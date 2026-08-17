@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npx eslint src)",
+      "PowerShell(npm run dev)",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:3000/login\" -UseBasicParsing; \"Status: $\\($r.StatusCode\\)\"; $r.Content.Substring\\(0, [Math]::Min\\(300, $r.Content.Length\\)\\))",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:3000/practica\" -UseBasicParsing; \"Final Status: $\\($r.StatusCode\\)\"; \"Final URI: $\\($r.BaseResponse.ResponseUri\\)\")"
+    ]
+  }
+}

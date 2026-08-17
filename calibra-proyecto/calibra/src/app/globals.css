@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+/* Barras de desplazamiento horizontales que existen por funcionalidad
+   (ej. el nav del header en viewports angostos) pero no deben verse como
+   una scrollbar de navegador — se puede seguir desplazando con touch/
+   trackpad, solo se oculta el indicador visual. */
+.sin-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.sin-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Modo claro (default) */
+:root {
+  --background: #fdfbf7;
+  --foreground: #1f2430;
+  --texto-secundario: #6b7280;
+  --surface: #ffffff;
+  --surface-2: #f3efe7;
+  --border: #e7e0d2;
+  --primario: #6c4cf1;
+  --correcto: #3fb88b;
+  --racha: #ff8a3d;
+  --error: #ff6b6b;
+  --logro: #ffc53d;
+}
+
+/* Modo oscuro por preferencia del sistema (si el usuario no eligió explícitamente) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #090c14;
+    --foreground: #f4f6fb;
+    --texto-secundario: #8892b0;
+    --surface: #12172a;
+    --surface-2: #171d34;
+    --border: #232b47;
+    --primario: #7c5cff;
+    --correcto: #3ddc97;
+    --racha: #ff8a3d;
+    --error: #ff5d5d;
+    --logro: #ffb627;
+  }
+}
+
+/* Modo oscuro elegido explícitamente con el toggle (gana siempre) */
+:root[data-theme="dark"] {
+  --background: #090c14;
+  --foreground: #f4f6fb;
+  --texto-secundario: #8892b0;
+  --surface: #12172a;
+  --surface-2: #171d34;
+  --border: #232b47;
+  --primario: #7c5cff;
+  --correcto: #3ddc97;
+  --racha: #ff8a3d;
+  --error: #ff5d5d;
+  --logro: #ffb627;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-texto-secundario: var(--texto-secundario);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-primario: var(--primario);
+  --color-correcto: var(--correcto);
+  --color-racha: var(--racha);
+  --color-error: var(--error);
+  --color-logro: var(--logro);
+  --font-display: var(--font-space-grotesk);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  transition: background-color .2s ease, color .2s ease;
+}
+
+button:not(:disabled),
+a,
+[role="button"],
+input[type="submit"]:not(:disabled),
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled),
+select:not(:disabled),
+label[for],
+summary,
+[onclick] {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
+}

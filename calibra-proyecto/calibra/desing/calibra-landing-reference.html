@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calibra — cálculo mental, en tu ritmo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-base:#090C14;
+    --bg-surface:#12172A;
+    --bg-surface-2:#171D34;
+    --violet:#7C5CFF;
+    --violet-soft:#a794ff;
+    --amber:#FFB627;
+    --mint:#3DDC97;
+    --coral:#FF5D5D;
+    --text-primary:#F4F6FB;
+    --text-muted:#8892B0;
+    --text-faint:#565F7E;
+    --border:#232B47;
+    --display: 'Space Grotesk', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+    --body: 'Inter', sans-serif;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--bg-base);
+    color:var(--text-primary);
+    font-family:var(--body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  :focus-visible{ outline:2px solid var(--violet-soft); outline-offset:3px; border-radius:4px; }
+
+  a{ color:inherit; }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 32px; }
+
+  /* ---------- background texture ---------- */
+  .grid-overlay{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(to right, rgba(124,92,255,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(124,92,255,0.05) 1px, transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+  }
+
+  .aurora{ position:absolute; inset:0; overflow:hidden; z-index:0; pointer-events:none; }
+  .blob{
+    position:absolute; border-radius:50%; filter:blur(90px); opacity:0.35;
+    animation:drift 22s ease-in-out infinite;
+  }
+  .blob.b1{ width:520px; height:520px; top:-180px; left:-120px; background:var(--violet); }
+  .blob.b2{ width:420px; height:420px; top:-60px; right:-140px; background:var(--amber); opacity:0.18; animation-delay:-8s; }
+  .blob.b3{ width:380px; height:380px; top:220px; left:38%; background:var(--mint); opacity:0.12; animation-delay:-14s; }
+  @keyframes drift{
+    0%,100%{ transform:translate(0,0) scale(1); }
+    50%{ transform:translate(30px,40px) scale(1.08); }
+  }
+
+  /* ---------- nav ---------- */
+  header{ position:relative; z-index:10; }
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:26px 0;
+  }
+  .logo{
+    font-family:var(--display); font-weight:700; font-size:20px; letter-spacing:-0.02em;
+    display:flex; align-items:center; gap:9px;
+  }
+  .logo .dot{
+    width:9px; height:9px; border-radius:50%;
+    background:conic-gradient(var(--violet), var(--amber), var(--mint), var(--violet));
+    animation:spin 4s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .nav-links{ display:flex; gap:34px; font-size:14.5px; color:var(--text-muted); }
+  .nav-links a{ text-decoration:none; transition:color .2s; }
+  .nav-links a:hover{ color:var(--text-primary); }
+  .nav-cta{
+    font-size:14px; font-weight:600; padding:9px 18px; border-radius:8px;
+    background:var(--text-primary); color:var(--bg-base); text-decoration:none;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .nav-cta:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(124,92,255,0.25); }
+
+  @media(max-width:720px){ .nav-links{ display:none; } }
+
+  /* ---------- buttons ---------- */
+  .btn-primary{
+    position:relative; display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--body); font-weight:600; font-size:15px; color:#0A0E17;
+    padding:14px 26px; border-radius:11px; border:none; cursor:pointer;
+    background:linear-gradient(120deg, var(--violet-soft), var(--amber));
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06) inset, 0 12px 30px -8px rgba(124,92,255,0.55);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 0 0 1px rgba(255,255,255,0.1) inset, 0 18px 40px -8px rgba(124,92,255,0.7); }
+
+  .btn-ghost{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--body); font-weight:600; font-size:15px; color:var(--text-primary);
+    padding:13px 24px; border-radius:11px; text-decoration:none;
+    border:1px solid var(--border); background:rgba(255,255,255,0.02);
+    transition:border-color .18s ease, background .18s ease;
+  }
+  .btn-ghost:hover{ border-color:var(--violet-soft); background:rgba(124,92,255,0.06); }
+
+  /* ---------- hero ---------- */
+  .hero{ position:relative; z-index:1; padding:70px 0 110px; }
+  .hero-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center;
+  }
+  @media(max-width:960px){ .hero-grid{ grid-template-columns:1fr; gap:56px; } }
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:12.5px; letter-spacing:0.06em; color:var(--amber);
+    background:rgba(255,182,39,0.08); border:1px solid rgba(255,182,39,0.25);
+    padding:6px 12px; border-radius:100px; margin-bottom:22px;
+  }
+  .eyebrow::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--amber); box-shadow:0 0 8px var(--amber); }
+
+  h1{
+    font-family:var(--display); font-size:clamp(36px,4.6vw,58px); line-height:1.06;
+    letter-spacing:-0.02em; font-weight:700; margin:0 0 22px;
+  }
+  h1 .grad{
+    background:linear-gradient(100deg, var(--violet-soft), var(--amber) 60%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero-sub{ font-size:17.5px; color:var(--text-muted); max-width:480px; margin:0 0 34px; }
+  .hero-actions{ display:flex; gap:14px; flex-wrap:wrap; }
+
+  /* ---------- signature: calibration dial ---------- */
+  .dial-wrap{ position:relative; width:150px; height:150px; margin:0 auto; }
+  .dial-wrap svg{ width:100%; height:100%; transform:rotate(-90deg); }
+  .dial-track{ fill:none; stroke:rgba(255,255,255,0.07); stroke-width:9; }
+  .dial-progress{
+    fill:none; stroke-width:9; stroke-linecap:round;
+    stroke:url(#dialGradient);
+    transition:stroke-dashoffset .6s cubic-bezier(.16,1,.3,1);
+  }
+  .dial-center{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-family:var(--mono);
+  }
+  .dial-level-num{ font-size:30px; font-weight:700; color:var(--text-primary); line-height:1; }
+  .dial-level-label{ font-size:10px; color:var(--text-muted); letter-spacing:0.04em; margin-top:4px; text-transform:uppercase; }
+
+  /* ---------- demo card ---------- */
+  .demo-card{
+    position:relative; border-radius:20px; padding:30px;
+    background:linear-gradient(180deg, var(--bg-surface), var(--bg-surface-2));
+    border:1px solid var(--border);
+    box-shadow:0 30px 80px -30px rgba(0,0,0,0.6);
+    transition:border-color .3s ease, box-shadow .3s ease;
+  }
+  .demo-card.flash-ok{ border-color:var(--mint); box-shadow:0 0 0 1px var(--mint), 0 30px 80px -30px rgba(61,220,151,0.35); }
+  .demo-card.flash-bad{ border-color:var(--coral); box-shadow:0 0 0 1px var(--coral), 0 30px 80px -30px rgba(255,93,93,0.35); }
+
+  .demo-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+  .demo-title{ font-family:var(--mono); font-size:12.5px; color:var(--text-muted); letter-spacing:0.03em; }
+  .demo-streak{ font-family:var(--mono); font-size:12.5px; color:var(--amber); }
+
+  .demo-body{ display:flex; flex-direction:column; align-items:center; gap:20px; }
+
+  .problem{
+    font-family:var(--mono); font-weight:700; font-size:clamp(34px,4vw,44px);
+    letter-spacing:-0.01em; min-height:56px; display:flex; align-items:center; gap:10px;
+  }
+  .problem .op{ color:var(--violet-soft); }
+
+  .answer-row{ display:flex; gap:10px; width:100%; max-width:280px; }
+  .answer-input{
+    flex:1; font-family:var(--mono); font-size:20px; font-weight:600; text-align:center;
+    background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px;
+    color:var(--text-primary); padding:12px 10px; width:100%;
+  }
+  .answer-input::placeholder{ color:var(--text-faint); font-weight:400; }
+
+  .timer-track{ width:100%; max-width:280px; height:4px; border-radius:4px; background:rgba(255,255,255,0.06); overflow:hidden; }
+  .timer-fill{ height:100%; width:100%; background:linear-gradient(90deg, var(--mint), var(--amber)); transform-origin:left; }
+
+  .demo-footnote{ font-size:12.5px; color:var(--text-faint); text-align:center; }
+
+  /* ---------- sections shared ---------- */
+  section{ position:relative; z-index:1; padding:100px 0; }
+  .section-head{ max-width:600px; margin-bottom:56px; }
+  .section-eyebrow{ font-family:var(--mono); font-size:12.5px; color:var(--violet-soft); letter-spacing:0.06em; margin-bottom:14px; text-transform:uppercase; }
+  h2{ font-family:var(--display); font-size:clamp(28px,3.2vw,38px); font-weight:700; letter-spacing:-0.02em; margin:0 0 14px; }
+  .section-sub{ color:var(--text-muted); font-size:16.5px; max-width:520px; }
+
+  /* ---------- feature cards (spotlight hover) ---------- */
+  .feature-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  @media(max-width:900px){ .feature-grid{ grid-template-columns:1fr; } }
+
+  .feature-card{
+    position:relative; border-radius:18px; padding:28px; overflow:hidden;
+    background:var(--bg-surface); border:1px solid var(--border);
+    transition:transform .25s ease, border-color .25s ease;
+  }
+  .feature-card:hover{ transform:translateY(-4px); border-color:rgba(124,92,255,0.4); }
+  .feature-card::before{
+    content:''; position:absolute; inset:0; opacity:0; transition:opacity .3s ease;
+    background:radial-gradient(320px circle at var(--mx,50%) var(--my,50%), rgba(124,92,255,0.14), transparent 70%);
+  }
+  .feature-card:hover::before{ opacity:1; }
+  .feature-icon{
+    width:42px; height:42px; border-radius:11px; display:flex; align-items:center; justify-content:center;
+    background:rgba(124,92,255,0.1); border:1px solid rgba(124,92,255,0.25); margin-bottom:20px;
+    position:relative; z-index:1;
+  }
+  .feature-card h3{ font-family:var(--display); font-size:19px; margin:0 0 10px; position:relative; z-index:1; }
+  .feature-card p{ font-size:14.5px; color:var(--text-muted); margin:0; position:relative; z-index:1; }
+
+  /* ---------- technique section ---------- */
+  .technique-layout{ display:grid; grid-template-columns:0.85fr 1.15fr; gap:56px; align-items:center; }
+  @media(max-width:900px){ .technique-layout{ grid-template-columns:1fr; } }
+
+  .technique-card{
+    border-radius:20px; padding:36px; background:var(--bg-surface); border:1px solid var(--border);
+  }
+  .technique-tag{
+    display:inline-block; font-family:var(--mono); font-size:11.5px; color:var(--mint);
+    background:rgba(61,220,151,0.08); border:1px solid rgba(61,220,151,0.25);
+    padding:5px 10px; border-radius:100px; margin-bottom:16px;
+  }
+  .technique-steps{ display:flex; flex-direction:column; gap:14px; font-family:var(--mono); }
+  .t-step{
+    display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:12px;
+    background:rgba(255,255,255,0.02); border:1px solid var(--border);
+    opacity:0.35; transform:translateX(-6px); transition:opacity .4s ease, transform .4s ease, border-color .4s ease;
+    font-size:15px;
+  }
+  .t-step.active{ opacity:1; transform:translateX(0); border-color:rgba(255,182,39,0.4); background:rgba(255,182,39,0.05); }
+  .t-step .num{ color:var(--amber); font-weight:700; min-width:18px; }
+
+  /* ---------- dashboard preview ---------- */
+  .dash-card{
+    border-radius:20px; padding:34px; background:linear-gradient(180deg, var(--bg-surface), var(--bg-surface-2));
+    border:1px solid var(--border); display:grid; grid-template-columns:auto 1fr; gap:40px; align-items:center;
+  }
+  @media(max-width:760px){ .dash-card{ grid-template-columns:1fr; justify-items:center; text-align:center; } }
+  .dash-stats{ display:flex; gap:14px; flex-wrap:wrap; margin-top:22px; }
+  .badge{
+    font-family:var(--mono); font-size:12.5px; color:var(--text-muted);
+    background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    padding:7px 12px; border-radius:100px;
+  }
+  .spark-label{ font-family:var(--mono); font-size:12px; color:var(--text-faint); margin-bottom:10px; letter-spacing:0.03em; text-transform:uppercase; }
+
+  /* ---------- footer cta ---------- */
+  .cta-final{
+    text-align:center; border-radius:24px; padding:70px 40px;
+    background:radial-gradient(ellipse at 50% 0%, rgba(124,92,255,0.14), transparent 70%), var(--bg-surface);
+    border:1px solid var(--border);
+  }
+  .cta-final h2{ margin-bottom:16px; }
+  .cta-final .section-sub{ margin:0 auto 30px; }
+  footer{ text-align:center; padding:40px 0 60px; color:var(--text-faint); font-size:13px; position:relative; z-index:1; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-overlay"></div>
+
+<header>
+  <div class="aurora"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+  <div class="wrap">
+    <nav>
+      <div class="logo"><span class="dot"></span>Calibra</div>
+      <div class="nav-links">
+        <a href="#demo">Cómo funciona</a>
+        <a href="#tecnicas">Técnicas</a>
+        <a href="#progreso">Progreso</a>
+      </div>
+      <a href="#" class="nav-cta">Empezar gratis</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="demo">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">Motor de calibración adaptativa</div>
+        <h1>Calculá <span class="grad">más rápido</span> de lo que creés.</h1>
+        <p class="hero-sub">Cálculo mental, acertijos de lógica y los trucos que usan los que hacen cuentas a la velocidad de un rayo. La dificultad se ajusta sola, problema por problema.</p>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="document.getElementById('answer').focus()">Probar el sprint ahora →</button>
+          <a href="#tecnicas" class="btn-ghost">Ver las técnicas</a>
+        </div>
+      </div>
+
+      <div class="demo-card" id="demoCard">
+        <div class="demo-head">
+          <span class="demo-title">SPRINT DE CÁLCULO — DEMO</span>
+          <span class="demo-streak">Racha: <span id="streakVal">0</span></span>
+        </div>
+        <div class="demo-body">
+          <div class="dial-wrap">
+            <svg viewBox="0 0 150 150">
+              <defs>
+                <linearGradient id="dialGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#7C5CFF"/>
+                  <stop offset="100%" stop-color="#FFB627"/>
+                </linearGradient>
+              </defs>
+              <circle class="dial-track" cx="75" cy="75" r="62"/>
+              <circle class="dial-progress" id="dialProgress" cx="75" cy="75" r="62" stroke-dasharray="389.6" stroke-dashoffset="350"/>
+            </svg>
+            <div class="dial-center">
+              <div class="dial-level-num" id="levelNum">1</div>
+              <div class="dial-level-label" id="levelLabel">Iniciado</div>
+            </div>
+          </div>
+
+          <div class="problem" id="problemText">7 <span class="op">+</span> 5</div>
+
+          <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
+
+          <div class="answer-row">
+            <input type="text" inputmode="numeric" class="answer-input" id="answer" placeholder="tu respuesta" autocomplete="off">
+          </div>
+          <div class="demo-footnote">Escribí la respuesta y presioná Enter</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pilares">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-eyebrow">El sistema</div>
+      <h2>Tres formas de afilar la mente</h2>
+      <p class="section-sub">No es solo repetición. Es calibración, patrones y trucos reales, todo en un mismo lugar.</p>
+    </div>
+    <div class="feature-grid" id="featureGrid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a794ff" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 12l4-4"/></svg>
+        </div>
+        <h3>Motor de calibración</h3>
+        <p>Mide tu velocidad y precisión en cada respuesta y ajusta la dificultad al instante — nunca demasiado fácil, nunca imposible.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a794ff" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        </div>
+        <h3>Acertijos de lógica</h3>
+        <p>Secuencias, patrones y problemas que entrenan el razonamiento — no solo la aritmética pura.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a794ff" stroke-width="2"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+        </div>
+        <h3>Técnicas mentales</h3>
+        <p>Los métodos que usan los calculistas: complemento a 10, trucos de multiplicación y más, con práctica dirigida.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tecnicas">
+  <div class="wrap">
+    <div class="technique-layout">
+      <div>
+        <div class="section-eyebrow">Técnica del día</div>
+        <h2>Un truco a la vez</h2>
+        <p class="section-sub">Cada lección enseña un método, con práctica dirigida hasta que se vuelva automático.</p>
+      </div>
+      <div class="technique-card">
+        <span class="technique-tag">× 11 EN UN SEGUNDO</span>
+        <div class="technique-steps" id="techSteps">
+          <div class="t-step"><span class="num">1</span> Separá los dígitos: 3 _ 7</div>
+          <div class="t-step"><span class="num">2</span> Sumá 3 + 7 = 10</div>
+          <div class="t-step"><span class="num">3</span> Llevás el 1: 3(+1) _ 0 _ 7</div>
+          <div class="t-step"><span class="num">4</span> Resultado: 37 × 11 = 407</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="progreso">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-eyebrow">Sin adivinar</div>
+      <h2>Tu progreso, medido de verdad</h2>
+      <p class="section-sub">Velocidad, precisión y nivel — el mismo dial que ves en cada sprint, ahora contando tu historia.</p>
+    </div>
+    <div class="dash-card">
+      <div class="dial-wrap">
+        <svg viewBox="0 0 150 150">
+          <circle class="dial-track" cx="75" cy="75" r="62"/>
+          <circle class="dial-progress" cx="75" cy="75" r="62" stroke-dasharray="389.6" stroke-dashoffset="120" stroke="url(#dialGradient)"/>
+        </svg>
+        <div class="dial-center">
+          <div class="dial-level-num">7</div>
+          <div class="dial-level-label">Avanzado</div>
+        </div>
+      </div>
+      <div>
+        <div class="spark-label">Velocidad promedio · últimas 6 semanas</div>
+        <svg width="100%" height="70" viewBox="0 0 400 70" preserveAspectRatio="none">
+          <polyline points="0,58 66,50 133,52 200,34 266,28 333,14 400,8" fill="none" stroke="#3DDC97" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="dash-stats">
+          <span class="badge">🔥 12 días seguidos</span>
+          <span class="badge">⚡ 340 problemas resueltos</span>
+          <span class="badge">🎯 92% de precisión</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="cta-final">
+      <h2>¿Lista tu cabeza para calibrarse?</h2>
+      <p class="section-sub">Empezá con un sprint de un minuto. Sin tarjeta, sin vueltas.</p>
+      <button class="btn-primary" onclick="document.getElementById('answer').focus(); document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Crear cuenta gratis →</button>
+    </div>
+  </div>
+</section>
+
+<footer>Calibra — entrená tu cálculo mental, un problema a la vez.</footer>
+
+<script>
+  // ---------- feature card spotlight ----------
+  document.querySelectorAll('.feature-card').forEach(card=>{
+    card.addEventListener('mousemove', e=>{
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  });
+
+  // ---------- technique step cycling ----------
+  const steps = document.querySelectorAll('#techSteps .t-step');
+  let stepIdx = 0;
+  function cycleSteps(){
+    steps.forEach((s,i)=> s.classList.toggle('active', i <= stepIdx));
+    stepIdx = (stepIdx + 1) % (steps.length + 1);
+  }
+  cycleSteps();
+  setInterval(cycleSteps, 1400);
+
+  // ---------- math sprint demo ----------
+  const CIRC = 389.6;
+  const tiers = [
+    {name:'Iniciado', min:1, max:2},
+    {name:'Aprendiz', min:3, max:4},
+    {name:'Competente', min:5, max:6},
+    {name:'Avanzado', min:7, max:8},
+    {name:'Calculista', min:9, max:10},
+  ];
+  function tierName(level){
+    return tiers.find(t=> level>=t.min && level<=t.max).name;
+  }
+
+  let level = 1, streak = 0, answer = null, timer = null, timeBudget = 6000;
+  const problemEl = document.getElementById('problemText');
+  const answerEl = document.getElementById('answer');
+  const timerFill = document.getElementById('timerFill');
+  const demoCard = document.getElementById('demoCard');
+  const levelNum = document.getElementById('levelNum');
+  const levelLabel = document.getElementById('levelLabel');
+  const streakVal = document.getElementById('streakVal');
+  const dialProgress = document.getElementById('dialProgress');
+
+  function rand(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+
+  function genProblem(lvl){
+    let a,b,op,text,ans;
+    if(lvl<=2){ a=rand(2,9); b=rand(2,9); op='+'; ans=a+b; }
+    else if(lvl<=4){ a=rand(10,40); b=rand(5,20); op = Math.random()<0.5?'+':'−'; ans = op==='+'? a+b : a-b; if(op==='−'&&a<b){[a,b]=[b,a]; ans=a-b;} }
+    else if(lvl<=6){ a=rand(3,9); b=rand(3,9); op='×'; ans=a*b; }
+    else if(lvl<=8){ a=rand(11,25); b=rand(3,9); op='×'; ans=a*b; }
+    else { b=rand(3,9); ans=rand(4,12); a=ans*b; op='÷'; }
+    text = a + ' ' + op + ' ' + b;
+    return {text, ans};
+  }
+
+  function setDial(){
+    const pct = level/10;
+    dialProgress.style.strokeDashoffset = CIRC - CIRC*pct;
+    levelNum.textContent = level;
+    levelLabel.textContent = tierName(level);
+  }
+
+  function timeBudgetFor(lvl){
+    return Math.max(2600, 6200 - lvl*350);
+  }
+
+  function nextProblem(){
+    const p = genProblem(level);
+    problemEl.innerHTML = p.text.replace(/([+\u2212×÷])/, '<span class="op">$1</span>');
+    answer = p.ans;
+    answerEl.value = '';
+    answerEl.focus();
+    timeBudget = timeBudgetFor(level);
+    runTimer();
+  }
+
+  function runTimer(){
+    clearTimeout(timer);
+    timerFill.style.transition = 'none';
+    timerFill.style.width = '100%';
+    timerFill.style.background = 'linear-gradient(90deg, var(--mint), var(--amber))';
+    void timerFill.offsetWidth;
+    timerFill.style.transition = 'width ' + timeBudget + 'ms linear, background .3s ease';
+    timerFill.style.width = '0%';
+    timer = setTimeout(()=> resolveAttempt(false), timeBudget);
+  }
+
+  function flash(ok){
+    demoCard.classList.remove('flash-ok','flash-bad');
+    void demoCard.offsetWidth;
+    demoCard.classList.add(ok?'flash-ok':'flash-bad');
+    setTimeout(()=> demoCard.classList.remove('flash-ok','flash-bad'), 500);
+  }
+
+  function resolveAttempt(correct){
+    clearTimeout(timer);
+    flash(correct);
+    if(correct){
+      streak++;
+      if(streak>=3){ level = Math.min(10, level+1); streak=0; }
+    } else {
+      streak = 0;
+      level = Math.max(1, level-1);
+    }
+    streakVal.textContent = streak;
+    setDial();
+    setTimeout(nextProblem, 550);
+  }
+
+  answerEl.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){
+      const val = parseInt(answerEl.value, 10);
+      resolveAttempt(!isNaN(val) && val === answer);
+    }
+  });
+
+  setDial();
+  nextProblem();
+</script>
+
+</body>
+</html>

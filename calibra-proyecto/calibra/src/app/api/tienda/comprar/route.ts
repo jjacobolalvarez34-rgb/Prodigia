@@ -1,0 +1,53 @@
+import { createClient } from "@/lib/supabase/server";
+import { NextResponse } from "next/server";
+import { precioConDescuento } from "@/lib/descuentoDiario";
+
+const COSTOS = {
+  escudo: 80,
+  congelamiento: 60,
+  boost: 100,
+  color_esmeralda: 150,
+  color_coral: 150,
+  color_dorado: 150,
+  marco_plata: 120,
+  marco_oro: 220,
+} as const;
+type Item = keyof typeof COSTOS;
+
+interface Body {
+  item: Item;
+}
+
+export async function POST(request: Request) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+  }
+
+  const body = (await request.json()) as Body;
+  if (!(body.item in COSTOS)) {
+    return NextResponse.json({ error: "Item inválido" }, { status: 400 });
+  }
+
+  // El descuento del día se recalcula acá, server-side, con la fecha de
+  // hoy — nunca se confía en un precio que mande el cliente.
+  const hoyIso = new Date().toISOString().slice(0, 10);
+  const costoFinal = precioConDescuento(COSTOS[body.item], body.item, hoyIso);
+
+  const { data, error } = await supabase.rpc("comprar_item_tienda", {
+    p_item: body.item,
+    p_costo: costoFinal,
+  });
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+
+  const fila = (data as Array<Record<string, unknown>>)[0];
+  return NextResponse.json({ ok: true, ...fila });
+}
