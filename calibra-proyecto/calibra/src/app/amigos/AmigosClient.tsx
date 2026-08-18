@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType } from "@/types/database";
 import RankingRankeds from "@/components/RankingRankeds";
@@ -176,7 +177,9 @@ export default function AmigosClient({ miUserId, solicitudesIniciales, amigosIni
             <div key={a.friend_id} className="flex flex-col gap-2 rounded-xl border border-border bg-surface px-4 py-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="font-medium text-foreground">{a.display_name ?? "Jugador"}</span>
+                  <Link href={`/perfil/${a.friend_id}`} className="font-medium text-foreground hover:underline">
+                    {a.display_name ?? "Jugador"}
+                  </Link>
                   <span className="ml-2 font-mono text-xs text-texto-secundario">{a.elo_rating} ELO</span>
                 </div>
                 <Boton onClick={() => setRetandoA(retandoA === a.friend_id ? null : a.friend_id)} className="px-3 py-1.5 text-sm">

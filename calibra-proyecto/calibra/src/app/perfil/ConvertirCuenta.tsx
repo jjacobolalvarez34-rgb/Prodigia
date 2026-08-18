@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
 import Boton from "@/components/Boton";
 
 // Un invitado (supabase.auth.signInAnonymously) ya tiene un user_id real y
@@ -32,11 +33,7 @@ export default function ConvertirCuenta() {
     setEnviando(false);
 
     if (authError) {
-      setError(
-        authError.message.includes("already registered") || authError.message.includes("already been registered")
-          ? "Ya existe una cuenta con ese email."
-          : "No pudimos guardar la cuenta. Probá de nuevo."
-      );
+      setError(mensajeErrorAuth(authError, "No pudimos guardar la cuenta. Probá de nuevo."));
       return;
     }
 

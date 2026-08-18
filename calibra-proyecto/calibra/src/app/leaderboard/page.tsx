@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
-
-interface FilaRanking {
-  user_id: string;
-  display_name: string | null;
-  xp_semana: number;
-}
+import Avatar from "@/components/Avatar";
+import Podio, { type FilaRanking } from "./Podio";
 
 export const metadata: Metadata = {
   title: "Ranking",
@@ -22,6 +19,8 @@ export default async function LeaderboardPage() {
   const ranking = (data ?? []) as FilaRanking[];
 
   const posicionUsuario = ranking.findIndex((f) => f.user_id === user.id);
+  const top3 = ranking.slice(0, 3);
+  const resto = ranking.slice(3, 10);
   const top10 = ranking.slice(0, 10);
   const enTop10 = posicionUsuario !== -1 && posicionUsuario < 10;
 
@@ -34,7 +33,7 @@ export default async function LeaderboardPage() {
 
   return (
     <>
-      <Header autenticado />
+      <Header autenticado invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Ranking semanal</h1>
@@ -49,16 +48,21 @@ export default async function LeaderboardPage() {
             Todavía nadie sumó experiencia esta semana — ¡arrancá vos!
           </p>
         ) : (
-          <ol className="flex flex-col gap-2">
-            {top10.map((fila, i) => (
-              <FilaRankingItem
-                key={fila.user_id}
-                fila={fila}
-                posicion={i}
-                esUsuarioActual={fila.user_id === user.id}
-              />
-            ))}
-          </ol>
+          <>
+            <Podio top3={top3} miUserId={user.id} />
+            {resto.length > 0 && (
+              <ol className="flex flex-col gap-2">
+                {resto.map((fila, i) => (
+                  <FilaRankingItem
+                    key={fila.user_id}
+                    fila={fila}
+                    posicion={i + 3}
+                    esUsuarioActual={fila.user_id === user.id}
+                  />
+                ))}
+              </ol>
+            )}
+          </>
         )}
 
         {!enTop10 && posicionUsuario !== -1 && (
@@ -102,10 +106,11 @@ function FilaRankingItem({
         esUsuarioActual ? "border-primario/40 bg-primario/5" : "border-border bg-surface"
       }`}
     >
-      <div className="flex items-center gap-3">
+      <Link href={`/perfil/${fila.user_id}`} className="flex items-center gap-3">
         <span className="w-6 text-center font-mono text-sm text-texto-secundario">{posicion + 1}</span>
-        <span className="font-medium text-foreground">{fila.display_name ?? "Jugador"}</span>
-      </div>
+        <Avatar url={fila.avatar_url} nombre={fila.display_name} size={32} />
+        <span className="font-medium text-foreground hover:underline">{fila.display_name ?? "Jugador"}</span>
+      </Link>
       <span className="font-mono font-semibold text-primario">{fila.xp_semana} Exp</span>
     </li>
   );

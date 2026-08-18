@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface FilaRanking {
   user_id: string;
@@ -24,7 +25,7 @@ export async function GET() {
 
   const { data, error } = await supabase.rpc("ranking_semanal");
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return respuestaError("leaderboard/posicion", error);
   }
 
   const ranking = (data ?? []) as FilaRanking[];

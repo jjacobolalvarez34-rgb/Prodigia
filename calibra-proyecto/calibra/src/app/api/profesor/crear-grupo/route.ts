@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   nombre: string;
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
     .eq("id", user.id);
 
   if (profesorError) {
-    return NextResponse.json({ error: `No se pudo marcar la cuenta como profesor: ${profesorError.message}` }, { status: 400 });
+    return respuestaError("profesor/crear-grupo:marcar-profesor", profesorError);
   }
 
   // El id lo generamos acá en vez de dejar que lo ponga la DB (default
@@ -48,7 +49,6 @@ export async function POST(request: Request) {
   // de "groups", una capa extra que no hace falta — ya sabemos el id y
   // el código porque los generamos nosotros.
   let codigo = generarCodigo();
-  let ultimoError: string | null = null;
   for (let intento = 0; intento < 5; intento++) {
     const id = randomUUID();
     const { error } = await supabase
@@ -57,12 +57,9 @@ export async function POST(request: Request) {
     if (!error) {
       return NextResponse.json({ ok: true, id, codigo });
     }
-    ultimoError = error.message;
+    console.error("[api:profesor/crear-grupo:insert]", error.code, error.message);
     codigo = generarCodigo(); // colisión de código único, reintenta
   }
 
-  return NextResponse.json(
-    { error: `No se pudo crear el grupo${ultimoError ? `: ${ultimoError}` : ", probá de nuevo."}` },
-    { status: 500 }
-  );
+  return NextResponse.json({ error: "No se pudo crear el grupo, probá de nuevo." }, { status: 500 });
 }

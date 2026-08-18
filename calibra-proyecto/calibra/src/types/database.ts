@@ -59,7 +59,26 @@ export interface Profile {
   colores_dial_desbloqueados: ColorDial[];
   elo_rating: number;
   created_at: string;
+  avatar_url: string | null; // Fase P3, Supabase Storage (bucket "avatares")
 }
+
+// Fase Q3: lo que puede ver cualquiera del perfil de OTRO usuario —
+// nunca el objeto Profile completo (que trae saldo de tienda, apuestas
+// activas, etc.). Viene de la RPC security definer
+// obtener_perfil_publico, no de un select directo (profiles solo
+// permite leer la fila propia por RLS).
+export interface PerfilPublico {
+  id: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  marco_perfil: string;
+  color_dial: ColorDial;
+  elo_rating: number;
+  puntos_total: number;
+  created_at: string;
+}
+
+export type MotivoReporte = "trampa" | "imagen_inapropiada" | "nombre_inapropiado" | "otro";
 
 export interface Attempt {
   id: number;

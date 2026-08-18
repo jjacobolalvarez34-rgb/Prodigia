@@ -55,7 +55,7 @@ export default async function ProdigiaHomePage() {
 
   return (
     <>
-      <Header autenticado mostrarTour />
+      <Header autenticado mostrarTour invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">

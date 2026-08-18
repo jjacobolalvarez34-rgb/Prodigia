@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import type { ArithmeticProblemType, ModifierSlug } from "@/types/database";
-import { tierDeElo } from "@/types/database";
 import type { Problem } from "@/lib/practica/problems";
 import type { DueloInfo, RespuestaDuelo } from "./page";
 import Boton from "@/components/Boton";
 import OperationPicker from "./OperationPicker";
 import SprintRunner from "./SprintRunner";
+import SalaDuelo from "./SalaDuelo";
 import SprintSummary, { type FinishResponse, type ResultadoDuelo } from "./SprintSummary";
 
 type Fase = "seleccion" | "duelo-intro" | "sprint" | "resumen";
@@ -19,15 +19,9 @@ interface Props {
   escudosExtra: number;
   boostActivo: boolean;
   duelo: DueloInfo | null;
+  miUserId: string;
   colorDial?: string;
 }
-
-const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
-  suma: "Suma",
-  resta: "Resta",
-  multiplicacion: "Multiplicación",
-  division: "División",
-};
 
 export default function PracticaClient({
   nivelInicial,
@@ -36,6 +30,7 @@ export default function PracticaClient({
   escudosExtra,
   boostActivo,
   duelo,
+  miUserId,
   colorDial,
 }: Props) {
   const [fase, setFase] = useState<Fase>(duelo ? "duelo-intro" : "seleccion");
@@ -77,72 +72,61 @@ export default function PracticaClient({
 
   async function handleFinishSprint(errores: Problem[], respuestas: RespuestaDuelo[]) {
     setErroresSprint(errores);
-    const res = await fetch("/api/practica/finish", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ started_at: startedAtIso }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      setErrorResumen(data.error ?? "No se pudo cerrar la partida.");
-      setFase("resumen");
-      return;
-    }
-    setErrorResumen(null);
-    setResumen(data as FinishResponse);
-
-    if (duelo) {
-      try {
-        const resDuelo = await fetch("/api/duelos/resultado", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            duel_id: duelo.duelId,
-            precision: (data as FinishResponse).sprint.precision ?? 0,
-            tiempo_promedio: (data as FinishResponse).sprint.avgTimeMs ?? 0,
-            puntaje: (data as FinishResponse).sprint.xpGanado,
-            respuestas,
-          }),
-        });
-        const dataDuelo = await resDuelo.json();
-        if (resDuelo.ok) setResultadoDuelo(dataDuelo as ResultadoDuelo);
-      } catch {
-        // El duelo no se pudo resolver por un error de red puntual — el
-        // resumen de la partida igual se muestra con normalidad.
+    try {
+      const res = await fetch("/api/practica/finish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ started_at: startedAtIso }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorResumen(data.error ?? "No se pudo cerrar la partida.");
+        setFase("resumen");
+        return;
       }
-    }
+      setErrorResumen(null);
+      setResumen(data as FinishResponse);
 
+      if (duelo) {
+        try {
+          const resDuelo = await fetch("/api/duelos/resultado", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              duel_id: duelo.duelId,
+              precision: (data as FinishResponse).sprint.precision ?? 0,
+              tiempo_promedio: (data as FinishResponse).sprint.avgTimeMs ?? 0,
+              puntaje: (data as FinishResponse).sprint.xpGanado,
+              respuestas,
+            }),
+          });
+          const dataDuelo = await resDuelo.json();
+          if (resDuelo.ok) setResultadoDuelo(dataDuelo as ResultadoDuelo);
+        } catch {
+          // El duelo no se pudo resolver por un error de red puntual — el
+          // resumen de la partida igual se muestra con normalidad.
+        }
+      }
+    } catch {
+      // Red caída o el servidor no respondió: no dejamos la partida
+      // trabada en la última pregunta, mostramos el resumen con error.
+      setErrorResumen("No pudimos conectar con el servidor. Probá de nuevo.");
+    }
     setFase("resumen");
   }
 
   if (fase === "duelo-intro" && duelo) {
     return (
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
-        <span className="rounded-full bg-primario/10 px-3 py-1 text-xs font-medium uppercase tracking-wide text-primario">
-          Duelo · {NOMBRES_OPERACION[duelo.operacion]}
-        </span>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-          Vs. {duelo.rivalNombre}
-        </h1>
-        <div className="flex items-center gap-6">
-          <div className="flex flex-col items-center gap-1">
-            <span className="font-mono text-xl font-bold text-foreground">{duelo.miElo}</span>
-            <span className="text-xs text-texto-secundario">Vos · {tierDeElo(duelo.miElo)}</span>
-          </div>
-          <span className="text-texto-secundario">—</span>
-          <div className="flex flex-col items-center gap-1">
-            <span className="font-mono text-xl font-bold text-foreground">{duelo.rivalElo}</span>
-            <span className="text-xs text-texto-secundario">{duelo.rivalNombre} · {tierDeElo(duelo.rivalElo)}</span>
-          </div>
-        </div>
-        <p className="text-sm text-texto-secundario">
-          Misma dificultad para los dos, calibrada según el rango promedio. Gana quien sume más
-          Experiencia.
-        </p>
-        <Boton onClick={() => iniciarSprint([duelo.operacion])} className="w-full py-4">
-          Empezar duelo
-        </Boton>
-      </div>
+      <SalaDuelo
+        duelId={duelo.duelId}
+        operacion={duelo.operacion}
+        miUserId={miUserId}
+        rivalId={duelo.rivalId}
+        rivalNombre={duelo.rivalNombre}
+        miElo={duelo.miElo}
+        rivalElo={duelo.rivalElo}
+        onEmpezar={() => iniciarSprint([duelo.operacion])}
+      />
     );
   }
 
@@ -156,6 +140,7 @@ export default function PracticaClient({
         escudosExtra={escudosExtra}
         colorDial={colorDial}
         fantasma={duelo?.rivalRespuestas ? { rivalNombre: duelo.rivalNombre, respuestas: duelo.rivalRespuestas } : null}
+        semillaDuelo={duelo?.semilla}
         onNivelChange={handleNivelChange}
         onFinish={handleFinishSprint}
       />

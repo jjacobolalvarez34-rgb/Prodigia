@@ -55,19 +55,24 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
 
   async function handleFinish(erroresPartida: PaisAmerica[]) {
     setErrores(erroresPartida);
-    const res = await fetch("/api/practica/finish", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ started_at: startedAtIso }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      setError(data.error ?? "No se pudo cerrar la partida.");
-      setFase("resumen");
-      return;
+    try {
+      const res = await fetch("/api/practica/finish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ started_at: startedAtIso }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "No se pudo cerrar la partida.");
+      } else {
+        setError(null);
+        setResumen(data as FinishResponse);
+      }
+    } catch {
+      // Red caída o el servidor no respondió: no dejamos la partida
+      // trabada en la última pregunta, mostramos el resumen con error.
+      setError("No pudimos conectar con el servidor. Probá de nuevo.");
     }
-    setError(null);
-    setResumen(data as FinishResponse);
     setFase("resumen");
   }
 

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { verificarLogros } from "@/lib/logros/verificar";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   fecha: string;
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return respuestaError("reto-diario/completar", error);
   }
 
   const fila = (data as Array<Record<string, unknown>>)[0];

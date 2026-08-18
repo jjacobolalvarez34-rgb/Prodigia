@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   post_id: string;
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
     .insert({ post_id: body.post_id, user_id: user.id });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return respuestaError("feed/reaccionar", error);
   }
 
   return NextResponse.json({ ok: true, reaccionaste: true });

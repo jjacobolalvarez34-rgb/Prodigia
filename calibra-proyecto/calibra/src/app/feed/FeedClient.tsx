@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType } from "@/types/database";
 
 export interface PostFeed {
@@ -169,8 +170,10 @@ function TarjetaLogro({ post, onReaccionar }: { post: PostFeed; onReaccionar: (i
       <div className="flex items-center gap-2">
         <span className="text-xl">🏅</span>
         <p className="text-sm text-foreground">
-          <span className="font-semibold">{post.autorNombre}</span> desbloqueó{" "}
-          <span className="font-semibold">{post.logroNombre}</span>
+          <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
+            {post.autorNombre}
+          </Link>{" "}
+          desbloqueó <span className="font-semibold">{post.logroNombre}</span>
         </p>
       </div>
       {post.logroDescripcion && <p className="text-xs text-texto-secundario">{post.logroDescripcion}</p>}
@@ -202,8 +205,10 @@ function TarjetaDesafio({ post, onReaccionar }: { post: PostFeed; onReaccionar: 
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-5 py-4 shadow-sm">
       <p className="text-sm text-foreground">
-        <span className="font-semibold">{post.autorNombre}</span> te desafía a{" "}
-        <span className="font-semibold">{NOMBRES_OPERACION[post.operationType ?? ""]}</span>, nivel{" "}
+        <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
+          {post.autorNombre}
+        </Link>{" "}
+        te desafía a <span className="font-semibold">{NOMBRES_OPERACION[post.operationType ?? ""]}</span>, nivel{" "}
         {post.nivel}, {post.cantidadProblemas} problemas.
       </p>
       <div className="flex items-center justify-between">

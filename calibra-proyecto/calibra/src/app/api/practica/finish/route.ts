@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { verificarLogros } from "@/lib/logros/verificar";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface FinishBody {
   started_at: string; // ISO timestamp de cuando arrancó el sprint
@@ -73,8 +74,7 @@ export async function POST(request: Request) {
     .gte("created_at", startedAtIso);
 
   if (sprintError) {
-    console.error("[/api/practica/finish] sprintError", sprintError);
-    return NextResponse.json({ error: sprintError.message }, { status: 400 });
+    return respuestaError("practica/finish:sprint", sprintError);
   }
 
   const sprintTotal = sprintRows.length;
@@ -92,8 +92,7 @@ export async function POST(request: Request) {
     .limit(5000);
 
   if (histError) {
-    console.error("[/api/practica/finish] histError", histError);
-    return NextResponse.json({ error: histError.message }, { status: 400 });
+    return respuestaError("practica/finish:hist", histError);
   }
 
   const histTotal = histRows.length;
@@ -107,8 +106,7 @@ export async function POST(request: Request) {
     .lt("fecha", startedAtIso.slice(0, 10));
 
   if (histDailyError) {
-    console.error("[/api/practica/finish] histDailyError", histDailyError);
-    return NextResponse.json({ error: histDailyError.message }, { status: 400 });
+    return respuestaError("practica/finish:histDaily", histDailyError);
   }
 
   const avgXpDiarioHistorico = promedio(histDaily.map((d) => d.xp_ganado));
@@ -119,8 +117,7 @@ export async function POST(request: Request) {
   );
 
   if (registroError) {
-    console.error("[/api/practica/finish] registroError", registroError);
-    return NextResponse.json({ error: registroError.message }, { status: 400 });
+    return respuestaError("practica/finish:registro", registroError);
   }
 
   // El boost comprado en la tienda (si estaba activo) ya se aplicó

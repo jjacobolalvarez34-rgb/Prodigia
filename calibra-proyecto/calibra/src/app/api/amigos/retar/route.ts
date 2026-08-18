@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { ARITHMETIC_PROBLEM_TYPES } from "@/types/database";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   friend_id: string;
@@ -39,8 +40,11 @@ export async function POST(request: Request) {
     .select("id")
     .single();
 
-  if (error || !duel) {
-    return NextResponse.json({ error: error?.message ?? "No se pudo crear el duelo" }, { status: 400 });
+  if (error) {
+    return respuestaError("amigos/retar", error);
+  }
+  if (!duel) {
+    return NextResponse.json({ error: "No se pudo crear el duelo" }, { status: 400 });
   }
 
   return NextResponse.json({ ok: true, duel_id: duel.id });

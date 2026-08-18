@@ -13,8 +13,13 @@ export interface Problem {
   incognitaB?: boolean;
 }
 
-function randomInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+// rng es inyectable para los duelos en tiempo real (Fase T3): ambos
+// rivales generan la MISMA secuencia de problemas a partir de la misma
+// semilla (duels.semilla_problemas + mulberry32, ver SprintRunner.tsx),
+// nunca vía Math.random. Sin duelo de por medio, rng se omite y esto
+// sigue siendo random de verdad, como siempre.
+function randomInt(min: number, max: number, rng: () => number = Math.random): number {
+  return Math.floor(rng() * (max - min + 1)) + min;
 }
 
 // Nivel 1-10 se agrupa en 5 bandas de dificultad ([1-2], [3-4], ..., [9-10]).
@@ -33,27 +38,27 @@ function bandaConModifier(nivel: number, modifier?: ModifierSlug): number {
   return modifier === "numeros_grandes" ? Math.min(4, base + 1) : base;
 }
 
-function generarSuma(nivel: number, modifier?: ModifierSlug): Problem {
+function generarSuma(nivel: number, modifier?: ModifierSlug, rng?: () => number): Problem {
   const max = SUMA_RESTA_MAX[bandaConModifier(nivel, modifier)];
-  const a = randomInt(1, max);
-  const b = randomInt(1, max);
+  const a = randomInt(1, max, rng);
+  const b = randomInt(1, max, rng);
   return { problemType: "suma", nivel, a, b, symbol: "+", answer: a + b, modifier };
 }
 
-function generarResta(nivel: number, modifier?: ModifierSlug): Problem {
+function generarResta(nivel: number, modifier?: ModifierSlug, rng?: () => number): Problem {
   const max = SUMA_RESTA_MAX[banda(nivel)];
-  let a = randomInt(1, max);
-  let b = randomInt(1, max);
+  let a = randomInt(1, max, rng);
+  let b = randomInt(1, max, rng);
   if (modifier !== "negativos" && b > a) {
     [a, b] = [b, a]; // sin el modificador, nunca da negativo
   }
   return { problemType: "resta", nivel, a, b, symbol: "−", answer: a - b, modifier };
 }
 
-function generarMultiplicacion(nivel: number, modifier?: ModifierSlug): Problem {
+function generarMultiplicacion(nivel: number, modifier?: ModifierSlug, rng?: () => number): Problem {
   const i = bandaConModifier(nivel, modifier);
-  const a = randomInt(2, FACTOR_1[i]);
-  const b = randomInt(2, FACTOR_2[i]);
+  const a = randomInt(2, FACTOR_1[i], rng);
+  const b = randomInt(2, FACTOR_2[i], rng);
 
   if (modifier === "inverso") {
     // Se muestra "a × ? = resultado": el campo `b` pasa a ser el
@@ -74,10 +79,10 @@ function generarMultiplicacion(nivel: number, modifier?: ModifierSlug): Problem 
   return { problemType: "multiplicacion", nivel, a, b, symbol: "×", answer: a * b, modifier };
 }
 
-function generarDivision(nivel: number): Problem {
+function generarDivision(nivel: number, rng?: () => number): Problem {
   const i = banda(nivel);
-  const divisor = randomInt(2, FACTOR_2[i]);
-  const cociente = randomInt(2, FACTOR_1[i]);
+  const divisor = randomInt(2, FACTOR_2[i], rng);
+  const cociente = randomInt(2, FACTOR_1[i], rng);
   const dividendo = divisor * cociente;
   return {
     problemType: "division",
@@ -99,17 +104,18 @@ export function formatearProblema(p: Problem): string {
 export function generarProblema(
   problemType: ArithmeticProblemType,
   nivel: number,
-  modifier?: ModifierSlug
+  modifier?: ModifierSlug,
+  rng?: () => number
 ): Problem {
   switch (problemType) {
     case "suma":
-      return generarSuma(nivel, modifier);
+      return generarSuma(nivel, modifier, rng);
     case "resta":
-      return generarResta(nivel, modifier);
+      return generarResta(nivel, modifier, rng);
     case "multiplicacion":
-      return generarMultiplicacion(nivel, modifier);
+      return generarMultiplicacion(nivel, modifier, rng);
     case "division":
-      return generarDivision(nivel);
+      return generarDivision(nivel, rng);
   }
 }
 

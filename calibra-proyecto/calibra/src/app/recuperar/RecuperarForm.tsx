@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
 import Boton from "@/components/Boton";
 
 export default function RecuperarForm() {
@@ -22,7 +23,7 @@ export default function RecuperarForm() {
 
     setEnviando(false);
     if (authError) {
-      setError("No pudimos enviar el enlace. Probá de nuevo.");
+      setError(mensajeErrorAuth(authError, "No pudimos enviar el enlace. Probá de nuevo."));
       return;
     }
     setEnviado(true);

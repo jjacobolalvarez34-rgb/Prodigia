@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   post_id: string;
@@ -7,10 +8,8 @@ interface Body {
 
 // POST /api/feed/retar
 // Crea el duelo (retador = quien clickea, retado = autor de la tarjeta
-// de desafío) y manda derecho al sprint con esa operación. El motor de
-// sprint todavía no consume semilla_problemas ni escribe duel_results —
-// eso queda para cuando se construya la pantalla de duelo en sí sobre
-// esta misma base (Fase N dejó la tabla lista a propósito para eso).
+// de desafío) y manda derecho a la sala de duelo sincronizada
+// (Fase T3 — semilla_problemas ya se consume ahí, ver SprintRunner.tsx).
 export async function POST(request: Request) {
   const supabase = await createClient();
 
@@ -51,8 +50,11 @@ export async function POST(request: Request) {
     .select("id")
     .single();
 
-  if (duelError || !duel) {
-    return NextResponse.json({ error: duelError?.message ?? "No se pudo crear el duelo" }, { status: 400 });
+  if (duelError) {
+    return respuestaError("feed/retar", duelError);
+  }
+  if (!duel) {
+    return NextResponse.json({ error: "No se pudo crear el duelo" }, { status: 400 });
   }
 
   return NextResponse.json({ ok: true, operation_type: post.operation_type, duel_id: duel.id });

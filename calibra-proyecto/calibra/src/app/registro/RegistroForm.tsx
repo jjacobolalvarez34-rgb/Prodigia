@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
 import Boton from "@/components/Boton";
 
 export default function RegistroForm() {
@@ -32,11 +33,14 @@ export default function RegistroForm() {
     });
 
     if (authError) {
-      setError(
-        authError.message.includes("already registered") || authError.message.includes("already been registered")
-          ? "Ya existe una cuenta con ese email."
-          : "No pudimos crear la cuenta. Probá de nuevo."
-      );
+      const mensaje = mensajeErrorAuth(authError, "No pudimos crear la cuenta. Probá de nuevo.");
+      // Fallback por si el mensaje viejo de Supabase ("User already
+      // registered") llega sin el código `email_exists` en alguna
+      // versión — mensajeErrorAuth ya cubre el código; esto es un
+      // segundo intento antes de resignarse al genérico.
+      const msg = authError.message.toLowerCase();
+      const yaRegistrado = msg.includes("already registered") || msg.includes("already been registered");
+      setError(yaRegistrado ? "Ya existe una cuenta con ese email." : mensaje);
       setEnviando(false);
       return;
     }

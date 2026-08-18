@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { verificarLogros } from "@/lib/logros/verificar";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface FinishBody {
   started_at: string;
@@ -57,7 +58,7 @@ export async function POST(request: Request) {
     .gte("created_at", startedAtIso);
 
   if (partidaError) {
-    return NextResponse.json({ error: partidaError.message }, { status: 400 });
+    return respuestaError("enigmia/finish:partida", partidaError);
   }
 
   const total = partidaRows.length;
@@ -81,7 +82,7 @@ export async function POST(request: Request) {
   });
 
   if (registroError) {
-    return NextResponse.json({ error: registroError.message }, { status: 400 });
+    return respuestaError("enigmia/finish:registro", registroError);
   }
 
   await supabase.rpc("consumir_boost_pendiente");

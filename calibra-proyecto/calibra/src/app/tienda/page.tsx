@@ -25,7 +25,7 @@ export default async function TiendaPage() {
 
   return (
     <>
-      <Header autenticado />
+      <Header autenticado invitado={user.is_anonymous} />
       <TiendaClient
         puntosIniciales={profile?.puntos_total ?? 0}
         escudosIniciales={profile?.escudos_extra_pendientes ?? 0}

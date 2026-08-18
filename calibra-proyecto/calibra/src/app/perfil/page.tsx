@@ -5,6 +5,7 @@ import { calcularRachaMaxima, calcularMejorPrecisionDiaria } from "@/lib/perfil/
 import Header from "@/components/Header";
 import LevelDial from "@/app/practica/LevelDial";
 import NombreEditable from "./NombreEditable";
+import SubirAvatar from "./SubirAvatar";
 import BorrarCuenta from "./BorrarCuenta";
 import ConvertirCuenta from "./ConvertirCuenta";
 import LogroMedalla from "@/components/LogroMedalla";
@@ -13,7 +14,18 @@ function formatearFecha(iso: string): string {
   return new Date(iso).toLocaleDateString("es-AR", { year: "numeric", month: "long", day: "numeric" });
 }
 
-export default async function PerfilPage() {
+const NOMBRE_SECCION_BLOQUEADA: Record<string, string> = {
+  aprender: "Aprender",
+  rankeds: "Rankeds",
+  social: "Social (Amigos y Grupos)",
+};
+
+interface Props {
+  searchParams: Promise<{ invitado_bloqueado?: string }>;
+}
+
+export default async function PerfilPage({ searchParams }: Props) {
+  const { invitado_bloqueado } = await searchParams;
   const supabase = await createClient();
   const { user, profile } = await requireUsuario(supabase, "/perfil");
 
@@ -31,7 +43,7 @@ export default async function PerfilPage() {
     { count: geografiaTotal },
     { data: worldRows },
   ] = await Promise.all([
-    supabase.from("profiles").select("created_at, elo_rating, marco_perfil").eq("id", user.id).single(),
+    supabase.from("profiles").select("created_at, elo_rating, marco_perfil, avatar_url").eq("id", user.id).single(),
     supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", user.id),
     supabase.from("daily_progress").select("fecha, meta_alcanzada, congelado").eq("user_id", user.id).limit(1000),
     supabase
@@ -84,11 +96,12 @@ export default async function PerfilPage() {
 
   return (
     <>
-      <Header autenticado />
+      <Header autenticado invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
         <section
           className={`flex flex-col gap-4 rounded-2xl border-2 bg-surface px-6 py-6 shadow-sm transition-colors ${ESTILO_MARCO[marcoPerfil] ?? ESTILO_MARCO.ninguno}`}
         >
+          <SubirAvatar userId={user.id} nombre={profile.display_name} avatarUrlInicial={profileFull?.avatar_url ?? null} />
           <NombreEditable userId={user.id} nombreActual={profile.display_name} />
           <p className="text-sm text-texto-secundario">
             En Prodigia desde {formatearFecha(profileFull?.created_at ?? new Date().toISOString())}
@@ -104,6 +117,12 @@ export default async function PerfilPage() {
           )}
         </section>
 
+        {user.is_anonymous && invitado_bloqueado && NOMBRE_SECCION_BLOQUEADA[invitado_bloqueado] && (
+          <p className="rounded-xl bg-primario/10 px-4 py-3 text-sm text-foreground">
+            {NOMBRE_SECCION_BLOQUEADA[invitado_bloqueado]} necesita una cuenta — creá una acá abajo, no
+            perdés nada de lo que ya practicaste.
+          </p>
+        )}
         {user.is_anonymous && <ConvertirCuenta />}
 
         <section className="grid grid-cols-2 gap-3 sm:grid-cols-3">

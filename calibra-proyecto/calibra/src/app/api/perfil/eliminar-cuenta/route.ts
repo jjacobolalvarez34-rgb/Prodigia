@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 // POST /api/perfil/eliminar-cuenta
 // Borra la cuenta de verdad: auth.users, y todo lo demás cae en cascada
@@ -22,11 +23,11 @@ export async function POST() {
     const admin = createAdminClient();
     const { error } = await admin.auth.admin.deleteUser(user.id);
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return respuestaError("perfil/eliminar-cuenta", error);
     }
   } catch (e) {
-    const message = e instanceof Error ? e.message : "No se pudo borrar la cuenta.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[api:perfil/eliminar-cuenta]", e);
+    return NextResponse.json({ error: "No se pudo borrar la cuenta. Probá de nuevo." }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });

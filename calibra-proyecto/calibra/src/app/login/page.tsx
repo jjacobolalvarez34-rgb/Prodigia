@@ -28,7 +28,11 @@ export default async function LoginPage({ searchParams }: Props) {
           <LoginForm next={next} />
 
           {error && (
-            <p className="mt-3 text-sm text-error">No pudimos confirmar el enlace. Probá de nuevo.</p>
+            <p className="mt-3 text-sm text-error">
+              No pudimos confirmar el enlace — puede haber expirado o ya haberse usado. Pedí uno nuevo
+              desde <Link href="/recuperar" className="underline">/recuperar</Link> o revisá tu email de
+              confirmación de cuenta.
+            </p>
           )}
 
           <div className="mt-6 flex flex-col gap-1.5 text-sm">

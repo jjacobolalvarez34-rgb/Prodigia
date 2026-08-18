@@ -48,7 +48,7 @@ export default function GestoLogo({ size = 120, colorHex = "#6C4CF1", onDone }: 
         initial={{ strokeDashoffset: 27.5 }}
         animate={{ strokeDashoffset: [27.5, 8, 27.5] }}
         transition={{ duration: 1, ease: "easeInOut" }}
-        style={{ transformOrigin: "50px 50px", transform: "rotate(-10deg)" }}
+        style={{ transformOrigin: "50px 50px", transform: "rotate(82deg)" }}
         onAnimationComplete={onDone}
       />
 

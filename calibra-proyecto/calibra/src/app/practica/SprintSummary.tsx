@@ -45,6 +45,7 @@ export interface ResultadoDuelo {
   gane: boolean;
   empate: boolean;
   oponente_nombre: string | null;
+  oponente_id: string | null;
 }
 
 interface Props {
@@ -90,7 +91,7 @@ export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volv
 
   const sonoDueloRef = useRef(false);
   useEffect(() => {
-    if (duelo && !duelo.empate && !sonoDueloRef.current) {
+    if (duelo && duelo.resuelto && !duelo.empate && !sonoDueloRef.current) {
       sonoDueloRef.current = true;
       reproducirTono(duelo.gane ? "duelo_gano" : "duelo_perdio");
     }
@@ -113,10 +114,26 @@ export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volv
         </motion.div>
       )}
 
+      {/* Bug encontrado en Fase T3: si el duelo todavía no está resuelto
+          (resuelto=false porque el rival no jugó su parte todavía —
+          normal en el flujo asincrónico, y posible por un instante en el
+          flujo en tiempo real si un lado termina antes que el otro), acá
+          abajo NO hay que mostrar nada de gané/perdí/empaté: esos campos
+          vienen todos en false/null por default y antes se leían igual,
+          mostrando "perdiste" a quien recién terminó de jugar su parte
+          sin que el rival hubiera jugado nada todavía. */}
+      {duelo && !duelo.resuelto && (
+        <div className="rounded-2xl border border-border bg-surface px-5 py-4 text-center">
+          <p className="text-sm font-medium text-foreground">Ya jugaste tu parte del duelo.</p>
+          <p className="mt-1 text-xs text-texto-secundario">
+            En cuanto {duelo.oponente_nombre ?? "tu rival"} termine la suya vas a ver quién ganó.
+          </p>
+        </div>
+      )}
       {/* Fase J2: victoria y derrota se tratan MUY distinto — nunca un
           "perdiste" seco, es la primera vez que la app muestra un
           resultado de perder de verdad y hay que cuidarlo. */}
-      {duelo?.empate && (
+      {duelo?.resuelto && duelo.empate && (
         <div className="rounded-2xl bg-surface-2 px-5 py-4 text-center">
           <p className="font-display text-sm font-bold text-foreground">
             Empataron con {duelo.oponente_nombre ?? "tu rival"} — ni más ni menos.
@@ -124,9 +141,14 @@ export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volv
           <p className="mt-1 text-xs text-texto-secundario">
             ELO {duelo.elo_anterior} → {duelo.elo_nuevo}
           </p>
+          {duelo.oponente_id && (
+            <Link href={`/perfil/${duelo.oponente_id}`} className="mt-1 block text-xs font-semibold text-primario hover:underline">
+              Ver perfil
+            </Link>
+          )}
         </div>
       )}
-      {duelo && !duelo.empate && duelo.gane && (
+      {duelo && duelo.resuelto && !duelo.empate && duelo.gane && (
         <motion.div
           initial={{ opacity: 0, scale: 0.7 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -142,9 +164,14 @@ export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volv
           <p className="text-xs text-texto-secundario">
             ELO {duelo.elo_anterior} → {duelo.elo_nuevo}
           </p>
+          {duelo.oponente_id && (
+            <Link href={`/perfil/${duelo.oponente_id}`} className="mt-1 text-xs font-semibold text-primario hover:underline">
+              Ver perfil
+            </Link>
+          )}
         </motion.div>
       )}
-      {duelo && !duelo.empate && !duelo.gane && (
+      {duelo && duelo.resuelto && !duelo.empate && !duelo.gane && (
         <div className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-surface px-6 py-4 text-center">
           <p className="font-display text-sm font-bold text-foreground">
             Esta vez ganó {duelo.oponente_nombre ?? "tu rival"} — estuviste cerca.
@@ -152,9 +179,16 @@ export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volv
           <p className="text-xs text-texto-secundario">
             ELO {duelo.elo_anterior} → {duelo.elo_nuevo}
           </p>
-          <Link href="/social?tab=amigos" className="mt-1 text-xs font-semibold text-primario hover:underline">
-            Pedir revancha
-          </Link>
+          <div className="mt-1 flex items-center gap-3">
+            {duelo.oponente_id && (
+              <Link href={`/perfil/${duelo.oponente_id}`} className="text-xs font-semibold text-primario hover:underline">
+                Ver perfil
+              </Link>
+            )}
+            <Link href="/social?tab=amigos" className="text-xs font-semibold text-primario hover:underline">
+              Pedir revancha
+            </Link>
+          </div>
         </div>
       )}
 

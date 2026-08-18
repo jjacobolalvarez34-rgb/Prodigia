@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   friend_id: string;
@@ -22,10 +23,10 @@ export async function POST(request: Request) {
     .insert({ user_id: user.id, friend_id: body.friend_id, estado: "pendiente" });
 
   if (error) {
-    return NextResponse.json(
-      { error: error.code === "23505" ? "Ya le mandaste una solicitud." : error.message },
-      { status: 400 }
-    );
+    if (error.code === "23505") {
+      return NextResponse.json({ error: "Ya le mandaste una solicitud." }, { status: 400 });
+    }
+    return respuestaError("amigos/solicitar", error);
   }
 
   return NextResponse.json({ ok: true });

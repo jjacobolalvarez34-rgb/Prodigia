@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuarioOnboarded } from "@/lib/auth/guard";
+import { requireUsuarioOnboarded, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCamino } from "@/lib/aprender/path";
 import Header from "@/components/Header";
 import LeccionClient from "./LeccionClient";
@@ -13,6 +13,7 @@ export default async function LeccionPage({ params }: Props) {
   const { slug } = await params;
   const supabase = await createClient();
   const { user } = await requireUsuarioOnboarded(supabase, `/aprender/${slug}`);
+  bloquearInvitado(user, "aprender");
 
   const unidades = await obtenerCamino(supabase, user.id);
   const nodo = unidades.flatMap((u) => u.nodos).find((n) => n.slug === slug);

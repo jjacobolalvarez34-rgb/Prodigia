@@ -5,6 +5,7 @@
       <stop offset="50%" stop-color="#E4CBA0" />
       <stop offset="100%" stop-color="#FFC53D" />
     </linearGradient>
+    <path id="prodigia-spark-arm" d="M0,0 C-10,-9 -5,-27 0.5,-36 C4,-24 7,-8 0,0 Z" />
   </defs>
   <circle
     cx="50" cy="50" r="34"
@@ -13,10 +14,12 @@
     stroke-width="14"
     stroke-dasharray="158.6 55"
     stroke-dashoffset="27.5"
-    transform="rotate(-10 50 50)"
+    transform="rotate(82 50 50)"
   />
   <g transform="translate(82 44) rotate(14)" fill="url(#prodigia-star-gradient)">
-    <path d="M0,0 C-10,-9 -5,-27 0.5,-36 C4,-24 7,-8 0,0 Z" />
-    <path d="M0,0 C3,4.5 8,6.5 11,5 C7.5,2 3,0.5 0,0 Z" transform="rotate(146)" />
+    <use href="#prodigia-spark-arm" />
+    <use href="#prodigia-spark-arm" transform="rotate(180) scale(0.33)" />
+    <use href="#prodigia-spark-arm" transform="rotate(84) scale(0.2)" />
+    <use href="#prodigia-spark-arm" transform="rotate(268) scale(0.15)" />
   </g>
 </svg>

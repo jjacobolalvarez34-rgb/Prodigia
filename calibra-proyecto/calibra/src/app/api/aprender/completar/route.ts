@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import type { Modifier } from "@/types/database";
 import { verificarLogros } from "@/lib/logros/verificar";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   technique_id: string;
@@ -43,7 +44,7 @@ export async function POST(request: Request) {
   );
 
   if (progresoError) {
-    return NextResponse.json({ error: progresoError.message }, { status: 400 });
+    return respuestaError("aprender/completar:progreso", progresoError);
   }
 
   const { data: relaciones, error: relacionesError } = await supabase
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
     .eq("technique_id", body.technique_id);
 
   if (relacionesError) {
-    return NextResponse.json({ error: relacionesError.message }, { status: 400 });
+    return respuestaError("aprender/completar:relaciones", relacionesError);
   }
 
   const modificadoresDesbloqueados: Modifier[] = [];

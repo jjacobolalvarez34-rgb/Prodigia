@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   duel_id: string;
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return respuestaError("duelos/resultado", error);
   }
 
   const fila = (data as Array<Record<string, unknown>>)[0];

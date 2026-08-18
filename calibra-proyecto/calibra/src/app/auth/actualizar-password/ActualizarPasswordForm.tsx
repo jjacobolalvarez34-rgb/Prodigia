@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
 import Boton from "@/components/Boton";
 
 export default function ActualizarPasswordForm() {
@@ -30,7 +31,7 @@ export default function ActualizarPasswordForm() {
 
     setEnviando(false);
     if (authError) {
-      setError("No pudimos actualizar la contraseña. Pedí un enlace nuevo desde /recuperar.");
+      setError(mensajeErrorAuth(authError, "No pudimos actualizar la contraseña. Pedí un enlace nuevo desde /recuperar."));
       return;
     }
 

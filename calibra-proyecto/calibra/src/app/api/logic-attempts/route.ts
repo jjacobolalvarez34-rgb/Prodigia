@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { calcularXpDetallado, tiempoEsperadoMs } from "@/lib/practica/formulas";
 import { actualizarLogicSkillLevel } from "@/lib/enigmia/skillLevels";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   puzzle_id: string;
@@ -51,7 +52,7 @@ export async function POST(request: Request) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return respuestaError("logic-attempts", error);
   }
 
   let skillLevel = null;

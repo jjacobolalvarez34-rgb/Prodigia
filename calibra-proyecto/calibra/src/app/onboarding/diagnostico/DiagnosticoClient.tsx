@@ -55,11 +55,13 @@ export default function DiagnosticoClient({ destino }: Props) {
   const [respuesta, setRespuesta] = useState("");
   const [feedback, setFeedback] = useState<"idle" | "correcto" | "incorrecto">("idle");
   const [nivelesFinal, setNivelesFinal] = useState(nivelInicial());
+  const [errorGuardado, setErrorGuardado] = useState(false);
 
   const ordenRef = useRef<ArithmeticProblemType[]>([]);
   const nivelesRef = useRef(nivelInicial());
   const problemShownAtRef = useRef(0);
   const submittingRef = useRef(false);
+  const reintentarRef = useRef<() => void>(() => {});
 
   function generarEnIndice(i: number) {
     const tipo = ordenRef.current[i];
@@ -108,35 +110,64 @@ export default function DiagnosticoClient({ destino }: Props) {
     }, 500);
   }
 
-  async function guardarNiveles(niveles: Record<ArithmeticProblemType, number>) {
+  async function guardarNiveles(niveles: Record<ArithmeticProblemType, number>): Promise<boolean> {
     const supabase = createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return;
-    await Promise.all(
-      ARITHMETIC_PROBLEM_TYPES.map((tipo) =>
-        supabase
-          .from("skill_levels")
-          .upsert(
-            { user_id: user.id, problem_type: tipo, nivel: niveles[tipo], racha_actual: 0 },
-            { onConflict: "user_id,problem_type" }
-          )
-      )
-    );
-    await supabase.from("profiles").update({ onboarding_completado: true }).eq("id", user.id);
+    if (!user) return false;
+    try {
+      const resultados = await Promise.all(
+        ARITHMETIC_PROBLEM_TYPES.map((tipo) =>
+          supabase
+            .from("skill_levels")
+            .upsert(
+              { user_id: user.id, problem_type: tipo, nivel: niveles[tipo], racha_actual: 0 },
+              { onConflict: "user_id,problem_type" }
+            )
+        )
+      );
+      const falloAlgunNivel = resultados.some((r) => r.error);
+      const { error: onboardingError } = await supabase
+        .from("profiles")
+        .update({ onboarding_completado: true })
+        .eq("id", user.id);
+      if (falloAlgunNivel || onboardingError) {
+        console.error("[onboarding/diagnostico] guardarNiveles falló parcialmente", {
+          falloAlgunNivel,
+          onboardingError,
+        });
+        return false;
+      }
+      return true;
+    } catch (e) {
+      console.error("[onboarding/diagnostico] guardarNiveles error de red", e);
+      return false;
+    }
   }
 
   async function finalizar() {
+    reintentarRef.current = finalizar;
     setFase("guardando");
     setNivelesFinal({ ...nivelesRef.current });
-    await guardarNiveles(nivelesRef.current);
+    const ok = await guardarNiveles(nivelesRef.current);
+    if (!ok) {
+      setErrorGuardado(true);
+      return;
+    }
+    setErrorGuardado(false);
     setFase("resultado");
   }
 
   async function saltear() {
+    reintentarRef.current = saltear;
     setFase("guardando");
-    await guardarNiveles(nivelInicial());
+    const ok = await guardarNiveles(nivelInicial());
+    if (!ok) {
+      setErrorGuardado(true);
+      return;
+    }
+    setErrorGuardado(false);
     continuar(prioridad);
   }
 
@@ -242,7 +273,7 @@ export default function DiagnosticoClient({ destino }: Props) {
           </motion.div>
         )}
 
-        {fase === "guardando" && (
+        {fase === "guardando" && !errorGuardado && (
           <motion.p
             key="guardando"
             initial={{ opacity: 0 }}
@@ -251,6 +282,21 @@ export default function DiagnosticoClient({ destino }: Props) {
           >
             Guardando tu diagnóstico...
           </motion.p>
+        )}
+
+        {fase === "guardando" && errorGuardado && (
+          <motion.div
+            key="error-guardado"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col items-center gap-4 text-center"
+          >
+            <p className="text-sm text-error">
+              No pudimos guardar tu diagnóstico — puede ser un problema de conexión. Tu progreso de
+              antes sigue intacto.
+            </p>
+            <Boton onClick={() => reintentarRef.current()}>Reintentar</Boton>
+          </motion.div>
         )}
 
         {fase === "resultado" && (

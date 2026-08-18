@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   monto: number;
@@ -25,7 +26,7 @@ export async function POST(request: Request) {
   const { data, error } = await supabase.rpc("apostar_doble_o_nada", { p_monto: body.monto });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return respuestaError("tienda/apostar", error);
   }
 
   const fila = (data as Array<Record<string, unknown>>)[0];

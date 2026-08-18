@@ -41,7 +41,13 @@ export default function OnboardingForm({ userId, next }: Props) {
 
     setEnviando(false);
     if (updateError) {
-      setError("No se pudo guardar. Probá de nuevo.");
+      // 23505 = unique_violation — el índice único case-insensitive de
+      // profiles.display_name (ver 0037_nombre_unico.sql) ya lo cubre.
+      setError(
+        updateError.code === "23505"
+          ? "Ese nombre ya lo está usando otra cuenta — probá con otro."
+          : "No se pudo guardar. Probá de nuevo."
+      );
       return;
     }
     setPaso("interes");

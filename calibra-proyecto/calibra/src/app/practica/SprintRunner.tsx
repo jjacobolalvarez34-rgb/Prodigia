@@ -6,6 +6,7 @@ import type { ArithmeticProblemType, ModifierSlug } from "@/types/database";
 import { generarProblema, type Problem } from "@/lib/practica/problems";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { tiempoEsperadoMs } from "@/lib/practica/formulas";
+import { mulberry32 } from "@/lib/rng";
 import type { RespuestaDuelo } from "./page";
 import { reproducirTono } from "@/lib/sonido";
 import SonidoToggle from "@/components/SonidoToggle";
@@ -42,6 +43,11 @@ interface Props {
   escudosExtra: number;
   colorDial?: string;
   fantasma?: Fantasma | null;
+  // Fase T3: si viene seteada, TODOS los problemas de este sprint salen
+  // de un rng sembrado con este número en vez de Math.random — es lo que
+  // hace que un duelo en tiempo real le muestre a los dos rivales
+  // exactamente la misma secuencia. Nunca se usa fuera de un duelo.
+  semillaDuelo?: number;
   onNivelChange: (tipo: ArithmeticProblemType, nivel: number) => void;
   onFinish: (errores: Problem[], respuestas: RespuestaDuelo[]) => void;
 }
@@ -85,10 +91,19 @@ export default function SprintRunner({
   escudosExtra,
   colorDial,
   fantasma,
+  semillaDuelo,
   onNivelChange,
   onFinish,
 }: Props) {
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
+
+  // useRef (no useMemo): tiene que sobrevivir exactamente igual durante
+  // toda la vida del componente — si se recreara en algún re-render, la
+  // secuencia de números se reiniciaría a mitad de partida y dejaría de
+  // coincidir con la del rival. mulberry32(...) es barato de llamar de
+  // más (el resultado se descarta salvo la primera vez), así que no hace
+  // falta un lazy initializer especial acá.
+  const rngDueloRef = useRef(semillaDuelo !== undefined ? mulberry32(semillaDuelo) : null);
 
   // Fase J2 (cierre): el fantasma avanza al ritmo EXACTO de las
   // respuestas ya guardadas del rival — acumulado[i] es el instante
@@ -118,7 +133,7 @@ export default function SprintRunner({
       () => {
         const tipo = elegirTipo(seleccion);
         const modifier = elegirModifier(tipo, modificadoresRef.current);
-        return generarProblema(tipo, nivelesRef.current[tipo], modifier);
+        return generarProblema(tipo, nivelesRef.current[tipo], modifier, rngDueloRef.current ?? undefined);
       },
       claveProblema,
       usadosRef.current
@@ -135,7 +150,15 @@ export default function SprintRunner({
   const [problema, setProblema] = useState<Problem | null>(() => {
     const tipo = elegirTipo(seleccion);
     const modifier = elegirModifier(tipo, modificadoresPorOperacion);
-    return generarProblema(tipo, nivelPorOperacion[tipo], modifier);
+    // No lee rngDueloRef.current acá a propósito (un lazy initializer
+    // cuenta como "durante el render" para el linter, que no deja leer
+    // refs ahí) — arma un generador nuevo de la misma semilla, se usa
+    // una vez y se descarta. El de rngDueloRef (mismo seed) arranca
+    // fresco en el efecto de montaje de abajo; como los dos rivales
+    // recorren el mismo camino determinístico, este problema inicial
+    // sigue dando exactamente lo mismo para los dos.
+    const rngInicial = semillaDuelo !== undefined ? mulberry32(semillaDuelo) : undefined;
+    return generarProblema(tipo, nivelPorOperacion[tipo], modifier, rngInicial);
   });
   const [cardKey, setCardKey] = useState(0);
   const [respuesta, setRespuesta] = useState("");

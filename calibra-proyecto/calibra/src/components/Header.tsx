@@ -23,6 +23,10 @@ interface Props {
   // el problema desde acá (sin consola del navegador a mano). El prop
   // se deja para no romper a page.tsx, pero ya no hace nada.
   mostrarTour?: boolean;
+  // Un invitado (sesión anónima) no tiene acceso a Rankeds ni a Social —
+  // ver src/lib/auth/guard.ts (bloquearInvitado). Se sacan esos links del
+  // nav para no mandarlo a un link que solo lo va a rebotar.
+  invitado?: boolean;
 }
 
 function LogoLink({ colorMundo }: { colorMundo: string }) {
@@ -37,7 +41,7 @@ function LogoLink({ colorMundo }: { colorMundo: string }) {
   );
 }
 
-export default function Header({ autenticado = false }: Props) {
+export default function Header({ autenticado = false, invitado = false }: Props) {
   const pathname = usePathname();
   const colorMundo = colorDelMundo(pathname ?? "/");
 
@@ -49,7 +53,7 @@ export default function Header({ autenticado = false }: Props) {
     { href: "/feed", label: "Feed" },
     { href: "/social", label: "Social" },
     { href: "/tienda", label: "Tienda" },
-  ];
+  ].filter((link) => !invitado || (link.href !== "/rankeds" && link.href !== "/social"));
 
   return (
     <header className="border-b border-border">

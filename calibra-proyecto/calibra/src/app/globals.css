@@ -100,3 +100,35 @@ input:disabled,
 select:disabled {
   cursor: not-allowed;
 }
+
+/* Spinner de carga (LogoSpinner.tsx): el aro gira con un easing propio
+   (no lineal) y la chispa pulsa en un ciclo independiente — dos
+   animaciones separadas sobre el mismo path real del logo, no una sola
+   rotación de todo el conjunto. */
+@keyframes logo-spinner-rotar {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes logo-spinner-pulso {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+.logo-spinner-ring {
+  transform-origin: 50px 50px;
+  animation: logo-spinner-rotar 1.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+.logo-spinner-spark {
+  transform-origin: 0px 0px;
+  animation: logo-spinner-pulso 1.6s ease-in-out infinite;
+}

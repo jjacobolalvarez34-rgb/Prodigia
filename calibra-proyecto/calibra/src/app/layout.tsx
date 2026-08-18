@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import DeteccionConexion from "@/components/DeteccionConexion";
 import PageFade from "@/components/PageFade";
 import ChispaClick from "@/components/ChispaClick";
+import NotificacionesDuelo from "@/components/NotificacionesDuelo";
+import RegistrarServiceWorker from "@/components/RegistrarServiceWorker";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -45,6 +47,31 @@ export const metadata: Metadata = {
     title: "Prodigia",
     description: "Práctica adaptativa de cálculo mental y lógica: dificultad que se ajusta a tu nivel.",
   },
+  // PWA (Fase U-PWA): "mobile-web-app-capable" + el título que se usa
+  // cuando queda instalada en el home de iOS/Android (sin la barra de
+  // direcciones alrededor). app/manifest.ts se enlaza solo, no hace
+  // falta declararlo acá.
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Prodigia",
+  },
+  icons: {
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+};
+
+// themeColor vive en viewport (no en metadata) desde Next 14 — distinto
+// color según el tema del sistema, igual que --primario en globals.css.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#6C4CF1" },
+    { media: "(prefers-color-scheme: dark)", color: "#7C5CFF" },
+  ],
 };
 
 // Fija el tema (claro/oscuro) en <html> antes del primer paint, para que no
@@ -78,6 +105,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <PageFade>{children}</PageFade>
         </ChispaClick>
         <DeteccionConexion />
+        <NotificacionesDuelo />
+        <RegistrarServiceWorker />
       </body>
     </html>
   );

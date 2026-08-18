@@ -55,3 +55,20 @@ export async function requireMundoEnigmia(supabase: SupabaseClient, pathActual: 
 // que el guard viejo (usado en casi todo el árbol de ese mundo) ahora
 // es exactamente requireMundoNumeria.
 export const requireUsuarioOnboarded = requireMundoNumeria;
+
+// Un invitado (supabase.auth.signInAnonymously, ver /login) puede ver
+// el ranking y practicar, pero no tiene cuenta real todavía — nada de
+// Aprender (progreso curricular), Rankeds (competitivo con ELO) ni
+// Social/Amigos/Grupos (todo lo que asume una identidad persistente y
+// visible para otros). Se llama DESPUÉS de requireUsuario/requireMundo*,
+// para no interferir con el onboarding (nombre + diagnóstico), que un
+// invitado también hace normalmente. Redirige a /perfil, que ya sabe
+// mostrarle a un invitado el cartel de "guardá tu cuenta" (ConvertirCuenta).
+export function bloquearInvitado(
+  user: { is_anonymous?: boolean },
+  seccion: "aprender" | "rankeds" | "social"
+) {
+  if (user.is_anonymous) {
+    redirect(`/perfil?invitado_bloqueado=${seccion}`);
+  }
+}

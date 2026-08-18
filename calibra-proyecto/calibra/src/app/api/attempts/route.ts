@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { ARITHMETIC_PROBLEM_TYPES, type NewAttempt } from "@/types/database";
 import { calcularXpDetallado, tiempoEsperadoMs } from "@/lib/practica/formulas";
 import { actualizarSkillLevel } from "@/lib/practica/skillLevels";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 // Piso de tiempo plausible: nadie resuelve de forma legítima un problema
 // en una fracción ínfima del tiempo "esperado" para ese nivel. No
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return respuestaError("attempts", error);
   }
 
   // Un intento sospechoso no mueve la calibración (ni para arriba ni para

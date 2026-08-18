@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   friend_id: string;
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
     .insert({ user_id: user.id, friend_id: body.friend_id, estado: "aceptada" });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return respuestaError("social/seguir", error);
   }
 
   return NextResponse.json({ ok: true, siguiendo: true });

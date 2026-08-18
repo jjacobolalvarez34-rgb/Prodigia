@@ -65,7 +65,7 @@ export default async function FeedPage() {
 
   return (
     <>
-      <Header autenticado />
+      <Header autenticado invitado={user.is_anonymous} />
       <FeedClient posts={postsFormateados} sugeridos={sugeridosFormateados} />
     </>
   );

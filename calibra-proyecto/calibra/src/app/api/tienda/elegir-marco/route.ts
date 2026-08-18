@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   marco: string;
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
   const { error } = await supabase.rpc("elegir_marco_perfil", { p_marco: body.marco });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return respuestaError("tienda/elegir-marco", error);
   }
   return NextResponse.json({ ok: true });
 }

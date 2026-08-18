@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   user_id: string;
@@ -23,14 +24,14 @@ export async function POST(request: Request) {
       .update({ estado: "aceptada" })
       .eq("user_id", body.user_id)
       .eq("friend_id", user.id);
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    if (error) return respuestaError("amigos/responder:aceptar", error);
   } else {
     const { error } = await supabase
       .from("friendships")
       .delete()
       .eq("user_id", body.user_id)
       .eq("friend_id", user.id);
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    if (error) return respuestaError("amigos/responder:rechazar", error);
   }
 
   return NextResponse.json({ ok: true });

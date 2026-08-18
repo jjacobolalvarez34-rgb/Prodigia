@@ -23,10 +23,17 @@ export interface DueloInfo {
   duelId: string;
   operacion: ArithmeticProblemType;
   nivel: number;
+  rivalId: string;
   rivalNombre: string;
   miElo: number;
   rivalElo: number;
   rivalRespuestas: RespuestaDuelo[] | null;
+  // Fase T3: ambos rivales generan la MISMA secuencia de problemas a
+  // partir de esta semilla (ver src/lib/practica/problems.ts +
+  // src/lib/rng.ts) — así "juegan lo mismo" de verdad, no solo al mismo
+  // tiempo. Se guarda desde antes (api/amigos/retar, api/feed/retar,
+  // buscar_rival_duelo) pero hasta esta fase nunca se leía.
+  semilla: number;
 }
 
 export default async function PracticaPage({ searchParams }: Props) {
@@ -36,14 +43,21 @@ export default async function PracticaPage({ searchParams }: Props) {
 
   let dueloInfo: DueloInfo | null = null;
   if (duelo) {
-    const { data } = await supabase.rpc("obtener_duelo", { p_duel_id: duelo });
+    const [{ data }, { data: filaSemilla }] = await Promise.all([
+      supabase.rpc("obtener_duelo", { p_duel_id: duelo }),
+      // obtener_duelo no expone semilla_problemas — se lee directo de
+      // duels, permitido por su policy de SELECT (ambos participantes).
+      supabase.from("duels").select("semilla_problemas").eq("id", duelo).single(),
+    ]);
     const fila = (data as Array<Record<string, unknown>> | null)?.[0];
     if (fila && fila.estado === "pendiente") {
       const rivalYaJugo = fila.rival_ya_jugo === true;
+      const rivalId = fila.retador_id === user.id ? (fila.retado_id as string) : (fila.retador_id as string);
       dueloInfo = {
         duelId: duelo,
         operacion: fila.operation_type as ArithmeticProblemType,
         nivel: fila.nivel as number,
+        rivalId,
         rivalNombre: (fila.rival_nombre as string | null) ?? "Rival",
         miElo: fila.mi_elo as number,
         rivalElo: fila.rival_elo as number,
@@ -51,6 +65,7 @@ export default async function PracticaPage({ searchParams }: Props) {
         // antes que vos — si no, jugás normal y tu secuencia de
         // respuestas queda guardada para cuando él juegue la suya.
         rivalRespuestas: rivalYaJugo ? (fila.rival_respuestas as RespuestaDuelo[] | null) ?? null : null,
+        semilla: (filaSemilla?.semilla_problemas as number | undefined) ?? 1,
       };
     }
   }
@@ -112,6 +127,7 @@ export default async function PracticaPage({ searchParams }: Props) {
         escudosExtra={escudosExtra}
         boostActivo={boostActivo}
         duelo={dueloInfo}
+        miUserId={user.id}
         colorDial={colorDial}
       />
     </>

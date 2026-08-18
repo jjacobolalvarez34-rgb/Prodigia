@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   group_id: string;
@@ -25,7 +26,7 @@ export async function POST(request: Request) {
     .eq("profesor_id", user.id);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    return respuestaError("profesor/borrar-grupo", error);
   }
 
   return NextResponse.json({ ok: true });

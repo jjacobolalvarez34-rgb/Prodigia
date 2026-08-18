@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Boton from "@/components/Boton";
+import { IconOjo, IconOjoTachado } from "@/components/icons";
+import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
 
 interface Props {
   next?: string;
@@ -13,6 +15,7 @@ export default function LoginForm({ next }: Props) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [verPassword, setVerPassword] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [entrandoInvitado, setEntrandoInvitado] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +26,7 @@ export default function LoginForm({ next }: Props) {
     const supabase = createClient();
     const { error: authError } = await supabase.auth.signInAnonymously();
     if (authError) {
-      setError("No pudimos crear una sesión de invitado. Probá de nuevo.");
+      setError(mensajeErrorAuth(authError, "No pudimos crear una sesión de invitado. Probá de nuevo."));
       setEntrandoInvitado(false);
       return;
     }
@@ -40,11 +43,7 @@ export default function LoginForm({ next }: Props) {
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
 
     if (authError) {
-      setError(
-        authError.message === "Invalid login credentials"
-          ? "Email o contraseña incorrectos."
-          : "No pudimos iniciar sesión. Probá de nuevo."
-      );
+      setError(mensajeErrorAuth(authError, "No pudimos iniciar sesión. Probá de nuevo."));
       setEnviando(false);
       return;
     }
@@ -65,16 +64,27 @@ export default function LoginForm({ next }: Props) {
         autoFocus
         className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
       />
-      <input
-        type="password"
-        required
-        minLength={6}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Contraseña"
-        autoComplete="current-password"
-        className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
-      />
+      <div className="relative">
+        <input
+          type={verPassword ? "text" : "password"}
+          required
+          minLength={6}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Contraseña"
+          autoComplete="current-password"
+          className="w-full rounded-xl border border-border bg-background px-4 py-3 pr-11 text-foreground outline-none focus:border-primario"
+        />
+        <button
+          type="button"
+          onClick={() => setVerPassword((v) => !v)}
+          aria-label={verPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+          aria-pressed={verPassword}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-texto-secundario transition-colors hover:text-foreground"
+        >
+          {verPassword ? <IconOjoTachado className="h-4.5 w-4.5" /> : <IconOjo className="h-4.5 w-4.5" />}
+        </button>
+      </div>
       <Boton type="submit" cargando={enviando} className="w-full">
         {enviando ? "Entrando..." : "Iniciar sesión"}
       </Boton>

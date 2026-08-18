@@ -16,7 +16,7 @@ export default async function AjustesPage() {
 
   return (
     <>
-      <Header autenticado />
+      <Header autenticado invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
         <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Ajustes</h1>
         <AjustesClient userId={user.id} metaXpDiariaInicial={profile.meta_xp_diaria ?? 400} />

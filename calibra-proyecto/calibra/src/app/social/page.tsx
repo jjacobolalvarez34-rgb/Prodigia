@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario } from "@/lib/auth/guard";
+import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import SocialClient from "./SocialClient";
 
@@ -17,6 +17,7 @@ export default async function SocialPage({ searchParams }: Props) {
   const { tab } = await searchParams;
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/social");
+  bloquearInvitado(user, "social");
 
   const [{ data: solicitudes }, { data: amigos }, { data: grupos }] = await Promise.all([
     supabase.rpc("mis_solicitudes_pendientes"),
