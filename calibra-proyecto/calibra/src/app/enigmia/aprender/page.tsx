@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { requireMundoEnigmia } from "@/lib/auth/guard";
+import { requireMundoEnigmia, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoEnigmia } from "@/lib/enigmia/path";
 import Header from "@/components/Header";
 import ProgressDial from "@/components/ProgressDial";
@@ -11,6 +11,7 @@ const COLOR = "#0E9F6E";
 export default async function EnigmiaAprenderPage() {
   const supabase = await createClient();
   const { user } = await requireMundoEnigmia(supabase, "/enigmia/aprender");
+  bloquearInvitado(user, "Aprender");
   const unidades = await obtenerCaminoEnigmia(supabase, user.id);
 
   const totalDominadas = unidades.reduce((acc, u) => acc + u.nodos.filter((n) => n.estado === "completado").length, 0);

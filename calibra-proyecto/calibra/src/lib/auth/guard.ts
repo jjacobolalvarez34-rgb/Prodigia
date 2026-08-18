@@ -57,18 +57,19 @@ export async function requireMundoEnigmia(supabase: SupabaseClient, pathActual: 
 export const requireUsuarioOnboarded = requireMundoNumeria;
 
 // Un invitado (supabase.auth.signInAnonymously, ver /login) puede ver
-// el ranking y practicar, pero no tiene cuenta real todavía — nada de
-// Aprender (progreso curricular), Rankeds (competitivo con ELO) ni
-// Social/Amigos/Grupos (todo lo que asume una identidad persistente y
-// visible para otros). Se llama DESPUÉS de requireUsuario/requireMundo*,
-// para no interferir con el onboarding (nombre + diagnóstico), que un
-// invitado también hace normalmente. Redirige a /perfil, que ya sabe
-// mostrarle a un invitado el cartel de "guardá tu cuenta" (ConvertirCuenta).
-export function bloquearInvitado(
-  user: { is_anonymous?: boolean },
-  seccion: "aprender" | "rankeds" | "social"
-) {
+// el ranking y practicar en la matriz reducida de accesoInvitado.ts,
+// pero no tiene cuenta real todavía — nada de Aprender (progreso
+// curricular), Rankeds (competitivo con ELO), Feed ni Social/Amigos/
+// Grupos (todo lo que asume una identidad persistente y visible para
+// otros), ni temas/continentes/categorías fuera de lo permitido. Se
+// llama DESPUÉS de requireUsuario/requireMundo*, para no interferir con
+// el onboarding (nombre + diagnóstico), que un invitado también hace
+// normalmente. `etiqueta` es el nombre legible de lo que se bloqueó
+// ("Aprender", "Fracciones", "Europa"...) — se muestra tal cual en la
+// pantalla corta de /invitado-bloqueado, así que no hace falta mantener
+// un mapa de traducción aparte por cada sección nueva que se agregue.
+export function bloquearInvitado(user: { is_anonymous?: boolean }, etiqueta: string) {
   if (user.is_anonymous) {
-    redirect(`/perfil?invitado_bloqueado=${seccion}`);
+    redirect(`/invitado-bloqueado?seccion=${encodeURIComponent(etiqueta)}`);
   }
 }

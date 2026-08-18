@@ -3,12 +3,16 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
+import { urlAbsoluta } from "@/lib/auth/urlAbsoluta";
 import Boton from "@/components/Boton";
+import CampoPassword from "@/components/CampoPassword";
 
 // Un invitado (supabase.auth.signInAnonymously) ya tiene un user_id real y
 // todo su progreso guardado bajo ese id — "guardar la cuenta" no migra
 // nada, solo le agrega email+contraseña al mismo usuario (updateUser),
-// así que el progreso queda intacto.
+// así que el progreso queda intacto. Compartido entre /perfil (cartel
+// permanente) y /invitado-bloqueado (pantalla corta al chocar contra
+// algo bloqueado) — un solo componente, no dos copias del formulario.
 export default function ConvertirCuenta() {
   const [abierto, setAbierto] = useState(false);
   const [email, setEmail] = useState("");
@@ -29,7 +33,14 @@ export default function ConvertirCuenta() {
 
     setEnviando(true);
     const supabase = createClient();
-    const { data, error: authError } = await supabase.auth.updateUser({ email, password });
+    // Antes esto no mandaba emailRedirectTo — la confirmación del email
+    // nuevo dependía 100% del Site URL de fallback del dashboard (ver
+    // urlAbsoluta.ts), en vez de construirse acá como en signUp/
+    // resetPasswordForEmail.
+    const { data, error: authError } = await supabase.auth.updateUser(
+      { email, password },
+      { emailRedirectTo: urlAbsoluta("/auth/callback") }
+    );
     setEnviando(false);
 
     if (authError) {
@@ -87,25 +98,17 @@ export default function ConvertirCuenta() {
           autoComplete="email"
           className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primario"
         />
-        <input
-          type="password"
-          required
-          minLength={6}
+        <CampoPassword
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={setPassword}
           placeholder="Contraseña (mínimo 6 caracteres)"
           autoComplete="new-password"
-          className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primario"
         />
-        <input
-          type="password"
-          required
-          minLength={6}
+        <CampoPassword
           value={confirmar}
-          onChange={(e) => setConfirmar(e.target.value)}
+          onChange={setConfirmar}
           placeholder="Repetí la contraseña"
           autoComplete="new-password"
-          className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primario"
         />
         <div className="mt-1 flex items-center gap-3">
           <Boton type="submit" cargando={enviando} className="px-4 py-2 text-sm">

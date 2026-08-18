@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function RankedsPage() {
   const supabase = await createClient();
   const { user, profile } = await requireUsuario(supabase, "/rankeds");
-  bloquearInvitado(user, "rankeds");
+  bloquearInvitado(user, "Rankeds");
 
   const [{ data: historial }, { data: pendientes }] = await Promise.all([
     supabase.rpc("mi_historial_duelos", { p_limite: 20 }),

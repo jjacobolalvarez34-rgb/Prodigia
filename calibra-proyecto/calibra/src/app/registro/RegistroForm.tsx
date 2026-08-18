@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
+import { urlAbsoluta } from "@/lib/auth/urlAbsoluta";
 import Boton from "@/components/Boton";
+import CampoPassword from "@/components/CampoPassword";
 
 export default function RegistroForm() {
   const router = useRouter();
@@ -29,7 +31,7 @@ export default function RegistroForm() {
     const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: { emailRedirectTo: urlAbsoluta("/auth/callback") },
     });
 
     if (authError) {
@@ -79,25 +81,17 @@ export default function RegistroForm() {
         autoFocus
         className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
       />
-      <input
-        type="password"
-        required
-        minLength={6}
+      <CampoPassword
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={setPassword}
         placeholder="Contraseña (mínimo 6 caracteres)"
         autoComplete="new-password"
-        className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
       />
-      <input
-        type="password"
-        required
-        minLength={6}
+      <CampoPassword
         value={confirmar}
-        onChange={(e) => setConfirmar(e.target.value)}
+        onChange={setConfirmar}
         placeholder="Repetí la contraseña"
         autoComplete="new-password"
-        className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
       />
       <Boton type="submit" cargando={enviando} className="w-full">
         {enviando ? "Creando cuenta..." : "Crear cuenta"}

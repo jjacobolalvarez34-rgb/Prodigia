@@ -17,7 +17,7 @@ export default async function SocialPage({ searchParams }: Props) {
   const { tab } = await searchParams;
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/social");
-  bloquearInvitado(user, "social");
+  bloquearInvitado(user, "Social (Amigos y Grupos)");
 
   const [{ data: solicitudes }, { data: amigos }, { data: grupos }] = await Promise.all([
     supabase.rpc("mis_solicitudes_pendientes"),

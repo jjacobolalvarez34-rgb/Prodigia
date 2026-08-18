@@ -952,6 +952,228 @@ recomendado para cuando se aborde:
   `select` periódico manual desde el dashboard con ese mismo filtro,
   como paso intermedio antes de automatizarlo del todo.
 
+---
+
+# Quinta tanda (2026-08-18): Fase 2 interrumpida a mitad + foco de urgencia en login/registro/recuperar
+
+## Fase 2 (matriz de acceso de invitado) — quedó A MITAD, interrumpida a propósito
+
+Arranqué Fase 2 (la que había quedado pendiente de la tanda anterior) y
+llegué a construir la infraestructura central y todos los bloqueos
+completos de página, pero un mensaje nuevo tuyo marcado como foco de
+hoy ("LOGIN completo y funcional al 100%... no sigas a otra pestaña
+hasta que esto quede resuelto de verdad") me hizo pausarla a mitad,
+como corresponde. Esto es lo que SÍ quedó hecho de Fase 2, verificado
+con `tsc`/`eslint` limpios:
+
+- `src/lib/auth/accesoInvitado.ts` (nuevo): matriz única de qué puede
+  hacer un invitado — Suma/Resta en Numeria, América en Geografía,
+  memoria en Enigmia.
+- `src/lib/auth/guard.ts`: `bloquearInvitado` ahora recibe una etiqueta
+  legible libre (`"Aprender"`, `"Feed"`, `"Grupos"`...) en vez de una
+  unión fija de 3 valores, y redirige a `/invitado-bloqueado` en vez de
+  al perfil completo.
+- `src/app/invitado-bloqueado/page.tsx` (nuevo): la pantalla corta que
+  pediste — candado, "Creá tu cuenta para desbloquear esto", y el mismo
+  formulario de guardar cuenta.
+- `src/components/ConvertirCuenta.tsx`: movido desde `app/perfil/` a
+  `components/` para poder compartirlo entre `/perfil` y la pantalla
+  nueva. `src/app/perfil/page.tsx` actualizado (import nuevo, se sacó el
+  banner viejo de `?invitado_bloqueado=`, ya no hace falta).
+- **Bloqueos completos de página agregados** (antes NO bloqueaban a un
+  invitado, confirmado por lectura de código antes de tocarlos):
+  `/feed`, `/geografia/aprender` + `[slug]`, `/enigmia/aprender` +
+  `[slug]`, `/profesor/[groupId]` + `[studentId]`.
+- **Etiquetas actualizadas** en los 5 bloqueos que ya existían
+  (`/aprender` ×2, `/rankeds`, `/duelo/invitacion/[inviteId]`,
+  `/social`) para usar el nuevo formato de etiqueta libre.
+
+**Lo que queda pendiente de Fase 2, sin tocar todavía:**
+- Bloqueo completo de página en los 4 temas de Numeria que no son
+  Aritmética (`/practica/fracciones`, `/decimales`, `/potencias`,
+  `/algebra`) y en los 3 continentes de Geografía que no son América
+  (`/geografia/practica/europa`, `/africa`, `/asia-oceania`).
+- Restricción de contenido (no bloqueo completo) dentro de páginas que
+  SÍ quedan accesibles: Aritmética solo Suma/Resta (`OperationPicker.tsx`
+  necesita ocultar/candar Multiplicación y División para invitado),
+  Enigmia solo categoría Memoria (filtrar `puzzles` + forzar
+  `generarAcertijoProcedural("memoria", ...)` en
+  `EnigmiaSprintRunner.tsx`).
+- Candado visual en las tarjetas que hoy solo apuntan a algo bloqueado
+  (`TopicCard.tsx`/`AccionMundo.tsx` necesitan un prop `bloqueado`, y
+  `Header.tsx` tiene que dejar de directamente ocultar los links de
+  Rankeds/Feed/Social para invitado y mostrarlos con candado en su
+  lugar, según pediste).
+- Defensa en profundidad en `/api/attempts` (rechazar
+  `problem_type` fuera de suma/resta/geografía si `user.is_anonymous`).
+
+Ninguno de estos 4 puntos está roto ni a medio escribir — simplemente
+no llegué a empezarlos antes del mensaje de foco nuevo. Continúa acá la
+próxima vez que se retome Fase 2.
+
+## Foco de urgencia: contraseña visible + diagnóstico de registro/recuperación
+
+### 1 — Mostrar/ocultar contraseña en los 3 formularios — HECHO
+
+`src/components/CampoPassword.tsx` (nuevo): un solo componente
+reusado, no copiado. Aplicado en los 3 formularios pedidos
+(`LoginForm.tsx`, `RegistroForm.tsx`, `ActualizarPasswordForm.tsx`) y,
+de paso, también en `ConvertirCuenta.tsx` (mismo patrón de 2 campos de
+contraseña, quedaba inconsistente si se dejaba afuera — costo extra
+cero al ya existir el componente). `LoginForm.tsx` pasó de tener el
+botón-ojo escrito a mano a usar el componente nuevo. Verificado con
+`tsc --noEmit` y `eslint` sobre los 4 archivos: limpio.
+
+### 2 — Creación de cuenta rota — diagnóstico de código, SIN poder probarlo en vivo
+
+**No tengo consola de navegador ni pestaña Network en este entorno —
+no pude reproducir el flujo como pediste.** Lo que sí hice: revisar a
+fondo el código real de todo el camino de `signUp`, específicamente la
+hipótesis que pediste chequear (el trigger `handle_new_user` chocando
+con el índice único de `0037_nombre_unico.sql`).
+
+**Esa hipótesis específica queda DESCARTADA, con evidencia, no solo
+"no creo que sea eso":**
+- `handle_new_user()` (`0001_init.sql:115-122`) inserta
+  `display_name = new.raw_user_meta_data->>'name'`.
+- `RegistroForm.tsx` llama `signUp({ email, password, options: {
+  emailRedirectTo } })` — **nunca manda `options.data.name`**, así que
+  `raw_user_meta_data` siempre es `{}` en un registro normal, y
+  `display_name` siempre queda `NULL` en ese insert.
+- El índice de `0037` es `create unique index ... on
+  profiles(lower(display_name)) where display_name is not null` — un
+  índice **parcial**: las filas con `display_name IS NULL` quedan
+  fuera del índice por completo y nunca pueden chocar entre sí, sin
+  importar cuántas cuentas nuevas se creen. Confirmé además (grep en
+  todas las migraciones) que ninguna columna de `profiles` tiene un
+  `not null` sin `default` que pudiera romper este insert por otro
+  lado, y que `handle_new_user` nunca se redefinió después de `0001`.
+- **Conclusión: el trigger de creación de perfil no puede estar
+  rompiendo el registro.** Es un descarte real, verificado leyendo el
+  SQL exacto, no una suposición.
+
+**Mi conclusión sobre la causa real, dado lo que ya encontraste vos
+mismo sobre Resend:** este proyecto tiene "Confirm email" activado
+(`RegistroForm.tsx` chequea `if (!data.session)` esperando
+confirmación, no asume sesión inmediata). Con "Confirm email" activo,
+el propio `signUp()` de Supabase intenta mandar el mail de
+confirmación **de forma sincrónica, como parte de la misma request** —
+si ese envío falla (que es exactamente lo que pasa con el dominio
+sandbox de Resend para cualquier email que no sea el dueño de la
+cuenta de Resend), Supabase le devuelve un error al cliente en la
+misma respuesta de `signUp()`, no un éxito silencioso. Eso explica
+perfectameente el síntoma "crear cuenta sigue fallando" sin que haga
+falta ningún bug de código nuevo: **es la misma causa de raíz que ya
+encontraste (Resend sandbox), no un problema aparte** — y por eso tiene
+sentido que se resuelva sola en cuanto tengas el dominio propio
+conectado, sin tocar más código. Dicho así, explícito: **no pude
+confirmar esto mirando una respuesta real en Network — es la
+conclusión más fuerte que puedo dar leyendo el código y el
+comportamiento documentado de Supabase, pero la confirmación en vivo
+(¿el mensaje de error que ves menciona el envío de mail?) queda de tu
+lado.**
+
+### 3 — Recuperar contraseña — mismo límite, mismo razonamiento
+
+**Tampoco pude volver a probarlo en vivo** (mismo motivo: sin consola
+ni Network acá). Repasé el código de nuevo de punta a punta
+(`RecuperarForm.tsx` → `/auth/callback/route.ts` →
+`ActualizarPasswordForm.tsx`) y no encontré nada roto en el código —
+usa `mensajeErrorAuth` (así que si Supabase devuelve un error, ya se ve
+específico en pantalla y en consola, no genérico), y `exchangeCodeForSession`
+en el callback es el manejo correcto para el flujo `?code=`.
+**Mi lectura:** recuperar contraseña manda un email igual que
+confirmar cuenta — pasa por el mismo SMTP/Resend. Es altamente probable
+que tenga **la misma causa de raíz que el registro** (sandbox de
+Resend), no un bug de código separado. Pero decirte "funciona" sin
+haberlo visto sería inventar un dato — así que te lo dejo explícito:
+**estado real desconocido para mí hasta que lo prueben en vivo con
+consola/Network abiertas**, mi hipótesis es que va a mostrar el mismo
+patrón que el registro por la misma causa de Resend.
+
+---
+
+## Bug con evidencia real: link de confirmación sin "https://" — causa encontrada y NO es un bug de este código
+
+Evidencia que trajiste: el link real que le llegó a tu amigo tenía
+`&redirect_to=prodigia-sandy.vercel.app/` — sin esquema, **y sin el
+path `/auth/callback`** que este código sí manda siempre. Ese segundo
+detalle es la pista clave.
+
+**Busqué en TODO el código los 3 lugares (ahora son 3, ver abajo) donde
+se dispara un email de Supabase Auth** (`signUp`,
+`resetPasswordForEmail`, y `updateUser` con email nuevo — grepeé
+`emailRedirectTo|redirectTo|window.location.origin` en todo `src/` para
+no dejar ninguno afuera). Los 3 construían la URL con
+`${window.location.origin}${path}` — y `window.location.origin`, en
+cualquier navegador real, **siempre** incluye el esquema
+(`https://dominio`, nunca solo `dominio`). No hay ningún camino en este
+código que pueda producir un `redirect_to` sin `https://`. Además, el
+link roto no tiene `/auth/callback` — pero `RegistroForm.tsx` (que es
+la llamada que generó el link de "confirmá tu cuenta" de tu amigo)
+**siempre** agrega ese path.
+
+**Conclusión, con evidencia, no una corazonada**: eso significa que
+Supabase **rechazó** el `emailRedirectTo` que mandó la app (por el
+allow-list de Redirect URLs — lo mismo que ya habíamos hablado, tiene
+pinta de que la entrada cargada no matchea) y cayó a su propio
+**Site URL de fallback** configurado en el dashboard — que a juzgar por
+el link roto, está cargado ahí como `prodigia-sandy.vercel.app` **sin
+el `https://` adelante**. Coincide 100% con la forma exacta del link
+roto (dominio pelado + `/` final, sin ningún path propio de esta app).
+
+**Lo que corregí igual, centralizado como pediste** (aunque el código
+en sí no era la causa, hacía falta esto para no depender por completo
+del fallback del dashboard, y de paso cerré un hueco real que sí
+encontré):
+- `src/lib/auth/urlAbsoluta.ts` (nuevo) — un solo lugar que arma la URL
+  absoluta para cualquier llamada de Auth, con un chequeo defensivo que
+  loguea fuerte si `window.location.origin` alguna vez viniera sin
+  esquema.
+- `RegistroForm.tsx` (`signUp`) y `RecuperarForm.tsx`
+  (`resetPasswordForEmail`) ahora usan `urlAbsoluta(...)` en vez de
+  construir el string a mano cada uno por su lado.
+- **Hueco real encontrado y cerrado**: `ConvertirCuenta.tsx`
+  (`updateUser` con email nuevo, al guardar la cuenta de invitado) **no
+  mandaba `emailRedirectTo` en absoluto** — dependía 100% del Site URL
+  de fallback, sin ni siquiera intentar mandar la URL correcta primero.
+  Ahora también usa `urlAbsoluta("/auth/callback")`.
+
+**Prueba real, no "debería andar"**: ejecuté el código real de
+`urlAbsoluta.ts` en Node, simulando
+`window.location.origin = "https://prodigia-sandy.vercel.app"` (el
+dominio real del proyecto):
+
+```
+signUp (RegistroForm) -> emailRedirectTo: https://prodigia-sandy.vercel.app/auth/callback
+resetPasswordForEmail (RecuperarForm) -> redirectTo: https://prodigia-sandy.vercel.app/auth/callback?next=%2Fauth%2Factualizar-password
+updateUser (ConvertirCuenta) -> emailRedirectTo: https://prodigia-sandy.vercel.app/auth/callback
+  OK: absoluta, esquema="https:", host="prodigia-sandy.vercel.app"  (×3)
+```
+
+Las 3 pasan `new URL(...)` sin tirar error — son URLs absolutas válidas
+con esquema, en los 3 flujos. Verificado `tsc --noEmit` y `eslint`
+sobre los 4 archivos tocados: limpio.
+
+**Lo que esto NO prueba, dicho explícito**: esto confirma que el
+CÓDIGO arma bien la URL — no prueba que el link que te va a llegar por
+mail ya salga bien, porque (según la evidencia que trajiste) el
+problema real está un paso después, en el dashboard de Supabase
+aceptando o no ese valor. **Dos cosas para revisar ahí, no en código**:
+1. **Authentication → URL Configuration → Site URL**: tiene que ser
+   `https://prodigia-sandy.vercel.app` (con el esquema) — si está
+   cargado sin `https://`, es la causa directa del link roto.
+2. **Authentication → URL Configuration → Redirect URLs**: tiene que
+   tener `https://prodigia-sandy.vercel.app/**` (con el doble asterisco
+   al final) — si la entrada es exacta sin comodín, el `emailRedirectTo`
+   que esta app manda (que ya vimos que sale bien armado) va a seguir
+   siendo rechazado y va a seguir cayendo al Site URL pase lo que pase
+   en el código.
+
+Corregidas esas dos cosas en el dashboard, el link real debería salir
+bien — pero la única confirmación de verdad es que lo vuelvan a probar
+y me peguen el link completo que les llega, como la vez pasada.
+
 **Actualización final**: `npx vitest run` — **17/17 tests pasando** (sin
 cambios respecto a antes de esta tanda). `npx next build` — **compiló
 limpio, exit code 0, 68 rutas generadas** (mismas de antes, ninguna

@@ -7,25 +7,14 @@ import LevelDial from "@/app/practica/LevelDial";
 import NombreEditable from "./NombreEditable";
 import SubirAvatar from "./SubirAvatar";
 import BorrarCuenta from "./BorrarCuenta";
-import ConvertirCuenta from "./ConvertirCuenta";
+import ConvertirCuenta from "@/components/ConvertirCuenta";
 import LogroMedalla from "@/components/LogroMedalla";
 
 function formatearFecha(iso: string): string {
   return new Date(iso).toLocaleDateString("es-AR", { year: "numeric", month: "long", day: "numeric" });
 }
 
-const NOMBRE_SECCION_BLOQUEADA: Record<string, string> = {
-  aprender: "Aprender",
-  rankeds: "Rankeds",
-  social: "Social (Amigos y Grupos)",
-};
-
-interface Props {
-  searchParams: Promise<{ invitado_bloqueado?: string }>;
-}
-
-export default async function PerfilPage({ searchParams }: Props) {
-  const { invitado_bloqueado } = await searchParams;
+export default async function PerfilPage() {
   const supabase = await createClient();
   const { user, profile } = await requireUsuario(supabase, "/perfil");
 
@@ -117,12 +106,6 @@ export default async function PerfilPage({ searchParams }: Props) {
           )}
         </section>
 
-        {user.is_anonymous && invitado_bloqueado && NOMBRE_SECCION_BLOQUEADA[invitado_bloqueado] && (
-          <p className="rounded-xl bg-primario/10 px-4 py-3 text-sm text-foreground">
-            {NOMBRE_SECCION_BLOQUEADA[invitado_bloqueado]} necesita una cuenta — creá una acá abajo, no
-            perdés nada de lo que ya practicaste.
-          </p>
-        )}
         {user.is_anonymous && <ConvertirCuenta />}
 
         <section className="grid grid-cols-2 gap-3 sm:grid-cols-3">

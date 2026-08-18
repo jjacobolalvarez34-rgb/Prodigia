@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
+import { urlAbsoluta } from "@/lib/auth/urlAbsoluta";
 import Boton from "@/components/Boton";
 
 export default function RecuperarForm() {
@@ -18,7 +19,7 @@ export default function RecuperarForm() {
 
     const supabase = createClient();
     const { error: authError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/auth/actualizar-password")}`,
+      redirectTo: urlAbsoluta(`/auth/callback?next=${encodeURIComponent("/auth/actualizar-password")}`),
     });
 
     setEnviando(false);

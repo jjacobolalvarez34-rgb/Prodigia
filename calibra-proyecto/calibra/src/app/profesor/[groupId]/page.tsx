@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario } from "@/lib/auth/guard";
+import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { calcularRachaDiaria } from "@/lib/practica/racha";
 import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType } from "@/types/database";
 import Header from "@/components/Header";
@@ -41,6 +41,7 @@ export default async function GrupoPage({ params }: Props) {
   const { groupId } = await params;
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, `/profesor/${groupId}`);
+  bloquearInvitado(user, "Grupos");
 
   const { data: grupo, error: grupoError } = await supabase
     .from("groups")

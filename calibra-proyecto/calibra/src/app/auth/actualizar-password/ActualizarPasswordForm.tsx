@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
 import Boton from "@/components/Boton";
+import CampoPassword from "@/components/CampoPassword";
 
 export default function ActualizarPasswordForm() {
   const router = useRouter();
@@ -41,26 +42,18 @@ export default function ActualizarPasswordForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <input
-        type="password"
-        required
-        minLength={6}
+      <CampoPassword
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={setPassword}
         placeholder="Nueva contraseña"
         autoComplete="new-password"
         autoFocus
-        className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
       />
-      <input
-        type="password"
-        required
-        minLength={6}
+      <CampoPassword
         value={confirmar}
-        onChange={(e) => setConfirmar(e.target.value)}
+        onChange={setConfirmar}
         placeholder="Repetí la nueva contraseña"
         autoComplete="new-password"
-        className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
       />
       <Boton type="submit" cargando={enviando} className="w-full">
         {enviando ? "Guardando..." : "Guardar contraseña"}

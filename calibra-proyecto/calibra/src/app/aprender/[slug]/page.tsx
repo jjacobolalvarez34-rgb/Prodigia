@@ -13,7 +13,7 @@ export default async function LeccionPage({ params }: Props) {
   const { slug } = await params;
   const supabase = await createClient();
   const { user } = await requireUsuarioOnboarded(supabase, `/aprender/${slug}`);
-  bloquearInvitado(user, "aprender");
+  bloquearInvitado(user, "Aprender");
 
   const unidades = await obtenerCamino(supabase, user.id);
   const nodo = unidades.flatMap((u) => u.nodos).find((n) => n.slug === slug);

@@ -16,7 +16,7 @@ export default async function InvitacionDueloPage({ params }: Props) {
   const { inviteId } = await params;
   const supabase = await createClient();
   const { user } = await requireUsuarioOnboarded(supabase, `/duelo/invitacion/${inviteId}`);
-  bloquearInvitado(user, "rankeds");
+  bloquearInvitado(user, "Rankeds");
 
   const { data, error } = await supabase.rpc("unirse_invitacion_duelo", { p_invite_id: inviteId });
   const fila = (data as Array<{ duel_id: string; operation_type: string }> | null)?.[0];

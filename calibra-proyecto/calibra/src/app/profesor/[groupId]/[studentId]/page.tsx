@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario } from "@/lib/auth/guard";
+import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { calcularRachaDiaria } from "@/lib/practica/racha";
 import { calcularRachaMaxima } from "@/lib/perfil/records";
 import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType } from "@/types/database";
@@ -34,7 +34,8 @@ interface Props {
 export default async function AlumnoDetallePage({ params }: Props) {
   const { groupId, studentId } = await params;
   const supabase = await createClient();
-  await requireUsuario(supabase, `/profesor/${groupId}/${studentId}`);
+  const { user } = await requireUsuario(supabase, `/profesor/${groupId}/${studentId}`);
+  bloquearInvitado(user, "Grupos");
 
   const [{ data: resumen }, { data: dailyRows }] = await Promise.all([
     supabase.rpc("resumen_grupo", { p_group_id: groupId }),

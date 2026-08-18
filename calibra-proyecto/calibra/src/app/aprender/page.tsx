@@ -7,7 +7,7 @@ import AprenderShell from "./AprenderShell";
 export default async function AprenderPage() {
   const supabase = await createClient();
   const { user } = await requireUsuarioOnboarded(supabase, "/aprender");
-  bloquearInvitado(user, "aprender");
+  bloquearInvitado(user, "Aprender");
 
   const unidades = await obtenerCamino(supabase, user.id);
 

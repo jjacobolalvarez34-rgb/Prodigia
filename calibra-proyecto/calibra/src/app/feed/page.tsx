@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario } from "@/lib/auth/guard";
+import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import FeedClient, { type PostFeed } from "./FeedClient";
 
@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 export default async function FeedPage() {
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/feed");
+  bloquearInvitado(user, "Feed");
 
   const [{ data: posts }, { data: reacciones }, { data: siguiendo }, { data: sugeridos }] = await Promise.all([
     supabase
