@@ -85,6 +85,51 @@ export default function RankedsClient({
   tabInicial = "competitivo",
 }: Props) {
   const [tab, setTab] = useState<Tab>(tabInicial);
+  const [historial, setHistorial] = useState(historialInicial);
+  const [pendientes, setPendientes] = useState(duelosPendientesIniciales);
+  const [statsCasual, setStatsCasual] = useState(statsCasualIniciales);
+
+  // Bug reportado: "Mi competitivo" no mostraba el duelo recién jugado.
+  // Causa real: esta pantalla nunca se refresca sola — historialInicial
+  // es una prop que solo se recalcula si Next vuelve a correr
+  // rankeds/page.tsx en el servidor, y eso NO pasa siempre: en
+  // particular, volver acá con el botón atrás del navegador después de
+  // un duelo restaura la página desde el back/forward cache del propio
+  // navegador (bfcache) tal cual estaba ANTES de jugar — Next no puede
+  // evitar eso, es un comportamiento del navegador (ver evento
+  // `pageshow`/`persisted`, no es específico de este proyecto). Se
+  // refresca de las dos formas que cubren todos los caminos reales:
+  // una vez al montar (por si el server component sirvió algo cacheado)
+  // y de nuevo cada vez que el navegador restaura la página desde
+  // bfcache — sin esto último, el botón atrás siempre mostraría datos
+  // viejos sin importar qué tan fresco esté el fetch inicial.
+  useEffect(() => {
+    let cancelado = false;
+    async function refrescarCompetitivo() {
+      const supabase = createClient();
+      const [{ data: hist }, { data: pend }, { data: stats }] = await Promise.all([
+        supabase.rpc("mi_historial_duelos", { p_limite: 20 }),
+        supabase.rpc("mis_duelos_pendientes"),
+        supabase.rpc("mis_stats_casual"),
+      ]);
+      if (cancelado) return;
+      if (hist) setHistorial(hist as FilaHistorial[]);
+      if (pend) setPendientes(pend as FilaPendiente[]);
+      const filaStats = (stats as StatsCasual[] | null)?.[0];
+      if (filaStats) setStatsCasual(filaStats);
+    }
+
+    refrescarCompetitivo();
+
+    function onPageShow(e: PageTransitionEvent) {
+      if (e.persisted) refrescarCompetitivo();
+    }
+    window.addEventListener("pageshow", onPageShow);
+    return () => {
+      cancelado = true;
+      window.removeEventListener("pageshow", onPageShow);
+    };
+  }, []);
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-12 sm:px-6">
@@ -110,9 +155,9 @@ export default function RankedsClient({
         <MiCompetitivo
           miElo={miElo}
           miTituloNombre={miTituloNombre}
-          historial={historialInicial}
-          pendientes={duelosPendientesIniciales}
-          statsCasual={statsCasualIniciales}
+          historial={historial}
+          pendientes={pendientes}
+          statsCasual={statsCasual}
         />
       ) : (
         <BuscarPartida miElo={miElo} miTituloNombre={miTituloNombre} miUserId={miUserId} />

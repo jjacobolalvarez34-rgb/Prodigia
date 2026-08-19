@@ -14,6 +14,11 @@
   content: "";
   position: absolute;
   inset: 0;
+  /* Decorativo puro — sin esto, este overlay (inset:0, encima de todo
+     por ser positioned con z-index:auto) capta el click en vez de
+     dejarlo pasar al botón/link real que envuelve GlareHover, así que
+     ningún elemento interactivo adentro respondía nunca a un click. */
+  pointer-events: none;
   background: linear-gradient(
     var(--gh-angle),
     hsla(0, 0%, 0%, 0) 60%,
