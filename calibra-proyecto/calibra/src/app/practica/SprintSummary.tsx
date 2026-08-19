@@ -139,7 +139,7 @@ export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volv
         />
       </div>
 
-      <p className="font-mono text-xs text-texto-secundario">Puntos totales: {resumen.puntosTotal}</p>
+      <p className="font-mono text-xs text-texto-secundario">Chispas totales: {resumen.puntosTotal}</p>
 
       {errores.length > 0 ? (
         <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">

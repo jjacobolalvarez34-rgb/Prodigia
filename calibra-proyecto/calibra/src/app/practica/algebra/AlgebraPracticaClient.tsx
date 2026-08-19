@@ -140,7 +140,7 @@ export default function AlgebraPracticaClient({ nivelInicial, escudosExtra, boos
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
       {boostActivo && (
         <div className="flex items-center justify-center gap-2 rounded-full bg-logro/15 px-4 py-2 text-sm font-medium text-foreground">
-          ⚡ Boost activo — Puntos ×1.5 en esta partida
+          ⚡ Boost activo — Chispas ×1.5 en esta partida
         </div>
       )}
       <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Álgebra básica</h1>

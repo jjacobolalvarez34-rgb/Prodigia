@@ -165,6 +165,9 @@ export default function PracticaClient({
         colorDial={colorDial}
         fantasma={duelo?.rivalRespuestas ? { rivalNombre: duelo.rivalNombre, respuestas: duelo.rivalRespuestas } : null}
         semillaDuelo={duelo?.semilla}
+        duelId={duelo?.duelId}
+        miUserId={miUserId}
+        rivalNombreEnVivo={duelo?.rivalNombre}
         onNivelChange={handleNivelChange}
         onFinish={handleFinishSprint}
       />
@@ -203,7 +206,7 @@ export default function PracticaClient({
     <>
       {boostActivo && (
         <div className="mx-auto mt-6 flex w-full max-w-md items-center justify-center gap-2 rounded-full bg-logro/15 px-4 py-2 text-sm font-medium text-foreground">
-          ⚡ Boost activo — Puntos ×1.5 en tu próxima partida
+          ⚡ Boost activo — Chispas ×1.5 en tu próxima partida
         </div>
       )}
       <OperationPicker

@@ -63,7 +63,7 @@ export default async function AlumnoDetallePage({ params }: Props) {
           <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-foreground">
             {fila.display_name ?? "Jugador"}
           </h1>
-          <p className="font-mono text-sm text-texto-secundario">{fila.puntos_total} Puntos totales</p>
+          <p className="font-mono text-sm text-texto-secundario">{fila.puntos_total} Chispas totales</p>
         </div>
 
         <section className="grid grid-cols-3 gap-3">

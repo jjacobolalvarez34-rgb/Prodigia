@@ -1,21 +1,16 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
-import type { PerfilPublico } from "@/types/database";
+import { ESTILO_MARCO_PERFIL, type PerfilPublico } from "@/types/database";
 import Header from "@/components/Header";
 import Avatar from "@/components/Avatar";
 import RangoBadge from "@/components/RangoBadge";
+import NombreConFuente from "@/components/NombreConFuente";
 import ReportarBoton from "./ReportarBoton";
 
 interface Props {
   params: Promise<{ userId: string }>;
 }
-
-const ESTILO_MARCO: Record<string, string> = {
-  ninguno: "border-border",
-  plata: "border-[#C0C5CE] shadow-[0_0_0_3px_rgba(192,197,206,0.25)]",
-  oro: "border-[#FFC53D] shadow-[0_0_0_3px_rgba(255,197,61,0.25)]",
-};
 
 function formatearFecha(iso: string): string {
   return new Date(iso).toLocaleDateString("es-AR", { year: "numeric", month: "long" });
@@ -48,11 +43,11 @@ export default async function PerfilPublicoPage({ params }: Props) {
       <Header autenticado invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-12 sm:px-6">
         <section
-          className={`flex flex-col items-center gap-3 rounded-2xl border-2 bg-surface px-6 py-8 text-center shadow-sm ${ESTILO_MARCO[marcoPerfil] ?? ESTILO_MARCO.ninguno}`}
+          className={`flex flex-col items-center gap-3 rounded-2xl border-2 bg-surface px-6 py-8 text-center shadow-sm ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}
         >
           <Avatar url={perfil.avatar_url} nombre={perfil.display_name} size={88} />
           <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-            {perfil.display_name ?? "Jugador"}
+            <NombreConFuente nombre={perfil.display_name} fuente={perfil.fuente_nombre} />
           </h1>
           <p className="text-sm text-texto-secundario">En Prodigia desde {formatearFecha(perfil.created_at)}</p>
 
@@ -63,7 +58,7 @@ export default async function PerfilPublicoPage({ params }: Props) {
               <p className="text-xs text-texto-secundario">{perfil.elo_rating} ELO</p>
             </div>
             <div className="rounded-xl border border-border bg-background px-4 py-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Puntos</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Chispas</p>
               <p className="mt-1 font-mono text-lg font-bold text-foreground">{perfil.puntos_total}</p>
             </div>
           </div>

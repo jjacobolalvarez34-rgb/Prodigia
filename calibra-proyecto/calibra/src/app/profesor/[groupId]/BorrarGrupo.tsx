@@ -28,7 +28,7 @@ export default function BorrarGrupo({ groupId, nombreGrupo }: Props) {
       setBorrando(false);
       return;
     }
-    router.push("/social?tab=grupos");
+    router.push("/profesor");
     router.refresh();
   }
 

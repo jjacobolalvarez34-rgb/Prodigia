@@ -4,11 +4,23 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType } from "@/types/database";
+import type { ArithmeticProblemType } from "@/types/database";
 import RangoBadge from "@/components/RangoBadge";
+import GlareHover from "@/components/reactbits/GlareHover";
+import BorderGlow from "@/components/reactbits/BorderGlow";
+import Boton from "@/components/Boton";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
+import { useRetosPendientes, type RetoPendienteBase } from "@/app/social/useRetosPendientes";
 
-type Tab = "competitivo" | "buscar" | "invitar";
+// Mismos hex que Header.tsx (colorDelMundo) y FondoCursorMundo.tsx — un
+// solo lugar más al que sumar esta paleta si algún día cambia.
+const COLOR_MUNDO: Record<MundoDuelo, string> = {
+  numeria: "#6C4CF1",
+  enigmia: "#0E9F6E",
+  geografia: "#1E7A8C",
+};
+
+type Tab = "competitivo" | "buscar";
 type SeleccionMundo = MundoDuelo | "aleatorio";
 
 interface FilaHistorial {
@@ -17,6 +29,7 @@ interface FilaHistorial {
   mundo: MundoDuelo;
   sub_tipo: string | null;
   modo: string;
+  clasificatorio: boolean;
   creado_at: string;
   rival_nombre: string | null;
   rival_titulo_nombre: string | null;
@@ -26,15 +39,13 @@ interface FilaHistorial {
   empate: boolean;
 }
 
-interface FilaPendiente {
-  duel_id: string;
-  operation_type: ArithmeticProblemType | null;
-  mundo: MundoDuelo;
-  creado_at: string;
-  retador_nombre: string | null;
-  retador_elo: number;
-  retador_titulo_nombre: string | null;
+interface StatsCasual {
+  victorias: number;
+  derrotas: number;
+  empates: number;
 }
+
+type FilaPendiente = RetoPendienteBase;
 
 const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
   suma: "Suma",
@@ -52,7 +63,6 @@ const NOMBRE_MUNDO: Record<MundoDuelo, string> = {
 const TABS: { id: Tab; nombre: string }[] = [
   { id: "competitivo", nombre: "Mi competitivo" },
   { id: "buscar", nombre: "Buscar partida" },
-  { id: "invitar", nombre: "Invitar por link" },
 ];
 
 interface Props {
@@ -61,6 +71,7 @@ interface Props {
   miUserId: string;
   historialInicial: FilaHistorial[];
   duelosPendientesIniciales: FilaPendiente[];
+  statsCasualIniciales: StatsCasual;
   tabInicial?: Tab;
 }
 
@@ -70,6 +81,7 @@ export default function RankedsClient({
   miUserId,
   historialInicial,
   duelosPendientesIniciales,
+  statsCasualIniciales,
   tabInicial = "competitivo",
 }: Props) {
   const [tab, setTab] = useState<Tab>(tabInicial);
@@ -100,17 +112,21 @@ export default function RankedsClient({
           miTituloNombre={miTituloNombre}
           historial={historialInicial}
           pendientes={duelosPendientesIniciales}
+          statsCasual={statsCasualIniciales}
         />
-      ) : tab === "buscar" ? (
-        <BuscarPartida miElo={miElo} miTituloNombre={miTituloNombre} miUserId={miUserId} />
       ) : (
-        <InvitarPorLink />
+        <BuscarPartida miElo={miElo} miTituloNombre={miTituloNombre} miUserId={miUserId} />
       )}
     </div>
   );
 }
 
-function DuelosPendientes({ pendientes }: { pendientes: FilaPendiente[] }) {
+function DuelosPendientes({ pendientes: pendientesIniciales }: { pendientes: FilaPendiente[] }) {
+  // Fase 4: mismo hook que la barra lateral de Social — cuenta
+  // regresiva de 60s visible y auto-rechazo al llegar a 0, una sola
+  // implementación para las dos pantallas donde se ven retos pendientes.
+  const { retos: pendientes, rechazar } = useRetosPendientes(pendientesIniciales);
+
   if (pendientes.length === 0) return null;
   return (
     <div className="flex flex-col gap-2 rounded-2xl border-2 border-primario/30 bg-primario/5 px-4 py-4">
@@ -118,20 +134,50 @@ function DuelosPendientes({ pendientes }: { pendientes: FilaPendiente[] }) {
         {pendientes.length === 1 ? "Te retaron a un duelo" : `Te retaron a ${pendientes.length} duelos`}
       </h2>
       {pendientes.map((p) => (
-        <Link
+        <GlareHover
           key={p.duel_id}
-          href={hrefDuelo(p.mundo, p.operation_type, p.duel_id)}
-          className="flex items-center justify-between rounded-xl bg-surface px-4 py-3 transition-colors hover:border-primario/40"
+          width="100%"
+          height="auto"
+          background="transparent"
+          borderColor="transparent"
+          borderRadius="0.75rem"
+          glareColor={COLOR_MUNDO[p.mundo]}
+          glareOpacity={0.3}
+          className="w-full"
         >
-          <div className="flex flex-col">
-            <span className="text-sm font-medium text-foreground">
-              {p.retador_nombre ?? "Alguien"} te retó a{" "}
-              {p.mundo === "numeria" && p.operation_type ? NOMBRES_OPERACION[p.operation_type] : NOMBRE_MUNDO[p.mundo]}
-            </span>
-            <RangoBadge elo={p.retador_elo} tituloNombre={p.retador_titulo_nombre} size="sm" mostrarElo className="text-xs" />
+          <div
+            className="flex items-center justify-between gap-3 rounded-xl bg-surface px-4 py-3"
+            style={{ borderLeft: `3px solid ${COLOR_MUNDO[p.mundo]}` }}
+          >
+            <Link href={hrefDuelo(p.mundo, p.operation_type, p.duel_id)} className="flex min-w-0 flex-col">
+              <span className="truncate text-sm font-medium text-foreground">
+                {p.retador_nombre ?? "Alguien"} te retó a{" "}
+                {p.mundo === "numeria" && p.operation_type ? NOMBRES_OPERACION[p.operation_type] : NOMBRE_MUNDO[p.mundo]}
+              </span>
+              <div className="flex items-center gap-1.5">
+                <RangoBadge elo={p.retador_elo} tituloNombre={p.retador_titulo_nombre} size="sm" mostrarElo className="text-xs" />
+                {p.segundosRestantes !== null && (
+                  <span className="font-mono text-[10px] text-texto-secundario">· expira en {p.segundosRestantes}s</span>
+                )}
+              </div>
+            </Link>
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                onClick={() => rechazar(p.duel_id)}
+                className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-texto-secundario transition-colors hover:border-error/40 hover:text-error"
+              >
+                Rechazar
+              </button>
+              <Link
+                href={hrefDuelo(p.mundo, p.operation_type, p.duel_id)}
+                className="rounded-full px-3 py-1.5 text-xs font-semibold text-white"
+                style={{ background: COLOR_MUNDO[p.mundo] }}
+              >
+                Jugar
+              </Link>
+            </div>
           </div>
-          <span className="shrink-0 rounded-full bg-primario px-3 py-1.5 text-xs font-semibold text-white">Jugar</span>
-        </Link>
+        </GlareHover>
       ))}
     </div>
   );
@@ -142,16 +188,19 @@ function MiCompetitivo({
   miTituloNombre,
   historial,
   pendientes,
+  statsCasual,
 }: {
   miElo: number;
   miTituloNombre: string | null;
   historial: FilaHistorial[];
   pendientes: FilaPendiente[];
+  statsCasual: StatsCasual;
 }) {
   const jugados = historial.filter((h) => !h.empate).length;
   const victorias = historial.filter((h) => h.gane).length;
   const derrotas = jugados - victorias;
   const tasaVictorias = jugados > 0 ? Math.round((victorias / jugados) * 100) : null;
+  const jugadosCasual = statsCasual.victorias + statsCasual.derrotas + statsCasual.empates;
 
   return (
     <div className="flex flex-col gap-5">
@@ -167,6 +216,17 @@ function MiCompetitivo({
         <Stat label="Derrotas" valor={String(derrotas)} />
         <Stat label="Tasa de victoria" valor={tasaVictorias === null ? "—" : `${tasaVictorias}%`} />
       </div>
+
+      {/* Fase 2 (Casuales): separada a propósito del bloque de ELO/rango
+          de arriba — es solo informativa, nunca genera rango propio. */}
+      {jugadosCasual > 0 && (
+        <p className="text-center text-xs text-texto-secundario">
+          Casual: <span className="font-medium text-foreground">{statsCasual.victorias}V</span> -{" "}
+          <span className="font-medium text-foreground">{statsCasual.derrotas}D</span>
+          {statsCasual.empates > 0 && <> - {statsCasual.empates}E</>}
+          {" · no afecta tu rango"}
+        </p>
+      )}
 
       <div className="flex flex-col gap-2">
         <h2 className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Historial de duelos</h2>
@@ -189,6 +249,11 @@ function MiCompetitivo({
               <div className="flex flex-col">
                 <span className="text-sm font-medium text-foreground">
                   {h.empate ? "Empate" : h.gane ? "Ganaste" : "Perdiste"} vs. {h.rival_nombre ?? "Jugador"}
+                  {!h.clasificatorio && (
+                    <span className="ml-2 rounded-full bg-foreground/[0.06] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-texto-secundario">
+                      Casual
+                    </span>
+                  )}
                 </span>
                 <span className="text-xs text-texto-secundario">
                   {h.mundo === "numeria" && h.operation_type ? NOMBRES_OPERACION[h.operation_type] : NOMBRE_MUNDO[h.mundo]}
@@ -220,7 +285,7 @@ const POLL_MS = 2200;
 const MAX_SEGUNDOS_BUSQUEDA = 60;
 
 const MUNDOS_SELECCIONABLES: { id: SeleccionMundo; nombre: string; descripcion: string }[] = [
-  { id: "numeria", nombre: "Numeria", descripcion: "Elegís la operación" },
+  { id: "numeria", nombre: "Numeria", descripcion: "Operación según tu rango" },
   { id: "geografia", nombre: "Geografía", descripcion: "Continente según tu rango" },
   { id: "enigmia", nombre: "Enigmia", descripcion: "Categoría según tu rango" },
   { id: "aleatorio", nombre: "Todas las ciudades", descripcion: "Mejor de 3, una ciudad por ronda" },
@@ -236,12 +301,31 @@ function BuscarPartida({
   miUserId: string;
 }) {
   const router = useRouter();
+  const [modoClasificacion, setModoClasificacion] = useState<"clasificatoria" | "casual">("clasificatoria");
   const [mundo, setMundo] = useState<SeleccionMundo>("numeria");
-  const [operacion, setOperacion] = useState<ArithmeticProblemType>("suma");
   const [estado, setEstado] = useState<"idle" | "buscando" | "sin-rivales">("idle");
   const [segundos, setSegundos] = useState(0);
   const [rango, setRango] = useState(30);
   const cancelarRef = useRef(false);
+
+  // Fase 2 (Casuales): "todas las ciudades" es inherentemente mejor-de-3
+  // — Casual es siempre duelo simple, así que esa opción ni se ofrece
+  // (mismo criterio que el guard del lado del servidor en
+  // buscar_rival_duelo). Si estaba elegida y se pasa a Casual, cae a
+  // Numeria en vez de dejar seleccionada una opción que ya no se ve.
+  function elegirModoClasificacion(v: "clasificatoria" | "casual") {
+    setModoClasificacion(v);
+    if (v === "casual" && mundo === "aleatorio") setMundo("numeria");
+  }
+
+  const mundosDisponibles =
+    modoClasificacion === "casual" ? MUNDOS_SELECCIONABLES.filter((m) => m.id !== "aleatorio") : MUNDOS_SELECCIONABLES;
+
+  // Fase de pulido: la ciudad elegida "transmuta" el acento de la
+  // pantalla (mismo principio que ya se aplica en el resto de la app —
+  // ver colorDelMundo en Header.tsx) — en "Todas las ciudades" se vuelve
+  // al degradé genérico de marca.
+  const colorMundo = mundo === "aleatorio" ? null : COLOR_MUNDO[mundo];
 
   useEffect(() => {
     return () => {
@@ -250,13 +334,20 @@ function BuscarPartida({
   }, []);
 
   function irAlDuelo(mundoEncontrado: MundoDuelo, duelId: string) {
-    router.push(hrefDuelo(mundoEncontrado, mundoEncontrado === "numeria" ? operacion : null, duelId));
+    // La operación de Numeria ya no se elige a mano — sale sorteada del
+    // lado del servidor al crear el duelo (ver buscar_rival_duelo) y
+    // /practica la lee de ahí, no de la URL.
+    router.push(hrefDuelo(mundoEncontrado, null, duelId));
   }
 
-  async function poll(m: SeleccionMundo, op: ArithmeticProblemType | undefined, inicioIso: string) {
+  async function poll(m: SeleccionMundo, ranked: boolean, inicioIso: string) {
     const supabase = createClient();
     while (!cancelarRef.current) {
-      const { data, error } = await supabase.rpc("buscar_rival_duelo", { p_mundo: m, p_operation_type: op ?? null });
+      const { data, error } = await supabase.rpc("buscar_rival_duelo", {
+        p_mundo: m,
+        p_operation_type: null,
+        p_ranked: ranked,
+      });
       if (cancelarRef.current) return;
       if (error) {
         setEstado("sin-rivales");
@@ -315,7 +406,7 @@ function BuscarPartida({
     setSegundos(0);
     setRango(30);
     setEstado("buscando");
-    poll(mundo, mundo === "numeria" ? operacion : undefined, new Date().toISOString());
+    poll(mundo, modoClasificacion === "clasificatoria", new Date().toISOString());
   }
 
   async function cancelarBusqueda() {
@@ -325,31 +416,66 @@ function BuscarPartida({
     await supabase.rpc("cancelar_busqueda_duelo");
   }
 
-  const etiquetaBusqueda =
-    mundo === "numeria" ? NOMBRES_OPERACION[operacion] : MUNDOS_SELECCIONABLES.find((m) => m.id === mundo)?.nombre;
+  const etiquetaBusqueda = MUNDOS_SELECCIONABLES.find((m) => m.id === mundo)?.nombre;
 
   if (estado === "buscando") {
     return (
-      <div className="flex flex-col items-center gap-4 rounded-2xl border-2 border-primario/30 bg-primario/5 px-6 py-10 text-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primario/30 border-t-primario" />
-        <div>
-          <p className="font-display text-lg font-bold text-foreground">Buscando rival…</p>
-          <p className="mt-1 text-xs text-texto-secundario">
-            {etiquetaBusqueda} · {segundos}s · buscando rivales entre {miElo - rango}-{miElo + rango} ELO
-          </p>
+      <BorderGlow
+        backgroundColor="transparent"
+        borderRadius={16}
+        glowRadius={24}
+        colors={colorMundo ? [colorMundo, "#A794FF", "#FFC53D"] : ["#6C4CF1", "#A794FF", "#FFC53D"]}
+        glowColor="255 65% 68%"
+        animated
+      >
+        <div className="flex flex-col items-center gap-4 px-6 py-10 text-center">
+          <div
+            className="h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"
+            style={{ borderColor: colorMundo ?? "var(--primario)", borderTopColor: "transparent" }}
+          />
+          <div>
+            <p className="font-display text-lg font-bold text-foreground">Buscando rival…</p>
+            <p className="mt-1 text-xs text-texto-secundario">
+              {etiquetaBusqueda} · {segundos}s · buscando rivales entre {miElo - rango}-{miElo + rango} ELO
+            </p>
+          </div>
+          <button
+            onClick={cancelarBusqueda}
+            className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-error/40 hover:text-error"
+          >
+            Cancelar
+          </button>
         </div>
-        <button
-          onClick={cancelarBusqueda}
-          className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-error/40 hover:text-error"
-        >
-          Cancelar
-        </button>
-      </div>
+      </BorderGlow>
     );
   }
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="flex w-fit gap-1 self-center rounded-full border border-border bg-surface p-1 text-sm">
+        <button
+          onClick={() => elegirModoClasificacion("clasificatoria")}
+          className={`rounded-full px-4 py-1.5 font-medium transition-colors ${
+            modoClasificacion === "clasificatoria" ? "bg-primario text-white" : "text-texto-secundario hover:text-foreground"
+          }`}
+        >
+          Clasificatoria
+        </button>
+        <button
+          onClick={() => elegirModoClasificacion("casual")}
+          className={`rounded-full px-4 py-1.5 font-medium transition-colors ${
+            modoClasificacion === "casual" ? "bg-primario text-white" : "text-texto-secundario hover:text-foreground"
+          }`}
+        >
+          Casual
+        </button>
+      </div>
+      {modoClasificacion === "casual" && (
+        <p className="text-center text-xs text-texto-secundario">
+          Mismo matchmaking y mismo contenido según tu rango — no cambia tu ELO.
+        </p>
+      )}
+
       {estado === "sin-rivales" && (
         <div className="rounded-xl border border-border bg-surface px-4 py-3 text-center text-sm text-texto-secundario">
           No hay contrincantes disponibles ahora mismo — probá de nuevo en un rato.
@@ -359,49 +485,51 @@ function BuscarPartida({
       <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
         <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Elegí la ciudad</p>
         <div className="grid grid-cols-2 gap-2">
-          {MUNDOS_SELECCIONABLES.map((m) => (
-            <button
-              key={m.id}
-              onClick={() => setMundo(m.id)}
-              className={`flex flex-col items-start gap-0.5 rounded-xl border px-3 py-2.5 text-left transition-colors ${
-                mundo === m.id ? "border-primario bg-primario/10" : "border-border"
-              }`}
-            >
-              <span className={`text-sm font-semibold ${mundo === m.id ? "text-primario" : "text-foreground"}`}>
-                {m.nombre}
-              </span>
-              <span className="text-[11px] text-texto-secundario">{m.descripcion}</span>
-            </button>
-          ))}
+          {mundosDisponibles.map((m) => {
+            const activo = mundo === m.id;
+            const color = m.id === "aleatorio" ? null : COLOR_MUNDO[m.id as MundoDuelo];
+            return (
+              <GlareHover
+                key={m.id}
+                width="100%"
+                height="auto"
+                background="transparent"
+                borderColor="transparent"
+                borderRadius="0.75rem"
+                glareColor={color ?? "#6C4CF1"}
+                glareOpacity={activo ? 0.35 : 0.15}
+                className="w-full"
+              >
+                <button
+                  type="button"
+                  onClick={() => setMundo(m.id)}
+                  className="flex w-full flex-col items-start gap-0.5 rounded-xl border px-3 py-2.5 text-left transition-colors"
+                  style={{
+                    borderColor: activo ? (color ?? "var(--primario)") : "var(--border)",
+                    background: activo
+                      ? color
+                        ? `${color}1A`
+                        : "color-mix(in oklab, var(--primario) 10%, transparent)"
+                      : "transparent",
+                  }}
+                >
+                  <span
+                    className="text-sm font-semibold"
+                    style={{ color: activo ? (color ?? "var(--primario)") : "var(--foreground)" }}
+                  >
+                    {m.nombre}
+                  </span>
+                  <span className="text-[11px] text-texto-secundario">{m.descripcion}</span>
+                </button>
+              </GlareHover>
+            );
+          })}
         </div>
       </div>
 
-      {mundo === "numeria" && (
-        <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Elegí la operación</p>
-          <div className="flex flex-wrap gap-2">
-            {ARITHMETIC_PROBLEM_TYPES.map((op) => (
-              <button
-                key={op}
-                onClick={() => setOperacion(op)}
-                className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-                  operacion === op ? "border-primario bg-primario/10 text-primario" : "border-border text-texto-secundario"
-                }`}
-              >
-                {NOMBRES_OPERACION[op]}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <button
-        onClick={iniciarBusqueda}
-        className="w-full rounded-2xl px-6 py-5 font-display text-lg font-semibold text-white shadow-lg"
-        style={{ background: "linear-gradient(120deg, var(--primario), var(--logro))" }}
-      >
+      <Boton onClick={iniciarBusqueda} colorHex={colorMundo ?? undefined} destacado className="w-full py-5 text-lg">
         Buscar partida
-      </button>
+      </Boton>
       <p className="flex items-center justify-center gap-1.5 text-center text-xs text-texto-secundario">
         Tu ELO: {miElo} · <RangoBadge elo={miElo} tituloNombre={miTituloNombre} size="sm" />
       </p>
@@ -409,136 +537,3 @@ function BuscarPartida({
   );
 }
 
-function InvitarPorLink() {
-  const router = useRouter();
-  const [operacion, setOperacion] = useState<ArithmeticProblemType>("suma");
-  const [estado, setEstado] = useState<"idle" | "generando" | "esperando" | "error">("idle");
-  const [link, setLink] = useState<string | null>(null);
-  const [copiado, setCopiado] = useState(false);
-  const inviteIdRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (estado !== "esperando" || !inviteIdRef.current) return;
-
-    const supabase = createClient();
-    const channel = supabase
-      .channel(`invitacion:${inviteIdRef.current}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "duel_invites",
-          filter: `id=eq.${inviteIdRef.current}`,
-        },
-        (payload) => {
-          const fila = payload.new as { estado: string; duel_id: string | null };
-          if (fila.estado === "usada" && fila.duel_id) {
-            router.push(`/practica?operacion=${operacion}&duelo=${fila.duel_id}`);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [estado]);
-
-  async function generarLink() {
-    setEstado("generando");
-    const supabase = createClient();
-    const { data, error } = await supabase.rpc("crear_invitacion_duelo", { p_operation_type: operacion });
-    if (error || !data) {
-      setEstado("error");
-      return;
-    }
-    inviteIdRef.current = data as string;
-    setLink(`${window.location.origin}/duelo/invitacion/${data}`);
-    setEstado("esperando");
-  }
-
-  async function cancelar() {
-    if (inviteIdRef.current) {
-      const supabase = createClient();
-      await supabase.rpc("cancelar_invitacion_duelo", { p_invite_id: inviteIdRef.current });
-    }
-    inviteIdRef.current = null;
-    setLink(null);
-    setEstado("idle");
-  }
-
-  async function copiar() {
-    if (!link) return;
-    try {
-      await navigator.clipboard.writeText(link);
-      setCopiado(true);
-      setTimeout(() => setCopiado(false), 2000);
-    } catch {
-      // Clipboard puede fallar por permisos del navegador — el link ya
-      // está visible en pantalla para copiar a mano igual.
-    }
-  }
-
-  if (estado === "esperando" && link) {
-    return (
-      <div className="flex flex-col items-center gap-4 rounded-2xl border-2 border-primario/30 bg-primario/5 px-6 py-10 text-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primario/30 border-t-primario" />
-        <div>
-          <p className="font-display text-lg font-bold text-foreground">Esperando a que se unan…</p>
-          <p className="mt-1 text-xs text-texto-secundario">{NOMBRES_OPERACION[operacion]} · no hace falta que sea amigo</p>
-        </div>
-        <div className="flex w-full max-w-sm items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2">
-          <span className="flex-1 truncate font-mono text-xs text-texto-secundario">{link}</span>
-          <button onClick={copiar} className="shrink-0 rounded-lg bg-primario px-3 py-1.5 text-xs font-semibold text-white">
-            {copiado ? "Copiado ✓" : "Copiar"}
-          </button>
-        </div>
-        <button
-          onClick={cancelar}
-          className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-error/40 hover:text-error"
-        >
-          Cancelar
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-4">
-      {estado === "error" && (
-        <div className="rounded-xl border border-border bg-surface px-4 py-3 text-center text-sm text-texto-secundario">
-          No pudimos generar el link. Probá de nuevo.
-        </div>
-      )}
-      <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Elegí la operación</p>
-        <div className="flex flex-wrap gap-2">
-          {ARITHMETIC_PROBLEM_TYPES.map((op) => (
-            <button
-              key={op}
-              onClick={() => setOperacion(op)}
-              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-                operacion === op ? "border-primario bg-primario/10 text-primario" : "border-border text-texto-secundario"
-              }`}
-            >
-              {NOMBRES_OPERACION[op]}
-            </button>
-          ))}
-        </div>
-      </div>
-      <button
-        onClick={generarLink}
-        disabled={estado === "generando"}
-        className="w-full rounded-2xl px-6 py-5 font-display text-lg font-semibold text-white shadow-lg disabled:opacity-60"
-        style={{ background: "linear-gradient(120deg, var(--primario), var(--logro))" }}
-      >
-        {estado === "generando" ? "Generando…" : "Generar link de invitación"}
-      </button>
-      <p className="text-center text-xs text-texto-secundario">
-        Compartiselo a quien quieras — no hace falta que sea tu amigo dentro de la app.
-      </p>
-    </div>
-  );
-}

@@ -3,15 +3,22 @@ import { NextResponse } from "next/server";
 import { precioConDescuento } from "@/lib/descuentoDiario";
 import { respuestaError } from "@/lib/api/respuestaError";
 
+// Fase 2 (mercado): precios revisados para que comprar algo se sienta
+// alcanzable en un puñado de partidas — ver el razonamiento completo
+// (Puntos típicos por partida) en 0054_tienda_rediseno.sql.
 const COSTOS = {
-  escudo: 80,
-  congelamiento: 60,
-  boost: 100,
-  color_esmeralda: 150,
-  color_coral: 150,
-  color_dorado: 150,
-  marco_plata: 120,
-  marco_oro: 220,
+  escudo: 40,
+  congelamiento: 35,
+  boost: 60,
+  fuente_mono: 50,
+  fuente_serif: 90,
+  fuente_manuscrita: 150,
+  marco_bronce: 50,
+  marco_plata: 80,
+  marco_oro: 120,
+  marco_platino: 170,
+  marco_diamante: 230,
+  marco_prodigio: 300,
 } as const;
 type Item = keyof typeof COSTOS;
 

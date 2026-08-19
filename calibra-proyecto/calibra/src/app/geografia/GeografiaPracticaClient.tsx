@@ -50,6 +50,7 @@ interface Props {
   escudosExtra: number;
   boostActivo: boolean;
   duelo?: DueloGenericoInfo | null;
+  miUserId: string;
 }
 
 const NOMBRE_CONTINENTE: Record<Continente, string> = {
@@ -59,7 +60,7 @@ const NOMBRE_CONTINENTE: Record<Continente, string> = {
   asia_oceania: "Asia y Oceanía",
 };
 
-export default function GeografiaPracticaClient({ continente, nivelInicial, escudosExtra, boostActivo, duelo }: Props) {
+export default function GeografiaPracticaClient({ continente, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("inicio");
   const [startedAtIso, setStartedAtIso] = useState("");
@@ -136,6 +137,9 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
         startedAt={startedAtPerf}
         nivelInicial={nivelInicial}
         escudosExtra={escudosExtra}
+        duelId={duelo?.duelId}
+        miUserId={miUserId}
+        rivalNombre={duelo?.rivalNombre}
         onFinish={handleFinish}
       />
     );
@@ -200,7 +204,7 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
       {boostActivo && (
         <div className="flex items-center justify-center gap-2 rounded-full bg-logro/15 px-4 py-2 text-sm font-medium text-foreground">
-          ⚡ Boost activo — Puntos ×1.5 en esta partida
+          ⚡ Boost activo — Chispas ×1.5 en esta partida
         </div>
       )}
       {duelo ? (

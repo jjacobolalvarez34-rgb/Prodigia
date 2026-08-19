@@ -4,16 +4,17 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
+import Avatar from "@/components/Avatar";
 import WorldCard from "@/components/WorldCard";
 import PrimeraVezTip from "@/components/PrimeraVezTip";
 import { calcularRachaDiaria } from "@/lib/practica/racha";
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
-import { IconSuma, IconLogica, IconAlgebra, IconGeometria, IconLlama, IconCheck, IconLibro } from "@/components/icons";
+import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica } from "@/components/icons";
 import Greeting from "./Greeting";
 
 export const metadata: Metadata = {
   title: "Inicio",
-  description: "Tu cuenta de Prodigia: Puntos, racha y tus mundos de práctica.",
+  description: "Tu cuenta de Prodigia: Chispas, racha y tus mundos de práctica.",
 };
 
 export default async function ProdigiaHomePage() {
@@ -57,13 +58,16 @@ export default async function ProdigiaHomePage() {
     <>
       <Header autenticado mostrarTour invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
-        <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-            <Greeting />, {profile.display_name}
-          </h1>
-          <p className="mt-0.5 font-mono text-xs text-texto-secundario">
-            {profile.puntos_total} Puntos totales
-          </p>
+        <div className="flex items-center gap-3">
+          <Avatar url={profile.avatar_url} nombre={profile.display_name} size={48} />
+          <div>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
+              <Greeting />, {profile.display_name}
+            </h1>
+            <p className="mt-0.5 font-mono text-xs text-texto-secundario">
+              {profile.puntos_total} Chispas totales
+            </p>
+          </div>
         </div>
 
         <section className="grid grid-cols-3 gap-3">
@@ -79,7 +83,7 @@ export default async function ProdigiaHomePage() {
           />
           <MetricaCard
             icono={<span className="text-sm">💰</span>}
-            label="Puntos"
+            label="Chispas"
             valor={`${profile.puntos_total}`}
           />
         </section>
@@ -106,7 +110,7 @@ export default async function ProdigiaHomePage() {
           </div>
           <PrimeraVezTip
             tipKey="tour-mundos"
-            texto="Elegí un mundo para practicar — Puntos, racha y ranking se comparten entre todos."
+            texto="Elegí un mundo para practicar — Chispas, racha y ranking se comparten entre todos."
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <WorldCard
@@ -131,17 +135,9 @@ export default async function ProdigiaHomePage() {
                 colorHex="#1E7A8C"
               />
               <WorldCard
-                nombre="Verbalia"
-                descripcion="Comprensión y razonamiento verbal."
-                Icono={IconAlgebra}
-                href="#"
-                colorHex="#6C4CF1"
-                proximamente
-              />
-              <WorldCard
-                nombre="Lexia"
-                descripcion="Vocabulario e idiomas."
-                Icono={IconLibro}
+                nombre="Quimia"
+                descripcion="Reacciones, elementos y fórmulas químicas."
+                Icono={IconQuimica}
                 href="#"
                 colorHex="#6C4CF1"
                 proximamente

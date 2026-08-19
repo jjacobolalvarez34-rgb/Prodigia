@@ -13,8 +13,8 @@ export default function ApuestaResultado({ apuesta }: Props) {
       }`}
     >
       {apuesta.gano
-        ? `🎲 Doble o nada: ganaste — +${apuesta.monto * 2} Puntos`
-        : `🎲 Doble o nada: esta vez no — perdiste los ${apuesta.monto} Puntos apostados`}
+        ? `🎲 Doble o nada: ganaste — +${apuesta.monto * 2} Chispas`
+        : `🎲 Doble o nada: esta vez no — perdiste las ${apuesta.monto} Chispas apostadas`}
     </div>
   );
 }

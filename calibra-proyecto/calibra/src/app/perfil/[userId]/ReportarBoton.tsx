@@ -12,13 +12,14 @@ const MOTIVOS: { valor: MotivoReporte; nombre: string }[] = [
   { valor: "otro", nombre: "Otro motivo" },
 ];
 
-interface Props {
-  userId: string;
-}
+// Fase 6: además de perfiles de usuario, ahora también se puede
+// reportar un problema personalizado específico — mismo botón, mismo
+// flujo, solo cambia qué RPC llama (reportar_usuario vs reportar_post).
+type Props = { userId: string; postId?: undefined } | { userId?: undefined; postId: string };
 
 // Fase Q3: reporte manual — se guarda en reportes_usuario para revisión
 // tuya después (sin sistema de moderación automática, a propósito).
-export default function ReportarBoton({ userId }: Props) {
+export default function ReportarBoton({ userId, postId }: Props) {
   const [abierto, setAbierto] = useState(false);
   const [motivo, setMotivo] = useState<MotivoReporte | null>(null);
   const [enviando, setEnviando] = useState(false);
@@ -30,10 +31,9 @@ export default function ReportarBoton({ userId }: Props) {
     setEnviando(true);
     setError(null);
     const supabase = createClient();
-    const { error: reportError } = await supabase.rpc("reportar_usuario", {
-      p_reportado_id: userId,
-      p_motivo: motivo,
-    });
+    const { error: reportError } = postId
+      ? await supabase.rpc("reportar_post", { p_post_id: postId, p_motivo: motivo })
+      : await supabase.rpc("reportar_usuario", { p_reportado_id: userId, p_motivo: motivo });
     setEnviando(false);
     if (reportError) {
       console.error("[reportar] error", reportError);

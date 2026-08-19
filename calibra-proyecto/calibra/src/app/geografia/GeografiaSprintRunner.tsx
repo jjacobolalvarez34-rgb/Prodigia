@@ -10,6 +10,8 @@ import RachaFuego from "@/components/RachaFuego";
 import LevelDial from "@/app/practica/LevelDial";
 import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/TarjetaSprint";
 import BarraTiempo from "@/components/practica/BarraTiempo";
+import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
+import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import GeografiaMapa, { COLOR_GEOGRAFIA } from "./GeografiaMapa";
 
 const TOTAL_PREGUNTAS = 10;
@@ -25,12 +27,29 @@ interface Props {
   startedAt: number;
   nivelInicial: number;
   escudosExtra: number;
+  // Fase 6: progreso del rival en vivo — Geografía no tiene fantasma
+  // (ver GeografiaPracticaClient.tsx, decisión de alcance), así que acá
+  // es la única señal del rival durante la partida.
+  duelId?: string | null;
+  miUserId?: string | null;
+  rivalNombre?: string | null;
   onFinish: (errores: PaisAmerica[]) => void;
 }
 
-export default function GeografiaSprintRunner({ continente, startedAt, nivelInicial, escudosExtra, onFinish }: Props) {
+export default function GeografiaSprintRunner({
+  continente,
+  startedAt,
+  nivelInicial,
+  escudosExtra,
+  duelId,
+  miUserId,
+  rivalNombre,
+  onFinish,
+}: Props) {
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
   const paises = PAISES_POR_CONTINENTE[continente];
+  const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
+  const correctosRef = useRef(0);
   const [pais, setPais] = useState<PaisAmerica | null>(null);
   const [cardKey, setCardKey] = useState(0);
   const [seleccionId, setSeleccionId] = useState<string | null>(null);
@@ -135,11 +154,13 @@ export default function GeografiaSprintRunner({ continente, startedAt, nivelInic
         xpGanado = data.xp;
         setXpSprint((prev) => prev + data.xp);
       }
+      if (correct) correctosRef.current += 1;
       if (data.skillLevel) {
         nivelSubio = data.skillLevel.nivel > nivelRef.current;
         nivelRef.current = data.skillLevel.nivel;
         setNivel(data.skillLevel.nivel);
         setRacha(data.skillLevel.racha_actual);
+        emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: data.skillLevel.racha_actual });
       }
       if (correct && xpGanado > 0) {
         setPuntaje({ total: xpGanado, intensidad: nivelSubio ? "grande" : xpGanado >= 20 ? "medio" : "chico" });
@@ -189,6 +210,17 @@ export default function GeografiaSprintRunner({ continente, startedAt, nivelInic
             <span className="font-mono font-medium">{segundos}s</span>
           </div>
         </div>
+
+        {rivalEnVivo && rivalNombre && (
+          <ProgresoRivalEnVivo
+            total={TOTAL_PREGUNTAS}
+            miRespondidos={respondidos}
+            rivalRespondidos={rivalEnVivo.respondidos}
+            rivalRacha={rivalEnVivo.racha}
+            rivalNombre={rivalNombre}
+            colorHex={COLOR_GEOGRAFIA}
+          />
+        )}
 
         <BarraTiempo remainingMs={remainingMs} duracionTotalMs={duracionTotalMs} bonusTiempo={bonusTiempo} cardKey={cardKey} />
       </div>

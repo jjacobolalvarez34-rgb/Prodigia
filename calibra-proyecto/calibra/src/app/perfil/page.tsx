@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
-import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType, type Achievement, type TituloUsuario } from "@/types/database";
+import { ARITHMETIC_PROBLEM_TYPES, ESTILO_MARCO_PERFIL, type ArithmeticProblemType, type Achievement, type TituloUsuario } from "@/types/database";
 import { calcularRachaMaxima, calcularMejorPrecisionDiaria } from "@/lib/perfil/records";
 import Header from "@/components/Header";
 import LevelDial from "@/app/practica/LevelDial";
@@ -53,7 +53,7 @@ export default async function PerfilPage() {
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("created_at, elo_rating, marco_perfil, avatar_url, titulo_activo")
+      .select("created_at, elo_rating, marco_perfil, fuente_nombre, avatar_url, titulo_activo")
       .eq("id", user.id)
       .single(),
     supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", user.id),
@@ -82,11 +82,6 @@ export default async function PerfilPage() {
   const rankingFila = (rankingRows as Array<{ posicion: number; total_jugadores: number }> | null)?.[0];
   const eloRating = profileFull?.elo_rating ?? 800;
   const marcoPerfil = profileFull?.marco_perfil ?? "ninguno";
-  const ESTILO_MARCO: Record<string, string> = {
-    ninguno: "border-border",
-    plata: "border-[#C0C5CE] shadow-[0_0_0_3px_rgba(192,197,206,0.25)]",
-    oro: "border-[#FFC53D] shadow-[0_0_0_3px_rgba(255,197,61,0.25)]",
-  };
 
   const nivelPorOperacion = Object.fromEntries(
     ARITHMETIC_PROBLEM_TYPES.map((tipo) => [
@@ -113,10 +108,10 @@ export default async function PerfilPage() {
       <Header autenticado invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
         <section
-          className={`flex flex-col gap-4 rounded-2xl border-2 bg-surface px-6 py-6 shadow-sm transition-colors ${ESTILO_MARCO[marcoPerfil] ?? ESTILO_MARCO.ninguno}`}
+          className={`flex flex-col gap-4 rounded-2xl border-2 bg-surface px-6 py-6 shadow-sm transition-colors ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}
         >
           <SubirAvatar userId={user.id} nombre={profile.display_name} avatarUrlInicial={profileFull?.avatar_url ?? null} />
-          <NombreEditable userId={user.id} nombreActual={profile.display_name} />
+          <NombreEditable nombreActual={profile.display_name} fuente={profileFull?.fuente_nombre ?? "default"} />
           {(titulosRows as TituloUsuario[] | null)?.find((t) => t.slug === profileFull?.titulo_activo) && (
             <span className="-mt-2 rounded-full bg-primario/10 px-3 py-1 text-xs font-semibold text-primario">
               {(titulosRows as TituloUsuario[]).find((t) => t.slug === profileFull?.titulo_activo)?.nombre}
@@ -126,12 +121,12 @@ export default async function PerfilPage() {
             En Prodigia desde {formatearFecha(profileFull?.created_at ?? new Date().toISOString())}
           </p>
           <p className="font-mono text-lg font-bold text-foreground">
-            {profile.puntos_total} <span className="text-sm font-normal text-texto-secundario">Puntos totales</span>
+            {profile.puntos_total} <span className="text-sm font-normal text-texto-secundario">Chispas totales</span>
           </p>
           {rankingFila && (
             <p className="text-sm text-texto-secundario">
               Puesto <span className="font-mono font-semibold text-foreground">#{rankingFila.posicion}</span> de{" "}
-              {rankingFila.total_jugadores} en el ranking general de Puntos
+              {rankingFila.total_jugadores} en el ranking general de Chispas
             </p>
           )}
         </section>

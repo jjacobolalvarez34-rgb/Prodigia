@@ -91,14 +91,6 @@ export default function MundoSelector() {
               {m.nombre}
             </Link>
           ))}
-          <Link
-            href="/"
-            role="menuitem"
-            className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-foreground/40"
-          >
-            <span className="h-2 w-2 rounded-full border border-dashed border-foreground/30" />
-            Lexia · Próximamente
-          </Link>
         </div>
       )}
     </div>

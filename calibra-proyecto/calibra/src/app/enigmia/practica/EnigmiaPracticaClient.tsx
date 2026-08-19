@@ -39,6 +39,10 @@ export interface DueloGenericoInfo {
   rondaNumero: number;
   rondaTotal: number;
   categoria: CategoriaEnigmia;
+  // Fase de corrección: complejidad graduada por rango (nivel_enigmia_por_rango,
+  // 0048) — reemplaza el nivel personal de logic_skill_levels DURANTE el
+  // duelo, mismo criterio que ya usaba Numeria con nivel_numeria.
+  nivel: number;
 }
 
 interface Props {
@@ -47,9 +51,10 @@ interface Props {
   escudosExtra: number;
   boostActivo: boolean;
   duelo?: DueloGenericoInfo | null;
+  miUserId: string;
 }
 
-export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosExtra, boostActivo, duelo }: Props) {
+export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("inicio");
   const [startedAtIso, setStartedAtIso] = useState("");
@@ -123,6 +128,10 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
         nivelInicial={nivelInicial}
         escudosExtra={escudosExtra}
         categoriaForzada={duelo?.categoria}
+        nivelForzado={duelo?.nivel}
+        duelId={duelo?.duelId}
+        miUserId={miUserId}
+        rivalNombre={duelo?.rivalNombre}
         onFinish={handleFinish}
       />
     );
@@ -193,7 +202,7 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
       {boostActivo && (
         <div className="flex items-center justify-center gap-2 rounded-full bg-logro/15 px-4 py-2 text-sm font-medium text-foreground">
-          ⚡ Boost activo — Puntos ×1.5 en esta partida
+          ⚡ Boost activo — Chispas ×1.5 en esta partida
         </div>
       )}
       {duelo ? (

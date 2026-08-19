@@ -8,15 +8,16 @@ interface Props {
 }
 
 // GET /duelo/invitacion/[inviteId] — a donde lleva el link compartible
-// que genera un usuario desde Rankeds ("Invitar por link", Fase T3). No
-// hace falta ser amigo de quien lo generó: cualquier cuenta real que
-// abra el link se une al mismo duelo. unirse_invitacion_duelo (security
-// definer) hace la validación real — acá solo se maneja el resultado.
+// que genera un usuario desde Social → Amigos ("Invitar por link", Fase
+// T3, movida a Amigos en la tanda de pulido de Rankeds). No hace falta
+// ser amigo de quien lo generó: cualquier cuenta real que abra el link
+// se une al mismo duelo. unirse_invitacion_duelo (security definer)
+// hace la validación real — acá solo se maneja el resultado.
 export default async function InvitacionDueloPage({ params }: Props) {
   const { inviteId } = await params;
   const supabase = await createClient();
   const { user } = await requireUsuarioOnboarded(supabase, `/duelo/invitacion/${inviteId}`);
-  bloquearInvitado(user, "Rankeds");
+  bloquearInvitado(user, "Amigos");
 
   const { data, error } = await supabase.rpc("unirse_invitacion_duelo", { p_invite_id: inviteId });
   const fila = (data as Array<{ duel_id: string; operation_type: string }> | null)?.[0];

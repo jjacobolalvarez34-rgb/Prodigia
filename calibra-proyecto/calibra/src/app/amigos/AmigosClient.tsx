@@ -1,28 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType } from "@/types/database";
-import RankingRankeds from "@/components/RankingRankeds";
 import Boton from "@/components/Boton";
-
-interface Solicitud {
-  user_id: string;
-  display_name: string | null;
-}
-
-interface Amigo {
-  friend_id: string;
-  display_name: string | null;
-  elo_rating: number;
-}
-
-interface Resultado {
-  id: string;
-  display_name: string | null;
-}
+import type { UseAmigosReturn } from "@/app/social/useAmigos";
 
 const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
   suma: "Suma",
@@ -31,86 +15,30 @@ const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
   division: "División",
 };
 
+// Fase 3 del rediseño de Social: ya no maneja su propio estado — recibe
+// todo de useAmigos() (llamado una sola vez en SocialClient) para que la
+// pestaña "Amigos" y la barra lateral del Feed compartan exactamente la
+// misma fuente de verdad, nunca dos copias que puedan desincronizarse.
 interface Props {
-  miUserId: string;
-  solicitudesIniciales: Solicitud[];
-  amigosIniciales: Amigo[];
+  amigosState: UseAmigosReturn;
 }
 
-export default function AmigosClient({ miUserId, solicitudesIniciales, amigosIniciales }: Props) {
-  const router = useRouter();
-  const [consulta, setConsulta] = useState("");
-  const [resultados, setResultados] = useState<Resultado[]>([]);
-  const [buscando, setBuscando] = useState(false);
-  const [solicitudes, setSolicitudes] = useState(solicitudesIniciales);
-  const [amigos, setAmigos] = useState(amigosIniciales);
-  const [enviadas, setEnviadas] = useState<Set<string>>(new Set());
+export default function AmigosClient({ amigosState }: Props) {
+  const {
+    consulta,
+    setConsulta,
+    resultados,
+    buscando,
+    solicitudes,
+    amigos,
+    enviadas,
+    error,
+    buscar,
+    enviarSolicitud,
+    responder,
+    retar,
+  } = amigosState;
   const [retandoA, setRetandoA] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  async function buscar(e: React.FormEvent) {
-    e.preventDefault();
-    if (consulta.trim().length < 2) return;
-    setBuscando(true);
-    setError(null);
-    const supabase = createClient();
-    const { data, error: rpcError } = await supabase.rpc("buscar_usuarios", { p_query: consulta.trim() });
-    setBuscando(false);
-    if (rpcError) {
-      setError("No se pudo buscar. Probá de nuevo.");
-      return;
-    }
-    setResultados((data ?? []) as Resultado[]);
-  }
-
-  async function enviarSolicitud(friendId: string) {
-    setError(null);
-    const res = await fetch("/api/amigos/solicitar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ friend_id: friendId }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      setError(data.error ?? "No se pudo enviar la solicitud.");
-      return;
-    }
-    setEnviadas((prev) => new Set(prev).add(friendId));
-  }
-
-  async function responder(userId: string, aceptar: boolean) {
-    setError(null);
-    const res = await fetch("/api/amigos/responder", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: userId, aceptar }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      setError(data.error ?? "No se pudo procesar la solicitud.");
-      return;
-    }
-    const solicitud = solicitudes.find((s) => s.user_id === userId);
-    setSolicitudes((prev) => prev.filter((s) => s.user_id !== userId));
-    if (aceptar && solicitud) {
-      setAmigos((prev) => [...prev, { friend_id: userId, display_name: solicitud.display_name, elo_rating: 1200 }]);
-    }
-  }
-
-  async function retar(friendId: string, operacion: ArithmeticProblemType) {
-    setError(null);
-    const res = await fetch("/api/amigos/retar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ friend_id: friendId, operation_type: operacion }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      setError(data.error ?? "No se pudo crear el duelo.");
-      return;
-    }
-    router.push(`/practica?operacion=${operacion}&duelo=${data.duel_id}`);
-  }
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
@@ -119,9 +47,12 @@ export default function AmigosClient({ miUserId, solicitudesIniciales, amigosIni
         <p className="mt-1 text-sm text-texto-secundario">Buscá gente, aceptá solicitudes y retalos a duelo.</p>
       </div>
 
-      <RankingRankeds miUserId={miUserId} />
+      <section className="flex flex-col gap-2">
+        <h2 className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Invitar por link</h2>
+        <InvitarPorLink />
+      </section>
 
-      <form onSubmit={buscar} className="flex gap-2">
+      <form onSubmit={(e) => { e.preventDefault(); buscar(consulta); }} className="flex gap-2">
         <input
           value={consulta}
           onChange={(e) => setConsulta(e.target.value)}
@@ -205,6 +136,144 @@ export default function AmigosClient({ miUserId, solicitudesIniciales, amigosIni
       </section>
 
       {error && <p className="text-sm text-error">{error}</p>}
+    </div>
+  );
+}
+
+// Fase de pulido: vivía en Rankeds, pero retar por link no tiene nada
+// que ver con el competitivo (ELO/matchmaking) — es un duelo casual con
+// quien sea, ni siquiera hace falta que sea tu amigo. Movido tal cual,
+// sin reescribir su lógica interna.
+function InvitarPorLink() {
+  const router = useRouter();
+  const [operacion, setOperacion] = useState<ArithmeticProblemType>("suma");
+  const [estado, setEstado] = useState<"idle" | "generando" | "esperando" | "error">("idle");
+  const [link, setLink] = useState<string | null>(null);
+  const [copiado, setCopiado] = useState(false);
+  const inviteIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (estado !== "esperando" || !inviteIdRef.current) return;
+
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`invitacion:${inviteIdRef.current}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "duel_invites",
+          filter: `id=eq.${inviteIdRef.current}`,
+        },
+        (payload) => {
+          const fila = payload.new as { estado: string; duel_id: string | null };
+          if (fila.estado === "usada" && fila.duel_id) {
+            router.push(`/practica?operacion=${operacion}&duelo=${fila.duel_id}`);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [estado]);
+
+  async function generarLink() {
+    setEstado("generando");
+    const supabase = createClient();
+    const { data, error } = await supabase.rpc("crear_invitacion_duelo", { p_operation_type: operacion });
+    if (error || !data) {
+      setEstado("error");
+      return;
+    }
+    inviteIdRef.current = data as string;
+    setLink(`${window.location.origin}/duelo/invitacion/${data}`);
+    setEstado("esperando");
+  }
+
+  async function cancelar() {
+    if (inviteIdRef.current) {
+      const supabase = createClient();
+      await supabase.rpc("cancelar_invitacion_duelo", { p_invite_id: inviteIdRef.current });
+    }
+    inviteIdRef.current = null;
+    setLink(null);
+    setEstado("idle");
+  }
+
+  async function copiar() {
+    if (!link) return;
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
+    } catch {
+      // Clipboard puede fallar por permisos del navegador — el link ya
+      // está visible en pantalla para copiar a mano igual.
+    }
+  }
+
+  if (estado === "esperando" && link) {
+    return (
+      <div className="flex flex-col items-center gap-4 rounded-2xl border-2 border-primario/30 bg-primario/5 px-6 py-10 text-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primario/30 border-t-primario" />
+        <div>
+          <p className="font-display text-lg font-bold text-foreground">Esperando a que se unan…</p>
+          <p className="mt-1 text-xs text-texto-secundario">{NOMBRES_OPERACION[operacion]} · no hace falta que sea amigo</p>
+        </div>
+        <div className="flex w-full max-w-sm items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2">
+          <span className="flex-1 truncate font-mono text-xs text-texto-secundario">{link}</span>
+          <button onClick={copiar} className="shrink-0 rounded-lg bg-primario px-3 py-1.5 text-xs font-semibold text-white">
+            {copiado ? "Copiado ✓" : "Copiar"}
+          </button>
+        </div>
+        <button
+          onClick={cancelar}
+          className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-error/40 hover:text-error"
+        >
+          Cancelar
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {estado === "error" && (
+        <div className="rounded-xl border border-border bg-surface px-4 py-3 text-center text-sm text-texto-secundario">
+          No pudimos generar el link. Probá de nuevo.
+        </div>
+      )}
+      <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
+        <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Elegí la operación</p>
+        <div className="flex flex-wrap gap-2">
+          {ARITHMETIC_PROBLEM_TYPES.map((op) => (
+            <button
+              key={op}
+              onClick={() => setOperacion(op)}
+              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                operacion === op ? "border-primario bg-primario/10 text-primario" : "border-border text-texto-secundario"
+              }`}
+            >
+              {NOMBRES_OPERACION[op]}
+            </button>
+          ))}
+        </div>
+      </div>
+      <button
+        onClick={generarLink}
+        disabled={estado === "generando"}
+        className="w-full rounded-2xl px-6 py-5 font-display text-lg font-semibold text-white shadow-lg disabled:opacity-60"
+        style={{ background: "linear-gradient(120deg, var(--primario), var(--logro))" }}
+      >
+        {estado === "generando" ? "Generando…" : "Generar link de invitación"}
+      </button>
+      <p className="text-center text-xs text-texto-secundario">
+        Compartiselo a quien quieras — no hace falta que sea tu amigo dentro de la app.
+      </p>
     </div>
   );
 }

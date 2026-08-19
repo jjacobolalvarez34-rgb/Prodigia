@@ -33,21 +33,14 @@ export default function OnboardingForm({ userId, next }: Props) {
     setEnviando(true);
     setError(null);
 
+    // El primer nombre es gratis — cambiar_nombre_usuario (0054) solo
+    // cobra Chispas a partir del segundo cambio (display_name ya no null).
     const supabase = createClient();
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ display_name: nombre.trim() })
-      .eq("id", userId);
+    const { error: rpcError } = await supabase.rpc("cambiar_nombre_usuario", { p_nombre: nombre.trim() });
 
     setEnviando(false);
-    if (updateError) {
-      // 23505 = unique_violation — el índice único case-insensitive de
-      // profiles.display_name (ver 0037_nombre_unico.sql) ya lo cubre.
-      setError(
-        updateError.code === "23505"
-          ? "Ese nombre ya lo está usando otra cuenta — probá con otro."
-          : "No se pudo guardar. Probá de nuevo."
-      );
+    if (rpcError) {
+      setError(rpcError.message ?? "No se pudo guardar. Probá de nuevo.");
       return;
     }
     setPaso("interes");

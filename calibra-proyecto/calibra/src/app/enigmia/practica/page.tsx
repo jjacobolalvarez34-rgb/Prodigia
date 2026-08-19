@@ -31,6 +31,7 @@ export default async function EnigmiaPracticaPage({ searchParams }: Props) {
         rondaNumero: fila.ronda_numero as number,
         rondaTotal: fila.ronda_total as number,
         categoria: (fila.sub_tipo as CategoriaEnigmia | null) ?? "memoria",
+        nivel: (fila.nivel as number | null) ?? 5,
       };
     }
   }
@@ -62,6 +63,7 @@ export default async function EnigmiaPracticaPage({ searchParams }: Props) {
         escudosExtra={escudosExtra}
         boostActivo={boostActivo}
         duelo={dueloInfo}
+        miUserId={user.id}
       />
     </>
   );

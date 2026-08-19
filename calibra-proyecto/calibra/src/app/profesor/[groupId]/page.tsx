@@ -94,7 +94,7 @@ export default async function GrupoPage({ params }: Props) {
       <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <Link href="/social?tab=grupos" className="text-xs text-texto-secundario hover:underline">
+            <Link href="/profesor" className="text-xs text-texto-secundario hover:underline">
               ← Grupos
             </Link>
             <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-foreground">{grupo.nombre}</h1>

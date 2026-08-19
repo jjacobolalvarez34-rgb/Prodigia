@@ -6,11 +6,15 @@ const ITEMS_CON_DESCUENTO = [
   "escudo",
   "congelamiento",
   "boost",
-  "color_esmeralda",
-  "color_coral",
-  "color_dorado",
+  "fuente_mono",
+  "fuente_serif",
+  "fuente_manuscrita",
+  "marco_bronce",
   "marco_plata",
   "marco_oro",
+  "marco_platino",
+  "marco_diamante",
+  "marco_prodigio",
 ] as const;
 
 function hashFecha(fecha: string): number {

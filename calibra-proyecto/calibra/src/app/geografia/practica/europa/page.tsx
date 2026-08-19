@@ -32,6 +32,7 @@ export default async function GeografiaPracticaEuropaPage() {
         nivelInicial={nivelRow?.nivel ?? 1}
         escudosExtra={escudosExtra}
         boostActivo={boostActivo}
+        miUserId={user.id}
       />
     </>
   );

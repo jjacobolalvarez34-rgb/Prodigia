@@ -1,9 +1,33 @@
-import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
+import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
+import Header from "@/components/Header";
+import ProfesorClient from "./ProfesorClient";
 
-// Fase T2: Profesor se renombró "Grupos" y ahora vive dentro de
-// /social (pestaña "Grupos"). Se deja este redirect para no romper
-// links viejos guardados o compartidos. Las sub-rutas /profesor/[groupId]
-// siguen existiendo tal cual — solo cambió el punto de entrada.
-export default function ProfesorPage() {
-  redirect("/social?tab=grupos");
+export const metadata: Metadata = {
+  title: "Grupos",
+  description: "Grupos de clase en Prodigia: creá o unite con un código.",
+};
+
+// Fase 3 del rediseño de Social: Grupos vuelve a ser una sección propia
+// (antes vivía como pestaña dentro de /social — con Social reducido a
+// "Feed"/"Amigos", ya no entraba ahí). Vuelve a tener su propio link en
+// el nav (ver Header.tsx).
+export default async function ProfesorPage() {
+  const supabase = await createClient();
+  const { user } = await requireUsuario(supabase, "/profesor");
+  bloquearInvitado(user, "Grupos");
+
+  const { data: grupos } = await supabase
+    .from("groups")
+    .select("id, nombre, codigo_invitacion")
+    .eq("profesor_id", user.id)
+    .order("created_at", { ascending: false });
+
+  return (
+    <>
+      <Header autenticado />
+      <ProfesorClient grupos={grupos ?? []} />
+    </>
+  );
 }

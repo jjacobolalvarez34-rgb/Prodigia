@@ -142,6 +142,23 @@ export async function POST(request: Request) {
   if (mundo && sprintXp > 0) {
     const { data: mundoRows } = await supabase.rpc("registrar_puntos_mundo", { p_world: mundo, p_puntos: sprintXp });
     nivelMundo = (mundoRows as RegistrarPuntosMundoResult[] | null)?.[0] ?? null;
+
+    // Fase 5 del feed: hito de nivel de mundo, no cada nivel — cada 5
+    // (1→5 no cuenta como hito, recién cruzar a un múltiplo de 5 sí).
+    // El "cruzar" (no solo "es múltiplo de 5") importa por si algún día
+    // el nivel pudiera saltar más de uno de una vez.
+    if (
+      nivelMundo &&
+      nivelMundo.nivel_mundo > nivelMundo.nivel_anterior &&
+      Math.floor(nivelMundo.nivel_mundo / 5) > Math.floor(nivelMundo.nivel_anterior / 5)
+    ) {
+      await supabase.from("feed_posts").insert({
+        user_id: user.id,
+        tipo: "nivel_mundo",
+        mundo,
+        nivel_mundo_valor: nivelMundo.nivel_mundo,
+      });
+    }
   }
 
   const logrosNuevos = await verificarLogros(supabase, user.id);

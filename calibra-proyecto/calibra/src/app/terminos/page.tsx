@@ -37,7 +37,7 @@ export default function TerminosPage() {
         <section className="flex flex-col gap-2">
           <h2 className="font-display text-lg font-bold text-foreground">Uso aceptable</h2>
           <p className="text-sm text-texto-secundario">
-            Usá Prodigia para practicar de buena fe. No intentes manipular el sistema de puntos, el
+            Usá Prodigia para practicar de buena fe. No intentes manipular el sistema de Chispas, el
             ranking o los duelos con bots, scripts, o respondiendo automáticamente.
           </p>
         </section>

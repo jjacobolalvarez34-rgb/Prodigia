@@ -31,6 +31,12 @@ export const ARITHMETIC_PROBLEM_TYPES: ArithmeticProblemType[] = [
 // cuenta, compartidos entre todos.
 export type Mundo = "numeria" | "enigmia";
 
+// Fase 5 (mercado): "color del dial" se retiró de la tienda — no
+// generaba sensación de diferencia real jugando de verdad — pero el
+// tipo se mantiene porque el dial de nivel de /practica y /practica/
+// fracciones todavía lee y aplica el color_dial YA comprado por quien
+// lo tenía antes de este cambio (nadie pierde un cosmético que ya
+// pagó); solo se sacó la vidriera para comprar uno nuevo.
 export type ColorDial = "violeta" | "esmeralda" | "coral" | "dorado";
 
 export const COLOR_DIAL_HEX: Record<ColorDial, string> = {
@@ -38,6 +44,18 @@ export const COLOR_DIAL_HEX: Record<ColorDial, string> = {
   esmeralda: "#0E9F6E",
   coral: "#FF8A3D",
   dorado: "#FFC53D",
+};
+
+// Fase 5 (mercado): tipografías comprables para el nombre de usuario —
+// el cosmético nuevo que reemplaza al dial en la vidriera de la tienda.
+// "default" = tipografía normal de la UI.
+export type FuenteNombre = "default" | "mono" | "serif" | "manuscrita";
+
+export const FUENTE_NOMBRE_CLASS: Record<FuenteNombre, string> = {
+  default: "",
+  mono: "font-mono",
+  serif: "font-[family-name:var(--font-playfair)]",
+  manuscrita: "font-[family-name:var(--font-caveat)]",
 };
 
 export interface Profile {
@@ -55,8 +73,9 @@ export interface Profile {
   escudos_extra_pendientes: number;
   congelamientos_disponibles: number;
   boost_multiplicador_pendiente: number; // 1 = sin boost activo, ej. 1.5 = próxima partida con +50% Puntos
-  color_dial: ColorDial;
-  colores_dial_desbloqueados: ColorDial[];
+  fuente_nombre: FuenteNombre;
+  fuentes_desbloqueadas: FuenteNombre[];
+  ocultar_doble_o_nada: boolean;
   elo_rating: number;
   created_at: string;
   avatar_url: string | null; // Fase P3, Supabase Storage (bucket "avatares")
@@ -72,7 +91,7 @@ export interface PerfilPublico {
   display_name: string | null;
   avatar_url: string | null;
   marco_perfil: string;
-  color_dial: ColorDial;
+  fuente_nombre: FuenteNombre;
   elo_rating: number;
   puntos_total: number;
   created_at: string;
@@ -234,6 +253,23 @@ export function rangoDeElo(elo: number): RangoElo {
 export function rangoDeSlug(slug: string): RangoElo | undefined {
   return RANGOS_ELO.find((r) => r.slug === slug);
 }
+
+// Fase 7 (mercado): "Marco de perfil" pasó de 2 opciones fijas
+// (plata/oro con hex propio) a los 6 rangos reales de Rankeds — mismos
+// slugs y mismo hex que RANGOS_ELO arriba, para no inventar una paleta
+// nueva. Clases Tailwind literales (no generadas por interpolación:
+// las arbitrary values necesitan aparecer tal cual en el código fuente
+// para que el JIT las genere) — si RANGOS_ELO cambia de color algún
+// día, hay que actualizar esto a mano también.
+export const ESTILO_MARCO_PERFIL: Record<string, string> = {
+  ninguno: "border-border",
+  bronce: "border-[#B08D57] shadow-[0_0_0_3px_rgba(176,141,87,0.25)]",
+  plata: "border-[#B8C4D9] shadow-[0_0_0_3px_rgba(184,196,217,0.25)]",
+  oro: "border-[#E8B34D] shadow-[0_0_0_3px_rgba(232,179,77,0.25)]",
+  platino: "border-[#5FBFA8] shadow-[0_0_0_3px_rgba(95,191,168,0.25)]",
+  diamante: "border-[#5DC8F5] shadow-[0_0_0_3px_rgba(93,200,245,0.25)]",
+  prodigio: "border-[#FFC53D] shadow-[0_0_0_3px_rgba(255,197,61,0.35)]",
+};
 
 // ---------- Rankeds: títulos (Fase 2) ----------
 // Esquema pensado para más de un origen a futuro (hoy el único origen

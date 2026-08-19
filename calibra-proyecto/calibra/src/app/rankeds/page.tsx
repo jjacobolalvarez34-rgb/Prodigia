@@ -19,11 +19,14 @@ export default async function RankedsPage({ searchParams }: Props) {
   const { user, profile } = await requireUsuario(supabase, "/rankeds");
   bloquearInvitado(user, "Rankeds");
 
-  const [{ data: historial }, { data: pendientes }, { data: miTituloNombre }] = await Promise.all([
+  const [{ data: historial }, { data: pendientes }, { data: miTituloNombre }, { data: statsCasual }] = await Promise.all([
     supabase.rpc("mi_historial_duelos", { p_limite: 20 }),
     supabase.rpc("mis_duelos_pendientes"),
     supabase.rpc("titulo_nombre_de", { p_user_id: user.id }),
+    supabase.rpc("mis_stats_casual"),
   ]);
+
+  const filaStatsCasual = (statsCasual as Array<{ victorias: number; derrotas: number; empates: number }> | null)?.[0];
 
   return (
     <>
@@ -34,7 +37,8 @@ export default async function RankedsPage({ searchParams }: Props) {
         miUserId={user.id}
         historialInicial={historial ?? []}
         duelosPendientesIniciales={pendientes ?? []}
-        tabInicial={tab === "buscar" ? "buscar" : tab === "invitar" ? "invitar" : "competitivo"}
+        statsCasualIniciales={filaStatsCasual ?? { victorias: 0, derrotas: 0, empates: 0 }}
+        tabInicial={tab === "buscar" ? "buscar" : "competitivo"}
       />
     </>
   );

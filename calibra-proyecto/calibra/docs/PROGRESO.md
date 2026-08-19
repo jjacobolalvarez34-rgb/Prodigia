@@ -1710,3 +1710,531 @@ ahora sí son idempotentes — la lógica de cada
 a mano, no ejecutada. La confirmación real depende de que las corras
 vos — avisame qué te tira.
 
+# Octava tanda (2026-08-18): pulido de Ranking y Rankeds, con capturas de producción
+
+## 1 — Ranking (/leaderboard): buscador que desaparecía sin filas debajo del top 3
+
+Auditando `Podio.tsx` y `ListaRanking.tsx` contra el código actual: las
+esquinas redondeadas y el `GlareHover` del podio YA estaban aplicados
+(tanda de leaderboard anterior) — no encontré ningún CSS pisándolos ni
+nada que sugiera un build viejo. Lo que SÍ era un bug real: `ListaRanking`
+hacía `if (resto.length === 0) return null;` ANTES de dibujar el
+buscador — con 3 usuarios totales (o menos) en el ranking de la semana,
+`resto` queda vacío y el bloque entero (título + botón de lupa) se
+esfuma, exactamente lo que se ve en la captura. Fix: el `return null`
+se saca, el buscador y su título ahora se dibujan siempre; solo el
+contenido de abajo cambia entre "todavía no hay nadie más" (lista
+vacía) y "nadie con ese nombre" (búsqueda sin resultados).
+
+**Lo que no pude confirmar desde acá**: si la build EN PRODUCCIÓN ya
+tiene este código o no — no tengo acceso a la app desplegada ni al
+historial de git en este entorno (sin `git` disponible en la sesión).
+El código fuente de este repo, a partir de ahora, es correcto; si en
+producción se sigue viendo el look viejo después de este cambio, es un
+tema de deploy/caché de build, no de este código.
+
+## 2 — "Mi competitivo": tarjetas de reto con más tratamiento visual + Rechazar
+
+Cada tarjeta de "Te retaron a..." ahora va envuelta en `GlareHover` con
+el color del mundo del duelo (mismo `COLOR_MUNDO` que ya usa
+`Header.tsx`/`FondoCursorMundo.tsx`) más un borde izquierdo de acento
+del mismo color. Botón "Rechazar" nuevo al lado de "Jugar" — llama a una
+función SQL nueva, `rechazar_duelo(p_duel_id)`
+(`0047_rechazar_duelo.sql`): borra el duelo (si es una ronda de una
+serie "todas las ciudades", borra las 3 juntas) — como `duel_results`
+tiene `on delete cascade` sobre `duel_id`, desaparece de verdad para los
+dos jugadores, no queda colgado para ninguno de los dos lados.
+
+## 3 — Numeria: la operación deja de elegirse a mano
+
+Se sacó la sección "Elegí la operación" de Buscar partida para Numeria
+— ahora dice "Operación según tu rango", igual que Geografía y Enigmia.
+La operación se sortea del lado del servidor al crear el duelo, mismo
+mecanismo que ya usaban el continente y la categoría
+(`0046_numeria_operacion_aleatoria.sql`, reescribe
+`buscar_rival_duelo`): ya no exige `p_operation_type`, ya no empareja la
+cola por operación, y en Numeria simple sortea una de las 4 con
+`random()` al insertar el duelo (la rama "todas las ciudades" ya lo
+hacía así, no se tocó). `hrefDuelo` y `PracticaClient`/`practica/page.tsx`
+no necesitaron cambios: la operación real siempre se lee del duelo en
+la base (`obtener_duelo`), nunca de la URL — el query param
+`?operacion=` queda como estaba, solo para el flujo de reto directo a
+un amigo (Amigos → Retar), donde sí se sigue eligiendo a mano.
+
+## 4 — Color dinámico por ciudad + pulido estético de Buscar partida
+
+`BuscarPartida` calcula `colorMundo` (null en "Todas las ciudades", el
+hex de la ciudad en el resto) y lo usa en: el botón "Buscar partida"
+(reusa `Boton` con `colorHex`+`destacado`, el mismo patrón que ya usan
+Geografía/Enigmia/Numeria para su CTA de "Empezar" — sin reinventar
+nada), el estado activo de las tarjetas "Elegí la ciudad" (fondo/borde/
+texto), el color del spinner de "Buscando rival…", y los `glareColor`
+de `GlareHover` en cada tarjeta de ciudad. El panel de "Buscando
+rival…" ahora va envuelto en `BorderGlow` animado (mismo efecto que ya
+usa `Boton` para sus CTAs destacados). En "Todas las ciudades" todo
+vuelve al degradé genérico de marca — sin cambios ahí.
+
+## 5 — "Invitar por link" se mudó de Rankeds a Amigos
+
+`InvitarPorLink` salió tal cual (sin reescribir su lógica) de
+`RankedsClient.tsx` y entró a `AmigosClient.tsx`, en una sección nueva
+arriba del buscador de usuarios. Rankeds quedó con 2 pestañas ("Mi
+competitivo", "Buscar partida"), `rankeds/page.tsx` ya no acepta
+`?tab=invitar`. De paso corregí un comentario y la etiqueta de bloqueo
+de invitados en `/duelo/invitacion/[inviteId]/page.tsx` (decía
+"Rankeds", ahora dice "Amigos", que es de donde sale el link ahora).
+
+## 6 — Avatar que no aparecía en la home
+
+Diagnóstico: NO es un problema de fetch fallido ni de render roto — es
+que `src/app/page.tsx` nunca pedía ni dibujaba el avatar. `profile` ya
+viene con `avatar_url` (el guard hace `select("*")`), pero el saludo
+("Buenas noches, {nombre}") nunca usaba ese campo ni había un
+`<Avatar>` en toda la página. Fix: un `<Avatar url={profile.avatar_url}
+nombre={profile.display_name} size={48} />` al lado del saludo.
+
+**Confirmado que NO es un problema general**: revisé perfil propio
+(`/perfil`, vía `SubirAvatar`), perfil público (`/perfil/[userId]`),
+`Podio.tsx`/`ListaRanking.tsx` del ranking y `SalaDuelo.tsx` — todos ya
+usan el componente `Avatar` con la URL real correctamente, así que el
+pipeline de subida/storage/render funciona bien; el bug estaba aislado
+100% a la home. Un caso aparte, que dejé SIN TOCAR por estar fuera de lo
+pedido: el botón de cuenta en la navbar (`ProfileMenu.tsx`) muestra un
+ícono genérico, no el avatar — pero es un botón que abre un menú, nunca
+tuvo la intención de mostrar la foto, así que no lo cuento como el mismo
+bug (es una mejora posible a futuro, no una regresión).
+
+## Verificación de esta tanda
+
+`tsc --noEmit` limpio, `eslint` limpio en todos los archivos tocados,
+`npx next build` — **confirmado: compiló limpio, exit code 0, 70 rutas**.
+
+# Novena tanda (2026-08-18): corrección de rangos + Fase 6 (prioridad) + 2 bugs investigados
+
+Orden real de ejecución: primero Fase 6 (el usuario la marcó como
+prioridad alta, por sobre trabajo nuevo), después la corrección de
+rangos donde era viable hacerla hoy, después los dos bugs.
+
+## Corrección — dificultad por rango en Numeria/Enigmia
+
+El pedido original (tanda anterior) se había malinterpretado como
+"restringir Numeria a 4 operaciones" — lo real es que TODO el contenido
+de cada mundo esté disponible, graduado por rango. Antes de tocar
+código le pregunté al usuario cómo secuenciar esto, porque el mapeo de
+Numeria pedido (Bronce=Suma/Resta, Plata=+Mult/Div, Oro=+Fracciones,
+Platino=+Decimales, Diamante=+Potencias, Prodigio=+Álgebra) implica que
+fracciones/decimales/potencias/álgebra puedan jugarse EN UN DUELO — hoy
+son rutas 100% de práctica solitaria (`/practica/fracciones`,
+`/decimales`, `/potencias`, `/algebra`: confirmado con grep, cero
+referencias a `duelo`/`semilla`/`rivalRespuestas` en esas carpetas).
+Construir esa integración (generador con semilla compartida,
+sincronización, ELO, resultado) para 4 temas nuevos es un desarrollo
+grande — el usuario eligió explícitamente "Fase 6 primero, Numeria
+completo después": **el mapeo de Numeria queda definido pero SIN
+implementar** — Numeria en Rankeds sigue como quedó ayer (4 operaciones
+sorteadas al azar, sin gating de tema todavía). Se retoma en una tanda
+aparte.
+
+**Enigmia sí se implementó completo hoy**, porque las 4 categorías
+(memoria/patrones/deducción/computacional) ya estaban 100% integradas a
+duelos desde la Fase 4 — no hacía falta construir nada nuevo, solo
+corregir el mapeo. Bug real encontrado en el mapeo de ayer:
+`categoria_aleatoria_por_rango` usaba 3 umbrales de ELO sueltos
+(900/1100/1500) que no coincidían con los 6 rangos reales de
+`rango_de_elo` (bronce <900, plata 900-1099, oro 1100-1299, platino
+1300-1499, diamante 1500-1699, prodigio ≥1700), y solo gateaba QUÉ
+categoría, nunca CUÁN compleja — dos rivales de rango altísimo podían
+terminar con secuencias de Memoria cortitas si su `logic_skill_levels`
+personal (una progresión de práctica solitaria totalmente aparte del
+ELO) todavía era bajo. Fix (`0048_enigmia_complejidad_por_rango.sql`):
+`categoria_aleatoria_por_rango` reescrita con los 6 rangos reales
+(Bronce=solo Patrones, Plata=+Memoria, Oro=mismas 2 pero con
+`nivel_enigmia_por_rango` más alto, Platino=+Deducción, Diamante y
+Prodigio=las 4); función nueva `nivel_enigmia_por_rango` (1-10, el
+mismo parámetro `dificultad` que ya usan los generadores en
+`src/lib/enigmia/generadores.ts` — más alto = secuencias más largas en
+Memoria, progresiones más difíciles en Patrones, más pasos en
+Computacional) que ahora se decide UNA vez al crear el duelo (columna
+nueva `duels.nivel_enigmia`, mismo patrón que `nivel_numeria`) y
+**reemplaza** el nivel personal durante todo el duelo —
+`EnigmiaSprintRunner.tsx` ganó un prop `nivelForzado` que, si viene
+seteado, bloquea que un acierto en pleno duelo recalibre la dificultad
+hacia el nivel personal (mismo criterio de disciplina que ya tenía
+Numeria con `nivel_numeria`, que Enigmia no tenía todavía).
+
+## Prioridad alta — Fase 6: progreso del rival EN VIVO
+
+Retomada y completada para los 3 mundos con duelo (Numeria, Geografía,
+Enigmia). Reusa el mismo canal de Supabase Realtime que `SalaDuelo.tsx`
+ya abre para la sala de espera (`duelo:<id>`) — ahora en Broadcast puro
+durante la partida en sí, en un hook nuevo y compartido
+(`src/lib/duelos/useProgresoEnVivo.ts`): cada respuesta emite
+`{ respondidos, correctos, racha }` al canal, y si el rival está
+jugando su parte al mismo tiempo, su progreso llega en vivo y se
+muestra con un componente nuevo también compartido
+(`ProgresoRivalEnVivo.tsx`) — puntito pulsante + dots de progreso +
+racha, deliberadamente chico, nunca tapa la tarjeta del problema. Si el
+rival no está conectado en simultáneo, no llega nada y no se muestra
+nada — no hace falta un estado especial, el resto del duelo ya
+funciona sin presencia simultánea.
+
+Distinto del "fantasma" que ya tenía Numeria (que reproduce respuestas
+YA guardadas de un rival que terminó ANTES) — son complementarios, y
+`SprintRunner.tsx` los mantiene mutuamente excluyentes (si hay
+fantasma, no se abre el canal en vivo: no hace falta, ya se sabe cómo
+le fue al rival). Geografía y Enigmia no tenían fantasma (decisión de
+alcance de la Fase 4 original: sin sala de espera sincronizada), así
+que ahí el progreso en vivo es la ÚNICA señal del rival durante la
+partida — quedó completa, no parcial.
+
+## Bug investigado — ¿Geografía repite siempre lo mismo?
+
+**Diagnóstico con números reales**, no una corrección a ciegas.
+Primero: el generador (`elegirPaisAleatorio` en
+`src/lib/practica/geografia.ts`) usa `Math.random()` genuino, sin
+semilla, sin iterar un array sin mezclar — no hay bug de aleatoriedad
+en el algoritmo en sí. Lo que SÍ es real es que el pool elegible es
+chico para rangos/niveles bajos, y con un pool chico la aleatoriedad
+verdadera igual se SIENTE repetitiva:
+
+- América tiene 28 países. Para nivel 1 (dificultad del jugador, banda
+  ±3 del generador), el pool elegible es de solo **12 países** (los de
+  dificultad 1-4: EEUU, Canadá, Brasil, Argentina, México, Chile,
+  Colombia, Perú, Venezuela, Ecuador, Bolivia, Cuba).
+- Europa (26 países): para nivel 1, pool de **11 países**.
+- Además, `continente_aleatorio_por_rango` (matchmaking de Rankeds) solo
+  desbloquea Europa a partir de ELO promedio ≥1100 — por debajo de eso
+  (Bronce entero y la mayor parte de Plata, arrancando en 800 ELO)
+  **todos los duelos de Geografía son siempre en América**, sea cual
+  sea el nivel.
+
+Conclusión: es el pool chico, no un bug de aleatoriedad — un jugador
+nuevo, en duelos, ve SIEMPRE América, y dentro de América solo ~12 de
+28 países hasta que su nivel sube. Con verdadera aleatoriedad sobre 12
+opciones, los mismos 6-7 países "famosos" reaparecen seguido, lo cual
+se percibe como "sale siempre lo mismo" aunque técnicamente no lo sea.
+**No apliqué ningún fix** — ensanchar la banda o el pool es una
+decisión de balance de juego (cuánto más difícil se vuelve más rápido),
+no una corrección de bug, y el pedido explícito era confirmar con
+números antes de tocar nada a ciegas.
+
+## Bug investigado y arreglado — animación de error trabada en mobile
+
+**Causa real, confirmada por lectura de código** (sin poder correr un
+profiler de dispositivo real en este entorno — no hay navegador ni
+emulador disponible acá, así que esto queda pendiente de que lo
+confirmes vos en un celular real después de este fix). `RevelarRespuesta.tsx`
+(el "tu respuesta X → la respuesta era Y" que aparece en cada error) usa
+`PixelTransition` con `gridSize={9}` — 81 `<div>` creados a mano vía
+`document.createElement` en un doble for, más dos tandas de tweens de
+GSAP en stagger sobre esos 81 nodos, CADA VEZ que el componente se
+monta. En Numeria (`SprintRunner.tsx`) se monta una sola vez y después
+solo cambia de visible/oculto — ahí no hay problema. Pero en
+`TarjetaSprint.tsx` (Geografía, Enigmia, Fracciones, Decimales,
+Potencias, Álgebra) `RevelarRespuesta` vive DENTRO de un
+`motion.div key={cardKey}` que cambia en cada pregunta nueva — así que
+en cada error se REMONTA de cero, reconstruyendo los 81 píxeles y
+relanzando las dos tandas de GSAP, siempre. Eso explica exactamente lo
+reportado: se repite en cada error, no es permanente (se recupera sola
+cuando termina la animación), y es mucho más notorio en hardware de
+gama media que en PC.
+
+Fix, sin sacar el efecto (tal como se pidió): `RevelarRespuesta.tsx`
+detecta touch/puntero grueso (mismo criterio que ya usa
+`PixelTransition.tsx` internamente) y en esos casos usa `gridSize={4}`
+(16 píxeles en vez de 81 — 80% menos nodos y tweens) con
+`animationStepDuration` más corto (0.22s en vez de 0.35s). Sigue siendo
+el mismo efecto visual, solo más liviano donde más pesa.
+
+# Décima tanda (2026-08-19): rediseño de Ranking/Social + duelos casuales + feed diversificado + problemas personalizados
+
+Tanda enorme, 6 fases en orden. Migraciones `0049` a `0053`.
+
+## Fase 1 — Ranking sale de Social, filtro Global/Amigos, pulido visual
+
+`RankingRankeds.tsx` (la tarjeta chica dentro de Amigos) se borró
+entera — su funcionalidad ("Experiencia total / Por mundo") se mudó a
+`/leaderboard` como la experiencia completa, sumando un segundo eje
+"Global / Amigos". Una sola función SQL nueva,
+`ranking_semanal_filtrado(p_mundo, p_solo_amigos)`, cubre las 4
+combinaciones. `LeaderboardClient.tsx` es nuevo (page.tsx ahora solo
+hace la carga inicial, los cambios de filtro son 100% client-side).
+Pulido: `Podio.tsx` ahora tiene `GlareHover` en los 3 puestos (antes
+solo el 1°), con el color siguiendo al filtro activo (dorado en
+"Experiencia total", el color del mundo en "Por mundo"); `ListaRanking.tsx`
+recibe el mismo color para las posiciones top-10 y el Exp de cada fila.
+
+## Fase 2 — Duelos Casuales
+
+Selector "Clasificatoria / Casual" arriba de "Buscar partida". Mismo
+matchmaking y mismo contenido graduado por rango — la diferencia real
+es una columna nueva `duels.clasificatorio` (default `true`, así que
+CUALQUIER duelo existente — matchmaking, reto a amigo, invitación por
+link — sigue aplicando ELO exactamente igual que antes; nada rompe
+retroactivamente). Casual no ofrece "Todas las ciudades" (ni en el
+cliente ni en el servidor — `buscar_rival_duelo` rechaza esa combinación
+explícitamente): siempre duelo simple. La cola de matchmaking
+(`duel_queue`) también gana `clasificatorio`, para que Clasificatoria y
+Casual nunca se emparejen entre sí. "Mi competitivo" muestra una línea
+chica aparte ("Casual: 3V - 1D · no afecta tu rango"), separada
+visualmente del bloque de ELO — nunca genera rango propio, tal como se
+pidió.
+
+## Fase 3 — Social rediseñado tipo Instagram
+
+Reestructuración grande. `/social` pasa a tener 2 pestañas: Feed
+(default) y Amigos — **decisión de alcance**: como el pedido decía
+explícitamente "dos pestañas", Grupos (que vivía como una tercera
+pestaña, ex-Profesor) volvió a ser una sección propia con su link en el
+nav (`/profesor`, restaurado como página real — antes redirigía a
+`/social?tab=grupos`).
+
+Feed: sub-pestañas "Para ti"/"Siguiendo" arriba, barra lateral fija
+(`sticky`, no se mueve al scrollear) a la derecha con Agregar amigos
+(panel de búsqueda), Solicitudes pendientes (con contador), Retos
+pendientes (con contador) y la lista de amigos con "Retar" directo. La
+pestaña Amigos mantiene la gestión completa de siempre. Ninguna lógica
+duplicada: `useAmigos()` (hook nuevo, `social/useAmigos.ts`) se llama
+UNA sola vez en `SocialClient.tsx` y reparte el mismo estado a las dos
+—aceptar una solicitud desde la barra lateral se refleja al toque si
+cambiás a la pestaña Amigos, no hay dos copias que puedan
+desincronizarse. Se sacó la columna vieja de "Gente a seguir" (un
+"seguir" unilateral aparte del sistema de amistad real) porque el pedido
+nuevo de sidebar no la incluye y quedaba redundante con "Agregar
+amigos" — `/api/social/seguir` se borró por quedar sin ningún caller.
+
+## Fase 4 — Invitaciones de duelo a 60 segundos
+
+Hook nuevo compartido, `social/useRetosPendientes.ts` — cuenta
+regresiva visible (actualiza cada segundo) y auto-rechazo al llegar a
+0, usado tanto en la barra lateral de Social como en "Mi competitivo"
+de Rankeds (mismo componente `DuelosPendientes`, ahora sin su propio
+estado duplicado). El cierre REAL no depende de que alguien tenga la
+pantalla abierta a tiempo: `mis_duelos_pendientes()` (servidor) borra
+de oficio, cada vez que se consulta, cualquier invitación propia ya
+vencida — no hay cron job en este proyecto, así que este es el
+mecanismo de limpieza "lazy" que garantiza que nunca quede colgada de
+verdad. Alcance deliberado: solo duelos `modo='simple'` — las rondas de
+una serie "todas las ciudades" no cuentan como "una invitación
+ignorable", son un duelo ya en curso.
+
+## Fase 5 — Feed diversificado (6 tipos de tarjeta)
+
+De los 6 pedidos, 2 ya existían (desafío, logro) y 1 más resultó estar
+YA cubierto sin código nuevo: el hito de racha 7/30/100 días son
+exactamente los achievements `racha-7/30/100` que ya existían desde
+antes, y desbloquear un achievement YA generaba su propia tarjeta de
+feed. Se construyeron los 3 que faltaban de verdad:
+- **Resultado de duelo** ("Juan venció a María en Numeria 🏆") — se
+  genera dentro de `registrar_resultado_duelo`/`finalizar_serie_si_corresponde`
+  (SQL, no TypeScript) porque ahí es donde se sabe con certeza que el
+  duelo se acaba de resolver; nunca para empates; para duelos casuales
+  Y clasificatorios por igual.
+- **Subida de rango** ("Juan subió a Diamante 💎") — mismo lugar que ya
+  desbloqueaba el título de rango, con el color/degradé real de
+  `RANGOS_ELO` (nada inventado de nuevo).
+- **Nivel de mundo** ("Juan alcanzó nivel 10 en Numeria 🎯") — solo en
+  hitos cada 5 niveles (no cada nivel), calculado en
+  `/api/practica/finish`.
+
+Todo denormalizado a propósito en `feed_posts` (texto plano, no ids que
+requerirían abrir `duels`, cuya RLS solo deja leer a los participantes)
+— es la única forma de que el feed, de lectura abierta entre
+autenticados, pueda mostrar esta info.
+
+## Fase 6 — Problemas personalizados (única excepción a "sin texto libre")
+
+Desbloqueo: nivel 10 en al menos un mundo (`world_progress` — con la
+curva no lineal existente, son ~4500 puntos acumulados en ese mundo
+específico, semanas de juego real, no un par de partidas). **Las 3
+redes de seguridad, confirmadas activas, no solo el feature en sí:**
+
+1. **Filtro de palabras** — `contiene_termino_prohibido()`, function SQL
+   nueva, chequea pregunta Y respuesta contra una lista de términos
+   prohibidos antes de guardar nada; si matchea, la función completa
+   (`crear_problema_personalizado`) aborta con excepción, no se crea ni
+   el problema ni el post.
+2. **Reportable** — `reportar_post()`, hermana de la `reportar_usuario()`
+   ya existente (Fase Q3), mismo mecanismo (tabla `reportes_usuario`,
+   sin moderación automática, revisión manual). `ReportarBoton.tsx` se
+   generalizó (antes solo aceptaba `userId`, ahora acepta `userId` O
+   `postId`) en vez de duplicar el componente — aparece en la tarjeta
+   del problema personalizado.
+3. **Límite de frecuencia** — máximo 1 por día por usuario, chequeado
+   DENTRO de la misma función atómica que crea el problema (no en dos
+   pasos separados desde TypeScript) para que dos clics rápidos no se
+   cuelen los dos antes de que el primero quede contado.
+
+Responder es inline (correcto/incorrecto), sin integrarlo a duelos ni
+ELO — la respuesta correcta nunca viaja al cliente en el feed en sí,
+solo se resuelve server-side cuando alguien arriesga una.
+
+## Verificación de esta tanda
+
+`tsc --noEmit` limpio. `eslint src` — los mismos 4 errores preexistentes
+de siempre en `DiagnosticoClient.tsx` (ninguno nuevo). `npx next build`
+— **confirmado: compiló limpio, exit code 0, 71 rutas** (70 anteriores,
+-1 por `/api/social/seguir` borrada, +2 por las 2 rutas nuevas de
+problemas personalizados).
+
+Las migraciones nuevas (`0049` a `0053`) no se corrieron contra una base
+real desde acá — la lógica está revisada a mano, no ejecutada. Correlas
+en orden después de `0048`.
+
+---
+
+# Décima primera tanda (2026-08-19): rediseño de la Tienda + catálogo de mundos
+
+Nueve fases, en el orden pedido. Migración única `0054_tienda_rediseno.sql`
+(todas tocan `comprar_item_tienda` y/o `profiles`, mejor consistentes entre
+sí que repartidas).
+
+## Fase 3 primero en la práctica — diagnóstico del bug de "Doble o nada"
+
+Diagnosticado antes de tocar el resto, como pediste. **Causa real, no
+cosmética**: `apostar_doble_o_nada` (0025) exigía `count(*) from
+public.attempts >= 20` antes de dejar apostar. Pero `attempts` SOLO
+recibe filas de Numeria/Fracciones/Decimales/Potencias/Álgebra/Geografía
+— Enigmia escribe en una tabla aparte (`logic_attempts`, 0015) y **ningún
+duelo, casual ni clasificatorio, toca `attempts` nunca** (van directo a
+`duels`/`duel_results` vía `registrar_resultado_duelo`). Una cuenta que
+jugó activamente pero sobre todo duelos —que fue gran parte de esta
+sesión— podía tener 0 filas elegibles y quedar bloqueada para siempre,
+con el error renderizado hasta abajo de una pantalla larga: en la
+práctica, "aprieto apostar y no pasa nada". Confirmé el diagnóstico
+leyendo los 3 flujos de escritura (`/api/attempts`, `/api/logic-attempts`,
+`/api/duelos/resultado`) antes de tocar nada, no fue un arreglo a ciegas.
+
+**Fix**: la elegibilidad y la base de precisión histórica ahora suman
+`attempts` + `logic_attempts` + `duel_results` (cada duelo pesa como ~10
+problemas). De paso encontré que `apostar_doble_o_nada` **nunca tuvo
+tope de monto** server-side — el array `[25, 50, 100]` del cliente
+era solo UI, nada lo hacía cumplir — así que el tope de la Fase 4 cierra
+también ese hueco real, no solo cumple el pedido de "ocultarlo mejor".
+
+## Fase 2 — precios revisados
+
+Calculé cuánto rinde una partida típica a partir de la fórmula real
+(`src/lib/practica/formulas.ts`: 10 base × multiplicador de nivel
+1.0x-2.35x × bonus de velocidad 1.0x-1.5x, 10 problemas por sprint) para
+un jugador de calibración media (~nivel 3-5, ~70% de aciertos, ritmo
+moderado): **≈100-130 Chispas por partida completa**, documentado con el
+cálculo completo en el propio `0054_tienda_rediseno.sql`. Precios nuevos
+(antes → ahora): escudo 80→40, congelar racha 60→35, boost 100→60 (todos
+bajo media partida); fuentes 50/90/150 y marcos 50/80/120/170/230/300
+(el más caro, Prodigio, ronda 2.5 partidas — un techo, no un muro).
+
+## Fase 4 — trastienda + salvaguardas
+
+"Doble o nada" ya no está en la pantalla principal — hay que tocar
+"🚪 Entrar a la trastienda…" para verla (`Trastienda` en
+`TiendaClient.tsx`). Agregado: tope de apuesta 200 Chispas (server-side
+real, ver Fase 3), texto fijo "esto nunca usa dinero real — es solo con
+tus Chispas del juego", y un toggle nuevo en Ajustes
+(`profiles.ocultar_doble_o_nada`) que saca la sección por completo si el
+usuario prefiere no verla.
+
+## Fase 1 — estética de mercado antiguo
+
+Reemplacé las tarjetas planas por una ambientación de bazar en
+`TiendaClient.tsx`: fondo cálido (degradé terracota/madera), cada
+categoría es un "estante" con un toldo colgante recortado en zigzag
+(`clip-path` con franjas de color) sobre una repisa de madera, ítems como
+fichas sobre el estante (`GlareHover`, ya integrado) en vez de tarjetas
+sueltas, "Oferta del día" con tratamiento de vendedor destacado
+(`BorderGlow` + 🏷️, no una barra de texto), y `ScrollFloat` en los
+precios. **Decisión documentada**: ningún ítem actual de la tienda
+pertenece a un mundo específico (escudo/congelamiento/boost aplican a
+cualquier mundo) — el pedido de "tintar por mundo si aplica" literalmente
+no aplica a ningún ítem hoy, así que ninguna sección lleva tinte de
+mundo; en cambio, "Herrero de marcos" usa los colores reales de cada
+rango (ver Fase 7) y la trastienda lleva un tinte rojizo de "riesgo".
+
+## Fase 5 — fuentes en vez de color del dial
+
+"Color del dial" no generaba sensación de diferencia real jugando de
+verdad (tu diagnóstico, no lo cuestioné) — sacado de la tienda. **No
+borré la columna ni el mecanismo**: quien ya lo había comprado antes de
+hoy lo sigue viendo exactamente igual en `/practica`, porque no vale la
+pena arrancarle un cosmético ya pagado a nadie — solo se cerró la
+vidriera para comprar uno nuevo. En su lugar, "Fuentes" (3 tipografías:
+Monoespaciada, Elegante con Playfair Display, Manuscrita con Caveat,
+ambas nuevas vía `next/font/google`) para el nombre de usuario. Nuevo
+componente compartido `NombreConFuente.tsx` — un solo lugar que traduce
+`fuente_nombre` a la clase real, usado en perfil (propio y público),
+podio, lista de ranking y las 6 tarjetas del feed que muestran autor.
+**Decisión de alcance**: no lo llevé a los nombres dentro de un duelo en
+curso — hubiera requerido tocar varias funciones de matchmaking
+(`buscar_rival_duelo`, `obtener_duelo`, historial) para un cosmético de
+texto, desproporcionado frente al resto de la fase; perfil/ranking/feed
+son las superficies que pediste explícitamente y son las de mayor
+visibilidad real.
+
+## Fase 6 — cambiar de nombre cuesta Chispas, nunca Experiencia
+
+No existía ningún costo por cambiar de nombre — era gratis, directo
+(`NombreEditable.tsx` escribía `display_name` sin pasar por ninguna
+función). Ahora `cambiar_nombre_usuario` (security definer, 0054) cobra
+**100 Chispas** — nunca Experiencia, respetando la separación de monedas
+ya establecida — excepto la primera vez (onboarding, cuando
+`display_name` todavía es null: sigue siendo gratis, la misma función
+resuelve los dos casos). `display_name` se sacó del GRANT de columnas
+editables directo, así que ya no hay forma de saltear el cobro escribiendo
+la columna a mano desde la consola del navegador.
+
+## Fase 7 — 6 marcos de perfil, mismos colores de Rankeds
+
+De 2 opciones (plata/oro, con hex propio e inconsistente: el "oro" viejo
+en realidad usaba el hex de Prodigio) a 6, uno por rango real
+(`RANGOS_ELO` de `src/types/database.ts` — cero colores nuevos
+inventados). Nuevo `ESTILO_MARCO_PERFIL` centralizado en `database.ts`
+usado por perfil propio, perfil público y la vidriera de la tienda —
+antes estaba duplicado a mano en 2 archivos con colores ligeramente
+distintos entre sí; ahora es un solo lugar.
+
+## Fase 8 — catálogo de mundos: Quimia reemplaza a Verbalia y Lexia
+
+Sacadas las 2 tarjetas placeholder. Agregada "Quimia" (`IconQuimica`
+nuevo, un matraz simple) con el mismo tratamiento "Próximamente" que ya
+tenían las anteriores. De paso saqué una referencia suelta a "Lexia" que
+había quedado en el dropdown de mundos de la navbar (`MundoSelector.tsx`)
+y no en la home — inconsistente con el catálogo real, ahora alineado.
+
+## Fase 9 — "Puntos" → "Chispas" en toda la UI
+
+Barrido completo de copy visible: tienda, perfil (propio y público),
+resumen de partida, ranking, feed, reto diario, términos, privacidad, y
+los avisos de "Boost activo" en los 7 motores de práctica — 19 archivos
+`.tsx` en total. **Deliberadamente NO toqué**: nombres de columnas
+(`puntos_total` sigue así en la base — riesgoso de renombrar con ~15
+funciones SQL dependiendo del nombre exacto) ni nombres de variables/
+identificadores en el código (`setPuntos`, `puntosBonus`, etc.) — la regla
+que seguí fue "texto que ve el usuario cambia, identificadores de código
+no", exactamente como me habías marcado antes en la sesión para otros
+renombres. "Experiencia" no se tocó en ningún lado, como pediste
+explícitamente.
+
+**Encontré y corregí un error propio a mitad de esta fase**: un primer
+intento de hacer el barrido con `Get-Content -replace` de PowerShell
+corrompió la codificación de `src/app/page.tsx` (acentos rotos) y, más
+grave, el `-replace` de PowerShell es case-insensitive por default —
+renombró sin querer el identificador real `puntos_total` a
+`Chispas_total` en ese archivo, lo que hubiera roto el build. Lo noté
+por el aviso de "archivo cambió en disco" antes de seguir, reescribí el
+archivo entero a mano con la codificación y los identificadores
+correctos, y no volví a usar reemplazo por regex de PowerShell sobre
+código para el resto de esta tanda — todo lo demás fue `Edit` puntual,
+exacto, sin este riesgo.
+
+## Verificación de esta tanda
+
+`npx eslint src` — los mismos 4 errores preexistentes de siempre en
+`DiagnosticoClient.tsx` (ninguno nuevo). `npx next build` (production,
+no solo `tsc` suelto) — **confirmado: compiló limpio, exit code 0, 71
+rutas** (mismas 71 que antes: `/api/tienda/elegir-color` se borró,
+`/api/tienda/elegir-fuente` la reemplaza).
+
+La migración nueva (`0054_tienda_rediseno.sql`) no se corrió contra una
+base real desde acá — la lógica está revisada a mano (releída línea por
+línea después de escribirla), no ejecutada. Correla después de `0053`.
+

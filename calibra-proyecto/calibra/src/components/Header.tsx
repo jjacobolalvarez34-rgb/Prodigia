@@ -45,15 +45,18 @@ export default function Header({ autenticado = false, invitado = false }: Props)
   const pathname = usePathname();
   const colorMundo = colorDelMundo(pathname ?? "/");
 
-  // Fase T2: Amigos y Profesor (renombrado "Grupos") viven bajo un solo
-  // acceso "Social" con pestañas — dejaron de ser dos links sueltos.
+  // Fase 3 del rediseño de Social: Feed pasó a vivir DENTRO de /social
+  // (pestaña por default, con Amigos al lado) — ya no es un link
+  // suelto. Grupos (ex "Profesor") volvió a tener su propio acceso acá,
+  // separado de Social otra vez (con Social reducido a 2 pestañas, ya
+  // no entraba como una tercera).
   const links = [
     { href: "/leaderboard", label: "Ranking" },
     { href: "/rankeds", label: "Rankeds" },
-    { href: "/feed", label: "Feed" },
     { href: "/social", label: "Social" },
+    { href: "/profesor", label: "Grupos" },
     { href: "/tienda", label: "Tienda" },
-  ].filter((link) => !invitado || (link.href !== "/rankeds" && link.href !== "/social"));
+  ].filter((link) => !invitado || (link.href !== "/rankeds" && link.href !== "/social" && link.href !== "/profesor"));
 
   return (
     <header className="border-b border-border">

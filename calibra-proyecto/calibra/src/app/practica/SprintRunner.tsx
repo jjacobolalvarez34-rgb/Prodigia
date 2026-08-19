@@ -17,6 +17,8 @@ import RachaFuego from "@/components/RachaFuego";
 import EscudoIcon from "@/components/EscudoIcon";
 import GestoLogo from "@/components/GestoLogo";
 import LevelDial from "./LevelDial";
+import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
+import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 
 const TOTAL_PROBLEMAS = 10;
 const DURACION_MS = 60_000;
@@ -48,6 +50,12 @@ interface Props {
   // hace que un duelo en tiempo real le muestre a los dos rivales
   // exactamente la misma secuencia. Nunca se usa fuera de un duelo.
   semillaDuelo?: number;
+  // Fase 6: progreso del rival EN VIVO (distinto del fantasma — ver
+  // useProgresoEnVivo). Solo tiene efecto si el rival no terminó antes
+  // que vos (si fantasma existe, no hace falta: ya se ve su avance real).
+  duelId?: string | null;
+  miUserId?: string | null;
+  rivalNombreEnVivo?: string | null;
   onNivelChange: (tipo: ArithmeticProblemType, nivel: number) => void;
   onFinish: (errores: Problem[], respuestas: RespuestaDuelo[]) => void;
 }
@@ -92,10 +100,18 @@ export default function SprintRunner({
   colorDial,
   fantasma,
   semillaDuelo,
+  duelId,
+  miUserId,
+  rivalNombreEnVivo,
   onNivelChange,
   onFinish,
 }: Props) {
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
+  const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({
+    duelId: fantasma ? null : duelId,
+    miUserId,
+  });
+  const correctosRef = useRef(0);
 
   // useRef (no useMemo): tiene que sobrevivir exactamente igual durante
   // toda la vida del componente — si se recreara en algún re-render, la
@@ -323,6 +339,7 @@ export default function SprintRunner({
         xpGanado = data.xp;
         setXpSprint((prev) => prev + data.xp);
       }
+      if (correct) correctosRef.current += 1;
       if (data.skillLevel) {
         setRacha(data.skillLevel.racha_actual);
         if (data.skillLevel.nivel > problema.nivel) {
@@ -333,6 +350,11 @@ export default function SprintRunner({
           setTimeout(() => setNivelSubioAnim(false), 900);
         }
         onNivelChange(problema.problemType, data.skillLevel.nivel);
+        emitirProgreso({
+          respondidos: problemasRespondidos + 1,
+          correctos: correctosRef.current,
+          racha: data.skillLevel.racha_actual,
+        });
       }
     } catch {
       // Si falla el guardado, igual dejamos que el sprint siga: la
@@ -445,6 +467,17 @@ export default function SprintRunner({
                   : `Van parejo con ${fantasma.rivalNombre}`}
             </span>
           </div>
+        )}
+
+        {!fantasma && rivalEnVivo && rivalNombreEnVivo && (
+          <ProgresoRivalEnVivo
+            total={TOTAL_PROBLEMAS}
+            miRespondidos={problemasRespondidos}
+            rivalRespondidos={rivalEnVivo.respondidos}
+            rivalRacha={rivalEnVivo.racha}
+            rivalNombre={rivalNombreEnVivo}
+            colorHex={colorDial}
+          />
         )}
 
         <div className="relative h-1.5 w-full">

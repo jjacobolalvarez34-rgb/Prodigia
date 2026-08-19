@@ -13,6 +13,8 @@ import BarraTiempo from "@/components/practica/BarraTiempo";
 import AcertijoMemoria from "@/components/AcertijoMemoria";
 import { generarAcertijoProcedural, type CategoriaGenerada } from "@/lib/enigmia/generadores";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
+import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
+import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 
 const TOTAL_PREGUNTAS = 10;
 // Fase V2: 60s se sentía corto para acertijos de lógica (no es lo mismo
@@ -82,11 +84,36 @@ interface Props {
   nivelInicial: number;
   escudosExtra: number;
   categoriaForzada?: CategoriaEnigmia;
+  // Corrección: en un duelo, la complejidad la decide el rango de los
+  // dos duelistas (nivel_enigmia_por_rango), no logic_skill_levels
+  // (progresión de práctica solitaria) — mismo criterio que ya usaba
+  // Numeria con nivel_numeria. Si viene seteado, el nivel queda FIJO
+  // durante todo el duelo (no se recalibra con cada acierto, igual que
+  // Numeria tampoco lo hace en duelos).
+  nivelForzado?: number;
+  // Fase 6: progreso del rival en vivo — mismo criterio que Geografía,
+  // sin fantasma acá.
+  duelId?: string | null;
+  miUserId?: string | null;
+  rivalNombre?: string | null;
   onFinish: (errores: LogicPuzzle[]) => void;
 }
 
-export default function EnigmiaSprintRunner({ puzzles, startedAt, nivelInicial, escudosExtra, categoriaForzada, onFinish }: Props) {
+export default function EnigmiaSprintRunner({
+  puzzles,
+  startedAt,
+  nivelInicial,
+  escudosExtra,
+  categoriaForzada,
+  nivelForzado,
+  duelId,
+  miUserId,
+  rivalNombre,
+  onFinish,
+}: Props) {
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
+  const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
+  const correctosRef = useRef(0);
   const [puzzle, setPuzzle] = useState<LogicPuzzle | null>(null);
   const [cardKey, setCardKey] = useState(0);
   // Fase W2: si el acertijo trae `secuencia` (Memoria), arranca oculto
@@ -99,13 +126,13 @@ export default function EnigmiaSprintRunner({ puzzles, startedAt, nivelInicial, 
   const [xpSprint, setXpSprint] = useState(0);
   const [respondidos, setRespondidos] = useState(0);
   const [remainingMs, setRemainingMs] = useState(DURACION_MS);
-  const [nivel, setNivel] = useState(nivelInicial);
+  const [nivel, setNivel] = useState(nivelForzado ?? nivelInicial);
   const [escudos, setEscudos] = useState(escudosIniciales);
   const [racha, setRacha] = useState(0);
 
   const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(DURACION_MS);
 
-  const nivelRef = useRef(nivelInicial);
+  const nivelRef = useRef(nivelForzado ?? nivelInicial);
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<LogicPuzzle[]>([]);
@@ -204,11 +231,15 @@ export default function EnigmiaSprintRunner({ puzzles, startedAt, nivelInicial, 
         xpGanado = data.xp;
         setXpSprint((prev) => prev + data.xp);
       }
+      if (correct) correctosRef.current += 1;
       if (data.skillLevel) {
-        nivelSubio = data.skillLevel.nivel > nivelRef.current;
-        nivelRef.current = data.skillLevel.nivel;
-        setNivel(data.skillLevel.nivel);
+        if (!nivelForzado) {
+          nivelSubio = data.skillLevel.nivel > nivelRef.current;
+          nivelRef.current = data.skillLevel.nivel;
+          setNivel(data.skillLevel.nivel);
+        }
         setRacha(data.skillLevel.racha_actual);
+        emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: data.skillLevel.racha_actual });
       }
       if (correct && xpGanado > 0) {
         setPuntaje({ total: xpGanado, intensidad: nivelSubio ? "grande" : xpGanado >= 20 ? "medio" : "chico" });
@@ -262,6 +293,17 @@ export default function EnigmiaSprintRunner({ puzzles, startedAt, nivelInicial, 
             <span className="font-mono font-medium">{segundos}s</span>
           </div>
         </div>
+
+        {rivalEnVivo && rivalNombre && (
+          <ProgresoRivalEnVivo
+            total={TOTAL_PREGUNTAS}
+            miRespondidos={respondidos}
+            rivalRespondidos={rivalEnVivo.respondidos}
+            rivalRacha={rivalEnVivo.racha}
+            rivalNombre={rivalNombre}
+            colorHex={COLOR}
+          />
+        )}
 
         <BarraTiempo remainingMs={remainingMs} duracionTotalMs={duracionTotalMs} bonusTiempo={bonusTiempo} cardKey={cardKey} />
       </div>

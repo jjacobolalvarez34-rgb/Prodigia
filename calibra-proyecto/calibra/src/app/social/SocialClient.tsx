@@ -2,55 +2,46 @@
 
 import { useState } from "react";
 import AmigosClient from "@/app/amigos/AmigosClient";
-import ProfesorClient from "@/app/profesor/ProfesorClient";
+import Feed, { type PostFeed } from "./Feed";
+import FeedSidebar from "./FeedSidebar";
+import { useAmigos, type Solicitud, type Amigo } from "./useAmigos";
+import type { RetoPendienteBase } from "./useRetosPendientes";
 
-type Tab = "amigos" | "grupos";
-
-interface Solicitud {
-  user_id: string;
-  display_name: string | null;
-}
-
-interface Amigo {
-  friend_id: string;
-  display_name: string | null;
-  elo_rating: number;
-}
-
-interface Grupo {
-  id: string;
-  nombre: string;
-  codigo_invitacion: string;
-}
+type Tab = "feed" | "amigos";
 
 interface Props {
-  miUserId: string;
   tabInicial: Tab;
+  posts: PostFeed[];
   solicitudesIniciales: Solicitud[];
   amigosIniciales: Amigo[];
-  gruposIniciales: Grupo[];
+  retosIniciales: RetoPendienteBase[];
+  puedeCrearProblemaPersonalizado: boolean;
 }
 
 const TABS: { id: Tab; nombre: string }[] = [
+  { id: "feed", nombre: "Feed" },
   { id: "amigos", nombre: "Amigos" },
-  { id: "grupos", nombre: "Grupos" },
 ];
 
-// Fase T2: Amigos y Profesor (renombrado "Grupos") comparten una sola
-// sección "Social" con pestañas — la funcionalidad de cada uno no
-// cambió, solo dónde se entra. Reutiliza los clientes existentes tal
-// cual, sin reescribir su lógica interna.
+// Fase 3 del rediseño de Social — layout tipo Instagram: Feed es la
+// pestaña por default, con una barra lateral FIJA de accesos rápidos de
+// amigos/retos. "Amigos" mantiene la gestión completa de siempre. Las
+// dos comparten useAmigos() (una sola vez, acá) para que aceptar una
+// solicitud desde la barra lateral se refleje también si cambiás a la
+// pestaña Amigos, sin dos copias de estado que puedan desincronizarse.
 export default function SocialClient({
-  miUserId,
   tabInicial,
+  posts,
   solicitudesIniciales,
   amigosIniciales,
-  gruposIniciales,
+  retosIniciales,
+  puedeCrearProblemaPersonalizado,
 }: Props) {
   const [tab, setTab] = useState<Tab>(tabInicial);
+  const amigosState = useAmigos(solicitudesIniciales, amigosIniciales);
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 pt-10 sm:px-6">
+    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-4 pt-10 sm:px-6">
       <div>
         <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Social</h1>
         <div className="mt-4 flex w-fit gap-1 rounded-full border border-border bg-surface p-1">
@@ -68,10 +59,13 @@ export default function SocialClient({
         </div>
       </div>
 
-      {tab === "amigos" ? (
-        <AmigosClient miUserId={miUserId} solicitudesIniciales={solicitudesIniciales} amigosIniciales={amigosIniciales} />
+      {tab === "feed" ? (
+        <div className="flex flex-1 flex-col gap-6 pb-12 md:flex-row md:items-start">
+          <Feed posts={posts} puedeCrearProblemaPersonalizado={puedeCrearProblemaPersonalizado} />
+          <FeedSidebar amigosState={amigosState} retosIniciales={retosIniciales} />
+        </div>
       ) : (
-        <ProfesorClient grupos={gruposIniciales} />
+        <AmigosClient amigosState={amigosState} />
       )}
     </div>
   );

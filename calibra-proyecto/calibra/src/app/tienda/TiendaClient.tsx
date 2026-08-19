@@ -1,21 +1,33 @@
 "use client";
 
-import { useState } from "react";
-import { COLOR_DIAL_HEX, type ColorDial } from "@/types/database";
+import { useState, type ReactNode } from "react";
+import { RANGOS_ELO, FUENTE_NOMBRE_CLASS, type FuenteNombre } from "@/types/database";
 import { IconEscudo } from "@/components/icons";
-import LevelDial from "@/app/practica/LevelDial";
 import Boton from "@/components/Boton";
+import GlareHover from "@/components/reactbits/GlareHover";
+import BorderGlow from "@/components/reactbits/BorderGlow";
+import ScrollFloat from "@/components/reactbits/ScrollFloat";
 import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiario";
 
+// Fase 2 (mercado): precios pensados para que comprar algo se sienta
+// alcanzable en un puñado de partidas, no una eternidad. Una partida
+// típica (10 problemas, calibración media, ritmo moderado) rinde
+// ~100-130 Chispas — ver el detalle del cálculo en
+// 0054_tienda_rediseno.sql. Los ítems funcionales quedan bajo media
+// partida, los cosméticos de gama alta rondan 2-2.5 partidas como techo.
 const COSTOS = {
-  escudo: 80,
-  congelamiento: 60,
-  boost: 100,
-  color_esmeralda: 150,
-  color_coral: 150,
-  color_dorado: 150,
-  marco_plata: 120,
-  marco_oro: 220,
+  escudo: 40,
+  congelamiento: 35,
+  boost: 60,
+  fuente_mono: 50,
+  fuente_serif: 90,
+  fuente_manuscrita: 150,
+  marco_bronce: 50,
+  marco_plata: 80,
+  marco_oro: 120,
+  marco_platino: 170,
+  marco_diamante: 230,
+  marco_prodigio: 300,
 } as const;
 
 type ItemComprable = keyof typeof COSTOS;
@@ -23,37 +35,49 @@ type ItemComprable = keyof typeof COSTOS;
 const NOMBRES_ITEM: Record<ItemComprable, string> = {
   escudo: "Escudo extra",
   congelamiento: "Congelar racha",
-  boost: "Boost de Puntos",
-  color_esmeralda: "Color Esmeralda",
-  color_coral: "Color Coral",
-  color_dorado: "Color Dorado",
+  boost: "Boost de Chispas",
+  fuente_mono: "Fuente Monoespaciada",
+  fuente_serif: "Fuente Elegante",
+  fuente_manuscrita: "Fuente Manuscrita",
+  marco_bronce: "Marco Bronce",
   marco_plata: "Marco Plata",
   marco_oro: "Marco Oro",
+  marco_platino: "Marco Platino",
+  marco_diamante: "Marco Diamante",
+  marco_prodigio: "Marco Prodigio",
 };
 
-const COLORES_COMPRABLES: { color: ColorDial; item: ItemComprable; nombre: string }[] = [
-  { color: "esmeralda", item: "color_esmeralda", nombre: "Esmeralda" },
-  { color: "coral", item: "color_coral", nombre: "Coral" },
-  { color: "dorado", item: "color_dorado", nombre: "Dorado" },
+const FUENTES_COMPRABLES: { fuente: FuenteNombre; item: ItemComprable; nombre: string }[] = [
+  { fuente: "mono", item: "fuente_mono", nombre: "Monoespaciada" },
+  { fuente: "serif", item: "fuente_serif", nombre: "Elegante" },
+  { fuente: "manuscrita", item: "fuente_manuscrita", nombre: "Manuscrita" },
 ];
 
-const MARCOS_COMPRABLES: { marco: string; item: ItemComprable; nombre: string; estilo: string }[] = [
-  { marco: "plata", item: "marco_plata", nombre: "Plata", estilo: "border-4 border-[#C0C5CE]" },
-  { marco: "oro", item: "marco_oro", nombre: "Oro", estilo: "border-4 border-[#FFC53D]" },
-];
+// Fase 7: reusa la paleta de rangos de Rankeds (RANGOS_ELO) en vez de
+// inventar colores nuevos — 6 marcos, uno por rango real.
+const MARCOS_COMPRABLES = RANGOS_ELO.map((r) => ({
+  marco: r.slug,
+  item: `marco_${r.slug}` as ItemComprable,
+  nombre: r.nombre,
+  colorHex: r.colorHex,
+}));
 
 const MONTOS_APUESTA = [25, 50, 100];
+const APUESTA_MAXIMA = 200;
+
+type Contexto = "utilidad" | "fuente" | "marco" | "apuesta";
 
 interface Props {
   puntosIniciales: number;
   escudosIniciales: number;
   congelamientosIniciales: number;
   boostIniciales: number;
-  colorActual: string;
-  coloresDesbloqueados: string[];
+  fuenteActual: string;
+  fuentesDesbloqueadas: string[];
   marcoActual: string;
   marcosDesbloqueados: string[];
   apuestaActiva: boolean;
+  ocultarDobleONadaInicial: boolean;
   fechaHoy: string;
 }
 
@@ -62,19 +86,20 @@ export default function TiendaClient({
   escudosIniciales,
   congelamientosIniciales,
   boostIniciales,
-  colorActual,
-  coloresDesbloqueados,
+  fuenteActual,
+  fuentesDesbloqueadas,
   marcoActual,
   marcosDesbloqueados,
   apuestaActiva,
+  ocultarDobleONadaInicial,
   fechaHoy,
 }: Props) {
   const [puntos, setPuntos] = useState(puntosIniciales);
   const [escudos, setEscudos] = useState(escudosIniciales);
   const [congelamientos, setCongelamientos] = useState(congelamientosIniciales);
   const [boost, setBoost] = useState(boostIniciales);
-  const [desbloqueados, setDesbloqueados] = useState(coloresDesbloqueados);
-  const [colorElegido, setColorElegido] = useState(colorActual);
+  const [fuentesDesbl, setFuentesDesbl] = useState(fuentesDesbloqueadas);
+  const [fuenteElegida, setFuenteElegida] = useState(fuenteActual);
   const [marcosDesbl, setMarcosDesbl] = useState(marcosDesbloqueados);
   const [marcoElegido, setMarcoElegido] = useState(marcoActual);
   const [apostando, setApostando] = useState(false);
@@ -82,7 +107,8 @@ export default function TiendaClient({
   const [confirmando, setConfirmando] = useState<ItemComprable | null>(null);
   const [comprando, setComprando] = useState(false);
   const [cambiandoCosmetico, setCambiandoCosmetico] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ msg: string; contexto: Contexto } | null>(null);
+  const [trastiendaAbierta, setTrastiendaAbierta] = useState(false);
 
   const oferta = obtenerDescuentoDelDia(fechaHoy);
 
@@ -90,7 +116,7 @@ export default function TiendaClient({
     return precioConDescuento(COSTOS[item], item, fechaHoy);
   }
 
-  async function comprar(item: ItemComprable) {
+  async function comprar(item: ItemComprable, contexto: Contexto) {
     setComprando(true);
     setError(null);
     try {
@@ -101,37 +127,37 @@ export default function TiendaClient({
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.error ?? "No se pudo comprar.");
+        setError({ msg: data.error ?? "No se pudo comprar.", contexto });
         return;
       }
       setPuntos(data.puntos_total);
       setEscudos(data.escudos_extra_pendientes);
       setCongelamientos(data.congelamientos_disponibles);
       setBoost(data.boost_multiplicador_pendiente > 1 ? 1 : 0);
-      if (Array.isArray(data.colores_dial_desbloqueados)) setDesbloqueados(data.colores_dial_desbloqueados);
+      if (Array.isArray(data.fuentes_desbloqueadas)) setFuentesDesbl(data.fuentes_desbloqueadas);
       if (Array.isArray(data.marcos_desbloqueados)) setMarcosDesbl(data.marcos_desbloqueados);
       setConfirmando(null);
     } catch {
-      setError("No se pudo comprar. Revisá tu conexión.");
+      setError({ msg: "No se pudo comprar. Revisá tu conexión.", contexto });
     } finally {
       setComprando(false);
     }
   }
 
-  async function elegirColor(color: string) {
+  async function elegirFuente(fuente: string) {
     setCambiandoCosmetico(true);
     setError(null);
     try {
-      const res = await fetch("/api/tienda/elegir-color", {
+      const res = await fetch("/api/tienda/elegir-fuente", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ color }),
+        body: JSON.stringify({ fuente }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) setError(data.error ?? "No se pudo cambiar el color.");
-      else setColorElegido(color);
+      if (!res.ok) setError({ msg: data.error ?? "No se pudo cambiar la fuente.", contexto: "fuente" });
+      else setFuenteElegida(fuente);
     } catch {
-      setError("No se pudo cambiar el color. Revisá tu conexión.");
+      setError({ msg: "No se pudo cambiar la fuente. Revisá tu conexión.", contexto: "fuente" });
     } finally {
       setCambiandoCosmetico(false);
     }
@@ -147,10 +173,10 @@ export default function TiendaClient({
         body: JSON.stringify({ marco }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) setError(data.error ?? "No se pudo cambiar el marco.");
+      if (!res.ok) setError({ msg: data.error ?? "No se pudo cambiar el marco.", contexto: "marco" });
       else setMarcoElegido(marco);
     } catch {
-      setError("No se pudo cambiar el marco. Revisá tu conexión.");
+      setError({ msg: "No se pudo cambiar el marco. Revisá tu conexión.", contexto: "marco" });
     } finally {
       setCambiandoCosmetico(false);
     }
@@ -167,203 +193,253 @@ export default function TiendaClient({
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.error ?? "No se pudo apostar.");
+        setError({ msg: data.error ?? "No se pudo apostar.", contexto: "apuesta" });
         return;
       }
       setPuntos(data.puntos_total);
       setApuestaActivaLocal(true);
     } catch {
-      setError("No se pudo apostar. Revisá tu conexión.");
+      setError({ msg: "No se pudo apostar. Revisá tu conexión.", contexto: "apuesta" });
     } finally {
       setApostando(false);
     }
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Tienda</h1>
-        <p className="mt-1 font-mono text-sm text-texto-secundario">{puntos} Puntos disponibles</p>
-      </div>
-
-      <div className="rounded-2xl bg-logro/15 px-5 py-3 text-center text-sm font-medium text-foreground">
-        🏷️ Oferta del día: {oferta.porcentaje}% menos en {NOMBRES_ITEM[oferta.item]}
-      </div>
-
-      <div className="flex flex-col gap-4">
-        <ItemTienda
-          icono={<IconEscudo className="h-6 w-6 text-primario" />}
-          nombre="Escudo extra"
-          descripcion="Un escudo de calibración de más para tu próxima partida."
-          costo={costoDe("escudo")}
-          costoOriginal={COSTOS.escudo}
-          cantidad={escudos}
-          puntos={puntos}
-          confirmando={confirmando === "escudo"}
-          comprando={comprando}
-          onConfirmar={() => setConfirmando("escudo")}
-          onCancelar={() => setConfirmando(null)}
-          onComprar={() => comprar("escudo")}
-        />
-        <ItemTienda
-          icono={<span className="text-2xl">❄️</span>}
-          nombre="Congelar racha"
-          descripcion="Si un día no practicás, no se corta tu racha."
-          costo={costoDe("congelamiento")}
-          costoOriginal={COSTOS.congelamiento}
-          cantidad={congelamientos}
-          puntos={puntos}
-          confirmando={confirmando === "congelamiento"}
-          comprando={comprando}
-          onConfirmar={() => setConfirmando("congelamiento")}
-          onCancelar={() => setConfirmando(null)}
-          onComprar={() => comprar("congelamiento")}
-        />
-        <ItemTienda
-          icono={<span className="text-2xl">⚡</span>}
-          nombre="Boost de Puntos"
-          descripcion="×1.5 Puntos en tu próxima partida, cualquier mundo."
-          costo={costoDe("boost")}
-          costoOriginal={COSTOS.boost}
-          cantidad={boost}
-          puntos={puntos}
-          confirmando={confirmando === "boost"}
-          comprando={comprando}
-          onConfirmar={() => setConfirmando("boost")}
-          onCancelar={() => setConfirmando(null)}
-          onComprar={() => comprar("boost")}
-        />
-      </div>
-
-      <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-6 py-5 shadow-sm">
-        <div className="flex items-center gap-4">
-          <LevelDial nivel={8} size={44} mostrarEtiqueta={false} colorHex={COLOR_DIAL_HEX[colorElegido as ColorDial]} />
-          <div className="flex-1">
-            <p className="font-display font-semibold text-foreground">Color del dial</p>
-            <p className="text-sm text-texto-secundario">Cosmético permanente — cambiá el acento de tu dial de nivel.</p>
-          </div>
+    <div
+      className="flex-1"
+      style={{ background: "radial-gradient(120% 100% at 50% 0%, #E8C79A 0%, #C97B4A 45%, #8a5a35 100%)" }}
+    >
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-12 sm:px-6">
+        <div className="text-center">
+          <h1 className="font-display text-3xl font-bold tracking-tight text-[#3D2410] drop-shadow-sm">
+            🏺 El Bazar de Prodigia
+          </h1>
+          <p className="mt-1 font-mono text-sm font-semibold text-[#5C3A22]">{puntos} Chispas disponibles</p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {(["violeta", ...COLORES_COMPRABLES.map((c) => c.color)] as ColorDial[]).map((color) => {
-            const desbloqueado = desbloqueados.includes(color);
-            const compra = COLORES_COMPRABLES.find((c) => c.color === color);
-            const elegido = colorElegido === color;
-            if (desbloqueado) {
+
+        <OfertaDelDia oferta={oferta} nombre={NOMBRES_ITEM[oferta.item as ItemComprable]} />
+
+        <EstanteCategoria titulo="Puesto de utilidad" franja="#6C4CF1">
+          <ItemEstante
+            icono={<IconEscudo className="h-6 w-6 text-[#6C4CF1]" />}
+            nombre="Escudo extra"
+            descripcion="Un escudo de calibración de más para tu próxima partida."
+            costo={costoDe("escudo")}
+            costoOriginal={COSTOS.escudo}
+            cantidad={escudos}
+            puntos={puntos}
+            confirmando={confirmando === "escudo"}
+            comprando={comprando}
+            onConfirmar={() => setConfirmando("escudo")}
+            onCancelar={() => setConfirmando(null)}
+            onComprar={() => comprar("escudo", "utilidad")}
+          />
+          <ItemEstante
+            icono={<span className="text-2xl">❄️</span>}
+            nombre="Congelar racha"
+            descripcion="Si un día no practicás, no se corta tu racha."
+            costo={costoDe("congelamiento")}
+            costoOriginal={COSTOS.congelamiento}
+            cantidad={congelamientos}
+            puntos={puntos}
+            confirmando={confirmando === "congelamiento"}
+            comprando={comprando}
+            onConfirmar={() => setConfirmando("congelamiento")}
+            onCancelar={() => setConfirmando(null)}
+            onComprar={() => comprar("congelamiento", "utilidad")}
+          />
+          <ItemEstante
+            icono={<span className="text-2xl">⚡</span>}
+            nombre="Boost de Chispas"
+            descripcion="×1.5 Chispas en tu próxima partida, cualquier mundo."
+            costo={costoDe("boost")}
+            costoOriginal={COSTOS.boost}
+            cantidad={boost}
+            puntos={puntos}
+            confirmando={confirmando === "boost"}
+            comprando={comprando}
+            onConfirmar={() => setConfirmando("boost")}
+            onCancelar={() => setConfirmando(null)}
+            onComprar={() => comprar("boost", "utilidad")}
+          />
+          {error?.contexto === "utilidad" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
+        </EstanteCategoria>
+
+        <EstanteCategoria titulo="Vidriera de tipografías" franja="#A78355">
+          <p className="text-sm text-[#F4E4C1]/90">
+            Cómo se ve tu nombre en tu perfil, el ranking y el feed. Cosmético — no cambia nada de la partida.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {(["default", ...FUENTES_COMPRABLES.map((f) => f.fuente)] as FuenteNombre[]).map((fuente) => {
+              const desbloqueada = fuentesDesbl.includes(fuente);
+              const compra = FUENTES_COMPRABLES.find((f) => f.fuente === fuente);
+              const elegida = fuenteElegida === fuente;
+              const claseFuente = FUENTE_NOMBRE_CLASS[fuente];
+              if (desbloqueada) {
+                return (
+                  <button
+                    key={fuente}
+                    onClick={() => elegirFuente(fuente)}
+                    disabled={cambiandoCosmetico || elegida}
+                    className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${claseFuente} ${
+                      elegida
+                        ? "border-[#3D2410] bg-[#F4E4C1] text-[#3D2410]"
+                        : "border-[#F4E4C1]/60 bg-[#3D2410]/30 text-[#F4E4C1] hover:border-[#F4E4C1]"
+                    }`}
+                  >
+                    {fuente === "default" ? "Normal" : compra?.nombre}
+                    {elegida && " · Activa"}
+                  </button>
+                );
+              }
+              if (!compra) return null;
+              const costo = costoDe(compra.item);
               return (
                 <button
-                  key={color}
-                  onClick={() => elegirColor(color)}
-                  disabled={cambiandoCosmetico || elegido}
-                  className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-                    elegido ? "border-foreground/40 bg-surface-2" : "border-border hover:border-foreground/30"
-                  }`}
+                  key={fuente}
+                  onClick={() => comprar(compra.item, "fuente")}
+                  disabled={comprando || puntos < costo}
+                  className={`rounded-full border border-dashed border-[#F4E4C1]/50 px-3 py-1.5 text-sm text-[#F4E4C1]/70 disabled:opacity-40 ${claseFuente}`}
                 >
-                  <span className="h-3 w-3 rounded-full" style={{ background: COLOR_DIAL_HEX[color] }} />
-                  {color[0].toUpperCase() + color.slice(1)}
-                  {elegido && " · Activo"}
+                  {compra.nombre} · {costo} Chispas
                 </button>
               );
-            }
-            if (!compra) return null;
-            const costo = costoDe(compra.item);
-            return (
-              <button
-                key={color}
-                onClick={() => comprar(compra.item)}
-                disabled={comprando || puntos < costo}
-                className="flex items-center gap-2 rounded-full border border-dashed border-border px-3 py-1.5 text-sm text-texto-secundario disabled:opacity-40"
-              >
-                <span className="h-3 w-3 rounded-full" style={{ background: COLOR_DIAL_HEX[color] }} />
-                {compra.nombre} · {costo} Puntos
-              </button>
-            );
-          })}
-        </div>
-      </div>
+            })}
+          </div>
+          {error?.contexto === "fuente" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
+        </EstanteCategoria>
 
-      <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-6 py-5 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div
-            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primario/10 ${
-              marcoElegido !== "ninguno" ? MARCOS_COMPRABLES.find((m) => m.marco === marcoElegido)?.estilo : ""
-            }`}
-          >
-            <span className="text-lg">👤</span>
-          </div>
-          <div className="flex-1">
-            <p className="font-display font-semibold text-foreground">Marco de perfil</p>
-            <p className="text-sm text-texto-secundario">Un borde cosmético alrededor de tu nombre en Perfil.</p>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {["ninguno", ...MARCOS_COMPRABLES.map((m) => m.marco)].map((marco) => {
-            const desbloqueado = marcosDesbl.includes(marco);
-            const compra = MARCOS_COMPRABLES.find((m) => m.marco === marco);
-            const elegido = marcoElegido === marco;
-            if (marco === "ninguno" || desbloqueado) {
+        <EstanteCategoria titulo="Herrero de marcos" franja="#E8B34D">
+          <p className="text-sm text-[#F4E4C1]/90">
+            Un borde cosmético para tu nombre en el perfil — los mismos colores que los rangos de Rankeds.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => elegirMarco("ninguno")}
+              disabled={cambiandoCosmetico || marcoElegido === "ninguno"}
+              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                marcoElegido === "ninguno"
+                  ? "border-[#3D2410] bg-[#F4E4C1] text-[#3D2410]"
+                  : "border-[#F4E4C1]/60 bg-[#3D2410]/30 text-[#F4E4C1] hover:border-[#F4E4C1]"
+              }`}
+            >
+              Sin marco{marcoElegido === "ninguno" && " · Activo"}
+            </button>
+            {MARCOS_COMPRABLES.map(({ marco, item, nombre, colorHex }) => {
+              const desbloqueado = marcosDesbl.includes(marco);
+              const elegido = marcoElegido === marco;
+              if (desbloqueado) {
+                return (
+                  <button
+                    key={marco}
+                    onClick={() => elegirMarco(marco)}
+                    disabled={cambiandoCosmetico || elegido}
+                    className={`flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-sm font-medium transition-colors ${
+                      elegido ? "bg-[#F4E4C1] text-[#3D2410]" : "bg-[#3D2410]/30 text-[#F4E4C1]"
+                    }`}
+                    style={{ borderColor: colorHex }}
+                  >
+                    <span className="h-2.5 w-2.5 rounded-full" style={{ background: colorHex }} />
+                    {nombre}
+                    {elegido && " · Activo"}
+                  </button>
+                );
+              }
+              const costo = costoDe(item);
               return (
                 <button
                   key={marco}
-                  onClick={() => elegirMarco(marco)}
-                  disabled={cambiandoCosmetico || elegido}
-                  className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-                    elegido ? "border-foreground/40 bg-surface-2" : "border-border hover:border-foreground/30"
-                  }`}
+                  onClick={() => comprar(item, "marco")}
+                  disabled={comprando || puntos < costo}
+                  className="flex items-center gap-1.5 rounded-full border border-dashed border-[#F4E4C1]/50 px-3 py-1.5 text-sm text-[#F4E4C1]/70 disabled:opacity-40"
                 >
-                  {marco === "ninguno" ? "Sin marco" : compra?.nombre}
-                  {elegido && " · Activo"}
+                  <span className="h-2.5 w-2.5 rounded-full" style={{ background: colorHex }} />
+                  {nombre} · {costo} Chispas
                 </button>
               );
-            }
-            if (!compra) return null;
-            const costo = costoDe(compra.item);
-            return (
-              <button
-                key={marco}
-                onClick={() => comprar(compra.item)}
-                disabled={comprando || puntos < costo}
-                className="rounded-full border border-dashed border-border px-3 py-1.5 text-sm text-texto-secundario disabled:opacity-40"
-              >
-                {compra.nombre} · {costo} Puntos
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-6 py-5 shadow-sm">
-        <div>
-          <p className="font-display font-semibold text-foreground">🎲 Doble o nada</p>
-          <p className="text-sm text-texto-secundario">
-            Apostá Puntos a que tu próxima partida supera tu precisión histórica. Si ganás, se duplica.
-          </p>
-        </div>
-        {apuestaActivaLocal ? (
-          <p className="text-sm font-medium text-primario">Tenés una apuesta activa — se resuelve con tu próxima partida.</p>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {MONTOS_APUESTA.map((monto) => (
-              <Boton
-                key={monto}
-                variante="secundario"
-                onClick={() => apostar(monto)}
-                disabled={apostando || puntos < monto}
-                cargando={apostando}
-                className="px-4 py-2 text-sm"
-              >
-                Apostar {monto}
-              </Boton>
-            ))}
+            })}
           </div>
+          {error?.contexto === "marco" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
+        </EstanteCategoria>
+
+        {!ocultarDobleONadaInicial && (
+          <Trastienda
+            abierta={trastiendaAbierta}
+            onAbrir={() => setTrastiendaAbierta(true)}
+            apuestaActiva={apuestaActivaLocal}
+            apostando={apostando}
+            puntos={puntos}
+            onApostar={apostar}
+            error={error?.contexto === "apuesta" ? error.msg : null}
+          />
         )}
       </div>
-
-      {error && <p className="text-sm text-error">{error}</p>}
     </div>
   );
 }
 
-function ItemTienda({
+// ---------- "vidriera" del descuento del día: trato de vendedor destacado ----------
+function OfertaDelDia({
+  oferta,
+  nombre,
+}: {
+  oferta: { item: string; porcentaje: number };
+  nombre: string;
+}) {
+  return (
+    <BorderGlow
+      backgroundColor="#3D2410"
+      borderRadius={20}
+      glowRadius={30}
+      colors={["#FFC53D", "#E8B34D", "#A794FF"]}
+      glowColor="45 85% 60%"
+    >
+      <div className="flex items-center gap-3 px-5 py-4 text-center">
+        <span className="text-2xl">🏷️</span>
+        <p className="text-sm font-semibold text-[#F4E4C1]">
+          Oferta del vendedor de hoy: <span className="text-[#FFC53D]">{oferta.porcentaje}% menos</span> en {nombre}
+        </p>
+      </div>
+    </BorderGlow>
+  );
+}
+
+// ---------- estante con toldo colgante (Fase 1: ambientación de bazar) ----------
+function EstanteCategoria({ titulo, franja, children }: { titulo: string; franja: string; children: ReactNode }) {
+  return (
+    <section className="overflow-hidden rounded-2xl shadow-[0_14px_28px_-14px_rgba(61,36,16,0.55)]">
+      <div className="relative">
+        <div
+          className="h-6 w-full"
+          style={{
+            background: `repeating-linear-gradient(90deg, ${franja} 0 22px, #F4E4C1 22px 44px)`,
+            clipPath:
+              "polygon(0 0,100% 0,100% 55%,95.5% 100%,91% 55%,86.5% 100%,82% 55%,77.5% 100%,73% 55%,68.5% 100%,64% 55%,59.5% 100%,55% 55%,50.5% 100%,46% 55%,41.5% 100%,37% 55%,32.5% 100%,28% 55%,23.5% 100%,19% 55%,14.5% 100%,10% 55%,5.5% 100%,1% 55%,0 100%)",
+          }}
+        />
+        <div className="bg-[#3D2410] px-4 py-2">
+          <span className="font-display text-sm font-bold uppercase tracking-wide text-[#F4E4C1]">{titulo}</span>
+        </div>
+      </div>
+      <div
+        className="flex flex-col gap-4 p-5"
+        style={{ background: "linear-gradient(180deg, #C1652F 0%, #A85527 100%)" }}
+      >
+        {children}
+      </div>
+      <div
+        className="h-3 w-full"
+        style={{
+          background: "linear-gradient(180deg, #8a5a35, #5C3A22)",
+          boxShadow: "inset 0 3px 6px -2px rgba(0,0,0,0.5)",
+        }}
+      />
+    </section>
+  );
+}
+
+function ItemEstante({
   icono,
   nombre,
   descripcion,
@@ -377,7 +453,7 @@ function ItemTienda({
   onCancelar,
   onComprar,
 }: {
-  icono: React.ReactNode;
+  icono: ReactNode;
   nombre: string;
   descripcion: string;
   costo: number;
@@ -393,14 +469,23 @@ function ItemTienda({
   const alcanza = puntos >= costo;
   const enOferta = costo < costoOriginal;
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-6 py-5 shadow-sm">
+    <GlareHover
+      width="100%"
+      height="auto"
+      background="#F4E4C1"
+      borderRadius="14px"
+      borderColor="#8a5a35"
+      glareColor="#FFC53D"
+      glareOpacity={0.35}
+      className="!flex !flex-col !gap-3 px-5 py-4 shadow-[0_6px_0_0_#8a5a35]"
+    >
       <div className="flex items-center gap-4">
-        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primario/10">{icono}</span>
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/60">{icono}</span>
         <div className="flex-1">
-          <p className="font-display font-semibold text-foreground">{nombre}</p>
-          <p className="text-sm text-texto-secundario">{descripcion}</p>
+          <p className="font-display font-semibold text-[#3D2410]">{nombre}</p>
+          <p className="text-sm text-[#5C3A22]">{descripcion}</p>
         </div>
-        <span className="rounded-full bg-surface-2 px-2.5 py-1 font-mono text-xs text-texto-secundario">
+        <span className="shrink-0 rounded-full bg-[#3D2410]/10 px-2.5 py-1 font-mono text-xs text-[#3D2410]">
           Tenés: {cantidad}
         </span>
       </div>
@@ -409,24 +494,93 @@ function ItemTienda({
         <Boton variante="primario" onClick={onConfirmar} disabled={!alcanza} className="self-start px-4 py-2 text-sm">
           {alcanza ? (
             <>
-              Comprar por {costo} Puntos
+              <ScrollFloat stagger={0.02} animationDuration={0.6}>
+                {`Comprar por ${costo} Chispas`}
+              </ScrollFloat>
               {enOferta && <span className="ml-1 text-white/70 line-through">{costoOriginal}</span>}
             </>
           ) : (
-            `Necesitás ${costo} Puntos`
+            `Necesitás ${costo} Chispas`
           )}
         </Boton>
       ) : (
         <div className="flex items-center gap-3">
-          <span className="text-sm text-foreground">¿Gastar {costo} Puntos?</span>
+          <span className="text-sm text-[#3D2410]">¿Gastar {costo} Chispas?</span>
           <Boton onClick={onComprar} cargando={comprando} className="px-3 py-1.5 text-sm">
             Confirmar
           </Boton>
-          <button onClick={onCancelar} className="text-sm text-texto-secundario hover:underline">
+          <button onClick={onCancelar} className="text-sm text-[#5C3A22] hover:underline">
             Cancelar
           </button>
         </div>
       )}
-    </div>
+    </GlareHover>
+  );
+}
+
+// ---------- Fase 4: "doble o nada" movido a una trastienda, un paso extra ----------
+function Trastienda({
+  abierta,
+  onAbrir,
+  apuestaActiva,
+  apostando,
+  puntos,
+  onApostar,
+  error,
+}: {
+  abierta: boolean;
+  onAbrir: () => void;
+  apuestaActiva: boolean;
+  apostando: boolean;
+  puntos: number;
+  onApostar: (monto: number) => void;
+  error: string | null;
+}) {
+  if (!abierta) {
+    return (
+      <button
+        onClick={onAbrir}
+        className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-[#3D2410]/40 bg-[#3D2410]/15 px-5 py-4 text-sm font-medium text-[#3D2410]/70 transition-colors hover:bg-[#3D2410]/25"
+      >
+        🚪 Entrar a la trastienda…
+      </button>
+    );
+  }
+
+  return (
+    <section
+      className="flex flex-col gap-3 rounded-2xl border border-[#5C1A1A]/40 px-6 py-5 shadow-lg"
+      style={{ background: "linear-gradient(180deg, #6B2A2A 0%, #3D2410 100%)" }}
+    >
+      <div>
+        <p className="font-display font-semibold text-[#F4E4C1]">🎲 Doble o nada</p>
+        <p className="mt-1 text-sm text-[#F4E4C1]/80">
+          Apostá Chispas a que tu próxima partida supera tu precisión histórica. Si ganás, se duplica.
+        </p>
+        <p className="mt-2 rounded-lg bg-[#F4E4C1]/10 px-3 py-2 text-xs font-medium text-[#F4E4C1]/90">
+          ⚠️ Esto nunca usa dinero real — es solo con tus Chispas del juego. Apuesta máxima: {APUESTA_MAXIMA}{" "}
+          Chispas. Podés ocultar esta sección desde Ajustes si preferís no verla.
+        </p>
+      </div>
+      {apuestaActiva ? (
+        <p className="text-sm font-medium text-[#FFC53D]">Tenés una apuesta activa — se resuelve con tu próxima partida.</p>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {MONTOS_APUESTA.map((monto) => (
+            <Boton
+              key={monto}
+              variante="secundario"
+              onClick={() => onApostar(monto)}
+              disabled={apostando || puntos < monto}
+              cargando={apostando}
+              className="px-4 py-2 text-sm"
+            >
+              Apostar {monto}
+            </Boton>
+          ))}
+        </div>
+      )}
+      {error && <p className="text-sm font-medium text-[#FF9B9B]">{error}</p>}
+    </section>
   );
 }

@@ -20,7 +20,7 @@ export default function PrivacidadPage() {
           <h2 className="font-display text-lg font-bold text-foreground">Qué datos guardamos</h2>
           <ul className="list-disc pl-5 text-sm text-texto-secundario">
             <li>Tu email (si creaste cuenta con email y contraseña).</li>
-            <li>Tu nombre visible y tu progreso: nivel por tema, racha, Puntos, Experiencia, logros.</li>
+            <li>Tu nombre visible y tu progreso: nivel por tema, racha, Chispas, Experiencia, logros.</li>
             <li>Tu actividad de práctica: qué respondiste, si acertaste, cuánto tardaste — esto es lo
               que usamos para calibrar la dificultad a tu nivel.</li>
             <li>Si sos parte de un grupo de un profesor, ese profesor puede ver tu progreso agregado

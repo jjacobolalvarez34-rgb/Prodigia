@@ -63,6 +63,7 @@ export default async function GeografiaPracticaPage({ searchParams }: Props) {
         escudosExtra={escudosExtra}
         boostActivo={boostActivo}
         duelo={dueloInfo}
+        miUserId={user.id}
       />
     </>
   );

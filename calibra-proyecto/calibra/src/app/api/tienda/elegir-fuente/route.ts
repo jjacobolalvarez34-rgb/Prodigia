@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
-  color: string;
+  fuente: string;
 }
 
 export async function POST(request: Request) {
@@ -18,10 +18,10 @@ export async function POST(request: Request) {
   }
 
   const body = (await request.json()) as Body;
-  const { error } = await supabase.rpc("elegir_color_dial", { p_color: body.color });
+  const { error } = await supabase.rpc("elegir_fuente_nombre", { p_fuente: body.fuente });
 
   if (error) {
-    return respuestaError("tienda/elegir-color", error);
+    return respuestaError("tienda/elegir-fuente", error);
   }
 
   return NextResponse.json({ ok: true });

@@ -7,6 +7,7 @@ import Avatar from "@/components/Avatar";
 import RangoBadge from "@/components/RangoBadge";
 import ScrollFloat from "@/components/reactbits/ScrollFloat";
 import { IconLupa, IconX } from "@/components/icons";
+import { FUENTE_NOMBRE_CLASS } from "@/types/database";
 import type { FilaRanking } from "./Podio";
 
 interface Props {
@@ -15,13 +16,14 @@ interface Props {
   // de las 7 filas que entraban antes en pantalla.
   resto: FilaRanking[];
   miUserId: string;
+  colorAcento?: string;
 }
 
 // Fase R3 v2: antes esto vivía inline en page.tsx y solo mostraba hasta
 // el puesto 10. Ahora es su propio componente de cliente porque necesita
 // estado (buscador, filtro en vivo) que un server component no puede
 // tener.
-export default function ListaRanking({ resto, miUserId }: Props) {
+export default function ListaRanking({ resto, miUserId, colorAcento = "#FFC53D" }: Props) {
   const [buscadorAbierto, setBuscadorAbierto] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -41,8 +43,6 @@ export default function ListaRanking({ resto, miUserId }: Props) {
     if (buscadorAbierto) setQuery("");
     setBuscadorAbierto((v) => !v);
   }
-
-  if (resto.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-3">
@@ -90,7 +90,11 @@ export default function ListaRanking({ resto, miUserId }: Props) {
         </div>
       </div>
 
-      {filtrado.length === 0 ? (
+      {resto.length === 0 ? (
+        <p className="rounded-xl border border-border bg-surface px-4 py-6 text-center text-sm text-texto-secundario">
+          Todavía no hay nadie más en el ranking de esta semana.
+        </p>
+      ) : filtrado.length === 0 ? (
         <p className="rounded-xl border border-border bg-surface px-4 py-6 text-center text-sm text-texto-secundario">
           Nadie con ese nombre en el ranking de esta semana.
         </p>
@@ -102,6 +106,7 @@ export default function ListaRanking({ resto, miUserId }: Props) {
               fila={fila}
               posicion={resto.indexOf(fila) + 4}
               esUsuarioActual={fila.user_id === miUserId}
+              colorAcento={colorAcento}
             />
           ))}
         </ol>
@@ -114,20 +119,28 @@ function FilaRankingRow({
   fila,
   posicion,
   esUsuarioActual,
+  colorAcento,
 }: {
   fila: FilaRanking;
   posicion: number;
   esUsuarioActual: boolean;
+  colorAcento: string;
 }) {
   return (
     <li
       id={`fila-ranking-${fila.user_id}`}
       className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-colors ${
-        esUsuarioActual ? "border-primario/40 bg-primario/5" : "border-border bg-surface"
+        esUsuarioActual ? "bg-primario/5" : "border-border bg-surface"
       }`}
+      style={esUsuarioActual ? { borderColor: `color-mix(in oklab, ${colorAcento} 40%, transparent)` } : undefined}
     >
       <Link href={`/perfil/${fila.user_id}`} className="flex min-w-0 items-center gap-3">
-        <span className="w-6 shrink-0 text-center font-mono text-sm text-texto-secundario">{posicion}</span>
+        <span
+          className="w-6 shrink-0 text-center font-mono text-sm"
+          style={posicion <= 10 ? { color: colorAcento } : { color: "var(--texto-secundario)" }}
+        >
+          {posicion}
+        </span>
         <Avatar url={fila.avatar_url} nombre={fila.display_name} size={32} />
         <span className="min-w-0 truncate font-medium text-foreground hover:underline">
           {/* stagger más chico que el default de React Bits (0.03): con
@@ -136,13 +149,13 @@ function FilaRankingRow({
               efecto. scrollStart/scrollEnd quedan en su default (son
               relativos al viewport, no al alto del elemento — ya dan un
               rango de scroll generoso incluso en una fila chica). */}
-          <ScrollFloat stagger={0.015} animationDuration={0.7}>
+          <ScrollFloat stagger={0.015} animationDuration={0.7} textClassName={FUENTE_NOMBRE_CLASS[fila.fuente_nombre ?? "default"]}>
             {fila.display_name ?? "Jugador"}
           </ScrollFloat>
         </span>
         <RangoBadge elo={fila.elo_rating} tituloNombre={fila.titulo_nombre} size="sm" className="shrink-0" />
       </Link>
-      <span className="shrink-0 font-mono font-semibold text-primario">
+      <span className="shrink-0 font-mono font-semibold" style={{ color: colorAcento }}>
         <ScrollFloat stagger={0.02} animationDuration={0.7}>
           {`${fila.xp_semana} Exp`}
         </ScrollFloat>

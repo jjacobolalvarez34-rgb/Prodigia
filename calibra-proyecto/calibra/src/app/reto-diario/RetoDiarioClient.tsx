@@ -85,7 +85,7 @@ export default function RetoDiarioClient({ fecha, problemas, yaCompletado }: Pro
                 5 problemas, los mismos para todos hoy
               </h1>
               <p className="mt-2 text-sm text-texto-secundario">
-                Completalo para sumar Puntos extra y estirar tu racha de retos diarios.
+                Completalo para sumar Chispas extra y estirar tu racha de retos diarios.
               </p>
             </div>
             <Boton onClick={() => setFase("jugando")} className="py-4">
@@ -156,7 +156,7 @@ export default function RetoDiarioClient({ fecha, problemas, yaCompletado }: Pro
             </h1>
             <p className="font-mono text-4xl font-bold text-logro">{resultado.correctos}/5</p>
             {resultado.puntosBonus > 0 && (
-              <p className="text-sm text-texto-secundario">+{resultado.puntosBonus} Puntos de bonus</p>
+              <p className="text-sm text-texto-secundario">+{resultado.puntosBonus} Chispas de bonus</p>
             )}
             <p className="text-sm text-texto-secundario">Volvé mañana por el próximo.</p>
             <Link

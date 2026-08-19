@@ -6,7 +6,7 @@ import TiendaClient from "./TiendaClient";
 
 export const metadata: Metadata = {
   title: "Tienda",
-  description: "Gastá tus Puntos en escudos, boosts y cosméticos de dial.",
+  description: "Gastá tus Chispas en escudos, boosts y cosméticos del bazar de Prodigia.",
 };
 
 export default async function TiendaPage() {
@@ -16,7 +16,7 @@ export default async function TiendaPage() {
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "puntos_total, escudos_extra_pendientes, congelamientos_disponibles, boost_multiplicador_pendiente, color_dial, colores_dial_desbloqueados, marco_perfil, marcos_desbloqueados, apuesta_monto"
+      "puntos_total, escudos_extra_pendientes, congelamientos_disponibles, boost_multiplicador_pendiente, fuente_nombre, fuentes_desbloqueadas, marco_perfil, marcos_desbloqueados, apuesta_monto, ocultar_doble_o_nada"
     )
     .eq("id", user.id)
     .single();
@@ -31,11 +31,12 @@ export default async function TiendaPage() {
         escudosIniciales={profile?.escudos_extra_pendientes ?? 0}
         congelamientosIniciales={profile?.congelamientos_disponibles ?? 0}
         boostIniciales={(profile?.boost_multiplicador_pendiente ?? 1) > 1 ? 1 : 0}
-        colorActual={(profile?.color_dial as string) ?? "violeta"}
-        coloresDesbloqueados={(profile?.colores_dial_desbloqueados as string[]) ?? ["violeta"]}
+        fuenteActual={(profile?.fuente_nombre as string) ?? "default"}
+        fuentesDesbloqueadas={(profile?.fuentes_desbloqueadas as string[]) ?? ["default"]}
         marcoActual={(profile?.marco_perfil as string) ?? "ninguno"}
         marcosDesbloqueados={(profile?.marcos_desbloqueados as string[]) ?? ["ninguno"]}
         apuestaActiva={(profile?.apuesta_monto ?? 0) > 0}
+        ocultarDobleONadaInicial={profile?.ocultar_doble_o_nada ?? false}
         fechaHoy={hoyIso}
       />
     </>

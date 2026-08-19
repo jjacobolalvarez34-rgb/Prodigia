@@ -4,13 +4,21 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Boton from "@/components/Boton";
+import NombreConFuente from "@/components/NombreConFuente";
+import type { FuenteNombre } from "@/types/database";
+
+// Fase 6 (mercado): cambiar de nombre después del primero cuesta
+// Chispas — nunca Experiencia, que es semanal/temporal y mediría mal si
+// se pudiera gastar. cambiar_nombre_usuario (0054) cobra server-side;
+// acá solo se muestra el costo antes de confirmar.
+const COSTO_RENOMBRAR = 100;
 
 interface Props {
-  userId: string;
   nombreActual: string | null;
+  fuente?: FuenteNombre;
 }
 
-export default function NombreEditable({ userId, nombreActual }: Props) {
+export default function NombreEditable({ nombreActual, fuente }: Props) {
   const router = useRouter();
   const [editando, setEditando] = useState(false);
   const [nombre, setNombre] = useState(nombreActual ?? "");
@@ -22,18 +30,10 @@ export default function NombreEditable({ userId, nombreActual }: Props) {
     setGuardando(true);
     setError(null);
     const supabase = createClient();
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ display_name: nombre.trim() })
-      .eq("id", userId);
+    const { error: rpcError } = await supabase.rpc("cambiar_nombre_usuario", { p_nombre: nombre.trim() });
     setGuardando(false);
-    if (updateError) {
-      // 23505 = unique_violation, ver 0037_nombre_unico.sql
-      setError(
-        updateError.code === "23505"
-          ? "Ese nombre ya lo está usando otra cuenta."
-          : "No se pudo guardar. Probá de nuevo."
-      );
+    if (rpcError) {
+      setError(rpcError.message ?? "No se pudo guardar. Probá de nuevo.");
       return;
     }
     setEditando(false);
@@ -43,7 +43,9 @@ export default function NombreEditable({ userId, nombreActual }: Props) {
   if (!editando) {
     return (
       <div className="flex items-center gap-3">
-        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{nombreActual}</h1>
+        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
+          <NombreConFuente nombre={nombreActual} fuente={fuente} />
+        </h1>
         <button
           onClick={() => setEditando(true)}
           className="text-xs font-medium text-primario hover:underline"
@@ -79,6 +81,7 @@ export default function NombreEditable({ userId, nombreActual }: Props) {
           Cancelar
         </button>
       </div>
+      <p className="text-xs text-texto-secundario">Cambiar de nombre cuesta {COSTO_RENOMBRAR} Chispas.</p>
       {error && <p className="text-xs text-error">{error}</p>}
     </div>
   );

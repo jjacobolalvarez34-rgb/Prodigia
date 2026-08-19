@@ -5,6 +5,8 @@ import Link from "next/link";
 import Avatar from "@/components/Avatar";
 import GlareHover from "@/components/reactbits/GlareHover";
 import RangoBadge from "@/components/RangoBadge";
+import NombreConFuente from "@/components/NombreConFuente";
+import type { FuenteNombre } from "@/types/database";
 
 export interface FilaRanking {
   user_id: string;
@@ -14,11 +16,16 @@ export interface FilaRanking {
   elo_rating: number;
   titulo_activo: string | null;
   titulo_nombre: string | null;
+  fuente_nombre?: FuenteNombre | null;
 }
 
 interface Props {
   top3: FilaRanking[];
   miUserId: string;
+  // Fase 1 del rediseño: sigue al filtro activo (dorado por defecto en
+  // "Experiencia total", el color del mundo cuando el filtro es "Por
+  // mundo") — se usa en el destello de las 3 tarjetas, no solo la del 1°.
+  colorAcento?: string;
 }
 
 // Fase R3: el top 3 tiene que sentirse como el lugar más codiciado de
@@ -43,7 +50,7 @@ function TarjetaPodio({ fila, indice, esUsuarioActual }: { fila: FilaRanking; in
       <span className="text-2xl">{estilo.medalla}</span>
       <Avatar url={fila.avatar_url} nombre={fila.display_name} size={indice === 0 ? 64 : 48} />
       <span className="max-w-[8rem] truncate text-center text-sm font-semibold text-foreground">
-        {fila.display_name ?? "Jugador"}
+        <NombreConFuente nombre={fila.display_name} fuente={fila.fuente_nombre} />
       </span>
       {/* Fase 9: rango de Rankeds, información aparte de la Experiencia
           semanal que ordena este ranking — no lo reemplaza. */}
@@ -53,7 +60,7 @@ function TarjetaPodio({ fila, indice, esUsuarioActual }: { fila: FilaRanking; in
   );
 }
 
-export default function Podio({ top3, miUserId }: Props) {
+export default function Podio({ top3, miUserId, colorAcento = "#FFC53D" }: Props) {
   const [destello, setDestello] = useState(false);
 
   useEffect(() => {
@@ -69,7 +76,18 @@ export default function Podio({ top3, miUserId }: Props) {
     <div className="flex items-end justify-center gap-2 sm:gap-4">
       {segundo && (
         <div className="flex flex-1 flex-col items-center">
-          <TarjetaPodio fila={segundo} indice={1} esUsuarioActual={segundo.user_id === miUserId} />
+          <GlareHover
+            width="100%"
+            height="auto"
+            background="transparent"
+            borderColor="transparent"
+            borderRadius="1rem 1rem 0 0"
+            glareColor={colorAcento}
+            glareOpacity={0.22}
+            className="w-full"
+          >
+            <TarjetaPodio fila={segundo} indice={1} esUsuarioActual={segundo.user_id === miUserId} />
+          </GlareHover>
           <div className={`w-full ${ESTILO[1].alto} rounded-b-2xl border-2 border-t-0 ${ESTILO[1].borde} ${ESTILO[1].fondo} flex items-start justify-center pt-1`}>
             <span className="font-display text-lg font-black text-foreground/70">2</span>
           </div>
@@ -84,7 +102,7 @@ export default function Podio({ top3, miUserId }: Props) {
             background="transparent"
             borderColor="transparent"
             borderRadius="1rem 1rem 0 0"
-            glareColor="#FFC53D"
+            glareColor={colorAcento}
             glareOpacity={0.35}
             playOnce
             trigger={destello}
@@ -100,7 +118,18 @@ export default function Podio({ top3, miUserId }: Props) {
 
       {tercero && (
         <div className="flex flex-1 flex-col items-center">
-          <TarjetaPodio fila={tercero} indice={2} esUsuarioActual={tercero.user_id === miUserId} />
+          <GlareHover
+            width="100%"
+            height="auto"
+            background="transparent"
+            borderColor="transparent"
+            borderRadius="1rem 1rem 0 0"
+            glareColor={colorAcento}
+            glareOpacity={0.22}
+            className="w-full"
+          >
+            <TarjetaPodio fila={tercero} indice={2} esUsuarioActual={tercero.user_id === miUserId} />
+          </GlareHover>
           <div className={`w-full ${ESTILO[2].alto} rounded-b-2xl border-2 border-t-0 ${ESTILO[2].borde} ${ESTILO[2].fondo} flex items-start justify-center pt-1`}>
             <span className="font-display text-lg font-black text-foreground/70">3</span>
           </div>
