@@ -4,12 +4,16 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Avatar from "@/components/Avatar";
 import GlareHover from "@/components/reactbits/GlareHover";
+import RangoBadge from "@/components/RangoBadge";
 
 export interface FilaRanking {
   user_id: string;
   display_name: string | null;
   xp_semana: number;
   avatar_url: string | null;
+  elo_rating: number;
+  titulo_activo: string | null;
+  titulo_nombre: string | null;
 }
 
 interface Props {
@@ -41,6 +45,9 @@ function TarjetaPodio({ fila, indice, esUsuarioActual }: { fila: FilaRanking; in
       <span className="max-w-[8rem] truncate text-center text-sm font-semibold text-foreground">
         {fila.display_name ?? "Jugador"}
       </span>
+      {/* Fase 9: rango de Rankeds, información aparte de la Experiencia
+          semanal que ordena este ranking — no lo reemplaza. */}
+      <RangoBadge elo={fila.elo_rating} tituloNombre={fila.titulo_nombre} size="sm" />
       <span className={`font-mono text-xs font-bold ${estilo.texto}`}>{fila.xp_semana} Exp</span>
     </Link>
   );
@@ -63,7 +70,7 @@ export default function Podio({ top3, miUserId }: Props) {
       {segundo && (
         <div className="flex flex-1 flex-col items-center">
           <TarjetaPodio fila={segundo} indice={1} esUsuarioActual={segundo.user_id === miUserId} />
-          <div className={`w-full ${ESTILO[1].alto} rounded-b-lg border-2 border-t-0 ${ESTILO[1].borde} ${ESTILO[1].fondo} flex items-start justify-center pt-1`}>
+          <div className={`w-full ${ESTILO[1].alto} rounded-b-2xl border-2 border-t-0 ${ESTILO[1].borde} ${ESTILO[1].fondo} flex items-start justify-center pt-1`}>
             <span className="font-display text-lg font-black text-foreground/70">2</span>
           </div>
         </div>
@@ -85,7 +92,7 @@ export default function Podio({ top3, miUserId }: Props) {
           >
             <TarjetaPodio fila={primero} indice={0} esUsuarioActual={primero.user_id === miUserId} />
           </GlareHover>
-          <div className={`w-full ${ESTILO[0].alto} rounded-b-lg border-2 border-t-0 ${ESTILO[0].borde} ${ESTILO[0].fondo} flex items-start justify-center pt-1`}>
+          <div className={`w-full ${ESTILO[0].alto} rounded-b-2xl border-2 border-t-0 ${ESTILO[0].borde} ${ESTILO[0].fondo} flex items-start justify-center pt-1`}>
             <span className="font-display text-2xl font-black text-foreground/70">1</span>
           </div>
         </div>
@@ -94,7 +101,7 @@ export default function Podio({ top3, miUserId }: Props) {
       {tercero && (
         <div className="flex flex-1 flex-col items-center">
           <TarjetaPodio fila={tercero} indice={2} esUsuarioActual={tercero.user_id === miUserId} />
-          <div className={`w-full ${ESTILO[2].alto} rounded-b-lg border-2 border-t-0 ${ESTILO[2].borde} ${ESTILO[2].fondo} flex items-start justify-center pt-1`}>
+          <div className={`w-full ${ESTILO[2].alto} rounded-b-2xl border-2 border-t-0 ${ESTILO[2].borde} ${ESTILO[2].fondo} flex items-start justify-center pt-1`}>
             <span className="font-display text-lg font-black text-foreground/70">3</span>
           </div>
         </div>

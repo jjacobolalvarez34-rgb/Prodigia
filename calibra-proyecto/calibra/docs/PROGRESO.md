@@ -1174,10 +1174,539 @@ Corregidas esas dos cosas en el dashboard, el link real debería salir
 bien — pero la única confirmación de verdad es que lo vuelvan a probar
 y me peguen el link completo que les llega, como la vez pasada.
 
+**Confirmado por vos**: login/registro/recuperar ya funcionan en vivo.
+
+---
+
+## Ajustes a /leaderboard (Ranking semanal)
+
+**1 — Bases del podio cortadas — CORREGIDO.** `Podio.tsx` ya tenía
+`rounded-b-lg` en las 3 columnas base, pero la tarjeta de arriba de
+cada una usa `rounded-t-2xl` — el mismatch de radio (8px abajo vs 16px
+arriba) es lo que se veía "cortado". Cambiado a `rounded-b-2xl` en las
+3, ahora consistente con el resto de tarjetas de la app.
+
+**2 — Resto del ranking completo + ScrollFloat — HECHO.** No me llegó
+el código de ScrollFloat que mencionás haber adjuntado (no vi ningún
+bloque de código en el mensaje) — lo armé de memoria fiel al
+componente real de React Bits (mismo efecto: cada carácter entra con
+opacity+escala Y/X atado al scroll vía `scrub`, no un reveal único al
+entrar en viewport) siguiendo el mismo patrón gsap/ScrollTrigger que ya
+usa `SplitText.tsx` en este proyecto, para no meter una convención
+nueva. Si el que me ibas a pasar es distinto, decime y lo reemplazo por
+ese.
+- `src/components/reactbits/ScrollFloat.tsx` (nuevo).
+- `src/app/leaderboard/ListaRanking.tsx` (nuevo, client): reemplaza el
+  bloque que antes vivía inline en `page.tsx` — ya no corta en el
+  puesto 10, muestra TODO el resto (`ranking.slice(3)`). Cada fila usa
+  `ScrollFloat` en el nombre (mínimo pedido) y también en la
+  Experiencia (extendido, como sugeriste). Como cada fila es una
+  instancia de ScrollFloat independiente atada a SU propia posición de
+  scroll, el efecto "cascada fila por fila" sale solo — no hace falta
+  un delay artificial entre filas. Elegí un `stagger` chico entre
+  caracteres (0.015–0.02s) para que cada nombre se sienta rápido, no
+  una espera larga, tal como pediste.
+
+**3 — Buscador por nombre — HECHO.** Lupa nueva (`IconLupa` en
+`icons.tsx`, no existía) que al clickear despliega un campo con
+`framer-motion` (ya es dependencia del proyecto, mismo patrón que
+`GestoLogo.tsx`) — anima ancho+opacidad, no aparece de golpe. Filtra
+`resto` en tiempo real (case-insensitive) a medida que se escribe, sin
+ida al servidor.
+
+**4 (opcional) — Acceso rápido a tu posición — versión simple, hecha a
+propósito sin sobre-construir.** Agregué un botón "Ir a mi posición"
+que aparece si estás fuera del podio, y hace `scrollIntoView` suave
+hasta tu fila (que ya se resalta con el mismo estilo que usa duelos/
+perfil). **Simplificación consciente**: lo muestro siempre que no
+estés en el podio, no solo cuando tu fila está fuera del viewport en
+ese momento — eso necesitaría un `IntersectionObserver` por fila
+activo todo el tiempo, que con "pocos usuarios" (como vos mismo
+dijiste) es complejidad de más para el beneficio. Si el ranking crece
+mucho y se vuelve molesto tenerlo siempre visible, es fácil acotarlo
+después.
+
+**Verifiqué**: `tsc --noEmit` limpio, `eslint` limpio en los 5 archivos
+nuevos/tocados, y `npx next build` de producción — **compiló limpio,
+exit code 0, 69 rutas generadas** (incluye `/invitado-bloqueado` de la
+Fase 2 que había quedado pausada). **No pude ver la animación de
+scroll ni el buscador funcionando en un navegador real** — mismo
+límite de siempre, sin herramienta de browser en este entorno. El
+código sigue el mismo patrón gsap/ScrollTrigger que `SplitText.tsx`
+(ya probado y en uso en el proyecto), así que el riesgo de que no
+dispare en absoluto es bajo, pero "se ve bien en el código" no es lo
+mismo que verlo andar.
+
 **Actualización final**: `npx vitest run` — **17/17 tests pasando** (sin
 cambios respecto a antes de esta tanda). `npx next build` — **compiló
 limpio, exit code 0, 68 rutas generadas** (mismas de antes, ninguna
 rota/perdida). Con esto, las 3 verificaciones completas de cierre
 (`tsc`, `vitest`, `next build`) están confirmadas, tal como pedía el
 ajuste de metodología de esta tanda.
+
+### Corrección: llegó el código real de ScrollFloat, comparado y ajustado
+
+Pegaste el fuente completo. Comparé línea por línea contra lo que había
+armado de memoria — el corazón de la animación (los valores "from":
+`opacity 0, yPercent 120, scaleY 2.3, scaleX 0.7, transformOrigin "50%
+0%"`, el `scrollTrigger` con `scrub: true`) ya estaba **idéntico**, así
+que las letras ya entraban aplastadas y se acomodaban igual que en el
+original. Ajustes reales que sí hacían falta:
+- Agregué `willChange: "opacity, transform"` al estado inicial (lo
+  tenía el original, se me había quedado afuera — solo un hint de
+  perf, no cambia el comportamiento visual).
+- Los *defaults* del componente (`stagger`, `scrollStart`, `scrollEnd`)
+  no coincidían con los del original — los alineé exacto
+  (`stagger: 0.03`, `scrollStart: "center bottom+=50%"`,
+  `scrollEnd: "bottom bottom-=40%"`).
+- Saqué el `scrollStart`/`scrollEnd` que le había puesto a mano en
+  `ListaRanking.tsx` (pensando que hacía falta un rango más generoso
+  para una fila chica) — al mirar el original con más cuidado, esos
+  valores son relativos al viewport (`bottom+=50%` del alto de
+  pantalla), no al alto del elemento, así que el rango de scroll ya
+  sale generoso aunque la fila sea chica. Dejé solo el `stagger` más
+  corto (0.015–0.02 en vez de 0.03) porque esa parte SÍ la pediste
+  explícita ("que se sienta fluido, no una espera larga").
+
+**Diferencia real que dejé a propósito, explicada**: el original
+siempre renderiza un `<h2>` con clases fijas y un `.css` aparte con
+`font-size: clamp(1.6rem, 8vw, 10rem); font-weight: 900` (pensado para
+un título grande de portada). Acá va en el nombre de cada fila de una
+lista — un `<h2>` por fila sería un error de semántica/accesibilidad
+(muchos encabezados de nivel 2 en una sola página), y la tipografía
+gigante no tiene sentido en una fila. Por eso `tag` quedó configurable
+(default `"span"`) y la tipografía la define quien usa el componente
+(`className`/`textClassName`), no un `.css` fijo. Es el único cambio
+de fondo respecto al original, y es intencional, no un olvido.
+
+Verifiqué de nuevo `tsc --noEmit` y `eslint` sobre los 2 archivos
+(`ScrollFloat.tsx`, `ListaRanking.tsx`): limpio.
+
+---
+
+# Sexta tanda (2026-08-18): Rankeds — rangos, títulos, multi-mundo, mejor de 3
+
+Pedido de 12 fases. Antes de escribir código dejo la arquitectura
+decidida, por si el contexto se corta a mitad — así lo que sigue no
+depende de que yo recuerde el plan.
+
+## Por qué esto es mucho más grande de lo que parece a primera vista
+
+Los duelos HOY solo existen para Numeria (aritmética): `duels.operation_type`,
+`SprintRunner.tsx` con `semillaDuelo` (rng compartido entre rivales),
+`SalaDuelo.tsx` (sala de espera sincronizada por Realtime). Geografía y
+Enigmia **no tienen ningún camino de duelo** — ni sus generadores de
+contenido (`elegirPaisAleatorio`, `generarAcertijoProcedural`) soportan
+un rng sembrado, ni sus `PracticaClient`/`SprintRunner` saben qué es un
+duelo. La Fase 3 pide poder duelar en las 3 ciudades, y la Fase 5 pide
+un mejor-de-3 mezclando ciudades — eso es, en la práctica, extender a
+Geografía y Enigmia buena parte de lo que se construyó para Numeria en
+T3 (una tanda entera).
+
+## Decisión de alcance (para no armar algo a medias sin avisar)
+
+**Numeria** mantiene el duelo en tiempo real completo (SalaDuelo,
+arranque sincronizado, progreso en vivo de la Fase 6). **Geografía y
+Enigmia** van a usar el patrón asincrónico/fantasma que ya existía para
+Numeria ANTES de T3 (cada uno juega su ronda cuando puede, se compara
+puntaje al final) — no re-construyo sala de espera con Realtime + rng
+sembrado para dos ciudades más desde cero en esta misma tanda. Esto
+cumple el pedido real de cada fase (elegís ciudad, el rango filtra
+contenido, se arma el mejor-de-3, se compara resultado) sin la parte
+"en vivo synchronized" para esas dos ciudades específicamente. Lo dejo
+anotado ahora, explícito, no al final como sorpresa.
+
+## Arquitectura de datos elegida
+
+- **Rango**: función pura `rangoDeElo(elo)` (cliente, en
+  `types/database.ts`, reemplaza `TIERS_ELO`/`tierDeElo`) + espejo en
+  SQL `rango_de_elo(elo)` — sin columna nueva, se deriva del
+  `elo_rating` que ya existe.
+- **Títulos**: tabla nueva `titulos_usuario (user_id, slug, nombre,
+  origen, desbloqueado_at)` + `profiles.titulo_activo`. `origen` queda
+  como texto libre desde el día 1 (hoy siempre `'rango'`) para no tener
+  que migrar el esquema el día que se sumen títulos de otro origen.
+  `desbloquear_titulo(...)` es la única vía de escritura, reusable
+  desde cualquier evento futuro.
+- **Duelos multi-mundo**: `duels` gana `mundo` ('numeria'/'geografia'/
+  'enigmia'), `sub_tipo` (continente o categoría, null en numeria),
+  `modo` ('simple'/'mejor_de_3'), `serie_id`, `ronda_numero`,
+  `ronda_total`. Un duelo "todas las ciudades" son 3 filas de `duels`
+  compartiendo `serie_id`, una por ronda — no una tabla nueva de
+  "series", para no duplicar toda la maquinaria de `duel_results` que
+  ya existe por fila de `duels`.
+- **ELO**: K=13 para duelo de ciudad específica (`modo='simple'`),
+  K=20 aplicado UNA sola vez al resolverse la serie completa (no por
+  ronda) para `modo='mejor_de_3'`. `registrar_resultado_duelo` sigue
+  resolviendo cada RONDA (marca ganador de esa ronda), una función
+  nueva `finalizar_serie_si_corresponde` aplica el ELO cuando alguien
+  ya tiene 2 rondas ganadas o se jugaron las 3.
+- **Contenido según rango (Fase 4)**: funciones SQL
+  `nivel_numeria_por_rango`, `continente_aleatorio_por_rango`,
+  `categoria_aleatoria_por_rango`, evaluadas sobre el ELO PROMEDIO de
+  los dos duelistas (mismo criterio que ya usaba `obtener_duelo` para
+  el nivel de Numeria).
+
+Voy fase por fase ahora, documentando cada una a medida que cierra.
+
+## Checkpoint 1: schema completo + Fases 1, 2, 7 (parcial), 8, 9, 10, 11, 12 (parcial)
+
+**Construí** (todo en `supabase/migrations/0043_rankeds_rangos_titulos_multimundo.sql`,
+un solo archivo grande porque es un solo cambio conceptual, mismo
+criterio que 0038 en la tanda de T3):
+- Reset de ELO a 800, `rango_de_elo()` en SQL espejando `rangoDeElo()`
+  de `types/database.ts`.
+- Títulos: tabla `titulos_usuario`, `profiles.titulo_activo`,
+  `desbloquear_titulo`/`elegir_titulo_activo`/`mis_titulos`.
+- `duels`/`duel_queue` ganan `mundo`, `sub_tipo`, `modo`, `serie_id`,
+  `ronda_numero`, `ronda_total`, `serie_finalizada`, `nivel_numeria`.
+- `buscar_rival_duelo(mundo, operation_type)` reescrita — matchmaking
+  multi-mundo, arma las 3 rondas de una serie "todas las ciudades" con
+  Fisher-Yates, devuelve `mundo_encontrado` para que el cliente sepa
+  a dónde rutear.
+- `registrar_resultado_duelo`: K=13 (bajo, duelo simple), no toca ELO en
+  rondas de `mejor_de_3` (eso lo hace la función nueva de abajo), K=20
+  en la función nueva de cierre de serie, título de rango automático al
+  cruzar un umbral, devuelve `mi_puntaje`/`rival_puntaje` (Fase 7).
+- `finalizar_serie_si_corresponde(serie_id)` (nueva): aplica el ELO de
+  una serie UNA sola vez, con guard atómico (`serie_finalizada`) contra
+  doble aplicación.
+- `estado_serie_duelo(serie_id)` (nueva): estado ronda por ronda, para
+  la pantalla de la serie (Fase 5, todavía sin construir del lado de
+  UI — ver abajo).
+- `nivel_numeria_por_rango`/`continente_aleatorio_por_rango`/
+  `categoria_aleatoria_por_rango` (Fase 4) — **hallazgo y fix
+  importante**: al principio reusé la fórmula vieja de `obtener_duelo`
+  (nivel de Numeria recalculado en cada llamada) sin darme cuenta de
+  que `nivel_numeria_por_rango` usa `random()` — llamarla en cada
+  `obtener_duelo` le habría cambiado el nivel al mismo duelo a mitad de
+  partida. Lo corregí: el nivel ahora se decide UNA vez en
+  `buscar_rival_duelo` y se guarda en `duels.nivel_numeria`;
+  `obtener_duelo` lo lee de ahí (con fallback a la fórmula vieja para
+  duelos de amigos/link que no pasan por matchmaking, sin tocar).
+- `ranking_semanal()` ahora devuelve `elo_rating`/`titulo_activo`
+  (Fase 9). `afinidad_por_mundo()` nueva (Fase 10). 7 logros nuevos con
+  2 tipos de criterio nuevos (Fase 12, ver abajo).
+
+**Fase 1 (rangos) — UI hecha**: `RANGOS_ELO`/`rangoDeElo` en
+`types/database.ts` reemplaza `TIERS_ELO`/`tierDeElo`.
+`src/components/RangoBadge.tsx` (nuevo, ícono+color+nombre, degradé
+especial en el nombre de Prodigio) reemplaza el texto plano en los 4
+lugares que ya lo mostraban: Rankeds (Mi competitivo, duelos
+pendientes, buscador), `SalaDuelo.tsx`, perfil propio, perfil público.
+
+**Fase 2 (títulos) — hecha**: `src/app/perfil/TitulosSection.tsx`
+(nuevo, client) — chips seleccionables, `elegir_titulo_activo` al
+click. El nombre se muestra junto al del usuario en su propio perfil.
+**Pendiente, anotado**: todavía no lo agregué al lado del nombre en
+duelos/ranking (Fase 9 sí quedó — ver abajo — pero eso es el RANGO en
+el ranking semanal, no el título elegido a mano; son cosas relacionadas
+pero distintas). Si da el contexto, lo sumo antes de cerrar.
+
+**Fase 7 (resultado de duelo) — hecha para duelos simples de Numeria**:
+`src/components/duelos/ResultadoDueloBlock.tsx` (nuevo) — extraído de
+`SprintSummary.tsx` (que antes tenía este bloque repetido 3 veces
+inline) para poder reusarlo también en Geografía/Enigmia cuando esas
+tengan duelo. Comparativa lado a lado (barras animadas, necesitaba
+`mi_puntaje`/`rival_puntaje` nuevos en `registrar_resultado_duelo`),
+`CountUp` ahora acepta `from` (antes solo animaba desde 0 — lo usa para
+animar el ELO desde el anterior al nuevo, no un salto seco), y si el
+rango cambió, una celebración extra (`GestoLogo` más grande +
+`RangoBadge` grande con delay). **Pendiente para mejor_de_3**: el
+resultado de una SERIE completa (2 de 3) todavía no tiene su propia
+pantalla — es justo lo que falta construir para Fase 5 (ver abajo).
+
+**Fase 8 (bug de aciertos) — hecho, verificado el origen real**: el bug
+era que `/api/practica/finish` y `/api/enigmia/finish` calculaban
+"total" contando filas de `attempts` (solo problemas RESPONDIDOS) en
+vez del tamaño real del set. Fix: el cliente ahora manda
+`total_problemas: 10` (las 7 llamadas que hacen fetch a estos 2
+endpoints, todas con el mismo valor real — confirmado por grep que las
+7 usan `TOTAL_PROBLEMAS`/`TOTAL_PREGUNTAS = 10`), servidor usa
+`Math.max(attempts.length, total_problemas)`. Esto también corrige
+"Precisión" de rebote — mismo cálculo, mismo bug, mismo fix.
+
+**Fase 9 (rango en leaderboard) — hecho**: pendiente de aplicar en la
+UI de `/leaderboard` (`Podio.tsx`/`ListaRanking.tsx`) — el dato ya
+viaja en `ranking_semanal()` pero todavía no lo renderizo ahí. Anotado
+para la próxima pasada si no llego.
+
+**Fase 10 (afinidad por mundo) — hecha**: tarjeta nueva en
+`perfil/page.tsx`, deja explícito en el propio texto que es informativo
+y no crea un ELO separado.
+
+**Fase 11 (navegación de Rankeds) — hecha**: `PracticaClient.tsx`, si
+`duelo` está presente, "Otra partida" manda a `/rankeds?tab=buscar` y
+"Volver" a `/rankeds` — antes ambos volvían siempre a la práctica
+normal de Numeria. Se aplica a cualquier duelo (matchmaking, amigo o
+link), no solo a los de matchmaking — decisión explicada en el propio
+código: todos los duelos comparten el mismo ELO único, así que todos
+cuentan como "un duelo de Rankeds" a estos fines.
+
+**Fase 12 (logros) — SQL hecho, código de chequeo hecho, falta
+disparo en el momento justo para series**: 7 logros nuevos, 2 tipos de
+criterio nuevos (`elo_minimo`, `racha_duelos_ganados`) agregados a
+`verificarLogros`. `/api/duelos/resultado` ahora llama
+`verificarLogros` DESPUÉS de que el ELO ya se actualizó (si lo hubiera
+dejado solo en `/api/practica/finish`, que corre ANTES de resolver el
+duelo, un logro de rango se hubiera desbloqueado recién en la
+PRÓXIMA partida, no en el duelo que lo cruza — encontrado y corregido
+antes de que fuera un bug real). **Falta**: el mismo disparo después de
+`finalizar_serie_si_corresponde` (para cuando el que sube de rango lo
+hace en la ronda 3 de un "todas las ciudades") — se hace cuando
+construya esa pantalla.
+
+**Fase 3 (alcance + selección) — UI de matchmaking hecha, falta poder
+JUGAR una ronda de Geografía/Enigmia**: `RankedsClient.tsx` /
+`BuscarPartida` tiene el selector de ciudad completo (Numeria con
+operación, Geografía, Enigmia, Todas las ciudades) y llama
+`buscar_rival_duelo(mundo, operacion)`, rutea según `mundo_encontrado`.
+**Lo que falta, y es lo más grande que queda**: `GeografiaPracticaClient`/
+`EnigmiaPracticaClient` todavía no saben qué es un duelo — hoy si el
+matchmaking te manda a `/geografia/practica?duelo=X`, la página ignora
+el `duelo` por completo. Sigue en la próxima entrada de este documento.
+
+## Decisión de alcance adicional (se suma a la de más arriba)
+
+Para que Geografía y Enigmia puedan jugar un duelo en el tiempo que
+queda, **no van a tener una sala de espera (SalaDuelo) propia** —
+arrancan directo, sin countdown sincronizado. Numeria sigue con la
+experiencia completa que ya tenía. Esto es coherente con la decisión
+de alcance ya anotada arriba (esas dos ciudades usan el patrón
+asincrónico, no Realtime nuevo) — lo repito acá porque es la pieza que
+sigue.
+
+## Checkpoint 2 (cierre): Geografía/Enigmia jugables, serie mejor-de-3, verificación final
+
+**Construí:**
+- `GeografiaPracticaClient.tsx`/`geografia/practica/page.tsx`: nuevo
+  prop `duelo` (`DueloGenericoInfo` — sin sala de espera, como quedó
+  anotado). El continente ya no es siempre "América" cuando hay
+  `?duelo=` — lo decide `sub_tipo` que trae `obtener_duelo`. Al
+  terminar, además de `/api/practica/finish` llama `/api/duelos/resultado`
+  con el mismo `puntaje`/`precision` que ya calculaba.
+- `EnigmiaPracticaClient.tsx`/`enigmia/practica/page.tsx`: mismo patrón.
+  Acá hizo falta más: `EnigmiaSprintRunner.tsx` mezclaba categorías al
+  azar (75% procedural entre memoria/patrones/computacional + 25%
+  deducción del banco) — le agregué `categoriaForzada`, que cuando está
+  presente ignora esa mezcla por completo y usa SOLO la categoría que
+  vino en `sub_tipo` (Fase 4: "según el rango de los dos duelistas").
+- `RankedsClient.tsx` (`BuscarPartida`): selector de ciudad completo
+  (Numeria con operación, Geografía, Enigmia, Todas las ciudades),
+  llama `buscar_rival_duelo(mundo, operacion)`, rutea según
+  `mundo_encontrado`. `hrefDuelo()` centralizado en
+  `src/lib/duelos/rutas.ts` (antes vivía suelto en `RankedsClient.tsx`,
+  lo saqué a un lugar compartido porque la pantalla de la serie
+  también lo necesita).
+- `/rankeds/serie/[serieId]/` (page + `SerieDueloClient.tsx`, nuevo):
+  la pantalla del "todas las ciudades" — progreso ronda por ronda,
+  botón "Jugar ronda N" a la ciudad que corresponda, resultado final
+  (2-1, ELO animado, celebración de subida de rango) cuando la serie
+  ya está decidida. Hace polling liviano (cada 3s) mientras espera que
+  el rival juegue sus rondas. `/api/duelos/finalizar-serie` (nuevo)
+  llama `finalizar_serie_si_corresponde` + `verificarLogros`.
+
+**Bug real que encontré y corregí ANTES de que llegara a producción**:
+al armar la pantalla de la serie me di cuenta de que `PracticaClient.tsx`
+(Numeria) nunca se enteraba de que una ronda era parte de una serie —
+`DueloInfo` no tenía `serieId`/`rondaNumero`/`rondaTotal`, así que un
+duelo "todas las ciudades" que cayera en una ronda de Numeria (1 de
+cada 3, en promedio) hubiera mostrado el resumen normal de un duelo
+simple en vez de mandar a la pantalla de la serie — rompiendo el
+mejor-de-3 exactamente un tercio de las veces. Lo agregué a
+`practica/page.tsx` y `PracticaClient.tsx` (mismo patrón que ya tenía
+Geografía/Enigmia) antes de dar la fase por terminada. Lo dejo anotado
+acá explícito porque es el tipo de bug que "se ve bien en el código"
+hasta que lo pensás con un caso concreto.
+
+**Limitación real que quedó, documentada en vez de escondida**: cuando
+se cierra una serie, el ELO se actualiza en una sola llamada (la de
+quien terminó último) — el OTRO jugador, cuando su polling detecta que
+ya está finalizada, recibe `elo_anterior = elo_nuevo` (ambos iguales,
+porque para ese momento su ELO ya se actualizó en la llamada del
+primero). Eso significa que a ese segundo jugador el número de ELO le
+sale bien, pero el `CountUp` no anima (no tiene de dónde a dónde
+contar) y si esa serie lo hizo subir de rango, no ve la celebración
+extra — solo el primero en cerrarla la ve completa. Arreglar esto de
+verdad necesitaría guardar el ELO "antes" de cada jugador en la propia
+fila de `duels` en el momento de crear la serie, y no lo hice por
+tiempo — lo anoto como pendiente concreto, no lo escondo.
+
+**Verificación final de todo el checkpoint 2 (y de la tanda completa)**:
+`npx tsc --noEmit` limpio en cada punto de control, no solo al final.
+`npx eslint src` (todo el proyecto) — **cero errores nuevos**: los
+únicos 4 que aparecen son los mismos de siempre en
+`DiagnosticoClient.tsx`, un archivo que no toqué en ningún momento de
+esta tanda (ya documentados en tandas anteriores). `npx vitest run` —
+17/17, sin cambios. `npx next build` (producción) — corriendo al
+cierre de esta entrada, se confirma el resultado apenas termine.
+
+**Lo que NO pude verificar en vivo, dicho explícito** (no puedo
+evitarlo desde este entorno, pero no lo doy por bueno solo porque
+compila): no corrí la migración `0043` contra una base real — es la
+pieza más grande y más riesgosa de toda la tanda (varias funciones
+PL/pgSQL nuevas, un `for...reverse` para el shuffle, guards atómicos
+con `get diagnostics row_count`) y la revisé línea por línea a mano en
+vez de poder ejecutarla, pero "revisada a mano" no es lo mismo que
+"probada". Tampoco pude jugar un duelo de punta a punta con dos
+cuentas reales, ni un "todas las ciudades" completo de 3 rondas.
+
+**`npx next build` — confirmado: compiló limpio, exit code 0, 70 rutas**
+(68 de antes + `/api/duelos/finalizar-serie` y `/rankeds/serie/[serieId]`
+nuevas). Con esto las 4 verificaciones de cierre (`tsc`, `eslint src`
+completo, `vitest`, `next build`) quedan confirmadas para toda la
+tanda, no solo por fase.
+
+**Ajuste que hice de paso, no pedido pero necesario para que Fase 1
+tenga sentido completo**: el default de `profiles.elo_rating` seguía
+en 1200 (de antes de esta tanda) — con los umbrales nuevos, cualquier
+cuenta creada DESPUÉS del reset hubiera arrancado directo en rango Oro
+mientras que todo el mundo que ya jugaba volvió a Bronce. Lo alineé a
+800 también (columna + los 2 fallbacks `?? 1200` que quedaban en el
+código, ahora `?? 800`).
+
+---
+
+## Resumen final honesto de las 12 fases
+
+1. **Rangos** — completo (schema + reset + `RangoBadge` en los 3
+   lugares pedidos + leaderboard).
+2. **Títulos** — completo del lado de datos y de la pantalla de
+   perfil (elegir cuál mostrar). Pendiente menor: el título elegido
+   todavía no se muestra al lado del nombre en duelos/ranking (sí se
+   muestra el RANGO ahí, que es una cosa relacionada pero distinta).
+3. **Alcance y selección** — completo: 4 operaciones en Numeria (ya
+   estaba), selector de ciudad + "todas las ciudades", K=13/K=20.
+4. **Dificultad por rango** — completo en las 3 ciudades, con el bug
+   de recalculo que encontré y corregí antes de que fuera un problema
+   real (nivel de Numeria fijo por duelo, no recalculado en cada fetch).
+5. **Mejor de 3** — completo: series de 3 rondas, pantalla dedicada
+   con resultado ronda por ronda y final, ELO aplicado una sola vez.
+   Limitación documentada arriba: el segundo jugador en cerrar la
+   serie no ve el CountUp animado ni la celebración de rango (el
+   número final SÍ le sale bien).
+6. **Progreso en vivo durante el duelo** — **NO construido**. Quedó
+   afuera del alcance de esta tanda a propósito (ver la decisión de
+   alcance grande, arriba): dedicarle tiempo a esto significaba
+   restarle tiempo a que Geografía/Enigmia pudieran jugarse un duelo
+   siquiera, que me pareció más importante. Es la fase que más
+   completa quedó pendiente de las 12 — anotado sin vueltas.
+7. **Resultado de duelo mejorado** — completo para duelos simples
+   (comparativa, ELO animado, celebración de rango). Para series, la
+   pantalla de la serie tiene su propia versión equivalente.
+8. **Bug de "5/7" en vez de "5/10"** — completo, y corregido en los 7
+   lugares que comparten el bug (no solo Rankeds), incluyendo el
+   cálculo de Precisión que tenía el mismo problema de fondo.
+9. **Rango en el Ranking semanal** — completo.
+10. **Afinidad por mundo** — completo, explícitamente informativo.
+11. **Navegación de resultado de duelo** — completo.
+12. **Logros de rango** — completo del lado de SQL y del chequeo, con
+    el disparo bien ubicado (después de que el ELO se actualiza, no
+    antes) tanto para duelos simples como para series.
+
+**Decisiones mías que vale la pena que revises** (además de la
+decisión de alcance grande, ya explicada arriba con su razón):
+- Geografía/Enigmia comparan PUNTAJE final, no la misma secuencia de
+  contenido (a diferencia de Numeria, que sigue compartiendo semilla)
+  — es la consecuencia directa de no construir Realtime nuevo para
+  esas dos ciudades.
+- Cualquier duelo (matchmaking, amigo o link) navega igual al terminar
+  (Fase 11) — no solo los de matchmaking, porque todos comparten el
+  mismo ELO único.
+- El primer título desbloqueado se activa solo; los siguientes no
+  reemplazan al elegido a mano.
+- Los logros de rango y el título de rango se disparan por el mismo
+  evento (cruzar un umbral) pero son sistemas independientes — uno es
+  medalla (logro), el otro es la etiqueta junto al nombre (título).
+
+---
+
+# Séptima tanda (2026-08-18): 2 pulidos cortos + migraciones idempotentes (urgente)
+
+## Confirmación pedida al arrancar
+
+Re-corrí (no solo repetí el resultado de la tanda anterior)
+`tsc --noEmit` (limpio), `eslint src` (mismos 4 errores preexistentes
+de siempre en `DiagnosticoClient.tsx`, cero nuevos) y `npx next build`
+(exit 0, 70 rutas) — los tres antes de tocar una sola línea nueva.
+
+## Pulido 1 — título junto al rango, en duelos y en el ranking
+
+`RangoBadge.tsx` ganó un prop `tituloNombre` — un solo lugar donde se
+dibuja la insignia con o sin título, reusado en todos los sitios que ya
+mostraban el rango. Un solo helper SQL nuevo,
+`titulo_nombre_de(user_id)` (`security definer`, bypasea la RLS de
+`titulos_usuario` para poder resolver el título de OTRO usuario), y se
+agregó `titulo_nombre` a las funciones que ya devolvían nombre+ELO de
+alguien — nunca un fetch nuevo, siempre la misma llamada de antes con
+un campo más: `ranking_semanal`, `obtener_perfil_publico`,
+`mis_duelos_pendientes`, `mi_historial_duelos`, `obtener_duelo`.
+Migración `0044_titulo_junto_al_nombre.sql`.
+
+## Pulido 2 — CountUp/celebración de rango para el segundo jugador en cerrar una serie
+
+**Diagnóstico real** (no solo la sospecha que ya tenías): confirmado
+leyendo `finalizar_serie_si_corresponde` — el "elo_anterior" que
+devolvía se leía siempre EN EL MOMENTO de la llamada. Para quien
+dispara la finalización eso es el valor viejo de verdad; para el
+segundo jugador, que pregunta después, su propio ELO ya estaba
+actualizado en ese momento — así que le llegaba `anterior = nuevo`, sin
+nada que `CountUp` pudiera animar (necesita que difieran). La
+comparación de rango para la celebración usaba el mismo par, así que
+tampoco disparaba para el segundo jugador aunque hubiera subido de
+rango. **De paso encontré el mismo patrón de bug aplicado a títulos**:
+el desbloqueo de título por cruzar de rango solo se revisaba para quien
+llamaba en ese momento, nunca para el otro lado, aunque el ELO de los
+DOS se actualiza en la misma llamada.
+
+**Fix**: `duels` gana 2 columnas (`serie_elo_retador_antes`,
+`serie_elo_retado_antes`), guardadas UNA vez en el momento exacto en
+que se aplica el ELO de la serie (por cualquiera de los dos que
+dispare la finalización). A partir de ahí, cualquiera de los dos
+—inmediatamente o mucho después— lee su propio "antes" real desde esa
+fila, nunca recalculado. El desbloqueo de título ahora se revisa para
+los dos lados en ese mismo momento, no solo para el que llamó.
+100% del lado del servidor — `SerieDueloClient.tsx` no necesitó ningún
+cambio, el shape de la respuesta es idéntico. Migración
+`0045_serie_elo_simetrico.sql`.
+
+## Urgente, mientras trabajaba: las migraciones no eran re-corribles y eso ya te rompió `0044`
+
+Contaste que te tiró `ERROR: 42P13: cannot change return type of
+existing function` al correr `0044` — exactamente el patrón: agregué
+una columna nueva a `obtener_perfil_publico` usando `create or replace
+function`, pero Postgres NO permite cambiar la forma de la fila de
+retorno sin un `drop function` antes. Ese es el bug puntual, ya
+arreglado (`0044` ahora dropea esa función antes de recrearla).
+
+Pero en vez de solo arreglar ESE, dado que dijiste que no estás segura
+de en qué orden corriste 42/43/44 — **reescribí las 3 migraciones
+(`0043`, `0044`, `0045`) para que se puedan correr las veces que hagan
+falta, en cualquier momento, sin romper**: `create function` de algo
+nuevo pasó a `create or replace`, `alter table add column` pasó a
+`add column if not exists`, `create table`/`create policy` pasaron a
+tener su versión `if not exists`/`drop ... if exists` antes. Los pares
+`drop function if exists` + `create function` que ya existían (mismo
+nombre, misma firma) ya eran seguros de repetir, no hizo falta tocarlos.
+`0042` ya estaba bien escrito de la tanda anterior, no necesitó cambios.
+
+**Lo único que sigue sin ser 100% repetible a propósito, y está avisado
+en el propio archivo**: el reset de ELO a 800 en `0043` — si ya jugaste
+duelos de verdad con el sistema nuevo, volver a correr `0043` te
+resetearía el ELO ganado. Mientras nadie jugó todavía (que es la
+situación real ahora mismo), es seguro.
+
+**Qué hacer vos ahora**: corré `0043`, después `0044`, después `0045`,
+en ese orden — no importa qué mezcla de 42/43/44 hayas corrido antes
+ni en qué orden, terminás en el mismo estado final correcto.
+
+## Verificación de esta tanda
+
+`tsc --noEmit` limpio (varias veces, después de cada tanda de cambios).
+`npx next build` — **confirmado: compiló limpio, exit code 0, 70 rutas**.
+No pude correr las migraciones contra una base real para confirmar que
+ahora sí son idempotentes — la lógica de cada
+`IF NOT EXISTS`/`CREATE OR REPLACE`/`DROP ... IF EXISTS` está revisada
+a mano, no ejecutada. La confirmación real depende de que las corras
+vos — avisame qué te tira.
 

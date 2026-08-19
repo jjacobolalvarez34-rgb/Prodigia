@@ -27,6 +27,8 @@ export interface DueloInfo {
   rivalNombre: string;
   miElo: number;
   rivalElo: number;
+  miTituloNombre: string | null;
+  rivalTituloNombre: string | null;
   rivalRespuestas: RespuestaDuelo[] | null;
   // Fase T3: ambos rivales generan la MISMA secuencia de problemas a
   // partir de esta semilla (ver src/lib/practica/problems.ts +
@@ -34,6 +36,14 @@ export interface DueloInfo {
   // tiempo. Se guarda desde antes (api/amigos/retar, api/feed/retar,
   // buscar_rival_duelo) pero hasta esta fase nunca se leía.
   semilla: number;
+  // Fase 5 de Rankeds: si esta ronda es parte de un duelo "todas las
+  // ciudades" (mejor de 3), serieId no es null — PracticaClient tiene
+  // que redirigir a /rankeds/serie/[serieId] al terminar en vez de
+  // mostrar su propio resumen (esa pantalla es la única que sabe
+  // agregar las 3 rondas y aplicar el ELO una sola vez).
+  serieId: string | null;
+  rondaNumero: number;
+  rondaTotal: number;
 }
 
 export default async function PracticaPage({ searchParams }: Props) {
@@ -50,7 +60,7 @@ export default async function PracticaPage({ searchParams }: Props) {
       supabase.from("duels").select("semilla_problemas").eq("id", duelo).single(),
     ]);
     const fila = (data as Array<Record<string, unknown>> | null)?.[0];
-    if (fila && fila.estado === "pendiente") {
+    if (fila && fila.estado === "pendiente" && fila.mundo === "numeria") {
       const rivalYaJugo = fila.rival_ya_jugo === true;
       const rivalId = fila.retador_id === user.id ? (fila.retado_id as string) : (fila.retador_id as string);
       dueloInfo = {
@@ -61,11 +71,16 @@ export default async function PracticaPage({ searchParams }: Props) {
         rivalNombre: (fila.rival_nombre as string | null) ?? "Rival",
         miElo: fila.mi_elo as number,
         rivalElo: fila.rival_elo as number,
+        miTituloNombre: (fila.mi_titulo_nombre as string | null) ?? null,
+        rivalTituloNombre: (fila.rival_titulo_nombre as string | null) ?? null,
         // El fantasma solo existe si el rival ya jugó su lado del duelo
         // antes que vos — si no, jugás normal y tu secuencia de
         // respuestas queda guardada para cuando él juegue la suya.
         rivalRespuestas: rivalYaJugo ? (fila.rival_respuestas as RespuestaDuelo[] | null) ?? null : null,
         semilla: (filaSemilla?.semilla_problemas as number | undefined) ?? 1,
+        serieId: (fila.serie_id as string | null) ?? null,
+        rondaNumero: fila.ronda_numero as number,
+        rondaTotal: fila.ronda_total as number,
       };
     }
   }

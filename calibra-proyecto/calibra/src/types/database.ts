@@ -76,6 +76,7 @@ export interface PerfilPublico {
   elo_rating: number;
   puntos_total: number;
   created_at: string;
+  titulo_nombre: string | null;
 }
 
 export type MotivoReporte = "trampa" | "imagen_inapropiada" | "nombre_inapropiado" | "otro";
@@ -184,9 +185,15 @@ export interface Duel {
   retador_id: string;
   retado_id: string;
   semilla_problemas: number;
-  operation_type: ArithmeticProblemType;
+  operation_type: ArithmeticProblemType | null;
   estado: EstadoDuelo;
   creado_at: string;
+  mundo: MundoDuelo;
+  sub_tipo: string | null; // continente (geografía) o categoría (enigmia) — null en numeria
+  modo: ModoDuelo;
+  serie_id: string | null;
+  ronda_numero: number;
+  ronda_total: number;
 }
 
 export interface DuelResult {
@@ -197,16 +204,52 @@ export interface DuelResult {
   puntaje_final: number;
 }
 
-export const TIERS_ELO = [
-  { nombre: "Bronce", min: 0 },
-  { nombre: "Plata", min: 1100 },
-  { nombre: "Oro", min: 1300 },
-  { nombre: "Platino", min: 1500 },
-] as const;
-
-export function tierDeElo(elo: number): string {
-  return [...TIERS_ELO].reverse().find((t) => elo >= t.min)?.nombre ?? "Bronce";
+// ---------- Rankeds: rangos (Fase 1 de la tanda de Rankeds) ----------
+// Reemplaza el TIERS_ELO/tierDeElo viejo (4 tiers, sin color) — ahora 6
+// rangos con umbral y color propios. Prodigio (el tope) no tiene un
+// colorHex sólido representativo: lleva `degradado` (violeta→ámbar, los
+// colores del logo) para que el tratamiento visual se sienta distinto
+// al resto, no "un color más de la lista".
+export interface RangoElo {
+  slug: string;
+  nombre: string;
+  min: number;
+  colorHex: string;
+  degradado?: [string, string];
 }
+
+export const RANGOS_ELO: RangoElo[] = [
+  { slug: "bronce", nombre: "Bronce", min: 0, colorHex: "#B08D57" },
+  { slug: "plata", nombre: "Plata", min: 900, colorHex: "#B8C4D9" },
+  { slug: "oro", nombre: "Oro", min: 1100, colorHex: "#E8B34D" },
+  { slug: "platino", nombre: "Platino", min: 1300, colorHex: "#5FBFA8" },
+  { slug: "diamante", nombre: "Diamante", min: 1500, colorHex: "#5DC8F5" },
+  { slug: "prodigio", nombre: "Prodigio", min: 1700, colorHex: "#FFC53D", degradado: ["#A794FF", "#FFC53D"] },
+];
+
+export function rangoDeElo(elo: number): RangoElo {
+  return [...RANGOS_ELO].reverse().find((r) => elo >= r.min) ?? RANGOS_ELO[0];
+}
+
+export function rangoDeSlug(slug: string): RangoElo | undefined {
+  return RANGOS_ELO.find((r) => r.slug === slug);
+}
+
+// ---------- Rankeds: títulos (Fase 2) ----------
+// Esquema pensado para más de un origen a futuro (hoy el único origen
+// real es "rango", pero `origen` queda como texto libre desde el
+// arranque para no migrar el esquema el día que se sumen títulos de
+// logros u otro lado).
+export interface TituloUsuario {
+  slug: string;
+  nombre: string;
+  origen: string;
+  desbloqueado_at: string;
+}
+
+// ---------- Rankeds: duelos multi-mundo (Fases 3-5) ----------
+export type MundoDuelo = "numeria" | "geografia" | "enigmia";
+export type ModoDuelo = "simple" | "mejor_de_3";
 
 // ---------- Enigmia (Fase X): mundo de lógica ----------
 

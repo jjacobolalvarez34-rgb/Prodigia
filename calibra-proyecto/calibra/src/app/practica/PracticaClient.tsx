@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { ArithmeticProblemType, ModifierSlug } from "@/types/database";
 import type { Problem } from "@/lib/practica/problems";
 import type { DueloInfo, RespuestaDuelo } from "./page";
@@ -33,6 +34,7 @@ export default function PracticaClient({
   miUserId,
   colorDial,
 }: Props) {
+  const router = useRouter();
   const [fase, setFase] = useState<Fase>(duelo ? "duelo-intro" : "seleccion");
   const [seleccionadas, setSeleccionadas] = useState<ArithmeticProblemType[]>(
     operacionPreseleccionada ? [operacionPreseleccionada] : []
@@ -76,7 +78,7 @@ export default function PracticaClient({
       const res = await fetch("/api/practica/finish", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ started_at: startedAtIso }),
+        body: JSON.stringify({ started_at: startedAtIso, total_problemas: 10 }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -101,7 +103,24 @@ export default function PracticaClient({
             }),
           });
           const dataDuelo = await resDuelo.json();
-          if (resDuelo.ok) setResultadoDuelo(dataDuelo as ResultadoDuelo);
+          if (resDuelo.ok) {
+            // Fase 5: esta ronda es parte de un "todas las ciudades" —
+            // la pantalla de la serie es la única que agrega las 3
+            // rondas y aplica el ELO, así que no se arma un resumen
+            // local acá (mismo criterio que Geografía/Enigmia).
+            if (duelo.serieId) {
+              router.push(`/rankeds/serie/${duelo.serieId}`);
+              return;
+            }
+            setResultadoDuelo(dataDuelo as ResultadoDuelo);
+            // Logros que recién se pueden cumplir una vez que el ELO de
+            // ESTE duelo ya se aplicó (ej. "llegaste a Plata") — ver
+            // comentario en /api/duelos/resultado. Se suman a los que ya
+            // había devuelto /api/practica/finish, no los reemplazan.
+            if (dataDuelo.logrosNuevos?.length > 0) {
+              setResumen((prev) => (prev ? { ...prev, logrosNuevos: [...prev.logrosNuevos, ...dataDuelo.logrosNuevos] } : prev));
+            }
+          }
         } catch {
           // El duelo no se pudo resolver por un error de red puntual — el
           // resumen de la partida igual se muestra con normalidad.
@@ -125,6 +144,11 @@ export default function PracticaClient({
         rivalNombre={duelo.rivalNombre}
         miElo={duelo.miElo}
         rivalElo={duelo.rivalElo}
+        miTituloNombre={duelo.miTituloNombre}
+        rivalTituloNombre={duelo.rivalTituloNombre}
+        serieId={duelo.serieId}
+        rondaNumero={duelo.rondaNumero}
+        rondaTotal={duelo.rondaTotal}
         onEmpezar={() => iniciarSprint([duelo.operacion])}
       />
     );
@@ -162,7 +186,15 @@ export default function PracticaClient({
         resumen={resumen}
         errores={erroresSprint}
         duelo={resultadoDuelo}
-        onOtraVez={() => setFase("seleccion")}
+        // Fase 11: el resumen de un duelo de Rankeds no vuelve a la
+        // selección normal de Practicar — "Otra partida" manda de
+        // nuevo a Buscar partida, y "Volver" a la pantalla principal
+        // de Rankeds, no a la home de Numeria. Se aplica a cualquier
+        // duelo (matchmaking, amigos o link) — todos afectan el mismo
+        // ELO único, así que todos son "un duelo de Rankeds" a estos
+        // fines de navegación.
+        onOtraVez={duelo ? () => router.push("/rankeds?tab=buscar") : () => setFase("seleccion")}
+        volverHref={duelo ? "/rankeds" : undefined}
       />
     );
   }

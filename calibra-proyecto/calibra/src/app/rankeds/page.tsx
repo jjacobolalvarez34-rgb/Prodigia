@@ -9,24 +9,32 @@ export const metadata: Metadata = {
   description: "Tu competitivo en Prodigia: ELO, historial y matchmaking de duelos.",
 };
 
-export default async function RankedsPage() {
+interface Props {
+  searchParams: Promise<{ tab?: string }>;
+}
+
+export default async function RankedsPage({ searchParams }: Props) {
+  const { tab } = await searchParams;
   const supabase = await createClient();
   const { user, profile } = await requireUsuario(supabase, "/rankeds");
   bloquearInvitado(user, "Rankeds");
 
-  const [{ data: historial }, { data: pendientes }] = await Promise.all([
+  const [{ data: historial }, { data: pendientes }, { data: miTituloNombre }] = await Promise.all([
     supabase.rpc("mi_historial_duelos", { p_limite: 20 }),
     supabase.rpc("mis_duelos_pendientes"),
+    supabase.rpc("titulo_nombre_de", { p_user_id: user.id }),
   ]);
 
   return (
     <>
       <Header autenticado />
       <RankedsClient
-        miElo={profile.elo_rating ?? 1200}
+        miElo={profile.elo_rating ?? 800}
+        miTituloNombre={miTituloNombre ?? null}
         miUserId={user.id}
         historialInicial={historial ?? []}
         duelosPendientesIniciales={pendientes ?? []}
+        tabInicial={tab === "buscar" ? "buscar" : tab === "invitar" ? "invitar" : "competitivo"}
       />
     </>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { LogicPuzzle } from "@/types/database";
+import type { CategoriaEnigmia, LogicPuzzle } from "@/types/database";
 import { reproducirTono } from "@/lib/sonido";
 import { useBonusTiempo } from "@/lib/practica/useBonusTiempo";
 import SonidoToggle from "@/components/SonidoToggle";
@@ -39,7 +39,26 @@ function claveAcertijo(p: LogicPuzzle): string {
   return `${p.contenido.enunciado}|${(p.contenido.secuencia ?? []).join(",")}`;
 }
 
-function elegirSiguiente(puzzlesDB: LogicPuzzle[], nivel: number, usados: Set<string>): LogicPuzzle {
+// Fase 4 de Rankeds: en un duelo, `categoriaForzada` restringe TODOS los
+// acertijos a esa única categoría (el contenido elegible según el rango
+// de los dos duelistas) — nada de la mezcla normal 75/25.
+function elegirSiguiente(
+  puzzlesDB: LogicPuzzle[],
+  nivel: number,
+  usados: Set<string>,
+  categoriaForzada?: CategoriaEnigmia
+): LogicPuzzle {
+  if (categoriaForzada) {
+    if (categoriaForzada === "deduccion") {
+      const soloDeduccion = puzzlesDB.filter((p) => p.tipo === "deduccion");
+      const banco = soloDeduccion.length > 0 ? soloDeduccion : puzzlesDB;
+      const candidatos = banco.filter((p) => !usados.has(p.id));
+      const pool = candidatos.length > 0 ? candidatos : banco;
+      return pool[Math.floor(Math.random() * pool.length)] ?? generarAcertijoProcedural("patrones", nivel);
+    }
+    return generarSinRepetir(() => generarAcertijoProcedural(categoriaForzada, nivel), claveAcertijo, usados);
+  }
+
   if (Math.random() < PROBABILIDAD_PROCEDURAL) {
     const categoria = CATEGORIAS_PROCEDURALES[Math.floor(Math.random() * CATEGORIAS_PROCEDURALES.length)];
     return generarSinRepetir(() => generarAcertijoProcedural(categoria, nivel), claveAcertijo, usados);
@@ -62,10 +81,11 @@ interface Props {
   startedAt: number;
   nivelInicial: number;
   escudosExtra: number;
+  categoriaForzada?: CategoriaEnigmia;
   onFinish: (errores: LogicPuzzle[]) => void;
 }
 
-export default function EnigmiaSprintRunner({ puzzles, startedAt, nivelInicial, escudosExtra, onFinish }: Props) {
+export default function EnigmiaSprintRunner({ puzzles, startedAt, nivelInicial, escudosExtra, categoriaForzada, onFinish }: Props) {
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
   const [puzzle, setPuzzle] = useState<LogicPuzzle | null>(null);
   const [cardKey, setCardKey] = useState(0);
@@ -94,7 +114,7 @@ export default function EnigmiaSprintRunner({ puzzles, startedAt, nivelInicial, 
   const finishedRef = useRef(false);
 
   function siguiente() {
-    const p = elegirSiguiente(puzzles, nivelRef.current, usadosRef.current);
+    const p = elegirSiguiente(puzzles, nivelRef.current, usadosRef.current, categoriaForzada);
     usadosRef.current.add(p.id);
     if (usadosRef.current.size > 200) usadosRef.current = new Set();
     setPuzzle(p);

@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
-import { tierDeElo, type ArithmeticProblemType } from "@/types/database";
+import type { ArithmeticProblemType } from "@/types/database";
 import Boton from "@/components/Boton";
+import RangoBadge from "@/components/RangoBadge";
 
 const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
   suma: "Suma",
@@ -32,6 +33,13 @@ interface Props {
   rivalNombre: string;
   miElo: number;
   rivalElo: number;
+  miTituloNombre?: string | null;
+  rivalTituloNombre?: string | null;
+  // Fase 5: si esta ronda es parte de un "todas las ciudades", se
+  // muestra "Ronda X/Y" en vez de solo el nombre de la operación.
+  serieId?: string | null;
+  rondaNumero?: number;
+  rondaTotal?: number;
   onEmpezar: () => void;
 }
 
@@ -54,6 +62,11 @@ export default function SalaDuelo({
   rivalNombre,
   miElo,
   rivalElo,
+  miTituloNombre,
+  rivalTituloNombre,
+  serieId,
+  rondaNumero,
+  rondaTotal,
   onEmpezar,
 }: Props) {
   const [estado, setEstado] = useState<Estado>("conectando");
@@ -142,19 +155,21 @@ export default function SalaDuelo({
   const encabezado = (
     <>
       <span className="rounded-full bg-primario/10 px-3 py-1 text-xs font-medium uppercase tracking-wide text-primario">
-        Duelo · {NOMBRES_OPERACION[operacion]}
+        {serieId ? `Duelo · Ronda ${rondaNumero}/${rondaTotal} · ${NOMBRES_OPERACION[operacion]}` : `Duelo · ${NOMBRES_OPERACION[operacion]}`}
       </span>
       <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Vs. {rivalNombre}</h1>
       <div className="flex items-center gap-6">
         <div className="flex flex-col items-center gap-1">
           <span className="font-mono text-xl font-bold text-foreground">{miElo}</span>
-          <span className="text-xs text-texto-secundario">Vos · {tierDeElo(miElo)}</span>
+          <span className="flex items-center gap-1 text-xs text-texto-secundario">
+            Vos · <RangoBadge elo={miElo} tituloNombre={miTituloNombre} size="sm" />
+          </span>
         </div>
         <span className="text-texto-secundario">—</span>
         <div className="flex flex-col items-center gap-1">
           <span className="font-mono text-xl font-bold text-foreground">{rivalElo}</span>
-          <span className="text-xs text-texto-secundario">
-            {rivalNombre} · {tierDeElo(rivalElo)}
+          <span className="flex items-center gap-1 text-xs text-texto-secundario">
+            {rivalNombre} · <RangoBadge elo={rivalElo} tituloNombre={rivalTituloNombre} size="sm" />
           </span>
         </div>
       </div>

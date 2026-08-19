@@ -210,3 +210,23 @@ export function IconOjoTachado({ className }: IconProps) {
     </svg>
   );
 }
+
+export function IconLupa({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="11" cy="11" r="7" />
+      <path d="M21 21l-4.3-4.3" />
+    </svg>
+  );
+}
+
+// Insignia de rango de Rankeds (RangoBadge.tsx) — distinta de IconEscudo
+// (que en el resto de la app siempre significa "escudo de calibración
+// disponible", un concepto puntual aparte).
+export function IconRango({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.3l-4.8 2.6.9-5.4-3.9-3.8 5.4-.8L12 2z" />
+    </svg>
+  );
+}

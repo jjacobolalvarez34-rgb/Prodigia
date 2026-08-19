@@ -1,14 +1,31 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
-import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType, type Achievement, tierDeElo } from "@/types/database";
+import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType, type Achievement, type TituloUsuario } from "@/types/database";
 import { calcularRachaMaxima, calcularMejorPrecisionDiaria } from "@/lib/perfil/records";
 import Header from "@/components/Header";
 import LevelDial from "@/app/practica/LevelDial";
+import RangoBadge from "@/components/RangoBadge";
 import NombreEditable from "./NombreEditable";
 import SubirAvatar from "./SubirAvatar";
 import BorrarCuenta from "./BorrarCuenta";
 import ConvertirCuenta from "@/components/ConvertirCuenta";
 import LogroMedalla from "@/components/LogroMedalla";
+import TitulosSection from "./TitulosSection";
+
+const NOMBRE_MUNDO_AFINIDAD: Record<string, string> = {
+  numeria: "Numeria",
+  enigmia: "Enigmia",
+  geografia: "Geografía",
+};
+
+interface FilaAfinidad {
+  mundo: string;
+  duelos_jugados: number;
+  victorias: number;
+  derrotas: number;
+  empates: number;
+  precision_promedio: number | null;
+}
 
 function formatearFecha(iso: string): string {
   return new Date(iso).toLocaleDateString("es-AR", { year: "numeric", month: "long", day: "numeric" });
@@ -31,8 +48,14 @@ export default async function PerfilPage() {
     { count: enigmiaTotal },
     { count: geografiaTotal },
     { data: worldRows },
+    { data: titulosRows },
+    { data: afinidadRows },
   ] = await Promise.all([
-    supabase.from("profiles").select("created_at, elo_rating, marco_perfil, avatar_url").eq("id", user.id).single(),
+    supabase
+      .from("profiles")
+      .select("created_at, elo_rating, marco_perfil, avatar_url, titulo_activo")
+      .eq("id", user.id)
+      .single(),
     supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", user.id),
     supabase.from("daily_progress").select("fecha, meta_alcanzada, congelado").eq("user_id", user.id).limit(1000),
     supabase
@@ -50,12 +73,14 @@ export default async function PerfilPage() {
     supabase.from("logic_attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("problem_type", "geografia"),
     supabase.from("world_progress").select("world, nivel_mundo").eq("user_id", user.id),
+    supabase.rpc("mis_titulos"),
+    supabase.rpc("afinidad_por_mundo"),
   ]);
 
   const nivelMundoDe = (world: string) => worldRows?.find((w) => w.world === world)?.nivel_mundo ?? 1;
 
   const rankingFila = (rankingRows as Array<{ posicion: number; total_jugadores: number }> | null)?.[0];
-  const eloRating = profileFull?.elo_rating ?? 1200;
+  const eloRating = profileFull?.elo_rating ?? 800;
   const marcoPerfil = profileFull?.marco_perfil ?? "ninguno";
   const ESTILO_MARCO: Record<string, string> = {
     ninguno: "border-border",
@@ -92,6 +117,11 @@ export default async function PerfilPage() {
         >
           <SubirAvatar userId={user.id} nombre={profile.display_name} avatarUrlInicial={profileFull?.avatar_url ?? null} />
           <NombreEditable userId={user.id} nombreActual={profile.display_name} />
+          {(titulosRows as TituloUsuario[] | null)?.find((t) => t.slug === profileFull?.titulo_activo) && (
+            <span className="-mt-2 rounded-full bg-primario/10 px-3 py-1 text-xs font-semibold text-primario">
+              {(titulosRows as TituloUsuario[]).find((t) => t.slug === profileFull?.titulo_activo)?.nombre}
+            </span>
+          )}
           <p className="text-sm text-texto-secundario">
             En Prodigia desde {formatearFecha(profileFull?.created_at ?? new Date().toISOString())}
           </p>
@@ -111,7 +141,7 @@ export default async function PerfilPage() {
         <section className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
             <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Rango de duelos</p>
-            <p className="mt-1 font-mono text-xl font-bold text-foreground">{tierDeElo(eloRating)}</p>
+            <p className="mt-1"><RangoBadge elo={eloRating} size="lg" /></p>
             <p className="text-xs text-texto-secundario">{eloRating} ELO</p>
           </div>
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
@@ -169,6 +199,34 @@ export default async function PerfilPage() {
             </div>
           </div>
         </section>
+
+        {(afinidadRows as FilaAfinidad[] | null) && (afinidadRows as FilaAfinidad[]).length > 0 && (
+          <section>
+            <h2 className="mb-1 font-display text-lg font-bold text-foreground">Afinidad por mundo</h2>
+            <p className="-mt-2 mb-4 text-xs text-texto-secundario">
+              Solo informativo — tu rango y el matchmaking son únicos y globales, esto no los afecta.
+            </p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              {(afinidadRows as FilaAfinidad[]).map((fila) => (
+                <div key={fila.mundo} className="rounded-xl border border-border bg-surface px-4 py-3">
+                  <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">
+                    {NOMBRE_MUNDO_AFINIDAD[fila.mundo] ?? fila.mundo}
+                  </p>
+                  <p className="mt-1 font-mono text-xl font-bold text-foreground">
+                    {fila.victorias}-{fila.derrotas}
+                    {fila.empates > 0 ? `-${fila.empates}` : ""}
+                  </p>
+                  <p className="text-xs text-texto-secundario">
+                    {fila.duelos_jugados} {fila.duelos_jugados === 1 ? "duelo" : "duelos"}
+                    {fila.precision_promedio !== null ? ` · ${fila.precision_promedio}% precisión` : ""}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <TitulosSection titulos={(titulosRows as TituloUsuario[]) ?? []} tituloActivo={profileFull?.titulo_activo ?? null} />
 
         <section>
           <h2 className="mb-4 font-display text-lg font-bold text-foreground">Logros</h2>

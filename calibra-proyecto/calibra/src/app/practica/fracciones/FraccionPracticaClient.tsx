@@ -64,7 +64,7 @@ export default function FraccionPracticaClient({ nivelInicial, escudosExtra, boo
       const res = await fetch("/api/practica/finish", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ started_at: startedAtIso }),
+        body: JSON.stringify({ started_at: startedAtIso, total_problemas: 10 }),
       });
       const data = await res.json();
       if (!res.ok) {

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { respuestaError } from "@/lib/api/respuestaError";
+import { verificarLogros } from "@/lib/logros/verificar";
 
 interface Body {
   duel_id: string;
@@ -39,5 +40,13 @@ export async function POST(request: Request) {
   }
 
   const fila = (data as Array<Record<string, unknown>>)[0];
-  return NextResponse.json({ ok: true, ...fila });
+
+  // El rango (y por lo tanto "elo_minimo"/racha de victorias) recién
+  // queda al día una vez que esta llamada termina de actualizar el ELO
+  // — se chequea acá, no solo en /api/practica/finish (que corre ANTES
+  // y todavía vería el ELO viejo), para que un logro de rango se
+  // desbloquee en el mismo duelo que lo cruza, no en la próxima partida.
+  const logrosNuevos = fila.resuelto ? await verificarLogros(supabase, user.id) : [];
+
+  return NextResponse.json({ ok: true, ...fila, logrosNuevos });
 }

@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import type { LogicPuzzle, Achievement } from "@/types/database";
+import { useRouter } from "next/navigation";
+import type { CategoriaEnigmia, LogicPuzzle, Achievement } from "@/types/database";
 import Boton from "@/components/Boton";
 import BotonesFinPartida from "@/components/BotonesFinPartida";
 import LogroBanner from "@/components/LogroBanner";
 import ApuestaResultado from "@/components/ApuestaResultado";
 import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSubio";
+import RangoBadge from "@/components/RangoBadge";
+import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/ResultadoDueloBlock";
 import EnigmiaSprintRunner from "./EnigmiaSprintRunner";
 
 type Fase = "inicio" | "sprint" | "resumen";
@@ -23,20 +26,38 @@ interface FinishResponse {
   nivelMundo?: NivelMundoInfo | null;
 }
 
+// Ver el mismo tipo en GeografiaPracticaClient.tsx — sin sala de espera
+// sincronizada a propósito (decisión de alcance, docs/PROGRESO.md).
+export interface DueloGenericoInfo {
+  duelId: string;
+  rivalNombre: string;
+  miElo: number;
+  rivalElo: number;
+  miTituloNombre: string | null;
+  rivalTituloNombre: string | null;
+  serieId: string | null;
+  rondaNumero: number;
+  rondaTotal: number;
+  categoria: CategoriaEnigmia;
+}
+
 interface Props {
   puzzles: LogicPuzzle[];
   nivelInicial: number;
   escudosExtra: number;
   boostActivo: boolean;
+  duelo?: DueloGenericoInfo | null;
 }
 
-export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosExtra, boostActivo }: Props) {
+export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosExtra, boostActivo, duelo }: Props) {
+  const router = useRouter();
   const [fase, setFase] = useState<Fase>("inicio");
   const [startedAtIso, setStartedAtIso] = useState("");
   const [startedAtPerf, setStartedAtPerf] = useState(0);
   const [resumen, setResumen] = useState<FinishResponse | null>(null);
   const [errores, setErrores] = useState<LogicPuzzle[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [resultadoDuelo, setResultadoDuelo] = useState<ResultadoDuelo | null>(null);
 
   function iniciar() {
     setStartedAtIso(new Date().toISOString());
@@ -51,14 +72,40 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
       const res = await fetch("/api/enigmia/finish", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ started_at: startedAtIso }),
+        body: JSON.stringify({ started_at: startedAtIso, total_problemas: 10 }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "No se pudo cerrar la partida.");
       } else {
         setError(null);
-        setResumen(data as FinishResponse);
+        const finishData = data as FinishResponse;
+        setResumen(finishData);
+
+        if (duelo) {
+          try {
+            const resDuelo = await fetch("/api/duelos/resultado", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                duel_id: duelo.duelId,
+                precision: finishData.partida.precision ?? 0,
+                tiempo_promedio: finishData.partida.avgTimeMs ?? 0,
+                puntaje: finishData.partida.xpGanado,
+              }),
+            });
+            const dataDuelo = await resDuelo.json();
+            if (resDuelo.ok) {
+              if (duelo.serieId) {
+                router.push(`/rankeds/serie/${duelo.serieId}`);
+                return;
+              }
+              setResultadoDuelo(dataDuelo as ResultadoDuelo);
+            }
+          } catch {
+            // El duelo no se pudo resolver por un error de red puntual.
+          }
+        }
       }
     } catch {
       // Red caída o el servidor no respondió: no dejamos la partida
@@ -75,6 +122,7 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
         startedAt={startedAtPerf}
         nivelInicial={nivelInicial}
         escudosExtra={escudosExtra}
+        categoriaForzada={duelo?.categoria}
         onFinish={handleFinish}
       />
     );
@@ -97,6 +145,7 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
         <LogroBanner logros={resumen.logrosNuevos} />
         <NivelMundoSubio nivelMundo={resumen.nivelMundo} />
         <ApuestaResultado apuesta={resumen.apuesta ?? null} />
+        <ResultadoDueloBlock duelo={resultadoDuelo} />
         <div className="flex flex-col items-center gap-2 text-center">
           <p className="font-display text-lg font-bold text-foreground">Ahí quedó.</p>
           <p className="font-mono text-3xl font-bold text-foreground">
@@ -131,7 +180,11 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
           <p className="text-sm text-texto-secundario">Ninguno fallado — así se hace. 🎯</p>
         )}
 
-        <BotonesFinPartida onOtraVez={() => setFase("inicio")} volverHref="/enigmia" colorHex="#0E9F6E" />
+        <BotonesFinPartida
+          onOtraVez={duelo ? () => router.push("/rankeds?tab=buscar") : () => setFase("inicio")}
+          volverHref={duelo ? "/rankeds" : "/enigmia"}
+          colorHex="#0E9F6E"
+        />
       </div>
     );
   }
@@ -143,7 +196,21 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
           ⚡ Boost activo — Puntos ×1.5 en esta partida
         </div>
       )}
-      <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">¿Listo?</h1>
+      {duelo ? (
+        <>
+          <span className="rounded-full bg-primario/10 px-3 py-1 text-xs font-medium uppercase tracking-wide text-primario">
+            {duelo.serieId ? `Duelo · Ronda ${duelo.rondaNumero}/${duelo.rondaTotal} · Enigmia` : "Duelo · Enigmia"}
+          </span>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Vs. {duelo.rivalNombre}</h1>
+          <div className="flex items-center gap-6">
+            <RangoBadge elo={duelo.miElo} tituloNombre={duelo.miTituloNombre} size="sm" mostrarElo />
+            <span className="text-texto-secundario">—</span>
+            <RangoBadge elo={duelo.rivalElo} tituloNombre={duelo.rivalTituloNombre} size="sm" mostrarElo />
+          </div>
+        </>
+      ) : (
+        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">¿Listo?</h1>
+      )}
       <p className="text-texto-secundario">10 acertijos o 60 segundos, lo que llegue primero.</p>
       <Boton onClick={iniciar} colorHex="#0E9F6E" destacado className="w-full py-5 text-lg">
         Iniciar partida

@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
-import Avatar from "@/components/Avatar";
 import Podio, { type FilaRanking } from "./Podio";
+import ListaRanking from "./ListaRanking";
 
 export const metadata: Metadata = {
   title: "Ranking",
@@ -20,16 +19,11 @@ export default async function LeaderboardPage() {
 
   const posicionUsuario = ranking.findIndex((f) => f.user_id === user.id);
   const top3 = ranking.slice(0, 3);
-  const resto = ranking.slice(3, 10);
-  const top10 = ranking.slice(0, 10);
-  const enTop10 = posicionUsuario !== -1 && posicionUsuario < 10;
-
-  let entornoUsuario: { fila: FilaRanking; posicion: number }[] = [];
-  if (posicionUsuario !== -1 && !enTop10) {
-    const desde = Math.max(0, posicionUsuario - 2);
-    const hasta = Math.min(ranking.length, posicionUsuario + 3);
-    entornoUsuario = ranking.slice(desde, hasta).map((fila, i) => ({ fila, posicion: desde + i }));
-  }
+  // Fase R3 v2: antes se cortaba en el puesto 10 (más un bloque aparte
+  // "tu posición" si quedabas afuera) — ahora la lista de abajo muestra
+  // el resto COMPLETO, con buscador propio para encontrar a cualquiera
+  // sin depender de scrollear a mano.
+  const resto = ranking.slice(3);
 
   return (
     <>
@@ -43,75 +37,23 @@ export default async function LeaderboardPage() {
           </p>
         </div>
 
-        {top10.length === 0 ? (
+        {ranking.length === 0 ? (
           <p className="rounded-2xl border border-border bg-surface px-6 py-8 text-center text-texto-secundario">
             Todavía nadie sumó experiencia esta semana — ¡arrancá vos!
           </p>
         ) : (
           <>
             <Podio top3={top3} miUserId={user.id} />
-            {resto.length > 0 && (
-              <ol className="flex flex-col gap-2">
-                {resto.map((fila, i) => (
-                  <FilaRankingItem
-                    key={fila.user_id}
-                    fila={fila}
-                    posicion={i + 3}
-                    esUsuarioActual={fila.user_id === user.id}
-                  />
-                ))}
-              </ol>
-            )}
+            <ListaRanking resto={resto} miUserId={user.id} />
           </>
         )}
 
-        {!enTop10 && posicionUsuario !== -1 && (
-          <div className="flex flex-col gap-2">
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Tu posición</p>
-            <ol className="flex flex-col gap-2">
-              {entornoUsuario.map(({ fila, posicion }) => (
-                <FilaRankingItem
-                  key={fila.user_id}
-                  fila={fila}
-                  posicion={posicion}
-                  esUsuarioActual={fila.user_id === user.id}
-                />
-              ))}
-            </ol>
-          </div>
-        )}
-
-        {posicionUsuario === -1 && (
+        {ranking.length > 0 && posicionUsuario === -1 && (
           <p className="text-sm text-texto-secundario">
             Todavía no sumaste experiencia esta semana — practicá para entrar al ranking.
           </p>
         )}
       </div>
     </>
-  );
-}
-
-function FilaRankingItem({
-  fila,
-  posicion,
-  esUsuarioActual,
-}: {
-  fila: FilaRanking;
-  posicion: number;
-  esUsuarioActual: boolean;
-}) {
-  return (
-    <li
-      className={`flex items-center justify-between rounded-xl border px-4 py-3 ${
-        esUsuarioActual ? "border-primario/40 bg-primario/5" : "border-border bg-surface"
-      }`}
-    >
-      <Link href={`/perfil/${fila.user_id}`} className="flex items-center gap-3">
-        <span className="w-6 text-center font-mono text-sm text-texto-secundario">{posicion + 1}</span>
-        <Avatar url={fila.avatar_url} nombre={fila.display_name} size={32} />
-        <span className="font-medium text-foreground hover:underline">{fila.display_name ?? "Jugador"}</span>
-      </Link>
-      <span className="font-mono font-semibold text-primario">{fila.xp_semana} Exp</span>
-    </li>
   );
 }

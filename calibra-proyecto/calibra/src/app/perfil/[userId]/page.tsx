@@ -1,9 +1,10 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
-import { tierDeElo, type PerfilPublico } from "@/types/database";
+import type { PerfilPublico } from "@/types/database";
 import Header from "@/components/Header";
 import Avatar from "@/components/Avatar";
+import RangoBadge from "@/components/RangoBadge";
 import ReportarBoton from "./ReportarBoton";
 
 interface Props {
@@ -58,7 +59,7 @@ export default async function PerfilPublicoPage({ params }: Props) {
           <div className="mt-2 grid w-full grid-cols-2 gap-3">
             <div className="rounded-xl border border-border bg-background px-4 py-3">
               <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Rango de duelos</p>
-              <p className="mt-1 font-mono text-lg font-bold text-foreground">{tierDeElo(perfil.elo_rating)}</p>
+              <p className="mt-1"><RangoBadge elo={perfil.elo_rating} tituloNombre={perfil.titulo_nombre} size="md" /></p>
               <p className="text-xs text-texto-secundario">{perfil.elo_rating} ELO</p>
             </div>
             <div className="rounded-xl border border-border bg-background px-4 py-3">

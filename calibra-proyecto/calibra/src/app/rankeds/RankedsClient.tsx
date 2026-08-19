@@ -4,15 +4,22 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { ARITHMETIC_PROBLEM_TYPES, tierDeElo, type ArithmeticProblemType } from "@/types/database";
+import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType } from "@/types/database";
+import RangoBadge from "@/components/RangoBadge";
+import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 
 type Tab = "competitivo" | "buscar" | "invitar";
+type SeleccionMundo = MundoDuelo | "aleatorio";
 
 interface FilaHistorial {
   duel_id: string;
-  operation_type: ArithmeticProblemType;
+  operation_type: ArithmeticProblemType | null;
+  mundo: MundoDuelo;
+  sub_tipo: string | null;
+  modo: string;
   creado_at: string;
   rival_nombre: string | null;
+  rival_titulo_nombre: string | null;
   mi_puntaje: number;
   rival_puntaje: number;
   gane: boolean;
@@ -21,10 +28,12 @@ interface FilaHistorial {
 
 interface FilaPendiente {
   duel_id: string;
-  operation_type: ArithmeticProblemType;
+  operation_type: ArithmeticProblemType | null;
+  mundo: MundoDuelo;
   creado_at: string;
   retador_nombre: string | null;
   retador_elo: number;
+  retador_titulo_nombre: string | null;
 }
 
 const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
@@ -32,6 +41,12 @@ const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
   resta: "Resta",
   multiplicacion: "Multiplicación",
   division: "División",
+};
+
+const NOMBRE_MUNDO: Record<MundoDuelo, string> = {
+  numeria: "Numeria",
+  geografia: "Geografía",
+  enigmia: "Enigmia",
 };
 
 const TABS: { id: Tab; nombre: string }[] = [
@@ -42,13 +57,22 @@ const TABS: { id: Tab; nombre: string }[] = [
 
 interface Props {
   miElo: number;
+  miTituloNombre: string | null;
   miUserId: string;
   historialInicial: FilaHistorial[];
   duelosPendientesIniciales: FilaPendiente[];
+  tabInicial?: Tab;
 }
 
-export default function RankedsClient({ miElo, miUserId, historialInicial, duelosPendientesIniciales }: Props) {
-  const [tab, setTab] = useState<Tab>("competitivo");
+export default function RankedsClient({
+  miElo,
+  miTituloNombre,
+  miUserId,
+  historialInicial,
+  duelosPendientesIniciales,
+  tabInicial = "competitivo",
+}: Props) {
+  const [tab, setTab] = useState<Tab>(tabInicial);
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-12 sm:px-6">
@@ -71,9 +95,14 @@ export default function RankedsClient({ miElo, miUserId, historialInicial, duelo
       </div>
 
       {tab === "competitivo" ? (
-        <MiCompetitivo miElo={miElo} historial={historialInicial} pendientes={duelosPendientesIniciales} />
+        <MiCompetitivo
+          miElo={miElo}
+          miTituloNombre={miTituloNombre}
+          historial={historialInicial}
+          pendientes={duelosPendientesIniciales}
+        />
       ) : tab === "buscar" ? (
-        <BuscarPartida miElo={miElo} miUserId={miUserId} />
+        <BuscarPartida miElo={miElo} miTituloNombre={miTituloNombre} miUserId={miUserId} />
       ) : (
         <InvitarPorLink />
       )}
@@ -91,14 +120,15 @@ function DuelosPendientes({ pendientes }: { pendientes: FilaPendiente[] }) {
       {pendientes.map((p) => (
         <Link
           key={p.duel_id}
-          href={`/practica?operacion=${p.operation_type}&duelo=${p.duel_id}`}
+          href={hrefDuelo(p.mundo, p.operation_type, p.duel_id)}
           className="flex items-center justify-between rounded-xl bg-surface px-4 py-3 transition-colors hover:border-primario/40"
         >
           <div className="flex flex-col">
             <span className="text-sm font-medium text-foreground">
-              {p.retador_nombre ?? "Alguien"} te retó a {NOMBRES_OPERACION[p.operation_type]}
+              {p.retador_nombre ?? "Alguien"} te retó a{" "}
+              {p.mundo === "numeria" && p.operation_type ? NOMBRES_OPERACION[p.operation_type] : NOMBRE_MUNDO[p.mundo]}
             </span>
-            <span className="text-xs text-texto-secundario">{tierDeElo(p.retador_elo)} · {p.retador_elo} ELO</span>
+            <RangoBadge elo={p.retador_elo} tituloNombre={p.retador_titulo_nombre} size="sm" mostrarElo className="text-xs" />
           </div>
           <span className="shrink-0 rounded-full bg-primario px-3 py-1.5 text-xs font-semibold text-white">Jugar</span>
         </Link>
@@ -109,10 +139,12 @@ function DuelosPendientes({ pendientes }: { pendientes: FilaPendiente[] }) {
 
 function MiCompetitivo({
   miElo,
+  miTituloNombre,
   historial,
   pendientes,
 }: {
   miElo: number;
+  miTituloNombre: string | null;
   historial: FilaHistorial[];
   pendientes: FilaPendiente[];
 }) {
@@ -127,7 +159,7 @@ function MiCompetitivo({
 
       <div className="flex flex-col items-center gap-1 rounded-2xl border-2 border-primario/30 bg-primario/5 px-6 py-7 text-center">
         <span className="font-mono text-4xl font-bold text-primario">{miElo}</span>
-        <span className="text-sm font-semibold text-foreground">{tierDeElo(miElo)}</span>
+        <RangoBadge elo={miElo} tituloNombre={miTituloNombre} size="md" />
       </div>
 
       <div className="grid grid-cols-3 gap-3">
@@ -159,7 +191,9 @@ function MiCompetitivo({
                   {h.empate ? "Empate" : h.gane ? "Ganaste" : "Perdiste"} vs. {h.rival_nombre ?? "Jugador"}
                 </span>
                 <span className="text-xs text-texto-secundario">
-                  {NOMBRES_OPERACION[h.operation_type]} · {new Date(h.creado_at).toLocaleDateString("es-AR")}
+                  {h.mundo === "numeria" && h.operation_type ? NOMBRES_OPERACION[h.operation_type] : NOMBRE_MUNDO[h.mundo]}
+                  {" · "}
+                  {new Date(h.creado_at).toLocaleDateString("es-AR")}
                 </span>
               </div>
               <span className="font-mono text-xs text-texto-secundario">
@@ -185,8 +219,24 @@ function Stat({ label, valor }: { label: string; valor: string }) {
 const POLL_MS = 2200;
 const MAX_SEGUNDOS_BUSQUEDA = 60;
 
-function BuscarPartida({ miElo, miUserId }: { miElo: number; miUserId: string }) {
+const MUNDOS_SELECCIONABLES: { id: SeleccionMundo; nombre: string; descripcion: string }[] = [
+  { id: "numeria", nombre: "Numeria", descripcion: "Elegís la operación" },
+  { id: "geografia", nombre: "Geografía", descripcion: "Continente según tu rango" },
+  { id: "enigmia", nombre: "Enigmia", descripcion: "Categoría según tu rango" },
+  { id: "aleatorio", nombre: "Todas las ciudades", descripcion: "Mejor de 3, una ciudad por ronda" },
+];
+
+function BuscarPartida({
+  miElo,
+  miTituloNombre,
+  miUserId,
+}: {
+  miElo: number;
+  miTituloNombre: string | null;
+  miUserId: string;
+}) {
   const router = useRouter();
+  const [mundo, setMundo] = useState<SeleccionMundo>("numeria");
   const [operacion, setOperacion] = useState<ArithmeticProblemType>("suma");
   const [estado, setEstado] = useState<"idle" | "buscando" | "sin-rivales">("idle");
   const [segundos, setSegundos] = useState(0);
@@ -199,18 +249,30 @@ function BuscarPartida({ miElo, miUserId }: { miElo: number; miUserId: string })
     };
   }, []);
 
-  async function poll(op: ArithmeticProblemType, inicioIso: string) {
+  function irAlDuelo(mundoEncontrado: MundoDuelo, duelId: string) {
+    router.push(hrefDuelo(mundoEncontrado, mundoEncontrado === "numeria" ? operacion : null, duelId));
+  }
+
+  async function poll(m: SeleccionMundo, op: ArithmeticProblemType | undefined, inicioIso: string) {
     const supabase = createClient();
     while (!cancelarRef.current) {
-      const { data, error } = await supabase.rpc("buscar_rival_duelo", { p_operation_type: op });
+      const { data, error } = await supabase.rpc("buscar_rival_duelo", { p_mundo: m, p_operation_type: op ?? null });
       if (cancelarRef.current) return;
       if (error) {
         setEstado("sin-rivales");
         return;
       }
-      const fila = (data as { duel_id: string | null; encontrado: boolean; rango_actual: number; segundos_esperando: number }[])?.[0];
-      if (fila?.encontrado && fila.duel_id) {
-        router.push(`/practica?operacion=${op}&duelo=${fila.duel_id}`);
+      const fila = (
+        data as {
+          duel_id: string | null;
+          encontrado: boolean;
+          rango_actual: number;
+          segundos_esperando: number;
+          mundo_encontrado: MundoDuelo | null;
+        }[]
+      )?.[0];
+      if (fila?.encontrado && fila.duel_id && fila.mundo_encontrado) {
+        irAlDuelo(fila.mundo_encontrado, fila.duel_id);
         return;
       }
 
@@ -220,17 +282,20 @@ function BuscarPartida({ miElo, miUserId }: { miElo: number; miUserId: string })
       // enteramos por esta respuesta. Se chequea acá directo si ya
       // quedamos como "retado" de un duelo nuevo desde que arrancamos a
       // buscar — más confiable que depender solo de la notificación en
-      // vivo (esa además ya existe, ver NotificacionesDuelo).
+      // vivo (esa además ya existe, ver NotificacionesDuelo). Para el
+      // modo "aleatorio" esto siempre encuentra la RONDA 1 (ronda_numero
+      // = 1), que es por donde arranca cualquiera de los dos lados.
       const { data: yaMatcheado } = await supabase
         .from("duels")
-        .select("id")
+        .select("id, mundo")
         .eq("retado_id", miUserId)
         .eq("estado", "pendiente")
+        .eq("ronda_numero", 1)
         .gte("creado_at", inicioIso)
         .limit(1);
       if (cancelarRef.current) return;
       if (yaMatcheado && yaMatcheado[0]) {
-        router.push(`/practica?operacion=${op}&duelo=${yaMatcheado[0].id}`);
+        irAlDuelo(yaMatcheado[0].mundo as MundoDuelo, yaMatcheado[0].id);
         return;
       }
 
@@ -250,7 +315,7 @@ function BuscarPartida({ miElo, miUserId }: { miElo: number; miUserId: string })
     setSegundos(0);
     setRango(30);
     setEstado("buscando");
-    poll(operacion, new Date().toISOString());
+    poll(mundo, mundo === "numeria" ? operacion : undefined, new Date().toISOString());
   }
 
   async function cancelarBusqueda() {
@@ -260,6 +325,9 @@ function BuscarPartida({ miElo, miUserId }: { miElo: number; miUserId: string })
     await supabase.rpc("cancelar_busqueda_duelo");
   }
 
+  const etiquetaBusqueda =
+    mundo === "numeria" ? NOMBRES_OPERACION[operacion] : MUNDOS_SELECCIONABLES.find((m) => m.id === mundo)?.nombre;
+
   if (estado === "buscando") {
     return (
       <div className="flex flex-col items-center gap-4 rounded-2xl border-2 border-primario/30 bg-primario/5 px-6 py-10 text-center">
@@ -267,7 +335,7 @@ function BuscarPartida({ miElo, miUserId }: { miElo: number; miUserId: string })
         <div>
           <p className="font-display text-lg font-bold text-foreground">Buscando rival…</p>
           <p className="mt-1 text-xs text-texto-secundario">
-            {NOMBRES_OPERACION[operacion]} · {segundos}s · buscando rivales entre {miElo - rango}-{miElo + rango} ELO
+            {etiquetaBusqueda} · {segundos}s · buscando rivales entre {miElo - rango}-{miElo + rango} ELO
           </p>
         </div>
         <button
@@ -289,21 +357,43 @@ function BuscarPartida({ miElo, miUserId }: { miElo: number; miUserId: string })
       )}
 
       <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Elegí la operación</p>
-        <div className="flex flex-wrap gap-2">
-          {ARITHMETIC_PROBLEM_TYPES.map((op) => (
+        <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Elegí la ciudad</p>
+        <div className="grid grid-cols-2 gap-2">
+          {MUNDOS_SELECCIONABLES.map((m) => (
             <button
-              key={op}
-              onClick={() => setOperacion(op)}
-              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-                operacion === op ? "border-primario bg-primario/10 text-primario" : "border-border text-texto-secundario"
+              key={m.id}
+              onClick={() => setMundo(m.id)}
+              className={`flex flex-col items-start gap-0.5 rounded-xl border px-3 py-2.5 text-left transition-colors ${
+                mundo === m.id ? "border-primario bg-primario/10" : "border-border"
               }`}
             >
-              {NOMBRES_OPERACION[op]}
+              <span className={`text-sm font-semibold ${mundo === m.id ? "text-primario" : "text-foreground"}`}>
+                {m.nombre}
+              </span>
+              <span className="text-[11px] text-texto-secundario">{m.descripcion}</span>
             </button>
           ))}
         </div>
       </div>
+
+      {mundo === "numeria" && (
+        <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
+          <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Elegí la operación</p>
+          <div className="flex flex-wrap gap-2">
+            {ARITHMETIC_PROBLEM_TYPES.map((op) => (
+              <button
+                key={op}
+                onClick={() => setOperacion(op)}
+                className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                  operacion === op ? "border-primario bg-primario/10 text-primario" : "border-border text-texto-secundario"
+                }`}
+              >
+                {NOMBRES_OPERACION[op]}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <button
         onClick={iniciarBusqueda}
@@ -312,7 +402,9 @@ function BuscarPartida({ miElo, miUserId }: { miElo: number; miUserId: string })
       >
         Buscar partida
       </button>
-      <p className="text-center text-xs text-texto-secundario">Tu ELO: {miElo} · {tierDeElo(miElo)}</p>
+      <p className="flex items-center justify-center gap-1.5 text-center text-xs text-texto-secundario">
+        Tu ELO: {miElo} · <RangoBadge elo={miElo} tituloNombre={miTituloNombre} size="sm" />
+      </p>
     </div>
   );
 }

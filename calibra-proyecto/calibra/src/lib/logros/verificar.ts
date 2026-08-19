@@ -100,6 +100,33 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     duelosGanados = count ?? 0;
   }
 
+  // Fase 12 (Rankeds): rango alcanzado — se compara directo contra
+  // profiles.elo_rating, no hace falta guardar nada aparte.
+  let eloActual = 0;
+  if (tiposNecesarios.has("elo_minimo")) {
+    const { data: perfilElo } = await supabase.from("profiles").select("elo_rating").eq("id", userId).single();
+    eloActual = perfilElo?.elo_rating ?? 0;
+  }
+
+  // Racha de duelos ganados SEGUIDOS, contando desde el más reciente
+  // hacia atrás — se corta apenas aparece uno que no fue victoria
+  // (derrota o empate). No distingue mundo/modo a propósito: "3
+  // seguidas" es sobre duelos en general, no por ciudad.
+  let rachaDuelosGanados = 0;
+  if (tiposNecesarios.has("racha_duelos_ganados")) {
+    const { data: duelosRows } = await supabase
+      .from("duels")
+      .select("ganador_id, creado_at")
+      .or(`retador_id.eq.${userId},retado_id.eq.${userId}`)
+      .eq("estado", "completado")
+      .order("creado_at", { ascending: false })
+      .limit(50);
+    for (const d of duelosRows ?? []) {
+      if (d.ganador_id === userId) rachaDuelosGanados++;
+      else break;
+    }
+  }
+
   let rachaRetosDiarios = 0;
   if (tiposNecesarios.has("racha_retos_diarios")) {
     const { data: retoRows } = await supabase
@@ -126,6 +153,8 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     else if (tipo === "logica_tecnicas_dominadas") cumplido = logicaTecnicasDominadas >= valor;
     else if (tipo === "duelos_ganados") cumplido = duelosGanados >= valor;
     else if (tipo === "racha_retos_diarios") cumplido = rachaRetosDiarios >= valor;
+    else if (tipo === "elo_minimo") cumplido = eloActual >= valor;
+    else if (tipo === "racha_duelos_ganados") cumplido = rachaDuelosGanados >= valor;
 
     if (cumplido) desbloqueadosAhora.push(a);
   }

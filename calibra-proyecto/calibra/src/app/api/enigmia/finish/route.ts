@@ -5,6 +5,8 @@ import { respuestaError } from "@/lib/api/respuestaError";
 
 interface FinishBody {
   started_at: string;
+  // Ver el mismo comentario en /api/practica/finish — mismo bug, mismo fix.
+  total_problemas: number;
 }
 
 interface RegistrarXpDiarioResult {
@@ -61,7 +63,7 @@ export async function POST(request: Request) {
     return respuestaError("enigmia/finish:partida", partidaError);
   }
 
-  const total = partidaRows.length;
+  const total = Math.max(partidaRows.length, body.total_problemas || 0);
   const correctos = partidaRows.filter((r) => r.correct).length;
   const xpGanado = partidaRows.reduce((acc, r) => acc + r.xp, 0);
   const avgTimeMs = promedio(partidaRows.map((r) => r.time_ms));

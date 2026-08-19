@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Continente, PaisAmerica } from "@/lib/practica/geografia";
 import type { Achievement } from "@/types/database";
 import Boton from "@/components/Boton";
@@ -8,6 +9,8 @@ import BotonesFinPartida from "@/components/BotonesFinPartida";
 import LogroBanner from "@/components/LogroBanner";
 import ApuestaResultado from "@/components/ApuestaResultado";
 import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSubio";
+import RangoBadge from "@/components/RangoBadge";
+import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/ResultadoDueloBlock";
 import GeografiaSprintRunner from "./GeografiaSprintRunner";
 import { COLOR_GEOGRAFIA } from "./GeografiaMapa";
 
@@ -24,11 +27,29 @@ interface FinishResponse {
   nivelMundo?: NivelMundoInfo | null;
 }
 
+// Fase 3 de Rankeds: info de un duelo de matchmaking para Geografía —
+// deliberadamente MÁS simple que DueloInfo de Numeria (practica/page.tsx):
+// sin sala de espera sincronizada (ver decisión de alcance en
+// docs/PROGRESO.md), así que no hace falta semilla ni datos del rival
+// más que para mostrarlos.
+export interface DueloGenericoInfo {
+  duelId: string;
+  rivalNombre: string;
+  miElo: number;
+  rivalElo: number;
+  miTituloNombre: string | null;
+  rivalTituloNombre: string | null;
+  serieId: string | null;
+  rondaNumero: number;
+  rondaTotal: number;
+}
+
 interface Props {
   continente: Continente;
   nivelInicial: number;
   escudosExtra: number;
   boostActivo: boolean;
+  duelo?: DueloGenericoInfo | null;
 }
 
 const NOMBRE_CONTINENTE: Record<Continente, string> = {
@@ -38,13 +59,15 @@ const NOMBRE_CONTINENTE: Record<Continente, string> = {
   asia_oceania: "Asia y Oceanía",
 };
 
-export default function GeografiaPracticaClient({ continente, nivelInicial, escudosExtra, boostActivo }: Props) {
+export default function GeografiaPracticaClient({ continente, nivelInicial, escudosExtra, boostActivo, duelo }: Props) {
+  const router = useRouter();
   const [fase, setFase] = useState<Fase>("inicio");
   const [startedAtIso, setStartedAtIso] = useState("");
   const [startedAtPerf, setStartedAtPerf] = useState(0);
   const [resumen, setResumen] = useState<FinishResponse | null>(null);
   const [errores, setErrores] = useState<PaisAmerica[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [resultadoDuelo, setResultadoDuelo] = useState<ResultadoDuelo | null>(null);
 
   function iniciar() {
     setStartedAtIso(new Date().toISOString());
@@ -59,18 +82,48 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
       const res = await fetch("/api/practica/finish", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ started_at: startedAtIso }),
+        body: JSON.stringify({ started_at: startedAtIso, total_problemas: 10 }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "No se pudo cerrar la partida.");
-      } else {
-        setError(null);
-        setResumen(data as FinishResponse);
+        setFase("resumen");
+        return;
+      }
+      setError(null);
+      const finishData = data as FinishResponse;
+      setResumen(finishData);
+
+      if (duelo) {
+        try {
+          const resDuelo = await fetch("/api/duelos/resultado", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              duel_id: duelo.duelId,
+              precision: finishData.sprint.precision ?? 0,
+              tiempo_promedio: finishData.sprint.avgTimeMs ?? 0,
+              puntaje: finishData.sprint.xpGanado,
+            }),
+          });
+          const dataDuelo = await resDuelo.json();
+          if (resDuelo.ok) {
+            // Fase 5: si es una ronda de "todas las ciudades", la
+            // pantalla de la serie es la única que muestra resultado —
+            // no se arma un resumen local acá, para no duplicar la
+            // lógica de "cuándo ya está decidida la serie" en 3 lugares.
+            if (duelo.serieId) {
+              router.push(`/rankeds/serie/${duelo.serieId}`);
+              return;
+            }
+            setResultadoDuelo(dataDuelo as ResultadoDuelo);
+          }
+        } catch {
+          // El duelo no se pudo resolver por un error de red puntual — el
+          // resumen de la partida igual se muestra con normalidad.
+        }
       }
     } catch {
-      // Red caída o el servidor no respondió: no dejamos la partida
-      // trabada en la última pregunta, mostramos el resumen con error.
       setError("No pudimos conectar con el servidor. Probá de nuevo.");
     }
     setFase("resumen");
@@ -105,6 +158,7 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
         <LogroBanner logros={resumen.logrosNuevos} />
         <NivelMundoSubio nivelMundo={resumen.nivelMundo} />
         <ApuestaResultado apuesta={resumen.apuesta ?? null} />
+        <ResultadoDueloBlock duelo={resultadoDuelo} />
         <div className="flex flex-col items-center gap-2 text-center">
           <p className="font-display text-lg font-bold text-foreground">Ahí quedó.</p>
           <p className="font-mono text-3xl font-bold text-foreground">
@@ -133,7 +187,11 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
           <p className="text-sm text-texto-secundario">Ninguno fallado — así se hace. 🎯</p>
         )}
 
-        <BotonesFinPartida onOtraVez={() => setFase("inicio")} volverHref="/geografia" colorHex={COLOR_GEOGRAFIA} />
+        <BotonesFinPartida
+          onOtraVez={duelo ? () => router.push("/rankeds?tab=buscar") : () => setFase("inicio")}
+          volverHref={duelo ? "/rankeds" : "/geografia"}
+          colorHex={COLOR_GEOGRAFIA}
+        />
       </div>
     );
   }
@@ -145,7 +203,21 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
           ⚡ Boost activo — Puntos ×1.5 en esta partida
         </div>
       )}
-      <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{NOMBRE_CONTINENTE[continente]}</h1>
+      {duelo ? (
+        <>
+          <span className="rounded-full bg-primario/10 px-3 py-1 text-xs font-medium uppercase tracking-wide text-primario">
+            {duelo.serieId ? `Duelo · Ronda ${duelo.rondaNumero}/${duelo.rondaTotal} · Geografía` : "Duelo · Geografía"}
+          </span>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Vs. {duelo.rivalNombre}</h1>
+          <div className="flex items-center gap-6">
+            <RangoBadge elo={duelo.miElo} tituloNombre={duelo.miTituloNombre} size="sm" mostrarElo />
+            <span className="text-texto-secundario">—</span>
+            <RangoBadge elo={duelo.rivalElo} tituloNombre={duelo.rivalTituloNombre} size="sm" mostrarElo />
+          </div>
+        </>
+      ) : (
+        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{NOMBRE_CONTINENTE[continente]}</h1>
+      )}
       <p className="text-texto-secundario">Identificá el país en el mapa. 10 preguntas o 60 segundos.</p>
       <Boton onClick={iniciar} colorHex={COLOR_GEOGRAFIA} destacado className="w-full py-5 text-lg">
         Iniciar partida

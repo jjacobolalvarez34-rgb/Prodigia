@@ -5,6 +5,13 @@ import { respuestaError } from "@/lib/api/respuestaError";
 
 interface FinishBody {
   started_at: string; // ISO timestamp de cuando arrancó el sprint
+  // Fase 8 (bug de Rankeds): el total de la partida tiene que ser el
+  // tamaño real del set (10 problemas), no la cantidad de filas de
+  // `attempts` — si el usuario dejó alguno sin responder por tiempo,
+  // esa fila nunca se inserta, y contar attempts.length como "total"
+  // mostraba "5/7" en vez de "5/10". El total real lo sabe el cliente
+  // (TOTAL_PROBLEMAS/TOTAL_PREGUNTAS de cada runner), no la base.
+  total_problemas: number;
 }
 
 interface RegistrarXpDiarioResult {
@@ -77,7 +84,10 @@ export async function POST(request: Request) {
     return respuestaError("practica/finish:sprint", sprintError);
   }
 
-  const sprintTotal = sprintRows.length;
+  // max(...) por las dudas de que total_problemas venga mal formado o
+  // más chico que lo realmente respondido — nunca debería recortar
+  // aciertos reales ya guardados.
+  const sprintTotal = Math.max(sprintRows.length, body.total_problemas || 0);
   const sprintCorrectos = sprintRows.filter((r) => r.correct).length;
   const sprintXp = sprintRows.reduce((acc, r) => acc + r.xp, 0);
   const sprintAvgTimeMs = promedio(sprintRows.map((r) => r.time_ms));
