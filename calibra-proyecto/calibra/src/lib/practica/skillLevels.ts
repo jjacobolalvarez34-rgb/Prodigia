@@ -34,7 +34,16 @@ export function calcularNuevoNivel(
 export async function actualizarSkillLevel(
   supabase: SupabaseClient,
   userId: string,
-  problemType: ArithmeticProblemType | "fracciones" | "geografia" | "decimales" | "potencias" | "algebra",
+  problemType:
+    | ArithmeticProblemType
+    | "fracciones"
+    | "geografia"
+    | "decimales"
+    | "potencias"
+    | "algebra"
+    | "quimia_simbolos"
+    | "quimia_formulas"
+    | "quimia_tabla",
   correct: boolean,
   protegido = false
 ): Promise<Pick<SkillLevel, "nivel" | "racha_actual">> {

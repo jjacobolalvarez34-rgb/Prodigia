@@ -8,6 +8,7 @@ const MUNDOS = [
   { href: "/numeria", nombre: "Numeria", colorHex: "#6C4CF1" },
   { href: "/enigmia", nombre: "Enigmia", colorHex: "#0E9F6E" },
   { href: "/geografia", nombre: "Geografía", colorHex: "#1E7A8C" },
+  { href: "/quimia", nombre: "Quimia", colorHex: "#C026D3" },
 ];
 
 function mundoActual(pathname: string) {

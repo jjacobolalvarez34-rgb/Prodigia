@@ -127,6 +127,39 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     }
   }
 
+  const TIPOS_QUIMIA = ["quimia_simbolos", "quimia_formulas", "quimia_tabla"];
+
+  let quimiaProblemasTotales = 0;
+  if (tiposNecesarios.has("quimia_problemas_totales")) {
+    const { count } = await supabase
+      .from("attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_QUIMIA);
+    quimiaProblemasTotales = count ?? 0;
+  }
+
+  let quimiaModosVariados = 0;
+  if (tiposNecesarios.has("quimia_modos_variados")) {
+    const { data: quimiaRows } = await supabase
+      .from("attempts")
+      .select("problem_type")
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_QUIMIA);
+    quimiaModosVariados = new Set((quimiaRows ?? []).map((r) => r.problem_type)).size;
+  }
+
+  let quimiaNivelMundo = 0;
+  if (tiposNecesarios.has("quimia_nivel_mundo")) {
+    const { data: worldRow } = await supabase
+      .from("world_progress")
+      .select("nivel_mundo")
+      .eq("user_id", userId)
+      .eq("world", "quimia")
+      .maybeSingle();
+    quimiaNivelMundo = worldRow?.nivel_mundo ?? 0;
+  }
+
   let rachaRetosDiarios = 0;
   if (tiposNecesarios.has("racha_retos_diarios")) {
     const { data: retoRows } = await supabase
@@ -139,6 +172,38 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       (retoRows ?? []).map((r) => ({ fecha: r.fecha, meta_alcanzada: true })),
       hoyIso
     );
+  }
+
+  // Sección 9: "mundo completado" — nivel 10 en TODOS los temas de ese
+  // mundo. Mismo criterio que usa verificarTitulos para "Maestro de
+  // X" (llamada aparte, en los mismos puntos que esta función) — acá
+  // solo se resuelve el logro/medalla, no el título, para no duplicar
+  // la llamada a desbloquear_titulo desde dos lugares.
+  const TIPOS_NUMERIA = ["suma", "resta", "multiplicacion", "division", "fracciones", "decimales", "potencias", "algebra"];
+  const TIPOS_QUIMIA_MUNDO = ["quimia_simbolos", "quimia_formulas", "quimia_tabla"];
+
+  let numeriaCompletado = false;
+  if (tiposNecesarios.has("mundo_completado_numeria")) {
+    const { data: rows } = await supabase.from("skill_levels").select("nivel").eq("user_id", userId).in("problem_type", TIPOS_NUMERIA);
+    numeriaCompletado = (rows ?? []).length === TIPOS_NUMERIA.length && (rows ?? []).every((r) => r.nivel >= 10);
+  }
+
+  let geografiaCompletado = false;
+  if (tiposNecesarios.has("mundo_completado_geografia")) {
+    const { data: row } = await supabase.from("skill_levels").select("nivel").eq("user_id", userId).eq("problem_type", "geografia").maybeSingle();
+    geografiaCompletado = (row?.nivel ?? 0) >= 10;
+  }
+
+  let quimiaCompletado = false;
+  if (tiposNecesarios.has("mundo_completado_quimia")) {
+    const { data: rows } = await supabase.from("skill_levels").select("nivel").eq("user_id", userId).in("problem_type", TIPOS_QUIMIA_MUNDO);
+    quimiaCompletado = (rows ?? []).length === TIPOS_QUIMIA_MUNDO.length && (rows ?? []).every((r) => r.nivel >= 10);
+  }
+
+  let enigmiaCompletado = false;
+  if (tiposNecesarios.has("mundo_completado_enigmia")) {
+    const { data: row } = await supabase.from("logic_skill_levels").select("nivel").eq("user_id", userId).maybeSingle();
+    enigmiaCompletado = (row?.nivel ?? 0) >= 10;
   }
 
   const desbloqueadosAhora: Achievement[] = [];
@@ -155,6 +220,13 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     else if (tipo === "racha_retos_diarios") cumplido = rachaRetosDiarios >= valor;
     else if (tipo === "elo_minimo") cumplido = eloActual >= valor;
     else if (tipo === "racha_duelos_ganados") cumplido = rachaDuelosGanados >= valor;
+    else if (tipo === "quimia_problemas_totales") cumplido = quimiaProblemasTotales >= valor;
+    else if (tipo === "quimia_modos_variados") cumplido = quimiaModosVariados >= valor;
+    else if (tipo === "quimia_nivel_mundo") cumplido = quimiaNivelMundo >= valor;
+    else if (tipo === "mundo_completado_numeria") cumplido = numeriaCompletado;
+    else if (tipo === "mundo_completado_geografia") cumplido = geografiaCompletado;
+    else if (tipo === "mundo_completado_quimia") cumplido = quimiaCompletado;
+    else if (tipo === "mundo_completado_enigmia") cumplido = enigmiaCompletado;
 
     if (cumplido) desbloqueadosAhora.push(a);
   }

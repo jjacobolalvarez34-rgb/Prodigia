@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { verificarLogros } from "@/lib/logros/verificar";
+import { verificarTitulos } from "@/lib/titulos/verificar";
 import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
 
   const fila = (data as Array<Record<string, unknown>>)[0];
   const logrosNuevos = await verificarLogros(supabase, user.id);
+  await verificarTitulos(supabase, user.id);
 
   return NextResponse.json({ ok: true, ...fila, logrosNuevos });
 }

@@ -16,7 +16,11 @@ export type ProblemType =
   | "geografia"
   | "decimales"
   | "potencias"
-  | "algebra";
+  | "algebra"
+  | "quimia"
+  | "quimia_simbolos"
+  | "quimia_formulas"
+  | "quimia_tabla";
 export type Plan = "free" | "pro" | "colegio";
 
 export const ARITHMETIC_PROBLEM_TYPES: ArithmeticProblemType[] = [
@@ -69,6 +73,7 @@ export interface Profile {
   meta_xp_diaria: number;
   onboarding_completado: boolean; // diagnóstico de Numeria hecho/salteado
   onboarding_enigmia_completado: boolean; // diagnóstico de Enigmia hecho/salteado
+  onboarding_quimia_completado: boolean; // diagnóstico de Quimia hecho/salteado
   interes_inicial: ArithmeticProblemType | "logica" | null; // capa Prodigia del onboarding
   escudos_extra_pendientes: number;
   congelamientos_disponibles: number;

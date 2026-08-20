@@ -2238,3 +2238,749 @@ La migración nueva (`0054_tienda_rediseno.sql`) no se corrió contra una
 base real desde acá — la lógica está revisada a mano (releída línea por
 línea después de escribirla), no ejecutada. Correla después de `0053`.
 
+---
+
+# Décima segunda tanda (2026-08-19/20): auditoría de invitados + bug de matchmaking (parcial) + bug de grupos + Quimia completo
+
+Empezó como una lista de 9 prioridades (auditoría de invitados, bug de
+matchmaking fantasma, contador roto en Enigmia/Geografía, progreso en
+vivo del rival, rediseño de retar-a-amigo, indicador "en línea",
+perfil público completo, pantalla previa con más presencia visual,
+ícono de PWA) — a mitad de la Prioridad 1, llegó un mensaje nuevo
+pidiendo priorizar el bug de grupos (rápido) y después Quimia completo
+por sobre el resto. Se cerró lo que ya estaba en curso (Prioridad 1) y
+se saltó directo a lo pedido — **las prioridades 2 y 4-9 de la lista
+original quedaron sin tocar esta tanda**, no se llegó a ellas.
+
+## Prioridad 1 — Auditoría de invitados: confirmado con Playwright real, no solo código
+
+Reporte del usuario: un invitado entró a Social y Rankeds. El código de
+`bloquearInvitado()` SÍ estaba presente en `rankeds/page.tsx` y
+`social/page.tsx` — a primera vista no debería fallar. Antes de asumir
+que "el código ya está bien", lo probé de verdad: instalé Playwright +
+Chromium headless, creé una sesión de invitado real
+(`signInAnonymously()`, no consume la cuota de emails — no hace falta
+correo) contra el dev server, y navegué directo a cada ruta protegida.
+
+**Confirmado el bug real**: `/rankeds`, `/social`, `/aprender` y
+`/enigmia/aprender` devolvían contenido real (200, la página de
+verdad) antes de que el redirect del servidor terminara de aplicarse —
+el log del dev server mostraba dos pedidos por ruta (`GET /rankeds
+200` seguido, un momento después, de `GET /onboarding?next=...200`),
+señal de que el `redirect()` de Next puede perder la carrera contra el
+streaming de RSC en vez de cortar la respuesta de entrada. Audité
+TODAS las rutas del proyecto, no solo las sospechadas.
+
+**Fix — centralizado de verdad, como pediste**: el guard vivía
+*solo* a nivel de página (una llamada a mano por archivo — exactamente
+el patrón "copiado pantalla por pantalla" que sospechaste). Ahora hay
+una lista única (`src/lib/auth/rutasInvitado.ts`, sin imports de
+Next.js a propósito para que sea segura de usar desde el middleware)
+y `middleware.ts` la usa para cortar el pedido **antes de que
+cualquier página arranque a renderizar** — no hay forma de que quede
+una ventana donde se filtre contenido, sin importar qué tan rápido o
+lento streame una página en particular. Los `bloquearInvitado()` de
+cada página se dejaron como defensa en profundidad, ya no son la única
+línea.
+
+**Verificación real, no solo razonamiento**: re-corrí el mismo test de
+Playwright después del fix. Antes: 3 rutas protegidas correctamente de
+9. Después: las 9 rutas protegidas se redirigen de forma consistente
+(algunas hacia `/invitado-bloqueado`, otras hacia `/onboarding` primero
+si la cuenta de prueba todavía no tenía nombre puesto — ambos casos
+son bloqueo real, nunca contenido filtrado). `/tienda`, `/leaderboard`
+y `/perfil` (intencionalmente permitidos para invitados) siguieron
+accesibles como corresponde.
+
+**Lista de rutas protegidas confirmada**: `/rankeds`,
+`/rankeds/serie/[id]`, `/social` (+ `?tab=amigos`), `/aprender`,
+`/geografia/aprender`, `/enigmia/aprender`, `/profesor`,
+`/duelo/invitacion/[id]` — las mismas 8 etiquetas que ya usaba
+`bloquearInvitado()`, ahora todas cortadas también en el middleware.
+
+## Prioridad 2 (matchmaking fantasma) — NO se llegó a diagnosticar
+
+El mensaje de re-priorización llegó mientras estaba cerrando la
+Prioridad 1. Documentado acá para que quede explícito que sigue
+pendiente, no que se resolvió solo ni que se olvidó sin más.
+
+## Bug — "Eliminar grupo" no borraba de verdad
+
+Diagnosticado por lectura de código, causa real encontrada:
+`0014_plan_academico.sql` creó `groups` con RLS habilitado pero **sin
+policy de DELETE**. Sin ninguna policy que lo permita, Postgres deniega
+el delete por default — y acá está la parte que lo hace tan silencioso:
+`.delete()` de supabase-js **no devuelve error** cuando RLS filtra las
+0 filas que matchean, se ve exactamente igual a "borrado con éxito".
+Una migración vieja (`0023_fix_recursion_grupos.sql`, de una sesión
+anterior) ya había agregado la policy correcta — pero dado el patrón
+repetido esta sesión de migraciones escritas y no corridas contra la
+base real, es la explicación más probable de que el bug siga vivo hoy
+sin que el código de esa migración tenga nada mal.
+
+**Fix en dos capas**: `0055_grupos_delete_policy_confirmada.sql`
+re-asegura la policy de forma idempotente (segura de correr sin
+importar si `0023` ya se aplicó), y `/api/profesor/borrar-grupo/route.ts`
+ahora encadena `.select("id")` al delete para poder ver cuántas filas
+se borraron de verdad — si son 0, devuelve un error explícito en vez de
+reportar éxito silenciosamente. Esto cierra la clase de bug entera, no
+solo este caso puntual: la próxima vez que una policy de RLS falte o
+esté mal, el usuario va a ver un error real en vez de un botón que
+"funciona" pero no hace nada.
+
+## Quimia — cuarto mundo jugable, completo
+
+Mismo patrón que Numeria/Enigmia/Geografía en todo lo que aplicaba —
+sin tablas nuevas para contenido (los 21 elementos y 10 compuestos
+verificados que diste viven en código,
+`src/lib/practica/quimia.ts`, igual que los países de Geografía).
+
+**Contenido**: Modo 1 (símbolos ↔ elemento), Modo 2 (fórmula ↔
+compuesto), Modo 3 (tabla periódica: grupo/período reales — IUPAC,
+datos de química estándar, no inventados) para los 3 modos, con las
+preguntas armadas como opción múltiple (4 opciones, distractores
+reales del mismo banco) en vez de texto libre — evita el problema de
+tildes/ortografía de "carbonato de calcio" vs. una variante mal
+escrita.
+
+**Escalera de rango en Rankeds**: `modo_quimia_aleatorio_por_rango` +
+`nivel_quimia_por_rango`, mismo patrón exacto que
+`categoria_aleatoria_por_rango`/`nivel_enigmia_por_rango` de Enigmia —
+Bronce solo Modo 1, Plata suma Modo 2, Oro/Platino suben la dificultad
+dentro de esos 2, Diamante suma Modo 3, Prodigio los 3 al máximo.
+`buscar_rival_duelo` ahora sortea entre 4 mundos para "todas las
+ciudades" (antes 3) — como una serie sigue siendo mejor-de-3, cada
+serie excluye al azar uno de los 4, documentado en el propio SQL.
+
+**Bug real que encontré y corregí en mi propio diseño antes de que
+llegara a jugarse**: las 3 rutas de práctica (`/quimia/practica`,
+`/practica/formulas`, `/practica/tabla`) originalmente fijaban el modo
+por la URL visitada. Pero el modo real de un duelo lo decide el rango
+de los dos rivales (`sub_tipo`), no la URL — si alguien entraba a la
+ruta de símbolos con un duelo cuyo `sub_tipo` real era "tabla", los dos
+rivales verían contenido distinto pese a compartir semilla. Se corrigió
+antes de terminar: el loader (`cargarDatosPracticaQuimia`) ahora
+resuelve el modo real desde el duelo cuando hay uno activo, sin
+importar qué ruta se haya visitado.
+
+**Retar a un amigo — generalizado, no solo Quimia agregada al costado**:
+encontrando el código, `retar()` solo soportaba las 4 operaciones de
+Numeria — ni Geografía ni Enigmia eran opciones tampoco, contradiciendo
+la frase "igual que los demás mundos" del pedido (esos mundos no tenían
+esa opción todavía). En vez de agregar Quimia sola dejando el resto del
+hueco, generalicé `retar()`/`/api/amigos/retar` para los 4 mundos, y
+extraje un componente compartido (`RetarPicker.tsx`) usado por
+`FeedSidebar.tsx` Y `AmigosClient.tsx` — antes tenían el mismo picker
+de operaciones duplicado en los dos archivos.
+
+**Integración confirmada, no asumida**: Feed — las 6 tarjetas
+auto-generadas ya eran genéricas por `mundo`/`tipo`, confirmé leyendo
+el código que Quimia no necesita nada especial ahí. Logros — 3 nuevos
+(`quimia-explorador` los 3 modos, `quimia-nivel-5`, `quimia-100`),
+2 tipos de criterio nuevos que evalúa `verificarLogros.ts`. Fondos
+ambientales — confirmé que el sistema (`FondoMundo.tsx`/
+`FondoCursorMundo.tsx`) sí está andando en los otros 3 mundos antes de
+sumar Quimia, con sus propios glifos (⚗ ⚛ ⬡ 🧪). Theming — magenta
+`#C026D3` sumado en los ~8 lugares donde el color de mundo está
+hardcodeado (Header, MundoSelector, RankedsClient, LeaderboardClient,
+FondoCursorMundo, NivelMundoSubio — deuda preexistente de no tener un
+solo lugar para esta paleta, no algo nuevo de esta tanda).
+
+**Decisiones de alcance documentadas**:
+- No extendí "Invitar por link" (`InvitarPorLink` en `AmigosClient.tsx`)
+  a los 4 mundos — sigue Numeria-only. Es una feature separada del
+  "Retar a duelo" de la lista de amigos, no la mencionaste explícita, y
+  el tiempo rindió mejor cerrando lo que sí pediste con solidez.
+- No agregué una 4ª tarjeta de estadística "Quimia" en `/perfil` (la
+  fila de Numeria/Enigmia/Geografía) — nice-to-have no pedido
+  explícitamente, prioricé terminar la integración pedida (Rankeds,
+  duelos, Feed, logros) primero, siguiendo tu propio criterio de "mejor
+  un modo sólido que tres flojos" aplicado a la tanda entera.
+- Sin cuenta de prueba real para jugar un duelo de punta a punta (mismo
+  límite que el resto de esta sesión con duelos — no hay browser
+  multi-sesión fácil de armar sin gastar cuota de invitados/emails
+  para probarlo en vivo con dos jugadores reales).
+
+## Verificación de esta tanda
+
+`npx tsc --noEmit` limpio. `npx eslint src` — al principio salieron 3
+errores nuevos en archivos de Quimia (`react-hooks/purity` sobre
+`performance.now()` dentro de handlers de click — mismo falso positivo
+ya documentado y resuelto en `DiagnosticoEnigmiaClient.tsx`, que sirvió
+de plantilla); se aplicó el mismo patrón de supresión ya establecido y
+quedó limpio, mismos 4 errores preexistentes de siempre en
+`DiagnosticoClient.tsx`, ninguno nuevo. **`npx next build` completo:
+compiló limpio, exit code 0, 77 rutas** (71 anteriores + 6 nuevas de
+Quimia: `/quimia`, `/quimia/aprender`, `/quimia/aprender/[slug]`,
+`/quimia/diagnostico`, `/quimia/practica`, `/quimia/practica/formulas`,
+`/quimia/practica/tabla`).
+
+Las migraciones nuevas (`0055` y `0056`) no se corrieron contra una
+base real desde acá — correlas en orden después de `0054`.
+
+## Sobre el commit pedido al principio de esta tanda
+
+Pediste explícitamente activar el localhost (hecho — corriendo en
+`http://localhost:3100`, reiniciado una vez a mitad de tanda porque un
+build de producción necesitaba borrar `.next` y eso tira abajo al dev
+server que comparte esa carpeta) y después poder commitear. **No hay
+`git` instalado como CLI en este entorno** — lo busqué en las rutas de
+instalación habituales de Windows y no está en ningún lado, mismo
+límite ya documentado en la primera tanda de esta sesión. No pude
+hacer el commit. Todo el trabajo queda en el working tree tal como
+está — vos vas a tener que commitear del lado tuyo (o decime si querés
+que intente instalar git, que sería una acción más invasiva que
+prefiero confirmar antes de tocar).
+
+---
+
+# Décima tercera tanda (2026-08-20): matchmaking fantasma, auditoría de RLS, invitar por link, podio, economía de la Tienda
+
+Lista de 10 secciones en orden estricto, bugs primero. Cubierta en esta
+entrada: Secciones 1-6. Las secciones 7-10 (títulos, insignias/marcos
+con assets, perfil con lecciones por mundo, crecimiento/retención)
+quedaron sin tocar — vas a ver el detalle en la próxima entrada de este
+documento si esta sesión sigue, o quedan documentadas como pendientes
+si no.
+
+## Sección 1 — Matchmaking fantasma: confirmado y corregido, con prueba real
+
+Reproducido de punta a punta sin pasar por la UI (dos invitados reales
+vía `signInAnonymously()`, llamando `buscar_rival_duelo` directo con
+`@supabase/supabase-js` desde Node): el usuario B entra a la cola una
+vez y no vuelve a llamar la función (simula cerrar la pestaña, sin
+cancelar). 12 segundos después, el usuario A busca con los mismos
+parámetros y **matchea contra B** — se crea un duelo real (`id` y todo)
+contra un rival que ya se fue.
+
+**Causa raíz**: `duel_queue.entered_at` es la hora en que arrancó la
+búsqueda (se usa para ensanchar el rango de ELO con el tiempo) — no es
+un heartbeat, y de hecho ni se actualiza en cada poll si los parámetros
+no cambiaron. No hay ninguna señal de "sigo acá" separada. Si alguien
+cierra la pestaña a mitad de búsqueda, pierde conexión, o el cliente
+crashea, su fila queda en la cola para siempre y cualquiera puede
+matchear contra ella.
+
+**Fix** (`0058_matchmaking_fantasma.sql`): columna nueva
+`last_seen_at`, heartbeat real que se actualiza en TODOS los polls (no
+solo cuando cambian los parámetros de búsqueda). `buscar_rival_duelo`
+ahora exige `last_seen_at` de los últimos 10 segundos para considerar a
+alguien un rival válido (el poll del cliente es cada 2.2s, así que
+tolera ~4 ciclos perdidos por jitter), y de paso limpia filas con más
+de 2 minutos sin heartbeat en cada llamada — autolimpieza sin cron.
+También agregué un handler de `pagehide` + fix del cleanup de unmount
+en `RankedsClient.tsx` (antes solo paraba el polling local, nunca
+avisaba al servidor) — defensa en profundidad, no el fix real (un
+`pagehide` puede no llegar a tiempo si se cierra la pestaña de golpe;
+la verificación que importa es la del servidor).
+
+## Sección 2 — Auditoría de RLS: pasada completa por las 30 tablas
+
+Delegada a un research agent en paralelo mientras seguía con el resto
+de la tanda — leyó las 58 migraciones en orden para reconstruir el
+estado VIGENTE (no el original) de cada tabla, y cruzó cada
+`.from(...)`/`.rpc(...)` real de `src/` contra eso.
+
+**Hallazgo crítico que yo mismo había introducido esta tanda, corregido
+antes de que nadie llegara a correrlo**: al escribir el fix del bug de
+Quimia (ver más abajo), copié la lista de columnas del GRANT de
+`profiles` de `0035` en vez de la vigente de `0054` — eso hubiera
+reintroducido dos regresiones reales: `avatar_url` afuera de la lista
+(subir foto de perfil rompe), `ocultar_doble_o_nada` afuera (el toggle
+de Ajustes falla en silencio, ni siquiera revisa el error de vuelta) y
+`display_name` de nuevo adentro (saltea el cobro de Chispas por cambiar
+de nombre que `0054` había cerrado a propósito). Corregido en
+`0056_mundo_quimia.sql` y `0057_fix_grant_onboarding_quimia.sql` antes
+de que ninguna de las dos llegara a correr contra la base real.
+
+**Otros hallazgos, corregidos en `0060_auditoria_rls_2.sql`**:
+- `duels`: la policy de INSERT solo exigía `auth.uid() = retador_id`,
+  sin restringir `estado`/`ganador_id` — un usuario podía insertar
+  directo una fila con `estado='completado'` y `ganador_id=<él mismo>`
+  sin jugar nada, y `verificar.ts` cuenta logros de duelos por
+  `ganador_id` sin revalidar que la fila haya pasado por
+  `registrar_resultado_duelo()`. Agregado `with check` restringiendo
+  `estado='pendiente'` y `ganador_id is null` en el insert.
+- `handle_new_user()`: la única función `security definer` de las ~80
+  del proyecto sin `set search_path = public` (footgun de Postgres
+  conocido) — corregida.
+- `user_achievements`/`unlocked_modifiers`: la policy de INSERT no
+  validaba que `achievement_id`/`modifier_id` existieran de verdad —
+  ahora sí (no revalida el criterio completo, eso sigue viviendo en
+  `verificar.ts`; cerrar eso del todo en SQL hubiera significado
+  duplicar bastante lógica para un hallazgo marcado por la auditoría
+  como "solo explotable por consola, no alcanzable desde la UI real").
+
+**Documentado, no corregido esta tanda** (prioricé lo de arriba por
+impacto/esfuerzo, con el volumen de esta lista): `feed_posts` permite
+insertar tarjetas con `rival_nombre`/`rango_nuevo` arbitrarios por
+consola (el código real siempre las genera bien, pero RLS no lo obliga)
+y `duel_results`/`duel_queue` tienen el mismo patrón de "solo exige
+dueño, no contenido" en columnas de menor impacto (puntaje/elo
+fabricado, solo explotable por consola). Categorías SIN hallazgos:
+ninguna tabla con una operación real del código sin policy que la
+cubra (la clase de bug de "eliminar grupo" no se repite en ningún otro
+lado), y ninguna tabla con RLS deshabilitado.
+
+## Sección 3 — "Invitar por link": generalizado a los 4 mundos
+
+Confirmado el reporte: `InvitarPorLink` en `AmigosClient.tsx` seguía
+mostrando solo las 4 operaciones de Numeria. La generalización de la
+tanda anterior tocó "retar a un amigo" (`api/amigos/retar`) pero nunca
+este flujo — código completamente distinto, tabla propia
+(`duel_invites`), confirmado leyendo `0038_duelos_tiempo_real.sql`:
+`operation_type` era `not null` con check solo de Numeria, sin columna
+`mundo`/`sub_tipo`, y `unirse_invitacion_duelo` insertaba en `duels`
+sin pasar `mundo` (caía siempre en el default `'numeria'` de esa
+columna) — el bug estaba tanto en la UI como en la base.
+
+**Fix** (`0059_invitar_por_link_multimundo.sql` + cambios en
+`AmigosClient.tsx`, `duelo/invitacion/[inviteId]/page.tsx`): agregadas
+`mundo`/`sub_tipo` a `duel_invites`, `crear_invitacion_duelo` y
+`unirse_invitacion_duelo` redefinidas con el mismo split
+`operation_type`/`sub_tipo` que ya usa `duels`. La UI ahora usa el
+mismo `RetarPicker` (ciudad primero, después operación/continente/
+categoría/modo) que ya usa "retar a un amigo" — cero lógica de
+selección duplicada. Exporté `nombreMundo`/`etiquetaOpcion` desde
+`RetarPicker.tsx` para el texto de "esperando a que se unan…" sin
+duplicar los 4 mapas de nombres que ya vivían ahí.
+
+## Sección 4 — Podio del ranking: no pude reproducir el corte
+
+Probé a fondo antes de asumir que había algo para arreglar, como
+pediste explícitamente. Capturas reales (no solo lectura de CSS) en
+tres motores de render distintos: Chromium desktop, Chromium a ancho
+mobile (375px), y **WebKit** (motor de Safari — instalé
+`playwright install webkit` específicamente para no descartar un bug
+que solo se vea en el motor de iOS). Los 3 muestran las 3 columnas
+completas, bordes redondeados prolijos en las 4 esquinas de cada
+pilar, sin corte. `getComputedStyle` confirma `border-bottom-left/
+right-radius: 16px` y ancho/color de borde idénticos en ambos lados;
+`elementFromPoint` en el borde derecho del pilar del 1er puesto
+devuelve el propio div del pilar, no un elemento superpuesto tapándolo.
+
+**No pude reproducir el bug** con los datos y el build actuales. Antes
+de cerrar esto como "no hay nada que arreglar", valdría la pena que me
+pases una captura de pantalla real de dónde lo viste — puede ser caché
+vieja del browser/CDN de antes del fix de border-radius que ya se
+había aplicado, un estado de datos que no reproduje (nombre muy largo,
+alguna combinación de filtro particular), o algo específico de un
+dispositivo que no puedo emular perfecto. Marcado NO PUDE PROBARLO, no
+SÍ ni NO — no quise fingir un fix sobre un bug que no logré ver.
+
+## Sección 5 — Verificación en vivo de 5 ítems
+
+El research agent que había delegado esto se cayó a mitad de camino
+por un límite de sesión ajeno a la tarea en sí (no un error de la app)
+— retomé la verificación yo mismo con Playwright real, mismo patrón de
+sesión de invitado que vengo usando en toda la tanda.
+
+**1. Geografía, variedad real — SÍ, confirmado, con una vuelta de tuerca.**
+Mi primer intento de probarlo en vivo dio un falso negativo: el mismo
+país aparecía "repetido" varias veces seguidas. Investigué a fondo
+antes de reportarlo como bug — la causa real era de mi propio script de
+prueba, no del juego: el click al país corre `await fetch(...)` ANTES
+de programar el `setTimeout` del feedback (550ms si acierta, 900ms si
+no) — así que el tiempo real hasta que cambia la pregunta es
+"latencia de red + delay de feedback", no solo el delay. Mi test leía
+el estado antes de que ese ciclo completo terminara, viendo la MISMA
+pregunta dos veces. Con el tiempo de espera corregido: 8 países
+distintos en 10 preguntas reales por sesión (América tiene 28 países
+en el banco, con nivel inicial ~3 el rango ±3 de dificultad da un pool
+de sobra) — variedad real, no repetida. Nota aparte, no un bug pedido
+en esta sección pero sí un hallazgo real: el patrón "fetch, DESPUÉS
+recién programar el feedback" es el mismo en los 4 mundos (no soy
+específico de Geografía) — significa que en una red lenta, cada ronda
+tarda "latencia + delay fijo" en vez de que el delay fijo enmascare la
+latencia. Cosmético/rendimiento, no roto, documentado para una futura
+pasada de pulido si hace falta.
+
+**2. Doble o nada — SÍ (UI y gate), con una limitación de prueba
+honesta.** El diagnóstico y fix ya documentados en `0054_tienda_rediseno.sql`
+(contar `logic_attempts`/`duel_results` además de `attempts` para la
+elegibilidad, tope real de 200 Chispas) los confirmé por lectura de
+código esta vez, no los reescribí. Lo que SÍ probé en vivo: la sección
+"Doble o nada" de la Trastienda renderiza correctamente (advertencia de
+tope de apuesta, mención del toggle para ocultarla en Ajustes, botones
+de apuesta), con los NUEVOS precios de la Sección 6 mostrándose bien
+(incluido el descuento del día aplicado correctamente sobre el marco
+Oro: 1700 base × 20% off = 1360, exacto). Lo que NO pude probar: una
+resolución real de apuesta (ganar/perder) — requiere pasar el gate de
+20 intentos reales, impracticable de fabricar con una cuenta de
+invitado en el tiempo disponible sin gastar cuota real. Marcado SÍ para
+UI+gate, NO PUDE PROBARLO para la resolución punta a punta.
+
+**3. Título junto al nombre — SÍ (mecanismo confirmado), con la misma
+limitación.** `RangoBadge.tsx` sí renderiza `tituloNombre` como una
+píldora junto al nombre del rango cuando el valor no es null — código
+real, no un stub, usado en Rankeds/perfil/podio según su propio
+comentario. Lo vi renderizar correctamente el estado "sin título" (sin
+romper el layout) en las capturas de la Sección 4. No pude ver el
+estado CON título activo real, porque eso requiere una cuenta con rango
+alcanzado de verdad — no fabricable rápido con una cuenta de invitado
+nueva. Mecanismo confirmado end-to-end por lectura de código
+(`titulo_nombre_de()` en SQL → prop `tituloNombre` → render), pero la
+confirmación 100% visual con datos reales queda pendiente.
+
+**4. Recuperar contraseña — SÍ (UI), no probado el envío real por la
+restricción de cuota de esta sesión.** `/recuperar` carga bien, sin
+errores de consola, formulario con el texto correcto ("Te mandamos un
+enlace por email para elegir una nueva", botón "Enviarme el enlace").
+No disparé un envío real (mismo límite de todas las tandas de esta
+sesión: nunca usar una cuenta de email real de verdad para no gastar la
+cuota limitada de SMTP del proyecto) — así que la ENTREGA del email no
+está confirmada, solo la pantalla y que el formulario no tira error al
+cargar.
+
+**5. Freeze mobile — NO PUDE CONFIRMAR EL REPORTE ORIGINAL, pero sí
+probé lo que pude en vivo sin encontrar nada roto.** No tengo el detalle
+original de qué pantalla específica se congelaba (se perdió con el
+corte de contexto de una tanda anterior, y el prompt que me repasaste
+tampoco lo especifica). Con eso como límite honesto, probé lo más
+representativo que pude: un sprint completo de Numeria (10 preguntas),
+en **WebKit** (motor de Safari, no Chromium — la sospecha más común
+detrás de un reporte de "freeze mobile" es justamente un bug específico
+de motor) a un viewport de iPhone (390×844). Completó las 10 rondas sin
+colgarse, sin errores de consola ni de página, `document.readyState`
+se mantuvo `"complete"` todo el tiempo. No encontré el freeze, pero
+tampoco puedo decir con confianza que no exista en una pantalla
+distinta a la que probé — marcado NO PUDE CONFIRMAR, no SÍ ni NO.
+
+## Sección 6 — Economía de la Tienda: rebalanceada con piso real de precio
+
+Confirmado el problema: con los precios de `0054` (escudo 40,
+congelamiento 35, boost 60, fuentes 50/90/150, marcos
+50/80/120/170/230/300), el catálogo completo sumaba **~1375 Chispas**
+— a ~120 Chispas/partida, literalmente las ~4 partidas que reportaste.
+
+**Precios nuevos**, con el mismo criterio de "~120 Chispas/partida"
+como referencia, ahora apuntando a los objetivos que diste:
+- Utilidad (3-5 partidas): escudo 350, congelamiento 450, boost 600.
+- Cosméticos bajos (8-15 partidas): fuente mono 1000, fuente serif
+  1400, marco bronce 1000, marco plata 1300, marco oro 1700.
+- Escalón medio, subiendo gradual hacia el techo de prestigio en vez de
+  saltar de golpe: marco platino 2200, marco diamante 3200.
+- Prestigio (30-50 partidas): fuente manuscrita 5000, marco Prodigio
+  5000.
+
+Catálogo completo nuevo: **~23.200 Chispas, ~190 partidas** — semanas
+de juego real, no una tarde.
+
+**Consolidé el origen de los precios**: vivían duplicados a mano en
+`api/tienda/comprar/route.ts` y `TiendaClient.tsx` (mismos números,
+dos lugares para desincronizar silenciosamente) — ahora un solo
+`src/lib/tienda/costos.ts` que ambos importan.
+
+**Encontré y cerré un agujero real mientras tocaba esto**: la función
+`comprar_item_tienda` confía en el `p_costo` que le manda quien la
+llama — la API route SIEMPRE lo calcula server-side (nunca confía en
+el navegador para el precio final), así que el flujo real de la app
+está bien, pero la función queda invocable directo desde la consola
+del navegador con sesión real y cualquier `p_costo`, incluyendo 1 —
+hubiera vuelto inútil este mismo rebalanceo para cualquiera que abriera
+la consola. `0061_tienda_precios_piso.sql` agrega un piso server-side
+(no menos de la mitad del precio de catálogo — el descuento diario
+máximo real es 50%), sin duplicar el hash determinístico de fecha
+completo en SQL.
+
+## Sección 7 — Sistema de títulos: ~46 nuevos (+ los 6 de rango ya existentes)
+
+Extendí el mecanismo que ya existía para rango (`desbloquear_titulo`,
+idempotente, `titulos_usuario`, se activa solo el primero que se
+desbloquea) en vez de inventar uno paralelo — la UI de `/perfil`
+(`TitulosSection.tsx`) ya estaba escrita para aceptar cualquier
+`origen`, no solo `'rango'`, así que no hizo falta tocar nada ahí.
+
+**Catálogo nuevo** (`src/lib/titulos/catalogo.ts`, en TypeScript, no en
+la base — mismo criterio que ya usa `desbloquear_titulo`, que recibe
+`nombre` como parámetro en vez de mirarlo de una tabla): 4 por completar
+un mundo (Maestro de Numeria/Geografía/Enigmia/Quimia), 6 por volumen
+(10 a 5000 partidas — "partidas" aproximado como problemas resueltos
+÷10, no hay un contador de sprints como tal en el esquema), 6 por
+precisión sostenida (70% a 99% de precisión semanal, con el mismo piso
+de 20 intentos que ya usaban los logros para que no sea por 2
+respuestas), 9 de duelos (bautismo, 5 de victorias acumuladas, 3 de
+racha), 8 de constancia (6 de racha diaria + 2 de racha de reto
+diario), 7 de curiosidad (explorar los 4 mundos, ser "embajador" —
+invitaste a alguien que se unió por link, mantener un saldo alto de
+Chispas, y 4 de completar el camino de Aprender de cada mundo). Nombres
+pensados para la voz de marca (directa, alentadora, un poco
+irreverente) — nada tipo "Nivel 10".
+
+**Verificación** (`src/lib/titulos/verificar.ts`, `verificarTitulos`):
+mismo patrón que `verificarLogros` — solo calcula las métricas que
+hacen falta para los títulos todavía no desbloqueados, no todo el
+catálogo en cada llamada. Cableado en los mismos 7 puntos donde ya se
+llama `verificarLogros` (después de cualquier evento que podría
+destrabar algo): `practica/finish`, `enigmia/finish`,
+`enigmia/completar-leccion`, `aprender/completar`,
+`duelos/resultado`, `duelos/finalizar-serie`, `reto-diario/completar`.
+
+**"Mundo completado" verificado de verdad, no asumido**: para Numeria
+exige las 8 columnas de `skill_levels` (suma/resta/multiplicacion/
+division/fracciones/decimales/potencias/algebra) todas en nivel 10;
+Quimia exige las 3 (símbolos/fórmulas/tabla); Geografía y Enigmia
+tienen un solo nivel de mundo cada una (`skill_levels.problem_type=
+'geografia'` y `logic_skill_levels.nivel` respectivamente) así que ahí
+alcanza con esa fila en 10. "Aprender completo" cuenta técnicas
+dominadas vs. el total real de técnicas de ese mundo consultado en vivo
+(no un número hardcodeado) — así que si mañana se agrega una lección
+más a algún mundo, el criterio se ajusta solo sin tocar código.
+
+**Decisión de alcance documentada**: encontré que `desbloquear_titulo`
+no valida `p_user_id = auth.uid()` — cualquier cuenta autenticada podría
+llamarla directo por consola con el uuid de otra persona y regalarle
+(o mejor dicho, "ensuciarle") un título. No es un hueco nuevo de esta
+tanda: ya estaba así desde que se creó para los títulos de rango en
+`0043`, porque la función se llama legítimamente para el RIVAL en un
+duelo (dos participantes, dos títulos posibles), no solo para quien
+hace el request — un chequeo ingenuo de `auth.uid()` rompería ese caso
+real. Cerrarlo bien pide distinguir "llamada desde otra función de
+confianza" de "llamada directa desde la consola", que Postgres no
+resuelve con un chequeo simple — lo dejo documentado para revisar con
+más tiempo en vez de arriesgar una regresión en el desbloqueo de
+títulos de rango del rival a último momento.
+
+**Verificación retroactiva de "mundo completado"**: pendiente, se hace
+en la Sección 9 (pide explícitamente chequear si alguien ya cumple la
+condición hoy y otorgarle el título con efecto retroactivo).
+
+## Sección 8 — Insignias de rango + marcos temáticos: BLOQUEADA, sin assets
+
+El mensaje decía "te adjunto imágenes generadas con Gemini" pero
+ningún archivo de imagen llegó a esta conversación — ni como adjunto
+visible ni en ningún directorio del proyecto o del scratchpad que
+pudiera encontrar. No hay nada que integrar todavía. No inventé
+placeholders ni asumí un diseño — mejor pedirte que reenvíes los
+archivos (o me digas dónde ya están guardados si los subiste a otro
+lado) que integrar algo a ciegas y tener que rehacerlo. El sistema de
+color plano actual (rangos por hex, marcos por color de rango) sigue
+como está, listo para recibir los assets reales apenas estén
+disponibles — no hace falta ningún cambio estructural previo, solo
+reemplazar dónde hoy se usa color por dónde usaría una imagen.
+
+## Sección 9 — Perfil: lecciones por mundo + logro "Mundo completado" retroactivo
+
+**Lecciones por mundo en /perfil**: función nueva
+`lecciones_completadas_por_mundo()` (mismo criterio que
+`afinidad_por_mundo()`, ya usada en esta misma página — una función en
+vez de que la página arme la cuenta a mano) que devuelve completadas/
+total por mundo, contando `technique_progress` para Numeria/Geografía/
+Quimia (agrupadas por `problem_type`) y `logic_technique_progress` para
+Enigmia (tablas separadas, no el mismo esquema). Nueva sección
+"Aprender" en `/perfil` mostrando "X/Y lecciones" por mundo — no
+rompe si la migración todavía no corrió (la RPC no existe todavía en
+la base real, así que `data` vuelve null y la sección simplemente no
+se muestra en vez de tirar error — confirmado en vivo, `/perfil` sigue
+cargando 200 sin la migración aplicada).
+
+**Logro real "Mundo completado"** (4 nuevos, uno por mundo, categoría
+`mundo` nueva en el check de `achievements`): se dispara con el mismo
+criterio ya usado para los títulos "Maestro de X" de la Sección 7
+(nivel 10 en las 8 columnas de Numeria, las 3 de Quimia, o el único
+nivel de mundo de Geografía/Enigmia) — cableado en `verificarLogros`
+(`src/lib/logros/verificar.ts`), que corre en los mismos 7 puntos que
+`verificarTitulos`, así que el logro y el título se destraban en el
+mismo evento, sin depender uno del otro.
+
+**Efecto retroactivo, de verdad, no solo en el papel**: la migración
+`0062` incluye un bloque `do $$ ... $$` que recorre TODOS los usuarios
+reales al momento de correrla y les otorga el logro + título a
+cualquiera que ya cumpla la condición hoy — no es una función que haya
+que acordarme de invocar después, se ejecuta sola la primera vez que
+la migración se aplica. No puedo confirmar si algún usuario real ya
+califica (no tengo acceso a la base real desde acá), pero si alguien
+lo hace, esta migración se lo va a dar apenas se corra, no recién la
+próxima vez que juegue.
+
+**Recompensa visual pendiente**: el pedido original conecta este logro
+con "podés reusar/adaptar los marcos temáticos de la Sección 8 como
+recompensa visual" — como la Sección 8 está bloqueada por falta de
+assets, el logro y el título quedan funcionando (mérito + nombre
+mostrable), pero sin el ítem visual exclusivo todavía. Se suma solo
+cuando lleguen los assets de la Sección 8.
+
+## Sección 10 — Crecimiento y retención: 2 de 7 confirmados, el resto no se llegó
+
+Con el volumen de esta tanda y la instrucción explícita de priorizar
+1-6, elegí los dos ítems que se podían confirmar rápido y con
+información real en vez de repartir el tiempo que quedaba en 7 cosas a
+medio hacer:
+
+**#1 — Landing pública: confirmado que NO existe, tal como sospechabas.**
+Probado con un contexto de browser realmente limpio (sin cookies, sin
+sesión previa — mi primer intento con PowerShell dio un falso positivo
+por reutilización de sesión del propio proceso de PowerShell, lo
+descarté al confirmarlo con un browser real aparte): `/` redirige
+siempre a `/login?next=%2F` para cualquier visitante sin cuenta, sin
+excepción. No hay ningún storytelling ni demo interactivo — es
+exactamente el "login pelado" que imaginabas. No armé la landing
+nueva: es una pieza de feature nueva completa (mockup + componente +
+ruta separada de la home autenticada), desproporcionada para el tiempo
+que quedaba frente a dejarla bien documentada para una tanda dedicada.
+
+**#5 — Cascada de borrado de cuenta: confirmado que SÍ, completo.**
+Auditadas las 30 tablas del proyecto (mismo relevamiento que la
+Sección 2): toda tabla que guarda datos de un usuario tiene
+`on delete cascade` hasta `profiles`, y `profiles.id` en sí tiene
+`on delete cascade` hasta `auth.users`. `/api/perfil/eliminar-cuenta`
+borra por el lugar correcto (`admin.auth.admin.deleteUser`, con la
+service role key — ningún usuario puede borrarse a sí mismo con su
+propio JWT) y deja que la cascada haga el resto, en vez de un borrado
+manual tabla por tabla (mucho más frágil, un solo `references` sin
+`on delete cascade` en el futuro rompería el borrado sin avisar). Sin
+hallazgos — auditoría limpia, no hacía falta ningún fix.
+
+**#2 (invitar sin cuenta), #3 (compartir logro), #4 (email de racha),
+#6 (tooltips nuevos) y #7 (estados vacíos/loading) — no se llegó.**
+Documentado explícitamente para que quede claro que no se evaluaron,
+no que se decidió que no hacían falta.
+
+## Corrección post-cierre: migración 0060 tenía una columna equivocada
+
+Al correrla contra la base real diste el error `column m.id does not
+exist`. Causa: la policy nueva de `unlocked_modifiers` (hallazgo #4 de
+la auditoría) apuntaba a `technique_modifiers` (la tabla puente
+técnica↔modificador, con clave compuesta `technique_id, modifier_id`,
+sin columna `id` propia) en vez de a `modifiers` (que sí tiene `id`).
+Como el editor de Supabase corre el script pegado como una sola
+transacción, ese error hizo rollback de las otras 3 correcciones de
+`0060` también (el policy de `duels`, el `search_path` de
+`handle_new_user`, el chequeo de `user_achievements`) — no quedó nada
+aplicado. Corregido en el archivo; **hace falta volver a correr
+`0060_auditoria_rls_2.sql` completo**, ahora sí limpio de punta a
+punta.
+
+## Sección 8 — Insignias de rango: integradas con tus assets reales
+
+Mandaste el collage de los 6 estandartes de rango (Bronce a Prodigio,
+colores confirmados uno por uno contra `RANGOS_ELO` en
+`src/types/database.ts` — coinciden exactos, hasta el degradé
+violeta→ámbar de Prodigio). Recorté el collage en 6 PNG individuales
+con `sharp` (ya estaba en `node_modules`, no hizo falta instalar nada)
+en `public/rangos/<slug>.png`, con el fondo negro convertido a
+transparente por umbral de luminancia — el primer recorte por bandas
+parejas dejaba colarse la punta del estandarte vecino en algunos
+bordes, así que angosté el margen de cada banda hasta que salieron
+limpios.
+
+Integrados en el lugar que pediste explícitamente — "Rankeds/Mi
+competitivo" — como una insignia grande arriba del ELO/rango (antes
+solo texto + color). Dejé los usos COMPACTOS de `RangoBadge` (perfil
+propio, perfil público, filas de leaderboard) como estaban: son
+grillas chicas donde un estandarte de esta escala no entra bien, y el
+pedido original era específicamente sobre Rankeds/Mi competitivo, no
+"en todos lados".
+
+**Sigue pendiente**: los marcos temáticos por mundo (la otra mitad de
+la Sección 8) — el asset que mandaste era solo el de rangos.
+
+## Sección 9 (retomada) + hallazgo de un bug real en el camino
+
+Encontrado mientras armaba el aviso de "primera vez" de Quimia
+(Sección 10.6, más abajo): un research agent que delegué para auditar
+estados vacíos/loading en Quimia/Social/Rankeds encontró que
+`FeedSidebar.tsx` recibe `error` de `useAmigos()` pero nunca lo
+mostraba — si fallaba aceptar una solicitud o retar a alguien desde la
+barra lateral del Feed, no pasaba nada visible, el botón simplemente
+dejaba de girar sin explicación. Corregido: el error ahora se muestra
+una vez, compartido entre los 3 paneles (antes solo se veía si el
+panel abierto era "agregar amigos", aunque el error viniera de
+aceptar/retar). De paso agregué el mismo "no encontramos a nadie"
+que le faltaba tanto ahí como en `AmigosClient.tsx` cuando una
+búsqueda da 0 resultados (antes esa sección quedaba vacía sin decir
+nada).
+
+También reforcé `DiagnosticoQuimiaClient.guardar()` — el mismo update
+que causó el loop infinito de Quimia (Sección 1 de la tanda anterior)
+ahora chequea su propio resultado: si falla, la pantalla final muestra
+"No pudimos guardar tu progreso" con un botón de reintentar, en vez de
+mostrar éxito silenciosamente sobre un guardado que no pasó.
+
+## Sección 10 — 6 de 7 ítems cerrados
+
+**10.1 (landing pública) y 10.5 (cascada de borrado)**: ya
+confirmados en la entrada anterior de este documento — no repito acá.
+
+**10.2 — Invitar sin cuenta, implementado.** Nueva sección "Invitar a
+un amigo (sin cuenta todavía)" en `/amigos`, distinta de "Invitar por
+link" (esa es para un duelo puntual). El link usa el propio `user_id`
+como código de referido (ya es un uuid, no hacía falta una tabla de
+invitaciones nueva) — `/registro?ref=<uuid>`. `conectar_por_invitacion`
+(`0063`, sin política de "pendiente", conecta directo en "aceptada" —
+un link personal ya implica intención mutua) se dispara desde dos
+lugares según haga falta confirmar el email o no: `RegistroForm.tsx`
+si `signUp` ya devuelve sesión, o `/auth/callback` si hay que esperar
+la confirmación (el `ref` viaja en `emailRedirectTo`, sobrevive el
+viaje de ida y vuelta al mail). **No probado de punta a punta** — haría
+falta un signup real con email real, y esta sesión respeta el límite
+ya documentado de no gastar la cuota de SMTP con cuentas de prueba.
+Confirmado por lectura de código + que `tsc`/`eslint` quedan limpios y
+la página carga sin error en vivo.
+
+**10.3 — Compartir logro, implementado.** Botón "Compartir" nuevo en
+cada medalla ya desbloqueada de `/perfil` — genera la imagen
+enteramente del lado del cliente (canvas, sin backend nuevo) y la
+descarga como PNG. Sí lo probé de verdad: repliqué el dibujo exacto en
+un HTML aislado y lo capturé — se ve prolijo, con la medalla, el
+nombre y descripción del logro, marca de Prodigia y el nombre de quien
+lo comparte.
+
+**10.4 — Email de racha en riesgo: NO implementado el envío, dejé la
+base lista.** El proyecto no tiene ningún proveedor de email
+transaccional instalado (revisé `package.json`: nada de Resend/
+SendGrid/Postmark/nodemailer) — lo único que manda emails hoy es
+Supabase Auth para sus propios flujos (confirmar cuenta, recuperar
+contraseña), no sirve para contenido arbitrario. Armar el envío real
+necesita dos decisiones tuyas que no quise tomar por mi cuenta: qué
+proveedor de email usar, y qué dispara el cron (`pg_cron`/`pg_net` si
+están habilitados en tu proyecto de Supabase, o un cron del lado del
+hosting). Lo que sí dejé listo: `usuarios_con_racha_en_riesgo()`
+(`0064`) — la consulta que identifica quién tiene una racha real de
+ayer sin haber practicado hoy todavía, lista para que un futuro cron
+la llame. A propósito NO tiene grant a `authenticated` (devuelve
+emails ajenos) — solo invocable con la service role key.
+
+**10.6 — Tooltips de primera vez, implementados con un componente
+nuevo, no reusando el existente.** `PrimeraVezTip.tsx` (el tour de
+onboarding) está deliberadamente restringido a esa única secuencia en
+la home — `Header.tsx` documenta que una versión anterior mostrada ahí
+se desactivó por un tip que quedaba "pegado" sin forma confiable de
+reproducirlo, probablemente por su cola compartida entre instancias
+(pensada para una sola secuencia en una página, no para 4 avisos
+independientes en 4 páginas). En vez de arriesgar la misma clase de
+bug, hice `AvisoPrimeraVez.tsx`: cada aviso independiente, un flag de
+localStorage por clave, sin cola ni coordinación entre instancias.
+Agregado en Rankeds (intro general), el rango (banner de la Sección 8,
+explica cómo sube/baja), Quimia (intro del mundo) y Chispas (en la
+home, explica que es moneda, no Experiencia).
+
+**Bug real que encontré probándolo en vivo, no en la primera pasada**:
+en la home, mi aviso nuevo y el tour viejo de onboarding pueden estar
+activos al mismo tiempo (invitado nuevo, nunca vio ninguno de los dos)
+— el overlay de fondo completo del tour viejo (`z-40`, sin
+`pointer-events: none`) tapaba el botón "Entendido" de mi aviso nuevo,
+que usaba el mismo z-index. Confirmado con Playwright (el click
+fallaba explícitamente con "intercepts pointer events" señalando ese
+overlay) antes de subir mi z-index a 50. Re-confirmado después: aviso
+visible, click exitoso, se queda descartado tras recargar.
+
+También encontré y corregí un error de lint real que había cometido en
+`AvisoPrimeraVez.tsx` (`react-hooks/set-state-in-effect` — llamar
+`setState` síncrono adentro de un efecto que solo lee localStorage) al
+correr `eslint` antes de dar por cerrado esto: reescribí el
+componente con `useSyncExternalStore` (mismo patrón que ya usaba
+`PrimeraVezTip.tsx` para lo mismo, con snapshot de servidor `false` a
+propósito para no romper la hidratación), volví a probarlo en vivo
+después del cambio para confirmar que seguía funcionando igual.
+
+## Migraciones nuevas de esta tanda
+
+En orden, después de `0057` (ya documentada en la tanda anterior):
+`0058_matchmaking_fantasma.sql`, `0059_invitar_por_link_multimundo.sql`,
+`0060_auditoria_rls_2.sql` (corregida, ver arriba — hace falta
+volver a correrla si ya la habías corrido con el error),
+`0061_tienda_precios_piso.sql`,
+`0062_lecciones_por_mundo_y_mundo_completado.sql`,
+`0063_invitar_amigo_sin_cuenta.sql`, `0064_racha_en_riesgo.sql`.
+

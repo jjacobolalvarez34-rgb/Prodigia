@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { verificarLogros } from "@/lib/logros/verificar";
+import { verificarTitulos } from "@/lib/titulos/verificar";
 import { respuestaError } from "@/lib/api/respuestaError";
 
 interface FinishBody {
@@ -35,10 +36,12 @@ interface RegistrarPuntosMundoResult {
 // Geografía — se determina el mundo a partir del problem_type real de
 // los intentos del sprint, no de la ruta que llamó a este endpoint.
 const TIPOS_NUMERIA = new Set(["suma", "resta", "multiplicacion", "division", "fracciones", "decimales", "potencias", "algebra"]);
+const TIPOS_QUIMIA = new Set(["quimia_simbolos", "quimia_formulas", "quimia_tabla"]);
 
-function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | null {
+function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | null {
   if (!problemType) return null;
   if (problemType === "geografia") return "geografia";
+  if (TIPOS_QUIMIA.has(problemType)) return "quimia";
   if (TIPOS_NUMERIA.has(problemType)) return "numeria";
   return null;
 }
@@ -162,6 +165,7 @@ export async function POST(request: Request) {
   }
 
   const logrosNuevos = await verificarLogros(supabase, user.id);
+  await verificarTitulos(supabase, user.id);
 
   const sprintPrecision = precision(sprintTotal, sprintCorrectos);
   let apuesta = null;

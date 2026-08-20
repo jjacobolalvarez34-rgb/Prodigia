@@ -4,16 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType } from "@/types/database";
+import type { ArithmeticProblemType } from "@/types/database";
 import Boton from "@/components/Boton";
 import type { UseAmigosReturn } from "@/app/social/useAmigos";
-
-const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
-  suma: "Suma",
-  resta: "Resta",
-  multiplicacion: "Multiplicación",
-  division: "División",
-};
+import RetarPicker, { nombreMundo, etiquetaOpcion } from "@/app/social/RetarPicker";
+import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 
 // Fase 3 del rediseño de Social: ya no maneja su propio estado — recibe
 // todo de useAmigos() (llamado una sola vez en SocialClient) para que la
@@ -48,6 +43,13 @@ export default function AmigosClient({ amigosState }: Props) {
       </div>
 
       <section className="flex flex-col gap-2">
+        <h2 className="text-xs font-medium uppercase tracking-wide text-texto-secundario">
+          Invitar a un amigo (sin cuenta todavía)
+        </h2>
+        <InvitarAmigoSinCuenta />
+      </section>
+
+      <section className="flex flex-col gap-2">
         <h2 className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Invitar por link</h2>
         <InvitarPorLink />
       </section>
@@ -63,6 +65,10 @@ export default function AmigosClient({ amigosState }: Props) {
           Buscar
         </Boton>
       </form>
+
+      {!buscando && !error && consulta.trim().length >= 2 && resultados.length === 0 && (
+        <p className="text-sm text-texto-secundario">No encontramos a nadie con ese nombre.</p>
+      )}
 
       {resultados.length > 0 && (
         <section className="flex flex-col gap-2">
@@ -118,16 +124,8 @@ export default function AmigosClient({ amigosState }: Props) {
                 </Boton>
               </div>
               {retandoA === a.friend_id && (
-                <div className="flex flex-wrap gap-2 border-t border-border pt-2">
-                  {ARITHMETIC_PROBLEM_TYPES.map((op) => (
-                    <button
-                      key={op}
-                      onClick={() => retar(a.friend_id, op)}
-                      className="rounded-full border border-border px-3 py-1 text-xs font-medium text-foreground hover:border-primario/40"
-                    >
-                      {NOMBRES_OPERACION[op]}
-                    </button>
-                  ))}
+                <div className="border-t border-border pt-2">
+                  <RetarPicker onElegir={(mundo, opcion) => retar(a.friend_id, mundo, opcion)} />
                 </div>
               )}
             </div>
@@ -142,18 +140,24 @@ export default function AmigosClient({ amigosState }: Props) {
 
 // Fase de pulido: vivía en Rankeds, pero retar por link no tiene nada
 // que ver con el competitivo (ELO/matchmaking) — es un duelo casual con
-// quien sea, ni siquiera hace falta que sea tu amigo. Movido tal cual,
-// sin reescribir su lógica interna.
+// quien sea, ni siquiera hace falta que sea tu amigo.
+//
+// Generalizado a los 4 mundos (antes solo ofrecía las 4 operaciones de
+// Numeria — "retar a un amigo" ya se había generalizado en una tanda
+// anterior, pero este flujo de código es distinto, con su propia tabla
+// duel_invites, y quedó afuera). Mismo RetarPicker que ya usa "retar a
+// un amigo" más arriba en este archivo, para elegir ciudad primero y
+// luego operación/continente/categoría/modo según corresponda.
 function InvitarPorLink() {
   const router = useRouter();
-  const [operacion, setOperacion] = useState<ArithmeticProblemType>("suma");
+  const [seleccion, setSeleccion] = useState<{ mundo: MundoDuelo; opcion: string } | null>(null);
   const [estado, setEstado] = useState<"idle" | "generando" | "esperando" | "error">("idle");
   const [link, setLink] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
   const inviteIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (estado !== "esperando" || !inviteIdRef.current) return;
+    if (estado !== "esperando" || !inviteIdRef.current || !seleccion) return;
 
     const supabase = createClient();
     const channel = supabase
@@ -169,7 +173,8 @@ function InvitarPorLink() {
         (payload) => {
           const fila = payload.new as { estado: string; duel_id: string | null };
           if (fila.estado === "usada" && fila.duel_id) {
-            router.push(`/practica?operacion=${operacion}&duelo=${fila.duel_id}`);
+            const operationType = seleccion.mundo === "numeria" ? (seleccion.opcion as ArithmeticProblemType) : null;
+            router.push(hrefDuelo(seleccion.mundo, operationType, fila.duel_id, seleccion.opcion));
           }
         }
       )
@@ -182,9 +187,14 @@ function InvitarPorLink() {
   }, [estado]);
 
   async function generarLink() {
+    if (!seleccion) return;
     setEstado("generando");
     const supabase = createClient();
-    const { data, error } = await supabase.rpc("crear_invitacion_duelo", { p_operation_type: operacion });
+    const { data, error } = await supabase.rpc("crear_invitacion_duelo", {
+      p_mundo: seleccion.mundo,
+      p_operation_type: seleccion.mundo === "numeria" ? seleccion.opcion : null,
+      p_sub_tipo: seleccion.mundo === "numeria" ? null : seleccion.opcion,
+    });
     if (error || !data) {
       setEstado("error");
       return;
@@ -222,7 +232,9 @@ function InvitarPorLink() {
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primario/30 border-t-primario" />
         <div>
           <p className="font-display text-lg font-bold text-foreground">Esperando a que se unan…</p>
-          <p className="mt-1 text-xs text-texto-secundario">{NOMBRES_OPERACION[operacion]} · no hace falta que sea amigo</p>
+          <p className="mt-1 text-xs text-texto-secundario">
+            {seleccion ? `${nombreMundo(seleccion.mundo)} · ${etiquetaOpcion(seleccion.mundo, seleccion.opcion)}` : ""} · no hace falta que sea amigo
+          </p>
         </div>
         <div className="flex w-full max-w-sm items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2">
           <span className="flex-1 truncate font-mono text-xs text-texto-secundario">{link}</span>
@@ -248,24 +260,17 @@ function InvitarPorLink() {
         </div>
       )}
       <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Elegí la operación</p>
-        <div className="flex flex-wrap gap-2">
-          {ARITHMETIC_PROBLEM_TYPES.map((op) => (
-            <button
-              key={op}
-              onClick={() => setOperacion(op)}
-              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-                operacion === op ? "border-primario bg-primario/10 text-primario" : "border-border text-texto-secundario"
-              }`}
-            >
-              {NOMBRES_OPERACION[op]}
-            </button>
-          ))}
-        </div>
+        <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Elegí ciudad y modo</p>
+        <RetarPicker onElegir={(mundo, opcion) => setSeleccion({ mundo, opcion })} />
+        {seleccion && (
+          <p className="text-xs text-texto-secundario">
+            Elegido: <span className="font-medium text-foreground">{nombreMundo(seleccion.mundo)} · {etiquetaOpcion(seleccion.mundo, seleccion.opcion)}</span>
+          </p>
+        )}
       </div>
       <button
         onClick={generarLink}
-        disabled={estado === "generando"}
+        disabled={estado === "generando" || !seleccion}
         className="w-full rounded-2xl px-6 py-5 font-display text-lg font-semibold text-white shadow-lg disabled:opacity-60"
         style={{ background: "linear-gradient(120deg, var(--primario), var(--logro))" }}
       >
@@ -274,6 +279,63 @@ function InvitarPorLink() {
       <p className="text-center text-xs text-texto-secundario">
         Compartiselo a quien quieras — no hace falta que sea tu amigo dentro de la app.
       </p>
+    </div>
+  );
+}
+
+// Sección 10.2: distinto de InvitarPorLink de arriba (que es para un
+// duelo puntual, con o sin cuenta amiga) — esto es un link de
+// referido personal para gente que TODAVÍA no tiene cuenta en
+// Prodigia: si se registran entrando por acá, quedan conectados como
+// amigos automáticamente (conectar_por_invitacion, disparada desde
+// RegistroForm.tsx o /auth/callback según si hace falta confirmar el
+// email). No usa una tabla de invitaciones aparte — el propio user_id
+// (ya un uuid) es el código de referido, no hace falta generar nada.
+function InvitarAmigoSinCuenta() {
+  const [link, setLink] = useState<string | null>(null);
+  const [copiado, setCopiado] = useState(false);
+
+  useEffect(() => {
+    let cancelado = false;
+    async function cargar() {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!cancelado && user) setLink(`${window.location.origin}/registro?ref=${user.id}`);
+    }
+    cargar();
+    return () => {
+      cancelado = true;
+    };
+  }, []);
+
+  async function copiar() {
+    if (!link) return;
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
+    } catch {
+      // Clipboard puede fallar por permisos del navegador — el link ya
+      // está visible en pantalla para copiar a mano igual.
+    }
+  }
+
+  if (!link) return null;
+
+  return (
+    <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
+      <p className="text-sm text-texto-secundario">
+        Quien se registre entrando por este link queda agregado como tu amigo automáticamente, sin pedir
+        ni aceptar solicitud.
+      </p>
+      <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2">
+        <span className="flex-1 truncate font-mono text-xs text-texto-secundario">{link}</span>
+        <button onClick={copiar} className="shrink-0 rounded-lg bg-primario px-3 py-1.5 text-xs font-semibold text-white">
+          {copiado ? "Copiado ✓" : "Copiar"}
+        </button>
+      </div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import Avatar from "@/components/Avatar";
 import WorldCard from "@/components/WorldCard";
 import PrimeraVezTip from "@/components/PrimeraVezTip";
+import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { calcularRachaDiaria } from "@/lib/practica/racha";
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
 import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica } from "@/components/icons";
@@ -81,11 +82,16 @@ export default async function ProdigiaHomePage() {
             label="Precisión · 7 días"
             valor={precision7dias === null ? "—" : `${precision7dias}%`}
           />
-          <MetricaCard
-            icono={<span className="text-sm">💰</span>}
-            label="Chispas"
-            valor={`${profile.puntos_total}`}
-          />
+          <AvisoPrimeraVez
+            avisoKey="chispas-intro"
+            texto="Las Chispas son la moneda del juego — se ganan practicando y se gastan en la Tienda. Tu Experiencia es aparte, esa nunca se gasta."
+          >
+            <MetricaCard
+              icono={<span className="text-sm">💰</span>}
+              label="Chispas"
+              valor={`${profile.puntos_total}`}
+            />
+          </AvisoPrimeraVez>
         </section>
 
         <Link
@@ -136,11 +142,10 @@ export default async function ProdigiaHomePage() {
               />
               <WorldCard
                 nombre="Quimia"
-                descripcion="Reacciones, elementos y fórmulas químicas."
+                descripcion="Elementos, fórmulas y la tabla periódica."
                 Icono={IconQuimica}
-                href="#"
-                colorHex="#6C4CF1"
-                proximamente
+                href="/quimia"
+                colorHex="#C026D3"
               />
             </div>
           </PrimeraVezTip>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { ArithmeticProblemType } from "@/types/database";
+import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 
 export interface Solicitud {
   user_id: string;
@@ -88,19 +89,29 @@ export function useAmigos(solicitudesIniciales: Solicitud[], amigosIniciales: Am
     }
   }
 
-  async function retar(friendId: string, operacion: ArithmeticProblemType) {
+  // `opcion` es la operación (Numeria) o el sub_tipo (continente de
+  // Geografía, categoría de Enigmia, modo de Quimia) — a diferencia del
+  // matchmaking (que lo sortea por rango), acá lo elige quien reta, es
+  // un desafío directo a una persona puntual.
+  async function retar(friendId: string, mundo: MundoDuelo, opcion: string) {
     setError(null);
+    const esNumeria = mundo === "numeria";
     const res = await fetch("/api/amigos/retar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ friend_id: friendId, operation_type: operacion }),
+      body: JSON.stringify({
+        friend_id: friendId,
+        mundo,
+        operation_type: esNumeria ? opcion : null,
+        sub_tipo: esNumeria ? null : opcion,
+      }),
     });
     const data = await res.json();
     if (!res.ok) {
       setError(data.error ?? "No se pudo crear el duelo.");
       return;
     }
-    router.push(`/practica?operacion=${operacion}&duelo=${data.duel_id}`);
+    router.push(hrefDuelo(mundo, esNumeria ? (opcion as ArithmeticProblemType) : null, data.duel_id, esNumeria ? null : opcion));
   }
 
   return {

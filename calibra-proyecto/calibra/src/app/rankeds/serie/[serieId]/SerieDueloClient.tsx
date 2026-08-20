@@ -42,7 +42,7 @@ interface ResultadoFinal {
 }
 
 const POLL_MS = 3000;
-const NOMBRE_MUNDO: Record<MundoDuelo, string> = { numeria: "Numeria", geografia: "Geografía", enigmia: "Enigmia" };
+const NOMBRE_MUNDO: Record<MundoDuelo, string> = { numeria: "Numeria", geografia: "Geografía", enigmia: "Enigmia", quimia: "Quimia" };
 const NOMBRE_OPERACION: Record<ArithmeticProblemType, string> = {
   suma: "Suma",
   resta: "Resta",

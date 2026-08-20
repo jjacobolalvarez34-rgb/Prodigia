@@ -8,7 +8,21 @@ import { urlAbsoluta } from "@/lib/auth/urlAbsoluta";
 import Boton from "@/components/Boton";
 import CampoPassword from "@/components/CampoPassword";
 
-export default function RegistroForm() {
+interface Props {
+  refId?: string;
+}
+
+// Sección 10.2: link de invitación de amigo (?ref=<userId de quien
+// invitó>) — mismo patrón que LoginForm.tsx (next?: string): lo lee el
+// server component (page.tsx) de searchParams y lo pasa como prop
+// normal, en vez de useSearchParams() acá adentro (que exigiría
+// envolver esto en <Suspense>, innecesario cuando el padre ya lo tiene
+// disponible sin eso). Se lleva a través de la confirmación de email
+// vía emailRedirectTo (sobrevive el viaje de ida y vuelta al mail), y
+// /auth/callback lo procesa server-side apenas hay sesión real. Para
+// el caso sin confirmación de email (signUp devuelve sesión directo)
+// se conecta acá mismo, sin esperar el viaje por mail.
+export default function RegistroForm({ refId }: Props) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,10 +42,11 @@ export default function RegistroForm() {
 
     setEnviando(true);
     const supabase = createClient();
+    const redirectPath = refId ? `/auth/callback?ref=${encodeURIComponent(refId)}` : "/auth/callback";
     const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: urlAbsoluta("/auth/callback") },
+      options: { emailRedirectTo: urlAbsoluta(redirectPath) },
     });
 
     if (authError) {
@@ -54,6 +69,13 @@ export default function RegistroForm() {
       setConfirmacionPendiente(true);
       setEnviando(false);
       return;
+    }
+
+    // Sin confirmación de email de por medio, ya hay sesión acá mismo
+    // — no hace falta esperar el viaje por /auth/callback para conectar
+    // la amistad. Best-effort: si falla, no bloquea el registro en sí.
+    if (refId) {
+      await supabase.rpc("conectar_por_invitacion", { p_inviter_id: refId });
     }
 
     router.push("/");

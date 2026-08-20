@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuarioOnboarded, bloquearInvitado } from "@/lib/auth/guard";
+import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
+import type { ArithmeticProblemType } from "@/types/database";
 import Header from "@/components/Header";
 
 interface Props {
@@ -20,7 +22,7 @@ export default async function InvitacionDueloPage({ params }: Props) {
   bloquearInvitado(user, "Amigos");
 
   const { data, error } = await supabase.rpc("unirse_invitacion_duelo", { p_invite_id: inviteId });
-  const fila = (data as Array<{ duel_id: string; operation_type: string }> | null)?.[0];
+  const fila = (data as Array<{ duel_id: string; mundo: MundoDuelo; operation_type: string | null; sub_tipo: string | null }> | null)?.[0];
 
   if (error || !fila) {
     return (
@@ -40,5 +42,5 @@ export default async function InvitacionDueloPage({ params }: Props) {
     );
   }
 
-  redirect(`/practica?operacion=${fila.operation_type}&duelo=${fila.duel_id}`);
+  redirect(hrefDuelo(fila.mundo, fila.operation_type as ArithmeticProblemType | null, fila.duel_id, fila.sub_tipo));
 }

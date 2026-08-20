@@ -51,6 +51,16 @@ export async function requireMundoEnigmia(supabase: SupabaseClient, pathActual: 
   return { user, profile };
 }
 
+export async function requireMundoQuimia(supabase: SupabaseClient, pathActual: string) {
+  const { user, profile } = await requireUsuario(supabase, pathActual);
+
+  if (!profile.onboarding_quimia_completado) {
+    redirect(`/quimia/diagnostico?next=${encodeURIComponent(pathActual)}`);
+  }
+
+  return { user, profile };
+}
+
 // Alias por compatibilidad: /practica y /aprender son de Numeria, así
 // que el guard viejo (usado en casi todo el árbol de ese mundo) ahora
 // es exactamente requireMundoNumeria.
@@ -68,6 +78,11 @@ export const requireUsuarioOnboarded = requireMundoNumeria;
 // ("Aprender", "Fracciones", "Europa"...) — se muestra tal cual en la
 // pantalla corta de /invitado-bloqueado, así que no hace falta mantener
 // un mapa de traducción aparte por cada sección nueva que se agregue.
+// Defensa en profundidad a nivel de página — la línea PRINCIPAL de
+// defensa real es middleware.ts (corta el pedido antes de renderizar
+// nada; ver rutasInvitado.ts, la lista centralizada que usan los dos).
+// Esta función se deja para las pantallas que ya la llamaban, pero
+// ninguna sección nueva debería depender solo de esto.
 export function bloquearInvitado(user: { is_anonymous?: boolean }, etiqueta: string) {
   if (user.is_anonymous) {
     redirect(`/invitado-bloqueado?seccion=${encodeURIComponent(etiqueta)}`);

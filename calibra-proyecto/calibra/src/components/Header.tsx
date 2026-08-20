@@ -13,6 +13,7 @@ import ThemeToggle from "./ThemeToggle";
 function colorDelMundo(pathname: string): string {
   if (pathname.startsWith("/enigmia")) return "#0E9F6E";
   if (pathname.startsWith("/geografia")) return "#1E7A8C";
+  if (pathname.startsWith("/quimia")) return "#C026D3";
   return "#6C4CF1"; // Numeria y el resto de Prodigia (fuera de un mundo) usan el violeta de marca
 }
 

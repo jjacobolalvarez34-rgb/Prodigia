@@ -8,29 +8,7 @@ import GlareHover from "@/components/reactbits/GlareHover";
 import BorderGlow from "@/components/reactbits/BorderGlow";
 import ScrollFloat from "@/components/reactbits/ScrollFloat";
 import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiario";
-
-// Fase 2 (mercado): precios pensados para que comprar algo se sienta
-// alcanzable en un puñado de partidas, no una eternidad. Una partida
-// típica (10 problemas, calibración media, ritmo moderado) rinde
-// ~100-130 Chispas — ver el detalle del cálculo en
-// 0054_tienda_rediseno.sql. Los ítems funcionales quedan bajo media
-// partida, los cosméticos de gama alta rondan 2-2.5 partidas como techo.
-const COSTOS = {
-  escudo: 40,
-  congelamiento: 35,
-  boost: 60,
-  fuente_mono: 50,
-  fuente_serif: 90,
-  fuente_manuscrita: 150,
-  marco_bronce: 50,
-  marco_plata: 80,
-  marco_oro: 120,
-  marco_platino: 170,
-  marco_diamante: 230,
-  marco_prodigio: 300,
-} as const;
-
-type ItemComprable = keyof typeof COSTOS;
+import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
 
 const NOMBRES_ITEM: Record<ItemComprable, string> = {
   escudo: "Escudo extra",

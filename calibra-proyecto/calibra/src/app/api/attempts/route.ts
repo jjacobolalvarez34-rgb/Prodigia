@@ -61,12 +61,31 @@ export async function POST(request: Request) {
   // Un intento sospechoso no mueve la calibración (ni para arriba ni para
   // abajo) — se descarta para ese propósito en vez de contaminarla.
   let skillLevel = null;
-  const tiposCalibrables = [...ARITHMETIC_PROBLEM_TYPES, "fracciones", "geografia", "decimales", "potencias", "algebra"];
+  const tiposCalibrables = [
+    ...ARITHMETIC_PROBLEM_TYPES,
+    "fracciones",
+    "geografia",
+    "decimales",
+    "potencias",
+    "algebra",
+    "quimia_simbolos",
+    "quimia_formulas",
+    "quimia_tabla",
+  ];
   if (!sospechoso && tiposCalibrables.includes(body.problem_type)) {
     skillLevel = await actualizarSkillLevel(
       supabase,
       user.id,
-      body.problem_type as (typeof ARITHMETIC_PROBLEM_TYPES)[number] | "fracciones" | "geografia" | "decimales" | "potencias" | "algebra",
+      body.problem_type as
+        | (typeof ARITHMETIC_PROBLEM_TYPES)[number]
+        | "fracciones"
+        | "geografia"
+        | "decimales"
+        | "potencias"
+        | "algebra"
+        | "quimia_simbolos"
+        | "quimia_formulas"
+        | "quimia_tabla",
       body.correct,
       body.protegido ?? false
     );

@@ -32,20 +32,35 @@ interface Props {
 // la app — nunca una fila más con un número al lado. Alturas de podio
 // real (2-1-3 de izquierda a derecha), oro/plata/bronce como acento, y
 // un destello (GlareHover) que cruza la tarjeta del 1° apenas carga.
-const ESTILO: Record<number, { alto: string; borde: string; fondo: string; medalla: string; texto: string }> = {
-  0: { alto: "h-40", borde: "border-[#FFC53D]", fondo: "bg-[#FFC53D]/10", medalla: "🥇", texto: "text-[#B8860B]" },
-  1: { alto: "h-28", borde: "border-[#C0C5CE]", fondo: "bg-[#C0C5CE]/10", medalla: "🥈", texto: "text-[#6B7280]" },
-  2: { alto: "h-20", borde: "border-[#CD7F32]", fondo: "bg-[#CD7F32]/10", medalla: "🥉", texto: "text-[#8B5A2B]" },
+//
+// El fondo se mezcla contra var(--surface), no contra "transparent"
+// (así lo hacía bg-[color]/10 de Tailwind) — mismo patrón que ya usan
+// las tarjetas de Quimia/Tienda. Con "transparent", el 10% de color
+// queda relativo a lo que sea que esté DETRÁS (el fondo de la página),
+// así que en tema oscuro (fondo casi negro) la tarjeta y la base del
+// podio se ven casi negras — mismo número, resultado final bien
+// distinto entre temas. Contra var(--surface) el mínimo de luminosidad
+// es siempre el de la superficie del tema activo, se vea como se vea
+// el fondo de la página.
+const ESTILO: Record<number, { alto: string; color: string; medalla: string; texto: string }> = {
+  0: { alto: "h-40", color: "#FFC53D", medalla: "🥇", texto: "text-[#B8860B]" },
+  1: { alto: "h-28", color: "#C0C5CE", medalla: "🥈", texto: "text-[#6B7280]" },
+  2: { alto: "h-20", color: "#CD7F32", medalla: "🥉", texto: "text-[#8B5A2B]" },
 };
+
+function fondoPodio(color: string): string {
+  return `color-mix(in oklab, ${color} 14%, var(--surface))`;
+}
 
 function TarjetaPodio({ fila, indice, esUsuarioActual }: { fila: FilaRanking; indice: number; esUsuarioActual: boolean }) {
   const estilo = ESTILO[indice];
   return (
     <Link
       href={`/perfil/${fila.user_id}`}
-      className={`flex flex-col items-center gap-2 rounded-t-2xl border-2 border-b-0 ${estilo.borde} ${estilo.fondo} px-4 pt-5 pb-3 transition-transform hover:-translate-y-0.5 ${
+      className={`flex flex-col items-center gap-2 rounded-t-2xl border-2 border-b-0 px-4 pt-5 pb-3 transition-transform hover:-translate-y-0.5 ${
         esUsuarioActual ? "ring-2 ring-primario/50" : ""
       }`}
+      style={{ borderColor: estilo.color, background: fondoPodio(estilo.color) }}
     >
       <span className="text-2xl">{estilo.medalla}</span>
       <Avatar url={fila.avatar_url} nombre={fila.display_name} size={indice === 0 ? 64 : 48} />
@@ -88,7 +103,10 @@ export default function Podio({ top3, miUserId, colorAcento = "#FFC53D" }: Props
           >
             <TarjetaPodio fila={segundo} indice={1} esUsuarioActual={segundo.user_id === miUserId} />
           </GlareHover>
-          <div className={`w-full ${ESTILO[1].alto} rounded-b-2xl border-2 border-t-0 ${ESTILO[1].borde} ${ESTILO[1].fondo} flex items-start justify-center pt-1`}>
+          <div
+            className={`w-full ${ESTILO[1].alto} flex items-start justify-center rounded-b-2xl border-2 border-t-0 pt-1`}
+            style={{ borderColor: ESTILO[1].color, background: fondoPodio(ESTILO[1].color) }}
+          >
             <span className="font-display text-lg font-black text-foreground/70">2</span>
           </div>
         </div>
@@ -110,7 +128,10 @@ export default function Podio({ top3, miUserId, colorAcento = "#FFC53D" }: Props
           >
             <TarjetaPodio fila={primero} indice={0} esUsuarioActual={primero.user_id === miUserId} />
           </GlareHover>
-          <div className={`w-full ${ESTILO[0].alto} rounded-b-2xl border-2 border-t-0 ${ESTILO[0].borde} ${ESTILO[0].fondo} flex items-start justify-center pt-1`}>
+          <div
+            className={`w-full ${ESTILO[0].alto} flex items-start justify-center rounded-b-2xl border-2 border-t-0 pt-1`}
+            style={{ borderColor: ESTILO[0].color, background: fondoPodio(ESTILO[0].color) }}
+          >
             <span className="font-display text-2xl font-black text-foreground/70">1</span>
           </div>
         </div>
@@ -130,7 +151,10 @@ export default function Podio({ top3, miUserId, colorAcento = "#FFC53D" }: Props
           >
             <TarjetaPodio fila={tercero} indice={2} esUsuarioActual={tercero.user_id === miUserId} />
           </GlareHover>
-          <div className={`w-full ${ESTILO[2].alto} rounded-b-2xl border-2 border-t-0 ${ESTILO[2].borde} ${ESTILO[2].fondo} flex items-start justify-center pt-1`}>
+          <div
+            className={`w-full ${ESTILO[2].alto} flex items-start justify-center rounded-b-2xl border-2 border-t-0 pt-1`}
+            style={{ borderColor: ESTILO[2].color, background: fondoPodio(ESTILO[2].color) }}
+          >
             <span className="font-display text-lg font-black text-foreground/70">3</span>
           </div>
         </div>

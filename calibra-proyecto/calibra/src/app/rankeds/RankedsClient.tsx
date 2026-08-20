@@ -4,13 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import type { ArithmeticProblemType } from "@/types/database";
+import { rangoDeElo, type ArithmeticProblemType } from "@/types/database";
 import RangoBadge from "@/components/RangoBadge";
 import GlareHover from "@/components/reactbits/GlareHover";
 import BorderGlow from "@/components/reactbits/BorderGlow";
 import Boton from "@/components/Boton";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 import { useRetosPendientes, type RetoPendienteBase } from "@/app/social/useRetosPendientes";
+import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 
 // Mismos hex que Header.tsx (colorDelMundo) y FondoCursorMundo.tsx — un
 // solo lugar más al que sumar esta paleta si algún día cambia.
@@ -18,6 +19,7 @@ const COLOR_MUNDO: Record<MundoDuelo, string> = {
   numeria: "#6C4CF1",
   enigmia: "#0E9F6E",
   geografia: "#1E7A8C",
+  quimia: "#C026D3",
 };
 
 type Tab = "competitivo" | "buscar";
@@ -58,6 +60,7 @@ const NOMBRE_MUNDO: Record<MundoDuelo, string> = {
   numeria: "Numeria",
   geografia: "Geografía",
   enigmia: "Enigmia",
+  quimia: "Quimia",
 };
 
 const TABS: { id: Tab; nombre: string }[] = [
@@ -133,22 +136,27 @@ export default function RankedsClient({
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-12 sm:px-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Rankeds</h1>
-        <p className="mt-1 text-sm text-texto-secundario">Tu competitivo de duelos, con matchmaking real.</p>
-        <div className="mt-4 flex w-fit gap-1 rounded-full border border-border bg-surface p-1">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                tab === t.id ? "bg-primario text-white" : "text-texto-secundario hover:text-foreground"
-              }`}
-            >
-              {t.nombre}
-            </button>
-          ))}
+      <AvisoPrimeraVez
+        avisoKey="rankeds-intro"
+        texto="Acá jugás duelos en serio contra otros jugadores reales, con ELO y rango — distinto de la práctica normal, que no afecta tu competitivo."
+      >
+        <div>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Rankeds</h1>
+          <p className="mt-1 text-sm text-texto-secundario">Tu competitivo de duelos, con matchmaking real.</p>
         </div>
+      </AvisoPrimeraVez>
+      <div className="flex w-fit gap-1 rounded-full border border-border bg-surface p-1">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              tab === t.id ? "bg-primario text-white" : "text-texto-secundario hover:text-foreground"
+            }`}
+          >
+            {t.nombre}
+          </button>
+        ))}
       </div>
 
       {tab === "competitivo" ? (
@@ -251,10 +259,21 @@ function MiCompetitivo({
     <div className="flex flex-col gap-5">
       <DuelosPendientes pendientes={pendientes} />
 
-      <div className="flex flex-col items-center gap-1 rounded-2xl border-2 border-primario/30 bg-primario/5 px-6 py-7 text-center">
-        <span className="font-mono text-4xl font-bold text-primario">{miElo}</span>
-        <RangoBadge elo={miElo} tituloNombre={miTituloNombre} size="md" />
-      </div>
+      <AvisoPrimeraVez
+        avisoKey="rangos-intro"
+        texto="Tu rango sube o baja según tu ELO en duelos clasificatorios — de Bronce a Prodigio. Ganar suma, perder resta; los casuales no cuentan."
+      >
+        <div className="flex flex-col items-center gap-1 rounded-2xl border-2 border-primario/30 bg-primario/5 px-6 py-6 text-center">
+          {/* Sección 8: insignia real del rango (antes solo texto + color) —
+              los 6 estandartes vienen de public/rangos/<slug>.png, recortados
+              del collage que diste, con el fondo negro convertido a
+              transparente. */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- tamaño intrínseco variable por rango, no vale la pena declarar 6 width/height distintos para next/image acá */}
+          <img src={`/rangos/${rangoDeElo(miElo).slug}.png`} alt="" className="h-24 w-auto drop-shadow-lg" />
+          <span className="font-mono text-4xl font-bold text-primario">{miElo}</span>
+          <RangoBadge elo={miElo} tituloNombre={miTituloNombre} size="md" />
+        </div>
+      </AvisoPrimeraVez>
 
       <div className="grid grid-cols-3 gap-3">
         <Stat label="Victorias" valor={String(victorias)} />
@@ -333,6 +352,7 @@ const MUNDOS_SELECCIONABLES: { id: SeleccionMundo; nombre: string; descripcion: 
   { id: "numeria", nombre: "Numeria", descripcion: "Operación según tu rango" },
   { id: "geografia", nombre: "Geografía", descripcion: "Continente según tu rango" },
   { id: "enigmia", nombre: "Enigmia", descripcion: "Categoría según tu rango" },
+  { id: "quimia", nombre: "Quimia", descripcion: "Modo según tu rango" },
   { id: "aleatorio", nombre: "Todas las ciudades", descripcion: "Mejor de 3, una ciudad por ronda" },
 ];
 
@@ -372,9 +392,27 @@ function BuscarPartida({
   // al degradé genérico de marca.
   const colorMundo = mundo === "aleatorio" ? null : COLOR_MUNDO[mundo];
 
+  // La verificación real de "el rival sigue ahí" es del lado del
+  // servidor (last_seen_at en duel_queue, ver 0058_matchmaking_fantasma.sql)
+  // — esto es solo para no dejar la fila esperando innecesariamente si el
+  // usuario navega DENTRO de la app a mitad de búsqueda (cambia de pestaña
+  // de Rankeds, va al perfil, etc.), donde sí hay chance de correr un
+  // cleanup. Si cierra la pestaña entera esto no llega a dispararse, por
+  // eso el fix real no depende de esto.
   useEffect(() => {
+    const supabase = createClient();
+    // Sin condición: si no había búsqueda activa, esto borra una fila
+    // que no existe — no-op inofensivo. pagehide es el único evento que
+    // llega a dispararse cuando se cierra la pestaña entera (ahí no hay
+    // unmount de React que valga, el contexto de JS muere de una).
+    function limpiarCola() {
+      supabase.rpc("cancelar_busqueda_duelo");
+    }
+    window.addEventListener("pagehide", limpiarCola);
     return () => {
       cancelarRef.current = true;
+      limpiarCola();
+      window.removeEventListener("pagehide", limpiarCola);
     };
   }, []);
 

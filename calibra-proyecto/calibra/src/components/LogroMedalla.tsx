@@ -1,14 +1,20 @@
+import CompartirLogroBoton from "./CompartirLogroBoton";
+
 interface Props {
   nombre: string;
   descripcion: string;
   desbloqueado: boolean;
+  // Sección 10.3: solo hace falta para armar el pie de la imagen
+  // compartible ("Logro de <nombre>") — el botón de compartir ni
+  // aparece en un logro bloqueado, así que esto es opcional.
+  displayName?: string | null;
 }
 
 // Tratamiento de medalla real (Fase HH), no un rectángulo genérico igual
 // al resto de las tarjetas: forma de escudo hexagonal vía clip-path,
 // relleno dorado en degradé cuando está desbloqueado, solo contorno
 // gris cuando no.
-export default function LogroMedalla({ nombre, descripcion, desbloqueado }: Props) {
+export default function LogroMedalla({ nombre, descripcion, desbloqueado, displayName }: Props) {
   return (
     <div className="flex flex-col items-center gap-2 text-center">
       <div
@@ -23,6 +29,7 @@ export default function LogroMedalla({ nombre, descripcion, desbloqueado }: Prop
       </div>
       <p className={`text-xs font-semibold ${desbloqueado ? "text-foreground" : "text-texto-secundario"}`}>{nombre}</p>
       <p className="text-[10px] leading-snug text-texto-secundario">{descripcion}</p>
+      {desbloqueado && <CompartirLogroBoton nombre={nombre} descripcion={descripcion} displayName={displayName ?? null} />}
     </div>
   );
 }

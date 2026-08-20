@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import Boton from "@/components/Boton";
-import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType } from "@/types/database";
+import { type ArithmeticProblemType } from "@/types/database";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 import type { UseAmigosReturn } from "./useAmigos";
 import { useRetosPendientes, type RetoPendienteBase } from "./useRetosPendientes";
+import RetarPicker from "./RetarPicker";
 
 const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
   suma: "Suma",
@@ -14,7 +15,7 @@ const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
   multiplicacion: "Multiplicación",
   division: "División",
 };
-const NOMBRE_MUNDO: Record<MundoDuelo, string> = { numeria: "Numeria", geografia: "Geografía", enigmia: "Enigmia" };
+const NOMBRE_MUNDO: Record<MundoDuelo, string> = { numeria: "Numeria", geografia: "Geografía", enigmia: "Enigmia", quimia: "Quimia" };
 
 type Panel = "ninguno" | "agregar" | "solicitudes" | "retos";
 
@@ -43,6 +44,7 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
     enviarSolicitud,
     responder,
     retar,
+    error,
   } = amigosState;
   const { retos, rechazar } = useRetosPendientes(retosIniciales);
   const [retandoA, setRetandoA] = useState<string | null>(null);
@@ -61,6 +63,11 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
       >
         + Agregar amigos
       </button>
+      {/* error compartido entre los 3 paneles (buscar/enviar/responder/
+          retar pueden fallar desde cualquiera) — antes solo se veía si
+          el panel abierto era "agregar", así que una falla al aceptar
+          una solicitud o retar a alguien no mostraba nada. */}
+      {error && <p className="text-xs text-error">{error}</p>}
       {panel === "agregar" && (
         <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-3">
           <form onSubmit={(e) => { e.preventDefault(); buscar(consulta); }} className="flex gap-1.5">
@@ -74,6 +81,9 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
               Buscar
             </Boton>
           </form>
+          {!buscando && !error && consulta.trim().length >= 2 && resultados.length === 0 && (
+            <p className="text-xs text-texto-secundario">No encontramos a nadie con ese nombre.</p>
+          )}
           {resultados.map((r) => (
             <div key={r.id} className="flex items-center justify-between gap-2 text-xs">
               <span className="truncate font-medium text-foreground">{r.display_name ?? "Jugador"}</span>
@@ -185,19 +195,7 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
                   Retar
                 </button>
               </div>
-              {retandoA === a.friend_id && (
-                <div className="flex flex-wrap gap-1">
-                  {ARITHMETIC_PROBLEM_TYPES.map((op) => (
-                    <button
-                      key={op}
-                      onClick={() => retar(a.friend_id, op)}
-                      className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-foreground hover:border-primario/40"
-                    >
-                      {NOMBRES_OPERACION[op]}
-                    </button>
-                  ))}
-                </div>
-              )}
+              {retandoA === a.friend_id && <RetarPicker onElegir={(mundo, opcion) => retar(a.friend_id, mundo, opcion)} />}
             </div>
           ))
         )}

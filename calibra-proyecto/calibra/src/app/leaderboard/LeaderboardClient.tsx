@@ -8,12 +8,13 @@ import ListaRanking from "./ListaRanking";
 
 type Alcance = "global" | "amigos";
 type Filtro = "total" | "mundo";
-type Mundo = "numeria" | "enigmia" | "geografia";
+type Mundo = "numeria" | "enigmia" | "geografia" | "quimia";
 
 const MUNDOS: { id: Mundo; nombre: string; colorHex: string }[] = [
   { id: "numeria", nombre: "Numeria", colorHex: "#6C4CF1" },
   { id: "enigmia", nombre: "Enigmia", colorHex: "#0E9F6E" },
   { id: "geografia", nombre: "Geografía", colorHex: "#1E7A8C" },
+  { id: "quimia", nombre: "Quimia", colorHex: "#C026D3" },
 ];
 
 interface Props {

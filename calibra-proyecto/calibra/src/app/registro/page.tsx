@@ -2,7 +2,13 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import RegistroForm from "./RegistroForm";
 
-export default function RegistroPage() {
+interface Props {
+  searchParams: Promise<{ ref?: string }>;
+}
+
+export default async function RegistroPage({ searchParams }: Props) {
+  const { ref } = await searchParams;
+
   return (
     <>
       <Header />
@@ -13,7 +19,7 @@ export default function RegistroPage() {
           </h1>
           <p className="mt-2 mb-7 text-sm text-texto-secundario">Con tu email y una contraseña.</p>
 
-          <RegistroForm />
+          <RegistroForm refId={ref} />
 
           <p className="mt-6 text-sm text-texto-secundario">
             ¿Ya tenés cuenta?{" "}

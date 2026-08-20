@@ -14,12 +14,14 @@ const NOMBRE_MUNDO: Record<string, string> = {
   numeria: "Numeria",
   enigmia: "Enigmia",
   geografia: "Geografía",
+  quimia: "Quimia",
 };
 
 const COLOR_MUNDO: Record<string, string> = {
   numeria: "#6C4CF1",
   enigmia: "#0E9F6E",
   geografia: "#1E7A8C",
+  quimia: "#C026D3",
 };
 
 // Cierre de Fase DD2: el nivel de mundo ahora tiene el mismo gesto que

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { respuestaError } from "@/lib/api/respuestaError";
 import { verificarLogros } from "@/lib/logros/verificar";
+import { verificarTitulos } from "@/lib/titulos/verificar";
 
 interface Body {
   duel_id: string;
@@ -47,6 +48,7 @@ export async function POST(request: Request) {
   // y todavía vería el ELO viejo), para que un logro de rango se
   // desbloquee en el mismo duelo que lo cruza, no en la próxima partida.
   const logrosNuevos = fila.resuelto ? await verificarLogros(supabase, user.id) : [];
+  if (fila.resuelto) await verificarTitulos(supabase, user.id);
 
   return NextResponse.json({ ok: true, ...fila, logrosNuevos });
 }

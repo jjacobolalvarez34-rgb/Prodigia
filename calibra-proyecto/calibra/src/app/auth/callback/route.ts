@@ -9,11 +9,19 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/";
+  // Sección 10.2: link de invitación de amigo — ver RegistroForm.tsx.
+  // emailRedirectTo lleva este param a través de todo el viaje de
+  // confirmación de email; recién acá, con sesión real ya
+  // intercambiada, se puede conectar la amistad server-side.
+  const ref = searchParams.get("ref");
 
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      if (ref) {
+        await supabase.rpc("conectar_por_invitacion", { p_inviter_id: ref });
+      }
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

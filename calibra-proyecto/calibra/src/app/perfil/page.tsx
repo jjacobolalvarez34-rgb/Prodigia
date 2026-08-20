@@ -16,6 +16,7 @@ const NOMBRE_MUNDO_AFINIDAD: Record<string, string> = {
   numeria: "Numeria",
   enigmia: "Enigmia",
   geografia: "Geografía",
+  quimia: "Quimia",
 };
 
 interface FilaAfinidad {
@@ -50,6 +51,7 @@ export default async function PerfilPage() {
     { data: worldRows },
     { data: titulosRows },
     { data: afinidadRows },
+    { data: leccionesRows },
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -75,6 +77,7 @@ export default async function PerfilPage() {
     supabase.from("world_progress").select("world, nivel_mundo").eq("user_id", user.id),
     supabase.rpc("mis_titulos"),
     supabase.rpc("afinidad_por_mundo"),
+    supabase.rpc("lecciones_completadas_por_mundo"),
   ]);
 
   const nivelMundoDe = (world: string) => worldRows?.find((w) => w.world === world)?.nivel_mundo ?? 1;
@@ -171,6 +174,27 @@ export default async function PerfilPage() {
           </div>
         </section>
 
+        {(leccionesRows as { mundo: string; completadas: number; total: number }[] | null) &&
+          (leccionesRows as { mundo: string; completadas: number; total: number }[]).length > 0 && (
+            <section>
+              <h2 className="mb-1 font-display text-lg font-bold text-foreground">Aprender</h2>
+              <p className="-mt-2 mb-4 text-xs text-texto-secundario">Lecciones completadas sobre el total de cada mundo.</p>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {(leccionesRows as { mundo: string; completadas: number; total: number }[]).map((fila) => (
+                  <div key={fila.mundo} className="rounded-xl border border-border bg-surface px-4 py-3">
+                    <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">
+                      {NOMBRE_MUNDO_AFINIDAD[fila.mundo] ?? fila.mundo}
+                    </p>
+                    <p className="mt-1 font-mono text-xl font-bold text-foreground">
+                      {fila.completadas}/{fila.total}
+                    </p>
+                    <p className="text-xs text-texto-secundario">lecciones</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
         <section>
           <h2 className="mb-4 font-display text-lg font-bold text-foreground">Récords personales</h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -232,6 +256,7 @@ export default async function PerfilPage() {
                 nombre={a.nombre}
                 descripcion={a.descripcion}
                 desbloqueado={idsDesbloqueados.has(a.id)}
+                displayName={profile.display_name}
               />
             ))}
           </div>
