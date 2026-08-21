@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono, Playfair_Display, Caveat } from "next/font/google";
+import { Space_Grotesk, Inter, JetBrains_Mono, Playfair_Display, Caveat, Bebas_Neue, Pacifico, Orbitron } from "next/font/google";
 import Script from "next/script";
 import DeteccionConexion from "@/components/DeteccionConexion";
 import PageFade from "@/components/PageFade";
@@ -42,6 +42,29 @@ const playfairDisplay = Playfair_Display({
 
 const caveat = Caveat({
   variable: "--font-caveat",
+  subsets: ["latin"],
+  weight: ["600", "700"],
+});
+
+// Fase 8 (ampliación de Tienda): 3 fuentes comprables más, mismo
+// criterio que playfairDisplay/caveat arriba — solo se usan a través de
+// NombreConFuente.tsx, nunca en el resto de la UI. Bebas Neue y
+// Pacifico son de un solo corte en Google Fonts (sin variantes 600/700
+// como las de arriba).
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bebas-neue",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
+const pacifico = Pacifico({
+  variable: "--font-pacifico",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
+const orbitron = Orbitron({
+  variable: "--font-orbitron",
   subsets: ["latin"],
   weight: ["600", "700"],
 });
@@ -108,7 +131,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="es"
       suppressHydrationWarning
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable} ${caveat.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable} ${caveat.variable} ${bebasNeue.variable} ${pacifico.variable} ${orbitron.variable} h-full antialiased`}
     >
       <head>
         <Script id="theme-init" strategy="beforeInteractive">

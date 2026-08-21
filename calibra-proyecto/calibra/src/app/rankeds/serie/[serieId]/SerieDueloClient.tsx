@@ -28,6 +28,7 @@ export interface FilaRondaSerie {
   oponente_nombre: string | null;
   serie_finalizada: boolean;
   oponente_es_bot: boolean;
+  mi_puntaje: number | null;
 }
 
 interface ResultadoFinal {
@@ -328,7 +329,7 @@ function FilaRondaResumen({ ronda }: { ronda: FilaRondaSerie }) {
         <span className="text-xs text-texto-secundario">
           {!resuelta
             ? ronda.yo_jugue
-              ? "Esperando al rival…"
+              ? `Esperando al rival…${ronda.mi_puntaje != null ? ` · vos: ${ronda.mi_puntaje} pts` : ""}`
               : "Todavía sin jugar"
             : ronda.empate_ronda
               ? "Empate"

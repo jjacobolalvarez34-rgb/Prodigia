@@ -8,14 +8,10 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 interface Props {
   userId: string;
-  metaXpDiariaInicial: number;
   ocultarDobleONadaInicial: boolean;
 }
 
-export default function AjustesClient({ userId, metaXpDiariaInicial, ocultarDobleONadaInicial }: Props) {
-  const [meta, setMeta] = useState(metaXpDiariaInicial);
-  const [guardandoMeta, setGuardandoMeta] = useState(false);
-  const [metaGuardada, setMetaGuardada] = useState(false);
+export default function AjustesClient({ userId, ocultarDobleONadaInicial }: Props) {
   const [ocultarDobleONada, setOcultarDobleONada] = useState(ocultarDobleONadaInicial);
   const [guardandoApuesta, setGuardandoApuesta] = useState(false);
   const sonido = useSyncExternalStore(subscribeSonido, sonidoHabilitado, sonidoHabilitadoServerSnapshot);
@@ -38,40 +34,8 @@ export default function AjustesClient({ userId, metaXpDiariaInicial, ocultarDobl
     setGuardandoApuesta(false);
   }
 
-  async function guardarMeta() {
-    setGuardandoMeta(true);
-    setMetaGuardada(false);
-    const supabase = createClient();
-    await supabase.from("profiles").update({ meta_xp_diaria: meta }).eq("id", userId);
-    setGuardandoMeta(false);
-    setMetaGuardada(true);
-    setTimeout(() => setMetaGuardada(false), 2000);
-  }
-
   return (
     <div className="flex flex-col gap-6">
-      <section className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
-        <p className="font-display font-semibold text-foreground">Meta diaria de Experiencia</p>
-        <p className="text-sm text-texto-secundario">Cuánta Experiencia querés juntar por día para mantener tu racha.</p>
-        <div className="mt-1 flex items-center gap-2">
-          <input
-            type="number"
-            min={20}
-            step={10}
-            value={meta}
-            onChange={(e) => setMeta(Number(e.target.value))}
-            className="w-28 rounded-lg border border-border bg-background px-3 py-2 font-mono text-foreground outline-none focus:border-primario"
-          />
-          <button
-            onClick={guardarMeta}
-            disabled={guardandoMeta || meta < 20}
-            className="rounded-lg bg-primario px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-          >
-            {guardandoMeta ? "Guardando..." : metaGuardada ? "Guardado ✓" : "Guardar"}
-          </button>
-        </div>
-      </section>
-
       <section className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4">
         <div>
           <p className="font-display font-semibold text-foreground">Sonido</p>

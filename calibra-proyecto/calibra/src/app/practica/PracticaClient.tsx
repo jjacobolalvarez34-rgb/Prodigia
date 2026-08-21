@@ -10,8 +10,9 @@ import OperationPicker from "./OperationPicker";
 import SprintRunner from "./SprintRunner";
 import SalaDuelo from "./SalaDuelo";
 import SprintSummary, { type FinishResponse, type ResultadoDuelo } from "./SprintSummary";
+import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
 
-type Fase = "seleccion" | "duelo-intro" | "sprint" | "resumen";
+type Fase = "seleccion" | "duelo-intro" | "sprint" | "finalizando" | "resumen";
 
 interface Props {
   nivelInicial: Record<ArithmeticProblemType, number>;
@@ -74,6 +75,7 @@ export default function PracticaClient({
 
   async function handleFinishSprint(errores: Problem[], respuestas: RespuestaDuelo[]) {
     setErroresSprint(errores);
+    setFase("finalizando");
     try {
       const res = await fetch("/api/practica/finish", {
         method: "POST",
@@ -173,6 +175,10 @@ export default function PracticaClient({
         onFinish={handleFinishSprint}
       />
     );
+  }
+
+  if (fase === "finalizando") {
+    return <TransicionFinalizando />;
   }
 
   if (fase === "resumen" && errorResumen) {

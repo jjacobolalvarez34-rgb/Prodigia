@@ -55,13 +55,18 @@ export const COLOR_DIAL_HEX: Record<ColorDial, string> = {
 // Fase 5 (mercado): tipografías comprables para el nombre de usuario —
 // el cosmético nuevo que reemplaza al dial en la vidriera de la tienda.
 // "default" = tipografía normal de la UI.
-export type FuenteNombre = "default" | "mono" | "serif" | "manuscrita";
+export type FuenteNombre = "default" | "mono" | "serif" | "manuscrita" | "impacto" | "script" | "futurista";
 
 export const FUENTE_NOMBRE_CLASS: Record<FuenteNombre, string> = {
   default: "",
   mono: "font-mono",
   serif: "font-[family-name:var(--font-playfair)]",
   manuscrita: "font-[family-name:var(--font-caveat)]",
+  // Fase 8: 3 fuentes nuevas de la tienda — mismo criterio que las de
+  // arriba, todas Google Fonts vía next/font/google (layout.tsx).
+  impacto: "font-[family-name:var(--font-bebas-neue)]",
+  script: "font-[family-name:var(--font-pacifico)]",
+  futurista: "font-[family-name:var(--font-orbitron)]",
 };
 
 export interface Profile {

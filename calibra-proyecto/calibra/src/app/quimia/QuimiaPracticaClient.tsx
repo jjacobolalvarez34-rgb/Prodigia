@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ModoQuimia, PreguntaQuimia } from "@/lib/practica/quimia";
 import { NOMBRE_MODO_QUIMIA } from "@/lib/practica/quimia";
@@ -11,12 +11,13 @@ import LogroBanner from "@/components/LogroBanner";
 import ApuestaResultado from "@/components/ApuestaResultado";
 import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSubio";
 import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/ResultadoDueloBlock";
-import PantallaVS from "@/components/duelos/PantallaVS";
+import SalaEsperaDuelo from "@/components/duelos/SalaEsperaDuelo";
+import { useArranqueSincronizado } from "@/lib/duelos/useArranqueSincronizado";
+import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
 import QuimiaSprintRunner from "./QuimiaSprintRunner";
 import { COLOR_QUIMIA } from "./colores";
 
-type Fase = "inicio" | "vs" | "sprint" | "resumen";
-const SEGUNDOS_VS_INICIALES = 3;
+type Fase = "inicio" | "vs" | "sprint" | "finalizando" | "resumen";
 
 interface FinishResponse {
   sprint: { total: number; correctos: number; precision: number | null; xpGanado: number; avgTimeMs: number | null };
@@ -34,6 +35,7 @@ interface FinishResponse {
 // funciona igual (ver useProgresoEnVivo dentro de QuimiaSprintRunner).
 export interface DueloQuimicoInfo {
   duelId: string;
+  rivalId: string;
   rivalNombre: string;
   miElo: number;
   rivalElo: number;
@@ -59,7 +61,6 @@ interface Props {
 export default function QuimiaPracticaClient({ modo, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
   const router = useRouter();
   const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
-  const [segundosVs, setSegundosVs] = useState(SEGUNDOS_VS_INICIALES);
   const [startedAtIso, setStartedAtIso] = useState("");
   const [startedAtPerf, setStartedAtPerf] = useState(0);
   const [resumen, setResumen] = useState<FinishResponse | null>(null);
@@ -67,15 +68,13 @@ export default function QuimiaPracticaClient({ modo, nivelInicial, escudosExtra,
   const [error, setError] = useState<string | null>(null);
   const [resultadoDuelo, setResultadoDuelo] = useState<ResultadoDuelo | null>(null);
 
-  useEffect(() => {
-    if (fase !== "vs") return;
-    if (segundosVs <= 0) {
-      iniciar();
-      return;
-    }
-    const t = setTimeout(() => setSegundosVs((s) => s - 1), 900);
-    return () => clearTimeout(t);
-  }, [fase, segundosVs]);
+  const { estado: estadoArranque, segundos: segundosVs, rivalPresente, empezarAhora } = useArranqueSincronizado({
+    duelId: duelo?.duelId,
+    miUserId,
+    rivalId: duelo?.rivalId,
+    rivalEsBot: duelo?.rivalEsBot,
+    onEmpezar: () => iniciar(),
+  });
 
   function iniciar() {
     setStartedAtIso(new Date().toISOString());
@@ -86,6 +85,7 @@ export default function QuimiaPracticaClient({ modo, nivelInicial, escudosExtra,
 
   async function handleFinish(erroresPartida: PreguntaQuimia[]) {
     setErrores(erroresPartida);
+    setFase("finalizando");
     try {
       const res = await fetch("/api/practica/finish", {
         method: "POST",
@@ -135,15 +135,17 @@ export default function QuimiaPracticaClient({ modo, nivelInicial, escudosExtra,
 
   if (fase === "vs" && duelo) {
     return (
-      <PantallaVS
-        miNombre="Vos"
+      <SalaEsperaDuelo
+        estado={estadoArranque}
+        segundos={segundosVs}
+        rivalPresente={rivalPresente}
         miElo={duelo.miElo}
         rivalNombre={duelo.rivalNombre}
         rivalElo={duelo.rivalElo}
         rivalEsBot={duelo.rivalEsBot}
         modo={duelo.serieId ? "mejor_de_3" : "simple"}
         subtitulo={duelo.serieId ? `Ronda ${duelo.rondaNumero}/${duelo.rondaTotal} · Quimia` : "Quimia"}
-        segundos={segundosVs}
+        onEmpezarAhora={empezarAhora}
       />
     );
   }
@@ -163,6 +165,10 @@ export default function QuimiaPracticaClient({ modo, nivelInicial, escudosExtra,
         onFinish={handleFinish}
       />
     );
+  }
+
+  if (fase === "finalizando") {
+    return <TransicionFinalizando />;
   }
 
   if (fase === "resumen" && error) {

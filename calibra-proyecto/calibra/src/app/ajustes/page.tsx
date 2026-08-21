@@ -7,12 +7,12 @@ import AjustesClient from "./AjustesClient";
 
 export const metadata: Metadata = {
   title: "Ajustes",
-  description: "Meta diaria, sonido y tema de Prodigia.",
+  description: "Sonido, efectos y tema de Prodigia.",
 };
 
 export default async function AjustesPage() {
   const supabase = await createClient();
-  const { user, profile } = await requireUsuario(supabase, "/ajustes");
+  const { user } = await requireUsuario(supabase, "/ajustes");
 
   const { data: profileFull } = await supabase
     .from("profiles")
@@ -27,7 +27,6 @@ export default async function AjustesPage() {
         <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Ajustes</h1>
         <AjustesClient
           userId={user.id}
-          metaXpDiariaInicial={profile.meta_xp_diaria ?? 400}
           ocultarDobleONadaInicial={profileFull?.ocultar_doble_o_nada ?? false}
         />
         <div className="flex flex-col gap-1 border-t border-border pt-6 text-sm">

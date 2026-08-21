@@ -10,12 +10,7 @@ export const metadata: Metadata = {
   description: "Feed, amigos y duelos en Prodigia.",
 };
 
-interface Props {
-  searchParams: Promise<{ tab?: string }>;
-}
-
-export default async function SocialPage({ searchParams }: Props) {
-  const { tab } = await searchParams;
+export default async function SocialPage() {
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/social");
   bloquearInvitado(user, "Social (Feed y Amigos)");
@@ -97,7 +92,6 @@ export default async function SocialPage({ searchParams }: Props) {
     <>
       <Header autenticado invitado={user.is_anonymous} />
       <SocialClient
-        tabInicial={tab === "amigos" ? "amigos" : "feed"}
         posts={postsFormateados}
         solicitudesIniciales={solicitudes ?? []}
         amigosIniciales={amigos ?? []}

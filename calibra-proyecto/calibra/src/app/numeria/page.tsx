@@ -46,7 +46,7 @@ export default async function NumeriaHomePage() {
 
   const nivelMundo = worldRow?.nivel_mundo ?? 1;
 
-  const metaXpDiaria = profile.meta_xp_diaria ?? 400;
+  const metaXpDiaria = profile.meta_xp_diaria ?? 500;
   const xpHoy = dailyHoy?.xp_ganado ?? 0;
   const metaCumplidaHoy = xpHoy >= metaXpDiaria;
   const nivelesAritmetica = (skillRows ?? []).filter((r) =>

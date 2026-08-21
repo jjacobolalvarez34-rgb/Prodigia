@@ -31,6 +31,7 @@ export default async function GeografiaPracticaPage({ searchParams }: Props) {
       continente = (fila.sub_tipo as Continente | null) ?? "america";
       dueloInfo = {
         duelId: duelo,
+        rivalId: fila.retador_id === user.id ? (fila.retado_id as string) : (fila.retador_id as string),
         rivalNombre: (fila.rival_nombre as string | null) ?? "Rival",
         miElo: fila.mi_elo as number,
         rivalElo: fila.rival_elo as number,

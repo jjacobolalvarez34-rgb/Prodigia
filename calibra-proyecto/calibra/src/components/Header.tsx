@@ -51,16 +51,16 @@ export default function Header({ autenticado = false, invitado = false }: Props)
   // suelto. Grupos (ex "Profesor") volvió a tener su propio acceso acá,
   // separado de Social otra vez (con Social reducido a 2 pestañas, ya
   // no entraba como una tercera).
+  // Fase 8 (tanda "Clanes: bugs y sistemas faltantes"): Grupos
+  // desactivado temporalmente — sacado del nav, código intacto
+  // (/profesor sigue existiendo, solo no se linkea desde acá).
   const links = [
     { href: "/leaderboard", label: "Ranking" },
     { href: "/rankeds", label: "Rankeds" },
     { href: "/social", label: "Social" },
     { href: "/clanes", label: "Clanes" },
-    { href: "/profesor", label: "Grupos" },
     { href: "/tienda", label: "Tienda" },
-  ].filter(
-    (link) => !invitado || (link.href !== "/rankeds" && link.href !== "/social" && link.href !== "/clanes" && link.href !== "/profesor")
-  );
+  ].filter((link) => !invitado || (link.href !== "/rankeds" && link.href !== "/social" && link.href !== "/clanes"));
 
   return (
     <header className="border-b border-border">

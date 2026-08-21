@@ -25,6 +25,15 @@ export const COSTOS = {
   fuente_mono: 1000,
   fuente_serif: 1400,
   fuente_manuscrita: 5000,
+  // Fase 8 ("Duelos..." tanda, ampliación de Tienda): 3 fuentes nuevas,
+  // todas Google Fonts (next/font/google) — nunca dafont.com, por
+  // licencias. Escalonadas entre las que ya había: impacto queda cerca
+  // de mono/serif, script en un escalón medio, futurista un poco más
+  // alto por lo distintiva que es (no llega al techo de prestigio de
+  // manuscrita, que sigue siendo el tope del catálogo de fuentes).
+  fuente_impacto: 1200,
+  fuente_script: 1800,
+  fuente_futurista: 2500,
   marco_bronce: 1000,
   marco_plata: 1300,
   marco_oro: 1700,

@@ -155,10 +155,16 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
   if (!duelo.resuelto) {
     return (
       <div className="rounded-2xl border border-border bg-surface px-5 py-4 text-center">
-        <p className="text-sm font-medium text-foreground">Ya jugaste tu parte del duelo.</p>
+        {duelo.mi_puntaje != null && (
+          <p className="font-mono text-2xl font-bold text-foreground">
+            {duelo.mi_puntaje} <span className="text-sm font-normal text-texto-secundario">puntos</span>
+          </p>
+        )}
+        <p className="mt-1 text-sm font-medium text-foreground">Esperando al rival…</p>
         <p className="mt-1 text-xs text-texto-secundario">
-          En cuanto {duelo.oponente_nombre ?? "tu rival"} termine la suya vas a ver quién ganó.
+          En cuanto {duelo.oponente_nombre ?? "tu rival"} termine la suya vas a ver la comparativa completa.
         </p>
+        <DesgloseCompleto duelo={duelo} />
       </div>
     );
   }

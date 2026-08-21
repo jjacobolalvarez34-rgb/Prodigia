@@ -44,6 +44,7 @@ export async function cargarDatosPracticaQuimia(
       }
       dueloInfo = {
         duelId: duelo,
+        rivalId: fila.retador_id === userId ? (fila.retado_id as string) : (fila.retador_id as string),
         rivalNombre: (fila.rival_nombre as string | null) ?? "Rival",
         miElo: fila.mi_elo as number,
         rivalElo: fila.rival_elo as number,

@@ -132,3 +132,50 @@ select:disabled {
   transform-origin: 0px 0px;
   animation: logo-spinner-pulso 1.6s ease-in-out infinite;
 }
+
+/* Fase 7 ("Mundo de Clanes"): 3 animaciones CSS livianas sobre las
+   ilustraciones de ciudad (EscenaCiudad.tsx) — niebla que deriva
+   despacio, un pulso neón tintado del color del estandarte del clan, y
+   luces que titilan en puntos fijos sobre la escena. */
+@keyframes ciudad-niebla-deriva {
+  0% {
+    transform: translateX(-6%);
+  }
+  50% {
+    transform: translateX(6%);
+  }
+  100% {
+    transform: translateX(-6%);
+  }
+}
+.ciudad-niebla {
+  animation: ciudad-niebla-deriva 14s ease-in-out infinite;
+}
+
+@keyframes ciudad-neon-pulso {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+.ciudad-neon {
+  animation: ciudad-neon-pulso 3.5s ease-in-out infinite;
+}
+
+@keyframes ciudad-luz-titilar {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+.ciudad-luz {
+  animation: ciudad-luz-titilar 2.2s ease-in-out infinite;
+}

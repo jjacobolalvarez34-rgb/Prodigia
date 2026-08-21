@@ -17,6 +17,9 @@ const NOMBRES_ITEM: Record<ItemComprable, string> = {
   fuente_mono: "Fuente Monoespaciada",
   fuente_serif: "Fuente Elegante",
   fuente_manuscrita: "Fuente Manuscrita",
+  fuente_impacto: "Fuente Impacto",
+  fuente_script: "Fuente Script",
+  fuente_futurista: "Fuente Futurista",
   marco_bronce: "Marco Bronce",
   marco_plata: "Marco Plata",
   marco_oro: "Marco Oro",
@@ -29,6 +32,9 @@ const FUENTES_COMPRABLES: { fuente: FuenteNombre; item: ItemComprable; nombre: s
   { fuente: "mono", item: "fuente_mono", nombre: "Monoespaciada" },
   { fuente: "serif", item: "fuente_serif", nombre: "Elegante" },
   { fuente: "manuscrita", item: "fuente_manuscrita", nombre: "Manuscrita" },
+  { fuente: "impacto", item: "fuente_impacto", nombre: "Impacto" },
+  { fuente: "script", item: "fuente_script", nombre: "Script" },
+  { fuente: "futurista", item: "fuente_futurista", nombre: "Futurista" },
 ];
 
 // Fase 7: reusa la paleta de rangos de Rankeds (RANGOS_ELO) en vez de

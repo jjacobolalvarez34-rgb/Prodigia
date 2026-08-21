@@ -59,7 +59,7 @@ export default async function PerfilPage() {
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("created_at, elo_rating, marco_perfil, fuente_nombre, avatar_url, titulo_activo")
+      .select("created_at, elo_rating, marco_perfil, fuente_nombre, avatar_url, titulo_activo, nivel_cuenta, xp_historico_total")
       .eq("id", user.id)
       .single(),
     supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", user.id),
@@ -87,6 +87,22 @@ export default async function PerfilPage() {
   ]);
 
   const miClan = (miClanRows as { clan_id: string; nombre: string; tag: string | null; color_estandarte: string; nivel_clan: number }[] | null)?.[0] ?? null;
+
+  // Fase 4 (nivel de cuenta): umbral del nivel actual y del siguiente,
+  // para la barra de progreso — misma curva que acreditar_chispas usa
+  // para decidir cuándo subís de nivel (xp_requerido_nivel_cuenta).
+  const nivelCuenta = profileFull?.nivel_cuenta ?? 1;
+  const xpHistorico = profileFull?.xp_historico_total ?? 0;
+  const [{ data: xpNivelActual }, { data: xpNivelSiguiente }] = await Promise.all([
+    supabase.rpc("xp_requerido_nivel_cuenta", { p_nivel: nivelCuenta }),
+    supabase.rpc("xp_requerido_nivel_cuenta", { p_nivel: nivelCuenta + 1 }),
+  ]);
+  const umbralActual = (xpNivelActual as number | null) ?? 0;
+  const umbralSiguiente = (xpNivelSiguiente as number | null) ?? umbralActual + 1;
+  const progresoNivelPct = Math.min(
+    100,
+    Math.max(0, Math.round(((xpHistorico - umbralActual) / Math.max(1, umbralSiguiente - umbralActual)) * 100))
+  );
 
   const nivelMundoDe = (world: string) => worldRows?.find((w) => w.world === world)?.nivel_mundo ?? 1;
 
@@ -134,6 +150,25 @@ export default async function PerfilPage() {
           <p className="font-mono text-lg font-bold text-foreground">
             {profile.puntos_total} <span className="text-sm font-normal text-texto-secundario">Chispas totales</span>
           </p>
+
+          <div className="rounded-xl border-2 border-primario/30 bg-primario/5 px-4 py-3">
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="font-display text-lg font-bold text-foreground">Nivel {nivelCuenta}</p>
+              <p className="text-xs text-texto-secundario">
+                {xpHistorico - umbralActual}/{umbralSiguiente - umbralActual} XP
+              </p>
+            </div>
+            <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-primario/15">
+              <div
+                className="h-full rounded-full bg-primario transition-all"
+                style={{ width: `${progresoNivelPct}%` }}
+              />
+            </div>
+            <p className="mt-1.5 text-xs text-texto-secundario">
+              {xpHistorico.toLocaleString("es-AR")} XP histórica acumulada — nunca baja
+            </p>
+          </div>
+
           {rankingFila && (
             <p className="text-sm text-texto-secundario">
               Puesto <span className="font-mono font-semibold text-foreground">#{rankingFila.posicion}</span> de{" "}

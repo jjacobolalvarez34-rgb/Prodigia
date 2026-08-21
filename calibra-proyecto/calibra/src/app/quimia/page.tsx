@@ -33,7 +33,7 @@ export default async function QuimiaHomePage() {
 
   const nivelDe = (tipo: string) => nivelRows?.find((r) => r.problem_type === tipo)?.nivel ?? 1;
   const nivelMundo = worldRow?.nivel_mundo ?? 1;
-  const metaXpDiaria = profile.meta_xp_diaria ?? 400;
+  const metaXpDiaria = profile.meta_xp_diaria ?? 500;
   const xpHoy = dailyHoy?.xp_ganado ?? 0;
   const metaCumplidaHoy = xpHoy >= metaXpDiaria;
 

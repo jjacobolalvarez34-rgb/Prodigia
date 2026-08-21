@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Continente, PaisAmerica } from "@/lib/practica/geografia";
 import type { PreguntaAvanzada } from "@/lib/practica/geografiaAvanzada";
@@ -11,12 +11,13 @@ import LogroBanner from "@/components/LogroBanner";
 import ApuestaResultado from "@/components/ApuestaResultado";
 import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSubio";
 import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/ResultadoDueloBlock";
-import PantallaVS from "@/components/duelos/PantallaVS";
+import SalaEsperaDuelo from "@/components/duelos/SalaEsperaDuelo";
+import { useArranqueSincronizado } from "@/lib/duelos/useArranqueSincronizado";
+import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
 import GeografiaSprintRunner from "./GeografiaSprintRunner";
 import { COLOR_GEOGRAFIA } from "./GeografiaMapa";
 
-type Fase = "inicio" | "vs" | "sprint" | "resumen";
-const SEGUNDOS_VS_INICIALES = 3;
+type Fase = "inicio" | "vs" | "sprint" | "finalizando" | "resumen";
 
 interface FinishResponse {
   sprint: { total: number; correctos: number; precision: number | null; xpGanado: number; avgTimeMs: number | null };
@@ -36,6 +37,7 @@ interface FinishResponse {
 // más que para mostrarlos.
 export interface DueloGenericoInfo {
   duelId: string;
+  rivalId: string;
   rivalNombre: string;
   miElo: number;
   rivalElo: number;
@@ -66,7 +68,6 @@ const NOMBRE_CONTINENTE: Record<Continente, string> = {
 export default function GeografiaPracticaClient({ continente, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
   const router = useRouter();
   const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
-  const [segundosVs, setSegundosVs] = useState(SEGUNDOS_VS_INICIALES);
   const [startedAtIso, setStartedAtIso] = useState("");
   const [startedAtPerf, setStartedAtPerf] = useState(0);
   const [resumen, setResumen] = useState<FinishResponse | null>(null);
@@ -74,19 +75,16 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
   const [error, setError] = useState<string | null>(null);
   const [resultadoDuelo, setResultadoDuelo] = useState<ResultadoDuelo | null>(null);
 
-  // Fase 1 (pantalla VS): countdown local simple — Geografía es
-  // asincrónica por diseño (no hace falta que los 2 rivales arranquen
-  // en el mismo instante real, a diferencia de Numeria/SalaDuelo), así
-  // que no hace falta Presence/Broadcast acá, solo ceremonia visual.
-  useEffect(() => {
-    if (fase !== "vs") return;
-    if (segundosVs <= 0) {
-      iniciar();
-      return;
-    }
-    const t = setTimeout(() => setSegundosVs((s) => s - 1), 900);
-    return () => clearTimeout(t);
-  }, [fase, segundosVs]);
+  // Fase 2 ("Duelos: llevar el progreso en vivo..."): arranque
+  // automático sincronizado de verdad (Presence + Broadcast), no un
+  // countdown local por cliente — mismo mecanismo que Numeria/SalaDuelo.
+  const { estado: estadoArranque, segundos: segundosVs, rivalPresente, empezarAhora } = useArranqueSincronizado({
+    duelId: duelo?.duelId,
+    miUserId,
+    rivalId: duelo?.rivalId,
+    rivalEsBot: duelo?.rivalEsBot,
+    onEmpezar: () => iniciar(),
+  });
 
   function iniciar() {
     setStartedAtIso(new Date().toISOString());
@@ -97,6 +95,7 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
 
   async function handleFinish(erroresPartida: (PaisAmerica | PreguntaAvanzada)[]) {
     setErrores(erroresPartida);
+    setFase("finalizando");
     try {
       const res = await fetch("/api/practica/finish", {
         method: "POST",
@@ -150,15 +149,17 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
 
   if (fase === "vs" && duelo) {
     return (
-      <PantallaVS
-        miNombre="Vos"
+      <SalaEsperaDuelo
+        estado={estadoArranque}
+        segundos={segundosVs}
+        rivalPresente={rivalPresente}
         miElo={duelo.miElo}
         rivalNombre={duelo.rivalNombre}
         rivalElo={duelo.rivalElo}
         rivalEsBot={duelo.rivalEsBot}
         modo={duelo.serieId ? "mejor_de_3" : "simple"}
         subtitulo={duelo.serieId ? `Ronda ${duelo.rondaNumero}/${duelo.rondaTotal} · Geografía` : "Geografía"}
-        segundos={segundosVs}
+        onEmpezarAhora={empezarAhora}
       />
     );
   }
@@ -176,6 +177,10 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
         onFinish={handleFinish}
       />
     );
+  }
+
+  if (fase === "finalizando") {
+    return <TransicionFinalizando />;
   }
 
   if (fase === "resumen" && error) {
