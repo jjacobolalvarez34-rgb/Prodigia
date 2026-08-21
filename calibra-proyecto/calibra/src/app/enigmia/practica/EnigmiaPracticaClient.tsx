@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { CategoriaEnigmia, LogicPuzzle, Achievement } from "@/types/database";
 import Boton from "@/components/Boton";
@@ -8,11 +8,12 @@ import BotonesFinPartida from "@/components/BotonesFinPartida";
 import LogroBanner from "@/components/LogroBanner";
 import ApuestaResultado from "@/components/ApuestaResultado";
 import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSubio";
-import RangoBadge from "@/components/RangoBadge";
 import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/ResultadoDueloBlock";
+import PantallaVS from "@/components/duelos/PantallaVS";
 import EnigmiaSprintRunner from "./EnigmiaSprintRunner";
 
-type Fase = "inicio" | "sprint" | "resumen";
+type Fase = "inicio" | "vs" | "sprint" | "resumen";
+const SEGUNDOS_VS_INICIALES = 3;
 
 interface FinishResponse {
   partida: { total: number; correctos: number; precision: number | null; xpGanado: number; avgTimeMs: number | null };
@@ -35,6 +36,7 @@ export interface DueloGenericoInfo {
   rivalElo: number;
   miTituloNombre: string | null;
   rivalTituloNombre: string | null;
+  rivalEsBot: boolean;
   serieId: string | null;
   rondaNumero: number;
   rondaTotal: number;
@@ -56,13 +58,24 @@ interface Props {
 
 export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
   const router = useRouter();
-  const [fase, setFase] = useState<Fase>("inicio");
+  const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
+  const [segundosVs, setSegundosVs] = useState(SEGUNDOS_VS_INICIALES);
   const [startedAtIso, setStartedAtIso] = useState("");
   const [startedAtPerf, setStartedAtPerf] = useState(0);
   const [resumen, setResumen] = useState<FinishResponse | null>(null);
   const [errores, setErrores] = useState<LogicPuzzle[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [resultadoDuelo, setResultadoDuelo] = useState<ResultadoDuelo | null>(null);
+
+  useEffect(() => {
+    if (fase !== "vs") return;
+    if (segundosVs <= 0) {
+      iniciar();
+      return;
+    }
+    const t = setTimeout(() => setSegundosVs((s) => s - 1), 900);
+    return () => clearTimeout(t);
+  }, [fase, segundosVs]);
 
   function iniciar() {
     setStartedAtIso(new Date().toISOString());
@@ -118,6 +131,21 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
       setError("No pudimos conectar con el servidor. Probá de nuevo.");
     }
     setFase("resumen");
+  }
+
+  if (fase === "vs" && duelo) {
+    return (
+      <PantallaVS
+        miNombre="Vos"
+        miElo={duelo.miElo}
+        rivalNombre={duelo.rivalNombre}
+        rivalElo={duelo.rivalElo}
+        rivalEsBot={duelo.rivalEsBot}
+        modo={duelo.serieId ? "mejor_de_3" : "simple"}
+        subtitulo={duelo.serieId ? `Ronda ${duelo.rondaNumero}/${duelo.rondaTotal} · Enigmia` : "Enigmia"}
+        segundos={segundosVs}
+      />
+    );
   }
 
   if (fase === "sprint") {
@@ -205,21 +233,7 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
           ⚡ Boost activo — Chispas ×1.5 en esta partida
         </div>
       )}
-      {duelo ? (
-        <>
-          <span className="rounded-full bg-primario/10 px-3 py-1 text-xs font-medium uppercase tracking-wide text-primario">
-            {duelo.serieId ? `Duelo · Ronda ${duelo.rondaNumero}/${duelo.rondaTotal} · Enigmia` : "Duelo · Enigmia"}
-          </span>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Vs. {duelo.rivalNombre}</h1>
-          <div className="flex items-center gap-6">
-            <RangoBadge elo={duelo.miElo} tituloNombre={duelo.miTituloNombre} size="sm" mostrarElo />
-            <span className="text-texto-secundario">—</span>
-            <RangoBadge elo={duelo.rivalElo} tituloNombre={duelo.rivalTituloNombre} size="sm" mostrarElo />
-          </div>
-        </>
-      ) : (
-        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">¿Listo?</h1>
-      )}
+      <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">¿Listo?</h1>
       <p className="text-texto-secundario">10 acertijos o 60 segundos, lo que llegue primero.</p>
       <Boton onClick={iniciar} colorHex="#0E9F6E" destacado className="w-full py-5 text-lg">
         Iniciar partida

@@ -11,6 +11,8 @@ import BorrarCuenta from "./BorrarCuenta";
 import ConvertirCuenta from "@/components/ConvertirCuenta";
 import LogroMedalla from "@/components/LogroMedalla";
 import TitulosSection from "./TitulosSection";
+import EstandarteClan from "@/components/clanes/EstandarteClan";
+import Link from "next/link";
 
 const NOMBRE_MUNDO_AFINIDAD: Record<string, string> = {
   numeria: "Numeria",
@@ -53,6 +55,7 @@ export default async function PerfilPage() {
     { data: titulosRows },
     { data: afinidadRows },
     { data: leccionesRows },
+    { data: miClanRows },
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -75,12 +78,15 @@ export default async function PerfilPage() {
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).neq("problem_type", "geografia"),
     supabase.from("logic_attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("problem_type", "geografia"),
-    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["quimia_simbolos", "quimia_formulas", "quimia_tabla"]),
+    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"]),
     supabase.from("world_progress").select("world, nivel_mundo").eq("user_id", user.id),
     supabase.rpc("mis_titulos"),
     supabase.rpc("afinidad_por_mundo"),
     supabase.rpc("lecciones_completadas_por_mundo"),
+    supabase.rpc("mi_clan"),
   ]);
+
+  const miClan = (miClanRows as { clan_id: string; nombre: string; tag: string | null; color_estandarte: string; nivel_clan: number }[] | null)?.[0] ?? null;
 
   const nivelMundoDe = (world: string) => worldRows?.find((w) => w.world === world)?.nivel_mundo ?? 1;
 
@@ -134,6 +140,21 @@ export default async function PerfilPage() {
               {rankingFila.total_jugadores} en el ranking general de Chispas
             </p>
           )}
+          <Link
+            href="/clanes"
+            className="flex w-fit items-center gap-2 rounded-xl border border-border px-3 py-2 transition-colors hover:border-primario/40"
+          >
+            {miClan ? (
+              <>
+                <EstandarteClan color={miClan.color_estandarte} nivel={miClan.nivel_clan} size={28} />
+                <span className="text-sm font-medium text-foreground">
+                  {miClan.nombre} {miClan.tag && <span className="text-texto-secundario">[{miClan.tag}]</span>}
+                </span>
+              </>
+            ) : (
+              <span className="text-sm text-texto-secundario">Todavía no estás en ningún clan — buscá uno →</span>
+            )}
+          </Link>
         </section>
 
         {user.is_anonymous && <ConvertirCuenta />}

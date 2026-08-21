@@ -55,9 +55,12 @@ export default function Header({ autenticado = false, invitado = false }: Props)
     { href: "/leaderboard", label: "Ranking" },
     { href: "/rankeds", label: "Rankeds" },
     { href: "/social", label: "Social" },
+    { href: "/clanes", label: "Clanes" },
     { href: "/profesor", label: "Grupos" },
     { href: "/tienda", label: "Tienda" },
-  ].filter((link) => !invitado || (link.href !== "/rankeds" && link.href !== "/social" && link.href !== "/profesor"));
+  ].filter(
+    (link) => !invitado || (link.href !== "/rankeds" && link.href !== "/social" && link.href !== "/clanes" && link.href !== "/profesor")
+  );
 
   return (
     <header className="border-b border-border">

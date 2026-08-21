@@ -26,7 +26,7 @@ export default async function QuimiaHomePage() {
       .from("skill_levels")
       .select("problem_type, nivel")
       .eq("user_id", user.id)
-      .in("problem_type", ["quimia_simbolos", "quimia_formulas", "quimia_tabla"]),
+      .in("problem_type", ["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"]),
     supabase.from("daily_progress").select("xp_ganado").eq("user_id", user.id).eq("fecha", hoyIso).maybeSingle(),
     supabase.from("world_progress").select("nivel_mundo").eq("user_id", user.id).eq("world", "quimia").maybeSingle(),
   ]);
@@ -123,6 +123,20 @@ export default async function QuimiaHomePage() {
               Icono={IconQuimica}
               href="/quimia/practica/tabla"
               badge={{ tipo: "nivel", nivel: nivelDe("quimia_tabla") }}
+              colorHex={COLOR_QUIMIA}
+            />
+            <TopicCard
+              nombre="Nomenclatura"
+              Icono={IconQuimica}
+              href="/quimia/practica/nomenclatura"
+              badge={{ tipo: "nivel", nivel: nivelDe("quimia_nomenclatura") }}
+              colorHex={COLOR_QUIMIA}
+            />
+            <TopicCard
+              nombre="Química orgánica"
+              Icono={IconQuimica}
+              href="/quimia/practica/organica"
+              badge={{ tipo: "nivel", nivel: nivelDe("quimia_organica") }}
               colorHex={COLOR_QUIMIA}
             />
           </div>

@@ -36,7 +36,7 @@ interface RegistrarPuntosMundoResult {
 // Geografía — se determina el mundo a partir del problem_type real de
 // los intentos del sprint, no de la ruta que llamó a este endpoint.
 const TIPOS_NUMERIA = new Set(["suma", "resta", "multiplicacion", "division", "fracciones", "decimales", "potencias", "algebra"]);
-const TIPOS_QUIMIA = new Set(["quimia_simbolos", "quimia_formulas", "quimia_tabla"]);
+const TIPOS_QUIMIA = new Set(["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"]);
 
 function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | null {
   if (!problemType) return null;

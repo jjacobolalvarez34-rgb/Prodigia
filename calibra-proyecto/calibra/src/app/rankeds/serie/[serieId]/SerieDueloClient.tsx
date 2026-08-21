@@ -11,6 +11,7 @@ import GestoLogo from "@/components/GestoLogo";
 import LogroBanner from "@/components/LogroBanner";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 import type { Achievement } from "@/types/database";
+import TextType from "@/components/reactbits/TextType";
 
 export interface FilaRondaSerie {
   duel_id: string;
@@ -55,6 +56,23 @@ function TagClanDeBots() {
 
 const POLL_MS = 3000;
 const NOMBRE_MUNDO: Record<MundoDuelo, string> = { numeria: "Numeria", geografia: "Geografía", enigmia: "Enigmia", quimia: "Quimia" };
+// Mismos hex que Header.tsx (colorDelMundo) y RankedsClient.tsx.
+const COLOR_MUNDO: Record<MundoDuelo, string> = { numeria: "#6C4CF1", enigmia: "#0E9F6E", geografia: "#1E7A8C", quimia: "#C026D3" };
+// Fase 2 (transición de ronda con TextType): velocidades elegidas para
+// que la ceremonia completa (tipear el mundo anterior → borrarlo →
+// tipear el siguiente) dure ~1.5-2s con nombres de mundo típicos — "es
+// ceremonia, no un loading real", nunca debe sentirse como una demora.
+const TT_TYPING_MS = 60;
+const TT_DELETING_MS = 40;
+const TT_PAUSE_MS = 500;
+const TT_BUFFER_MS = 300;
+
+function duracionTransicionMs(mundoAnterior: string | null, mundoSiguiente: string): number {
+  const siguiente = mundoSiguiente.length * TT_TYPING_MS;
+  if (!mundoAnterior) return siguiente + TT_BUFFER_MS;
+  const anterior = mundoAnterior.length * TT_TYPING_MS + TT_PAUSE_MS + mundoAnterior.length * TT_DELETING_MS;
+  return anterior + siguiente + TT_BUFFER_MS;
+}
 const NOMBRE_OPERACION: Record<ArithmeticProblemType, string> = {
   suma: "Suma",
   resta: "Resta",
@@ -87,7 +105,30 @@ export default function SerieDueloClient({
 }) {
   const [rondas, setRondas] = useState(rondasIniciales);
   const [resultadoFinal, setResultadoFinal] = useState<ResultadoFinal | null>(null);
+  // Fase 2: qué ronda (duel_id) ya terminó de mostrar su transición de
+  // TextType — hasta que coincide con la próxima ronda a jugar, se
+  // muestra la animación en vez del botón "Jugar ronda".
+  const [transicionListaPara, setTransicionListaPara] = useState<string | null>(null);
   const cancelarRef = useRef(false);
+
+  const proximaRonda = rondas.find((r) => !r.yo_jugue);
+  const indiceProxima = proximaRonda ? rondas.findIndex((r) => r.duel_id === proximaRonda.duel_id) : -1;
+  const rondaAnterior = indiceProxima > 0 ? rondas[indiceProxima - 1] : null;
+  const transicionPendiente = !!proximaRonda && transicionListaPara !== proximaRonda.duel_id;
+
+  // Fase 2: apenas se revela una ronda nueva (o al montar, para la
+  // primera), un timer propio marca cuándo termina la ceremonia visual
+  // de TextType — independiente del callback onSentenceComplete del
+  // componente (no se dispara para la ÚLTIMA frase cuando loop=false,
+  // ver TextType.tsx), así el botón "Jugar ronda" no queda esperando
+  // un evento que nunca llega.
+  useEffect(() => {
+    if (!proximaRonda || transicionListaPara === proximaRonda.duel_id) return;
+    const duracion = duracionTransicionMs(rondaAnterior ? NOMBRE_MUNDO[rondaAnterior.mundo] : null, NOMBRE_MUNDO[proximaRonda.mundo]);
+    const t = setTimeout(() => setTransicionListaPara(proximaRonda.duel_id), duracion);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [proximaRonda?.duel_id]);
 
   useEffect(() => {
     cancelarRef.current = false;
@@ -150,7 +191,14 @@ export default function SerieDueloClient({
               <GestoLogo size={subioDeRango ? 130 : 90} colorHex={subioDeRango ? undefined : "#3FB88B"} />
             </div>
           )}
-          <p className="font-display text-xl font-black tracking-tight text-foreground">
+          <p
+            className={`font-display text-3xl font-black uppercase tracking-tight sm:text-4xl ${
+              resultadoFinal.gane ? "text-correcto" : "text-foreground"
+            }`}
+          >
+            {resultadoFinal.empate ? "Empate" : resultadoFinal.gane ? "Victoria" : "Derrota"}
+          </p>
+          <p className="text-sm font-medium text-texto-secundario">
             {resultadoFinal.empate
               ? `Empataron la serie con ${oponenteNombre}`
               : resultadoFinal.gane
@@ -162,9 +210,14 @@ export default function SerieDueloClient({
             {resultadoFinal.victorias_propias} - {resultadoFinal.victorias_rival}
           </p>
           {resultadoFinal.elo_anterior !== null && resultadoFinal.elo_nuevo !== null && (
-            <p className="flex items-center justify-center gap-1.5 text-xs text-texto-secundario">
-              ELO <CountUp from={resultadoFinal.elo_anterior} value={resultadoFinal.elo_nuevo} className="font-mono font-semibold text-foreground" />
-            </p>
+            <div className="mt-2 flex flex-col items-center gap-0.5">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-texto-secundario">ELO</span>
+              <CountUp
+                from={resultadoFinal.elo_anterior}
+                value={resultadoFinal.elo_nuevo}
+                className="font-display text-6xl font-black leading-none tabular-nums text-foreground sm:text-7xl"
+              />
+            </div>
           )}
           {subioDeRango && resultadoFinal.elo_nuevo !== null && (
             <motion.div
@@ -209,10 +262,6 @@ export default function SerieDueloClient({
     );
   }
 
-  // Todavía no está decidida: muestro el progreso ronda por ronda y el
-  // botón para jugar la próxima ronda que me toca a mí.
-  const proximaRonda = rondas.find((r) => !r.yo_jugue);
-
   return (
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
       <span className="rounded-full bg-primario/10 px-3 py-1 text-xs font-medium uppercase tracking-wide text-primario">
@@ -232,7 +281,22 @@ export default function SerieDueloClient({
         ))}
       </div>
 
-      {proximaRonda ? (
+      {proximaRonda && transicionPendiente ? (
+        <div className="flex h-[76px] w-full items-center justify-center">
+          <TextType
+            key={proximaRonda.duel_id}
+            as="span"
+            text={rondaAnterior ? [NOMBRE_MUNDO[rondaAnterior.mundo], NOMBRE_MUNDO[proximaRonda.mundo]] : [NOMBRE_MUNDO[proximaRonda.mundo]]}
+            textColors={rondaAnterior ? [COLOR_MUNDO[rondaAnterior.mundo], COLOR_MUNDO[proximaRonda.mundo]] : [COLOR_MUNDO[proximaRonda.mundo]]}
+            typingSpeed={TT_TYPING_MS}
+            deletingSpeed={TT_DELETING_MS}
+            pauseDuration={TT_PAUSE_MS}
+            loop={false}
+            showCursor={false}
+            className="font-display text-3xl font-black tracking-tight"
+          />
+        </div>
+      ) : proximaRonda ? (
         <Link
           href={hrefDuelo(proximaRonda.mundo, proximaRonda.operation_type, proximaRonda.duel_id)}
           className="w-full rounded-2xl px-6 py-5 text-center font-display text-lg font-semibold text-white shadow-lg"

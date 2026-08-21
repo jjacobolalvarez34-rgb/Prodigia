@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ModoQuimia } from "@/lib/practica/quimia";
 import type { DueloQuimicoInfo } from "@/app/quimia/QuimiaPracticaClient";
 
-const MODOS_VALIDOS: ModoQuimia[] = ["simbolos", "formulas", "tabla"];
+const MODOS_VALIDOS: ModoQuimia[] = ["simbolos", "formulas", "tabla", "nomenclatura", "organica"];
 
 export interface DatosPracticaQuimia {
   modo: ModoQuimia;
@@ -49,6 +49,7 @@ export async function cargarDatosPracticaQuimia(
         rivalElo: fila.rival_elo as number,
         miTituloNombre: (fila.mi_titulo_nombre as string | null) ?? null,
         rivalTituloNombre: (fila.rival_titulo_nombre as string | null) ?? null,
+        rivalEsBot: fila.rival_es_bot === true,
         serieId: (fila.serie_id as string | null) ?? null,
         rondaNumero: fila.ronda_numero as number,
         rondaTotal: fila.ronda_total as number,

@@ -27,6 +27,7 @@ export default async function EnigmiaPracticaPage({ searchParams }: Props) {
         rivalElo: fila.rival_elo as number,
         miTituloNombre: (fila.mi_titulo_nombre as string | null) ?? null,
         rivalTituloNombre: (fila.rival_titulo_nombre as string | null) ?? null,
+        rivalEsBot: fila.rival_es_bot === true,
         serieId: (fila.serie_id as string | null) ?? null,
         rondaNumero: fila.ronda_numero as number,
         rondaTotal: fila.ronda_total as number,

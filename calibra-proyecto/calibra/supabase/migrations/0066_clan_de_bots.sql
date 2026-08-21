@@ -921,7 +921,11 @@ create function public.registrar_resultado_duelo(
 returns table (
   resuelto boolean, elo_nuevo integer, elo_anterior integer, gane boolean, empate boolean,
   oponente_nombre text, oponente_id uuid, mundo text, modo text, ronda_numero smallint, ronda_total smallint,
-  mi_puntaje integer, rival_puntaje integer, clasificatorio boolean, oponente_es_bot boolean
+  mi_puntaje integer, rival_puntaje integer, clasificatorio boolean, oponente_es_bot boolean,
+  -- Sección "Rankeds visual" (tanda nocturna): desglose completo para
+  -- la pantalla de resultado tipo tetr.io — ya vivía en duel_results,
+  -- solo faltaba devolverlo.
+  mi_precision numeric, mi_tiempo_promedio numeric, rival_precision numeric, rival_tiempo_promedio numeric
 )
 language plpgsql
 security definer
@@ -970,7 +974,8 @@ begin
   if v_otro.user_id is null then
     return query select false, v_mi_elo, v_mi_elo, false, false, null::text, v_otro_id,
       v_duel.mundo, v_duel.modo, v_duel.ronda_numero, v_duel.ronda_total,
-      null::integer, null::integer, v_duel.clasificatorio, v_otro_es_bot;
+      null::integer, null::integer, v_duel.clasificatorio, v_otro_es_bot,
+      p_precision, p_tiempo_promedio, null::numeric, null::numeric;
     return;
   end if;
 
@@ -994,7 +999,8 @@ begin
     return query select true, v_mi_elo, v_mi_elo, (v_actual = 1), (v_actual = 0.5),
       (select display_name from public.profiles where id = v_otro_id), v_otro_id,
       v_duel.mundo, v_duel.modo, v_duel.ronda_numero, v_duel.ronda_total,
-      v_mi.puntaje_final, v_otro.puntaje_final, v_duel.clasificatorio, v_otro_es_bot;
+      v_mi.puntaje_final, v_otro.puntaje_final, v_duel.clasificatorio, v_otro_es_bot,
+      v_mi.precision, v_mi.tiempo_promedio, v_otro.precision, v_otro.tiempo_promedio;
     return;
   end if;
 
@@ -1014,7 +1020,8 @@ begin
     return query select true, v_mi_elo, v_mi_elo, (v_actual = 1), (v_actual = 0.5),
       (select display_name from public.profiles where id = v_otro_id), v_otro_id,
       v_duel.mundo, v_duel.modo, v_duel.ronda_numero, v_duel.ronda_total,
-      v_mi.puntaje_final, v_otro.puntaje_final, v_duel.clasificatorio, v_otro_es_bot;
+      v_mi.puntaje_final, v_otro.puntaje_final, v_duel.clasificatorio, v_otro_es_bot,
+      v_mi.precision, v_mi.tiempo_promedio, v_otro.precision, v_otro.tiempo_promedio;
     return;
   end if;
 
@@ -1037,7 +1044,8 @@ begin
     select true, v_nuevo_elo, v_mi_elo, (v_actual = 1), (v_actual = 0.5),
       (select display_name from public.profiles where id = v_otro_id), v_otro_id,
       v_duel.mundo, v_duel.modo, v_duel.ronda_numero, v_duel.ronda_total,
-      v_mi.puntaje_final, v_otro.puntaje_final, v_duel.clasificatorio, v_otro_es_bot;
+      v_mi.puntaje_final, v_otro.puntaje_final, v_duel.clasificatorio, v_otro_es_bot,
+      v_mi.precision, v_mi.tiempo_promedio, v_otro.precision, v_otro.tiempo_promedio;
 end;
 $$;
 

@@ -7,6 +7,7 @@ import Avatar from "@/components/Avatar";
 import RangoBadge from "@/components/RangoBadge";
 import NombreConFuente from "@/components/NombreConFuente";
 import ReportarBoton from "./ReportarBoton";
+import EstandarteClan from "@/components/clanes/EstandarteClan";
 
 interface Props {
   params: Promise<{ userId: string }>;
@@ -29,8 +30,12 @@ export default async function PerfilPublicoPage({ params }: Props) {
     redirect("/perfil");
   }
 
-  const { data, error } = await supabase.rpc("obtener_perfil_publico", { p_user_id: userId });
+  const [{ data, error }, { data: clanRows }] = await Promise.all([
+    supabase.rpc("obtener_perfil_publico", { p_user_id: userId }),
+    supabase.rpc("clan_de_usuario", { p_user_id: userId }),
+  ]);
   const perfil = (data as PerfilPublico[] | null)?.[0];
+  const clan = (clanRows as { clan_id: string; nombre: string; tag: string | null; color_estandarte: string; nivel_clan: number }[] | null)?.[0] ?? null;
 
   if (error || !perfil) {
     notFound();
@@ -50,6 +55,14 @@ export default async function PerfilPublicoPage({ params }: Props) {
             <NombreConFuente nombre={perfil.display_name} fuente={perfil.fuente_nombre} />
           </h1>
           <p className="text-sm text-texto-secundario">En Prodigia desde {formatearFecha(perfil.created_at)}</p>
+          {clan && (
+            <div className="flex items-center gap-2">
+              <EstandarteClan color={clan.color_estandarte} nivel={clan.nivel_clan} size={22} />
+              <span className="text-sm text-texto-secundario">
+                {clan.nombre} {clan.tag && `[${clan.tag}]`}
+              </span>
+            </div>
+          )}
 
           <div className="mt-2 grid w-full grid-cols-2 gap-3">
             <div className="rounded-xl border border-border bg-background px-4 py-3">

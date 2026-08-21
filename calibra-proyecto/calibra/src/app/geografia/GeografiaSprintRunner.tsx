@@ -2,6 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { elegirPaisAleatorio, PAISES_POR_CONTINENTE, type Continente, type PaisAmerica } from "@/lib/practica/geografia";
+import {
+  elegirPreguntaAvanzada,
+  NIVEL_MINIMO_AVANZADO,
+  PROBABILIDAD_AVANZADO,
+  type PreguntaAvanzada,
+} from "@/lib/practica/geografiaAvanzada";
 import { reproducirTono } from "@/lib/sonido";
 import { useBonusTiempo } from "@/lib/practica/useBonusTiempo";
 import SonidoToggle from "@/components/SonidoToggle";
@@ -13,6 +19,25 @@ import BarraTiempo from "@/components/practica/BarraTiempo";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import GeografiaMapa, { COLOR_GEOGRAFIA } from "./GeografiaMapa";
+
+// Extraído a un helper de módulo (mismo criterio que elegirPaisAleatorio/
+// elegirPreguntaAvanzada, ninguno de los dos vive dentro del componente)
+// — mantiene el cuerpo de siguiente() más simple.
+function elegirSiguientePais(
+  continente: Continente,
+  paises: PaisAmerica[],
+  nivel: number,
+  usados: Set<string>
+): PaisAmerica | PreguntaAvanzada | null {
+  if (nivel >= NIVEL_MINIMO_AVANZADO && Math.random() < PROBABILIDAD_AVANZADO) {
+    return elegirPreguntaAvanzada(continente, usados);
+  }
+  return elegirPaisAleatorio(paises, nivel, usados);
+}
+
+function esPreguntaAvanzada(p: PaisAmerica | PreguntaAvanzada): p is PreguntaAvanzada {
+  return "pregunta" in p;
+}
 
 const TOTAL_PREGUNTAS = 10;
 const DURACION_MS = 60_000;
@@ -33,7 +58,7 @@ interface Props {
   duelId?: string | null;
   miUserId?: string | null;
   rivalNombre?: string | null;
-  onFinish: (errores: PaisAmerica[]) => void;
+  onFinish: (errores: (PaisAmerica | PreguntaAvanzada)[]) => void;
 }
 
 export default function GeografiaSprintRunner({
@@ -50,7 +75,7 @@ export default function GeografiaSprintRunner({
   const paises = PAISES_POR_CONTINENTE[continente];
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const correctosRef = useRef(0);
-  const [pais, setPais] = useState<PaisAmerica | null>(null);
+  const [pais, setPais] = useState<PaisAmerica | PreguntaAvanzada | null>(null);
   const [cardKey, setCardKey] = useState(0);
   const [seleccionId, setSeleccionId] = useState<string | null>(null);
   const [respondido, setRespondido] = useState(false);
@@ -67,13 +92,17 @@ export default function GeografiaSprintRunner({
   const nivelRef = useRef(nivelInicial);
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
-  const erroresRef = useRef<PaisAmerica[]>([]);
+  const erroresRef = useRef<(PaisAmerica | PreguntaAvanzada)[]>([]);
   const shownAtRef = useRef(0);
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
 
   function siguiente() {
-    const p = elegirPaisAleatorio(paises, nivelRef.current, usadosRef.current);
+    // Sección 4: calibración alta (8-10) mezcla, con probabilidad,
+    // ciudades/ríos/puntos de referencia reales (texto, ver
+    // geografiaAvanzada.ts) junto al mapa de países de siempre — en
+    // niveles bajos esto nunca se sortea, sigue siendo solo el mapa.
+    const p = elegirSiguientePais(continente, paises, nivelRef.current, usadosRef.current);
     if (p) usadosRef.current.add(p.id);
     setPais(p);
     setCardKey((k) => k + 1);
@@ -179,9 +208,23 @@ export default function GeografiaSprintRunner({
     }, correct ? FEEDBACK_MS_OK : FEEDBACK_MS_ERROR);
   }
 
+  // Referencia estable (no una arrow function nueva por opción dentro
+  // del .map()) — con una arrow inline ahí, el compilador de React
+  // marca en falso el performance.now() de handleClickPais como
+  // "impuro durante el render" (mismo handleClickPais que ya se pasa
+  // sin problema como referencia pelada a GeografiaMapa más abajo).
+  function handleClickOpcion(e: React.MouseEvent<HTMLButtonElement>) {
+    const id = e.currentTarget.dataset.id;
+    if (id) handleClickPais(id);
+  }
+
   if (!pais) return null;
+  const esAvanzada = esPreguntaAvanzada(pais);
   const segundos = Math.ceil(remainingMs / 1000);
   const feedback: "idle" | "correcto" | "incorrecto" = !respondido ? "idle" : seleccionId === pais.id ? "correcto" : "incorrecto";
+  const miRespuesta = esAvanzada
+    ? (pais.opciones.find((o) => o.id === seleccionId)?.texto ?? "")
+    : (paises.find((p) => p.id === seleccionId)?.nombre ?? "");
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-12">
@@ -229,21 +272,53 @@ export default function GeografiaSprintRunner({
         cardKey={cardKey}
         feedback={feedback}
         puntaje={puntaje}
-        miRespuesta={paises.find((p) => p.id === seleccionId)?.nombre ?? ""}
+        miRespuesta={miRespuesta}
         respuestaCorrecta={pais.nombre}
         padding="px-4 py-5"
         minHeight={460}
       >
-        <p className="text-center font-display text-lg font-bold text-foreground">
-          ¿Dónde está <span style={{ color: COLOR_GEOGRAFIA }}>{pais.nombre}</span>?
-        </p>
-        <GeografiaMapa
-          continente={continente}
-          objetivoId={pais.id}
-          seleccionId={seleccionId}
-          respondido={respondido}
-          onClickPais={handleClickPais}
-        />
+        {esAvanzada ? (
+          <>
+            <p className="text-center font-display text-lg font-bold text-foreground">{pais.pregunta}</p>
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+              {pais.opciones.map((o) => {
+                const esCorrecta = respondido && o.id === pais.id;
+                const esIncorrectaElegida = respondido && seleccionId === o.id && o.id !== pais.id;
+                return (
+                  <button
+                    key={o.id}
+                    type="button"
+                    disabled={respondido}
+                    data-id={o.id}
+                    onClick={handleClickOpcion}
+                    className={`rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-colors disabled:cursor-not-allowed ${
+                      esCorrecta
+                        ? "border-correcto bg-correcto/10 text-correcto"
+                        : esIncorrectaElegida
+                          ? "border-error bg-error/10 text-error"
+                          : "border-border text-foreground"
+                    }`}
+                  >
+                    {o.texto}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-center font-display text-lg font-bold text-foreground">
+              ¿Dónde está <span style={{ color: COLOR_GEOGRAFIA }}>{pais.nombre}</span>?
+            </p>
+            <GeografiaMapa
+              continente={continente}
+              objetivoId={pais.id}
+              seleccionId={seleccionId}
+              respondido={respondido}
+              onClickPais={handleClickPais}
+            />
+          </>
+        )}
         {respondido && seleccionId === pais.id && (
           <p className="text-center text-sm font-medium text-texto-secundario">¡Correcto!</p>
         )}

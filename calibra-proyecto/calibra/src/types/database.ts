@@ -20,7 +20,9 @@ export type ProblemType =
   | "quimia"
   | "quimia_simbolos"
   | "quimia_formulas"
-  | "quimia_tabla";
+  | "quimia_tabla"
+  | "quimia_nomenclatura"
+  | "quimia_organica";
 export type Plan = "free" | "pro" | "colegio";
 
 export const ARITHMETIC_PROBLEM_TYPES: ArithmeticProblemType[] = [

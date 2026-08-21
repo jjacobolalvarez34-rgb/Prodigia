@@ -43,7 +43,9 @@ export async function actualizarSkillLevel(
     | "algebra"
     | "quimia_simbolos"
     | "quimia_formulas"
-    | "quimia_tabla",
+    | "quimia_tabla"
+    | "quimia_nomenclatura"
+    | "quimia_organica",
   correct: boolean,
   protegido = false
 ): Promise<Pick<SkillLevel, "nivel" | "racha_actual">> {

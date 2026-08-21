@@ -27,9 +27,16 @@ function banda(nivel: number): number {
   return Math.min(4, Math.floor((nivel - 1) / 2));
 }
 
-const SUMA_RESTA_MAX = [9, 50, 99, 500, 999];
-const FACTOR_1 = [5, 9, 12, 20, 30];
-const FACTOR_2 = [5, 9, 12, 12, 15];
+// Sección 2 (auditoría de variedad): la banda más alta (nivel 9-10) se
+// quedaba corta — sumas tope 999 (3 dígitos) y factores tope 30×15 —
+// una versión apenas más grande de nivel 5, no dificultad máxima real.
+// Solo se extiende el techo de la ÚLTIMA banda; 0-3 quedan intactas.
+const SUMA_RESTA_MIN = [1, 1, 1, 1, 1000];
+const SUMA_RESTA_MAX = [9, 50, 99, 999, 99999];
+const FACTOR_1_MIN = [2, 2, 2, 2, 15];
+const FACTOR_1 = [5, 9, 12, 20, 300];
+const FACTOR_2_MIN = [2, 2, 2, 2, 12];
+const FACTOR_2 = [5, 9, 12, 12, 150];
 
 function bandaConModifier(nivel: number, modifier?: ModifierSlug): number {
   // "numeros_grandes" empuja una banda de dificultad más arriba de la que
@@ -39,16 +46,16 @@ function bandaConModifier(nivel: number, modifier?: ModifierSlug): number {
 }
 
 function generarSuma(nivel: number, modifier?: ModifierSlug, rng?: () => number): Problem {
-  const max = SUMA_RESTA_MAX[bandaConModifier(nivel, modifier)];
-  const a = randomInt(1, max, rng);
-  const b = randomInt(1, max, rng);
+  const i = bandaConModifier(nivel, modifier);
+  const a = randomInt(SUMA_RESTA_MIN[i], SUMA_RESTA_MAX[i], rng);
+  const b = randomInt(SUMA_RESTA_MIN[i], SUMA_RESTA_MAX[i], rng);
   return { problemType: "suma", nivel, a, b, symbol: "+", answer: a + b, modifier };
 }
 
 function generarResta(nivel: number, modifier?: ModifierSlug, rng?: () => number): Problem {
-  const max = SUMA_RESTA_MAX[banda(nivel)];
-  let a = randomInt(1, max, rng);
-  let b = randomInt(1, max, rng);
+  const i = banda(nivel);
+  let a = randomInt(SUMA_RESTA_MIN[i], SUMA_RESTA_MAX[i], rng);
+  let b = randomInt(SUMA_RESTA_MIN[i], SUMA_RESTA_MAX[i], rng);
   if (modifier !== "negativos" && b > a) {
     [a, b] = [b, a]; // sin el modificador, nunca da negativo
   }
@@ -57,8 +64,8 @@ function generarResta(nivel: number, modifier?: ModifierSlug, rng?: () => number
 
 function generarMultiplicacion(nivel: number, modifier?: ModifierSlug, rng?: () => number): Problem {
   const i = bandaConModifier(nivel, modifier);
-  const a = randomInt(2, FACTOR_1[i], rng);
-  const b = randomInt(2, FACTOR_2[i], rng);
+  const a = randomInt(FACTOR_1_MIN[i], FACTOR_1[i], rng);
+  const b = randomInt(FACTOR_2_MIN[i], FACTOR_2[i], rng);
 
   if (modifier === "inverso") {
     // Se muestra "a × ? = resultado": el campo `b` pasa a ser el
@@ -81,8 +88,8 @@ function generarMultiplicacion(nivel: number, modifier?: ModifierSlug, rng?: () 
 
 function generarDivision(nivel: number, rng?: () => number): Problem {
   const i = banda(nivel);
-  const divisor = randomInt(2, FACTOR_2[i], rng);
-  const cociente = randomInt(2, FACTOR_1[i], rng);
+  const divisor = randomInt(FACTOR_2_MIN[i], FACTOR_2[i], rng);
+  const cociente = randomInt(FACTOR_1_MIN[i], FACTOR_1[i], rng);
   const dividendo = divisor * cociente;
   return {
     problemType: "division",

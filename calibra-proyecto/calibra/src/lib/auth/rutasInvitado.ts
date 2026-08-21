@@ -14,6 +14,7 @@ export const RUTAS_BLOQUEADAS_INVITADO: { prefijo: string; etiqueta: string }[] 
   { prefijo: "/social", etiqueta: "Social (Feed y Amigos)" },
   { prefijo: "/profesor", etiqueta: "Grupos" },
   { prefijo: "/duelo/invitacion", etiqueta: "Amigos" },
+  { prefijo: "/clanes", etiqueta: "Clanes" },
 ];
 
 export function rutaBloqueadaParaInvitado(pathname: string): string | null {

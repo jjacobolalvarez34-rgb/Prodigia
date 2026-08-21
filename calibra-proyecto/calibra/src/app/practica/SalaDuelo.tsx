@@ -5,7 +5,7 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import type { ArithmeticProblemType } from "@/types/database";
 import Boton from "@/components/Boton";
-import RangoBadge from "@/components/RangoBadge";
+import PantallaVS from "@/components/duelos/PantallaVS";
 
 const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
   suma: "Suma",
@@ -68,8 +68,6 @@ export default function SalaDuelo({
   rivalNombre,
   miElo,
   rivalElo,
-  miTituloNombre,
-  rivalTituloNombre,
   rivalEsBot = false,
   serieId,
   rondaNumero,
@@ -169,66 +167,54 @@ export default function SalaDuelo({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estado, rivalPresente, soyHost]);
 
-  const encabezado = (
-    <>
-      <span className="rounded-full bg-primario/10 px-3 py-1 text-xs font-medium uppercase tracking-wide text-primario">
-        {serieId ? `Duelo · Ronda ${rondaNumero}/${rondaTotal} · ${NOMBRES_OPERACION[operacion]}` : `Duelo · ${NOMBRES_OPERACION[operacion]}`}
-      </span>
-      <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Vs. {rivalNombre}</h1>
-      <div className="flex items-center gap-6">
-        <div className="flex flex-col items-center gap-1">
-          <span className="font-mono text-xl font-bold text-foreground">{miElo}</span>
-          <span className="flex items-center gap-1 text-xs text-texto-secundario">
-            Vos · <RangoBadge elo={miElo} tituloNombre={miTituloNombre} size="sm" />
-          </span>
-        </div>
-        <span className="text-texto-secundario">—</span>
-        <div className="flex flex-col items-center gap-1">
-          <span className="font-mono text-xl font-bold text-foreground">{rivalElo}</span>
-          <span className="flex items-center gap-1 text-xs text-texto-secundario">
-            {rivalNombre} · <RangoBadge elo={rivalElo} tituloNombre={rivalTituloNombre} size="sm" />
-          </span>
-        </div>
-      </div>
-    </>
-  );
+  const subtitulo = serieId ? `Ronda ${rondaNumero}/${rondaTotal} · ${NOMBRES_OPERACION[operacion]}` : NOMBRES_OPERACION[operacion];
+  const modo = serieId ? "mejor_de_3" : "simple";
 
   if (estado === "cuenta-regresiva") {
     return (
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
-        {encabezado}
-        <span className="font-display text-6xl font-black tabular-nums text-primario">{segundos}</span>
-        <p className="text-sm text-texto-secundario">Arrancando para los dos al mismo tiempo…</p>
-      </div>
+      <PantallaVS
+        miNombre="Vos"
+        miElo={miElo}
+        rivalNombre={rivalNombre}
+        rivalElo={rivalElo}
+        rivalEsBot={rivalEsBot}
+        modo={modo}
+        subtitulo={subtitulo}
+        segundos={segundos}
+      />
     );
   }
 
   if (estado === "agotado") {
     return (
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
-        {encabezado}
-        <p className="text-sm text-texto-secundario">
-          {rivalNombre} todavía no se conectó a la sala — podés seguir esperando o arrancar tu parte
-          ahora (se resuelve el duelo apenas juegue la suya, como antes).
-        </p>
-        <Boton onClick={onEmpezar} className="w-full py-4">
-          Jugar mi parte ahora
-        </Boton>
+      <div className="flex flex-1 flex-col">
+        <PantallaVS miNombre="Vos" miElo={miElo} rivalNombre={rivalNombre} rivalElo={rivalElo} rivalEsBot={rivalEsBot} modo={modo} subtitulo={subtitulo} segundos={null} />
+        <div className="mx-auto -mt-10 flex w-full max-w-md flex-col items-center gap-4 px-4 pb-16 text-center">
+          <p className="text-sm text-texto-secundario">
+            {rivalNombre} todavía no se conectó a la sala — podés seguir esperando o arrancar tu parte
+            ahora (se resuelve el duelo apenas juegue la suya, como antes).
+          </p>
+          <Boton onClick={onEmpezar} className="w-full py-4">
+            Jugar mi parte ahora
+          </Boton>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
-      {encabezado}
-      <div className="flex items-center gap-2 text-sm text-texto-secundario">
-        <span className={`h-2 w-2 rounded-full ${estado === "esperando" ? "bg-correcto" : "bg-foreground/20"}`} />
-        <span>Vos, listo</span>
-        <span className="mx-1">·</span>
-        <span className={`h-2 w-2 rounded-full ${rivalPresente ? "bg-correcto" : "bg-foreground/20 animate-pulse"}`} />
-        <span>{rivalPresente ? `${rivalNombre}, listo` : `Esperando a ${rivalNombre}…`}</span>
+    <div className="flex flex-1 flex-col">
+      <PantallaVS miNombre="Vos" miElo={miElo} rivalNombre={rivalNombre} rivalElo={rivalElo} rivalEsBot={rivalEsBot} modo={modo} subtitulo={subtitulo} segundos={null} />
+      <div className="mx-auto -mt-10 flex w-full max-w-md flex-col items-center gap-3 px-4 pb-16 text-center">
+        <div className="flex items-center gap-2 text-sm text-texto-secundario">
+          <span className={`h-2 w-2 rounded-full ${estado === "esperando" ? "bg-correcto" : "bg-foreground/20"}`} />
+          <span>Vos, listo</span>
+          <span className="mx-1">·</span>
+          <span className={`h-2 w-2 rounded-full ${rivalPresente ? "bg-correcto" : "bg-foreground/20 animate-pulse"}`} />
+          <span>{rivalPresente ? `${rivalNombre}, listo` : `Esperando a ${rivalNombre}…`}</span>
+        </div>
+        <p className="text-xs text-texto-secundario">Arranca solo apenas estén los dos — no hace falta que apretés nada.</p>
       </div>
-      <p className="text-xs text-texto-secundario">Arranca solo apenas estén los dos — no hace falta que apretés nada.</p>
     </div>
   );
 }

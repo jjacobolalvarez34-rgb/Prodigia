@@ -127,7 +127,13 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     }
   }
 
-  const TIPOS_QUIMIA = ["quimia_simbolos", "quimia_formulas", "quimia_tabla"];
+  // Sección 5 (auditoría de variedad): "quimia_problemas_totales" y
+  // "quimia_modos_variados" cuentan sobre los 5 modos (los 2 nuevos
+  // suman acá) — a diferencia de TIPOS_QUIMIA_MUNDO más abajo (logro
+  // "mundo completado"), que se deja en los 3 modos originales a
+  // propósito: ya lo desbloquearon usuarios reales con ese criterio, no
+  // corresponde subirles la vara retroactivamente.
+  const TIPOS_QUIMIA = ["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"];
 
   let quimiaProblemasTotales = 0;
   if (tiposNecesarios.has("quimia_problemas_totales")) {

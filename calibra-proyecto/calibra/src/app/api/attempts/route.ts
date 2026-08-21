@@ -71,6 +71,8 @@ export async function POST(request: Request) {
     "quimia_simbolos",
     "quimia_formulas",
     "quimia_tabla",
+    "quimia_nomenclatura",
+    "quimia_organica",
   ];
   if (!sospechoso && tiposCalibrables.includes(body.problem_type)) {
     skillLevel = await actualizarSkillLevel(
@@ -85,7 +87,9 @@ export async function POST(request: Request) {
         | "algebra"
         | "quimia_simbolos"
         | "quimia_formulas"
-        | "quimia_tabla",
+        | "quimia_tabla"
+        | "quimia_nomenclatura"
+        | "quimia_organica",
       body.correct,
       body.protegido ?? false
     );
