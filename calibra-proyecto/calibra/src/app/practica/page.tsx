@@ -29,6 +29,7 @@ export interface DueloInfo {
   rivalElo: number;
   miTituloNombre: string | null;
   rivalTituloNombre: string | null;
+  rivalEsBot: boolean;
   rivalRespuestas: RespuestaDuelo[] | null;
   // Fase T3: ambos rivales generan la MISMA secuencia de problemas a
   // partir de esta semilla (ver src/lib/practica/problems.ts +
@@ -73,6 +74,7 @@ export default async function PracticaPage({ searchParams }: Props) {
         rivalElo: fila.rival_elo as number,
         miTituloNombre: (fila.mi_titulo_nombre as string | null) ?? null,
         rivalTituloNombre: (fila.rival_titulo_nombre as string | null) ?? null,
+        rivalEsBot: fila.rival_es_bot === true,
         // El fantasma solo existe si el rival ya jugó su lado del duelo
         // antes que vos — si no, jugás normal y tu secuencia de
         // respuestas queda guardada para cuando él juegue la suya.

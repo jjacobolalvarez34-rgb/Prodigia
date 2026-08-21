@@ -146,6 +146,7 @@ export default function PracticaClient({
         rivalElo={duelo.rivalElo}
         miTituloNombre={duelo.miTituloNombre}
         rivalTituloNombre={duelo.rivalTituloNombre}
+        rivalEsBot={duelo.rivalEsBot}
         serieId={duelo.serieId}
         rondaNumero={duelo.rondaNumero}
         rondaTotal={duelo.rondaTotal}

@@ -26,6 +26,7 @@ export interface FilaRondaSerie {
   oponente_id: string;
   oponente_nombre: string | null;
   serie_finalizada: boolean;
+  oponente_es_bot: boolean;
 }
 
 interface ResultadoFinal {
@@ -38,7 +39,18 @@ interface ResultadoFinal {
   victorias_rival: number;
   oponente_id: string;
   oponente_nombre: string | null;
+  oponente_es_bot: boolean;
   logrosNuevos?: Achievement[];
+}
+
+// Fase 3 (Clan de Bots): mismo tratamiento que la etiqueta "Casual" del
+// historial de Rankeds — dato secundario discreto, nunca una alerta.
+function TagClanDeBots() {
+  return (
+    <span className="ml-1.5 rounded-full bg-foreground/[0.06] px-2 py-0.5 align-middle text-[10px] font-medium uppercase tracking-wide text-texto-secundario">
+      Clan de Bots
+    </span>
+  );
 }
 
 const POLL_MS = 3000;
@@ -113,6 +125,7 @@ export default function SerieDueloClient({
 
   const oponenteNombre = rondas[0]?.oponente_nombre ?? "tu rival";
   const oponenteId = rondas[0]?.oponente_id ?? null;
+  const oponenteEsBot = rondas[0]?.oponente_es_bot ?? false;
   const victoriasMias = rondas.filter((r) => r.gane_ronda).length;
   const victoriasRival = rondas.filter((r) => r.estado === "completado" && !r.gane_ronda && !r.empate_ronda).length;
 
@@ -143,6 +156,7 @@ export default function SerieDueloClient({
               : resultadoFinal.gane
                 ? `Ganaste la serie a ${oponenteNombre}`
                 : `Esta vez ganó ${oponenteNombre}`}
+            {resultadoFinal.oponente_es_bot && <TagClanDeBots />}
           </p>
           <p className="font-mono text-2xl font-bold text-foreground">
             {resultadoFinal.victorias_propias} - {resultadoFinal.victorias_rival}
@@ -163,7 +177,7 @@ export default function SerieDueloClient({
               <RangoBadge elo={resultadoFinal.elo_nuevo} size="lg" />
             </motion.div>
           )}
-          {oponenteId && (
+          {oponenteId && !resultadoFinal.oponente_es_bot && (
             <Link href={`/perfil/${oponenteId}`} className="mt-1 text-xs font-semibold text-primario hover:underline">
               Ver perfil
             </Link>
@@ -204,7 +218,10 @@ export default function SerieDueloClient({
       <span className="rounded-full bg-primario/10 px-3 py-1 text-xs font-medium uppercase tracking-wide text-primario">
         Todas las ciudades · Mejor de 3
       </span>
-      <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Vs. {oponenteNombre}</h1>
+      <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
+        Vs. {oponenteNombre}
+        {oponenteEsBot && <TagClanDeBots />}
+      </h1>
       <p className="font-mono text-lg font-bold text-foreground">
         {victoriasMias} - {victoriasRival}
       </p>

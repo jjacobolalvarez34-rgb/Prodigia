@@ -35,6 +35,12 @@ interface Props {
   rivalElo: number;
   miTituloNombre?: string | null;
   rivalTituloNombre?: string | null;
+  // Fase 3 de Clanes: un rival del Clan de Bots nunca va a conectarse a
+  // esta sala de verdad (no existe ningún segundo cliente real del otro
+  // lado) — se salta directo a la cuenta regresiva en vez de pasar por
+  // la espera de Presence + el fallback de 45s a "agotado", que sería
+  // literalmente lo mismo pero con una demora artificial e innecesaria.
+  rivalEsBot?: boolean;
   // Fase 5: si esta ronda es parte de un "todas las ciudades", se
   // muestra "Ronda X/Y" en vez de solo el nombre de la operación.
   serieId?: string | null;
@@ -64,6 +70,7 @@ export default function SalaDuelo({
   rivalElo,
   miTituloNombre,
   rivalTituloNombre,
+  rivalEsBot = false,
   serieId,
   rondaNumero,
   rondaTotal,
@@ -97,7 +104,17 @@ export default function SalaDuelo({
     tick();
   }
 
+  // Fase 3 de Clanes: contra un bot no hay nadie del otro lado para
+  // trackear presencia — arranca directo, sin abrir ningún canal.
   useEffect(() => {
+    if (!rivalEsBot) return;
+    const startAt = Date.now() + MARGEN_ARRANQUE_MS;
+    queueMicrotask(() => arrancarCuentaRegresiva(startAt));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rivalEsBot]);
+
+  useEffect(() => {
+    if (rivalEsBot) return;
     const supabase = createClient();
     const channel = supabase.channel(`duelo:${duelId}`, {
       config: { presence: { key: miUserId } },

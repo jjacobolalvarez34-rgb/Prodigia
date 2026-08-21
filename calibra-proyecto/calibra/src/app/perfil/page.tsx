@@ -48,6 +48,7 @@ export default async function PerfilPage() {
     { count: numeriaTotal },
     { count: enigmiaTotal },
     { count: geografiaTotal },
+    { count: quimiaTotal },
     { data: worldRows },
     { data: titulosRows },
     { data: afinidadRows },
@@ -74,6 +75,7 @@ export default async function PerfilPage() {
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).neq("problem_type", "geografia"),
     supabase.from("logic_attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("problem_type", "geografia"),
+    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["quimia_simbolos", "quimia_formulas", "quimia_tabla"]),
     supabase.from("world_progress").select("world, nivel_mundo").eq("user_id", user.id),
     supabase.rpc("mis_titulos"),
     supabase.rpc("afinidad_por_mundo"),
@@ -156,6 +158,11 @@ export default async function PerfilPage() {
             <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Geografía</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{geografiaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">países acertados · nivel de mundo {nivelMundoDe("geografia")}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Quimia</p>
+            <p className="mt-1 font-mono text-xl font-bold text-foreground">{quimiaTotal ?? 0}</p>
+            <p className="text-xs text-texto-secundario">problemas resueltos · nivel de mundo {nivelMundoDe("quimia")}</p>
           </div>
         </section>
 

@@ -5,6 +5,7 @@ import DeteccionConexion from "@/components/DeteccionConexion";
 import PageFade from "@/components/PageFade";
 import ChispaClick from "@/components/ChispaClick";
 import NotificacionesDuelo from "@/components/NotificacionesDuelo";
+import AnunciosModal from "@/components/AnunciosModal";
 import RegistrarServiceWorker from "@/components/RegistrarServiceWorker";
 import "./globals.css";
 
@@ -120,6 +121,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </ChispaClick>
         <DeteccionConexion />
         <NotificacionesDuelo />
+        <AnunciosModal />
         <RegistrarServiceWorker />
       </body>
     </html>

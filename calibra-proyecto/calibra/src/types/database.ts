@@ -84,6 +84,7 @@ export interface Profile {
   elo_rating: number;
   created_at: string;
   avatar_url: string | null; // Fase P3, Supabase Storage (bucket "avatares")
+  es_admin: boolean; // Fase 12: acceso a /admin/anuncios — se otorga a mano por email, ver 0065_anuncios.sql
 }
 
 // Fase Q3: lo que puede ver cualquiera del perfil de OTRO usuario —

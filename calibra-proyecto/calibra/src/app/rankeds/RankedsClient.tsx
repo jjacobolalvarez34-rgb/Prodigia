@@ -39,6 +39,7 @@ interface FilaHistorial {
   rival_puntaje: number;
   gane: boolean;
   empate: boolean;
+  rival_es_bot: boolean;
 }
 
 interface StatsCasual {
@@ -316,6 +317,11 @@ function MiCompetitivo({
                   {!h.clasificatorio && (
                     <span className="ml-2 rounded-full bg-foreground/[0.06] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-texto-secundario">
                       Casual
+                    </span>
+                  )}
+                  {h.rival_es_bot && (
+                    <span className="ml-2 rounded-full bg-foreground/[0.06] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-texto-secundario">
+                      Clan de Bots
                     </span>
                   )}
                 </span>

@@ -19,6 +19,19 @@ export interface ResultadoDuelo {
   oponente_id: string | null;
   mi_puntaje?: number | null;
   rival_puntaje?: number | null;
+  oponente_es_bot?: boolean | null;
+}
+
+// Fase 3 (Clan de Bots): mismo tratamiento visual que la etiqueta
+// "Casual" que ya existe en el historial de Rankeds — un dato
+// secundario discreto, nunca una alerta. Nunca se oculta, pero tampoco
+// interrumpe nada.
+function TagClanDeBots() {
+  return (
+    <span className="ml-1.5 rounded-full bg-foreground/[0.06] px-2 py-0.5 align-middle text-[10px] font-medium uppercase tracking-wide text-texto-secundario">
+      Clan de Bots
+    </span>
+  );
 }
 
 interface Props {
@@ -97,10 +110,11 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
       <div className="flex flex-col items-center gap-1 rounded-2xl bg-surface-2 px-5 py-4 text-center">
         <p className="font-display text-sm font-bold text-foreground">
           Empataron con {duelo.oponente_nombre ?? "tu rival"} — ni más ni menos.
+          {duelo.oponente_es_bot && <TagClanDeBots />}
         </p>
         {cambioElo}
         {hayPuntajes && <BarraComparacion miPuntaje={duelo.mi_puntaje!} rivalPuntaje={duelo.rival_puntaje!} />}
-        {duelo.oponente_id && (
+        {duelo.oponente_id && !duelo.oponente_es_bot && (
           <Link href={`/perfil/${duelo.oponente_id}`} className="mt-1 block text-xs font-semibold text-primario hover:underline">
             Ver perfil
           </Link>
@@ -122,6 +136,7 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
         </div>
         <p className="font-display text-xl font-black tracking-tight text-correcto">
           Le ganaste a {duelo.oponente_nombre ?? "tu rival"}
+          {duelo.oponente_es_bot && <TagClanDeBots />}
         </p>
         {cambioElo}
         {hayPuntajes && <BarraComparacion miPuntaje={duelo.mi_puntaje!} rivalPuntaje={duelo.rival_puntaje!} />}
@@ -136,7 +151,7 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
             <RangoBadge elo={duelo.elo_nuevo} size="lg" />
           </motion.div>
         )}
-        {duelo.oponente_id && (
+        {duelo.oponente_id && !duelo.oponente_es_bot && (
           <Link href={`/perfil/${duelo.oponente_id}`} className="mt-1 text-xs font-semibold text-primario hover:underline">
             Ver perfil
           </Link>
@@ -149,11 +164,12 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
     <div className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-surface px-6 py-4 text-center">
       <p className="font-display text-sm font-bold text-foreground">
         Esta vez ganó {duelo.oponente_nombre ?? "tu rival"} — estuviste cerca.
+        {duelo.oponente_es_bot && <TagClanDeBots />}
       </p>
       {cambioElo}
       {hayPuntajes && <BarraComparacion miPuntaje={duelo.mi_puntaje!} rivalPuntaje={duelo.rival_puntaje!} />}
       <div className="mt-1 flex items-center gap-3">
-        {duelo.oponente_id && (
+        {duelo.oponente_id && !duelo.oponente_es_bot && (
           <Link href={`/perfil/${duelo.oponente_id}`} className="text-xs font-semibold text-primario hover:underline">
             Ver perfil
           </Link>
