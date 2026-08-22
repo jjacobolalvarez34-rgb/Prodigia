@@ -62,8 +62,14 @@ const GENERADORES: Record<TipoPotencia, (nivel: number) => ProblemaPotencia> = {
   notacion: generarNotacion,
 };
 
-export function generarProblemaPotencia(nivel: number, tipos: TipoPotencia[] = ["potencia", "raiz", "notacion"]): ProblemaPotencia {
-  const disponibles = tipos.length > 0 ? tipos : (["potencia", "raiz", "notacion"] as TipoPotencia[]);
+export const TIPOS_POTENCIA: TipoPotencia[] = ["potencia", "raiz", "notacion"];
+
+// Fase 2 ("Practicar" estandarizado): calibración propia por sub-tema.
+export function generarProblemaPotencia(
+  nivelPorTipo: Record<TipoPotencia, number>,
+  tipos: TipoPotencia[] = TIPOS_POTENCIA
+): ProblemaPotencia {
+  const disponibles = tipos.length > 0 ? tipos : TIPOS_POTENCIA;
   const tipo = disponibles[Math.floor(Math.random() * disponibles.length)];
-  return GENERADORES[tipo](nivel);
+  return GENERADORES[tipo](nivelPorTipo[tipo]);
 }

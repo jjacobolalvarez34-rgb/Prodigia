@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import GestoLogo from "./GestoLogo";
 import GlareHover from "@/components/reactbits/GlareHover";
@@ -16,6 +17,7 @@ interface Props {
 // la tipografía Black exclusiva de celebraciones (Fase E2), y la
 // fanfarria de logro (Fase I2).
 export default function LogroBanner({ logros }: Props) {
+  const t = useTranslations("Common");
   const sonoReproducido = useRef(false);
   const [destello, setDestello] = useState(false);
 
@@ -59,7 +61,7 @@ export default function LogroBanner({ logros }: Props) {
         <span className="text-2xl">🏅</span>
         {logros.map((l) => (
           <p key={l.slug} className="font-display text-lg font-black tracking-tight text-foreground">
-            Nuevo logro: {l.nombre}
+            {t("nuevoLogro", { nombre: l.nombre })}
           </p>
         ))}
       </GlareHover>

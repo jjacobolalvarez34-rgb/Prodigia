@@ -5,7 +5,36 @@
 // el color propio del clan y 3 escalones visuales según nivel_clan
 // (1-3 lisa, 4-7 con borde + brillo, 8-10 con emblema de estrella) —
 // mismo espíritu de "evoluciona con el nivel", código en vez de PNG.
-export default function EstandarteClan({ color, nivel, size = 64 }: { color: string; nivel: number; size?: number }) {
+//
+// Fase 3 (tanda "Rankeds/Clanes: bugs y ranking visible"): si el clan
+// subió una imagen propia (Supabase Storage, mismo mecanismo que
+// SubirAvatar.tsx), esa reemplaza el estandarte generado — el generado
+// sigue siendo el default cuando no hay ninguna subida.
+export default function EstandarteClan({
+  color,
+  nivel,
+  size = 64,
+  imagenUrl,
+}: {
+  color: string;
+  nivel: number;
+  size?: number;
+  imagenUrl?: string | null;
+}) {
+  if (imagenUrl) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- imagen subida por el usuario, tamaño fijo del contenedor
+      <img
+        src={imagenUrl}
+        alt="Estandarte del clan"
+        width={size}
+        height={size}
+        className="shrink-0 rounded-full border-2 object-cover"
+        style={{ width: size, height: size, borderColor: color }}
+      />
+    );
+  }
+
   const alto = size;
   const ancho = size * 0.72;
   const tierAlto = nivel >= 8 ? 3 : nivel >= 4 ? 2 : 1;

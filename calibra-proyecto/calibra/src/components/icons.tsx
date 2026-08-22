@@ -155,6 +155,18 @@ export function IconQuimica({ className }: IconProps) {
   );
 }
 
+// Fase 5 ("Anatomía"): corazón con pulso — símbolo genérico de "cuerpo
+// humano" que funciona igual de bien para huesos, músculos, órganos y
+// sistema nervioso (no hay un ícono único que represente los 4).
+export function IconAnatomia({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 21s-7.5-4.6-10-9.3C.5 8.2 2.3 4.5 6 4c2.2-.3 3.9.9 6 3 2.1-2.1 3.8-3.3 6-3 3.7.5 5.5 4.2 4 7.7C19.5 16.4 12 21 12 21z" />
+      <path d="M4.5 12h3l1.5-3 2 5 1.5-3h3.5" />
+    </svg>
+  );
+}
+
 export function IconEscudo({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

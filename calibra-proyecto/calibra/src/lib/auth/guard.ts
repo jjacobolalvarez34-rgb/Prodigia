@@ -61,6 +61,18 @@ export async function requireMundoQuimia(supabase: SupabaseClient, pathActual: s
   return { user, profile };
 }
 
+// Fase 5 ("Anatomía"): mismo patrón que los demás mundos — diagnóstico
+// inicial propio antes de dejar entrar a practicar/aprender.
+export async function requireMundoAnatomia(supabase: SupabaseClient, pathActual: string) {
+  const { user, profile } = await requireUsuario(supabase, pathActual);
+
+  if (!profile.onboarding_anatomia_completado) {
+    redirect(`/anatomia/diagnostico?next=${encodeURIComponent(pathActual)}`);
+  }
+
+  return { user, profile };
+}
+
 // Alias por compatibilidad: /practica y /aprender son de Numeria, así
 // que el guard viejo (usado en casi todo el árbol de ese mundo) ahora
 // es exactamente requireMundoNumeria.

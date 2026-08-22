@@ -6,11 +6,13 @@ Documento de referencia para retomar el trabajo (por ejemplo, en otra sesión, o
 
 ## Qué es Prodigia
 
-App de práctica adaptativa con gamificación, en español (Argentina), con tres "mundos" de contenido independientes:
+App de práctica adaptativa con gamificación, en español (Argentina), con cinco "mundos" de contenido independientes:
 
-- **Numeria** — cálculo mental y matemática: Aritmética (suma/resta/multiplicación/división), Fracciones, Decimales y porcentajes, Potencias y raíces, Álgebra básica. Geometría básica queda como "Próximamente" (único tema sin implementar).
+- **Numeria** — cálculo mental y matemática: Aritmética (suma/resta/multiplicación/división), Fracciones, Decimales y porcentajes, Potencias y raíces, Álgebra básica, Geometría básica (Perímetro/Área/Ángulos/Ternas pitagóricas).
 - **Enigmia** — lógica: 4 categorías (Memoria, Patrones, Deducción, Pensamiento computacional). Memoria/Patrones/Computacional se generan por código (infinitos); Deducción viene de un banco fijo sembrado en la base.
 - **Geografía** — identificar países en el mapa: 4 continentes activos (América, Europa, África, Asia+Oceanía — estos dos últimos agrupados). 153 países jugables en total. "Departamentos/estados/ríos" queda como "Próximamente".
+- **Quimia** — elementos, fórmulas, tabla periódica, nomenclatura y química orgánica: 5 modos, cada uno con su propia calibración.
+- **Anatomía** — sistema óseo, muscular, órganos y sistema nervioso: 4 modos (cada uno con nivel bajo general y nivel alto más específico — huesos del cráneo, músculos de la cara, pares craneales), preguntas de clasificación (multiple choice, contenido de nombres verificado, sin trivia inventada).
 
 Cada mundo tiene: una calibración de nivel por tema (1-10, sube/baja según aciertos), un **nivel de mundo** (eje de progreso separado, acumulado por puntos, curva RPG no lineal — ver más abajo), lecciones ("Aprender"), y práctica ("Practicar").
 
@@ -54,21 +56,36 @@ docs/
   ESPECIFICACION.md         — este archivo
 ```
 
-## Los 3 mundos — contenido
+## Los mundos — contenido
 
 ### Numeria (`/numeria`)
-Temas: Aritmética (`/practica`), Fracciones (`/practica/fracciones`), Decimales (`/practica/decimales`), Potencias (`/practica/potencias`), Álgebra (`/practica/algebra`). Lecciones en `/aprender`.
+Temas: Aritmética (`/practica`), Fracciones (`/practica/fracciones`), Decimales (`/practica/decimales`), Potencias (`/practica/potencias`), Álgebra (`/practica/algebra`), Geometría (`/practica/geometria` — Perímetro/Área/Ángulos/Ternas pitagóricas). Los 6 temas tienen sub-temas independientemente elegibles y calibrados (cada uno su propio `problem_type` en `skill_levels`, sufijo `_<subtema>` salvo Aritmética que usa suma/resta/multiplicacion/division sueltos). Lecciones en `/aprender`.
 
 ### Enigmia (`/enigmia`)
-Una sola calibración de nivel (no por categoría). Práctica en `/enigmia/practica`, mezcla las 4 categorías. Lecciones en `/enigmia/aprender`. Diagnóstico inicial en `/enigmia/diagnostico`.
+Una sola calibración de nivel (no por categoría todavía). Práctica en `/enigmia/practica`, mezcla las 4 categorías — las tarjetas de "Categorías" de la home son solo informativas (ver convención de Practicar abajo), no filtran. Lecciones en `/enigmia/aprender`. Diagnóstico inicial en `/enigmia/diagnostico`.
 
 ### Geografía (`/geografia`)
-Un continente por ruta: `/geografia/practica/europa`, `/africa`, `/asia-oceania`, y la ruta base `/geografia/practica` (América). Lecciones en `/geografia/aprender`.
+Un continente por ruta: `/geografia/practica/europa`, `/africa`, `/asia-oceania`, y la ruta base `/geografia/practica` (América). Hub de selección en `/geografia/elegir`. Lecciones en `/geografia/aprender`. Nivel único compartido entre continentes (no hay sub-tema por región todavía).
+
+### Quimia (`/quimia`)
+5 modos, cada uno con su propio `problem_type` (`quimia_simbolos`, `quimia_formulas`, `quimia_tabla`, `quimia_nomenclatura`, `quimia_organica`). Hub de selección en `/quimia/elegir`. Lecciones en `/quimia/aprender`.
+
+### Anatomía (`/anatomia`)
+4 modos, cada uno con su propio `problem_type` (`anatomia_oseo`, `anatomia_muscular`, `anatomia_organos`, `anatomia_nervioso`). Contenido de nombres verificado (ver `src/lib/practica/anatomia.ts`) — sin una segunda propiedad independiente por término (a diferencia de Quimia, símbolo↔nombre), así que las preguntas son de clasificación ("¿cuál de estas opciones es un hueso del cráneo?"), nunca trivia inventada. Cada modo (salvo Órganos) tiene nivel bajo (términos generales) y nivel alto (el escalón específico: huesos del cráneo, músculos de la cara, pares craneales). Hub de selección en `/anatomia/elegir`. Lecciones en `/anatomia/aprender`. Color de marca bordó `#8B2942` (deliberadamente distinto del coral de error `#FF6B6B`).
+
+## Convención fija: flujo de "Practicar"
+
+Regla permanente para cualquier mundo, presente o futuro — no es una preferencia de una tanda puntual:
+
+1. **La home de un mundo nunca deja arrancar una partida con un solo click.** Las tarjetas de tema/categoría/modo de la home (`TopicCard`) son solo vidriera — muestran el nivel actual, pero **sin `href`** (no son links). El único acceso real a jugar es la tarjeta "Practicar".
+2. **"Practicar" entra siempre a un hub de selección**, nunca directo a una partida. Ese hub lista los temas del mundo (Numeria: `/practica/temas`; Geografía: `/geografia/elegir`; Quimia: `/quimia/elegir`; Enigmia no necesita hub propio porque no tiene sub-rutas reales, `/enigmia/practica` ya es el único destino).
+3. **Si un tema tiene sub-temas reales** (Numeria: sí, los 6; Quimia: sus 5 modos ya son sub-temas de nivel superior, no hace falta un tercer escalón), el hub del tema (no el del mundo) muestra cada sub-tema con **su propio nivel**, en chips multi-seleccionables (`SubtemaPicker.tsx`, mismo patrón que ya usaba `OperationPicker.tsx` de Aritmética) — se puede elegir uno, varios, o todos antes de arrancar.
+4. Esto **no** implica que todo mundo necesite sub-temas per se — Geografía y Enigmia hoy no los tienen (nivel único compartido), y eso es una decisión de contenido válida, no una violación de la convención. La convención es sobre el FLUJO de navegación (home → Practicar → [sub-tema si corresponde] → partida), no sobre cuántos niveles de sub-división tiene cada mundo.
 
 ## Sistemas de gamificación
 
 - **Calibración por tema** (`skill_levels` / `logic_skill_levels`): nivel 1-10, sube con 3 aciertos seguidos, baja con 1 error (salvo escudo activo). Lógica pura en `src/lib/practica/skillLevels.ts` / `src/lib/enigmia/skillLevels.ts`.
-- **Nivel de mundo** (`world_progress`, tabla separada): tercer eje de progreso, acumulado por puntos ganados en cualquier práctica de ese mundo, curva RPG no lineal (`nivel = floor((50 + sqrt(2500 + 200*puntos)) / 100)`). Se muestra con `NivelMundoBadge.tsx` (persistente) y celebra con `NivelMundoSubio.tsx` (el "gesto del logo") al subir.
+- **Nivel de mundo** (`world_progress`, tabla separada, 1-100): combinación de 3 ejes, no solo Puntos acumulados (fórmula rediseñada — ver `0080_nivel_mundo_dominio_real.sql`): 30% volumen de Puntos ganados en ese mundo (normalizado a un techo), 50% fracción de sub-temas del mundo en calibración nivel 10 (el eje más pesado — dominio real), 20% fracción de lecciones de Aprender de ese mundo ya dominadas. `nivel = round(100 * (0.3*volumen + 0.5*dominio + 0.2*lecciones))`, con techo real en 100. Se muestra con `NivelMundoBadge.tsx` (persistente) y celebra con `NivelMundoSubio.tsx` (el "gesto del logo") al subir.
 - **Puntos** (`profiles.puntos_total`): moneda permanente, nunca baja sola. Se gana con `registrar_xp_diario` (RPC `security definer`).
 - **Racha diaria** (`daily_progress`, `profiles.streak_dias`): meta de XP diaria configurable, congelamientos comprables para no perderla.
 - **Escudos de calibración**: protegen el nivel de un error (no la racha de partida). Se compran en la tienda.

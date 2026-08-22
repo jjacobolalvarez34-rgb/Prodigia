@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
 
 const MUNDOS = [
   { href: "/numeria", nombre: "Numeria", colorHex: "#6C4CF1" },
   { href: "/enigmia", nombre: "Enigmia", colorHex: "#0E9F6E" },
   { href: "/geografia", nombre: "Geografía", colorHex: "#1E7A8C" },
   { href: "/quimia", nombre: "Quimia", colorHex: "#C026D3" },
+  { href: "/anatomia", nombre: "Anatomía", colorHex: "#8B2942" },
 ];
 
 function mundoActual(pathname: string) {
@@ -19,6 +20,7 @@ function mundoActual(pathname: string) {
 // este dropdown vive en la navbar y está disponible en cualquier
 // pantalla, no solo en la home de Prodigia.
 export default function MundoSelector() {
+  const t = useTranslations("Nav.mundoSelector");
   const pathname = usePathname() ?? "/";
   const actual = mundoActual(pathname);
   const [abierto, setAbierto] = useState(false);
@@ -60,7 +62,7 @@ export default function MundoSelector() {
           className="h-2 w-2 rounded-full"
           style={{ background: actual?.colorHex ?? "var(--texto-secundario)" }}
         />
-        {actual?.nombre ?? "Mundos"}
+        {actual?.nombre ?? t("mundos")}
         <svg width="10" height="10" viewBox="0 0 10 10" className={`transition-transform ${abierto ? "rotate-180" : ""}`}>
           <path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -76,7 +78,7 @@ export default function MundoSelector() {
             role="menuitem"
             className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-texto-secundario transition-colors hover:bg-surface-2"
           >
-            ← Inicio de Prodigia
+            ← {t("inicioDeProdigia")}
           </Link>
           <div className="h-px bg-border" />
           {MUNDOS.map((m) => (

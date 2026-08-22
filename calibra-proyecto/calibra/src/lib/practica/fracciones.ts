@@ -89,8 +89,17 @@ const GENERADORES: Record<TipoFraccion, (nivel: number) => ProblemaFraccion> = {
   sumar: generarSumar,
 };
 
-export function generarProblemaFraccion(nivel: number): ProblemaFraccion {
-  const tipos: TipoFraccion[] = ["simplificar", "comparar", "sumar"];
-  const tipo = tipos[Math.floor(Math.random() * tipos.length)];
-  return GENERADORES[tipo](nivel);
+export const TIPOS_FRACCION: TipoFraccion[] = ["simplificar", "comparar", "sumar"];
+
+// Fase 2 ("Practicar" estandarizado): cada sub-tema tiene su propia
+// calibración (nivelPorTipo), igual que las 4 operaciones de
+// Aritmética — el tipo del problema se sortea entre los sub-temas
+// elegidos, y ESE sub-tema es el que decide el nivel de dificultad.
+export function generarProblemaFraccion(
+  nivelPorTipo: Record<TipoFraccion, number>,
+  tipos: TipoFraccion[] = TIPOS_FRACCION
+): ProblemaFraccion {
+  const disponibles = tipos.length > 0 ? tipos : TIPOS_FRACCION;
+  const tipo = disponibles[Math.floor(Math.random() * disponibles.length)];
+  return GENERADORES[tipo](nivelPorTipo[tipo]);
 }

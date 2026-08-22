@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono, Playfair_Display, Caveat, Bebas_Neue, Pacifico, Orbitron } from "next/font/google";
 import Script from "next/script";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import DeteccionConexion from "@/components/DeteccionConexion";
 import PageFade from "@/components/PageFade";
 import ChispaClick from "@/components/ChispaClick";
@@ -126,10 +128,17 @@ const THEME_INIT_SCRIPT = `
 })();
 `;
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // El árbol de rutas real vive bajo app/[locale]/ (next-intl), pero el
+  // layout con <html>/<body> tiene que ser el único en la raíz real de
+  // app/ — Next no permite dos layouts anidados declarando ambos. Por eso
+  // el provider de next-intl se arma acá arriba, no en [locale]/layout.tsx.
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
     <html
-      lang="es"
+      lang={locale}
       suppressHydrationWarning
       className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable} ${caveat.variable} ${bebasNeue.variable} ${pacifico.variable} ${orbitron.variable} h-full antialiased`}
     >
@@ -139,13 +148,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </Script>
       </head>
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
-        <ChispaClick>
-          <PageFade>{children}</PageFade>
-        </ChispaClick>
-        <DeteccionConexion />
-        <NotificacionesDuelo />
-        <AnunciosModal />
-        <RegistrarServiceWorker />
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <ChispaClick>
+            <PageFade>{children}</PageFade>
+          </ChispaClick>
+          <DeteccionConexion />
+          <NotificacionesDuelo />
+          <AnunciosModal />
+          <RegistrarServiceWorker />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

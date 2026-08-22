@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 
 type Theme = "light" | "dark";
 
@@ -19,6 +20,7 @@ function getServerSnapshot(): Theme {
 }
 
 export default function ThemeToggle() {
+  const t = useTranslations("Nav.tema");
   const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   function toggle() {
@@ -30,7 +32,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      aria-label={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+      aria-label={theme === "dark" ? t("aClaro") : t("aOscuro")}
       className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface text-foreground/70 transition-colors hover:border-primario/40 hover:text-foreground"
     >
       {theme === "dark" ? (

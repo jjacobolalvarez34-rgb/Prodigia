@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { tierCiudadDeNivel } from "@/lib/clanes/tierCiudad";
 import EscenaCiudad from "./EscenaCiudad";
+import EstandarteClan from "./EstandarteClan";
 
 export interface ParcelaClan {
   clan_id: string;
@@ -13,6 +14,7 @@ export interface ParcelaClan {
   nivel_clan: number;
   cantidad_miembros: number;
   capacidad: number;
+  imagen_url: string | null;
 }
 
 interface ClanPublico extends ParcelaClan {
@@ -174,11 +176,14 @@ function PanelClan({ clan, cargando, onCerrar }: { clan: ClanPublico | null; car
         <div className="flex flex-col gap-3">
           <EscenaCiudad nivelClan={clan.nivel_clan} colorEstandarte={clan.color_estandarte} className="h-40 w-full" />
           <div className="flex items-start justify-between gap-2">
-            <div>
-              <p className="font-display text-lg font-bold text-foreground">
-                {clan.nombre} {clan.tag && <span className="text-texto-secundario">[{clan.tag}]</span>}
-              </p>
-              <p className="mt-0.5 text-sm text-texto-secundario">{clan.descripcion}</p>
+            <div className="flex items-start gap-2">
+              <EstandarteClan color={clan.color_estandarte} nivel={clan.nivel_clan} imagenUrl={clan.imagen_url} size={36} />
+              <div>
+                <p className="font-display text-lg font-bold text-foreground">
+                  {clan.nombre} {clan.tag && <span className="text-texto-secundario">[{clan.tag}]</span>}
+                </p>
+                <p className="mt-0.5 text-sm text-texto-secundario">{clan.descripcion}</p>
+              </div>
             </div>
             <button onClick={onCerrar} className="shrink-0 text-sm text-texto-secundario hover:text-foreground">
               ✕

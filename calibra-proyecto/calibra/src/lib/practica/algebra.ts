@@ -79,11 +79,27 @@ function generarDosPasos(nivel: number): ProblemaAlgebra {
   };
 }
 
-// Fase EE2: escala la dificultad por tipo de problema, no solo por
-// números más grandes — nivel bajo es evaluar una expresión, nivel
-// medio es despejar en un paso, nivel alto ya es de dos pasos.
-export function generarProblemaAlgebra(nivel: number): ProblemaAlgebra {
-  if (nivel <= 3) return generarEvaluar(nivel);
-  if (nivel <= 6) return generarUnPaso(nivel);
-  return generarDosPasos(nivel);
+const GENERADORES: Record<TipoAlgebra, (nivel: number) => ProblemaAlgebra> = {
+  evaluar: generarEvaluar,
+  "un-paso": generarUnPaso,
+  "dos-pasos": generarDosPasos,
+};
+
+export const TIPOS_ALGEBRA: TipoAlgebra[] = ["evaluar", "un-paso", "dos-pasos"];
+
+// Fase 2 ("Practicar" estandarizado): pasa de una progresión fija por
+// nivel único (evaluar -> un-paso -> dos-pasos, Fase EE2 original) a 3
+// sub-temas independientemente elegibles y calibrados, mismo patrón
+// que el resto de Numeria — cada uno escala su propia dificultad
+// puertas adentro (ver generarEvaluar/generarUnPaso/generarDosPasos),
+// así que elegir "dos-pasos" desde nivel 1 sigue siendo jugable, solo
+// que empieza en su escalón más fácil en vez de heredar progreso de
+// los otros dos.
+export function generarProblemaAlgebra(
+  nivelPorTipo: Record<TipoAlgebra, number>,
+  tipos: TipoAlgebra[] = TIPOS_ALGEBRA
+): ProblemaAlgebra {
+  const disponibles = tipos.length > 0 ? tipos : TIPOS_ALGEBRA;
+  const tipo = disponibles[Math.floor(Math.random() * disponibles.length)];
+  return GENERADORES[tipo](nivelPorTipo[tipo]);
 }

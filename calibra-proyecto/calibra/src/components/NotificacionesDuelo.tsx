@@ -1,18 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import type { ArithmeticProblemType } from "@/types/database";
 import { reproducirTono } from "@/lib/sonido";
-
-const NOMBRES_OPERACION: Record<string, string> = {
-  suma: "Suma",
-  resta: "Resta",
-  multiplicacion: "Multiplicación",
-  division: "División",
-};
 
 interface Aviso {
   id: string;
@@ -30,6 +24,8 @@ interface Aviso {
 // Rankeds (ver nota en RankedsClient.tsx sobre el hueco de
 // descubrimiento que este mismo canal también tapa).
 export default function NotificacionesDuelo() {
+  const t = useTranslations("Common.notificacionesDuelo");
+  const tOperaciones = useTranslations("Practica.operationPicker.operaciones");
   const [avisos, setAvisos] = useState<Aviso[]>([]);
   const idRef = useRef(0);
 
@@ -82,19 +78,19 @@ export default function NotificacionesDuelo() {
             <span className="text-xl">⚔️</span>
             <div className="flex flex-col">
               <span className="font-display text-sm font-bold text-foreground">
-                Te retaron a un duelo de {NOMBRES_OPERACION[aviso.operacion] ?? aviso.operacion}
+                {t("teRetaronADueloDe", { operacion: tOperaciones(aviso.operacion) })}
               </span>
               <Link
                 href={`/practica?operacion=${aviso.operacion}&duelo=${aviso.duelId}`}
                 className="text-xs font-semibold text-primario hover:underline"
                 onClick={() => setAvisos((prev) => prev.filter((a) => a.id !== aviso.id))}
               >
-                Ver duelo →
+                {t("verDuelo")}
               </Link>
             </div>
             <button
               onClick={() => setAvisos((prev) => prev.filter((a) => a.id !== aviso.id))}
-              aria-label="Cerrar aviso"
+              aria-label={t("cerrarAviso")}
               className="ml-1 text-texto-secundario hover:text-foreground"
             >
               ×

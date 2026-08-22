@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 
@@ -12,14 +13,14 @@ interface Anuncio {
   fecha: string;
 }
 
-const ESTILO_TIPO: Record<Anuncio["tipo"], { etiqueta: string; icono: string; color: string }> = {
-  actualizacion: { etiqueta: "Actualización", icono: "🚀", color: "var(--primario)" },
-  arreglo: { etiqueta: "Arreglo", icono: "🔧", color: "var(--correcto)" },
-  evento: { etiqueta: "Evento", icono: "🎉", color: "var(--logro)" },
+const ICONO_COLOR_TIPO: Record<Anuncio["tipo"], { icono: string; color: string }> = {
+  actualizacion: { icono: "🚀", color: "var(--primario)" },
+  arreglo: { icono: "🔧", color: "var(--correcto)" },
+  evento: { icono: "🎉", color: "var(--logro)" },
 };
 
-function formatearFecha(iso: string): string {
-  return new Date(iso + "T00:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "long" });
+function formatearFecha(iso: string, locale: string): string {
+  return new Date(iso + "T00:00:00").toLocaleDateString(locale === "en" ? "en-US" : "es-AR", { day: "numeric", month: "long" });
 }
 
 // Fase 12: modal de "qué hay de nuevo", mismo patrón de auto-montaje que
@@ -29,6 +30,8 @@ function formatearFecha(iso: string): string {
 // "Siguiente" marca el actual como leído (nunca vuelve a aparecer, ver
 // marcar_anuncio_leido en 0065_anuncios.sql) y pasa al que sigue.
 export default function AnunciosModal() {
+  const t = useTranslations("Common.anuncios");
+  const locale = useLocale();
   const [anuncios, setAnuncios] = useState<Anuncio[] | null>(null);
   const [indice, setIndice] = useState(0);
 
@@ -58,7 +61,7 @@ export default function AnunciosModal() {
 
   if (!actual) return null;
 
-  const estilo = ESTILO_TIPO[actual.tipo];
+  const estilo = ICONO_COLOR_TIPO[actual.tipo];
   const quedan = (anuncios?.length ?? 0) - indice - 1;
 
   return (
@@ -85,7 +88,7 @@ export default function AnunciosModal() {
             {estilo.icono}
           </div>
           <p className="mt-4 text-xs font-semibold uppercase tracking-wide" style={{ color: estilo.color }}>
-            {estilo.etiqueta} · {formatearFecha(actual.fecha)}
+            {t(`tipos.${actual.tipo}`)} · {formatearFecha(actual.fecha, locale)}
           </p>
           <h2 className="mt-1 font-display text-xl font-bold text-foreground">{actual.titulo}</h2>
           <p className="mt-2 text-sm leading-relaxed text-texto-secundario">{actual.descripcion}</p>
@@ -94,7 +97,7 @@ export default function AnunciosModal() {
             className="mt-6 w-full rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             style={{ background: estilo.color }}
           >
-            {quedan > 0 ? `Siguiente (${quedan} más)` : "Entendido"}
+            {quedan > 0 ? t("siguienteConCantidad", { n: quedan }) : t("entendido")}
           </button>
         </motion.div>
       </motion.div>

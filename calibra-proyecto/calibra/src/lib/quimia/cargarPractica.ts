@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ModoQuimia } from "@/lib/practica/quimia";
-import type { DueloQuimicoInfo } from "@/app/quimia/QuimiaPracticaClient";
+import type { DueloQuimicoInfo } from "@/app/[locale]/quimia/QuimiaPracticaClient";
 
 const MODOS_VALIDOS: ModoQuimia[] = ["simbolos", "formulas", "tabla", "nomenclatura", "organica"];
 

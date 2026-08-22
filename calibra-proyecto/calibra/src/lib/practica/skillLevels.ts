@@ -31,21 +31,46 @@ export function calcularNuevoNivel(
   return { nivel, racha_actual };
 }
 
+// Fase 2 ("Practicar" estandarizado): además de los tipos "de tema"
+// (fracciones/geografia/decimales/potencias/algebra, ya vestigiales
+// como problem_type — ver 0079_practicar_subtemas.sql), acepta
+// cualquier sub-tema real vigente. No se derivan por template literal
+// desde una lista central porque este archivo no depende de los
+// generadores de cada mundo — mismo criterio que /api/attempts, que
+// también repite la lista.
+export type ProblemTypeCalibrable =
+  | ArithmeticProblemType
+  | "fracciones"
+  | "geografia"
+  | "decimales"
+  | "potencias"
+  | "algebra"
+  | "quimia_simbolos"
+  | "quimia_formulas"
+  | "quimia_tabla"
+  | "quimia_nomenclatura"
+  | "quimia_organica"
+  | "geometria_perimetro"
+  | "geometria_area"
+  | "geometria_angulos"
+  | "geometria_ternas"
+  | "fracciones_simplificar"
+  | "fracciones_comparar"
+  | "fracciones_sumar"
+  | "decimales_convertir"
+  | "decimales_porcentaje"
+  | "decimales_redondear"
+  | "potencias_potencia"
+  | "potencias_raiz"
+  | "potencias_notacion"
+  | "algebra_evaluar"
+  | "algebra_un-paso"
+  | "algebra_dos-pasos";
+
 export async function actualizarSkillLevel(
   supabase: SupabaseClient,
   userId: string,
-  problemType:
-    | ArithmeticProblemType
-    | "fracciones"
-    | "geografia"
-    | "decimales"
-    | "potencias"
-    | "algebra"
-    | "quimia_simbolos"
-    | "quimia_formulas"
-    | "quimia_tabla"
-    | "quimia_nomenclatura"
-    | "quimia_organica",
+  problemType: ProblemTypeCalibrable,
   correct: boolean,
   protegido = false
 ): Promise<Pick<SkillLevel, "nivel" | "racha_actual">> {

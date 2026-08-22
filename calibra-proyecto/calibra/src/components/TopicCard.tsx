@@ -6,7 +6,13 @@ export type TopicBadge = { tipo: "nivel"; nivel: number } | { tipo: "proximament
 interface Props {
   nombre: string;
   Icono: (props: { className?: string }) => ReactElement;
-  href: string;
+  // Fase 2 ("Practicar" estandarizado): sin href, la tarjeta queda como
+  // vidriera informativa (nivel actual) en vez de acceso directo a
+  // arrancar una partida — la home de cada mundo ya no debe dejar
+  // saltar directo a jugar desde acá, eso pasa solo adentro de
+  // "Practicar". Se conserva la prop por si algún día hace falta un
+  // link real a otro lado (perfil del tema, por ejemplo).
+  href?: string;
   badge: TopicBadge;
   colorHex?: string;
 }
@@ -16,15 +22,15 @@ interface Props {
 // no se lea como el mismo componente reciclado que el resto de la app.
 export default function TopicCard({ nombre, Icono, href, badge, colorHex = "#6C4CF1" }: Props) {
   const proximamente = badge.tipo === "proximamente";
-  return (
-    <Link
-      href={href}
-      className="group relative flex flex-col justify-between gap-6 overflow-hidden rounded-2xl border px-5 py-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
-      style={{
-        borderColor: proximamente ? "var(--border)" : `color-mix(in oklab, ${colorHex} 25%, var(--border))`,
-        background: proximamente ? "var(--surface)" : `color-mix(in oklab, ${colorHex} 5%, var(--surface))`,
-      }}
-    >
+  const className = `group relative flex flex-col justify-between gap-6 overflow-hidden rounded-2xl border px-5 py-5 transition-all duration-200 ${
+    href ? "hover:-translate-y-1 hover:shadow-lg" : ""
+  }`;
+  const style = {
+    borderColor: proximamente ? "var(--border)" : `color-mix(in oklab, ${colorHex} 25%, var(--border))`,
+    background: proximamente ? "var(--surface)" : `color-mix(in oklab, ${colorHex} 5%, var(--surface))`,
+  };
+  const contenido = (
+    <>
       <span
         className="absolute -right-2 -top-2 opacity-[0.07] transition-opacity group-hover:opacity-[0.12]"
         style={proximamente ? undefined : { color: colorHex }}
@@ -50,6 +56,19 @@ export default function TopicCard({ nombre, Icono, href, badge, colorHex = "#6C4
           <p className="mt-1 text-xs font-medium uppercase tracking-wide text-texto-secundario">Próximamente</p>
         )}
       </div>
-    </Link>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link href={href} className={className} style={style}>
+        {contenido}
+      </Link>
+    );
+  }
+  return (
+    <div className={className} style={style}>
+      {contenido}
+    </div>
   );
 }

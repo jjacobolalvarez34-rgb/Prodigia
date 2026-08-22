@@ -1,0 +1,420 @@
+{
+  "Rankeds": {
+    "metadata": {
+      "description": "Your competitive scene in Prodigia: ELO, history, and duel matchmaking."
+    },
+    "tabs": {
+      "competitivo": "My Competitive",
+      "buscar": "Find a Match",
+      "ranking": "Ranking"
+    },
+    "intro": "This is where you play real duels against other real players, with ELO and rank — different from regular practice, which doesn't affect your competitive standing.",
+    "subtitulo": "Your duel ranking, with real matchmaking.",
+    "teRetaronAUno": "You've been challenged to a duel",
+    "teRetaronAVarios": "You've been challenged to {n} duels",
+    "alguien": "Someone",
+    "teRetoA": "{nombre} challenged you to {que}",
+    "expiraEn": "expires in {n}s",
+    "rechazar": "Decline",
+    "jugar": "Play",
+    "rangosIntro": "Your rank rises or falls with your ELO in ranked duels — from Bronze to Prodigy. Wins add, losses subtract; casuals don't count.",
+    "victorias": "Wins",
+    "derrotas": "Losses",
+    "tasaDeVictoria": "Win rate",
+    "casualPrefijo": "Casual:",
+    "victoriasAbrev": "{n}W",
+    "derrotasAbrev": "{n}L",
+    "empatesAbrev": "{n}D",
+    "noAfectaTuRango": "doesn't affect your rank",
+    "historialDeDuelos": "Duel history",
+    "todaviaNoJugaste": "You haven't played any duels yet — try \"Find a Match\".",
+    "resultadoVs": "{resultado} vs. {rival}",
+    "empate": "Draw",
+    "ganaste": "You won",
+    "perdiste": "You lost",
+    "jugador": "Player",
+    "casual": "Casual",
+    "clanDeBots": "Bot Clan",
+    "todasLasCiudades": "All Cities",
+    "ciudades": {
+      "numeria": "Operation based on your rank",
+      "geografia": "Continent based on your rank",
+      "enigmia": "Category based on your rank",
+      "quimia": "Mode based on your rank",
+      "aleatorio": "Best of 3, one city per round"
+    },
+    "buscandoRival": "Looking for a rival…",
+    "buscandoDetalle": "{etiqueta} · {segundos}s · searching for rivals between {min}-{max} ELO",
+    "cancelar": "Cancel",
+    "clasificatoria": "Ranked",
+    "mismoMatchmaking": "Same matchmaking and same content based on your rank — doesn't change your ELO.",
+    "noHayContrincantes": "No opponents available right now — try again in a bit.",
+    "elegiLaCiudad": "Choose the city",
+    "tuElo": "Your ELO: {elo}",
+    "rankingElo": {
+      "global": "Global",
+      "amigos": "Friends",
+      "cargando": "Loading...",
+      "ningunoDeTusAmigos": "None of your friends have played rankeds yet.",
+      "todaviaNoHayNadie": "There's no one in the competitive ranking yet.",
+      "restoDelRanking": "Rest of the ranking",
+      "buscarPorNombre": "Search by name...",
+      "cerrarBusqueda": "Close search",
+      "nadieMasTodavia": "No one else in the ranking yet.",
+      "nadieConEseNombre": "No one with that name in the ranking.",
+      "todaviaNoJugasteClasificatorio": "You haven't played any ranked duel yet."
+    }
+  },
+  "Social": {
+    "amigos": "Friends",
+    "subtitulo": "Find people, accept requests, and challenge them to a duel.",
+    "invitarSinCuenta": "Invite a friend (no account yet)",
+    "invitarPorLink": "Invite by link",
+    "buscarPorNombre": "Search by name...",
+    "buscar": "Search",
+    "noEncontramosANadie": "We couldn't find anyone with that name.",
+    "resultados": "Results",
+    "jugador": "Player",
+    "enviada": "Sent",
+    "enviarSolicitud": "Send request",
+    "solicitudesPendientes": "Pending requests",
+    "aceptar": "Accept",
+    "rechazar": "Decline",
+    "tusAmigos": "Your friends",
+    "todaviaNoTenesAmigos": "You don't have any friends added yet — search for them above.",
+    "retarADuelo": "Challenge to a duel",
+    "esperandoQueSeUnan": "Waiting for someone to join…",
+    "noHaceFaltaQueSeaAmigo": "they don't have to be your friend",
+    "copiadoCheck": "Copied ✓",
+    "copiar": "Copy",
+    "cancelar": "Cancel",
+    "noPudimosGenerarLink": "We couldn't generate the link. Try again.",
+    "elegiCiudadYModo": "Choose city and mode",
+    "elegido": "Chosen:",
+    "generando": "Generating…",
+    "generarLinkDeInvitacion": "Generate invite link",
+    "compartiseloAQuienQuieras": "Share it with anyone you like — they don't have to be your friend in the app.",
+    "quienSeRegistre": "Whoever signs up through this link gets added as your friend automatically, no request needed."
+  },
+  "Perfil": {
+    "enProdigiaDesde": "On Prodigia since {fecha}",
+    "chispasTotales": "Total Chispas",
+    "nivel": "Level {n}",
+    "xpHistoricaAcumulada": "{xp} lifetime XP earned — never goes down",
+    "puestoDe": "Rank <destacado>#{posicion}</destacado> of {total} on the overall Chispas leaderboard",
+    "todaviaNoEstasEnClan": "You're not in a clan yet — find one →",
+    "rangoDeDuelos": "Duel rank",
+    "problemasResueltosNivel": "problems solved · world level {n}",
+    "acertijosResueltosNivel": "puzzles solved · world level {n}",
+    "paisesAcertadosNivel": "countries guessed · world level {n}",
+    "preguntasResueltasNivel": "questions answered · world level {n}",
+    "nivelPorOperacion": "Level by operation",
+    "calibracionEspecifica": "Topic-specific calibration — different from the world level above, which is broader progress.",
+    "aprender": "Learn",
+    "leccionesCompletadasDescripcion": "Lessons completed out of the total for each world.",
+    "lecciones": "lessons",
+    "recordsPersonales": "Personal records",
+    "respuestaMasRapida": "Fastest answer",
+    "rachaMasLarga": "Longest streak",
+    "diasCantidad": "{n} {n, plural, one {day} other {days}}",
+    "mejorPrecisionUnDia": "Best accuracy (one day)",
+    "afinidadPorMundo": "Affinity by world",
+    "afinidadDescripcion": "Informational only — your rank and matchmaking are unique and global, this doesn't affect them.",
+    "duelosCantidad": "{n} {n, plural, one {duel} other {duels}}",
+    "precisionPct": "{n}% accuracy",
+    "logros": "Achievements"
+  },
+  "Tienda": {
+    "metadata": {
+      "title": "Shop",
+      "description": "Spend your Chispas on shields, boosts, and cosmetics from Prodigia's bazaar."
+    },
+    "items": {
+      "escudo": "Extra shield",
+      "congelamiento": "Freeze streak",
+      "boost": "Chispas boost",
+      "fuenteMono": "Monospace Font",
+      "fuenteSerif": "Elegant Font",
+      "fuenteManuscrita": "Handwritten Font",
+      "fuenteImpacto": "Impact Font",
+      "fuenteScript": "Script Font",
+      "fuenteFuturista": "Futuristic Font",
+      "marcoBronce": "Bronze Frame",
+      "marcoPlata": "Silver Frame",
+      "marcoOro": "Gold Frame",
+      "marcoPlatino": "Platinum Frame",
+      "marcoDiamante": "Diamond Frame",
+      "marcoProdigio": "Prodigy Frame"
+    },
+    "fuentes": {
+      "mono": "Monospace",
+      "serif": "Elegant",
+      "manuscrita": "Handwritten",
+      "impacto": "Impact",
+      "script": "Script",
+      "futurista": "Futuristic"
+    },
+    "descripciones": {
+      "escudo": "One more calibration shield for your next match.",
+      "congelamiento": "If you miss a day of practice, your streak won't break.",
+      "boost": "×1.5 Chispas on your next match, any world."
+    },
+    "noSePudoComprar": "Couldn't complete the purchase.",
+    "noSePudoComprarConexion": "Couldn't complete the purchase. Check your connection.",
+    "noSePudoCambiarFuente": "Couldn't change the font.",
+    "noSePudoCambiarFuenteConexion": "Couldn't change the font. Check your connection.",
+    "noSePudoCambiarMarco": "Couldn't change the frame.",
+    "noSePudoCambiarMarcoConexion": "Couldn't change the frame. Check your connection.",
+    "noSePudoApostar": "Couldn't place the bet.",
+    "noSePudoApostarConexion": "Couldn't place the bet. Check your connection.",
+    "elBazarDeProdigia": "Prodigia's Bazaar",
+    "chispasDisponibles": "{n} Chispas available",
+    "puestoDeUtilidad": "Utility stall",
+    "vidrieraDeTipografias": "Font showcase",
+    "vidrieraDescripcion": "How your name looks on your profile, the ranking, and the feed. Cosmetic — doesn't change anything about the match.",
+    "normal": "Normal",
+    "activa": "Active",
+    "activo": "Active",
+    "nombreChispas": "{nombre} · {costo} Chispas",
+    "herreroDeMarcos": "Frame smith",
+    "herreroDescripcion": "A cosmetic border for your name on your profile — the same colors as Rankeds ranks.",
+    "sinMarco": "No frame",
+    "ofertaDelVendedor": "Today's vendor deal:",
+    "porcentajeMenos": "{n}% off",
+    "enItem": "on {nombre}",
+    "tenes": "You have: {n}",
+    "comprarPor": "Buy for {costo} Chispas",
+    "necesitas": "You need {costo} Chispas",
+    "gastarChispas": "Spend {costo} Chispas?",
+    "confirmar": "Confirm",
+    "cancelar": "Cancel",
+    "entrarALaTrastienda": "Enter the back room…",
+    "dobleONada": "Double or nothing",
+    "dobleONadaDescripcion": "Bet Chispas that your next match beats your historical accuracy. If you win, it doubles.",
+    "dobleONadaAviso": "This never uses real money — it's only with your in-game Chispas. Max bet: {max} Chispas. You can hide this section from Settings if you'd rather not see it.",
+    "apuestaActivaAviso": "You have an active bet — it settles with your next match.",
+    "apostarMonto": "Bet {monto}"
+  },
+  "Common": {
+    "entendido": "Got it",
+    "nuevoLogro": "New achievement: {nombre}",
+    "algoSalioMal": "Something went wrong. Try again.",
+    "deteccionConexion": {
+      "mensaje": "We noticed your connection is slow — want to turn off the extra visual effects? You can change this anytime in Settings.",
+      "desactivar": "Turn off",
+      "dejarlosActivados": "Keep them on"
+    },
+    "anuncios": {
+      "tipos": {
+        "actualizacion": "Update",
+        "arreglo": "Fix",
+        "evento": "Event"
+      },
+      "siguienteConCantidad": "Next ({n} more)",
+      "entendido": "Got it"
+    },
+    "notificacionesDuelo": {
+      "teRetaronADueloDe": "You've been challenged to a {operacion} duel",
+      "verDuelo": "View duel →",
+      "cerrarAviso": "Close notification"
+    }
+  },
+  "Geografia": {
+    "continentes": {
+      "america": "America",
+      "europa": "Europe",
+      "africa": "Africa",
+      "asia_oceania": "Asia & Oceania"
+    }
+  },
+  "Nav": {
+    "inicio": "Home",
+    "ranking": "Ranking",
+    "rankeds": "Rankeds",
+    "social": "Social",
+    "clanes": "Clans",
+    "tienda": "Shop",
+    "mundoSelector": {
+      "mundos": "Worlds",
+      "inicioDeProdigia": "Prodigia Home"
+    },
+    "tema": {
+      "aClaro": "Switch to light mode",
+      "aOscuro": "Switch to dark mode"
+    },
+    "profileMenu": {
+      "cuenta": "Account",
+      "perfil": "Profile",
+      "ajustes": "Settings",
+      "modoClaro": "Light mode",
+      "modoOscuro": "Dark mode",
+      "idioma": "Language",
+      "salir": "Log out"
+    }
+  },
+  "Home": {
+    "metadata": {
+      "title": "Home",
+      "description": "Your Prodigia account: Chispas, streak, and your practice worlds."
+    },
+    "saludo": {
+      "noche": "Good evening",
+      "manana": "Good morning",
+      "tarde": "Good afternoon",
+      "servidor": "Hi"
+    },
+    "chispasTotales": "{n} total Chispas",
+    "racha": "Streak",
+    "rachaValor": "{racha} {racha, plural, one {day} other {days}}",
+    "precision7dias": "Accuracy · 7 days",
+    "sinDatos": "—",
+    "chispasIntro": "Chispas are the game's currency — you earn them by practicing and spend them at the Shop. Your Experience is separate — that one never gets spent.",
+    "chispas": "Chispas",
+    "retoDiario": "Daily challenge",
+    "retoDiarioHecho": "Already done today: {correctos}/5",
+    "retoDiarioDescripcion": "5 problems, the same for everyone today",
+    "ver": "View",
+    "jugar": "Play",
+    "tusMundos": "Your worlds",
+    "tusMundosDescripcion": "Each world has its own pace and its own path.",
+    "tourMundos": "Pick a world to practice — Chispas, streak, and ranking are shared across all of them.",
+    "mundos": {
+      "numeria": "Mental math with adaptive difficulty.",
+      "enigmia": "Logic puzzles: sequences, patterns, and deduction.",
+      "geografia": "Locate countries of the Americas on the map.",
+      "quimia": "Elements, formulas, and the periodic table.",
+      "anatomia": "Bones, muscles, organs, and the nervous system."
+    }
+  },
+  "Numeria": {
+    "metadata": {
+      "description": "Mental math with adaptive difficulty: addition, subtraction, multiplication, division, and fractions."
+    },
+    "titulo": "Mental math",
+    "metaCumplida": "You already hit today's goal.",
+    "metaFaltante": "You need <destacado>{n}</destacado> more XP to hit today's goal.",
+    "practicarAhora": "Practice now",
+    "practicar": "Practice",
+    "practicarDescripcion": "A mental math match, calibrated to your level.",
+    "aprender": "Learn",
+    "aprenderDescripcion": "Mental math techniques, one trick at a time.",
+    "temasTitulo": "Topics",
+    "temas": {
+      "aritmetica": "Arithmetic",
+      "fracciones": "Fractions",
+      "decimales": "Decimals & percentages",
+      "potencias": "Powers & roots",
+      "algebra": "Basic algebra",
+      "geometria": "Basic geometry"
+    }
+  },
+  "Practica": {
+    "tiers": {
+      "iniciado": "Beginner",
+      "aprendiz": "Apprentice",
+      "competente": "Competent",
+      "avanzado": "Advanced",
+      "calculista": "Master"
+    },
+    "temas": {
+      "metadata": {
+        "title": "Practice",
+        "description": "Choose a Numeria topic to practice."
+      },
+      "titulo": "Which topic are we practicing?",
+      "subtitulo": "Choose a topic — inside, you'll be able to pick exactly what to practice.",
+      "desc": {
+        "aritmetica": "Addition, subtraction, multiplication, division",
+        "fracciones": "Simplify, compare, add",
+        "decimales": "Convert, calculate %, round",
+        "potencias": "Powers, roots, notation",
+        "algebra": "Evaluate expressions, solve for x",
+        "geometria": "Perimeter, area, angles, triples"
+      }
+    },
+    "operationPicker": {
+      "titulo": "What are we practicing?",
+      "subtitulo": "Choose one or more operations. 10 problems or 60 seconds, whichever comes first.",
+      "operaciones": {
+        "suma": "Addition",
+        "resta": "Subtraction",
+        "multiplicacion": "Multiplication",
+        "division": "Division"
+      },
+      "elegiAlMenosUna": "Choose at least one operation",
+      "iniciarPartida": "Start match",
+      "iniciarPartidaConCantidad": "Start match ({n} operations)"
+    },
+    "subtemaPicker": {
+      "elegiAlMenosUno": "Choose at least one sub-topic",
+      "iniciarPartida": "Start match",
+      "iniciarPartidaConCantidad": "Start match ({n} sub-topics)"
+    },
+    "cliente": {
+      "noSePudoCerrar": "Couldn't close the match.",
+      "errorDeRed": "We couldn't connect to the server. Try again.",
+      "noPudimosCerrar": "We couldn't close the match: {error}",
+      "volver": "Back",
+      "boostActivo": "Boost active — ×1.5 Chispas on your next match"
+    },
+    "sprint": {
+      "superasteTuTecho": "You broke through your ceiling — level {nivel}.",
+      "subisteAlPuesto": "you moved up to rank {puesto}",
+      "escudosDisponibles": "{n} calibration shields available",
+      "exp": "{n} XP",
+      "vasAdelanteDe": "You're ahead of {nombre}",
+      "teLlevaVentaja": "{nombre} has the lead",
+      "vanParejoCon": "You're tied with {nombre}",
+      "escudoUsado": "Shield used — your level is safe",
+      "segundos": "{n}s",
+      "ok": "Ok"
+    },
+    "resumen": {
+      "vsTuPromedio": "vs. {historico} your average",
+      "sinHistorial": "no history",
+      "partidaPerfecta": "Perfect match — 10/10",
+      "ahiQuedo": "Nailed it.",
+      "experiencia": "Experience",
+      "rompisteTuMeta": "You crushed today's goal — {ganado}/{meta} XP",
+      "aciertos": "Correct",
+      "precision": "Accuracy",
+      "velocidadPromedio": "Average speed",
+      "experienciaHoy": "XP today",
+      "chispasTotales": "Total Chispas: {n}",
+      "repasemosEsto": "Let's review this",
+      "laRespuestaEra": "the answer was",
+      "ningunoFallado": "Nothing missed — that's how it's done."
+    }
+  },
+  "Aprender": {
+    "progreso": "Progress",
+    "tecnicas": "{dominadas}/{total} techniques",
+    "titulo": "Learn",
+    "subtitulo": "One path: unlock techniques in order, or jump to a unit from the left.",
+    "descripcionUnidad": {
+      "suma": "Add faster by combining numbers in simpler ways.",
+      "resta": "Subtract with confidence, even when the numbers don't cooperate.",
+      "multiplicacion": "Multiply from memory with shortcuts that save steps.",
+      "division": "Divide in your head by spotting patterns before you calculate.",
+      "fracciones": "Work with fractions fearlessly: simplify, compare, add.",
+      "decimales": "Convert, round, and calculate percentages without losing your footing.",
+      "potencias": "Powers and roots with shortcuts, no brute force.",
+      "algebra": "Solve for x fearlessly: one step at a time, always checkable.",
+      "geometria": "Perimeters, areas, and Pythagorean triples — patterns, not formulas to memorize."
+    },
+    "leccion": {
+      "tecnica": "Technique",
+      "verElEjemplo": "See the example",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "marcarComoAprendida": "Mark as learned",
+      "practicar": "Practice",
+      "ok": "Ok",
+      "teTrabaste": "Stuck? See the example again",
+      "completaste": "You completed {nombre}!",
+      "desbloqueasteEnPracticar": "You unlocked in Practice:",
+      "volverAAprender": "Back to Learn",
+      "irAPracticar": "Go practice"
+    }
+  }
+}

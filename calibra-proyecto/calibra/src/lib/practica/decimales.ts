@@ -66,8 +66,15 @@ const GENERADORES: Record<TipoDecimal, (nivel: number) => ProblemaDecimal> = {
   redondear: generarRedondear,
 };
 
-export function generarProblemaDecimal(nivel: number, tipos: TipoDecimal[] = ["convertir", "porcentaje", "redondear"]): ProblemaDecimal {
-  const disponibles = tipos.length > 0 ? tipos : (["convertir", "porcentaje", "redondear"] as TipoDecimal[]);
+export const TIPOS_DECIMAL: TipoDecimal[] = ["convertir", "porcentaje", "redondear"];
+
+// Fase 2 ("Practicar" estandarizado): calibración propia por sub-tema
+// (nivelPorTipo), mismo criterio que fracciones.ts/algebra.ts.
+export function generarProblemaDecimal(
+  nivelPorTipo: Record<TipoDecimal, number>,
+  tipos: TipoDecimal[] = TIPOS_DECIMAL
+): ProblemaDecimal {
+  const disponibles = tipos.length > 0 ? tipos : TIPOS_DECIMAL;
   const tipo = disponibles[Math.floor(Math.random() * disponibles.length)];
-  return GENERADORES[tipo](nivel);
+  return GENERADORES[tipo](nivelPorTipo[tipo]);
 }

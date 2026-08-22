@@ -35,7 +35,18 @@ interface RegistrarPuntosMundoResult {
 // Fracciones, Decimales, Potencias, Álgebra (todos "numeria") y
 // Geografía — se determina el mundo a partir del problem_type real de
 // los intentos del sprint, no de la ruta que llamó a este endpoint.
-const TIPOS_NUMERIA = new Set(["suma", "resta", "multiplicacion", "division", "fracciones", "decimales", "potencias", "algebra"]);
+// Fase 2 ("Practicar" estandarizado): incluye los sub-temas reales de
+// Fracciones/Decimales/Potencias/Álgebra (ya no un solo problem_type
+// por tema) y los 4 de Geometría (Fase 1, nueva) — ver
+// 0079_practicar_subtemas.sql.
+const TIPOS_NUMERIA = new Set([
+  "suma", "resta", "multiplicacion", "division",
+  "geometria_perimetro", "geometria_area", "geometria_angulos", "geometria_ternas",
+  "fracciones_simplificar", "fracciones_comparar", "fracciones_sumar",
+  "decimales_convertir", "decimales_porcentaje", "decimales_redondear",
+  "potencias_potencia", "potencias_raiz", "potencias_notacion",
+  "algebra_evaluar", "algebra_un-paso", "algebra_dos-pasos",
+]);
 const TIPOS_QUIMIA = new Set(["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"]);
 
 function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | null {

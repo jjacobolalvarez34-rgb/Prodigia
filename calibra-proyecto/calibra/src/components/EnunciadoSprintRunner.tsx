@@ -1,57 +1,61 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { reproducirTono } from "@/lib/sonido";
 import { useBonusTiempo } from "@/lib/practica/useBonusTiempo";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import SonidoToggle from "@/components/SonidoToggle";
 import EscudoIcon from "@/components/EscudoIcon";
 import RachaFuego from "@/components/RachaFuego";
-import LevelDial from "@/app/practica/LevelDial";
+import LevelDial from "@/app/[locale]/practica/LevelDial";
 import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/TarjetaSprint";
 import BarraTiempo from "@/components/practica/BarraTiempo";
 
 const TOTAL_PROBLEMAS = 10;
 const DURACION_MS = 60_000;
-// Fase de auditoría GRUPO 2: mismo ritmo que el resto de los runners
-// (Fase VV) — antes este motor tenía su propio timing (700/1400) y
-// ningún componente del sistema de feedback compartido.
 const FEEDBACK_MS_OK = 550;
 const FEEDBACK_MS_ERROR = 900;
 const ESCUDOS_BASE = 2;
 
 export interface ProblemaGenerico {
+  tipo: string;
   enunciado: string;
   respuesta: number;
   tolerancia: number;
 }
 
-interface Props<T extends ProblemaGenerico> {
-  generar: (nivel: number) => T;
+interface Props<T extends ProblemaGenerico, TTipo extends string> {
+  generar: (nivelPorTipo: Record<TTipo, number>, tipos: TTipo[]) => T;
   startedAt: number;
-  nivelInicial: number;
+  nivelPorTipoInicial: Record<TTipo, number>;
+  seleccion: TTipo[];
   escudosExtra: number;
   colorDial?: string;
-  apiPath: string; // /api/attempts, con problem_type fijo abajo
-  problemType: string;
+  apiPath: string; // /api/attempts, con problem_type dinámico por sub-tema
+  problemTypeDe: (tipo: TTipo) => string;
   onFinish: (errores: T[]) => void;
 }
 
-// Motor genérico compartido por Decimales, Potencias y Álgebra — mismo
-// patrón de partida que Fracciones/Enigmia/Geografía (escudos, sonido,
-// racha de tiempo, tarjeta compartida, PuntajeCorner, racha de fuego)
-// para problemas de "un enunciado, una respuesta numérica" en vez de
-// tener que armar una UI particular para cada tipo de pregunta.
-export default function EnunciadoSprintRunner<T extends ProblemaGenerico>({
+// Motor genérico compartido por Decimales, Potencias, Álgebra y
+// Geometría — mismo patrón de partida que Fracciones/Enigmia/Geografía
+// para problemas de "un enunciado, una respuesta numérica". Fase 2
+// ("Practicar" estandarizado): cada sub-tema (problema.tipo) calibra su
+// PROPIO nivel — igual que las 4 operaciones de Aritmética — en vez de
+// un nivel único para todo el tema; el sub-tema real del problema se
+// sortea entre los elegidos (`seleccion`) en cada `generar()`.
+export default function EnunciadoSprintRunner<T extends ProblemaGenerico, TTipo extends string = T["tipo"]>({
   generar,
   startedAt,
-  nivelInicial,
+  nivelPorTipoInicial,
+  seleccion,
   escudosExtra,
   colorDial,
   apiPath,
-  problemType,
+  problemTypeDe,
   onFinish,
-}: Props<T>) {
+}: Props<T, TTipo>) {
+  const t = useTranslations("Practica.sprint");
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
   const [problema, setProblema] = useState<T | null>(null);
   const [cardKey, setCardKey] = useState(0);
@@ -62,13 +66,13 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico>({
   const [xpSprint, setXpSprint] = useState(0);
   const [respondidos, setRespondidos] = useState(0);
   const [remainingMs, setRemainingMs] = useState(DURACION_MS);
-  const [nivel, setNivel] = useState(nivelInicial);
+  const [nivel, setNivel] = useState(1);
   const [escudos, setEscudos] = useState(escudosIniciales);
   const [racha, setRacha] = useState(0);
 
   const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(DURACION_MS);
 
-  const nivelRef = useRef(nivelInicial);
+  const nivelPorTipoRef = useRef<Record<TTipo, number>>(nivelPorTipoInicial);
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<T[]>([]);
@@ -78,9 +82,11 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico>({
 
   function siguiente() {
     // El enunciado ya es texto único por combinación de números al azar
-    // (Decimales/Potencias/Álgebra) — sirve como clave canónica sin
-    // necesitar una función de clave por tipo.
-    setProblema(generarSinRepetir(() => generar(nivelRef.current), (p) => p.enunciado, usadosRef.current));
+    // — sirve como clave canónica sin necesitar una función de clave
+    // por tipo.
+    const nuevo = generarSinRepetir(() => generar(nivelPorTipoRef.current, seleccion), (p) => p.enunciado, usadosRef.current);
+    setProblema(nuevo);
+    setNivel(nivelPorTipoRef.current[nuevo.tipo as TTipo] ?? 1);
     setCardKey((k) => k + 1);
     setRespuesta("");
     setFeedback("idle");
@@ -126,8 +132,10 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico>({
     }
     reproducirTono(correct ? "correcto" : "error");
 
+    const tipoDelProblema = problema.tipo as TTipo;
+    const nivelDelTipo = nivelPorTipoRef.current[tipoDelProblema] ?? 1;
     if (correct) {
-      evaluarBonus(nivelRef.current, timeMs);
+      evaluarBonus(nivelDelTipo, timeMs);
     }
 
     let protegido = false;
@@ -145,8 +153,8 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico>({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          problem_type: problemType,
-          level: nivelRef.current,
+          problem_type: problemTypeDe(tipoDelProblema),
+          level: nivelDelTipo,
           correct,
           time_ms: timeMs,
           protegido,
@@ -160,8 +168,8 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico>({
         setXpSprint((prev) => prev + data.xp);
       }
       if (data.skillLevel) {
-        nivelSubio = data.skillLevel.nivel > nivelRef.current;
-        nivelRef.current = data.skillLevel.nivel;
+        nivelSubio = data.skillLevel.nivel > nivelDelTipo;
+        nivelPorTipoRef.current = { ...nivelPorTipoRef.current, [tipoDelProblema]: data.skillLevel.nivel };
         setNivel(data.skillLevel.nivel);
         setRacha(data.skillLevel.racha_actual);
       }
@@ -201,14 +209,14 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico>({
           </div>
           <div className="flex items-center gap-3">
             <SonidoToggle />
-            <div className="flex items-center gap-1" aria-label={`${escudos} escudos disponibles`}>
+            <div className="flex items-center gap-1" aria-label={t("escudosDisponibles", { n: escudos })}>
               {Array.from({ length: escudosIniciales }).map((_, i) => (
                 <EscudoIcon key={i} activo={i < escudos} claseActivo="text-primario/70" />
               ))}
             </div>
             <RachaFuego racha={racha} />
-            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">{xpSprint} Exp</span>
-            <span className="font-mono font-medium">{segundos}s</span>
+            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">{t("exp", { n: xpSprint })}</span>
+            <span className="font-mono font-medium">{t("segundos", { n: segundos })}</span>
           </div>
         </div>
 
@@ -243,7 +251,7 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico>({
             disabled={feedback !== "idle"}
             className="rounded-xl bg-primario px-5 py-3 font-display font-semibold text-white disabled:opacity-60"
           >
-            Ok
+            {t("ok")}
           </button>
         </form>
       </TarjetaSprint>

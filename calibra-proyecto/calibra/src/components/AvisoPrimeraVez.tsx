@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 
 const PREFIJO = "prodigia-aviso-";
@@ -46,6 +47,7 @@ interface Props {
 }
 
 export default function AvisoPrimeraVez({ avisoKey, texto, children }: Props) {
+  const t = useTranslations("Common");
   // Snapshot del server: siempre "ya visto" (false), así el HTML inicial
   // nunca muestra el aviso y no hay mismatch de hidratación — recién en
   // el cliente, si localStorage dice que no se vio, se hace visible.
@@ -91,7 +93,7 @@ export default function AvisoPrimeraVez({ avisoKey, texto, children }: Props) {
           >
             <p className="text-sm font-medium leading-snug text-foreground">{texto}</p>
             <button onClick={descartar} className="mt-2 rounded-lg bg-primario px-3 py-1.5 text-xs font-semibold text-white">
-              Entendido
+              {t("entendido")}
             </button>
           </motion.div>
         )}

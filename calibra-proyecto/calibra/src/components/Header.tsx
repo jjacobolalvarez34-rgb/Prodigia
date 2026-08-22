@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
 import { IconCasa } from "@/components/icons";
 import Logo from "./Logo";
 import MundoSelector from "./MundoSelector";
@@ -14,6 +14,7 @@ function colorDelMundo(pathname: string): string {
   if (pathname.startsWith("/enigmia")) return "#0E9F6E";
   if (pathname.startsWith("/geografia")) return "#1E7A8C";
   if (pathname.startsWith("/quimia")) return "#C026D3";
+  if (pathname.startsWith("/anatomia")) return "#8B2942";
   return "#6C4CF1"; // Numeria y el resto de Prodigia (fuera de un mundo) usan el violeta de marca
 }
 
@@ -43,6 +44,7 @@ function LogoLink({ colorMundo }: { colorMundo: string }) {
 }
 
 export default function Header({ autenticado = false, invitado = false }: Props) {
+  const t = useTranslations("Nav");
   const pathname = usePathname();
   const colorMundo = colorDelMundo(pathname ?? "/");
 
@@ -55,11 +57,11 @@ export default function Header({ autenticado = false, invitado = false }: Props)
   // desactivado temporalmente — sacado del nav, código intacto
   // (/profesor sigue existiendo, solo no se linkea desde acá).
   const links = [
-    { href: "/leaderboard", label: "Ranking" },
-    { href: "/rankeds", label: "Rankeds" },
-    { href: "/social", label: "Social" },
-    { href: "/clanes", label: "Clanes" },
-    { href: "/tienda", label: "Tienda" },
+    { href: "/leaderboard", label: t("ranking") },
+    { href: "/rankeds", label: t("rankeds") },
+    { href: "/social", label: t("social") },
+    { href: "/clanes", label: t("clanes") },
+    { href: "/tienda", label: t("tienda") },
   ].filter((link) => !invitado || (link.href !== "/rankeds" && link.href !== "/social" && link.href !== "/clanes"));
 
   return (
@@ -79,7 +81,7 @@ export default function Header({ autenticado = false, invitado = false }: Props)
           {autenticado && (
             <Link
               href="/"
-              aria-label="Inicio"
+              aria-label={t("inicio")}
               className="shrink-0 text-texto-secundario transition-colors hover:text-foreground"
               style={pathname === "/" ? { color: colorMundo } : undefined}
             >

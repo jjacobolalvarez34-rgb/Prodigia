@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { ARITHMETIC_PROBLEM_TYPES, type NewAttempt } from "@/types/database";
 import { calcularXpDetallado, tiempoEsperadoMs } from "@/lib/practica/formulas";
-import { actualizarSkillLevel } from "@/lib/practica/skillLevels";
+import { actualizarSkillLevel, type ProblemTypeCalibrable } from "@/lib/practica/skillLevels";
 import { respuestaError } from "@/lib/api/respuestaError";
 
 // Piso de tiempo plausible: nadie resuelve de forma legítima un problema
@@ -61,35 +61,41 @@ export async function POST(request: Request) {
   // Un intento sospechoso no mueve la calibración (ni para arriba ni para
   // abajo) — se descarta para ese propósito en vez de contaminarla.
   let skillLevel = null;
-  const tiposCalibrables = [
+  // Fase 2 ("Practicar" estandarizado): cada sub-tema real de Fracciones/
+  // Decimales/Potencias/Álgebra/Geometría calibra su propio nivel — los
+  // problem_type "de tema" viejos (fracciones/decimales/potencias/
+  // algebra, sin sufijo) quedan afuera de la lista a propósito, ya no
+  // se escriben más (ver 0079_practicar_subtemas.sql).
+  const tiposCalibrables: ProblemTypeCalibrable[] = [
     ...ARITHMETIC_PROBLEM_TYPES,
-    "fracciones",
     "geografia",
-    "decimales",
-    "potencias",
-    "algebra",
     "quimia_simbolos",
     "quimia_formulas",
     "quimia_tabla",
     "quimia_nomenclatura",
     "quimia_organica",
+    "geometria_perimetro",
+    "geometria_area",
+    "geometria_angulos",
+    "geometria_ternas",
+    "fracciones_simplificar",
+    "fracciones_comparar",
+    "fracciones_sumar",
+    "decimales_convertir",
+    "decimales_porcentaje",
+    "decimales_redondear",
+    "potencias_potencia",
+    "potencias_raiz",
+    "potencias_notacion",
+    "algebra_evaluar",
+    "algebra_un-paso",
+    "algebra_dos-pasos",
   ];
-  if (!sospechoso && tiposCalibrables.includes(body.problem_type)) {
+  if (!sospechoso && (tiposCalibrables as string[]).includes(body.problem_type)) {
     skillLevel = await actualizarSkillLevel(
       supabase,
       user.id,
-      body.problem_type as
-        | (typeof ARITHMETIC_PROBLEM_TYPES)[number]
-        | "fracciones"
-        | "geografia"
-        | "decimales"
-        | "potencias"
-        | "algebra"
-        | "quimia_simbolos"
-        | "quimia_formulas"
-        | "quimia_tabla"
-        | "quimia_nomenclatura"
-        | "quimia_organica",
+      body.problem_type as ProblemTypeCalibrable,
       body.correct,
       body.protegido ?? false
     );

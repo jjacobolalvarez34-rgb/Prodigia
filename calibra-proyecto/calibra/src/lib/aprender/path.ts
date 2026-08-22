@@ -7,7 +7,7 @@ export type NodoEstado = "completado" | "activo" | "bloqueado";
 // mismo camino de Aprender que las 4 operaciones — ninguno es parte de
 // ArithmeticProblemType (ese tipo sigue siendo específicamente "las 4
 // operaciones de /practica"), así que se amplía localmente acá nada más.
-export type TemaAprendible = ArithmeticProblemType | "fracciones" | "decimales" | "potencias" | "algebra";
+export type TemaAprendible = ArithmeticProblemType | "fracciones" | "decimales" | "potencias" | "algebra" | "geometria";
 
 export interface NodoCamino {
   id: string;
@@ -25,7 +25,7 @@ export interface UnidadCamino {
   nodos: NodoCamino[]; // vacío = todavía no hay técnicas para este tema
 }
 
-const TEMAS_ORDEN: TemaAprendible[] = [...ARITHMETIC_PROBLEM_TYPES, "fracciones", "decimales", "potencias", "algebra"];
+const TEMAS_ORDEN: TemaAprendible[] = [...ARITHMETIC_PROBLEM_TYPES, "fracciones", "decimales", "potencias", "algebra", "geometria"];
 
 const NOMBRE_TEMA: Record<TemaAprendible, string> = {
   suma: "Suma",
@@ -36,6 +36,7 @@ const NOMBRE_TEMA: Record<TemaAprendible, string> = {
   decimales: "Decimales y porcentajes",
   potencias: "Potencias y raíces",
   algebra: "Álgebra básica",
+  geometria: "Geometría básica",
 };
 
 // El orden global del camino es: primero por tema (suma, resta,

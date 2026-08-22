@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 import { setEfectosHabilitados } from "@/lib/efectos";
 
 const CLAVE_PREGUNTADO = "prodigia-conexion-preguntado";
@@ -40,6 +41,7 @@ function getServerSnapshot(): boolean {
 // datos" en la primera visita, preguntamos una sola vez si prefiere
 // menos efectos — nunca bloquea el uso si no se puede detectar.
 export default function DeteccionConexion() {
+  const t = useTranslations("Common.deteccionConexion");
   const detectado = useSyncExternalStore(subscribe, detectarConexionLenta, getServerSnapshot);
   const [descartado, setDescartado] = useState(false);
   const visible = detectado && !descartado;
@@ -58,19 +60,16 @@ export default function DeteccionConexion() {
 
   return (
     <div className="fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-sm flex-col gap-3 rounded-2xl border border-border bg-surface px-5 py-4 shadow-lg sm:inset-x-auto sm:right-4">
-      <p className="text-sm text-foreground">
-        Notamos que tu conexión anda lenta — ¿querés desactivar los efectos visuales extra? Podés
-        cambiarlo cuando quieras en Ajustes.
-      </p>
+      <p className="text-sm text-foreground">{t("mensaje")}</p>
       <div className="flex gap-3">
         <button
           onClick={() => responder(false)}
           className="rounded-lg bg-primario px-3 py-1.5 text-sm font-medium text-white"
         >
-          Desactivar
+          {t("desactivar")}
         </button>
         <button onClick={() => responder(true)} className="text-sm text-texto-secundario hover:underline">
-          Dejarlos activados
+          {t("dejarlosActivados")}
         </button>
       </div>
     </div>
