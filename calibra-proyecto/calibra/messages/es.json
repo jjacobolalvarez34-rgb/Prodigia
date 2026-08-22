@@ -252,6 +252,42 @@
       "salir": "Salir"
     }
   },
+  "Landing": {
+    "metadata": {
+      "title": "Prodigia — Entrená tu cabeza jugando",
+      "description": "Practicá cálculo mental, lógica, geografía, química y anatomía con partidas cortas y competitivas. Empezá gratis, sin crear cuenta."
+    },
+    "pregunta": {
+      "titulo": "¿Ya conocés Prodigia?",
+      "si": "Sí, iniciar sesión",
+      "no": "No, quiero conocerla"
+    },
+    "hero": {
+      "titulo": "Entrená tu cabeza como si fuera un músculo",
+      "subtitulo": "Partidas cortas y adictivas de cálculo, lógica, geografía, química y anatomía. Elegí un mundo y probalo ahora, sin crear cuenta."
+    },
+    "grid": {
+      "titulo": "Elegí tu primer mundo",
+      "descripcion": "Una partida de prueba de 5 preguntas, directo — sin registrarte."
+    },
+    "entrando": "Entrando...",
+    "errorInvitado": "No pudimos armar la demo. Probá de nuevo.",
+    "tour": {
+      "sprint": "Esto es un sprint: respondé rápido antes de que se acabe el tiempo. Cada acierto suma puntos y te hace subir de nivel.",
+      "rankeds": "Cuando tengas cuenta vas a poder competir en Rankeds: duelos en serio contra otros jugadores, con tu propio ELO y rango.",
+      "social": "Social: seguí a tus amigos y su progreso.",
+      "tienda": "Tienda: gastá tus Chispas en mejoras.",
+      "clanes": "Clanes: sumate a un equipo y compitan juntos.",
+      "siguiente": "Siguiente",
+      "entendido": "Entendido"
+    },
+    "cta": {
+      "titulo": "¡Nada mal para empezar!",
+      "resultado": "Acertaste {correctos} de {total}",
+      "mensaje": "Creá tu cuenta para guardar tu progreso y seguir tu racha",
+      "seguirExplorando": "Ver los otros mundos"
+    }
+  },
   "Home": {
     "metadata": {
       "title": "Inicio",

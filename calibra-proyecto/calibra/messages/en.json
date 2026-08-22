@@ -252,6 +252,42 @@
       "salir": "Log out"
     }
   },
+  "Landing": {
+    "metadata": {
+      "title": "Prodigia — Train your brain while you play",
+      "description": "Practice mental math, logic, geography, chemistry, and anatomy with short, competitive rounds. Start free, no account needed."
+    },
+    "pregunta": {
+      "titulo": "Already know Prodigia?",
+      "si": "Yes, log in",
+      "no": "No, show me around"
+    },
+    "hero": {
+      "titulo": "Train your brain like it's a muscle",
+      "subtitulo": "Short, addictive rounds of math, logic, geography, chemistry, and anatomy. Pick a world and try it now — no account needed."
+    },
+    "grid": {
+      "titulo": "Pick your first world",
+      "descripcion": "A 5-question trial round, right away — no sign-up."
+    },
+    "entrando": "Loading...",
+    "errorInvitado": "We couldn't set up the demo. Try again.",
+    "tour": {
+      "sprint": "This is a sprint: answer fast before time runs out. Every correct answer scores points and levels you up.",
+      "rankeds": "Once you have an account, you'll be able to compete in Rankeds: real duels against other players, with your own ELO and rank.",
+      "social": "Social: follow your friends and their progress.",
+      "tienda": "Shop: spend your Chispas on upgrades.",
+      "clanes": "Clans: join a team and compete together.",
+      "siguiente": "Next",
+      "entendido": "Got it"
+    },
+    "cta": {
+      "titulo": "Not bad for a first try!",
+      "resultado": "You got {correctos} out of {total}",
+      "mensaje": "Create your account to save your progress and keep your streak",
+      "seguirExplorando": "See the other worlds"
+    }
+  },
   "Home": {
     "metadata": {
       "title": "Home",

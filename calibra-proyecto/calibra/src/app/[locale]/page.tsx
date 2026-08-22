@@ -9,19 +9,47 @@ import Avatar from "@/components/Avatar";
 import WorldCard from "@/components/WorldCard";
 import PrimeraVezTip from "@/components/PrimeraVezTip";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
+import VisitanteLanding from "@/components/landing/VisitanteLanding";
 import { calcularRachaDiaria } from "@/lib/practica/racha";
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
 import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia } from "@/components/icons";
 import Greeting from "./Greeting";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Home.metadata");
+  // La metadata (título/descripción para redes sociales y buscadores)
+  // tiene que reflejar lo que REALMENTE se muestra en "/" — para un
+  // visitante sin sesión eso es la landing pública, no la home de
+  // cuenta. Prioridad alta según el pedido: "/" es la puerta de entrada
+  // real para tráfico de redes sociales.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const t = await getTranslations(user ? "Home.metadata" : "Landing.metadata");
   return { title: t("title"), description: t("description") };
 }
 
 export default async function ProdigiaHomePage() {
   const t = await getTranslations("Home");
   const supabase = await createClient();
+
+  // Landing pública (Fases 0-4 de la landing de visitantes): "/" para
+  // alguien SIN sesión ya no redirige derecho a /login — muestra la
+  // landing + demo interactiva. Un usuario con sesión (incluido un
+  // invitado ya logueado vía signInAnonymously) sigue el flujo de
+  // siempre más abajo, sin ningún cambio.
+  const {
+    data: { user: visitante },
+  } = await supabase.auth.getUser();
+  if (!visitante) {
+    return (
+      <>
+        <Header />
+        <VisitanteLanding />
+      </>
+    );
+  }
+
   const { user, profile } = await requireUsuario(supabase, "/");
 
   const ahora = new Date();

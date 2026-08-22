@@ -57,6 +57,11 @@ interface Props {
   duelId?: string | null;
   miUserId?: string | null;
   rivalNombreEnVivo?: string | null;
+  // Modo demo (landing pública, Fase 2): partida más corta que el sprint
+  // real — 5 preguntas o 30s, lo que llegue primero, en vez de los
+  // defaults de arriba. Nunca se usa fuera de /demo/numeria.
+  totalPreguntas?: number;
+  duracionMs?: number;
   onNivelChange: (tipo: ArithmeticProblemType, nivel: number) => void;
   onFinish: (errores: Problem[], respuestas: RespuestaDuelo[]) => void;
 }
@@ -104,6 +109,8 @@ export default function SprintRunner({
   duelId,
   miUserId,
   rivalNombreEnVivo,
+  totalPreguntas = TOTAL_PROBLEMAS,
+  duracionMs = DURACION_MS,
   onNivelChange,
   onFinish,
 }: Props) {
@@ -183,11 +190,11 @@ export default function SprintRunner({
   const [feedback, setFeedback] = useState<"idle" | "correcto" | "incorrecto">("idle");
   const [puntaje, setPuntaje] = useState<{ total: number; intensidad: IntensidadPuntaje } | null>(null);
   const [bonusTiempo, setBonusTiempo] = useState<number | null>(null);
-  const [duracionTotalMs, setDuracionTotalMs] = useState(DURACION_MS);
+  const [duracionTotalMs, setDuracionTotalMs] = useState(duracionMs);
   const [miRespuesta, setMiRespuesta] = useState("");
   const [xpSprint, setXpSprint] = useState(0);
   const [problemasRespondidos, setProblemasRespondidos] = useState(0);
-  const [remainingMs, setRemainingMs] = useState(DURACION_MS);
+  const [remainingMs, setRemainingMs] = useState(duracionMs);
   const [racha, setRacha] = useState(0);
   const [nivelSubioAnim, setNivelSubioAnim] = useState(false);
   const [logro, setLogro] = useState<string | null>(null);
@@ -250,7 +257,7 @@ export default function SprintRunner({
   useEffect(() => {
     const interval = setInterval(() => {
       const transcurrido = performance.now() - startedAt;
-      const restante = Math.max(0, DURACION_MS + bonusAcumuladoRef.current - transcurrido);
+      const restante = Math.max(0, duracionMs + bonusAcumuladoRef.current - transcurrido);
       setRemainingMs(restante);
       if (acumuladoFantasma) {
         setFantasmaRespondidos(acumuladoFantasma.filter((t) => t <= transcurrido).length);
@@ -262,7 +269,7 @@ export default function SprintRunner({
     }, 100);
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startedAt]);
+  }, [startedAt, duracionMs]);
 
   function avanzar() {
     setLogro(null);
@@ -270,7 +277,7 @@ export default function SprintRunner({
     const siguienteIdx = problemasRespondidos + 1;
     setProblemasRespondidos(siguienteIdx);
     if (finishedRef.current) return;
-    if (siguienteIdx >= TOTAL_PROBLEMAS) {
+    if (siguienteIdx >= totalPreguntas) {
       terminarSprint();
     } else {
       activarProblema(siguienteRef.current!);
@@ -302,7 +309,7 @@ export default function SprintRunner({
         const msBonus = Math.min(segundosBonus * 1000, BONUS_TIEMPO_MAX_ACUMULADO_MS - bonusAcumuladoRef.current);
         if (msBonus > 0) {
           bonusAcumuladoRef.current += msBonus;
-          setDuracionTotalMs(DURACION_MS + bonusAcumuladoRef.current);
+          setDuracionTotalMs(duracionMs + bonusAcumuladoRef.current);
           setBonusTiempo(Math.round(msBonus / 1000));
         }
       }
@@ -419,7 +426,7 @@ export default function SprintRunner({
       <div className="flex w-full max-w-lg flex-col gap-2">
         <div className="flex items-center justify-between text-sm text-texto-secundario">
           <div className="flex gap-1.5">
-            {Array.from({ length: TOTAL_PROBLEMAS }).map((_, i) => (
+            {Array.from({ length: totalPreguntas }).map((_, i) => (
               <span
                 key={i}
                 className={`h-2 w-2 rounded-full transition-colors ${
@@ -451,7 +458,7 @@ export default function SprintRunner({
             <div className="flex items-center gap-1.5">
               <span>👻</span>
               <div className="flex gap-1">
-                {Array.from({ length: TOTAL_PROBLEMAS }).map((_, i) => (
+                {Array.from({ length: totalPreguntas }).map((_, i) => (
                   <span
                     key={i}
                     className={`h-1.5 w-1.5 rounded-full transition-colors ${
@@ -473,7 +480,7 @@ export default function SprintRunner({
 
         {!fantasma && rivalEnVivo && rivalNombreEnVivo && (
           <ProgresoRivalEnVivo
-            total={TOTAL_PROBLEMAS}
+            total={totalPreguntas}
             miRespondidos={problemasRespondidos}
             rivalRespondidos={rivalEnVivo.respondidos}
             rivalRacha={rivalEnVivo.racha}

@@ -96,6 +96,9 @@ interface Props {
   duelId?: string | null;
   miUserId?: string | null;
   rivalNombre?: string | null;
+  // Modo demo (landing pública, Fase 2): ver mismo prop en SprintRunner.tsx.
+  totalPreguntas?: number;
+  duracionMs?: number;
   onFinish: (errores: LogicPuzzle[]) => void;
 }
 
@@ -109,6 +112,8 @@ export default function EnigmiaSprintRunner({
   duelId,
   miUserId,
   rivalNombre,
+  totalPreguntas = TOTAL_PREGUNTAS,
+  duracionMs = DURACION_MS,
   onFinish,
 }: Props) {
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
@@ -125,12 +130,12 @@ export default function EnigmiaSprintRunner({
   const [puntaje, setPuntaje] = useState<PuntajeTarjeta | null>(null);
   const [xpSprint, setXpSprint] = useState(0);
   const [respondidos, setRespondidos] = useState(0);
-  const [remainingMs, setRemainingMs] = useState(DURACION_MS);
+  const [remainingMs, setRemainingMs] = useState(duracionMs);
   const [nivel, setNivel] = useState(nivelForzado ?? nivelInicial);
   const [escudos, setEscudos] = useState(escudosIniciales);
   const [racha, setRacha] = useState(0);
 
-  const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(DURACION_MS);
+  const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(duracionMs);
 
   const nivelRef = useRef(nivelForzado ?? nivelInicial);
   const escudosRef = useRef(escudosIniciales);
@@ -175,7 +180,7 @@ export default function EnigmiaSprintRunner({
     const interval = setInterval(() => {
       const restante = Math.max(
         0,
-        DURACION_MS + bonusAcumuladoRef.current - (performance.now() - startedAt)
+        duracionMs + bonusAcumuladoRef.current - (performance.now() - startedAt)
       );
       setRemainingMs(restante);
       if (restante <= 0) {
@@ -185,7 +190,7 @@ export default function EnigmiaSprintRunner({
     }, 100);
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startedAt]);
+  }, [startedAt, duracionMs]);
 
   async function handleResponder(e: React.MouseEvent<HTMLButtonElement>) {
     const opcion = e.currentTarget.dataset.opcion;
@@ -253,7 +258,7 @@ export default function EnigmiaSprintRunner({
       const sig = respondidos + 1;
       setRespondidos(sig);
       if (finishedRef.current) return;
-      if (sig >= TOTAL_PREGUNTAS) {
+      if (sig >= totalPreguntas) {
         terminar();
       } else {
         siguiente();
@@ -271,7 +276,7 @@ export default function EnigmiaSprintRunner({
       <div className="flex w-full max-w-lg flex-col gap-2">
         <div className="flex items-center justify-between text-sm text-texto-secundario">
           <div className="flex gap-1.5">
-            {Array.from({ length: TOTAL_PREGUNTAS }).map((_, i) => (
+            {Array.from({ length: totalPreguntas }).map((_, i) => (
               <span
                 key={i}
                 className={`h-2 w-2 rounded-full transition-colors ${i < respondidos ? "" : "bg-foreground/15"}`}
@@ -296,7 +301,7 @@ export default function EnigmiaSprintRunner({
 
         {rivalEnVivo && rivalNombre && (
           <ProgresoRivalEnVivo
-            total={TOTAL_PREGUNTAS}
+            total={totalPreguntas}
             miRespondidos={respondidos}
             rivalRespondidos={rivalEnVivo.respondidos}
             rivalRacha={rivalEnVivo.racha}
