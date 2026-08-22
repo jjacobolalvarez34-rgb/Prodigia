@@ -43,12 +43,53 @@ const ETIQUETA_ALTO: Record<Exclude<ModoAnatomia, "organos">, string> = {
   nervioso: "un par craneal",
 };
 
-export interface PreguntaAnatomia {
+export interface PreguntaAnatomiaOpcion {
+  tipo: "opcion";
   enunciado: string;
   opciones: string[];
   respuesta: string;
   clave: string;
 }
+
+// Fase 2 ("identificación por ubicación directa"): en vez de elegir el
+// nombre entre 4 opciones, se pide clickear la zona correcta sobre
+// public/data/esqueleto-oseo.svg. objetivoHueso es el data-hueso real
+// del SVG (ver ese archivo) — NO todos los términos de OSEO_BAJO tienen
+// uno: "Costillas" se queda en formato de opción múltiple porque el SVG
+// fuente no separa la caja torácica en un grupo propio (ver el
+// comentario en el propio SVG).
+export interface PreguntaAnatomiaClick {
+  tipo: "click";
+  enunciado: string;
+  objetivoHueso: string;
+  respuesta: string;
+  clave: string;
+}
+
+export type PreguntaAnatomia = PreguntaAnatomiaOpcion | PreguntaAnatomiaClick;
+
+// Términos de OSEO_BAJO con una zona real y verificada en
+// esqueleto-oseo.svg — construido a partir de los grupos que el propio
+// SVG fuente (LadyofHats, dominio público) ya traía separados por
+// hueso, no de coordenadas inventadas a mano.
+export const HUESO_CLICKEABLE: Partial<Record<string, string>> = {
+  Fémur: "femur",
+  Húmero: "humero",
+  Tibia: "tibia",
+  Peroné: "perone",
+  Radio: "radio",
+  Cúbito: "cubito",
+  "Columna vertebral": "columna",
+  Cráneo: "craneo",
+  Pelvis: "pelvis",
+};
+
+// Inverso de HUESO_CLICKEABLE (data-hueso -> nombre en español) — lo
+// usa el Runner para mostrar "clickeaste: X" cuando la respuesta fue
+// incorrecta.
+export const NOMBRE_POR_HUESO_CLICKEABLE: Record<string, string> = Object.fromEntries(
+  Object.entries(HUESO_CLICKEABLE).map(([nombre, hueso]) => [hueso!, nombre])
+);
 
 export type Rng = () => number;
 
@@ -91,9 +132,34 @@ function poolOtrosSistemas(modo: ModoAnatomia, dificil: boolean): string[] {
     .flatMap((t) => (dificil ? t.alto : t.bajo));
 }
 
+// Fase 2: a partir de nivel 3 (band>=1), el sistema óseo pasa a
+// identificación por click sobre esqueleto-oseo.svg en vez de opción
+// múltiple — pero solo mientras el pool siga siendo OSEO_BAJO (band<3,
+// nivel 3-6): en band>=3 (nivel 7+) el pool cambia a huesos del cráneo
+// (OSEO_ALTO), que no tienen zona propia en el SVG actual (sería un
+// diagrama de cráneo aparte, con mucho más detalle) — ahí se sigue
+// usando opción múltiple, a propósito, en vez de forzar un click
+// impreciso sobre una calavera en miniatura.
+function esNivelClickeableOseo(modo: ModoAnatomia, band: number): boolean {
+  return modo === "oseo" && band >= 1 && band < 3;
+}
+
 export function generarPreguntaAnatomia(modo: ModoAnatomia, nivel: number, usados: Set<string>, rng: Rng = Math.random): PreguntaAnatomia {
   const band = banda(nivel);
   const esAlto = band >= 3 && modo !== "organos";
+
+  if (esNivelClickeableOseo(modo, band)) {
+    const poolClickeable = OSEO_BAJO.filter((x) => HUESO_CLICKEABLE[x]);
+    const disponibles = poolClickeable.filter((x) => !usados.has(x));
+    const correcta = elegir(disponibles.length > 0 ? disponibles : poolClickeable, rng);
+    return {
+      tipo: "click",
+      enunciado: `Clickeá dónde está: ${correcta}`,
+      objetivoHueso: HUESO_CLICKEABLE[correcta]!,
+      respuesta: correcta,
+      clave: correcta,
+    };
+  }
 
   let pool: string[];
   let etiqueta: string;
@@ -115,6 +181,7 @@ export function generarPreguntaAnatomia(modo: ModoAnatomia, nivel: number, usado
   const opciones = opcionesConDistractores(correcta, distractoresPool, rng);
 
   return {
+    tipo: "opcion",
     enunciado: `¿Cuál de estas opciones es ${etiqueta}?`,
     opciones,
     respuesta: correcta,

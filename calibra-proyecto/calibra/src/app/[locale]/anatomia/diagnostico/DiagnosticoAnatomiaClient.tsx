@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { generarPreguntaAnatomia, type PreguntaAnatomia } from "@/lib/practica/anatomia";
 import { tiempoEsperadoMs } from "@/lib/practica/formulas";
+import EsqueletoClickeable from "@/components/anatomia/EsqueletoClickeable";
 import { COLOR_ANATOMIA } from "../colores";
 
 type Fase = "intro" | "diagnostico" | "guardando" | "resultado";
@@ -61,7 +62,7 @@ export default function DiagnosticoAnatomiaClient({ destino }: Props) {
 
     // eslint-disable-next-line react-hooks/purity
     const timeMs = Math.round(performance.now() - shownAtRef.current);
-    const correct = opcion === pregunta.respuesta;
+    const correct = pregunta.tipo === "click" ? opcion === pregunta.objetivoHueso : opcion === pregunta.respuesta;
     setFeedback(correct ? "correcto" : "incorrecto");
 
     const esperado = tiempoEsperadoMs(nivelRef.current);
@@ -169,28 +170,37 @@ export default function DiagnosticoAnatomiaClient({ destino }: Props) {
             </div>
             <div className="flex w-full flex-col items-center gap-6 rounded-3xl border-2 border-border bg-surface px-8 py-10">
               <p className="text-center font-medium text-foreground">{pregunta.enunciado}</p>
-              <div className="grid w-full grid-cols-2 gap-2">
-                {pregunta.opciones.map((op) => {
-                  const esElegida = seleccion === op;
-                  const esCorrecta = feedback !== "idle" && op === pregunta.respuesta;
-                  return (
-                    <button
-                      key={op}
-                      onClick={() => handleResponder(op)}
-                      disabled={feedback !== "idle"}
-                      className={`rounded-xl border-2 px-4 py-3 text-sm font-medium transition-colors disabled:opacity-100 ${
-                        esCorrecta
-                          ? "border-correcto bg-correcto/10 text-correcto"
-                          : esElegida
-                            ? "border-error bg-error/10 text-error"
-                            : "border-border bg-background text-foreground"
-                      }`}
-                    >
-                      {op}
-                    </button>
-                  );
-                })}
-              </div>
+              {pregunta.tipo === "click" ? (
+                <EsqueletoClickeable
+                  objetivoHueso={pregunta.objetivoHueso}
+                  respondido={feedback !== "idle"}
+                  seleccion={seleccion}
+                  onClickHueso={handleResponder}
+                />
+              ) : (
+                <div className="grid w-full grid-cols-2 gap-2">
+                  {pregunta.opciones.map((op) => {
+                    const esElegida = seleccion === op;
+                    const esCorrecta = feedback !== "idle" && op === pregunta.respuesta;
+                    return (
+                      <button
+                        key={op}
+                        onClick={() => handleResponder(op)}
+                        disabled={feedback !== "idle"}
+                        className={`rounded-xl border-2 px-4 py-3 text-sm font-medium transition-colors disabled:opacity-100 ${
+                          esCorrecta
+                            ? "border-correcto bg-correcto/10 text-correcto"
+                            : esElegida
+                              ? "border-error bg-error/10 text-error"
+                              : "border-border bg-background text-foreground"
+                        }`}
+                      >
+                        {op}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
             <button onClick={saltear} className="text-sm text-texto-secundario hover:underline">
               Prefiero arrancar en nivel 1

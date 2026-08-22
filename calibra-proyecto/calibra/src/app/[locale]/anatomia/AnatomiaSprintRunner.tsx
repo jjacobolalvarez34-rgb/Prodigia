@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { generarPreguntaAnatomia, type ModoAnatomia, type PreguntaAnatomia } from "@/lib/practica/anatomia";
+import { generarPreguntaAnatomia, NOMBRE_POR_HUESO_CLICKEABLE, type ModoAnatomia, type PreguntaAnatomia } from "@/lib/practica/anatomia";
 import { reproducirTono } from "@/lib/sonido";
 import { useBonusTiempo } from "@/lib/practica/useBonusTiempo";
 import SonidoToggle from "@/components/SonidoToggle";
@@ -10,6 +10,7 @@ import RachaFuego from "@/components/RachaFuego";
 import LevelDial from "@/app/[locale]/practica/LevelDial";
 import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/TarjetaSprint";
 import BarraTiempo from "@/components/practica/BarraTiempo";
+import EsqueletoClickeable from "@/components/anatomia/EsqueletoClickeable";
 import { COLOR_ANATOMIA } from "./colores";
 
 const TOTAL_PREGUNTAS = 10;
@@ -105,7 +106,7 @@ export default function AnatomiaSprintRunner({
 
     // eslint-disable-next-line react-hooks/purity
     const timeMs = Math.round(performance.now() - shownAtRef.current);
-    const correct = opcion === pregunta.respuesta;
+    const correct = pregunta.tipo === "click" ? opcion === pregunta.objetivoHueso : opcion === pregunta.respuesta;
     reproducirTono(correct ? "correcto" : "error");
 
     if (correct) {
@@ -166,7 +167,14 @@ export default function AnatomiaSprintRunner({
 
   if (!pregunta) return null;
   const segundos = Math.ceil(remainingMs / 1000);
-  const feedback: "idle" | "correcto" | "incorrecto" = !respondido ? "idle" : seleccion === pregunta.respuesta ? "correcto" : "incorrecto";
+  const esCorrectoSeleccion =
+    pregunta.tipo === "click" ? seleccion === pregunta.objetivoHueso : seleccion === pregunta.respuesta;
+  const feedback: "idle" | "correcto" | "incorrecto" = !respondido ? "idle" : esCorrectoSeleccion ? "correcto" : "incorrecto";
+  // Para el reveal de texto (RevelarRespuesta): en modo click, "lo que
+  // elegiste" es un data-hueso (ej. "tibia"), no un nombre — se traduce
+  // acá para mostrar texto legible.
+  const miRespuestaTexto =
+    pregunta.tipo === "click" ? (seleccion ? (NOMBRE_POR_HUESO_CLICKEABLE[seleccion] ?? seleccion) : "") : (seleccion ?? "");
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-12">
@@ -203,33 +211,43 @@ export default function AnatomiaSprintRunner({
         cardKey={cardKey}
         feedback={feedback}
         puntaje={puntaje}
-        miRespuesta={seleccion ?? ""}
+        miRespuesta={miRespuestaTexto}
         respuestaCorrecta={pregunta.respuesta}
         padding="px-6 py-10"
+        minHeight={pregunta.tipo === "click" ? 460 : 300}
       >
         <p className="text-center font-display text-lg font-bold text-foreground">{pregunta.enunciado}</p>
-        <div className="grid w-full max-w-sm grid-cols-2 gap-2">
-          {pregunta.opciones.map((op) => {
-            const esElegida = seleccion === op;
-            const esCorrecta = respondido && op === pregunta.respuesta;
-            return (
-              <button
-                key={op}
-                onClick={() => handleElegir(op)}
-                disabled={respondido}
-                className={`rounded-xl border-2 px-4 py-3 text-sm font-medium transition-colors disabled:opacity-100 ${
-                  esCorrecta
-                    ? "border-correcto bg-correcto/10 text-correcto"
-                    : esElegida
-                      ? "border-error bg-error/10 text-error"
-                      : "border-border bg-background text-foreground"
-                }`}
-              >
-                {op}
-              </button>
-            );
-          })}
-        </div>
+        {pregunta.tipo === "click" ? (
+          <EsqueletoClickeable
+            objetivoHueso={pregunta.objetivoHueso}
+            respondido={respondido}
+            seleccion={seleccion}
+            onClickHueso={handleElegir}
+          />
+        ) : (
+          <div className="grid w-full max-w-sm grid-cols-2 gap-2">
+            {pregunta.opciones.map((op) => {
+              const esElegida = seleccion === op;
+              const esCorrecta = respondido && op === pregunta.respuesta;
+              return (
+                <button
+                  key={op}
+                  onClick={() => handleElegir(op)}
+                  disabled={respondido}
+                  className={`rounded-xl border-2 px-4 py-3 text-sm font-medium transition-colors disabled:opacity-100 ${
+                    esCorrecta
+                      ? "border-correcto bg-correcto/10 text-correcto"
+                      : esElegida
+                        ? "border-error bg-error/10 text-error"
+                        : "border-border bg-background text-foreground"
+                  }`}
+                >
+                  {op}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </TarjetaSprint>
     </div>
   );
