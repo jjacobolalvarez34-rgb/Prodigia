@@ -41,6 +41,123 @@ describe("generarMemoria escala de verdad con la dificultad", () => {
   });
 });
 
+// Auditoría 2026-08-24 (reporte real de usuario: "x = 4; x = x + 4;
+// repetir 4 veces" mostró opciones sin la respuesta correcta —
+// sospecha: el generador calcula como si fuera multiplicación en vez
+// de suma). El describe de arriba ("todas las dificultades") ya
+// verifica que la respuesta está entre las opciones, pero lo hace
+// comparando `p.respuesta` contra `p.contenido.opciones`, dos campos
+// que el generador arma desde LA MISMA variable `x` — un bug donde el
+// texto describe una operación y el valor real refleja otra podría
+// pasar ese chequeo sin que se note, porque nunca se compara contra
+// una fuente independiente. Este bloque interpreta el enunciado en
+// español desde cero (un intérprete aparte, que no toca ninguna
+// función interna de generadores.ts) y recalcula el resultado — si el
+// texto dice "x = x + 4" tiene que sumar 4, sin importar qué haya
+// hecho el generador puertas adentro.
+function aplicarPaso(x: number, paso: string): number {
+  const paso2 = paso.trim();
+  let m = paso2.match(/^x = x \+ (-?\d+)$/);
+  if (m) return x + Number(m[1]);
+  m = paso2.match(/^x = x - (-?\d+)$/);
+  if (m) return x - Number(m[1]);
+  if (paso2 === "x = x × 2") return x * 2;
+  throw new Error(`oráculo: paso no reconocido — "${paso2}"`);
+}
+
+function aplicarCondicional(x: number, regla: string): number {
+  let m = regla.match(/^si x es par: (.+); si no: (.+)$/);
+  if (m) return x % 2 === 0 ? aplicarPaso(x, m[1]) : aplicarPaso(x, m[2]);
+  m = regla.match(/^si x > (-?\d+): (.+); si no: (.+)$/);
+  if (m) return x > Number(m[1]) ? aplicarPaso(x, m[2]) : aplicarPaso(x, m[3]);
+  throw new Error(`oráculo: regla condicional no reconocida — "${regla}"`);
+}
+
+// Recalcula la respuesta esperada leyendo SOLO el texto del enunciado.
+// Devuelve null para las formas que no dan una respuesta numérica
+// (hoy: "ordenar pasos", verificado aparte más abajo).
+function respuestaEsperadaDesdeEnunciado(enunciado: string): number | null {
+  let m = enunciado.match(/^x = (-?\d+)\. Repetir (\d+) veces: \{ si x > (-?\d+): (.+); si no: (.+) \}\. ¿Cuánto vale x al final\?$/);
+  if (m) {
+    let x = Number(m[1]);
+    const veces = Number(m[2]);
+    const regla = `si x > ${m[3]}: ${m[4]}; si no: ${m[5]}`;
+    for (let i = 0; i < veces; i++) x = aplicarCondicional(x, regla);
+    return x;
+  }
+
+  m = enunciado.match(/^x = (-?\d+)\. Repetir (\d+) veces: \{ repetir (\d+) veces: (.+) \}\. ¿Cuánto vale x al final\?$/);
+  if (m) {
+    let x = Number(m[1]);
+    const veces = Number(m[2]);
+    const vecesInterno = Number(m[3]);
+    const texto = m[4];
+    for (let i = 0; i < veces; i++) for (let j = 0; j < vecesInterno; j++) x = aplicarPaso(x, texto);
+    return x;
+  }
+
+  m = enunciado.match(/^x = (-?\d+)\. Repetir (\d+) veces: (.+)\. ¿Cuánto vale x al final\?$/);
+  if (m) {
+    let x = Number(m[1]);
+    const veces = Number(m[2]);
+    const texto = m[3];
+    for (let i = 0; i < veces; i++) x = aplicarPaso(x, texto);
+    return x;
+  }
+
+  m = enunciado.match(/^x = (-?\d+)\. En orden: (.+)\. ¿Cuánto vale x al final\?$/);
+  if (m) {
+    let x = Number(m[1]);
+    const lineas = m[2].split(". ");
+    for (const linea of lineas) {
+      x = linea.startsWith("si ") ? aplicarCondicional(x, linea) : aplicarPaso(x, linea);
+    }
+    return x;
+  }
+
+  if (enunciado.includes("Estos 3 pasos están desordenados")) return null;
+
+  throw new Error(`oráculo: forma de enunciado no reconocida — "${enunciado}"`);
+}
+
+describe("generarComputacional — oráculo independiente (recalcula desde el texto, no desde el código interno)", () => {
+  it("2000 muestras repartidas en las 10 dificultades: la respuesta recalculada desde el enunciado coincide siempre con p.respuesta", () => {
+    for (let dificultad = 1; dificultad <= 10; dificultad++) {
+      for (let i = 0; i < 200; i++) {
+        const p = generarComputacional(dificultad);
+        const esperada = respuestaEsperadaDesdeEnunciado(p.contenido.enunciado);
+        if (esperada === null) continue; // "ordenar pasos" — verificado abajo
+        expect(esperada, `enunciado: "${p.contenido.enunciado}" / respuesta: "${p.respuesta}"`).toBe(Number(p.respuesta));
+      }
+    }
+  });
+
+  it("caso puntual del reporte de usuario: bucle de suma simple calcula por suma, no por multiplicación", () => {
+    // x = 4, "x = x + 4", repetir 4 veces → 4 + 4*4 = 20 (suma), no
+    // 4 × 2^4 = 64 ni 4×4×4×4 (lo que "multiplicación en vez de suma"
+    // habría dado). Se arma el enunciado a mano, se corre por el mismo
+    // oráculo de arriba.
+    const enunciado = "x = 4. Repetir 4 veces: x = x + 4. ¿Cuánto vale x al final?";
+    expect(respuestaEsperadaDesdeEnunciado(enunciado)).toBe(20);
+  });
+
+  it("500 muestras de 'ordenar pasos' (dificultad 8-10): aplicar la secuencia de la respuesta desde x inicial da el resultado que el enunciado promete", () => {
+    let vistas = 0;
+    for (let i = 0; i < 500; i++) {
+      const p = generarComputacional(8 + (i % 3));
+      const m = p.contenido.enunciado.match(
+        /^x = (-?\d+)\. Estos 3 pasos están desordenados — ¿en qué orden hay que aplicarlos para que x termine en (-?\d+)\?$/
+      );
+      if (!m) continue;
+      vistas++;
+      let x = Number(m[1]);
+      for (const paso of p.respuesta.split(" → ")) x = aplicarPaso(x, paso);
+      expect(x, `enunciado: "${p.contenido.enunciado}" / secuencia respuesta: "${p.respuesta}"`).toBe(Number(m[2]));
+    }
+    expect(vistas).toBeGreaterThan(0);
+  });
+});
+
 describe("generarPatron sigue funcionando igual (sin cambios de esta tanda)", () => {
   it("siempre da 4 opciones únicas con la respuesta adentro", () => {
     for (let dificultad = 1; dificultad <= 10; dificultad++) {

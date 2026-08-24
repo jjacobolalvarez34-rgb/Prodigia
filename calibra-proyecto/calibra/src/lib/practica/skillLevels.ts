@@ -65,7 +65,16 @@ export type ProblemTypeCalibrable =
   | "potencias_notacion"
   | "algebra_evaluar"
   | "algebra_un-paso"
-  | "algebra_dos-pasos";
+  | "algebra_dos-pasos"
+  | "anatomia_oseo"
+  | "anatomia_muscular"
+  | "anatomia_organos"
+  | "anatomia_nervioso"
+  | "melodia_fundamentos"
+  | "melodia_lectura"
+  | "melodia_alteraciones"
+  | "melodia_escalas"
+  | "melodia_acordes";
 
 export async function actualizarSkillLevel(
   supabase: SupabaseClient,

@@ -15,3 +15,9 @@ export const CATEGORIA_ENIGMIA_INVITADO: CategoriaEnigmia = "memoria";
 export function operacionPermitidaInvitado(tipo: ArithmeticProblemType): boolean {
   return (OPERACIONES_INVITADO as string[]).includes(tipo);
 }
+
+// Melodía (Fase 1, 2026-08-24) — decisión explícita, no un hueco: mismo
+// criterio que Quimia y Anatomía, ninguna de las dos tiene entrada acá
+// tampoco. Un invitado puede practicar cualquier modo sin restricción
+// (Aprender sigue bloqueado aparte, vía bloquearInvitado() en las
+// páginas de aprender/ — mismo patrón que Quimia/Anatomía).

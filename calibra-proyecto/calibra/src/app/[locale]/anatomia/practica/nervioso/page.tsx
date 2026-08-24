@@ -10,16 +10,28 @@ export const metadata: Metadata = {
   description: "Sistema nervioso y pares craneales, con dificultad adaptativa.",
 };
 
-export default async function AnatomiaNerviosoPage() {
+interface Props {
+  searchParams: Promise<{ duelo?: string }>;
+}
+
+export default async function AnatomiaNerviosoPage({ searchParams }: Props) {
+  const { duelo } = await searchParams;
   const supabase = await createClient();
   const { user } = await requireMundoAnatomia(supabase, "/anatomia/practica/nervioso");
 
-  const { nivelInicial, escudosExtra, boostActivo } = await cargarDatosPracticaAnatomia(supabase, user.id, "nervioso");
+  const { modo, nivelInicial, escudosExtra, boostActivo, dueloInfo } = await cargarDatosPracticaAnatomia(supabase, user.id, "nervioso", duelo);
 
   return (
     <>
       <Header autenticado />
-      <AnatomiaPracticaClient modo="nervioso" nivelInicial={nivelInicial} escudosExtra={escudosExtra} boostActivo={boostActivo} />
+      <AnatomiaPracticaClient
+        modo={modo}
+        nivelInicial={nivelInicial}
+        escudosExtra={escudosExtra}
+        boostActivo={boostActivo}
+        duelo={dueloInfo}
+        miUserId={user.id}
+      />
     </>
   );
 }

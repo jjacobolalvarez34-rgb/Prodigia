@@ -25,6 +25,17 @@
   torácica en un grupo propio (a diferencia del resto de los huesos acá
   listados), y no se aproximó una zona de click a mano sin verificación
   geométrica real — ese término sigue en formato de opción múltiple.
+
+  2026-08-23 (auditoría "Anatomía a nivel 10"): se sumaron data-hueso a
+  6 grupos más que el SVG fuente YA traía separados por mano/pie, sin
+  usar hasta ahora — carpianos, metacarpianos, falanges de la mano,
+  tarsianos, metatarsianos, falanges del pie (cada uno con su versión
+  izquierda y derecha ya dibujada, sin necesidad de espejar nada). Se
+  usan como contenido de nivel alto (7-10) del modo óseo, junto a los
+  huesos del cráneo — que SIGUEN sin data-hueso propio (el cráneo es un
+  grupo único en el SVG, sin sub-huesos individuales marcados), así que
+  esos términos puntuales se quedan en opción múltiple dentro del mismo
+  nivel alto.
 -->
 <g
   
@@ -37,7 +48,7 @@
 	
 	<g
    id="TarsalsLeft"
-  ><g
+   data-hueso="tarsianos"><g
      id="g13">
 		<path
    style="fill:#f3d48c;stroke:#967348;stroke-width:0.26899999"
@@ -107,7 +118,7 @@
    style="fill:#dcc06d" />
 		</g></g><g
    id="MetatarsalsLeft"
-  ><g
+   data-hueso="metatarsianos"><g
      id="g57">
 				<path
    style="fill:#f3d48c;stroke:#967348;stroke-width:0.26899999"
@@ -191,7 +202,7 @@
    d="M 220.243,783.063 C 219.834,782.959 219.654,783.611 219.64,783.981 C 219.52,783.76 219.407,783.548 219.341,783.294 C 219.587,783.11 219.889,782.956 220.164,782.93" />
 			</g></g><g
    id="PhalangesFootLeft"
-  ><g
+   data-hueso="falanges_pie"><g
      id="g103">
 				<g
    id="g105">
@@ -367,7 +378,7 @@
 	
 	<g
    id="TarsalsRight"
-  ><g
+   data-hueso="tarsianos"><g
      id="g195">
 		<path
    style="fill:#f3d48c;stroke:#967348;stroke-width:0.26069999"
@@ -437,7 +448,7 @@
    style="fill:#dcc06d" />
 		</g></g><g
    id="MetatarsalsRight"
-  ><g
+   data-hueso="metatarsianos"><g
      id="g239">
 				<path
    style="fill:#f3d48c;stroke:#967348;stroke-width:0.26069999"
@@ -521,7 +532,7 @@
    d="M 178.234,782.168 C 178.636,782.048 178.853,782.65 178.888,782.996 C 178.995,782.783 179.094,782.577 179.147,782.335 C 178.891,782.176 178.58,782.048 178.305,782.038" />
 			</g></g><g
    id="PhalangesFootRight"
-  >
+   data-hueso="falanges_pie">
 				<g
    id="g287">
 					<path
@@ -3451,7 +3462,7 @@
 	
 	<g
    id="CarpalsLeft"
-  >
+   data-hueso="carpianos">
 		<g
    id="g1993">
 			<path
@@ -3597,7 +3608,7 @@
 	
 	<g
    id="MetacarpalsLeft"
-  ><g
+   data-hueso="metacarpianos"><g
      id="g1893">
 		<path
    style="fill:#f9ce82;stroke:#967348;stroke-width:0.32179999"
@@ -3728,7 +3739,7 @@
 	
 	<g
    id="PhalangesLeft"
-  ><g
+   data-hueso="falanges_mano"><g
      id="g1801">
 		<path
    style="fill:#f9e3b7;stroke:#967348;stroke-width:0.32179999"
@@ -4062,7 +4073,7 @@
 	
 	<g
    id="CarpalsRight"
-  ><g
+   data-hueso="carpianos"><g
      id="g2121">
 		<path
    style="fill:#f3d48c;stroke:#967348;stroke-width:0.32179999"
@@ -4186,7 +4197,7 @@
 	
 	<g
    id="PhalangesRight"
-  ><g
+   data-hueso="falanges_mano"><g
      id="g2155">
 		<path
    style="fill:#f3d48c;stroke:#967348;stroke-width:0.32179999"
@@ -4416,7 +4427,7 @@
 	
 	<g
    id="MetacarpalsRight"
-  ><g
+   data-hueso="metacarpianos"><g
      id="g2315">
 		<path
    style="fill:#f3d48c;stroke:#967348;stroke-width:0.32179999"

@@ -167,6 +167,19 @@ export function IconAnatomia({ className }: IconProps) {
   );
 }
 
+// Mundo Melodía (Fase 1): corchea simple — mismo trazo de 2px que el
+// resto de los íconos de mundo, nada de glifos musicales importados acá
+// (esos viven en Pentagrama.tsx, donde sí hace falta el glifo real).
+export function IconMelodia({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="7" cy="18" r="3" fill="currentColor" stroke="none" />
+      <path d="M10 18V5l8-2v11" />
+      <circle cx="18" cy="14" r="3" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function IconEscudo({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

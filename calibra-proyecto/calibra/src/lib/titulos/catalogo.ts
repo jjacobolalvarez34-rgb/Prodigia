@@ -7,8 +7,8 @@
 // idempotente, el primero que se desbloquea se activa solo), solo que
 // disparado desde acá (verificar.ts) en vez de desde SQL.
 export type CriterioTitulo =
-  | { tipo: "mundo_completado"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" }
-  | { tipo: "aprender_completo"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" }
+  | { tipo: "mundo_completado"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" }
+  | { tipo: "aprender_completo"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" }
   | { tipo: "partidas_totales"; valor: number }
   | { tipo: "precision_semana"; valor: number }
   | { tipo: "duelos_ganados"; valor: number }
@@ -33,6 +33,8 @@ export const CATALOGO_TITULOS: TituloCatalogo[] = [
   { slug: "maestro-geografia", nombre: "Maestro de Geografía", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "geografia" } },
   { slug: "maestro-enigmia", nombre: "Maestro de Enigmia", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "enigmia" } },
   { slug: "maestro-quimia", nombre: "Maestro de Quimia", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "quimia" } },
+  { slug: "maestro-anatomia", nombre: "Maestro de Anatomía", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "anatomia" } },
+  { slug: "maestro-melodia", nombre: "Maestro de Melodía", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "melodia" } },
 
   // ---------- por volumen de juego (partidas ≈ problemas resueltos / 10) ----------
   { slug: "partidas-10", nombre: "Recién Empezás", categoria: "volumen", criterio: { tipo: "partidas_totales", valor: 10 } },
@@ -72,11 +74,17 @@ export const CATALOGO_TITULOS: TituloCatalogo[] = [
   { slug: "retos-30", nombre: "Ritual Diario", categoria: "constancia", criterio: { tipo: "racha_retos_diarios", valor: 30 } },
 
   // ---------- por curiosidad / exploración ----------
-  { slug: "explorador-total", nombre: "Explorador Total", categoria: "curiosidad", criterio: { tipo: "mundos_explorados", valor: 4 } },
+  // Sube de 5 a 6: desde que existe Melodía, "todos los mundos" ya son
+  // 6 — dejarlo en 5 hacía que el título se desbloqueara sin haber
+  // tocado Melodía, contradiciendo el propio nombre ("Total"). Mismo
+  // ajuste que se hizo cuando entró Anatomía (4→5).
+  { slug: "explorador-total", nombre: "Explorador Total", categoria: "curiosidad", criterio: { tipo: "mundos_explorados", valor: 6 } },
   { slug: "embajador", nombre: "Embajador", categoria: "curiosidad", criterio: { tipo: "embajador" } },
   { slug: "chispas-de-sobra", nombre: "Chispas de Sobra", categoria: "curiosidad", criterio: { tipo: "chispas_balance", valor: 5000 } },
   { slug: "estudioso-numeria", nombre: "Estudioso de Numeria", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "numeria" } },
   { slug: "estudioso-geografia", nombre: "Estudioso de Geografía", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "geografia" } },
   { slug: "estudioso-enigmia", nombre: "Estudioso de Enigmia", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "enigmia" } },
   { slug: "estudioso-quimia", nombre: "Estudioso de Quimia", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "quimia" } },
+  { slug: "estudioso-anatomia", nombre: "Estudioso de Anatomía", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "anatomia" } },
+  { slug: "estudioso-melodia", nombre: "Estudioso de Melodía", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "melodia" } },
 ];

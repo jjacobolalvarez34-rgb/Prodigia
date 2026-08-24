@@ -166,6 +166,75 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     quimiaNivelMundo = worldRow?.nivel_mundo ?? 0;
   }
 
+  // Auditoría de mundo nuevo (2026-08-23): Anatomía nunca tuvo criterios
+  // propios acá, a diferencia de Quimia — mismo patrón, sus 4 modos.
+  const TIPOS_ANATOMIA = ["anatomia_oseo", "anatomia_muscular", "anatomia_organos", "anatomia_nervioso"];
+
+  let anatomiaProblemasTotales = 0;
+  if (tiposNecesarios.has("anatomia_problemas_totales")) {
+    const { count } = await supabase
+      .from("attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_ANATOMIA);
+    anatomiaProblemasTotales = count ?? 0;
+  }
+
+  let anatomiaModosVariados = 0;
+  if (tiposNecesarios.has("anatomia_modos_variados")) {
+    const { data: anatomiaRows } = await supabase
+      .from("attempts")
+      .select("problem_type")
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_ANATOMIA);
+    anatomiaModosVariados = new Set((anatomiaRows ?? []).map((r) => r.problem_type)).size;
+  }
+
+  let anatomiaNivelMundo = 0;
+  if (tiposNecesarios.has("anatomia_nivel_mundo")) {
+    const { data: worldRow } = await supabase
+      .from("world_progress")
+      .select("nivel_mundo")
+      .eq("user_id", userId)
+      .eq("world", "anatomia")
+      .maybeSingle();
+    anatomiaNivelMundo = worldRow?.nivel_mundo ?? 0;
+  }
+
+  // Mundo Melodía (Fase 1, 2026-08-24): mismo patrón que Anatomía, sus 5 modos.
+  const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes"];
+
+  let melodiaProblemasTotales = 0;
+  if (tiposNecesarios.has("melodia_problemas_totales")) {
+    const { count } = await supabase
+      .from("attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_MELODIA);
+    melodiaProblemasTotales = count ?? 0;
+  }
+
+  let melodiaModosVariados = 0;
+  if (tiposNecesarios.has("melodia_modos_variados")) {
+    const { data: melodiaRows } = await supabase
+      .from("attempts")
+      .select("problem_type")
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_MELODIA);
+    melodiaModosVariados = new Set((melodiaRows ?? []).map((r) => r.problem_type)).size;
+  }
+
+  let melodiaNivelMundo = 0;
+  if (tiposNecesarios.has("melodia_nivel_mundo")) {
+    const { data: worldRow } = await supabase
+      .from("world_progress")
+      .select("nivel_mundo")
+      .eq("user_id", userId)
+      .eq("world", "melodia")
+      .maybeSingle();
+    melodiaNivelMundo = worldRow?.nivel_mundo ?? 0;
+  }
+
   let rachaRetosDiarios = 0;
   if (tiposNecesarios.has("racha_retos_diarios")) {
     const { data: retoRows } = await supabase
@@ -229,6 +298,12 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     else if (tipo === "quimia_problemas_totales") cumplido = quimiaProblemasTotales >= valor;
     else if (tipo === "quimia_modos_variados") cumplido = quimiaModosVariados >= valor;
     else if (tipo === "quimia_nivel_mundo") cumplido = quimiaNivelMundo >= valor;
+    else if (tipo === "anatomia_problemas_totales") cumplido = anatomiaProblemasTotales >= valor;
+    else if (tipo === "anatomia_modos_variados") cumplido = anatomiaModosVariados >= valor;
+    else if (tipo === "anatomia_nivel_mundo") cumplido = anatomiaNivelMundo >= valor;
+    else if (tipo === "melodia_problemas_totales") cumplido = melodiaProblemasTotales >= valor;
+    else if (tipo === "melodia_modos_variados") cumplido = melodiaModosVariados >= valor;
+    else if (tipo === "melodia_nivel_mundo") cumplido = melodiaNivelMundo >= valor;
     else if (tipo === "mundo_completado_numeria") cumplido = numeriaCompletado;
     else if (tipo === "mundo_completado_geografia") cumplido = geografiaCompletado;
     else if (tipo === "mundo_completado_quimia") cumplido = quimiaCompletado;

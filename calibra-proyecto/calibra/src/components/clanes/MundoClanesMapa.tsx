@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { tierCiudadDeNivel } from "@/lib/clanes/tierCiudad";
-import EscenaCiudad from "./EscenaCiudad";
+import EscenaCiudad, { type MiembroCasa } from "./EscenaCiudad";
 import EstandarteClan from "./EstandarteClan";
 
 export interface ParcelaClan {
@@ -43,6 +43,7 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
   const contenedorRef = useRef<HTMLDivElement>(null);
 
   const [seleccionado, setSeleccionado] = useState<ClanPublico | null>(null);
+  const [miembrosClan, setMiembrosClan] = useState<MiembroCasa[]>([]);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
 
   function onPointerDown(e: React.PointerEvent) {
@@ -73,11 +74,24 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
 
   async function abrirClan(clanId: string) {
     setCargandoDetalle(true);
+    setMiembrosClan([]);
     try {
       const supabase = createClient();
-      const { data } = await supabase.rpc("ver_clan_publico", { p_clan_id: clanId });
+      // Fase 4 (bug "la ciudad del clan no carga ni las casas por
+      // miembro"): antes acá solo se pedía ver_clan_publico — la lista
+      // de miembros nunca se cargaba, así que EscenaCiudad nunca tenía
+      // nada que dibujar aparte del tier. miembros_de_clan() ya existe
+      // (se usa hoy para MI propio clan en ClanesClient.tsx) y no tiene
+      // ningún chequeo de "sos miembro de este clan" — ya es de lectura
+      // pública para cualquier clan_id, solo nunca se había llamado
+      // desde el mapa.
+      const [{ data }, { data: miembrosData }] = await Promise.all([
+        supabase.rpc("ver_clan_publico", { p_clan_id: clanId }),
+        supabase.rpc("miembros_de_clan", { p_clan_id: clanId }),
+      ]);
       const fila = (data as ClanPublico[] | null)?.[0];
       if (fila) setSeleccionado(fila);
+      setMiembrosClan((miembrosData as MiembroCasa[] | null) ?? []);
     } finally {
       setCargandoDetalle(false);
     }
@@ -137,7 +151,12 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
       </div>
 
       {(seleccionado || cargandoDetalle) && (
-        <PanelClan clan={seleccionado} cargando={cargandoDetalle} onCerrar={() => setSeleccionado(null)} />
+        <PanelClan
+          clan={seleccionado}
+          miembros={miembrosClan}
+          cargando={cargandoDetalle}
+          onCerrar={() => setSeleccionado(null)}
+        />
       )}
     </div>
   );
@@ -167,14 +186,29 @@ function ParcelaTile({ parcela, onClick }: { parcela: ParcelaClan; onClick: () =
   );
 }
 
-function PanelClan({ clan, cargando, onCerrar }: { clan: ClanPublico | null; cargando: boolean; onCerrar: () => void }) {
+function PanelClan({
+  clan,
+  miembros,
+  cargando,
+  onCerrar,
+}: {
+  clan: ClanPublico | null;
+  miembros: MiembroCasa[];
+  cargando: boolean;
+  onCerrar: () => void;
+}) {
   return (
     <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
       {cargando && !clan ? (
         <p className="text-sm text-texto-secundario">Cargando…</p>
       ) : clan ? (
         <div className="flex flex-col gap-3">
-          <EscenaCiudad nivelClan={clan.nivel_clan} colorEstandarte={clan.color_estandarte} className="h-40 w-full" />
+          <EscenaCiudad
+            nivelClan={clan.nivel_clan}
+            colorEstandarte={clan.color_estandarte}
+            miembros={miembros}
+            className="h-40 w-full"
+          />
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-start gap-2">
               <EstandarteClan color={clan.color_estandarte} nivel={clan.nivel_clan} imagenUrl={clan.imagen_url} size={36} />

@@ -10,16 +10,28 @@ export const metadata: Metadata = {
   description: "Órganos principales del cuerpo humano, con dificultad adaptativa.",
 };
 
-export default async function AnatomiaOrganosPage() {
+interface Props {
+  searchParams: Promise<{ duelo?: string }>;
+}
+
+export default async function AnatomiaOrganosPage({ searchParams }: Props) {
+  const { duelo } = await searchParams;
   const supabase = await createClient();
   const { user } = await requireMundoAnatomia(supabase, "/anatomia/practica/organos");
 
-  const { nivelInicial, escudosExtra, boostActivo } = await cargarDatosPracticaAnatomia(supabase, user.id, "organos");
+  const { modo, nivelInicial, escudosExtra, boostActivo, dueloInfo } = await cargarDatosPracticaAnatomia(supabase, user.id, "organos", duelo);
 
   return (
     <>
       <Header autenticado />
-      <AnatomiaPracticaClient modo="organos" nivelInicial={nivelInicial} escudosExtra={escudosExtra} boostActivo={boostActivo} />
+      <AnatomiaPracticaClient
+        modo={modo}
+        nivelInicial={nivelInicial}
+        escudosExtra={escudosExtra}
+        boostActivo={boostActivo}
+        duelo={dueloInfo}
+        miUserId={user.id}
+      />
     </>
   );
 }

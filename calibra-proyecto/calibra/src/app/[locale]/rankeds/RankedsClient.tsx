@@ -20,6 +20,8 @@ const COLOR_MUNDO: Record<MundoDuelo, string> = {
   numeria: "#6C4CF1",
   enigmia: "#0E9F6E",
   geografia: "#1E7A8C",
+  anatomia: "#8B2942",
+  melodia: "#B8860B",
   quimia: "#C026D3",
 };
 
@@ -55,6 +57,8 @@ const NOMBRE_MUNDO: Record<MundoDuelo, string> = {
   numeria: "Numeria",
   geografia: "Geografía",
   enigmia: "Enigmia",
+  anatomia: "Anatomía",
+  melodia: "Melodía",
   quimia: "Quimia",
 };
 
@@ -371,6 +375,8 @@ function BuscarPartida({
     { id: "geografia", nombre: "Geografía", descripcion: t("ciudades.geografia") },
     { id: "enigmia", nombre: "Enigmia", descripcion: t("ciudades.enigmia") },
     { id: "quimia", nombre: "Quimia", descripcion: t("ciudades.quimia") },
+    { id: "anatomia", nombre: "Anatomía", descripcion: t("ciudades.anatomia") },
+    { id: "melodia", nombre: "Melodía", descripcion: t("ciudades.melodia") },
     { id: "aleatorio", nombre: t("todasLasCiudades"), descripcion: t("ciudades.aleatorio") },
   ];
   // Fase 7 (Rankeds: Platino+ solo "todas las ciudades"): desde Platino

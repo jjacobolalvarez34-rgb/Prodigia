@@ -90,6 +90,15 @@ export async function POST(request: Request) {
     "algebra_evaluar",
     "algebra_un-paso",
     "algebra_dos-pasos",
+    "anatomia_oseo",
+    "anatomia_muscular",
+    "anatomia_organos",
+    "anatomia_nervioso",
+    "melodia_fundamentos",
+    "melodia_lectura",
+    "melodia_alteraciones",
+    "melodia_escalas",
+    "melodia_acordes",
   ];
   if (!sospechoso && (tiposCalibrables as string[]).includes(body.problem_type)) {
     skillLevel = await actualizarSkillLevel(

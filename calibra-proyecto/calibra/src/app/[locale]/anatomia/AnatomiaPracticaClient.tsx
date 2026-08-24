@@ -1,17 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { NOMBRE_MODO_ANATOMIA, type ModoAnatomia, type PreguntaAnatomia } from "@/lib/practica/anatomia";
+import type { DueloAnatomiaInfo } from "@/lib/anatomia/cargarPractica";
 import type { Achievement } from "@/types/database";
 import Boton from "@/components/Boton";
 import BotonesFinPartida from "@/components/BotonesFinPartida";
 import LogroBanner from "@/components/LogroBanner";
 import ApuestaResultado from "@/components/ApuestaResultado";
 import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSubio";
+import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/ResultadoDueloBlock";
+import SalaEsperaDuelo from "@/components/duelos/SalaEsperaDuelo";
+import { useArranqueSincronizado } from "@/lib/duelos/useArranqueSincronizado";
+import { useDeteccionAbandono } from "@/lib/duelos/useDeteccionAbandono";
+import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
+import BotonRendirse from "@/components/duelos/BotonRendirse";
 import AnatomiaSprintRunner from "./AnatomiaSprintRunner";
 import { COLOR_ANATOMIA } from "./colores";
 
-type Fase = "inicio" | "sprint" | "resumen";
+type Fase = "inicio" | "vs" | "sprint" | "finalizando" | "resumen";
 
 interface FinishResponse {
   sprint: { total: number; correctos: number; precision: number | null; xpGanado: number; avgTimeMs: number | null };
@@ -29,15 +37,30 @@ interface Props {
   nivelInicial: number;
   escudosExtra: number;
   boostActivo: boolean;
+  duelo?: DueloAnatomiaInfo | null;
+  miUserId: string;
 }
 
-export default function AnatomiaPracticaClient({ modo, nivelInicial, escudosExtra, boostActivo }: Props) {
-  const [fase, setFase] = useState<Fase>("inicio");
+// Fase 2 ("extender duelos a los mundos que faltan"): mismo patrón que
+// EnigmiaPracticaClient.tsx (sin sala de espera sincronizada propia,
+// sin semilla — ver comentario en cargarPractica.ts).
+export default function AnatomiaPracticaClient({ modo, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
+  const router = useRouter();
+  const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
   const [startedAtIso, setStartedAtIso] = useState("");
   const [startedAtPerf, setStartedAtPerf] = useState(0);
   const [resumen, setResumen] = useState<FinishResponse | null>(null);
   const [errores, setErrores] = useState<PreguntaAnatomia[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [resultadoDuelo, setResultadoDuelo] = useState<ResultadoDuelo | null>(null);
+
+  const { estado: estadoArranque, segundos: segundosVs, rivalPresente, empezarAhora } = useArranqueSincronizado({
+    duelId: duelo?.duelId,
+    miUserId,
+    rivalId: duelo?.rivalId,
+    rivalEsBot: duelo?.rivalEsBot,
+    onEmpezar: () => iniciar(),
+  });
 
   function iniciar() {
     setStartedAtIso(new Date().toISOString());
@@ -48,6 +71,7 @@ export default function AnatomiaPracticaClient({ modo, nivelInicial, escudosExtr
 
   async function handleFinish(erroresPartida: PreguntaAnatomia[]) {
     setErrores(erroresPartida);
+    setFase("finalizando");
     try {
       const res = await fetch("/api/practica/finish", {
         method: "POST",
@@ -57,9 +81,36 @@ export default function AnatomiaPracticaClient({ modo, nivelInicial, escudosExtr
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "No se pudo cerrar la partida.");
-      } else {
-        setError(null);
-        setResumen(data as FinishResponse);
+        setFase("resumen");
+        return;
+      }
+      setError(null);
+      const finishData = data as FinishResponse;
+      setResumen(finishData);
+
+      if (duelo) {
+        try {
+          const resDuelo = await fetch("/api/duelos/resultado", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              duel_id: duelo.duelId,
+              precision: finishData.sprint.precision ?? 0,
+              tiempo_promedio: finishData.sprint.avgTimeMs ?? 0,
+              puntaje: finishData.sprint.xpGanado,
+            }),
+          });
+          const dataDuelo = await resDuelo.json();
+          if (resDuelo.ok) {
+            if (duelo.serieId) {
+              router.push(`/rankeds/serie/${duelo.serieId}`);
+              return;
+            }
+            setResultadoDuelo(dataDuelo as ResultadoDuelo);
+          }
+        } catch {
+          // El duelo no se pudo resolver por un error de red puntual.
+        }
       }
     } catch {
       setError("No pudimos conectar con el servidor. Probá de nuevo.");
@@ -67,10 +118,75 @@ export default function AnatomiaPracticaClient({ modo, nivelInicial, escudosExtr
     setFase("resumen");
   }
 
+  async function handleAbandonoDetectado() {
+    if (!duelo) return;
+    try {
+      await fetch("/api/duelos/reclamar-abandono", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ duel_id: duelo.duelId }),
+      });
+    } catch {
+      // Si falla, el usuario puede reintentar rindiéndose o navegando afuera.
+    }
+    router.push(duelo.serieId ? `/rankeds/serie/${duelo.serieId}` : "/rankeds");
+  }
+
+  useDeteccionAbandono({
+    duelId: duelo?.duelId,
+    miUserId,
+    rivalId: duelo?.rivalId,
+    rivalEsBot: duelo?.rivalEsBot,
+    activo: fase === "sprint" && !!duelo,
+    onAbandonoDetectado: handleAbandonoDetectado,
+  });
+
+  if (fase === "vs" && duelo) {
+    return (
+      <SalaEsperaDuelo
+        estado={estadoArranque}
+        segundos={segundosVs}
+        rivalPresente={rivalPresente}
+        miElo={duelo.miElo}
+        rivalNombre={duelo.rivalNombre}
+        rivalElo={duelo.rivalElo}
+        rivalEsBot={duelo.rivalEsBot}
+        modo={duelo.serieId ? "mejor_de_3" : "simple"}
+        subtitulo={duelo.serieId ? `Ronda ${duelo.rondaNumero}/${duelo.rondaTotal} · Anatomía` : "Anatomía"}
+        onEmpezarAhora={empezarAhora}
+        duelId={duelo.duelId}
+      />
+    );
+  }
+
   if (fase === "sprint") {
     return (
-      <AnatomiaSprintRunner modo={modo} startedAt={startedAtPerf} nivelInicial={nivelInicial} escudosExtra={escudosExtra} onFinish={handleFinish} />
+      <>
+        {duelo && !duelo.rivalEsBot && (
+          <div className="mx-auto flex w-full max-w-lg justify-end px-4 pt-4">
+            <BotonRendirse
+              duelId={duelo.duelId}
+              onRendido={() => router.push(duelo.serieId ? `/rankeds/serie/${duelo.serieId}` : "/rankeds")}
+            />
+          </div>
+        )}
+        <AnatomiaSprintRunner
+          modo={modo}
+          startedAt={startedAtPerf}
+          nivelInicial={nivelInicial}
+          escudosExtra={escudosExtra}
+          nivelForzado={duelo?.nivel}
+          duelId={duelo?.duelId}
+          miUserId={miUserId}
+          rivalNombre={duelo?.rivalNombre}
+          onFinish={handleFinish}
+        />
+      </>
     );
+  }
+
+  if (fase === "finalizando") {
+    return <TransicionFinalizando />;
   }
 
   if (fase === "resumen" && error) {
@@ -94,6 +210,7 @@ export default function AnatomiaPracticaClient({ modo, nivelInicial, escudosExtr
         <LogroBanner logros={resumen.logrosNuevos} />
         <NivelMundoSubio nivelMundo={resumen.nivelMundo} />
         <ApuestaResultado apuesta={resumen.apuesta ?? null} />
+        <ResultadoDueloBlock duelo={resultadoDuelo} />
         <div className="flex flex-col items-center gap-2 text-center">
           <p className="font-display text-lg font-bold text-foreground">Ahí quedó.</p>
           <p className="font-mono text-3xl font-bold text-foreground">
@@ -122,7 +239,11 @@ export default function AnatomiaPracticaClient({ modo, nivelInicial, escudosExtr
           <p className="text-sm text-texto-secundario">Ninguna fallada — así se hace. 🎯</p>
         )}
 
-        <BotonesFinPartida onOtraVez={() => setFase("inicio")} volverHref="/anatomia" colorHex={COLOR_ANATOMIA} />
+        <BotonesFinPartida
+          onOtraVez={duelo ? () => router.push("/rankeds?tab=buscar") : () => setFase("inicio")}
+          volverHref={duelo ? "/rankeds" : "/anatomia"}
+          colorHex={COLOR_ANATOMIA}
+        />
       </div>
     );
   }

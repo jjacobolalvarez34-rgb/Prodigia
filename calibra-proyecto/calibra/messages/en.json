@@ -41,6 +41,8 @@
       "geografia": "Continent based on your rank",
       "enigmia": "Category based on your rank",
       "quimia": "Mode based on your rank",
+      "anatomia": "System based on your rank",
+      "melodia": "Mode based on your rank",
       "aleatorio": "Best of 3, one city per round"
     },
     "buscandoRival": "Looking for a rival…",

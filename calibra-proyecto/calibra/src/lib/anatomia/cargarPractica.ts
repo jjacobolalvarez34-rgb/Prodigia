@@ -1,19 +1,70 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ModoAnatomia } from "@/lib/practica/anatomia";
 
+export interface DueloAnatomiaInfo {
+  duelId: string;
+  rivalId: string;
+  rivalNombre: string;
+  miElo: number;
+  rivalElo: number;
+  miTituloNombre: string | null;
+  rivalTituloNombre: string | null;
+  rivalEsBot: boolean;
+  serieId: string | null;
+  rondaNumero: number;
+  rondaTotal: number;
+  nivel: number;
+}
+
 export interface DatosPracticaAnatomia {
+  modo: ModoAnatomia;
   nivelInicial: number;
   escudosExtra: number;
   boostActivo: boolean;
+  dueloInfo: DueloAnatomiaInfo | null;
 }
 
-// Compartido por los 4 page.tsx de /anatomia/practica/* — mismo
-// criterio que cargarPractica.ts de Quimia.
+const MODOS_VALIDOS: ModoAnatomia[] = ["oseo", "muscular", "organos", "nervioso"];
+
+// Fase 2 ("extender duelos a los mundos que faltan"): mismo patrón que
+// cargarDatosPracticaQuimia, sin semilla (Anatomía no sincroniza
+// contenido entre los dos rivales — mismo criterio que Enigmia/
+// Geografía: cada uno resuelve su propio set al azar, a la misma
+// dificultad).
 export async function cargarDatosPracticaAnatomia(
   supabase: SupabaseClient,
   userId: string,
-  modo: ModoAnatomia
+  modoDeLaRuta: ModoAnatomia,
+  duelo?: string
 ): Promise<DatosPracticaAnatomia> {
+  let dueloInfo: DueloAnatomiaInfo | null = null;
+  let modo = modoDeLaRuta;
+
+  if (duelo) {
+    const { data } = await supabase.rpc("obtener_duelo", { p_duel_id: duelo });
+    const fila = (data as Array<Record<string, unknown>> | null)?.[0];
+    if (fila && fila.estado === "pendiente" && fila.mundo === "anatomia") {
+      const subTipo = fila.sub_tipo as string | null;
+      if (subTipo && (MODOS_VALIDOS as string[]).includes(subTipo)) {
+        modo = subTipo as ModoAnatomia;
+      }
+      dueloInfo = {
+        duelId: duelo,
+        rivalId: fila.retador_id === userId ? (fila.retado_id as string) : (fila.retador_id as string),
+        rivalNombre: (fila.rival_nombre as string | null) ?? "Rival",
+        miElo: fila.mi_elo as number,
+        rivalElo: fila.rival_elo as number,
+        miTituloNombre: (fila.mi_titulo_nombre as string | null) ?? null,
+        rivalTituloNombre: (fila.rival_titulo_nombre as string | null) ?? null,
+        rivalEsBot: fila.rival_es_bot === true,
+        serieId: (fila.serie_id as string | null) ?? null,
+        rondaNumero: fila.ronda_numero as number,
+        rondaTotal: fila.ronda_total as number,
+        nivel: (fila.nivel as number | null) ?? 5,
+      };
+    }
+  }
+
   const [{ data: nivelRow }, { data: profile }] = await Promise.all([
     supabase.from("skill_levels").select("nivel").eq("user_id", userId).eq("problem_type", `anatomia_${modo}`).maybeSingle(),
     supabase.from("profiles").select("escudos_extra_pendientes, boost_multiplicador_pendiente").eq("id", userId).single(),
@@ -26,8 +77,10 @@ export async function cargarDatosPracticaAnatomia(
   }
 
   return {
+    modo,
     nivelInicial: nivelRow?.nivel ?? 1,
     escudosExtra,
     boostActivo,
+    dueloInfo,
   };
 }

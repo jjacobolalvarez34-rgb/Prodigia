@@ -16,7 +16,18 @@ export const NOMBRE_MODO_ANATOMIA: Record<ModoAnatomia, string> = {
 };
 
 const OSEO_BAJO = ["Fémur", "Húmero", "Tibia", "Peroné", "Radio", "Cúbito", "Costillas", "Columna vertebral", "Cráneo", "Pelvis"];
-const OSEO_ALTO = ["Frontal", "Parietal", "Temporal", "Occipital", "Esfenoides", "Etmoides", "Maxilar", "Mandíbula", "Cigomático", "Nasal"];
+// Nivel alto (7-10): huesos del cráneo (sin zona de click propia — el
+// cráneo es un único grupo en el SVG, sin sub-huesos separados) más
+// mano y pie (2026-08-23: el SVG fuente SÍ los trae separados por
+// hueso, izquierda y derecha, sin usar hasta ahora — ver comentario en
+// esqueleto-oseo.svg). Mezclados a propósito en el mismo pool: los de
+// mano/pie salen como pregunta de click, los del cráneo como opción
+// múltiple — la decisión es por término elegido, no por nivel entero
+// (ver generarPreguntaAnatomia).
+const OSEO_ALTO = [
+  "Frontal", "Parietal", "Temporal", "Occipital", "Esfenoides", "Etmoides", "Maxilar", "Mandíbula", "Cigomático", "Nasal",
+  "Carpianos", "Metacarpianos", "Falanges de la mano", "Tarsianos", "Metatarsianos", "Falanges del pie",
+];
 
 const MUSCULAR_BAJO = ["Bíceps", "Tríceps", "Cuádriceps", "Deltoides", "Glúteos", "Recto abdominal", "Pectoral mayor", "Trapecio", "Gastrocnemio", "Dorsal ancho"];
 const MUSCULAR_ALTO = ["Frontal", "Orbicular de los ojos", "Orbicular de la boca", "Masetero", "Temporal", "Buccinador", "Cigomático mayor", "Occipital", "Platisma"];
@@ -82,6 +93,13 @@ export const HUESO_CLICKEABLE: Partial<Record<string, string>> = {
   "Columna vertebral": "columna",
   Cráneo: "craneo",
   Pelvis: "pelvis",
+  // Nivel alto (2026-08-23) — ver comentario de OSEO_ALTO arriba.
+  Carpianos: "carpianos",
+  Metacarpianos: "metacarpianos",
+  "Falanges de la mano": "falanges_mano",
+  Tarsianos: "tarsianos",
+  Metatarsianos: "metatarsianos",
+  "Falanges del pie": "falanges_pie",
 };
 
 // Inverso de HUESO_CLICKEABLE (data-hueso -> nombre en español) — lo
@@ -132,30 +150,45 @@ function poolOtrosSistemas(modo: ModoAnatomia, dificil: boolean): string[] {
     .flatMap((t) => (dificil ? t.alto : t.bajo));
 }
 
-// Fase 2: a partir de nivel 3 (band>=1), el sistema óseo pasa a
-// identificación por click sobre esqueleto-oseo.svg en vez de opción
-// múltiple — pero solo mientras el pool siga siendo OSEO_BAJO (band<3,
-// nivel 3-6): en band>=3 (nivel 7+) el pool cambia a huesos del cráneo
-// (OSEO_ALTO), que no tienen zona propia en el SVG actual (sería un
-// diagrama de cráneo aparte, con mucho más detalle) — ahí se sigue
-// usando opción múltiple, a propósito, en vez de forzar un click
-// impreciso sobre una calavera en miniatura.
-function esNivelClickeableOseo(modo: ModoAnatomia, band: number): boolean {
-  return modo === "oseo" && band >= 1 && band < 3;
-}
+// Fase 2 (nivel 3-6) + auditoría "Anatomía a nivel 10" (nivel 7-10): en
+// el modo óseo, a partir de nivel 3 la pregunta es de click siempre que
+// el término elegido tenga una zona real en esqueleto-oseo.svg
+// (HUESO_CLICKEABLE) — la decisión es POR TÉRMINO, no por nivel entero,
+// porque nivel alto (band>=3) mezcla huesos con zona real (mano, pie) y
+// sin ella (cráneo, sin sub-huesos separados en el SVG). Si el término
+// elegido no tiene zona, cae a opción múltiple — nunca se fuerza un
+// click sin asset real detrás. Nivel 1-2 (band 0) se queda 100% en
+// opción múltiple a propósito (nivel de entrada, más fácil — ver
+// pedido original de Fase 2), aunque el término elegido SÍ tenga zona.
 
 export function generarPreguntaAnatomia(modo: ModoAnatomia, nivel: number, usados: Set<string>, rng: Rng = Math.random): PreguntaAnatomia {
   const band = banda(nivel);
   const esAlto = band >= 3 && modo !== "organos";
 
-  if (esNivelClickeableOseo(modo, band)) {
-    const poolClickeable = OSEO_BAJO.filter((x) => HUESO_CLICKEABLE[x]);
-    const disponibles = poolClickeable.filter((x) => !usados.has(x));
-    const correcta = elegir(disponibles.length > 0 ? disponibles : poolClickeable, rng);
+  if (modo === "oseo") {
+    const pool = band < 3 ? OSEO_BAJO : OSEO_ALTO;
+    const disponibles = pool.filter((x) => !usados.has(x));
+    const correcta = elegir(disponibles.length > 0 ? disponibles : pool, rng);
+    const huesoClave = band >= 1 ? HUESO_CLICKEABLE[correcta] : undefined;
+    if (huesoClave) {
+      return {
+        tipo: "click",
+        enunciado: `Clickeá dónde está: ${correcta}`,
+        objetivoHueso: huesoClave,
+        respuesta: correcta,
+        clave: correcta,
+      };
+    }
+    // Sin zona real (Costillas en cualquier nivel, huesos del cráneo en
+    // 7-10) o nivel 1-2 (opción múltiple siempre) — mismo formato de
+    // siempre, no se aproxima ninguna zona de click.
+    const etiquetaOseo = band < 3 ? "un hueso" : "un hueso del cráneo, la mano o el pie";
+    const distractoresOseo = poolOtrosSistemas(modo, band >= 2);
+    const opcionesOseo = opcionesConDistractores(correcta, distractoresOseo, rng);
     return {
-      tipo: "click",
-      enunciado: `Clickeá dónde está: ${correcta}`,
-      objetivoHueso: HUESO_CLICKEABLE[correcta]!,
+      tipo: "opcion",
+      enunciado: `¿Cuál de estas opciones es ${etiquetaOseo}?`,
+      opciones: opcionesOseo,
       respuesta: correcta,
       clave: correcta,
     };
@@ -167,10 +200,10 @@ export function generarPreguntaAnatomia(modo: ModoAnatomia, nivel: number, usado
     pool = ORGANOS;
     etiqueta = ETIQUETA_BAJO.organos;
   } else if (esAlto) {
-    pool = modo === "oseo" ? OSEO_ALTO : modo === "muscular" ? MUSCULAR_ALTO : NERVIOSO_ALTO;
+    pool = modo === "muscular" ? MUSCULAR_ALTO : NERVIOSO_ALTO;
     etiqueta = ETIQUETA_ALTO[modo];
   } else {
-    pool = modo === "oseo" ? OSEO_BAJO : modo === "muscular" ? MUSCULAR_BAJO : NERVIOSO_BAJO;
+    pool = modo === "muscular" ? MUSCULAR_BAJO : NERVIOSO_BAJO;
     etiqueta = ETIQUETA_BAJO[modo];
   }
 

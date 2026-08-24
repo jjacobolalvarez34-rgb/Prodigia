@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, subscribeEfectos } from "@/lib/efectos";
 
-export type MundoFondo = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia";
+export type MundoFondo = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia";
 
 interface Posicion {
   simbolo: string;
@@ -60,6 +60,15 @@ const SETS: Record<MundoFondo, Posicion[]> = {
     { simbolo: "🦴", left: "14%", top: "72%", size: 36, rotate: -4, delay: 1 },
     { simbolo: "🧠", left: "88%", top: "66%", size: 30, rotate: 8, delay: 1.3 },
     { simbolo: "♥", left: "50%", top: "8%", size: 22, rotate: 6, delay: 0.7 },
+  ],
+  // Mundo Melodía (Fase 1): pentagrama, corchea, clave de sol — mismo
+  // criterio (glifos unicode, no imágenes).
+  melodia: [
+    { simbolo: "♪", left: "8%", top: "14%", size: 54, rotate: -8, delay: 0 },
+    { simbolo: "𝄞", left: "90%", top: "20%", size: 44, rotate: 4, delay: 0.5 },
+    { simbolo: "♫", left: "14%", top: "72%", size: 36, rotate: -4, delay: 1 },
+    { simbolo: "♩", left: "88%", top: "66%", size: 30, rotate: 8, delay: 1.3 },
+    { simbolo: "♭", left: "50%", top: "8%", size: 26, rotate: 6, delay: 0.7 },
   ],
 };
 

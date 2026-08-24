@@ -82,6 +82,7 @@ export interface Profile {
   onboarding_enigmia_completado: boolean; // diagnóstico de Enigmia hecho/salteado
   onboarding_quimia_completado: boolean; // diagnóstico de Quimia hecho/salteado
   onboarding_anatomia_completado: boolean; // diagnóstico de Anatomía hecho/salteado
+  onboarding_melodia_completado: boolean; // diagnóstico de Melodía hecho/salteado
   idioma: "es" | "en";
   interes_inicial: ArithmeticProblemType | "logica" | null; // capa Prodigia del onboarding
   escudos_extra_pendientes: number;

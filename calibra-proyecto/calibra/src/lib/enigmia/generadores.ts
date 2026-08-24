@@ -281,14 +281,54 @@ function generarComputacionalOrdenar(dificultad: number): LogicPuzzle {
   return generarComputacionalBucle(dificultad, true);
 }
 
+// Dificultad 8-10 (auditoría 2026-08-24, reporte de usuario: "se siente
+// muy simple incluso en dificultad alta"): antes de este cambio, la
+// banda más alta solo alternaba entre bucle anidado con una única
+// instrucción fija (aritmética repetida, sin decisiones) y "ordenar
+// pasos" — ninguna de las dos obliga a rastrear una decisión distinta
+// en cada vuelta del bucle. Esta forma combina las dos cosas que el
+// reporte pidió explícitamente: bucle + condicional, en la misma
+// estructura — cada vuelta hay que evaluar la condición de nuevo con
+// el x actualizado, no aplicar la misma operación en piloto automático.
+// La condición usa "x > umbral" (no paridad): paridad con una rama que
+// duplica termina fijando la paridad para siempre después de la
+// primera vuelta (una vez par, x×2 sigue siendo par) y la dificultad
+// real desaparece a partir de ahí. "x > umbral" en cambio oscila
+// alrededor del umbral vuelta tras vuelta — cada paso exige evaluar la
+// condición de nuevo de verdad.
+function generarComputacionalBucleCondicional(dificultad: number): LogicPuzzle {
+  const veces = randomInt(4, 7);
+  const umbral = randomInt(8, 15);
+  const delta = randomInt(2, 5);
+  const inicial = randomInt(1, umbral + 5);
+  let x = inicial;
+  for (let i = 0; i < veces; i++) x = x > umbral ? x - delta : x + delta;
+
+  const regla = `si x > ${umbral}: x = x - ${delta}; si no: x = x + ${delta}`;
+  return {
+    id: idFalso("computacional"),
+    tipo: "programacion" as TipoAcertijo,
+    dificultad,
+    contenido: {
+      enunciado: `x = ${inicial}. Repetir ${veces} veces: { ${regla} }. ¿Cuánto vale x al final?`,
+      opciones: opcionesNumericasDesde(x, Math.max(4, delta * 2)),
+    },
+    respuesta: String(x),
+  };
+}
+
 export function generarComputacional(dificultad: number): LogicPuzzle {
   if (dificultad <= 3) return generarComputacionalSecuencial(dificultad);
   if (dificultad <= 5) return generarComputacionalBucle(dificultad, false);
   if (dificultad <= 7) return generarComputacionalCondicional(dificultad);
-  // 8-10: la banda más alta alterna entre 2 formas de estructura
+  // 8-10: la banda más alta alterna entre 3 formas de estructura
   // distinta, no un único tipo repetido — "más variedad real", no solo
-  // "más difícil".
-  return Math.random() < 0.5 ? generarComputacionalBucle(dificultad, true) : generarComputacionalOrdenar(dificultad);
+  // "más difícil". Bucle+condicional pesa el doble a propósito: es la
+  // forma que de verdad exige rastrear una decisión por vuelta (ver
+  // comentario arriba); las otras dos siguen adentro por variedad.
+  const r = Math.random();
+  if (r < 0.5) return generarComputacionalBucleCondicional(dificultad);
+  return r < 0.75 ? generarComputacionalBucle(dificultad, true) : generarComputacionalOrdenar(dificultad);
 }
 
 export type CategoriaGenerada = "memoria" | "patrones" | "computacional";

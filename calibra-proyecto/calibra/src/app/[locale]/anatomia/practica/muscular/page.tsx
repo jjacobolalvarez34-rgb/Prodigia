@@ -10,16 +10,28 @@ export const metadata: Metadata = {
   description: "Músculos del cuerpo humano, con dificultad adaptativa.",
 };
 
-export default async function AnatomiaMuscularPage() {
+interface Props {
+  searchParams: Promise<{ duelo?: string }>;
+}
+
+export default async function AnatomiaMuscularPage({ searchParams }: Props) {
+  const { duelo } = await searchParams;
   const supabase = await createClient();
   const { user } = await requireMundoAnatomia(supabase, "/anatomia/practica/muscular");
 
-  const { nivelInicial, escudosExtra, boostActivo } = await cargarDatosPracticaAnatomia(supabase, user.id, "muscular");
+  const { modo, nivelInicial, escudosExtra, boostActivo, dueloInfo } = await cargarDatosPracticaAnatomia(supabase, user.id, "muscular", duelo);
 
   return (
     <>
       <Header autenticado />
-      <AnatomiaPracticaClient modo="muscular" nivelInicial={nivelInicial} escudosExtra={escudosExtra} boostActivo={boostActivo} />
+      <AnatomiaPracticaClient
+        modo={modo}
+        nivelInicial={nivelInicial}
+        escudosExtra={escudosExtra}
+        boostActivo={boostActivo}
+        duelo={dueloInfo}
+        miUserId={user.id}
+      />
     </>
   );
 }

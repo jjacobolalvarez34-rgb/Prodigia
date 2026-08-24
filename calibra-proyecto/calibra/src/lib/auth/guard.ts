@@ -73,6 +73,17 @@ export async function requireMundoAnatomia(supabase: SupabaseClient, pathActual:
   return { user, profile };
 }
 
+// Mundo Melodía (Fase 1, 2026-08-24): mismo patrón que Quimia/Anatomía.
+export async function requireMundoMelodia(supabase: SupabaseClient, pathActual: string) {
+  const { user, profile } = await requireUsuario(supabase, pathActual);
+
+  if (!profile.onboarding_melodia_completado) {
+    redirect(`/melodia/diagnostico?next=${encodeURIComponent(pathActual)}`);
+  }
+
+  return { user, profile };
+}
+
 // Alias por compatibilidad: /practica y /aprender son de Numeria, así
 // que el guard viejo (usado en casi todo el árbol de ese mundo) ahora
 // es exactamente requireMundoNumeria.

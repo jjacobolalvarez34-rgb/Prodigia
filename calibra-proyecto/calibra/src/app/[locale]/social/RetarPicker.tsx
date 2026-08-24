@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { ARITHMETIC_PROBLEM_TYPES, NOMBRE_CATEGORIA_ENIGMIA, type ArithmeticProblemType, type CategoriaEnigmia } from "@/types/database";
 import { NOMBRE_MODO_QUIMIA, type ModoQuimia } from "@/lib/practica/quimia";
+import { NOMBRE_MODO_ANATOMIA, type ModoAnatomia } from "@/lib/practica/anatomia";
+import { NOMBRE_MODO_MELODIA, type ModoMelodia } from "@/lib/practica/melodia";
 import type { Continente } from "@/lib/practica/geografia";
 import type { MundoDuelo } from "@/lib/duelos/rutas";
 
@@ -12,6 +14,8 @@ const MUNDOS: { id: MundoDuelo; nombre: string; colorHex: string }[] = [
   { id: "geografia", nombre: "Geografía", colorHex: "#1E7A8C" },
   { id: "enigmia", nombre: "Enigmia", colorHex: "#0E9F6E" },
   { id: "quimia", nombre: "Quimia", colorHex: "#C026D3" },
+  { id: "anatomia", nombre: "Anatomía", colorHex: "#8B2942" },
+  { id: "melodia", nombre: "Melodía", colorHex: "#B8860B" },
 ];
 
 const CONTINENTES: Continente[] = ["america", "europa", "africa", "asia_oceania"];
@@ -35,6 +39,8 @@ export function useEtiquetasDuelo() {
     if (mundo === "numeria") return tOperaciones(opcion as ArithmeticProblemType);
     if (mundo === "geografia") return tContinentes(opcion as Continente);
     if (mundo === "enigmia") return NOMBRE_CATEGORIA_ENIGMIA[opcion as CategoriaEnigmia] ?? opcion;
+    if (mundo === "anatomia") return NOMBRE_MODO_ANATOMIA[opcion as ModoAnatomia] ?? opcion;
+    if (mundo === "melodia") return NOMBRE_MODO_MELODIA[opcion as ModoMelodia] ?? opcion;
     return NOMBRE_MODO_QUIMIA[opcion as ModoQuimia] ?? opcion;
   }
 
@@ -59,6 +65,8 @@ export default function RetarPicker({ onElegir }: Props) {
     geografia: CONTINENTES.map((c) => ({ id: c, nombre: tContinentes(c) })),
     enigmia: (Object.keys(NOMBRE_CATEGORIA_ENIGMIA) as CategoriaEnigmia[]).map((c) => ({ id: c, nombre: NOMBRE_CATEGORIA_ENIGMIA[c] })),
     quimia: (Object.keys(NOMBRE_MODO_QUIMIA) as ModoQuimia[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_QUIMIA[m] })),
+    anatomia: (Object.keys(NOMBRE_MODO_ANATOMIA) as ModoAnatomia[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_ANATOMIA[m] })),
+    melodia: (Object.keys(NOMBRE_MODO_MELODIA) as ModoMelodia[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_MELODIA[m] })),
   };
 
   return (

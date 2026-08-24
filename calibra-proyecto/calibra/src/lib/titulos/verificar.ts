@@ -4,6 +4,8 @@ import { CATALOGO_TITULOS, type TituloCatalogo } from "./catalogo";
 
 const TIPOS_NUMERIA = ["suma", "resta", "multiplicacion", "division", "fracciones", "decimales", "potencias", "algebra"];
 const TIPOS_QUIMIA = ["quimia_simbolos", "quimia_formulas", "quimia_tabla"];
+const TIPOS_ANATOMIA = ["anatomia_oseo", "anatomia_muscular", "anatomia_organos", "anatomia_nervioso"];
+const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes"];
 
 // Mismo espíritu que verificarLogros (src/lib/logros/verificar.ts):
 // solo calcula lo que hace falta para los títulos todavía no
@@ -143,6 +145,12 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
     } else if (mundo === "enigmia") {
       const { data: row } = await supabase.from("logic_skill_levels").select("nivel").eq("user_id", userId).maybeSingle();
       mundoCompletado.set(mundo, (row?.nivel ?? 0) >= 10);
+    } else if (mundo === "anatomia") {
+      const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_ANATOMIA);
+      mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_ANATOMIA.length && (rows ?? []).every((r) => r.nivel >= 10));
+    } else if (mundo === "melodia") {
+      const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_MELODIA);
+      mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_MELODIA.length && (rows ?? []).every((r) => r.nivel >= 10));
     }
   }
 

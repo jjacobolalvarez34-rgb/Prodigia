@@ -13,7 +13,9 @@ import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSub
 import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/ResultadoDueloBlock";
 import SalaEsperaDuelo from "@/components/duelos/SalaEsperaDuelo";
 import { useArranqueSincronizado } from "@/lib/duelos/useArranqueSincronizado";
+import { useDeteccionAbandono } from "@/lib/duelos/useDeteccionAbandono";
 import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
+import BotonRendirse from "@/components/duelos/BotonRendirse";
 import GeografiaSprintRunner from "./GeografiaSprintRunner";
 import { COLOR_GEOGRAFIA } from "./GeografiaMapa";
 
@@ -147,6 +149,29 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
     setFase("resumen");
   }
 
+  async function handleAbandonoDetectado() {
+    if (!duelo) return;
+    try {
+      await fetch("/api/duelos/reclamar-abandono", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ duel_id: duelo.duelId }),
+      });
+    } catch {
+      // Si falla, el usuario puede reintentar rindiéndose o navegando afuera.
+    }
+    router.push(duelo.serieId ? `/rankeds/serie/${duelo.serieId}` : "/rankeds");
+  }
+
+  useDeteccionAbandono({
+    duelId: duelo?.duelId,
+    miUserId,
+    rivalId: duelo?.rivalId,
+    rivalEsBot: duelo?.rivalEsBot,
+    activo: fase === "sprint" && !!duelo,
+    onAbandonoDetectado: handleAbandonoDetectado,
+  });
+
   if (fase === "vs" && duelo) {
     return (
       <SalaEsperaDuelo
@@ -160,22 +185,33 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
         modo={duelo.serieId ? "mejor_de_3" : "simple"}
         subtitulo={duelo.serieId ? `Ronda ${duelo.rondaNumero}/${duelo.rondaTotal} · Geografía` : "Geografía"}
         onEmpezarAhora={empezarAhora}
+        duelId={duelo.duelId}
       />
     );
   }
 
   if (fase === "sprint") {
     return (
-      <GeografiaSprintRunner
-        continente={continente}
-        startedAt={startedAtPerf}
-        nivelInicial={nivelInicial}
-        escudosExtra={escudosExtra}
-        duelId={duelo?.duelId}
-        miUserId={miUserId}
-        rivalNombre={duelo?.rivalNombre}
-        onFinish={handleFinish}
-      />
+      <>
+        {duelo && !duelo.rivalEsBot && (
+          <div className="mx-auto flex w-full max-w-lg justify-end px-4 pt-4">
+            <BotonRendirse
+              duelId={duelo.duelId}
+              onRendido={() => router.push(duelo.serieId ? `/rankeds/serie/${duelo.serieId}` : "/rankeds")}
+            />
+          </div>
+        )}
+        <GeografiaSprintRunner
+          continente={continente}
+          startedAt={startedAtPerf}
+          nivelInicial={nivelInicial}
+          escudosExtra={escudosExtra}
+          duelId={duelo?.duelId}
+          miUserId={miUserId}
+          rivalNombre={duelo?.rivalNombre}
+          onFinish={handleFinish}
+        />
+      </>
     );
   }
 

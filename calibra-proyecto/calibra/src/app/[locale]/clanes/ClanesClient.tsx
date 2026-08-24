@@ -245,7 +245,7 @@ function MiClanView({
 
   return (
     <section className="flex flex-col gap-5">
-      <EscenaCiudad nivelClan={clan.nivel_clan} colorEstandarte={clan.color_estandarte} className="h-44 w-full" />
+      <EscenaCiudad nivelClan={clan.nivel_clan} colorEstandarte={clan.color_estandarte} miembros={miembros} className="h-44 w-full" />
 
       <div className="flex items-center gap-4 rounded-2xl border-2 px-6 py-6" style={{ borderColor: `${clan.color_estandarte}55` }}>
         <EstandarteClan color={clan.color_estandarte} nivel={clan.nivel_clan} size={72} imagenUrl={clan.imagen_url} />

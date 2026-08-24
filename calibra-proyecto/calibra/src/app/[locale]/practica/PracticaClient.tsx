@@ -12,6 +12,8 @@ import SprintRunner from "./SprintRunner";
 import SalaDuelo from "./SalaDuelo";
 import SprintSummary, { type FinishResponse, type ResultadoDuelo } from "./SprintSummary";
 import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
+import BotonRendirse from "@/components/duelos/BotonRendirse";
+import { useDeteccionAbandono } from "@/lib/duelos/useDeteccionAbandono";
 
 type Fase = "seleccion" | "duelo-intro" | "sprint" | "finalizando" | "resumen";
 
@@ -138,6 +140,36 @@ export default function PracticaClient({
     setFase("resumen");
   }
 
+  // Fase 3 ("Rankeds: rendición automática por desconexión"): si el
+  // rival deja de responder al Presence por más de 1 minuto durante la
+  // partida en sí (no la sala de espera, que ya tiene su propio
+  // timeout de 45s), reclamamos la victoria automáticamente — no tiene
+  // sentido dejar a alguien esperando indefinidamente a un rival que
+  // ya se fue.
+  async function handleAbandonoDetectado() {
+    if (!duelo) return;
+    try {
+      await fetch("/api/duelos/reclamar-abandono", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ duel_id: duelo.duelId }),
+      });
+    } catch {
+      // Si falla, el usuario puede reintentar rindiéndose o navegando
+      // afuera — no hay mucho más que hacer acá.
+    }
+    router.push(duelo.serieId ? `/rankeds/serie/${duelo.serieId}` : "/rankeds");
+  }
+
+  useDeteccionAbandono({
+    duelId: duelo?.duelId,
+    miUserId,
+    rivalId: duelo?.rivalId,
+    rivalEsBot: duelo?.rivalEsBot,
+    activo: fase === "sprint" && !!duelo,
+    onAbandonoDetectado: handleAbandonoDetectado,
+  });
+
   if (fase === "duelo-intro" && duelo) {
     return (
       <SalaDuelo
@@ -161,21 +193,31 @@ export default function PracticaClient({
 
   if (fase === "sprint" && seleccionSprint.length > 0) {
     return (
-      <SprintRunner
-        seleccion={seleccionSprint}
-        startedAt={startedAtPerf}
-        nivelPorOperacion={nivelPorOperacion}
-        modificadoresPorOperacion={duelo ? { ...modificadoresPorOperacion, [duelo.operacion]: [] } : modificadoresPorOperacion}
-        escudosExtra={escudosExtra}
-        colorDial={colorDial}
-        fantasma={duelo?.rivalRespuestas ? { rivalNombre: duelo.rivalNombre, respuestas: duelo.rivalRespuestas } : null}
-        semillaDuelo={duelo?.semilla}
-        duelId={duelo?.duelId}
-        miUserId={miUserId}
-        rivalNombreEnVivo={duelo?.rivalNombre}
-        onNivelChange={handleNivelChange}
-        onFinish={handleFinishSprint}
-      />
+      <>
+        {duelo && !duelo.rivalEsBot && (
+          <div className="mx-auto flex w-full max-w-lg justify-end px-4 pt-4">
+            <BotonRendirse
+              duelId={duelo.duelId}
+              onRendido={() => router.push(duelo.serieId ? `/rankeds/serie/${duelo.serieId}` : "/rankeds")}
+            />
+          </div>
+        )}
+        <SprintRunner
+          seleccion={seleccionSprint}
+          startedAt={startedAtPerf}
+          nivelPorOperacion={nivelPorOperacion}
+          modificadoresPorOperacion={duelo ? { ...modificadoresPorOperacion, [duelo.operacion]: [] } : modificadoresPorOperacion}
+          escudosExtra={escudosExtra}
+          colorDial={colorDial}
+          fantasma={duelo?.rivalRespuestas ? { rivalNombre: duelo.rivalNombre, respuestas: duelo.rivalRespuestas } : null}
+          semillaDuelo={duelo?.semilla}
+          duelId={duelo?.duelId}
+          miUserId={miUserId}
+          rivalNombreEnVivo={duelo?.rivalNombre}
+          onNivelChange={handleNivelChange}
+          onFinish={handleFinishSprint}
+        />
+      </>
     );
   }
 

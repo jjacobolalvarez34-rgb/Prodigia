@@ -1,5 +1,7 @@
+import { useRouter } from "next/navigation";
 import Boton from "@/components/Boton";
 import PantallaVS from "@/components/duelos/PantallaVS";
+import BotonRendirse from "@/components/duelos/BotonRendirse";
 import type { EstadoArranque } from "@/lib/duelos/useArranqueSincronizado";
 
 interface Props {
@@ -13,6 +15,12 @@ interface Props {
   modo?: "simple" | "mejor_de_3";
   subtitulo?: string;
   onEmpezarAhora: () => void;
+  // Fase 3 ("Rankeds: Rendirse en vez de cancelar por click afuera"):
+  // opcional para no romper algún punto de uso viejo que no lo pase
+  // todavía, pero todo caller nuevo debería mandarlo — sin duelId no
+  // hay botón de Rendirse, que es exactamente el bug que esto resuelve.
+  duelId?: string;
+  volverA?: string;
 }
 
 // Extraído de SalaDuelo.tsx (Numeria) — misma pantalla de espera para
@@ -29,7 +37,21 @@ export default function SalaEsperaDuelo({
   modo = "simple",
   subtitulo,
   onEmpezarAhora,
+  duelId,
+  volverA = "/rankeds",
 }: Props) {
+  const router = useRouter();
+
+  function handleRendido() {
+    router.push(volverA);
+  }
+
+  const botonRendirse = duelId && !rivalEsBot && (
+    <div className="mx-auto -mt-2 mb-2 flex w-full max-w-md justify-end px-4">
+      <BotonRendirse duelId={duelId} onRendido={handleRendido} />
+    </div>
+  );
+
   if (estado === "cuenta-regresiva") {
     return (
       <PantallaVS
@@ -57,6 +79,7 @@ export default function SalaEsperaDuelo({
           <Boton onClick={onEmpezarAhora} className="w-full py-4">
             Jugar mi parte ahora
           </Boton>
+          {duelId && !rivalEsBot && <BotonRendirse duelId={duelId} onRendido={handleRendido} />}
         </div>
       </div>
     );
@@ -64,6 +87,7 @@ export default function SalaEsperaDuelo({
 
   return (
     <div className="flex flex-1 flex-col">
+      {botonRendirse}
       <PantallaVS miNombre="Vos" miElo={miElo} rivalNombre={rivalNombre} rivalElo={rivalElo} rivalEsBot={rivalEsBot} modo={modo} subtitulo={subtitulo} segundos={null} />
       <div className="mx-auto -mt-10 flex w-full max-w-md flex-col items-center gap-3 px-4 pb-16 text-center">
         <div className="flex items-center gap-2 text-sm text-texto-secundario">

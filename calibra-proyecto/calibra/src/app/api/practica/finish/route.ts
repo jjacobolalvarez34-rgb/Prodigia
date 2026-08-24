@@ -48,11 +48,21 @@ const TIPOS_NUMERIA = new Set([
   "algebra_evaluar", "algebra_un-paso", "algebra_dos-pasos",
 ]);
 const TIPOS_QUIMIA = new Set(["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"]);
+// Auditoría de mundo nuevo (2026-08-23, ver docs/ESPECIFICACION.md): esta
+// función nunca se actualizó cuando se agregó Anatomía — world_progress
+// jamás recibía una fila para ese mundo pese a que el RPC de SQL
+// (registrar_puntos_mundo) ya tenía su rama lista desde 0080/0081.
+const TIPOS_ANATOMIA = new Set(["anatomia_oseo", "anatomia_muscular", "anatomia_organos", "anatomia_nervioso"]);
+// Mundo Melodía (Fase 1, 2026-08-24) — mismos 5 problem_type que
+// ProblemTypeCalibrable/tiposCalibrables (skillLevels.ts, api/attempts).
+const TIPOS_MELODIA = new Set(["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes"]);
 
-function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | null {
+function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | "anatomia" | "melodia" | null {
   if (!problemType) return null;
   if (problemType === "geografia") return "geografia";
   if (TIPOS_QUIMIA.has(problemType)) return "quimia";
+  if (TIPOS_ANATOMIA.has(problemType)) return "anatomia";
+  if (TIPOS_MELODIA.has(problemType)) return "melodia";
   if (TIPOS_NUMERIA.has(problemType)) return "numeria";
   return null;
 }

@@ -3,11 +3,13 @@ import { NextResponse } from "next/server";
 import { ARITHMETIC_PROBLEM_TYPES } from "@/types/database";
 import { respuestaError } from "@/lib/api/respuestaError";
 
-const MUNDOS_VALIDOS = ["numeria", "geografia", "enigmia", "quimia"];
+const MUNDOS_VALIDOS = ["numeria", "geografia", "enigmia", "quimia", "anatomia", "melodia"];
 const SUB_TIPOS_VALIDOS: Record<string, string[]> = {
   geografia: ["america", "europa", "africa", "asia_oceania"],
   enigmia: ["memoria", "patrones", "deduccion", "computacional"],
   quimia: ["simbolos", "formulas", "tabla"],
+  anatomia: ["oseo", "muscular", "organos", "nervioso"],
+  melodia: ["fundamentos", "lectura", "alteraciones", "escalas", "acordes"],
 };
 
 interface Body {

@@ -42,6 +42,7 @@ export default async function PerfilPage() {
     geografia: "Geografía",
     quimia: "Quimia",
     anatomia: "Anatomía",
+    melodia: "Melodía",
     geometria: tNumeriaTemas("geometria"),
     fracciones: tNumeriaTemas("fracciones"),
     decimales: tNumeriaTemas("decimales"),
@@ -63,6 +64,7 @@ export default async function PerfilPage() {
     { count: geografiaTotal },
     { count: quimiaTotal },
     { count: anatomiaTotal },
+    { count: melodiaTotal },
     { data: worldRows },
     { data: titulosRows },
     { data: afinidadRows },
@@ -92,6 +94,7 @@ export default async function PerfilPage() {
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("problem_type", "geografia"),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"]),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["anatomia_oseo", "anatomia_muscular", "anatomia_organos", "anatomia_nervioso"]),
+    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes"]),
     supabase.from("world_progress").select("world, nivel_mundo").eq("user_id", user.id),
     supabase.rpc("mis_titulos"),
     supabase.rpc("afinidad_por_mundo"),
@@ -233,6 +236,11 @@ export default async function PerfilPage() {
             <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Anatomía</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{anatomiaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">{t("preguntasResueltasNivel", { n: nivelMundoDe("anatomia") })}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Melodía</p>
+            <p className="mt-1 font-mono text-xl font-bold text-foreground">{melodiaTotal ?? 0}</p>
+            <p className="text-xs text-texto-secundario">{t("preguntasResueltasNivel", { n: nivelMundoDe("melodia") })}</p>
           </div>
         </section>
 

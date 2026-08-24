@@ -11,6 +11,8 @@ import LevelDial from "@/app/[locale]/practica/LevelDial";
 import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/TarjetaSprint";
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import EsqueletoClickeable from "@/components/anatomia/EsqueletoClickeable";
+import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
+import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import { COLOR_ANATOMIA } from "./colores";
 
 const TOTAL_PREGUNTAS = 10;
@@ -24,6 +26,12 @@ interface Props {
   startedAt: number;
   nivelInicial: number;
   escudosExtra: number;
+  // Duelo: si viene nivelForzado, el nivel personal no gobierna la
+  // partida — mismo criterio que Enigmia/Quimia.
+  nivelForzado?: number;
+  duelId?: string | null;
+  miUserId?: string | null;
+  rivalNombre?: string | null;
   // Modo demo (landing pública, Fase 2): ver mismo prop en SprintRunner.tsx.
   totalPreguntas?: number;
   duracionMs?: number;
@@ -35,11 +43,16 @@ export default function AnatomiaSprintRunner({
   startedAt,
   nivelInicial,
   escudosExtra,
+  nivelForzado,
+  duelId,
+  miUserId,
+  rivalNombre,
   totalPreguntas = TOTAL_PREGUNTAS,
   duracionMs = DURACION_MS,
   onFinish,
 }: Props) {
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
+  const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const [pregunta, setPregunta] = useState<PreguntaAnatomia | null>(null);
   const [cardKey, setCardKey] = useState(0);
   const [seleccion, setSeleccion] = useState<string | null>(null);
@@ -48,13 +61,14 @@ export default function AnatomiaSprintRunner({
   const [xpSprint, setXpSprint] = useState(0);
   const [respondidos, setRespondidos] = useState(0);
   const [remainingMs, setRemainingMs] = useState(duracionMs);
-  const [nivel, setNivel] = useState(nivelInicial);
+  const [nivel, setNivel] = useState(nivelForzado ?? nivelInicial);
   const [escudos, setEscudos] = useState(escudosIniciales);
   const [racha, setRacha] = useState(0);
 
   const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(duracionMs);
 
-  const nivelRef = useRef(nivelInicial);
+  const nivelRef = useRef(nivelForzado ?? nivelInicial);
+  const correctosRef = useRef(0);
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<PreguntaAnatomia[]>([]);
@@ -111,6 +125,7 @@ export default function AnatomiaSprintRunner({
 
     if (correct) {
       evaluarBonus(nivelRef.current, timeMs);
+      correctosRef.current += 1;
     }
 
     let protegido = false;
@@ -142,11 +157,17 @@ export default function AnatomiaSprintRunner({
         xpGanado = data.xp;
         setXpSprint((prev) => prev + data.xp);
       }
-      if (data.skillLevel) {
+      // En duelo, el nivel lo fija el rango — nunca la calibración
+      // personal en vivo (mismo guardrail que EnigmiaSprintRunner/
+      // QuimiaSprintRunner).
+      if (data.skillLevel && !nivelForzado) {
         nivelSubio = data.skillLevel.nivel > nivelRef.current;
         nivelRef.current = data.skillLevel.nivel;
         setNivel(data.skillLevel.nivel);
         setRacha(data.skillLevel.racha_actual);
+      }
+      if (data.skillLevel) {
+        emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: data.skillLevel.racha_actual });
       }
       if (correct && xpGanado > 0) {
         setPuntaje({ total: xpGanado, intensidad: nivelSubio ? "grande" : xpGanado >= 20 ? "medio" : "chico" });
@@ -203,6 +224,17 @@ export default function AnatomiaSprintRunner({
             <span className="font-mono font-medium">{segundos}s</span>
           </div>
         </div>
+
+        {rivalEnVivo && rivalNombre && (
+          <ProgresoRivalEnVivo
+            total={totalPreguntas}
+            miRespondidos={respondidos}
+            rivalRespondidos={rivalEnVivo.respondidos}
+            rivalRacha={rivalEnVivo.racha}
+            rivalNombre={rivalNombre}
+            colorHex={COLOR_ANATOMIA}
+          />
+        )}
 
         <BarraTiempo remainingMs={remainingMs} duracionTotalMs={duracionTotalMs} bonusTiempo={bonusTiempo} cardKey={cardKey} />
       </div>

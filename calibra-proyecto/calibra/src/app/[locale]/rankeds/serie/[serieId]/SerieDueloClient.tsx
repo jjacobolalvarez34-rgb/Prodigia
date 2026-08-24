@@ -56,9 +56,23 @@ function TagClanDeBots() {
 }
 
 const POLL_MS = 3000;
-const NOMBRE_MUNDO: Record<MundoDuelo, string> = { numeria: "Numeria", geografia: "Geografía", enigmia: "Enigmia", quimia: "Quimia" };
+const NOMBRE_MUNDO: Record<MundoDuelo, string> = {
+  numeria: "Numeria",
+  geografia: "Geografía",
+  enigmia: "Enigmia",
+  quimia: "Quimia",
+  anatomia: "Anatomía",
+  melodia: "Melodía",
+};
 // Mismos hex que Header.tsx (colorDelMundo) y RankedsClient.tsx.
-const COLOR_MUNDO: Record<MundoDuelo, string> = { numeria: "#6C4CF1", enigmia: "#0E9F6E", geografia: "#1E7A8C", quimia: "#C026D3" };
+const COLOR_MUNDO: Record<MundoDuelo, string> = {
+  numeria: "#6C4CF1",
+  enigmia: "#0E9F6E",
+  geografia: "#1E7A8C",
+  quimia: "#C026D3",
+  anatomia: "#8B2942",
+  melodia: "#B8860B",
+};
 // Fase 2 (transición de ronda con TextType): velocidades elegidas para
 // que la ceremonia completa (tipear el mundo anterior → borrarlo →
 // tipear el siguiente) dure ~1.5-2s con nombres de mundo típicos — "es

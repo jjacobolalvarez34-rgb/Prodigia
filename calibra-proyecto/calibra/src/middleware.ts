@@ -135,7 +135,13 @@ export const config = {
   // propósito, es la URL de redirect fija que Supabase tiene configurada
   // en su dashboard — no puede llevar prefijo de idioma ni pasar por la
   // lógica de next-intl.
+  // /data/* también queda afuera (bug real, 2026-08-24): son assets
+  // estáticos públicos servidos directo desde public/data/ con paths
+  // absolutos sin prefijo de idioma (GeografiaMapa.tsx pide
+  // "/data/countries-110m.json" a mano) — sin esta exclusión, next-intl
+  // los redirigía a "/es/data/..." (que no existe) antes de que
+  // pudieran servirse, rompiendo cualquier fetch de datos estáticos.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api|auth/callback|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api|auth/callback|data/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

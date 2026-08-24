@@ -1,6 +1,6 @@
 import type { ArithmeticProblemType } from "@/types/database";
 
-export type MundoDuelo = "numeria" | "geografia" | "enigmia" | "quimia";
+export type MundoDuelo = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia";
 
 // A dónde lleva jugar un duelo según en qué ciudad cayó — un solo lugar,
 // usado por RankedsClient (matchmaking, duelos pendientes) y por la
@@ -16,6 +16,19 @@ export function hrefDuelo(mundo: MundoDuelo, operationType: ArithmeticProblemTyp
     if (subTipo === "formulas") return `/quimia/practica/formulas?duelo=${duelId}`;
     if (subTipo === "tabla") return `/quimia/practica/tabla?duelo=${duelId}`;
     return `/quimia/practica?duelo=${duelId}`;
+  }
+  if (mundo === "anatomia") {
+    if (subTipo === "muscular") return `/anatomia/practica/muscular?duelo=${duelId}`;
+    if (subTipo === "organos") return `/anatomia/practica/organos?duelo=${duelId}`;
+    if (subTipo === "nervioso") return `/anatomia/practica/nervioso?duelo=${duelId}`;
+    return `/anatomia/practica?duelo=${duelId}`;
+  }
+  if (mundo === "melodia") {
+    if (subTipo === "lectura") return `/melodia/practica/lectura?duelo=${duelId}`;
+    if (subTipo === "alteraciones") return `/melodia/practica/alteraciones?duelo=${duelId}`;
+    if (subTipo === "escalas") return `/melodia/practica/escalas?duelo=${duelId}`;
+    if (subTipo === "acordes") return `/melodia/practica/acordes?duelo=${duelId}`;
+    return `/melodia/practica?duelo=${duelId}`;
   }
   // La operación real (asignada por buscar_rival_duelo, ver Rankeds) se
   // lee siempre del duelo en sí (obtener_duelo) apenas se carga

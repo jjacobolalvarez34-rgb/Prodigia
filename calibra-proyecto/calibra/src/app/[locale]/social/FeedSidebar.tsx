@@ -15,7 +15,14 @@ const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
   multiplicacion: "Multiplicación",
   division: "División",
 };
-const NOMBRE_MUNDO: Record<MundoDuelo, string> = { numeria: "Numeria", geografia: "Geografía", enigmia: "Enigmia", quimia: "Quimia" };
+const NOMBRE_MUNDO: Record<MundoDuelo, string> = {
+  numeria: "Numeria",
+  geografia: "Geografía",
+  enigmia: "Enigmia",
+  quimia: "Quimia",
+  anatomia: "Anatomía",
+  melodia: "Melodía",
+};
 
 type Panel = "ninguno" | "agregar" | "solicitudes" | "retos";
 

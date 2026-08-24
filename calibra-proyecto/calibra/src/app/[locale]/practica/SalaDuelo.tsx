@@ -77,6 +77,7 @@ export default function SalaDuelo({
       modo={modo}
       subtitulo={subtitulo}
       onEmpezarAhora={empezarAhora}
+      duelId={duelId}
     />
   );
 }
