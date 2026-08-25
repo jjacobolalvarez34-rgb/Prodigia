@@ -12,7 +12,7 @@ import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import VisitanteLanding from "@/components/landing/VisitanteLanding";
 import { calcularRachaDiaria } from "@/lib/practica/racha";
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
-import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia } from "@/components/icons";
+import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia } from "@/components/icons";
 import Greeting from "./Greeting";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -177,6 +177,13 @@ export default async function ProdigiaHomePage() {
                 Icono={IconAnatomia}
                 href="/anatomia"
                 colorHex="#8B2942"
+              />
+              <WorldCard
+                nombre="Melodía"
+                descripcion={t("mundos.melodia")}
+                Icono={IconMelodia}
+                href="/melodia"
+                colorHex="#B8860B"
               />
             </div>
           </PrimeraVezTip>

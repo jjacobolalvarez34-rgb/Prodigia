@@ -20,9 +20,11 @@ export default function TerminosPage() {
         <section className="flex flex-col gap-2">
           <h2 className="font-display text-lg font-bold text-foreground">Qué es Prodigia</h2>
           <p className="text-sm text-texto-secundario">
-            Prodigia es una app educativa de práctica adaptativa: cálculo mental, lógica y otros temas
-            que se van agregando, con dificultad que se ajusta a cómo te va. No reemplaza una clase ni
-            una evaluación formal — es una herramienta de práctica.
+            Prodigia es una app educativa de práctica adaptativa: cálculo mental, lógica, geografía,
+            química, anatomía, teoría musical y otros temas que se van agregando, con dificultad que se
+            ajusta a cómo te va. También incluye duelos en tiempo real contra otros jugadores (con ELO y
+            rango), clanes, amigos, logros y un feed social. No reemplaza una clase ni una evaluación
+            formal — es una herramienta de práctica.
           </p>
         </section>
 
@@ -38,7 +40,10 @@ export default function TerminosPage() {
           <h2 className="font-display text-lg font-bold text-foreground">Uso aceptable</h2>
           <p className="text-sm text-texto-secundario">
             Usá Prodigia para practicar de buena fe. No intentes manipular el sistema de Chispas, el
-            ranking o los duelos con bots, scripts, o respondiendo automáticamente.
+            ranking o los duelos con bots, scripts, o respondiendo automáticamente. En el chat de tu
+            clan y en cualquier otro lugar donde puedas escribir texto libre, no uses lenguaje ofensivo,
+            discriminatorio o abusivo — los mensajes que lo contienen se rechazan automáticamente antes
+            de guardarse, y cualquier mensaje o perfil se puede reportar para que lo revisemos a mano.
           </p>
         </section>
 
@@ -49,8 +54,11 @@ export default function TerminosPage() {
             <Link href="/perfil" className="text-primario hover:underline">
               tu perfil
             </Link>
-            . Esa acción es permanente: borra tu progreso, tus logros y tu historial, y no se puede
-            deshacer.
+            . Esa acción es permanente: borra tu progreso, tus logros, tu historial de duelos, tu
+            pertenencia a un clan, tus mensajes de chat y todo lo demás asociado a tu cuenta, y no se
+            puede deshacer. Si jugaste un duelo contra alguien que después borra su cuenta, ese duelo
+            puede desaparecer también de tu propio historial — es un efecto secundario de cómo funciona
+            el borrado, no algo que puedas evitar del otro lado.
           </p>
         </section>
 

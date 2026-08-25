@@ -8,6 +8,7 @@ import { generarPreguntaMelodia, type PreguntaMelodia } from "@/lib/practica/mel
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { tiempoEsperadoMs } from "@/lib/practica/formulas";
 import Pentagrama from "@/components/melodia/Pentagrama";
+import FiguraRitmicaIcono from "@/components/melodia/FiguraRitmicaIcono";
 import { COLOR_MELODIA } from "../colores";
 
 type Fase = "intro" | "diagnostico" | "guardando" | "resultado";
@@ -175,6 +176,9 @@ export default function DiagnosticoMelodiaClient({ destino }: Props) {
                 <div className="w-full overflow-x-auto">
                   <Pentagrama notas={pregunta.notas} disposicion={pregunta.disposicion} colorHex={COLOR_MELODIA} />
                 </div>
+              )}
+              {pregunta.tipo === "texto" && pregunta.figuraId && (
+                <FiguraRitmicaIcono figura={pregunta.figuraId} colorHex={COLOR_MELODIA} />
               )}
               <p className="text-center font-medium text-foreground">{pregunta.enunciado}</p>
               <div className="grid w-full grid-cols-2 gap-2">

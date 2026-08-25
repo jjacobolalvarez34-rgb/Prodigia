@@ -10,6 +10,7 @@
     },
     "intro": "Acá jugás duelos en serio contra otros jugadores reales, con ELO y rango — distinto de la práctica normal, que no afecta tu competitivo.",
     "subtitulo": "Tu competitivo de duelos, con matchmaking real.",
+    "usuariosEnLinea": "{n} en línea",
     "teRetaronAUno": "Te retaron a un duelo",
     "teRetaronAVarios": "Te retaron a {n} duelos",
     "alguien": "Alguien",
@@ -321,7 +322,8 @@
       "enigmia": "Acertijos de lógica: secuencias, patrones y deducción.",
       "geografia": "Ubicá países de América en el mapa.",
       "quimia": "Elementos, fórmulas y la tabla periódica.",
-      "anatomia": "Huesos, músculos, órganos y sistema nervioso."
+      "anatomia": "Huesos, músculos, órganos y sistema nervioso.",
+      "melodia": "Pentagrama, escalas y acordes construidos por fórmula."
     }
   },
   "Numeria": {

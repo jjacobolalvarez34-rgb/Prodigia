@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { IconCasa } from "@/components/icons";
+import { useTrackearPresenciaGlobal } from "@/lib/presencia/useTrackearPresenciaGlobal";
 import Logo from "./Logo";
 import MundoSelector from "./MundoSelector";
 import ProfileMenu from "./ProfileMenu";
@@ -48,6 +49,12 @@ export default function Header({ autenticado = false, invitado = false }: Props)
   const t = useTranslations("Nav");
   const pathname = usePathname();
   const colorMundo = colorDelMundo(pathname ?? "/");
+  // Rankeds ("usuarios en línea"): Header renderiza en toda página
+  // autenticada, así que trackear presencia acá alcanza para reflejar
+  // actividad de la app entera, no solo de quien está mirando Rankeds
+  // en ese momento. El hook mismo no hace nada si no hay sesión real
+  // (landing pública con autenticado=false igual la llama, sin efecto).
+  useTrackearPresenciaGlobal();
 
   // Fase 3 del rediseño de Social: Feed pasó a vivir DENTRO de /social
   // (pestaña por default, con Amigos al lado) — ya no es un link

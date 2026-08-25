@@ -7,6 +7,7 @@ import Boton from "@/components/Boton";
 import Avatar from "@/components/Avatar";
 import EstandarteClan from "@/components/clanes/EstandarteClan";
 import EscenaCiudad from "@/components/clanes/EscenaCiudad";
+import ChatDeClan from "@/components/clanes/ChatDeClan";
 import SubirImagenClan from "@/components/clanes/SubirImagenClan";
 import CountdownSemanal from "@/components/CountdownSemanal";
 
@@ -307,6 +308,8 @@ function MiClanView({
           {mision.completada && <p className="text-xs font-semibold text-correcto">¡Misión cumplida! Chispas repartidas.</p>}
         </div>
       )}
+
+      <ChatDeClan clanId={clan.clan_id} miUserId={miUserId} />
 
       <div className="flex flex-col gap-2">
         <h3 className="text-sm font-semibold text-foreground">Miembros</h3>

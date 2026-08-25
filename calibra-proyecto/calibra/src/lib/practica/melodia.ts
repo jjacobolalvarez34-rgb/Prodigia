@@ -236,11 +236,18 @@ interface PreguntaBase {
   respuesta: string;
 }
 
-// Fundamentos y Alteraciones/Escalas/Acordes se resuelven con
-// opciones de texto — Lectura además trae las notas a dibujar en el
-// pentagrama (el componente Pentagrama.tsx las consume directo).
+// Fundamentos (cifrado) y Alteraciones/Escalas/Acordes se resuelven
+// con opciones de texto puro — Lectura además trae las notas a dibujar
+// en el pentagrama (el componente Pentagrama.tsx las consume directo).
+// Fundamentos (figura) es la excepción DENTRO de "texto": necesita
+// mostrar el ícono de la figura rítmica (FiguraRitmicaIcono.tsx), así
+// que carga cuál es en figuraId — bug real (2026-08-25): esto no
+// estaba, la pregunta "¿cómo se llama esta figura?" se mostraba sin
+// ningún dibujo porque no había forma de que el cliente supiera qué
+// dibujar.
 export interface PreguntaMelodiaTexto extends PreguntaBase {
   tipo: "texto";
+  figuraId?: FiguraRitmica;
 }
 
 export interface PreguntaMelodiaPentagrama extends PreguntaBase {
@@ -305,6 +312,7 @@ function generarFundamentos(nivel: number): PreguntaMelodiaTexto {
       enunciado: "¿Cómo se llama esta figura rítmica?",
       opciones,
       respuesta: NOMBRE_FIGURA[figura],
+      figuraId: figura,
     };
   }
 

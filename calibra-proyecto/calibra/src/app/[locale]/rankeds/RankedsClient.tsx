@@ -12,6 +12,7 @@ import Boton from "@/components/Boton";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 import { useRetosPendientes, type RetoPendienteBase } from "@/app/[locale]/social/useRetosPendientes";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
+import { useConteoUsuariosEnLinea } from "@/lib/presencia/useConteoUsuariosEnLinea";
 import RankingElo from "./RankingElo";
 
 // Mismos hex que Header.tsx (colorDelMundo) y FondoCursorMundo.tsx — un
@@ -137,9 +138,12 @@ export default function RankedsClient({
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-12 sm:px-6">
       <AvisoPrimeraVez avisoKey="rankeds-intro" texto={t("intro")}>
-        <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Rankeds</h1>
-          <p className="mt-1 text-sm text-texto-secundario">{t("subtitulo")}</p>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Rankeds</h1>
+            <p className="mt-1 text-sm text-texto-secundario">{t("subtitulo")}</p>
+          </div>
+          <UsuariosEnLinea />
         </div>
       </AvisoPrimeraVez>
       <div className="flex w-fit gap-1 rounded-full border border-border bg-surface p-1">
@@ -170,6 +174,23 @@ export default function RankedsClient({
         <RankingElo miUserId={miUserId} />
       )}
     </div>
+  );
+}
+
+// Fase (Rankeds: "usuarios en línea"): cifra de Supabase Realtime
+// Presence, no exacta al segundo (se actualiza con cada evento
+// "sync" del canal compartido "presencia:global" — ver
+// useConteoUsuariosEnLinea.ts). Mientras el valor inicial de sync
+// todavía no llegó, no muestra nada en vez de un "0" engañoso.
+function UsuariosEnLinea() {
+  const t = useTranslations("Rankeds");
+  const conteo = useConteoUsuariosEnLinea();
+  if (conteo === null) return null;
+  return (
+    <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1 text-xs font-medium text-texto-secundario">
+      <span className="h-1.5 w-1.5 rounded-full bg-correcto" />
+      {t("usuariosEnLinea", { n: conteo })}
+    </span>
   );
 }
 

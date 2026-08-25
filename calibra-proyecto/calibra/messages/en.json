@@ -10,6 +10,7 @@
     },
     "intro": "This is where you play real duels against other real players, with ELO and rank — different from regular practice, which doesn't affect your competitive standing.",
     "subtitulo": "Your duel ranking, with real matchmaking.",
+    "usuariosEnLinea": "{n} online",
     "teRetaronAUno": "You've been challenged to a duel",
     "teRetaronAVarios": "You've been challenged to {n} duels",
     "alguien": "Someone",
@@ -321,7 +322,8 @@
       "enigmia": "Logic puzzles: sequences, patterns, and deduction.",
       "geografia": "Locate countries of the Americas on the map.",
       "quimia": "Elements, formulas, and the periodic table.",
-      "anatomia": "Bones, muscles, organs, and the nervous system."
+      "anatomia": "Bones, muscles, organs, and the nervous system.",
+      "melodia": "Staff notation, scales, and chords built from formulas."
     }
   },
   "Numeria": {

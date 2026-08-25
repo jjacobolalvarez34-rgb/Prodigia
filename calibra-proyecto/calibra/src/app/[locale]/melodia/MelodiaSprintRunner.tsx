@@ -12,6 +12,7 @@ import LevelDial from "@/app/[locale]/practica/LevelDial";
 import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/TarjetaSprint";
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import Pentagrama from "@/components/melodia/Pentagrama";
+import FiguraRitmicaIcono from "@/components/melodia/FiguraRitmicaIcono";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import { COLOR_MELODIA } from "./colores";
@@ -248,6 +249,9 @@ export default function MelodiaSprintRunner({
           <div className="w-full overflow-x-auto">
             <Pentagrama notas={pregunta.notas} disposicion={pregunta.disposicion} colorHex={COLOR_MELODIA} />
           </div>
+        )}
+        {pregunta.tipo === "texto" && pregunta.figuraId && (
+          <FiguraRitmicaIcono figura={pregunta.figuraId} colorHex={COLOR_MELODIA} />
         )}
         <p className="text-center font-display text-lg font-bold text-foreground">{pregunta.enunciado}</p>
         <div className="grid w-full max-w-sm grid-cols-2 gap-2">

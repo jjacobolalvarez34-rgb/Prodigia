@@ -114,7 +114,7 @@ export interface PerfilPublico {
   titulo_nombre: string | null;
 }
 
-export type MotivoReporte = "trampa" | "imagen_inapropiada" | "nombre_inapropiado" | "otro";
+export type MotivoReporte = "trampa" | "imagen_inapropiada" | "nombre_inapropiado" | "contenido_ofensivo" | "otro";
 
 export interface Attempt {
   id: number;
