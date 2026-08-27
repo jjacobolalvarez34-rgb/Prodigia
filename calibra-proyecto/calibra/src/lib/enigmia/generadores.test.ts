@@ -158,12 +158,54 @@ describe("generarComputacional — oráculo independiente (recalcula desde el te
   });
 });
 
-describe("generarPatron sigue funcionando igual (sin cambios de esta tanda)", () => {
-  it("siempre da 4 opciones únicas con la respuesta adentro", () => {
+// Auditoría 2026-08-25 ("los patrones son mayormente aditivos
+// simples"): generarPatron pasó de 2 formas (aditivo/geométrico) a 4
+// (+ alternante y combinación suma×multiplicación), gateadas por
+// dificultad. Estos tests verifican tanto el contrato de siempre
+// (4 opciones únicas, respuesta incluida) como que las bandas altas
+// de verdad NO son aditivas — si alguna vez alguien rompe el
+// dispatch y todo vuelve a caer en paso constante, esto lo detecta.
+describe("generarPatron — 4 formas reales, no solo aditivo", () => {
+  it("en las 10 dificultades: 4 opciones únicas y la respuesta incluida", () => {
     for (let dificultad = 1; dificultad <= 10; dificultad++) {
-      const p = generarPatron(dificultad);
-      expect(p.contenido.opciones.length).toBe(4);
-      expect(p.contenido.opciones).toContain(p.respuesta);
+      for (let i = 0; i < 30; i++) {
+        const p = generarPatron(dificultad);
+        expect(p.contenido.opciones.length, `dificultad ${dificultad}`).toBe(4);
+        expect(new Set(p.contenido.opciones).size, `dificultad ${dificultad}: opciones duplicadas`).toBe(4);
+        expect(p.contenido.opciones, `dificultad ${dificultad}: enunciado "${p.contenido.enunciado}"`).toContain(p.respuesta);
+      }
+    }
+  });
+
+  function deltas(secuencia: number[]): number[] {
+    const nums = secuencia.map(Number);
+    return nums.slice(1).map((n, i) => n - nums[i]);
+  }
+
+  it("dificultad 5 (alternante): el delta entre términos cambia de signo, no es un paso constante", () => {
+    let algunaVezAlternó = false;
+    for (let i = 0; i < 20; i++) {
+      const p = generarPatron(5);
+      const nums = p.contenido.enunciado.replace(", ?", "").split(", ").map(Number);
+      const ds = deltas(nums);
+      if (ds[0] > 0 && ds[1] < 0) algunaVezAlternó = true;
+      // nunca debería ser un paso constante (eso sería el generador aditivo, banda equivocada)
+      expect(new Set(ds).size, `dificultad 5 dio un paso constante: ${nums.join(",")}`).toBeGreaterThan(1);
+    }
+    expect(algunaVezAlternó).toBe(true);
+  });
+
+  it("dificultad 10 (combinación): la razón entre términos consecutivos no es constante (mezcla suma y multiplicación)", () => {
+    for (let i = 0; i < 20; i++) {
+      const p = generarPatron(10);
+      const nums = p.contenido.enunciado.replace(", ?", "").split(", ").map(Number);
+      const razones = nums.slice(1).map((n, i2) => (nums[i2] !== 0 ? n / nums[i2] : null));
+      const ds = deltas(nums);
+      // ni las razones son todas iguales (no es geométrico puro) ni los
+      // deltas son todos iguales (no es aditivo puro) — es la mezcla.
+      const razonesDistintas = new Set(razones.map((r) => (r === null ? "null" : r.toFixed(3)))).size > 1;
+      const deltasDistintos = new Set(ds).size > 1;
+      expect(razonesDistintas || deltasDistintos, `dificultad 10 parece una sola operación repetida: ${nums.join(",")}`).toBe(true);
     }
   });
 });

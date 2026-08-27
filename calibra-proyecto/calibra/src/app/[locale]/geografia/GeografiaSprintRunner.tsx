@@ -18,6 +18,7 @@ import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/Tarjet
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
+import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import GeografiaMapa, { COLOR_GEOGRAFIA } from "./GeografiaMapa";
 
 // Extraído a un helper de módulo (mismo criterio que elegirPaisAleatorio/
@@ -90,7 +91,7 @@ export default function GeografiaSprintRunner({
   const [remainingMs, setRemainingMs] = useState(duracionMs);
   const [nivel, setNivel] = useState(nivelInicial);
   const [escudos, setEscudos] = useState(escudosIniciales);
-  const [racha, setRacha] = useState(0);
+  const { racha, registrarResultado } = useRachaCombo();
 
   const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(duracionMs);
 
@@ -154,6 +155,7 @@ export default function GeografiaSprintRunner({
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const correct = id === pais.id;
     reproducirTono(correct ? "correcto" : "error");
+    const rachaActual = registrarResultado(correct);
 
     if (correct) {
       evaluarBonus(pais.dificultad, timeMs);
@@ -193,8 +195,7 @@ export default function GeografiaSprintRunner({
         nivelSubio = data.skillLevel.nivel > nivelRef.current;
         nivelRef.current = data.skillLevel.nivel;
         setNivel(data.skillLevel.nivel);
-        setRacha(data.skillLevel.racha_actual);
-        emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: data.skillLevel.racha_actual });
+        emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: rachaActual });
       }
       if (correct && xpGanado > 0) {
         setPuntaje({ total: xpGanado, intensidad: nivelSubio ? "grande" : xpGanado >= 20 ? "medio" : "chico" });

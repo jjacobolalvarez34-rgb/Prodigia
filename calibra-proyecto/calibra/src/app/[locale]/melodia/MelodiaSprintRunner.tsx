@@ -13,8 +13,10 @@ import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/Tarjet
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import Pentagrama from "@/components/melodia/Pentagrama";
 import FiguraRitmicaIcono from "@/components/melodia/FiguraRitmicaIcono";
+import BotonEscucharNota from "@/components/melodia/BotonEscucharNota";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
+import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import { COLOR_MELODIA } from "./colores";
 
 const TOTAL_PREGUNTAS = 10;
@@ -73,7 +75,7 @@ export default function MelodiaSprintRunner({
   const [remainingMs, setRemainingMs] = useState(duracionMs);
   const [nivel, setNivel] = useState(nivelForzado ?? nivelInicial);
   const [escudos, setEscudos] = useState(escudosIniciales);
-  const [racha, setRacha] = useState(0);
+  const { racha, registrarResultado } = useRachaCombo();
 
   const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(duracionMs);
 
@@ -130,6 +132,7 @@ export default function MelodiaSprintRunner({
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const correct = opcion === pregunta.respuesta;
     reproducirTono(correct ? "correcto" : "error");
+    const rachaActual = registrarResultado(correct);
 
     if (correct) {
       evaluarBonus(nivelRef.current, timeMs);
@@ -169,10 +172,9 @@ export default function MelodiaSprintRunner({
         nivelSubio = data.skillLevel.nivel > nivelRef.current;
         nivelRef.current = data.skillLevel.nivel;
         setNivel(data.skillLevel.nivel);
-        setRacha(data.skillLevel.racha_actual);
       }
       if (data.skillLevel) {
-        emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: data.skillLevel.racha_actual });
+        emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: rachaActual });
       }
       if (correct && xpGanado > 0) {
         setPuntaje({ total: xpGanado, intensidad: nivelSubio ? "grande" : xpGanado >= 20 ? "medio" : "chico" });
@@ -253,6 +255,7 @@ export default function MelodiaSprintRunner({
         {pregunta.tipo === "texto" && pregunta.figuraId && (
           <FiguraRitmicaIcono figura={pregunta.figuraId} colorHex={COLOR_MELODIA} />
         )}
+        {pregunta.tipo === "audio" && <BotonEscucharNota nota={pregunta.nota} colorHex={COLOR_MELODIA} />}
         <p className="text-center font-display text-lg font-bold text-foreground">{pregunta.enunciado}</p>
         <div className="grid w-full max-w-sm grid-cols-2 gap-2">
           {pregunta.opciones.map((op) => {

@@ -15,6 +15,7 @@ import { generarAcertijoProcedural, type CategoriaGenerada } from "@/lib/enigmia
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
+import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 
 const TOTAL_PREGUNTAS = 10;
 // Fase V2: 60s se sentía corto para acertijos de lógica (no es lo mismo
@@ -133,7 +134,7 @@ export default function EnigmiaSprintRunner({
   const [remainingMs, setRemainingMs] = useState(duracionMs);
   const [nivel, setNivel] = useState(nivelForzado ?? nivelInicial);
   const [escudos, setEscudos] = useState(escudosIniciales);
-  const [racha, setRacha] = useState(0);
+  const { racha, registrarResultado } = useRachaCombo();
 
   const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(duracionMs);
 
@@ -202,6 +203,7 @@ export default function EnigmiaSprintRunner({
     const correct = opcion === puzzle.respuesta;
     setFeedback(correct ? "correcto" : "incorrecto");
     reproducirTono(correct ? "correcto" : "error");
+    const rachaActual = registrarResultado(correct);
 
     if (correct) {
       evaluarBonus(puzzle.dificultad, timeMs);
@@ -243,8 +245,7 @@ export default function EnigmiaSprintRunner({
           nivelRef.current = data.skillLevel.nivel;
           setNivel(data.skillLevel.nivel);
         }
-        setRacha(data.skillLevel.racha_actual);
-        emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: data.skillLevel.racha_actual });
+        emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: rachaActual });
       }
       if (correct && xpGanado > 0) {
         setPuntaje({ total: xpGanado, intensidad: nivelSubio ? "grande" : xpGanado >= 20 ? "medio" : "chico" });

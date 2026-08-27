@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   generarPreguntaMelodia, MODOS_MELODIA, construirEscala, construirAcorde,
-  semitonoAbsoluto, LETRAS, type TipoEscala, type TipoAcorde, type NotaMusical,
+  semitonoAbsoluto, frecuenciaDeNota, LETRAS, type TipoEscala, type TipoAcorde, type NotaMusical,
 } from "./melodia";
 
 function fundamentalAlAzar(): NotaMusical {
@@ -9,6 +9,24 @@ function fundamentalAlAzar(): NotaMusical {
   const octava = 3 + Math.floor(Math.random() * 2);
   return { letra, octava, alteracion: null };
 }
+
+describe("frecuenciaDeNota — Fase 7, oído absoluto", () => {
+  it("La4 = 440Hz exacto (referencia estándar)", () => {
+    expect(frecuenciaDeNota({ letra: "La", octava: 4, alteracion: null })).toBeCloseTo(440, 5);
+  });
+
+  it("subir una octava duplica la frecuencia", () => {
+    const do4 = frecuenciaDeNota({ letra: "Do", octava: 4, alteracion: null });
+    const do5 = frecuenciaDeNota({ letra: "Do", octava: 5, alteracion: null });
+    expect(do5 / do4).toBeCloseTo(2, 5);
+  });
+
+  it("un sostenido sube exactamente un semitono (razón 2^(1/12))", () => {
+    const fa = frecuenciaDeNota({ letra: "Fa", octava: 4, alteracion: null });
+    const faSost = frecuenciaDeNota({ letra: "Fa", octava: 4, alteracion: "sostenido" });
+    expect(faSost / fa).toBeCloseTo(Math.pow(2, 1 / 12), 5);
+  });
+});
 
 describe("generarPreguntaMelodia — contrato para todos los modos", () => {
   for (const modo of MODOS_MELODIA) {

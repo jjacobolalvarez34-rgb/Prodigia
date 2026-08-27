@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Boton from "@/components/Boton";
-import NombreConFuente from "@/components/NombreConFuente";
-import type { FuenteNombre } from "@/types/database";
+import ScrollFloat from "@/components/reactbits/ScrollFloat";
+import { FUENTE_NOMBRE_CLASS, type FuenteNombre } from "@/types/database";
 
 // Fase 6 (mercado): cambiar de nombre después del primero cuesta
 // Chispas — nunca Experiencia, que es semanal/temporal y mediría mal si
@@ -41,11 +41,21 @@ export default function NombreEditable({ nombreActual, fuente }: Props) {
   }
 
   if (!editando) {
+    // Fase 10 (Tienda: animaciones adicionales) — mismo componente que
+    // ya anima los nombres del ranking (ScrollFloat, /leaderboard),
+    // ahora también en tu propio perfil. La tipografía comprada
+    // (fuente_nombre) se preserva vía textClassName, mismo mapeo que
+    // usa NombreConFuente.tsx.
     return (
       <div className="flex items-center gap-3">
-        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-          <NombreConFuente nombre={nombreActual} fuente={fuente} />
-        </h1>
+        <ScrollFloat
+          tag="h1"
+          className="font-display text-2xl font-bold tracking-tight text-foreground"
+          textClassName={FUENTE_NOMBRE_CLASS[fuente ?? "default"] ?? ""}
+          animationDuration={0.7}
+        >
+          {nombreActual ?? "Jugador"}
+        </ScrollFloat>
         <button
           onClick={() => setEditando(true)}
           className="text-xs font-medium text-primario hover:underline"

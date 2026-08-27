@@ -13,6 +13,7 @@ import BarraTiempo from "@/components/practica/BarraTiempo";
 import EsqueletoClickeable from "@/components/anatomia/EsqueletoClickeable";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
+import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import { COLOR_ANATOMIA } from "./colores";
 
 const TOTAL_PREGUNTAS = 10;
@@ -63,7 +64,7 @@ export default function AnatomiaSprintRunner({
   const [remainingMs, setRemainingMs] = useState(duracionMs);
   const [nivel, setNivel] = useState(nivelForzado ?? nivelInicial);
   const [escudos, setEscudos] = useState(escudosIniciales);
-  const [racha, setRacha] = useState(0);
+  const { racha, registrarResultado } = useRachaCombo();
 
   const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(duracionMs);
 
@@ -122,6 +123,7 @@ export default function AnatomiaSprintRunner({
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const correct = pregunta.tipo === "click" ? opcion === pregunta.objetivoHueso : opcion === pregunta.respuesta;
     reproducirTono(correct ? "correcto" : "error");
+    const rachaActual = registrarResultado(correct);
 
     if (correct) {
       evaluarBonus(nivelRef.current, timeMs);
@@ -164,10 +166,9 @@ export default function AnatomiaSprintRunner({
         nivelSubio = data.skillLevel.nivel > nivelRef.current;
         nivelRef.current = data.skillLevel.nivel;
         setNivel(data.skillLevel.nivel);
-        setRacha(data.skillLevel.racha_actual);
       }
       if (data.skillLevel) {
-        emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: data.skillLevel.racha_actual });
+        emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: rachaActual });
       }
       if (correct && xpGanado > 0) {
         setPuntaje({ total: xpGanado, intensidad: nivelSubio ? "grande" : xpGanado >= 20 ? "medio" : "chico" });
@@ -248,6 +249,17 @@ export default function AnatomiaSprintRunner({
         padding="px-6 py-10"
         minHeight={pregunta.tipo === "click" ? 460 : 300}
       >
+        {pregunta.tipo === "opcion" && pregunta.diagramaId && (
+          // Fase 5: lámina real de Gray's Anatomy 1918 (dominio público)
+          // por región — contexto visual, no un click sobre el músculo
+          // exacto (son PNG escaneados, sin regiones vectoriales).
+          // eslint-disable-next-line @next/next/no-img-element -- lámina fija de un asset local, no hace falta next/image acá
+          <img
+            src={`/anatomia/musculos/${pregunta.diagramaId}.png`}
+            alt=""
+            className="max-h-64 w-auto rounded-xl object-contain"
+          />
+        )}
         <p className="text-center font-display text-lg font-bold text-foreground">{pregunta.enunciado}</p>
         {pregunta.tipo === "click" ? (
           <EsqueletoClickeable

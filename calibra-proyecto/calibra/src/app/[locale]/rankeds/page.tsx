@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
+import { requireUsuario, bloquearInvitado, requireNivelCuentaRankeds } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import RankedsClient from "./RankedsClient";
 
@@ -19,6 +19,7 @@ export default async function RankedsPage({ searchParams }: Props) {
   const supabase = await createClient();
   const { user, profile } = await requireUsuario(supabase, "/rankeds");
   bloquearInvitado(user, "Rankeds");
+  requireNivelCuentaRankeds(profile);
 
   const [{ data: historial }, { data: pendientes }, { data: miTituloNombre }, { data: statsCasual }] = await Promise.all([
     supabase.rpc("mi_historial_duelos", { p_limite: 20 }),

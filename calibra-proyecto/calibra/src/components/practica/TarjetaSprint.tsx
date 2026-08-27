@@ -25,7 +25,22 @@ interface Props {
 // el mismo lado; incorrecto se oscurece y desliza un poco más lento a
 // propósito. El reveal de la respuesta correcta usa PixelTransition
 // (Fase K3) en vez de las partículas de "desintegración" de antes.
-// Usada igual en los 4 runners de práctica — nada de feedback viejo.
+// Usada igual en los 6 runners de práctica — nada de feedback viejo.
+//
+// Fase 4 (auditoría 2026-08-25 — "el contenedor no crece con la
+// imagen, corta el pentagrama/la molécula/el esqueleto"): la causa
+// real era `className="absolute inset-0"` en la tarjeta de acá abajo.
+// Un elemento `position: absolute` NUNCA aporta altura a su padre —
+// así que el wrapper de afuera quedaba fijo exactamente en `minHeight`
+// pase lo que pase adentro, recortando/apretando cualquier contenido
+// más alto que eso (pentagramas, el esqueleto de Anatomía, moléculas
+// de Quimia orgánica). `AnimatePresence mode="popLayout"` YA saca del
+// flujo (con su propio absolute, automático) solo a la tarjeta que se
+// está yendo — la que está ENTRANDO/presente se queda en flujo normal
+// a propósito, así que sacar el `absolute inset-0` de acá alcanza para
+// que el wrapper vuelva a crecer con el contenido real, sin perder la
+// superposición del swipe de salida (eso ya lo resuelve popLayout
+// solo). `minHeight` pasa a ser un piso de verdad, no un techo.
 export default function TarjetaSprint({
   cardKey,
   feedback,
@@ -56,10 +71,9 @@ export default function TarjetaSprint({
             transition: { duration: feedback === "incorrecto" ? 0.45 : 0.32, ease: "easeIn" },
           }}
           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute inset-0"
         >
           <div
-            className={`relative flex h-full w-full flex-col items-center gap-6 rounded-3xl border-2 bg-surface ${padding} shadow-lg shadow-foreground/[0.03] transition-colors ${
+            className={`relative flex w-full flex-col items-center gap-6 rounded-3xl border-2 bg-surface ${padding} shadow-lg shadow-foreground/[0.03] transition-colors ${
               feedback === "correcto"
                 ? "border-correcto"
                 : feedback === "incorrecto"

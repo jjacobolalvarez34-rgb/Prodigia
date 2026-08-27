@@ -30,6 +30,13 @@ const OSEO_ALTO = [
 ];
 
 const MUSCULAR_BAJO = ["Bíceps", "Tríceps", "Cuádriceps", "Deltoides", "Glúteos", "Recto abdominal", "Pectoral mayor", "Trapecio", "Gastrocnemio", "Dorsal ancho"];
+// Fase 5: región del cuerpo de cada término de MUSCULAR_BAJO — decide
+// qué lámina de public/anatomia/musculos/ mostrar (ver PreguntaAnatomiaOpcion.diagramaId).
+const REGION_MUSCULAR: Partial<Record<string, "brazo" | "pierna" | "torso">> = {
+  Bíceps: "brazo", Tríceps: "brazo", Deltoides: "brazo", "Pectoral mayor": "brazo",
+  Cuádriceps: "pierna", Glúteos: "pierna", Gastrocnemio: "pierna",
+  "Recto abdominal": "torso", Trapecio: "torso", "Dorsal ancho": "torso",
+};
 const MUSCULAR_ALTO = ["Frontal", "Orbicular de los ojos", "Orbicular de la boca", "Masetero", "Temporal", "Buccinador", "Cigomático mayor", "Occipital", "Platisma"];
 
 const ORGANOS = ["Corazón", "Pulmones", "Hígado", "Riñones", "Estómago", "Cerebro", "Intestino", "Páncreas", "Vejiga", "Bazo"];
@@ -60,6 +67,14 @@ export interface PreguntaAnatomiaOpcion {
   opciones: string[];
   respuesta: string;
   clave: string;
+  // Fase 5 (2026-08-25): no existe un diagrama muscular de cuerpo
+  // completo con licencia libre (buscado y descartado, ver
+  // docs/PROGRESO.md) — en vez de eso, láminas REALES de Gray's
+  // Anatomy 1918 (dominio público, mismo autor que el esqueleto:
+  // Henry Vandyke Carter) por región. Contexto visual de la zona, no
+  // un click sobre el músculo exacto — son PNG escaneados, sin
+  // regiones vectoriales que tagear (a diferencia del esqueleto SVG).
+  diagramaId?: "brazo" | "pierna" | "torso";
 }
 
 // Fase 2 ("identificación por ubicación directa"): en vez de elegir el
@@ -219,5 +234,6 @@ export function generarPreguntaAnatomia(modo: ModoAnatomia, nivel: number, usado
     opciones,
     respuesta: correcta,
     clave: correcta,
+    diagramaId: modo === "muscular" ? REGION_MUSCULAR[correcta] : undefined,
   };
 }

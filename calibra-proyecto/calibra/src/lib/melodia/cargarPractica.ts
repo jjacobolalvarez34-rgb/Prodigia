@@ -24,7 +24,7 @@ export interface DatosPracticaMelodia {
   dueloInfo: DueloMelodiaInfo | null;
 }
 
-const MODOS_VALIDOS: ModoMelodia[] = ["fundamentos", "lectura", "alteraciones", "escalas", "acordes"];
+const MODOS_VALIDOS: ModoMelodia[] = ["fundamentos", "lectura", "alteraciones", "escalas", "acordes", "oido_absoluto"];
 
 // Fase 2 ("extender duelos a los mundos que faltan"): mismo patrón que
 // cargarDatosPracticaAnatomia — sin semilla, cada rival resuelve su

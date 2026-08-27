@@ -83,6 +83,8 @@ export interface Profile {
   onboarding_quimia_completado: boolean; // diagnóstico de Quimia hecho/salteado
   onboarding_anatomia_completado: boolean; // diagnóstico de Anatomía hecho/salteado
   onboarding_melodia_completado: boolean; // diagnóstico de Melodía hecho/salteado
+  mundos_desbloqueados: string[]; // Fase 12: qué mundos ya compró con Chispas — 'numeria' siempre presente
+  nivel_cuenta: number; // Fase 4 (nivel de cuenta): nivel general de la cuenta, no el de un mundo puntual
   idioma: "es" | "en";
   interes_inicial: ArithmeticProblemType | "logica" | null; // capa Prodigia del onboarding
   escudos_extra_pendientes: number;

@@ -9,7 +9,7 @@ const SUB_TIPOS_VALIDOS: Record<string, string[]> = {
   enigmia: ["memoria", "patrones", "deduccion", "computacional"],
   quimia: ["simbolos", "formulas", "tabla"],
   anatomia: ["oseo", "muscular", "organos", "nervioso"],
-  melodia: ["fundamentos", "lectura", "alteraciones", "escalas", "acordes"],
+  melodia: ["fundamentos", "lectura", "alteraciones", "escalas", "acordes", "oido_absoluto"],
 };
 
 interface Body {

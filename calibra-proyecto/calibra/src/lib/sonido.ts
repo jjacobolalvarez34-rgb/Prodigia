@@ -86,6 +86,25 @@ function reproducirSecuencia(notas: Nota[]) {
   }
 }
 
+// Fase 7 (Melodía, modo "oído absoluto"): reproduce la frecuencia real
+// de una nota musical (A4 = 440Hz, temperamento igual — mismo cálculo
+// que melodia.ts usa para el pentagrama, ver semitonoAbsoluto) como
+// tono sintetizado — nada de archivos de audio externos, mismo
+// criterio que el resto de esta función. Dos armónicos suaves además
+// de la fundamental (no un seno puro) para que se sienta más "nota de
+// instrumento" que un beep de prueba de audio.
+export function reproducirNotaMusical(freq: number) {
+  if (!sonidoHabilitado() || typeof window === "undefined") return;
+  try {
+    reproducirSecuencia([
+      { freq, inicio: 0, duracion: 1.1, tipoOnda: "triangle", volumen: 0.14 },
+      { freq: freq * 2, inicio: 0, duracion: 0.9, tipoOnda: "sine", volumen: 0.03 },
+    ]);
+  } catch {
+    // audio no disponible en este navegador/contexto
+  }
+}
+
 export type TipoTono = "correcto" | "error" | "nivel" | "logro" | "duelo_gano" | "duelo_perdio";
 
 // Tonos generados con Web Audio (sin archivos de audio con licencia):

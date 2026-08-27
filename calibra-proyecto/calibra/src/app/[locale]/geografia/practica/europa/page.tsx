@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario } from "@/lib/auth/guard";
+import { requireMundoGeografia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import GeografiaPracticaClient from "../../GeografiaPracticaClient";
 
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function GeografiaPracticaEuropaPage() {
   const supabase = await createClient();
-  const { user } = await requireUsuario(supabase, "/geografia/practica/europa");
+  const { user } = await requireMundoGeografia(supabase, "/geografia/practica/europa");
 
   const [{ data: nivelRow }, { data: profile }] = await Promise.all([
     supabase.from("skill_levels").select("nivel").eq("user_id", user.id).eq("problem_type", "geografia").maybeSingle(),

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -136,7 +137,15 @@ export default function RankedsClient({
   }, []);
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-12 sm:px-6">
+    // Fase 10: entrada propia además del fade global de PageFade
+    // (layout.tsx) — un slide-up sutil, mismo lenguaje de movimiento
+    // que ya usan las pantallas de diagnóstico/resultado en toda la app.
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-12 sm:px-6"
+    >
       <AvisoPrimeraVez avisoKey="rankeds-intro" texto={t("intro")}>
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -173,7 +182,7 @@ export default function RankedsClient({
       ) : (
         <RankingElo miUserId={miUserId} />
       )}
-    </div>
+    </motion.div>
   );
 }
 

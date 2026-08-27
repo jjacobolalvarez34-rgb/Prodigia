@@ -149,6 +149,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconSuma}
                 href="/numeria"
                 colorHex="#6C4CF1"
+                bloqueado={!profile.mundos_desbloqueados?.includes("numeria")}
               />
               <WorldCard
                 nombre="Enigmia"
@@ -156,6 +157,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconLogica}
                 href="/enigmia"
                 colorHex="#0E9F6E"
+                bloqueado={!profile.mundos_desbloqueados?.includes("enigmia")}
               />
               <WorldCard
                 nombre="Geografía"
@@ -163,6 +165,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconGeometria}
                 href="/geografia"
                 colorHex="#1E7A8C"
+                bloqueado={!profile.mundos_desbloqueados?.includes("geografia")}
               />
               <WorldCard
                 nombre="Quimia"
@@ -170,6 +173,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconQuimica}
                 href="/quimia"
                 colorHex="#C026D3"
+                bloqueado={!profile.mundos_desbloqueados?.includes("quimia")}
               />
               <WorldCard
                 nombre="Anatomía"
@@ -177,6 +181,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconAnatomia}
                 href="/anatomia"
                 colorHex="#8B2942"
+                bloqueado={!profile.mundos_desbloqueados?.includes("anatomia")}
               />
               <WorldCard
                 nombre="Melodía"
@@ -184,6 +189,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconMelodia}
                 href="/melodia"
                 colorHex="#B8860B"
+                bloqueado={!profile.mundos_desbloqueados?.includes("melodia")}
               />
             </div>
           </PrimeraVezTip>

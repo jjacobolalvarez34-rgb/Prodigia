@@ -99,6 +99,7 @@ export async function POST(request: Request) {
     "melodia_alteraciones",
     "melodia_escalas",
     "melodia_acordes",
+    "melodia_oido_absoluto",
   ];
   if (!sospechoso && (tiposCalibrables as string[]).includes(body.problem_type)) {
     skillLevel = await actualizarSkillLevel(

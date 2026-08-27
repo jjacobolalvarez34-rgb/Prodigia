@@ -5,7 +5,7 @@ import { CATALOGO_TITULOS, type TituloCatalogo } from "./catalogo";
 const TIPOS_NUMERIA = ["suma", "resta", "multiplicacion", "division", "fracciones", "decimales", "potencias", "algebra"];
 const TIPOS_QUIMIA = ["quimia_simbolos", "quimia_formulas", "quimia_tabla"];
 const TIPOS_ANATOMIA = ["anatomia_oseo", "anatomia_muscular", "anatomia_organos", "anatomia_nervioso"];
-const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes"];
+const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"];
 
 // Mismo espíritu que verificarLogros (src/lib/logros/verificar.ts):
 // solo calcula lo que hace falta para los títulos todavía no

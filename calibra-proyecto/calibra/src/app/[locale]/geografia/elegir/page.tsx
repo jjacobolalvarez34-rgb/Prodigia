@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario } from "@/lib/auth/guard";
+import { requireMundoGeografia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import LevelDial from "@/app/[locale]/practica/LevelDial";
 import { IconGeometria } from "@/components/icons";
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 // 4 regiones (no hay sub-tema por continente, a diferencia de Numeria).
 export default async function GeografiaElegirPage() {
   const supabase = await createClient();
-  const { user } = await requireUsuario(supabase, "/geografia/elegir");
+  const { user } = await requireMundoGeografia(supabase, "/geografia/elegir");
 
   const { data: nivelRow } = await supabase
     .from("skill_levels")

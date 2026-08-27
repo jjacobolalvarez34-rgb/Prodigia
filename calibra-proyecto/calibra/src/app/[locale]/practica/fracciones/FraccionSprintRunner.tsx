@@ -11,6 +11,7 @@ import RachaFuego from "@/components/RachaFuego";
 import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/TarjetaSprint";
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import LevelDial from "../LevelDial";
+import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 
 const TOTAL_PROBLEMAS = 10;
 const DURACION_MS = 60_000;
@@ -61,7 +62,7 @@ export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccio
   const [remainingMs, setRemainingMs] = useState(DURACION_MS);
   const [nivel, setNivel] = useState(1);
   const [escudos, setEscudos] = useState(escudosIniciales);
-  const [racha, setRacha] = useState(0);
+  const { racha, registrarResultado } = useRachaCombo();
 
   const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(DURACION_MS);
 
@@ -123,6 +124,7 @@ export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccio
   }, [startedAt]);
 
   async function registrar(correct: boolean, timeMs: number) {
+    registrarResultado(correct);
     const tipoDelProblema = problema?.tipo ?? "simplificar";
     const nivelDelTipo = nivelPorTipoRef.current[tipoDelProblema] ?? 1;
     if (correct) {
@@ -162,7 +164,6 @@ export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccio
         nivelSubio = data.skillLevel.nivel > nivelDelTipo;
         nivelPorTipoRef.current = { ...nivelPorTipoRef.current, [tipoDelProblema]: data.skillLevel.nivel };
         setNivel(data.skillLevel.nivel);
-        setRacha(data.skillLevel.racha_actual);
       }
       if (correct && xpGanado > 0) {
         setPuntaje({ total: xpGanado, intensidad: nivelSubio ? "grande" : xpGanado >= 20 ? "medio" : "chico" });

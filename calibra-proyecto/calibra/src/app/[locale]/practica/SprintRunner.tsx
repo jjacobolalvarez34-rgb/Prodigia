@@ -20,6 +20,7 @@ import GestoLogo from "@/components/GestoLogo";
 import LevelDial from "./LevelDial";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
+import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 
 const TOTAL_PROBLEMAS = 10;
 const DURACION_MS = 60_000;
@@ -195,7 +196,7 @@ export default function SprintRunner({
   const [xpSprint, setXpSprint] = useState(0);
   const [problemasRespondidos, setProblemasRespondidos] = useState(0);
   const [remainingMs, setRemainingMs] = useState(duracionMs);
-  const [racha, setRacha] = useState(0);
+  const { racha, registrarResultado } = useRachaCombo();
   const [nivelSubioAnim, setNivelSubioAnim] = useState(false);
   const [logro, setLogro] = useState<string | null>(null);
   const [escudos, setEscudos] = useState(escudosIniciales);
@@ -294,6 +295,7 @@ export default function SprintRunner({
     setFeedback(correct ? "correcto" : "incorrecto");
     reproducirTono(correct ? "correcto" : "error");
     respuestasRef.current.push({ correct, timeMs });
+    const rachaActual = registrarResultado(correct);
 
     // Bonus de tiempo (Fase C2): responder muy rápido en nivel alto suma
     // segundos al reloj de la partida, con un tope acumulado razonable.
@@ -350,7 +352,6 @@ export default function SprintRunner({
       }
       if (correct) correctosRef.current += 1;
       if (data.skillLevel) {
-        setRacha(data.skillLevel.racha_actual);
         if (data.skillLevel.nivel > problema.nivel) {
           nivelSubioEsteIntento = true;
           setLogro(t("superasteTuTecho", { nivel: data.skillLevel.nivel }));
@@ -362,7 +363,7 @@ export default function SprintRunner({
         emitirProgreso({
           respondidos: problemasRespondidos + 1,
           correctos: correctosRef.current,
-          racha: data.skillLevel.racha_actual,
+          racha: rachaActual,
         });
       }
     } catch {

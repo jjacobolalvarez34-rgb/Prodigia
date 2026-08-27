@@ -7,21 +7,46 @@ import type { LogicPuzzle, TipoAcertijo } from "@/types/database";
 // de ahí las pistas mínimas necesarias, que es un problema bastante más
 // difícil — queda anotado como proyecto aparte, no se fuerza acá.
 
+// Fase 3 (reto diario multi-ciudad, 2026-08-25): este archivo generaba
+// TODO por Math.random directo, sin forma de sembrarlo — Química y
+// Anatomía sí soportan un `rng` inyectable (para duelos con semilla
+// compartida) desde antes. En vez de rehacer cada función interna para
+// recibir un parámetro `rng` (docenas de call sites, alto riesgo de
+// romper algo ya probado), se indirecciona por una única referencia
+// mutable a nivel de módulo — los generadores de acá abajo no cambian
+// ni una línea de su lógica, solo de dónde sale el número al azar.
+let rngActual: () => number = Math.random;
+
 function randomInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(rngActual() * (max - min + 1)) + min;
 }
 
 function elegir<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[Math.floor(rngActual() * arr.length)];
 }
 
 function mezclar<T>(arr: T[]): T[] {
   const copia = [...arr];
   for (let i = copia.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rngActual() * (i + 1));
     [copia[i], copia[j]] = [copia[j], copia[i]];
   }
   return copia;
+}
+
+// Corre `fn` con un generador de números pseudo-aleatorios sembrado en
+// vez de Math.random — usado por el reto diario para que la misma
+// fecha produzca el mismo acertijo para todos los usuarios. Nunca dos
+// llamadas anidadas ni async en el medio (los generadores de acá son
+// 100% síncronos), así que restaurar en el `finally` alcanza.
+export function conRngSembrado<T>(rng: () => number, fn: () => T): T {
+  const anterior = rngActual;
+  rngActual = rng;
+  try {
+    return fn();
+  } finally {
+    rngActual = anterior;
+  }
 }
 
 function idFalso(prefijo: string): string {
@@ -64,27 +89,95 @@ export function generarMemoria(dificultad: number): LogicPuzzle {
   };
 }
 
-export function generarPatron(dificultad: number): LogicPuzzle {
-  // Alterna entre progresión aritmética y geométrica según la dificultad.
-  const geometrica = dificultad >= 6;
-  const inicio = randomInt(1, 5 + dificultad);
-  let secuencia: number[];
-  let siguiente: number;
+// Auditoría 2026-08-25 ("hoy los patrones son mayormente aditivos
+// simples"): 4 formas reales de patrón, escalando con la dificultad —
+// cada una obliga a pensar una lógica distinta, no solo "sumar
+// siempre el mismo número". Todas devuelven 5 términos (los 4 que se
+// muestran + la respuesta), calculados de una sola simulación, nunca
+// con una fórmula cerrada aparte que pueda desincronizarse del
+// enunciado (mismo espíritu que el fix de Enigmia/computacional de
+// esta misma tanda: el oráculo de verificación recalcula desde el
+// propio enunciado, no reusa el cálculo interno).
+interface PatronGenerado {
+  secuencia: number[]; // 4 términos mostrados
+  siguiente: number; // 5to término, la respuesta
+  ruidoBase: number; // escala típica de paso entre términos, para armar distractores creíbles
+}
 
-  if (geometrica) {
-    const razon = randomInt(2, 3);
-    secuencia = [0, 1, 2, 3].map((i) => inicio * razon ** i);
-    siguiente = inicio * razon ** 4;
-  } else {
-    const paso = randomInt(2, 4 + Math.floor(dificultad / 2));
-    secuencia = [0, 1, 2, 3].map((i) => inicio + paso * i);
-    siguiente = inicio + paso * 4;
+// Dificultad 1-3: aditivo simple, paso constante — el patrón de
+// siempre, se mantiene como piso de entrada.
+function patronAditivo(dificultad: number): PatronGenerado {
+  const inicio = randomInt(1, 5 + dificultad);
+  const paso = randomInt(2, 4 + Math.floor(dificultad / 2));
+  const secuencia = [0, 1, 2, 3].map((i) => inicio + paso * i);
+  return { secuencia, siguiente: inicio + paso * 4, ruidoBase: paso };
+}
+
+// Dificultad 4-6: alternante — el signo cambia cada paso (ej.
+// +5, −3, +5, −3, ...), dos pasos reales en vez de uno solo. Hay que
+// rastrear CUÁL de los dos pasos toca a continuación, no solo sumar.
+function patronAlternante(dificultad: number): PatronGenerado {
+  const inicio = randomInt(5, 15 + dificultad * 2);
+  const a = randomInt(2, 4 + Math.floor(dificultad / 2));
+  const b = randomInt(2, 4 + Math.floor(dificultad / 2));
+  const deltas = [a, -b];
+  let x = inicio;
+  const secuencia = [x];
+  for (let i = 0; i < 3; i++) {
+    x += deltas[i % 2];
+    secuencia.push(x);
   }
+  const siguiente = x + deltas[3 % 2];
+  return { secuencia, siguiente, ruidoBase: Math.max(a, b) };
+}
+
+// Dificultad 7-8: geométrico/multiplicativo — ×2 o ×3 cada paso.
+function patronGeometrico(_dificultad: number): PatronGenerado {
+  const inicio = randomInt(1, 4);
+  const razon = randomInt(2, 3);
+  const secuencia = [0, 1, 2, 3].map((i) => inicio * razon ** i);
+  return { secuencia, siguiente: inicio * razon ** 4, ruidoBase: secuencia[3] - secuencia[2] };
+}
+
+// Dificultad 9-10: combinación real — suma y multiplicación
+// INTERCALADAS en la misma secuencia (ej. +a, ×2, +a, ×2, ...), no
+// una sola operación repetida. La forma más difícil a propósito: cada
+// paso exige recordar cuál de las dos operaciones toca ahora.
+function patronCombinado(dificultad: number): PatronGenerado {
+  const inicio = randomInt(1, 3 + Math.floor(dificultad / 3));
+  const suma = randomInt(2, 5);
+  const razon = 2;
+  const pasos: ((v: number) => number)[] = [(v) => v + suma, (v) => v * razon];
+  let x = inicio;
+  const secuencia = [x];
+  for (let i = 0; i < 3; i++) {
+    x = pasos[i % 2](x);
+    secuencia.push(x);
+  }
+  const siguiente = pasos[3 % 2](x);
+  return { secuencia, siguiente, ruidoBase: Math.max(suma, Math.abs(siguiente - x)) };
+}
+
+export function generarPatron(dificultad: number): LogicPuzzle {
+  const generador =
+    dificultad <= 3 ? patronAditivo : dificultad <= 6 ? patronAlternante : dificultad <= 8 ? patronGeometrico : patronCombinado;
+  const { secuencia, siguiente, ruidoBase } = generador(dificultad);
 
   const distractores = new Set<number>();
+  let intentos = 0;
+  while (distractores.size < 3 && intentos < 60) {
+    intentos++;
+    const ruido = siguiente + randomInt(-3, 3) * Math.max(1, ruidoBase);
+    if (ruido !== siguiente) distractores.add(ruido);
+  }
+  // Última red de seguridad: si por lo que sea no se juntaron 3
+  // distractores distintos del real (secuencias muy chicas de
+  // magnitud), se completa con desplazamientos fijos — nunca se
+  // devuelven menos de 4 opciones.
+  let relleno = 1;
   while (distractores.size < 3) {
-    const ruido = siguiente + randomInt(-5, 5) * (geometrica ? randomInt(2, 4) : 1);
-    if (ruido !== siguiente && ruido > 0) distractores.add(ruido);
+    distractores.add(siguiente + relleno);
+    relleno++;
   }
   const opciones = mezclar([siguiente, ...Array.from(distractores)]).map((n) => String(n));
 
@@ -199,7 +292,7 @@ function generarComputacionalCondicional(dificultad: number): LogicPuzzle {
   const lineas: string[] = [];
 
   for (let i = 0; i < pasos; i++) {
-    if (Math.random() < 0.5) {
+    if (rngActual() < 0.5) {
       const suma = randomInt(1, 5);
       lineas.push(`si x es par: x = x + ${suma}; si no: x = x × 2`);
       x = x % 2 === 0 ? x + suma : x * 2;
@@ -261,7 +354,7 @@ function generarComputacionalOrdenar(dificultad: number): LogicPuzzle {
     if (vistos.size < 4) continue;
 
     const resultadosDistintos = mezclar(Array.from(vistos.keys())).slice(0, 4);
-    const correcto = resultadosDistintos[Math.floor(Math.random() * resultadosDistintos.length)];
+    const correcto = resultadosDistintos[Math.floor(rngActual() * resultadosDistintos.length)];
     const opciones = resultadosDistintos.map((resultado) => vistos.get(resultado)!.map((i) => i.texto).join(" → "));
     const respuesta = vistos.get(correcto)!.map((i) => i.texto).join(" → ");
 
@@ -326,7 +419,7 @@ export function generarComputacional(dificultad: number): LogicPuzzle {
   // "más difícil". Bucle+condicional pesa el doble a propósito: es la
   // forma que de verdad exige rastrear una decisión por vuelta (ver
   // comentario arriba); las otras dos siguen adentro por variedad.
-  const r = Math.random();
+  const r = rngActual();
   if (r < 0.5) return generarComputacionalBucleCondicional(dificultad);
   return r < 0.75 ? generarComputacionalBucle(dificultad, true) : generarComputacionalOrdenar(dificultad);
 }

@@ -55,6 +55,13 @@ export function semitonoAbsoluto(nota: NotaMusical): number {
   return base + (nota.alteracion === "sostenido" ? 1 : nota.alteracion === "bemol" ? -1 : 0);
 }
 
+// Fase 7 ("oído absoluto"): A4 = 440Hz, temperamento igual — la
+// fórmula estándar (freq = 440 × 2^(semitonos_desde_A4/12)).
+// semitonoAbsoluto(La4) = 4*12+9 = 57, de ahí sale el 57 de acá abajo.
+export function frecuenciaDeNota(nota: NotaMusical): number {
+  return 440 * Math.pow(2, (semitonoAbsoluto(nota) - 57) / 12);
+}
+
 export function nombreNota(nota: NotaMusical): string {
   const simbolo = nota.alteracion === "sostenido" ? "♯" : nota.alteracion === "bemol" ? "♭" : "";
   return `${nota.letra}${simbolo}${nota.octava}`;
@@ -111,18 +118,25 @@ function notaDesdeSemitonoAbsoluto(semitonoAbs: number, usarBemoles: boolean): N
   return { letra, octava, alteracion };
 }
 
+// Fase 3 (reto diario multi-ciudad, 2026-08-25): mismo criterio que
+// generadores.ts de Enigmia — una única referencia mutable a nivel de
+// módulo en vez de rehacer cada función interna para recibir un
+// parámetro `rng` (esto tiene bandas/fórmulas de acordes/escalas
+// reales adentro, no vale la pena arriesgar tocar esa lógica).
+let rngActual: () => number = Math.random;
+
 function randomInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(rngActual() * (max - min + 1)) + min;
 }
 
 function elegir<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[Math.floor(rngActual() * arr.length)];
 }
 
 function mezclar<T>(arr: T[]): T[] {
   const copia = [...arr];
   for (let i = copia.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rngActual() * (i + 1));
     [copia[i], copia[j]] = [copia[j], copia[i]];
   }
   return copia;
@@ -130,6 +144,19 @@ function mezclar<T>(arr: T[]): T[] {
 
 function idFalso(prefijo: string): string {
   return `${prefijo}-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+}
+
+// Corre `fn` con un generador de números pseudo-aleatorios sembrado en
+// vez de Math.random — usado por el reto diario para que la misma
+// fecha produzca el mismo contenido para todos los usuarios.
+export function conRngSembrado<T>(rng: () => number, fn: () => T): T {
+  const anterior = rngActual;
+  rngActual = rng;
+  try {
+    return fn();
+  } finally {
+    rngActual = anterior;
+  }
 }
 
 // ─── Figuras rítmicas y equivalencia de cifrado (modo Fundamentos) ───
@@ -225,7 +252,7 @@ export function banda(nivel: number): number {
 
 // ─── Preguntas: unión discriminada por modo ───
 
-export type ModoMelodia = "fundamentos" | "lectura" | "alteraciones" | "escalas" | "acordes";
+export type ModoMelodia = "fundamentos" | "lectura" | "alteraciones" | "escalas" | "acordes" | "oido_absoluto";
 
 interface PreguntaBase {
   id: string;
@@ -256,7 +283,14 @@ export interface PreguntaMelodiaPentagrama extends PreguntaBase {
   disposicion: "secuencial" | "simultanea";
 }
 
-export type PreguntaMelodia = PreguntaMelodiaTexto | PreguntaMelodiaPentagrama;
+// Fase 7: "oído absoluto" — se reproduce la nota (frecuenciaDeNota) y
+// hay que identificarla, nada de pentagrama a la vista (sería trampa).
+export interface PreguntaMelodiaAudio extends PreguntaBase {
+  tipo: "audio";
+  nota: NotaMusical;
+}
+
+export type PreguntaMelodia = PreguntaMelodiaTexto | PreguntaMelodiaPentagrama | PreguntaMelodiaAudio;
 
 function fundamentalAlAzar(rangoOctava: [number, number] = [3, 5]): NotaMusical {
   const letra = elegir(LETRAS);
@@ -289,7 +323,7 @@ const NOTAS_POR_BANDA: NotaLetra[][] = [
 
 function generarFundamentos(nivel: number): PreguntaMelodiaTexto {
   const b = banda(nivel);
-  const esFigura = Math.random() < 0.5;
+  const esFigura = rngActual() < 0.5;
 
   if (esFigura) {
     const pool = FIGURAS_POR_BANDA[b];
@@ -320,7 +354,7 @@ function generarFundamentos(nivel: number): PreguntaMelodiaTexto {
   const letra = elegir(pool);
   // Banda alta: a veces la pregunta va al revés (cifrado → nota en
   // español) para no quedarse siempre en la misma dirección.
-  const invertida = b >= 3 && Math.random() < 0.5;
+  const invertida = b >= 3 && rngActual() < 0.5;
   // Mismo criterio que con las figuras arriba: si el pool de la banda
   // (3 notas en banda 0) no alcanza para 3 distractores, se completa
   // desde el set completo de 7 notas.
@@ -426,7 +460,7 @@ function generarLectura(nivel: number): PreguntaMelodiaPentagrama {
 // pool para forzar a distinguir grafía, no solo sonido.
 function generarAlteraciones(nivel: number): PreguntaMelodiaPentagrama {
   const b = banda(nivel);
-  const usarBemol = Math.random() < 0.5;
+  const usarBemol = rngActual() < 0.5;
   const base: NotaMusical = { letra: elegir(LETRAS), octava: randomInt(4, 5), alteracion: usarBemol ? "bemol" : "sostenido" };
   const respuesta = nombreNota(base);
 
@@ -479,7 +513,7 @@ function generarEscalas(nivel: number): PreguntaMelodiaPentagrama {
   const b = banda(nivel);
   const pool = ESCALAS_POR_BANDA[b];
   const tipo = elegir(pool);
-  const usarBemoles = Math.random() < 0.5;
+  const usarBemoles = rngActual() < 0.5;
   const fundamental = fundamentalAlAzar([3, 4]);
   const notas = construirEscala(fundamental, tipo, usarBemoles);
 
@@ -522,7 +556,7 @@ function acordesPorNivel(nivel: number): TipoAcorde[] {
 function generarAcordes(nivel: number): PreguntaMelodiaPentagrama {
   const pool = acordesPorNivel(nivel);
   const tipo = elegir(pool);
-  const usarBemoles = Math.random() < 0.5;
+  const usarBemoles = rngActual() < 0.5;
   const fundamental = fundamentalAlAzar([3, 4]);
   const notas = construirAcorde(fundamental, tipo, usarBemoles);
 
@@ -552,23 +586,89 @@ function generarAcordes(nivel: number): PreguntaMelodiaPentagrama {
   };
 }
 
+// ─── Modo 6: Oído absoluto (Fase 7, dificultad reservada para lo más
+// alto) — se reproduce el audio de una nota (Web Audio API, tono
+// sintetizado con la frecuencia real, ver frecuenciaDeNota/sonido.ts)
+// y hay que identificarla de oído, nada de pentagrama a la vista. No
+// hay forma de hacer "fácil" reconocer una nota de oído más allá de
+// separar bien las opciones entre sí — la escalada real es reducir esa
+// separación a medida que sube el nivel: de un piso/quinta/octava bien
+// distintos hasta semitonos vecinos con alteración, el caso genuinamente
+// difícil de oído absoluto.
+const POOL_OIDO_POR_BANDA: NotaMusical[][] = [
+  // banda 0 (nivel 1-2): máxima separación — cuarta, quinta y octava.
+  // 4 notas, no 3: hacen falta al menos 4 para armar 4 opciones únicas
+  // sin repetir la correcta (mismo bug ya encontrado y corregido esta
+  // tanda en Fundamentos/melodia.ts — pool de banda demasiado chico).
+  [
+    { letra: "Do", octava: 4, alteracion: null },
+    { letra: "Fa", octava: 4, alteracion: null },
+    { letra: "Sol", octava: 4, alteracion: null },
+    { letra: "Do", octava: 5, alteracion: null },
+  ],
+  // banda 1 (nivel 3-4): suma un par de naturales más de la misma octava.
+  [
+    { letra: "Do", octava: 4, alteracion: null },
+    { letra: "Mi", octava: 4, alteracion: null },
+    { letra: "Sol", octava: 4, alteracion: null },
+    { letra: "La", octava: 4, alteracion: null },
+    { letra: "Do", octava: 5, alteracion: null },
+  ],
+  // banda 2 (nivel 5-6): las 7 naturales de una octava completa.
+  LETRAS.map((letra) => ({ letra, octava: 4, alteracion: null }) as NotaMusical),
+  // banda 3 (nivel 7-8): dos octavas de naturales — hay que distinguir
+  // register, no solo nombre de nota.
+  [
+    ...LETRAS.map((letra) => ({ letra, octava: 3, alteracion: null }) as NotaMusical),
+    ...LETRAS.map((letra) => ({ letra, octava: 4, alteracion: null }) as NotaMusical),
+  ],
+  // banda 4 (nivel 9-10): suma sostenidos — semitonos vecinos reales,
+  // el desafío genuino de oído absoluto.
+  [
+    ...LETRAS.map((letra) => ({ letra, octava: 4, alteracion: null }) as NotaMusical),
+    ...(["Do", "Re", "Fa", "Sol", "La"] as NotaLetra[]).map((letra) => ({ letra, octava: 4, alteracion: "sostenido" }) as NotaMusical),
+  ],
+];
+
+function generarOidoAbsoluto(nivel: number): PreguntaMelodiaAudio {
+  const pool = POOL_OIDO_POR_BANDA[banda(nivel)];
+  const nota = elegir(pool);
+  const respuesta = nombreNota(nota);
+
+  const distractores = mezclar(pool.filter((n) => nombreNota(n) !== respuesta)).slice(0, 3);
+  const opciones = mezclar([respuesta, ...distractores.map(nombreNota)]);
+
+  return {
+    id: idFalso("melodia-oido"),
+    modo: "oido_absoluto",
+    tipo: "audio",
+    dificultad: nivel,
+    enunciado: "Escuchá la nota — ¿cuál es?",
+    opciones,
+    respuesta,
+    nota,
+  };
+}
+
 const GENERADORES: Record<ModoMelodia, (nivel: number) => PreguntaMelodia> = {
   fundamentos: generarFundamentos,
   lectura: generarLectura,
   alteraciones: generarAlteraciones,
   escalas: generarEscalas,
   acordes: generarAcordes,
+  oido_absoluto: generarOidoAbsoluto,
 };
 
 export function generarPreguntaMelodia(modo: ModoMelodia, nivel: number): PreguntaMelodia {
   return GENERADORES[modo](Math.max(1, Math.min(10, Math.round(nivel))));
 }
 
-export const MODOS_MELODIA: ModoMelodia[] = ["fundamentos", "lectura", "alteraciones", "escalas", "acordes"];
+export const MODOS_MELODIA: ModoMelodia[] = ["fundamentos", "lectura", "alteraciones", "escalas", "acordes", "oido_absoluto"];
 export const NOMBRE_MODO_MELODIA: Record<ModoMelodia, string> = {
   fundamentos: "Fundamentos",
   lectura: "Lectura en pentagrama",
   alteraciones: "Alteraciones",
   escalas: "Escalas",
   acordes: "Acordes",
+  oido_absoluto: "Oído absoluto",
 };

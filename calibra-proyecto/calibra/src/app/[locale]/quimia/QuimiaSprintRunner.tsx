@@ -15,6 +15,7 @@ import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/Tarjet
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
+import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import { COLOR_QUIMIA } from "./colores";
 
 const TOTAL_PREGUNTAS = 10;
@@ -69,7 +70,7 @@ export default function QuimiaSprintRunner({
   const [remainingMs, setRemainingMs] = useState(duracionMs);
   const [nivel, setNivel] = useState(nivelForzado ?? nivelInicial);
   const [escudos, setEscudos] = useState(escudosIniciales);
-  const [racha, setRacha] = useState(0);
+  const { racha, registrarResultado } = useRachaCombo();
 
   const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(duracionMs);
 
@@ -140,6 +141,7 @@ export default function QuimiaSprintRunner({
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const correct = opcion === pregunta.respuesta;
     reproducirTono(correct ? "correcto" : "error");
+    const rachaActual = registrarResultado(correct);
 
     if (correct) {
       evaluarBonus(nivelRef.current, timeMs);
@@ -181,10 +183,9 @@ export default function QuimiaSprintRunner({
         nivelSubio = data.skillLevel.nivel > nivelRef.current;
         nivelRef.current = data.skillLevel.nivel;
         setNivel(data.skillLevel.nivel);
-        setRacha(data.skillLevel.racha_actual);
       }
       if (data.skillLevel) {
-        emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: data.skillLevel.racha_actual });
+        emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: rachaActual });
       }
       if (correct && xpGanado > 0) {
         setPuntaje({ total: xpGanado, intensidad: nivelSubio ? "grande" : xpGanado >= 20 ? "medio" : "chico" });

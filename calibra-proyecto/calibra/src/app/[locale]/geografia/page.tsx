@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario } from "@/lib/auth/guard";
+import { requireMundoGeografia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import FondoMundo from "@/components/FondoMundo";
 import FondoCursorMundo from "@/components/FondoCursorMundo";
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default async function GeografiaHomePage() {
   const supabase = await createClient();
-  const { user, profile } = await requireUsuario(supabase, "/geografia");
+  const { user, profile } = await requireMundoGeografia(supabase, "/geografia");
 
   const hoyIso = new Date().toISOString().slice(0, 10);
   const [{ data: nivelRow }, { data: dailyHoy }, { data: worldRow }] = await Promise.all([

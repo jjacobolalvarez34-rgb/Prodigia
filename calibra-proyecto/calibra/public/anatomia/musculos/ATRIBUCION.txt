@@ -1,0 +1,19 @@
+Fase 5 (2026-08-25): láminas por región para el modo muscular de Anatomía.
+
+Las 3 imágenes de esta carpeta (brazo.png, pierna.png, torso.png) son
+recortes/planchas de "Anatomy of the Human Body" (Henry Gray, 20ª
+edición, 1918) — ilustradas por Henry Vandyke Carter, el mismo
+ilustrador que la fuente del esqueleto óseo interactivo
+(public/data/esqueleto-oseo.svg). Dominio público en EE.UU. (publicado
+antes de 1931) y en su país de origen (vida del autor + 100 años).
+
+Fuente y licencia verificada en Wikimedia Commons:
+- brazo.png  = Gray410.png  https://commons.wikimedia.org/wiki/File:Gray410.png
+- pierna.png = Gray430.png  https://commons.wikimedia.org/wiki/File:Gray430.png
+- torso.png  = Gray389.png  https://commons.wikimedia.org/wiki/File:Gray389.png
+
+No se buscó (ni se encontró en esta pasada) un diagrama muscular de
+CUERPO COMPLETO con licencia libre verificable — por eso el enfoque es
+por región en vez de una sola imagen. Cara/cabeza no necesitó imagen
+nueva: MUSCULAR_ALTO (anatomia.ts) ya son todos músculos faciales,
+cubiertos por el nombre + opción múltiple sin hacer falta un dibujo.

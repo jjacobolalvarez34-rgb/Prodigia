@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description: "Pentagrama, escalas y acordes, con dificultad adaptativa.",
 };
 
-const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes"];
+const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"];
 
 export default async function MelodiaHomePage() {
   const supabase = await createClient();
@@ -107,6 +107,7 @@ export default async function MelodiaHomePage() {
             <TopicCard nombre="Alteraciones" Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_alteraciones") }} colorHex={COLOR_MELODIA} />
             <TopicCard nombre="Escalas" Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_escalas") }} colorHex={COLOR_MELODIA} />
             <TopicCard nombre="Acordes" Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_acordes") }} colorHex={COLOR_MELODIA} />
+            <TopicCard nombre="Oído absoluto" Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_oido_absoluto") }} colorHex={COLOR_MELODIA} />
           </div>
         </section>
       </div>

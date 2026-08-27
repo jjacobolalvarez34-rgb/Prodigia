@@ -202,7 +202,7 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
   }
 
   // Mundo Melodía (Fase 1, 2026-08-24): mismo patrón que Anatomía, sus 5 modos.
-  const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes"];
+  const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"];
 
   let melodiaProblemasTotales = 0;
   if (tiposNecesarios.has("melodia_problemas_totales")) {

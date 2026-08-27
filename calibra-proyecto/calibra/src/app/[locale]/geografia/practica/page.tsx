@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario } from "@/lib/auth/guard";
+import { requireMundoGeografia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import GeografiaPracticaClient, { type DueloGenericoInfo } from "../GeografiaPracticaClient";
 import type { Continente } from "@/lib/practica/geografia";
@@ -17,7 +17,7 @@ interface Props {
 export default async function GeografiaPracticaPage({ searchParams }: Props) {
   const { duelo } = await searchParams;
   const supabase = await createClient();
-  const { user } = await requireUsuario(supabase, "/geografia/practica");
+  const { user } = await requireMundoGeografia(supabase, "/geografia/practica");
 
   // Fase 3 de Rankeds: si vengo de matchmaking para Geografía, el
   // continente lo decide el rango de los dos duelistas (sub_tipo,

@@ -74,7 +74,8 @@ export type ProblemTypeCalibrable =
   | "melodia_lectura"
   | "melodia_alteraciones"
   | "melodia_escalas"
-  | "melodia_acordes";
+  | "melodia_acordes"
+  | "melodia_oido_absoluto";
 
 export async function actualizarSkillLevel(
   supabase: SupabaseClient,

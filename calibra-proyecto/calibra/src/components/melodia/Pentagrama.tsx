@@ -83,17 +83,26 @@ export default function Pentagrama({ notas, disposicion = "secuencial", colorHex
         />
       ))}
 
-      {/* Clave de sol — glifo musical estándar (Unicode U+1D11E), no
-          una forma inventada. */}
-      <text
-        x={xClave}
-        y={yLineaInferior + 14}
-        fontSize={58}
-        fontFamily="'Segoe UI Symbol', 'Noto Music', serif"
-        className="fill-foreground/85"
-      >
-        𝄞
-      </text>
+      {/* Clave de sol — antes era el glifo Unicode U+1D11E (𝄞) vía
+          <text>, que en varios dispositivos (sobre todo Android/Linux
+          sin la fuente correcta instalada) no tiene glifo para ese
+          carácter y no dibuja NADA — la causa real de "a veces no
+          carga" reportada en Melodía (auditoría 2026-08-25, Fase 4).
+          Un path SVG dibujado a mano, verificado renderizando el
+          archivo antes de usarlo (mismo criterio que el resto del
+          proyecto con assets nuevos) — no depende de ninguna fuente
+          del sistema, así que renderiza siempre, en cualquier
+          dispositivo. */}
+      <g transform={`translate(${xClave - 5}, ${yLineaInferior - 66})`} className="fill-none stroke-foreground/85">
+        <path
+          d="M21 8C15 8 12 13 14 19C16 25 24 33 26 42C27.5 49 20 51 17 46C14.5 42 18 38 22 39C27 40.3 27 47 22 49.5C16 52.5 10 47 12 40C13.5 34.5 20 33 24 37L22 12C21.3 9.5 18 9 17 12C16 15 18.5 17 20.5 15.5"
+          strokeWidth={2.6}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path d="M21 20L21 70" strokeWidth={2.6} strokeLinecap="round" />
+        <circle cx={21} cy={70} r={3.4} className="fill-foreground/85" stroke="none" />
+      </g>
 
       {notas.map((nota, i) => {
         const pasos = pasosDeNota(nota);

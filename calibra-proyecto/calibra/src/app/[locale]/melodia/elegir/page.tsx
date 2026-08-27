@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: "Elegí un modo de Melodía para practicar.",
 };
 
-const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes"];
+const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"];
 
 export default async function MelodiaElegirPage() {
   const supabase = await createClient();
@@ -31,6 +31,7 @@ export default async function MelodiaElegirPage() {
     { nombre: "Alteraciones", desc: "Sostenidos y bemoles", href: "/melodia/practica/alteraciones", nivel: nivelDe("melodia_alteraciones") },
     { nombre: "Escalas", desc: "Mayor, menor y pentatónicas", href: "/melodia/practica/escalas", nivel: nivelDe("melodia_escalas") },
     { nombre: "Acordes", desc: "Tríadas, séptimas y extendidos", href: "/melodia/practica/acordes", nivel: nivelDe("melodia_acordes") },
+    { nombre: "Oído absoluto 🔥", desc: "Escuchá la nota e identificala — el más difícil", href: "/melodia/practica/oido-absoluto", nivel: nivelDe("melodia_oido_absoluto") },
   ];
 
   return (

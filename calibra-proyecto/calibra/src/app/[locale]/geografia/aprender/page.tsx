@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
+import { requireMundoGeografia, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoGeografia } from "@/lib/geografia/path";
 import Header from "@/components/Header";
 import ProgressDial from "@/components/ProgressDial";
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default async function GeografiaAprenderPage() {
   const supabase = await createClient();
-  const { user } = await requireUsuario(supabase, "/geografia/aprender");
+  const { user } = await requireMundoGeografia(supabase, "/geografia/aprender");
   bloquearInvitado(user, "Aprender");
   const nodos = await obtenerCaminoGeografia(supabase, user.id);
 

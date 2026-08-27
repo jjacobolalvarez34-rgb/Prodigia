@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Avatar from "@/components/Avatar";
+import GlareHover from "@/components/reactbits/GlareHover";
 
 interface Props {
   userId: string;
@@ -80,7 +81,13 @@ export default function SubirAvatar({ userId, nombre, avatarUrlInicial }: Props)
 
   return (
     <div className="flex items-center gap-3">
-      <Avatar url={avatarUrl} nombre={nombre} size={64} />
+      {/* Fase 10 (Tienda: animaciones adicionales): brillo al pasar el
+          mouse sobre tu propio avatar — mismo componente ya usado en
+          otras tarjetas de la app, tamaño/forma ajustados a un círculo
+          de 64px en vez del rectángulo grande de las cards. */}
+      <GlareHover width="64px" height="64px" borderRadius="9999px" background="transparent" borderColor="transparent" glareOpacity={0.35}>
+        <Avatar url={avatarUrl} nombre={nombre} size={64} />
+      </GlareHover>
       <div className="flex flex-col gap-1">
         <button
           type="button"

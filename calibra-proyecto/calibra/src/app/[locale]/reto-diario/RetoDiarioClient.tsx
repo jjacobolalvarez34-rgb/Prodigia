@@ -3,31 +3,58 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import type { ProblemaReto } from "@/lib/retoDiario";
+import type { PreguntaRetoDiario, MundoRetoDiario } from "@/lib/retoDiario";
 import type { Achievement } from "@/types/database";
 import { reproducirTono } from "@/lib/sonido";
 import LogroBanner from "@/components/LogroBanner";
 import Boton from "@/components/Boton";
+import Pentagrama from "@/components/melodia/Pentagrama";
+import FiguraRitmicaIcono from "@/components/melodia/FiguraRitmicaIcono";
 
 type Fase = "intro" | "jugando" | "resumen";
 
 interface Props {
   fecha: string;
-  problemas: ProblemaReto[];
+  problemas: PreguntaRetoDiario[];
   yaCompletado: { correctos: number; puntosBonus: number } | null;
 }
 
+const COLOR_MUNDO: Record<MundoRetoDiario, string> = {
+  numeria: "#6C4CF1",
+  enigmia: "#0E9F6E",
+  geografia: "#1E7A8C",
+  quimia: "#C026D3",
+  anatomia: "#8B2942",
+  melodia: "#B8860B",
+};
+const NOMBRE_MUNDO: Record<MundoRetoDiario, string> = {
+  numeria: "Numeria",
+  enigmia: "Enigmia",
+  geografia: "Geografía",
+  quimia: "Quimia",
+  anatomia: "Anatomía",
+  melodia: "Melodía",
+};
+
+// Fase 3 (reto diario multi-ciudad, 2026-08-25): 45 preguntas de las
+// ciudades que el usuario ya desbloqueó (mezcladas, ver
+// generarRetoDelDia), no solo Numeria — un único renderer de opción
+// múltiple para las 6 ciudades (incluida Numeria, que antes tenía
+// teclado numérico propio) porque mezclar un teclado numérico con
+// tarjetas de opción en la misma tanda de 45 se sentía más
+// inconsistente que ganar en algo real.
 export default function RetoDiarioClient({ fecha, problemas, yaCompletado }: Props) {
   const [fase, setFase] = useState<Fase>(yaCompletado ? "resumen" : "intro");
   const [indice, setIndice] = useState(0);
-  const [respuesta, setRespuesta] = useState("");
+  const [seleccion, setSeleccion] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<"idle" | "correcto" | "incorrecto">("idle");
   const [correctos, setCorrectos] = useState(0);
   const [resultado, setResultado] = useState<{ correctos: number; puntosBonus: number } | null>(yaCompletado);
   const [logrosNuevos, setLogrosNuevos] = useState<Achievement[]>([]);
   const [enviando, setEnviando] = useState(false);
 
-  const problema = problemas[indice];
+  const pregunta = problemas[indice];
+  const total = problemas.length;
 
   async function finalizar(correctosFinal: number) {
     setEnviando(true);
@@ -51,10 +78,10 @@ export default function RetoDiarioClient({ fecha, problemas, yaCompletado }: Pro
     setFase("resumen");
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (feedback !== "idle" || respuesta === "") return;
-    const correct = Number(respuesta) === problema.answer;
+  function handleElegir(opcion: string) {
+    if (feedback !== "idle") return;
+    const correct = opcion === pregunta.respuesta;
+    setSeleccion(opcion);
     setFeedback(correct ? "correcto" : "incorrecto");
     reproducirTono(correct ? "correcto" : "error");
     const totalCorrectos = correct ? correctos + 1 : correctos;
@@ -62,14 +89,14 @@ export default function RetoDiarioClient({ fecha, problemas, yaCompletado }: Pro
 
     setTimeout(() => {
       const siguiente = indice + 1;
-      if (siguiente >= problemas.length) {
+      if (siguiente >= total) {
         finalizar(totalCorrectos);
       } else {
         setIndice(siguiente);
-        setRespuesta("");
+        setSeleccion(null);
         setFeedback("idle");
       }
-    }, correct ? 500 : 900);
+    }, correct ? 450 : 800);
   }
 
   return (
@@ -82,10 +109,11 @@ export default function RetoDiarioClient({ fecha, problemas, yaCompletado }: Pro
                 Reto diario
               </span>
               <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">
-                5 problemas, los mismos para todos hoy
+                {total} preguntas, las mismas para todos hoy
               </h1>
               <p className="mt-2 text-sm text-texto-secundario">
-                Completalo para sumar Chispas extra y estirar tu racha de retos diarios.
+                Repartidas entre tus ciudades desbloqueadas, al azar. Completalo para sumar Chispas extra y
+                estirar tu racha de retos diarios.
               </p>
             </div>
             <Boton onClick={() => setFase("jugando")} className="py-4">
@@ -94,49 +122,66 @@ export default function RetoDiarioClient({ fecha, problemas, yaCompletado }: Pro
           </motion.div>
         )}
 
-        {fase === "jugando" && problema && (
+        {fase === "jugando" && pregunta && (
           <motion.div
             key={`p-${indice}`}
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -10 }}
             transition={{ duration: 0.2 }}
-            className="flex flex-col items-center gap-6"
+            className="flex flex-col items-center gap-5"
           >
-            <div className="flex gap-1.5">
-              {problemas.map((_, i) => (
-                <span key={i} className={`h-1.5 w-6 rounded-full ${i <= indice ? "bg-logro" : "bg-foreground/15"}`} />
-              ))}
+            <div className="flex w-full flex-col gap-1.5">
+              <div className="flex items-center justify-between text-xs text-texto-secundario">
+                <span className="font-medium" style={{ color: COLOR_MUNDO[pregunta.mundo] }}>
+                  {NOMBRE_MUNDO[pregunta.mundo]}
+                </span>
+                <span className="font-mono">{indice + 1}/{total}</span>
+              </div>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-foreground/10">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{ width: `${((indice + 1) / total) * 100}%`, background: COLOR_MUNDO[pregunta.mundo] }}
+                />
+              </div>
             </div>
+
             <div
-              className={`flex w-full flex-col items-center gap-6 rounded-3xl border-2 bg-surface px-8 py-14 transition-colors ${
+              className={`flex w-full flex-col items-center gap-5 rounded-3xl border-2 bg-surface px-6 py-8 transition-colors ${
                 feedback === "correcto" ? "border-correcto" : feedback === "incorrecto" ? "border-error" : "border-border"
               }`}
             >
-              <span className="font-mono text-4xl font-bold text-foreground">
-                {problema.a} <span className="text-primario">{problema.symbol}</span> {problema.b}
-              </span>
-              <form onSubmit={handleSubmit} className="flex w-full max-w-xs gap-2">
-                <input
-                  type="number"
-                  inputMode="numeric"
-                  value={respuesta}
-                  onChange={(e) => setRespuesta(e.target.value)}
-                  disabled={feedback !== "idle"}
-                  autoFocus
-                  className="w-full rounded-xl border border-border bg-background px-4 py-3 text-center font-mono text-xl font-semibold text-foreground outline-none focus:border-primario disabled:opacity-60"
-                />
-                <button
-                  type="submit"
-                  disabled={feedback !== "idle"}
-                  className="rounded-xl bg-primario px-5 py-3 font-display font-semibold text-white disabled:opacity-60"
-                >
-                  Ok
-                </button>
-              </form>
-              {feedback === "incorrecto" && (
-                <p className="font-mono text-sm font-semibold text-error">Era {problema.answer}</p>
+              {pregunta.notasMelodia && (
+                <div className="w-full overflow-x-auto">
+                  <Pentagrama notas={pregunta.notasMelodia} disposicion={pregunta.disposicionMelodia} colorHex={COLOR_MUNDO.melodia} />
+                </div>
               )}
+              {pregunta.figuraMelodia && <FiguraRitmicaIcono figura={pregunta.figuraMelodia} colorHex={COLOR_MUNDO.melodia} />}
+
+              <p className="text-center font-medium text-foreground">{pregunta.enunciado}</p>
+
+              <div className="grid w-full grid-cols-2 gap-2.5">
+                {pregunta.opciones.map((op) => {
+                  const esElegida = seleccion === op;
+                  const esCorrecta = feedback !== "idle" && op === pregunta.respuesta;
+                  return (
+                    <button
+                      key={op}
+                      onClick={() => handleElegir(op)}
+                      disabled={feedback !== "idle"}
+                      className={`rounded-xl border-2 px-4 py-3 text-sm font-medium transition-colors disabled:opacity-100 ${
+                        esCorrecta
+                          ? "border-correcto bg-correcto/10 text-correcto"
+                          : esElegida
+                            ? "border-error bg-error/10 text-error"
+                            : "border-border bg-background text-foreground"
+                      }`}
+                    >
+                      {op}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </motion.div>
         )}
@@ -154,7 +199,9 @@ export default function RetoDiarioClient({ fecha, problemas, yaCompletado }: Pro
                 ? "Ya completaste el reto de hoy"
                 : "Ahí quedó."}
             </h1>
-            <p className="font-mono text-4xl font-bold text-logro">{resultado.correctos}/5</p>
+            <p className="font-mono text-4xl font-bold text-logro">
+              {resultado.correctos}/{total}
+            </p>
             {resultado.puntosBonus > 0 && (
               <p className="text-sm text-texto-secundario">+{resultado.puntosBonus} Chispas de bonus</p>
             )}

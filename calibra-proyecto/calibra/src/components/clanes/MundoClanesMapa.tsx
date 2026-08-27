@@ -28,6 +28,20 @@ const COLUMNAS = 6;
 const ANCHO_PARCELA = 168;
 const ALTO_PARCELA = 128;
 const GAP = 20;
+// Fase 8 (auditoría 2026-08-25 — "clickear una parcela no abre la
+// ciudad"): causa real, mismo patrón que el bug viejo de GlareHover —
+// onPointerDown arrancaba el arrastre y llamaba setPointerCapture()
+// en CUALQUIER click, sin exigir movimiento real primero. Un click
+// real en el mouse/dedo casi nunca tiene cero movimiento entre down y
+// up (tiembla un par de píxeles) — eso ya alcanzaba para: (a)
+// capturar el puntero en el contenedor de pan/zoom en vez de dejarlo
+// en el <button> de la parcela, y (b) mover `offset` un pelo durante
+// el gesto, lo que varios navegadores toman como "fue un drag, no un
+// click" y cancelan el evento click sintético del botón. Con un piso
+// de movimiento real antes de considerar que empezó un arrastre (y
+// setPointerCapture recién ahí, no en el pointerdown), un click
+// genuino nunca dispara nada de esto — llega intacto al botón.
+const UMBRAL_ARRASTRE_PX = 6;
 
 // Fase 7 ("Mundo de Clanes"): mapa pan/zoom sin librería externa (mismo
 // criterio que el resto del proyecto — TextType.tsx se portó a mano en
@@ -38,7 +52,12 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [arrastrando, setArrastrando] = useState(false);
-  const arrastrandoRef = useRef(false);
+  // "podría estar arrastrando" (el puntero está abajo) vs. "ya
+  // confirmado que es un arrastre real" (superó UMBRAL_ARRASTRE_PX) —
+  // son dos cosas distintas a propósito, ver comentario arriba.
+  const punteroAbajoRef = useRef(false);
+  const arrastreConfirmadoRef = useRef(false);
+  const puntoInicialRef = useRef({ x: 0, y: 0 });
   const ultimoPunto = useRef({ x: 0, y: 0 });
   const contenedorRef = useRef<HTMLDivElement>(null);
 
@@ -47,14 +66,26 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
 
   function onPointerDown(e: React.PointerEvent) {
-    arrastrandoRef.current = true;
-    setArrastrando(true);
+    punteroAbajoRef.current = true;
+    arrastreConfirmadoRef.current = false;
+    puntoInicialRef.current = { x: e.clientX, y: e.clientY };
     ultimoPunto.current = { x: e.clientX, y: e.clientY };
-    contenedorRef.current?.setPointerCapture(e.pointerId);
+    // Nada de setPointerCapture ni setArrastrando(true) todavía — recién
+    // cuando se confirma un movimiento real (onPointerMove de abajo). Un
+    // click sobre una parcela nunca debe pasar por acá.
   }
 
   function onPointerMove(e: React.PointerEvent) {
-    if (!arrastrandoRef.current) return;
+    if (!punteroAbajoRef.current) return;
+
+    if (!arrastreConfirmadoRef.current) {
+      const distancia = Math.hypot(e.clientX - puntoInicialRef.current.x, e.clientY - puntoInicialRef.current.y);
+      if (distancia < UMBRAL_ARRASTRE_PX) return;
+      arrastreConfirmadoRef.current = true;
+      setArrastrando(true);
+      contenedorRef.current?.setPointerCapture(e.pointerId);
+    }
+
     const dx = e.clientX - ultimoPunto.current.x;
     const dy = e.clientY - ultimoPunto.current.y;
     ultimoPunto.current = { x: e.clientX, y: e.clientY };
@@ -62,9 +93,12 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
   }
 
   function onPointerUp(e: React.PointerEvent) {
-    arrastrandoRef.current = false;
+    punteroAbajoRef.current = false;
     setArrastrando(false);
-    contenedorRef.current?.releasePointerCapture(e.pointerId);
+    if (arrastreConfirmadoRef.current && contenedorRef.current?.hasPointerCapture(e.pointerId)) {
+      contenedorRef.current.releasePointerCapture(e.pointerId);
+    }
+    arrastreConfirmadoRef.current = false;
   }
 
   function onWheel(e: React.WheelEvent) {

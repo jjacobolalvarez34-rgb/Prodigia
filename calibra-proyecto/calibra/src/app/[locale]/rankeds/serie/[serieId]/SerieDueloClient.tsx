@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { rangoDeElo, type ArithmeticProblemType } from "@/types/database";
 import CountUp from "@/components/CountUp";
@@ -29,6 +30,7 @@ export interface FilaRondaSerie {
   serie_finalizada: boolean;
   oponente_es_bot: boolean;
   mi_puntaje: number | null;
+  rival_puntaje: number | null;
 }
 
 interface ResultadoFinal {
@@ -118,29 +120,32 @@ export default function SerieDueloClient({
   serieId: string;
   rondasIniciales: FilaRondaSerie[];
 }) {
+  const router = useRouter();
   const [rondas, setRondas] = useState(rondasIniciales);
   const [resultadoFinal, setResultadoFinal] = useState<ResultadoFinal | null>(null);
-  // Fase 2: qué ronda (duel_id) ya terminó de mostrar su transición de
-  // TextType — hasta que coincide con la próxima ronda a jugar, se
-  // muestra la animación en vez del botón "Jugar ronda".
-  const [transicionListaPara, setTransicionListaPara] = useState<string | null>(null);
+  // Fase 2 (auditoría 2026-08-25 — "sacá el botón manual, no debe
+  // existir bajo ninguna circunstancia"): antes esto marcaba cuándo la
+  // ceremonia de TextType terminaba de tipear para RECIÉN AHÍ mostrar
+  // un botón "Jugar ronda" que había que clickear a mano. Ahora el
+  // mismo timer, al cumplirse, navega solo — la ceremonia entera
+  // (mostrar la ciudad que acaba de jugarse, borrarla, tipear la
+  // siguiente) corre en un overlay a pantalla completa mientras tanto,
+  // sin ninguna acción del usuario en el medio.
+  const [navegandoA, setNavegandoA] = useState<string | null>(null);
   const cancelarRef = useRef(false);
 
   const proximaRonda = rondas.find((r) => !r.yo_jugue);
   const indiceProxima = proximaRonda ? rondas.findIndex((r) => r.duel_id === proximaRonda.duel_id) : -1;
   const rondaAnterior = indiceProxima > 0 ? rondas[indiceProxima - 1] : null;
-  const transicionPendiente = !!proximaRonda && transicionListaPara !== proximaRonda.duel_id;
+  const enCeremonia = !!proximaRonda && navegandoA !== proximaRonda.duel_id;
 
-  // Fase 2: apenas se revela una ronda nueva (o al montar, para la
-  // primera), un timer propio marca cuándo termina la ceremonia visual
-  // de TextType — independiente del callback onSentenceComplete del
-  // componente (no se dispara para la ÚLTIMA frase cuando loop=false,
-  // ver TextType.tsx), así el botón "Jugar ronda" no queda esperando
-  // un evento que nunca llega.
   useEffect(() => {
-    if (!proximaRonda || transicionListaPara === proximaRonda.duel_id) return;
+    if (!proximaRonda || navegandoA === proximaRonda.duel_id) return;
     const duracion = duracionTransicionMs(rondaAnterior ? NOMBRE_MUNDO[rondaAnterior.mundo] : null, NOMBRE_MUNDO[proximaRonda.mundo]);
-    const t = setTimeout(() => setTransicionListaPara(proximaRonda.duel_id), duracion);
+    const t = setTimeout(() => {
+      setNavegandoA(proximaRonda.duel_id);
+      router.push(hrefDuelo(proximaRonda.mundo, proximaRonda.operation_type, proximaRonda.duel_id));
+    }, duracion);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proximaRonda?.duel_id]);
@@ -296,34 +301,39 @@ export default function SerieDueloClient({
         ))}
       </div>
 
-      {proximaRonda && transicionPendiente ? (
-        <div className="flex h-[76px] w-full items-center justify-center">
-          <TextType
-            key={proximaRonda.duel_id}
-            as="span"
-            text={rondaAnterior ? [NOMBRE_MUNDO[rondaAnterior.mundo], NOMBRE_MUNDO[proximaRonda.mundo]] : [NOMBRE_MUNDO[proximaRonda.mundo]]}
-            textColors={rondaAnterior ? [COLOR_MUNDO[rondaAnterior.mundo], COLOR_MUNDO[proximaRonda.mundo]] : [COLOR_MUNDO[proximaRonda.mundo]]}
-            typingSpeed={TT_TYPING_MS}
-            deletingSpeed={TT_DELETING_MS}
-            pauseDuration={TT_PAUSE_MS}
-            loop={false}
-            showCursor={false}
-            className="font-display text-3xl font-black tracking-tight"
-          />
-        </div>
-      ) : proximaRonda ? (
-        <Link
-          href={hrefDuelo(proximaRonda.mundo, proximaRonda.operation_type, proximaRonda.duel_id)}
-          className="w-full rounded-2xl px-6 py-5 text-center font-display text-lg font-semibold text-white shadow-lg"
-          style={{ background: "linear-gradient(120deg, var(--primario), var(--logro))" }}
-        >
-          Jugar ronda {proximaRonda.ronda_numero} · {etiquetaRonda(proximaRonda)}
-        </Link>
-      ) : (
+      {!proximaRonda && (
         <p className="text-sm text-texto-secundario">
           Ya jugaste tus 3 rondas — esperando a que {oponenteNombre} termine las suyas.
         </p>
       )}
+
+      <AnimatePresence>
+        {proximaRonda && enCeremonia && (
+          <motion.div
+            key={proximaRonda.duel_id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-background px-6"
+          >
+            <span className="text-xs font-medium uppercase tracking-[0.3em] text-texto-secundario">
+              {rondaAnterior ? "Siguiente ciudad" : "Arrancamos en"}
+            </span>
+            <TextType
+              as="span"
+              text={rondaAnterior ? [NOMBRE_MUNDO[rondaAnterior.mundo], NOMBRE_MUNDO[proximaRonda.mundo]] : [NOMBRE_MUNDO[proximaRonda.mundo]]}
+              textColors={rondaAnterior ? [COLOR_MUNDO[rondaAnterior.mundo], COLOR_MUNDO[proximaRonda.mundo]] : [COLOR_MUNDO[proximaRonda.mundo]]}
+              typingSpeed={TT_TYPING_MS}
+              deletingSpeed={TT_DELETING_MS}
+              pauseDuration={TT_PAUSE_MS}
+              loop={false}
+              showCursor={false}
+              className="font-display text-3xl font-black tracking-tight text-center sm:text-5xl"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -345,11 +355,11 @@ function FilaRondaResumen({ ronda }: { ronda: FilaRondaSerie }) {
             ? ronda.yo_jugue
               ? `Esperando al rival…${ronda.mi_puntaje != null ? ` · vos: ${ronda.mi_puntaje} pts` : ""}`
               : "Todavía sin jugar"
-            : ronda.empate_ronda
-              ? "Empate"
-              : ronda.gane_ronda
-                ? "Ganaste"
-                : "Perdiste"}
+            : `${ronda.empate_ronda ? "Empate" : ronda.gane_ronda ? "Ganaste" : "Perdiste"}${
+                ronda.mi_puntaje != null && ronda.rival_puntaje != null
+                  ? ` · vos: ${ronda.mi_puntaje} pts · rival: ${ronda.rival_puntaje} pts`
+                  : ""
+              }`}
         </span>
       </div>
       <span className="text-lg">{resuelta ? (ronda.empate_ronda ? "🤝" : ronda.gane_ronda ? "✅" : "❌") : "⏳"}</span>

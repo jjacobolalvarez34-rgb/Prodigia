@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
-import { generarRetoDelDia } from "@/lib/retoDiario";
+import { generarRetoDelDia, type MundoRetoDiario } from "@/lib/retoDiario";
 import Header from "@/components/Header";
 import RetoDiarioClient from "./RetoDiarioClient";
 
 export const metadata: Metadata = {
   title: "Reto diario",
-  description: "5 problemas iguales para todos, cada día.",
+  description: "45 preguntas de tus ciudades desbloqueadas, las mismas para todos, cada día.",
 };
 
 export default async function RetoDiarioPage() {
   const supabase = await createClient();
-  const { user } = await requireUsuario(supabase, "/reto-diario");
+  const { user, profile } = await requireUsuario(supabase, "/reto-diario");
 
   const hoyIso = new Date().toISOString().slice(0, 10);
   const { data: completado } = await supabase
@@ -22,7 +22,13 @@ export default async function RetoDiarioPage() {
     .eq("fecha", hoyIso)
     .maybeSingle();
 
-  const problemas = generarRetoDelDia(hoyIso);
+  // Fase 12 ("Mundos por Chispas"): "desbloqueada" ahora es el
+  // desbloqueo real (mundos_desbloqueados), no un proxy por diagnóstico
+  // completado — un mundo comprado pero sin diagnosticar todavía igual
+  // debe poder salir en el reto (no depende de haber jugado ahí antes).
+  const mundosDesbloqueados = (profile.mundos_desbloqueados ?? ["numeria"]) as MundoRetoDiario[];
+
+  const problemas = generarRetoDelDia(hoyIso, mundosDesbloqueados);
 
   return (
     <>
