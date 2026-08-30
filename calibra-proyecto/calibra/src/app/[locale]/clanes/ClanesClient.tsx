@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import Boton from "@/components/Boton";
@@ -27,6 +27,10 @@ export interface MiClan {
   nivel_clan: number;
   guerras_ganadas: number;
   imagen_url: string | null;
+  // Fase 7 (auditoría de estabilización, 2026-08-30): crudo, para
+  // calcular el progreso al próximo nivel — nivel_clan por sí solo ya
+  // viene calculado, no alcanza para armar una barra de progreso.
+  xp_acumulado_historico: number;
 }
 
 export interface ClanRanking {
@@ -244,6 +248,41 @@ function MiClanView({
   const progresoPct = mision ? Math.min(100, Math.round((mision.progreso_actual / mision.objetivo_cantidad) * 100)) : 0;
   const soyFundador = clan.rol === "fundador";
 
+  // Fase 7 (auditoría de estabilización, 2026-08-30): "progreso de
+  // nivel de clan invisible" — no había ningún lugar donde ver cuánto
+  // faltaba para el próximo nivel. xp_requerido_nivel_clan() (0070) ya
+  // existe y es la fuente real de la curva — se llama acá en vez de
+  // reimplementar la fórmula en TS, mismo criterio que ya usa /perfil
+  // para el nivel de cuenta (xp_requerido_nivel_cuenta).
+  const [umbralesNivelClan, setUmbralesNivelClan] = useState<{ actual: number; siguiente: number } | null>(null);
+  useEffect(() => {
+    let cancelado = false;
+    const supabase = createClient();
+    Promise.all([
+      supabase.rpc("xp_requerido_nivel_clan", { p_nivel: clan.nivel_clan }),
+      supabase.rpc("xp_requerido_nivel_clan", { p_nivel: clan.nivel_clan + 1 }),
+    ]).then(([{ data: actual }, { data: siguiente }]) => {
+      if (!cancelado && typeof actual === "number" && typeof siguiente === "number") {
+        setUmbralesNivelClan({ actual, siguiente });
+      }
+    });
+    return () => {
+      cancelado = true;
+    };
+  }, [clan.nivel_clan]);
+
+  const progresoNivelClanPct = umbralesNivelClan
+    ? Math.min(
+        100,
+        Math.max(
+          0,
+          Math.round(
+            ((clan.xp_acumulado_historico - umbralesNivelClan.actual) / Math.max(1, umbralesNivelClan.siguiente - umbralesNivelClan.actual)) * 100
+          )
+        )
+      )
+    : 0;
+
   return (
     <section className="flex flex-col gap-5">
       <EscenaCiudad nivelClan={clan.nivel_clan} colorEstandarte={clan.color_estandarte} miembros={miembros} className="h-44 w-full" />
@@ -262,6 +301,19 @@ function MiClanView({
               <> · 🏆 {clan.guerras_ganadas} {clan.guerras_ganadas === 1 ? "guerra ganada" : "guerras ganadas"}</>
             )}
           </p>
+          {umbralesNivelClan && (
+            <div className="mt-2.5 flex flex-col gap-1">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-foreground/10">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{ width: `${progresoNivelClanPct}%`, background: clan.color_estandarte }}
+                />
+              </div>
+              <span className="text-[10px] text-texto-secundario">
+                {Math.max(0, umbralesNivelClan.siguiente - clan.xp_acumulado_historico).toLocaleString()} Chispas para nivel {clan.nivel_clan + 1}
+              </span>
+            </div>
+          )}
           {soyFundador && (
             <div className="mt-2">
               <SubirImagenClan clanId={clan.clan_id} onSubida={onImagenSubida} />

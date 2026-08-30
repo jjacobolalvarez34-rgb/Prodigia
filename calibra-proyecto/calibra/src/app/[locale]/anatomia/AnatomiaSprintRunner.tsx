@@ -249,17 +249,6 @@ export default function AnatomiaSprintRunner({
         padding="px-6 py-10"
         minHeight={pregunta.tipo === "click" ? 460 : 300}
       >
-        {pregunta.tipo === "opcion" && pregunta.diagramaId && (
-          // Fase 5: lámina real de Gray's Anatomy 1918 (dominio público)
-          // por región — contexto visual, no un click sobre el músculo
-          // exacto (son PNG escaneados, sin regiones vectoriales).
-          // eslint-disable-next-line @next/next/no-img-element -- lámina fija de un asset local, no hace falta next/image acá
-          <img
-            src={`/anatomia/musculos/${pregunta.diagramaId}.png`}
-            alt=""
-            className="max-h-64 w-auto rounded-xl object-contain"
-          />
-        )}
         <p className="text-center font-display text-lg font-bold text-foreground">{pregunta.enunciado}</p>
         {pregunta.tipo === "click" ? (
           <EsqueletoClickeable

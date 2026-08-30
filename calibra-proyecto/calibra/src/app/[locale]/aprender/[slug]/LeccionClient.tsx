@@ -74,6 +74,20 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
       });
       const data = await res.json();
       if (Array.isArray(data.logrosNuevos)) setLogrosNuevos(data.logrosNuevos);
+      // Fase 8 (auditoría de estabilización, 2026-08-30 — "después de
+      // completar la 2da lección, el resto queda con candado
+      // permanentemente"): confirmado jugando con la cuenta QA que
+      // obtenerCamino()/technique_progress se actualizan bien server-side
+      // — el candado "permanente" era el Router Cache de cliente de
+      // Next.js: al volver a /aprender con router.push (navegación
+      // client-side), Next podía reusar el árbol de Server Components ya
+      // cacheado de esa ruta (con el estado viejo, techniques 3+ todavía
+      // bloqueadas) en vez de pedirlo de nuevo — se sentía "permanente"
+      // porque cualquier vuelta a /aprender pisaba la misma caché stale,
+      // no porque los datos reales estuvieran mal. router.refresh()
+      // invalida esa caché así la siguiente vez que se visite /aprender
+      // trae el camino recalculado de verdad.
+      router.refresh();
     } catch {
       // Si falla el guardado, igual mostramos la celebración: no vale la
       // pena trabar al usuario por un error de red puntual acá.

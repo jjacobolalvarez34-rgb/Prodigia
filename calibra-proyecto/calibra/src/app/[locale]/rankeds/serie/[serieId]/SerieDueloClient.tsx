@@ -83,6 +83,15 @@ const TT_TYPING_MS = 60;
 const TT_DELETING_MS = 40;
 const TT_PAUSE_MS = 500;
 const TT_BUFFER_MS = 300;
+// Fase 5 (auditoría de estabilización, 2026-08-30 — "el overlay tapa
+// las estadísticas antes de poder leerlas"): antes la ceremonia de
+// TextType arrancaba apenas se detectaba la próxima ronda, tapando a
+// pantalla completa la fila de resultados que recién acababa de
+// aparecer (vos: X pts · rival: Y pts) sin darle tiempo a nadie de
+// leerla. Este piso de lectura corre ANTES de montar el overlay —
+// durante esos ms la lista de rondas queda a la vista, sin nada
+// encima.
+const LECTURA_RESULTADO_MS = 3500;
 
 function duracionTransicionMs(mundoAnterior: string | null, mundoSiguiente: string): number {
   const siguiente = mundoSiguiente.length * TT_TYPING_MS;
@@ -106,6 +115,33 @@ const NOMBRE_CONTENIDO: Record<string, string> = {
   deduccion: "Deducción",
   computacional: "Pensamiento computacional",
 };
+
+// Fase 5: comparativa liviana y persistente — se usa tanto en la
+// pantalla normal como DENTRO del overlay de ceremonia, para que nunca
+// dependa de una sola pantalla que tapa todo (pedido explícito).
+function ComparativaSerie({
+  victoriasMias,
+  victoriasRival,
+  oponenteNombre,
+}: {
+  victoriasMias: number;
+  victoriasRival: number;
+  oponenteNombre: string;
+}) {
+  return (
+    <div className="flex items-center gap-4">
+      <div className="flex flex-col items-center gap-0.5">
+        <span className="text-[10px] font-medium uppercase tracking-wide text-texto-secundario">Vos</span>
+        <span className="font-mono text-xl font-bold text-foreground">{victoriasMias}</span>
+      </div>
+      <span className="text-sm font-medium text-texto-secundario">-</span>
+      <div className="flex flex-col items-center gap-0.5">
+        <span className="max-w-24 truncate text-[10px] font-medium uppercase tracking-wide text-texto-secundario">{oponenteNombre}</span>
+        <span className="font-mono text-xl font-bold text-foreground">{victoriasRival}</span>
+      </div>
+    </div>
+  );
+}
 
 function etiquetaRonda(r: FilaRondaSerie): string {
   if (r.mundo === "numeria" && r.operation_type) return `Numeria · ${NOMBRE_OPERACION[r.operation_type]}`;
@@ -132,15 +168,54 @@ export default function SerieDueloClient({
   // siguiente) corre en un overlay a pantalla completa mientras tanto,
   // sin ninguna acción del usuario en el medio.
   const [navegandoA, setNavegandoA] = useState<string | null>(null);
+  // Guarda el duel_id de la ronda para la que YA se cumplió el piso de
+  // lectura — no un boolean reseteado a mano en el efecto (eso disparaba
+  // react-hooks/set-state-in-effect por el setState síncrono al toque de
+  // cada render). Comparar contra el duel_id actual hace el "reset" solo,
+  // sin necesitar una línea que lo resetee explícitamente.
+  const [rondaListaParaCeremonia, setRondaListaParaCeremonia] = useState<string | null>(null);
   const cancelarRef = useRef(false);
 
-  const proximaRonda = rondas.find((r) => !r.yo_jugue);
+  // Fase 6 (auditoría de estabilización, 2026-08-30 — BUG: "mejor de 3
+  // fuerza la 3ra ronda incluso ganando 2-0"): las 3 rondas se crean de
+  // entrada como filas reales de `duels` cuando arranca la serie, así
+  // que la 3ra existe y es jugable aunque la serie ya esté decidida en
+  // 2. `estado_serie_duelo` (RPC) ya calcula esto server-side y lo
+  // expone como `serie_finalizada` en cada fila — antes este componente
+  // nunca lo miraba acá, solo miraba "¿tengo una ronda sin jugar?" sin
+  // preguntar si hacía falta jugarla. Con la serie decidida, no hay
+  // "próxima ronda" real aunque la fila siga ahí sin jugar.
+  const serieFinalizada = rondas.some((r) => r.serie_finalizada);
+  const proximaRonda = serieFinalizada ? undefined : rondas.find((r) => !r.yo_jugue);
   const indiceProxima = proximaRonda ? rondas.findIndex((r) => r.duel_id === proximaRonda.duel_id) : -1;
   const rondaAnterior = indiceProxima > 0 ? rondas[indiceProxima - 1] : null;
-  const enCeremonia = !!proximaRonda && navegandoA !== proximaRonda.duel_id;
+  const listoParaCeremonia = !!proximaRonda && rondaListaParaCeremonia === proximaRonda.duel_id;
+  const enCeremonia = !!proximaRonda && navegandoA !== proximaRonda.duel_id && listoParaCeremonia;
 
+  // Piso de lectura: arranca a correr apenas se conoce la próxima ronda
+  // — recién cuando el timer cumple, marca ESA ronda como lista. Una
+  // ronda nueva queda "no lista" automáticamente porque su duel_id no
+  // coincide con `rondaListaParaCeremonia` todavía, sin necesitar
+  // resetear nada a mano.
   useEffect(() => {
-    if (!proximaRonda || navegandoA === proximaRonda.duel_id) return;
+    if (!proximaRonda || navegandoA === proximaRonda.duel_id || resultadoFinal?.finalizada) return;
+    const t = setTimeout(() => setRondaListaParaCeremonia(proximaRonda.duel_id), LECTURA_RESULTADO_MS);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [proximaRonda?.duel_id, resultadoFinal?.finalizada]);
+
+  // Fase 6: `resultadoFinal?.finalizada` en la guarda (y en las deps) es
+  // lo que de verdad evita forzar una 3ra ronda innecesaria — no alcanza
+  // con que `proximaRonda` dé undefined more tarde (depende de que
+  // `rondas` ya se haya refrescado con serie_finalizada=true, que puede
+  // no pasar todavía si finalizar-serie recién terminó de resolver):
+  // este efecto sigue vivo aunque el render ya esté mostrando la
+  // pantalla de resultado final (los hooks no se "cancelan" solo porque
+  // otra rama del JSX se esté mostrando), así que sin este chequeo
+  // podía navegar a la ronda 3 por atrás de la pantalla de resultado ya
+  // visible.
+  useEffect(() => {
+    if (!proximaRonda || navegandoA === proximaRonda.duel_id || !listoParaCeremonia || resultadoFinal?.finalizada) return;
     const duracion = duracionTransicionMs(rondaAnterior ? NOMBRE_MUNDO[rondaAnterior.mundo] : null, NOMBRE_MUNDO[proximaRonda.mundo]);
     const t = setTimeout(() => {
       setNavegandoA(proximaRonda.duel_id);
@@ -148,7 +223,7 @@ export default function SerieDueloClient({
     }, duracion);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proximaRonda?.duel_id]);
+  }, [proximaRonda?.duel_id, listoParaCeremonia, resultadoFinal?.finalizada]);
 
   useEffect(() => {
     cancelarRef.current = false;
@@ -291,9 +366,7 @@ export default function SerieDueloClient({
         Vs. {oponenteNombre}
         {oponenteEsBot && <TagClanDeBots />}
       </h1>
-      <p className="font-mono text-lg font-bold text-foreground">
-        {victoriasMias} - {victoriasRival}
-      </p>
+      <ComparativaSerie victoriasMias={victoriasMias} victoriasRival={victoriasRival} oponenteNombre={oponenteNombre} />
 
       <div className="flex w-full flex-col gap-2">
         {rondas.map((r) => (
@@ -315,8 +388,9 @@ export default function SerieDueloClient({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-background px-6"
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-background px-6"
           >
+            <ComparativaSerie victoriasMias={victoriasMias} victoriasRival={victoriasRival} oponenteNombre={oponenteNombre} />
             <span className="text-xs font-medium uppercase tracking-[0.3em] text-texto-secundario">
               {rondaAnterior ? "Siguiente ciudad" : "Arrancamos en"}
             </span>

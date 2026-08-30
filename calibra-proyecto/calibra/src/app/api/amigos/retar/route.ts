@@ -7,7 +7,7 @@ const MUNDOS_VALIDOS = ["numeria", "geografia", "enigmia", "quimia", "anatomia",
 const SUB_TIPOS_VALIDOS: Record<string, string[]> = {
   geografia: ["america", "europa", "africa", "asia_oceania"],
   enigmia: ["memoria", "patrones", "deduccion", "computacional"],
-  quimia: ["simbolos", "formulas", "tabla"],
+  quimia: ["simbolos", "formulas", "tabla", "nomenclatura", "organica"],
   anatomia: ["oseo", "muscular", "organos", "nervioso"],
   melodia: ["fundamentos", "lectura", "alteraciones", "escalas", "acordes", "oido_absoluto"],
 };

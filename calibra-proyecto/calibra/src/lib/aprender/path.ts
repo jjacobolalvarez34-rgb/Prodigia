@@ -88,9 +88,29 @@ export async function obtenerCamino(
     };
   });
 
-  return TEMAS_ORDEN.map((tema) => ({
-    problemType: tema,
-    nombre: NOMBRE_TEMA[tema],
-    nodos: nodos.filter((n) => n.problemType === tema),
-  }));
+  // Fase 8 (auditoría de estabilización, 2026-08-30): tramo "avanzado"
+  // — técnicas nuevas para números grandes (0101_lecciones_avanzadas_
+  // numeria.sql), sembradas con orden >= 100 a propósito. Esa marca es
+  // lo único que las distingue: cuando una operación tiene alguna,
+  // se parte en 2 unidades visuales separadas (básico primero, avanzado
+  // después) en vez de mezclarlas en una sola lista continua — el orden
+  // global ya las deja después de las básicas de todos modos (el
+  // "activo" único del camino nunca salta a un avanzado antes de
+  // terminar los básicos de esa operación, ni de otras anteriores).
+  const UMBRAL_AVANZADO = 100;
+  const unidades: UnidadCamino[] = [];
+  for (const tema of TEMAS_ORDEN) {
+    const nodosDelTema = nodos.filter((n) => n.problemType === tema);
+    const basicos = nodosDelTema.filter((n) => temaOrdenOriginal(ordenadas, n.id) < UMBRAL_AVANZADO);
+    const avanzados = nodosDelTema.filter((n) => temaOrdenOriginal(ordenadas, n.id) >= UMBRAL_AVANZADO);
+    unidades.push({ problemType: tema, nombre: NOMBRE_TEMA[tema], nodos: basicos });
+    if (avanzados.length > 0) {
+      unidades.push({ problemType: tema, nombre: `${NOMBRE_TEMA[tema]} · Avanzado`, nodos: avanzados });
+    }
+  }
+  return unidades;
+}
+
+function temaOrdenOriginal(ordenadas: { id: string; orden: number }[], id: string): number {
+  return ordenadas.find((t) => t.id === id)?.orden ?? 0;
 }

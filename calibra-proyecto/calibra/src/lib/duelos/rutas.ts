@@ -15,6 +15,8 @@ export function hrefDuelo(mundo: MundoDuelo, operationType: ArithmeticProblemTyp
   if (mundo === "quimia") {
     if (subTipo === "formulas") return `/quimia/practica/formulas?duelo=${duelId}`;
     if (subTipo === "tabla") return `/quimia/practica/tabla?duelo=${duelId}`;
+    if (subTipo === "nomenclatura") return `/quimia/practica/nomenclatura?duelo=${duelId}`;
+    if (subTipo === "organica") return `/quimia/practica/organica?duelo=${duelId}`;
     return `/quimia/practica?duelo=${duelId}`;
   }
   if (mundo === "anatomia") {
@@ -28,6 +30,7 @@ export function hrefDuelo(mundo: MundoDuelo, operationType: ArithmeticProblemTyp
     if (subTipo === "alteraciones") return `/melodia/practica/alteraciones?duelo=${duelId}`;
     if (subTipo === "escalas") return `/melodia/practica/escalas?duelo=${duelId}`;
     if (subTipo === "acordes") return `/melodia/practica/acordes?duelo=${duelId}`;
+    if (subTipo === "oido_absoluto") return `/melodia/practica/oido-absoluto?duelo=${duelId}`;
     return `/melodia/practica?duelo=${duelId}`;
   }
   // La operación real (asignada por buscar_rival_duelo, ver Rankeds) se

@@ -98,6 +98,23 @@ export async function POST(request: Request) {
   if (xpGanado > 0) {
     const { data: mundoRows } = await supabase.rpc("registrar_puntos_mundo", { p_world: "enigmia", p_puntos: xpGanado });
     nivelMundo = (mundoRows as RegistrarPuntosMundoResult[] | null)?.[0] ?? null;
+
+    // Auditoría de paridad (Fase 1, 2026-08-27): a diferencia de
+    // /api/practica/finish, este endpoint nunca publicaba el hito de
+    // "subiste de nivel de mundo" en el feed — mismo criterio que ahí,
+    // cada 5 niveles, solo al CRUZAR el múltiplo (no en cada nivel).
+    if (
+      nivelMundo &&
+      nivelMundo.nivel_mundo > nivelMundo.nivel_anterior &&
+      Math.floor(nivelMundo.nivel_mundo / 5) > Math.floor(nivelMundo.nivel_anterior / 5)
+    ) {
+      await supabase.from("feed_posts").insert({
+        user_id: user.id,
+        tipo: "nivel_mundo",
+        mundo: "enigmia",
+        nivel_mundo_valor: nivelMundo.nivel_mundo,
+      });
+    }
   }
 
   const logrosNuevos = await verificarLogros(supabase, user.id);

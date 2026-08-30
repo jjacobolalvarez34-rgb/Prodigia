@@ -89,7 +89,22 @@ export default async function PerfilPage() {
     supabase.from("achievements").select("id, slug, nombre, descripcion, categoria, criterio"),
     supabase.from("user_achievements").select("achievement_id, desbloqueado_at").eq("user_id", user.id),
     supabase.rpc("posicion_ranking_puntos"),
-    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).neq("problem_type", "geografia"),
+    // Bug de paridad (auditoría Fase 1, 2026-08-27): antes solo excluía
+    // "geografia" — como "attempts" es una tabla compartida por varios
+    // mundos con problem_type con prefijo (quimia_*, anatomia_*,
+    // melodia_*), ese único .neq dejaba pasar esas filas y el contador
+    // de Numeria quedaba inflado con intentos de otros mundos. Excluir
+    // por prefijo (no por lista exacta) evita que vuelva a desalinearse
+    // si se agrega un sub-tipo nuevo a algún mundo, como ya pasó con
+    // Quimia (nomenclatura/organica quedaron afuera de otros 3 lugares).
+    supabase
+      .from("attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .neq("problem_type", "geografia")
+      .not("problem_type", "like", "quimia_%")
+      .not("problem_type", "like", "anatomia_%")
+      .not("problem_type", "like", "melodia_%"),
     supabase.from("logic_attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("problem_type", "geografia"),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"]),

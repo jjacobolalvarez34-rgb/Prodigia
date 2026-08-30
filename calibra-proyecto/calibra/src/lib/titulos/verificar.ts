@@ -203,8 +203,18 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
     if (cumplido) desbloqueadosAhora.push(t);
   }
 
+  // Fase de seguridad (2026-08-30, migración 0102): antes esto llamaba
+  // a `desbloquear_titulo` (que acepta cualquier p_user_id) directo
+  // desde la sesión normal del cliente — cualquier cuenta autenticada
+  // podía llamar ese mismo RPC con OTRO user_id y asignarle un título
+  // inventado a otra persona (confirmado explotándolo con 2 cuentas de
+  // prueba). Acá ya de por sí siempre se llamaba con `userId` propio
+  // (todos los call sites pasan `user.id`, nunca el de otra cuenta), así
+  // que pasar a `desbloquear_titulo_propio` (sin p_user_id, siempre
+  // auth.uid() del lado del servidor) no cambia el comportamiento real
+  // — solo saca la posibilidad de mandar un id ajeno.
   for (const t of desbloqueadosAhora) {
-    await supabase.rpc("desbloquear_titulo", { p_user_id: userId, p_slug: t.slug, p_nombre: t.nombre, p_origen: t.categoria });
+    await supabase.rpc("desbloquear_titulo_propio", { p_slug: t.slug, p_nombre: t.nombre, p_origen: t.categoria });
   }
 
   return desbloqueadosAhora;

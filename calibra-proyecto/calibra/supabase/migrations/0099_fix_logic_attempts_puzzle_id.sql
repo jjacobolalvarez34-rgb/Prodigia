@@ -1,0 +1,42 @@
+-- ============================================================
+-- Fase 1 (auditoría de estabilización, 2026-08-30) — BUG CRÍTICO:
+-- Enigmia no registraba ningún acierto en NINGÚN modo (Practicar,
+-- Rankeds, Reto diario).
+--
+-- Causa real, confirmada jugando con la cuenta QA (POST directo a
+-- /api/logic-attempts, log del servidor):
+--   [api:logic-attempts] 22P02 invalid input syntax for type uuid:
+--   "diag-0-1788101754830"
+--
+-- logic_attempts.puzzle_id es `uuid not null references
+-- logic_puzzles(id)` desde 0015_mundo_enigmia.sql, cuando Enigmia
+-- todavía era 100% banco fijo (logic_puzzles, ids uuid reales). Cuando
+-- se agregaron los generadores procedurales (memoria/patrones/
+-- computacional, "Fase A2") esos acertijos empezaron a traer un id
+-- SINTÉTICO (`idFalso()` en src/lib/enigmia/generadores.ts, algo como
+-- "patron-1788101822033-482910") que nunca fue ni va a ser una fila
+-- real de logic_puzzles — cualquier intento de guardarlo choca contra
+-- la constraint de tipo uuid y el insert de logic_attempts falla
+-- SIEMPRE para contenido procedural.
+--
+-- Ese fetch falla en silencio del lado del cliente ("Si falla el
+-- guardado, la partida sigue igual" — EnigmiaSprintRunner.tsx) así que
+-- el jugador ve el feedback visual de "correcto" en cada pregunta, pero
+-- el servidor nunca graba nada — al cerrar la partida,
+-- /api/enigmia/finish cuenta filas reales de logic_attempts y no
+-- encuentra ninguna: 0 correctas, 0 Experiencia, pase lo que pase.
+--
+-- Afecta ~75% de las preguntas de Practicar/Rankeds
+-- (PROBABILIDAD_PROCEDURAL = 0.75 en EnigmiaSprintRunner.tsx) y el
+-- 100% de Reto diario (retoDiario.ts solo usa "patrones"/
+-- "computacional", ambos procedurales) — coincide exactamente con el
+-- reporte del usuario en los 3 modos.
+--
+-- Fix: puzzle_id pasa a `text`, sin FK — nunca hubo un join real contra
+-- logic_puzzles para mostrar nada (confirmado por grep en las 98
+-- migraciones anteriores), la FK solo servía para integridad de un
+-- escenario que ya no es el único caso real.
+-- ============================================================
+
+alter table public.logic_attempts drop constraint if exists logic_attempts_puzzle_id_fkey;
+alter table public.logic_attempts alter column puzzle_id type text;

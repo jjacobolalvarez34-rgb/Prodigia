@@ -55,7 +55,7 @@ const TIPOS_QUIMIA = new Set(["quimia_simbolos", "quimia_formulas", "quimia_tabl
 const TIPOS_ANATOMIA = new Set(["anatomia_oseo", "anatomia_muscular", "anatomia_organos", "anatomia_nervioso"]);
 // Mundo Melodía (Fase 1, 2026-08-24) — mismos 5 problem_type que
 // ProblemTypeCalibrable/tiposCalibrables (skillLevels.ts, api/attempts).
-const TIPOS_MELODIA = new Set(["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes"]);
+const TIPOS_MELODIA = new Set(["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"]);
 
 function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | "anatomia" | "melodia" | null {
   if (!problemType) return null;

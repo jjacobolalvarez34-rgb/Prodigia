@@ -1,0 +1,25 @@
+-- ============================================================
+-- Fixup de 0102 — el PoC repetido CONTRA LA BASE YA MIGRADA encontró
+-- que el hueco 1 (desbloquear_titulo) seguía explotable pese al
+-- `revoke ... from authenticated` de esa migración.
+--
+-- Causa real: Postgres le da EXECUTE a la pseudo-role PUBLIC en
+-- cualquier función nueva por default, en el momento de crearla,
+-- salvo que se revoque explícitamente — y `desbloquear_titulo`
+-- (0043_rankeds_rangos_titulos_multimundo.sql) nunca tuvo un
+-- `revoke ... from public`, solo el `grant ... to authenticated` de
+-- siempre (redundante sobre el permiso de PUBLIC que ya traía). Como
+-- CUALQUIER rol (incluido `authenticated`) hereda automáticamente lo
+-- que tiene PUBLIC, revocarle el EXECUTE solo a `authenticated` no
+-- sacó nada en la práctica — el PoC repetido confirmó el mismo
+-- comportamiento de antes: QA1 le siguió pudiendo asignar un título a
+-- QA2 sin error.
+--
+-- Fix real: revocar también de PUBLIC. `desbloquear_titulo_propio`
+-- (el wrapper nuevo, pensado para ser llamado por cualquier cliente
+-- autenticado) no se toca — ese SÍ debe seguir siendo ejecutable, y su
+-- propio chequeo de `auth.uid() is null` ya lo protege contra sesiones
+-- anónimas de todos modos.
+-- ============================================================
+
+revoke execute on function public.desbloquear_titulo(uuid, text, text, text) from public;
