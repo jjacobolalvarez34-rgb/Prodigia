@@ -6,7 +6,7 @@ import { requireMundoNumeria } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { ARITHMETIC_PROBLEM_TYPES } from "@/types/database";
 import LevelDial from "@/app/[locale]/practica/LevelDial";
-import { IconSuma, IconFracciones, IconDecimalesPorcentajes, IconPotenciasRaices, IconAlgebra, IconGeometria } from "@/components/icons";
+import { IconSuma, IconFracciones, IconDecimalesPorcentajes, IconPotenciasRaices, IconAlgebra, IconGeometria, IconCandado } from "@/components/icons";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Practica.temas.metadata");
@@ -36,13 +36,18 @@ export default async function TemasPage() {
     return filas.length > 0 ? Math.round(filas.reduce((acc, r) => acc + r.nivel, 0) / filas.length) : 1;
   }
 
+  // Deuda técnica invisible, Fase 1: estos 5 (todo salvo Aritmética) ya
+  // están bloqueados de verdad del lado del servidor para invitados
+  // (bloquearInvitado en cada page.tsx, ver src/lib/auth/guard.ts) —
+  // acá solo se muestra el candado ANTES de que hagan el clic, para no
+  // dejarlos entrar y recién ahí rebotarlos.
   const temas = [
-    { nombre: tNumeria("aritmetica"), desc: t("desc.aritmetica"), Icono: IconSuma, href: "/practica", nivel: nivelAritmetica },
-    { nombre: tNumeria("fracciones"), desc: t("desc.fracciones"), Icono: IconFracciones, href: "/practica/fracciones", nivel: nivelPromedioDePrefijo("fracciones_") },
-    { nombre: tNumeria("decimales"), desc: t("desc.decimales"), Icono: IconDecimalesPorcentajes, href: "/practica/decimales", nivel: nivelPromedioDePrefijo("decimales_") },
-    { nombre: tNumeria("potencias"), desc: t("desc.potencias"), Icono: IconPotenciasRaices, href: "/practica/potencias", nivel: nivelPromedioDePrefijo("potencias_") },
-    { nombre: tNumeria("algebra"), desc: t("desc.algebra"), Icono: IconAlgebra, href: "/practica/algebra", nivel: nivelPromedioDePrefijo("algebra_") },
-    { nombre: tNumeria("geometria"), desc: t("desc.geometria"), Icono: IconGeometria, href: "/practica/geometria", nivel: nivelPromedioDePrefijo("geometria_") },
+    { nombre: tNumeria("aritmetica"), desc: t("desc.aritmetica"), Icono: IconSuma, href: "/practica", nivel: nivelAritmetica, bloqueadoInvitado: false },
+    { nombre: tNumeria("fracciones"), desc: t("desc.fracciones"), Icono: IconFracciones, href: "/practica/fracciones", nivel: nivelPromedioDePrefijo("fracciones_"), bloqueadoInvitado: true },
+    { nombre: tNumeria("decimales"), desc: t("desc.decimales"), Icono: IconDecimalesPorcentajes, href: "/practica/decimales", nivel: nivelPromedioDePrefijo("decimales_"), bloqueadoInvitado: true },
+    { nombre: tNumeria("potencias"), desc: t("desc.potencias"), Icono: IconPotenciasRaices, href: "/practica/potencias", nivel: nivelPromedioDePrefijo("potencias_"), bloqueadoInvitado: true },
+    { nombre: tNumeria("algebra"), desc: t("desc.algebra"), Icono: IconAlgebra, href: "/practica/algebra", nivel: nivelPromedioDePrefijo("algebra_"), bloqueadoInvitado: true },
+    { nombre: tNumeria("geometria"), desc: t("desc.geometria"), Icono: IconGeometria, href: "/practica/geometria", nivel: nivelPromedioDePrefijo("geometria_"), bloqueadoInvitado: true },
   ];
 
   return (
@@ -54,22 +59,36 @@ export default async function TemasPage() {
           <p className="mt-2 text-sm text-texto-secundario">{t("subtitulo")}</p>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {temas.map((tema) => (
-            <Link
-              key={tema.nombre}
-              href={tema.href}
-              className="flex items-center gap-4 rounded-2xl border-2 border-border bg-surface px-5 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-primario/40 hover:shadow-lg"
-            >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primario/10 text-primario">
-                <tema.Icono className="h-5 w-5" />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="font-display font-bold text-foreground">{tema.nombre}</p>
-                <p className="text-xs text-texto-secundario">{tema.desc}</p>
-              </div>
-              <LevelDial nivel={tema.nivel} size={44} mostrarEtiqueta={false} />
-            </Link>
-          ))}
+          {temas.map((tema) => {
+            const bloqueado = tema.bloqueadoInvitado && user.is_anonymous;
+            return (
+              <Link
+                key={tema.nombre}
+                href={tema.href}
+                className={`flex items-center gap-4 rounded-2xl border-2 px-5 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg ${
+                  bloqueado ? "border-dashed border-border bg-surface hover:border-primario/20" : "border-border bg-surface hover:border-primario/40"
+                }`}
+              >
+                <span
+                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${
+                    bloqueado ? "bg-foreground/5 text-foreground/40" : "bg-primario/10 text-primario"
+                  }`}
+                >
+                  <tema.Icono className="h-5 w-5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className={`font-display font-bold ${bloqueado ? "text-foreground/70" : "text-foreground"}`}>{tema.nombre}</p>
+                  <p className="text-xs text-texto-secundario">{bloqueado ? "Necesitás una cuenta para practicar esto" : tema.desc}</p>
+                  {bloqueado && (
+                    <span className="mt-1 flex w-fit items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-foreground/40">
+                      <IconCandado className="h-2.5 w-2.5" /> Invitado
+                    </span>
+                  )}
+                </div>
+                {!bloqueado && <LevelDial nivel={tema.nivel} size={44} mostrarEtiqueta={false} />}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </>

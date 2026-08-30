@@ -29,6 +29,15 @@ function sinPrefijoLocale(pathname: string): string {
   return resto === "" ? "/" : resto;
 }
 
+// Deuda técnica invisible, Fase 2: renombrado de middleware.ts a
+// proxy.ts (convención nativa de Next 16 — "middleware" queda
+// deprecado, mismo comportamiento, la función pasa a llamarse `proxy`
+// en vez de `middleware`; ver node_modules/next/dist/docs/01-app/03-
+// api-reference/03-file-conventions/proxy.md). Migración pura de
+// nombre, sin cambio de lógica — se verificó en vivo con la cuenta QA
+// que el guard de invitado y el refresco de sesión siguen andando
+// exactamente igual después del rename.
+//
 // Refresca la sesión de auth en cada request, resuelve el idioma (next-intl
 // — detección por cookie/Accept-Language, la cookie manual siempre gana),
 // y — hallazgo de auditoría: un invitado real podía ver contenido de
@@ -39,13 +48,13 @@ function sinPrefijoLocale(pathname: string): string {
 // carrera contra el streaming de RSC). Este chequeo corre ANTES de que
 // cualquier página arranque a renderizar — ninguna sección bloqueada puede
 // filtrar contenido real, sin importar qué haga la página en sí.
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const intlResponse = intlMiddleware(request);
 
   // next-intl decidió redirigir (agregar/corregir el prefijo de idioma, o
   // pasar de un idioma a otro) — dejamos pasar ese redirect tal cual, sin
   // tocar la sesión acá; el pedido siguiente vuelve a entrar a este
-  // middleware ya con el prefijo puesto, y ahí sí corre el resto.
+  // proxy ya con el prefijo puesto, y ahí sí corre el resto.
   if (intlResponse.headers.get("location")) {
     return intlResponse;
   }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { requireMundoNumeria } from "@/lib/auth/guard";
+import { requireMundoNumeria, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { TIPOS_ALGEBRA, type TipoAlgebra } from "@/lib/practica/algebra";
 import AlgebraPracticaClient from "./AlgebraPracticaClient";
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 export default async function AlgebraPracticaPage() {
   const supabase = await createClient();
   const { user } = await requireMundoNumeria(supabase, "/practica/algebra");
+  bloquearInvitado(user, "Álgebra");
 
   const [{ data: skillRows }, { data: profile }] = await Promise.all([
     supabase

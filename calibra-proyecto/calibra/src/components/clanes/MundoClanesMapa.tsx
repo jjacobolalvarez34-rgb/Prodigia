@@ -253,7 +253,11 @@ function PanelClan({
                 <p className="mt-0.5 text-sm text-texto-secundario">{clan.descripcion}</p>
               </div>
             </div>
-            <button onClick={onCerrar} className="shrink-0 text-sm text-texto-secundario hover:text-foreground">
+            <button
+              onClick={onCerrar}
+              aria-label="Cerrar información del clan"
+              className="shrink-0 text-sm text-texto-secundario hover:text-foreground"
+            >
               ✕
             </button>
           </div>

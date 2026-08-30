@@ -111,7 +111,7 @@ export default function RankingElo({ miUserId }: { miUserId: string }) {
               if (!fila) return <div key={slot} className="flex-1" />;
               const indice = slot === 0 ? 1 : slot === 1 ? 0 : 2;
               return (
-                <div key={fila.user_id} className="flex flex-1 flex-col items-center">
+                <div key={fila.user_id} className="flex min-w-0 flex-1 flex-col items-center">
                   <GlareHover
                     width="100%"
                     height="auto"
@@ -124,17 +124,22 @@ export default function RankingElo({ miUserId }: { miUserId: string }) {
                   >
                     <Link
                       href={`/perfil/${fila.user_id}`}
-                      className={`flex flex-col items-center gap-2 rounded-t-2xl border-2 border-b-0 px-4 pt-5 pb-3 transition-transform hover:-translate-y-0.5 ${
+                      // Mismo fix que leaderboard/Podio.tsx ("podio
+                      // cortado" — GlareHover centra en vez de estirar,
+                      // así que esta tarjeta necesita su propio tope de
+                      // ancho para que el truncate de la insignia de
+                      // rango tenga contra qué achicarse.
+                      className={`flex max-w-[8.5rem] flex-col items-center gap-2 rounded-t-2xl border-2 border-b-0 px-4 pt-5 pb-3 transition-transform hover:-translate-y-0.5 ${
                         fila.user_id === miUserId ? "ring-2 ring-primario/50" : ""
                       }`}
                       style={{ borderColor: ESTILO[indice].color, background: fondoPodio(ESTILO[indice].color) }}
                     >
                       <span className="text-2xl">{ESTILO[indice].medalla}</span>
                       <Avatar url={fila.avatar_url} nombre={fila.display_name} size={indice === 0 ? 64 : 48} />
-                      <span className="max-w-[8rem] truncate text-center text-sm font-semibold text-foreground">
+                      <span className="max-w-full truncate text-center text-sm font-semibold text-foreground">
                         <NombreConFuente nombre={fila.display_name} fuente={fila.fuente_nombre} />
                       </span>
-                      <RangoBadge elo={fila.elo_rating} tituloNombre={fila.titulo_nombre} size="sm" />
+                      <RangoBadge elo={fila.elo_rating} tituloNombre={fila.titulo_nombre} size="sm" className="max-w-full" />
                       <span className={`font-mono text-xs font-bold ${ESTILO[indice].texto}`}>{fila.elo_rating} ELO</span>
                     </Link>
                   </GlareHover>

@@ -41,17 +41,24 @@ export default function RangoBadge({ elo, size = "md", mostrarElo = false, titul
     : { color: rango.colorHex };
 
   return (
-    <span className={`inline-flex items-center gap-1.5 font-display font-bold ${t.texto} ${className}`}>
+    <span className={`inline-flex min-w-0 items-center gap-1.5 font-display font-bold ${t.texto} ${className}`}>
       <span className="shrink-0" style={{ color: rango.colorHex }}>
         <IconRango className={t.icon} />
       </span>
-      <span style={estiloNombre}>{rango.nombre}</span>
+      <span className="shrink-0" style={estiloNombre}>{rango.nombre}</span>
       {tituloNombre && (
-        <span className="rounded-full bg-foreground/[0.06] px-2 py-0.5 text-[0.7em] font-medium text-texto-secundario">
+        // min-w-0 + truncate: sin esto, un título largo ("Bautismo de
+        // Fuego") nunca se achicaba (audit del podio "cortado",
+        // /leaderboard) — no importaba cuánto achicara su contenedor,
+        // esta insignia seguía pintando a su ancho natural completo por
+        // encima de lo que estuviera al lado. Sin efecto visual cuando
+        // hay espacio de sobra (el caso de siempre) — solo actúa cuando
+        // el contenedor real es angosto.
+        <span className="min-w-0 truncate rounded-full bg-foreground/[0.06] px-2 py-0.5 text-[0.7em] font-medium text-texto-secundario">
           {tituloNombre}
         </span>
       )}
-      {mostrarElo && <span className="font-mono font-normal text-texto-secundario">· {elo} ELO</span>}
+      {mostrarElo && <span className="shrink-0 font-mono font-normal text-texto-secundario">· {elo} ELO</span>}
     </span>
   );
 }

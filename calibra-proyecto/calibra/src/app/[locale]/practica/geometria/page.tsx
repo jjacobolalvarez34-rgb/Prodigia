@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { requireMundoNumeria } from "@/lib/auth/guard";
+import { requireMundoNumeria, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { TIPOS_GEOMETRIA, type TipoGeometria } from "@/lib/practica/geometria";
 import GeometriaPracticaClient from "./GeometriaPracticaClient";
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 export default async function GeometriaPracticaPage() {
   const supabase = await createClient();
   const { user } = await requireMundoNumeria(supabase, "/practica/geometria");
+  bloquearInvitado(user, "Geometría");
 
   const [{ data: skillRows }, { data: profile }] = await Promise.all([
     supabase

@@ -9,6 +9,7 @@ import {
 } from "@/types/database";
 import Header from "@/components/Header";
 import PracticaClient from "./PracticaClient";
+import { operacionPermitidaInvitado } from "@/lib/auth/accesoInvitado";
 
 interface Props {
   searchParams: Promise<{ operacion?: string; duelo?: string }>;
@@ -87,9 +88,15 @@ export default async function PracticaPage({ searchParams }: Props) {
     }
   }
 
-  const operacionPreseleccionada = (ARITHMETIC_PROBLEM_TYPES as string[]).includes(operacion ?? "")
+  // Deuda técnica invisible, Fase 1: un invitado que tipeara
+  // ?operacion=multiplicacion a mano no debe quedar con esa operación
+  // pre-elegida — se descarta acá, antes de que llegue al cliente.
+  let operacionPreseleccionada = (ARITHMETIC_PROBLEM_TYPES as string[]).includes(operacion ?? "")
     ? (operacion as ArithmeticProblemType)
     : undefined;
+  if (user.is_anonymous && operacionPreseleccionada && !operacionPermitidaInvitado(operacionPreseleccionada)) {
+    operacionPreseleccionada = undefined;
+  }
 
   const [{ data: skillRows }, { data: unlockedRows }, { data: profile }] = await Promise.all([
     supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", user.id),
@@ -146,6 +153,7 @@ export default async function PracticaPage({ searchParams }: Props) {
         duelo={dueloInfo}
         miUserId={user.id}
         colorDial={colorDial}
+        esInvitado={user.is_anonymous ?? false}
       />
     </>
   );

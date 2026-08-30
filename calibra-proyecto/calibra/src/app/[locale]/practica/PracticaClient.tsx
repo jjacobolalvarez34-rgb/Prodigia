@@ -14,6 +14,7 @@ import SprintSummary, { type FinishResponse, type ResultadoDuelo } from "./Sprin
 import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
 import BotonRendirse from "@/components/duelos/BotonRendirse";
 import { useDeteccionAbandono } from "@/lib/duelos/useDeteccionAbandono";
+import { operacionPermitidaInvitado } from "@/lib/auth/accesoInvitado";
 
 type Fase = "seleccion" | "duelo-intro" | "sprint" | "finalizando" | "resumen";
 
@@ -26,6 +27,7 @@ interface Props {
   duelo: DueloInfo | null;
   miUserId: string;
   colorDial?: string;
+  esInvitado: boolean;
 }
 
 export default function PracticaClient({
@@ -37,6 +39,7 @@ export default function PracticaClient({
   duelo,
   miUserId,
   colorDial,
+  esInvitado,
 }: Props) {
   const t = useTranslations("Practica.cliente");
   const router = useRouter();
@@ -58,11 +61,13 @@ export default function PracticaClient({
   const [resultadoDuelo, setResultadoDuelo] = useState<ResultadoDuelo | null>(null);
 
   function toggleOperacion(tipo: ArithmeticProblemType) {
+    if (esInvitado && !operacionPermitidaInvitado(tipo)) return;
     setSeleccionadas((prev) => (prev.includes(tipo) ? prev.filter((t) => t !== tipo) : [...prev, tipo]));
   }
 
   function iniciarSprint(seleccion: ArithmeticProblemType[] = seleccionadas) {
     if (seleccion.length === 0) return;
+    if (esInvitado && seleccion.some((tipo) => !operacionPermitidaInvitado(tipo))) return;
     setSeleccionSprint(seleccion);
     setStartedAtIso(new Date().toISOString());
     setStartedAtPerf(performance.now());
@@ -267,6 +272,7 @@ export default function PracticaClient({
         colorDial={colorDial}
         onToggle={toggleOperacion}
         onIniciar={() => iniciarSprint()}
+        esInvitado={esInvitado}
       />
     </>
   );

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { requireMundoNumeria } from "@/lib/auth/guard";
+import { requireMundoNumeria, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { TIPOS_DECIMAL, type TipoDecimal } from "@/lib/practica/decimales";
 import DecimalPracticaClient from "./DecimalPracticaClient";
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 export default async function DecimalesPage() {
   const supabase = await createClient();
   const { user } = await requireMundoNumeria(supabase, "/practica/decimales");
+  bloquearInvitado(user, "Decimales");
 
   const [{ data: skillRows }, { data: profile }] = await Promise.all([
     supabase

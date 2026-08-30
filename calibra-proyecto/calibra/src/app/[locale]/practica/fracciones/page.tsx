@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { requireMundoNumeria } from "@/lib/auth/guard";
+import { requireMundoNumeria, bloquearInvitado } from "@/lib/auth/guard";
 import { COLOR_DIAL_HEX, type ColorDial } from "@/types/database";
 import Header from "@/components/Header";
 import { TIPOS_FRACCION, type TipoFraccion } from "@/lib/practica/fracciones";
@@ -8,6 +8,7 @@ import FraccionPracticaClient from "./FraccionPracticaClient";
 export default async function FraccionesPracticaPage() {
   const supabase = await createClient();
   const { user } = await requireMundoNumeria(supabase, "/practica/fracciones");
+  bloquearInvitado(user, "Fracciones");
 
   const [{ data: skillRows }, { data: profile }] = await Promise.all([
     supabase

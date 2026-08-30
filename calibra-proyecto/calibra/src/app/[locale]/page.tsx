@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
@@ -9,7 +10,6 @@ import Avatar from "@/components/Avatar";
 import WorldCard from "@/components/WorldCard";
 import PrimeraVezTip from "@/components/PrimeraVezTip";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
-import VisitanteLanding from "@/components/landing/VisitanteLanding";
 import { calcularRachaDiaria } from "@/lib/practica/racha";
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
 import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia } from "@/components/icons";
@@ -33,21 +33,17 @@ export default async function ProdigiaHomePage() {
   const t = await getTranslations("Home");
   const supabase = await createClient();
 
-  // Landing pública (Fases 0-4 de la landing de visitantes): "/" para
-  // alguien SIN sesión ya no redirige derecho a /login — muestra la
-  // landing + demo interactiva. Un usuario con sesión (incluido un
+  // Arreglo urgente: la landing pública (demo interactiva para
+  // visitantes sin sesión) queda desactivada — "/" vuelve a mandar
+  // derecho a /login para cualquiera sin sesión, sin mostrar nada de
+  // contenido antes de eso. Un usuario con sesión (incluido un
   // invitado ya logueado vía signInAnonymously) sigue el flujo de
   // siempre más abajo, sin ningún cambio.
   const {
     data: { user: visitante },
   } = await supabase.auth.getUser();
   if (!visitante) {
-    return (
-      <>
-        <Header />
-        <VisitanteLanding />
-      </>
-    );
+    redirect("/login");
   }
 
   const { user, profile } = await requireUsuario(supabase, "/");

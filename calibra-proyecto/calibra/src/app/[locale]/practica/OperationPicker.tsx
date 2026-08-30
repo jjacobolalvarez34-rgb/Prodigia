@@ -3,7 +3,8 @@ import { useTranslations } from "next-intl";
 import { ARITHMETIC_PROBLEM_TYPES, MODIFIER_NOMBRES, type ArithmeticProblemType, type ModifierSlug } from "@/types/database";
 import Boton from "@/components/Boton";
 import LevelDial from "./LevelDial";
-import { IconSuma, IconResta, IconMultiplicacion, IconDivision, IconCheck } from "@/components/icons";
+import { IconSuma, IconResta, IconMultiplicacion, IconDivision, IconCheck, IconCandado } from "@/components/icons";
+import { operacionPermitidaInvitado } from "@/lib/auth/accesoInvitado";
 
 export type Seleccion = ArithmeticProblemType[];
 
@@ -21,12 +22,18 @@ interface Props {
   colorDial?: string;
   onToggle: (tipo: ArithmeticProblemType) => void;
   onIniciar: () => void;
+  esInvitado?: boolean;
 }
 
 // Rediseñado desde cero (Fase HH): filas anchas con relleno de color
 // sólido cuando está elegida, no un borde tenue — la diferencia entre
 // "elegida" y "no elegida" tiene que ser evidente de un vistazo, no
 // leerse como una grilla de checkboxes de formulario.
+//
+// Deuda técnica invisible, Fase 1: Multiplicación/División quedan con
+// candado para invitados (mismo criterio que operacionPermitidaInvitado,
+// server-side en /api/attempts y en PracticaClient) — antes esta
+// pantalla no distinguía invitado de cuenta real en absoluto.
 export default function OperationPicker({
   nivelPorOperacion,
   modificadoresPorOperacion,
@@ -34,6 +41,7 @@ export default function OperationPicker({
   colorDial,
   onToggle,
   onIniciar,
+  esInvitado = false,
 }: Props) {
   const t = useTranslations("Practica.operationPicker");
   const color = colorDial ?? "var(--primario)";
@@ -54,12 +62,17 @@ export default function OperationPicker({
           const Icono = ICONOS[tipo];
           const modificadores = modificadoresPorOperacion[tipo];
           const activo = seleccion.includes(tipo);
+          const bloqueado = esInvitado && !operacionPermitidaInvitado(tipo);
           return (
             <button
               key={tipo}
               onClick={() => onToggle(tipo)}
               aria-pressed={activo}
-              className="flex items-center gap-4 rounded-2xl border-2 px-5 py-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+              aria-disabled={bloqueado}
+              disabled={bloqueado}
+              className={`flex items-center gap-4 rounded-2xl border-2 px-5 py-4 text-left shadow-sm transition-all duration-200 ${
+                bloqueado ? "cursor-not-allowed opacity-50" : "hover:-translate-y-0.5 hover:shadow-lg"
+              }`}
               style={{
                 borderColor: activo ? color : "var(--border)",
                 background: activo ? color : "var(--surface)",
@@ -76,19 +89,25 @@ export default function OperationPicker({
                 <p className={`font-display text-lg font-bold ${activo ? "text-white" : "text-foreground"}`}>
                   {t(`operaciones.${tipo}`)}
                 </p>
-                {modificadores.length > 0 && (
-                  <span className="flex flex-wrap gap-1">
-                    {modificadores.map((slug) => (
-                      <span
-                        key={slug}
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                          activo ? "bg-white/20 text-white" : "bg-logro/15 text-texto-secundario"
-                        }`}
-                      >
-                        + {MODIFIER_NOMBRES[slug]}
-                      </span>
-                    ))}
+                {bloqueado ? (
+                  <span className="flex w-fit items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-foreground/40">
+                    <IconCandado className="h-2.5 w-2.5" /> Invitado
                   </span>
+                ) : (
+                  modificadores.length > 0 && (
+                    <span className="flex flex-wrap gap-1">
+                      {modificadores.map((slug) => (
+                        <span
+                          key={slug}
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                            activo ? "bg-white/20 text-white" : "bg-logro/15 text-texto-secundario"
+                          }`}
+                        >
+                          + {MODIFIER_NOMBRES[slug]}
+                        </span>
+                      ))}
+                    </span>
+                  )
                 )}
               </div>
 

@@ -1,7 +1,9 @@
 // Lista única de qué secciones están bloqueadas para invitados
 // (supabase.auth.signInAnonymously) — sin imports de Next.js a propósito,
-// para que sea seguro usarla tanto desde middleware.ts (runtime Edge)
-// como desde src/lib/auth/guard.ts (Server Components). Agregar una
+// para que sea seguro usarla tanto desde src/proxy.ts (Fase 2: antes
+// middleware.ts, renombrado por la convención nativa de Next 16 —
+// mismo comportamiento) como desde src/lib/auth/guard.ts (Server
+// Components). Agregar una
 // sección nueva que deba bloquearse: sumarla acá, nada más — tanto el
 // middleware (primera línea de defensa, corta el pedido antes de
 // renderizar nada) como el guard de cada página (defensa en profundidad)

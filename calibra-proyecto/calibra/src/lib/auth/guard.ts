@@ -141,7 +141,7 @@ export const requireUsuarioOnboarded = requireMundoNumeria;
 // pantalla corta de /invitado-bloqueado, así que no hace falta mantener
 // un mapa de traducción aparte por cada sección nueva que se agregue.
 // Defensa en profundidad a nivel de página — la línea PRINCIPAL de
-// defensa real es middleware.ts (corta el pedido antes de renderizar
+// defensa real es src/proxy.ts (corta el pedido antes de renderizar
 // nada; ver rutasInvitado.ts, la lista centralizada que usan los dos).
 // Esta función se deja para las pantallas que ya la llamaban, pero
 // ninguna sección nueva debería depender solo de esto.

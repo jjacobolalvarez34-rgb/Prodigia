@@ -2610,6 +2610,123 @@ resolución real de apuesta (ganar/perder) — requiere pasar el gate de
 invitado en el tiempo disponible sin gastar cuota real. Marcado SÍ para
 UI+gate, NO PUDE PROBARLO para la resolución punta a punta.
 
+---
+
+# Progreso — sesión autónoma (2026-08-30)
+
+Auditoría de accesibilidad pedida hace tiempo y nunca confirmada como
+cerrada. Alcance: (1) contraste WCAG de los 6 colores de mundo (y de
+más yapa, los 6 de `RANGOS_ELO`) contra los fondos reales de la app en
+claro y oscuro, (2) navegación por teclado en selectores de
+operación/mundo y pantallas de "empezar a practicar", (3) `aria-label`
+en controles solo-ícono. Fixes reales donde el hallazgo era inequívoco
+y de bajo riesgo — no un informe nada más.
+
+## 1. Contraste de color — hallazgos, sin tocar la paleta de marca
+
+Calculé luminancia relativa y ratio WCAG a mano (fórmula estándar)
+para los 6 hex de `COLOR_MUNDO` (`src/lib/duelos/rutas.ts`) y los 6 de
+`RANGOS_ELO` (`src/types/database.ts`) contra `--background`,
+`--surface` y `--surface-2` de `src/app/globals.css`, en claro y
+oscuro, y contra blanco (patrón real: pill/badge de mundo con texto
+blanco, ej. el botón "Jugar" de `RankedsClient.tsx:249-250`).
+
+**Mundos — texto blanco sobre el color sólido del mundo (patrón real,
+`RankedsClient.tsx`, texto chico `text-xs`, necesita 4.5:1):**
+- Numeria `#6C4CF1`: 5.33:1 — OK
+- Enigmia `#0E9F6E`: 3.39:1 — **FALLA** (necesita 4.5:1)
+- Geografía `#1E7A8C`: 4.98:1 — OK
+- Quimia `#C026D3`: 4.71:1 — OK (al límite)
+- Anatomía `#8B2942`: 8.42:1 — OK
+- Melodía `#B8860B`: 3.25:1 — **FALLA** (necesita 4.5:1)
+
+**Mismos 6, texto/borde del color de mundo sobre superficie clara**
+(mismo ratio que arriba por simetría del cálculo): en `--surface`
+(#fff) igual que la tabla de arriba; en `--surface-2` (#f3efe7, más
+oscuro) Enigmia cae a 2.95:1 (falla incluso el piso de 3:1 de UI) y
+Geografía/Quimia caen debajo de 4.5:1 para texto normal.
+
+**Mismos 6, sobre fondo oscuro** (`--background` #090c14 /
+`--surface` #12172a — la paleta de mundo es la MISMA en claro y
+oscuro, no hay variante por tema, confirmado en `colorDelMundo()` de
+`Header.tsx`): Anatomía `#8B2942` cae a **~2.1–2.3:1** contra
+`--surface`/`--background` oscuros — falla incluso el piso de 3:1,
+prácticamente ilegible. Numeria/Geografía/Quimia también caen debajo
+de 4.5:1 (aunque arriba de 3:1) en textos chicos sobre fondo oscuro
+(ej. `RetoDiarioClient.tsx:136`, nombre del mundo en `text-xs` sobre
+`--background`). Enigmia y Melodía sí pasan bien en oscuro.
+
+**`RANGOS_ELO` (bronce/plata/oro/platino/diamante/prodigio) — patrón
+real: texto del rango en `RangoBadge.tsx:41,48` (`font-bold`,
+`text-xs/sm/lg`) sobre superficie clara:** los 6 fallan 4.5:1 en modo
+claro, y varios (plata `#B8C4D9` 1.76:1, diamante `#5DC8F5` 1.90:1,
+prodigio `#FFC53D` 1.58:1) fallan incluso el piso de 3:1 — son colores
+"metálicos/gema" pensados para leerse sobre fondo oscuro, y
+`--background`/`--surface` en modo claro son casi blancos. En modo
+oscuro los 6 pasan cómodo (8.8–12.4:1).
+
+**No apliqué ningún cambio de color acá.** Todos los fallos caen
+sobre la paleta de marca (`COLOR_MUNDO`, `COLOR_MUNDO_PAGO`,
+`colorDelMundo()`, `RANGOS_ELO`) usada también en logos, marcos de
+perfil e ilustraciones — oscurecer Enigmia/Melodía lo suficiente para
+4.5:1, dar a Anatomía una variante para oscuro, o aclarar/oscurecer
+los 6 rangos para que "plata" siga leyéndose plateado y no gris,
+son decisiones de diseño reales, no un ajuste mecánico de "un toque
+más oscuro". Reportado con el número exacto de cada caso arriba para
+que se decida a mano.
+
+## 2. Navegación por teclado — revisado, sin hallazgos que arreglar
+
+Recorrí `OperationPicker.tsx`, `SelectorMundoDuelo.tsx`, `WorldCard.tsx`,
+`AccionMundo.tsx` y grep de `onClick=` en todo `*.tsx` buscando
+`<div onClick>`/`<span onClick>` haciendo de botón falso, y
+`focus:outline-none` sin reemplazo. Conclusión (razonada sobre JSX/DOM,
+sin browser — no hice simulación real de tab-order):
+- Los 3 selectores pedidos ya usan `<button>`/`<Link>` reales con
+  `aria-pressed`/`role="menuitem"` donde corresponde — tabulables y
+  activables con Enter/Espacio de forma nativa.
+- Único `<div onClick>` real del proyecto: `src/components/ChispaClick.tsx:132`,
+  un overlay puramente decorativo (chispas de partícula al hacer
+  click en cualquier parte de la pantalla) que envuelve contenido con
+  sus propios controles reales — no reemplaza ningún control
+  interactivo, así que no lo toqué.
+- Cero `focus:outline-none` sueltos. El único lugar que remueve el
+  outline por defecto (`src/components/reactbits/SpecularButton.css:27`,
+  usado por el botón "secundario" compartido) ya lo repone bien vía
+  `:focus-visible` (línea 35-38, anillo con el color de texto del
+  botón al 60%, offset 3px) — no es un caso roto.
+
+No hubo cambios de código en esta área.
+
+## 3. `aria-label` en controles solo-ícono — 1 fix real
+
+Recorrí las 26 funciones `Icon*` exportadas de `src/components/icons.tsx`
+y cada uso dentro de `<button>`/`<Link>`/`<a>`, más una pasada aparte
+por símbolos Unicode/emoji usados como contenido de botón (✕, →, 🔥,
+etc., para no depender solo de `icons.tsx`). La gran mayoría ya tenía
+`aria-label` (`ProfileMenu.tsx`, `RankingElo.tsx`/`ListaRanking.tsx`,
+`CampoPassword.tsx`, `Header.tsx`, `ThemeToggle.tsx`, `SonidoToggle.tsx`)
+o es decorativo junto a texto visible (íconos de mundo en
+`AccionMundo.tsx`/`WorldCard.tsx`/`TopicCard.tsx`, `IconRango` junto al
+nombre del rango, etc.) — no necesitaba nada.
+
+**Encontrado y corregido**: `src/components/clanes/MundoClanesMapa.tsx:256`,
+el botón "✕" que cierra el panel de info de un clan (`PanelClan`) no
+tenía texto visible ni `aria-label` — un lector de pantalla lo hubiera
+anunciado como el glifo crudo, no como "cerrar". Agregado
+`aria-label="Cerrar información del clan"`.
+
+`IconMixto`/`IconObjetivo` (en `icons.tsx`) están exportados pero sin
+ningún uso en el repo — código muerto, no un caso de aria-label
+faltante.
+
+## Verificación
+
+`npx eslint src/components/clanes/MundoClanesMapa.tsx` limpio.
+`npx tsc --noEmit -p tsconfig.json` limpio sobre el proyecto entero.
+No corrí el dev server ni probé en browser real (fuera de alcance de
+esta pasada, según lo pedido).
+
 **3. Título junto al nombre — SÍ (mecanismo confirmado), con la misma
 limitación.** `RangoBadge.tsx` sí renderiza `tituloNombre` como una
 píldora junto al nombre del rango cuando el valor no es null — código

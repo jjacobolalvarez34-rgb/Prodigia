@@ -1,9 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { ARITHMETIC_PROBLEM_TYPES, type NewAttempt } from "@/types/database";
+import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType, type NewAttempt } from "@/types/database";
 import { calcularXpDetallado, tiempoEsperadoMs } from "@/lib/practica/formulas";
 import { actualizarSkillLevel, type ProblemTypeCalibrable } from "@/lib/practica/skillLevels";
 import { respuestaError } from "@/lib/api/respuestaError";
+import { operacionPermitidaInvitado, temaAvanzadoBloqueadoParaInvitado } from "@/lib/auth/accesoInvitado";
 
 // Piso de tiempo plausible: nadie resuelve de forma legítima un problema
 // en una fracción ínfima del tiempo "esperado" para ese nivel. No
@@ -33,6 +34,23 @@ export async function POST(request: Request) {
   }
 
   const body = (await request.json()) as NewAttempt & { protegido?: boolean };
+
+  // Deuda técnica invisible, Fase 1: la matriz de acceso de invitado
+  // (src/lib/auth/accesoInvitado.ts) existía desde hace tiempo pero
+  // nunca se validaba acá — un invitado podía mandar cualquier
+  // problem_type directo por POST, sin pasar por ninguna página
+  // bloqueada, y este endpoint lo guardaba igual. Esta es la defensa
+  // real (server-side, no confía en que el cliente ya filtró la UI).
+  if (user.is_anonymous) {
+    const esOperacionAritmetica = (ARITHMETIC_PROBLEM_TYPES as string[]).includes(body.problem_type);
+    if (esOperacionAritmetica && !operacionPermitidaInvitado(body.problem_type as ArithmeticProblemType)) {
+      return NextResponse.json({ error: "Esa operación no está disponible para invitados." }, { status: 403 });
+    }
+    if (temaAvanzadoBloqueadoParaInvitado(body.problem_type)) {
+      return NextResponse.json({ error: "Ese tema no está disponible para invitados." }, { status: 403 });
+    }
+  }
+
   const sospechoso = esTiempoSospechoso(body.level, body.time_ms);
   const desglose = calcularXpDetallado(body.level, body.time_ms);
 

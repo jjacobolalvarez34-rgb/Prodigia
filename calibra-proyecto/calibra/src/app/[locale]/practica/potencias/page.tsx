@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import { requireMundoNumeria } from "@/lib/auth/guard";
+import { requireMundoNumeria, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { TIPOS_POTENCIA, type TipoPotencia } from "@/lib/practica/potencias";
 import PotenciaPracticaClient from "./PotenciaPracticaClient";
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 export default async function PotenciasPage() {
   const supabase = await createClient();
   const { user } = await requireMundoNumeria(supabase, "/practica/potencias");
+  bloquearInvitado(user, "Potencias");
 
   const [{ data: skillRows }, { data: profile }] = await Promise.all([
     supabase
