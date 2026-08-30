@@ -40,6 +40,27 @@ export const COSTOS = {
   marco_platino: 2200,
   marco_diamante: 3200,
   marco_prodigio: 5000,
+  // Grupo B, Fase 1: 6 marcos temáticos (uno por mundo, assets reales
+  // en public/marcos/) — un escalón arriba de platino, abajo de
+  // diamante: exclusivos, pero el tope de prestigio sigue siendo
+  // prodigio. A diferencia de los de rango, también exigen haber
+  // alcanzado nivel_mundo >= 40 en ESE mundo (validado server-side en
+  // comprar_item_tienda, ver 0104_marcos_tematicos_mundo.sql) — la
+  // vidriera los muestra bloqueados hasta entonces, no solo caros.
+  marco_numeria: 2400,
+  marco_enigmia: 2400,
+  marco_geografia: 2400,
+  marco_quimia: 2400,
+  marco_anatomia: 2400,
+  marco_melodia: 2400,
+  // Grupo B, Fase 7: "Colección de Mundos" — los 6 marcos de mundo de
+  // una sola vez, con descuento (6 × 2400 = 14400 comprados sueltos),
+  // pero SIN saltarse el requisito de nivel de cada uno — exige
+  // nivel_mundo >= 40 en los 6 a la vez (validado server-side en
+  // comprar_item_tienda, ver 0107_paquete_marcos_mundo.sql). Es un
+  // ítem de coleccionista para quien ya juega los 6 mundos, no un atajo
+  // para principiantes.
+  paquete_marcos_mundo: 11000,
 } as const;
 
 export type ItemComprable = keyof typeof COSTOS;

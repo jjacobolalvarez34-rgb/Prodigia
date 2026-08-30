@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { ArithmeticProblemType } from "@/types/database";
 import Boton from "@/components/Boton";
 import type { UseAmigosReturn } from "@/app/[locale]/social/useAmigos";
-import RetarPicker, { useEtiquetasDuelo } from "@/app/[locale]/social/RetarPicker";
+import SelectorMundoDuelo, { MUNDOS_DUELO, useEtiquetasDuelo } from "@/components/duelos/SelectorMundoDuelo";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 
 // Fase 3 del rediseño de Social: ya no maneja su propio estado — recibe
@@ -126,7 +126,11 @@ export default function AmigosClient({ amigosState }: Props) {
               </div>
               {retandoA === a.friend_id && (
                 <div className="border-t border-border pt-2">
-                  <RetarPicker onElegir={(mundo, opcion) => retar(a.friend_id, mundo, opcion)} />
+                  <SelectorMundoDuelo
+                    mundos={MUNDOS_DUELO}
+                    requiereSubopcion
+                    onElegirSubopcion={(mundo, opcion) => retar(a.friend_id, mundo, opcion)}
+                  />
                 </div>
               )}
             </div>
@@ -146,9 +150,9 @@ export default function AmigosClient({ amigosState }: Props) {
 // Generalizado a los 4 mundos (antes solo ofrecía las 4 operaciones de
 // Numeria — "retar a un amigo" ya se había generalizado en una tanda
 // anterior, pero este flujo de código es distinto, con su propia tabla
-// duel_invites, y quedó afuera). Mismo RetarPicker que ya usa "retar a
-// un amigo" más arriba en este archivo, para elegir ciudad primero y
-// luego operación/continente/categoría/modo según corresponda.
+// duel_invites, y quedó afuera). Mismo SelectorMundoDuelo que ya usa
+// "retar a un amigo" más arriba en este archivo, para elegir ciudad
+// primero y luego operación/continente/categoría/modo según corresponda.
 function InvitarPorLink() {
   const t = useTranslations("Social");
   const { nombreMundo, etiquetaOpcion } = useEtiquetasDuelo();
@@ -264,7 +268,11 @@ function InvitarPorLink() {
       )}
       <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
         <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("elegiCiudadYModo")}</p>
-        <RetarPicker onElegir={(mundo, opcion) => setSeleccion({ mundo, opcion })} />
+        <SelectorMundoDuelo
+          mundos={MUNDOS_DUELO}
+          requiereSubopcion
+          onElegirSubopcion={(mundo, opcion) => setSeleccion({ mundo, opcion })}
+        />
         {seleccion && (
           <p className="text-xs text-texto-secundario">
             {t("elegido")} <span className="font-medium text-foreground">{nombreMundo(seleccion.mundo)} · {etiquetaOpcion(seleccion.mundo, seleccion.opcion)}</span>

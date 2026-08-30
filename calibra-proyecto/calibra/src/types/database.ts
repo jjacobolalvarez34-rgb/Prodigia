@@ -110,6 +110,8 @@ export interface PerfilPublico {
   avatar_url: string | null;
   marco_perfil: string;
   fuente_nombre: FuenteNombre;
+  titulo_activo: string | null;
+  nivel_cuenta: number;
   elo_rating: number;
   puntos_total: number;
   created_at: string;
@@ -287,6 +289,23 @@ export const ESTILO_MARCO_PERFIL: Record<string, string> = {
   platino: "border-[#5FBFA8] shadow-[0_0_0_3px_rgba(95,191,168,0.25)]",
   diamante: "border-[#5DC8F5] shadow-[0_0_0_3px_rgba(93,200,245,0.25)]",
   prodigio: "border-[#FFC53D] shadow-[0_0_0_3px_rgba(255,197,61,0.35)]",
+};
+
+// Grupo B, Fase 1: 6 marcos temáticos, uno por mundo — a diferencia de
+// los de rango (arriba, tiñen el borde de la tarjeta entera),
+// public/marcos/marco_<mundo>.png es un anillo circular con el centro
+// transparente: se renderiza superpuesto sobre el avatar (ver
+// AvatarConMarco.tsx), no como borde de tarjeta. mundoDeMarco() separa
+// "es un marco de mundo" de "es un marco de rango" en un solo lugar,
+// para no repetir la lista de 6 slugs en cada componente que dibuja un
+// avatar con marco.
+export const MARCOS_MUNDO: Record<string, { nombre: string; imagen: string }> = {
+  numeria: { nombre: "Numeria", imagen: "/marcos/marco_numeria.png" },
+  enigmia: { nombre: "Enigmia", imagen: "/marcos/marco_enigmia.png" },
+  geografia: { nombre: "Geografía", imagen: "/marcos/marco_geografia.png" },
+  quimia: { nombre: "Quimia", imagen: "/marcos/marco_quimia.png" },
+  anatomia: { nombre: "Anatomía", imagen: "/marcos/marco_anatomia.png" },
+  melodia: { nombre: "Melodía", imagen: "/marcos/marco_melodia.png" },
 };
 
 // ---------- Rankeds: títulos (Fase 2) ----------

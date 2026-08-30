@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { RANGOS_ELO, FUENTE_NOMBRE_CLASS, type FuenteNombre } from "@/types/database";
+import { RANGOS_ELO, FUENTE_NOMBRE_CLASS, MARCOS_MUNDO, type FuenteNombre } from "@/types/database";
 import { IconEscudo } from "@/components/icons";
 import Boton from "@/components/Boton";
 import GlareHover from "@/components/reactbits/GlareHover";
@@ -20,10 +20,22 @@ const MARCOS_COMPRABLES = RANGOS_ELO.map((r) => ({
   colorHex: r.colorHex,
 }));
 
+// Grupo B, Fase 1: 6 marcos temáticos, uno por mundo — a diferencia de
+// MARCOS_COMPRABLES (arriba), exigen además haber alcanzado
+// nivel_mundo >= 40 en ese mundo (validado server-side en
+// comprar_item_tienda), no solo Chispas.
+const NIVEL_MUNDO_REQUERIDO_MARCO = 40;
+const MARCOS_MUNDO_COMPRABLES = Object.entries(MARCOS_MUNDO).map(([mundo, { nombre, imagen }]) => ({
+  mundo,
+  item: `marco_${mundo}` as ItemComprable,
+  nombre,
+  imagen,
+}));
+
 const MONTOS_APUESTA = [25, 50, 100];
 const APUESTA_MAXIMA = 200;
 
-type Contexto = "utilidad" | "fuente" | "marco" | "apuesta";
+type Contexto = "utilidad" | "fuente" | "marco" | "marco-mundo" | "apuesta";
 
 interface Props {
   puntosIniciales: number;
@@ -34,6 +46,7 @@ interface Props {
   fuentesDesbloqueadas: string[];
   marcoActual: string;
   marcosDesbloqueados: string[];
+  nivelesMundo: Record<string, number>;
   apuestaActiva: boolean;
   ocultarDobleONadaInicial: boolean;
   fechaHoy: string;
@@ -48,6 +61,7 @@ export default function TiendaClient({
   fuentesDesbloqueadas,
   marcoActual,
   marcosDesbloqueados,
+  nivelesMundo,
   apuestaActiva,
   ocultarDobleONadaInicial,
   fechaHoy,
@@ -69,6 +83,13 @@ export default function TiendaClient({
     marco_platino: t("items.marcoPlatino"),
     marco_diamante: t("items.marcoDiamante"),
     marco_prodigio: t("items.marcoProdigio"),
+    marco_numeria: t("items.marcoNumeria"),
+    marco_enigmia: t("items.marcoEnigmia"),
+    marco_geografia: t("items.marcoGeografia"),
+    marco_quimia: t("items.marcoQuimia"),
+    marco_anatomia: t("items.marcoAnatomia"),
+    marco_melodia: t("items.marcoMelodia"),
+    paquete_marcos_mundo: t("items.paqueteMarcosMundo"),
   };
   const FUENTES_COMPRABLES: { fuente: FuenteNombre; item: ItemComprable; nombre: string }[] = [
     { fuente: "mono", item: "fuente_mono", nombre: t("fuentes.mono") },
@@ -343,6 +364,72 @@ export default function TiendaClient({
           {error?.contexto === "marco" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
         </EstanteCategoria>
 
+        <EstanteCategoria titulo={t("vidrieraDeMarcosTematicos")} franja="#6C4CF1">
+          <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraMarcosTematicosDescripcion", { n: NIVEL_MUNDO_REQUERIDO_MARCO })}</p>
+          <div className="flex flex-wrap gap-3">
+            {MARCOS_MUNDO_COMPRABLES.map(({ mundo, item, nombre, imagen }) => {
+              const desbloqueado = marcosDesbl.includes(mundo);
+              const elegido = marcoElegido === mundo;
+              const nivelActual = nivelesMundo[mundo] ?? 0;
+              const alcanzaNivel = nivelActual >= NIVEL_MUNDO_REQUERIDO_MARCO;
+
+              if (desbloqueado) {
+                return (
+                  <button
+                    key={mundo}
+                    onClick={() => elegirMarco(mundo)}
+                    disabled={cambiandoCosmetico || elegido}
+                    className={`flex items-center gap-2 rounded-full border-2 px-3 py-1.5 text-sm font-medium transition-colors ${
+                      elegido ? "border-[#3D2410] bg-[#F4E4C1] text-[#3D2410]" : "border-[#F4E4C1]/60 bg-[#3D2410]/30 text-[#F4E4C1]"
+                    }`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={imagen} alt="" width={22} height={22} className="h-[22px] w-[22px]" />
+                    {nombre}
+                    {elegido && ` · ${t("activo")}`}
+                  </button>
+                );
+              }
+
+              const costo = costoDe(item);
+              if (!alcanzaNivel) {
+                return (
+                  <div
+                    key={mundo}
+                    className="flex items-center gap-2 rounded-full border border-dashed border-[#F4E4C1]/30 px-3 py-1.5 text-sm text-[#F4E4C1]/40"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={imagen} alt="" width={22} height={22} className="h-[22px] w-[22px] grayscale" />
+                    {t("requiereNivelMundo", { n: NIVEL_MUNDO_REQUERIDO_MARCO, mundo: nombre })}
+                  </div>
+                );
+              }
+              return (
+                <button
+                  key={mundo}
+                  onClick={() => comprar(item, "marco-mundo")}
+                  disabled={comprando || puntos < costo}
+                  className="flex items-center gap-2 rounded-full border border-dashed border-[#F4E4C1]/50 px-3 py-1.5 text-sm text-[#F4E4C1]/70 disabled:opacity-40"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={imagen} alt="" width={22} height={22} className="h-[22px] w-[22px]" />
+                  {t("nombreChispas", { nombre, costo })}
+                </button>
+              );
+            })}
+          </div>
+          {error?.contexto === "marco-mundo" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
+
+          <PaqueteMarcosMundo
+            marcosDesbl={marcosDesbl}
+            nivelesMundo={nivelesMundo}
+            puntos={puntos}
+            comprando={comprando}
+            onComprar={() => comprar("paquete_marcos_mundo", "marco-mundo")}
+            costo={costoDe("paquete_marcos_mundo")}
+          />
+        </EstanteCategoria>
+
         {!ocultarDobleONadaInicial && (
           <Trastienda
             abierta={trastiendaAbierta}
@@ -562,5 +649,49 @@ function Trastienda({
       )}
       {error && <p className="text-sm font-medium text-[#FF9B9B]">{error}</p>}
     </section>
+  );
+}
+
+// ---------- Fase 7: "Colección de Mundos" — los 6 marcos de mundo de una, con descuento ----------
+function PaqueteMarcosMundo({
+  marcosDesbl,
+  nivelesMundo,
+  puntos,
+  comprando,
+  onComprar,
+  costo,
+}: {
+  marcosDesbl: string[];
+  nivelesMundo: Record<string, number>;
+  puntos: number;
+  comprando: boolean;
+  onComprar: () => void;
+  costo: number;
+}) {
+  const t = useTranslations("Tienda");
+  const mundos = Object.keys(MARCOS_MUNDO);
+  const yaCompleto = mundos.every((m) => marcosDesbl.includes(m));
+  const alcanzaNivelEnTodos = mundos.every((m) => (nivelesMundo[m] ?? 0) >= NIVEL_MUNDO_REQUERIDO_MARCO);
+
+  if (yaCompleto) {
+    return (
+      <p className="rounded-xl border border-dashed border-[#F4E4C1]/30 px-3 py-2 text-sm text-[#F4E4C1]/60">
+        ✨ {t("paqueteMarcosMundoCompleto")}
+      </p>
+    );
+  }
+
+  return (
+    <div className="mt-1 flex flex-col gap-1.5 rounded-xl border border-[#FFC53D]/40 bg-[#3D2410]/40 px-4 py-3">
+      <p className="text-sm font-semibold text-[#FFC53D]">🏆 {t("items.paqueteMarcosMundo")}</p>
+      <p className="text-xs text-[#F4E4C1]/80">{t("paqueteMarcosMundoDescripcion")}</p>
+      {alcanzaNivelEnTodos ? (
+        <Boton onClick={onComprar} disabled={comprando || puntos < costo} cargando={comprando} className="mt-1 self-start px-4 py-2 text-sm">
+          {t("nombreChispas", { nombre: t("items.paqueteMarcosMundo"), costo })}
+        </Boton>
+      ) : (
+        <p className="mt-1 text-xs text-[#F4E4C1]/50">{t("paqueteMarcosMundoRequisito", { n: NIVEL_MUNDO_REQUERIDO_MARCO })}</p>
+      )}
+    </div>
   );
 }

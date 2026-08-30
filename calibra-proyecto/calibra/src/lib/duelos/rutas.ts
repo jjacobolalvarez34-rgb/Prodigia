@@ -2,6 +2,19 @@ import type { ArithmeticProblemType } from "@/types/database";
 
 export type MundoDuelo = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia";
 
+// Paleta de acento por mundo — fuente única para todo lo relacionado a
+// duelos (antes vivía duplicada, mismos 6 hex, en RankedsClient,
+// SerieDueloClient, RetoDiarioClient, FondoCursorMundo y
+// NivelMundoSubio). Coincide además con colorDelMundo de Header.tsx.
+export const COLOR_MUNDO: Record<MundoDuelo, string> = {
+  numeria: "#6C4CF1",
+  enigmia: "#0E9F6E",
+  geografia: "#1E7A8C",
+  anatomia: "#8B2942",
+  melodia: "#B8860B",
+  quimia: "#C026D3",
+};
+
 // A dónde lleva jugar un duelo según en qué ciudad cayó — un solo lugar,
 // usado por RankedsClient (matchmaking, duelos pendientes) y por la
 // pantalla de la serie "todas las ciudades" (Fase 5). Quimia tiene 3

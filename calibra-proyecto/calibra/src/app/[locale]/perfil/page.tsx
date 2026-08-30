@@ -161,7 +161,7 @@ export default async function PerfilPage() {
         <section
           className={`flex flex-col gap-4 rounded-2xl border-2 bg-surface px-6 py-6 shadow-sm transition-colors ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}
         >
-          <SubirAvatar userId={user.id} nombre={profile.display_name} avatarUrlInicial={profileFull?.avatar_url ?? null} />
+          <SubirAvatar userId={user.id} nombre={profile.display_name} avatarUrlInicial={profileFull?.avatar_url ?? null} marco={marcoPerfil} />
           <NombreEditable nombreActual={profile.display_name} fuente={profileFull?.fuente_nombre ?? "default"} />
           {(titulosRows as TituloUsuario[] | null)?.find((t) => t.slug === profileFull?.titulo_activo) && (
             <span className="-mt-2 rounded-full bg-primario/10 px-3 py-1 text-xs font-semibold text-primario">

@@ -147,7 +147,14 @@
       "marcoOro": "Gold Frame",
       "marcoPlatino": "Platinum Frame",
       "marcoDiamante": "Diamond Frame",
-      "marcoProdigio": "Prodigy Frame"
+      "marcoProdigio": "Prodigy Frame",
+      "marcoNumeria": "Numeria Frame",
+      "marcoEnigmia": "Enigmia Frame",
+      "marcoGeografia": "Geography Frame",
+      "marcoQuimia": "Quimia Frame",
+      "marcoAnatomia": "Anatomy Frame",
+      "marcoMelodia": "Melodia Frame",
+      "paqueteMarcosMundo": "World Collection"
     },
     "fuentes": {
       "mono": "Monospace",
@@ -182,6 +189,12 @@
     "herreroDeMarcos": "Frame smith",
     "herreroDescripcion": "A cosmetic border for your name on your profile — the same colors as Rankeds ranks.",
     "sinMarco": "No frame",
+    "vidrieraDeMarcosTematicos": "World frames",
+    "vidrieraMarcosTematicosDescripcion": "A different ring for each world, for your avatar. Unlocks at level {n} in that world — or free, as a gift, if you fully master it.",
+    "requiereNivelMundo": "Level {n} in {mundo} to unlock",
+    "paqueteMarcosMundoDescripcion": "All 6 world frames together, discounted — for when you're seriously playing all 6.",
+    "paqueteMarcosMundoRequisito": "You need level {n} in all 6 worlds to unlock it",
+    "paqueteMarcosMundoCompleto": "You already have all 6 world frames",
     "ofertaDelVendedor": "Today's vendor deal:",
     "porcentajeMenos": "{n}% off",
     "enItem": "on {nombre}",

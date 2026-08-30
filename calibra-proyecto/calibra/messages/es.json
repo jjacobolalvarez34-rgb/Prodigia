@@ -147,7 +147,14 @@
       "marcoOro": "Marco Oro",
       "marcoPlatino": "Marco Platino",
       "marcoDiamante": "Marco Diamante",
-      "marcoProdigio": "Marco Prodigio"
+      "marcoProdigio": "Marco Prodigio",
+      "marcoNumeria": "Marco Numeria",
+      "marcoEnigmia": "Marco Enigmia",
+      "marcoGeografia": "Marco Geografía",
+      "marcoQuimia": "Marco Quimia",
+      "marcoAnatomia": "Marco Anatomía",
+      "marcoMelodia": "Marco Melodía",
+      "paqueteMarcosMundo": "Colección de Mundos"
     },
     "fuentes": {
       "mono": "Monoespaciada",
@@ -182,6 +189,12 @@
     "herreroDeMarcos": "Herrero de marcos",
     "herreroDescripcion": "Un borde cosmético para tu nombre en el perfil — los mismos colores que los rangos de Rankeds.",
     "sinMarco": "Sin marco",
+    "vidrieraDeMarcosTematicos": "Marcos de mundo",
+    "vidrieraMarcosTematicosDescripcion": "Un anillo distinto para cada mundo, para tu avatar. Se desbloquea al llegar a nivel {n} en ese mundo — o gratis, de regalo, si lo dominás por completo.",
+    "requiereNivelMundo": "Nivel {n} en {mundo} para desbloquear",
+    "paqueteMarcosMundoDescripcion": "Los 6 marcos de mundo juntos, con descuento — para cuando ya jugás los 6 en serio.",
+    "paqueteMarcosMundoRequisito": "Necesitás nivel {n} en los 6 mundos para desbloquearlo",
+    "paqueteMarcosMundoCompleto": "Ya tenés los 6 marcos de mundo",
     "ofertaDelVendedor": "Oferta del vendedor de hoy:",
     "porcentajeMenos": "{n}% menos",
     "enItem": "en {nombre}",

@@ -215,6 +215,12 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
   // — solo saca la posibilidad de mandar un id ajeno.
   for (const t of desbloqueadosAhora) {
     await supabase.rpc("desbloquear_titulo_propio", { p_slug: t.slug, p_nombre: t.nombre, p_origen: t.categoria });
+    // Grupo B, Fase 2: completar un mundo (mismo criterio que el
+    // título "Maestro de X") también otorga el marco temático de ese
+    // mundo, gratis — ver 0104_marcos_tematicos_mundo.sql.
+    if (t.criterio.tipo === "mundo_completado") {
+      await supabase.rpc("otorgar_marco_mundo_propio", { p_mundo: t.criterio.mundo });
+    }
   }
 
   return desbloqueadosAhora;

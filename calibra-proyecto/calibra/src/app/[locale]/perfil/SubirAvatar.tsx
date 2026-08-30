@@ -3,13 +3,15 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import Avatar from "@/components/Avatar";
+import AvatarConMarco from "@/components/AvatarConMarco";
 import GlareHover from "@/components/reactbits/GlareHover";
+import { MARCOS_MUNDO } from "@/types/database";
 
 interface Props {
   userId: string;
   nombre: string | null;
   avatarUrlInicial: string | null;
+  marco?: string;
 }
 
 const MAX_BYTES = 2 * 1024 * 1024;
@@ -20,7 +22,7 @@ const TIPOS_PERMITIDOS = new Set(["image/png", "image/jpeg", "image/webp", "imag
 // de Storage exige exactamente eso, no cualquier ruta. Siempre pisa el
 // mismo archivo (nombre fijo "foto"), así no hace falta borrar el
 // anterior a mano ni acumular basura.
-export default function SubirAvatar({ userId, nombre, avatarUrlInicial }: Props) {
+export default function SubirAvatar({ userId, nombre, avatarUrlInicial, marco = "ninguno" }: Props) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [avatarUrl, setAvatarUrl] = useState(avatarUrlInicial);
@@ -84,9 +86,20 @@ export default function SubirAvatar({ userId, nombre, avatarUrlInicial }: Props)
       {/* Fase 10 (Tienda: animaciones adicionales): brillo al pasar el
           mouse sobre tu propio avatar — mismo componente ya usado en
           otras tarjetas de la app, tamaño/forma ajustados a un círculo
-          de 64px en vez del rectángulo grande de las cards. */}
-      <GlareHover width="64px" height="64px" borderRadius="9999px" background="transparent" borderColor="transparent" glareOpacity={0.35}>
-        <Avatar url={avatarUrl} nombre={nombre} size={64} />
+          de 64px en vez del rectángulo grande de las cards. Grupo B,
+          Fase 1: si el marco activo es uno de mundo (anillo PNG que
+          sobresale del avatar, ver AvatarConMarco), GlareHover crece
+          con él — su overflow:hidden recortaría el anillo si se
+          quedara fijo en 64px. */}
+      <GlareHover
+        width={MARCOS_MUNDO[marco] ? "85px" : "64px"}
+        height={MARCOS_MUNDO[marco] ? "85px" : "64px"}
+        borderRadius="9999px"
+        background="transparent"
+        borderColor="transparent"
+        glareOpacity={0.35}
+      >
+        <AvatarConMarco url={avatarUrl} nombre={nombre} marco={marco} size={64} />
       </GlareHover>
       <div className="flex flex-col gap-1">
         <button

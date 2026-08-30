@@ -10,25 +10,15 @@ import RangoBadge from "@/components/RangoBadge";
 import GlareHover from "@/components/reactbits/GlareHover";
 import BorderGlow from "@/components/reactbits/BorderGlow";
 import Boton from "@/components/Boton";
-import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
+import { COLOR_MUNDO, hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 import { useRetosPendientes, type RetoPendienteBase } from "@/app/[locale]/social/useRetosPendientes";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { useConteoUsuariosEnLinea } from "@/lib/presencia/useConteoUsuariosEnLinea";
+import SelectorMundoDuelo, { type SeleccionMundoDuelo } from "@/components/duelos/SelectorMundoDuelo";
 import RankingElo from "./RankingElo";
 
-// Mismos hex que Header.tsx (colorDelMundo) y FondoCursorMundo.tsx — un
-// solo lugar más al que sumar esta paleta si algún día cambia.
-const COLOR_MUNDO: Record<MundoDuelo, string> = {
-  numeria: "#6C4CF1",
-  enigmia: "#0E9F6E",
-  geografia: "#1E7A8C",
-  anatomia: "#8B2942",
-  melodia: "#B8860B",
-  quimia: "#C026D3",
-};
-
 type Tab = "competitivo" | "buscar" | "ranking";
-type SeleccionMundo = MundoDuelo | "aleatorio";
+type SeleccionMundo = SeleccionMundoDuelo;
 
 interface FilaHistorial {
   duel_id: string;
@@ -621,47 +611,12 @@ function BuscarPartida({
 
       <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
         <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("elegiLaCiudad")}</p>
-        <div className="grid grid-cols-2 gap-2">
-          {mundosDisponibles.map((m) => {
-            const activo = mundo === m.id;
-            const color = m.id === "aleatorio" ? null : COLOR_MUNDO[m.id as MundoDuelo];
-            return (
-              <GlareHover
-                key={m.id}
-                width="100%"
-                height="auto"
-                background="transparent"
-                borderColor="transparent"
-                borderRadius="0.75rem"
-                glareColor={color ?? "#6C4CF1"}
-                glareOpacity={activo ? 0.35 : 0.15}
-                className="w-full"
-              >
-                <button
-                  type="button"
-                  onClick={() => setMundo(m.id)}
-                  className="flex w-full flex-col items-start gap-0.5 rounded-xl border px-3 py-2.5 text-left transition-colors"
-                  style={{
-                    borderColor: activo ? (color ?? "var(--primario)") : "var(--border)",
-                    background: activo
-                      ? color
-                        ? `${color}1A`
-                        : "color-mix(in oklab, var(--primario) 10%, transparent)"
-                      : "transparent",
-                  }}
-                >
-                  <span
-                    className="text-sm font-semibold"
-                    style={{ color: activo ? (color ?? "var(--primario)") : "var(--foreground)" }}
-                  >
-                    {m.nombre}
-                  </span>
-                  <span className="text-[11px] text-texto-secundario">{m.descripcion}</span>
-                </button>
-              </GlareHover>
-            );
-          })}
-        </div>
+        <SelectorMundoDuelo
+          mundos={mundosDisponibles}
+          mostrarDescripcion
+          mundoSeleccionado={mundo}
+          onSeleccionarMundo={setMundo}
+        />
       </div>
 
       <Boton onClick={iniciarBusqueda} colorHex={colorMundo ?? undefined} destacado className="w-full py-5 text-lg">

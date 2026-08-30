@@ -141,7 +141,20 @@ export const config = {
   // "/data/countries-110m.json" a mano) — sin esta exclusión, next-intl
   // los redirigía a "/es/data/..." (que no existe) antes de que
   // pudieran servirse, rompiendo cualquier fetch de datos estáticos.
+  //
+  // Grupo B, Fase 6 (bug real encontrado al verificar el ícono de PWA
+  // en vivo, no solo releyendo código): manifest.webmanifest, sw.js,
+  // robots.txt y sitemap.xml son archivos especiales de app/ (o de
+  // public/) que Next sirve en la raíz, SIN prefijo de idioma — antes
+  // de este fix, ninguno estaba excluido acá, así que next-intl los
+  // interceptaba igual que cualquier página y los mandaba a
+  // "/es/manifest.webmanifest" (confirmado con curl: 307 → 404) —
+  // rompiendo la instalabilidad de la PWA de raíz (sin manifest
+  // alcanzable no hay banner de instalación), el service worker, y los
+  // dos archivos de SEO. El resto de los archivos especiales de
+  // app/ (icon.svg, apple-touch-icon.png, favicon.ico) ya colaban por
+  // el filtro de extensiones de imagen que ya estaba.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api|auth/callback|data/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api|auth/callback|data/|manifest\\.webmanifest|sw\\.js|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

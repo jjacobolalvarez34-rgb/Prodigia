@@ -5,9 +5,9 @@ import Link from "next/link";
 import Boton from "@/components/Boton";
 import { type ArithmeticProblemType } from "@/types/database";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
+import SelectorMundoDuelo, { MUNDOS_DUELO } from "@/components/duelos/SelectorMundoDuelo";
 import type { UseAmigosReturn } from "./useAmigos";
 import { useRetosPendientes, type RetoPendienteBase } from "./useRetosPendientes";
-import RetarPicker from "./RetarPicker";
 
 const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
   suma: "Suma",
@@ -202,7 +202,13 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
                   Retar
                 </button>
               </div>
-              {retandoA === a.friend_id && <RetarPicker onElegir={(mundo, opcion) => retar(a.friend_id, mundo, opcion)} />}
+              {retandoA === a.friend_id && (
+                <SelectorMundoDuelo
+                  mundos={MUNDOS_DUELO}
+                  requiereSubopcion
+                  onElegirSubopcion={(mundo, opcion) => retar(a.friend_id, mundo, opcion)}
+                />
+              )}
             </div>
           ))
         )}
