@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import Header from "@/components/Header";
+import HeaderFlujo from "@/components/landing/HeaderFlujo";
 import DemoGeografiaClient from "./DemoGeografiaClient";
 
 // Ver nota de /demo/numeria/page.tsx: mismo criterio, sin
@@ -15,7 +15,7 @@ export default async function DemoGeografiaPage() {
 
   return (
     <>
-      <Header autenticado invitado />
+      <HeaderFlujo />
       <DemoGeografiaClient />
     </>
   );

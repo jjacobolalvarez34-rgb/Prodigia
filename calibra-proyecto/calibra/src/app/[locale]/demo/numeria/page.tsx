@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import Header from "@/components/Header";
+import HeaderFlujo from "@/components/landing/HeaderFlujo";
 import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType, type ModifierSlug } from "@/types/database";
 import DemoNumeriaClient from "./DemoNumeriaClient";
 
@@ -26,7 +26,7 @@ export default async function DemoNumeriaPage() {
 
   return (
     <>
-      <Header autenticado invitado />
+      <HeaderFlujo />
       <DemoNumeriaClient nivelPorOperacion={nivelPorOperacion} modificadoresPorOperacion={modificadoresPorOperacion} />
     </>
   );

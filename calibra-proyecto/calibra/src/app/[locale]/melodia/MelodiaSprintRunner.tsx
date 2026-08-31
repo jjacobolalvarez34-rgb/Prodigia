@@ -42,7 +42,7 @@ interface Props {
   rivalNombre?: string | null;
   totalPreguntas?: number;
   duracionMs?: number;
-  onFinish: (errores: PreguntaMelodia[]) => void;
+  onFinish: (errores: PreguntaMelodia[], correctos: number) => void;
 }
 
 // Mismo patrón que EnigmiaSprintRunner.tsx (sin semilla — cada rival
@@ -106,7 +106,7 @@ export default function MelodiaSprintRunner({
   function terminar() {
     if (finishedRef.current) return;
     finishedRef.current = true;
-    onFinish(erroresRef.current);
+    onFinish(erroresRef.current, correctosRef.current);
   }
 
   useEffect(() => {

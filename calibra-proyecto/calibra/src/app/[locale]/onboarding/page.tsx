@@ -42,7 +42,7 @@ export default async function OnboardingPage({ searchParams }: Props) {
       <Header autenticado />
       <div className="flex flex-1 items-center justify-center px-4 py-20">
         <div className="w-full max-w-sm rounded-2xl border border-border bg-surface p-8 shadow-sm">
-          <OnboardingForm userId={user.id} next={destino} saltarPasoNombre={tieneNombre} />
+          <OnboardingForm next={destino} saltarPasoNombre={tieneNombre} />
         </div>
       </div>
     </>

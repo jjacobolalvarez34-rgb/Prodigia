@@ -32,7 +32,7 @@ interface Props {
   rivalNombre?: string | null;
   totalPreguntas?: number;
   duracionMs?: number;
-  onFinish: (errores: PreguntaHistoria[]) => void;
+  onFinish: (errores: PreguntaHistoria[], correctos: number) => void;
 }
 
 // Mismo patrón que QuimiaSprintRunner.tsx — los 4 modos de Historia son
@@ -100,7 +100,7 @@ export default function HistoriaSprintRunner({
   function terminar() {
     if (finishedRef.current) return;
     finishedRef.current = true;
-    onFinish(erroresRef.current);
+    onFinish(erroresRef.current, correctosRef.current);
   }
 
   useEffect(() => {

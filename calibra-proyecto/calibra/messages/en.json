@@ -287,24 +287,40 @@
       "titulo": "Train your brain like it's a muscle",
       "subtitulo": "Short, addictive rounds of math, logic, geography, chemistry, and anatomy. Pick a world and try it now — no account needed."
     },
+    "intro": {
+      "titulo": "This is Prodigia",
+      "texto": "Short practice rounds, a live ranking, and duels against other players. You can take a 2-minute guided tutorial, or jump straight in.",
+      "hacerTutorial": "Take the tutorial",
+      "sinTutorial": "Play without a tutorial"
+    },
     "grid": {
-      "titulo": "Pick your first world",
+      "titulo": "Pick a city to try",
       "descripcion": "A 5-question trial round, right away — no sign-up."
+    },
+    "mecanismo": {
+      "titulo": "How a round works",
+      "texto": "It's 10 questions in 60 seconds. Answering in a streak buys you more seconds; answering faster earns you more Experience.",
+      "boton": "Start"
     },
     "entrando": "Loading...",
     "errorInvitado": "We couldn't set up the demo. Try again.",
     "tour": {
-      "sprint": "This is a sprint: answer fast before time runs out. Every correct answer scores points and levels you up.",
-      "rankeds": "Once you have an account, you'll be able to compete in Rankeds: real duels against other players, with your own ELO and rank.",
-      "social": "Social: follow your friends and their progress.",
-      "tienda": "Shop: spend your Chispas on upgrades.",
-      "clanes": "Clans: join a team and compete together.",
+      "ranking": "Ranking: compare your progress with every other player, overall and per world.",
+      "rankeds": "Rankeds: real duels against other players, with your own ELO and rank.",
+      "amigos": "Friends and Clans: follow your friends, challenge them, and join a team.",
+      "perfil": "Profile: your streak, your achievements, and your account frame, all in one place.",
       "siguiente": "Next",
       "entendido": "Got it"
+    },
+    "promo": {
+      "titulo": "And whenever you want, Prodigia Pro",
+      "texto": "Here's what you'll be able to get later on, if you want to move faster.",
+      "continuar": "Continue"
     },
     "cta": {
       "titulo": "Not bad for a first try!",
       "resultado": "You got {correctos} out of {total}",
+      "continuar": "Continue",
       "mensaje": "Create your account to save your progress and keep your streak",
       "seguirExplorando": "See the other worlds"
     }
@@ -325,7 +341,7 @@
     "rachaValor": "{racha} {racha, plural, one {day} other {days}}",
     "precision7dias": "Accuracy · 7 days",
     "sinDatos": "—",
-    "chispasIntro": "Chispas are the game's currency — you earn them by practicing and spend them at the Shop. Your Experience is separate — that one never gets spent.",
+    "chispasIntro": "Chispas are the game's currency — you earn them by practicing and spend them at the Shop.",
     "chispas": "Chispas",
     "retoDiario": "Daily challenge",
     "retoDiarioHecho": "Already done today: {correctos}/5",

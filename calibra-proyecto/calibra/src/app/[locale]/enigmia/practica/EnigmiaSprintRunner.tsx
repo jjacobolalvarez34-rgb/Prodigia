@@ -100,7 +100,7 @@ interface Props {
   // Modo demo (landing pública, Fase 2): ver mismo prop en SprintRunner.tsx.
   totalPreguntas?: number;
   duracionMs?: number;
-  onFinish: (errores: LogicPuzzle[]) => void;
+  onFinish: (errores: LogicPuzzle[], correctos: number) => void;
 }
 
 export default function EnigmiaSprintRunner({
@@ -174,7 +174,7 @@ export default function EnigmiaSprintRunner({
   function terminar() {
     if (finishedRef.current) return;
     finishedRef.current = true;
-    onFinish(erroresRef.current);
+    onFinish(erroresRef.current, correctosRef.current);
   }
 
   useEffect(() => {

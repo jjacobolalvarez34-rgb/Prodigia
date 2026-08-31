@@ -9,6 +9,7 @@ import { MUNDOS_LANDING } from "@/lib/mundos";
 const CLAVE_CONOCE = "prodigia-conoce-prodigia";
 
 type RespuestaGuardada = "cargando" | "si" | "no" | "ninguna";
+type PasoTutorial = "intro" | "ciudad" | "mecanismo";
 
 function subscribe() {
   return () => {};
@@ -31,12 +32,15 @@ function getServerSnapshot(): RespuestaGuardada {
   return "cargando";
 }
 
-// Landing pública para visitantes sin sesión (Fases 0 y 1). Fase 0: se
-// pregunta una sola vez por navegador si ya conoce Prodigia — la
-// respuesta vive en localStorage, nunca en el servidor, porque no hay
-// cuenta todavía. "Sí" manda derecho a /login para siempre (no se
-// vuelve a preguntar); "No" (o primera visita, sin nada guardado)
-// revela el resto de la landing.
+// Landing pública para visitantes sin sesión — rediseño del flujo
+// (Fase 7): "¿Ya conocés Prodigia?" (paso 0, sin cambios) → si "No":
+// intro corta con la bifurcación real ("Jugar sin tutorial" manda
+// directo a /login — mismo destino que "Sí, ya la conozco", porque todo
+// lo que sigue es justamente el tutorial; "Hacer el tutorial" sigue acá
+// mismo) → elegir ciudad → explicación breve del mecanismo del sprint →
+// recién ahí se crea la sesión de invitado y se entra a /demo/[mundo],
+// que continúa el resto del flujo (partida de prueba, tour, promo Pro,
+// elegir 2 mundos gratis) sin volver a pasar por acá.
 export default function VisitanteLanding() {
   const t = useTranslations("Landing");
   const tHome = useTranslations("Home");
@@ -46,6 +50,8 @@ export default function VisitanteLanding() {
   // vuelva a leerse) — así el click en "Sí"/"No" cambia la pantalla al
   // toque, sin depender de que el store se vuelva a leer.
   const [eleccion, setEleccion] = useState<"si" | "no" | null>(null);
+  const [paso, setPaso] = useState<PasoTutorial>("intro");
+  const [ciudadElegida, setCiudadElegida] = useState<string | null>(null);
   const [entrando, setEntrando] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,15 +72,15 @@ export default function VisitanteLanding() {
     if (nueva === "si") router.push("/login");
   }
 
-  // Fase 2: signInAnonymously invisible al elegir un mundo — mismo
-  // mecanismo que "Entrar como invitado" en LoginForm.tsx, disparado
-  // automáticamente en vez de requerir un click aparte. La ruta /demo/*
-  // (a diferencia de /numeria/practica y equivalentes) no exige el
-  // onboarding de nombre ni el diagnóstico de nivel, así que el visitante
-  // cae derecho en la partida de prueba.
-  async function probarMundo(slug: string) {
+  // signInAnonymously invisible recién acá (paso "mecanismo" → arranca
+  // la demo) — mismo mecanismo que "Entrar como invitado" en
+  // LoginForm.tsx. La ruta /demo/* (a diferencia de /numeria/practica y
+  // equivalentes) no exige el onboarding de nombre ni el diagnóstico de
+  // nivel, así que el visitante cae derecho en la partida de prueba.
+  async function comenzarDemo() {
+    if (!ciudadElegida) return;
     setError(null);
-    setEntrando(slug);
+    setEntrando(ciudadElegida);
     const supabase = createClient();
     const { error: authError } = await supabase.auth.signInAnonymously();
     if (authError) {
@@ -82,7 +88,7 @@ export default function VisitanteLanding() {
       setEntrando(null);
       return;
     }
-    router.push(`/demo/${slug}`);
+    router.push(`/demo/${ciudadElegida}`);
   }
 
   if (respuesta === "cargando" || respuesta === "si") return null;
@@ -109,6 +115,47 @@ export default function VisitanteLanding() {
     );
   }
 
+  if (paso === "intro") {
+    return (
+      <div className="mx-auto flex w-full max-w-sm flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
+        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("intro.titulo")}</h1>
+        <p className="text-sm text-texto-secundario">{t("intro.texto")}</p>
+        <div className="flex w-full flex-col gap-3">
+          <button
+            onClick={() => setPaso("ciudad")}
+            className="rounded-xl bg-primario px-5 py-3 font-display font-semibold text-white"
+          >
+            {t("intro.hacerTutorial")}
+          </button>
+          <button
+            onClick={() => router.push("/login")}
+            className="rounded-xl border border-border px-5 py-3 font-display font-semibold text-foreground"
+          >
+            {t("intro.sinTutorial")}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (paso === "mecanismo" && ciudadElegida) {
+    return (
+      <div className="mx-auto flex w-full max-w-sm flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
+        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("mecanismo.titulo")}</h1>
+        <p className="text-sm text-texto-secundario">{t("mecanismo.texto")}</p>
+        {error && <p className="text-sm text-error">{error}</p>}
+        <button
+          onClick={comenzarDemo}
+          disabled={entrando !== null}
+          className="w-full rounded-xl bg-primario px-5 py-3 font-display font-semibold text-white disabled:opacity-70"
+        >
+          {entrando !== null ? t("entrando") : t("mecanismo.boton")}
+        </button>
+      </div>
+    );
+  }
+
+  // paso === "ciudad"
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-14 px-4 py-16 sm:px-6">
       <section className="flex flex-col items-center gap-4 text-center">
@@ -123,14 +170,15 @@ export default function VisitanteLanding() {
           <h2 className="font-display text-lg font-bold text-foreground">{t("grid.titulo")}</h2>
           <p className="text-xs text-texto-secundario">{t("grid.descripcion")}</p>
         </div>
-        {error && <p className="text-center text-sm text-error">{error}</p>}
         <div className="grid gap-4 sm:grid-cols-2">
           {MUNDOS_LANDING.map((mundo) => (
             <button
               key={mundo.slug}
-              onClick={() => probarMundo(mundo.slug)}
-              disabled={entrando !== null}
-              className="group flex flex-col gap-3 rounded-2xl px-6 py-7 text-left text-white shadow-lg transition-all duration-200 hover:-translate-y-1 hover:-rotate-1 hover:shadow-xl disabled:opacity-70"
+              onClick={() => {
+                setCiudadElegida(mundo.slug);
+                setPaso("mecanismo");
+              }}
+              className="group flex flex-col gap-3 rounded-2xl px-6 py-7 text-left text-white shadow-lg transition-all duration-200 hover:-translate-y-1 hover:-rotate-1 hover:shadow-xl"
               style={{
                 background: `linear-gradient(120deg, ${mundo.colorHex}, color-mix(in oklab, ${mundo.colorHex} 55%, white))`,
               }}
@@ -142,7 +190,6 @@ export default function VisitanteLanding() {
                 <p className="font-display text-lg font-bold">{mundo.nombre}</p>
                 <p className="mt-0.5 text-sm text-white/80">{tHome(`mundos.${mundo.slug}`)}</p>
               </div>
-              {entrando === mundo.slug && <p className="text-xs font-medium text-white/90">{t("entrando")}</p>}
             </button>
           ))}
         </div>

@@ -377,7 +377,7 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
   '{"pasos": [
     "Para cada evento que te cueste recordar, inventate una imagen mental exagerada o una frase pegadiza que lo conecte con el dato clave",
     "Cuanto más rara o graciosa sea la asociación, mejor se queda — no hace falta que tenga sentido para otra persona, solo para vos",
-    "Ejemplo: para una fecha con muchos '4', podés imaginarte literalmente cuatro objetos relacionados con el evento",
+    "Ejemplo: para una fecha con varios cuatros, podés imaginarte literalmente cuatro objetos relacionados con el evento",
     "Revisá la asociación una sola vez más al día siguiente — ese segundo repaso es el que la fija de verdad"
   ]}',
   3),

@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { redirect } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
+import HeaderFlujo from "@/components/landing/HeaderFlujo";
+import VisitanteLanding from "@/components/landing/VisitanteLanding";
 import Avatar from "@/components/Avatar";
 import WorldCard from "@/components/WorldCard";
 import PrimeraVezTip from "@/components/PrimeraVezTip";
@@ -33,17 +34,16 @@ export default async function ProdigiaHomePage() {
   const t = await getTranslations("Home");
   const supabase = await createClient();
 
-  // Arreglo urgente: la landing pública (demo interactiva para
-  // visitantes sin sesión) queda desactivada — "/" vuelve a mandar
-  // derecho a /login para cualquiera sin sesión, sin mostrar nada de
-  // contenido antes de eso. Un usuario con sesión (incluido un
-  // invitado ya logueado vía signInAnonymously) sigue el flujo de
-  // siempre más abajo, sin ningún cambio.
   const {
     data: { user: visitante },
   } = await supabase.auth.getUser();
   if (!visitante) {
-    redirect("/login");
+    return (
+      <>
+        <HeaderFlujo />
+        <VisitanteLanding />
+      </>
+    );
   }
 
   const { user, profile } = await requireUsuario(supabase, "/");

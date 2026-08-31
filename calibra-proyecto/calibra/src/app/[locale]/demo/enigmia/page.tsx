@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import Header from "@/components/Header";
+import HeaderFlujo from "@/components/landing/HeaderFlujo";
 import type { LogicPuzzle } from "@/types/database";
 import DemoEnigmiaClient from "./DemoEnigmiaClient";
 
@@ -21,7 +21,7 @@ export default async function DemoEnigmiaPage() {
 
   return (
     <>
-      <Header autenticado invitado />
+      <HeaderFlujo />
       <DemoEnigmiaClient puzzles={(puzzles ?? []) as LogicPuzzle[]} />
     </>
   );

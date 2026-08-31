@@ -25,7 +25,7 @@ begin
     raise exception 'mundo invalido';
   end if;
 
-  select mundos_desbloqueados into v_actuales from public.profiles where id = v_user;
+  select pr.mundos_desbloqueados into v_actuales from public.profiles pr where pr.id = v_user;
 
   if cardinality(v_actuales) > 0 then
     raise exception 'ya elegiste tu mundo inicial';
@@ -63,8 +63,8 @@ begin
     raise exception 'mundo invalido';
   end if;
 
-  select puntos_total, mundos_desbloqueados into v_saldo, v_actuales
-  from public.profiles where id = v_user;
+  select pr.puntos_total, pr.mundos_desbloqueados into v_saldo, v_actuales
+  from public.profiles pr where pr.id = v_user;
 
   if p_mundo = any(v_actuales) then
     raise exception 'ya tenés ese mundo desbloqueado';

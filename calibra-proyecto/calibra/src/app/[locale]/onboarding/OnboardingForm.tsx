@@ -6,10 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import {
   IconSuma,
-  IconMultiplicacion,
-  IconDivision,
-  IconLogica,
   IconGeometria,
+  IconLogica,
   IconQuimica,
   IconAnatomia,
   IconMelodia,
@@ -21,26 +19,21 @@ import Boton from "@/components/Boton";
 import { MUNDOS_PAGOS, NOMBRE_MUNDO_PAGO, COLOR_MUNDO_PAGO, type MundoPago } from "@/lib/mundos/precios";
 
 interface Props {
-  userId: string;
   next: string;
   // Fase 12 (ajuste): una cuenta que ya guardó el nombre pero cerró la
-  // pestaña antes de elegir su mundo gratis vuelve acá — no tiene
-  // sentido pedirle el nombre de nuevo.
+  // pestaña antes de elegir sus mundos gratis vuelve acá — no tiene
+  // sentido pedirle el nombre de nuevo. En la práctica esto casi nunca
+  // dispara para un invitado (el nombre ya le llega autogenerado desde
+  // el trigger, ver 0112_flujo_bienvenida.sql) — queda como red de
+  // seguridad si display_name llegara null por algún motivo.
   saltarPasoNombre: boolean;
 }
 
-type Interes = "suma" | "resta" | "multiplicacion" | "division" | "logica";
-
-const OPCIONES: { valor: Interes; nombre: string; Icono: typeof IconSuma }[] = [
-  { valor: "suma", nombre: "Suma y resta", Icono: IconSuma },
-  { valor: "multiplicacion", nombre: "Multiplicación", Icono: IconMultiplicacion },
-  { valor: "division", nombre: "División", Icono: IconDivision },
-  { valor: "logica", nombre: "Lógica", Icono: IconLogica },
-];
-
-// Fase 12 (ajuste): ya no hay un mundo gratis fijo — se elige acá,
-// mismos 6 mundos y colores que MundoSelector.tsx (nav), un ícono por
-// mundo ya usado en cada home respectiva.
+// Fase 12 (ajuste) + rediseño de onboarding (Fase 5/6): ya no hay un
+// mundo gratis fijo ni la pantalla de "¿Qué te gustaría mejorar?" (era
+// un resabio de cuando solo existía Numeria, no influía en nada del
+// diagnóstico real de cada mundo) — se eligen directamente 2 mundos
+// gratis acá, mismos 8 mundos y colores que MundoSelector.tsx (nav).
 const ICONO_MUNDO: Record<MundoPago, typeof IconSuma> = {
   numeria: IconSuma,
   geografia: IconGeometria,
@@ -52,12 +45,13 @@ const ICONO_MUNDO: Record<MundoPago, typeof IconSuma> = {
   historia: IconHistoria,
 };
 
-export default function OnboardingForm({ userId, next, saltarPasoNombre }: Props) {
+export default function OnboardingForm({ next, saltarPasoNombre }: Props) {
   const router = useRouter();
-  const [paso, setPaso] = useState<"nombre" | "interes" | "mundo">(saltarPasoNombre ? "interes" : "nombre");
+  const [paso, setPaso] = useState<"nombre" | "mundos">(saltarPasoNombre ? "mundos" : "nombre");
   const [nombre, setNombre] = useState("");
   const [enviando, setEnviando] = useState(false);
-  const [enviandoMundo, setEnviandoMundo] = useState<MundoPago | null>(null);
+  const [seleccionados, setSeleccionados] = useState<MundoPago[]>([]);
+  const [enviandoMundos, setEnviandoMundos] = useState(false);
   const [errorMundo, setErrorMundo] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,8 +60,9 @@ export default function OnboardingForm({ userId, next, saltarPasoNombre }: Props
     setEnviando(true);
     setError(null);
 
-    // El primer nombre es gratis — cambiar_nombre_usuario (0054) solo
-    // cobra Chispas a partir del segundo cambio (display_name ya no null).
+    // El primer nombre es gratis — cambiar_nombre_usuario (0054/0112)
+    // solo cobra Chispas a partir del segundo cambio de un nombre que la
+    // propia persona haya elegido.
     const supabase = createClient();
     const { error: rpcError } = await supabase.rpc("cambiar_nombre_usuario", { p_nombre: nombre.trim() });
 
@@ -76,25 +71,26 @@ export default function OnboardingForm({ userId, next, saltarPasoNombre }: Props
       setError(rpcError.message ?? "No se pudo guardar. Probá de nuevo.");
       return;
     }
-    setPaso("interes");
+    setPaso("mundos");
   }
 
-  async function elegirInteres(interes: Interes | null) {
-    setEnviando(true);
-    const supabase = createClient();
-    await supabase.from("profiles").update({ interes_inicial: interes }).eq("id", userId);
-    setEnviando(false);
-    setPaso("mundo");
+  function alternar(mundo: MundoPago) {
+    setSeleccionados((actuales) => {
+      if (actuales.includes(mundo)) return actuales.filter((m) => m !== mundo);
+      if (actuales.length >= 2) return actuales;
+      return [...actuales, mundo];
+    });
   }
 
-  async function elegirMundo(mundo: MundoPago) {
-    setEnviandoMundo(mundo);
+  async function confirmarMundos() {
+    if (seleccionados.length !== 2) return;
+    setEnviandoMundos(true);
     setErrorMundo(null);
     const supabase = createClient();
-    const { error: rpcError } = await supabase.rpc("elegir_mundo_inicial", { p_mundo: mundo });
+    const { error: rpcError } = await supabase.rpc("elegir_mundos_iniciales", { p_mundos: seleccionados });
     if (rpcError) {
       setErrorMundo(rpcError.message ?? "No se pudo guardar. Probá de nuevo.");
-      setEnviandoMundo(null);
+      setEnviandoMundos(false);
       return;
     }
     router.push(next);
@@ -129,55 +125,31 @@ export default function OnboardingForm({ userId, next, saltarPasoNombre }: Props
             {error && <p className="text-sm text-error">{error}</p>}
           </form>
         </motion.div>
-      ) : paso === "interes" ? (
-        <motion.div key="interes" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-            ¿Qué te gustaría mejorar?
-          </h1>
-          <p className="mt-2 mb-6 text-sm text-texto-secundario">
-            Sin presión — es solo para orientarte, no mide nada todavía.
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            {OPCIONES.map(({ valor, nombre: nombreOpcion, Icono }) => (
-              <button
-                key={valor}
-                onClick={() => elegirInteres(valor)}
-                disabled={enviando}
-                className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-background px-4 py-5 transition-colors hover:border-primario/40 disabled:opacity-60"
-              >
-                <Icono className="h-5 w-5 text-primario" />
-                <span className="text-sm font-medium text-foreground">{nombreOpcion}</span>
-              </button>
-            ))}
-          </div>
-          <button
-            onClick={() => elegirInteres(null)}
-            disabled={enviando}
-            className="mt-4 w-full text-center text-sm text-texto-secundario hover:underline"
-          >
-            Prefiero explorar solo
-          </button>
-        </motion.div>
       ) : (
-        <motion.div key="mundo" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}>
+        <motion.div key="mundos" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}>
           <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-            Elegí tu primer mundo
+            Elegí tus 2 mundos
           </h1>
           <p className="mt-2 mb-6 text-sm text-texto-secundario">
-            Todos empiezan bloqueados — el que elijas acá es gratis para siempre. Los demás se
+            Todos empiezan bloqueados — los 2 que elijas acá son gratis para siempre. Los demás se
             desbloquean después con Chispas, jugando.
           </p>
           <div className="grid grid-cols-2 gap-3">
             {MUNDOS_PAGOS.map((mundo) => {
               const Icono = ICONO_MUNDO[mundo];
               const color = COLOR_MUNDO_PAGO[mundo];
+              const elegido = seleccionados.includes(mundo);
+              const deshabilitado = !elegido && seleccionados.length >= 2;
               return (
                 <button
                   key={mundo}
-                  onClick={() => elegirMundo(mundo)}
-                  disabled={enviandoMundo !== null}
-                  className="group relative flex flex-col items-center gap-2 overflow-hidden rounded-2xl border-2 px-4 py-5 text-center transition-colors disabled:opacity-60"
-                  style={{ borderColor: `color-mix(in oklab, ${color} 35%, transparent)` }}
+                  onClick={() => alternar(mundo)}
+                  disabled={enviandoMundos || deshabilitado}
+                  className="group relative flex flex-col items-center gap-2 overflow-hidden rounded-2xl border-2 px-4 py-5 text-center transition-colors disabled:opacity-50"
+                  style={{
+                    borderColor: elegido ? color : `color-mix(in oklab, ${color} 35%, transparent)`,
+                    background: elegido ? `color-mix(in oklab, ${color} 12%, transparent)` : undefined,
+                  }}
                 >
                   <span
                     className="flex h-9 w-9 items-center justify-center rounded-full text-white"
@@ -186,8 +158,10 @@ export default function OnboardingForm({ userId, next, saltarPasoNombre }: Props
                     <Icono className="h-4 w-4" />
                   </span>
                   <span className="text-sm font-medium text-foreground">{NOMBRE_MUNDO_PAGO[mundo]}</span>
-                  {enviandoMundo === mundo ? (
-                    <span className="text-xs text-texto-secundario">Guardando...</span>
+                  {elegido ? (
+                    <span className="text-xs font-medium" style={{ color }}>
+                      Elegido
+                    </span>
                   ) : (
                     <span className="flex items-center gap-1 text-xs text-texto-secundario">
                       <IconCandado className="h-3 w-3" /> Bloqueado
@@ -198,6 +172,15 @@ export default function OnboardingForm({ userId, next, saltarPasoNombre }: Props
             })}
           </div>
           {errorMundo && <p className="mt-3 text-sm text-error">{errorMundo}</p>}
+          <Boton
+            type="button"
+            onClick={confirmarMundos}
+            disabled={seleccionados.length !== 2}
+            cargando={enviandoMundos}
+            className="mt-4 w-full"
+          >
+            {seleccionados.length === 2 ? "Empezar a jugar" : `Elegí ${2 - seleccionados.length} más`}
+          </Boton>
         </motion.div>
       )}
     </AnimatePresence>

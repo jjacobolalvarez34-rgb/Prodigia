@@ -40,7 +40,7 @@ interface Props {
   // Modo demo (landing pública, Fase 2): ver mismo prop en SprintRunner.tsx.
   totalPreguntas?: number;
   duracionMs?: number;
-  onFinish: (errores: PreguntaQuimia[]) => void;
+  onFinish: (errores: PreguntaQuimia[], correctos: number) => void;
 }
 
 export default function QuimiaSprintRunner({
@@ -112,7 +112,7 @@ export default function QuimiaSprintRunner({
   function terminar() {
     if (finishedRef.current) return;
     finishedRef.current = true;
-    onFinish(erroresRef.current);
+    onFinish(erroresRef.current, correctosRef.current);
   }
 
   useEffect(() => {

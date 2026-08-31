@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import Header from "@/components/Header";
+import HeaderFlujo from "@/components/landing/HeaderFlujo";
 import DemoAnatomiaClient from "./DemoAnatomiaClient";
 
 // Ver nota de /demo/numeria/page.tsx: mismo criterio, sin
@@ -15,7 +15,7 @@ export default async function DemoAnatomiaPage() {
 
   return (
     <>
-      <Header autenticado invitado />
+      <HeaderFlujo />
       <DemoAnatomiaClient />
     </>
   );

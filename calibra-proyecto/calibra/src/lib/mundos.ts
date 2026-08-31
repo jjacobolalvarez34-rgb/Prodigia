@@ -10,10 +10,12 @@ export interface MundoLanding {
   Icono: (props: { className?: string }) => ReactElement;
 }
 
-// Mismos 5 mundos, mismos colores/íconos que WorldCard/MundoSelector/
+// Mismos 8 mundos, mismos colores/íconos que WorldCard/MundoSelector/
 // Header (page.tsx de la home autenticada) — separado en su propio
 // archivo para que la landing pública y /demo/* lo usen sin duplicar la
-// lista a mano en cada componente nuevo.
+// lista a mano en cada componente nuevo. Cada slug de acá necesita su
+// propia carpeta src/app/[locale]/demo/<slug>/ — ver la regla en
+// docs/PARIDAD_MUNDOS.md ("Rediseño del flujo de landing/onboarding").
 export const MUNDOS_LANDING: MundoLanding[] = [
   { slug: "numeria", nombre: "Numeria", colorHex: "#6C4CF1", Icono: IconSuma },
   { slug: "enigmia", nombre: "Enigmia", colorHex: "#0E9F6E", Icono: IconLogica },

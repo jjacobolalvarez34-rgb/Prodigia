@@ -9,33 +9,45 @@ interface Paso {
   variante: "grande" | "chico";
 }
 
-// Tour de la demo pre-cuenta (landing pública, Fase 3): mismo mecanismo
-// visual que PrimeraVezTip.tsx (overlay oscurecido + tarjeta, un paso a
-// la vez), pero NO reusa su cola compartida a nivel de módulo — esa cola
-// es a propósito una única secuencia de la home autenticada (ver
-// comentario en PrimeraVezTip.tsx), y mezclar un contexto pre-cuenta ahí
-// arriesgaba romper esa garantía. Este es su propio estado local, nunca
-// persiste en localStorage (la demo entera es efímera).
-export default function DemoTour() {
+interface Props {
+  onTerminar: () => void;
+}
+
+// Paso 6 del flujo nuevo (Fase 7): tour guiado por el resto de la app.
+// Mismo mecanismo visual que el viejo DemoTour.tsx (overlay de a un
+// paso, sin cola compartida ni localStorage — la demo entera es
+// efímera), pero NO navega a las rutas reales (Ranking/Rankeds/
+// Amigos-Clanes/Perfil): esas rutas están protegidas por requireUsuario
+// (exige mundos_desbloqueados, que recién se completa en el paso 8) —
+// navegar de verdad ahí adentro reproduciría el mismo bug de la Fase 4
+// que este rediseño vino a sacar. Un resumen liviano alcanza para
+// "mostrar" cada sección sin salir del flujo.
+export default function FlujoTour({ onTerminar }: Props) {
   const t = useTranslations("Landing.tour");
   const [paso, setPaso] = useState(0);
 
   const pasos: Paso[] = [
-    { texto: t("sprint"), variante: "grande" },
+    { texto: t("ranking"), variante: "grande" },
     { texto: t("rankeds"), variante: "grande" },
-    { texto: t("social"), variante: "chico" },
-    { texto: t("tienda"), variante: "chico" },
-    { texto: t("clanes"), variante: "chico" },
+    { texto: t("amigos"), variante: "chico" },
+    { texto: t("perfil"), variante: "chico" },
   ];
 
-  if (paso >= pasos.length) return null;
-  const actual = pasos[paso];
   const esUltimo = paso === pasos.length - 1;
+  const actual = pasos[paso];
+
+  function avanzar() {
+    if (esUltimo) {
+      onTerminar();
+    } else {
+      setPaso((p) => p + 1);
+    }
+  }
 
   return (
     <AnimatePresence>
       <motion.div
-        key="overlay-demo-tour"
+        key="overlay-flujo-tour"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -61,7 +73,7 @@ export default function DemoTour() {
             {actual.texto}
           </p>
           <button
-            onClick={() => setPaso((p) => p + 1)}
+            onClick={avanzar}
             className="mt-4 rounded-lg bg-primario px-4 py-2 text-sm font-semibold text-white"
           >
             {esUltimo ? t("entendido") : t("siguiente")}

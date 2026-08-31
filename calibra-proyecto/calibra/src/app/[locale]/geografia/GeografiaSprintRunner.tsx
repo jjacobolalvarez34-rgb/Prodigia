@@ -62,7 +62,7 @@ interface Props {
   // Modo demo (landing pública, Fase 2): ver mismo prop en SprintRunner.tsx.
   totalPreguntas?: number;
   duracionMs?: number;
-  onFinish: (errores: (PaisAmerica | PreguntaAvanzada)[]) => void;
+  onFinish: (errores: (PaisAmerica | PreguntaAvanzada)[], correctos: number) => void;
 }
 
 export default function GeografiaSprintRunner({
@@ -127,7 +127,7 @@ export default function GeografiaSprintRunner({
   function terminar() {
     if (finishedRef.current) return;
     finishedRef.current = true;
-    onFinish(erroresRef.current);
+    onFinish(erroresRef.current, correctosRef.current);
   }
 
   useEffect(() => {

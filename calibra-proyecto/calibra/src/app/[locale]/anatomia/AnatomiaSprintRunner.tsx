@@ -36,7 +36,7 @@ interface Props {
   // Modo demo (landing pública, Fase 2): ver mismo prop en SprintRunner.tsx.
   totalPreguntas?: number;
   duracionMs?: number;
-  onFinish: (errores: PreguntaAnatomia[]) => void;
+  onFinish: (errores: PreguntaAnatomia[], correctos: number) => void;
 }
 
 export default function AnatomiaSprintRunner({
@@ -97,7 +97,7 @@ export default function AnatomiaSprintRunner({
   function terminar() {
     if (finishedRef.current) return;
     finishedRef.current = true;
-    onFinish(erroresRef.current);
+    onFinish(erroresRef.current, correctosRef.current);
   }
 
   useEffect(() => {

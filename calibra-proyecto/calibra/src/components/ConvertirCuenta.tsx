@@ -11,16 +11,35 @@ import CampoPassword from "@/components/CampoPassword";
 // todo su progreso guardado bajo ese id — "guardar la cuenta" no migra
 // nada, solo le agrega email+contraseña al mismo usuario (updateUser),
 // así que el progreso queda intacto. Compartido entre /perfil (cartel
-// permanente) y /invitado-bloqueado (pantalla corta al chocar contra
-// algo bloqueado) — un solo componente, no dos copias del formulario.
-export default function ConvertirCuenta() {
-  const [abierto, setAbierto] = useState(false);
+// permanente), /invitado-bloqueado (pantalla corta al chocar contra
+// algo bloqueado) y el paso final del flujo de landing — un solo
+// componente, no varias copias del formulario.
+//
+// Fase 3/2 del rediseño de onboarding: un invitado nunca elige nombre —
+// tiene uno autogenerado ("Invitado83920", ver 0112_flujo_bienvenida.sql).
+// "El nombre real solo se pide en el registro de una cuenta de
+// verdad" — o sea, justo acá, después de que el email+contraseña ya se
+// guardaron con éxito (nunca antes). Ese primer nombre real sigue
+// siendo gratis (nombre_generado en la base lo garantiza), pero se deja
+// saltear por si prefiere quedarse con el autogenerado.
+interface Props {
+  // El flujo de landing (FlujoElegirMundos.tsx) ya muestra su propia
+  // explicación antes de esto — ahí conviene arrancar directo en el
+  // formulario en vez de repetir la tarjeta "Estás como invitado".
+  inicial?: "cerrado" | "form";
+}
+
+export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
+  const [paso, setPaso] = useState<"cerrado" | "form" | "nombre" | "directo" | "confirmar">(inicial);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmar, setConfirmar] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [listo, setListo] = useState<"directo" | "confirmar" | null>(null);
+  const [emailConfirmado, setEmailConfirmado] = useState(false);
+  const [nombre, setNombre] = useState("");
+  const [enviandoNombre, setEnviandoNombre] = useState(false);
+  const [errorNombre, setErrorNombre] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -49,11 +68,65 @@ export default function ConvertirCuenta() {
     }
 
     // Si el proyecto pide confirmar el email, el cambio queda pendiente
-    // hasta que confirmes desde el link que te llega; si no, ya quedó.
-    setListo(data.user?.email_confirmed_at ? "directo" : "confirmar");
+    // hasta que confirmes desde el link que te llega; si no, ya quedó —
+    // en los dos casos, el paso de nombre real va antes del mensaje
+    // final.
+    setEmailConfirmado(Boolean(data.user?.email_confirmed_at));
+    setPaso("nombre");
   }
 
-  if (listo === "directo") {
+  async function handleGuardarNombre(e: React.FormEvent) {
+    e.preventDefault();
+    setEnviandoNombre(true);
+    setErrorNombre(null);
+    const supabase = createClient();
+    const { error: rpcError } = await supabase.rpc("cambiar_nombre_usuario", { p_nombre: nombre.trim() });
+    setEnviandoNombre(false);
+    if (rpcError) {
+      setErrorNombre(rpcError.message ?? "No se pudo guardar. Probá de nuevo.");
+      return;
+    }
+    setPaso(emailConfirmado ? "directo" : "confirmar");
+  }
+
+  if (paso === "nombre") {
+    return (
+      <div className="flex flex-col gap-3 rounded-2xl border border-primario/30 bg-primario/5 px-6 py-5 text-left">
+        <p className="font-display font-semibold text-foreground">¿Cómo te llamamos?</p>
+        <p className="text-sm text-texto-secundario">
+          Tu cuenta ya está guardada — elegí tu nombre real para el perfil y el ranking.
+        </p>
+        <form onSubmit={handleGuardarNombre} className="flex flex-col gap-2">
+          <input
+            type="text"
+            required
+            minLength={2}
+            maxLength={40}
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            placeholder="Tu nombre"
+            autoFocus
+            className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primario"
+          />
+          <div className="mt-1 flex items-center gap-3">
+            <Boton type="submit" disabled={nombre.trim().length < 2} cargando={enviandoNombre} className="px-4 py-2 text-sm">
+              Guardar
+            </Boton>
+            <button
+              type="button"
+              onClick={() => setPaso(emailConfirmado ? "directo" : "confirmar")}
+              className="text-sm text-texto-secundario hover:underline"
+            >
+              Seguir con mi nombre actual
+            </button>
+          </div>
+          {errorNombre && <p className="text-sm text-error">{errorNombre}</p>}
+        </form>
+      </div>
+    );
+  }
+
+  if (paso === "directo") {
     return (
       <p className="rounded-xl bg-correcto/15 px-4 py-3 text-sm text-foreground">
         Listo, tu cuenta ya tiene email y contraseña — la próxima vez entrá con eso.
@@ -61,7 +134,7 @@ export default function ConvertirCuenta() {
     );
   }
 
-  if (listo === "confirmar") {
+  if (paso === "confirmar") {
     return (
       <p className="rounded-xl bg-correcto/15 px-4 py-3 text-sm text-foreground">
         Te mandamos un email a <span className="font-medium">{email}</span> — confirmalo para
@@ -70,7 +143,7 @@ export default function ConvertirCuenta() {
     );
   }
 
-  if (!abierto) {
+  if (paso === "cerrado") {
     return (
       <div className="flex flex-col gap-2 rounded-2xl border border-primario/30 bg-primario/5 px-6 py-5">
         <p className="font-display font-semibold text-foreground">Estás como invitado</p>
@@ -78,7 +151,7 @@ export default function ConvertirCuenta() {
           Tu progreso ya se está guardando, pero si borrás el navegador lo perdés. Agregá un email y
           contraseña para no perderlo nunca.
         </p>
-        <Boton onClick={() => setAbierto(true)} className="mt-1 self-start px-4 py-2 text-sm">
+        <Boton onClick={() => setPaso("form")} className="mt-1 self-start px-4 py-2 text-sm">
           Guardar mi cuenta
         </Boton>
       </div>
@@ -114,7 +187,7 @@ export default function ConvertirCuenta() {
           <Boton type="submit" cargando={enviando} className="px-4 py-2 text-sm">
             Confirmar
           </Boton>
-          <Boton type="button" variante="fantasma" onClick={() => setAbierto(false)}>
+          <Boton type="button" variante="fantasma" onClick={() => setPaso("cerrado")}>
             Cancelar
           </Boton>
         </div>

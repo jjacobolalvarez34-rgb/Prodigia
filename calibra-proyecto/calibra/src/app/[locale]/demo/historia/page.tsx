@@ -1,12 +1,13 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import HeaderFlujo from "@/components/landing/HeaderFlujo";
-import DemoQuimiaClient from "./DemoQuimiaClient";
+import DemoHistoriaClient from "./DemoHistoriaClient";
 
 // Ver nota de /demo/numeria/page.tsx: mismo criterio, sin
-// requireMundoQuimia. Modo fijo en "simbolos" — el default de siempre
-// (mismo que /quimia/practica), no hace falta ninguna consulta.
-export default async function DemoQuimiaPage() {
+// requireMundoHistoria. Modo fijo en "personajes" — opción múltiple,
+// buen gancho de demo (adivinar la figura histórica), no hace falta
+// ninguna consulta.
+export default async function DemoHistoriaPage() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -16,7 +17,7 @@ export default async function DemoQuimiaPage() {
   return (
     <>
       <HeaderFlujo />
-      <DemoQuimiaClient />
+      <DemoHistoriaClient />
     </>
   );
 }

@@ -38,7 +38,7 @@ interface Props {
   rivalNombre?: string | null;
   totalPreguntas?: number;
   duracionMs?: number;
-  onFinish: (errores: ProblemaTrigonometria[]) => void;
+  onFinish: (errores: ProblemaTrigonometria[], correctos: number) => void;
 }
 
 // Mismo patrón que MelodiaSprintRunner (timer/escudos/racha/duelo en
@@ -109,7 +109,7 @@ export default function TrigonometriaSprintRunner({
   function terminar() {
     if (finishedRef.current) return;
     finishedRef.current = true;
-    onFinish(erroresRef.current);
+    onFinish(erroresRef.current, correctosRef.current);
   }
 
   useEffect(() => {

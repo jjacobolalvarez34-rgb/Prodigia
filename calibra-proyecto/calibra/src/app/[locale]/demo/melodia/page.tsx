@@ -1,12 +1,13 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import HeaderFlujo from "@/components/landing/HeaderFlujo";
-import DemoQuimiaClient from "./DemoQuimiaClient";
+import DemoMelodiaClient from "./DemoMelodiaClient";
 
 // Ver nota de /demo/numeria/page.tsx: mismo criterio, sin
-// requireMundoQuimia. Modo fijo en "simbolos" — el default de siempre
-// (mismo que /quimia/practica), no hace falta ninguna consulta.
-export default async function DemoQuimiaPage() {
+// requireMundoMelodia. Modo fijo en "fundamentos" — el más básico de
+// los 6 modos (mismo primer paso que /melodia/practica), no hace falta
+// ninguna consulta.
+export default async function DemoMelodiaPage() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -16,7 +17,7 @@ export default async function DemoQuimiaPage() {
   return (
     <>
       <HeaderFlujo />
-      <DemoQuimiaClient />
+      <DemoMelodiaClient />
     </>
   );
 }
