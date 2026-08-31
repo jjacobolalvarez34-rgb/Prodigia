@@ -11,7 +11,7 @@ import Avatar from "@/components/Avatar";
 import WorldCard from "@/components/WorldCard";
 import PrimeraVezTip from "@/components/PrimeraVezTip";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
-import { calcularRachaDiaria } from "@/lib/practica/racha";
+import { calcularRachaDiaria, lunesDeEstaSemanaIso } from "@/lib/practica/racha";
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
 import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria } from "@/components/icons";
 import Greeting from "./Greeting";
@@ -56,7 +56,9 @@ export default async function ProdigiaHomePage() {
   // se aplica acá antes de calcular la racha — así nunca se ve el corte.
   await aplicarCongelamientoSiHaceFalta(supabase);
 
-  const [{ data: dailyRows }, { data: attemptsSemana }, { data: logicAttemptsSemana }, { data: retoHoy }] =
+  const semanaIso = lunesDeEstaSemanaIso();
+
+  const [{ data: dailyRows }, { data: attemptsSemana }, { data: logicAttemptsSemana }, { data: retoHoy }, { data: retoSemana }] =
     await Promise.all([
       supabase
         .from("daily_progress")
@@ -71,6 +73,12 @@ export default async function ProdigiaHomePage() {
         .select("correctos")
         .eq("user_id", user.id)
         .eq("fecha", hoyIso)
+        .maybeSingle(),
+      supabase
+        .from("retos_semanales_completados")
+        .select("correctos")
+        .eq("user_id", user.id)
+        .eq("semana_inicio", semanaIso)
         .maybeSingle(),
     ]);
 
@@ -117,20 +125,36 @@ export default async function ProdigiaHomePage() {
           </AvisoPrimeraVez>
         </section>
 
-        <Link
-          href="/reto-diario"
-          className="flex items-center justify-between gap-4 rounded-2xl border border-logro/30 bg-logro/10 px-5 py-4 transition-colors hover:border-logro/50"
-        >
-          <div>
-            <p className="font-display text-sm font-bold text-foreground">{t("retoDiario")}</p>
-            <p className="text-xs text-texto-secundario">
-              {retoHoy ? t("retoDiarioHecho", { correctos: retoHoy.correctos }) : t("retoDiarioDescripcion")}
-            </p>
-          </div>
-          <span className="shrink-0 rounded-full bg-logro px-4 py-2 text-sm font-display font-semibold text-foreground">
-            {retoHoy ? t("ver") : t("jugar")}
-          </span>
-        </Link>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Link
+            href="/reto-diario"
+            className="flex items-center justify-between gap-4 rounded-2xl border border-logro/30 bg-logro/10 px-5 py-4 transition-colors hover:border-logro/50"
+          >
+            <div>
+              <p className="font-display text-sm font-bold text-foreground">{t("retoDiario")}</p>
+              <p className="text-xs text-texto-secundario">
+                {retoHoy ? t("retoDiarioHecho", { correctos: retoHoy.correctos }) : t("retoDiarioDescripcion")}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full bg-logro px-4 py-2 text-sm font-display font-semibold text-foreground">
+              {retoHoy ? t("ver") : t("jugar")}
+            </span>
+          </Link>
+          <Link
+            href="/reto-semanal"
+            className="flex items-center justify-between gap-4 rounded-2xl border border-primario/30 bg-primario/10 px-5 py-4 transition-colors hover:border-primario/50"
+          >
+            <div>
+              <p className="font-display text-sm font-bold text-foreground">{t("retoSemanal")}</p>
+              <p className="text-xs text-texto-secundario">
+                {retoSemana ? t("retoSemanalHecho", { correctos: retoSemana.correctos }) : t("retoSemanalDescripcion")}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full bg-primario px-4 py-2 text-sm font-display font-semibold text-white">
+              {retoSemana ? t("ver") : t("jugar")}
+            </span>
+          </Link>
+        </div>
 
         <section className="flex flex-col gap-4">
           <div>

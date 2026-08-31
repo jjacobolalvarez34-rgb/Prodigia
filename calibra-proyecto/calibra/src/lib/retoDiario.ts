@@ -10,20 +10,19 @@ import { generarProblemaTrigonometria, conRngSembrado as conRngSembradoTrigonome
 import { generarPreguntaHistoria, conRngSembrado as conRngSembradoHistoria, type ModoHistoria } from "@/lib/practica/historia";
 
 // Fase 3 (reto diario multi-ciudad, 2026-08-25): antes esto solo
-// generaba 5 sumas/restas/multiplicaciones/divisiones — el reto pasa a
-// 45 preguntas, cada una de una ciudad elegida al azar ENTRE LAS QUE
-// el usuario ya desbloqueó (no todas las que existen). "Desbloqueado"
-// hoy (antes de que exista el pago con Chispas de la Fase 12 de esta
-// misma tanda) significa "ya hizo el diagnóstico de esa ciudad" —
-// numeria y geografía no tienen diagnóstico propio (geografía nunca
-// tuvo su propio guard, ver requireMundoNumeria/guard.ts) así que
-// siempre cuentan como desbloqueadas. Cuando la Fase 12 exista, el
-// llamador (reto-diario/page.tsx) puede empezar a mandar acá el set
-// real de mundos pagados en vez de este proxy — la firma ya recibe la
-// lista desde afuera, no la calcula internamente.
+// generaba 5 sumas/restas/multiplicaciones/divisiones — pasó a 45
+// preguntas de cualquier ciudad desbloqueada. Rediseño posterior
+// (2026-08-31): ESE tamaño de 45 se reserva ahora para el reto
+// SEMANAL nuevo (generarRetoSemanal) — el diario vuelve a 5 preguntas,
+// más frecuente y más rápido, mismo criterio de "ciudad al azar entre
+// las desbloqueadas" para los dos. "Desbloqueado" significa
+// mundos_desbloqueados de profiles (Fase 12, Chispas) — el llamador
+// (reto-diario/page.tsx, reto-semanal/page.tsx) manda esa lista desde
+// afuera, esta función no la calcula.
 export type MundoRetoDiario = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia";
 
-export const TOTAL_PREGUNTAS_RETO = 45;
+export const TOTAL_PREGUNTAS_RETO_DIARIO = 5;
+export const TOTAL_PREGUNTAS_RETO_SEMANAL = 45;
 
 export interface PreguntaRetoDiario {
   mundo: MundoRetoDiario;
@@ -202,21 +201,19 @@ function claveDePregunta(p: PreguntaRetoDiario): string {
   return `${p.mundo}|${p.enunciado}|${p.respuesta}`;
 }
 
-// fechaIso: "YYYY-MM-DD". Se puede llamar tanto en el servidor como en
-// el cliente — determinístico, siempre da lo mismo para la misma
-// fecha Y el mismo set de mundosDesbloqueados (dos usuarios con las
-// mismas ciudades desbloqueadas ven exactamente las mismas 45
-// preguntas ese día; si desbloquearon ciudades distintas, divergen a
-// partir de ahí — es lo máximo de "semilla compartida" que tiene
-// sentido una vez que el desbloqueo es por cuenta).
-export function generarRetoDelDia(fechaIso: string, mundosDesbloqueados: MundoRetoDiario[]): PreguntaRetoDiario[] {
+// seed: string determinística (fecha "YYYY-MM-DD" para el diario,
+// lunes de la semana ISO para el semanal). Se puede llamar tanto en el
+// servidor como en el cliente — dos usuarios con las mismas ciudades
+// desbloqueadas ven exactamente las mismas preguntas ese día/semana; si
+// desbloquearon ciudades distintas, divergen a partir de ahí.
+function generarPreguntasReto(seed: string, mundosDesbloqueados: MundoRetoDiario[], total: number): PreguntaRetoDiario[] {
   const pool = mundosDesbloqueados.length > 0 ? mundosDesbloqueados : (["numeria"] as MundoRetoDiario[]);
-  const rng = mulberry32(hashFecha(fechaIso));
+  const rng = mulberry32(hashFecha(seed));
   const usados = new Set<string>();
   const preguntas: PreguntaRetoDiario[] = [];
   const MAX_INTENTOS = 15;
 
-  for (let i = 0; i < TOTAL_PREGUNTAS_RETO; i++) {
+  for (let i = 0; i < total; i++) {
     const mundo = elegirRng(rng, pool);
     let intento: PreguntaRetoDiario | null = null;
     for (let intentos = 0; intentos < MAX_INTENTOS; intentos++) {
@@ -227,4 +224,18 @@ export function generarRetoDelDia(fechaIso: string, mundosDesbloqueados: MundoRe
     preguntas.push(intento!);
   }
   return preguntas;
+}
+
+export function generarRetoDelDia(fechaIso: string, mundosDesbloqueados: MundoRetoDiario[]): PreguntaRetoDiario[] {
+  return generarPreguntasReto(fechaIso, mundosDesbloqueados, TOTAL_PREGUNTAS_RETO_DIARIO);
+}
+
+// semanaIso: el lunes de la semana ("YYYY-MM-DD", mismo criterio que
+// date_trunc('week', ...) en Postgres) — ver reto-semanal/page.tsx.
+export function generarRetoSemanal(semanaIso: string, mundosDesbloqueados: MundoRetoDiario[]): PreguntaRetoDiario[] {
+  // Prefijo distinto de la semilla para que el reto semanal no repita,
+  // pregunta por pregunta, el mismo contenido que el diario de ese
+  // mismo lunes (mulberry32 sobre el mismo string daría la misma
+  // secuencia).
+  return generarPreguntasReto(`semana:${semanaIso}`, mundosDesbloqueados, TOTAL_PREGUNTAS_RETO_SEMANAL);
 }

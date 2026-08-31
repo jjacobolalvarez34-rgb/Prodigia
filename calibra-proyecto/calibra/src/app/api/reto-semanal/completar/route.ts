@@ -5,7 +5,7 @@ import { verificarTitulos } from "@/lib/titulos/verificar";
 import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
-  clave: string; // fecha "YYYY-MM-DD"
+  clave: string; // lunes de la semana "YYYY-MM-DD"
   correctos: number;
 }
 
@@ -18,19 +18,19 @@ export async function POST(request: Request) {
 
   const body = (await request.json()) as Body;
 
-  const { data, error } = await supabase.rpc("completar_reto_diario", {
-    p_fecha: body.clave,
+  const { data, error } = await supabase.rpc("completar_reto_semanal", {
+    p_semana: body.clave,
     p_correctos: body.correctos,
   });
 
   if (error) {
-    return respuestaError("reto-diario/completar", error);
+    return respuestaError("reto-semanal/completar", error);
   }
 
   const fila = (data as Array<Record<string, unknown>>)[0];
   const [logrosNuevos, { data: ranking }] = await Promise.all([
     verificarLogros(supabase, user.id),
-    supabase.rpc("ranking_reto_diario", { p_fecha: body.clave }),
+    supabase.rpc("ranking_reto_semanal", { p_semana: body.clave }),
   ]);
   await verificarTitulos(supabase, user.id);
 

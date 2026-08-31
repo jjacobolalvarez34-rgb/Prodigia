@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Achievement } from "@/types/database";
-import { calcularRachaDiaria } from "@/lib/practica/racha";
+import { calcularRachaDiaria, calcularRachaSemanal } from "@/lib/practica/racha";
 
 // Chequea los criterios de todos los logros que el usuario todavía no
 // tiene, y desbloquea (inserta en user_achievements) los que se
@@ -317,6 +317,41 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     );
   }
 
+  let retoDiarioTotal = 0;
+  if (tiposNecesarios.has("reto_diario_total")) {
+    const { count } = await supabase
+      .from("retos_diarios_completados")
+      .select("fecha", { count: "exact", head: true })
+      .eq("user_id", userId);
+    retoDiarioTotal = count ?? 0;
+  }
+
+  let retoSemanalTotal = 0;
+  if (tiposNecesarios.has("reto_semanal_total")) {
+    const { count } = await supabase
+      .from("retos_semanales_completados")
+      .select("semana_inicio", { count: "exact", head: true })
+      .eq("user_id", userId);
+    retoSemanalTotal = count ?? 0;
+  }
+
+  let rachaRetosSemanales = 0;
+  if (tiposNecesarios.has("racha_retos_semanales")) {
+    const hoy = new Date(`${hoyIso}T00:00:00Z`);
+    const dia = hoy.getUTCDay();
+    const diffAlLunes = dia === 0 ? 6 : dia - 1;
+    hoy.setUTCDate(hoy.getUTCDate() - diffAlLunes);
+    const semanaActualIso = hoy.toISOString().slice(0, 10);
+
+    const { data: semanaRows } = await supabase
+      .from("retos_semanales_completados")
+      .select("semana_inicio")
+      .eq("user_id", userId)
+      .order("semana_inicio", { ascending: false })
+      .limit(60);
+    rachaRetosSemanales = calcularRachaSemanal((semanaRows ?? []).map((r) => r.semana_inicio), semanaActualIso);
+  }
+
   // Sección 9: "mundo completado" — nivel 10 en TODOS los temas de ese
   // mundo. Mismo criterio que usa verificarTitulos para "Maestro de
   // X" (llamada aparte, en los mismos puntos que esta función) — acá
@@ -361,6 +396,9 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     else if (tipo === "logica_tecnicas_dominadas") cumplido = logicaTecnicasDominadas >= valor;
     else if (tipo === "duelos_ganados") cumplido = duelosGanados >= valor;
     else if (tipo === "racha_retos_diarios") cumplido = rachaRetosDiarios >= valor;
+    else if (tipo === "reto_diario_total") cumplido = retoDiarioTotal >= valor;
+    else if (tipo === "reto_semanal_total") cumplido = retoSemanalTotal >= valor;
+    else if (tipo === "racha_retos_semanales") cumplido = rachaRetosSemanales >= valor;
     else if (tipo === "elo_minimo") cumplido = eloActual >= valor;
     else if (tipo === "racha_duelos_ganados") cumplido = rachaDuelosGanados >= valor;
     else if (tipo === "quimia_problemas_totales") cumplido = quimiaProblemasTotales >= valor;
