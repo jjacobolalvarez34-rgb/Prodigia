@@ -6,6 +6,8 @@ const TIPOS_NUMERIA = ["suma", "resta", "multiplicacion", "division", "fraccione
 const TIPOS_QUIMIA = ["quimia_simbolos", "quimia_formulas", "quimia_tabla"];
 const TIPOS_ANATOMIA = ["anatomia_oseo", "anatomia_muscular", "anatomia_organos", "anatomia_nervioso"];
 const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"];
+const TIPOS_TRIGONOMETRIA = ["trigonometria_razones", "trigonometria_circulo", "trigonometria_identidades", "trigonometria_leyes"];
+const TIPOS_HISTORIA = ["historia_cronologia", "historia_personajes", "historia_causaefecto", "historia_fechas"];
 
 // Mismo espíritu que verificarLogros (src/lib/logros/verificar.ts):
 // solo calcula lo que hace falta para los títulos todavía no
@@ -151,6 +153,12 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
     } else if (mundo === "melodia") {
       const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_MELODIA);
       mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_MELODIA.length && (rows ?? []).every((r) => r.nivel >= 10));
+    } else if (mundo === "trigonometria") {
+      const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_TRIGONOMETRIA);
+      mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_TRIGONOMETRIA.length && (rows ?? []).every((r) => r.nivel >= 10));
+    } else if (mundo === "historia") {
+      const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_HISTORIA);
+      mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_HISTORIA.length && (rows ?? []).every((r) => r.nivel >= 10));
     }
   }
 

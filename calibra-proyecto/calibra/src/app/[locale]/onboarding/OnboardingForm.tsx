@@ -13,6 +13,8 @@ import {
   IconQuimica,
   IconAnatomia,
   IconMelodia,
+  IconTrigonometria,
+  IconHistoria,
   IconCandado,
 } from "@/components/icons";
 import Boton from "@/components/Boton";
@@ -46,6 +48,8 @@ const ICONO_MUNDO: Record<MundoPago, typeof IconSuma> = {
   quimia: IconQuimica,
   anatomia: IconAnatomia,
   melodia: IconMelodia,
+  trigonometria: IconTrigonometria,
+  historia: IconHistoria,
 };
 
 export default function OnboardingForm({ userId, next, saltarPasoNombre }: Props) {

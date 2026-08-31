@@ -6,6 +6,8 @@ import { generarAcertijoProcedural, conRngSembrado as conRngSembradoEnigmia, typ
 import { generarPreguntaQuimia, type ModoQuimia } from "@/lib/practica/quimia";
 import { generarPreguntaAnatomia, type ModoAnatomia } from "@/lib/practica/anatomia";
 import { generarPreguntaMelodia, conRngSembrado as conRngSembradoMelodia, type ModoMelodia, type NotaMusical, type FiguraRitmica } from "@/lib/practica/melodia";
+import { generarProblemaTrigonometria, conRngSembrado as conRngSembradoTrigonometria, type ModoTrigonometria } from "@/lib/practica/trigonometria";
+import { generarPreguntaHistoria, conRngSembrado as conRngSembradoHistoria, type ModoHistoria } from "@/lib/practica/historia";
 
 // Fase 3 (reto diario multi-ciudad, 2026-08-25): antes esto solo
 // generaba 5 sumas/restas/multiplicaciones/divisiones — el reto pasa a
@@ -19,7 +21,7 @@ import { generarPreguntaMelodia, conRngSembrado as conRngSembradoMelodia, type M
 // llamador (reto-diario/page.tsx) puede empezar a mandar acá el set
 // real de mundos pagados en vez de este proxy — la firma ya recibe la
 // lista desde afuera, no la calcula internamente.
-export type MundoRetoDiario = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia";
+export type MundoRetoDiario = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia";
 
 export const TOTAL_PREGUNTAS_RETO = 45;
 
@@ -160,6 +162,31 @@ function preguntaMelodia(rng: () => number): PreguntaRetoDiario {
   return base;
 }
 
+// "razones"/"leyes" quedan afuera: son de entrada numérica (con
+// tolerancia), no de opción múltiple — mismo criterio que "organica"/
+// "oseo"/"memoria" arriba, sin forzarlas en un formato genérico.
+const MODOS_TRIGONOMETRIA_RETO: ModoTrigonometria[] = ["circulo", "identidades"];
+
+function preguntaTrigonometria(rng: () => number): PreguntaRetoDiario {
+  const modo = elegirRng(rng, MODOS_TRIGONOMETRIA_RETO);
+  const p = conRngSembradoTrigonometria(rng, () => generarProblemaTrigonometria(modo, nivelMedio(rng)));
+  if (p.entrada !== "opciones") {
+    // No debería pasar nunca para estos 2 modos — guard defensivo, nunca un crash si algún día cambia.
+    return { mundo: "trigonometria", enunciado: p.enunciado, opciones: [String(p.respuesta)], respuesta: String(p.respuesta) };
+  }
+  return { mundo: "trigonometria", enunciado: p.enunciado, opciones: p.opciones, respuesta: p.respuesta };
+}
+
+// Los 4 modos de Historia son opción múltiple de punta a punta — a
+// diferencia de Trigonometría, ninguno queda afuera del reto diario.
+const MODOS_HISTORIA_RETO: ModoHistoria[] = ["cronologia", "personajes", "causaefecto", "fechas"];
+
+function preguntaHistoria(rng: () => number): PreguntaRetoDiario {
+  const modo = elegirRng(rng, MODOS_HISTORIA_RETO);
+  const p = conRngSembradoHistoria(rng, () => generarPreguntaHistoria(modo, nivelMedio(rng)));
+  return { mundo: "historia", enunciado: p.enunciado, opciones: p.opciones, respuesta: p.respuesta };
+}
+
 const GENERADORES: Record<MundoRetoDiario, (rng: () => number) => PreguntaRetoDiario> = {
   numeria: preguntaNumeria,
   geografia: preguntaGeografia,
@@ -167,6 +194,8 @@ const GENERADORES: Record<MundoRetoDiario, (rng: () => number) => PreguntaRetoDi
   quimia: preguntaQuimia,
   anatomia: preguntaAnatomia,
   melodia: preguntaMelodia,
+  trigonometria: preguntaTrigonometria,
+  historia: preguntaHistoria,
 };
 
 function claveDePregunta(p: PreguntaRetoDiario): string {

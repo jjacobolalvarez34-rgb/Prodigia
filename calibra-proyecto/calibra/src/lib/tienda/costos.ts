@@ -53,14 +53,20 @@ export const COSTOS = {
   marco_quimia: 2400,
   marco_anatomia: 2400,
   marco_melodia: 2400,
-  // Grupo B, Fase 7: "Colección de Mundos" — los 6 marcos de mundo de
-  // una sola vez, con descuento (6 × 2400 = 14400 comprados sueltos),
-  // pero SIN saltarse el requisito de nivel de cada uno — exige
-  // nivel_mundo >= 40 en los 6 a la vez (validado server-side en
-  // comprar_item_tienda, ver 0107_paquete_marcos_mundo.sql). Es un
-  // ítem de coleccionista para quien ya juega los 6 mundos, no un atajo
-  // para principiantes.
-  paquete_marcos_mundo: 11000,
+  // Trigonometría/Historia (mundos 7 y 8): mismo precio y mismo gate de
+  // nivel_mundo >= 40 que los 6 marcos anteriores.
+  marco_trigonometria: 2400,
+  marco_historia: 2400,
+  // Grupo B, Fase 7: "Colección de Mundos" — los marcos de mundo de una
+  // sola vez, con descuento (comprados sueltos costarían más), pero SIN
+  // saltarse el requisito de nivel de cada uno — exige nivel_mundo >= 40
+  // en TODOS a la vez (validado server-side en comprar_item_tienda, ver
+  // 0107_paquete_marcos_mundo.sql y 0110_ocho_mundos.sql). Es un ítem de
+  // coleccionista para quien ya juega todos los mundos, no un atajo
+  // para principiantes. Precio actualizado de 11000 a 14500 al pasar de
+  // 6 a 8 mundos (8 × 2400 = 19200 sueltos, ~24% de descuento, mismo
+  // criterio que el precio original).
+  paquete_marcos_mundo: 14500,
 } as const;
 
 export type ItemComprable = keyof typeof COSTOS;

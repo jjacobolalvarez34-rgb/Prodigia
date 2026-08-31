@@ -7,8 +7,8 @@
 // idempotente, el primero que se desbloquea se activa solo), solo que
 // disparado desde acá (verificar.ts) en vez de desde SQL.
 export type CriterioTitulo =
-  | { tipo: "mundo_completado"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" }
-  | { tipo: "aprender_completo"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" }
+  | { tipo: "mundo_completado"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" }
+  | { tipo: "aprender_completo"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" }
   | { tipo: "partidas_totales"; valor: number }
   | { tipo: "precision_semana"; valor: number }
   | { tipo: "duelos_ganados"; valor: number }
@@ -35,6 +35,8 @@ export const CATALOGO_TITULOS: TituloCatalogo[] = [
   { slug: "maestro-quimia", nombre: "Maestro de Quimia", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "quimia" } },
   { slug: "maestro-anatomia", nombre: "Maestro de Anatomía", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "anatomia" } },
   { slug: "maestro-melodia", nombre: "Maestro de Melodía", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "melodia" } },
+  { slug: "maestro-trigonometria", nombre: "Maestro de Trigonometría", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "trigonometria" } },
+  { slug: "maestro-historia", nombre: "Maestro de Historia", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "historia" } },
 
   // ---------- por volumen de juego (partidas ≈ problemas resueltos / 10) ----------
   { slug: "partidas-10", nombre: "Recién Empezás", categoria: "volumen", criterio: { tipo: "partidas_totales", valor: 10 } },
@@ -74,11 +76,12 @@ export const CATALOGO_TITULOS: TituloCatalogo[] = [
   { slug: "retos-30", nombre: "Ritual Diario", categoria: "constancia", criterio: { tipo: "racha_retos_diarios", valor: 30 } },
 
   // ---------- por curiosidad / exploración ----------
-  // Sube de 5 a 6: desde que existe Melodía, "todos los mundos" ya son
-  // 6 — dejarlo en 5 hacía que el título se desbloqueara sin haber
-  // tocado Melodía, contradiciendo el propio nombre ("Total"). Mismo
-  // ajuste que se hizo cuando entró Anatomía (4→5).
-  { slug: "explorador-total", nombre: "Explorador Total", categoria: "curiosidad", criterio: { tipo: "mundos_explorados", valor: 6 } },
+  // Sube de 6 a 8: con Trigonometría e Historia, "todos los mundos" ya
+  // son 8 — dejarlo en 6 hacía que el título se desbloqueara sin haber
+  // tocado los 2 nuevos, contradiciendo el propio nombre ("Total").
+  // Mismo ajuste que se hizo cuando entraron Anatomía (4→5) y Melodía
+  // (5→6).
+  { slug: "explorador-total", nombre: "Explorador Total", categoria: "curiosidad", criterio: { tipo: "mundos_explorados", valor: 8 } },
   { slug: "embajador", nombre: "Embajador", categoria: "curiosidad", criterio: { tipo: "embajador" } },
   { slug: "chispas-de-sobra", nombre: "Chispas de Sobra", categoria: "curiosidad", criterio: { tipo: "chispas_balance", valor: 5000 } },
   { slug: "estudioso-numeria", nombre: "Estudioso de Numeria", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "numeria" } },
@@ -87,4 +90,6 @@ export const CATALOGO_TITULOS: TituloCatalogo[] = [
   { slug: "estudioso-quimia", nombre: "Estudioso de Quimia", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "quimia" } },
   { slug: "estudioso-anatomia", nombre: "Estudioso de Anatomía", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "anatomia" } },
   { slug: "estudioso-melodia", nombre: "Estudioso de Melodía", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "melodia" } },
+  { slug: "estudioso-trigonometria", nombre: "Estudioso de Trigonometría", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "trigonometria" } },
+  { slug: "estudioso-historia", nombre: "Estudioso de Historia", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "historia" } },
 ];

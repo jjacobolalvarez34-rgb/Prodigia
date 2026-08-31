@@ -235,6 +235,74 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     melodiaNivelMundo = worldRow?.nivel_mundo ?? 0;
   }
 
+  // Mundo Trigonometría — mismo patrón que Melodía, sus 4 modos.
+  const TIPOS_TRIGONOMETRIA = ["trigonometria_razones", "trigonometria_circulo", "trigonometria_identidades", "trigonometria_leyes"];
+
+  let trigonometriaProblemasTotales = 0;
+  if (tiposNecesarios.has("trigonometria_problemas_totales")) {
+    const { count } = await supabase
+      .from("attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_TRIGONOMETRIA);
+    trigonometriaProblemasTotales = count ?? 0;
+  }
+
+  let trigonometriaModosVariados = 0;
+  if (tiposNecesarios.has("trigonometria_modos_variados")) {
+    const { data: trigonometriaRows } = await supabase
+      .from("attempts")
+      .select("problem_type")
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_TRIGONOMETRIA);
+    trigonometriaModosVariados = new Set((trigonometriaRows ?? []).map((r) => r.problem_type)).size;
+  }
+
+  let trigonometriaNivelMundo = 0;
+  if (tiposNecesarios.has("trigonometria_nivel_mundo")) {
+    const { data: worldRow } = await supabase
+      .from("world_progress")
+      .select("nivel_mundo")
+      .eq("user_id", userId)
+      .eq("world", "trigonometria")
+      .maybeSingle();
+    trigonometriaNivelMundo = worldRow?.nivel_mundo ?? 0;
+  }
+
+  // Mundo Historia — mismo patrón que Trigonometría, sus 4 modos.
+  const TIPOS_HISTORIA = ["historia_cronologia", "historia_personajes", "historia_causaefecto", "historia_fechas"];
+
+  let historiaProblemasTotales = 0;
+  if (tiposNecesarios.has("historia_problemas_totales")) {
+    const { count } = await supabase
+      .from("attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_HISTORIA);
+    historiaProblemasTotales = count ?? 0;
+  }
+
+  let historiaModosVariados = 0;
+  if (tiposNecesarios.has("historia_modos_variados")) {
+    const { data: historiaRows } = await supabase
+      .from("attempts")
+      .select("problem_type")
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_HISTORIA);
+    historiaModosVariados = new Set((historiaRows ?? []).map((r) => r.problem_type)).size;
+  }
+
+  let historiaNivelMundo = 0;
+  if (tiposNecesarios.has("historia_nivel_mundo")) {
+    const { data: worldRow } = await supabase
+      .from("world_progress")
+      .select("nivel_mundo")
+      .eq("user_id", userId)
+      .eq("world", "historia")
+      .maybeSingle();
+    historiaNivelMundo = worldRow?.nivel_mundo ?? 0;
+  }
+
   let rachaRetosDiarios = 0;
   if (tiposNecesarios.has("racha_retos_diarios")) {
     const { data: retoRows } = await supabase
@@ -304,6 +372,12 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     else if (tipo === "melodia_problemas_totales") cumplido = melodiaProblemasTotales >= valor;
     else if (tipo === "melodia_modos_variados") cumplido = melodiaModosVariados >= valor;
     else if (tipo === "melodia_nivel_mundo") cumplido = melodiaNivelMundo >= valor;
+    else if (tipo === "trigonometria_problemas_totales") cumplido = trigonometriaProblemasTotales >= valor;
+    else if (tipo === "trigonometria_modos_variados") cumplido = trigonometriaModosVariados >= valor;
+    else if (tipo === "trigonometria_nivel_mundo") cumplido = trigonometriaNivelMundo >= valor;
+    else if (tipo === "historia_problemas_totales") cumplido = historiaProblemasTotales >= valor;
+    else if (tipo === "historia_modos_variados") cumplido = historiaModosVariados >= valor;
+    else if (tipo === "historia_nivel_mundo") cumplido = historiaNivelMundo >= valor;
     else if (tipo === "mundo_completado_numeria") cumplido = numeriaCompletado;
     else if (tipo === "mundo_completado_geografia") cumplido = geografiaCompletado;
     else if (tipo === "mundo_completado_quimia") cumplido = quimiaCompletado;

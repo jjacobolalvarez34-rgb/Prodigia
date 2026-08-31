@@ -31,6 +31,8 @@ const NOMBRE_MUNDO: Record<string, string> = {
   quimia: "Quimia",
   anatomia: "Anatomía",
   melodia: "Melodía",
+  trigonometria: "Trigonometría",
+  historia: "Historia",
 };
 
 function formatearFecha(iso: string): string {

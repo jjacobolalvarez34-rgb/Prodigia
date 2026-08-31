@@ -36,7 +36,7 @@ export interface PostFeed {
   yoReaccione: boolean;
 }
 
-const NOMBRE_MUNDO: Record<string, string> = { numeria: "Numeria", geografia: "Geografía", enigmia: "Enigmia", quimia: "Quimia", anatomia: "Anatomía", melodia: "Melodía", aleatorio: "todas las ciudades" };
+const NOMBRE_MUNDO: Record<string, string> = { numeria: "Numeria", geografia: "Geografía", enigmia: "Enigmia", quimia: "Quimia", anatomia: "Anatomía", melodia: "Melodía", trigonometria: "Trigonometría", historia: "Historia", aleatorio: "todas las ciudades" };
 
 interface Props {
   posts: PostFeed[];

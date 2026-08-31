@@ -180,6 +180,29 @@ export function IconMelodia({ className }: IconProps) {
   );
 }
 
+// Mundo Trigonometría: triángulo rectángulo con el ángulo marcado —
+// mismo trazo de 2px que el resto de los íconos de mundo.
+export function IconTrigonometria({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4 20h16L4 4v16z" />
+      <path d="M7 20a3 3 0 0 1 3-3" />
+    </svg>
+  );
+}
+
+// Mundo Historia: pergamino/rollo enrollado en ambos extremos — mismo
+// trazo de 2px que el resto de los íconos de mundo.
+export function IconHistoria({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M6 4a2 2 0 0 0 0 4h12a2 2 0 0 1 0 4H6" />
+      <path d="M18 20a2 2 0 0 0 0-4H6a2 2 0 0 1 0-4" />
+      <path d="M6 8v8M18 8v8" />
+    </svg>
+  );
+}
+
 export function IconEscudo({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

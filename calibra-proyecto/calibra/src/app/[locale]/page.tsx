@@ -12,7 +12,7 @@ import PrimeraVezTip from "@/components/PrimeraVezTip";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { calcularRachaDiaria } from "@/lib/practica/racha";
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
-import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia } from "@/components/icons";
+import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria } from "@/components/icons";
 import Greeting from "./Greeting";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -186,6 +186,22 @@ export default async function ProdigiaHomePage() {
                 href="/melodia"
                 colorHex="#B8860B"
                 bloqueado={!profile.mundos_desbloqueados?.includes("melodia")}
+              />
+              <WorldCard
+                nombre="Trigonometría"
+                descripcion={t("mundos.trigonometria")}
+                Icono={IconTrigonometria}
+                href="/trigonometria"
+                colorHex="#84CC16"
+                bloqueado={!profile.mundos_desbloqueados?.includes("trigonometria")}
+              />
+              <WorldCard
+                nombre="Historia"
+                descripcion={t("mundos.historia")}
+                Icono={IconHistoria}
+                href="/historia"
+                colorHex="#A0522D"
+                bloqueado={!profile.mundos_desbloqueados?.includes("historia")}
               />
             </div>
           </PrimeraVezTip>

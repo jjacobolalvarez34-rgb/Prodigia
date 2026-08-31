@@ -75,7 +75,15 @@ export type ProblemTypeCalibrable =
   | "melodia_alteraciones"
   | "melodia_escalas"
   | "melodia_acordes"
-  | "melodia_oido_absoluto";
+  | "melodia_oido_absoluto"
+  | "trigonometria_razones"
+  | "trigonometria_circulo"
+  | "trigonometria_identidades"
+  | "trigonometria_leyes"
+  | "historia_cronologia"
+  | "historia_personajes"
+  | "historia_causaefecto"
+  | "historia_fechas";
 
 export async function actualizarSkillLevel(
   supabase: SupabaseClient,

@@ -10,7 +10,7 @@
 // jamás confía en lo que mande el cliente, ver esa migración).
 export const PRECIO_MUNDO_CHISPAS = 3000;
 
-export const MUNDOS_PAGOS = ["numeria", "geografia", "enigmia", "quimia", "anatomia", "melodia"] as const;
+export const MUNDOS_PAGOS = ["numeria", "geografia", "enigmia", "quimia", "anatomia", "melodia", "trigonometria", "historia"] as const;
 
 export type MundoPago = (typeof MUNDOS_PAGOS)[number];
 
@@ -25,6 +25,8 @@ export const NOMBRE_MUNDO_PAGO: Record<MundoPago, string> = {
   quimia: "Quimia",
   anatomia: "Anatomía",
   melodia: "Melodía",
+  trigonometria: "Trigonometría",
+  historia: "Historia",
 };
 
 export const COLOR_MUNDO_PAGO: Record<MundoPago, string> = {
@@ -34,6 +36,8 @@ export const COLOR_MUNDO_PAGO: Record<MundoPago, string> = {
   quimia: "#C026D3",
   anatomia: "#8B2942",
   melodia: "#B8860B",
+  trigonometria: "#84CC16",
+  historia: "#A0522D",
 };
 
 export const RUTA_MUNDO_PAGO: Record<MundoPago, string> = {
@@ -43,4 +47,6 @@ export const RUTA_MUNDO_PAGO: Record<MundoPago, string> = {
   quimia: "/quimia",
   anatomia: "/anatomia",
   melodia: "/melodia",
+  trigonometria: "/trigonometria",
+  historia: "/historia",
 };

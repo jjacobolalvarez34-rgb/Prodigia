@@ -44,6 +44,8 @@
       "quimia": "Modo según tu rango",
       "anatomia": "Sistema según tu rango",
       "melodia": "Modo según tu rango",
+      "trigonometria": "Modo según tu rango",
+      "historia": "Modo según tu rango",
       "aleatorio": "Mejor de 3, una ciudad por ronda"
     },
     "buscandoRival": "Buscando rival…",
@@ -154,6 +156,8 @@
       "marcoQuimia": "Marco Quimia",
       "marcoAnatomia": "Marco Anatomía",
       "marcoMelodia": "Marco Melodía",
+      "marcoTrigonometria": "Marco Trigonometría",
+      "marcoHistoria": "Marco Historia",
       "paqueteMarcosMundo": "Colección de Mundos"
     },
     "fuentes": {
@@ -337,7 +341,9 @@
       "geografia": "Ubicá países de América en el mapa.",
       "quimia": "Elementos, fórmulas y la tabla periódica.",
       "anatomia": "Huesos, músculos, órganos y sistema nervioso.",
-      "melodia": "Pentagrama, escalas y acordes construidos por fórmula."
+      "melodia": "Pentagrama, escalas y acordes construidos por fórmula.",
+      "trigonometria": "Razones, círculo unitario, identidades y triángulos.",
+      "historia": "Cronología, personajes, causa y efecto, y fechas exactas."
     }
   },
   "Numeria": {

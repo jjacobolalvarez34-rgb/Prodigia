@@ -1,0 +1,270 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import type { ModoTrigonometria, ProblemaTrigonometria } from "@/lib/practica/trigonometria";
+import { NOMBRE_MODO_TRIGONOMETRIA } from "@/lib/practica/trigonometria";
+import type { DueloTrigonometriaInfo } from "@/lib/trigonometria/cargarPractica";
+import type { Achievement } from "@/types/database";
+import Boton from "@/components/Boton";
+import BotonesFinPartida from "@/components/BotonesFinPartida";
+import LogroBanner from "@/components/LogroBanner";
+import ApuestaResultado from "@/components/ApuestaResultado";
+import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSubio";
+import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/ResultadoDueloBlock";
+import SalaEsperaDuelo from "@/components/duelos/SalaEsperaDuelo";
+import { useArranqueSincronizado } from "@/lib/duelos/useArranqueSincronizado";
+import { useDeteccionAbandono } from "@/lib/duelos/useDeteccionAbandono";
+import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
+import BotonRendirse from "@/components/duelos/BotonRendirse";
+import TrigonometriaSprintRunner from "./TrigonometriaSprintRunner";
+import { COLOR_TRIGONOMETRIA } from "./colores";
+
+type Fase = "inicio" | "vs" | "sprint" | "finalizando" | "resumen";
+
+interface FinishResponse {
+  sprint: { total: number; correctos: number; precision: number | null; xpGanado: number; avgTimeMs: number | null };
+  puntosTotal: number;
+  xpGanadoHoy: number;
+  metaAlcanzada: boolean;
+  metaXpDiaria: number;
+  logrosNuevos: Achievement[];
+  apuesta?: { gano: boolean; monto: number } | null;
+  nivelMundo?: NivelMundoInfo | null;
+}
+
+interface Props {
+  modo: ModoTrigonometria;
+  nivelInicial: number;
+  escudosExtra: number;
+  boostActivo: boolean;
+  duelo?: DueloTrigonometriaInfo | null;
+  miUserId: string;
+}
+
+// Mismo patrón que MelodiaPracticaClient.tsx.
+export default function TrigonometriaPracticaClient({ modo, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
+  const router = useRouter();
+  const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
+  const [startedAtIso, setStartedAtIso] = useState("");
+  const [startedAtPerf, setStartedAtPerf] = useState(0);
+  const [resumen, setResumen] = useState<FinishResponse | null>(null);
+  const [errores, setErrores] = useState<ProblemaTrigonometria[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [resultadoDuelo, setResultadoDuelo] = useState<ResultadoDuelo | null>(null);
+
+  const { estado: estadoArranque, segundos: segundosVs, rivalPresente, empezarAhora } = useArranqueSincronizado({
+    duelId: duelo?.duelId,
+    miUserId,
+    rivalId: duelo?.rivalId,
+    rivalEsBot: duelo?.rivalEsBot,
+    onEmpezar: () => iniciar(),
+  });
+
+  function iniciar() {
+    setStartedAtIso(new Date().toISOString());
+    setStartedAtPerf(performance.now());
+    setResumen(null);
+    setFase("sprint");
+  }
+
+  async function handleFinish(erroresPartida: ProblemaTrigonometria[]) {
+    setErrores(erroresPartida);
+    setFase("finalizando");
+    try {
+      const res = await fetch("/api/practica/finish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ started_at: startedAtIso, total_problemas: 10 }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "No se pudo cerrar la partida.");
+        setFase("resumen");
+        return;
+      }
+      setError(null);
+      const finishData = data as FinishResponse;
+      setResumen(finishData);
+
+      if (duelo) {
+        try {
+          const resDuelo = await fetch("/api/duelos/resultado", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              duel_id: duelo.duelId,
+              precision: finishData.sprint.precision ?? 0,
+              tiempo_promedio: finishData.sprint.avgTimeMs ?? 0,
+              puntaje: finishData.sprint.xpGanado,
+            }),
+          });
+          const dataDuelo = await resDuelo.json();
+          if (resDuelo.ok) {
+            if (duelo.serieId) {
+              router.push(`/rankeds/serie/${duelo.serieId}`);
+              return;
+            }
+            setResultadoDuelo(dataDuelo as ResultadoDuelo);
+          }
+        } catch {
+          // El duelo no se pudo resolver por un error de red puntual.
+        }
+      }
+    } catch {
+      setError("No pudimos conectar con el servidor. Probá de nuevo.");
+    }
+    setFase("resumen");
+  }
+
+  async function handleAbandonoDetectado() {
+    if (!duelo) return;
+    try {
+      await fetch("/api/duelos/reclamar-abandono", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ duel_id: duelo.duelId }),
+      });
+    } catch {
+      // Si falla, el usuario puede reintentar rindiéndose o navegando afuera.
+    }
+    router.push(duelo.serieId ? `/rankeds/serie/${duelo.serieId}` : "/rankeds");
+  }
+
+  useDeteccionAbandono({
+    duelId: duelo?.duelId,
+    miUserId,
+    rivalId: duelo?.rivalId,
+    rivalEsBot: duelo?.rivalEsBot,
+    activo: fase === "sprint" && !!duelo,
+    onAbandonoDetectado: handleAbandonoDetectado,
+  });
+
+  if (fase === "vs" && duelo) {
+    return (
+      <SalaEsperaDuelo
+        estado={estadoArranque}
+        segundos={segundosVs}
+        rivalPresente={rivalPresente}
+        miElo={duelo.miElo}
+        rivalNombre={duelo.rivalNombre}
+        rivalElo={duelo.rivalElo}
+        rivalEsBot={duelo.rivalEsBot}
+        modo={duelo.serieId ? "mejor_de_3" : "simple"}
+        subtitulo={duelo.serieId ? `Ronda ${duelo.rondaNumero}/${duelo.rondaTotal} · Trigonometría` : "Trigonometría"}
+        onEmpezarAhora={empezarAhora}
+        duelId={duelo.duelId}
+      />
+    );
+  }
+
+  if (fase === "sprint") {
+    return (
+      <>
+        {duelo && !duelo.rivalEsBot && (
+          <div className="mx-auto flex w-full max-w-lg justify-end px-4 pt-4">
+            <BotonRendirse
+              duelId={duelo.duelId}
+              onRendido={() => router.push(duelo.serieId ? `/rankeds/serie/${duelo.serieId}` : "/rankeds")}
+            />
+          </div>
+        )}
+        <TrigonometriaSprintRunner
+          modo={modo}
+          startedAt={startedAtPerf}
+          nivelInicial={nivelInicial}
+          escudosExtra={escudosExtra}
+          nivelForzado={duelo?.nivel}
+          duelId={duelo?.duelId}
+          miUserId={miUserId}
+          rivalNombre={duelo?.rivalNombre}
+          onFinish={handleFinish}
+        />
+      </>
+    );
+  }
+
+  if (fase === "finalizando") {
+    return <TransicionFinalizando />;
+  }
+
+  if (fase === "resumen" && error) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-16 text-center">
+        <p className="text-error">No pudimos cerrar la partida: {error}</p>
+        <button onClick={() => setFase("inicio")} className="rounded-2xl px-4 py-3 font-medium text-white" style={{ background: COLOR_TRIGONOMETRIA }}>
+          Volver
+        </button>
+      </div>
+    );
+  }
+
+  if (fase === "resumen" && resumen) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-20">
+        <LogroBanner logros={resumen.logrosNuevos} />
+        <NivelMundoSubio nivelMundo={resumen.nivelMundo} />
+        <ApuestaResultado apuesta={resumen.apuesta ?? null} />
+        <ResultadoDueloBlock duelo={resultadoDuelo} />
+        <div className="flex flex-col items-center gap-2 text-center">
+          <p className="font-display text-lg font-bold text-foreground">Ahí quedó.</p>
+          <p className="font-mono text-3xl font-bold text-foreground">
+            +{resumen.sprint.xpGanado} <span className="text-base font-medium text-texto-secundario">Experiencia</span>
+          </p>
+        </div>
+
+        <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
+          <Fila label="Aciertos" valor={`${resumen.sprint.correctos}/${resumen.sprint.total}`} />
+          <Fila label="Precisión" valor={resumen.sprint.precision === null ? "—" : `${Math.round(resumen.sprint.precision * 100)}%`} />
+          <Fila label="Experiencia hoy" valor={`${resumen.xpGanadoHoy}/${resumen.metaXpDiaria}`} />
+        </div>
+
+        {errores.length > 0 ? (
+          <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
+            <p className="mb-3 font-display text-sm font-semibold text-foreground">Repasemos esto</p>
+            <div className="flex flex-wrap gap-2">
+              {errores.map((p, i) => (
+                <span key={i} className="rounded-full bg-surface-2 px-3 py-1 text-sm text-foreground">
+                  {String(p.respuesta)}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-texto-secundario">Ninguna fallada — así se hace. 🎯</p>
+        )}
+
+        <BotonesFinPartida
+          onOtraVez={duelo ? () => router.push("/rankeds?tab=buscar") : () => setFase("inicio")}
+          volverHref={duelo ? "/rankeds" : "/trigonometria"}
+          colorHex={COLOR_TRIGONOMETRIA}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
+      {boostActivo && (
+        <div className="flex items-center justify-center gap-2 rounded-full bg-logro/15 px-4 py-2 text-sm font-medium text-foreground">
+          ⚡ Boost activo — Chispas ×1.5 en esta partida
+        </div>
+      )}
+      <span className="text-4xl">📐</span>
+      <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{NOMBRE_MODO_TRIGONOMETRIA[modo]}</h1>
+      <p className="text-texto-secundario">10 preguntas o 60 segundos, lo que llegue primero.</p>
+      <Boton onClick={iniciar} colorHex={COLOR_TRIGONOMETRIA} destacado className="w-full py-5 text-lg">
+        Iniciar partida
+      </Boton>
+    </div>
+  );
+}
+
+function Fila({ label, valor }: { label: string; valor: string }) {
+  return (
+    <div className="flex items-center justify-between border-b border-border py-3.5 last:border-0">
+      <span className="text-sm text-texto-secundario">{label}</span>
+      <span className="font-mono font-semibold text-foreground">{valor}</span>
+    </div>
+  );
+}

@@ -113,6 +113,30 @@ export async function requireMundoMelodia(supabase: SupabaseClient, pathActual: 
   return { user, profile };
 }
 
+// Mundo Trigonometría: mismo patrón que Quimia/Anatomía/Melodía.
+export async function requireMundoTrigonometria(supabase: SupabaseClient, pathActual: string) {
+  const { user, profile } = await requireUsuario(supabase, pathActual);
+  requireMundoComprado(profile, "trigonometria", pathActual);
+
+  if (!profile.onboarding_trigonometria_completado) {
+    redirect(`/trigonometria/diagnostico?next=${encodeURIComponent(pathActual)}`);
+  }
+
+  return { user, profile };
+}
+
+// Mundo Historia: mismo patrón que Trigonometría/Quimia/Anatomía/Melodía.
+export async function requireMundoHistoria(supabase: SupabaseClient, pathActual: string) {
+  const { user, profile } = await requireUsuario(supabase, pathActual);
+  requireMundoComprado(profile, "historia", pathActual);
+
+  if (!profile.onboarding_historia_completado) {
+    redirect(`/historia/diagnostico?next=${encodeURIComponent(pathActual)}`);
+  }
+
+  return { user, profile };
+}
+
 // Geografía nunca tuvo diagnóstico propio (arranca directo) — con Fase
 // 12 pasa a necesitar este guard nuevo en vez de requireUsuario a
 // secas, solo para el chequeo de compra.

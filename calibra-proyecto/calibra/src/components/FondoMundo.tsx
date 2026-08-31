@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, subscribeEfectos } from "@/lib/efectos";
 
-export type MundoFondo = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia";
+export type MundoFondo = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia";
 
 interface Posicion {
   simbolo: string;
@@ -69,6 +69,24 @@ const SETS: Record<MundoFondo, Posicion[]> = {
     { simbolo: "♫", left: "14%", top: "72%", size: 36, rotate: -4, delay: 1 },
     { simbolo: "♩", left: "88%", top: "66%", size: 30, rotate: 8, delay: 1.3 },
     { simbolo: "♭", left: "50%", top: "8%", size: 26, rotate: 6, delay: 0.7 },
+  ],
+  // Mundo Trigonometría: triángulo, ángulo, símbolo de grado — mismo
+  // criterio (glifos unicode, no imágenes).
+  trigonometria: [
+    { simbolo: "△", left: "8%", top: "14%", size: 54, rotate: -8, delay: 0 },
+    { simbolo: "∠", left: "90%", top: "20%", size: 44, rotate: 4, delay: 0.5 },
+    { simbolo: "°", left: "14%", top: "72%", size: 40, rotate: -4, delay: 1 },
+    { simbolo: "π", left: "88%", top: "66%", size: 34, rotate: 8, delay: 1.3 },
+    { simbolo: "θ", left: "50%", top: "8%", size: 30, rotate: 6, delay: 0.7 },
+  ],
+  // Mundo Historia: pergamino, columna, reloj de arena — mismo criterio
+  // (glifos/emoji unicode, no imágenes).
+  historia: [
+    { simbolo: "📜", left: "8%", top: "14%", size: 44, rotate: -8, delay: 0 },
+    { simbolo: "🏛", left: "90%", top: "20%", size: 40, rotate: 4, delay: 0.5 },
+    { simbolo: "⏳", left: "14%", top: "72%", size: 36, rotate: -4, delay: 1 },
+    { simbolo: "⚔", left: "88%", top: "66%", size: 32, rotate: 8, delay: 1.3 },
+    { simbolo: "🗿", left: "50%", top: "8%", size: 30, rotate: 6, delay: 0.7 },
   ],
 };
 

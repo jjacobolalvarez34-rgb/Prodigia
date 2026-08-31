@@ -22,6 +22,8 @@ const NOMBRE_MUNDO: Record<MundoDuelo, string> = {
   quimia: "Quimia",
   anatomia: "Anatomía",
   melodia: "Melodía",
+  trigonometria: "Trigonometría",
+  historia: "Historia",
 };
 
 type Panel = "ninguno" | "agregar" | "solicitudes" | "retos";

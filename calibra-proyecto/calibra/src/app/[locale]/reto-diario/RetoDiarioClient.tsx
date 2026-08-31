@@ -26,6 +26,8 @@ const COLOR_MUNDO: Record<MundoRetoDiario, string> = {
   quimia: "#C026D3",
   anatomia: "#8B2942",
   melodia: "#B8860B",
+  trigonometria: "#84CC16",
+  historia: "#A0522D",
 };
 const NOMBRE_MUNDO: Record<MundoRetoDiario, string> = {
   numeria: "Numeria",
@@ -34,6 +36,8 @@ const NOMBRE_MUNDO: Record<MundoRetoDiario, string> = {
   quimia: "Quimia",
   anatomia: "Anatomía",
   melodia: "Melodía",
+  trigonometria: "Trigonometría",
+  historia: "Historia",
 };
 
 // Fase 3 (reto diario multi-ciudad, 2026-08-25): 45 preguntas de las

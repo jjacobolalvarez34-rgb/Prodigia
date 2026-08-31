@@ -44,6 +44,8 @@
       "quimia": "Mode based on your rank",
       "anatomia": "System based on your rank",
       "melodia": "Mode based on your rank",
+      "trigonometria": "Mode based on your rank",
+      "historia": "Mode based on your rank",
       "aleatorio": "Best of 3, one city per round"
     },
     "buscandoRival": "Looking for a rival…",
@@ -154,6 +156,8 @@
       "marcoQuimia": "Quimia Frame",
       "marcoAnatomia": "Anatomy Frame",
       "marcoMelodia": "Melodia Frame",
+      "marcoTrigonometria": "Trigonometry Frame",
+      "marcoHistoria": "History Frame",
       "paqueteMarcosMundo": "World Collection"
     },
     "fuentes": {
@@ -337,7 +341,9 @@
       "geografia": "Locate countries of the Americas on the map.",
       "quimia": "Elements, formulas, and the periodic table.",
       "anatomia": "Bones, muscles, organs, and the nervous system.",
-      "melodia": "Staff notation, scales, and chords built from formulas."
+      "melodia": "Staff notation, scales, and chords built from formulas.",
+      "trigonometria": "Ratios, unit circle, identities, and triangles.",
+      "historia": "Chronology, figures, cause and effect, and exact dates."
     }
   },
   "Numeria": {

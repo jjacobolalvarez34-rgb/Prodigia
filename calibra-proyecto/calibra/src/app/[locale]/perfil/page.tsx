@@ -43,6 +43,8 @@ export default async function PerfilPage() {
     quimia: "Quimia",
     anatomia: "Anatomía",
     melodia: "Melodía",
+    trigonometria: "Trigonometría",
+    historia: "Historia",
     geometria: tNumeriaTemas("geometria"),
     fracciones: tNumeriaTemas("fracciones"),
     decimales: tNumeriaTemas("decimales"),
@@ -65,6 +67,8 @@ export default async function PerfilPage() {
     { count: quimiaTotal },
     { count: anatomiaTotal },
     { count: melodiaTotal },
+    { count: trigonometriaTotal },
+    { count: historiaTotal },
     { data: worldRows },
     { data: titulosRows },
     { data: afinidadRows },
@@ -104,12 +108,16 @@ export default async function PerfilPage() {
       .neq("problem_type", "geografia")
       .not("problem_type", "like", "quimia_%")
       .not("problem_type", "like", "anatomia_%")
-      .not("problem_type", "like", "melodia_%"),
+      .not("problem_type", "like", "melodia_%")
+      .not("problem_type", "like", "trigonometria_%")
+      .not("problem_type", "like", "historia_%"),
     supabase.from("logic_attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("problem_type", "geografia"),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"]),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["anatomia_oseo", "anatomia_muscular", "anatomia_organos", "anatomia_nervioso"]),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"]),
+    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["trigonometria_razones", "trigonometria_circulo", "trigonometria_identidades", "trigonometria_leyes"]),
+    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["historia_cronologia", "historia_personajes", "historia_causaefecto", "historia_fechas"]),
     supabase.from("world_progress").select("world, nivel_mundo").eq("user_id", user.id),
     supabase.rpc("mis_titulos"),
     supabase.rpc("afinidad_por_mundo"),
@@ -256,6 +264,16 @@ export default async function PerfilPage() {
             <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Melodía</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{melodiaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">{t("preguntasResueltasNivel", { n: nivelMundoDe("melodia") })}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Trigonometría</p>
+            <p className="mt-1 font-mono text-xl font-bold text-foreground">{trigonometriaTotal ?? 0}</p>
+            <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("trigonometria") })}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Historia</p>
+            <p className="mt-1 font-mono text-xl font-bold text-foreground">{historiaTotal ?? 0}</p>
+            <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("historia") })}</p>
           </div>
         </section>
 

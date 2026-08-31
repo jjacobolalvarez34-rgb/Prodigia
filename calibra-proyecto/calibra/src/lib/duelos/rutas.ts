@@ -1,6 +1,6 @@
 import type { ArithmeticProblemType } from "@/types/database";
 
-export type MundoDuelo = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia";
+export type MundoDuelo = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia";
 
 // Paleta de acento por mundo — fuente única para todo lo relacionado a
 // duelos (antes vivía duplicada, mismos 6 hex, en RankedsClient,
@@ -13,6 +13,8 @@ export const COLOR_MUNDO: Record<MundoDuelo, string> = {
   anatomia: "#8B2942",
   melodia: "#B8860B",
   quimia: "#C026D3",
+  trigonometria: "#84CC16",
+  historia: "#A0522D",
 };
 
 // A dónde lleva jugar un duelo según en qué ciudad cayó — un solo lugar,
@@ -45,6 +47,18 @@ export function hrefDuelo(mundo: MundoDuelo, operationType: ArithmeticProblemTyp
     if (subTipo === "acordes") return `/melodia/practica/acordes?duelo=${duelId}`;
     if (subTipo === "oido_absoluto") return `/melodia/practica/oido-absoluto?duelo=${duelId}`;
     return `/melodia/practica?duelo=${duelId}`;
+  }
+  if (mundo === "trigonometria") {
+    if (subTipo === "circulo") return `/trigonometria/practica/circulo?duelo=${duelId}`;
+    if (subTipo === "identidades") return `/trigonometria/practica/identidades?duelo=${duelId}`;
+    if (subTipo === "leyes") return `/trigonometria/practica/leyes?duelo=${duelId}`;
+    return `/trigonometria/practica?duelo=${duelId}`;
+  }
+  if (mundo === "historia") {
+    if (subTipo === "personajes") return `/historia/practica/personajes?duelo=${duelId}`;
+    if (subTipo === "causaefecto") return `/historia/practica/causaefecto?duelo=${duelId}`;
+    if (subTipo === "fechas") return `/historia/practica/fechas?duelo=${duelId}`;
+    return `/historia/practica?duelo=${duelId}`;
   }
   // La operación real (asignada por buscar_rival_duelo, ver Rankeds) se
   // lee siempre del duelo en sí (obtener_duelo) apenas se carga

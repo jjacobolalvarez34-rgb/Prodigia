@@ -52,6 +52,8 @@ const NOMBRE_MUNDO: Record<MundoDuelo, string> = {
   anatomia: "Anatomía",
   melodia: "Melodía",
   quimia: "Quimia",
+  trigonometria: "Trigonometría",
+  historia: "Historia",
 };
 
 interface Props {
@@ -397,6 +399,8 @@ function BuscarPartida({
     { id: "quimia", nombre: "Quimia", descripcion: t("ciudades.quimia") },
     { id: "anatomia", nombre: "Anatomía", descripcion: t("ciudades.anatomia") },
     { id: "melodia", nombre: "Melodía", descripcion: t("ciudades.melodia") },
+    { id: "trigonometria", nombre: "Trigonometría", descripcion: t("ciudades.trigonometria") },
+    { id: "historia", nombre: "Historia", descripcion: t("ciudades.historia") },
     { id: "aleatorio", nombre: t("todasLasCiudades"), descripcion: t("ciudades.aleatorio") },
   ];
   // Fase 7 (Rankeds: Platino+ solo "todas las ciudades"): desde Platino

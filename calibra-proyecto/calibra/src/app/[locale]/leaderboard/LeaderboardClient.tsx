@@ -8,7 +8,7 @@ import ListaRanking from "./ListaRanking";
 
 type Alcance = "global" | "amigos";
 type Filtro = "total" | "mundo";
-type Mundo = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia";
+type Mundo = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia";
 
 const MUNDOS: { id: Mundo; nombre: string; colorHex: string }[] = [
   { id: "numeria", nombre: "Numeria", colorHex: "#6C4CF1" },
@@ -17,6 +17,8 @@ const MUNDOS: { id: Mundo; nombre: string; colorHex: string }[] = [
   { id: "quimia", nombre: "Quimia", colorHex: "#C026D3" },
   { id: "anatomia", nombre: "Anatomía", colorHex: "#8B2942" },
   { id: "melodia", nombre: "Melodía", colorHex: "#B8860B" },
+  { id: "trigonometria", nombre: "Trigonometría", colorHex: "#84CC16" },
+  { id: "historia", nombre: "Historia", colorHex: "#A0522D" },
 ];
 
 interface Props {

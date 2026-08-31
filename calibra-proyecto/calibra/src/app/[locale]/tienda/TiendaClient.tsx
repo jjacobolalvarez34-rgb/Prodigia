@@ -89,6 +89,8 @@ export default function TiendaClient({
     marco_quimia: t("items.marcoQuimia"),
     marco_anatomia: t("items.marcoAnatomia"),
     marco_melodia: t("items.marcoMelodia"),
+    marco_trigonometria: t("items.marcoTrigonometria"),
+    marco_historia: t("items.marcoHistoria"),
     paquete_marcos_mundo: t("items.paqueteMarcosMundo"),
   };
   const FUENTES_COMPRABLES: { fuente: FuenteNombre; item: ItemComprable; nombre: string }[] = [

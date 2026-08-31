@@ -65,6 +65,8 @@ const NOMBRE_MUNDO: Record<MundoDuelo, string> = {
   quimia: "Quimia",
   anatomia: "Anatomía",
   melodia: "Melodía",
+  trigonometria: "Trigonometría",
+  historia: "Historia",
 };
 // Mismos hex que Header.tsx (colorDelMundo) y RankedsClient.tsx.
 const COLOR_MUNDO: Record<MundoDuelo, string> = {
@@ -74,6 +76,8 @@ const COLOR_MUNDO: Record<MundoDuelo, string> = {
   quimia: "#C026D3",
   anatomia: "#8B2942",
   melodia: "#B8860B",
+  trigonometria: "#84CC16",
+  historia: "#A0522D",
 };
 // Fase 2 (transición de ronda con TextType): velocidades elegidas para
 // que la ceremonia completa (tipear el mundo anterior → borrarlo →

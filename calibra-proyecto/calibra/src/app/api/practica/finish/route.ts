@@ -56,13 +56,19 @@ const TIPOS_ANATOMIA = new Set(["anatomia_oseo", "anatomia_muscular", "anatomia_
 // Mundo Melodía (Fase 1, 2026-08-24) — mismos 5 problem_type que
 // ProblemTypeCalibrable/tiposCalibrables (skillLevels.ts, api/attempts).
 const TIPOS_MELODIA = new Set(["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"]);
+// Mundo Trigonometría — mismos 4 problem_type que ProblemTypeCalibrable/tiposCalibrables (skillLevels.ts, api/attempts).
+const TIPOS_TRIGONOMETRIA = new Set(["trigonometria_razones", "trigonometria_circulo", "trigonometria_identidades", "trigonometria_leyes"]);
+// Mundo Historia — mismos 4 problem_type que ProblemTypeCalibrable/tiposCalibrables (skillLevels.ts, api/attempts).
+const TIPOS_HISTORIA = new Set(["historia_cronologia", "historia_personajes", "historia_causaefecto", "historia_fechas"]);
 
-function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | "anatomia" | "melodia" | null {
+function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | null {
   if (!problemType) return null;
   if (problemType === "geografia") return "geografia";
   if (TIPOS_QUIMIA.has(problemType)) return "quimia";
   if (TIPOS_ANATOMIA.has(problemType)) return "anatomia";
   if (TIPOS_MELODIA.has(problemType)) return "melodia";
+  if (TIPOS_TRIGONOMETRIA.has(problemType)) return "trigonometria";
+  if (TIPOS_HISTORIA.has(problemType)) return "historia";
   if (TIPOS_NUMERIA.has(problemType)) return "numeria";
   return null;
 }

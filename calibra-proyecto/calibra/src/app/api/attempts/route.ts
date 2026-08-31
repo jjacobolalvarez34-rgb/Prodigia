@@ -118,6 +118,14 @@ export async function POST(request: Request) {
     "melodia_escalas",
     "melodia_acordes",
     "melodia_oido_absoluto",
+    "trigonometria_razones",
+    "trigonometria_circulo",
+    "trigonometria_identidades",
+    "trigonometria_leyes",
+    "historia_cronologia",
+    "historia_personajes",
+    "historia_causaefecto",
+    "historia_fechas",
   ];
   if (!sospechoso && (tiposCalibrables as string[]).includes(body.problem_type)) {
     skillLevel = await actualizarSkillLevel(

@@ -2610,123 +2610,6 @@ resolución real de apuesta (ganar/perder) — requiere pasar el gate de
 invitado en el tiempo disponible sin gastar cuota real. Marcado SÍ para
 UI+gate, NO PUDE PROBARLO para la resolución punta a punta.
 
----
-
-# Progreso — sesión autónoma (2026-08-30)
-
-Auditoría de accesibilidad pedida hace tiempo y nunca confirmada como
-cerrada. Alcance: (1) contraste WCAG de los 6 colores de mundo (y de
-más yapa, los 6 de `RANGOS_ELO`) contra los fondos reales de la app en
-claro y oscuro, (2) navegación por teclado en selectores de
-operación/mundo y pantallas de "empezar a practicar", (3) `aria-label`
-en controles solo-ícono. Fixes reales donde el hallazgo era inequívoco
-y de bajo riesgo — no un informe nada más.
-
-## 1. Contraste de color — hallazgos, sin tocar la paleta de marca
-
-Calculé luminancia relativa y ratio WCAG a mano (fórmula estándar)
-para los 6 hex de `COLOR_MUNDO` (`src/lib/duelos/rutas.ts`) y los 6 de
-`RANGOS_ELO` (`src/types/database.ts`) contra `--background`,
-`--surface` y `--surface-2` de `src/app/globals.css`, en claro y
-oscuro, y contra blanco (patrón real: pill/badge de mundo con texto
-blanco, ej. el botón "Jugar" de `RankedsClient.tsx:249-250`).
-
-**Mundos — texto blanco sobre el color sólido del mundo (patrón real,
-`RankedsClient.tsx`, texto chico `text-xs`, necesita 4.5:1):**
-- Numeria `#6C4CF1`: 5.33:1 — OK
-- Enigmia `#0E9F6E`: 3.39:1 — **FALLA** (necesita 4.5:1)
-- Geografía `#1E7A8C`: 4.98:1 — OK
-- Quimia `#C026D3`: 4.71:1 — OK (al límite)
-- Anatomía `#8B2942`: 8.42:1 — OK
-- Melodía `#B8860B`: 3.25:1 — **FALLA** (necesita 4.5:1)
-
-**Mismos 6, texto/borde del color de mundo sobre superficie clara**
-(mismo ratio que arriba por simetría del cálculo): en `--surface`
-(#fff) igual que la tabla de arriba; en `--surface-2` (#f3efe7, más
-oscuro) Enigmia cae a 2.95:1 (falla incluso el piso de 3:1 de UI) y
-Geografía/Quimia caen debajo de 4.5:1 para texto normal.
-
-**Mismos 6, sobre fondo oscuro** (`--background` #090c14 /
-`--surface` #12172a — la paleta de mundo es la MISMA en claro y
-oscuro, no hay variante por tema, confirmado en `colorDelMundo()` de
-`Header.tsx`): Anatomía `#8B2942` cae a **~2.1–2.3:1** contra
-`--surface`/`--background` oscuros — falla incluso el piso de 3:1,
-prácticamente ilegible. Numeria/Geografía/Quimia también caen debajo
-de 4.5:1 (aunque arriba de 3:1) en textos chicos sobre fondo oscuro
-(ej. `RetoDiarioClient.tsx:136`, nombre del mundo en `text-xs` sobre
-`--background`). Enigmia y Melodía sí pasan bien en oscuro.
-
-**`RANGOS_ELO` (bronce/plata/oro/platino/diamante/prodigio) — patrón
-real: texto del rango en `RangoBadge.tsx:41,48` (`font-bold`,
-`text-xs/sm/lg`) sobre superficie clara:** los 6 fallan 4.5:1 en modo
-claro, y varios (plata `#B8C4D9` 1.76:1, diamante `#5DC8F5` 1.90:1,
-prodigio `#FFC53D` 1.58:1) fallan incluso el piso de 3:1 — son colores
-"metálicos/gema" pensados para leerse sobre fondo oscuro, y
-`--background`/`--surface` en modo claro son casi blancos. En modo
-oscuro los 6 pasan cómodo (8.8–12.4:1).
-
-**No apliqué ningún cambio de color acá.** Todos los fallos caen
-sobre la paleta de marca (`COLOR_MUNDO`, `COLOR_MUNDO_PAGO`,
-`colorDelMundo()`, `RANGOS_ELO`) usada también en logos, marcos de
-perfil e ilustraciones — oscurecer Enigmia/Melodía lo suficiente para
-4.5:1, dar a Anatomía una variante para oscuro, o aclarar/oscurecer
-los 6 rangos para que "plata" siga leyéndose plateado y no gris,
-son decisiones de diseño reales, no un ajuste mecánico de "un toque
-más oscuro". Reportado con el número exacto de cada caso arriba para
-que se decida a mano.
-
-## 2. Navegación por teclado — revisado, sin hallazgos que arreglar
-
-Recorrí `OperationPicker.tsx`, `SelectorMundoDuelo.tsx`, `WorldCard.tsx`,
-`AccionMundo.tsx` y grep de `onClick=` en todo `*.tsx` buscando
-`<div onClick>`/`<span onClick>` haciendo de botón falso, y
-`focus:outline-none` sin reemplazo. Conclusión (razonada sobre JSX/DOM,
-sin browser — no hice simulación real de tab-order):
-- Los 3 selectores pedidos ya usan `<button>`/`<Link>` reales con
-  `aria-pressed`/`role="menuitem"` donde corresponde — tabulables y
-  activables con Enter/Espacio de forma nativa.
-- Único `<div onClick>` real del proyecto: `src/components/ChispaClick.tsx:132`,
-  un overlay puramente decorativo (chispas de partícula al hacer
-  click en cualquier parte de la pantalla) que envuelve contenido con
-  sus propios controles reales — no reemplaza ningún control
-  interactivo, así que no lo toqué.
-- Cero `focus:outline-none` sueltos. El único lugar que remueve el
-  outline por defecto (`src/components/reactbits/SpecularButton.css:27`,
-  usado por el botón "secundario" compartido) ya lo repone bien vía
-  `:focus-visible` (línea 35-38, anillo con el color de texto del
-  botón al 60%, offset 3px) — no es un caso roto.
-
-No hubo cambios de código en esta área.
-
-## 3. `aria-label` en controles solo-ícono — 1 fix real
-
-Recorrí las 26 funciones `Icon*` exportadas de `src/components/icons.tsx`
-y cada uso dentro de `<button>`/`<Link>`/`<a>`, más una pasada aparte
-por símbolos Unicode/emoji usados como contenido de botón (✕, →, 🔥,
-etc., para no depender solo de `icons.tsx`). La gran mayoría ya tenía
-`aria-label` (`ProfileMenu.tsx`, `RankingElo.tsx`/`ListaRanking.tsx`,
-`CampoPassword.tsx`, `Header.tsx`, `ThemeToggle.tsx`, `SonidoToggle.tsx`)
-o es decorativo junto a texto visible (íconos de mundo en
-`AccionMundo.tsx`/`WorldCard.tsx`/`TopicCard.tsx`, `IconRango` junto al
-nombre del rango, etc.) — no necesitaba nada.
-
-**Encontrado y corregido**: `src/components/clanes/MundoClanesMapa.tsx:256`,
-el botón "✕" que cierra el panel de info de un clan (`PanelClan`) no
-tenía texto visible ni `aria-label` — un lector de pantalla lo hubiera
-anunciado como el glifo crudo, no como "cerrar". Agregado
-`aria-label="Cerrar información del clan"`.
-
-`IconMixto`/`IconObjetivo` (en `icons.tsx`) están exportados pero sin
-ningún uso en el repo — código muerto, no un caso de aria-label
-faltante.
-
-## Verificación
-
-`npx eslint src/components/clanes/MundoClanesMapa.tsx` limpio.
-`npx tsc --noEmit -p tsconfig.json` limpio sobre el proyecto entero.
-No corrí el dev server ni probé en browser real (fuera de alcance de
-esta pasada, según lo pedido).
-
 **3. Título junto al nombre — SÍ (mecanismo confirmado), con la misma
 limitación.** `RangoBadge.tsx` sí renderiza `tituloNombre` como una
 píldora junto al nombre del rango cuando el valor no es null — código
@@ -3100,4 +2983,293 @@ volver a correrla si ya la habías corrido con el error),
 `0061_tienda_precios_piso.sql`,
 `0062_lecciones_por_mundo_y_mundo_completado.sql`,
 `0063_invitar_amigo_sin_cuenta.sql`, `0064_racha_en_riesgo.sql`.
+
+---
+
+# Progreso — sesión autónoma (2026-08-30)
+
+Auditoría de accesibilidad pedida hace tiempo y nunca confirmada como
+cerrada. Alcance: (1) contraste WCAG de los 6 colores de mundo (y de
+más yapa, los 6 de `RANGOS_ELO`) contra los fondos reales de la app en
+claro y oscuro, (2) navegación por teclado en selectores de
+operación/mundo y pantallas de "empezar a practicar", (3) `aria-label`
+en controles solo-ícono. Fixes reales donde el hallazgo era inequívoco
+y de bajo riesgo — no un informe nada más.
+
+## 1. Contraste de color — hallazgos, sin tocar la paleta de marca
+
+Calculé luminancia relativa y ratio WCAG a mano (fórmula estándar)
+para los 6 hex de `COLOR_MUNDO` (`src/lib/duelos/rutas.ts`) y los 6 de
+`RANGOS_ELO` (`src/types/database.ts`) contra `--background`,
+`--surface` y `--surface-2` de `src/app/globals.css`, en claro y
+oscuro, y contra blanco (patrón real: pill/badge de mundo con texto
+blanco, ej. el botón "Jugar" de `RankedsClient.tsx:249-250`).
+
+**Mundos — texto blanco sobre el color sólido del mundo (patrón real,
+`RankedsClient.tsx`, texto chico `text-xs`, necesita 4.5:1):**
+- Numeria `#6C4CF1`: 5.33:1 — OK
+- Enigmia `#0E9F6E`: 3.39:1 — **FALLA** (necesita 4.5:1)
+- Geografía `#1E7A8C`: 4.98:1 — OK
+- Quimia `#C026D3`: 4.71:1 — OK (al límite)
+- Anatomía `#8B2942`: 8.42:1 — OK
+- Melodía `#B8860B`: 3.25:1 — **FALLA** (necesita 4.5:1)
+
+**Mismos 6, texto/borde del color de mundo sobre superficie clara**
+(mismo ratio que arriba por simetría del cálculo): en `--surface`
+(#fff) igual que la tabla de arriba; en `--surface-2` (#f3efe7, más
+oscuro) Enigmia cae a 2.95:1 (falla incluso el piso de 3:1 de UI) y
+Geografía/Quimia caen debajo de 4.5:1 para texto normal.
+
+**Mismos 6, sobre fondo oscuro** (`--background` #090c14 /
+`--surface` #12172a — la paleta de mundo es la MISMA en claro y
+oscuro, no hay variante por tema, confirmado en `colorDelMundo()` de
+`Header.tsx`): Anatomía `#8B2942` cae a **~2.1–2.3:1** contra
+`--surface`/`--background` oscuros — falla incluso el piso de 3:1,
+prácticamente ilegible. Numeria/Geografía/Quimia también caen debajo
+de 4.5:1 (aunque arriba de 3:1) en textos chicos sobre fondo oscuro
+(ej. `RetoDiarioClient.tsx:136`, nombre del mundo en `text-xs` sobre
+`--background`). Enigmia y Melodía sí pasan bien en oscuro.
+
+**`RANGOS_ELO` (bronce/plata/oro/platino/diamante/prodigio) — patrón
+real: texto del rango en `RangoBadge.tsx:41,48` (`font-bold`,
+`text-xs/sm/lg`) sobre superficie clara:** los 6 fallan 4.5:1 en modo
+claro, y varios (plata `#B8C4D9` 1.76:1, diamante `#5DC8F5` 1.90:1,
+prodigio `#FFC53D` 1.58:1) fallan incluso el piso de 3:1 — son colores
+"metálicos/gema" pensados para leerse sobre fondo oscuro, y
+`--background`/`--surface` en modo claro son casi blancos. En modo
+oscuro los 6 pasan cómodo (8.8–12.4:1).
+
+**No apliqué ningún cambio de color acá.** Todos los fallos caen
+sobre la paleta de marca (`COLOR_MUNDO`, `COLOR_MUNDO_PAGO`,
+`colorDelMundo()`, `RANGOS_ELO`) usada también en logos, marcos de
+perfil e ilustraciones — oscurecer Enigmia/Melodía lo suficiente para
+4.5:1, dar a Anatomía una variante para oscuro, o aclarar/oscurecer
+los 6 rangos para que "plata" siga leyéndose plateado y no gris,
+son decisiones de diseño reales, no un ajuste mecánico de "un toque
+más oscuro". Reportado con el número exacto de cada caso arriba para
+que se decida a mano.
+
+## 2. Navegación por teclado — revisado, sin hallazgos que arreglar
+
+Recorrí `OperationPicker.tsx`, `SelectorMundoDuelo.tsx`, `WorldCard.tsx`,
+`AccionMundo.tsx` y grep de `onClick=` en todo `*.tsx` buscando
+`<div onClick>`/`<span onClick>` haciendo de botón falso, y
+`focus:outline-none` sin reemplazo. Conclusión (razonada sobre JSX/DOM,
+sin browser — no hice simulación real de tab-order):
+- Los 3 selectores pedidos ya usan `<button>`/`<Link>` reales con
+  `aria-pressed`/`role="menuitem"` donde corresponde — tabulables y
+  activables con Enter/Espacio de forma nativa.
+- Único `<div onClick>` real del proyecto: `src/components/ChispaClick.tsx:132`,
+  un overlay puramente decorativo (chispas de partícula al hacer
+  click en cualquier parte de la pantalla) que envuelve contenido con
+  sus propios controles reales — no reemplaza ningún control
+  interactivo, así que no lo toqué.
+- Cero `focus:outline-none` sueltos. El único lugar que remueve el
+  outline por defecto (`src/components/reactbits/SpecularButton.css:27`,
+  usado por el botón "secundario" compartido) ya lo repone bien vía
+  `:focus-visible` (línea 35-38, anillo con el color de texto del
+  botón al 60%, offset 3px) — no es un caso roto.
+
+No hubo cambios de código en esta área.
+
+## 3. `aria-label` en controles solo-ícono — 1 fix real
+
+Recorrí las 26 funciones `Icon*` exportadas de `src/components/icons.tsx`
+y cada uso dentro de `<button>`/`<Link>`/`<a>`, más una pasada aparte
+por símbolos Unicode/emoji usados como contenido de botón (✕, →, 🔥,
+etc., para no depender solo de `icons.tsx`). La gran mayoría ya tenía
+`aria-label` (`ProfileMenu.tsx`, `RankingElo.tsx`/`ListaRanking.tsx`,
+`CampoPassword.tsx`, `Header.tsx`, `ThemeToggle.tsx`, `SonidoToggle.tsx`)
+o es decorativo junto a texto visible (íconos de mundo en
+`AccionMundo.tsx`/`WorldCard.tsx`/`TopicCard.tsx`, `IconRango` junto al
+nombre del rango, etc.) — no necesitaba nada.
+
+**Encontrado y corregido**: `src/components/clanes/MundoClanesMapa.tsx:256`,
+el botón "✕" que cierra el panel de info de un clan (`PanelClan`) no
+tenía texto visible ni `aria-label` — un lector de pantalla lo hubiera
+anunciado como el glifo crudo, no como "cerrar". Agregado
+`aria-label="Cerrar información del clan"`.
+
+`IconMixto`/`IconObjetivo` (en `icons.tsx`) están exportados pero sin
+ningún uso en el repo — código muerto, no un caso de aria-label
+faltante.
+
+## Verificación
+
+`npx eslint src/components/clanes/MundoClanesMapa.tsx` limpio.
+`npx tsc --noEmit -p tsconfig.json` limpio sobre el proyecto entero.
+No corrí el dev server ni probé en browser real (fuera de alcance de
+esta pasada, según lo pedido).
+
+**Nota de mantenimiento**: la sección de arriba (accesibilidad) había
+quedado insertada por error a mitad de la "Décima tercera tanda"
+(entre sus ítems 2 y 3), partiendo esa tanda vieja en dos mitades. Se
+reubicó acá, al final real del archivo, sin cambiar una palabra de su
+contenido — solo su posición.
+
+---
+
+# Progreso — sesión autónoma (2026-08-30), continuación: "Deuda técnica invisible"
+
+Tanda de 5 fases en orden estricto (bugs primero), más 2 interrupciones
+urgentes atendidas en el momento en que llegaron. Todo confirmado en
+vivo con la cuenta QA (`solirinaalmacen+prodigia-qa@gmail.com`) o con
+una sesión anónima real (`signInAnonymously`) cuando el caso era
+específicamente de invitados — nunca solo por lectura de código.
+
+## Interrupción urgente 1 — "no se pudo comprar" al desbloquear un mundo
+
+Reportado en caliente por el usuario (7000 Chispas, intentando
+desbloquear Quimia). Reproducido de verdad contra la base real antes
+de tocar nada: `rpc("desbloquear_mundo", {p_mundo:"quimia"})` con
+`mundos_desbloqueados` sin quimia → `42702 column reference
+"puntos_total" is ambiguous`. Mismo patrón exacto que ya había roto el
+chat de clanes en una tanda anterior: `returns table (puntos_total
+integer, ...)` crea una variable interna con ese nombre, y el `select
+puntos_total ... from profiles` de adentro queda ambiguo entre esa
+variable y la columna real. Bonus hallazgo: `elegir_mundo_inicial`
+(elegir tu mundo gratis en el onboarding) **ni existía** en la base
+real — probablemente `0097` nunca se corrió completa, bloqueando el
+onboarding de cuentas nuevas de raíz.
+
+Fix: `0106_fix_desbloquear_mundo_ambiguo.sql` — las dos funciones
+recreadas con `create or replace`, todas las columnas de `profiles`
+calificadas con alias. Pendiente de que el usuario la corra (no puedo
+ejecutar DDL yo mismo).
+
+## Interrupción urgente 2 — landing pública desactivada
+
+Pedido explícito: `/` para un visitante sin sesión ya no muestra la
+landing/demo — redirige derecho a `/login`. `VisitanteLanding` se
+desenchufó de `src/app/[locale]/page.tsx` (el componente en sí no se
+borró, por si se reactiva más adelante). Confirmado en vivo leyendo el
+payload RSC crudo (`fetch()` normal no sigue este tipo de redirect —
+ver Fase 1 más abajo, mismo mecanismo): la respuesta trae el digest
+`NEXT_REDIRECT;replace;/login;307;`, así que un browser real navega
+bien.
+
+## Fase 1 — Matriz de acceso de invitado: los 4 huecos reales, cerrados
+
+`src/lib/auth/accesoInvitado.ts` existía desde hacía tiempo pero era
+**código 100% muerto** — ninguna página lo importaba, `/api/attempts`
+no validaba nada server-side. Un invitado podía tipear la URL de
+Fracciones/Decimales/Potencias/Álgebra/Geometría, cualquier continente
+de Geografía, o Multiplicación/División, y jugarlos igual.
+
+Cerrado: `bloquearInvitado()` agregado a las 5 páginas de temas
+avanzados de Numeria + las 3 páginas de continentes de Geografía;
+candado visual en `/practica/temas` y `/geografia/elegir` (mismo
+patrón que ya usaba `WorldCard`); Multiplicación/División con candado
+real en `OperationPicker` (deshabilitado, no solo grisado) más el
+mismo chequeo en `PracticaClient`; defensa server-side real y nueva en
+`/api/attempts` (403 si un invitado manda un `problem_type` fuera de
+lo permitido).
+
+**Verificación en vivo, con hallazgo de metodología en el camino**:
+un primer intento de probar esto con `fetch()` crudo dio 20 falsos
+negativos — parecía que nada bloqueaba nada. La causa real no era un
+bug de producto: `redirect()` llamado DESPUÉS de que el shell ya
+empezó a streamearse no manda un 3xx normal, manda la instrucción dentro
+del payload RSC (`self.__next_f.push(...)` con un digest
+`"NEXT_REDIRECT;replace;/invitado-bloqueado?...`) para que el cliente
+navegue solo — cualquier `fetch()` sin ejecutar JS nunca lo sigue.
+Corregido el método de verificación (buscar el digest en el body en
+vez de status/location), quedó **20/20 checks confirmados** con una
+sesión anónima real: los 8 GET a páginas bloqueadas mostraron el
+digest correcto, los 2 GET a páginas permitidas cargaron normal, y las
+10 llamadas a `/api/attempts` (incluida Geografía, que sí debe
+dejarse) dieron exactamente el status esperado.
+
+## Fase 2 — Migración a proxy.ts
+
+Investigado contra `node_modules/next/dist/docs` (Next 16.3.0, según
+exige AGENTS.md): "middleware" está deprecado y renombrado a "proxy" —
+mismo comportamiento, sin cambios de API, con codemod oficial
+(`middleware-to-proxy`). Decisión: migrar ahora, es un rename puro y de
+bajo riesgo, y el proyecto ya viene arrastrando el warning de
+deprecación en cada arranque del dev server.
+
+`src/middleware.ts` → `src/proxy.ts`, función `middleware` → `proxy`,
+`config`/`matcher` sin cambios. Confirmado en vivo tras el rename: el
+guard de invitado a nivel de middleware (`/social` con una sesión
+anónima real sigue redirigiendo a `/invitado-bloqueado`, esta vez con
+un 3xx real ya que corre ANTES de cualquier render) y el redirect de
+idioma (`/` → `/es`) siguen andando idéntico. Warning de deprecación
+desaparecido del log de arranque.
+
+## Fase 3 — Estados vacíos, revisión sistemática
+
+**No se completó** — el agente en background que lo tenía asignado
+chocó con el límite de uso de la sesión antes de aplicar ningún
+cambio de código (confirmado: no tocó ningún archivo de `src/`).
+Sigue pendiente de punta a punta.
+
+## Fase 4 — Confirmar el estado real de 0037-0064
+
+Auditoría contra la base real (no el código), vía un cliente
+admin/service-role probando la existencia de cada función/columna
+distintiva de cada migración. **Nada de 0037-0064 está sin aplicar**
+— todo lo probable existe en vivo. Un hallazgo real: **`0064
+_racha_en_riesgo.sql` está aplicada pero rota** —
+`usuarios_con_racha_en_riesgo()` declara `returns table (..., email
+text, ...)` pero `auth.users.email` es `varchar(255)`, no `text` —
+Postgres rechaza el `return query` con `42804` en cada llamada. Nadie
+lo iba a notar porque la función todavía no está enchufada a nada (es
+la base para el email de "racha en riesgo" que nunca se terminó de
+implementar, ver `0064` en la tanda del 2026-08-20) — pero el día que
+se conecte a un cron, va a fallar en la primera llamada. No se corrigió
+(instrucción explícita: reportar, no correr nada sin avisar primero).
+Algunas migraciones de policies RLS puras (`0037`, `0055`, `0057`,
+parte de `0060`) no se pudieron confirmar así — la service role
+bypassea RLS y grants por columna, haría falta una sesión real de
+usuario para probarlas.
+
+## Fase 5 — El podio "cortado": diagnosticado de raíz, fix parcial
+
+Reportado como arreglado 2 veces antes sin que el problema real
+desapareciera — se cambió de método esta vez: Playwright real (recién
+instalado, Chromium headless), capturas en `/leaderboard` en los 2
+temas × 2 viewports (375px y 1920px), más lectura de `getComputedStyle`
+real de la base del podio.
+
+**El border-radius nunca fue el problema** — coincidió exacto con lo
+que pide el código en las 4 combinaciones, sin ningún
+`overflow:hidden` de por medio. El bug real, medido con
+`getBoundingClientRect()`: a 375px de ancho, la tarjeta de un usuario
+con una insignia de título larga terminaba con `left:-14.6px` y la del
+extremo opuesto con `right:389.6px` contra un viewport de 375px —
+recortadas de verdad por los bordes de la pantalla, no un problema
+visual de esquinas. Causa raíz: cada columna del podio es `flex-1`
+pero un hijo flex tiene `min-width:auto` por default — nunca se achica
+más allá del ancho mínimo de SU CONTENIDO, así que una insignia de
+rango con un título largo (`RangoBadge`, sin ningún límite de ancho ni
+truncado) empujaba esa columna más ancha que 1/3 del contenedor.
+
+Aplicado: `min-w-0` en las 3 columnas (`Podio.tsx` y su copia
+duplicada en `RankingElo.tsx`), `min-w-0 truncate` en la píldora de
+título dentro de `RangoBadge.tsx` (con `shrink-0` en ícono/nombre de
+rango para que esos nunca se corten), y un `max-w-[8.5rem]` en la
+tarjeta misma (`GlareHover` centra en vez de estirar — sin este tope
+explícito, `min-w-0` en los ancestros no alcanza, la tarjeta se sigue
+dibujando tan ancha como pida su contenido).
+
+**Estado real, sin maquillar**: la medición en vivo después del fix
+bajó el overflow de 16px a 4px, pero con las tarjetas ahora
+**superpuestas** en vez de recortadas contra el borde (`right` de una
+tarjeta mayor que el `left` de la siguiente) — mejor que antes, pero
+todavía no resuelto del todo a 375px con nombres/títulos largos. Quedó
+sin cerrar por la interrupción urgente de la landing — **pendiente
+para la próxima sesión**: lo más probable es que además haga falta
+reducir el tamaño del avatar/padding en la tarjeta del medio a
+viewports angostos, o pasar `gap-2` a algo más chico todavía por
+debajo de ~400px.
+
+## Verificación de esta tanda
+
+`npx eslint` y `npx tsc --noEmit -p tsconfig.json` (proyecto entero)
+limpios sobre todos los archivos tocados — mismos 4 errores
+preexistentes de siempre en `DiagnosticoClient.tsx` (ninguno mío).
+Migraciones pendientes de que el usuario las corra, en orden:
+`0104`, `0105`, `0106` (esta puede ir sola primero si se quiere la
+urgente resuelta ya), `0107`.
 

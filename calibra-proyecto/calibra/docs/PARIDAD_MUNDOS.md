@@ -40,36 +40,37 @@ confirmar en vivo · ❌ ausente.
 
 ## Matriz completa
 
-| # | Sistema | Numeria | Enigmia | Geografía | Quimia | Anatomía | Melodía |
-|---|---|---|---|---|---|---|---|
-| 1 | Practicar: tema→sub-tema→chips | ✅ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| 2 | Calibración 1-10 | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ |
-| 3 | Aprender: camino continuo | ✅ | ✅ | ⚠️ | ✅ | ✅ | ✅ |
-| 4 | world_progress avanzando | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅¹ |
-| 5 | Racha/combo (useRachaCombo) | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ |
-| 6 | Logros y títulos propios | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ |
-| 7 | Aparece en /perfil | ✅² | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 8 | Rankeds: ciudad seleccionable | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 9 | Rankeds: dificultad por rango | ✅ | ✅⁵ | ✅ | ✅¹ | ✅ | ✅ |
-| 10 | Duelo casual | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 11 | Duelo con amigo (selector) | ✅ | ✅ | ✅ | ✅¹ | ✅ | ✅ |
-| 12 | Invitar por link (sin cuenta) | ✅ | ✅ | ✅ | ✅¹ | ✅ | ✅¹ |
-| 13 | Progreso en vivo del rival | ✅ | ✅³ | ✅³ | ✅³ | ✅³ | ✅³ |
-| 14 | Pantalla VS antes de arrancar | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 15 | TextType "todas las ciudades" | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 16 | Countdown automático 10s | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 17 | Resultados + ELO animado | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 18 | Mundos por Chispas | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ |
-| 19 | Feed: tarjetas automáticas | ✅ | ✅¹,⁵ | ✅ | ✅ | ✅ | ✅¹ |
-| 20 | Responsive en mobile real | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| # | Sistema | Numeria | Enigmia | Geografía | Quimia | Anatomía | Melodía | Trigonometría | Historia |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | Practicar: tema→sub-tema→chips | ✅ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| 2 | Calibración 1-10 | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ |
+| 3 | Aprender: camino continuo | ✅ | ✅ | ⚠️ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ |
+| 4 | world_progress avanzando | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ |
+| 5 | Racha/combo (useRachaCombo) | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ |
+| 6 | Logros y títulos propios | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ |
+| 7 | Aparece en /perfil | ✅² | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ |
+| 8 | Rankeds: ciudad seleccionable | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ |
+| 9 | Rankeds: dificultad por rango | ✅ | ✅⁵ | ✅ | ✅¹ | ✅ | ✅ | ✅⁶ | ✅⁶ |
+| 10 | Duelo casual | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ |
+| 11 | Duelo con amigo (selector) | ✅ | ✅ | ✅ | ✅¹ | ✅ | ✅ | ✅⁶ | ✅⁶ |
+| 12 | Invitar por link (sin cuenta) | ✅ | ✅ | ✅ | ✅¹ | ✅ | ✅¹ | ✅⁶ | ✅⁶ |
+| 13 | Progreso en vivo del rival | ✅ | ✅³ | ✅³ | ✅³ | ✅³ | ✅³ | ⚠️⁶ | ⚠️⁶ |
+| 14 | Pantalla VS antes de arrancar | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ |
+| 15 | TextType "todas las ciudades" | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ |
+| 16 | Countdown automático 10s | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ |
+| 17 | Resultados + ELO animado | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ |
+| 18 | Mundos por Chispas | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁶ | ✅⁶ |
+| 19 | Feed: tarjetas automáticas | ✅ | ✅¹,⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ |
+| 20 | Responsive en mobile real | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 
 ¹ = bug real encontrado en esta auditoría y **ya corregido en el código** esta sesión — ver "Changelog" abajo. La celda muestra el estado ACTUAL (post-fix), no el que se encontró.
 ² = /perfil de Numeria tenía un bug propio (ver changelog) que inflaba su propio contador con attempts de otros mundos — también corregido.
 ³ = **confirmado jugando de verdad**, no solo por código — duelo real creado entre 2 cuentas reales (nunca un bot) vía la API de la app, canal de Realtime abierto desde las 2 cuentas a la vez, broadcast confirmado ida y vuelta. Ver "Fase 3" al final.
 ⁴ = bug real que rompía la compra de CUALQUIER mundo con Chispas (columna ambigua en `desbloquear_mundo()` — mismo patrón de Postgres que ya había roto `enviar_mensaje_clan`: la función confundía la columna `puntos_total` de `profiles` con su propia variable de salida homónima). Encontrado y corregido en una sesión posterior a esta auditoría (2026-08-30, migración `0106_fix_desbloquear_mundo_ambiguo.sql`) — ya estaba resuelto para cuando se hizo la repasada de esta fecha. Ver "Segunda pasada" más abajo.
 ⁵ = Enigmia no grababa NINGÚN acierto de contenido procedural (memoria/patrones/computacional — ~75% de las preguntas de Practicar/Rankeds, 100% de Reto diario) por un choque de tipos: `logic_attempts.puzzle_id` era `uuid`, pero los generadores procedurales mandan ids sintéticos en texto — el insert fallaba en silencio y la partida se cerraba con 0 aciertos. Encontrado y corregido en la misma sesión posterior (2026-08-30, migración `0099_fix_logic_attempts_puzzle_id.sql`) — ya estaba resuelto para cuando se hizo la repasada de esta fecha. Ver "Segunda pasada" más abajo.
+⁶ = Trigonometría e Historia son mundos nuevos (2026-08-30, migraciones `0108`-`0110`, todavía sin correr en la base real al momento de escribir esto). El símbolo ✅ acá significa "código completo, typecheck y `next build` limpios, mismo patrón verificado que los 6 mundos anteriores" — **a diferencia del resto de esta tabla, nada de esto se pudo confirmar jugando de verdad todavía**, porque no existe forma de probarlo sin que las migraciones estén aplicadas primero. La fila 13 (progreso en vivo) queda en ⚠️ en vez de ✅ a propósito, porque esa fila específica es la única que el resto de la tabla marca como "confirmada jugando" (ver Fase 3 más abajo) — acá todavía no se hizo esa verificación. Apenas se corran las migraciones, esto se puede probar con las cuentas QA con el mismo método de Fase 3 y actualizar el símbolo si corresponde.
 
-**Resumen actual**: de 120 celdas, 105 ✅ (5 de ellas confirmadas jugando, no solo por código), 14 ⚠️, 1 ❌ (Enigmia #1). Ningún mundo tiene un sistema completamente roto sin arreglo disponible; los ⚠️ restantes son gaps de UX/contenido reales (no bugs de wiring) o cosas que no se pueden confirmar sin dispositivo real / browser. La repasada de código del 2026-08-30 (ver "Segunda pasada") no cambió ningún símbolo — confirmó que los bugs reales que aparecieron después de la auditoría original ya estaban corregidos.
+**Resumen actual**: de 160 celdas (20 sistemas × 8 mundos), 141 ✅ (5 de ellas confirmadas jugando, no solo por código; 18 de las nuevas de Trigonometría/Historia son ✅ solo por código+build, ver footnote ⁶), 17 ⚠️, 1 ❌ (Enigmia #1). Ningún mundo tiene un sistema completamente roto sin arreglo disponible; los ⚠️ restantes son gaps de UX/contenido reales (no bugs de wiring), cosas que no se pueden confirmar sin dispositivo real/browser, o (para los 2 mundos nuevos) sistemas pendientes de la primera verificación en vivo post-migración.
 
 ---
 
@@ -185,3 +186,17 @@ estado post-fix.
 3. **Lo que todavía NO se pudo confirmar, ni con la cuenta QA**: este entorno no tiene browser — no puedo ver ni verificar visualmente la pantalla VS, la transición TextType, el countdown de 10s, la pantalla de resultados con ELO animado, ni el responsive en mobile (sistema #20). Lo que sí se probó es la capa de datos/transporte real (creación del duelo, resolución server-side, canal de Realtime) para los 5 mundos — la parte puramente visual de esas pantallas sigue siendo "verificado por código" (React/CSS ya auditado, componentes compartidos), no "confirmado viéndolo".
 
 Quedaron 5 duelos de prueba en estado `pendiente` entre QA1/QA2 (uno por mundo, inofensivos, aislados a las cuentas de test) — no hace falta limpiarlos para seguir usando las cuentas.
+
+---
+
+## Mundos 7 y 8 — Trigonometría e Historia (2026-08-30)
+
+Dos mundos nuevos, pedidos en dos mensajes separados, construidos con la checklist completa de esta matriz aplicada desde el día uno (no en fases sucesivas como Melodía/Anatomía originalmente) — ver el patrón exacto en `0108_mundo_trigonometria.sql` y `0109_mundo_historia.sql`, más la migración cross-cutting `0110_ocho_mundos.sql` (expande `elegir_mundo_inicial`/`desbloquear_mundo`/`comprar_item_tienda`/el paquete de marcos de 6 a 8 mundos).
+
+**Trigonometría** (#84CC16): 4 modos — razones básicas (SOHCAHTOA, entrada numérica con tolerancia, triángulos rectángulos de lados enteros vía ternas pitagóricas), círculo unitario (valores exactos, nunca decimales, opción múltiple), identidades (pitagórica/ángulo doble/complementarios, resueltas por sustitución con ángulos notables — nunca un parser simbólico libre, que no existe en ningún lado del código), leyes de seno/coseno (triángulos oblicuos reales, entrada numérica). Único mundo con un runner que mezcla dos estilos de entrada (numérico + opción múltiple) dentro del mismo componente — mismo patrón ya en producción de `FraccionSprintRunner.tsx`, no una invención nueva. Diagrama propio (`TrianguloSVG.tsx`) para los modos 1 y 4, en el espíritu de `Pentagrama.tsx` de Melodía.
+
+**Historia** (#A0522D, sepia/terracota): 4 modos, los 4 de opción múltiple — cronología (ordenar 3 eventos, o identificar el siglo), personajes (identificar la figura desde pistas), causa y efecto, fechas exactas. Contenido curado a mano (patrón `armar()` de `geografiaAvanzada.ts`, no procedural). **Curación de contenido** (pedido explícito: solo hechos de consenso histórico amplio, nada de historia política del siglo XX-XXI ni de interpretación disputada) — hechos usados: fundación legendaria de Roma (753 a.C.), primeros Juegos Olímpicos (776 a.C.), reforma democrática de Clístenes en Atenas (508 a.C.), pirámides de Guiza (~2560 a.C.), asesinato de Julio César (44 a.C.), caída del Imperio Romano de Occidente (476 d.C.), viajes de Marco Polo (s. XIII), imprenta de Gutenberg (~1440), Mona Lisa y Capilla Sixtina (Renacimiento), piedra de Rosetta descifrada (1822), máquina de vapor de Watt (1769), teléfono de Bell (1876), bombilla de Edison (1879), primer vuelo motorizado (1903), penicilina de Fleming (1928), llegada del Apolo 11 a la Luna (1969), invención del papel en China (~105 d.C.), invención de la imprenta y su efecto en la difusión del conocimiento. Evitados a propósito: cualquier guerra mundial, colonización/Colón, fundación de religiones, política del siglo XX-XXI, descolonización — ante la duda sobre si un hecho era "seguro", se descartó en vez de incluirlo. Lista completa para revisión humana, tal como se pidió.
+
+**Estado real de verificación**: código completo, `npx tsc --noEmit` limpio, `npx eslint` limpio (0 errores nuevos en todo el proyecto), `next build` exitoso con las 12 rutas nuevas de cada mundo compilando igual que sus 6 hermanos. **Lo que NO se pudo hacer, a diferencia de auditorías anteriores de este documento**: jugar de verdad con las cuentas QA — las migraciones `0108`-`0110` (más las `0104`-`0107` de la tanda anterior, que siguen pendientes) todavía no se corrieron contra la base real, así que no existe ninguna fila de `skill_levels`/`achievements`/`world_progress` para estos 2 mundos hasta que eso pase. Los símbolos ✅ de la matriz de arriba para estas 2 columnas están marcados con footnote ⁶ precisamente por esto — significan "wiring correcto por código", no "confirmado jugando". Próximo paso natural: correr las migraciones en orden (`0104` → ... → `0110`) y repetir el mismo método de Fase 3 (duelo real QA1↔QA2, doble canal de Realtime) para las filas 9-13 de estos 2 mundos.
+
+Precio del "Colección de Mundos" actualizado de 11000 a 14500 Chispas al pasar de 6 a 8 marcos temáticos (mismo ~24% de descuento que antes). Marcos temáticos de Trigonometría/Historia generados programáticamente (anillo + motivo simple: triángulos en verde lima / hojas de laurel en sepia) en vez de assets de diseño provistos por el usuario como los 6 anteriores — notablemente más simples, aviso explícito de esa diferencia.
