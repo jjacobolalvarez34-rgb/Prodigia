@@ -213,7 +213,73 @@
     "dobleONadaDescripcion": "Bet Chispas that your next match beats your historical accuracy. If you win, it doubles.",
     "dobleONadaAviso": "This never uses real money — it's only with your in-game Chispas. Max bet: {max} Chispas. You can hide this section from Settings if you'd rather not see it.",
     "apuestaActivaAviso": "You have an active bet — it settles with your next match.",
-    "apostarMonto": "Bet {monto}"
+    "apostarMonto": "Bet {monto}",
+    "laTrastienda": "The Back Room",
+    "sotanoDescripcion": "The Bazaar's basement — where Prodigia makes its most dangerous deals.",
+    "volverAlBazar": "Back to the Bazaar",
+    "cajaFuerte": "Safe",
+    "apuestaPendiente": "Pending",
+    "trastienda": {
+      "ruleta": {
+        "titulo": "The Dealer's Wheel",
+        "descripcion": "One spin, one fate. The house always wins — eventually.",
+        "girar": "SPIN",
+        "girando": "Spinning…",
+        "costoNormal": "Cost: {costo} Chispas",
+        "costoPrimero": "First spin of the day: {costo} Chispas",
+        "pityActivo": "Pity active: prize guaranteed",
+        "limiteDiario": "You already spun your 5 today. Come back tomorrow.",
+        "resultado": "Result",
+        "premios": {
+          "boost": "Chispas boost",
+          "escudo": "Extra shield",
+          "congelamiento": "Freeze streak",
+          "chispas": "{n} Chispas",
+          "fuente": "New font",
+          "marco": "New frame",
+          "nada": "No prize…"
+        }
+      },
+      "volado": {
+        "titulo": "The Dealer's Coin Flip",
+        "descripcion": "Heads or tails. You can stop after any round — or double down.",
+        "elegiCaraO": "Pick heads or tails",
+        "cara": "HEADS",
+        "cruz": "TAILS",
+        "tirar": "FLIP",
+        "tirando": "Flipping…",
+        "ronda": "Round {n}",
+        "entrada": "Entry: {n} Chispas",
+        "ganaste": "You won! +{n} Chispas",
+        "perdiste": "The coin got away. 0 Chispas.",
+        "seguir": "Keep going (round {n})",
+        "parar": "Stop and take {n}"
+      },
+      "pizarra": {
+        "titulo": "The Professor's Board",
+        "descripcion": "Guess the number between 1 and 100. Each question costs Chispas — you get 7 tries.",
+        "entrar": "Enter the board (30 Chispas)",
+        "entrando": "Entering…",
+        "preguntar": "Ask (10 Chispas)",
+        "intentos": "Tries: {n}/7",
+        "ganaste": "Nailed it! +{n} Chispas",
+        "perdiste": "You ran out of tries.",
+        "deNuevo": "Play again"
+      },
+      "historial": {
+        "titulo": "Recent activity",
+        "vacio": "No movement around here yet.",
+        "ruleta": "Wheel",
+        "volado": "Coin flip",
+        "la_pizarra": "The Board"
+      },
+      "errores": {
+        "girar": "Couldn't spin.",
+        "tirar": "Couldn't flip.",
+        "pizarra": "Couldn't play the board.",
+        "historial": "Couldn't load history."
+      }
+    }
   },
   "Common": {
     "entendido": "Got it",

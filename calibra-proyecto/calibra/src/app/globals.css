@@ -25,6 +25,22 @@
   --racha: #ff8a3d;
   --error: #ff6b6b;
   --logro: #ffc53d;
+
+  /* Trastienda — el sótano del Bazar: paleta violeta oscuro aislada del
+     resto de la app. Siempre oscura por diseño (VER TRASTIENDA-VISUAL). */
+  --tt-bg: #1a1118;
+  --tt-surface: #2a1f28;
+  --tt-surface-2: #3d2e3a;
+  --tt-border: #4a3848;
+  --tt-text: #f0e6ec;
+  --tt-text-muted: #9a8a96;
+  --tt-accent: #ffc53d;
+  --tt-accent-bright: #ffd86b;
+  --tt-neon: #7c5cff;
+  --tt-success: #3fb88b;
+  --tt-danger: #ff6b6b;
+  --tt-danger-muted: #ff6b6b80;
+  --tt-glow: rgba(124, 92, 255, 0.12);
 }
 
 /* Modo oscuro por preferencia del sistema (si el usuario no eligió explícitamente) */
@@ -41,6 +57,21 @@
     --racha: #ff8a3d;
     --error: #ff5d5d;
     --logro: #ffb627;
+
+    /* Trastienda (dark) — más profundo que el claro: un sótano más inmersivo */
+    --tt-bg: #0d0a10;
+    --tt-surface: #1a1420;
+    --tt-surface-2: #261c2e;
+    --tt-border: #352a38;
+    --tt-text: #e8dce4;
+    --tt-text-muted: #7a6a78;
+    --tt-accent: #ffb627;
+    --tt-accent-bright: #ffc84d;
+    --tt-neon: #7c5cff;
+    --tt-success: #3ddc97;
+    --tt-danger: #ff5d5d;
+    --tt-danger-muted: #ff5d5d80;
+    --tt-glow: rgba(124, 92, 255, 0.18);
   }
 }
 
@@ -57,6 +88,21 @@
   --racha: #ff8a3d;
   --error: #ff5d5d;
   --logro: #ffb627;
+
+  /* Trastienda (dark) — ver bloque de prefers-color-scheme */
+  --tt-bg: #0d0a10;
+  --tt-surface: #1a1420;
+  --tt-surface-2: #261c2e;
+  --tt-border: #352a38;
+  --tt-text: #e8dce4;
+  --tt-text-muted: #7a6a78;
+  --tt-accent: #ffb627;
+  --tt-accent-bright: #ffc84d;
+  --tt-neon: #7c5cff;
+  --tt-success: #3ddc97;
+  --tt-danger: #ff5d5d;
+  --tt-danger-muted: #ff5d5d80;
+  --tt-glow: rgba(124, 92, 255, 0.18);
 }
 
 @theme inline {
@@ -71,6 +117,18 @@
   --color-racha: var(--racha);
   --color-error: var(--error);
   --color-logro: var(--logro);
+  --color-tt-bg: var(--tt-bg);
+  --color-tt-surface: var(--tt-surface);
+  --color-tt-surface-2: var(--tt-surface-2);
+  --color-tt-border: var(--tt-border);
+  --color-tt-text: var(--tt-text);
+  --color-tt-text-muted: var(--tt-text-muted);
+  --color-tt-accent: var(--tt-accent);
+  --color-tt-accent-bright: var(--tt-accent-bright);
+  --color-tt-neon: var(--tt-neon);
+  --color-tt-success: var(--tt-success);
+  --color-tt-danger: var(--tt-danger);
+  --color-tt-danger-muted: var(--tt-danger-muted);
   --font-display: var(--font-space-grotesk);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);

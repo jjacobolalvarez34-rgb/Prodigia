@@ -3608,3 +3608,64 @@ escribir intentos/niveles/XP directo.
 - PENDIENTE: aplicar `0120_cerrar_s0_s1.sql` a prod (DDL manual) y re-observar flujo
   legítimo (finish de práctica/Enigmia, calibración). Docs actualizados: AUDIT-RLS-…,
   MASTER-AUDIT.md, PROJECT-STATE.md.
+
+---
+
+## 2026-09-09 — Fase marketing-real + i18n + tienda + UX
+
+### Delegación (6 agentes, entregables en docs, sin código en esa ronda)
+- i18n → `docs/audits/I18N-AUDIT.md`.
+- Dirección artística → `docs/marketing/DIRECCION-ARTISTICA.md` (+ append en EXTERNAL-RESOURCES.md).
+- Video/storyboards → `docs/marketing/ANUNCIOS-VIDEO-2026-09-09.md` + `STORYBOARD-TRAILER-PRINCIPAL.md`.
+- Tienda/economía → `docs/audits/TIENDA-EXPANSION-2026-09-09.md`.
+- Trastienda visual → `docs/audits/TRASTIENDA-VISUAL-2026-09-09.md`.
+- UX producto → `docs/audits/PRODUCT-UX-AUDIT.md`.
+
+### Construí (implementación pedida por el PO: "ya hazlo, implementalo")
+- Trastienda con identidad visual propia sobre el módulo existente (sin tocar mecánica):
+  - Tokens `--tt-*` en `src/app/globals.css` (bloques `:root`, `prefers-color-scheme:dark`,
+    `[data-theme="dark"]` + `@theme` para clases `bg-tt-surface`/`text-tt-accent`/etc.).
+  - `TiendaClient.tsx`: puerta con emblema `IconCandado` (adiós 🚪), sala SIEMPRE oscura
+    (rayo de luz violeta, header "Volver al Bazar" + caja fuerte con balance mono dorado,
+    montos como chips de mesa, apuesta activa con badge "⏳ Pendiente", marca de agua del
+    candado). Prop `onVolver` nuevo al componente `Trastienda`.
+  - Copy nuevo en `messages/es.json` y `messages/en.json` (laTrastienda, sotanoDescripcion,
+    volverAlBazar, cajaFuerte, apuestaPendiente).
+
+### Verifiqué
+- npx tsc --noEmit: 0.  npx eslint `TiendaClient.tsx`: 0.  npx vitest run: 126/126.
+- Piezas publicitarias (eje claro): renderizadas con Playwright headless (sin dev server,
+  vía `file://`) → 4 PNG con dimensiones exactas (1080×1080 ×3, 1200×630) en
+  `docs/marketing/assets/piezas/`, HTML editables + script `scripts/piezas-reales.mjs`.
+
+### Resultado
+- VERIFICADO POR CÓDIGO. PENDIENTE usuario: ver la Trastienda nueva en el navegador.
+- Piezas eje oscuro: BLOQUEADO (no hay capturas reales del dark mode — requiere tunnel del usuario).
+- Manifiesto de lo que NO se implementó (a propósito): ruleta, mesa de apuestas,
+  minijuegos, vitrina de objeto raro, títulos — dependen de la economía server de
+  `TRASTIENDA-ECONOMIA.md` (migraciones) que aún no existe + decisiones PO de las
+  propuestas P4-P10 de `TRASTIENDA-VISUAL`. Queda registrado en DECISIONS.md y TECH-DEBT.md.
+
+---
+
+## 2026-09-09 — Trastienda: economía server corte 1 (ruleta + volado + pizarra + historial + fix doble o nada)
+
+### Construí
+- **Migración `supabase/migrations/0121_trastienda_economia.sql`** (DDL manual — el PO la aplica):
+  - Tablas: `trastienda_ruleta` (giros por día), `trastienda_minijuegos` (volado: rondas/pagos/estado apuesta), `trastienda_pizarra` (el secreto 1-100, SIN RLS ni grants — solo RPC `security definer`).
+  - RPCs: `girar_ruleta()` (10 segmentos, límite 5/día, 1er giro 120, siguientes 150, pity 3→4º), `tirar_volado(ronda, eleccion)` (RNG server, entradas 30/60/120 → 55/110/220), `iniciar_la_pizarra()` + `adivinar_la_pizarra(id, intento)` (entrada 30, 10/pregunta, máx 7, máx 3/día; pagos 170/100/50), `fetch_trastienda_historial()` (últimas 8).
+  - **Recrea resiliente** `apostar_doble_o_nada` y `resolver_apuesta_si_activa`: guards `to_regclass('public.logic_attempts'/'duel_results')` + `ADD COLUMN IF NOT EXISTS apuesta_monto/apuesta_umbral`. Hipótesis: el "Algo salió mal" genérico del usuario era 42P01 (tablas inexistentes en prod).
+- **Cliente:**
+  - `src/lib/trastienda/ruleta.ts` (orden/probabilidades/colores espejo SQL, `RULETA_COSTO_FIRST/NORMAL`, `RULETA_LIMITE_DIARIO=5`, `RULETA_PITY=3`, `angulosRuleta`, `conicGradientRuleta`, `rotacionParaSegmento`, `evGiroRuleta`) + `src/lib/trastienda/tipos.ts`.
+  - Rutas `src/app/api/trastienda/{girar-ruleta,volado,pizarra,historial}/route.ts` (patrón `respuestaError`).
+  - Componentes `src/components/trastienda/{Ruleta,Volado,Pizarra,HistorialTrastienda}.tsx` integrados en `TiendaClient.tsx` (sala Trastienda).
+  - Keys `Tienda.trastienda` en `messages/es.json` y `messages/en.json` (47 c/u, espejadas).
+  - Test `src/lib/trastienda/ruleta.test.ts` (6 casos: probabilidades suman 100, ángulos cubren 360, gradient, rotación→aguja, EV<1 con pity, escudo=placeholder).
+
+### Verifiqué
+- npx tsc --noEmit: 0. npx eslint (trastienda lib/components/api + TiendaClient): 0. npx vitest run: **132/132** (126 previos + 6 nuevos). npx next build: limpio, con las 4 rutas `/api/trastienda/*`. Paridad i18n es/en: 47/47 (script de diff).
+
+### Resultado
+- **VERIFICADO POR CÓDIGO.** SQL sin validar contra la DB (sin acceso).
+- **PENDIENTE usuario:** (1) aplicar `0121_trastienda_economia.sql` a prod; (2) retestear el doble o nada (debería dejar de dar "Algo salió mal" si la causa era 42P01); (3) probar ruleta/volado/pizarra en browser (tunnel del usuario); (4) confirmar dominio del dev tunnel.
+- DIFERIDOS a decisión PO: Mecánica 1 (apuestas a partida de otro), Mecánica 2 (predicciones de ranking), Mecánica 3 (títulos Trastienda), minijuegos La Calcu/Acertijos/El Reloj, ruleta horizontal vs tómbola vertical (P4). Ver DECISIONS.md y TECH-DEBT.md.

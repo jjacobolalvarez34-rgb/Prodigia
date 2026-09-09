@@ -213,7 +213,73 @@
     "dobleONadaDescripcion": "Apostá Chispas a que tu próxima partida supera tu precisión histórica. Si ganás, se duplica.",
     "dobleONadaAviso": "Esto nunca usa dinero real — es solo con tus Chispas del juego. Apuesta máxima: {max} Chispas. Podés ocultar esta sección desde Ajustes si preferís no verla.",
     "apuestaActivaAviso": "Tenés una apuesta activa — se resuelve con tu próxima partida.",
-    "apostarMonto": "Apostar {monto}"
+    "apostarMonto": "Apostar {monto}",
+    "laTrastienda": "La Trastienda",
+    "sotanoDescripcion": "El sótano del Bazar — donde Prodigia va a hacer sus tratos más peligrosos.",
+    "volverAlBazar": "Volver al Bazar",
+    "cajaFuerte": "Caja fuerte",
+    "apuestaPendiente": "Pendiente",
+    "trastienda": {
+      "ruleta": {
+        "titulo": "La Ruleta del Trastiendista",
+        "descripcion": "Un giro, un destino. La casa siempre gana — pero a la larga.",
+        "girar": "GIRAR",
+        "girando": "Girando…",
+        "costoNormal": "Costo: {costo} Chispas",
+        "costoPrimero": "Primer giro del día: {costo} Chispas",
+        "pityActivo": "Pity activo: premio asegurado",
+        "limiteDiario": "Ya giraste las 5 veces de hoy. Volvé mañana.",
+        "resultado": "Resultado",
+        "premios": {
+          "boost": "Boost de Chispas",
+          "escudo": "Escudo extra",
+          "congelamiento": "Congelar racha",
+          "chispas": "{n} Chispas",
+          "fuente": "Fuente nueva",
+          "marco": "Marco nuevo",
+          "nada": "Sin premio…"
+        }
+      },
+      "volado": {
+        "titulo": "Volado del Trastiendista",
+        "descripcion": "Cara o cruz. Podés parar en cualquier ronda — o doblar la apuesta.",
+        "elegiCaraO": "Elegí cara o cruz",
+        "cara": "CARA",
+        "cruz": "CRUZ",
+        "tirar": "TIRAR",
+        "tirando": "Tirando…",
+        "ronda": "Ronda {n}",
+        "entrada": "Entrada: {n} Chispas",
+        "ganaste": "¡Saliste ganando! +{n} Chispas",
+        "perdiste": "Se te fue la moneda. 0 Chispas.",
+        "seguir": "Seguir (ronda {n})",
+        "parar": "Parar y llevarte {n}"
+      },
+      "pizarra": {
+        "titulo": "La Pizarra del Profesor",
+        "descripcion": "Adiviná el número entre 1 y 100. Cada pregunta cuesta Chispas — tenés 7 intentos.",
+        "entrar": "Entrar a la pizarra (30 Chispas)",
+        "entrando": "Entrando…",
+        "preguntar": "Preguntar (10 Chispas)",
+        "intentos": "Intentos: {n}/7",
+        "ganaste": "¡Lo clavaste! +{n} Chispas",
+        "perdiste": "Se acabaron los intentos.",
+        "deNuevo": "Jugar de nuevo"
+      },
+      "historial": {
+        "titulo": "Historial reciente",
+        "vacio": "Todavía no hay movimiento por acá.",
+        "ruleta": "Ruleta",
+        "volado": "Volado",
+        "la_pizarra": "La Pizarra"
+      },
+      "errores": {
+        "girar": "No se pudo girar.",
+        "tirar": "No se pudo tirar.",
+        "pizarra": "No se pudo jugar a la pizarra.",
+        "historial": "No se pudo cargar el historial."
+      }
+    }
   },
   "Common": {
     "entendido": "Entendido",

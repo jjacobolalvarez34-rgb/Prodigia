@@ -25,6 +25,7 @@
 
 ## Deuda por dominio (para auditar, Fase B/C)
 
+- **Trastienda: economía server del primer corte implementada en `0121` (ruleta + volado + pizarra + historial).** El 2026-09-09 se aplicó la piel visual (tokens `--tt-*`, caja fuerte, candado) sobre el doble o nada; el mismo día se escribió `supabase/migrations/0121_trastienda_economia.sql` (tablas `trastienda_ruleta`, `trastienda_minijuegos`, `trastienda_pizarra` + RPCs `girar_ruleta`/`tirar_volado`/`iniciar_la_pizarra`/`adivinar_la_pizarra`/`fetch_trastienda_historial`) y el cliente (4 rutas API + 4 componentes + keys es/en). **DIFERIDO a un corte posterior** (ver `TRASTIENDA-ECONOMIA.md`): Mecánica 1 (mesa de apuestas a partidas de otros), Mecánica 2 (predicciones de ranking), Mecánica 3 (títulos de Trastienda — el segmento "titulo" de la ruleta entrega un escudo placeholder), y los minijuegos La Calcu/Acertijos/El Reloj. Propuestas visuales P4-P10 de `TRASTIENDA-VISUAL` siguen PENDIENTES (la ruleta implementada es horizontal circular, no la tómbola vertical P4). `PENDIENTE` (aplicar 0121 a prod y retestear en vivo).
 - Verificar que `supabase/functions/*` tengan los secrets necesarios y callback de push configurado (0114). `PENDIENTE`.
 - Verificar cobertura RLS post-0102 y huecos conocidos en `DIAGNOSTICO.md` Caja A (config de Supabase del dashboard no es código). `PENDIENTE`.
 - `proxy.ts` sin documentar bien. `PENDIENTE`.

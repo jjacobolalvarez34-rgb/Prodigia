@@ -30,6 +30,10 @@
 | PENDIENTE | Fase D: reproducir P0 reto diario/semanal | daily-weekly-challenges | — |
 | COMPLETADO | Fase B: auditoría del mapa (rutas/RPC/migraciones 0001-0115) | repo-architect | 2026-09-07 |
 | COMPLETADO | Cierre familia S0/S1/S2/S3/S4/S8 (RLS economía/progreso): migración 0120 + rutas a RPC security definer | auth-security | 2026-09-08 |
+| COMPLETADO | Trastienda visual: identidad "sótano del Bazar" implementada (tokens --tt-*, caja fuerte, emblema candado, sala siempre oscura) sobre el doble o nada — mecánica intacta | orchestrator/visual-design | 2026-09-09 |
+| COMPLETADO (eje claro) | Piezas publicitarias reales: 4 piezas renderizadas (8-mundos, numeria-sprint, reto-diario square + melodia banner) + README + script `scripts/piezas-reales.mjs` | marketing/orchestrator | 2026-09-09 |
+| PENDIENTE | Piezas eje OSCURO (requiere capturas reales del dark mode — tunnel del usuario) | marketing | 2026-09-09 |
+| COMPLETADO (corte 1) | Módulos nuevos de Trastienda (ruleta, volado, pizarra, historial) + economía server `0121` + fix resiliente doble o nada — M1/M2/M3 y minijuegos restantes DIFERIDOS | store-economy/visual-design/ux-ui | 2026-09-09 |
 | PENDIENTE | Auditoría RLS/seguridad: repro en vivo + fix S5 (p_precision) y S9 (edge) | auth-security | — |
 | PENDIENTE | Fase C: auditoría economía/tienda | store-economy | — |
 | PENDIENTE | Fase C: auditoría marketing | marketing | — |
@@ -113,7 +117,10 @@ Resultado:
 - RESULTADO: CONFIRMADO POR CÓDIGO (S0-S4/S8 cerradas; quedan S5/S9). PENDIENTE: aplicar 0120
   a prod por el PO y re-observar finish de práctica/Enigmia.
 
-### CLAIM: P0 bug "2 mundos" (trabado + numeria sola) · onboarding-landing · 2026-09-08
+### CLAIM: Fase marketing-real + i18n + tienda + UX · orchestrator · 2026-09-09
+Estado: EN CURSO (delegada en especialistas; ver TODOS abajo)
+Áreas: docs/marketing/** (piezas reales), docs/audits/I18N-AUDIT.md, TIENDA-EXPANSION-2026-09-09.md, TRASTIENDA-VISUAL-2026-09-09.md, PRODUCT-UX-AUDIT.md, EXTERNAL-RESOURCES.md, DECISIONS.md, TECH-DEBT.md.
+Plan: (A) piezas publicitarias reales light+dark a partir de las 30 capturas existentes + capturas dark vía Playwright; (B) auditoría i18n ; (C) expansión tienda; (D) diseño visual Trastienda; (E) prototipos de video; (F) UX audit. NO tocar migraciones/producción aún.
 Estado: COMPLETADO en código (ver CIERRE); verificación en vivo la hace el usuario (aplicar 0116 + tunnel).
 Áreas tocadas: `supabase/migrations/0116_fix_elegir_dos_mundos.sql` (nuevo), `src/lib/auth/guard.ts`, `src/app/[locale]/onboarding/page.tsx`, `src/app/[locale]/onboarding/OnboardingForm.tsx`, `src/components/landing/FlujoElegirMundos.tsx`, `src/lib/mundos/precios.ts` (comentario), `src/types/database.ts` (comentario).
 Plan: INVESTIGAR (2 subagentes explore: flujo cliente + RPC/DB) → CORREGIR → VERIFICAR (tsc/lint/test/build) → DOCUMENTAR → usuario aplica 0116 y retestea en vivo.
@@ -214,3 +221,26 @@ Resultado en `RETO-DIRECTO-AMIGO-2026-09-08.md`. REPRODUCIDO con 2 cuentas QA re
 - IMPLEMENTACIÓN: `NotificacionesDuelo.tsx` — suscripción con `onAuthStateChange` (re-canal por sesión + cleanup) + destino con `hrefDuelo(mundo, operation_type, duel_id, sub_tipo)` + etiqueta traducida. Sin migración (fix 100% cliente).
 - VERIFICACIÓN e2e real (login SIN reload, el flujo que fallaba): Numeria ✓ (toast ~3s → ambos en sala), Geografía ✓ (toast "Te retaron a un duelo de Geografía (América)" → sala de geografía). tsc 0 · eslint 0.
 - RESULTADO: REPRODUCIDO REAL → CAUSA RAÍZ → CORREGIDO → VERIFICADO EN BROWSER (2 usuarios). Pendiente opcional: mismo hrefDuelo en Feed.tsx:217.
+
+### CIERRE: Fase marketing-real + i18n + tienda + UX · orchestrator · 2026-09-09
+Resultado:
+- DELEGUÉ en 6 agentes: i18n (I18N-AUDIT.md), dirección artística (DIRECCION-ARTISTICA.md + EXTERNAL-RESOURCES), video (ANUNCIOS-VIDEO + STORYBOARD-TRAILER-PRINCIPAL), tienda (TIENDA-EXPANSION-2026-09-09.md), Trastienda visual (TRASTIENDA-VISUAL-2026-09-09.md) y UX (PRODUCT-UX-AUDIT.md). Entregaron docs (ronda de estudio, no código) — el PO confundió docs con implementación y pidió "implementalo".
+- IMPLEMENTÉ la Trastienda visual sobre el módulo existente: tokens `--tt-*` en `globals.css` (3 bloques + @theme), `TiendaClient.tsx` con puerta-emblema candado, sala siempre oscura (rayo de luz, caja fuerte, chips de monto, badge pendiente, marca de agua), prop `onVolver`, copy nuevo en `es.json`/`en.json`.
+- VERIFIQUÉ: tsc 0 · eslint tocados 0 · vitest 126/126.
+- PENDIENTE: (a) piezas eje OSCURO (requiere capturas dark reales del app — tunnel del usuario); (b) integrar detalles finos de los entregables si el PO los aprueba; (c) usuario verifica la Trastienda en browser. Los módulos nuevos (ruleta, apuestas, minijuegos, títulos) NO se implementan: requieren economía server de `TRASTIENDA-ECONOMIA.md` + decisión PO (ver DECISIONS.md y TECH-DEBT.md).
+
+### CLAIM: Trastienda economía corte 1 (ruleta + volado + pizarra + historial + fix doble o nada) · store-economy+visual-design · 2026-09-09
+Estado: CERRADO (ver CIERRE abajo).
+Áreas tocadas: `supabase/migrations/0121_trastienda_economia.sql`, `src/lib/trastienda/*`, `src/app/api/trastienda/*`, `src/components/trastienda/*`, `src/app/[locale]/tienda/TiendaClient.tsx`, `messages/es.json` + `messages/en.json`, `src/lib/trastienda/ruleta.test.ts`.
+
+### CIERRE: Trastienda economía corte 1 (ruleta + volado + pizarra + historial + fix doble o nada) · store-economy+visual-design · 2026-09-09
+Resultado:
+- CONSTRUÍ migración `0121_trastienda_economia.sql`: tablas `trastienda_ruleta`, `trastienda_minijuegos`, `trastienda_pizarra` (sin RLS ni grants — secreto solo vía RPC) + RPCs `girar_ruleta`, `tirar_volado`, `iniciar_la_pizarra`, `adivinar_la_pizarra`, `fetch_trastienda_historial`; recrea de forma RESILIENTE `apostar_doble_o_nada` y `resolver_apuesta_si_activa` (guards `to_regclass` + `ADD COLUMN IF NOT EXISTS` → el "Algo salió mal" era probablemente 42P01 por tablas inexistentes en prod, HIPÓTESIS).
+- Cliente: 4 rutas API (girar-ruleta/volado/pizarra/historial), 4 componentes (Ruleta/Volado/Pizarra/HistorialTrastienda), `TiendaClient.tsx` integra todo (props `historialVersion`/`onPuntos`/`onMovimiento`), keys `Tienda.trastienda` espejadas es/en (47 cada una, verificado por script).
+- DIFERIDO a decisión PO: Mecánica 1 (apuestas a partida), Mecánica 2 (predicciones ranking), Mecánica 3 (títulos — ruleta entrega escudo placeholder), minijuegos La Calcu/Acertijos/Reloj.
+- VERIFIQUÉ: tsc 0 · eslint tocados 0 · vitest 132/132 (126 previos + 6 tests nuevos de ruleta: probabilidades 100, ángulos 360, gradient, rotación→aguja, EV en rango, valor escudo) · build limpio (rutas nuevas listadas). Paridad i18n 47/47.
+- RESULTADO: VERIFICADO POR CÓDIGO. PENDIENTE usuario: aplicar `0121_trastienda_economia.sql` a prod; retestear doble o nada + módulos nuevos en browser (tunnel/decisions en DECISIONS.md).
+
+### CIERRE: Trastienda economía corte 1 (doble o nada) · store-economy · 2026-09-09
+Resultado: fix resiliente incluido en 0121 (to_regclass + ADD COLUMN IF NOT EXISTS). Causa raíz en la apuesta activa: HIPÓTESIS 42P01 (logic_attempts/duel_results ausentes en prod) — no confirmable sin acceso a la DB. EV 0.92/0.94 intacto.
+- ESTADO: VERIFICADO POR CÓDIGO. Piezas eje claro: renderizadas (Playwright headless, sin server) en `docs/marketing/assets/piezas/` (4 PNG + HTML editables + script `scripts/piezas-reales.mjs`).

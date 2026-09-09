@@ -609,3 +609,45 @@ See more: https://nextjs.org/docs/app/guides/local-development
  GET /es/geografia/practica?duelo=17c46808-c560-490a-b2bc-c9bec91e5449 307 in 219ms (proxy.ts: 165ms)
  GET /es/geografia/practica?duelo=17c46808-c560-490a-b2bc-c9bec91e5449 200 in 1283ms (next.js: 35ms, proxy.ts: 173ms, generate-params: 26ms, application-code: 1049ms)
  GET /es/geografia/practica?duelo=17c46808-c560-490a-b2bc-c9bec91e5449 200 in 1171ms (next.js: 70ms, proxy.ts: 166ms, generate-params: 0.1ms, application-code: 935ms)
+✓ Finished writing to filesystem cache in 39.1s
+ GET /es 200 in 22.1s (next.js: 3.5s, proxy.ts: 5.3s, generate-params: 444ms, application-code: 12.9s)
+○ Compiling /[locale]/onboarding ...
+⨯ SyntaxError: Unexpected non-whitespace character after JSON at position 2314 (line 1 column 2315)
+    at JSON.parse (<anonymous>) {
+  page: '/es/onboarding'
+}
+⨯ SyntaxError: Unexpected non-whitespace character after JSON at position 2314 (line 1 column 2315)
+    at JSON.parse (<anonymous>) {
+  page: '/es/tienda'
+}
+○ Compiling /_error ...
+⨯ SyntaxError: Unexpected non-whitespace character after JSON at position 2314 (line 1 column 2315)
+    at JSON.parse (<anonymous>)
+⨯ SyntaxError: Unexpected non-whitespace character after JSON at position 2314 (line 1 column 2315)
+    at JSON.parse (<anonymous>)
+SyntaxError: Unexpected non-whitespace character after JSON at position 2314 (line 1 column 2315)
+    at JSON.parse (<anonymous>) {
+  page: '/es/onboarding'
+}
+SyntaxError: Unexpected non-whitespace character after JSON at position 2314 (line 1 column 2315)
+    at JSON.parse (<anonymous>) {
+  page: '/es/tienda'
+}
+⨯ SyntaxError: Unexpected non-whitespace character after JSON at position 2314 (line 1 column 2315)
+    at JSON.parse (<anonymous>)
+⨯ SyntaxError: Unexpected non-whitespace character after JSON at position 2314 (line 1 column 2315)
+    at JSON.parse (<anonymous>)
+SyntaxError: Unexpected non-whitespace character after JSON at position 2314 (line 1 column 2315)
+    at JSON.parse (<anonymous>)
+SyntaxError: Unexpected non-whitespace character after JSON at position 2314 (line 1 column 2315)
+    at JSON.parse (<anonymous>)
+✓ Finished writing to filesystem cache in 35.8s
+
+thread 'tokio-rt-worker' (1496) panicked at turbopack\crates\turbo-tasks-backend\src\backend\operation\mod.rs:292:17:
+Restore of All for task TaskId 344800 failed in another thread: restoring failed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+turbo-tasks: an internal panic occurred outside the per-task panic boundary. This is a bug in turbo-tasks/Turbopack — please report it at https://github.com/vercel/next.js/discussions and include the panic message and stack trace above.
+
+Aborting.
+[?25h
