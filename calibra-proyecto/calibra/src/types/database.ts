@@ -85,7 +85,7 @@ export interface Profile {
   onboarding_melodia_completado: boolean; // diagnóstico de Melodía hecho/salteado
   onboarding_trigonometria_completado: boolean; // diagnóstico de Trigonometría hecho/salteado
   onboarding_historia_completado: boolean; // diagnóstico de Historia hecho/salteado
-  mundos_desbloqueados: string[]; // Fase 12: qué mundos ya compró con Chispas — 'numeria' siempre presente
+  mundos_desbloqueados: string[]; // Fase 12: qué mundos ya compró/eligió — puede no incluir 'numeria'
   nivel_cuenta: number; // Fase 4 (nivel de cuenta): nivel general de la cuenta, no el de un mundo puntual
   idioma: "es" | "en";
   interes_inicial: ArithmeticProblemType | "logica" | null; // capa Prodigia del onboarding

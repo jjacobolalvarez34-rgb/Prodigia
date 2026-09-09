@@ -22,9 +22,11 @@ const TIMEOUT_ABANDONO_MS = 60_000;
 // timeout de 45s en useArranqueSincronizado), si el rival deja de
 // responder al Presence de Realtime por más de 1 minuto seguido, se
 // dispara onAbandonoDetectado (el caller decide qué hacer — normalmente
-// llamar a /api/duelos/reclamar-abandono). Mismo canal `duelo:<id>` que
-// ya usan useArranqueSincronizado y useProgresoEnVivo — Supabase permite
-// varias suscripciones propias al mismo topic sin conflicto.
+// llamar a /api/duelos/reclamar-abandono). Topic PROPIO (`duelo:<id>:abandono`),
+// no el canal `duelo:<id>:sala` de useArranqueSincronizado:
+// RealtimeClient.channel() reusa un canal existente con el mismo topic, y
+// registrar callbacks de `presence` sobre un canal ya suscripto lanza
+// "cannot add `presence` callbacks ... after `subscribe()`" (crash del duelo).
 export function useDeteccionAbandono({ duelId, miUserId, rivalId, rivalEsBot = false, activo, onAbandonoDetectado }: Params) {
   const [rivalAusenteDesde, setRivalAusenteDesde] = useState<number | null>(null);
   const disparadoRef = useRef(false);
@@ -33,7 +35,7 @@ export function useDeteccionAbandono({ duelId, miUserId, rivalId, rivalEsBot = f
     if (!activo || rivalEsBot || !duelId || !miUserId || !rivalId) return;
     disparadoRef.current = false;
     const supabase = createClient();
-    const channel = supabase.channel(`duelo:${duelId}`, {
+    const channel = supabase.channel(`duelo:${duelId}:abandono`, {
       config: { presence: { key: `${miUserId}:vivo` } },
     });
     let cancelado = false;

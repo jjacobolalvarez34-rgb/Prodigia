@@ -10,6 +10,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.1",
+    "@capacitor/push-notifications": "^8.1.2",
     "@gsap/react": "^2.1.2",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.2",
@@ -25,6 +27,8 @@
     "world-atlas": "^2.0.2"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.1",
+    "@capacitor/core": "^8.5.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

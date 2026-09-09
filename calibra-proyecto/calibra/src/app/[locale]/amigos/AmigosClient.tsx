@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { ArithmeticProblemType } from "@/types/database";
 import Boton from "@/components/Boton";
 import type { UseAmigosReturn } from "@/app/[locale]/social/useAmigos";
-import SelectorMundoDuelo, { MUNDOS_DUELO, useEtiquetasDuelo } from "@/components/duelos/SelectorMundoDuelo";
+import SelectorMundoDuelo, { MUNDOS_DUELO, QUIMIA_MODOS_INVITACION, useEtiquetasDuelo } from "@/components/duelos/SelectorMundoDuelo";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 
 // Fase 3 del rediseño de Social: ya no maneja su propio estado — recibe
@@ -271,6 +271,7 @@ function InvitarPorLink() {
         <SelectorMundoDuelo
           mundos={MUNDOS_DUELO}
           requiereSubopcion
+          subopcionesPorMundo={{ quimia: QUIMIA_MODOS_INVITACION }}
           onElegirSubopcion={(mundo, opcion) => setSeleccion({ mundo, opcion })}
         />
         {seleccion && (

@@ -96,7 +96,8 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     const { count } = await supabase
       .from("duels")
       .select("id", { count: "exact", head: true })
-      .eq("ganador_id", userId);
+      .eq("ganador_id", userId)
+      .eq("clasificatorio", true);
     duelosGanados = count ?? 0;
   }
 
@@ -119,6 +120,7 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .select("ganador_id, creado_at")
       .or(`retador_id.eq.${userId},retado_id.eq.${userId}`)
       .eq("estado", "completado")
+      .eq("clasificatorio", true)
       .order("creado_at", { ascending: false })
       .limit(50);
     for (const d of duelosRows ?? []) {

@@ -36,7 +36,7 @@ interface Props {
 }
 
 // Sala de espera de un duelo en tiempo real (Fase T3). La sincronización
-// real (Presence + Broadcast sobre `duelo:<id>`) vive en
+// real (Presence + Broadcast sobre `duelo:<id>:sala`) vive en
 // useArranqueSincronizado — compartida con los otros 3 mundos desde la
 // tanda "Duelos: llevar el progreso en vivo..." (Fase 2). Este archivo
 // solo aporta lo específico de Numeria: el label de la operación.

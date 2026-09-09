@@ -32,7 +32,9 @@ export default async function OnboardingPage({ searchParams }: Props) {
   // diagnóstico de cada mundo es aparte y se dispara recién cuando el
   // usuario entra a ESE mundo por primera vez.
   const tieneNombre = Boolean(profile?.display_name);
-  const tieneMundo = (profile?.mundos_desbloqueados?.length ?? 0) > 0;
+  // 0116: 1 mundo (heredado de la fase vieja de 1 mundo gratis) NO es
+  // suficiente para saltar el onboarding — hay que completar los 2.
+  const tieneMundo = (profile?.mundos_desbloqueados?.length ?? 0) >= 2;
   if (tieneNombre && tieneMundo) {
     redirect(destino);
   }

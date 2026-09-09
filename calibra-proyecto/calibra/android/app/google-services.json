@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "919871521401",
+    "project_id": "prodigia-367ac",
+    "storage_bucket": "prodigia-367ac.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:919871521401:android:2a4627aaa5fcc6e0590aa8",
+        "android_client_info": {
+          "package_name": "com.prodigia.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGoX-hwbXPl83SpbMPvlBxcpbmF-net9k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

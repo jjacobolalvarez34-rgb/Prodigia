@@ -96,7 +96,7 @@ export async function POST(request: Request) {
   // /api/practica/finish no hace falta derivar el mundo del problem_type.
   let nivelMundo: RegistrarPuntosMundoResult | null = null;
   if (xpGanado > 0) {
-    const { data: mundoRows } = await supabase.rpc("registrar_puntos_mundo", { p_world: "enigmia", p_puntos: xpGanado });
+    const { data: mundoRows } = await supabase.rpc("registrar_progreso_mundo", { p_world: "enigmia", p_puntos: xpGanado });
     nivelMundo = (mundoRows as RegistrarPuntosMundoResult[] | null)?.[0] ?? null;
 
     // Auditoría de paridad (Fase 1, 2026-08-27): a diferencia de

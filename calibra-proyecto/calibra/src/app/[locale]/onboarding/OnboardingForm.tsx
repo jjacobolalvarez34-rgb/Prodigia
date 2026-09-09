@@ -88,7 +88,15 @@ export default function OnboardingForm({ next, saltarPasoNombre }: Props) {
     setErrorMundo(null);
     const supabase = createClient();
     const { error: rpcError } = await supabase.rpc("elegir_mundos_iniciales", { p_mundos: seleccionados });
+    // 0116: si la cuenta YA tiene 2+ mundos la RPC lo rechaza con
+    // "ya elegiste" — no tiene sentido quedar trabados acá: ya está
+    // onboardeada, ir directo al destino.
     if (rpcError) {
+      if (rpcError.message?.includes("ya elegiste")) {
+        router.push(next);
+        router.refresh();
+        return;
+      }
       setErrorMundo(rpcError.message ?? "No se pudo guardar. Probá de nuevo.");
       setEnviandoMundos(false);
       return;

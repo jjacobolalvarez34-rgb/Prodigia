@@ -29,13 +29,12 @@ export async function requireUsuario(supabase: SupabaseClient, pathActual: strin
     redirect(`/onboarding?next=${encodeURIComponent(pathActual)}`);
   }
 
-  // Fase 12 (ajuste): ya no hay un mundo gratis fijo — elegir cuál de
-  // los 6 es el gratis pasa a ser parte obligatoria del onboarding
-  // (OnboardingForm, paso "mundo"). Una cuenta real que todavía no
-  // eligió ninguno (mundos_desbloqueados vacío) vuelve a /onboarding,
-  // que va a mostrar el paso que le falte según lo que ya tenga
-  // guardado (ver onboarding/page.tsx).
-  if (!profile?.mundos_desbloqueados || profile.mundos_desbloqueados.length === 0) {
+  // Fase 12 (ajuste) + 0116: el onboarding exige DOS mundos gratis, no
+  // uno. Cuentas con menos de 2 mundos vuelven a /onboarding — incluida
+  // la deuda heredada de la fase vieja de 1 mundo gratis (quedaban con
+  // exactamente ['numeria'] sin forma de repararlo por la UI). Con 2+
+  // mundos ya pasó por el flujo y no se le vuelve a pedir.
+  if (!profile?.mundos_desbloqueados || profile.mundos_desbloqueados.length < 2) {
     redirect(`/onboarding?next=${encodeURIComponent(pathActual)}`);
   }
 

@@ -9,6 +9,7 @@ import ChispaClick from "@/components/ChispaClick";
 import NotificacionesDuelo from "@/components/NotificacionesDuelo";
 import AnunciosModal from "@/components/AnunciosModal";
 import RegistrarServiceWorker from "@/components/RegistrarServiceWorker";
+import NativePush from "@/components/NativePush";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -156,6 +157,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <NotificacionesDuelo />
           <AnunciosModal />
           <RegistrarServiceWorker />
+          {/* Solo actúa adentro de la app nativa (Capacitor); 100% inerte en web/PWA */}
+          <NativePush />
         </NextIntlClientProvider>
       </body>
     </html>

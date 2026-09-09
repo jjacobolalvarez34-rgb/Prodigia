@@ -1,9 +1,9 @@
-// Fase 12 ("Mundos por Chispas"), con el ajuste posterior: ya no hay un
-// mundo gratis fijo — cada cuenta elige UNO de los 6 como gratis en el
-// onboarding (OnboardingForm, RPC elegir_mundo_inicial) y el resto se
-// compra con Chispas. Por eso los 6 mundos, Numeria incluida, cuentan
-// acá como "potencialmente pagos" — cuál de ellos es realmente gratis
-// depende de qué eligió cada cuenta, no de una lista fija.
+// Fase 12 ("Mundos por Chispas"), con el ajuste posterior (0112): ya no
+// hay un mundo gratis fijo — cada cuenta elige DOS de los 8 como gratis
+// en el onboarding (OnboardingForm, RPC elegir_mundos_iniciales) y el
+// resto se compra con Chispas. Por eso los 8 mundos, Numeria incluida,
+// cuentan acá como "potencialmente pagos" — cuál de ellos es realmente
+// gratis depende de qué eligió cada cuenta, no de una lista fija.
 // Precio real y definitivo vive DENTRO de desbloquear_mundo()
 // (0097_mundos_por_chispas.sql), nunca acá ni en el cliente — este
 // número es solo para mostrarlo en la UI antes de comprar (el servidor

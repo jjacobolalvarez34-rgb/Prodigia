@@ -3273,3 +3273,338 @@ Migraciones pendientes de que el usuario las corra, en orden:
 `0104`, `0105`, `0106` (esta puede ir sola primero si se quiere la
 urgente resuelta ya), `0107`.
 
+---
+
+# Progreso — sesión autónoma (2026-09-07)
+
+Sesión de estructuras y auditorías (sin cambios de código de runtime,
+salvo una migración). Se trabajó con claims en
+`docs/agent-work/ACTIVE.md`; todo lo de esta sesión quedó además en los
+informes `docs/audits/*.md` y en `docs/marketing/`. Método: INVESTIGAR →
+REPRODUCIR → CORREGIR → VERIFICAR → DOCUMENTAR, con estados según
+`docs/AGENT-RULES.md` §1 (CONFIRMADO / VERIFICADO POR CÓDIGO /
+BLOQUEADO / etc.). Verificación con `tsc --noEmit` + `eslint` por
+archivo (el `npm run lint` global corta por timeout >120s) + `vitest`.
+
+## Fase 0 — P0 reto diario/semanal (crash por loop de useSyncExternalStore)
+
+Causa raíz confirmada en `RetoClient.tsx`: `getSnapshot` de
+`useSyncExternalStore` devolvía un objeto nuevo en cada llamada → el
+React Compiler lo trataba como cambio perpetuo → loop infinito.
+
+**Construí:** `src/lib/progresoReto.ts` (creador de snapshot memoizado) +
+`RetoClient.tsx` usando `useMemo`. Test de regresión de 9 casos
+(`src/lib/progresoReto.test.ts`) que documenta el contrato `Object.is`.
+
+**Verifiqué:** vitest 110/110 (8 files), `tsc --noEmit` limpio, eslint
+de los archivos tocados limpio, `next build` limpio.
+
+**Resultado:** CONFIRMADO (crash-proof por test de regresión) /
+BLOQUEADO el flujo visual en navegador (no hay browser en este entorno).
+
+## Fase 1 — Línea marketing: estudio real + 16 documentos + primer paquete
+
+3 subagents de SOLO LECTURA estudiaron la app real (educativo,
+gameplay/competitivo, visual/UX) y se crearon los 16 archivos de
+`docs/marketing/` (BRAND, PRODUCT-MESSAGING, AUDIENCE,
+COMPETITIVE-RESEARCH, CONTENT-STRATEGY, AD-CONCEPTS, SOCIAL-CONTENT,
+VIDEO-CONCEPTS, VISUAL-ASSETS, SCREENSHOTS, PROMPTS-IMAGES,
+PROMPTS-VIDEO, CAMPAIGNS, COPY-LIBRARY, FUNNEL, README) +
+`docs/marketing/agent-work/ACTIVE.md`.
+
+Primer paquete publicitario urgente: 5 anuncios visuales (Ad-01..05),
+5 videos (Video A-E), 10 hooks, 5 anuncios completos, 5 carruseles A/B,
+3 trailers (T1-T3) — todo anclado en features **verificadas en código**
+(fantasma del rival 0028/0038, pentagrama de Melodía, reto diario con
+ranking, dificultad adaptativa).
+
+Regla de oro respetada: **no inventar features**; cada afirmación lleva
+evidencia `archivo:línea` y estado. Advertencias explícitas: no
+publicitar Pro (no está a la venta), retos NO son "en vivo" (ranking de
+completados), Historia tiene banco finito de lecciones, modo casual usa
+ELO oculto.
+
+**Resultado:** VERIFICADO POR CÓDIGO. Pendiente: capturas reales
+(BLOQUEADO sin navegador), live research de competencia (hoy HIPÓTESIS),
+priorización final P0-P3 de conceptos.
+
+## Fase 2 — Auditoría RLS/seguridad (auth-security)
+
+### Hallazgos (informe: `docs/audits/AUDIT-RLS-SEGURIDAD-2026-09-07.md`)
+
+- **S10 CRÍTICO** `acreditar_chispas(p_user_id, p_monto)` — `security
+  definer` + grant a `authenticated` **sin validar `p_user_id =
+  auth.uid()`** (`0070:105-153`). Un cliente puede acreditarse Chispas
+  ilimitadas (+ `xp_historico_total`, `nivel_cuenta`, bonus de nivel,
+  `xp_aportado` del clan) o *griefear* a un tercero con `p_monto`
+  negativo. Detectado durante la auditoría del mapa.
+- **S0 CRÍTICO** `registrar_xp_diario(p_xp)` — versión vigente
+  `0070:164-206`: suma `p_xp` verbatim (→ `daily_progress.xp_ganado` y
+  `acreditar_chispas`) SIN validar contra intentos reales. `supabase.rpc`
+  directo = Chispas/XP infinitos. (Cadena 0003→0004→0009→0036→0070; las
+  tandas 0035/0036 arreglaron PERMISOS, no el VALOR.)
+- **S1 CRÍTICO** `registrar_puntos_mundo(p_world, p_puntos)` — versión
+  vigente `0109:81-202`: `p_puntos` verbatim → infla `nivel_mundo` 0-100
+  → marcos temáticos + títulos de mundo completado sin jugar.
+- **S2/S3/S4/S8 ALTO** — policies "for all" / abiertas de cliente sobre
+  `skill_levels`, `attempts` (insert con `xp` arbitrario), `daily_progress`
+  y `logic_attempts` → dominio falso (S2) y rankings por mundo y global
+  inflables (S3/S8: `ranking_semanal_filtrado` suma `attempts.xp` /
+  `logic_attempts.xp`, `0109:244-277`).
+- **S5 ALTO** `resolver_apuesta_si_activa(p_precision)` — `security
+  definer`, acepta la precisión del cliente (`0025:171-208`): apostar +
+  resolver con `p_precision` al tope = ganar siempre.
+- **S9 BAJO** — edge functions públicas sin verificación de JWT/firma
+  (invoke = spam de notificaciones).
+- **S6 MEDIO** — `handle_new_user` re-creado en 0112 SIN
+  `set search_path = public` (regresión del hardening de 0060).
+- **S7 MEDIO** — `friendships` INSERT solo exigía `auth.uid() = user_id`
+  → amistad directa en `aceptada` sin consentimiento.
+
+### Fixes aplicados (migración `0115_cerrar_huecos_seguridad_fase5.sql`)
+
+Tres fixes de **cero cambio de comportamiento legítimo**, verificados por
+espejo 1:1 contra las definiciones vigentes y por ausencia de llamadas de
+cliente (grep en `src/`):
+
+1. `handle_new_user` re-creada con `set search_path = public` (S6).
+2. Policy INSERT de `friendships` ahora exige `estado = 'pendiente'`
+   (S7). No rompe `/api/amigos/solicitar` (inserta pendiente) ni
+   `conectar_por_invitacion` (security definer bypasea RLS, `0063:34-36`).
+3. `acreditar_chispas` con guard `if p_user_id is distinct from
+   auth.uid() then raise exception` + `revoke execute ... from public,
+   authenticated` (S10). La app nunca la llama desde el cliente (grep
+   solo comenta en `src/app/[locale]/perfil/page.tsx:131`); callers
+   internos (`0070:199` registrar_xp_diario, `0070:240`
+   completar_reto_diario) pasan siempre `auth.uid()`.
+
+**NO tocadas a ciegas** (requieren reproducción contra la base real
+antes de cambiar el contrato): S0/S1/S2/S3/S4/S5/S8/S9. El fix correcto
+de la familia economía es migrar el alta de progreso/XP a funciones
+security definer con valores derivados de la DB (o `revoke` + wrapper),
+no parchear los RPC sin verificar — quedaría sin probar.
+
+**Resultado:** CONFIRMADO POR CÓDIGO para los hallazgos; CORREGIDO
+S6/S7/S10; reproducción en vivo BLOQUEADO (sin acceso a base real).
+
+## Fase 3 — Auditoría del mapa (rutas/RPC/migraciones) (repo-architect)
+
+Informe: `docs/audits/AUDIT-MAPA-2026-09-07.md`.
+
+### Superficie real (VERIFICADO POR CÓDIGO)
+
+| Área | Cantidad |
+|---|---|
+| Migraciones | 115 (0001..0115) |
+| Páginas | 111 bajo `src/app/[locale]/` |
+| API routes | 31 en `src/app/api/**` + `/auth/callback` |
+| Funciones Postgres | 122 únicas (250 definiciones con `create or replace`) |
+| Middleware | 1 (`src/proxy.ts` — Next 16: middleware → proxy) |
+
+### Cruce de referencias (M4)
+
+Ningún RPC llamado por la app queda sin definir, y las 2 funciones
+revocadas (`desbloquear_titulo`, `otorgar_marco_mundo`) no se usan en
+`src/` (se usan las variantes `*_propio` de
+`src/lib/titulos/verificar.ts:225,230`). Hallazgos menores documentados:
+`elegir_mundo_inicial` huérfana (`0111:12-45`, la app usa
+`elegir_mundos_iniciales` de 0112), AGENTS.md/README dicen "70 rutas"
+(cifra real: 111 páginas), cierre semanal de clanes disparado por visita
+a `src/app/[locale]/clanes/page.tsx:20`. Frontera de `attempts`
+documentada (ruta + policy juntas delimitan el insert). Todo sin
+hallazgos críticos; resultados alimentan el backlog del master audit.
+
+## Verificación de la tanda
+
+- `npx tsc --noEmit -p tsconfig.json` limpio (proyecto entero).
+- `npx eslint <archivos tocados>` limpio.
+- Migración `0115_cerrar_huecos_seguridad_fase5.sql` pendiente de que el
+  usuario la corra en la base.
+
+## Pendientes para la próxima sesión
+
+1. Reproducción en vivo de la familia S0-S5/S8/S9 y decisión de contrato
+   para el fix de economía/progreso (BLOQUEADO sin acceso a base real).
+2. Cierre formal del bug "2 mundos" (NO REPRODUCIDO/BLOQUEADO — consultar
+   producción).
+3. Auditoría economía/tienda (profundiza S0/S1/S5 a nivel doc).
+4. Seguimientos del mapa: `elegir_mundo_inicial` legacy (M1), docs de
+   rutas (M2), cierre semanal de clanes por tráfico (M4).
+5. Capturas reales para marketing (BLOQUEADO sin navegador).
+
+---
+
+# Progreso — sesión autónoma (2026-09-08): hotfix P0 "2 mundos"
+
+Repro en vivo del usuario vía dev tunnel (https://814f2c7c-3000.use2.devtunnels.ms):
+elige 2 mundos → "ya elegiste tus dos mundos iniciales" y se traba; al recargar
+la home solo muestra "numería" activo aunque nunca lo eligió. Con 2 subagentes
+explore en paralelo (flujo cliente + lado RPC/DB) se llegó al diagnóstico:
+
+## Causa raíz
+
+`profiles.mundos_desbloqueados` de la cuenta estaba en `['numeria']` — estado
+heredado de la fase vieja de UN mundo gratis (`elegir_mundo_inicial`), que
+ningún código actual siembra por defecto. Con ese estado:
+
+1. `elegir_mundos_iniciales` (0112:124) rechazaba cualquier array no vacío con
+   `raise exception 'ya elegiste tus mundos iniciales'` — incluida la cuenta
+   que nunca había completado el onboarding de 2 mundos.
+2. Ambos clientes (`FlujoElegirMundos.tsx`, `onboarding/OnboardingForm.tsx`)
+   mostraban el error y hacían `return` sin navegar → pantalla trabada sin
+   salida.
+3. `requireUsuario` (guard.ts) y `onboarding/page.tsx` solo mandaban a
+   onboarding a los que tenían 0 mundos (`length === 0`), nunca a los que
+   tenían 1 → la cuenta quedaba "presumida" onboardeada con numeria sola.
+
+## Correcciones
+
+- **Migración `0116_fix_elegir_dos_mundos.sql`**: `elegir_mundos_iniciales`
+  pasa a bloquear solo con `cardinality >= 2` (ya completó el flujo); con
+  cardinalidad 1 se **auto-repara** reemplazando el estado heredado con los 2
+  mundos elegidos. De paso revoca (con chequeo de existencia) la RPC legacy
+  singular `elegir_mundo_inicial(text)` — hallazgo F-M1 del AUDIT-MAPA-2026-09-07
+  — para que ningún cliente vuelva a dejar la cuenta en el estado de 1 mundo.
+- **`src/lib/auth/guard.ts`**: `length === 0` → `length < 2` (cuentas con 1
+  mundo heredado vuelven al onboarding).
+- **`src/app/[locale]/onboarding/page.tsx`**: `tieneMundo` ahora `>= 2`.
+- **`FlujoElegirMundos.tsx` y `OnboardingForm.tsx`**: si la RPC responde
+  "ya elegiste", navegan a la home/destino en vez de quedar trabados (red de
+  seguridad para estados ≥ 2 que lleguen al picker por algún flujo viejo).
+- Comentarios desactualizados corregidos: `precios.ts` (1 mundo → 2, 6 → 8
+  mundos) y `database.ts` ("numeria siempre presente" ya no es cierto).
+
+## Verificación
+
+`npx tsc --noEmit` limpio · `npx eslint` archivos tocados limpio ·
+`npm test` 110/110 (8 files) · `npm run build` limpio (route output OK).
+
+**Pendiente**: aplicar `0116_fix_elegir_dos_mundos.sql` en la base (Supabase
+editor) y retestear por el tunnel. Los fixes de cliente ya están activos en el
+dev server (hot reload), pero sin la migración la RPC sigue rechazando; el
+recovery del cliente evita el atasco igualmente.
+
+Estado: VERIFICADO POR CÓDIGO / PENDIENTE verificación en navegador.
+
+---
+## Reto directo a amigo — bug "se ve la invitación pero la partida no conecta" (2026-09-08)
+
+Detalle completo en docs/audits/RETO-DIRECTO-AMIGO-2026-09-08.md.
+
+### Causa raíz (2 bugs independientes)
+- **A — suscripción solo al montar**: NotificacionesDuelo (layout raíz) usaba
+  getUser().then() con deps `[]`. Si la app arranca en /login deslogueada y se entra por
+  navegación cliente, el layout no se remonta y el canal `realtime:retos-a:<id>` jamás se
+  crea → el retado nunca recibe la notificación → el duelo queda pendiente.
+- **B — toast hardcodeado a Numeria**: el link del aviso era
+  `/practica?operacion=...&duelo=...`; para mundos != numeria operation_type es null
+  → /practica?operacion=null → el gate mundo === "numeria" en /practica no matchea →
+  práctica normal, duelo nunca conecta.
+
+### Fix aplicado
+- src/components/NotificacionesDuelo.tsx: suscripción con supabase.auth.onAuthStateChange
+  (re-canal por sesión, cleanup) + destino con hrefDuelo(mundo, operation_type, duel_id,
+  sub_tipo) y etiqueta con useEtiquetasDuelo. Sin migración.
+
+### Verificación
+- npx tsc --noEmit y npx eslint limpios. E2E con 2 cuentas QA (login sin reload): Numeria
+  (toast + ambos en sala) y Geografía (toast con href /es/geografia/practica?duelo=... +
+  ambos en sala) ambos REAL. Realtime delivery descartado como causa (pruebas Node con
+  tokens reales).
+
+Estado: VERIFICADO EN BROWSER.
+
+---
+
+## Tanda P0/P1/P2 completa (2026-09-08)
+
+Cierre integral de la tanda delegada como ORCHESTRATOR. Todo registrado en
+`docs/agent-work/ACTIVE.md`, `docs/audits/*` y `PROJECT-STATE.md`.
+
+### P0 — CORREGIDO / VERIFICADO
+- **T1 Usuarios/ranking**: cuentas incompletas (display_name null / email sin confirmar)
+  aparecían en ranking ELO (5/14 filas). Fix: `0119_filtro_ranking_usuarios_permanentes.sql`
+  (4 condiciones de usuario permanente + guard/revoke de `ranking_semanal`). Simulación
+  14→9 filas, 0 legítimos perdidos. PENDIENTE: aplicar 0119 en prod (DDL manual).
+- **T8 Casual**: auditado con E2E real (2 anon). Confirmado: no toca ELO, no cruza con la
+  cola ranked, stats separadas. BUG#1/#3/#4 corregidos en cliente (RankedsClient.tsx,
+  logros/verificar.ts). BUG#2 (bots en casual) y BUG#5 (doble resolución → feed/ELO
+  duplicado) documentados para migración pendiente.
+- **T9 Invitación por link**: bug real corregido (Quimia: 5 modos ofrecidos vs 3 aceptados
+  por `crear_invitacion_duelo` → link `opcion invalida`). Fix aditivo en SelectorMundoDuelo.
+  Hallazgos sin fix: link es `clasificatorio=true` pese a "casual" (decisión PO) y sin
+  expiración de duel_invites.
+- **T10 Reto directo a amigo**: REPRODUCIDO con 2 cuentas QA → 2 bugs reales (suscripción
+  realtime nunca creada al entrar por navegación cliente; toast hardcodeado a Numeria) →
+  fix en NotificacionesDuelo.tsx → E2E VERIFICADO EN BROWSER (Numeria y Geografía).
+
+### P1 — CAUSA RAÍZ + IMPLEMENTACIÓN (migraciones PENDIENTES de aplicar a prod)
+- **T4 Niveles de mundos**: curva exigía "dominio nivel 10" (casi inalcanzable) + volumen
+  con techo 50000 → 800 problemas quedaban en nivel 1. Fix `0117` (registrar_progreso_mundo:
+  volumen 34% techo 25000 + dominio 45% desde nivel 4 + lecciones 21%). 800 problemas ⇒
+  nivel ~54; farm de un sub-tema clavado en ~36. + worldLevel.ts + tests.
+- **T5+T6 Niveles personales + recompensa**: curva `100·n^1.6` se siente ~816 constante →
+  escalera por tramos (200→2400 cota) en `0118`. Recompensa: 1000 flat ANALIZADO y
+  RECHAZADO (duplica velocidad de compra del catálogo, regala grind en niveles bajos) →
+  **`50·n+250` APROBADA por PO (2026-09-08) y aplicada** a la base.
+
+### P2 — SPEC/DISEÑO
+- **T7 Animación level up**: spec completa (framer-motion + canvas 2D + WebAudio, trigger =
+  finish route debe exponer nivelCuenta). Implementación pendiente.
+- **T2/T3 Trastienda**: diseño de economía (mecánicas 1-5, probabilidades/EV, minijuegos,
+  títulos) + diseño visual (sótano del Bazar). PENDIENTE decisión PO (moneda) + implementar.
+- **Marketing**: 30 capturas reales con Playwright + REAL-APP-2026-09-08.md (5 claims REAL)
+  + docs/marketing actualizados.
+
+### Verificación de la tanda
+- npx tsc --noEmit: 0 errores.  npx vitest run: 126/126 (10 archivos).  npm run build:
+  limpio (234 rutas).  npm run lint: 4 errores PREEXISTENTES (DiagnosticoClient refs,
+  SocialClient, etc.), ninguno nuevo de la tanda.
+
+---
+
+## Tanda S0/S1 — cierre de la familia de seguridad economía/progreso (2026-09-08)
+
+Cierre de la familia S0-S4/S8 del AUDIT-RLS-SEGURIDAD-2026-09-07.md (el "grifo infinito"):
+los RPC de progreso aceptaban valores del cliente verbatim y las policies amplias dejaban
+escribir intentos/niveles/XP directo.
+
+### Tarea
+- Pasar el alta de intentos, calibración de niveles, XP diario y progreso de mundo a
+  funciones security definer que DERIVAN los montos reales de la base, y sellar las
+  policies de escritura amplias.
+
+### Construí
+- `supabase/migrations/0120_cerrar_s0_s1.sql` (nueva, PENDIENTE de aplicar a prod):
+  - Drop de 5 policies amplias: attempts INSERT, logic_attempts INSERT, skill_levels
+    "for all", logic_skill_levels "for all", daily_progress "for all" (quedan solo SELECT).
+  - Helper `xp_real_por_mundo(user, world)`: suma `attempts.xp` / `logic_attempts.xp`
+    reales por mundo (numeria/geografia/enigmia/quimia/anatomia/melodia/trigonometria/
+    historia, incl. todos los sub-temas).
+  - `registrar_xp_diario(p_xp)` REDEFINIDO: ignora `p_xp`, acredita
+    `greatest(0, xp real del día − ya acreditado hoy)` vía `acreditar_chispas`
+    (idempotente, anti doble-finish). Conserva firma/returns.
+  - `registrar_progreso_mundo(p_world, p_puntos)` REDEFINIDO: deriva del mundo real y
+    acredita la diferencia contra `world_progress.puntos_mundo`; `registrar_puntos_mundo`
+    delega en él. Conserva el contrato de salida (nivel_anterior, etc.).
+  - RPC nuevo `insertar_intento(...)`: calcula XP (fórmula espejo de formulas.ts con
+    boost de profile) + anti-apuro server-side, inserta en attempts y actualiza
+    skill_levels si calibra. RPC nuevo `insertar_intento_logica(...)` equivalente para
+    Enigmia (logic_attempts + logic_skill_levels).
+- `src/app/api/attempts/route.ts` y `src/app/api/logic-attempts/route.ts`: migradas a los
+  RPC (supabase.rpc("insertar_intento"/"insertar_intento_logica")); se quita el upsert
+  vía cliente; la lista de tipos calibrables sigue en TS y se pasa como `p_calibrar`.
+  `/api/practica/finish` y `/api/enigmia/finish` no cambian (firmas intactas).
+
+### Verifiqué
+- npx tsc --noEmit: 0 errores.  npx vitest run: 126/126.  eslint sobre las 2 rutas
+  tocadas: 0 errores. greps: sin callers directos de attempts/logic_attempts/daily_progress
+  que se rompan; `actualizarSkillLevel`/`actualizarLogicSkillLevel` quedan sin uso en TS
+  (la lógica vive en los RPC).
+
+### Resultado
+- CONFIRMADO POR CÓDIGO (familia S0/S1/S2/S3/S4/S8 resuelta en 0120; quedan S5 apuestas y
+  S9 edge functions del informe, ver MASTER-AUDIT).
+- PENDIENTE: aplicar `0120_cerrar_s0_s1.sql` a prod (DDL manual) y re-observar flujo
+  legítimo (finish de práctica/Enigmia, calibración). Docs actualizados: AUDIT-RLS-…,
+  MASTER-AUDIT.md, PROJECT-STATE.md.

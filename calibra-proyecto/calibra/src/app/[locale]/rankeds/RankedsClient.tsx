@@ -277,8 +277,9 @@ function MiCompetitivo({
   const t = useTranslations("Rankeds");
   const tOperaciones = useTranslations("Practica.operationPicker.operaciones");
   const locale = useLocale();
-  const jugados = historial.filter((h) => !h.empate).length;
-  const victorias = historial.filter((h) => h.gane).length;
+  const historialCompetitivo = historial.filter((h) => h.clasificatorio);
+  const jugados = historialCompetitivo.filter((h) => !h.empate).length;
+  const victorias = historialCompetitivo.filter((h) => h.gane).length;
   const derrotas = jugados - victorias;
   const tasaVictorias = jugados > 0 ? Math.round((victorias / jugados) * 100) : null;
   const jugadosCasual = statsCasual.victorias + statsCasual.derrotas + statsCasual.empates;
@@ -476,6 +477,33 @@ function BuscarPartida({
   async function poll(m: SeleccionMundo, ranked: boolean, inicioIso: string) {
     const supabase = createClient();
     while (!cancelarRef.current) {
+      // buscar_rival_duelo solo le devuelve el duel_id a quien hizo LA
+      // llamada que encontró rival — si fue el rival quien nos encontró
+      // a nosotros (nuestra fila de la cola ya fue borrada), nunca nos
+      // enteramos por esta respuesta. Se chequea acá directo si ya
+      // quedamos como "retado" de un duelo nuevo desde que arrancamos a
+      // buscar — más confiable que depender solo de la notificación en
+      // vivo (esa además ya existe, ver NotificacionesDuelo). Chequearlo
+      // ANTES de buscar_rival_duelo evita que el lado pasivo se
+      // re-inserte en la cola tras ser matcheado (rebirth fantasma).
+      // El modo "simple" arranca con ronda_numero NULL, así que el
+      // fallback cubre ronda NULL o 1; el filtro de clasificatorio evita
+      // saltar a un duelo casual desde una búsqueda rankeds.
+      const { data: yaMatcheado } = await supabase
+        .from("duels")
+        .select("id, mundo")
+        .eq("retado_id", miUserId)
+        .eq("estado", "pendiente")
+        .eq("clasificatorio", ranked)
+        .or("ronda_numero.is.null,ronda_numero.eq.1")
+        .gte("creado_at", inicioIso)
+        .limit(1);
+      if (cancelarRef.current) return;
+      if (yaMatcheado && yaMatcheado[0]) {
+        irAlDuelo(yaMatcheado[0].mundo as MundoDuelo, yaMatcheado[0].id);
+        return;
+      }
+
       const { data, error } = await supabase.rpc("buscar_rival_duelo", {
         p_mundo: m,
         p_operation_type: null,
@@ -497,29 +525,6 @@ function BuscarPartida({
       )?.[0];
       if (fila?.encontrado && fila.duel_id && fila.mundo_encontrado) {
         irAlDuelo(fila.mundo_encontrado, fila.duel_id);
-        return;
-      }
-
-      // buscar_rival_duelo solo le devuelve el duel_id a quien hizo LA
-      // llamada que encontró rival — si fue el rival quien nos encontró
-      // a nosotros (nuestra fila de la cola ya fue borrada), nunca nos
-      // enteramos por esta respuesta. Se chequea acá directo si ya
-      // quedamos como "retado" de un duelo nuevo desde que arrancamos a
-      // buscar — más confiable que depender solo de la notificación en
-      // vivo (esa además ya existe, ver NotificacionesDuelo). Para el
-      // modo "aleatorio" esto siempre encuentra la RONDA 1 (ronda_numero
-      // = 1), que es por donde arranca cualquiera de los dos lados.
-      const { data: yaMatcheado } = await supabase
-        .from("duels")
-        .select("id, mundo")
-        .eq("retado_id", miUserId)
-        .eq("estado", "pendiente")
-        .eq("ronda_numero", 1)
-        .gte("creado_at", inicioIso)
-        .limit(1);
-      if (cancelarRef.current) return;
-      if (yaMatcheado && yaMatcheado[0]) {
-        irAlDuelo(yaMatcheado[0].mundo as MundoDuelo, yaMatcheado[0].id);
         return;
       }
 

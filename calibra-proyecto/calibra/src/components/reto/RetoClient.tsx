@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState, useMemo, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { crearSnapshotProgreso } from "@/lib/progresoReto";
 import type { PreguntaRetoDiario, MundoRetoDiario } from "@/lib/retoDiario";
 import type { Achievement } from "@/types/database";
 import { reproducirTono } from "@/lib/sonido";
@@ -72,19 +73,10 @@ const TEXTO_TIPO: Record<TipoReto, { etiqueta: string; periodo: string; endpoint
 // hace perder el avance — la recompensa real sigue viniendo 100% del
 // server (completar_reto_diario/completar_reto_semanal), localStorage
 // solo afecta la continuidad visual, nunca el puntaje que se paga.
-function leerProgresoGuardado(claveStorage: string, total: number): { indice: number; correctos: number } | null {
-  try {
-    const guardado = localStorage.getItem(claveStorage);
-    if (!guardado) return null;
-    const datos = JSON.parse(guardado) as { indice?: number; correctos?: number };
-    if (typeof datos.indice === "number" && datos.indice > 0 && datos.indice < total) {
-      return { indice: datos.indice, correctos: datos.correctos ?? 0 };
-    }
-    return null;
-  } catch {
-    return null; // localStorage no disponible (modo privado) — simplemente arranca de cero.
-  }
-}
+// P0 retos (2026-09-07): el getSnapshot de useSyncExternalStore debe ser
+// Object.is-estable entre renders; leer localStorage directo devolvía un
+// objeto nuevo por llamada y causaba un loop infinito de render. Ahora la
+// lectura se memoiza en crearSnapshotProgreso (ver src/lib/progresoReto.ts).
 
 function subscribeNoop() {
   return () => {};
@@ -109,12 +101,10 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
   // Snapshot de servidor siempre "sin progreso guardado" (localStorage no
   // existe en SSR) — mismo patrón que AvisoPrimeraVez.tsx/PrimeraVezTip.tsx,
   // así el HTML inicial nunca tiene mismatch de hidratación; el valor real
-  // llega recién en el cliente, un tick después de montar.
-  const progresoGuardado = useSyncExternalStore(
-    subscribeNoop,
-    () => leerProgresoGuardado(claveStorage, total),
-    () => null
-  );
+  // llega recién en el cliente, un tick después de montar. crearSnapshotProgreso
+  // memoiza la lectura (ver P0 retos arriba), así la snapshot es estable.
+  const getSnapshot = useMemo(() => crearSnapshotProgreso(claveStorage, total), [claveStorage, total]);
+  const progresoGuardado = useSyncExternalStore(subscribeNoop, getSnapshot, () => null);
 
   // Retoma un intento en curso (misma fecha/semana) si la pestaña se
   // cerró a mitad de camino — solo si el server no dice ya_completado

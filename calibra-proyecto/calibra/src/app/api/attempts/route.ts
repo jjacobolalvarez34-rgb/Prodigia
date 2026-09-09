@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType, type NewAttempt } from "@/types/database";
 import { calcularXpDetallado, tiempoEsperadoMs } from "@/lib/practica/formulas";
-import { actualizarSkillLevel, type ProblemTypeCalibrable } from "@/lib/practica/skillLevels";
+import { type ProblemTypeCalibrable } from "@/lib/practica/skillLevels";
 import { respuestaError } from "@/lib/api/respuestaError";
 import { operacionPermitidaInvitado, temaAvanzadoBloqueadoParaInvitado } from "@/lib/auth/accesoInvitado";
 
@@ -11,6 +11,9 @@ import { operacionPermitidaInvitado, temaAvanzadoBloqueadoParaInvitado } from "@
 // rechazamos el intento (podría ser solo jitter de red) — lo marcamos
 // como sospechoso: se guarda igual, pero no suma XP ni mueve la
 // calibración, así ni el ranking ni los duelos se pueden inflar así.
+// El mismo cálculo vive en el RPC insertar_intento (0120), que es el
+// que decide de verdad en la base — acá solo se replica para decidir
+// qué copiar al desglose y si calibrar.
 function esTiempoSospechoso(nivel: number, timeMs: number): boolean {
   const piso = Math.max(150, tiempoEsperadoMs(nivel) * 0.12);
   return timeMs < piso;
@@ -18,10 +21,12 @@ function esTiempoSospechoso(nivel: number, timeMs: number): boolean {
 
 // POST /api/attempts
 // Guarda un intento del sprint de cálculo. El front manda el resultado
-// (correcto/incorrecto, tiempo, nivel) y acá lo persistimos asociado
-// al usuario autenticado — nunca confiamos en un user_id que mande el cliente.
-// El XP y la calibración de skill_levels también se calculan acá, nunca
-// confiando en valores que pueda mandar el cliente.
+// (correcto/incorrecto, tiempo, nivel) y acá lo validamos contra la
+// matriz de acceso de invitado y lo enrutamos al RPC security definer
+// insertar_intento (0120), que escribe la fila en attempts y actualiza
+// skill_levels — el XP se calcula ahí, dentro de la base, nunca
+// mirando valores que mande el cliente. Acá solo se replica la fórmula
+// de sospechoso/desglose para decidir qué copiar al front.
 export async function POST(request: Request) {
   const supabase = await createClient();
 
@@ -54,31 +59,8 @@ export async function POST(request: Request) {
   const sospechoso = esTiempoSospechoso(body.level, body.time_ms);
   const desglose = calcularXpDetallado(body.level, body.time_ms);
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("boost_multiplicador_pendiente")
-    .eq("id", user.id)
-    .single();
-  const boost = profile?.boost_multiplicador_pendiente ?? 1;
-
-  const xp = body.correct && !sospechoso ? Math.round(desglose.total * boost) : 0;
-
-  const { error } = await supabase.from("attempts").insert({
-    user_id: user.id,
-    problem_type: body.problem_type,
-    level: body.level,
-    correct: body.correct,
-    time_ms: body.time_ms,
-    xp,
-  });
-
-  if (error) {
-    return respuestaError("attempts", error);
-  }
-
   // Un intento sospechoso no mueve la calibración (ni para arriba ni para
   // abajo) — se descarta para ese propósito en vez de contaminarla.
-  let skillLevel = null;
   // Fase 2 ("Practicar" estandarizado): cada sub-tema real de Fracciones/
   // Decimales/Potencias/Álgebra/Geometría calibra su propio nivel — los
   // problem_type "de tema" viejos (fracciones/decimales/potencias/
@@ -127,21 +109,32 @@ export async function POST(request: Request) {
     "historia_causaefecto",
     "historia_fechas",
   ];
-  if (!sospechoso && (tiposCalibrables as string[]).includes(body.problem_type)) {
-    skillLevel = await actualizarSkillLevel(
-      supabase,
-      user.id,
-      body.problem_type as ProblemTypeCalibrable,
-      body.correct,
-      body.protegido ?? false
-    );
+  const calibrar = !sospechoso && (tiposCalibrables as string[]).includes(body.problem_type);
+
+  // El alta se hace por el RPC security definer insertar_intento (0120):
+  // calcula XP y anti-apuro server-side dentro de la base, inserta el
+  // intento y actualiza skill_levels. El cliente no puede escribir
+  // attempts directo (policy sellada) ni inventar el xp.
+  const { data: rpcRows, error } = await supabase.rpc("insertar_intento", {
+    p_problem_type: body.problem_type,
+    p_level: body.level,
+    p_correct: body.correct,
+    p_time_ms: body.time_ms,
+    p_protegido: body.protegido ?? false,
+    p_calibrar: calibrar,
+  });
+
+  if (error) {
+    return respuestaError("attempts", error);
   }
+
+  const fila = (rpcRows ?? [])[0];
 
   return NextResponse.json({
     ok: true,
-    xp,
+    xp: fila?.xp ?? 0,
     xpBreakdown: body.correct && !sospechoso ? desglose : null,
-    skillLevel,
-    sospechoso,
+    skillLevel: fila?.nivel != null ? { nivel: fila.nivel, racha_actual: fila.racha_actual } : null,
+    sospechoso: fila?.sospechoso ?? sospechoso,
   });
 }

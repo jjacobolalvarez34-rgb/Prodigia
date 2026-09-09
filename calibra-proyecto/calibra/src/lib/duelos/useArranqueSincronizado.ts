@@ -29,8 +29,8 @@ const TIMEOUT_ESPERA_MS_DEFAULT = 45_000;
 // dos arrancaran en el mismo instante real. Esto usa Presence (saber si
 // el rival ya está en la sala) + Broadcast (el instante exacto de
 // arranque, decidido por el host determinístico — el user_id menor en
-// orden alfabético) sobre el mismo canal `duelo:<id>` que ya usa
-// useProgresoEnVivo durante la partida en sí.
+// orden alfabético) sobre el canal `duelo:<id>:sala` (topic propio de
+// este hook; ver comentario en el channel()).
 export function useArranqueSincronizado({
   duelId,
   miUserId,
@@ -78,7 +78,18 @@ export function useArranqueSincronizado({
   useEffect(() => {
     if (rivalEsBot || !duelId || !miUserId || !rivalId) return;
     const supabase = createClient();
-    const channel = supabase.channel(`duelo:${duelId}`, {
+    // Canal propio con sufijo `:sala`: supabase.channel() REUSA la
+    // instancia existente si el topic ya está registrado en el cliente
+    // (no la reemplaza). Si dos hooks comparten el topic `duelo:<id>`
+    // (este + useProgresoEnVivo) y uno remonta mientras el otro canal
+    // todavía está dado de baja (removeChannel es async), el hook que
+    // reintenta termina agregando callbacks de presence/broadcast sobre
+    // un canal YA suscripto y Supabase lanza
+    // "cannot add presence callbacks after subscribe()" → error boundary
+    // → "Algo no cargó bien". Topic por hook elimina la carrera. Los dos
+    // rivales usan el mismo sufijo y el Presence/Broadcast del arranque
+    // sigue viajando entre clientes sin cambio de comportamiento.
+    const channel = supabase.channel(`duelo:${duelId}:sala`, {
       config: { presence: { key: miUserId } },
     });
     channelRef.current = channel;

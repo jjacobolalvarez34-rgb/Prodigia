@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { calcularXpDetallado, tiempoEsperadoMs } from "@/lib/practica/formulas";
-import { actualizarLogicSkillLevel } from "@/lib/enigmia/skillLevels";
 import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
@@ -13,12 +12,18 @@ interface Body {
 }
 
 // Mismo piso anti-apuro que /api/attempts, aplicado a acertijos.
+// Espejo local del cálculo que decide el RPC insertar_intento_logica
+// (0120) — acá solo para elegir qué desglose copiar al front.
 function esTiempoSospechoso(dificultad: number, timeMs: number): boolean {
   const piso = Math.max(150, tiempoEsperadoMs(dificultad) * 0.12);
   return timeMs < piso;
 }
 
 // POST /api/logic-attempts — equivalente de /api/attempts para Enigmia.
+// El alta se hace por el RPC security definer insertar_intento_logica
+// (0120): calcula XP y anti-apuro dentro de la base, inserta el intento
+// y actualiza logic_skill_levels. El cliente no puede escribir
+// logic_attempts directo ni inventar el xp.
 export async function POST(request: Request) {
   const supabase = await createClient();
 
@@ -34,31 +39,25 @@ export async function POST(request: Request) {
   const sospechoso = esTiempoSospechoso(body.dificultad, body.time_ms);
   const desglose = calcularXpDetallado(body.dificultad, body.time_ms);
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("boost_multiplicador_pendiente")
-    .eq("id", user.id)
-    .single();
-  const boost = profile?.boost_multiplicador_pendiente ?? 1;
-
-  const xp = body.correct && !sospechoso ? Math.round(desglose.total * boost) : 0;
-
-  const { error } = await supabase.from("logic_attempts").insert({
-    user_id: user.id,
-    puzzle_id: body.puzzle_id,
-    correct: body.correct,
-    time_ms: body.time_ms,
-    xp,
+  const { data: rpcRows, error } = await supabase.rpc("insertar_intento_logica", {
+    p_puzzle_id: body.puzzle_id,
+    p_dificultad: body.dificultad,
+    p_correct: body.correct,
+    p_time_ms: body.time_ms,
+    p_protegido: body.protegido ?? false,
   });
 
   if (error) {
     return respuestaError("logic-attempts", error);
   }
 
-  let skillLevel = null;
-  if (!sospechoso) {
-    skillLevel = await actualizarLogicSkillLevel(supabase, user.id, body.correct, body.protegido ?? false);
-  }
+  const fila = (rpcRows ?? [])[0];
 
-  return NextResponse.json({ ok: true, xp, xpBreakdown: body.correct && !sospechoso ? desglose : null, skillLevel, sospechoso });
+  return NextResponse.json({
+    ok: true,
+    xp: fila?.xp ?? 0,
+    xpBreakdown: body.correct && !sospechoso ? desglose : null,
+    skillLevel: fila?.nivel != null ? { nivel: fila.nivel, racha_actual: fila.racha_actual } : null,
+    sospechoso: fila?.sospechoso ?? sospechoso,
+  });
 }

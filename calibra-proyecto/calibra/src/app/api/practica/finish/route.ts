@@ -170,7 +170,7 @@ export async function POST(request: Request) {
   let nivelMundo: RegistrarPuntosMundoResult | null = null;
   const mundo = mundoDeProblemType(sprintRows[0]?.problem_type);
   if (mundo && sprintXp > 0) {
-    const { data: mundoRows } = await supabase.rpc("registrar_puntos_mundo", { p_world: mundo, p_puntos: sprintXp });
+    const { data: mundoRows } = await supabase.rpc("registrar_progreso_mundo", { p_world: mundo, p_puntos: sprintXp });
     nivelMundo = (mundoRows as RegistrarPuntosMundoResult[] | null)?.[0] ?? null;
 
     // Fase 5 del feed: hito de nivel de mundo, no cada nivel — cada 5

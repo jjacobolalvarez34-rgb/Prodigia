@@ -77,12 +77,22 @@ export interface MundoSeleccionable {
   descripcion?: string;
 }
 
+// Modos de Quimia que la RPC crear_invitacion_duelo acepta (0109_mundo_
+// historia.sql:780-783). Retar a un amigo (api/amigos/retar) Sí acepta los 5
+// (retar/route.ts:10), pero invitar por link NO — así que ese flujo restringe
+// el selector a esta lista para no ofrecer opciones que el server rechaza.
+export const QUIMIA_MODOS_INVITACION = ["simbolos", "formulas", "tabla"];
+
 interface Props {
   mundos: MundoSeleccionable[];
   // Rankeds muestra la descripción de una línea por ciudad (t("ciudades.*")
   // en el namespace Rankeds) — retar a un amigo / invitar por link nunca
   // tuvieron esa copia, así que se omite en vez de inventarla.
   mostrarDescripcion?: boolean;
+  // Filtro opcional por mundo para recortar los sub_tipo que se ofrecen
+  // (ej. InvitarPorLink limita Quimia a los 3 modos que la RPC acepta).
+  // Si se omite, se ofrecen todos los de tipo.
+  subopcionesPorMundo?: Partial<Record<Exclude<MundoDuelo, "numeria">, string[]>>;
   // Rankeds solo elige mundo (la operación real la sortea buscar_rival_duelo
   // del lado del servidor). Retar a un amigo / invitar por link necesitan
   // un paso más para elegir operación/continente/categoría/modo.
@@ -109,6 +119,7 @@ export default function SelectorMundoDuelo({
   mostrarDescripcion = false,
   requiereSubopcion = false,
   onElegirSubopcion,
+  subopcionesPorMundo,
   mundoSeleccionado,
   onSeleccionarMundo,
   className = "",
@@ -194,15 +205,17 @@ export default function SelectorMundoDuelo({
                   {tOperaciones(op)}
                 </button>
               ))
-            : opcionesPorMundo[mundo].map((op) => (
-                <button
-                  key={op.id}
-                  onClick={() => onElegirSubopcion?.(mundo, op.id)}
-                  className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-foreground hover:border-primario/40"
-                >
-                  {op.nombre}
-                </button>
-              ))}
+            : opcionesPorMundo[mundo]
+                .filter((op) => !subopcionesPorMundo?.[mundo] || subopcionesPorMundo[mundo].includes(op.id))
+                .map((op) => (
+                  <button
+                    key={op.id}
+                    onClick={() => onElegirSubopcion?.(mundo, op.id)}
+                    className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-foreground hover:border-primario/40"
+                  >
+                    {op.nombre}
+                  </button>
+                ))}
         </div>
       )}
     </div>

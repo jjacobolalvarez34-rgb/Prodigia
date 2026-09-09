@@ -57,7 +57,16 @@ export default function FlujoElegirMundos() {
     setError(null);
     const supabase = createClient();
     const { error: rpcError } = await supabase.rpc("elegir_mundos_iniciales", { p_mundos: seleccionados });
+    // 0116: si la cuenta YA tiene mundos (p.ej. estado heredado de 1
+    // mundo, o alguien que ya pasó por el flujo), la RPC lo rechaza con
+    // "ya elegiste". Antes esto dejaba la pantalla trabada sin salida —
+    // acá se reconoce y se manda a la home, que ya muestra sus mundos.
     if (rpcError) {
+      if (rpcError.message?.includes("ya elegiste")) {
+        router.push("/");
+        router.refresh();
+        return;
+      }
       setError(rpcError.message ?? "No se pudo guardar. Probá de nuevo.");
       setEnviando(false);
       return;
