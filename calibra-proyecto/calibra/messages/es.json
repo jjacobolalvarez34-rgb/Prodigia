@@ -220,6 +220,97 @@
     "cajaFuerte": "Caja fuerte",
     "apuestaPendiente": "Pendiente",
     "trastienda": {
+      "apuestasPartida": {
+        "titulo": "La Mesa de Apuestas",
+        "descripcion": "Duelos de otros jugadores en vivo. Elegí un lado, pagá tu entrada y que gane el mejor.",
+        "operaciones": {
+          "suma": "Suma",
+          "resta": "Resta",
+          "multiplicacion": "Multiplicación",
+          "division": "División"
+        },
+        "apostar": "Apostar",
+        "ganador": "Gana {nombre}",
+        "empate": "Empate",
+        "gananciaPotencial": "×{mult} → +{ganancia} Chispas",
+        "confirmar": "CONFIRMAR APUESTA",
+        "apostando": "Apostando…",
+        "apuestaHecha": "Apuesta registrada — se liquida sola cuando termina el duelo. Puede dejar {ganancia} Chispas.",
+        "sinChispas": "No te alcanzan las Chispas para ese monto.",
+        "sinPartidas": "No hay duelos ajenos en vivo por ahora. Volvé en un rato.",
+        "cargando": "Buscando mesas…",
+        "limiteDia": "Hoy: {hoy}/10 · {monto}/500",
+        "limiteDiaAlcanzado": "Llegaste al límite del día (10 apuestas o 500 Chispas). Volvé mañana.",
+        "misApuestas": "Mis apuestas",
+        "estados": {
+          "pendiente": "En juego",
+          "ganada": "+{n}",
+          "perdida": "Perdida",
+          "devuelta": "Empate — devuelta"
+        }
+      },
+      "prediccionRanking": {
+        "titulo": "El Oráculo del Ranking",
+        "descripcion": "Apostá dónde vas a terminar en el ranking semanal. Si acertás, la casa te paga.",
+        "semana": "Semana {semana}",
+        "cargando": "Consultando al oráculo…",
+        "ventanaCerrada": "La ventana de apuestas abre el lunes y cierra el miércoles. La próxima arranca el lunes.",
+        "tuPrediccion": "Predijiste #{puesto} por {monto} Chispas (×{mult})",
+        "gananciaPotencial": "×{mult} → +{ganancia} Chispas",
+        "confirmar": "CONFIRMAR PREDICCIÓN",
+        "apostando": "Apostando…",
+        "hecha": "Predicción registrada. Nos vemos el último día del ranking.",
+        "estados": {
+          "pendiente": "En juego",
+          "ganada": "¡Acertaste! +{n}",
+          "parcial": "Cerca — pago parcial +{n}",
+          "perdida": "No se dio."
+        }
+      },
+      "laCalcu": {
+        "titulo": "La Calculadora",
+        "descripcion": "Usá los 4 números una vez cada uno con +, −, × y ÷ para llegar al objetivo.",
+        "jugar": "Empezar ({costo} Chispas)",
+        "iniciando": "Generando puzzle…",
+        "sinChispas": "Necesitás 50 Chispas.",
+        "completa": "Completá la secuencia: números y operaciones, en ese orden.",
+        "deshacer": "Deshacer",
+        "resolver": "¡Resolver!",
+        "resuelta": "¡Igualdad! +{n} Chispas",
+        "fallida": "No da el objetivo. Se te fue la apuesta.",
+        "deNuevo": "Otra ronda"
+      },
+      "acertijos": {
+        "titulo": "Acertijos de Enigmia",
+        "descripcion": "Memorizá la secuencia y reproducila en el orden exacto. Se pone tramposa a la tercera.",
+        "jugar": "Empezar ({costo} Chispas)",
+        "iniciando": "Preparando…",
+        "sinChispas": "Necesitás 100 Chispas.",
+        "memoriza": "Memorizá la secuencia…",
+        "dificultades": {
+          "facil": "Fácil",
+          "media": "Media",
+          "dificil": "Difícil"
+        },
+        "completa": "Reproducí el orden:",
+        "deshacer": "Deshacer",
+        "confirmar": "Confirmar",
+        "resuelto": "¡Secuencia perfecta! +{n} Chispas",
+        "fallido": "El orden no era ese.",
+        "deNuevo": "Otra ronda"
+      },
+      "elReloj": {
+        "titulo": "El Reloj del Sótano",
+        "descripcion": "15 sumas y restas antes de que se acabe el tiempo. Las que falten, cuentan como perdidas.",
+        "jugar": "Empezar ({costo} Chispas)",
+        "iniciando": "Poniendo el reloj en cero…",
+        "sinChispas": "Necesitás 60 Chispas.",
+        "progreso": "{n} de {total} resueltas",
+        "siguiente": "Siguiente ↵",
+        "correctas": "Acertaste {n} de {total}.",
+        "premio": "+{n} Chispas",
+        "deNuevo": "Otra ronda"
+      },
       "ruleta": {
         "titulo": "La Ruleta del Trastiendista",
         "descripcion": "Un giro, un destino. La casa siempre gana — pero a la larga.",
@@ -271,13 +362,22 @@
         "vacio": "Todavía no hay movimiento por acá.",
         "ruleta": "Ruleta",
         "volado": "Volado",
-        "la_pizarra": "La Pizarra"
+        "la_pizarra": "La Pizarra",
+        "la_calcu": "La Calculadora",
+        "acertijos": "Acertijos de Enigmia",
+        "el_reloj": "El Reloj del Sótano",
+        "minijuego": "Minijuego"
       },
       "errores": {
         "girar": "No se pudo girar.",
         "tirar": "No se pudo tirar.",
         "pizarra": "No se pudo jugar a la pizarra.",
-        "historial": "No se pudo cargar el historial."
+        "historial": "No se pudo cargar el historial.",
+        "apuestas": "No se pudo operar con la casa.",
+        "prediccion": "El oráculo no respondió.",
+        "laCalcu": "No se pudo jugar a la calculadora.",
+        "acertijos": "No se pudo jugar a los acertijos.",
+        "elReloj": "No se pudo jugar al reloj."
       }
     }
   },

@@ -3669,3 +3669,30 @@ escribir intentos/niveles/XP directo.
 - **VERIFICADO POR CÓDIGO.** SQL sin validar contra la DB (sin acceso).
 - **PENDIENTE usuario:** (1) aplicar `0121_trastienda_economia.sql` a prod; (2) retestear el doble o nada (debería dejar de dar "Algo salió mal" si la causa era 42P01); (3) probar ruleta/volado/pizarra en browser (tunnel del usuario); (4) confirmar dominio del dev tunnel.
 - DIFERIDOS a decisión PO: Mecánica 1 (apuestas a partida de otro), Mecánica 2 (predicciones de ranking), Mecánica 3 (títulos Trastienda), minijuegos La Calcu/Acertijos/El Reloj, ruleta horizontal vs tómbola vertical (P4). Ver DECISIONS.md y TECH-DEBT.md.
+
+---
+
+## 2026-09-09 — Trastienda corte 2: fix Pizarra (0122) + página propia + M1/M2/M3 + minijuegos completos
+
+### Construí
+- **`0122_arreglo_pizarra.sql`**: bug de La Pizarra `v_del_dia integer` → `v_pizarra_id uuid` (la sesión nueva venía NULL → 22021 y el historial no listaba). Incluye `NOTIFY pgrst, 'reload schema';` — el "Algo salió mal" de TODOS los módulos nuevos es caché de esquema PostgREST (PGRST202 → 404 en `rpc`).
+- **Página propia `/trastienda`** (`[locale]/trastienda/page.tsx` + `TrastiendaClient.tsx`): la sala sale de la Tienda. `tienda/page.tsx` ya no lee `apuesta_monto`/`ocultar_doble_o_nada` del select ni recibe `apuestaActiva`/`ocultarDobleONadaInicial`; la función interna `Trastienda` fue borrada de `TiendaClient.tsx`.
+- **`0123_trastienda_mecanicas_123.sql`** (M1+M2+M3):
+  - M1 apuestas a duelos AIENOS (solo `duels`; rankeds/reto_semanal quedan PENDIENTE): tablas `trastienda_apuestas`/`limites_diarios` (RLS lectura propia), `fetch_apuestas_disponibles`, `preview_apuesta_partida` (odds por ΔELO, tabla de cuotas de la spec), `apostar_partida` (límites 10/día y 500/día, pre-check de duplicado), `resolver_apuesta_partida` + trigger en `duel_results` (resultado se liquida solo).
+  - M2 predicción de ranking semanal: `ranking_semanal_de_semana` (variante historizable), `apostar_prediccion_ranking` (ventana lunes→miércoles, self-heal: al apostar resuelve semanas previas), `resolver_prediccion_ranking` (buckets 1/2/3/4-5/6-10/11-20/21+, ±2 posiciones = 50%), `cobrar_predicciones_pendientes`.
+  - M3 títulos: `girar_ruleta` reescrito con rama 'titulo' real (antes escudo placeholder) usando `titulos_trastienda_base()` + `desbloquear_titulo_propio(p_slug, p_nombre, 'trastienda')`; helpers `nombre_titulo_trastienda`.
+- **`0124_trastienda_minijuegos.sql`**:
+  - **La Calcu** (50 Chispas): puzzle generado server-side (`generar_puzzle_calcu`, árbol de forma fija; '/' solo en nodos internos, `+-*` final → target entero siempre alcanzable); `eval_calcu` valida AST JSONB (sin eval de texto); ventana 30s; 125 de salida (+200 si ≤10s).
+  - **Acertijos de Enigmia** (100 Chispas): secuencias 4/5/6 de símbolos (1-8) DISTINTOS, dificultad por racha (3 → media, ≥6 → difícil); 30s; payouts 60/100/170 por dificultad.
+  - **El Reloj del sótano** (60 Chispas): 15 sumas/restas; las respuestas viven SOLO en `trastienda_reloj` (sin grants/RLS); 85s; payouts 160/95/55/0 (10/8/6+).
+  - Rachas por iteración consecutiva excluyendo la fila actual (`m.id <> v_fila.minijuego_id`).
+- **Cliente completo:** rutas `/api/trastienda/{apuestas,predicciones,la-calcu,acertijos,el-reloj}` (patrón `respuestaError`), componentes `ApostarPartida` (feed + modal + límites + mis apuestas), `PrediccionRanking` (ventana + puestos × montos + historial), `LaCalcu` (build de AST por toques, duplicados por cantidad), `Acertijos` (mostrar-secuencia 3s + orden), `ElReloj` (secuencial con 85s); integrados en `TrastiendaClient` (apuestas + oráculo arriba de la Ruleta, grid de 3 minijuegos abajo), balance propagado por `puntos`/`onPuntos`/`onMovimiento`. `HistorialTrastienda` ahora mapea los minijuegos nuevos por `titulo`. Tipos espejados a los contratos RPC reales.
+- **M3 en TS:** `catalogo.ts` categoría `trastienda` + 8 títulos con los criterios de `TRASTIENDA-ECONOMIA.md` §3 (tronado 1 ganada, farolero racha 5, profeta-minor 10 predicciones, uja 50 apuestas, ardilla 5000 payout, profeta-mayor racha 5 predicciones, ecualizador racha 20, sentenciador ≥100 y neto >0); `verificar.ts` lee `trastienda_apuestas` (+racha, +neto, +payout) y `trastienda_predicciones_ranking` solo si hace falta (falla en silencio si 0123 no está aplicada).
+
+### Verifiqué
+- npx tsc --noEmit: 0. npx eslint (trastienda client/lib/api + tienda + titulos): 0. npx vitest run: **132/132** (sin tests nuevos — no hay contrato RPC que testear sin base real). npx next build: limpio, 245 páginas, con las 5 rutas nuevas (`/api/trastienda/*`).
+
+### Resultado
+- **VERIFICADO POR CÓDIGO.** El SQL 0122/0123/0124 NO se pudo validar contra la base (sin acceso a DB/runtime).
+- **PENDIENTE usuario (en orden):** (1) aplicar `0122` y correr `NOTIFY pgrst, 'reload schema';` y retestear ruleta/volado/pizarra/historial; (2) aplicar `0123` + `0124`; (3) probar en browser apuestas, oráculo, títulos (ruleta y por mérito) y los 3 minijuegos vía tunnel.
+- Sigue PENDIENTE del dif упомянутый original: ex 'Mecánica 1 rankeds/reto_semanal'; M2 job semanal automático (se usa self-heal); ruleta horizontal vs tómbola vertical (P4). Ver DECISIONS.md y TECH-DEBT.md.

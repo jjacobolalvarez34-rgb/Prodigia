@@ -38,8 +38,20 @@ export default function HistorialTrastienda({ refreshKey }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshKey]);
 
-  const etiquetaTipo = (tipo: string): string =>
-    tipo === "ruleta" ? t("ruleta") : tipo === "pizarra" ? t("la_pizarra") : t("volado");
+  // Los minijuegos llegan con tipo='minijuego' y el nombre del juego como
+  // titulo ('volado', 'la_calcu', 'acertijos', 'el_reloj').
+  const etiquetaTipo = (item: ItemHistorial): string => {
+    if (item.tipo === "ruleta") return t("ruleta");
+    if (item.tipo === "pizarra") return t("la_pizarra");
+    if (item.tipo === "minijuego") {
+      if (item.titulo === "volado") return t("volado");
+      if (item.titulo === "la_calcu") return t("la_calcu");
+      if (item.titulo === "acertijos") return t("acertijos");
+      if (item.titulo === "el_reloj") return t("el_reloj");
+      return t("minijuego");
+    }
+    return t("volado");
+  };
 
   return (
     <div className="rounded-2xl border border-tt-border bg-tt-surface p-5">
@@ -70,7 +82,7 @@ export default function HistorialTrastienda({ refreshKey }: Props) {
                 )}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-tt-text">{etiquetaTipo(item.tipo)}</p>
+                <p className="truncate text-sm font-semibold text-tt-text">{etiquetaTipo(item)}</p>
                 <p className="truncate text-xs text-tt-text-muted">
                   {new Date(item.creado_at).toLocaleString(locale, { hour: "2-digit", minute: "2-digit" })}
                 </p>

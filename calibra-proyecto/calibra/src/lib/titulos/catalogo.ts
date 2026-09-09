@@ -18,12 +18,19 @@ export type CriterioTitulo =
   | { tipo: "racha_retos_diarios"; valor: number }
   | { tipo: "mundos_explorados"; valor: number }
   | { tipo: "embajador" }
-  | { tipo: "chispas_balance"; valor: number };
+  | { tipo: "chispas_balance"; valor: number }
+  | { tipo: "trastienda_apuestas_ganadas"; valor: number }
+  | { tipo: "trastienda_racha_apuestas"; valor: number }
+  | { tipo: "trastienda_apuestas_totales"; valor: number }
+  | { tipo: "trastienda_payout_total"; valor: number }
+  | { tipo: "trastienda_predicciones_ganadas"; valor: number }
+  | { tipo: "trastienda_predicciones_racha"; valor: number }
+  | { tipo: "trastienda_neto_positivo"; valor: number };
 
 export interface TituloCatalogo {
   slug: string;
   nombre: string;
-  categoria: "mundo" | "volumen" | "precision" | "duelos" | "constancia" | "curiosidad";
+  categoria: "mundo" | "volumen" | "precision" | "duelos" | "constancia" | "curiosidad" | "trastienda";
   criterio: CriterioTitulo;
 }
 
@@ -92,4 +99,19 @@ export const CATALOGO_TITULOS: TituloCatalogo[] = [
   { slug: "estudioso-melodia", nombre: "Estudioso de Melodía", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "melodia" } },
   { slug: "estudioso-trigonometria", nombre: "Estudioso de Trigonometría", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "trigonometria" } },
   { slug: "estudioso-historia", nombre: "Estudioso de Historia", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "historia" } },
+
+  // ---------- por Trastienda (apuestas y predicciones de ranking) ---------
+  // M3 de TRASTIENDA-ECONOMIA.md §3. Los slugs/nombres son los mismos que
+  // reparte el segmento 'titulo' de la ruleta (0123): los títulos ganados
+  // por mérito no se duplican porque desbloquear_titulo es idempotente.
+  // Redundan con los 4 de titulos_trastienda_base() del SQL — acá se pueden
+  // ganar también por criterio real, no solo por ruleta.
+  { slug: "tronado", nombre: "Tronado", categoria: "trastienda", criterio: { tipo: "trastienda_apuestas_ganadas", valor: 1 } },
+  { slug: "farolero", nombre: "Farolero", categoria: "trastienda", criterio: { tipo: "trastienda_racha_apuestas", valor: 5 } },
+  { slug: "profeta-minor", nombre: "Profeta Menor", categoria: "trastienda", criterio: { tipo: "trastienda_predicciones_ganadas", valor: 10 } },
+  { slug: "uja", nombre: "Uja", categoria: "trastienda", criterio: { tipo: "trastienda_apuestas_totales", valor: 50 } },
+  { slug: "ardilla", nombre: "Ardilla", categoria: "trastienda", criterio: { tipo: "trastienda_payout_total", valor: 5000 } },
+  { slug: "profeta-mayor", nombre: "Profeta Mayor", categoria: "trastienda", criterio: { tipo: "trastienda_predicciones_racha", valor: 5 } },
+  { slug: "ecualizador", nombre: "Ecualizador", categoria: "trastienda", criterio: { tipo: "trastienda_racha_apuestas", valor: 20 } },
+  { slug: "sentenciador", nombre: "Sentenciador", categoria: "trastienda", criterio: { tipo: "trastienda_neto_positivo", valor: 100 } },
 ];

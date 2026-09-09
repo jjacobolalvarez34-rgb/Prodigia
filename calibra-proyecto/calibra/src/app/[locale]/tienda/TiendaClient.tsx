@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { RANGOS_ELO, FUENTE_NOMBRE_CLASS, MARCOS_MUNDO, type FuenteNombre } from "@/types/database";
 import { IconCandado, IconEscudo } from "@/components/icons";
@@ -8,10 +9,6 @@ import Boton from "@/components/Boton";
 import GlareHover from "@/components/reactbits/GlareHover";
 import BorderGlow from "@/components/reactbits/BorderGlow";
 import ScrollFloat from "@/components/reactbits/ScrollFloat";
-import Ruleta from "@/components/trastienda/Ruleta";
-import Volado from "@/components/trastienda/Volado";
-import Pizarra from "@/components/trastienda/Pizarra";
-import HistorialTrastienda from "@/components/trastienda/HistorialTrastienda";
 import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiario";
 import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
 
@@ -36,9 +33,6 @@ const MARCOS_MUNDO_COMPRABLES = Object.entries(MARCOS_MUNDO).map(([mundo, { nomb
   imagen,
 }));
 
-const MONTOS_APUESTA = [25, 50, 100];
-const APUESTA_MAXIMA = 200;
-
 type Contexto = "utilidad" | "fuente" | "marco" | "marco-mundo" | "apuesta";
 
 interface Props {
@@ -51,8 +45,6 @@ interface Props {
   marcoActual: string;
   marcosDesbloqueados: string[];
   nivelesMundo: Record<string, number>;
-  apuestaActiva: boolean;
-  ocultarDobleONadaInicial: boolean;
   fechaHoy: string;
 }
 
@@ -66,8 +58,6 @@ export default function TiendaClient({
   marcoActual,
   marcosDesbloqueados,
   nivelesMundo,
-  apuestaActiva,
-  ocultarDobleONadaInicial,
   fechaHoy,
 }: Props) {
   const t = useTranslations("Tienda");
@@ -113,14 +103,10 @@ export default function TiendaClient({
   const [fuenteElegida, setFuenteElegida] = useState(fuenteActual);
   const [marcosDesbl, setMarcosDesbl] = useState(marcosDesbloqueados);
   const [marcoElegido, setMarcoElegido] = useState(marcoActual);
-  const [apostando, setApostando] = useState(false);
-  const [apuestaActivaLocal, setApuestaActivaLocal] = useState(apuestaActiva);
   const [confirmando, setConfirmando] = useState<ItemComprable | null>(null);
   const [comprando, setComprando] = useState(false);
   const [cambiandoCosmetico, setCambiandoCosmetico] = useState(false);
   const [error, setError] = useState<{ msg: string; contexto: Contexto } | null>(null);
-  const [trastiendaAbierta, setTrastiendaAbierta] = useState(false);
-  const [historialVersion, setHistorialVersion] = useState(0);
 
   const oferta = obtenerDescuentoDelDia(fechaHoy);
 
@@ -191,29 +177,6 @@ export default function TiendaClient({
       setError({ msg: t("noSePudoCambiarMarcoConexion"), contexto: "marco" });
     } finally {
       setCambiandoCosmetico(false);
-    }
-  }
-
-  async function apostar(monto: number) {
-    setApostando(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/tienda/apostar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ monto }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setError({ msg: data.error ?? t("noSePudoApostar"), contexto: "apuesta" });
-        return;
-      }
-      setPuntos(data.puntos_total);
-      setApuestaActivaLocal(true);
-    } catch {
-      setError({ msg: t("noSePudoApostarConexion"), contexto: "apuesta" });
-    } finally {
-      setApostando(false);
     }
   }
 
@@ -437,21 +400,24 @@ export default function TiendaClient({
           />
         </EstanteCategoria>
 
-        {!ocultarDobleONadaInicial && (
-          <Trastienda
-            abierta={trastiendaAbierta}
-            onAbrir={() => setTrastiendaAbierta(true)}
-            onVolver={() => setTrastiendaAbierta(false)}
-            apuestaActiva={apuestaActivaLocal}
-            apostando={apostando}
-            puntos={puntos}
-            onApostar={apostar}
-            error={error?.contexto === "apuesta" ? error.msg : null}
-            historialVersion={historialVersion}
-            onPuntos={setPuntos}
-            onMovimiento={() => setHistorialVersion((v) => v + 1)}
-          />
-        )}
+        {/* La puerta del sótano — la Trastienda vive en su propia página
+            ( /trastienda ): acá solo queda el cartel que indica el camino. */}
+        <Link
+          href="/trastienda"
+          aria-label={t("entrarALaTrastienda")}
+          className="group flex w-full items-center justify-between gap-4 rounded-2xl border border-tt-border bg-tt-surface px-6 py-5 text-left shadow-[0_8px_32px_-8px_rgba(0,0,0,0.55)] transition-colors hover:border-tt-accent/60"
+        >
+          <span className="flex min-w-0 items-center gap-3">
+            <IconCandado className="h-6 w-6 shrink-0 text-tt-text-muted transition-colors group-hover:text-tt-accent" />
+            <span className="flex flex-col gap-0.5">
+              <span className="font-display text-base font-bold tracking-tight text-tt-text">{t("laTrastienda")}</span>
+              <span className="text-sm text-tt-text-muted">{t("sotanoDescripcion")}</span>
+            </span>
+          </span>
+          <span className="shrink-0 font-mono text-lg font-bold leading-none text-tt-accent" aria-hidden>
+            ↓
+          </span>
+        </Link>
       </div>
     </div>
   );
@@ -595,162 +561,6 @@ function ItemEstante({
         </div>
       )}
     </GlareHover>
-  );
-}
-
-// ---------- Trastienda: el sótano del Bazar ----------
-// Fase 4: el "doble o nada" vive atrás de la Tienda (un paso extra).
-// TRASTIENDA-VISUAL: la sala es SIEMPRE oscura (tokens --tt-*), el balance
-// es la "caja fuerte" y la apuesta una mesa de juego. La mecánica y el
-// flujo server-authoritative no cambian — solo la identidad visual.
-function Trastienda({
-  abierta,
-  onAbrir,
-  onVolver,
-  apuestaActiva,
-  apostando,
-  puntos,
-  onApostar,
-  error,
-  historialVersion,
-  onPuntos,
-  onMovimiento,
-}: {
-  abierta: boolean;
-  onAbrir: () => void;
-  onVolver: () => void;
-  apuestaActiva: boolean;
-  apostando: boolean;
-  puntos: number;
-  onApostar: (monto: number) => void;
-  error: string | null;
-  historialVersion: number;
-  onPuntos: (n: number) => void;
-  onMovimiento: () => void;
-}) {
-  const t = useTranslations("Tienda");
-
-  if (!abierta) {
-    return (
-      <button
-        onClick={onAbrir}
-        aria-label={t("entrarALaTrastienda")}
-        className="group flex w-full items-center justify-between gap-4 rounded-2xl border border-tt-border bg-tt-surface px-6 py-5 text-left shadow-[0_8px_32px_-8px_rgba(0,0,0,0.55)] transition-colors hover:border-tt-accent/60"
-      >
-        <span className="flex min-w-0 items-center gap-3">
-          <IconCandado className="h-6 w-6 shrink-0 text-tt-text-muted transition-colors group-hover:text-tt-accent" />
-          <span className="flex flex-col gap-0.5">
-            <span className="font-display text-base font-bold tracking-tight text-tt-text">{t("laTrastienda")}</span>
-            <span className="text-sm text-tt-text-muted">{t("sotanoDescripcion")}</span>
-          </span>
-        </span>
-        <span className="shrink-0 font-mono text-lg font-bold leading-none text-tt-accent" aria-hidden>
-          ↓
-        </span>
-      </button>
-    );
-  }
-
-  return (
-    <section
-      className="relative overflow-hidden rounded-2xl border border-tt-border"
-      style={{ background: "var(--tt-bg)", boxShadow: "0 8px 32px -8px rgba(0,0,0,0.45)" }}
-    >
-      {/* Luz de neón que entra desde la escalera — el único elemento "neón"
-          de la sala, ambiental y sutil (TRASTIENDA-VISUAL §1). */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-40"
-        style={{ background: "linear-gradient(180deg, var(--tt-neon) 0%, transparent 60%)", opacity: 0.08 }}
-      />
-
-      <div className="relative flex items-center justify-between gap-3 border-b border-tt-border px-5 py-4">
-        <button
-          onClick={onVolver}
-          className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-sm font-medium text-tt-text-muted transition-colors hover:text-tt-text"
-        >
-          <span aria-hidden>←</span> {t("volverAlBazar")}
-        </button>
-        <div className="flex items-center gap-3">
-          <span className="hidden text-[11px] font-medium uppercase tracking-[0.08em] text-tt-text-muted sm:inline">
-            {t("cajaFuerte")}
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-tt-accent/50 bg-tt-surface-2 px-4 py-1.5">
-            <span className="text-sm leading-none text-tt-accent" aria-hidden>
-              ⚡
-            </span>
-            <span
-              className="font-mono text-xl font-bold tabular-nums leading-none text-tt-accent"
-              style={{ letterSpacing: "0.04em" }}
-            >
-              {puntos}
-            </span>
-          </span>
-        </div>
-      </div>
-
-      <div className="relative flex flex-col gap-4 px-4 pb-6 pt-5 sm:px-5">
-        <div
-          className="rounded-2xl border border-tt-border bg-tt-surface p-5 transition-colors"
-          style={{ boxShadow: "0 8px 32px -8px rgba(0,0,0,0.5)" }}
-        >
-          <div className="flex items-start gap-3">
-            <span className="text-xl leading-none" aria-hidden>
-              🎲
-            </span>
-            <div>
-              <p className="font-display text-lg font-bold tracking-tight text-tt-text">{t("dobleONada")}</p>
-              <p className="mt-1 text-sm text-tt-text-muted">{t("dobleONadaDescripcion")}</p>
-            </div>
-          </div>
-
-          <div className="mt-4 rounded-xl border border-tt-border bg-tt-surface-2 px-3.5 py-2.5 text-xs font-medium text-tt-text-muted">
-            <span aria-hidden>⚠️</span> {t("dobleONadaAviso", { max: APUESTA_MAXIMA })}
-          </div>
-
-          {apuestaActiva ? (
-            <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-dashed border-tt-accent/60 bg-tt-surface-2 px-4 py-3">
-              <span className="shrink-0 rounded-full bg-tt-accent px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em] text-tt-bg">
-                <span aria-hidden>⏳</span> {t("apuestaPendiente")}
-              </span>
-              <p className="text-sm font-medium text-tt-text">{t("apuestaActivaAviso")}</p>
-            </div>
-          ) : (
-            <div className="mt-4 flex flex-wrap items-center gap-2.5">
-              {apostando && (
-                <span className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-tt-accent/30 border-t-tt-accent" />
-              )}
-              {MONTOS_APUESTA.map((monto) => (
-                <button
-                  key={monto}
-                  onClick={() => onApostar(monto)}
-                  disabled={apostando || puntos < monto}
-                  className="rounded-full bg-tt-surface-2 px-5 py-2 font-mono text-sm font-bold text-tt-text transition-all duration-150 hover:scale-105 hover:border-tt-accent disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
-                  style={{ border: "1px solid var(--tt-border)" }}
-                >
-                  {t("apostarMonto", { monto })}
-                </button>
-              ))}
-            </div>
-          )}
-          {error && <p className="mt-3 text-sm font-medium text-tt-danger">{error}</p>}
-        </div>
-
-        <Ruleta puntos={puntos} onPuntos={onPuntos} onMovimiento={onMovimiento} />
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Volado puntos={puntos} onPuntos={onPuntos} onMovimiento={onMovimiento} />
-          <Pizarra puntos={puntos} onPuntos={onPuntos} onMovimiento={onMovimiento} />
-        </div>
-
-        <HistorialTrastienda refreshKey={historialVersion} />
-      </div>
-
-      {/* Marca de agua del Trastiendista (emblema propuesto) al fondo */}
-      <div aria-hidden className="pointer-events-none absolute bottom-2 right-3 opacity-[0.05]">
-        <IconCandado className="h-24 w-24 text-tt-text-muted" />
-      </div>
-    </section>
   );
 }
 
