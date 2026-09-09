@@ -128,6 +128,67 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
     chispasBalance = perfil?.puntos_total ?? 0;
   }
 
+  // ---------- Trastienda (M3, 0123) ----------
+  // Solo se leen las tablas nuevas si algún título pendiente las necesita.
+  // Las tablas tienen RLS de lectura propia (select + grant a authenticated);
+  // si las migraciones todavía no se aplicaron, el select falla en silencio
+  // ({data: null}) y no se desbloquea nada — seguro durante el rollout.
+  let taGanadas = 0;
+  let taTotales = 0;
+  let taRachaGanadas = 0;
+  let taPayoutTotal = 0;
+  let taNeto = 0;
+  const taNecesario =
+    tiposNecesarios.has("trastienda_apuestas_ganadas") ||
+    tiposNecesarios.has("trastienda_racha_apuestas") ||
+    tiposNecesarios.has("trastienda_apuestas_totales") ||
+    tiposNecesarios.has("trastienda_payout_total") ||
+    tiposNecesarios.has("trastienda_neto_positivo");
+  if (taNecesario) {
+    const { data: apuestas } = await supabase
+      .from("trastienda_apuestas")
+      .select("estado, resultado_final, monto, multiplier, payout")
+      .eq("user_id", userId)
+      .order("creado_at", { ascending: false })
+      .limit(500);
+    taTotales = (apuestas ?? []).length;
+    taGanadas = (apuestas ?? []).filter((a) => a.estado === "ganada").length;
+    taPayoutTotal = (apuestas ?? []).reduce((acc, a) => acc + (a.estado === "ganada" ? (a.payout ?? 0) : 0), 0);
+    taNeto = (apuestas ?? []).reduce((acc, a) => {
+      if (a.estado === "ganada") return acc + (a.payout ?? 0) - a.monto;
+      if (a.estado === "perdida") return acc - a.monto;
+      return acc;
+    }, 0);
+    for (const a of apuestas ?? []) {
+      if (a.estado === "ganada") {
+        taRachaGanadas++;
+      } else if (a.estado === "perdida") {
+        break; // una perdida corta la racha
+      }
+    }
+  }
+
+  let tpGanadas = 0;
+  let tpRachaGanadas = 0;
+  const tpNecesario =
+    tiposNecesarios.has("trastienda_predicciones_ganadas") || tiposNecesarios.has("trastienda_predicciones_racha");
+  if (tpNecesario) {
+    const { data: predicciones } = await supabase
+      .from("trastienda_predicciones_ranking")
+      .select("estado")
+      .eq("user_id", userId)
+      .order("creado_at", { ascending: false })
+      .limit(200);
+    tpGanadas = (predicciones ?? []).filter((p) => p.estado === "ganada" || p.estado === "parcial").length;
+    for (const p of predicciones ?? []) {
+      if (p.estado === "ganada" || p.estado === "parcial") {
+        tpRachaGanadas++;
+      } else if (p.estado === "perdida") {
+        break; // acertar es el estado que corta; las pendientes quedan al final
+      }
+    }
+  }
+
   // mundo_completado y aprender_completo se calculan por mundo, solo
   // para los mundos que realmente hacen falta (no los 4 siempre).
   const mundosCompletadoNecesarios = new Set(
@@ -207,6 +268,13 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
     else if (c.tipo === "chispas_balance") cumplido = chispasBalance >= c.valor;
     else if (c.tipo === "mundo_completado") cumplido = mundoCompletado.get(c.mundo) ?? false;
     else if (c.tipo === "aprender_completo") cumplido = aprenderCompleto.get(c.mundo) ?? false;
+    else if (c.tipo === "trastienda_apuestas_ganadas") cumplido = taGanadas >= c.valor;
+    else if (c.tipo === "trastienda_racha_apuestas") cumplido = taRachaGanadas >= c.valor;
+    else if (c.tipo === "trastienda_apuestas_totales") cumplido = taTotales >= c.valor;
+    else if (c.tipo === "trastienda_payout_total") cumplido = taPayoutTotal >= c.valor;
+    else if (c.tipo === "trastienda_predicciones_ganadas") cumplido = tpGanadas >= c.valor;
+    else if (c.tipo === "trastienda_predicciones_racha") cumplido = tpRachaGanadas >= c.valor;
+    else if (c.tipo === "trastienda_neto_positivo") cumplido = taTotales >= c.valor && taNeto > 0;
 
     if (cumplido) desbloqueadosAhora.push(t);
   }

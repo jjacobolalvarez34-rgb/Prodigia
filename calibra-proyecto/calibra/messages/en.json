@@ -220,6 +220,97 @@
     "cajaFuerte": "Safe",
     "apuestaPendiente": "Pending",
     "trastienda": {
+      "apuestasPartida": {
+        "titulo": "The Betting Table",
+        "descripcion": "Other players' duels, live. Pick a side, pay your stake and let the best win.",
+        "operaciones": {
+          "suma": "Addition",
+          "resta": "Subtraction",
+          "multiplicacion": "Multiplication",
+          "division": "Division"
+        },
+        "apostar": "Bet",
+        "ganador": "{nombre} wins",
+        "empate": "Draw",
+        "gananciaPotencial": "×{mult} → +{ganancia} Chispas",
+        "confirmar": "CONFIRM BET",
+        "apostando": "Betting…",
+        "apuestaHecha": "Bet placed — it settles on its own when the duel ends. Could pay {ganancia} Chispas.",
+        "sinChispas": "You don't have enough Chispas for that stake.",
+        "sinPartidas": "No other live duels right now. Come back soon.",
+        "cargando": "Looking for tables…",
+        "limiteDia": "Today: {hoy}/10 · {monto}/500",
+        "limiteDiaAlcanzado": "You hit today's limit (10 bets or 500 Chispas). Come back tomorrow.",
+        "misApuestas": "My bets",
+        "estados": {
+          "pendiente": "Playing",
+          "ganada": "+{n}",
+          "perdida": "Lost",
+          "devuelta": "Draw — refunded"
+        }
+      },
+      "prediccionRanking": {
+        "titulo": "The Ranking Oracle",
+        "descripcion": "Bet where you'll end up in the weekly ranking. Get it right and the house pays you.",
+        "semana": "Week {semana}",
+        "cargando": "Consulting the oracle…",
+        "ventanaCerrada": "The betting window opens Monday and closes Wednesday. The next one starts Monday.",
+        "tuPrediccion": "You predicted #{puesto} for {monto} Chispas (×{mult})",
+        "gananciaPotencial": "×{mult} → +{ganancia} Chispas",
+        "confirmar": "CONFIRM PREDICTION",
+        "apostando": "Betting…",
+        "hecha": "Prediction locked in. See you on the last day of the ranking.",
+        "estados": {
+          "pendiente": "Playing",
+          "ganada": "You nailed it! +{n}",
+          "parcial": "Close — partial payout +{n}",
+          "perdida": "Didn't happen."
+        }
+      },
+      "laCalcu": {
+        "titulo": "The Calculator",
+        "descripcion": "Use each of the 4 numbers once (+, −, ×, ÷) to hit the target.",
+        "jugar": "Start ({costo} Chispas)",
+        "iniciando": "Generating puzzle…",
+        "sinChispas": "You need 50 Chispas.",
+        "completa": "Finish the sequence: numbers and operations, in that order.",
+        "deshacer": "Undo",
+        "resolver": "Solve!",
+        "resuelta": "Dead on! +{n} Chispas",
+        "fallida": "Doesn't hit the target. Your bet is gone.",
+        "deNuevo": "Another round"
+      },
+      "acertijos": {
+        "titulo": "Enigmia Riddles",
+        "descripcion": "Memorize the sequence and replay it in the exact order. It gets tricky by the third one.",
+        "jugar": "Start ({costo} Chispas)",
+        "iniciando": "Preparing…",
+        "sinChispas": "You need 100 Chispas.",
+        "memoriza": "Memorize the sequence…",
+        "dificultades": {
+          "facil": "Easy",
+          "media": "Medium",
+          "dificil": "Hard"
+        },
+        "completa": "Replay the order:",
+        "deshacer": "Undo",
+        "confirmar": "Confirm",
+        "resuelto": "Perfect sequence! +{n} Chispas",
+        "fallido": "That wasn't the order.",
+        "deNuevo": "Another round"
+      },
+      "elReloj": {
+        "titulo": "The Basement Clock",
+        "descripcion": "15 additions and subtractions before time runs out. The ones you miss count as wrong.",
+        "jugar": "Start ({costo} Chispas)",
+        "iniciando": "Setting the clock…",
+        "sinChispas": "You need 60 Chispas.",
+        "progreso": "{n} of {total} solved",
+        "siguiente": "Next ↵",
+        "correctas": "You got {n} of {total} right.",
+        "premio": "+{n} Chispas",
+        "deNuevo": "Another round"
+      },
       "ruleta": {
         "titulo": "The Dealer's Wheel",
         "descripcion": "One spin, one fate. The house always wins — eventually.",
@@ -271,13 +362,22 @@
         "vacio": "No movement around here yet.",
         "ruleta": "Wheel",
         "volado": "Coin flip",
-        "la_pizarra": "The Board"
+        "la_pizarra": "The Board",
+        "la_calcu": "The Calculator",
+        "acertijos": "Enigmia Riddles",
+        "el_reloj": "The Basement Clock",
+        "minijuego": "Minigame"
       },
       "errores": {
         "girar": "Couldn't spin.",
         "tirar": "Couldn't flip.",
         "pizarra": "Couldn't play the board.",
-        "historial": "Couldn't load history."
+        "historial": "Couldn't load history.",
+        "apuestas": "Couldn't deal with the house.",
+        "prediccion": "The oracle wouldn't answer.",
+        "laCalcu": "Couldn't play the calculator.",
+        "acertijos": "Couldn't play the riddles.",
+        "elReloj": "Couldn't play the clock."
       }
     }
   },
