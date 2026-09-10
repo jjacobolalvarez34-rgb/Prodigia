@@ -15,6 +15,10 @@ const NOMBRE_MUNDO: Record<string, string> = {
   enigmia: "Enigmia",
   geografia: "Geografía",
   quimia: "Quimia",
+  anatomia: "Anatomía",
+  melodia: "Melodía",
+  trigonometria: "Trigonometría",
+  historia: "Historia",
 };
 
 const COLOR_MUNDO: Record<string, string> = {
@@ -22,6 +26,10 @@ const COLOR_MUNDO: Record<string, string> = {
   enigmia: "#0E9F6E",
   geografia: "#1E7A8C",
   quimia: "#C026D3",
+  anatomia: "#8B2942",
+  melodia: "#B8860B",
+  trigonometria: "#84CC16",
+  historia: "#A0522D",
 };
 
 // Cierre de Fase DD2: el nivel de mundo ahora tiene el mismo gesto que

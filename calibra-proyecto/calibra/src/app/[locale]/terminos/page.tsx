@@ -31,8 +31,8 @@ export default function TerminosPage() {
         <section className="flex flex-col gap-2">
           <h2 className="font-display text-lg font-bold text-foreground">Tu cuenta</h2>
           <p className="text-sm text-texto-secundario">
-            Podés crear una cuenta con email y contraseña, o entrar como invitado y decidir más adelante
-            si querés guardarla. Sos responsable de mantener tu contraseña segura.
+            Puedes crear una cuenta con email y contraseña, o entrar como invitado y decidir más adelante
+            si quieres guardarla. Eres responsable de mantener tu contraseña segura.
           </p>
         </section>
 

@@ -189,7 +189,7 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
       <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-3">
         <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Tus amigos</p>
         {amigos.length === 0 ? (
-          <p className="text-xs text-texto-secundario">Todavía no tenés amigos agregados.</p>
+          <p className="text-xs text-texto-secundario">Todavía no tienes amigos agregados.</p>
         ) : (
           amigos.map((a) => (
             <div key={a.friend_id} className="flex flex-col gap-1.5 text-xs">

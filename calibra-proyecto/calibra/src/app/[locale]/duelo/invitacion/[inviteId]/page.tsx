@@ -34,7 +34,7 @@ export default async function InvitacionDueloPage({ params }: Props) {
           </h1>
           <p className="text-sm text-texto-secundario">
             {error?.message.includes("propia invitacion")
-              ? "Es tu propio link — compartiselo a otra persona."
+              ? "Es tu propio link — compárteselo a otra persona."
               : "Puede que ya se haya usado, se haya cancelado, o el link esté mal copiado."}
           </p>
         </div>

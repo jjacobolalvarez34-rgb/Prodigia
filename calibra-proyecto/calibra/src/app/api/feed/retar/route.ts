@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Desafío no encontrado" }, { status: 404 });
   }
   if (post.user_id === user.id) {
-    return NextResponse.json({ error: "No podés retarte a vos mismo" }, { status: 400 });
+    return NextResponse.json({ error: "No puedes retarte a ti mismo" }, { status: 400 });
   }
 
   const semilla = Math.floor(Math.random() * 1_000_000_000_000);

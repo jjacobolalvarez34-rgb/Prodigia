@@ -94,7 +94,7 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
       <div className="flex flex-col gap-3 rounded-2xl border border-primario/30 bg-primario/5 px-6 py-5 text-left">
         <p className="font-display font-semibold text-foreground">¿Cómo te llamamos?</p>
         <p className="text-sm text-texto-secundario">
-          Tu cuenta ya está guardada — elegí tu nombre real para el perfil y el ranking.
+          Tu cuenta ya está guardada — elige tu nombre real para el perfil y el ranking.
         </p>
         <form onSubmit={handleGuardarNombre} className="flex flex-col gap-2">
           <input
@@ -137,8 +137,8 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
   if (paso === "confirmar") {
     return (
       <p className="rounded-xl bg-correcto/15 px-4 py-3 text-sm text-foreground">
-        Te mandamos un email a <span className="font-medium">{email}</span> — confirmalo para
-        terminar de guardar tu cuenta. Mientras tanto seguí jugando normal, no perdés nada.
+        Te mandamos un email a <span className="font-medium">{email}</span> — confírmalo para
+        terminar de guardar tu cuenta. Mientras tanto sigue jugando normal, no pierdes nada.
       </p>
     );
   }

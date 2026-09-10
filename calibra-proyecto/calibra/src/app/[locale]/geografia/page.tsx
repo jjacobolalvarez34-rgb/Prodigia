@@ -7,6 +7,8 @@ import FondoMundo from "@/components/FondoMundo";
 import FondoCursorMundo from "@/components/FondoCursorMundo";
 import TopicCard from "@/components/TopicCard";
 import NivelMundoBadge from "@/components/NivelMundoBadge";
+import NivelMundoProgreso from "@/components/NivelMundoProgreso";
+import type { SincronizarProgresoRow } from "@/lib/mundos/progresoNivel";
 import { IconCheck, IconGeometria } from "@/components/icons";
 import { COLOR_GEOGRAFIA } from "./GeografiaMapa";
 
@@ -20,16 +22,23 @@ export default async function GeografiaHomePage() {
   const { user, profile } = await requireMundoGeografia(supabase, "/geografia");
 
   const hoyIso = new Date().toISOString().slice(0, 10);
-  const [{ data: nivelRow }, { data: dailyHoy }, { data: worldRow }] = await Promise.all([
+  const [{ data: nivelRow }, { data: dailyHoy }, { data: mundoProgreso }] = await Promise.all([
     // Nivel único compartido entre continentes (mismo patrón que el resto
     // del mundo: un problem_type = un nivel, sin importar qué región).
     supabase.from("skill_levels").select("nivel").eq("user_id", user.id).eq("problem_type", "geografia").maybeSingle(),
     supabase.from("daily_progress").select("xp_ganado").eq("user_id", user.id).eq("fecha", hoyIso).maybeSingle(),
-    supabase.from("world_progress").select("nivel_mundo").eq("user_id", user.id).eq("world", "geografia").maybeSingle(),
+    supabase.rpc("sincronizar_progreso_mundo", { p_world: "geografia" }).returns<SincronizarProgresoRow[]>().maybeSingle(),
   ]);
 
   const nivel = nivelRow?.nivel ?? 1;
-  const nivelMundo = worldRow?.nivel_mundo ?? 1;
+  const nivelMundo = mundoProgreso?.nivel_mundo ?? 1;
+  const progresoMundo = {
+    puntos: mundoProgreso?.puntos_mundo ?? 0,
+    nivel: nivelMundo,
+    fracVolumen: mundoProgreso?.frac_volumen ?? 0,
+    fracDominio: mundoProgreso?.frac_dominio ?? 0,
+    fracLecciones: mundoProgreso?.frac_lecciones ?? 0,
+  };
   const metaXpDiaria = profile.meta_xp_diaria ?? 500;
   const xpHoy = dailyHoy?.xp_ganado ?? 0;
   const metaCumplidaHoy = xpHoy >= metaXpDiaria;
@@ -49,6 +58,8 @@ export default async function GeografiaHomePage() {
             <NivelMundoBadge nombreMundo="Geografía" nivel={nivelMundo} colorHex={COLOR_GEOGRAFIA} />
           </div>
         </div>
+
+        <NivelMundoProgreso nombreMundo="Geografía" colorHex={COLOR_GEOGRAFIA} progreso={progresoMundo} />
 
         {metaCumplidaHoy && (
           <div className="flex items-center gap-3 rounded-2xl bg-correcto/10 px-5 py-4">

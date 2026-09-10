@@ -1,7 +1,18 @@
 # TRASTIENDA — Economía y Mecánicas
 
-> Documento de diseño (solo diseño, sin código). Estado: PENDIENTE DE IMPLEMENTACIÓN.
+> Documento de diseño (solo diseño, sin código). Estado: **IMPLEMENTADO** (2026-09-09).
 > Creado: 2026-09-08. Referencias citadas contra código real.
+> Implementación: migraciones `0121`–`0127` + cliente completo en `/trastienda`. Ver `docs/audits/STORE-ECONOMY-AUDIT.md` (F5) para el detalle código-safe; este doc conserva el diseño original con sus divergencias anotadas abajo.
+
+### Nota de implementación (2026-09-09) — divergencias vs este diseño
+
+- **M1 (apuestas):** implementado solo para `duels`; `rankeds`/`reto_semanal` quedan para un corte futuro (`0123` comentario líneas 11). Límites reales 10 apuestas/día y 500 Chispas/día, multiplers idénticos a la tabla de §1.
+- **M2 (predicción):** implementada con la tabla de multiplers "AJUSTADO" de §2 y ventana lunes→miércoles server-authoritative (`ventana_predicciones`, 0126). Resolución por **self-heal** al apostar (`resolver_prediccion_ranking(v_semana - 7)` dentro de `apostar_prediccion_ranking`) — no hay job semanal automático.
+- **M3 (títulos):** 8 de 9 títulos en `src/lib/titulos/catalogo.ts:107-116`. Falta `gniñardo` (Mitológico, top-3 ×3 semanas). El premio "título" de la ruleta entrega títulos REALES desde 0123.
+- **M4 (ruleta):** reemplazada por la **mesa casino** (`0127`): 118 elementos de la tabla periódica, fichas 100/250/500/1000, límite 20/día, factor `× 0.88` (EV del jugador ~0.88, house edge 12%). La rueda clásica queda legacy sin uso en la UI.
+- **M5 (minijuegos):** La Calcu, Volado y La Pizarra activos. Acertijos de Enigmia y El Reloj se implementaron en 0124 y se **eliminaron en 0126** (limpieza, decisión de diseño).
+- **Lugar de entrada:** se implementó la **Opción B** del §7 (ruta propia `/trastienda`), no la Opción A recomendada en el doc.
+- **EV agregado real:** la mesa casino (factor 0.88) desvía el target 0.92-0.96 del diseño — ver hallazgo H-01 en STORE-ECONOMY-AUDIT.md.
 
 ---
 

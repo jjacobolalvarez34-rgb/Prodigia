@@ -11,6 +11,7 @@ import BotonesFinPartida from "@/components/BotonesFinPartida";
 import LogroBanner from "@/components/LogroBanner";
 import ApuestaResultado from "@/components/ApuestaResultado";
 import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSubio";
+
 import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/ResultadoDueloBlock";
 import SalaEsperaDuelo from "@/components/duelos/SalaEsperaDuelo";
 import { useArranqueSincronizado } from "@/lib/duelos/useArranqueSincronizado";
@@ -31,6 +32,7 @@ interface FinishResponse {
   logrosNuevos: Achievement[];
   apuesta?: { gano: boolean; monto: number } | null;
   nivelMundo?: NivelMundoInfo | null;
+
 }
 
 interface Props {
@@ -204,6 +206,7 @@ export default function HistoriaPracticaClient({ modo, nivelInicial, escudosExtr
       <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-20">
         <LogroBanner logros={resumen.logrosNuevos} />
         <NivelMundoSubio nivelMundo={resumen.nivelMundo} />
+
         <ApuestaResultado apuesta={resumen.apuesta ?? null} />
         <ResultadoDueloBlock duelo={resultadoDuelo} />
         <div className="flex flex-col items-center gap-2 text-center">

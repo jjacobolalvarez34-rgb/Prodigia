@@ -11,6 +11,21 @@ export interface ResultadoRuleta {
   costo_aplicado: number;
 }
 
+// Ruleta casino (0127 apostar_casino_elementos).
+export interface ResultadoCasino {
+  zona: string;
+  monto: number;
+  elegido: string;
+  elegido_nombre: string;
+  ganaste: boolean;
+  multiplier: number;
+  chispas_ganadas: number;
+  premio_tipo: string | null;
+  premio_detalle: Record<string, unknown> | null;
+  apuestas_hoy: number;
+  puntos_total: number;
+}
+
 export interface ResultadoVolado {
   cara: boolean;
   ganaste: boolean;
@@ -126,38 +141,6 @@ export interface InicioLaCalcu {
 
 export interface ResultadoLaCalcu {
   resolvio: boolean;
-  payout: number;
-  puntos_total: number;
-}
-
-export interface InicioAcertijos {
-  id: string;
-  secuencia: number[];
-  dificultad: "facil" | "media" | "dificil";
-  puntos_total: number;
-}
-
-export interface ResultadoAcertijos {
-  ganado: boolean;
-  payout: number;
-  puntos_total: number;
-}
-
-export interface ProblemaReloj {
-  idx: number;
-  a: number;
-  b: number;
-  op: "suma" | "resta";
-}
-
-export interface InicioElReloj {
-  id: string;
-  problemas: ProblemaReloj[];
-  puntos_total: number;
-}
-
-export interface ResultadoElReloj {
-  correctas: number;
   payout: number;
   puntos_total: number;
 }

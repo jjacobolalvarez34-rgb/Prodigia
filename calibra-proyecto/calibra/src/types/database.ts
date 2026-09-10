@@ -35,7 +35,15 @@ export const ARITHMETIC_PROBLEM_TYPES: ArithmeticProblemType[] = [
 // Los "mundos" de Prodigia (Fase V): cada uno es una materia con su
 // propia home, diagnóstico y catálogo. Puntos/racha/Experiencia son de
 // cuenta, compartidos entre todos.
-export type Mundo = "numeria" | "enigmia";
+export type Mundo =
+  | "numeria"
+  | "enigmia"
+  | "geografia"
+  | "quimia"
+  | "anatomia"
+  | "melodia"
+  | "trigonometria"
+  | "historia";
 
 // Fase 5 (mercado): "color del dial" se retiró de la tienda — no
 // generaba sensación de diferencia real jugando de verdad — pero el
@@ -325,7 +333,15 @@ export interface TituloUsuario {
 }
 
 // ---------- Rankeds: duelos multi-mundo (Fases 3-5) ----------
-export type MundoDuelo = "numeria" | "geografia" | "enigmia";
+export type MundoDuelo =
+  | "numeria"
+  | "geografia"
+  | "enigmia"
+  | "quimia"
+  | "anatomia"
+  | "melodia"
+  | "trigonometria"
+  | "historia";
 export type ModoDuelo = "simple" | "mejor_de_3";
 
 // ---------- Enigmia (Fase X): mundo de lógica ----------

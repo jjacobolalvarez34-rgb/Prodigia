@@ -8,7 +8,7 @@
       "buscar": "Buscar partida",
       "ranking": "Ranking"
     },
-    "intro": "Acá jugás duelos en serio contra otros jugadores reales, con ELO y rango — distinto de la práctica normal, que no afecta tu competitivo.",
+    "intro": "Acá juegas duelos en serio contra otros jugadores reales, con ELO y rango — distinto de la práctica normal, que no afecta tu competitivo.",
     "subtitulo": "Tu competitivo de duelos, con matchmaking real.",
     "usuariosEnLinea": "{n} en línea",
     "teRetaronAUno": "Te retaron a un duelo",
@@ -28,7 +28,7 @@
     "empatesAbrev": "{n}E",
     "noAfectaTuRango": "no afecta tu rango",
     "historialDeDuelos": "Historial de duelos",
-    "todaviaNoJugaste": "Todavía no jugaste ningún duelo — probá \"Buscar partida\".",
+    "todaviaNoJugaste": "Todavía no jugaste ningún duelo — prueba \"Buscar partida\".",
     "resultadoVs": "{resultado} vs. {rival}",
     "empate": "Empate",
     "ganaste": "Ganaste",
@@ -53,8 +53,8 @@
     "cancelar": "Cancelar",
     "clasificatoria": "Clasificatoria",
     "mismoMatchmaking": "Mismo matchmaking y mismo contenido según tu rango — no cambia tu ELO.",
-    "noHayContrincantes": "No hay contrincantes disponibles ahora mismo — probá de nuevo en un rato.",
-    "elegiLaCiudad": "Elegí la ciudad",
+    "noHayContrincantes": "No hay contrincantes disponibles ahora mismo — prueba de nuevo en un rato.",
+    "elegiLaCiudad": "Elige la ciudad",
     "tuElo": "Tu ELO: {elo}",
     "rankingElo": {
       "global": "Global",
@@ -72,7 +72,7 @@
   },
   "Social": {
     "amigos": "Amigos",
-    "subtitulo": "Buscá gente, aceptá solicitudes y retalos a duelo.",
+    "subtitulo": "Busca gente, acepta solicitudes y rétalos a duelo.",
     "invitarSinCuenta": "Invitar a un amigo (sin cuenta todavía)",
     "invitarPorLink": "Invitar por link",
     "buscarPorNombre": "Buscar por nombre...",
@@ -86,20 +86,30 @@
     "aceptar": "Aceptar",
     "rechazar": "Rechazar",
     "tusAmigos": "Tus amigos",
-    "todaviaNoTenesAmigos": "Todavía no tenés amigos agregados — buscalos arriba.",
+    "todaviaNoTenesAmigos": "Todavía no tienes amigos agregados — búscalos arriba.",
     "retarADuelo": "Retar a duelo",
     "esperandoQueSeUnan": "Esperando a que se unan…",
     "noHaceFaltaQueSeaAmigo": "no hace falta que sea amigo",
     "copiadoCheck": "Copiado ✓",
     "copiar": "Copiar",
     "cancelar": "Cancelar",
-    "noPudimosGenerarLink": "No pudimos generar el link. Probá de nuevo.",
-    "elegiCiudadYModo": "Elegí ciudad y modo",
+    "noPudimosGenerarLink": "No pudimos generar el link. Prueba de nuevo.",
+    "elegiCiudadYModo": "Elige ciudad y modo",
     "elegido": "Elegido:",
     "generando": "Generando…",
     "generarLinkDeInvitacion": "Generar link de invitación",
     "compartiseloAQuienQuieras": "Compartiselo a quien quieras — no hace falta que sea tu amigo dentro de la app.",
     "quienSeRegistre": "Quien se registre entrando por este link queda agregado como tu amigo automáticamente, sin pedir ni aceptar solicitud."
+  },
+  "mundoProgreso": {
+    "titulo": "Progreso del mundo",
+    "puntos": "{xp} XP en {mundo}",
+    "volumen": "Volumen",
+    "dominio": "Dominio",
+    "aprender": "Aprender",
+    "paraSubir": "Para el nivel {nivel}: faltan aprox. {xp} XP de práctica",
+    "necesitaMas": "Para el siguiente nivel necesitas más dominio: sube más sub-temas a calibración 4+ y completa Aprender",
+    "maximo": "¡Mundo al nivel máximo!"
   },
   "Perfil": {
     "enProdigiaDesde": "En Prodigia desde {fecha}",
@@ -107,8 +117,24 @@
     "nivel": "Nivel {n}",
     "xpHistoricaAcumulada": "{xp} XP histórica acumulada — nunca baja",
     "puestoDe": "Puesto <destacado>#{posicion}</destacado> de {total} en el ranking general de Chispas",
-    "todaviaNoEstasEnClan": "Todavía no estás en ningún clan — buscá uno →",
+    "todaviaNoEstasEnClan": "Todavía no estás en ningún clan — busca uno →",
     "rangoDeDuelos": "Rango de duelos",
+    "rango": "Rango",
+    "banner": {
+      "titulo": "Banner de afinidad",
+      "descripcion": "Cuenta con qué mundo o ciudad te identificas y tu nivel. Es solo decorativo: no afecta tu calibración.",
+      "mundo": "Mundo",
+      "temaNumeria": "Ciudad de Numeria",
+      "vacio": "Todavía no agregaste nada. Elige un referente (mundo o ciudad) y un nivel.",
+      "referente": "Referente",
+      "nivel": "Nivel",
+      "agregar": "Agregar",
+      "quitar": "Quitar",
+      "guardar": "Guardar banner",
+      "guardando": "Guardando…",
+      "guardado": "Banner guardado",
+      "error": "No se pudo guardar el banner. Intenta de nuevo."
+    },
     "problemasResueltosNivel": "problemas resueltos · nivel de mundo {n}",
     "acertijosResueltosNivel": "acertijos resueltos · nivel de mundo {n}",
     "paisesAcertadosNivel": "países acertados · nivel de mundo {n}",
@@ -132,7 +158,7 @@
   "Tienda": {
     "metadata": {
       "title": "Tienda",
-      "description": "Gastá tus Chispas en escudos, boosts y cosméticos del bazar de Prodigia."
+      "description": "Gasta tus Chispas en escudos, boosts y cosméticos del bazar de Prodigia."
     },
     "items": {
       "escudo": "Escudo extra",
@@ -170,17 +196,17 @@
     },
     "descripciones": {
       "escudo": "Un escudo de calibración de más para tu próxima partida.",
-      "congelamiento": "Si un día no practicás, no se corta tu racha.",
+      "congelamiento": "Si un día no practicas, no se corta tu racha.",
       "boost": "×1.5 Chispas en tu próxima partida, cualquier mundo."
     },
     "noSePudoComprar": "No se pudo comprar.",
-    "noSePudoComprarConexion": "No se pudo comprar. Revisá tu conexión.",
+    "noSePudoComprarConexion": "No se pudo comprar. Revisa tu conexión.",
     "noSePudoCambiarFuente": "No se pudo cambiar la fuente.",
-    "noSePudoCambiarFuenteConexion": "No se pudo cambiar la fuente. Revisá tu conexión.",
+    "noSePudoCambiarFuenteConexion": "No se pudo cambiar la fuente. Revisa tu conexión.",
     "noSePudoCambiarMarco": "No se pudo cambiar el marco.",
-    "noSePudoCambiarMarcoConexion": "No se pudo cambiar el marco. Revisá tu conexión.",
+    "noSePudoCambiarMarcoConexion": "No se pudo cambiar el marco. Revisa tu conexión.",
     "noSePudoApostar": "No se pudo apostar.",
-    "noSePudoApostarConexion": "No se pudo apostar. Revisá tu conexión.",
+    "noSePudoApostarConexion": "No se pudo apostar. Revisa tu conexión.",
     "elBazarDeProdigia": "El Bazar de Prodigia",
     "chispasDisponibles": "{n} Chispas disponibles",
     "puestoDeUtilidad": "Puesto de utilidad",
@@ -194,35 +220,41 @@
     "herreroDescripcion": "Un borde cosmético para tu nombre en el perfil — los mismos colores que los rangos de Rankeds.",
     "sinMarco": "Sin marco",
     "vidrieraDeMarcosTematicos": "Marcos de mundo",
-    "vidrieraMarcosTematicosDescripcion": "Un anillo distinto para cada mundo, para tu avatar. Se desbloquea al llegar a nivel {n} en ese mundo — o gratis, de regalo, si lo dominás por completo.",
+    "vidrieraMarcosTematicosDescripcion": "Un anillo distinto para cada mundo, para tu avatar. Se desbloquea al llegar a nivel {n} en ese mundo — o gratis, de regalo, si lo dominas por completo.",
     "requiereNivelMundo": "Nivel {n} en {mundo} para desbloquear",
-    "paqueteMarcosMundoDescripcion": "Los 6 marcos de mundo juntos, con descuento — para cuando ya jugás los 6 en serio.",
-    "paqueteMarcosMundoRequisito": "Necesitás nivel {n} en los 6 mundos para desbloquearlo",
-    "paqueteMarcosMundoCompleto": "Ya tenés los 6 marcos de mundo",
+    "paqueteMarcosMundoDescripcion": "Los 6 marcos de mundo juntos, con descuento — para cuando ya juegas los 6 en serio.",
+    "paqueteMarcosMundoRequisito": "Necesitas nivel {n} en los 6 mundos para desbloquearlo",
+    "paqueteMarcosMundoCompleto": "Ya tienes los 6 marcos de mundo",
     "ofertaDelVendedor": "Oferta del vendedor de hoy:",
     "porcentajeMenos": "{n}% menos",
     "enItem": "en {nombre}",
-    "tenes": "Tenés: {n}",
+    "tenes": "Tienes: {n}",
     "comprarPor": "Comprar por {costo} Chispas",
-    "necesitas": "Necesitás {costo} Chispas",
+    "necesitas": "Necesitas {costo} Chispas",
     "gastarChispas": "¿Gastar {costo} Chispas?",
     "confirmar": "Confirmar",
     "cancelar": "Cancelar",
     "entrarALaTrastienda": "Entrar a la trastienda…",
     "dobleONada": "Doble o nada",
-    "dobleONadaDescripcion": "Apostá Chispas a que tu próxima partida supera tu precisión histórica. Si ganás, se duplica.",
-    "dobleONadaAviso": "Esto nunca usa dinero real — es solo con tus Chispas del juego. Apuesta máxima: {max} Chispas. Podés ocultar esta sección desde Ajustes si preferís no verla.",
-    "apuestaActivaAviso": "Tenés una apuesta activa — se resuelve con tu próxima partida.",
+    "dobleONadaDescripcion": "Apuesta Chispas a que tu próxima partida supera tu precisión histórica. Si ganas, se duplica.",
+    "dobleONadaAviso": "Esto nunca usa dinero real — es solo con tus Chispas del juego. Apuesta máxima: {max} Chispas. Puedes ocultar esta sección desde Ajustes si prefieres no verla.",
+    "apuestaActivaAviso": "Tienes una apuesta activa — se resuelve con tu próxima partida.",
     "apostarMonto": "Apostar {monto}",
     "laTrastienda": "La Trastienda",
     "sotanoDescripcion": "El sótano del Bazar — donde Prodigia va a hacer sus tratos más peligrosos.",
     "volverAlBazar": "Volver al Bazar",
     "cajaFuerte": "Caja fuerte",
     "apuestaPendiente": "Pendiente",
+    "tabRuleta": "La ruleta",
+    "tabJuegos": "Los juegos",
     "trastienda": {
       "apuestasPartida": {
         "titulo": "La Mesa de Apuestas",
-        "descripcion": "Duelos de otros jugadores en vivo. Elegí un lado, pagá tu entrada y que gane el mejor.",
+        "descripcion": "Duelos de otros jugadores en vivo. Elige un lado, paga tu entrada y que gane el mejor.",
+        "enLinea": "Duelos en vivo: {n}",
+        "pagina": "Página {actual} de {total}",
+        "anterior": "Anterior",
+        "siguiente": "Siguiente",
         "operaciones": {
           "suma": "Suma",
           "resta": "Resta",
@@ -237,10 +269,10 @@
         "apostando": "Apostando…",
         "apuestaHecha": "Apuesta registrada — se liquida sola cuando termina el duelo. Puede dejar {ganancia} Chispas.",
         "sinChispas": "No te alcanzan las Chispas para ese monto.",
-        "sinPartidas": "No hay duelos ajenos en vivo por ahora. Volvé en un rato.",
+        "sinPartidas": "No hay duelos ajenos en vivo por ahora. Vuelve en un rato.",
         "cargando": "Buscando mesas…",
         "limiteDia": "Hoy: {hoy}/10 · {monto}/500",
-        "limiteDiaAlcanzado": "Llegaste al límite del día (10 apuestas o 500 Chispas). Volvé mañana.",
+        "limiteDiaAlcanzado": "Llegaste al límite del día (10 apuestas o 500 Chispas). Vuelve mañana.",
         "misApuestas": "Mis apuestas",
         "estados": {
           "pendiente": "En juego",
@@ -251,7 +283,7 @@
       },
       "prediccionRanking": {
         "titulo": "El Oráculo del Ranking",
-        "descripcion": "Apostá dónde vas a terminar en el ranking semanal. Si acertás, la casa te paga.",
+        "descripcion": "Apuesta dónde vas a terminar en el ranking semanal. Si aciertas, la casa te paga.",
         "semana": "Semana {semana}",
         "cargando": "Consultando al oráculo…",
         "ventanaCerrada": "La ventana de apuestas abre el lunes y cierra el miércoles. La próxima arranca el lunes.",
@@ -269,58 +301,59 @@
       },
       "laCalcu": {
         "titulo": "La Calculadora",
-        "descripcion": "Usá los 4 números una vez cada uno con +, −, × y ÷ para llegar al objetivo.",
+        "descripcion": "Usa los 4 números una vez cada uno con +, −, × y ÷ para llegar al objetivo.",
         "jugar": "Empezar ({costo} Chispas)",
         "iniciando": "Generando puzzle…",
-        "sinChispas": "Necesitás 50 Chispas.",
-        "completa": "Completá la secuencia: números y operaciones, en ese orden.",
+        "sinChispas": "Necesitas 50 Chispas.",
+        "completa": "Completa la secuencia: números y operaciones, en ese orden.",
         "deshacer": "Deshacer",
         "resolver": "¡Resolver!",
         "resuelta": "¡Igualdad! +{n} Chispas",
         "fallida": "No da el objetivo. Se te fue la apuesta.",
         "deNuevo": "Otra ronda"
       },
-      "acertijos": {
-        "titulo": "Acertijos de Enigmia",
-        "descripcion": "Memorizá la secuencia y reproducila en el orden exacto. Se pone tramposa a la tercera.",
-        "jugar": "Empezar ({costo} Chispas)",
-        "iniciando": "Preparando…",
-        "sinChispas": "Necesitás 100 Chispas.",
-        "memoriza": "Memorizá la secuencia…",
-        "dificultades": {
-          "facil": "Fácil",
-          "media": "Media",
-          "dificil": "Difícil"
-        },
-        "completa": "Reproducí el orden:",
-        "deshacer": "Deshacer",
-        "confirmar": "Confirmar",
-        "resuelto": "¡Secuencia perfecta! +{n} Chispas",
-        "fallido": "El orden no era ese.",
-        "deNuevo": "Otra ronda"
-      },
-      "elReloj": {
-        "titulo": "El Reloj del Sótano",
-        "descripcion": "15 sumas y restas antes de que se acabe el tiempo. Las que falten, cuentan como perdidas.",
-        "jugar": "Empezar ({costo} Chispas)",
-        "iniciando": "Poniendo el reloj en cero…",
-        "sinChispas": "Necesitás 60 Chispas.",
-        "progreso": "{n} de {total} resueltas",
-        "siguiente": "Siguiente ↵",
-        "correctas": "Acertaste {n} de {total}.",
-        "premio": "+{n} Chispas",
-        "deNuevo": "Otra ronda"
-      },
       "ruleta": {
         "titulo": "La Ruleta del Trastiendista",
-        "descripcion": "Un giro, un destino. La casa siempre gana — pero a la larga.",
-        "girar": "GIRAR",
-        "girando": "Girando…",
-        "costoNormal": "Costo: {costo} Chispas",
-        "costoPrimero": "Primer giro del día: {costo} Chispas",
-        "pityActivo": "Pity activo: premio asegurado",
-        "limiteDiario": "Ya giraste las 5 veces de hoy. Volvé mañana.",
+        "descripcion": "Mesa completa de la tabla periódica. Apuesta a un elemento o a una zona y deja que la casa pague.",
+        "ficha": "Ficha",
+        "eligeZona": "Elige tu zona",
+        "mesa": "Mesa de 118 elementos",
+        "elemento": "Elemento",
+        "paridad": "Paridad",
+        "par": "Par",
+        "impar": "Impar",
+        "grupos": "Grupos",
+        "grupo": "Grupo {n}",
+        "transicion": "Transición (3-12)",
+        "periodos": "Periodos",
+        "periodo": "Periodo {n}",
+        "tipos": "Familias",
+        "tiposNombres": {
+          "alcalino": "Alcalinos",
+          "alcalinoterreo": "Alcalinotérreos",
+          "transicion": "Metales de transición",
+          "post_transicion": "Metales del bloque p",
+          "metaloides": "Metaloides",
+          "no_metal": "No metales",
+          "halogeno": "Halógenos",
+          "gas_noble": "Gases nobles",
+          "lantanido": "Lantánidos",
+          "actinido": "Actínidos"
+        },
+        "posibilidades": "{n} de 118",
+        "multiplicador": "Paga {mult}×",
+        "paga": "Ganas {n} Chispas si cae en tu zona",
+        "girar": "APOSTAR",
+        "girando": "Apostando…",
         "resultado": "Resultado",
+        "cayoEnTuZona": "¡Cayó en tu zona!",
+        "noCayo": "No cayó en tu zona",
+        "ganoChispas": "+{n} Chispas",
+        "perdisteMonto": "Se fueron {monto} Chispas de tu caja.",
+        "elementoGanador": "Cayó en: {simbolo} — {nombre}",
+        "premioItem": "¡Ganancia rara: {item}!",
+        "limiteDiario": "Ya apostaste las 20 veces de hoy. Vuelve mañana.",
+        "apuestasHoy": "Hoy: {n}/20",
         "premios": {
           "boost": "Boost de Chispas",
           "escudo": "Escudo extra",
@@ -328,13 +361,14 @@
           "chispas": "{n} Chispas",
           "fuente": "Fuente nueva",
           "marco": "Marco nuevo",
+          "titulo": "Título de la Trastienda",
           "nada": "Sin premio…"
         }
       },
       "volado": {
         "titulo": "Volado del Trastiendista",
-        "descripcion": "Cara o cruz. Podés parar en cualquier ronda — o doblar la apuesta.",
-        "elegiCaraO": "Elegí cara o cruz",
+        "descripcion": "Cara o cruz. Puedes parar en cualquier ronda — o doblar la apuesta.",
+        "elegiCaraO": "Elige cara o cruz",
         "cara": "CARA",
         "cruz": "CRUZ",
         "tirar": "TIRAR",
@@ -348,7 +382,7 @@
       },
       "pizarra": {
         "titulo": "La Pizarra del Profesor",
-        "descripcion": "Adiviná el número entre 1 y 100. Cada pregunta cuesta Chispas — tenés 7 intentos.",
+        "descripcion": "Adivina el número entre 1 y 100. Cada pregunta cuesta Chispas — tienes 7 intentos.",
         "entrar": "Entrar a la pizarra (30 Chispas)",
         "entrando": "Entrando…",
         "preguntar": "Preguntar (10 Chispas)",
@@ -361,32 +395,30 @@
         "titulo": "Historial reciente",
         "vacio": "Todavía no hay movimiento por acá.",
         "ruleta": "Ruleta",
+        "casino": "Ruleta casino",
         "volado": "Volado",
         "la_pizarra": "La Pizarra",
         "la_calcu": "La Calculadora",
-        "acertijos": "Acertijos de Enigmia",
-        "el_reloj": "El Reloj del Sótano",
         "minijuego": "Minijuego"
       },
       "errores": {
+        "casino": "No se pudo apostar a la mesa.",
         "girar": "No se pudo girar.",
         "tirar": "No se pudo tirar.",
         "pizarra": "No se pudo jugar a la pizarra.",
         "historial": "No se pudo cargar el historial.",
         "apuestas": "No se pudo operar con la casa.",
         "prediccion": "El oráculo no respondió.",
-        "laCalcu": "No se pudo jugar a la calculadora.",
-        "acertijos": "No se pudo jugar a los acertijos.",
-        "elReloj": "No se pudo jugar al reloj."
+        "laCalcu": "No se pudo jugar a la calculadora."
       }
     }
   },
   "Common": {
     "entendido": "Entendido",
     "nuevoLogro": "Nuevo logro: {nombre}",
-    "algoSalioMal": "Algo salió mal. Probá de nuevo.",
+    "algoSalioMal": "Algo salió mal. Prueba de nuevo.",
     "deteccionConexion": {
-      "mensaje": "Notamos que tu conexión anda lenta — ¿querés desactivar los efectos visuales extra? Podés cambiarlo cuando quieras en Ajustes.",
+      "mensaje": "Notamos que tu conexión anda lenta — ¿quieres desactivar los efectos visuales extra? Puedes cambiarlo cuando quieras en Ajustes.",
       "desactivar": "Desactivar",
       "dejarlosActivados": "Dejarlos activados"
     },
@@ -441,26 +473,26 @@
   },
   "Landing": {
     "metadata": {
-      "title": "Prodigia — Entrená tu cabeza jugando",
-      "description": "Practicá cálculo mental, lógica, geografía, química y anatomía con partidas cortas y competitivas. Empezá gratis, sin crear cuenta."
+      "title": "Prodigia — Entrena tu cabeza jugando",
+      "description": "Practica cálculo mental, lógica, geografía, química y anatomía con partidas cortas y competitivas. Empieza gratis, sin crear cuenta."
     },
     "pregunta": {
-      "titulo": "¿Ya conocés Prodigia?",
+      "titulo": "¿Ya conoces Prodigia?",
       "si": "Sí, iniciar sesión",
       "no": "No, quiero conocerla"
     },
     "hero": {
-      "titulo": "Entrená tu cabeza como si fuera un músculo",
-      "subtitulo": "Partidas cortas y adictivas de cálculo, lógica, geografía, química y anatomía. Elegí un mundo y probalo ahora, sin crear cuenta."
+      "titulo": "Entrena tu cabeza como si fuera un músculo",
+      "subtitulo": "Partidas cortas y adictivas de cálculo, lógica, geografía, química y anatomía. Elige un mundo y pruébalo ahora, sin crear cuenta."
     },
     "intro": {
       "titulo": "Así es Prodigia",
-      "texto": "Partidas cortas de práctica, un ranking en vivo y duelos contra otros jugadores. Podés hacer un tutorial guiado de 2 minutos, o entrar directo.",
+      "texto": "Partidas cortas de práctica, un ranking en vivo y duelos contra otros jugadores. Puedes hacer un tutorial guiado de 2 minutos, o entrar directo.",
       "hacerTutorial": "Hacer el tutorial",
       "sinTutorial": "Jugar sin tutorial"
     },
     "grid": {
-      "titulo": "Elegí una ciudad para probar",
+      "titulo": "Elige una ciudad para probar",
       "descripcion": "Una partida de prueba de 5 preguntas, directo — sin registrarte."
     },
     "mecanismo": {
@@ -469,25 +501,25 @@
       "boton": "Empezar"
     },
     "entrando": "Entrando...",
-    "errorInvitado": "No pudimos armar la demo. Probá de nuevo.",
+    "errorInvitado": "No pudimos armar la demo. Prueba de nuevo.",
     "tour": {
-      "ranking": "Ranking: comparás tu progreso con el resto de los jugadores, en total y por mundo.",
+      "ranking": "Ranking: comparas tu progreso con el resto de los jugadores, en total y por mundo.",
       "rankeds": "Rankeds: duelos en serio contra otros jugadores, con tu propio ELO y rango.",
-      "amigos": "Amigos y Clanes: seguí a tus amigos, retalos y sumate a un equipo.",
+      "amigos": "Amigos y Clanes: sigue a tus amigos, rétalos y sumate a un equipo.",
       "perfil": "Perfil: tu racha, tus logros y el marco de tu cuenta, todo en un solo lugar.",
       "siguiente": "Siguiente",
       "entendido": "Entendido"
     },
     "promo": {
       "titulo": "Y cuando quieras, Prodigia Pro",
-      "texto": "Esto es lo que vas a tener disponible más adelante, si querés ir más rápido.",
+      "texto": "Esto es lo que vas a tener disponible más adelante, si quieres ir más rápido.",
       "continuar": "Continuar"
     },
     "cta": {
       "titulo": "¡Nada mal para empezar!",
       "resultado": "Acertaste {correctos} de {total}",
       "continuar": "Continuar",
-      "mensaje": "Creá tu cuenta para guardar tu progreso y seguir tu racha",
+      "mensaje": "Crea tu cuenta para guardar tu progreso y seguir tu racha",
       "seguirExplorando": "Ver los otros mundos"
     }
   },
@@ -519,11 +551,11 @@
     "jugar": "Jugar",
     "tusMundos": "Tus mundos",
     "tusMundosDescripcion": "Cada mundo tiene su propio ritmo y su propio camino.",
-    "tourMundos": "Elegí un mundo para practicar — Chispas, racha y ranking se comparten entre todos.",
+    "tourMundos": "Elige un mundo para practicar — Chispas, racha y ranking se comparten entre todos.",
     "mundos": {
       "numeria": "Cálculo mental con dificultad adaptativa.",
       "enigmia": "Acertijos de lógica: secuencias, patrones y deducción.",
-      "geografia": "Ubicá países de América en el mapa.",
+      "geografia": "Ubica países de América en el mapa.",
       "quimia": "Elementos, fórmulas y la tabla periódica.",
       "anatomia": "Huesos, músculos, órganos y sistema nervioso.",
       "melodia": "Pentagrama, escalas y acordes construidos por fórmula.",
@@ -564,10 +596,10 @@
     "temas": {
       "metadata": {
         "title": "Practicar",
-        "description": "Elegí un tema de Numeria para practicar."
+        "description": "Elige un tema de Numeria para practicar."
       },
       "titulo": "¿Qué tema practicamos?",
-      "subtitulo": "Elegí un tema — adentro vas a poder elegir qué practicar.",
+      "subtitulo": "Elige un tema — adentro vas a poder elegir qué practicar.",
       "desc": {
         "aritmetica": "Suma, resta, multiplicación, división",
         "fracciones": "Simplificar, comparar, sumar",
@@ -579,25 +611,25 @@
     },
     "operationPicker": {
       "titulo": "¿Qué practicamos?",
-      "subtitulo": "Elegí una o más operaciones. 10 problemas o 60 segundos, lo que llegue primero.",
+      "subtitulo": "Elige una o más operaciones. 10 problemas o 60 segundos, lo que llegue primero.",
       "operaciones": {
         "suma": "Suma",
         "resta": "Resta",
         "multiplicacion": "Multiplicación",
         "division": "División"
       },
-      "elegiAlMenosUna": "Elegí al menos una operación",
+      "elegiAlMenosUna": "Elige al menos una operación",
       "iniciarPartida": "Iniciar partida",
       "iniciarPartidaConCantidad": "Iniciar partida ({n} operaciones)"
     },
     "subtemaPicker": {
-      "elegiAlMenosUno": "Elegí al menos un sub-tema",
+      "elegiAlMenosUno": "Elige al menos un sub-tema",
       "iniciarPartida": "Iniciar partida",
       "iniciarPartidaConCantidad": "Iniciar partida ({n} sub-temas)"
     },
     "cliente": {
       "noSePudoCerrar": "No se pudo cerrar la partida.",
-      "errorDeRed": "No pudimos conectar con el servidor. Probá de nuevo.",
+      "errorDeRed": "No pudimos conectar con el servidor. Prueba de nuevo.",
       "noPudimosCerrar": "No pudimos cerrar la partida: {error}",
       "volver": "Volver",
       "boostActivo": "Boost activo — Chispas ×1.5 en tu próxima partida"
@@ -626,7 +658,7 @@
       "velocidadPromedio": "Velocidad promedio",
       "experienciaHoy": "Experiencia hoy",
       "chispasTotales": "Chispas totales: {n}",
-      "repasemosEsto": "Repasemos esto",
+          "repasemosEsto": "Repasemos esto",
       "laRespuestaEra": "la respuesta era",
       "ningunoFallado": "Ninguno fallado — así se hace."
     }
@@ -635,16 +667,16 @@
     "progreso": "Progreso",
     "tecnicas": "{dominadas}/{total} técnicas",
     "titulo": "Aprender",
-    "subtitulo": "Un solo camino: andá desbloqueando técnicas en orden, o saltá a una unidad desde la izquierda.",
+    "subtitulo": "Un solo camino: anda desbloqueando técnicas en orden, o salta a una unidad desde la izquierda.",
     "descripcionUnidad": {
-      "suma": "Sumá más rápido combinando números de formas más simples.",
-      "resta": "Restá con confianza, incluso cuando los números no cooperan.",
-      "multiplicacion": "Multiplicá de memoria con atajos que ahorran pasos.",
-      "division": "Dividí de cabeza reconociendo patrones antes de calcular.",
-      "fracciones": "Trabajá fracciones sin miedo: simplificar, comparar, sumar.",
-      "decimales": "Convertí, redondeá y calculá porcentajes sin perder pie.",
+      "suma": "Suma más rápido combinando números de formas más simples.",
+      "resta": "Resta con confianza, incluso cuando los números no cooperan.",
+      "multiplicacion": "Multiplica de memoria con atajos que ahorran pasos.",
+      "division": "Divide de cabeza reconociendo patrones antes de calcular.",
+      "fracciones": "Trabaja fracciones sin miedo: simplificar, comparar, sumar.",
+      "decimales": "Convierte, redondea y calcula porcentajes sin perder pie.",
       "potencias": "Potencias y raíces con atajos, sin fuerza bruta.",
-      "algebra": "Despejá x sin miedo: un paso a la vez, siempre verificable.",
+      "algebra": "Despeja x sin miedo: un paso a la vez, siempre verificable.",
       "geometria": "Perímetros, áreas y ternas pitagóricas — patrones, no fórmulas de memoria."
     },
     "leccion": {

@@ -192,7 +192,7 @@ export default function DiagnosticoClient({ destino }: Props) {
               </h1>
               <p className="mt-2 text-sm text-texto-secundario">
                 Sin presión — esto no afecta tu racha ni tu experiencia, solo nos ayuda a calibrar
-                bien desde el principio. ¿Qué querés mejorar primero?
+                bien desde el principio. ¿Qué quieres mejorar primero?
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3">

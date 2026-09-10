@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>pieza-oscura-numeria-sprint-story</title>
+<meta name="prodigia:eje" content="oscuro">
+<!--
+  EJE OSCURO · tokens reales del dark mode (src/app/globals.css:47-56, :root:not([data-theme="light"])):
+  --background #090c14 · --surface #12172a · --surface-2 #171d34 · --border #232b47
+  --primario #7c5cff · --foreground #f4f6fb · --texto-secundario #8892b0 · oro #FFC53D
+  PENDIENTE (captura FINAL): ./pantallas-oscuras/23-demo-numeria-sprint.png en dark mode (tunnel del usuario).
+  Mientras no exista, usa como fallback la captura CLARA real (foco de luz, DIRECCION-ARTISTICA.md sección 9).
+  Swap automático al soltar el PNG en docs/marketing/assets/pantallas-oscuras/ y re-renderizar.
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#090c14; color:#f4f6fb; }
+  .axis { width:100%; height:100%; padding:64px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .eyebrow { font-size:24px; font-weight:700; letter-spacing:0.14em; color:#8892b0; }
+  .top-right { font-size:24px; font-weight:700; color:#8892b0; }
+  .headline { font-size:64px; line-height:1.0; font-weight:700; letter-spacing:-0.02em; }
+  .headline em { font-style:normal; background:linear-gradient(120deg,#7C5CFF,#FFC53D); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .card { border-radius:32px; overflow:hidden; border:1px solid #232b47; box-shadow:0 0 0 1px rgba(124,92,255,0.16), 0 32px 64px -24px rgba(0,0,0,0.7); height:700px; margin:40px 0; }
+  .card img { width:100%; height:100%; object-fit:cover; display:block; }
+  .state { display:inline-flex; align-items:center; gap:14px; padding:12px 20px; border-radius:9999px; background:#12172a; border:1px solid #232b47; font-size:22px; color:#8892b0; align-self:flex-start; }
+  .state strong { font-size:26px; color:#FFC53D; }
+  .footer { display:flex; align-items:center; justify-content:space-between; margin-top:26px; }
+  .cta { display:inline-flex; align-items:center; gap:12px; padding:20px 38px; border-radius:9999px; background:linear-gradient(120deg,#7C5CFF,#FFC53D); color:#fff; font-size:24px; font-weight:700; box-shadow:0 16px 32px -12px rgba(124,92,255,0.55); }
+  .brand { display:flex; align-items:center; gap:12px; font-size:22px; font-weight:700; color:#8892b0; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="eyebrow mono">PRODIGIA · NUMERIA</span>
+      <span class="top-right mono">nivel propio · dificultad adaptativa</span>
+    </div>
+    <h1 class="headline">60 segundos.<br><em>La cabeza</em> hace el resto.</h1>
+    <div class="card">
+      <img src="../pantallas-oscuras/23-demo-numeria-sprint.png" onerror="if(this.src.indexOf('pantallas-oscuras')>-1){this.src='../pantallas-reales/23-demo-numeria-sprint.png';this.onerror=null;}" data-pendiente="pantallas-oscuras/23-demo-numeria-sprint.png" alt="Sprint de práctica de Numeria con el contador en marcha">
+    </div>
+    <p class="state mono"><span>racha</span><strong>+14</strong><span>· precisión</span><strong>96%</strong></p>
+    <div class="footer">
+      <span class="cta">Probar gratis</span>
+      <span class="brand mono">prodigia.app</span>
+    </div>
+  </div>
+</body>
+</html>

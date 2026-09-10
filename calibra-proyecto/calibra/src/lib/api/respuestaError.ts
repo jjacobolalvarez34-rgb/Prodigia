@@ -23,7 +23,7 @@ export function respuestaError(contexto: string, error: ErrorConCodigo, status =
   console.error(`[api:${contexto}]`, error.code, error.message);
   const esMensajeDeNegocio = error.code === "P0001";
   return NextResponse.json(
-    { error: esMensajeDeNegocio ? error.message : "Algo salió mal. Probá de nuevo." },
+    { error: esMensajeDeNegocio ? error.message : "Algo salió mal. Prueba de nuevo." },
     { status }
   );
 }

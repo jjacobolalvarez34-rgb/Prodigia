@@ -44,9 +44,16 @@ export const RULETA_COSTO_NORMAL = 150;
 export const RULETA_LIMITE_DIARIO = 5;
 export const RULETA_PITY_TRES_SIN_PREMIO = 3;
 
+// LEGACY (0127): este archivo ya no se renderiza en la UI — la ruleta
+// clásica fue reemplazada por la mesa casino (src/lib/trastienda/casino.ts
+// + Ruleta.tsx) y solo queda como respaldo/referencia del giro RPC
+// girar_ruleta (0121/0126). Se conserva intacto (probabilidades, orden,
+// valores y el test ruleta.test.ts que lo verifican).
+//
 // Valor en Chispas que paga cada segmento (para el test de EV). El
-// segmento 'titulo' entrega un escudo (placeholder hasta Mecánica 3),
-// igual que el SQL — por eso su valor es el del escudo.
+// segmento 'titulo' quedaba como escudo en 0121; desde 0123 girar_ruleta
+// entrega títulos reales vía titulos_trastienda_base()/desbloquear_titulo_propio
+// (esta copia del valor sigue usando 350 solo a efectos del test de EV).
 export const VALOR_SEGMENTO_CHISPAS: Record<SegmentoRuleta, number> = {
   boost: 600,
   escudo: 350,

@@ -2,21 +2,50 @@
 
 Documento de referencia para retomar el trabajo (por ejemplo, en otra sesión, otra carpeta, o con otra persona). No reemplaza a `docs/PROGRESO.md` (el historial cronológico de auditorías y decisiones) — esto es una foto del estado actual: qué es la app, cómo está armada, y qué queda pendiente.
 
-Última actualización: 2026-08-17.
+Última reconciliación: 2026-09-09 — fase F13. Ver también: `docs/audits/*.md` (auditorías F0–F12) y `docs/PROGRESO.md`.
+
+## Estado verificado (F0-F13)
+
+Lista de qué fue verificado contra el código real en las fases F0-F13, con link al audit correspondiente. "VERIFICADO" aquí = confirmado en código/auditorías, no en runtime (sin DB/browser en el entorno).
+
+| Área | Estado verificada en | Evidencia/audit |
+|---|---|---|
+| Nivel de mundo: curva 34/45/21 (techo 25.000), anti-farm | Código + migraciones | `docs/audits/NIVELES-MUNDOS-2026-09-08.md`; `0117_curva_nivel_mundo.sql`; `worldLevel.ts:46-49`; `0125:184` |
+| Nivel de cuenta: escalera 200/300/550/900/1400/1900/2400 | Código + migración | `docs/audits/NIVELES-PERSONALES-2026-09-08.md`; `0118_niveles_cuenta_recompensas.sql`; `src/lib/cuenta/niveles.ts` |
+| Recompensa nivel cuenta: 50n+250 (invisible al cliente, sin grant) | Código + migración | `0118`; `0125` concilia con `greatest` |
+| 8 mundos (MundoDuelo/colores alineados) | Código | `src/types/database.ts:38,328`; `0110`; alineados en F7 |
+| Catálogo tienda real: 24 ítems / 47.900 Chispas, 6 marcos de rango | Código | `docs/audits/STORE-ECONOMY-AUDIT.md` (§2); `src/lib/tienda/costos.ts:21-70` |
+| Trastienda: casino 0.88 (0127), sourceErrorTrastienda, M2 self-heal sin cron, M3 8/9 títulos (falta gniñardo), M5 3 minijuegos activos (Acertijos/Reloj eliminados 0126) | Código | `docs/audits/STORE-ECONOMY-AUDIT.md` (§3-§5); migraciones `0121`–`0127` |
+| Minijuego único activo de 0124: "La Calcu" | Código | `0126` elimina Acertijos/El Reloj; `LaCalcu.tsx` |
+| RLS/seguridad: S5 CRÍTICO documentado; S9 edge | Código | `docs/audits/AUDIT-RLS-SEGURIDAD-2026-09-07.md`; `0121:605-649` re-grant |
+| Feed social DESACTIVADO | Código | `docs/audits/DUELOS-AUDIT.md` §2; `SocialClient.tsx:16-19` |
+| Tour de onboarding desactivado | Código | `Header.tsx:27-31`; `PrimeraVezTip.tsx` sin uso |
+| Pro informativo (no pago); PWA sin offline; solo Android | Código | `docs/audits/REQUIREMENTS-CHECKLIST.md` #51, #52, #64 |
+| Rankeds: nivel mínimo 5, mejor-de-3, ELO TS≡SQL (0043), casual sin ELO (0050), bots casual BLOQUEADO-POR-DB, anti-aleatorio (0109) | Código | `docs/audits/RANKEDS-AUDIT.md`, `docs/audits/CASUAL-AUDIT-2026-09-08.md`, `docs/audits/DUELOS-AUDIT.md`; `guard.ts:184` |
+| Clanes: costo 5000, roles, chat push, estandarte 2600px, mapa/ciudad tierCiudad, guerra, nivel clan sin cap | Código | `docs/audits/REQUIREMENTS-CHECKLIST.md` #24-28; migraciones `0068`, `0070`, `0076`, `0092` |
+| Español neutro LA; migraciones hasta 0128 (9 RPCs neutros); NOTIFY en 0122/0123/0125/0126/0127 | Código | `docs/TERMINOLOGY.md`; `docs/audits/I18N-AUDIT.md`; `0128_espanol_neutro.sql` |
+| Límites: racha, escudos, doble-o-nada (200), apostar (10/500), casino 20/día, apuestas amigos solo duels | Código | `docs/audits/STORE-ECONOMY-AUDIT.md` (§3.1) |
+| Onboarding 2 mundos + fix 0116 (self-heal) | Código + en vivo | `0116_fix_elegir_dos_mundos.sql`; `docs/audits/REQUIREMENTS-CHECKLIST.md` #47 |
+
+Método: todo lo de arriba fue verificado leyendo código/migraciones audits en F0-F12 (CONFIRMADO POR CÓDIGO). Tsc/eslint/vitest NO aplican a esta fase (cero cambios de código).
 
 ## Qué es Prodigia
 
-App de práctica adaptativa con gamificación, en español (Argentina), con cinco "mundos" de contenido independientes:
+App de práctica adaptativa con gamificación, en español neutro latinoamericano (ver `docs/TERMINOLOGY.md`), con ocho "mundos" de contenido independientes:
 
 - **Numeria** — cálculo mental y matemática: Aritmética (suma/resta/multiplicación/división), Fracciones, Decimales y porcentajes, Potencias y raíces, Álgebra básica, Geometría básica (Perímetro/Área/Ángulos/Ternas pitagóricas).
 - **Enigmia** — lógica: 4 categorías (Memoria, Patrones, Deducción, Pensamiento computacional). Memoria/Patrones/Computacional se generan por código (infinitos); Deducción viene de un banco fijo sembrado en la base.
 - **Geografía** — identificar países en el mapa: 4 continentes activos (América, Europa, África, Asia+Oceanía — estos dos últimos agrupados). 153 países jugables en total. "Departamentos/estados/ríos" queda como "Próximamente".
 - **Quimia** — elementos, fórmulas, tabla periódica, nomenclatura y química orgánica: 5 modos, cada uno con su propia calibración.
 - **Anatomía** — sistema óseo, muscular, órganos y sistema nervioso: 4 modos (cada uno con nivel bajo general y nivel alto más específico — huesos del cráneo, músculos de la cara, pares craneales), preguntas de clasificación (multiple choice, contenido de nombres verificado, sin trivia inventada).
+- **Melodía** — reconocimiento auditivo (incluye oído absoluto, `0096`). Hub de selección en `/melodia/elegir`. Lecciones en `/melodia/aprender`.
+- **Trigonometria** — funciones trigonométricas, identidades y aplicaciones. Hub de selección en `/trigonometria/elegir`. Lecciones en `/trigonometria/aprender`.
+- **Historia** — contenido histórico-cultural. Hub de selección en `/historia/elegir`. Lecciones en `/historia/aprender`.
+- (Detalle de modos/sub-temas específicos de Melodía/Trigonometria/Historia: NO PUEDO VERIFICAR sin DB — remitirse a `docs/audits/REQUIREMENTS-CHECKLIST.md` y `docs/PROGRESO.md`.)
 
-Cada mundo tiene: una calibración de nivel por tema (1-10, sube/baja según aciertos), un **nivel de mundo** (eje de progreso separado, acumulado por puntos, curva RPG no lineal — ver más abajo), lecciones ("Aprender"), y práctica ("Practicar").
+Cada mundo tiene: una calibración de nivel por tema (1-10, sube/baja según aciertos), un **nivel de mundo** (eje de progreso separado, acumulado por puntos, curva RPG no lineal — ver más abajo), lecciones ("Aprender"), y práctica ("Practicar"). Los 8 mundos son: Numeria, Enigmia, Geografía, Quimia, Anatomía, Melodía, Trigonometria, Historia (verificados en código: `src/lib/mundos.ts:19-28`, `src/lib/mundos/precios.ts:13`).
 
-Por fuera de los mundos: cuenta (perfil, ajustes), social (amigos, grupos de profesor/alumnos), competitivo (ranking semanal, rankeds con ELO y matchmaking, duelos), economía (Puntos, tienda, apuestas), logros, reto diario, feed de actividad.
+Por fuera de los mundos: cuenta (perfil, ajustes, nivel personal con recompensas), social (amigos, grupos de profesor/alumnos; feed de actividad DESACTIVADO — ver Pendiente), competitivo (ranking semanal, rankeds con ELO y matchmaking, duelos mejor-de-3), economía (Chispas como moneda, tienda, Trastienda con ruleta casino/apuestas/predicciones/minijuegos, apuestas doble-o-nada), clanes (crear/unirse, guerra semanal, chat, estandarte), logros, reto diario, reto semanal.
 
 ## Stack técnico
 
@@ -26,7 +55,7 @@ Por fuera de los mundos: cuenta (perfil, ajustes), social (amigos, grupos de pro
 - **framer-motion** — motor de animación principal y confiable en todo el proyecto
 - **gsap** + **@gsap/react** — usado en algunos componentes de react-bits (ver advertencia abajo)
 - **three** + **ogl** — para GhostCursor (fondo ambiental) y SpecularButton (botones secundarios)
-- **vitest** — 13 tests unitarios (lógica pura: fórmulas, cálculo de nivel, etc.)
+- **vitest** — suite unitaria de lógica pura (fórmulas, cálculo de nivel, retos, ruleta/casino, etc.). 147 tests en la última verificación (2026-09-09).
 
 ### ⚠️ Advertencia sobre gsap en este entorno
 
@@ -50,7 +79,7 @@ src/
     practica/              — generadores de problemas + lógica de práctica
     enigmia/                — generadores de acertijos + skill level de Enigmia
     auth/guard.ts           — guards en capas (requireUsuario, requireMundoNumeria, requireMundoEnigmia)
-supabase/migrations/       — SQL, 0001 a 0036, se aplican en orden a mano
+supabase/migrations/       — SQL, 0001 a 0128, se aplican en orden a mano
 docs/
   PROGRESO.md               — historial cronológico de auditorías/decisiones (fuente de verdad de "qué se hizo y por qué")
   ESPECIFICACION.md         — este archivo
@@ -85,30 +114,30 @@ Regla permanente para cualquier mundo, presente o futuro — no es una preferenc
 ## Sistemas de gamificación
 
 - **Calibración por tema** (`skill_levels` / `logic_skill_levels`): nivel 1-10, sube con 3 aciertos seguidos, baja con 1 error (salvo escudo activo). Lógica pura en `src/lib/practica/skillLevels.ts` / `src/lib/enigmia/skillLevels.ts`.
-- **Nivel de mundo** (`world_progress`, tabla separada, 1-100): combinación de 3 ejes, no solo Puntos acumulados (fórmula rediseñada — ver `0080_nivel_mundo_dominio_real.sql`): 30% volumen de Puntos ganados en ese mundo (normalizado a un techo), 50% fracción de sub-temas del mundo en calibración nivel 10 (el eje más pesado — dominio real), 20% fracción de lecciones de Aprender de ese mundo ya dominadas. `nivel = round(100 * (0.3*volumen + 0.5*dominio + 0.2*lecciones))`, con techo real en 100. Se muestra con `NivelMundoBadge.tsx` (persistente) y celebra con `NivelMundoSubio.tsx` (el "gesto del logo") al subir.
-- **Puntos** (`profiles.puntos_total`): moneda permanente, nunca baja sola. Se gana con `registrar_xp_diario` (RPC `security definer`).
+- **Nivel de mundo** (`world_progress`, tabla separada, 1-100): combinación de 3 ejes, no solo Puntos acumulados (fórmula rediseñada — `0117_curva_nivel_mundo.sql`, espejo TS en `src/lib/practica/worldLevel.ts:46-49`): 34% volumen de Puntos ganados en ese mundo (normalizado a techo 25.000), 45% fracción de sub-temas del mundo con calibración ≥ nivel 4 (clamp((n−4)/6)), 21% fracción de lecciones de Aprender de ese mundo ya dominadas. `nivel = round(100 * (0.34*volumen + 0.45*dominio + 0.21*lecciones))`, con techo real en 100. Anti-farm por diseño: el farm de un solo sub-tema queda clavado en ~36. Se muestra con `NivelMundoBadge.tsx` (persistente) y celebra con `NivelMundoSubio.tsx` (el "gesto del logo") al subir.
+- **Puntos** (`profiles.puntos_total`): moneda permanente, nunca baja sola. Se gana con `insertar_intento` / `insertar_intento_logica` (RPCs `security definer` de `0120` — migran el cálculo de XP al servidor).
 - **Racha diaria** (`daily_progress`, `profiles.streak_dias`): meta de XP diaria configurable, congelamientos comprables para no perderla.
 - **Escudos de calibración**: protegen el nivel de un error (no la racha de partida). Se compran en la tienda.
 - **Boost de XP** (`boost_multiplicador_pendiente`): ×1.5 temporal, comprable.
 - **Apuesta "doble o nada"** (`apuesta_monto`/`apuesta_umbral`): jugarse una racha de precisión a cambio de duplicar Puntos.
-- **Tienda** (`/tienda`): escudos, congelamientos, boost, colores de dial, marcos de perfil. Todo pasa por `comprar_item_tienda` (RPC `security definer`).
+- **Tienda** (`/tienda`): escudos (350), congelamientos (450), boost (600), 6 fuentes (1.000–5.000), 6 marcos de rango (1.000–5.000), 8 marcos de mundo (2.400 c/u), paquete marcos mundo (14.500). 24 ítems, total sin paquete 47.900 Chispas. Todo pasa por `comprar_item_tienda` (RPC `security definer`). Catálogo verificado: `src/lib/tienda/costos.ts:21-70`.
+- **Trastienda** (`/trastienda`): ruleta casino con 118 elementos de tabla periódica (fichas 100/250/500/1.000, límite 20/día, factor 0.88 — `0127`), apuestas a partida ajena (10/día, 500 Chispas — `0123`), predicción de ranking semanal (self-heal — `0123`/`0126`), minijuegos (Volado, Pizarra, La Calcu — `0121`/`0124`), historial completo. Títulos exclusivos (8 de 9 — falta `gniñardo`). División visual: sub-pestañas ruleta/juegos.
 - **Logros** (`achievements`/`user_achievements`): catálogo fijo, se muestran todos (bloqueados o no) en `/perfil`.
 - **Ranking semanal** (`ranking_semanal`): por XP de la semana, se reinicia los lunes. Filtro "por mundo" también disponible (dentro de Social > Amigos).
-- **Rankeds** (`/rankeds`): competitivo real con ELO (`profiles.elo_rating`) y matchmaking (`duel_queue`, `buscar_rival_duelo`).
-- **Duelos**: asincrónicos (no hay sesión en vivo compartida — es un proyecto aparte, deliberadamente no encarado). Tienen "fantasma" del rival (`duel_results.respuestas`) que muestra el ritmo exacto de las respuestas ya guardadas.
-- **Social** (`/social`): pestañas Amigos / Grupos (antes "Profesor"). `/amigos` y `/profesor` son redirects.
-- **Reto diario** (`/reto-diario`): 5 problemas iguales para todos los usuarios el mismo día (RNG sembrado por fecha, determinístico).
-- **Feed** (`/feed`): actividad de logros/desafíos de la gente que seguís.
+- **Rankeds** (`/rankeds`): competitivo real con ELO (`profiles.elo_rating`) y matchmaking (`duel_queue`, `buscar_rival_duelo`). Nivel mínimo de cuenta para acceder: nivel 5 (`guard.ts:184`). Mejor-de-3 para "Todas las ciudades" (3 rondas, ELO K×20 una sola vez al finalizar la serie — `0043`–`0045`). Anti-aleatorio: desde Platino, solo "todas las ciudades" (`0109`).
+- **Duelos**: en Numeria, sala de espera sincronizada por Realtime (`SalaDuelo.tsx`, `0038`). En Geografía/Enigmia, patrón asincrónico/fantasma (cada uno juega por separado, se compara puntaje al final). Casual sin ELO (`0050`). Rendirse/abandono (`0088`). "Fantasma" del rival (`duel_results.respuestas`) que muestra el ritmo exacto de las respuestas ya guardadas.
+- **Social** (`/social`): pestañas Amigos / Grupos (antes "Profesor"). `/amigos` y `/profesor` son redirects. Feed de actividad DESACTIVADO (`SocialClient.tsx:16-19`): código completo sin uso en runtime; plan de activación propuesto en `docs/audits/DUELOS-AUDIT.md §2.4`.
+- **Reto diario** (`/reto-diario`): 5 problemas iguales para todos los usuarios el mismo día (RNG sembrado por fecha, determinístico). Reto semanal (`/reto-semanal`): 45 preguntas + ranking semanal (`0113`).
 
 ## Patrones de arquitectura establecidos
 
 ### RLS + `security definer`
-Toda escritura de datos sensibles (Puntos, ELO, nivel, items de la tienda) pasa por funciones Postgres `security definer` con su propio chequeo `if auth.uid() is null then raise exception`. **Las policies de RLS por sí solas NO alcanzan** para proteger columnas específicas de una fila que el usuario sí puede tocar (ver hallazgo de la auditoría de seguridad, migración `0035`) — si una tabla necesita que el usuario actualice su propia fila pero solo algunas columnas, se usa `GRANT UPDATE (col1, col2) ON tabla TO authenticated` en vez de confiar en que nadie va a hacer un `update()` directo desde el cliente con más columnas de las esperadas.
+Toda escritura de datos sensibles (Puntos, ELO, nivel, items de la tienda) pasa por funciones Postgres `security definer` con su propio chequeo `if auth.uid() is null then raise exception`. **Las policies de RLS por sí solas NO alcanzan** para proteger columnas específicas de una fila que el usuario sí puede tocar (ver hallazgo de la auditoría de seguridad, migración `0035`) — si una tabla necesita que el usuario actualice su propia fila pero solo algunas columnas, se usa `GRANT UPDATE (col1, col2) ON tabla TO authenticated` en vez de confiar en que nadie va a hacer un `update()` directo desde el cliente con más columnas de las esperadas. La familia S0/S1/S2/S3/S4/S8 se cerró en `0120` (XP/calibración server-side); S5 (doble-o-nada, `resolver_apuesta_si_activa` re-granted en `0121:605-649`) y S9 (edge functions sin verificación) quedan pendientes — ver `docs/audits/AUDIT-RLS-SEGURIDAD-2026-09-07.md`.
 
 **Antes de agregar una función nueva que escriba datos de otro usuario que no sea el propio, chequeo obligatorio**: ¿tiene `security definer`? ¿Valida `auth.uid()` al principio? ¿El `with check` de cualquier policy de INSERT/UPDATE relacionada restringe lo que hace falta?
 
 ### Sistema de feedback de partida (compartido)
-Todos los runners de práctica (Aritmética, Fracciones, Decimales, Potencias, Álgebra, Enigmia, Geografía) comparten:
+Todos los runners de práctica (Aritmética, Fracciones, Decimales, Potencias, Álgebra, Enigmia, Geografía, Anatomía, Melodía, Trigonometria, Historia) comparten:
 - `TarjetaSprint.tsx` — la tarjeta flashcard con transición de entrada/salida
 - `PuntajeCorner.tsx` — el puntaje que aparece al acertar
 - `BarraTiempo.tsx` / `useBonusTiempo.ts` — barra de tiempo + bonus por velocidad
@@ -116,7 +145,7 @@ Todos los runners de práctica (Aritmética, Fracciones, Decimales, Potencias, �
 - `EscudoIcon.tsx` — animación de escudo rompiéndose al gastarse
 - `RevelarRespuesta.tsx` (usa `PixelTransition`) — revela la respuesta correcta al errar
 
-**Importante**: estos NO están unificados en un solo componente de runner — cada tema tiene su propio archivo (`SprintRunner.tsx`, `FraccionSprintRunner.tsx`, `EnigmiaSprintRunner.tsx`, `GeografiaSprintRunner.tsx`, y `EnunciadoSprintRunner.tsx` compartido por Decimales/Potencias/Álgebra) que importa estas piezas a mano. **Si se agrega un tema nuevo, hay que acordarse de importar las 6 piezas** — así se generó el hueco que se cerró en la auditoría de esta sesión (Decimales/Potencias/Álgebra no tenían ninguna, Fracciones/Enigmia/Geografía les faltaba solo RachaFuego). Evaluado un refactor de unificación (hook o shell compartido) — invasividad media, recomendado para después de la primera ronda de usuarios reales, no antes.
+**Importante**: estos NO están unificados en un solo componente de runner — cada tema tiene su propio archivo (`SprintRunner.tsx`, `FraccionSprintRunner.tsx`, `EnigmiaSprintRunner.tsx`, `GeografiaSprintRunner.tsx`, y `EnunciadoSprintRunner.tsx` compartido por Decimales/Potencias/Álgebra, más runners para Anatomía/Melodía/Trigonometria/Historia) que importa estas piezas a mano. **Si se agrega un tema nuevo, hay que acordarse de importar las 6 piezas** — así se generó el hueco que se cerró en la auditoría de esta sesión (Decimales/Potencias/Álgebra no tenían ninguna, Fracciones/Enigmia/Geografía les faltaba solo RachaFuego). Evaluado un refactor de unificación (hook o shell compartido) — invasividad media, recomendado para después de la primera ronda de usuarios reales, no antes.
 
 ### Deduplicación de problemas dentro de una partida
 `src/lib/practica/generarUnico.ts` → `generarSinRepetir(generar, clave, usados, maxIntentos=20)`. Todo generador de problemas nuevo debe usar esto (registrar una clave canónica por problema, reintentar si ya salió en la partida, permitir repetir recién si se agotan los intentos). Ya aplicado en los 7 generadores existentes.
@@ -141,7 +170,7 @@ Esta regla puntual sobre `/perfil` quedó chica: **Anatomía repitió el mismo p
 
 ## Checklist de mundo nuevo (obligatoria, la misma tarea que agrega el mundo)
 
-Cada mundo (`numeria`, `enigmia`, `geografia`, `quimia`, `anatomia`, y cualquiera que se agregue después) tiene que aparecer en **todos** estos puntos. La causa raíz de que esto se rompa dos veces seguidas (Quimia, después Anatomía) es siempre la misma: son listas de TypeScript/SQL escritas a mano en varios archivos, no derivadas de una única fuente de verdad — agregar el mundo a la tabla `world_progress_world_check` o al `MundoSelector` no alcanza, hay que tocar cada ítem de acá por separado. Ninguno de estos falla con un error visible cuando falta un mundo — el mundo simplemente no aparece como opción, en silencio.
+Cada mundo (`numeria`, `enigmia`, `geografia`, `quimia`, `anatomia`, `melodia`, `trigonometria`, `historia`, y cualquiera que se agregue después) tiene que aparecer en **todos** estos puntos. La causa raíz de que esto se rompa dos veces seguidas (Quimia, después Anatomía) es siempre la misma: son listas de TypeScript/SQL escritas a mano en varios archivos, no derivadas de una única fuente de verdad — agregar el mundo a la tabla `world_progress_world_check` o al `MundoSelector` no alcanza, hay que tocar cada ítem de acá por separado. Ninguno de estos falla con un error visible cuando falta un mundo — el mundo simplemente no aparece como opción, en silencio.
 
 | # | Punto de integración | Dónde vive (patrón a repetir) |
 |---|---|---|
@@ -176,7 +205,7 @@ SUPABASE_SERVICE_ROLE_KEY=...   # falta agregarla — ver Pendiente
 ```
 La service_role key solo la usa `src/lib/supabase/admin.ts`, importado únicamente por `api/perfil/eliminar-cuenta/route.ts` (server-only, nunca se expone al cliente — confirmado inspeccionando el bundle real). **Nunca** importar `admin.ts` desde un Client Component.
 
-## Migraciones (`supabase/migrations/`, 0001-0036)
+## Migraciones (`supabase/migrations/`, 0001-0128)
 
 Se aplican en orden, a mano, desde el SQL Editor de Supabase (no hay CLI en este entorno). Resumen por bloques:
 - **0001-0011**: esquema base (perfiles, intentos, técnicas, calibración, progreso diario, modificadores, ranking, onboarding, logros, tienda inicial)
@@ -184,20 +213,51 @@ Se aplican en orden, a mano, desde el SQL Editor de Supabase (no hay CLI en este
 - **0018-0026**: lecciones de Numeria, fracciones, categorías de Enigmia, amigos v2, geografía, fix de recursión en grupos, reto diario, tienda ampliada, decimales/potencias
 - **0027-0034**: lecciones de geografía, fantasma de duelos, ranking por mundo, fix de memoria en Enigmia, matchmaking de rankeds, álgebra básica, nivel de mundo, fix de nivel anterior
 - **0035-0036**: **auditoría de seguridad pre-lanzamiento** — cierra 2 vulnerabilidades altas (policies de UPDATE sin `with check` en `profiles` y `duels`, explotables desde la consola del navegador) y 2 medias (`duel_results`, `friendships`); 0036 es un hotfix urgente porque 0035 rompió `registrar_xp_diario`/`comprar_item_tienda` al no haberles agregado `security definer` también.
+- **0037-0041**: nombre único, duelos tiempo real (Realtime), avatares, perfil público y reportes, ranking con avatar
+- **0042-0047**: ranking excluye invitados, rankeds rangos/títulos/multi-mundo, título junto al nombre, serie ELO simétrico, numeria operación aleatoria, rechazar duelo
+- **0048-0055**: Enigmia complejidad por rango, ranking amigos, duelos casuales, invitaciones temporales, feed diversificado, problemas personalizados, tienda rediseno, grupos delete policy
+- **0056-0062**: mundo Quimia, fix grant onboarding Quimia, matchmaking fantasma, invitar por link multi-mundo, auditoría RLS 2, tienda precios piso, lecciones por mundo y mundo completado
+- **0063-0070**: invitar amigo sin cuenta, racha en riesgo, anuncios, clan de bots, Quimia nomenclatura orgánica, clanes reales, clanes fixes, clanes niveles y roles
+- **0071-0078**: duelo mi puntaje en espera, ELO K factor por rango, ELO K factor serie, serie duelos rival puntaje, tienda fuentes nuevas, mundo clanes, clan de bots más rivales, Platino solo todas las ciudades
+- **0079-0086**: practicar sub-temas, nivel mundo dominio real, mundo Anatomía, lecciones geometría/anatomía, ranking ELO global, imagen clan, perfil idioma, fix grant onboarding Anatomía
+- **0087-0094**: anatomía checklist mundo, rendirse duelo, mundo Melodía, lecciones Melodía, duelos anatomía/melodia, FK borrado cuenta, chat de clan, serie duelos rival puntaje
+- **0095-0114**: reto diario 45 multi-mundo, melodia oído absoluto, desbloquear mundo, lecciones historia, mundo Trigonometria, duelo trigonometria/historia, purge/anonymize, edge functions (notify-duelo, racha-en-riesgo, notify-clan-mensaje), levels mundo, mismatch fix, tienda marcos mundo, ranking elo global fix
+- **0115**: auditoría seguridad (S6/S7/S10 — handle_new_user search_path, friendships INSERT check, acreditar_chispas guard)
+- **0116**: fix elegir dos mundos (self-heal cardinalidad 1→2)
+- **0117**: curva nivel mundo (34/45/21, techo 25000)
+- **0118**: niveles cuenta escalera (200/300/550/900/1400/1900/2400) + recompensa 50n+250
+- **0119**: filtro ranking usuarios permanentes
+- **0120**: cerrar familia S0/S1/S2/S3/S4/S8 (XP/calibración server-side, `insertar_intento`/`insertar_intento_logica`)
+- **0121**: trastienda economía (ruleta, volado, pizarra, historial, doble-o nada resiliente)
+- **0122**: arreglo pizarra (PGRST202)
+- **0123**: trastienda mecánicas 1/2/3 (apuestas, predicciones, títulos)
+- **0124**: trastienda minijuegos (La Calcu, Acertijos, El Reloj)
+- **0125**: recálculo niveles mundo + saneo
+- **0126**: trastienda limpieza (QA oculto, oráculo, mesa paginada, eliminación Acertijos/El Reloj, español normalizado en RPCs)
+- **0127**: trastienda ruleta casino (118 elementos, factor 0.88, 20/día)
+- **0128**: español neutro latinoamericano (9 RPCs con mensajes neutros)
 
 **Antes de compartir la app con gente real, confirmar que 0035 y 0036 estén aplicadas** — sin ellas, cualquier usuario logueado puede escribirse Puntos/ELO/items de la tienda directo desde la consola del navegador.
 
 ## Pendiente / decisiones para revisar
 
-1. **`SUPABASE_SERVICE_ROLE_KEY`** no está en `.env.local` ni (probablemente) en Vercel — sin ella, "Borrar mi cuenta" falla en producción (con error controlado, no un crash).
-2. **Confirmar en Vercel**: variables de entorno coinciden con `.env.local`, y en Supabase → Authentication → URL Configuration está cargada la URL real de producción (si no, el login funciona en localhost pero falla en producción).
-3. **Tour de onboarding desactivado** (`PrimeraVezTip.tsx` ya no se usa desde `Header.tsx`) — se sacó por un bug de renderizado nunca resuelto del todo (ver advertencia de gsap arriba, aunque el causante final terminó siendo un problema de `overflow-x-auto` recortando el eje Y, no gsap en sí — quedó desactivado igual porque no se re-intentó reactivarlo tras el fix). Si se quiere reactivar, revisar `Header.tsx` (buscar el comentario sobre `mostrarTour`).
+1. **`SUPABASE_SERVICE_ROLE_KEY`** — en `.env.local` para desarrollo; confirmar en Vercel para producción. Sin ella, "Borrar mi cuenta" falla en producción (con error controlado, no un crash).
+2. **Confirmar en Vercel**: variables de entorno coinciden con `.env.local`, y en Supabase → Authentication → URL Configuration está cargada la URL real de producción (si no, el login funciona en localhost pero falla en producción). Redirect URLs: `https://tu-dominio.vercel.app/**` (con comodín, ver `docs/PROGRESO.md` V3).
+3. **Tour de onboarding desactivado** (`PrimeraVezTip.tsx` ya no se usa desde `Header.tsx:27-31`) — se sacó por un bug de renderizado nunca resuelto del todo (ver advertencia de gsap arriba, aunque el causante final terminó siendo un problema de `overflow-x-auto` recortando el eje Y, no gsap en sí — quedó desactivado igual porque no se re-intentó reactivarlo tras el fix). Si se quiere reactivar, revisar `Header.tsx` (buscar el comentario sobre `mostrarTour`).
 4. **`AbanicoBurbuja.tsx`** (animación en abanico del menú de cuenta) también desactivada — `ProfileMenu.tsx` volvió al fundido simple original. El archivo queda sin usar.
 5. **Refactor de unificación de runners de práctica** — evaluado, no implementado (ver sección de arquitectura arriba).
-6. **Manejo de errores sin detalle técnico** — ~19 rutas de API reenvían `error.message` directo al cliente sin un `catch` genérico externo. Seguro en el camino feliz (son mensajes en español definidos a propósito), pero un error verdaderamente inesperado se propagaría sin capturar. No se tocó (cambio grande, 19 archivos).
+6. **Manejo de errores sin detalle técnico** — ~19 rutas de API reenvían `error.message` directo al cliente sin un `catch` genérico externo. Seguro en el camino feliz (son mensajes en español definidos a propósito), pero un error verdaderamente inesperado se propagaría sin capturar. No se tocó (cambio grande, 19 archivos). Nota: `respuestaError` (`src/lib/api/respuestaError.ts`) centraliza el manejo en las 24 rutas desde la tanda X3.
 7. **`ProfesorClient.tsx`** (lista de grupos) no muestra un mensaje explícito de "sin grupos todavía" cuando está vacío — no está roto, pero es inconsistente con el resto de las pantallas que sí lo hacen.
 8. **Hydration warning menor** en `ProgressDial` (diferencia de precisión de punto flotante en un atributo `cx` de SVG entre servidor y cliente) — no afecta funcionalidad.
 9. **`overflow-x: auto` en un contenedor recorta también el eje Y** aunque no se pida — causó dos bugs reales esta sesión (tooltip del tour, desplegable de cuenta, ambos clippeados por el `<nav>` del header). Si se necesita que algo escape hacia abajo de un contenedor con scroll horizontal, no usar `overflow-x-auto` — usar `flex-wrap` (la solución que se terminó aplicando en el header) u otro contenedor.
+10. **Feed social DESACTIVADO** — código completo (`Feed.tsx`, `FeedSidebar.tsx`, APIs `api/feed/*`), sin uso en runtime (`SocialClient.tsx:16-19`). Plan de activación propuesto en `docs/audits/DUELOS-AUDIT.md §2.4`. Pendiente decisión del PO.
+11. **Doble-o-nada: S5 CRÍTICO** — `resolver_apuesta_si_activa(p_precision)` re-granted con `security definer` en `0121:605-649`, pero `p_precision` viene del cliente → apuesta siempre ganada. Requiere migración para derivar `p_precision` server-side. Ver `docs/audits/AUDIT-RLS-SEGURIDAD-2026-09-07.md`.
+12. **Edge functions (S9)** — `notify-duelo`, `notify-clan-mensaje`, `racha-en-riesgo` sin verificación de llamada. BAJO, documentado.
+13. **Clanes**: costo 5000 Chispas, roles (fundador/guía/miembro), chat con push (`0092`, edge function), estandarte 2.600px, mapa/ciudad tierCiudad, guerra semanal (`0076`/`0077`), nivel clan sin cap.
+14. **Límites verificados**: racha diaria, escudos de calibración, doble-o-nada (200 Chispas), apostar a partida (10/día, 500 Chispas), casino (20/día), apuestas amigos solo duels.
+15. **PWA sin offline** — `public/sw.js` cachea solo `/_next/static/*` e íconos (a propósito, sin caché de páginas ni API). Multiplataforma: solo Android (Capacitor). Push nativas solo para app nativa (`NativePush.tsx`).
+16. **Pro informativo** — `pro/page.tsx:12-16` es solo pantalla informativa, sin pasarela de pago. Sin fecha de implementación.
+17. **Migraciones pendientes de aplicar a producción**: `0116` → `0117` → `0118` → `0119` → `0120` → `0121` → `0122` → `0123` → `0124` → `0125` → `0126` → `0127` → `0128` + `NOTIFY pgrst, 'reload schema';`. Aplicar en orden.
 
 ## Cómo levantar el proyecto
 

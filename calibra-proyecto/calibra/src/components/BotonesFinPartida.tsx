@@ -17,7 +17,7 @@ export default function BotonesFinPartida({ onOtraVez, volverHref, colorHex }: P
         className="flex-1 rounded-2xl px-4 py-4 font-display font-semibold text-white shadow-[0_12px_30px_-8px_color-mix(in_oklab,var(--primario)_55%,transparent)] transition-all duration-200 hover:-translate-y-0.5"
         style={{
           background: colorHex
-            ? `linear-gradient(120deg, ${colorHex}, #3FB88B)`
+            ? `linear-gradient(120deg, ${colorHex}, var(--correcto))`
             : "linear-gradient(120deg, var(--primario), var(--logro))",
         }}
       >

@@ -1,11 +1,11 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
-import { ARITHMETIC_PROBLEM_TYPES, ESTILO_MARCO_PERFIL, type ArithmeticProblemType, type Achievement, type TituloUsuario } from "@/types/database";
+import { ESTILO_MARCO_PERFIL, type Achievement, type TituloUsuario } from "@/types/database";
 import { calcularRachaMaxima, calcularMejorPrecisionDiaria } from "@/lib/perfil/records";
 import Header from "@/components/Header";
-import LevelDial from "@/app/[locale]/practica/LevelDial";
 import RangoBadge from "@/components/RangoBadge";
+import BannerHabilidades, { type ItemBanner, type OpcionBanner } from "@/components/BannerHabilidades";
 import NombreEditable from "./NombreEditable";
 import SubirAvatar from "./SubirAvatar";
 import BorrarCuenta from "./BorrarCuenta";
@@ -31,7 +31,6 @@ function formatearFecha(iso: string, locale: string): string {
 export default async function PerfilPage() {
   const t = await getTranslations("Perfil");
   const tNumeriaTemas = await getTranslations("Numeria.temas");
-  const tOperaciones = await getTranslations("Practica.operationPicker.operaciones");
   const locale = await getLocale();
   const supabase = await createClient();
   const { user, profile } = await requireUsuario(supabase, "/perfil");
@@ -54,7 +53,6 @@ export default async function PerfilPage() {
 
   const [
     { data: profileFull },
-    { data: skillRows },
     { data: dailyRows },
     { data: masRapida },
     { data: attemptsParaPrecision },
@@ -77,10 +75,9 @@ export default async function PerfilPage() {
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("created_at, elo_rating, marco_perfil, fuente_nombre, avatar_url, titulo_activo, nivel_cuenta, xp_historico_total")
+      .select("created_at, elo_rating, marco_perfil, fuente_nombre, avatar_url, titulo_activo, nivel_cuenta, xp_historico_total, afinidad_banner")
       .eq("id", user.id)
       .single(),
-    supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", user.id),
     supabase.from("daily_progress").select("fecha, meta_alcanzada, congelado").eq("user_id", user.id).limit(1000),
     supabase
       .from("attempts")
@@ -149,12 +146,29 @@ export default async function PerfilPage() {
   const eloRating = profileFull?.elo_rating ?? 800;
   const marcoPerfil = profileFull?.marco_perfil ?? "ninguno";
 
-  const nivelPorOperacion = Object.fromEntries(
-    ARITHMETIC_PROBLEM_TYPES.map((tipo) => [
-      tipo,
-      skillRows?.find((r) => r.problem_type === tipo)?.nivel ?? 1,
-    ])
-  ) as Record<ArithmeticProblemType, number>;
+  const MUNDOS_BANNER: Array<[string, string]> = [
+    ["numeria", "Numeria"],
+    ["enigmia", "Enigmia"],
+    ["geografia", "Geografía"],
+    ["quimia", "Quimia"],
+    ["anatomia", "Anatomía"],
+    ["melodia", "Melodía"],
+    ["trigonometria", "Trigonometría"],
+    ["historia", "Historia"],
+  ];
+  const TEMAS_BANNER: Array<[string, string]> = [
+    ["aritmetica", tNumeriaTemas("aritmetica")],
+    ["fracciones", tNumeriaTemas("fracciones")],
+    ["decimales", tNumeriaTemas("decimales")],
+    ["potencias", tNumeriaTemas("potencias")],
+    ["algebra", tNumeriaTemas("algebra")],
+    ["geometria", tNumeriaTemas("geometria")],
+  ];
+  const opcionesBanner: OpcionBanner[] = [
+    ...MUNDOS_BANNER.map(([ref, nombre]) => ({ ref, nombre, grupo: t("banner.mundo") })),
+    ...TEMAS_BANNER.map(([ref, nombre]) => ({ ref, nombre, grupo: t("banner.temaNumeria") })),
+  ];
+  const itemsBanner = (profileFull?.afinidad_banner as ItemBanner[] | null) ?? [];
 
   const rachaMaxima = calcularRachaMaxima(dailyRows ?? []);
   const mejorTiempo = masRapida && masRapida.length > 0 ? masRapida[0].time_ms : null;
@@ -179,6 +193,10 @@ export default async function PerfilPage() {
           <p className="text-sm text-texto-secundario">
             {t("enProdigiaDesde", { fecha: formatearFecha(profileFull?.created_at ?? new Date().toISOString(), locale) })}
           </p>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("rango")}</span>
+            <RangoBadge elo={eloRating} size="md" mostrarElo />
+          </div>
           <p className="font-mono text-lg font-bold text-foreground">
             {profile.puntos_total} <span className="text-sm font-normal text-texto-secundario">{t("chispasTotales")}</span>
           </p>
@@ -278,16 +296,9 @@ export default async function PerfilPage() {
         </section>
 
         <section>
-          <h2 className="mb-4 font-display text-lg font-bold text-foreground">{t("nivelPorOperacion")}</h2>
-          <p className="-mt-2 mb-4 text-xs text-texto-secundario">{t("calibracionEspecifica")}</p>
-          <div className="grid grid-cols-4 gap-3">
-            {ARITHMETIC_PROBLEM_TYPES.map((tipo) => (
-              <div key={tipo} className="flex flex-col items-center gap-2">
-                <LevelDial nivel={nivelPorOperacion[tipo]} size={64} mostrarEtiqueta={false} />
-                <span className="text-xs font-medium text-texto-secundario">{tOperaciones(tipo)}</span>
-              </div>
-            ))}
-          </div>
+          <h2 className="mb-1 font-display text-lg font-bold text-foreground">{t("banner.titulo")}</h2>
+          <p className="-mt-2 mb-4 text-xs text-texto-secundario">{t("banner.descripcion")}</p>
+          <BannerHabilidades itemsIniciales={itemsBanner} opciones={opcionesBanner} />
         </section>
 
         {(leccionesRows as { mundo: string; completadas: number; total: number }[] | null) &&

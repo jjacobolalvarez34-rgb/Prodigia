@@ -581,3 +581,39 @@
 | **Contenido educativo** | ⚠️ Contenido en español | Anatomía, Enigmia, Geografía — contenido generado |
 | **Títulos/Logros** | ❌ 40+ títulos hardcodeados | Catálogo completo en español |
 | **Navegación (Link/router)** | ❌ ~60 archivos usan next/navigation en vez de @/i18n/navigation | Bug de prefix perdido en idioma no-default |
+
+---
+
+## Actualización F3 (2026-09-09) — Español neutro latinoamericano + voseo estructurado
+
+### Hecho en esta tanda
+- **Voseo en messages/es.json**: ~53 strings normalizadas a tuteo (tenés→tienes, podés→puedes,
+  querés→quieres, necesitás→necesitas, elegí→elige, probá→prueba, mirá→mira, intentá→intenta,
+  completá→completa, jugá→juega, andá→anda, buscá→busca, sumate→súmate, probalo→pruébalo,
+  retalos→rétalos, apretés→aprietes, revisá→revisa, multiplicá→multiplica, redondeá→redondea,
+  etc.). **Paridad es/en confirmada 555/555 claves** (antes del
+  audit figuraban 300; el archivo tiene más claves hoy). Voseo residual: solo «más»/«estás»
+  (neutrales, NO voseo) tras 3 pasadas del mapa.
+- **Voseo hardcodeado en 13 archivos** de clientes/páginas/API corregido (SalaEsperaDuelo,
+  ConvertirCuenta, mensajeErrorAuth, feed/retar, profesor/crear-grupo, 5× Diagnóstico de mundos,
+  ClanesClient, login, registro, FeedSidebar, privacidad, terminos, Onboarding DiagnosticoClient,
+  MundoBloqueado).
+- **Backend/RPC**: nueva migración 0128_espanol_neutro.sql recrea 9 funciones únicamente con
+  raise exception en neutro (reportar_usuario, crear_problema_personalizado, reportar_post,
+  unirse_invitacion_duelo, crear_clan, reportar_mensaje_clan, mensajes_de_clan, desbloquear_mundo,
+  elegir_mundos_iniciales). Verificada por script: solo difieren los literales de mensaje.
+- **docs/TERMINOLOGY.md** creado: tabla voseo→neutro, excepciones (estás/más/pretéritos), criterios.
+
+### Hallazgos que SIGUEN abiertos del audit (sin cambios en esta tanda)
+1. ~75 archivos usan next/navigation o next/link en vez de @/i18n/navigation; 12 críticos en
+   Auth/Clanes/Retos/SEO.
+2. Pantallas completas hardcodeadas en español: login, registro, ajustes, retos, clanes, términos
+   y privacidad, feed, mundo-bloqueado, onboarding (sin claves i18n).
+3. SEO metadata (~15 páginas) y ~40 títulos de logros + nombres de modos/mundos en src/lib sin i18n.
+4. Edge functions mandan pushes en español.
+
+### PENDIENTE (contenido didáctico, requiere decisión + DB)
+Tips/hints/lecciones seed con rioplatense en migraciones ya aplicadas:
+- 0005:71 (pasos JSON, Mirá/Sumá×2), 0015:123/152/166, 0026:48/51, 0027:31, 0032:25/49,
+- 0056:449, 0089:312, 0101:51/58/103, 0108:389, 0109:358/380/389/395.
+Corregir implica UPDATEs sobre filas/columnas varias sin DB; se documenta para un pase de contenido.

@@ -20,9 +20,9 @@ export function mensajeErrorAuth(error: AuthError, mensajeGenerico: string): str
     case "invalid_credentials":
       return "Email o contraseña incorrectos.";
     case "over_email_send_rate_limit":
-      return "Estamos mandando muchos emails ahora mismo — probá de nuevo en unos minutos.";
+      return "Estamos mandando muchos emails ahora mismo — prueba de nuevo en unos minutos.";
     case "over_request_rate_limit":
-      return "Demasiados intentos seguidos — esperá un minuto y probá de nuevo.";
+      return "Demasiados intentos seguidos — espera un minuto y prueba de nuevo.";
     case "email_address_not_authorized":
       // Pasa cuando el proyecto todavía usa el SMTP por defecto de
       // Supabase, que solo manda emails a integrantes de la organización
@@ -35,11 +35,11 @@ export function mensajeErrorAuth(error: AuthError, mensajeGenerico: string): str
     case "email_address_invalid":
       return "Ese email no es válido.";
     case "same_password":
-      return "Esa ya es tu contraseña actual — elegí una distinta.";
+      return "Esa ya es tu contraseña actual — elige una distinta.";
     case "otp_expired":
       return "El enlace venció — pedí uno nuevo.";
     case "weak_password":
-      return "Esa contraseña es muy débil — probá con una más larga o menos común.";
+      return "Esa contraseña es muy débil — prueba con una más larga o menos común.";
     case "captcha_failed":
       // El código de este proyecto nunca manda un captchaToken en
       // ninguna llamada de auth — si esto aparece, es porque "Bot and

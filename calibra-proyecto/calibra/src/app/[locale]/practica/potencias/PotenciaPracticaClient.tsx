@@ -7,6 +7,7 @@ import BotonesFinPartida from "@/components/BotonesFinPartida";
 import LogroBanner from "@/components/LogroBanner";
 import ApuestaResultado from "@/components/ApuestaResultado";
 import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSubio";
+
 import EnunciadoSprintRunner from "@/components/EnunciadoSprintRunner";
 import SubtemaPicker from "@/components/practica/SubtemaPicker";
 import Boton from "@/components/Boton";
@@ -29,6 +30,7 @@ interface FinishResponse {
   logrosNuevos: Achievement[];
   apuesta?: { gano: boolean; monto: number } | null;
   nivelMundo?: NivelMundoInfo | null;
+
 }
 
 interface Props {
@@ -108,6 +110,7 @@ export default function PotenciaPracticaClient({ nivelPorTipo, escudosExtra, boo
       <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-20">
         <LogroBanner logros={resumen.logrosNuevos} />
         <NivelMundoSubio nivelMundo={resumen.nivelMundo} />
+
         <ApuestaResultado apuesta={resumen.apuesta ?? null} />
         <div className="flex flex-col items-center gap-2 text-center">
           <p className="font-display text-lg font-bold text-foreground">Ahí quedó.</p>

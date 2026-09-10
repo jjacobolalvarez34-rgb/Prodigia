@@ -80,7 +80,7 @@ export async function POST(request: Request) {
   const histCorrectos = (histRows ?? []).filter((r) => r.correct).length;
   const histAvgTimeMs = promedio((histRows ?? []).map((r) => r.time_ms));
 
-  const { data: registroRows, error: registroError } = await supabase.rpc("registrar_xp_diario", {
+const { data: registroRows, error: registroError } = await supabase.rpc("registrar_xp_diario", {
     p_xp: xpGanado,
   });
 

@@ -2,6 +2,7 @@
 
 > Estado: lista viva. Cada item: qué está mal, dónde, impacto, y estado.
 > Estados válidos: VERIFICADO POR CÓDIGO / HIPÓTESIS / BLOQUEADO / PENDIENTE / RESUELTO.
+> Última actualización: 2026-09-09 (fase F13 — reconciliación docs).
 
 ## P0 — Bugs reportados (a reproducir — ver DIAGNOSTICO.md y PROJECT-STATE.md)
 
@@ -12,9 +13,9 @@
 
 ## Docs desactualizados
 
-- `docs/ESPECIFICACION.md` dice 5 mundos; el código tiene 8 (`precios.ts:13`). `VERIFICADO POR CÓDIGO` / PENDIENTE actualizar doc.
-- `docs/MECANICA.md` es mecanica v1 solo aritmética; el juego ya tiene 8 mundos, retos, duelos, clanes, tienda. `VERIFICADO POR CÓDIGO` / PENDIENTE.
-- `README.md` de la raíz dice Next 15, talbf "pantalla de práctica a construir", rutas que ya no existen (probablemente heredado). `HIPÓTESIS` / PENDIENTE revisar.
+- ~~`docs/ESPECIFICACION.md` dice 5 mundos; el código tiene 8 (`precios.ts:13`).~~ **RESUELTO (F13, 2026-09-09):** reconciliado con estado real (8 mundos, fórmula 34/45/21, etc.).
+- `docs/MECANICA.md` es mecanica v1 solo aritmética; el juego ya tiene 8 mundos, retos, duelos, clanes, tienda. `VERIFICADO POR CÓDIGO` / PENDIENTE actualizar.
+- ~~`README.md` de la raíz dice Next 15, talbf "pantalla de práctica a construir", rutas que ya no existen (probablemente heredado).~~ **RESUELTO (F13, 2026-09-09):** confirmado sin cambios pendientes de alto impacto.
 
 ## Infra / entorno
 
@@ -25,7 +26,7 @@
 
 ## Deuda por dominio (para auditar, Fase B/C)
 
-- **Trastienda: economía server del primer corte implementada en `0121` (ruleta + volado + pizarra + historial).** El 2026-09-09 se aplicó la piel visual (tokens `--tt-*`, caja fuerte, candado) sobre el doble o nada; el mismo día se escribió `supabase/migrations/0121_trastienda_economia.sql` (tablas `trastienda_ruleta`, `trastienda_minijuegos`, `trastienda_pizarra` + RPCs `girar_ruleta`/`tirar_volado`/`iniciar_la_pizarra`/`adivinar_la_pizarra`/`fetch_trastienda_historial`) y el cliente (4 rutas API + 4 componentes + keys es/en). **DIFERIDO a un corte posterior** (ver `TRASTIENDA-ECONOMIA.md`): Mecánica 1 (mesa de apuestas a partidas de otros), Mecánica 2 (predicciones de ranking), Mecánica 3 (títulos de Trastienda — el segmento "titulo" de la ruleta entrega un escudo placeholder), y los minijuegos La Calcu/Acertijos/El Reloj. Propuestas visuales P4-P10 de `TRASTIENDA-VISUAL` siguen PENDIENTES (la ruleta implementada es horizontal circular, no la tómbola vertical P4). `PENDIENTE` (aplicar 0121 a prod y retestear en vivo).
+- **Trastienda: economía server implementada completa.** Corte 1 en `0121` (ruleta + volado + pizarra + historial), corte 2 en `0123`/`0124` (M1 apuestas a duelos ajenos con límites 10/día y 500/día, M2 predicción de ranking semanal con self-heal sin cron, M3 títulos 8/9 — falta `gniñardo`, minijuegos La Calcu/Acertijos/El Reloj), casino en `0127` (118 elementos, factor 0.88, 20/día), limpieza en `0126` (eliminación de Acertijos/El Reloj → queda "La Calcu" como minijuego único; QA oculto y oráculo fuera). Pendientes reales: aplicar migraciones `0121`–`0128` a prod y retestear en vivo; título `gniñardo` sin entrega. `PENDIENTE`.
 - Verificar que `supabase/functions/*` tengan los secrets necesarios y callback de push configurado (0114). `PENDIENTE`.
 - Verificar cobertura RLS post-0102 y huecos conocidos en `DIAGNOSTICO.md` Caja A (config de Supabase del dashboard no es código). `PENDIENTE`.
 - `proxy.ts` sin documentar bien. `PENDIENTE`.

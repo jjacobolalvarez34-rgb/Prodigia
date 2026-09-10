@@ -101,6 +101,16 @@
     "compartiseloAQuienQuieras": "Share it with anyone you like — they don't have to be your friend in the app.",
     "quienSeRegistre": "Whoever signs up through this link gets added as your friend automatically, no request needed."
   },
+  "mundoProgreso": {
+    "titulo": "World progress",
+    "puntos": "{xp} XP in {mundo}",
+    "volumen": "Volume",
+    "dominio": "Mastery",
+    "aprender": "Learn",
+    "paraSubir": "Next level {nivel}: about {xp} more XP of practice",
+    "necesitaMas": "For the next level you need more mastery: level up more subtopics to calibration 4+ and finish Learn",
+    "maximo": "World at max level!"
+  },
   "Perfil": {
     "enProdigiaDesde": "On Prodigia since {fecha}",
     "chispasTotales": "Total Chispas",
@@ -109,6 +119,22 @@
     "puestoDe": "Rank <destacado>#{posicion}</destacado> of {total} on the overall Chispas leaderboard",
     "todaviaNoEstasEnClan": "You're not in a clan yet — find one →",
     "rangoDeDuelos": "Duel rank",
+    "rango": "Rank",
+    "banner": {
+      "titulo": "Affinity banner",
+      "descripcion": "Tell us which world or city you identify with and your level. Decorative only — it doesn't affect your calibration.",
+      "mundo": "World",
+      "temaNumeria": "Numeria city",
+      "vacio": "Nothing yet. Pick a reference (world or city) and a level.",
+      "referente": "Reference",
+      "nivel": "Level",
+      "agregar": "Add",
+      "quitar": "Remove",
+      "guardar": "Save banner",
+      "guardando": "Saving…",
+      "guardado": "Banner saved",
+      "error": "Couldn't save the banner. Try again."
+    },
     "problemasResueltosNivel": "problems solved · world level {n}",
     "acertijosResueltosNivel": "puzzles solved · world level {n}",
     "paisesAcertadosNivel": "countries guessed · world level {n}",
@@ -219,10 +245,16 @@
     "volverAlBazar": "Back to the Bazaar",
     "cajaFuerte": "Safe",
     "apuestaPendiente": "Pending",
+    "tabRuleta": "The Table",
+    "tabJuegos": "The games",
     "trastienda": {
       "apuestasPartida": {
         "titulo": "The Betting Table",
         "descripcion": "Other players' duels, live. Pick a side, pay your stake and let the best win.",
+        "enLinea": "Live duels: {n}",
+        "pagina": "Page {actual} of {total}",
+        "anterior": "Previous",
+        "siguiente": "Next",
         "operaciones": {
           "suma": "Addition",
           "resta": "Subtraction",
@@ -280,47 +312,48 @@
         "fallida": "Doesn't hit the target. Your bet is gone.",
         "deNuevo": "Another round"
       },
-      "acertijos": {
-        "titulo": "Enigmia Riddles",
-        "descripcion": "Memorize the sequence and replay it in the exact order. It gets tricky by the third one.",
-        "jugar": "Start ({costo} Chispas)",
-        "iniciando": "Preparing…",
-        "sinChispas": "You need 100 Chispas.",
-        "memoriza": "Memorize the sequence…",
-        "dificultades": {
-          "facil": "Easy",
-          "media": "Medium",
-          "dificil": "Hard"
-        },
-        "completa": "Replay the order:",
-        "deshacer": "Undo",
-        "confirmar": "Confirm",
-        "resuelto": "Perfect sequence! +{n} Chispas",
-        "fallido": "That wasn't the order.",
-        "deNuevo": "Another round"
-      },
-      "elReloj": {
-        "titulo": "The Basement Clock",
-        "descripcion": "15 additions and subtractions before time runs out. The ones you miss count as wrong.",
-        "jugar": "Start ({costo} Chispas)",
-        "iniciando": "Setting the clock…",
-        "sinChispas": "You need 60 Chispas.",
-        "progreso": "{n} of {total} solved",
-        "siguiente": "Next ↵",
-        "correctas": "You got {n} of {total} right.",
-        "premio": "+{n} Chispas",
-        "deNuevo": "Another round"
-      },
       "ruleta": {
-        "titulo": "The Dealer's Wheel",
-        "descripcion": "One spin, one fate. The house always wins — eventually.",
-        "girar": "SPIN",
-        "girando": "Spinning…",
-        "costoNormal": "Cost: {costo} Chispas",
-        "costoPrimero": "First spin of the day: {costo} Chispas",
-        "pityActivo": "Pity active: prize guaranteed",
-        "limiteDiario": "You already spun your 5 today. Come back tomorrow.",
+        "titulo": "The Dealer's Table",
+        "descripcion": "The full periodic table. Bet on one element or a whole zone — and let the house pay up.",
+        "ficha": "Chip",
+        "eligeZona": "Pick your zone",
+        "mesa": "Table of 118 elements",
+        "elemento": "Element",
+        "paridad": "Parity",
+        "par": "Even",
+        "impar": "Odd",
+        "grupos": "Groups",
+        "grupo": "Group {n}",
+        "transicion": "Transition (3-12)",
+        "periodos": "Periods",
+        "periodo": "Period {n}",
+        "tipos": "Families",
+        "tiposNombres": {
+          "alcalino": "Alkali metals",
+          "alcalinoterreo": "Alkaline earth metals",
+          "transicion": "Transition metals",
+          "post_transicion": "Post-transition metals",
+          "metaloides": "Metalloids",
+          "no_metal": "Non-metals",
+          "halogeno": "Halogens",
+          "gas_noble": "Noble gases",
+          "lantanido": "Lanthanides",
+          "actinido": "Actinides"
+        },
+        "posibilidades": "{n} of 118",
+        "multiplicador": "Pays {mult}×",
+        "paga": "Win {n} Chispas if it lands in your zone",
+        "girar": "BET",
+        "girando": "Betting…",
         "resultado": "Result",
+        "cayoEnTuZona": "It landed in your zone!",
+        "noCayo": "Not in your zone",
+        "ganoChispas": "+{n} Chispas",
+        "perdisteMonto": "{monto} Chispas left your vault.",
+        "elementoGanador": "Landed on: {simbolo} — {nombre}",
+        "premioItem": "Rare win: {item}!",
+        "limiteDiario": "You already bet your 20 for today. Come back tomorrow.",
+        "apuestasHoy": "Today: {n}/20",
         "premios": {
           "boost": "Chispas boost",
           "escudo": "Extra shield",
@@ -328,6 +361,7 @@
           "chispas": "{n} Chispas",
           "fuente": "New font",
           "marco": "New frame",
+          "titulo": "Back Room title",
           "nada": "No prize…"
         }
       },
@@ -361,23 +395,21 @@
         "titulo": "Recent activity",
         "vacio": "No movement around here yet.",
         "ruleta": "Wheel",
+        "casino": "Dealer's table",
         "volado": "Coin flip",
         "la_pizarra": "The Board",
         "la_calcu": "The Calculator",
-        "acertijos": "Enigmia Riddles",
-        "el_reloj": "The Basement Clock",
         "minijuego": "Minigame"
       },
       "errores": {
+        "casino": "Couldn't place the bet.",
         "girar": "Couldn't spin.",
         "tirar": "Couldn't flip.",
         "pizarra": "Couldn't play the board.",
         "historial": "Couldn't load history.",
         "apuestas": "Couldn't deal with the house.",
         "prediccion": "The oracle wouldn't answer.",
-        "laCalcu": "Couldn't play the calculator.",
-        "acertijos": "Couldn't play the riddles.",
-        "elReloj": "Couldn't play the clock."
+        "laCalcu": "Couldn't play the calculator."
       }
     }
   },
@@ -626,7 +658,7 @@
       "velocidadPromedio": "Average speed",
       "experienciaHoy": "XP today",
       "chispasTotales": "Total Chispas: {n}",
-      "repasemosEsto": "Let's review this",
+          "repasemosEsto": "Let's review this",
       "laRespuestaEra": "the answer was",
       "ningunoFallado": "Nothing missed — that's how it's done."
     }

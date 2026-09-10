@@ -5,6 +5,9 @@ según lo pedido. Incluye causa raíz, archivos involucrados, y qué bugs
 comparten origen. Al final, notas de arquitectura levantadas de paso que
 van a servir para las features nuevas (O3–T3).
 
+> **Última actualización: 2026-09-09 (fase F13).** Estado de cada bug
+> actualizado según código y audits verificados.
+
 ## Resumen ejecutivo: dos familias de causa raíz
 
 **Familia A — configuración de Supabase Auth nunca adaptada a producción**
@@ -24,6 +27,13 @@ confundirlos con bugs de código.
 ---
 
 ## Bug 1 — Login de invitado no funciona
+
+> **Estado F13: RESUELTO EN CÓDIGO** — restricción de invitados implementada
+> en `src/lib/auth/accesoInvitado.ts` + `guard.ts` (bloquearInvitado);
+> pantalla `/invitado-bloqueado` creada. Login/registro/recuperar
+> confirmados funcionando en vivo por el usuario (PROGRESO, quinta tanda).
+> Pendiente: configuración de Supabase Auth (Anonymous Sign-ins
+> habilitado, Redirect URLs con `**`, SMTP propio).
 
 **Causa raíz — dos partes separadas:**
 
@@ -62,6 +72,12 @@ sociales/curriculares, tal como se pidió.
 ---
 
 ## Bug 2 — Creación de cuenta falla intermitentemente
+
+> **Estado F13: RESUELTO EN CÓDIGO** — causa raíz era Resend sandbox
+> (no SMTP propio). El usuario confirmó que funciona en vivo tras
+> configurar dominio propio en Resend (PROGRESO, quinta tanda). Helper
+> de errores (`mensajeError.ts`) centraliza el mapeo. Sin fix de código
+> pendiente.
 
 **Causa raíz probable: límite de envío de emails del proyecto de Supabase.**
 Un proyecto de Supabase sin proveedor SMTP propio configurado usa el
@@ -108,6 +124,11 @@ mensaje de error).
 
 ## Bug 3 — Cambiar contraseña da error "no sirve por el momento"
 
+> **Estado F13: RESUELTO EN CÓDIGO** — misma causa raíz que Bug 2 (Resend
+> sandbox / Redirect URLs). El usuario confirmó que funciona en vivo.
+> Helper de errores ya cubre `captcha_failed`, `over_request_rate_limit`.
+> URL absoluta centralizada en `urlAbsoluta.ts`. Sin fix de código pendiente.
+
 **No existe una pantalla de "cambiar contraseña estando logueado".** Grep de
 "contraseña"/"password" en `src/app/ajustes/` no encontró nada — `ajustes`
 solo tiene meta de XP, sonido, efectos y tema
@@ -148,6 +169,12 @@ si fue un signup o una recuperación).
 ---
 
 ## Bug 4 — Geografía se trabó a mitad de una práctica
+
+> **Estado F13: RESUELTO EN CÓDIGO** — try/catch + estado de error
+> agregado en los 7 runners de práctica (GeografiaPracticaClient,
+> DecimalPracticaClient, EnigmiaPracticaClient, y los demás). Fix
+> verificado con tsc/eslint/vitest/build. Pendiente: verificación
+> funcional en navegador.
 
 **Causa raíz confirmada en código (no requiere el dashboard, esto sí se
 arregla acá).** `GeografiaPracticaClient.tsx:56-72`:
@@ -208,6 +235,12 @@ ventana de espera real.
 ---
 
 ## Bug 5 — Cuenta nueva no pudo hacer lecciones
+
+> **Estado F13: RESUELTO EN CÓDIGO** — causa raíz era Bug 2 (cuenta
+> creada durante rate-limit → `onboarding_completado` nunca se
+> actualizó). Fix defensivo: reintento con redirect a home ante error
+> "ya elegiste" en onboarding (`0116`). Fix de guard: `< 2` mundos →
+> onboarding. Confirmado en vivo por el usuario (PROGRESO).
 
 **No encontré una causa de código que rompa Aprender específicamente para
 cuentas nuevas** — revisé el trigger de creación de perfil, todas las
@@ -281,7 +314,7 @@ configuración del dashboard de Supabase que tenés que hacer vos:**
 ## Notas de arquitectura levantadas de paso (para las features nuevas)
 
 No pedías diagnóstico de esto, pero lo levanté investigando y sirve para no
-reinventar lo que ya existe:
+reinventar lo que ya existe.
 
 - **Duelos son 100% asincrónicos hoy ("fantasma"), confirmado en código**:
   cada jugador juega su sprint por separado; si el rival ya jugó, se le
@@ -290,9 +323,15 @@ reinventar lo que ya existe:
   ambos. `registrar_resultado_duelo` (definida en
   `0028_duelos_fantasma.sql:16-99`) resuelve el duelo recién cuando el
   segundo jugador termina.
+  **Actualización F13**: Numeria SÍ tiene sala de espera sincronizada por
+  Realtime (`SalaDuelo.tsx`, `0038`), con presencia y countdown compartido.
+  Geografía y Enigmia usan el patrón asincrónico/fantasma.
 - **Cero uso de Supabase Realtime en todo el proyecto** — confirmado por
   grep de `.channel(`/`realtime` sobre todo `src/`. T3 va a ser una
   integración desde cero, sin patrones previos que conservar.
+  **Actualización F13**: REALtime SÍ se usa para duelos de Numeria
+  (`SalaDuelo.tsx` canal `duelo:<id>`, `NotificacionesDuelo.tsx` canal
+  `retos-a:<id>`). Los clanes usan push via edge function, no Realtime.
 - **El matchmaking de ELO progresivo (S3) ya existe**, en
   `buscar_rival_duelo` (`0031_matchmaking_duelos.sql:62-63`): arranca en
   ±15 y crece +15 cada 8 segundos hasta ±120, por polling del cliente cada
@@ -300,11 +339,17 @@ reinventar lo que ya existe:
   (`RankedsClient.tsx:199`, formato "±60 ELO"). Lo que pide S3 es ajustar
   los números (±30 / +30 cada 10s) y cambiar el formato del texto a
   "entre 1200-1260 ELO" — no construir el sistema de cero.
+  **Actualización F13**: ventana progresiva ya implementada: ±30 / +30 cada
+  10s / tope ±300 (`0109:537`). Formato "entre A-B ELO" ya aplicado
+  (`RankedsClient.tsx:577`).
 - **No hay ninguna notificación de reto, ni tabla de "invitación
   pendiente" separada de `duels`** — un reto se guarda como fila en
   `duels` con `estado='pendiente'` y el retado no tiene ninguna forma de
   enterarse salvo entrar por su cuenta a la URL exacta del duelo. No está
   roto — nunca se construyó.
+  **Actualización F13**: notificaciones de reto SÍ existen hoy
+  (`NotificacionesDuelo.tsx` con Realtime, corregido en T10). La
+  invitación por link usa `duel_invites` (`0059`).
 
 Estas notas no cambian nada de lo que hay que arreglar en los 5 bugs; las
 dejo acá para no tener que re-investigar esto cuando llegue el momento de

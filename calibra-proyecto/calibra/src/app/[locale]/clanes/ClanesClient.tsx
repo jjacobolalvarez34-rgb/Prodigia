@@ -135,7 +135,7 @@ export default function ClanesClient({
   }
 
   async function salirDelClan() {
-    if (!confirm("¿Seguro que querés salir de tu clan?")) return;
+    if (!confirm("¿Seguro que quieres salir de tu clan?")) return;
     setCargando(true);
     setError(null);
     const supabase = createClient();
@@ -454,7 +454,7 @@ function SinClanView({
       return;
     }
     if (misChispas < COSTO_CREAR_CLAN) {
-      setError(`Te faltan Chispas: crear un clan cuesta ${COSTO_CREAR_CLAN} (tenés ${misChispas}).`);
+      setError(`Te faltan Chispas: crear un clan cuesta ${COSTO_CREAR_CLAN} (tienes ${misChispas}).`);
       return;
     }
     setCreando(true);

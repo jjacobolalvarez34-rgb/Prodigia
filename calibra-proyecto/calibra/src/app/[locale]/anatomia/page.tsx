@@ -7,6 +7,8 @@ import FondoMundo from "@/components/FondoMundo";
 import FondoCursorMundo from "@/components/FondoCursorMundo";
 import TopicCard from "@/components/TopicCard";
 import NivelMundoBadge from "@/components/NivelMundoBadge";
+import NivelMundoProgreso from "@/components/NivelMundoProgreso";
+import type { SincronizarProgresoRow } from "@/lib/mundos/progresoNivel";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { IconCheck, IconAnatomia } from "@/components/icons";
 import { NOMBRE_MODO_ANATOMIA, type ModoAnatomia } from "@/lib/practica/anatomia";
@@ -22,18 +24,25 @@ export default async function AnatomiaHomePage() {
   const { user, profile } = await requireMundoAnatomia(supabase, "/anatomia");
 
   const hoyIso = new Date().toISOString().slice(0, 10);
-  const [{ data: nivelRows }, { data: dailyHoy }, { data: worldRow }] = await Promise.all([
+  const [{ data: nivelRows }, { data: dailyHoy }, { data: mundoProgreso }] = await Promise.all([
     supabase
       .from("skill_levels")
       .select("problem_type, nivel")
       .eq("user_id", user.id)
       .in("problem_type", ["anatomia_oseo", "anatomia_muscular", "anatomia_organos", "anatomia_nervioso"]),
     supabase.from("daily_progress").select("xp_ganado").eq("user_id", user.id).eq("fecha", hoyIso).maybeSingle(),
-    supabase.from("world_progress").select("nivel_mundo").eq("user_id", user.id).eq("world", "anatomia").maybeSingle(),
+    supabase.rpc("sincronizar_progreso_mundo", { p_world: "anatomia" }).returns<SincronizarProgresoRow[]>().maybeSingle(),
   ]);
 
   const nivelDe = (modo: ModoAnatomia) => nivelRows?.find((r) => r.problem_type === `anatomia_${modo}`)?.nivel ?? 1;
-  const nivelMundo = worldRow?.nivel_mundo ?? 1;
+  const nivelMundo = mundoProgreso?.nivel_mundo ?? 1;
+  const progresoMundo = {
+    puntos: mundoProgreso?.puntos_mundo ?? 0,
+    nivel: nivelMundo,
+    fracVolumen: mundoProgreso?.frac_volumen ?? 0,
+    fracDominio: mundoProgreso?.frac_dominio ?? 0,
+    fracLecciones: mundoProgreso?.frac_lecciones ?? 0,
+  };
   const metaXpDiaria = profile.meta_xp_diaria ?? 500;
   const xpHoy = dailyHoy?.xp_ganado ?? 0;
   const metaCumplidaHoy = xpHoy >= metaXpDiaria;
@@ -58,6 +67,8 @@ export default async function AnatomiaHomePage() {
             </div>
           </div>
         </AvisoPrimeraVez>
+
+        <NivelMundoProgreso nombreMundo="Anatomía" colorHex={COLOR_ANATOMIA} progreso={progresoMundo} />
 
         {metaCumplidaHoy && (
           <div className="flex items-center gap-3 rounded-2xl bg-correcto/10 px-5 py-4">

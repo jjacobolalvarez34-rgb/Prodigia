@@ -73,7 +73,7 @@ export default function SalaEsperaDuelo({
         <PantallaVS miNombre="Vos" miElo={miElo} rivalNombre={rivalNombre} rivalElo={rivalElo} rivalEsBot={rivalEsBot} modo={modo} subtitulo={subtitulo} segundos={null} />
         <div className="mx-auto -mt-10 flex w-full max-w-md flex-col items-center gap-4 px-4 pb-16 text-center">
           <p className="text-sm text-texto-secundario">
-            {rivalNombre} todavía no se conectó a la sala — podés seguir esperando o arrancar tu parte
+            {rivalNombre} todavía no se conectó a la sala — puedes seguir esperando o arrancar tu parte
             ahora (se resuelve el duelo apenas juegue la suya, como antes).
           </p>
           <Boton onClick={onEmpezarAhora} className="w-full py-4">
@@ -97,7 +97,7 @@ export default function SalaEsperaDuelo({
           <span className={`h-2 w-2 rounded-full ${rivalPresente ? "bg-correcto" : "bg-foreground/20 animate-pulse"}`} />
           <span>{rivalPresente ? `${rivalNombre}, listo` : `Esperando a ${rivalNombre}…`}</span>
         </div>
-        <p className="text-xs text-texto-secundario">Arranca solo apenas estén los dos — no hace falta que apretés nada.</p>
+        <p className="text-xs text-texto-secundario">Arranca solo apenas estén los dos — no hace falta que aprietes nada.</p>
       </div>
     </div>
   );

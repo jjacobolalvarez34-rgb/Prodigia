@@ -225,7 +225,7 @@ export default function DiagnosticoTrigonometriaClient({ destino }: Props) {
             </p>
             {!guardadoOk && (
               <p className="text-sm text-error">
-                No pudimos guardar tu progreso — probá de nuevo antes de continuar.
+                No pudimos guardar tu progreso — prueba de nuevo antes de continuar.
               </p>
             )}
             <button

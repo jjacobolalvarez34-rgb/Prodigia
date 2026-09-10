@@ -11,8 +11,6 @@ import HistorialTrastienda from "@/components/trastienda/HistorialTrastienda";
 import ApostarPartida from "@/components/trastienda/ApostarPartida";
 import PrediccionRanking from "@/components/trastienda/PrediccionRanking";
 import LaCalcu from "@/components/trastienda/LaCalcu";
-import Acertijos from "@/components/trastienda/Acertijos";
-import ElReloj from "@/components/trastienda/ElReloj";
 
 const MONTOS_APUESTA = [25, 50, 100];
 const APUESTA_MAXIMA = 200;
@@ -33,6 +31,7 @@ export default function TrastiendaClient({ puntosIniciales, apuestaActivaInicial
   const [apostando, setApostando] = useState(false);
   const [errorApuesta, setErrorApuesta] = useState<string | null>(null);
   const [historialVersion, setHistorialVersion] = useState(0);
+  const [seccion, setSeccion] = useState<"ruleta" | "juegos">("ruleta");
 
   async function apostar(monto: number) {
     setApostando(true);
@@ -166,18 +165,43 @@ export default function TrastiendaClient({ puntosIniciales, apuestaActivaInicial
           <PrediccionRanking puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
         </div>
 
-        <Ruleta puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Volado puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
-          <Pizarra puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
+        {/* Sub-pestañas: la ruleta casino y los juegos del sótano */}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setSeccion("ruleta")}
+            className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
+              seccion === "ruleta"
+                ? "border-tt-accent bg-tt-accent/20 text-tt-accent"
+                : "border-tt-border bg-tt-surface-2 text-tt-text-muted hover:text-tt-text"
+            }`}
+          >
+            🎰 {t("tabRuleta")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setSeccion("juegos")}
+            className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
+              seccion === "juegos"
+                ? "border-tt-accent bg-tt-accent/20 text-tt-accent"
+                : "border-tt-border bg-tt-surface-2 text-tt-text-muted hover:text-tt-text"
+            }`}
+          >
+            🎲 {t("tabJuegos")}
+          </button>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-3">
-          <LaCalcu puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
-          <Acertijos puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
-          <ElReloj puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
-        </div>
+        {seccion === "ruleta" ? (
+          <Ruleta puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
+        ) : (
+          <>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Volado puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
+              <Pizarra puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
+            </div>
+            <LaCalcu puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
+          </>
+        )}
 
         <HistorialTrastienda refreshKey={historialVersion} />
 

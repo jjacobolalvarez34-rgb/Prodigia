@@ -71,7 +71,7 @@ export default function MundoBloqueadoClient({ mundo, nombreMundo, puntosInicial
           </Boton>
           {!alcanza && (
             <p className="text-xs text-texto-secundario">
-              Seguí jugando para ganar más Chispas, o mirá la tienda.
+              Sigue jugando para ganar más Chispas, o mira la tienda.
             </p>
           )}
           {error && <p className="text-xs text-error">{error}</p>}

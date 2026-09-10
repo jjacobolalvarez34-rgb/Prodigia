@@ -40,9 +40,9 @@ export default async function LoginPage({ searchParams }: Props) {
               ¿Olvidaste tu contraseña?
             </Link>
             <p className="text-texto-secundario">
-              ¿No tenés cuenta?{" "}
+              ¿No tienes cuenta?{" "}
               <Link href="/registro" className="font-medium text-primario hover:underline">
-                Creá una
+                Crea una
               </Link>
             </p>
           </div>

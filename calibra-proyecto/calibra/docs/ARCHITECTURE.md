@@ -1,6 +1,6 @@
 # ARCHITECTURE — Mapa de la aplicación
 
-> Estado: VERIFICADO POR CÓDIGO (2026-09-07). Si el código cambia, actualizar acá por `repo-architect`.
+> Estado: VERIFICADO POR CÓDIGO (2026-09-07, reconciliado F13 2026-09-09). Si el código cambia, actualizar acá por `repo-architect`.
 
 ## Flujo en una línea
 
@@ -32,7 +32,7 @@ Flujo: `onboarding`, `invitado-bloqueado`, `mundo-bloqueado`, `demo`, `ajustes`,
 - `proxy.ts` (utilidades) y `types/` (`.ts` de tipos Supabase → `database.ts`).
 
 ### `supabase/`
-- `migrations/` — 0001→0114 SQL versionado (esquema + RLS + triggers + funciones). *Unico lugar donde existe el esquema.*
+- `migrations/` — 0001→0128 SQL versionado (esquema + RLS + triggers + funciones). *Unico lugar donde existe el esquema.*
 - `functions/` — Edge Functions: `notify-duelo`, `notify-clan-mensaje`, `racha-en-riesgo`, `_shared/`.
 - `.temp/` (generado).
 
@@ -70,5 +70,5 @@ Para retos: `zona` live a `reto-diario/page` → `RetoClient` → POST `/api/ret
 
 ## Pendientes de arquitectura (detalle en TECH-DEBT.md)
 
-- README.md desactualizado (Next 15, "pantalla de práctica a construir", rutas que ya no existen).
-- docs de ESPECIFICACIÓN y MECÁNICA desactualizadas respecto del código (8 mundos, retos, etc.).
+- ~~README.md desactualizado (Next 15, "pantalla de práctica a construir", rutas que ya no existen)~~ — marcado RESUELTO en F13.
+- ~~docs de ESPECIFICACIÓN y MECÁNICA desactualizadas respecto del código (8 mundos, retos, etc.)~~ — ESPECIFICACION reconciliado en F13 (2026-09-09); MECANICA.md sigue PENDIENTE (mecánica v1).

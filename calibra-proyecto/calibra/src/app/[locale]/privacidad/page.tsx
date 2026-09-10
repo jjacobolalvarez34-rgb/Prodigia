@@ -53,7 +53,7 @@ export default function PrivacidadPage() {
             <Link href="/perfil" className="text-primario hover:underline">
               tu perfil
             </Link>{" "}
-            podés borrar tu cuenta por completo — se elimina tu progreso, tus logros, tu título, tu
+            puedes borrar tu cuenta por completo — se elimina tu progreso, tus logros, tu título, tu
             historial de duelos, tu pertenencia a un clan y tus mensajes de chat, tus amistades, y todo
             lo demás asociado a tu cuenta, de forma permanente. Una excepción a tener en cuenta: si
             jugaste un duelo contra otra persona y esa persona borra su cuenta más adelante, el registro

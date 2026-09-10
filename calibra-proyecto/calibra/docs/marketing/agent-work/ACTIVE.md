@@ -14,6 +14,8 @@
 | HECHO | Primer paquete publicitario (conceptos+prompts+copy) | orchestrator | 2026-09-07 |
 | EN CURSO | Piezas visuales reales de la app con Playwright (browser AHORA DISPONIBLE: Chromium headless funcionando) + avanzar docs/marketing | marketing + visual-design | 2026-09-08 |
 | HECHO (capturas CIERRE) | 30 capturas reales + REAL-APP doc + claims navegador | marketing + visual-design | 2026-09-08 |
+| HECHO | F4 marketing: inventario + auditoría docs-vs-código (`docs/audits/MARKETING-AUDIT.md`) + 4 plantillas eje OSCURO (tokens dark reales) + plan de capturas | marketing/orchestrator | 2026-09-09 |
+| PENDIENTE | Piezas eje OSCURO: falta SOLO la captura real del dark mode (tunnel del usuario) → `assets/pantallas-oscuras/` + re-render | marketing | 2026-09-09 |
 | PENDIENTE | Live research de competencia (revalidar HIPÓTESIS) | marketing | — |
 | PENDIENTE | Priorización tabla P0-P3 final de conceptos | marketing | — |
 
@@ -70,3 +72,19 @@ PENDIENTE:
 - Generar piezas visuales reales: BLOQUEADO (sin browser para capturas; prompts listos en PROMPTS-*).
 - COMPETITIVE-RESEARCH revalidado con live research: PENDIENTE.
 - Tabla de priorización P0-P3 final de conceptos publicitarios: PENDIENTE (borrador en AD-CONCEPTS).
+
+### CLAIM: F4 marketing — inventario + auditoría + eje oscuro · marketing/orchestrator · 2026-09-09
+Estado: CIERRE (ver abajo). Solo docs/assets; sin tocar código de la app ni migraciones.
+
+ACTIVIDAD:
+1. Inventario de la línea: `docs/marketing/` = **20 .md**, `assets/pantallas-reales/` = **30 capturas**, `assets/piezas/` = 4 piezas claro (HTML+PNG) + pipeline `scripts/piezas-reales.mjs`.
+2. Auditoría docs-vs-código en `docs/audits/MARKETING-AUDIT.md` (12 hallazgos, tabla claim→estado, checklist).
+3. Plantillas eje OSCURO (`pieza-oscura-*.html`) con tokens dark REALES (`globals.css:47-56`) + PNG de preview, carpeta `assets/pantallas-oscuras/` (destino de capturas, swap automático).
+
+HALLAZGOS CLAVE (en código):
+- Nivel de mundo: marketing cita fórmula vieja "50% dominio" (`PRODUCT-MESSAGING.md:52,55`, `AD-CONCEPTS.md:90` citando `0080`); vigente 34/45/21 (`0117`, `worldLevel.ts:46-49`) → docs a corregir.
+- `docs/MARKETING.MD:8-9`: 6 mundos + "no número fijo" (obsoleto; código = 8 via `mundos.ts:19-28`/`0110`).
+- Feed social: `AUDIENCE.md:31` lo vende, `SocialClient.tsx:16-19` lo deja desactivado → no publicitar.
+- Dark mode real: tokens+toggle+init script (VERIFICADO EN CÓDIGO), captura real BLOQUEADA sin tunnel.
+
+SIGUIENTE PASO: usuario con tunnel captura dark → `assets/pantallas-oscuras/` → `node scripts/piezas-reales.mjs` → revisión visual de los 8 PNG. Corregir los 3 docs desactualizados arriba.

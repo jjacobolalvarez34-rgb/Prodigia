@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>pieza-oscura-8-mundos-square</title>
+<meta name="prodigia:eje" content="oscuro">
+<!--
+  EJE OSCURO · tokens reales del dark mode (src/app/globals.css:47-56, :root:not([data-theme="light"])):
+  --background #090c14 · --surface #12172a · --surface-2 #171d34 · --border #232b47
+  --primario #7c5cff · --foreground #f4f6fb · --texto-secundario #8892b0 · oro de logros #FFC53D
+  PENDIENTE (captura FINAL): ./pantallas-oscuras/10-home-principal.png (dark mode, tunnel del usuario).
+  Mientras no exista, el <img> usa como fallback la captura CLARA real (tratada como foco de luz
+  por DIRECCION-ARTISTICA.md sección 9). Swap automático: soltar el PNG en docs/marketing/assets/pantallas-oscuras/
+  y re-renderizar con `node scripts/piezas-reales.mjs`.
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#090c14; color:#f4f6fb; }
+  .axis { width:100%; height:100%; padding:56px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .eyebrow { font-size:20px; font-weight:700; letter-spacing:0.14em; color:#8892b0; }
+  .top-right { font-size:20px; font-weight:700; color:#8892b0; }
+  .card { border-radius:28px; overflow:hidden; border:1px solid #232b47; box-shadow:0 0 0 1px rgba(124,92,255,0.16), 0 28px 56px -20px rgba(0,0,0,0.65); height:430px; }
+  .card img { width:100%; height:100%; object-fit:cover; display:block; }
+  .headline { margin-top:28px; font-size:46px; line-height:1.02; font-weight:700; letter-spacing:-0.02em; }
+  .headline em { font-style:normal; background:linear-gradient(120deg,#7C5CFF,#FFC53D); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .state { display:inline-flex; align-items:center; gap:10px; margin-top:16px; padding:10px 18px; border-radius:9999px; background:#12172a; border:1px solid #232b47; font-size:18px; color:#8892b0; }
+  .state strong { font-size:22px; color:#f4f6fb; }
+  .footer { display:flex; align-items:center; justify-content:space-between; margin-top:30px; }
+  .cta { display:inline-flex; align-items:center; gap:12px; padding:18px 34px; border-radius:9999px; background:linear-gradient(120deg,#7C5CFF,#FFC53D); color:#fff; font-size:22px; font-weight:700; box-shadow:0 16px 32px -12px rgba(124,92,255,0.55); }
+  .brand { display:flex; align-items:center; gap:12px; font-size:20px; font-weight:700; color:#8892b0; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="eyebrow mono">PRODIGIA · 8 MUNDOS</span>
+      <span class="top-right mono">un mismo cerebro, 8 gimnasios</span>
+    </div>
+    <div class="card">
+      <img src="../pantallas-oscuras/10-home-principal.png" onerror="if(this.src.indexOf('pantallas-oscuras')>-1){this.src='../pantallas-reales/10-home-principal.png';this.onerror=null;}" data-pendiente="pantallas-oscuras/10-home-principal.png" alt="Home de Prodigia con el grid de los 8 mundos">
+    </div>
+    <h1 class="headline">8 mundos.<br><em>Una sola cabeza. Sin límite.</em></h1>
+    <p class="state mono"><span>cada mundo</span><strong>·</strong><span>una habilidad distinta</span></p>
+    <div class="footer">
+      <span class="cta">Probar gratis</span>
+      <span class="brand mono">prodigia.app</span>
+    </div>
+  </div>
+</body>
+</html>

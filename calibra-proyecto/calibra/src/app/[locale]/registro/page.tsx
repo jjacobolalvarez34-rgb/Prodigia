@@ -22,9 +22,9 @@ export default async function RegistroPage({ searchParams }: Props) {
           <RegistroForm refId={ref} />
 
           <p className="mt-6 text-sm text-texto-secundario">
-            ¿Ya tenés cuenta?{" "}
+            ¿Ya tienes cuenta?{" "}
             <Link href="/login" className="font-medium text-primario hover:underline">
-              Iniciá sesión
+              Inicia sesión
             </Link>
           </p>
         </div>

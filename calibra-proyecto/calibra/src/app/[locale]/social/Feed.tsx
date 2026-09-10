@@ -138,7 +138,7 @@ export default function Feed({ posts: postsIniciales, puedeCrearProblemaPersonal
       {visibles.length === 0 ? (
         <p className="rounded-2xl border border-border bg-surface px-6 py-8 text-center text-sm text-texto-secundario">
           {tab === "siguiendo"
-            ? "Todavía no seguís a nadie con actividad — agregá amigos desde la barra lateral."
+            ? "Todavía no sigues a nadie con actividad — agrega amigos desde la barra lateral."
             : "Todavía no hay nada en el feed."}
         </p>
       ) : (

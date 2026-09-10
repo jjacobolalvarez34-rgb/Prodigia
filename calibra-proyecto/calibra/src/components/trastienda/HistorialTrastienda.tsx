@@ -39,18 +39,23 @@ export default function HistorialTrastienda({ refreshKey }: Props) {
   }, [refreshKey]);
 
   // Los minijuegos llegan con tipo='minijuego' y el nombre del juego como
-  // titulo ('volado', 'la_calcu', 'acertijos', 'el_reloj').
+  // titulo ('volado', 'la_calcu'); el casino llega con tipo='casino' y la zona
+  // como titulo, más el elemento ganador en detalle.elegido.
   const etiquetaTipo = (item: ItemHistorial): string => {
     if (item.tipo === "ruleta") return t("ruleta");
+    if (item.tipo === "casino") return t("casino");
     if (item.tipo === "pizarra") return t("la_pizarra");
     if (item.tipo === "minijuego") {
       if (item.titulo === "volado") return t("volado");
       if (item.titulo === "la_calcu") return t("la_calcu");
-      if (item.titulo === "acertijos") return t("acertijos");
-      if (item.titulo === "el_reloj") return t("el_reloj");
       return t("minijuego");
     }
     return t("volado");
+  };
+
+  const elementoCasino = (item: ItemHistorial): string => {
+    const elegido = item.detalle?.elegido as string | undefined;
+    return `${item.titulo} → ${elegido ?? ""}`;
   };
 
   return (
@@ -69,11 +74,16 @@ export default function HistorialTrastienda({ refreshKey }: Props) {
               <span
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
                 style={{
-                  background: item.tipo === "ruleta" ? "var(--tt-accent)" : "var(--tt-surface)",
+                  background:
+                    item.tipo === "ruleta" || item.tipo === "casino" ? "var(--tt-accent)" : "var(--tt-surface)",
                   border: "1px solid var(--tt-border)",
                 }}
               >
-                {item.tipo === "ruleta" ? (
+                {item.tipo === "casino" ? (
+                  <span className="font-mono text-xs font-bold text-tt-bg">
+                    {(item.detalle?.elegido as string | undefined) ?? "?"}
+                  </span>
+                ) : item.tipo === "ruleta" ? (
                   <IconCandado className="h-4 w-4 text-tt-bg" />
                 ) : (
                   <span className={`text-sm leading-none ${item.monto > 0 ? "text-tt-success" : "text-tt-text-muted"}`}>
@@ -84,7 +94,9 @@ export default function HistorialTrastienda({ refreshKey }: Props) {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-tt-text">{etiquetaTipo(item)}</p>
                 <p className="truncate text-xs text-tt-text-muted">
-                  {new Date(item.creado_at).toLocaleString(locale, { hour: "2-digit", minute: "2-digit" })}
+                  {item.tipo === "casino"
+                    ? elementoCasino(item)
+                    : new Date(item.creado_at).toLocaleString(locale, { hour: "2-digit", minute: "2-digit" })}
                 </p>
               </div>
               {item.monto > 0 ? (

@@ -28,18 +28,30 @@ export async function GET() {
     .limit(8);
   if (error) return respuestaError("trastienda/predicciones", error);
 
-  // Ventana de apuesta: semana ISO del server (lunes 00:00 UTC) y si hoy
-  // cae dentro de lunes..miércoles (el server lo enforce, esto es UI).
-  const hoy = new Date();
-  const dia = (hoy.getUTCDay() + 6) % 7; // 0 = lunes
-  const lunes = new Date(Date.UTC(hoy.getUTCFullYear(), hoy.getUTCMonth(), hoy.getUTCDate() - dia));
-  const semanaIso = lunes.toISOString().slice(0, 10);
+  // Ventana de apuesta: la resuelve el server con current_date (0126), la
+  // misma fuente que valida el POST — no depende del reloj del cliente.
+  const ventana = await supabase.rpc("ventana_predicciones");
+  let semana = "";
+  let ventanaAbierta = false;
+  if (!ventana.error) {
+    const v = (ventana.data as Array<Record<string, unknown>>)[0];
+    semana = v?.semana ? String(v.semana) : "";
+    ventanaAbierta = v?.ventana_abierta === true;
+  } else {
+    // Fallback pre-0126 (mismo cálculo que el server, lunes UTC): solo para
+    // no dejar muerto el oráculo antes de aplicar 0126.
+    const hoy = new Date();
+    const dia = (hoy.getUTCDay() + 6) % 7; // 0 = lunes
+    const lunes = new Date(Date.UTC(hoy.getUTCFullYear(), hoy.getUTCMonth(), hoy.getUTCDate() - dia));
+    semana = lunes.toISOString().slice(0, 10);
+    ventanaAbierta = dia <= 2;
+  }
 
   return NextResponse.json({
     ok: true,
     predicciones: fila ?? [],
-    semana: semanaIso,
-    ventanaAbierta: dia <= 2,
+    semana,
+    ventanaAbierta,
     montos: MONTOS,
     puestos: PUESTOS,
   });

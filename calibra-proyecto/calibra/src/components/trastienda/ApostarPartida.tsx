@@ -12,6 +12,7 @@ interface Props {
 }
 
 const MONTOS = [25, 50, 100, 200];
+const POR_PAGINA = 3;
 
 // Mecánica 1: apostar al resultado de un duelo de OTRO jugador (0123).
 // El feed y las odds vienen del server; el multiplier se lockea al apostar.
@@ -31,6 +32,7 @@ export default function ApostarPartida({ puntos, onPuntos, onMovimiento }: Props
   const [preview, setPreview] = useState<PreviewApuesta | null>(null);
   const [apostando, setApostando] = useState(false);
   const [confirmada, setConfirmada] = useState(false);
+  const [pagina, setPagina] = useState(0);
 
   const cargar = useCallback(async () => {
     setCargando(true);
@@ -45,6 +47,7 @@ export default function ApostarPartida({ puntos, onPuntos, onMovimiento }: Props
       setPartidas(data.disponibles ?? []);
       setMisApuestas(data.misApuestas ?? []);
       setLimites(data.limites ?? { apuestas_realizadas: 0, monto_total_apostado: 0, perdida_total: 0 });
+      setPagina(0);
     } catch {
       setError(terrores("apuestas"));
     } finally {
@@ -114,6 +117,8 @@ export default function ApostarPartida({ puntos, onPuntos, onMovimiento }: Props
 
   const topLimite = limites.apuestas_realizadas >= 10 || limites.monto_total_apostado >= 500;
   const mostrarLimites = limites.apuestas_realizadas + limites.monto_total_apostado > 0;
+  const paginas = Math.max(1, Math.ceil(partidas.length / POR_PAGINA));
+  const visibles = partidas.slice(pagina * POR_PAGINA, pagina * POR_PAGINA + POR_PAGINA);
 
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-tt-border bg-tt-surface p-5">
@@ -136,29 +141,75 @@ export default function ApostarPartida({ puntos, onPuntos, onMovimiento }: Props
       ) : partidas.length === 0 ? (
         <p className="rounded-xl bg-tt-surface-2 px-3.5 py-2.5 text-sm font-medium text-tt-text-muted">{t("sinPartidas")}</p>
       ) : (
-        <ul className="flex flex-col gap-2">
-          {partidas.map((p) => (
-            <li key={p.partida_id}>
+        <>
+          <div className="flex items-center justify-between gap-3">
+            <span className="rounded-full border border-tt-border bg-tt-surface-2 px-3 py-1 font-mono text-xs font-semibold text-tt-text-muted">
+              {t("enLinea", { n: partidas.length })}
+            </span>
+            {paginas > 1 && (
+              <span className="font-mono text-xs font-semibold text-tt-text-muted">
+                {t("pagina", { actual: pagina + 1, total: paginas })}
+              </span>
+            )}
+          </div>
+          <ul className="flex flex-col gap-2">
+            {visibles.map((p) => (
+              <li key={p.partida_id}>
+                <button
+                  onClick={() => elegir(p)}
+                  disabled={topLimite}
+                  className="flex w-full items-center justify-between gap-3 rounded-xl border border-tt-border bg-tt-surface-2 px-4 py-3 text-left transition-colors hover:border-tt-accent/60 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <span className="flex min-w-0 flex-col gap-0.5">
+                    <span className="truncate text-sm font-bold text-tt-text">
+                      {p.nombre_a} <span className="text-tt-text-muted">vs</span> {p.nombre_b}
+                    </span>
+                    <span className="font-mono text-xs text-tt-text-muted">
+                      {t(`operaciones.${p.operation_type}`)} · ELO {p.elo_a}–{p.elo_b}
+                    </span>
+                  </span>
+                  <span className="shrink-0 rounded-full border border-tt-accent/50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-tt-accent">
+                    {t("apostar")}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          {paginas > 1 && (
+            <div className="flex items-center justify-between gap-2">
               <button
-                onClick={() => elegir(p)}
-                disabled={topLimite}
-                className="flex w-full items-center justify-between gap-3 rounded-xl border border-tt-border bg-tt-surface-2 px-4 py-3 text-left transition-colors hover:border-tt-accent/60 disabled:cursor-not-allowed disabled:opacity-40"
+                onClick={() => setPagina((p) => Math.max(0, p - 1))}
+                disabled={pagina === 0}
+                className="rounded-full border border-tt-border bg-tt-surface-2 px-4 py-1.5 text-sm font-semibold text-tt-text transition-colors hover:border-tt-accent/60 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                <span className="flex min-w-0 flex-col gap-0.5">
-                  <span className="truncate text-sm font-bold text-tt-text">
-                    {p.nombre_a} <span className="text-tt-text-muted">vs</span> {p.nombre_b}
-                  </span>
-                  <span className="font-mono text-xs text-tt-text-muted">
-                    {t(`operaciones.${p.operation_type}`)} · ELO {p.elo_a}–{p.elo_b}
-                  </span>
-                </span>
-                <span className="shrink-0 rounded-full border border-tt-accent/50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-tt-accent">
-                  {t("apostar")}
-                </span>
+                ← {t("anterior")}
               </button>
-            </li>
-          ))}
-        </ul>
+              <div className="flex gap-1">
+                {Array.from({ length: paginas }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setPagina(i)}
+                    aria-label={t("pagina", { actual: i + 1, total: paginas })}
+                    className={`h-7 w-7 rounded-full font-mono text-xs font-bold transition-colors ${
+                      i === pagina
+                        ? "bg-tt-accent text-tt-bg"
+                        : "border border-tt-border bg-tt-surface text-tt-text-muted hover:border-tt-accent/60"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setPagina((p) => Math.min(paginas - 1, p + 1))}
+                disabled={pagina >= paginas - 1}
+                className="rounded-full border border-tt-border bg-tt-surface-2 px-4 py-1.5 text-sm font-semibold text-tt-text transition-colors hover:border-tt-accent/60 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {t("siguiente")} →
+              </button>
+            </div>
+          )}
+        </>
       )}
       {error && partidas.length > 0 && <p className="text-sm font-medium text-tt-danger">{error}</p>}
       {topLimite && <p className="text-sm font-semibold text-tt-danger">{t("limiteDiaAlcanzado")}</p>}

@@ -3696,3 +3696,269 @@ escribir intentos/niveles/XP directo.
 - **VERIFICADO POR CÓDIGO.** El SQL 0122/0123/0124 NO se pudo validar contra la base (sin acceso a DB/runtime).
 - **PENDIENTE usuario (en orden):** (1) aplicar `0122` y correr `NOTIFY pgrst, 'reload schema';` y retestear ruleta/volado/pizarra/historial; (2) aplicar `0123` + `0124`; (3) probar en browser apuestas, oráculo, títulos (ruleta y por mérito) y los 3 minijuegos vía tunnel.
 - Sigue PENDIENTE del dif упомянутый original: ex 'Mecánica 1 rankeds/reto_semanal'; M2 job semanal automático (se usa self-heal); ruleta horizontal vs tómbola vertical (P4). Ver DECISIONS.md y TECH-DEBT.md.
+
+---
+
+## 2026-09-09 — Trastienda: ruleta casino (0127), diseño aprobado por PO
+
+Diseño del agente aprobado por el PO el 2026-09-09 con 3 ajustes: fichas ALTAS (100/250/500/1000, porque se ganan muchas Chispas jugando), premios viejos (boost/escudo/congelamiento/fuente/marco/título) conservados como ganancia rara ~5% POR ENCIMA de las Chispas, y mesa COMPLETA de 118 elementos (no ligera). Implementado como casa de apuestas sobre la tabla periódica.
+
+### Construí
+- **`supabase/migrations/0127_trastienda_ruleta_casino.sql`** (DDL manual — el PO la aplica):
+  - Catálogo `trastienda_casino_elementos` con los 118 elementos (6 alcalinos, 6 alcalinotérreos, 38 transición, 12 post-transición, 6 metaloides, 7 no metales, 6 halógenos, 7 gases nobles, 15 lantánidos, 15 actínidos).
+  - `trastienda_casino` (log de apuestas, RLS select-propia) + `casino_elementos_en_zona(p_zona)` (valida y devuelve miembros: `paridad:par/impar`, `grupo:1..18`, `grupo:transicion`, `periodo:1..7`, `tipo:<tipo>`, `elemento:X` — case-insensitive vía `upper()`) + `apostar_casino_elementos(p_zona, p_monto)` (server-authoritative: elige al azar entre los 118, `payout = round(monto × (118/n) × 0.88)`, fichas 100/250/500/1000, límite 20/día, descuenta siempre, premio raro ~5% con ramas boost/escudo/congelamiento/fuente/marco/título copiadas de 0123).
+  - `fetch_trastienda_historial` re-creada (union incluye `trastienda_casino` como tipo `casino`).
+- **Espejo TS** `src/lib/trastienda/casino.ts` (118 elementos, `TOTAL_ELEMENTOS_CASINO=118`, `FICHAS_CASINO`, `LIMITE_CASINO_DIARIO=20`, `EV_CASA_CASINO=0.88`, `colorElementoCasino`, zonificación/conteo/mult/ganancia) + `casino.test.ts` (8 pruebas: conteos por familia, paridad 59/59, EV por zona ~0.88 en rango, elemento individual case-insensitive, rechazo de inválidas, fichas y límite). Fix en sesión: símbolos mixtos ("Au") → `toUpperCase()` en compare, grupo 1 = 7 (incluye el hidrógeno).
+- **Ruta** `src/app/api/trastienda/casino/route.ts` (POST con validación de zona y ficha, patrón `respuestaError`).
+- **Cliente**: `Ruleta.tsx` reescrita como mesa de apuestas casino (tabla periódica 18 columnas por `gridColumnStart`, f-bloques de 15, color por tipo, pills de zonas — paridad/grupo transición/grupos/periodos/familias —, fichas, resumen con posibilidades×multiplicador×pago, APOSTAR con sweep 110ms + resaltado del ganador + premio raro); `TrastiendaClient.tsx` con sub-pestañas 🎰 ruleta / 🎲 juegos; `HistorialTrastienda.tsx` con rama `casino` (símbolo del ganador en el badge, `elemento → simbolo` en el detalle); i18n es/en para la mesa completa; tipos `ResultadoCasino`. Componentes de módulo fuera del render (Pill/Celda) y sin `setState` síncrono en efecto (reglas eslint).
+
+### Verifiqué
+- npx tsc --noEmit: 0 (tras limpiar `.next/types` stale de la ruta nueva). npx eslint (Ruleta, TrastiendaClient, HistorialTrastienda, casino.ts/test, route, tipos): 0. npx vitest run: **147/147** (13 archivos; 8 pruebas casino). npx next build: limpio, **244 páginas**, `/api/trastienda/casino` listada. Paridad i18n ruleta es/en por script.
+
+### Resultado
+- **VERIFICADO POR CÓDIGO.** SQL sin validar contra la DB (sin acceso).
+- **PENDIENTE usuario (en orden):** aplicar `0123` → `0124` → `0125` → `0126` → `0127` + `NOTIFY pgrst, 'reload schema';` y retestear en browser: sub-pestañas ruleta/juegos, fichas/mesa/límite diario, premio raro, e historial con tipo `casino`.
+- La ruleta clásica (`ruleta.ts` legacy + `/api/trastienda/girar-ruleta`) queda sin uso en la UI pero intacta.
+
+---
+
+
+---
+
+## 2026-09-09 — Español neutro latinoamericano (F3 del mega-sprint)
+
+### Construí
+- **Script `scripts/normalizar-espanol.mjs`**: mapeo curado token→token (límites Unicode-aware `(?<![\p{L}\p{N}_])…(?![…])`), idempotente, respeta capitalización, actúa solo sobre valores de JSON. Además `scripts/detectar-voseo.mjs` (reporte), `scripts/analizar-voseo-funciones.mjs`, `scripts/generar-migracion-neutro.mjs` y `scripts/verificar-0128.mjs` (SQL).
+- **`messages/es.json`**: ~53 strings normalizadas (3 pasadas: básicos, presente/imperativos, micro-pulido de tienda/aprender/landing): tenés→tienes, podés→puedes, querés→quieres, necesitás→necesitas, identificás→identificas, practicás→practicas, dominás→dominas, conocés→conoces, comparás→comparas, elegí→elige, probá→prueba, mirá→mira, intentá→intenta, completá→completa, empezá→empieza, jugá→juega, andá→anda, buscá→busca, guardá→guarda, mandá→manda, seguí→sigue, sumá→suma, pasá→pasa, contá→cuenta, sumate→súmate, probalo→pruébalo, buscalos→búscalos, retalos→rétalos, apretés→aprietes, y más.
+- **Hardcoded en componentes/páginas** (13 archivos): `SalaEsperaDuelo` (podés→puedes, apretés→aprietes), `ConvertirCuenta` (elegí→elige, confirmalo→confírmalo, seguí→sigue, perdés→pierdes), `mensajeError.ts` (probá→prueba, esperá→espera, elegí→elige), `feed/retar` (no podés retarte a vos mismo→no puedes retarte a ti mismo), `profesor/crear-grupo`, 5 × Diagnóstico de mundos (probá→prueba), `ClanesClient` (querés→quieres, tenés→tienes), `login/registro` (tenés→tienes, Creá→Crea, Iniciá→Inicia), `FeedSidebar` (tenés→tienes), `privacidad` (podés→puedes), `terminos` (Podés→Puedes, querés→quieres, Sos→Eres), `Onboarding DiagnosticoClient` (querés→quieres), `MundoBloqueado` (Seguí→Sigue, mirá→mira).
+- **`supabase/migrations/0128_espanol_neutro.sql`** (nueva, generada por script): recrea 9 funciones **solo con mensajes neutros** en sus `raise exception` — `reportar_usuario` (a ti mismo), `crear_problema_personalizado` (llegá→llega, probá→prueba), `reportar_post`, `unirse_invitacion_duelo`, `crear_clan` (salí→sal, tenés→tienes), `reportar_mensaje_clan`, `mensajes_de_clan` (sos→eres), `desbloquear_mundo` (tenés→tienes), `elegir_mundos_iniciales` (elegí→elige). `salir_del_clan` NO necesita cambio ('estás' es neutro). Verificado por script: lógica idéntica (solo difieren los literales de `raise exception`).
+
+### Verifiqué
+- npx tsc --noEmit: 0. npx eslint en los 13 archivos tocados: 0 errores **nuevos** (quedan 4 preexistentes en `DiagnosticoClient.tsx:72/89/232` — reglas react-compiler de refs/impurezas, ajenas al cambio de texto). npx vitest run: **147/147**. Voseo residual en es.json: solo 'más' y 'estás' (neutrales; no son voseo) tras las 3 pasadas + revisión del mapa. Paridad es/en: **555/555 claves** idénticas tras la normalización.
+
+### Resultado
+- **VERIFICADO POR CÓDIGO.**
+- **PENDIENTE decisión/contenido:** tips/hints/lecciones seed con rioplatense en migraciones ya aplicadas (`0005:71`, `0015:123/152/166`, `0026:48/51`, `0027:31`, `0032:25/49`, `0056:449`, `0089:312`, `0101:51/58/103`, `0108:389`, `0109:358/380/389/395`) — requieren UPDATEs sobre filas existentes (tablas/columnas varias); se documentan para un pase de contenido futuro, no se tocan a ciegas sin DB.
+- **PENDIENTE usuario:** aplicar `0128` al final de la cadena `0123→0124→0125→0126→0127→0128` + `NOTIFY pgrst, 'reload schema';`.
+
+---
+
+## 2026-09-09 — F4 marketing (inventario + auditoría + eje oscuro)
+
+### Construí
+- **`docs/audits/MARKETING-AUDIT.md`** (nuevo): inventario de la línea marketing (`docs/marketing/` = 20 .md, 30 capturas reales en `assets/pantallas-reales/`, 4 piezas claras HTML+PNG, pipeline `scripts/piezas-reales.mjs`), auditoría docs-vs-código con hallazgos y file:line, tabla claim→estado, estado real del dark mode y plan del eje oscuro BLOQUEADO-con-plan, checklist de correcciones.
+- **4 plantillas del eje oscuro** en `docs/marketing/assets/piezas/` (`pieza-oscura-8-mundos-square`, `pieza-oscura-numeria-sprint-story` 1080×1920, `pieza-oscura-reto-diario-square`, `pieza-oscura-melodia-banner`) con tokens dark REALES de la app (`globals.css:47-56`: fondo `#090c14`, surface `#12172a`, borde `#232b47`, primario `#7c5cff`, texto `#f4f6fb`/`#8892b0`, oro `#FFC53D`) + PNG de preview. Cada `<img>` carga primero `../pantallas-oscuras/<nombre>.png` (captura dark FINAL) y cae solo a la captura clara real (foco de luz, `DIRECCION-ARTISTICA.md` §9) hasta que el usuario deje la captura dark.
+- **`docs/marketing/assets/pantallas-oscuras/`** (nueva): destino de las capturas dark + README con la tabla pieza↔captura y pasos.
+- READMEs actualizados: `docs/marketing/README.md` (sección NUEVO 2026-09-09) y `assets/piezas/README.md` (matriz con las 4 oscuras + cómo destrabar).
+
+### Verifiqué
+- `node scripts/piezas-reales.mjs` renderizó los **8 PNG** (4 claros + 4 oscuros) con tamaños correctos (square 1080×1080 · story 1080×1920 · banner 1200×630). No pude inspeccionar visualmente los PNG (modelo sin entrada de imágenes) → revisión visual del usuario.
+- Hallazgos con file:line: nivel mundo vigente 34/45/21 (`src/lib/practica/worldLevel.ts:46-49`, `0117`, `0125:184`) vs cita vieja 50% en `PRODUCT-MESSAGING.md:52,55` y `AD-CONCEPTS.md:90` (vía `0080`); 8 mundos reales (`mundos.ts:19-28`, `0110`, `precios.ts:13`) vs `docs/MARKETING.MD:8-9`; feed social desactivado (`SocialClient.tsx:16-19`) vs `AUDIENCE.md:31`; tour: `Header.tsx:27-31` desactivado, `PrimeraVezTip.tsx` existe (PARCIAL); Pro informativo (`pro/page.tsx:12-16`, coincide con docs); retos "5 preguntas" (`reto-diario/page.tsx:11`) / "45" (`reto-semanal/page.tsx:11`) y "10 preg·60 seg" (`es.json:500`); dark mode real (`globals.css:47-56,79`, `ThemeToggle.tsx:26-30`, `layout.tsx:120-130`, `ProfileMenu.tsx:62`).
+- tsc/lint/test/build: no aplican (cero cambios de código o migraciones; solo docs + HTML estático fuera de `src/`).
+
+### Resultado
+- **VERIFICADO POR CÓDIGO** para inventario, hallazgos y plantillas; **BLOQUEADO-con-plan** para la captura real del dark mode (requiere tunnel del usuario → PNG en `assets/pantallas-oscuras/` + `node scripts/piezas-reales.mjs`).
+- **Correcciones pendientes (docs):** `PRODUCT-MESSAGING.md:52,55` y `AD-CONCEPTS.md:90` (fórmula vieja 50% dominio → 45/34/21 vigente); `AUDIENCE.md:31` (feed social desactivado, Fase 8); `docs/MARKETING.MD:8-9` (6 mundos y "no usar número fijo" → 8 reales); confirmar umbral exacto de `requireNivelCuentaRankeds` (docs dicen nivel 5).
+- **PENDIENTE usuario:** levantar tunnel con dark mode, capturar las 4 pantallas oscuras y dejarlas en `docs/marketing/assets/pantallas-oscuras/`, re-renderizar el script y revisar visualmente los 8 PNG.
+
+---
+
+## 2026-09-09 — F5 auditoría Tienda/Trastienda (docs vs código)
+
+### Construí
+- **`docs/audits/STORE-ECONOMY-AUDIT.md`** (nuevo): cruce Tienda+Trastienda docs-vs-código con file:line. **Tienda:** catálogo real = **24 ítems / 47.900 Chispas sin paquete** (62.400 con paquete) vs el "~23.200 / 26 ítems (8 marcos de rango)" que citan `costos.ts:13`, `TRASTIENDA-ECONOMIA.md:17` y `TIENDA-EXPANSION-2026-09-09.md:10,14` (real: 6 marcos de rango, `costos.ts:37-42`) → divergencias T-01..T-04 (incluye la Opción B `/trastienda` vs Opción A recomendada en el doc). **Trastienda:** M1 duels-only (límites 10/día y 500/día, cuotas idénticas a la spec, `0123:121-156,325-328`), M2 multiplers "AJUSTADO" de la spec + self-heal `resolver_prediccion_ranking(v_semana - 7)` (sin job semanal, `0123:497-501`), M3 8/9 títulos (`catalogo.ts:107-116`, falta `gniñardo`), M4 reemplazada por mesa casino 0127 (118 elementos, fichas 100-1000, límite 20, factor 0.88), M5 3 minijuegos activos (Acertijos/El Reloj eliminados en 0126), T-01/T-02 sin RLS/grant (BAJO latente, bloqueados por decisión sin repro DB), S5 fuera de alcance.
+
+### Hallazgos
+- **H-01:** comentario SQL `0127:17,342` dice "EV de casa ~ 0.92" pero el factor `× 0.88` da EV del jugador ~0.88 (house edge 12%). PROPUESTA: corregir comentario (no se tocó SQL).
+- **H-02:** `REQUIREMENTS-CHECKLIST.md:90,102` y `ruleta.ts:52` decían "el premio 'título' entrega escudo placeholder" — desactualizado: desde `0123` entrega título real y desde `0127` la UI usa la mesa casino. **Corregido.**
+- **H-03 (voseo visible en TIENDA, NO corregido):** `messages/es.json:203,205,207,209` = "No se pudo comprar/cambiar la fuente/cambiar el marco/apostar. **Revisá** tu conexión." F3 no normalizó tokens capitalizados → estos 4 quedaron fuera. Se reportan por regla de la tarea (no se corrigen a ciegas). Recomendación: `Revisa`.
+- **H-04:** clave `tenes` (`es.json:231`) es solo nombre de key (valor neutro "Tienes: {n}") — sin impacto visible.
+
+### Apliqué (código-safe)
+- `src/lib/trastienda/ruleta.ts`: comentario del bloque `VALOR_SEGMENTO_CHISPAS` documentando que el archivo es LEGACY (0127) y que `girar_ruleta` entrega títulos reales desde 0123. Sin tocar valores ni `ruleta.test.ts`.
+- `docs/audits/TRASTIENDA-ECONOMIA.md`: header → **IMPLEMENTADO** + bloque "Nota de implementación (2026-09-09) — divergencias vs este diseño" (M1 duels-only, M2 self-heal, M3 8/9, M4→casino 0.88, M5 3 activos, Opción B, EV).
+- `docs/audits/REQUIREMENTS-CHECKLIST.md`: notas de los ítems 34, 41, 44 y del pendiente 3 (título real, ruleta→mesa casino, Acertijos/El Reloj ELIMINADO POR DISEÑO, doc actualizado).
+- `docs/agent-work/ACTIVE.md`: CLAIM + CIERRE F5.
+
+### Verifiqué
+- `npx tsc --noEmit` 0 · `npx eslint src/lib/trastienda/ruleta.ts` 0 · `npx vitest run` **147/147** (el único cambio de código es un comentario; `ruleta.test.ts` intacto). Paridad i18n es/en heredada de F3 (555/555).
+
+### Resultado
+- **VERIFICADO POR CÓDIGO.** Sin acceso DB/browser → los RPC y el tunnel siguen PENDIENTE usuario.
+- **Backlog reclasificado:** M1 `rankeds`/`reto_semanal` → DIFERIDO-POR-DECISIÓN (`0123:11`); job semanal M2 → DIFERIDO-POR-DECISIÓN (self-heal cubre); ruleta clásica / P4 tómbola → CERRADO (reemplazada por mesa casino); `gniñardo` → PENDIENTE-DECISIÓN; Acertijos/El Reloj → CERRADO por diseño (0126); T-01/T-02 RLS → BLOQUEADO-POR-DB; voseo "Revisá" → PROPUESTA (espera decisión); comentarios `costos.ts:13` y `0127:17` → PROPUESTA de corrección.
+- **PENDIENTE usuario (en orden):** aplicar `0123 → 0124 → 0125 → 0126 → 0127 → 0128` + `NOTIFY pgrst, 'reload schema';` y retestear por tunnel: mesa casino (fichas/límite 20/premio raro), apuestas a duelo (límites 10 y 500), predicción (ventana + self-heal), La Calcu/Volado/Pizarra. Decidir además la corrección de las 4 claves "Revisá".
+
+---
+
+## 2026-09-09 — F6 auditoría de progresión (niveles mundo/cuenta, recompensas, level-up)
+
+### Construí
+- **`docs/audits/PROGRESION-AUDIT.md`** (nuevo): auditoría docs-vs-código del sistema de niveles con file:line. **Mundo:** fórmula vigente 34/45/21 (`worldLevel.ts:46-51`, `VOLUMEN_TECHO 25000`, `NIVEL_MIN/MAX_DOMINIO 4/10`) vs curva vieja 0.3/0.5/0.2; `registrar_progreso_mundo` (0117) y recálculo en lote (0125). **Cuenta:** escalera marginal de 0118 (k=2:200, 3-5:300, 6-10:550, 11-15:900, 16-20:1400, 21-30:1900, 31+:2400; refs 1.100/8.350/34.350/82.350 XP en niveles 5/15/30/50) vs curva vieja `floor(100·power(n,1.6))` (0070:33-38) — **conviven según migración aplicada**; conciliación `0125` con `greatest(nivel_cuenta, nivel_desde_xp_cuenta(...))`. **Recompensa:** `50·n+250` (`0118:107-113`): 300/1.000/1.750/2.750 en niveles 1/15/30/50. **Grants:** `costo_marginal` (0118:67) y `xp_requerido` (0070:56) sí; `recompensa_nivel_cuenta` y `acreditar_chispas` **sin grant** (0115:102 revoca) → el bonus es 100% server-side y `registrar_xp_diario` lo descarta (0118:120,124-125,155). **Economía:** cruce recompensa↔tienda (`costos.ts`).
+
+### Apliqué (código-safe, sin migraciones)
+- `src/components/NivelCuentaSubio.tsx` (NUEVO): badge "Subiste a nivel {n} de cuenta" con GestoLogo (`#6C4CF1`) + `reproducirTono("nivel")`, mismo lenguaje visual que `NivelMundoSubio`; retorna `null` si no subió.
+- `src/app/api/practica/finish/route.ts` y `src/app/api/enigmia/finish/route.ts`: leen `profiles.nivel_cuenta` antes/después de `registrar_xp_diario` y devuelven `nivelCuenta: { subio, nivel }` — seguro bajo cualquier curva de nivel desplegada (0118 o 0070) y sin depender de migraciones nuevas.
+- Wiring del `NivelCuentaSubio` en los **13 resúmenes** que ya mostraban `NivelMundoSubio` (`SprintSummary` + potencias/geometria/fracciones/decimales/algebra + quimia/anatomia/melodia/trigonometria/historia/geografia + enigmia): campo `nivelCuenta` en cada `FinishResponse` + render junto al de mundo.
+- `messages/es.json` + `messages/en.json`: key `Practica.resumen.subisteDeNivel` (`{n}`). Paridad es/en mantenida.
+
+### Verifiqué
+- `npx tsc --noEmit` **0** · `npx eslint` sobre los 16 archivos tocados **0** · `npx vitest run` **147/147** · `npm run build` **OK** (Next 16.3.0 Turbopack, 244 páginas).
+
+### Resultado
+- **CERRADO:** umbral `requireNivelCuentaRankeds` = **5** (`guard.ts:184`); docs (`REQUIREMENTS-CHECKLIST.md:116`, `rankeds-bloqueado/page.tsx:10`) coinciden — queda resuelto el pendiente de `MARKETING-AUDIT.md:142`.
+- **VERIFICADO POR CÓDIGO:** fórmulas de mundo y cuenta, dónde sube cada nivel y quién paga el bonus, grants reales.
+- **PROPUESTA:** los mapas `NOMBRE_MUNDO`/`COLOR_MUNDO` de `NivelMundoSubio.tsx:13-25` solo cubren 4 de los 8 mundos (fallback violeta + mundo crudo para el resto) → completarlos.
+- **PENDIENTE (siguiente fase, requiere SQL/decisión):** propagar `(nivel_subio, nivel_nuevo, bonus_nivel)` desde `acreditar_chispas` (o exponer `recompensa_nivel_cuenta`) para mostrar el **monto exacto** del bonus; overlay burst completo de la spec `LEVEL-UP-ANIMACION-2026-09-08.md`.
+- **PENDIENTE usuario:** aplicar `0117 → 0118 → 0119 → 0120 → 0121 → 0122 → 0123 → 0124 → 0125 → 0126 → 0127 → 0128` + `NOTIFY pgrst, 'reload schema';`. Sin acceso DB/browser en este entorno → runtime sin retestear.
+
+---
+
+## 2026-09-09 — F7 auditoría de Rankeds y Clanes (ELO/matchmaking + comunidad)
+
+### Construí
+- **`docs/audits/RANKEDS-AUDIT.md`** (nuevo): auditoría docs-vs-código con file:line. **Rankeds:** guards (`requireUsuario`+`bloquearInvitado`+`requireNivelCuentaRankeds`=5, `guard.ts:184`; página bloqueada `rankeds-bloqueado/page.tsx`); ELO inicial 800 + 6 rangos con paridad TS≡SQL (`database.ts:262-269` ≡ `0043:117-130`: 0/900/1100/1300/1500/1700); K por rango (0072) y ×1.5 en series (0073); matchmaking operativo en `0109` (v_mundos 8, guard 'mundo invalido', casual no admite "todas las ciudades" y Platino+ solo "todas las ciudades" — reconfirma `0078`); ventana ±15→±120 (0031/0038/0043/0066); poll ~3s con `MAX_SEGUNDOS_BUSQUEDA=60` (`RankedsClient.tsx:383,533`); serie mejor-de-3 (`mi_puntaje` 0071/0074, `rival_puntaje` 0094); rechazo en cascada (0047); rendirse/abandonado (`0088`: estado `'abandonado'`, `abandonado_por`, `reclamar_victoria_por_abandono` presence-driven); ranking anti-anónimos (0119) + `es_cuenta_prueba` (0126). **Clanes:** `0068` (check bots/jugadores, tag 2-5, color estandarte, índice único jugadores, roles fundador/guía/miembro), `0069`/`0070` (`miembros_de_clan` 0070:468, `rival_de_clan` 0070:575, `procesar_cierre_semana_clanes` 0070:614), `xp_requerido_nivel_clan = floor(4000·niv^1.9)` sin cap (0070:64) + grant cliente (0100:81); misiones semanales **sin cron** (lazy desde `clanes/page.tsx`, `0068:307,324`, intención documentada en 0070:603); chat con rate-limit + push (0092/0100 + edge `notify-clan-mensaje`); estandarte SVG tiers 1-3/4-7/8-10 + bucket `clanes` 2MB solo fundador (0084) y `mapa_clanes` recreada (0084:127); mundo de clanes (`0076:57`) + `tierCiudad` 1/3/6/11/21 + `EscenaCiudad` con `/clan_rangos/{1..5}.png`; `COSTO_CREAR_CLAN=5000` (`ClanesClient.tsx:17`).
+
+### Apliqué (código-safe, sin migraciones)
+- `src/types/database.ts`: `Mundo` (`:38`) y `MundoDuelo` (`:328`) alineados a los 8 mundos reales (`src/lib/duelos/rutas.ts:3`). **Sin importadores** (grep `@/types/database` sin hits) ⇒ riesgo-cero. Cierra el pendiente 5 de `REQUIREMENTS-CHECKLIST.md`.
+- `docs/audits/REQUIREMENTS-CHECKLIST.md`: fila "ELIMINADO POR DISEÑO" + nota en el legend; resumen recomputado a la matriz real (9 REAL / 50 IMPLEMENTADO / 3 PARCIAL / 2 CONCEPTO FUTURO / 0 FALTA / 1 ELIMINADO / **65 total**, antes "50"); "Última migración analizada" → `0128`; pendiente 5 marcado RESUELTO (F7).
+
+### Verifiqué
+- `npx tsc --noEmit` **0** · `npx eslint src/types/database.ts` **0** · `npx vitest run` **147/147** (13 files).
+
+### Resultado
+- **Rankeds → VERIFICADO POR CÓDIGO.** Hipótesis "la UI ofrece mundos que el server rechaza" **DESCARTADA** (UI y `0109` coinciden en 8; el guard `'mundo invalido'` es solo red de seguridad).
+- **Clanes → VERIFICADO POR CÓDIGO.** Los gaps conocidos son de i18n/voz (documentados), no funcionales.
+- **CERRADO:** tipos `Mundo`/`MundoDuelo` stale (pendiente 5 del checklist); resumen del checklist (doc drift 50→65).
+- **Documentado (sin fix por scope/DB):** D-02 los duels no aportan XP a la guerra/misión de clanes (por diseño, solo cuentan via `registrar_xp_diario`); D-03 `SerieDueloClient.tsx` hardcode español (gap i18n); D-04 voz mixta en Clanes ("Tenés" `:561` vs "tienes" `:457`) y "Hacé click" (`mundo/page.tsx`); D-05 = P0#4 TECH-DEBT parcialmente confirmado: casual no toca ELO (`0050`, E2E) pero el fallback de bots (>30s) no está condicionado a `p_ranked` (`0109:552-560`) ⇒ requiere migración y base, **BLOQUEADO-POR-DB**.
+- **BLOQUEADO-POR-DB:** S5/S9 (seguridad — ver `AUDIT-RLS-SEGURIDAD-2026-09-07.md`) y el fix de bots en casual. Sin acceso a runtime ⇒ tunnel y E2E de rankeds/clanes (guerra semanal, chat realtime, reto/duelo) siguen **PENDIENTE usuario**: aplicar `0117 → … → 0128` + `NOTIFY pgrst, 'reload schema';` y retestear con 2 cuentas.
+
+---
+
+## 2026-09-09 — F8 duelo casual/feed social
+
+### Construí
+- **`docs/audits/DUELOS-AUDIT.md`** (nuevo): auditoría docs-vs-código con file:line del flujo casual/duelos y del feed social.
+  - **Duelos casual/ranked:** entrada única vía `RankedsClient.tsx` (toggle clasificatoria/casual `:413`, `mundosDisponibles` `:433-438`, `poll` 2.2s + `MAX_SEGUNDOS_BUSQUEDA=60` `:382-383`); casual = `clasificatorio=false`, sin ELO (`0050:243-249`), stats `mis_stats_casual` aparte; "Todas las ciudades" solo clasificatoria (`0109:504-508` + guard UI); mejor-de-3 = 3 rondas de `duels` con `ronda_numero`/`ronda_total` (`0109:573-620`) + badge `PantallaVS.tsx:39-43`; rendirse (`0088` + `BotonRendirse`), botones ocultos contra bot (`SalaEsperaDuelo.tsx:49`). **P0#4 confirmado parcialmente:** fallback de bots en `0109:550-562` sin condicionar a `p_ranked` → casual y ranked (<1300) caen contra bot tras 30s. **BLOQUEADO-POR-DB** (migración).
+  - **Feed social:** `Feed.tsx` (6 tarjetas), `FeedSidebar.tsx`, APIs `api/feed/*` (5 rutas), `social/page.tsx` **sigue cargando posts/reacciones/siguiendo/amigos/retos** (`:26-40`) — la desactivación vive solo en `SocialClient.tsx:16-19`. RLS `feed_posts` público para autenticados (embedding `profiles` por diseño). **Plan de activación PROPUESTO** (diff sugerido en SocialClient, checks, riesgos R1-R5) en DUELOS-AUDIT §2.4 — NO activado (cambio de producto, PO ausente).
+- **Cierres riesgo-cero:** voseo residual visible corregido en `Feed.tsx:141` ("seguís/agregá" → "sigues/agrega") y `src/app/[locale]/duelo/invitacion/[inviteId]/page.tsx:37` ("compartiselo" → "compárteselo"). Sin tocar matchmaking/RLS/migraciones.
+- Checklist: #18 (Casual) y #54 (Feed PARCIAL) sin cambio de estado — la auditoría confirma ambos; la reactivación queda como PROPUESTA.
+
+### Verifiqué
+- `npx tsc --noEmit` **0** · `npx eslint` (Feed.tsx + invitacion/page.tsx) **0** · `npx vitest run` **147/147** (13 files).
+
+### Resultado
+- **Duelos casual → VERIFICADO POR CÓDIGO.** Diferencias casual/clasificatoria confirmadas (ELO, stats, ciudades, modo). Bots en casual: BLOQUEADO-POR-DB por requerir migración.
+- **Feed social → VERIFICADO EN CÓDIGO y en PROPUESTA.** El plan de activación completo queda documentado en DUELOS-AUDIT §2.4; decisión de producto pendiente (PO ausente).
+- **CERRADO:** voseo residual en 2 archivos user-facing (sin impacto de runtime; tsc/eslint/vitest intactos).
+- **PENDIENTE usuario:** aplicar migraciones `0117 → … → 0128` + `NOTIFY pgrst, 'reload schema';`, y decidir si se activa el feed social con el plan PROPUESTO.
+
+---
+
+## 2026-09-09 — F9 plan de verificación por navegador (BROWSER-TESTING-PLAN)
+
+### Construí
+- **`docs/audits/BROWSER-TESTING-PLAN.md`** (nuevo, entregable de la fase): consolida todos los pendientes de verificación por navegador de F0–F8 en **9 flujos / 55 ítems** con estado y fuente por fila. Desglose: **47 VERIFICADO EN CÓDIGO** · **1 VERIFICADO CON TEST** (casino 0127) · **1 PROPUESTA** (título `gniñardo`) · **4 PENDIENTE-USUARIO** (landing visual, invitado-bloqueado visual, capturas dark H4, instalación PWA I3) · **2 BLOQUEADO-POR-DB** (bots casual `0109:550-562`; cierre guerra `0070:614`).
+- Bloques operativos: **[APPLY-FIRST]** `0116 → … → 0128` en orden + `NOTIFY pgrst, 'reload schema';` (tabla de qué habilita cada migración + ubicación real de los NOTIFY embebidos: `0122:79`, `0123:913`, `0125:330`, `0126:889`, `0127:512`; ausentes en `0121`, `0124`, `0128`); **[QA-ENV]** cuentas QA (`scripts/crear-usuario-qa.mjs`, slots 1/2, credenciales en `.env.test.local`) + `es_cuenta_prueba` de `0126:30-33` (exclusión de rankings/mesas) + SQL de chequeo sin browser; **[TUNNEL-ONLY]** 8 ítems que exigen browser/tunnel.
+- **Pirámide de verificación:** capa 1 código estático/unit (48: 47 + 1 test), capa 2 DB/RPC/RLS (~14 ítems `· DB` tras migraciones; ninguno marcable `VERIFICADO EN DB` sin base real), capa 3 visual/navegador (21 ítems con componente browser).
+- **Inventario Playwright (estado real):** `playwright ^1.62.1` solo en devDependencies; **sin** `playwright.config.*`, **sin** `e2e/`, **sin** `@playwright/test`; único uso ad-hoc en `scripts/piezas-reales.mjs` (render `file://` de las piezas de marketing, no toca la app); `login-qa.mjs`/`crear-usuario-qa.mjs` no usan browser. No se automatiza e2e (requeriría que el usuario habilite la suite); los pasos visuales quedan `PENDIENTE-USUARIO`.
+
+### Verifiqué
+- En vivo: `npx vitest run` **147/147** (13 files) · íconos PWA en `public/` (`icon-{192,512}[-maskable].png` + `icon.svg`) · `.env.test.local` presente · `reto-semanal/page.tsx:11` (45 preguntas) · guards `guard.ts:19,29,37-39,184` · fórmula nivel `worldLevel.ts:46-51` · matchmaking `0109:504-508,550-562,573-620` · oráculo/mesa/limpieza `0126`. tsc/lint/test/build: **no aplican** (fase solo docs; cero cambios de código/migraciones).
+
+### Resultado
+- **F9 CERRADO** (entregable: `docs/audits/BROWSER-TESTING-PLAN.md`). **0 ítems sin fuente** (ninguno cae en `NO PUEDO VERIFICAR`).
+- **Qué no se pudo verificar y por qué:** la capa DB (migraciones `0116→0128` sin aplicar — bloque `[APPLY-FIRST]`) y la capa visual/realtime (sin dev server/tunnel/navegador en este entorno) → 4 ítems `PENDIENTE-USUARIO` + 2 `BLOQUEADO-POR-DB` (bots casual `0109:550-562` y cierre de guerra `0070:614`, ambos requieren migración/decisión aparte).
+- **Orden recomendado al usuario (numérico):** 1) aplicar `0116→0128` + `NOTIFY pgrst, 'reload schema';` (una vez); 2) crear/verificar cuentas QA; 3) tunnel y recorrer los flujos A→I en orden (§2 del plan); 4) resolver D8/F7 vía migración aparte si se decide; 5) capturas dark (H4) + `node scripts/piezas-reales.mjs` si se retoma marketing.
+- **Siguiente fase sugerida:** ejecutar el plan por tunnel marcando `VERIFICADO EN BROWSER`/`VERIFICADO EN DB`, y tomar decisiones de las PROPUESTAS abiertas (`gniñardo`, feed social, monto del bonus de nivel).
+
+---
+
+## 2026-09-09 — F10 auditoría UX de producto final
+
+### Construí
+- **`docs/audits/UX-AUDIT.md`** (nuevo): auditoría UX de ~100 páginas/60 componentes con tabla de ~18 hallazgos (file:line), reconciliación con PRODUCT-UX-AUDIT (42 hallazgos previos), top 5 priorizado y cobertura de 30+ archivos. Cero cambios de código/migraciones (fase solo documentación).
+
+### Verifiqué
+- Cobertura: 30+ archivos leídos (onboarding, login, registro, tienda, trastienda, rankeds, clanes, amigos, leaderboard, perfil, reto, bloqueos, ajustes, header, global loading/error, ConvertirCuenta). Sin browser/DB/tunnel.
+- tsc/eslint/vitest: **no aplican** (fase solo documentación; cero cambios de código).
+- Confirmé convención de copy: TERMINOLOGY.md §1 dice "español neutro latinoamericano (tuteo)" — "Tenés"/"Elegí"/"Probá"/"Hacé" en TSX son residuos F3, no convención vigente.
+
+### Resultado
+- **F10 CERRADO** (entregable: `docs/audits/UX-AUDIT.md`).
+- 0 cierres riesgo-cero aplicados este pase: todos los candidatos requieren decisión PO (comportamiento/afordance) o pertenecen a otra fase (F3 voseo TSX, F11 visual, I18N-AUDIT).
+- Reconciliación PRODUCT-UX-AUDIT: **8 hallazgos cerrados/verificados** (#17 RankingElo empty, #26 Rendirse confirm, #27 Sala timeout, #33 error retry, #34 loading brand, #3 Recuperar copy, #15 Amigos empty, #9 Tienda utilidad confirm parcial); 8+ confirmados abiertos.
+- Top 5 prioritarios: ProfileMenu salir sin confirm (P0), Tienda inconsistencia 2-step (P1), Sin toast global (P0), Ajustes sin sección Cuenta (P1), Leaderboard hardcoded ES (P3).
+- Nuevos respecto a PRODUCT-UX-AUDIT: Ajustes sin gestión de cuenta, perfil nivel ??1 en [userId], i18n gaps (Leaderboard, SalaEspera, error.tsx).
+
+---
+
+## 2026-09-09 — F11 auditoría visual consistencia (código)
+
+### Construí
+- **`docs/audits/VISUAL-CONSISTENCY-AUDIT.md`** (nuevo): auditoría visual completa de 296 componentes `.tsx` + `globals.css` + `layout.tsx`. Incluye:
+  - Mapa de tokens: 11 core + 13 trastienda + @theme inline mapping + 8 colores de mundo + 8 fuentes + gradiente de marca.
+  - Inventario de estilos: rounded-full (90), rounded-xl (50), rounded-2xl (44), text-white (32), bg-primario (22), bg-surface (41), shadow-lg (13), font-display (77), font-mono (62), font-bold (86), font-semibold (86).
+  - Dark mode: sistema correcto (data-theme + prefers-color-scheme + CSS vars, NO Tailwind dark:). 0 componentes que rompan. bg-white (4) son overlays sobre gradientes, intencional.
+  - Íconos: 28 SVGs customizados en icons.tsx (stroke 2px consistent), ~80 emojis decorativos (deliberadamente mix SVG+emoji).
+  - Tipografía: escala consistente (text-xs→text-3xl+), 3 familias UI + 5 comprables.
+  - 6 hallazgos + 6 propuestas fase futura.
+
+### Cierres riesgo-cero
+- **C-01:** `BotonesFinPartida.tsx:20` — `#3FB88B` → `var(--correcto)` (mejora adaptación dark mode, mismo color en light).
+- **C-02:** `NivelMundoSubio.tsx:13-25` — agregados anatomía/melodía/trigonometría/historia a `NOMBRE_MUNDO` + `COLOR_MUNDO` (antes solo 4 mundos, fallback violeta de Numeria para los 4 faltantes).
+
+### Verifiqué
+- tsc **0** · eslint tocados **0** · vitest **147/147** (13 files).
+- 2 archivos modificados: `BotonesFinPartida.tsx`, `NivelMundoSubio.tsx`.
+
+### Resultado
+- **F11 CERRADO** (entregable: `docs/audits/VISUAL-CONSISTENCY-AUDIT.md` + 2 cierres código).
+- Fortalezas: tokens CSS bien diseñados, dark mode correcto (CSS vars), tipografía coherente, radius/shadows en escala, gradiente de marca consistente.
+- Propuestas fase futura: P-01 centralizar colores mundos (4/8 sin colores.ts), P-02 tokens gradiente éxito, P-03 token overlay-highlight, P-04 theme spacing/radius, P-05 emojis→SVGs prominentes, P-06 podio medalla tokens.
+
+---
+
+## 2026-09-09 — F12 Función vs Marketing (promesa vs producto real)
+
+### Construí
+- **`docs/audits/FUNCION-VS-MARKETING.md`** (nuevo): matriz de 24 claims de marketing contra el producto real, con file:line por celda. Estados: 17 ✅ VERDADERO / 5 ⚠️ PARCIAL / 2 ❌ FALSO / 1 no-existe. Top claims dañinos: fórmula "50% dominio" (real 45%, afecta 4 docs) y feed social desactivado (vendido en AUDIENCE.md:31). Temas transversales: feed, fórmula, Pro, tour, casino/trastienda, PWA, multiplataforma.
+
+### Verifiqué
+- 24 claims procesados contra código fuente (worldLevel.ts, guard.ts, SocialClient.tsx, Header.tsx, manifest.ts, sw.js, capacitor.config.ts, VisitanteLanding.tsx, onboarding/page.tsx, pro/page.tsx, mundos.ts, y docs marketing AUDIENCE.md, PRODUCT-MESSAGING.md, AD-CONCEPTS.md, MARKETING.MD, ESPECIFICACION.md, messages/es.json).
+- 0 archivos de código modificados (fase solo documentación).
+- tsc/eslint/vitest: no aplican (cero cambios de código).
+
+### Resultado
+- **F12 CERRADO** (entregable: `docs/audits/FUNCION-VS-MARKETING.md`).
+- 0 cierres riesgo-cero: todos los candidatos requieren decisión PO (corregir copy de marketing del PO, activar/quitar feed social).
+- **Acción para el PO:** revisar la matriz y decidir: (1) corregir "50% dominio" → "45%" en 4 docs; (2) quitar "feed social" de marketing o activarlo en código; (3) matizar "tutorial guiado de 2 minutos" a "~30 segundos"; (4) verificar si "21 min/día" aparece en algún anuncio (no encontrado en docs ni messages).
+
+---
+
+## 2026-09-09 — F13 Reconciliación docs de diseño (ESPECIFICACION y afines vs estado real F0-F12)
+
+### Objetivo
+Sincronizar los docs de diseño vivos con el estado real verificado en F0-F12 (fuente: contexto del usuario; no re-auditar). Fase 100% documentación: cero código, cero migraciones → tsc/eslint/vitest/build NO aplican.
+
+### Construí
+- **`docs/ESPECIFICACION.md`** (15 ediciones quirúrgicas, sin reescribir):
+  - Cabecera nueva "Última reconciliación: 2026-09-09 — fase F13" + sección nueva **"Estado verificado (F0-F13)"**: tabla de 16 filas con audit/evidencia por área (curva mundo 34/45/21, niveles cuenta 0118, tienda/trastienda, rankeds, clanes, español neutro, límites, seg.)
+  - 8 mundos (se agregaron Melodía/Trigonometria/Historia; descripción conservadora — sin inventar modos/`problem_type` para los que no hay evidencia).
+  - Curva de nivel de mundo 34/45/21 (0117, `worldLevel.ts:46-49`), niveles cuenta (0118), recompensa 50n+250 (invisible, sin grant).
+  - Tienda real (24 ítems/47.900/6 marcos) + Trastienda completa (casino 0.88, apuestas 10|500, predicciones self-heal, 3 minijuegos activos, títulos 8/9 falta gniñardo).
+  - Rankeds (nivel mínimo 5 `guard.ts:184`, mejor-de-3, ELO TS≡SQL 0043, casual sin ELO 0050, anti-aleatorio 0109), feed DESACTIVADO, reto semanal 45 (0113), RLS S0-S4/S8 cerrada en 0120 + S5 re-granted 0121:605-649 + S9 pendiente, runners 11 mundos, checklist 8 mundos.
+  - Migraciones 0001→0128 con resumen por bloque; vitest 13→147; rango del diagrama de estructura 0036→0128; Pendiente reescrito (17 ítems).
+- **`docs/DIAGNOSTICO.md`**: 5 bugs marcados RESUELTO EN CÓDIGO (Bug 2/3 = misma causa raíz, helper único) + notas de arquitectura actualizadas (Numeria Realtime 0038, matchmaking ±30→±300 tope ±300 `0109:537`, notificaciones reto Realtime + `duel_invites` 0059).
+- **`docs/TECH-DEBT.md`** y **`docs/ARCHITECTURE.md`**: ítems de "docs desactualizados" actualizados (8 mundos, fórmula, README) y rango de migraciones a 0128.
+- **`docs/agent-work/ACTIVE.md`**: claim F13 cerrado.
+
+### Verifiqué
+- Coherencia final con grep: sin restos en ESPECIFICACION de "5/cinco mundos", "español (Argentina)", "0001-0036", fórmula vieja 50% dominio, ni conteos viejos. Restos de estos claims quedan SOLO en audits (no editables) y `docs/PROJECT-STATE.md:27,84`.
+- Referencias de la tabla "Estado verificado" validadas contra el filesystem: todos los `docs/audits/*.md` citados existen (STORE-ECONOMY, DUELOS, RANKEDS, CASUAL, NIVELES-MUNDOS, NIVELES-PERSONALES, AUDIT-RLS-SEGURIDAD, REQUIREMENTS-CHECKLIST, I18N) + `docs/TERMINOLOGY.md`.
+
+### Resultado
+- **F13 CERRADO**.
+- **NO PUEDO VERIFICAR (sin DB)**: detalle de modos/sub-temas de Melodía/Trigonometria/Historia (remitido a REQUIREMENTS-CHECKLIST/PROGRESO); `docs/PROJECT-STATE.md:27,84` y `docs/audits/MASTER-AUDIT.md:50` aún dicen que ESPECIFICACION dice "5 mundos" → actualizar en la próxima pasada que toque esos docs (audits no editables por regla).
+
+
+- **ROLLBACK F6 (2026-09-09, urgente)**: revertido el wiring de level-up de cuenta al 100% por reporte de XP/aciertos en 0 en resumenes de practica y rankeds. Se quito: `NivelCuentaSubio.tsx`, bloque nivelAntes/nivelDespues de `api/practica/finish` y `api/enigmia/finish`, campo `nivelCuenta` del FinishResponse y renders en SprintSummary + 12 clientes, y key `subisteDeNivel` de es/en.json. Verificado: tsc 0, eslint 0, vitest 147/147, build OK. El path de conteo (`/api/attempts` -> `insertar_intento`, SprintRunner, `registrar_resultado_duelo`) no fue tocado por ninguna fase.

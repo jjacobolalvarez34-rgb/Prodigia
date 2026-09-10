@@ -61,5 +61,5 @@ export async function POST(request: Request) {
     codigo = generarCodigo(); // colisión de código único, reintenta
   }
 
-  return NextResponse.json({ error: "No se pudo crear el grupo, probá de nuevo." }, { status: 500 });
+  return NextResponse.json({ error: "No se pudo crear el grupo, prueba de nuevo." }, { status: 500 });
 }

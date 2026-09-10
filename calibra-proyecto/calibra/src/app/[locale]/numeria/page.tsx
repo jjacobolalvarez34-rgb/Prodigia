@@ -9,6 +9,8 @@ import FondoCursorMundo from "@/components/FondoCursorMundo";
 import TopicCard, { type TopicBadge } from "@/components/TopicCard";
 import AccionMundo from "@/components/AccionMundo";
 import NivelMundoBadge from "@/components/NivelMundoBadge";
+import NivelMundoProgreso from "@/components/NivelMundoProgreso";
+import type { SincronizarProgresoRow } from "@/lib/mundos/progresoNivel";
 import LevelDial from "@/app/[locale]/practica/LevelDial";
 import { ARITHMETIC_PROBLEM_TYPES } from "@/types/database";
 import {
@@ -35,7 +37,7 @@ export default async function NumeriaHomePage() {
   const ahora = new Date();
   const hoyIso = ahora.toISOString().slice(0, 10);
 
-  const [{ data: dailyHoy }, { data: skillRows }, { data: worldRow }] = await Promise.all([
+  const [{ data: dailyHoy }, { data: skillRows }, { data: mundoProgreso }] = await Promise.all([
     supabase
       .from("daily_progress")
       .select("xp_ganado")
@@ -43,10 +45,17 @@ export default async function NumeriaHomePage() {
       .eq("fecha", hoyIso)
       .maybeSingle(),
     supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", user.id),
-    supabase.from("world_progress").select("nivel_mundo").eq("user_id", user.id).eq("world", "numeria").maybeSingle(),
+    supabase.rpc("sincronizar_progreso_mundo", { p_world: "numeria" }).returns<SincronizarProgresoRow[]>().maybeSingle(),
   ]);
 
-  const nivelMundo = worldRow?.nivel_mundo ?? 1;
+  const nivelMundo = mundoProgreso?.nivel_mundo ?? 1;
+  const progresoMundo = {
+    puntos: mundoProgreso?.puntos_mundo ?? 0,
+    nivel: nivelMundo,
+    fracVolumen: mundoProgreso?.frac_volumen ?? 0,
+    fracDominio: mundoProgreso?.frac_dominio ?? 0,
+    fracLecciones: mundoProgreso?.frac_lecciones ?? 0,
+  };
 
   const metaXpDiaria = profile.meta_xp_diaria ?? 500;
   const xpHoy = dailyHoy?.xp_ganado ?? 0;
@@ -103,6 +112,8 @@ export default async function NumeriaHomePage() {
           </div>
           <LevelDial nivel={nivelPromedio} size={56} mostrarEtiqueta={false} />
         </div>
+
+        <NivelMundoProgreso nombreMundo="Numeria" colorHex="#6C4CF1" progreso={progresoMundo} />
 
         {metaCumplidaHoy ? (
           <div className="flex items-center gap-3 rounded-2xl bg-correcto/10 px-5 py-4">

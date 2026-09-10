@@ -1,7 +1,12 @@
 # docs/marketing — Línea de publicidad y marketing de Prodigia
 
 > Línea INDEPENDIENTE Y PARALELA a los P0 técnicos. URGENTE, pero nunca debe interrumpir ni retrasar los P0 técnicos.
-> Última actualización: 2026-09-08.
+> Última actualización: 2026-09-09.
+
+## NUEVO (2026-09-09): auditoría de la línea + eje oscuro de piezas
+
+- `docs/audits/MARKETING-AUDIT.md` — inventario completo (20 docs + assets), auditoría docs-vs-código con hallazgos y file:line, estado real del dark mode y plan del eje oscuro (BLOQUEADO-con-plan).
+- **Eje oscuro**: 4 plantillas nuevas en `assets/piezas/` (`pieza-oscura-*`) con tokens dark REALES de la app (`globals.css:47-56`) + PNG de preview. Capturan primero de `assets/pantallas-oscuras/` (dark real, tunnel del usuario) y caen a la captura clara mientras no existan. Hallazgos a corregir: `PRODUCT-MESSAGING.md:52,55` y `AD-CONCEPTS.md:90` citan la fórmula vieja de nivel de mundo (50% dominio; vigente: 45/34/21 → `0117`+`worldLevel.ts`), y `AUDIENCE.md:31` publicita un feed social que el código tiene desactivado.
 
 ## NUEVO (2026-09-08): evidencia real en navegador
 
