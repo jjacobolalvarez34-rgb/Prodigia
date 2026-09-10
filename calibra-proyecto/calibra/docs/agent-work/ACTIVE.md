@@ -428,3 +428,9 @@ Resultado:
 - 0 cierres riesgo-cero: todos los candidatos requieren decisión PO (corregir copy de marketing del PO, activar/quitar feed).
 - VERIFICADO: tsc/eslint/vitest no aplican (fase solo documentación; cero cambios de código).
 - RESULTADO: F12 CERRADO. El PO tiene la matriz completa para decidir qué prometer, qué matizar y qué quitar.
+
+
+### CIERRE: F14/15+F16 informe final · 2026-09-09
+- CONSTRUI: `docs/FINAL-SPRINT-REPORT.md` (rutas de migracion 0116→0128 + NOTIFY, checklist de retest por tunnel 9 flujos, riesgos S5/S9 y causa del 0 XP, nota de rollback F6).
+- VERIFIQUE: el codigo de `/api/attempts` y `/api/logic-attempts` llama RPCs de 0120 (insertar_intento / insertar_intento_logica, grant a authenticated 0120:483/573) — el 0 XP es por migracion 0120 no aplicada a la base, NO por codigo (tsc/eslint/vitest/build OK).
+- PENDIENTE usuario: aplicar 0116→0128 + NOTIFY y recorrer el Paso 2 del informe. PENDIENTE PO: items de UX, feed social, copy 50% dominio y tutorial.

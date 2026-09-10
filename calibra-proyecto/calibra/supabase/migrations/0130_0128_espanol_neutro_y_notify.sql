@@ -1,3 +1,21 @@
+-- ====================================================================
+-- PRODIGIA — RESTO DEL SPRINT (SOLO 0128 + NOTIFY)
+-- Generado: 2026-09-09
+--
+-- ESTADO DE TU BASE: 0116→0119 aplicadas por ti; 0120→0127 aplicadas
+-- (primera corrida de la 0129). Esta migracion cubre SOLO lo que falta:
+-- el 0128 espanol neutro (crea o reemplaza 9 funciones RPC) + el
+-- NOTIFY de recarga del schema.
+--
+-- NO re-ejecutar 0129 entera / 0120-0127: sus seeds en tablas SIN
+-- primary key (trastienda_ruleta/minijuegos/pizarra/apuestas/
+-- predicciones_ranking/calcu/acertijos/reloj/casino, id uuid default
+-- gen_random_uuid()) se DUPLICARIAN.
+--
+-- 0128 es idempotente (create or replace function, sin grants y sin
+-- seeds top-level): puede re-ejecutarse sin riesgo.
+-- ====================================================================
+
 -- 0128: Español neutro latinoamericano — mensajes de negocio (RPC) sin voseo.
 -- Sigue a 0127_trastienda_ruleta_casino.sql.
 --
@@ -401,3 +419,4 @@ begin
     from public.profiles pr where pr.id = v_user;
 end;
 $$;
+NOTIFY pgrst, 'reload schema';
