@@ -1,0 +1,22 @@
+
+> prodigia@0.1.0 dev
+> next dev
+
+▲ Next.js 16.3.0 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://26.106.16.101:3000
+- Environments: .env.local
+✓ Ready in 6.2s
+✓ Running next.config.ts took 3.8s
+○ Compiling proxy ...
+
+○ Compiling /[locale] ...
+ GET /es 200 in 23.4s (proxy.ts: 43ms)
+ POST /api/attempts 401 in 3.5s (next.js: 3.3s, application-code: 198ms)
+ POST /api/attempts 401 in 28ms (next.js: 9ms, application-code: 19ms)
+ GET /es 200 in 5.3s (next.js: 4.7s, proxy.ts: 32ms, generate-params: 25ms, application-code: 474ms)
+ GET /es 200 in 278ms (next.js: 19ms, proxy.ts: 14ms, generate-params: 0.1ms, application-code: 245ms)
+ POST /api/attempts 401 in 47ms (next.js: 14ms, application-code: 33ms)
+ POST /api/practica/finish 401 in 1301ms (next.js: 1265ms, application-code: 35ms)
+ POST /api/attempts 400 in 1467ms (next.js: 790ms, application-code: 677ms)
+ POST /api/practica/finish 200 in 10.6s (next.js: 287ms, application-code: 10.3s)

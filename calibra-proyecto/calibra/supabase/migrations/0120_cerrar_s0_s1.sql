@@ -220,7 +220,7 @@ begin
   v_nivel_anterior := coalesce(v_nivel_anterior, 1);
 
   v_real_mundo := public.xp_real_por_mundo(v_user, p_world)::integer;
-  select coalesce(puntos_mundo, 0) into v_ya
+  select coalesce(w.puntos_mundo, 0) into v_ya
   from public.world_progress w where w.user_id = v_user and w.world = p_world;
   v_por_acreditar := greatest(0, v_real_mundo - v_ya);
 
@@ -452,8 +452,8 @@ begin
   v_nivel := null;
   v_racha := null;
   if p_calibrar and not v_sospechoso then
-    select nivel, racha_actual into v_actual
-    from public.skill_levels where user_id = v_user and problem_type = p_problem_type;
+    select sl.nivel, sl.racha_actual into v_actual
+    from public.skill_levels sl where sl.user_id = v_user and sl.problem_type = p_problem_type;
     v_nivel := coalesce(v_actual.nivel, 1);
     v_racha := coalesce(v_actual.racha_actual, 0);
 
@@ -542,8 +542,8 @@ begin
   v_nivel := null;
   v_racha := null;
   if not v_sospechoso then
-    select nivel, racha_actual into v_actual
-    from public.logic_skill_levels where user_id = v_user;
+    select sl.nivel, sl.racha_actual into v_actual
+    from public.logic_skill_levels sl where sl.user_id = v_user;
     v_nivel := coalesce(v_actual.nivel, 1);
     v_racha := coalesce(v_actual.racha_actual, 0);
 

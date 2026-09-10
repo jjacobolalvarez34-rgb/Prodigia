@@ -1,0 +1,4 @@
+⚠ Turbopack's filesystem cache has been deleted because we previously detected an internal error in Turbopack. Builds or page loads may be slower as a result.
+⚠ Slow filesystem detected. The benchmark took 597ms. If \\?\D:\Repositorios\Prodigia\calibra-proyecto\calibra\.next\dev is a network drive, consider moving it to a local folder.
+See more: https://nextjs.org/docs/app/guides/local-development
+[api:attempts] 42702 column reference "nivel" is ambiguous

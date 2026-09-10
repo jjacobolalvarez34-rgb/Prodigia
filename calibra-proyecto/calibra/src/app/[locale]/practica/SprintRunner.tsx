@@ -203,6 +203,7 @@ export default function SprintRunner({
   const [escudoUsado, setEscudoUsado] = useState(false);
   const [nudgeRanking, setNudgeRanking] = useState<string | null>(null);
   const [fantasmaRespondidos, setFantasmaRespondidos] = useState(0);
+  const [errorGuardado, setErrorGuardado] = useState<string | null>(null);
 
   useEffect(() => {
     nivelesRef.current = nivelPorOperacion;
@@ -346,6 +347,9 @@ export default function SprintRunner({
         }),
       });
       const data = await res.json();
+      if (!res.ok || data.error) {
+        setErrorGuardado(typeof data.error === "string" ? data.error : `HTTP ${res.status}`);
+      }
       if (typeof data.xp === "number" && data.xp > 0) {
         xpGanado = data.xp;
         setXpSprint((prev) => prev + data.xp);
@@ -366,9 +370,8 @@ export default function SprintRunner({
           racha: rachaActual,
         });
       }
-    } catch {
-      // Si falla el guardado, igual dejamos que el sprint siga: la
-      // práctica no se traba por un error de red puntual.
+    } catch (err) {
+      setErrorGuardado(err instanceof Error ? err.message : String(err));
     }
 
     if (correct && xpGanado > 0) {
@@ -450,6 +453,12 @@ export default function SprintRunner({
             <span className="font-mono font-medium">{t("segundos", { n: segundos })}</span>
           </div>
         </div>
+
+        {errorGuardado && (
+          <div className="rounded-lg border border-error/40 bg-error/10 px-3 py-2 text-xs font-medium text-error">
+            No se pudo guardar el intento: {errorGuardado}
+          </div>
+        )}
 
         {/* Fase J2 (cierre): fantasma del rival — avanza al ritmo exacto de
             sus respuestas ya guardadas del duelo, en paralelo a la partida
