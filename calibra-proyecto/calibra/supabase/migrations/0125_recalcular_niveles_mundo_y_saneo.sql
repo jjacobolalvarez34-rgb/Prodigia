@@ -192,8 +192,22 @@ $$;
 -- ---------- 2) recalcular_progreso_mundo: refresca world_progress ----------
 -- Upsert de valores EXACTOS derivados (no acumulativos): el world_progress
 -- queda coherente con la curva vigente aunque antes tuviera basura.
+--
+-- FIX 42702 (encontrado al correr esta migración contra producción,
+-- 2026-09-12): `returns table (world text, puntos_mundo integer,
+-- nivel_mundo integer)` crea variables de salida con esos 3 nombres —
+-- IDÉNTICOS a 3 columnas reales de world_progress. PL/pgSQL escanea el
+-- texto completo de cada sentencia embebida (incluida la lista de
+-- columnas de un INSERT y el conflict target de ON CONFLICT) buscando
+-- coincidencias con nombres de variable — ahí es ambiguo aunque, para
+-- SQL "puro", una lista de columnas nunca debería serlo. Nadie fuera de
+-- esta función lee su resultado por nombre (sincronizar_progreso_mundo
+-- y el recálculo masivo de abajo la llaman con `perform`, descartando
+-- el valor de retorno) — renombrar las 3 columnas de salida a algo que
+-- no colisione con ninguna columna real es un cambio sin ningún efecto
+-- externo, no solo un workaround puntual de una línea.
 create or replace function public.recalcular_progreso_mundo(p_user_id uuid, p_world text)
-returns table (world text, puntos_mundo integer, nivel_mundo integer)
+returns table (mundo_out text, puntos_mundo_out integer, nivel_mundo_out integer)
 language plpgsql
 security definer
 set search_path = public

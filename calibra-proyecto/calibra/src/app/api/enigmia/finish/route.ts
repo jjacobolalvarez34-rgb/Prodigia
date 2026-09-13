@@ -17,10 +17,12 @@ interface RegistrarXpDiarioResult {
   meta_xp_diaria: number;
 }
 
+// Nombres de columna del RPC registrar_progreso_mundo (0132): world/
+// puntos_mundo/nivel_mundo se renombraron a *_out para no colisionar
+// con las columnas reales de world_progress (bug 42702 real, ver esa
+// migración).
 interface RegistrarPuntosMundoResult {
-  world: string;
-  puntos_mundo: number;
-  nivel_mundo: number;
+  nivel_mundo_out: number;
   nivel_anterior: number;
 }
 
@@ -105,14 +107,14 @@ const { data: registroRows, error: registroError } = await supabase.rpc("registr
     // cada 5 niveles, solo al CRUZAR el múltiplo (no en cada nivel).
     if (
       nivelMundo &&
-      nivelMundo.nivel_mundo > nivelMundo.nivel_anterior &&
-      Math.floor(nivelMundo.nivel_mundo / 5) > Math.floor(nivelMundo.nivel_anterior / 5)
+      nivelMundo.nivel_mundo_out > nivelMundo.nivel_anterior &&
+      Math.floor(nivelMundo.nivel_mundo_out / 5) > Math.floor(nivelMundo.nivel_anterior / 5)
     ) {
       await supabase.from("feed_posts").insert({
         user_id: user.id,
         tipo: "nivel_mundo",
         mundo: "enigmia",
-        nivel_mundo_valor: nivelMundo.nivel_mundo,
+        nivel_mundo_valor: nivelMundo.nivel_mundo_out,
       });
     }
   }
@@ -151,9 +153,9 @@ const { data: registroRows, error: registroError } = await supabase.rpc("registr
     logrosNuevos,
     apuesta,
     nivelMundo: nivelMundo && {
-      world: nivelMundo.world,
-      nivel_mundo: nivelMundo.nivel_mundo,
-      subio: nivelMundo.nivel_mundo > nivelMundo.nivel_anterior,
+      world: "enigmia",
+      nivel_mundo: nivelMundo.nivel_mundo_out,
+      subio: nivelMundo.nivel_mundo_out > nivelMundo.nivel_anterior,
     },
   });
 }
