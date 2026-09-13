@@ -75,7 +75,7 @@ export default function RegistroForm({ refId }: Props) {
     // — no hace falta esperar el viaje por /auth/callback para conectar
     // la amistad. Best-effort: si falla, no bloquea el registro en sí.
     if (refId) {
-      await supabase.rpc("conectar_por_invitacion", { p_inviter_id: refId });
+      await supabase.rpc("conectar_por_invitacion", { p_token: refId });
     }
 
     router.push("/");

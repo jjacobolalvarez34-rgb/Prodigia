@@ -299,8 +299,13 @@ function InvitarPorLink() {
 // Prodigia: si se registran entrando por acá, quedan conectados como
 // amigos automáticamente (conectar_por_invitacion, disparada desde
 // RegistroForm.tsx o /auth/callback según si hace falta confirmar el
-// email). No usa una tabla de invitaciones aparte — el propio user_id
-// (ya un uuid) es el código de referido, no hace falta generar nada.
+// email).
+// Fix de seguridad (auditoría IDOR, ver 0133): el link usaba el user_id
+// real, que no es secreto — buscar_usuarios() permite resolver
+// nombre→id de cualquiera, así que cualquiera podía forzarle una
+// amistad "aceptada" a un tercero sin su consentimiento. Ahora usa
+// profiles.token_invitacion, un uuid random separado del id real y sin
+// forma de derivarlo por búsqueda.
 function InvitarAmigoSinCuenta() {
   const t = useTranslations("Social");
   const [link, setLink] = useState<string | null>(null);
@@ -313,7 +318,11 @@ function InvitarAmigoSinCuenta() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!cancelado && user) setLink(`${window.location.origin}/registro?ref=${user.id}`);
+      if (!user) return;
+      const { data: perfil } = await supabase.from("profiles").select("token_invitacion").eq("id", user.id).single();
+      if (!cancelado && perfil?.token_invitacion) {
+        setLink(`${window.location.origin}/registro?ref=${perfil.token_invitacion}`);
+      }
     }
     cargar();
     return () => {

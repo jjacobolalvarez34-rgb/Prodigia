@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       if (ref) {
-        await supabase.rpc("conectar_por_invitacion", { p_inviter_id: ref });
+        await supabase.rpc("conectar_por_invitacion", { p_token: ref });
       }
       return NextResponse.redirect(`${origin}${next}`);
     }

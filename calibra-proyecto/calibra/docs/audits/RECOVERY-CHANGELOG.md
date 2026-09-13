@@ -82,6 +82,68 @@ Verificado con `scripts/verificar-estado-real*.mjs` (borrados tras usarlos — n
 
 **Lectura de esta tabla**: todo indica que en algún momento se corrieron migraciones individuales hasta más o menos 0124 (o hasta 0120/0123, con 0131 aplicada suelta después para el fix de `insertar_intento`), y que el intento posterior de correr el bundle gigante `0129` (0120→0128 en un solo archivo) probablemente falló a mitad de camino — muy posiblemente en el `insert` de 118 elementos de `trastienda_casino_elementos` (0127), que no tiene `on conflict` y si la tabla ya existía de una corrida previa habría chocado con la primary key `simbolo`, abortando toda la transacción del bundle y dejando 0124-0128 sin aplicar. Es una hipótesis razonada a partir de la evidencia, no un hecho confirmado — no se puede saber con certeza sin ver el error real que devolvió el SQL Editor en su momento.
 
+## 4. Confirmado: `/api/attempts` y `/api/logic-attempts` ya usan los RPC nuevos (sin regresión del cierre S0/S1)
+
+Verificado leyendo el código completo de las dos rutas: ambas llaman a `insertar_intento`/`insertar_intento_logica` (no hacen INSERT directo), con el mismo cálculo de "sospechoso" replicado solo para decidir qué mostrar en el front. Confirmado además con una llamada RPC real (ver sección 2) que `insertar_intento` funciona. **Sin riesgo de que el cierre de seguridad de 0120 haya roto la práctica normal — el cliente ya estaba actualizado para el nuevo camino.**
+
+## 5. Sección 15 del brief (RetoClient.tsx / useSyncExternalStore) — diagnóstico de opencode CONFIRMADO correcto
+
+El brief pedía no confiar ciegamente en el diagnóstico de opencode acá. Lo comprobé leyendo el código real: **el bug era real** (mío, de esta misma sesión, no de opencode) — `useSyncExternalStore` recibía `() => leerProgresoGuardado(...)` inline, y esa función devuelve un objeto NUEVO (`JSON.parse`) en cada llamada. Eso viola el contrato de `getSnapshot` (debe ser `Object.is`-estable entre llamadas sin cambios reales) — React lo detecta y puede entrar en loop de "Maximum update depth exceeded". **El fix de opencode es correcto y está bien hecho**: extrajo `crearSnapshotProgreso` (`src/lib/progresoReto.ts`) que devuelve un closure con cache — misma referencia hasta que cambie la clave — y lo memoiza con `useMemo` en el componente. De paso separó `leerProgresoGuardado` en una función pura testeable (acepta un `storage` inyectable). Sin regresiones visibles en el resto del componente.
+
+## 6. Estado real actualizado de migraciones (después de que el propietario corriera 0125-0127-0132)
+
+| Pieza | Estado |
+|---|---|
+| `profiles.es_cuenta_prueba` (0126) | ✅ Aplicada |
+| `trastienda_reloj`/`trastienda_acertijos` (deberían borrarse en 0126) | ❌ Siguen existiendo — el DROP de esas 2 tablas no se aplicó, aunque el resto de 0126 sí (columna + `ventana_predicciones` sí existen). Inofensivo: sus RPCs ya no existen, nada las usa. Cosmético, no urgente. |
+| `trastienda_casino_elementos` (0127) | ✅ 118 filas, correcto |
+| `profiles.afinidad_banner` (0125) | ✅ Aplicada |
+| `elegir_mundo_inicial` legacy revocada (0116) | ❌ **NO aplicada** — la función singular sigue viva. Ver riesgo abajo. |
+| `ventana_predicciones` (0126) | ✅ Aplicada |
+| `registrar_xp_diario` real (0120) | ✅ Aplicada y funcionando |
+
+**Riesgo real de que 0116 no esté aplicada**: si existe alguna cuenta real todavía con `mundos_desbloqueados` de cardinalidad exactamente 1 (heredada de la época "1 mundo gratis", antes de esta sesión) y todavía no completó el onboarding de 2 mundos, `elegir_mundos_iniciales` (la función vigente, de 0112) sigue rechazándola con `cardinality(v_actuales) > 0` — el auto-reparo de 0116 (`>= 2` en vez de `> 0`) todavía no está en producción. Esto es, con evidencia real (no sospecha), la causa más probable del punto 14 del brief ("problema con selección de dos mundos"). **Pendiente: correr `0116_fix_elegir_dos_mundos.sql`.**
+
+## 7. Secciones 12/13/17 del brief — Casual, Invitación a duelo, Temporadas de Ranked
+
+**Hallazgo de alcance primero**: comparé `git diff e03aee6 HEAD` en TODO lo relacionado a duelos/matchmaking/casual (`src/lib/duelos`, `src/app/api/duelos`, `src/app/api/amigos`, `src/app/[locale]/social`) — opencode tocó exactamente 3 archivos ahí, y ninguna migración SQL nueva (0114-0132) toca `buscar_rival_duelo`, ELO, ni ninguna función de matchmaking. Es decir: **la lógica de Casual vs Ranked, cómo se calcula el ELO, y el matchmaking en sí NO fueron tocados por opencode en este sprint** — no hay regresión que buscar ahí específicamente atribuible a opencode.
+
+**Sección 13 (invitación a duelo que se queda trabada) — SÍ hay un fix real, y es bueno**: los 3 hooks de duelo en tiempo real (`useArranqueSincronizado`, `useDeteccionAbandono`, `useProgresoEnVivo`) compartían el mismo topic de canal Realtime (`duelo:<id>`). `supabase.channel()` **reusa** la instancia existente si el topic ya está registrado — si dos de estos hooks montaban cerca en el tiempo (ej. una invitación que arranca el duelo apenas se acepta), uno terminaba agregando callbacks de `presence`/`broadcast` sobre un canal que el OTRO hook ya había suscripto, y Supabase tira `"cannot add presence callbacks after subscribe()"` — un crash real que coincide exactamente con el síntoma reportado ("se queda cargando/trabada, no conecta"). El fix le da a cada hook su propio topic (`:sala`, `:abandono`, `:vivo`) — verificado que no queda ninguna referencia huérfana al topic viejo sin sufijo en ningún otro archivo. Diagnóstico y fix correctos.
+
+**Sección 17 (temporadas de Ranked)**: `0120_cerrar_s0_s1.sql` — pese al nombre parecido — es sobre hallazgos de seguridad "S0/S1" (severidad, del audit), NO sobre "Season 0/Season 1" de Rankeds. Confirmado por grep de todo el proyecto (`temporada`, `season`, `soft reset`, `placement`): **la propuesta de temporadas de Ranked nunca se implementó, ni parcial** — sigue siendo 100% una propuesta sobre papel. Por la propia regla del brief ("no sacrificar estabilidad por implementar una temporada rápidamente"), no la construyo ahora — quedaría fuera del alcance de "recuperación" y es trabajo nuevo, no un fix de regresión.
+
+## 8. Casual vs Ranked / ELO / heartbeat / fantasmas — auditado a pedido explícito, código PRE-EXISTENTE (no de opencode)
+
+Resultado: **en general está bien diseñado, no roto.** Punto por punto contra el pedido del brief:
+
+- **"Casual vs Casual, nunca mezclar colas"**: ✅ correcto. `buscar_rival_duelo` filtra `q.clasificatorio = p_ranked` — Clasificatoria y Casual literalmente no pueden emparejarse entre sí (con un comentario explícito en el código explicando por qué: sería incoherente que a uno le cambie el ELO y al otro no).
+- **"NO modificar ELO en Casual"**: ✅ correcto y bien cerrado. `registrar_resultado_duelo` (duelo simple) tiene un `if not v_duel.clasificatorio then return ... (sin tocar elo_rating) ... end if;` explícito. `finalizar_serie_si_corresponde` (el "mejor de 3"/todas-las-ciudades) SIEMPRE actualiza ELO sin chequear `clasificatorio` — pero es inofensivo porque el modo "aleatorio" (el único que genera series) está BLOQUEADO para casual desde el matchmaking mismo (`if p_mundo = 'aleatorio' and not p_ranked then raise exception`) — casual nunca puede generar una serie, así que esa función nunca se ejecuta para un duelo casual.
+- **"NO usar ELO para encontrar rival" (en Casual)**: ⚠️ matizable, no un bug claro. El matchmaking SÍ usa proximidad de ELO (`abs(elo - mi_elo) <= rango`, rango que crece con el tiempo de espera) para emparejar, incluso en modo casual — no hay una rama que ignore el ELO en Casual. Puede ser una decisión de diseño deliberada (emparejar razonablemente parejo incluso en casual) más que un incumplimiento — lo señalo como algo para confirmar con vos, no lo cambio sin que lo pidas explícitamente (sería un cambio de comportamiento, no un fix de regresión).
+- **Heartbeat / jugadores fantasma**: ✅ verificado de punta a punta, no solo por código. El cliente (`RankedsClient.tsx`) hace polling a `buscar_rival_duelo` cada 2.2s mientras espera — cada llamada refresca `last_seen_at` en el servidor. La búsqueda descarta filas de la cola con `last_seen_at` de más de 10 segundos (fantasmas: pestaña cerrada, conexión perdida) y limpia filas de más de 2 minutos. Además hay protección explícita contra "rebirth fantasma" (el lado pasivo de un match no se re-inserta en la cola si ya fue emparejado por el otro lado) — con comentario explicando exactamente ese caso. Bien pensado, coherente.
+
+Conclusión: no encontré nada roto en esta área ni antes ni durante opencode — la única duda es de producto (ELO en casual), no técnica.
+
+## 9. Idioma (secciones 24-25 del brief) — voseo ya está limpio, pero el problema real es otro y es grande
+
+**Voseo**: corrí `scripts/detectar-voseo.mjs` contra `messages/es.json` (limpio, sin residuos reales — los 2 "hallazgos" son falsos positivos de la regex) y grepeé formas de voseo típicas (`tenés`, `podés`, `elegí`, `jugá`, etc.) en TODO `src/**/*.tsx` — **cero coincidencias**. El trabajo de español neutro de opencode (0128/0130 para RPCs + lo que sea que tocó en `messages/*.json`) parece haber cerrado esto bien.
+
+**El problema real es más grande que voseo — es cobertura de i18n**: de 295 archivos `.tsx` en `src/`, solo 45 (15%) usan `useTranslations`/`getTranslations` de next-intl. Los otros 250 muy probablemente tienen texto en español escrito directo en el JSX — se vería en español SIN IMPORTAR que el usuario tenga inglés seleccionado. Esto no es algo que opencode haya roto: es un patrón de todo el proyecto, de siempre (incluye código mío de esta misma sesión — el flujo de retos diarios/semanales y el rediseño de onboarding que armé antes de este mensaje NO usan next-intl, texto literal en español). Migrar 250 archivos a next-intl es un trabajo grande, no un fix puntual — se lo consulto al propietario antes de meterle tiempo, en vez de asumir el alcance.
+
+## 10. Auditoría de seguridad IDOR (sección 23 del brief) — sub-agente + fixes aplicados
+
+Lancé una auditoría sistemática (no manual) de las 132 migraciones buscando el mismo patrón de `acreditar_chispas` (0115): un parámetro `uuid` que identifica a "otro usuario", usado sin comparar contra `auth.uid()`, en una función con `grant execute ... to authenticated`. Cubrió también las rutas API cliente. Código PRE-EXISTENTE en todos los casos, no de opencode.
+
+**Confirmado seguro (con evidencia, no supuesto)**: todas las funciones que tocan Chispas, ELO, nivel de mundo o títulos ya sea usan `auth.uid()` internamente, validan el parámetro contra `auth.uid()`, o no tienen grant a `authenticated` (solo invocables desde otra función `security definer` con un id resuelto server-side — mismo patrón ya usado en `desbloquear_titulo`/`otorgar_marco_mundo`). Ningún caso adicional del bug crítico de `acreditar_chispas` (fabricación/robo de economía) sigue sin mitigar.
+
+**4 hallazgos reales, los 4 corregidos ahora en `0133_seguridad_idor_invitacion_y_grupos.sql`**:
+
+1. **`conectar_por_invitacion(p_inviter_id)` (0063, severidad media)** — el link de "invitar amigo sin cuenta" usaba el `user_id` real como si fuera secreto, pero `buscar_usuarios()` permite resolver nombre→id de cualquiera — cualquier usuario podía forzarle una amistad "aceptada" a un tercero sin su consentimiento, solo buscándolo por nombre. **FIX**: nueva columna `profiles.token_invitacion` (uuid random, separado del id real, sin forma de derivarlo por búsqueda) — la función ahora recibe `p_token` y resuelve el id internamente. Actualizados los 3 lugares del cliente (`RegistroForm.tsx`, `auth/callback/route.ts`, y el generador del link en `AmigosClient.tsx`).
+2. **`es_miembro_de_grupo` / `es_profesor_del_grupo` (0023, severidad media)** — helpers de RLS con grant a `authenticated`: cualquiera podía consultar directo "¿el usuario X es alumno/profesor del grupo Y?" de terceros. Confirmé que las 2 policies que las usan SIEMPRE las llaman con `auth.uid()` como segundo parámetro — **FIX**: las funciones ahora ignoran el `p_user_id` recibido y usan `auth.uid()` directo, sin cambiar el comportamiento real de las policies.
+3. **`mision_actual_de_clan` / `asegurar_mision_semanal` (0068, severidad baja)** — sin chequeo de membresía al clan. **FIX**: agregado `if not exists (... clan_membresias ...) then raise exception`.
+4. **`xp_real_por_mundo` (severidad baja)** — helper interno con grant a `authenticated` de más (confirmado por grep que ningún código cliente la llama directo). **FIX**: `revoke execute ... from authenticated, public` — las llamadas internas de otras funciones `security definer` no se ven afectadas.
+
+`npx tsc --noEmit` limpio en las dos carpetas después de los 3 cambios de cliente. **Pendiente de correr `0133` en producción.**
+
 ## Bloqueos actuales
 
 - **Sin verificar contra la base de datos real todavía**: tengo `.env.local` con la service role key copiado al clon nuevo, así que esto es technically posible en la próxima pasada (leer `pg_proc`, o mejor, reproducir llamadas RPC reales vía las cuentas QA, mismo método que sesiones anteriores). Sección 6/36/37 del brief pendiente de ejecutar.
