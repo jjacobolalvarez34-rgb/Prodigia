@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoHistoria } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import HistoriaPracticaClient from "../../HistoriaPracticaClient";
 import { cargarDatosPracticaHistoria } from "@/lib/historia/cargarPractica";
 
-export const metadata: Metadata = {
-  title: "Practicar Causa y efecto",
-  description: "La consecuencia directa más reconocida de un evento histórico.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Historia.practicaPages.causaefecto.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 interface Props {
   searchParams: Promise<{ duelo?: string }>;

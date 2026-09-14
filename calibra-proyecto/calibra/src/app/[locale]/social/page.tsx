@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import SocialClient from "./SocialClient";
 import type { PostFeed } from "./Feed";
 
-export const metadata: Metadata = {
-  title: "Social",
-  description: "Feed, amigos y duelos en Prodigia.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Social.metadata");
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default async function SocialPage() {
+  const t = await getTranslations("Social");
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/social");
-  bloquearInvitado(user, "Social (Feed y Amigos)");
+  bloquearInvitado(user, t("guardLabel"));
 
   const [
     { data: posts },

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuarioOnboarded, bloquearInvitado } from "@/lib/auth/guard";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
@@ -17,6 +18,7 @@ interface Props {
 // hace la validación real — acá solo se maneja el resultado.
 export default async function InvitacionDueloPage({ params }: Props) {
   const { inviteId } = await params;
+  const t = await getTranslations("Duelos.invitacion");
   const supabase = await createClient();
   const { user } = await requireUsuarioOnboarded(supabase, `/duelo/invitacion/${inviteId}`);
   bloquearInvitado(user, "Amigos");
@@ -30,12 +32,12 @@ export default async function InvitacionDueloPage({ params }: Props) {
         <Header autenticado />
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-4 px-4 py-20 text-center">
           <h1 className="font-display text-xl font-bold tracking-tight text-foreground">
-            Este link de duelo ya no sirve
+            {t("tituloInvalido")}
           </h1>
           <p className="text-sm text-texto-secundario">
             {error?.message.includes("propia invitacion")
-              ? "Es tu propio link — compárteselo a otra persona."
-              : "Puede que ya se haya usado, se haya cancelado, o el link esté mal copiado."}
+              ? t("esTuPropioLink")
+              : t("motivoGenerico")}
           </p>
         </div>
       </>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Boton from "@/components/Boton";
 import ScrollFloat from "@/components/reactbits/ScrollFloat";
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export default function NombreEditable({ nombreActual, fuente }: Props) {
+  const t = useTranslations("Perfil");
   const router = useRouter();
   const [editando, setEditando] = useState(false);
   const [nombre, setNombre] = useState(nombreActual ?? "");
@@ -33,7 +35,7 @@ export default function NombreEditable({ nombreActual, fuente }: Props) {
     const { error: rpcError } = await supabase.rpc("cambiar_nombre_usuario", { p_nombre: nombre.trim() });
     setGuardando(false);
     if (rpcError) {
-      setError(rpcError.message ?? "No se pudo guardar. Probá de nuevo.");
+      setError(rpcError.message ?? t("nombreEditable.errorGuardar"));
       return;
     }
     setEditando(false);
@@ -54,13 +56,13 @@ export default function NombreEditable({ nombreActual, fuente }: Props) {
           textClassName={FUENTE_NOMBRE_CLASS[fuente ?? "default"] ?? ""}
           animationDuration={0.7}
         >
-          {nombreActual ?? "Jugador"}
+          {nombreActual ?? t("nombreEditable.jugador")}
         </ScrollFloat>
         <button
           onClick={() => setEditando(true)}
           className="text-xs font-medium text-primario hover:underline"
         >
-          Editar
+          {t("nombreEditable.editar")}
         </button>
       </div>
     );
@@ -78,7 +80,7 @@ export default function NombreEditable({ nombreActual, fuente }: Props) {
           className="rounded-lg border border-border bg-background px-3 py-1.5 font-display text-lg font-bold text-foreground outline-none focus:border-primario"
         />
         <Boton onClick={guardar} disabled={nombre.trim().length < 2} cargando={guardando} className="px-3 py-1.5 text-sm">
-          {guardando ? "Guardando..." : "Guardar"}
+          {guardando ? t("nombreEditable.guardando") : t("nombreEditable.guardar")}
         </Boton>
         <button
           onClick={() => {
@@ -88,10 +90,10 @@ export default function NombreEditable({ nombreActual, fuente }: Props) {
           }}
           className="text-sm text-texto-secundario hover:underline"
         >
-          Cancelar
+          {t("nombreEditable.cancelar")}
         </button>
       </div>
-      <p className="text-xs text-texto-secundario">Cambiar de nombre cuesta {COSTO_RENOMBRAR} Chispas.</p>
+      <p className="text-xs text-texto-secundario">{t("nombreEditable.costoCambiar", { costo: COSTO_RENOMBRAR })}</p>
       {error && <p className="text-xs text-error">{error}</p>}
     </div>
   );

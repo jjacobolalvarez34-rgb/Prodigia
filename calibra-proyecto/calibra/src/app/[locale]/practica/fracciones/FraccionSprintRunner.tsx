@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { generarProblemaFraccion, type ProblemaFraccion, type TipoFraccion } from "@/lib/practica/fracciones";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { reproducirTono } from "@/lib/sonido";
@@ -48,6 +49,8 @@ function FraccionVisual({ num, den }: { num: number; den: number }) {
 }
 
 export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccion, escudosExtra, colorDial, onFinish }: Props) {
+  const t = useTranslations("Practica.sprint");
+  const tFracciones = useTranslations("Fracciones.enunciados");
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
   const [problema, setProblema] = useState<ProblemaFraccion | null>(null);
   const [cardKey, setCardKey] = useState(0);
@@ -236,14 +239,14 @@ export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccio
           </div>
           <div className="flex items-center gap-3">
             <SonidoToggle />
-            <div className="flex items-center gap-1" aria-label={`${escudos} escudos disponibles`}>
+            <div className="flex items-center gap-1" aria-label={t("escudosDisponibles", { n: escudos })}>
               {Array.from({ length: escudosIniciales }).map((_, i) => (
                 <EscudoIcon key={i} activo={i < escudos} claseActivo="text-primario/70" />
               ))}
             </div>
             <RachaFuego racha={racha} />
-            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">{xpSprint} Exp</span>
-            <span className="font-mono font-medium">{segundos}s</span>
+            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">{t("exp", { n: xpSprint })}</span>
+            <span className="font-mono font-medium">{t("segundos", { n: segundos })}</span>
           </div>
         </div>
 
@@ -260,7 +263,7 @@ export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccio
       >
         {problema.tipo === "simplificar" && problema.frac && (
           <>
-            <p className="text-sm text-texto-secundario">Simplificá esta fracción</p>
+            <p className="text-sm text-texto-secundario">{tFracciones("simplificar")}</p>
             <FraccionVisual num={problema.frac[0]} den={problema.frac[1]} />
             <form onSubmit={handleSubmitFraccion} className="flex items-center gap-2">
               <input
@@ -284,7 +287,7 @@ export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccio
                 disabled={feedback !== "idle"}
                 className="rounded-xl bg-primario px-4 py-2.5 font-display font-semibold text-white disabled:opacity-60"
               >
-                Ok
+                {t("ok")}
               </button>
             </form>
           </>
@@ -292,7 +295,7 @@ export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccio
 
         {problema.tipo === "sumar" && problema.frac1 && problema.frac2 && (
           <>
-            <p className="text-sm text-texto-secundario">Sumá y simplificá el resultado</p>
+            <p className="text-sm text-texto-secundario">{tFracciones("sumar")}</p>
             <div className="flex items-center gap-4">
               <FraccionVisual num={problema.frac1[0]} den={problema.frac1[1]} />
               <span className="text-2xl text-primario">+</span>
@@ -320,7 +323,7 @@ export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccio
                 disabled={feedback !== "idle"}
                 className="rounded-xl bg-primario px-4 py-2.5 font-display font-semibold text-white disabled:opacity-60"
               >
-                Ok
+                {t("ok")}
               </button>
             </form>
           </>
@@ -328,7 +331,7 @@ export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccio
 
         {problema.tipo === "comparar" && problema.frac1 && problema.frac2 && (
           <>
-            <p className="text-sm text-texto-secundario">¿Cuál es mayor?</p>
+            <p className="text-sm text-texto-secundario">{tFracciones("comparar")}</p>
             <div className="flex items-center gap-4">
               <FraccionVisual num={problema.frac1[0]} den={problema.frac1[1]} />
               <span className="text-xl text-texto-secundario">?</span>

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { indiceDiatonicoAbsoluto, type NotaMusical } from "@/lib/practica/melodia";
 
 interface Props {
@@ -54,6 +55,7 @@ function pasosDeNota(nota: NotaMusical): number {
 // cabezas simultáneas a distinta altura) agregan una complejidad de
 // dibujo real que no aporta nada a un ejercicio de identificación.
 export default function Pentagrama({ notas, disposicion = "secuencial", colorHex = "#B8860B", className = "" }: Props) {
+  const t = useTranslations("Melodia.pentagrama");
   const yLineaInferior = 90;
   const xClave = 16;
   const xPrimeraNota = 52;
@@ -68,7 +70,7 @@ export default function Pentagrama({ notas, disposicion = "secuencial", colorHex
   }
 
   return (
-    <svg viewBox={`0 0 ${ancho} ${alto}`} width="100%" className={className} role="img" aria-label="Pentagrama musical">
+    <svg viewBox={`0 0 ${ancho} ${alto}`} width="100%" className={className} role="img" aria-label={t("ariaLabel")}>
       {/* 5 líneas del pentagrama */}
       {[0, 1, 2, 3, 4].map((i) => (
         <line

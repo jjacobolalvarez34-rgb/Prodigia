@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoGeografia, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import GeografiaPracticaClient from "../../GeografiaPracticaClient";
 
-export const metadata: Metadata = {
-  title: "Practicar Geografía — Europa",
-  description: "Identificá países de Europa en el mapa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Geografia.metadata.practicaEuropa");
+  return { title: t("title"), description: t("description") };
+}
 
 export default async function GeografiaPracticaEuropaPage() {
   const supabase = await createClient();

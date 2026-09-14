@@ -1,4 +1,5 @@
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Boton from "@/components/Boton";
 import PantallaVS from "@/components/duelos/PantallaVS";
 import BotonRendirse from "@/components/duelos/BotonRendirse";
@@ -40,6 +41,7 @@ export default function SalaEsperaDuelo({
   duelId,
   volverA = "/rankeds",
 }: Props) {
+  const t = useTranslations("Duelos.salaEspera");
   const router = useRouter();
 
   function handleRendido() {
@@ -55,7 +57,7 @@ export default function SalaEsperaDuelo({
   if (estado === "cuenta-regresiva") {
     return (
       <PantallaVS
-        miNombre="Vos"
+        miNombre={t("tu")}
         miElo={miElo}
         rivalNombre={rivalNombre}
         rivalElo={rivalElo}
@@ -70,14 +72,13 @@ export default function SalaEsperaDuelo({
   if (estado === "agotado") {
     return (
       <div className="flex flex-1 flex-col">
-        <PantallaVS miNombre="Vos" miElo={miElo} rivalNombre={rivalNombre} rivalElo={rivalElo} rivalEsBot={rivalEsBot} modo={modo} subtitulo={subtitulo} segundos={null} />
+        <PantallaVS miNombre={t("tu")} miElo={miElo} rivalNombre={rivalNombre} rivalElo={rivalElo} rivalEsBot={rivalEsBot} modo={modo} subtitulo={subtitulo} segundos={null} />
         <div className="mx-auto -mt-10 flex w-full max-w-md flex-col items-center gap-4 px-4 pb-16 text-center">
           <p className="text-sm text-texto-secundario">
-            {rivalNombre} todavía no se conectó a la sala — puedes seguir esperando o arrancar tu parte
-            ahora (se resuelve el duelo apenas juegue la suya, como antes).
+            {t("rivalNoConectado", { rival: rivalNombre })}
           </p>
           <Boton onClick={onEmpezarAhora} className="w-full py-4">
-            Jugar mi parte ahora
+            {t("jugarAhora")}
           </Boton>
           {duelId && !rivalEsBot && <BotonRendirse duelId={duelId} onRendido={handleRendido} />}
         </div>
@@ -88,16 +89,16 @@ export default function SalaEsperaDuelo({
   return (
     <div className="flex flex-1 flex-col">
       {botonRendirse}
-      <PantallaVS miNombre="Vos" miElo={miElo} rivalNombre={rivalNombre} rivalElo={rivalElo} rivalEsBot={rivalEsBot} modo={modo} subtitulo={subtitulo} segundos={null} />
+      <PantallaVS miNombre={t("tu")} miElo={miElo} rivalNombre={rivalNombre} rivalElo={rivalElo} rivalEsBot={rivalEsBot} modo={modo} subtitulo={subtitulo} segundos={null} />
       <div className="mx-auto -mt-10 flex w-full max-w-md flex-col items-center gap-3 px-4 pb-16 text-center">
         <div className="flex items-center gap-2 text-sm text-texto-secundario">
           <span className={`h-2 w-2 rounded-full ${estado === "esperando" ? "bg-correcto" : "bg-foreground/20"}`} />
-          <span>Vos, listo</span>
+          <span>{t("tuListo")}</span>
           <span className="mx-1">·</span>
           <span className={`h-2 w-2 rounded-full ${rivalPresente ? "bg-correcto" : "bg-foreground/20 animate-pulse"}`} />
-          <span>{rivalPresente ? `${rivalNombre}, listo` : `Esperando a ${rivalNombre}…`}</span>
+          <span>{rivalPresente ? t("rivalListo", { rival: rivalNombre }) : t("esperandoA", { rival: rivalNombre })}</span>
         </div>
-        <p className="text-xs text-texto-secundario">Arranca solo apenas estén los dos — no hace falta que aprietes nada.</p>
+        <p className="text-xs text-texto-secundario">{t("arrancaSolo")}</p>
       </div>
     </div>
   );

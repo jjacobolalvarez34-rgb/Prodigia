@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 import PixelTransition from "@/components/reactbits/PixelTransition";
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, subscribeEfectos } from "@/lib/efectos";
 
@@ -33,11 +34,16 @@ function dispositivoLiviano(): boolean {
 // efectos está apagado, se cae directo al texto final sin animación.
 export default function RevelarRespuesta({ activo, miRespuesta, respuestaCorrecta }: Props) {
   const efectos = useSyncExternalStore(subscribeEfectos, efectosHabilitados, efectosHabilitadosServerSnapshot);
+  const t = useTranslations("Practica.revelarRespuesta");
 
   if (!activo) return null;
 
   if (!efectos) {
-    return <span className="font-mono text-sm font-semibold text-error">La respuesta era {respuestaCorrecta}</span>;
+    return (
+      <span className="font-mono text-sm font-semibold text-error">
+        {t("laRespuestaEra", { respuesta: respuestaCorrecta })}
+      </span>
+    );
   }
 
   const liviano = dispositivoLiviano();
@@ -53,12 +59,12 @@ export default function RevelarRespuesta({ activo, miRespuesta, respuestaCorrect
       style={{ minHeight: 24 }}
       firstContent={
         <span className="flex h-full w-full items-center justify-center font-mono text-sm font-semibold text-error">
-          Tu respuesta: {miRespuesta || "—"}
+          {t("tuRespuesta", { respuesta: miRespuesta || "—" })}
         </span>
       }
       secondContent={
         <span className="flex h-full w-full items-center justify-center font-mono text-sm font-semibold text-error">
-          La respuesta era {respuestaCorrecta}
+          {t("laRespuestaEra", { respuesta: respuestaCorrecta })}
         </span>
       }
     />

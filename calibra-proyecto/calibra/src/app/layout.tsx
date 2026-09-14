@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono, Playfair_Display, Caveat, Bebas_Neue, Pacifico, Orbitron } from "next/font/google";
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import DeteccionConexion from "@/components/DeteccionConexion";
 import PageFade from "@/components/PageFade";
 import ChispaClick from "@/components/ChispaClick";
@@ -10,6 +10,7 @@ import NotificacionesDuelo from "@/components/NotificacionesDuelo";
 import AnunciosModal from "@/components/AnunciosModal";
 import RegistrarServiceWorker from "@/components/RegistrarServiceWorker";
 import NativePush from "@/components/NativePush";
+import NativeBackButton from "@/components/NativeBackButton";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -72,39 +73,44 @@ const orbitron = Orbitron({
   weight: ["600", "700"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: { default: "Prodigia", template: "%s — Prodigia" },
-  description: "Práctica adaptativa de cálculo mental y lógica: dificultad que se ajusta a tu nivel.",
-  openGraph: {
-    title: "Prodigia",
-    description: "Práctica adaptativa de cálculo mental y lógica: dificultad que se ajusta a tu nivel.",
-    siteName: "Prodigia",
-    locale: "es_AR",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Prodigia",
-    description: "Práctica adaptativa de cálculo mental y lógica: dificultad que se ajusta a tu nivel.",
-  },
-  // PWA (Fase U-PWA): "mobile-web-app-capable" + el título que se usa
-  // cuando queda instalada en el home de iOS/Android (sin la barra de
-  // direcciones alrededor). app/manifest.ts se enlaza solo, no hace
-  // falta declararlo acá.
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Prodigia",
-  },
-  icons: {
-    icon: [
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    apple: "/apple-touch-icon.png",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Common.metadata");
+  const locale = await getLocale();
+  const description = t("description");
+  return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+    title: { default: "Prodigia", template: "%s — Prodigia" },
+    description,
+    openGraph: {
+      title: "Prodigia",
+      description,
+      siteName: "Prodigia",
+      locale: locale === "en" ? "en_US" : "es_AR",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Prodigia",
+      description,
+    },
+    // PWA (Fase U-PWA): "mobile-web-app-capable" + el título que se usa
+    // cuando queda instalada en el home de iOS/Android (sin la barra de
+    // direcciones alrededor). app/manifest.ts se enlaza solo, no hace
+    // falta declararlo acá.
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: "Prodigia",
+    },
+    icons: {
+      icon: [
+        { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+        { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      ],
+      apple: "/apple-touch-icon.png",
+    },
+  };
+}
 
 // themeColor vive en viewport (no en metadata) desde Next 14 — distinto
 // color según el tema del sistema, igual que --primario en globals.css.
@@ -157,8 +163,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <NotificacionesDuelo />
           <AnunciosModal />
           <RegistrarServiceWorker />
-          {/* Solo actúa adentro de la app nativa (Capacitor); 100% inerte en web/PWA */}
+          {/* Solo actúan adentro de la app nativa (Capacitor); 100% inertes en web/PWA */}
           <NativePush />
+          <NativeBackButton />
         </NextIntlClientProvider>
       </body>
     </html>

@@ -13,7 +13,7 @@ interface Props {
 
 type Token = { num: number } | { op: string };
 
-// La Calcu (0124): armá la secuencia con los 4 números (cada uno una vez)
+// La Calcu (0124): arma la secuencia con los 4 números (cada uno una vez)
 // y las operaciones + − × ÷. Al tocar "=" el cliente construye un AST JSONB
 // ["+", ["−", n0, n1], n2]… y el server lo valida contra el target oculto.
 export default function LaCalcu({ puntos, onPuntos, onMovimiento }: Props) {

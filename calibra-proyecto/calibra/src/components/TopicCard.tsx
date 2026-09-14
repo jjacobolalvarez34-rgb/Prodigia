@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import type { ReactElement } from "react";
+import { useTranslations } from "next-intl";
 
 export type TopicBadge = { tipo: "nivel"; nivel: number } | { tipo: "proximamente" };
 
@@ -21,6 +24,7 @@ interface Props {
 // tarjeta, no el ícono — alineado a la izquierda, no centrado, para que
 // no se lea como el mismo componente reciclado que el resto de la app.
 export default function TopicCard({ nombre, Icono, href, badge, colorHex = "#6C4CF1" }: Props) {
+  const t = useTranslations("Componentes");
   const proximamente = badge.tipo === "proximamente";
   const className = `group relative flex flex-col justify-between gap-6 overflow-hidden rounded-2xl border px-5 py-5 transition-all duration-200 ${
     href ? "hover:-translate-y-1 hover:shadow-lg" : ""
@@ -50,10 +54,10 @@ export default function TopicCard({ nombre, Icono, href, badge, colorHex = "#6C4
         <p className="font-display text-lg font-bold leading-tight text-foreground">{nombre}</p>
         {badge.tipo === "nivel" ? (
           <p className="mt-1 font-mono text-xs font-medium" style={{ color: colorHex }}>
-            Nivel {badge.nivel}
+            {t("topicCard.nivel", { nivel: badge.nivel })}
           </p>
         ) : (
-          <p className="mt-1 text-xs font-medium uppercase tracking-wide text-texto-secundario">Próximamente</p>
+          <p className="mt-1 text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("topicCard.proximamente")}</p>
         )}
       </div>
     </>

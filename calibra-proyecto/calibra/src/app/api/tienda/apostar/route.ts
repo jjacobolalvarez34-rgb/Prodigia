@@ -6,8 +6,8 @@ interface Body {
   monto: number;
 }
 
-// POST /api/tienda/apostar — "doble o nada" (Fase G2): apostás Puntos a
-// que tu próxima partida supera tu precisión histórica. Si ganás se
+// POST /api/tienda/apostar — "doble o nada" (Fase G2): apuestas Puntos a
+// que tu próxima partida supera tu precisión histórica. Si ganas se
 // duplica lo apostado; se resuelve solo al cerrar la próxima partida
 // (ver resolver_apuesta_si_activa, llamado desde /api/practica/finish y
 // /api/enigmia/finish).

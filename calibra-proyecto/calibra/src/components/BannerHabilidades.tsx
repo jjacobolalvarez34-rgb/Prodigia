@@ -22,7 +22,7 @@ interface Props {
 }
 
 // Banner de afinidad del perfil: listado editable de "con qué mundo o
-// ciudad te identificás y tu nivel". Cosmético (el usuario se autodefine);
+// ciudad te identificas y tu nivel". Cosmético (el usuario se autodefine);
 // el server solo valida forma, tamaños y que sea el dueño del perfil.
 export default function BannerHabilidades({ itemsIniciales, opciones }: Props) {
   const t = useTranslations("Perfil.banner");

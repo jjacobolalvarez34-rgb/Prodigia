@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { tiempoEsperadoMs } from "@/lib/practica/formulas";
@@ -28,6 +29,7 @@ interface Props {
 }
 
 export default function DiagnosticoEnigmiaClient({ puzzles, destino }: Props) {
+  const t = useTranslations("Enigmia.diagnostico");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("intro");
   const [indice, setIndice] = useState(0);
@@ -139,10 +141,10 @@ export default function DiagnosticoEnigmiaClient({ puzzles, destino }: Props) {
                 Enigmia
               </span>
               <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">
-                Unos acertijos para calibrar
+                {t("introTitulo")}
               </h1>
               <p className="mt-2 text-sm text-texto-secundario">
-                Sin presión — 8 acertijos variados, solo para arrancar en el nivel justo.
+                {t("introDescripcion")}
               </p>
             </div>
             <button
@@ -150,10 +152,10 @@ export default function DiagnosticoEnigmiaClient({ puzzles, destino }: Props) {
               className="rounded-2xl px-6 py-4 font-display font-semibold text-white"
               style={{ background: "linear-gradient(120deg, #0E9F6E, #3FB88B)" }}
             >
-              Empezar
+              {t("empezar")}
             </button>
             <button onClick={saltear} className="text-sm text-texto-secundario hover:underline">
-              Prefiero arrancar en nivel 1
+              {t("prefiereNivelUno")}
             </button>
           </motion.div>
         )}
@@ -215,7 +217,7 @@ export default function DiagnosticoEnigmiaClient({ puzzles, destino }: Props) {
               )}
             </div>
             <button onClick={saltear} className="text-sm text-texto-secundario hover:underline">
-              Prefiero arrancar en nivel 1
+              {t("prefiereNivelUno")}
             </button>
           </motion.div>
         )}
@@ -227,7 +229,7 @@ export default function DiagnosticoEnigmiaClient({ puzzles, destino }: Props) {
             animate={{ opacity: 1 }}
             className="text-center text-sm text-texto-secundario"
           >
-            Guardando tu diagnóstico...
+            {t("guardando")}
           </motion.p>
         )}
 
@@ -238,14 +240,14 @@ export default function DiagnosticoEnigmiaClient({ puzzles, destino }: Props) {
             animate={{ opacity: 1, scale: 1 }}
             className="flex flex-col items-center gap-6 text-center"
           >
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Así arrancás</h1>
-            <p className="font-mono text-4xl font-bold text-[#0E9F6E]">Nivel {nivelFinal}</p>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("resultadoTitulo")}</h1>
+            <p className="font-mono text-4xl font-bold text-[#0E9F6E]">{t("nivelResultado", { nivel: nivelFinal })}</p>
             <button
               onClick={() => router.push(destino)}
               className="w-full rounded-2xl px-6 py-4 font-display font-semibold text-white"
               style={{ background: "linear-gradient(120deg, #0E9F6E, #3FB88B)" }}
             >
-              Continuar
+              {t("continuar")}
             </button>
           </motion.div>
         )}

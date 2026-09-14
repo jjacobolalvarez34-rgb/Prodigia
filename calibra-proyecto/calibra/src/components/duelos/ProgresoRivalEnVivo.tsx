@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { IconLlama } from "@/components/icons";
 
 interface Props {
@@ -10,7 +11,7 @@ interface Props {
 }
 
 // Fase 6: la pieza que más impacto tiene en la sensación de "carrera
-// real" de un duelo — el progreso del rival, en vivo, mientras jugás
+// real" de un duelo — el progreso del rival, en vivo, mientras juegas
 // (no al final). Deliberadamente chico y silencioso: nunca tapa ni
 // compite con la tarjeta del problema propio, solo está presente, como
 // un marcador de fondo.
@@ -22,6 +23,7 @@ export default function ProgresoRivalEnVivo({
   rivalNombre,
   colorHex,
 }: Props) {
+  const t = useTranslations("Duelos.progresoRival");
   const color = colorHex ?? "var(--primario)";
   return (
     <div className="flex items-center justify-between text-xs text-texto-secundario">
@@ -51,10 +53,10 @@ export default function ProgresoRivalEnVivo({
       </div>
       <span>
         {miRespondidos > rivalRespondidos
-          ? `Vas adelante de ${rivalNombre}`
+          ? t("vasAdelante", { rival: rivalNombre })
           : miRespondidos < rivalRespondidos
-            ? `${rivalNombre} te lleva ventaja`
-            : `Van parejo con ${rivalNombre}`}
+            ? t("teLlevaVentaja", { rival: rivalNombre })
+            : t("vanParejo", { rival: rivalNombre })}
       </span>
     </div>
   );

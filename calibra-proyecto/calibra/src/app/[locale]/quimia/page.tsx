@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoQuimia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
@@ -13,12 +14,13 @@ import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { IconCheck, IconQuimica } from "@/components/icons";
 import { COLOR_QUIMIA } from "./colores";
 
-export const metadata: Metadata = {
-  title: "Quimia",
-  description: "Elementos, símbolos y fórmulas químicas, con dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Quimia.metadata");
+  return { title: "Quimia", description: t("description") };
+}
 
 export default async function QuimiaHomePage() {
+  const t = await getTranslations("Quimia");
   const supabase = await createClient();
   const { user, profile } = await requireMundoQuimia(supabase, "/quimia");
 
@@ -52,15 +54,12 @@ export default async function QuimiaHomePage() {
       <FondoCursorMundo mundo="quimia" />
       <Header autenticado />
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
-        <AvisoPrimeraVez
-          avisoKey="quimia-intro"
-          texto="Elementos, símbolos, fórmulas y la tabla periódica — con dificultad que se adapta a vos, igual que en los demás mundos."
-        >
+        <AvisoPrimeraVez avisoKey="quimia-intro" texto={t("aviso")}>
           <div>
             <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_QUIMIA }}>
               Quimia
             </span>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Elementos y compuestos</h1>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
             <div className="mt-2">
               <NivelMundoBadge nombreMundo="Quimia" nivel={nivelMundo} colorHex={COLOR_QUIMIA} />
             </div>
@@ -72,7 +71,7 @@ export default async function QuimiaHomePage() {
         {metaCumplidaHoy && (
           <div className="flex items-center gap-3 rounded-2xl bg-correcto/10 px-5 py-4">
             <IconCheck className="h-5 w-5 shrink-0 text-correcto" />
-            <p className="text-sm font-medium text-foreground">Ya cumpliste tu meta de hoy.</p>
+            <p className="text-sm font-medium text-foreground">{t("metaCumplida")}</p>
           </div>
         )}
 
@@ -89,8 +88,8 @@ export default async function QuimiaHomePage() {
               <IconQuimica className="h-5 w-5" />
             </span>
             <div>
-              <span className="font-display text-xl font-bold text-foreground">Practicar</span>
-              <p className="mt-1 text-sm text-texto-secundario">Elementos, fórmulas y la tabla periódica.</p>
+              <span className="font-display text-xl font-bold text-foreground">{t("practicar")}</span>
+              <p className="mt-1 text-sm text-texto-secundario">{t("practicarDescripcion")}</p>
             </div>
           </Link>
 
@@ -106,41 +105,41 @@ export default async function QuimiaHomePage() {
               <IconQuimica className="h-5 w-5" />
             </span>
             <div>
-              <span className="font-display text-xl font-bold text-foreground">Aprender</span>
-              <p className="mt-1 text-sm text-texto-secundario">Trucos mnemotécnicos para memorizar más rápido.</p>
+              <span className="font-display text-xl font-bold text-foreground">{t("aprender")}</span>
+              <p className="mt-1 text-sm text-texto-secundario">{t("aprenderDescripcion")}</p>
             </div>
           </Link>
         </section>
 
         <section className="flex flex-col gap-4">
-          <h2 className="font-display text-lg font-bold text-foreground">Modos</h2>
+          <h2 className="font-display text-lg font-bold text-foreground">{t("modosTitulo")}</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <TopicCard
-              nombre="Símbolos y elementos"
+              nombre={t("modos.simbolos")}
               Icono={IconQuimica}
               badge={{ tipo: "nivel", nivel: nivelDe("quimia_simbolos") }}
               colorHex={COLOR_QUIMIA}
             />
             <TopicCard
-              nombre="Fórmulas y compuestos"
+              nombre={t("modos.formulas")}
               Icono={IconQuimica}
               badge={{ tipo: "nivel", nivel: nivelDe("quimia_formulas") }}
               colorHex={COLOR_QUIMIA}
             />
             <TopicCard
-              nombre="Tabla periódica"
+              nombre={t("modos.tabla")}
               Icono={IconQuimica}
               badge={{ tipo: "nivel", nivel: nivelDe("quimia_tabla") }}
               colorHex={COLOR_QUIMIA}
             />
             <TopicCard
-              nombre="Nomenclatura"
+              nombre={t("modos.nomenclatura")}
               Icono={IconQuimica}
               badge={{ tipo: "nivel", nivel: nivelDe("quimia_nomenclatura") }}
               colorHex={COLOR_QUIMIA}
             />
             <TopicCard
-              nombre="Química orgánica"
+              nombre={t("modos.organica")}
               Icono={IconQuimica}
               badge={{ tipo: "nivel", nivel: nivelDe("quimia_organica") }}
               colorHex={COLOR_QUIMIA}

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { generarProblemaTrigonometria, type ProblemaTrigonometriaNumero } from "@/lib/practica/trigonometria";
@@ -29,6 +30,7 @@ function claveRazones(p: ProblemaTrigonometriaNumero): string {
 // el modo de entrada) se resuelve con un input numérico simple en vez
 // de la grilla de opciones que usan los demás mundos.
 export default function DiagnosticoTrigonometriaClient({ destino }: Props) {
+  const t = useTranslations("Trigonometria");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("intro");
   const [indice, setIndice] = useState(0);
@@ -144,11 +146,11 @@ export default function DiagnosticoTrigonometriaClient({ destino }: Props) {
                 className="rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wide"
                 style={{ background: `color-mix(in oklab, ${COLOR_TRIGONOMETRIA} 10%, transparent)`, color: COLOR_TRIGONOMETRIA }}
               >
-                Trigonometría
+                {t("nombreMundo")}
               </span>
-              <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">Unos triángulos para calibrar</h1>
+              <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">{t("diagnostico.introTitulo")}</h1>
               <p className="mt-2 text-sm text-texto-secundario">
-                Sin presión — 8 preguntas variadas, solo para arrancar en el nivel justo.
+                {t("diagnostico.introSubtitulo")}
               </p>
             </div>
             <button
@@ -156,10 +158,10 @@ export default function DiagnosticoTrigonometriaClient({ destino }: Props) {
               className="rounded-2xl px-6 py-4 font-display font-semibold text-white"
               style={{ background: `linear-gradient(120deg, ${COLOR_TRIGONOMETRIA}, #BEF264)` }}
             >
-              Empezar
+              {t("diagnostico.empezar")}
             </button>
             <button onClick={saltear} className="text-sm text-texto-secundario hover:underline">
-              Prefiero arrancar en nivel 1
+              {t("diagnostico.arrancarNivel1")}
             </button>
           </motion.div>
         )}
@@ -201,31 +203,31 @@ export default function DiagnosticoTrigonometriaClient({ destino }: Props) {
                   className="rounded-xl px-4 py-2.5 font-display font-semibold text-white disabled:opacity-60"
                   style={{ background: COLOR_TRIGONOMETRIA }}
                 >
-                  Ok
+                  {t("diagnostico.ok")}
                 </button>
               </form>
             </div>
             <button onClick={saltear} className="text-sm text-texto-secundario hover:underline">
-              Prefiero arrancar en nivel 1
+              {t("diagnostico.arrancarNivel1")}
             </button>
           </motion.div>
         )}
 
         {fase === "guardando" && (
           <motion.p key="guardando" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-sm text-texto-secundario">
-            Guardando tu diagnóstico...
+            {t("diagnostico.guardando")}
           </motion.p>
         )}
 
         {fase === "resultado" && (
           <motion.div key="resultado" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-6 text-center">
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Así arrancás</h1>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("diagnostico.resultadoTitulo")}</h1>
             <p className="font-mono text-4xl font-bold" style={{ color: COLOR_TRIGONOMETRIA }}>
-              Nivel {nivelFinal}
+              {t("diagnostico.nivel", { n: nivelFinal })}
             </p>
             {!guardadoOk && (
               <p className="text-sm text-error">
-                No pudimos guardar tu progreso — prueba de nuevo antes de continuar.
+                {t("diagnostico.errorGuardado")}
               </p>
             )}
             <button
@@ -233,7 +235,7 @@ export default function DiagnosticoTrigonometriaClient({ destino }: Props) {
               className="w-full rounded-2xl px-6 py-4 font-display font-semibold text-white"
               style={{ background: guardadoOk ? `linear-gradient(120deg, ${COLOR_TRIGONOMETRIA}, #BEF264)` : "var(--error)" }}
             >
-              {guardadoOk ? "Continuar" : "Reintentar"}
+              {guardadoOk ? t("diagnostico.continuar") : t("diagnostico.reintentar")}
             </button>
           </motion.div>
         )}

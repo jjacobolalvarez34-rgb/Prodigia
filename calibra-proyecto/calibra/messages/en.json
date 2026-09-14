@@ -68,6 +68,44 @@
       "nadieMasTodavia": "No one else in the ranking yet.",
       "nadieConEseNombre": "No one with that name in the ranking.",
       "todaviaNoJugasteClasificatorio": "You haven't played any ranked duel yet."
+    },
+    "serieDuelo": {
+      "tu": "You",
+      "pillTitulo": "All cities · Best of 3",
+      "vsOponente": "Vs. {nombre}",
+      "esperandoTermine": "You've played your 3 rounds — waiting for {oponente} to finish theirs.",
+      "siguienteCiudad": "Next city",
+      "arrancamosEn": "Starting with",
+      "esperandoAlRival": "Waiting for your rival…",
+      "miPuntajeSufijo": " · you: {puntaje} pts",
+      "todaviaSinJugar": "Not played yet",
+      "resultadoPuntajesSufijo": " · you: {mio} pts · rival: {rival} pts",
+      "ronda": "Round {n} · {etiqueta}",
+      "victoria": "Victory",
+      "derrota": "Defeat",
+      "empataronSerie": "You drew the series with {oponente}",
+      "ganasteSerie": "You won the series against {oponente}",
+      "perdisteSerie": "{oponente} won this time",
+      "elo": "ELO",
+      "subisteDeRango": "You ranked up",
+      "verPerfil": "View profile",
+      "otraPartida": "Another match",
+      "volver": "Back",
+      "contenidos": {
+        "memoria": "Memory",
+        "patrones": "Patterns",
+        "deduccion": "Deduction",
+        "computacional": "Computational thinking"
+      }
+    },
+    "bloqueado": {
+      "metadata": {
+        "title": "Rankeds locked",
+        "description": "Rankeds unlocks at account level {nivel}."
+      },
+      "titulo": "Rankeds unlocks at level {nivel}",
+      "mensaje": "You're at account level <n>{nivelActual}</n> — you need <f>{faltan} more {faltan, plural, one {level} other {levels}}</f>. Keep playing to earn Experience and level up.",
+      "seguirPracticando": "Keep practicing"
     }
   },
   "Social": {
@@ -99,7 +137,81 @@
     "generando": "Generating…",
     "generarLinkDeInvitacion": "Generate invite link",
     "compartiseloAQuienQuieras": "Share it with anyone you like — they don't have to be your friend in the app.",
-    "quienSeRegistre": "Whoever signs up through this link gets added as your friend automatically, no request needed."
+    "quienSeRegistre": "Whoever signs up through this link gets added as your friend automatically, no request needed.",
+    "metadata": {
+      "title": "Social",
+      "description": "Feed, friends, and duels in Prodigia."
+    },
+    "guardLabel": "Social (Feed and Friends)",
+    "tituloPagina": "Social",
+    "operaciones": {
+      "suma": "Addition",
+      "resta": "Subtraction",
+      "multiplicacion": "Multiplication",
+      "division": "Division"
+    },
+    "mundos": {
+      "numeria": "Numeria",
+      "geografia": "Geography",
+      "enigmia": "Enigmia",
+      "quimia": "Quimia",
+      "anatomia": "Anatomy",
+      "melodia": "Melodia",
+      "trigonometria": "Trigonometry",
+      "historia": "History",
+      "aleatorio": "all the cities",
+      "suMundo": "their world"
+    },
+    "feed": {
+      "tabParaTi": "For you",
+      "tabSiguiendo": "Following",
+      "botonProblemaPropio": "+ Custom problem",
+      "botonDesafio": "+ Challenge",
+      "vacioSiguiendo": "You're not following anyone with activity yet — add friends from the sidebar.",
+      "vacioFeed": "There's nothing in the feed yet.",
+      "logroDesbloqueo": "unlocked",
+      "desafioTe": "challenges you to",
+      "desafioDetalle": ", level {nivel}, {cantidad} problems.",
+      "botonRetar": "Challenge",
+      "retarCreando": "Creating...",
+      "vencioA": "defeated",
+      "en": "in",
+      "subioA": "climbed to",
+      "alcanzoNivel": "reached level",
+      "problemaMensaje": "made a problem for you:",
+      "placeholderRespuesta": "Your answer...",
+      "botonResponder": "Answer",
+      "resultadoCorrecto": "Correct! 🎉",
+      "resultadoIncorrecto": "Not quite — the answer was \"{respuesta}\"",
+      "tituloProblemaPropio": "Create your own problem",
+      "placeholderPregunta": "Question (e.g. Capital of Mongolia?)",
+      "placeholderRespuestaCorrecta": "Correct answer",
+      "errorPublicarProblema": "Couldn't publish the problem.",
+      "publicando": "Publishing...",
+      "botonPublicarProblema": "Publish problem",
+      "notaUnoPorDia": "One per day max — shared with everyone in the feed.",
+      "tituloArmarDesafio": "Create a challenge",
+      "nivelOpcion": "Level {n}",
+      "cantidadProblemasOpcion": "{c} problems",
+      "botonPublicarDesafio": "Publish challenge"
+    },
+    "sidebar": {
+      "botonAgregarAmigos": "+ Add friends",
+      "enviarCorto": "Send",
+      "nadaPendiente": "Nothing pending.",
+      "retosPendientes": "Pending challenges",
+      "nadieTeReto": "No one has challenged you yet.",
+      "botonJugar": "Play",
+      "sinAmigos": "You don't have any friends added yet.",
+      "retarCorto": "Challenge",
+      "alguien": "Someone"
+    },
+    "hook": {
+      "errorBuscar": "Couldn't search. Try again.",
+      "errorEnviarSolicitud": "Couldn't send the request.",
+      "errorProcesarSolicitud": "Couldn't process the request.",
+      "errorCrearDuelo": "Couldn't create the duel."
+    }
   },
   "mundoProgreso": {
     "titulo": "World progress",
@@ -153,7 +265,84 @@
     "afinidadDescripcion": "Informational only — your rank and matchmaking are unique and global, this doesn't affect them.",
     "duelosCantidad": "{n} {n, plural, one {duel} other {duels}}",
     "precisionPct": "{n}% accuracy",
-    "logros": "Achievements"
+    "logros": "Achievements",
+    "borrarCuenta": {
+      "zonaPeligrosa": "Danger zone",
+      "borrarMiCuenta": "Delete my account",
+      "confirmacionTexto": "This truly deletes your profile, progress, achievements, and your entire history — it can't be undone. Type <b>{palabra}</b> to confirm.",
+      "palabraConfirmacion": "DELETE",
+      "borrando": "Deleting...",
+      "confirmarBorrado": "Confirm deletion",
+      "cancelar": "Cancel",
+      "errorGenerico": "Couldn't delete the account."
+    },
+    "nombreEditable": {
+      "jugador": "Player",
+      "editar": "Edit",
+      "guardando": "Saving...",
+      "guardar": "Save",
+      "cancelar": "Cancel",
+      "costoCambiar": "Changing your name costs {costo} Chispas.",
+      "errorGuardar": "Couldn't save. Try again."
+    },
+    "subirAvatar": {
+      "tipoInvalido": "It has to be an image (PNG, JPG, WEBP, or GIF).",
+      "tamanoExcedido": "The image can't be larger than 2MB.",
+      "errorSubida": "We couldn't upload the image. Try again.",
+      "errorGuardarPerfil": "The image uploaded but we couldn't save it to your profile. Try again.",
+      "subiendo": "Uploading...",
+      "cambiarFoto": "Change photo",
+      "subirFoto": "Upload photo"
+    },
+    "titulosSection": {
+      "titulo": "Titles",
+      "vacio": "You haven't unlocked any yet — rank up in Rankeds to get your first one.",
+      "elegirDescripcion": "Choose which one to show next to your name — activating one doesn't remove the others.",
+      "ninguno": "None"
+    },
+    "amistadBoton": {
+      "yaSonAmigos": "You're friends",
+      "solicitudEnviada": "Request sent",
+      "aceptarSolicitud": "Accept request",
+      "rechazar": "Decline",
+      "invitarSerAmigo": "Add friend",
+      "errorEnviarSolicitud": "Couldn't send the request.",
+      "errorProcesarSolicitud": "Couldn't process the request."
+    },
+    "reportarBoton": {
+      "motivos": {
+        "trampa": "Cheating",
+        "imagenInapropiada": "Inappropriate profile photo",
+        "nombreInapropiado": "Inappropriate name",
+        "contenidoOfensivo": "Offensive content",
+        "otro": "Other reason"
+      },
+      "reportar": "Report",
+      "gracias": "Thanks, we'll take a look.",
+      "porQueReportas": "Why are you reporting them?",
+      "enviarReporte": "Send report",
+      "cancelar": "Cancel",
+      "errorEnviar": "We couldn't send the report. Try again."
+    },
+    "publico": {
+      "nombreMundo": {
+        "numeria": "Numeria",
+        "enigmia": "Enigmia",
+        "geografia": "Geography",
+        "quimia": "Quimia",
+        "anatomia": "Anatomy",
+        "melodia": "Melodia",
+        "trigonometria": "Trigonometry",
+        "historia": "History"
+      },
+      "eloValor": "{n} ELO",
+      "nivelLabel": "Level",
+      "chispasLabel": "Chispas",
+      "nivelPorMundo": "Level by world",
+      "de100": "of 100",
+      "activoSufijo": " · active",
+      "sinDatos": "—"
+    }
   },
   "Tienda": {
     "metadata": {
@@ -228,7 +417,7 @@
     "ofertaDelVendedor": "Today's vendor deal:",
     "porcentajeMenos": "{n}% off",
     "enItem": "on {nombre}",
-    "tenes": "You have: {n}",
+    "tienes": "You have: {n}",
     "comprarPor": "Buy for {costo} Chispas",
     "necesitas": "You need {costo} Chispas",
     "gastarChispas": "Spend {costo} Chispas?",
@@ -313,10 +502,17 @@
         "deNuevo": "Another round"
       },
       "ruleta": {
-        "titulo": "The Dealer's Table",
-        "descripcion": "The full periodic table. Bet on one element or a whole zone — and let the house pay up.",
+        "titulo": "Elemental Roulette",
+        "descripcion": "The full periodic table. Pick one or several zones and drop a chip on each — one spin, one element drawn out of 118.",
         "ficha": "Chip",
-        "eligeZona": "Pick your zone",
+        "eligeZona": "Pick your zones",
+        "zonasEnJuego": "Zones in play ({n}/{max})",
+        "sinZonasElegidas": "You haven't picked a zone yet",
+        "maxZonasAlcanzado": "Max {max} zones per spin",
+        "totalEnJuego": "Total in play: {n} Chispas",
+        "quitarZona": "Remove",
+        "ganasteEsta": "✓ landed inside",
+        "perdisteEsta": "✗ missed",
         "mesa": "Table of 118 elements",
         "elemento": "Element",
         "paridad": "Parity",
@@ -435,6 +631,14 @@
       "teRetaronADueloDe": "You've been challenged to a {operacion} duel",
       "verDuelo": "View duel →",
       "cerrarAviso": "Close notification"
+    },
+    "errorBoundario": {
+      "titulo": "Something didn't load right",
+      "descripcion": "It might be a connection problem with the server. Try again in a moment — your already-saved progress isn't lost.",
+      "reintentar": "Retry"
+    },
+    "metadata": {
+      "description": "Adaptive practice for mental math and logic: difficulty that adjusts to your level."
     }
   },
   "Geografia": {
@@ -443,6 +647,96 @@
       "europa": "Europe",
       "africa": "Africa",
       "asia_oceania": "Asia & Oceania"
+    },
+    "nombreMundo": "Geography",
+    "metadata": {
+      "home": {
+        "description": "Locate countries of the Americas on the map, with adaptive difficulty."
+      },
+      "elegir": {
+        "title": "Practice",
+        "description": "Choose a Geography region to practice."
+      },
+      "aprender": {
+        "title": "Learn Geography",
+        "description": "Mnemonic techniques to locate countries faster."
+      },
+      "practica": {
+        "title": "Practice Geography",
+        "description": "Identify countries of the Americas on the map."
+      },
+      "practicaAfrica": {
+        "title": "Practice Geography — Africa",
+        "description": "Identify countries of Africa on the map."
+      },
+      "practicaAsiaOceania": {
+        "title": "Practice Geography — Asia and Oceania",
+        "description": "Identify countries of Asia and Oceania on the map."
+      },
+      "practicaEuropa": {
+        "title": "Practice Geography — Europe",
+        "description": "Identify countries of Europe on the map."
+      }
+    },
+    "home": {
+      "mapasDelMundo": "World maps",
+      "metaCumplida": "You already hit today's goal.",
+      "practicar": "Practice",
+      "practicarDescripcion": "Choose a region and locate its countries on the map.",
+      "aprender": "Learn",
+      "aprenderDescripcion": "Mnemonic tricks to locate countries faster.",
+      "regiones": "Regions"
+    },
+    "elegir": {
+      "quePracticamos": "Which region do we practice?",
+      "subtitulo": "Choose a region to get started.",
+      "descAmerica": "The base continent",
+      "descEuropa": "European countries",
+      "descAfrica": "African countries",
+      "descAsiaOceania": "Asian and Oceanian countries",
+      "bloqueadoDesc": "You need an account to practice this",
+      "invitado": "Guest"
+    },
+    "practicaClient": {
+      "rondaSubtitulo": "Round {n}/{total} · Geography",
+      "errorDefault": "Couldn't close the match.",
+      "errorConDetalle": "We couldn't close the match: {error}",
+      "errorDeRed": "We couldn't connect to the server. Try again.",
+      "volver": "Back",
+      "ahiQuedo": "That's a wrap.",
+      "experiencia": "Experience",
+      "aciertos": "Correct",
+      "precision": "Accuracy",
+      "experienciaHoy": "Experience today",
+      "sinDatos": "—",
+      "repasemosEsto": "Let's review this",
+      "ningunoFallado": "None missed — that's how it's done. 🎯",
+      "boostActivo": "⚡ Boost active — Sparks ×1.5 on this match",
+      "instrucciones": "Locate the country on the map. 10 questions or 60 seconds.",
+      "iniciarPartida": "Start match"
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n, plural, one {# shield available} other {# shields available}}",
+      "exp": "{n} Exp",
+      "dondeEsta": "Where is <destacado>{pais}</destacado>?",
+      "correcto": "Correct!"
+    },
+    "aprender": {
+      "descripcionUnidad": "Techniques to locate countries faster — not computation, mnemonics.",
+      "progreso": "Progress",
+      "tecnicas": "{completadas}/{total} techniques",
+      "titulo": "Learn",
+      "subtitulo": "Tricks to memorize maps — not math, ways of looking."
+    },
+    "leccion": {
+      "tecnica": "Technique",
+      "verElTruco": "See the trick",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "marcarComoAprendida": "Mark as learned",
+      "completaste": "You completed {nombre}!",
+      "volverAAprender": "Back to Learn",
+      "irAPracticar": "Go practice"
     }
   },
   "Nav": {
@@ -625,7 +919,8 @@
     "subtemaPicker": {
       "elegiAlMenosUno": "Choose at least one sub-topic",
       "iniciarPartida": "Start match",
-      "iniciarPartidaConCantidad": "Start match ({n} sub-topics)"
+      "iniciarPartidaConCantidad": "Start match ({n} sub-topics)",
+      "subtitulo": "Choose one or more sub-topics. 10 problems or 60 seconds."
     },
     "cliente": {
       "noSePudoCerrar": "Couldn't close the match.",
@@ -650,6 +945,8 @@
       "vsTuPromedio": "vs. {historico} your average",
       "sinHistorial": "no history",
       "partidaPerfecta": "Perfect match — 10/10",
+      "era": "was",
+      "ningunaFallada": "None missed — that's how it's done.",
       "ahiQuedo": "Nailed it.",
       "experiencia": "Experience",
       "rompisteTuMeta": "You crushed today's goal — {ganado}/{meta} XP",
@@ -658,10 +955,18 @@
       "velocidadPromedio": "Average speed",
       "experienciaHoy": "XP today",
       "chispasTotales": "Total Chispas: {n}",
-          "repasemosEsto": "Let's review this",
+      "repasemosEsto": "Let's review this",
       "laRespuestaEra": "the answer was",
       "ningunoFallado": "Nothing missed — that's how it's done."
-    }
+    },
+    "revelarRespuesta": {
+      "tuRespuesta": "Your answer: {respuesta}",
+      "laRespuestaEra": "The answer was {respuesta}"
+    },
+    "duelo": {
+      "rondaDe": "Round {n}/{total}"
+    },
+    "rivalPredeterminado": "Opponent"
   },
   "Aprender": {
     "progreso": "Progress",
@@ -692,6 +997,1357 @@
       "desbloqueasteEnPracticar": "You unlocked in Practice:",
       "volverAAprender": "Back to Learn",
       "irAPracticar": "Go practice"
+    }
+  },
+  "Admin": {
+    "anuncios": {
+      "titulo": "Announcements",
+      "descripcion": "Whatever you create here shows up as a modal to every user who hasn't seen it yet, once.",
+      "nuevoAnuncio": "New announcement",
+      "placeholderTitulo": "Title",
+      "placeholderDescripcion": "Description",
+      "completaTituloYDescripcion": "Fill in title and description.",
+      "publicar": "Publish",
+      "todosLosAnuncios": "All announcements",
+      "todaviaNoCreaste": "You haven't created any yet.",
+      "inactivo": "inactive",
+      "desactivar": "Deactivate",
+      "activar": "Activate"
+    }
+  },
+  "Ajustes": {
+    "metadata": {
+      "title": "Settings",
+      "description": "Sound, effects, and theme for Prodigia."
+    },
+    "titulo": "Settings",
+    "sonido": "Sound",
+    "sonidoDescripcion": "Short tones when you get an answer right or wrong during matches.",
+    "efectosVisuales": "Visual effects",
+    "efectosVisualesDescripcion": "Animated backgrounds, particles, and the logo's gesture during celebrations. Turning it off doesn't change any functionality.",
+    "ocultarDobleONada": "Hide \"Double or nothing\"",
+    "ocultarDobleONadaDescripcion": "Removes the betting backroom from the Shop. It's always just game Chispas, never real money — but if you'd rather not see it, turn it off here.",
+    "tema": "Theme",
+    "temaDescripcion": "Light or dark.",
+    "terminosDeUso": "Terms of use",
+    "privacidad": "Privacy"
+  },
+  "Algebra": {
+    "metadata": {
+      "title": "Practice Algebra",
+      "description": "Evaluate expressions and solve simple linear equations."
+    },
+    "tipos": {
+      "evaluar": "Evaluate expressions",
+      "unPaso": "One-step equations",
+      "dosPasos": "Two-step equations"
+    }
+  },
+  "Anatomia": {
+    "nombreMundo": "Anatomy",
+    "home": {
+      "metadata": {
+        "description": "Bones, muscles, organs, and the nervous system, with adaptive difficulty."
+      },
+      "avisoIntro": "Bones, muscles, organs, and the nervous system — with difficulty that adapts to you, just like the other worlds.",
+      "titulo": "The human body",
+      "metaCumplida": "You already hit today's goal.",
+      "practicarTitulo": "Practice",
+      "practicarDescripcion": "Bones, muscles, organs, and the nervous system.",
+      "aprenderTitulo": "Learn",
+      "aprenderDescripcion": "Memory techniques, one system at a time.",
+      "sistemasTitulo": "Systems"
+    },
+    "elegir": {
+      "metadata": {
+        "titulo": "Practice",
+        "description": "Choose an Anatomy system to practice."
+      },
+      "titulo": "Which system should we practice?",
+      "subtitulo": "Choose a system to get started.",
+      "modos": {
+        "oseo": "Bones of the body",
+        "muscular": "Muscles of the body",
+        "organos": "Main organs",
+        "nervioso": "Nervous system and cranial nerves"
+      }
+    },
+    "practicaClient": {
+      "errorCerrarPartida": "Couldn't close the match.",
+      "errorConexion": "We couldn't connect to the server. Try again.",
+      "noPudimosCerrarPartida": "We couldn't close the match: {error}",
+      "volver": "Back",
+      "subtituloRonda": "Round {ronda}/{total} · Anatomy",
+      "ahiQuedo": "Nailed it.",
+      "experiencia": "Experience",
+      "aciertos": "Correct",
+      "precision": "Accuracy",
+      "experienciaHoy": "XP today",
+      "repasemosEsto": "Let's review this",
+      "ningunaFallada": "Nothing missed — that's how it's done. 🎯",
+      "boostActivo": "⚡ Boost active — ×1.5 Chispas in this match",
+      "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
+      "iniciarPartida": "Start match"
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} shields available",
+      "exp": "{n} XP",
+      "segundos": "{n}s"
+    },
+    "diagnostico": {
+      "titulo": "A few bones to calibrate",
+      "subtitulo": "No pressure — 8 varied questions, just to start you at the right level.",
+      "empezar": "Start",
+      "arrancarNivel1": "I'd rather start at level 1",
+      "guardando": "Saving your diagnostic...",
+      "resultadoTitulo": "Here's how you start",
+      "nivelResultado": "Level {n}",
+      "errorGuardado": "We couldn't save your progress — try again before continuing.",
+      "continuar": "Continue",
+      "reintentar": "Retry"
+    },
+    "aprender": {
+      "metadata": {
+        "titulo": "Learn Anatomy",
+        "description": "Memory techniques for bones, muscles, organs, and the nervous system."
+      },
+      "progresoLabel": "Progress",
+      "tecnicasContador": "{dominadas}/{total} techniques",
+      "unidadDescripcion": "Techniques for memorizing anatomical terms — not computation, but associations and patterns.",
+      "titulo": "Learn",
+      "subtitulo": "Tricks for memorizing terms — not math, but ways of seeing and grouping."
+    },
+    "leccion": {
+      "badge": "Technique",
+      "verTruco": "See the trick",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "marcarAprendida": "Mark as learned",
+      "completaste": "You completed {nombre}!",
+      "volverAprender": "Back to Learn",
+      "irPracticar": "Go practice"
+    },
+    "practica": {
+      "oseo": {
+        "metadata": {
+          "titulo": "Skeletal system",
+          "description": "Bones of the human body, with adaptive difficulty."
+        }
+      },
+      "muscular": {
+        "metadata": {
+          "titulo": "Muscular system",
+          "description": "Muscles of the human body, with adaptive difficulty."
+        }
+      },
+      "nervioso": {
+        "metadata": {
+          "titulo": "Nervous system",
+          "description": "Nervous system and cranial nerves, with adaptive difficulty."
+        }
+      },
+      "organos": {
+        "metadata": {
+          "titulo": "Organs",
+          "description": "Main organs of the human body, with adaptive difficulty."
+        }
+      }
+    }
+  },
+  "Auth": {
+    "metadata": {
+      "title": "Sign in",
+      "description": "Sign in to Prodigia with your email and password."
+    },
+    "login": {
+      "titulo": "Sign in to Prodigia",
+      "subtitulo": "With your email and password.",
+      "errorEnlace": "We couldn't confirm the link — it may have expired or already been used. Request a new one from <link>/recuperar</link> or check your account confirmation email.",
+      "olvidasteContrasena": "Forgot your password?",
+      "noTienesCuenta": "Don't have an account?",
+      "creaUna": "Create one",
+      "emailPlaceholder": "you@email.com",
+      "passwordPlaceholder": "Password",
+      "entrando": "Signing in...",
+      "botonIniciarSesion": "Sign in",
+      "separadorO": "or",
+      "botonInvitado": "Continue as guest",
+      "practicaSinCuenta": "Practice without creating an account. You can save your progress later.",
+      "errorInvitado": "We couldn't create a guest session. Try again.",
+      "errorLogin": "We couldn't sign you in. Try again."
+    },
+    "registro": {
+      "titulo": "Create your account",
+      "subtitulo": "With your email and a password.",
+      "yaTienesCuenta": "Already have an account?",
+      "iniciaSesion": "Sign in",
+      "emailPlaceholder": "you@email.com",
+      "passwordPlaceholder": "Password (6 characters minimum)",
+      "confirmarPlaceholder": "Repeat your password",
+      "creandoCuenta": "Creating account...",
+      "botonCrearCuenta": "Create account",
+      "errorPasswordsNoCoinciden": "Passwords don't match.",
+      "errorCrearCuenta": "We couldn't create the account. Try again.",
+      "errorYaRegistrado": "An account with that email already exists.",
+      "confirmacionPendiente": "We sent an email to <strong>{email}</strong> — confirm your account from there to be able to sign in."
+    },
+    "recuperar": {
+      "titulo": "Recover password",
+      "subtitulo": "We'll send you a link by email to choose a new one.",
+      "volverIniciarSesion": "Back to sign in",
+      "emailPlaceholder": "you@email.com",
+      "enviando": "Sending...",
+      "botonEnviar": "Send me the link",
+      "errorEnviar": "We couldn't send the link. Try again.",
+      "enviado": "If there's an account with that email, a link to choose a new password was sent to it."
+    },
+    "actualizarPassword": {
+      "titulo": "Choose your new password",
+      "subtitulo": "This replaces the previous password on your account.",
+      "passwordPlaceholder": "New password",
+      "confirmarPlaceholder": "Repeat the new password",
+      "guardando": "Saving...",
+      "botonGuardar": "Save password",
+      "errorPasswordsNoCoinciden": "Passwords don't match.",
+      "errorActualizar": "We couldn't update the password. Request a new link from /recuperar."
+    },
+    "convertirCuenta": {
+      "pasoCerrado": {
+        "titulo": "You're playing as a guest",
+        "subtitulo": "Your progress is already being saved, but you'll lose it if you clear your browser data. Add an email and password so you never lose it.",
+        "boton": "Save my account"
+      },
+      "form": {
+        "titulo": "Save my account",
+        "emailPlaceholder": "you@email.com",
+        "passwordPlaceholder": "Password (6 characters minimum)",
+        "confirmarPlaceholder": "Repeat your password",
+        "botonConfirmar": "Confirm",
+        "botonCancelar": "Cancel",
+        "errorPasswordsNoCoinciden": "Passwords don't match.",
+        "errorGuardar": "We couldn't save the account. Try again."
+      },
+      "pasoNombre": {
+        "titulo": "What should we call you?",
+        "subtitulo": "Your account is already saved — choose your real name for your profile and the ranking.",
+        "placeholder": "Your name",
+        "botonGuardar": "Save",
+        "seguirNombreActual": "Keep my current name",
+        "errorGenerico": "Couldn't save. Try again."
+      },
+      "pasoDirecto": "Done, your account now has an email and password — sign in with those next time.",
+      "pasoConfirmar": "We sent an email to <strong>{email}</strong> — confirm it to finish saving your account. Keep playing normally in the meantime, you won't lose anything."
+    }
+  },
+  "Bloqueos": {
+    "invitado": {
+      "metadata": {
+        "title": "Create your account",
+        "description": "This part of Prodigia needs a real account."
+      },
+      "titulo": "Create your account to unlock this",
+      "necesitaCuenta": "needs a real account — it's free and you won't lose anything you've already practiced.",
+      "etiquetaPorDefecto": "This",
+      "volverInvitado": "Keep playing as a guest"
+    },
+    "mundo": {
+      "metadata": {
+        "title": "World locked",
+        "description": "This world unlocks by paying with Chispas."
+      },
+      "mundoBloqueado": "{mundo} is locked",
+      "desbloqueaPara": "Unlock <nombre>{mundo}</nombre> for good for <chispas>{precio} Chispas</chispas>. You have <valor>{puntos}</valor>.",
+      "desbloqueado": "Unlocked! Heading in…",
+      "desbloquearPor": "Unlock for {precio} Chispas",
+      "teFaltanChispas": "You're short on Chispas",
+      "sigueJugando": "Keep playing to earn more Chispas, or check out the shop.",
+      "noSePudoDesbloquear": "Couldn't unlock it. Try again.",
+      "noSePudoConectar": "Couldn't connect. Try again."
+    }
+  },
+  "Clanes": {
+    "metadata": {
+      "title": "Clans",
+      "description": "Create or join a clan, complete weekly missions as a team, and compete in the clan war."
+    },
+    "titulo": "Clans",
+    "subtitulo": "Join a group, complete weekly missions as a team, and compete in the clan war.",
+    "confirmarSalir": "Are you sure you want to leave your clan?",
+    "roles": {
+      "fundador": "Founder",
+      "guia": "Guide",
+      "miembro": "Member"
+    },
+    "nivelLabel": "Level {nivel}",
+    "miembrosCantidad": "{n} {n, plural, one {member} other {members}}",
+    "esRol": "You are {rol}",
+    "guerraGanada": "{n} {n, plural, one {war won} other {wars won}}",
+    "chispasParaNivel": "{n} Sparks to level {siguiente}",
+    "verMundo": "🗺️ View the World of Clans",
+    "tuClan": "Your clan",
+    "vs": "vs",
+    "misionTitulo": "Mission of the week",
+    "misionRecompensa": "+{n} Sparks for everyone",
+    "misionDescripcion": "Solve {objetivo} problems as a clan — {progreso}/{objetivo}",
+    "misionCumplida": "Mission complete! Sparks have been shared out.",
+    "miembrosTitulo": "Members",
+    "jugadorDefault": "Player",
+    "fundadorBadge": "★ Founder",
+    "guiaBadge": "Guide",
+    "expAportada": "{n} Exp contributed",
+    "aporteHistoricoTitle": "Historical contribution to the clan",
+    "bajarAMiembro": "Demote to Member",
+    "nombrarGuia": "Promote to Guide",
+    "salirDelClan": "Leave clan",
+    "guerraSemana": "Clan war — this week",
+    "rankingVacio": "No clan has earned Experience this week yet — be the first.",
+    "expSemana": "{n} Exp",
+    "sinClan": {
+      "buscarTitulo": "Search for a clan",
+      "buscarPlaceholder": "Search clan by name...",
+      "buscando": "Searching…",
+      "sinResultados": "We couldn't find any clan with that name.",
+      "unirme": "Join",
+      "crearClanTitulo": "Create a clan",
+      "costoChispas": "— {n} Sparks",
+      "nombrePlaceholder": "Clan name",
+      "tagPlaceholder": "Short tag (optional, e.g. PRD)",
+      "descripcionPlaceholder": "Description (optional)",
+      "elegirColor": "Choose color {color}",
+      "tienesChispas": "You have {n} Sparks",
+      "noAlcanza": "— not enough yet",
+      "crearClanBoton": "Create clan",
+      "errorNombreCorto": "The name needs at least 3 characters.",
+      "errorFaltanChispas": "You're missing Sparks: creating a clan costs {costo} (you have {tienes})."
+    },
+    "mundo": {
+      "metadata": {
+        "title": "World of Clans",
+        "description": "The map of every clan in Prodigia — one plot per clan, ordered by age."
+      },
+      "volver": "← Back to Clans",
+      "titulo": "World of Clans",
+      "subtitulo": "One plot per clan, in the order they were founded. Click to enter its city."
+    },
+    "chat": {
+      "titulo": "Clan chat",
+      "cargando": "Loading...",
+      "vacio": "No one has written anything here yet — you go first.",
+      "tu": "You",
+      "jugador": "Player",
+      "placeholder": "Write something to your clan...",
+      "enviar": "Send"
+    },
+    "escenaCiudad": {
+      "alt": "Clan city — {tier}"
+    },
+    "estandarte": {
+      "alt": "Clan banner",
+      "ariaLabel": "Clan banner, level {nivel}"
+    },
+    "mapa": {
+      "ayuda": "Drag to move around the map — scroll or use the buttons to zoom.",
+      "cargando": "Loading…",
+      "vacio": "No clans have been founded yet.",
+      "nivelAbrev": "Lv. {nivel}",
+      "lleno": "Full",
+      "cerrarInfo": "Close clan information",
+      "nivel": "Level {nivel}",
+      "miembrosCapacidad": "{cantidad}/{capacidad} members",
+      "guerrasGanadas": "{n} {n, plural, one {war won} other {wars won}}"
+    },
+    "subirImagen": {
+      "errorTipo": "It must be an image (PNG, JPG, WEBP, or GIF).",
+      "errorTamano": "The image can't be larger than 2MB.",
+      "subiendo": "Uploading...",
+      "cambiarImagen": "Change clan image",
+      "errorSubida": "We couldn't upload the image. Please try again.",
+      "errorGuardado": "The image uploaded but we couldn't save it. Please try again."
+    }
+  },
+  "Componentes": {
+    "acertijoMemoria": {
+      "memorizando": "Memorize this sequence..."
+    },
+    "apuestaResultado": {
+      "gano": "🎲 Double or nothing: you won — +{monto} Chispas",
+      "perdio": "🎲 Double or nothing: not this time — you lost the {monto} Chispas you bet"
+    },
+    "botonesFinPartida": {
+      "otraPartida": "Play again",
+      "volver": "Back"
+    },
+    "caminoContinuo": {
+      "proximamente": "Coming soon"
+    },
+    "campoPassword": {
+      "ocultarContrasena": "Hide password",
+      "mostrarContrasena": "Show password"
+    },
+    "compartirLogroBoton": {
+      "generando": "Generating…",
+      "compartir": "Share",
+      "logroDe": "Achievement by {nombre}"
+    },
+    "countdownSemanal": {
+      "seReinicia": "Resets in <destacado>{tiempo}</destacado>"
+    },
+    "nivelMundoBadge": {
+      "nivel": "Level {nivel}"
+    },
+    "nivelMundoSubio": {
+      "subioANivel": "{nombre} leveled up to {nivel}",
+      "mundos": {
+        "numeria": "Numeria",
+        "enigmia": "Enigmia",
+        "geografia": "Geography",
+        "quimia": "Quimia",
+        "anatomia": "Anatomy",
+        "melodia": "Melodia",
+        "trigonometria": "Trigonometry",
+        "historia": "History"
+      }
+    },
+    "nombreConFuente": {
+      "jugador": "Player"
+    },
+    "primeraVezTip": {
+      "siguiente": "Next",
+      "entendido": "Got it"
+    },
+    "sonidoToggle": {
+      "silenciar": "Mute sound",
+      "activar": "Enable sound"
+    },
+    "topicCard": {
+      "nivel": "Level {nivel}",
+      "proximamente": "Coming soon"
+    },
+    "worldCard": {
+      "proximamente": "Coming soon",
+      "bloqueado": "Locked"
+    }
+  },
+  "Decimales": {
+    "metadata": {
+      "description": "Convert, calculate percentages, and round — adaptive difficulty."
+    },
+    "tipos": {
+      "convertir": "Convert to decimal",
+      "porcentaje": "Percentages",
+      "redondear": "Round"
+    }
+  },
+  "Duelos": {
+    "rendirse": {
+      "confirmarPregunta": "Give up? It counts as a loss.",
+      "confirmarBoton": "Yes, give up",
+      "enviando": "...",
+      "seguirJugando": "Keep playing",
+      "error": "Couldn't give up the duel. Try again.",
+      "boton": "Give up"
+    },
+    "pantallaVS": {
+      "mejorDe3": "Best of 3",
+      "vs": "VS",
+      "eloValor": "{elo} ELO",
+      "clanDeBots": "Bot Clan"
+    },
+    "progresoRival": {
+      "vasAdelante": "You're ahead of {rival}",
+      "teLlevaVentaja": "{rival} is ahead of you",
+      "vanParejo": "Tied with {rival}"
+    },
+    "resultado": {
+      "clanDeBots": "Bot Clan",
+      "tu": "You",
+      "rival": "Rival",
+      "elo": "ELO",
+      "aciertos": "Correct",
+      "precision": "Accuracy",
+      "tiempoProm": "Avg. time",
+      "puntos": "points",
+      "esperandoRival": "Waiting for your rival…",
+      "enCuantoTermine": "As soon as {oponente} finishes theirs, you'll see the full comparison.",
+      "rivalPorDefecto": "your rival",
+      "empate": "Draw",
+      "empataronCon": "You drew with {oponente} — dead even.",
+      "verPerfil": "View profile",
+      "victoria": "Victory",
+      "leGanasteA": "You beat {oponente}",
+      "subisteDeRango": "You ranked up",
+      "derrota": "Defeat",
+      "estaVezGano": "{oponente} won this time — you were close.",
+      "pedirRevancha": "Ask for a rematch"
+    },
+    "salaEspera": {
+      "tu": "You",
+      "rivalNoConectado": "{rival} hasn't connected to the room yet — you can keep waiting or start your part now (the duel resolves as soon as they play theirs, like before).",
+      "jugarAhora": "Play my part now",
+      "tuListo": "You, ready",
+      "rivalListo": "{rival}, ready",
+      "esperandoA": "Waiting for {rival}…",
+      "arrancaSolo": "It starts automatically once you're both ready — no need to press anything."
+    },
+    "transicionFinalizando": {
+      "mensaje": "Closing the match…"
+    },
+    "invitacion": {
+      "tituloInvalido": "This duel link no longer works",
+      "esTuPropioLink": "It's your own link — share it with someone else.",
+      "motivoGenerico": "It may have already been used, canceled, or the link was copied wrong."
+    }
+  },
+  "Enigmia": {
+    "metadata": {
+      "description": "Logic puzzles: memory, patterns, deduction, and computational thinking."
+    },
+    "titulo": "Logic",
+    "metaCumplida": "You've already hit today's goal.",
+    "practicar": "Practice",
+    "practicarDescripcion": "Logic puzzles, calibrated to your level.",
+    "aprender": "Learn",
+    "aprenderDescripcion": "Reasoning strategies, one at a time.",
+    "categoriasTitulo": "Categories",
+    "practica": {
+      "rivalPorDefecto": "Rival"
+    },
+    "practicaClient": {
+      "noSePudoCerrar": "Couldn't close the match.",
+      "errorDeRed": "We couldn't connect to the server. Try again.",
+      "noPudimosCerrar": "We couldn't close the match: {error}",
+      "volver": "Back",
+      "ahiQuedo": "Nailed it.",
+      "experiencia": "Experience",
+      "aciertos": "Correct",
+      "precision": "Accuracy",
+      "experienciaHoy": "XP today",
+      "repasemosEsto": "Let's review this",
+      "laRespuestaEra": "the answer was",
+      "ningunoFallado": "Nothing missed — that's how it's done.",
+      "boostActivo": "Boost active — ×1.5 Chispas on this match",
+      "dueloSubtitulo": "Round {ronda}/{total} · Enigmia",
+      "listoTitulo": "Ready?",
+      "listoDescripcion": "10 puzzles or 60 seconds, whichever comes first.",
+      "iniciarPartida": "Start match"
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} shields available",
+      "exp": "{n} XP",
+      "segundos": "{n}s"
+    },
+    "diagnostico": {
+      "introTitulo": "A few puzzles to calibrate",
+      "introDescripcion": "No pressure — 8 varied puzzles, just to start at the right level.",
+      "empezar": "Start",
+      "prefiereNivelUno": "I'd rather start at level 1",
+      "guardando": "Saving your diagnostic...",
+      "resultadoTitulo": "Here's where you start",
+      "nivelResultado": "Level {nivel}",
+      "continuar": "Continue"
+    },
+    "aprenderPagina": {
+      "progreso": "Progress",
+      "progresoTecnicas": "{dominadas}/{total} techniques",
+      "titulo": "Learn"
+    },
+    "leccion": {
+      "tecnica": "Technique",
+      "verElEjemplo": "See the example",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "listo": "Done",
+      "completaste": "You completed {nombre}!",
+      "volverAAprender": "Back to Learn"
+    }
+  },
+  "Fracciones": {
+    "tipos": {
+      "simplificar": "Simplify",
+      "comparar": "Compare",
+      "sumar": "Add"
+    },
+    "enunciados": {
+      "simplificar": "Simplify this fraction",
+      "sumar": "Add and simplify the result",
+      "comparar": "Which is greater?"
+    }
+  },
+  "Geometria": {
+    "metadata": {
+      "description": "Perimeter, area, angles, and Pythagorean triples — adaptive difficulty."
+    },
+    "tipos": {
+      "perimetro": "Perimeter",
+      "area": "Area",
+      "angulos": "Angles",
+      "ternas": "Pythagorean triples"
+    }
+  },
+  "Historia": {
+    "metadata": {
+      "description": "Chronology, historical figures, cause and effect, and exact dates, with adaptive difficulty."
+    },
+    "aviso": "Chronology, historical figures, cause and effect, and exact dates — well-established historical facts, with difficulty that adapts to you.",
+    "titulo": "Facts, dates, and figures",
+    "metaCumplida": "You already hit today's goal.",
+    "practicar": "Practice",
+    "practicarDescripcion": "Chronology, figures, cause/effect, and dates.",
+    "aprender": "Learn",
+    "aprenderDescripcion": "Memory techniques for dates and chronology.",
+    "modosTitulo": "Modes",
+    "modos": {
+      "cronologia": "Chronology",
+      "personajes": "Figures",
+      "causaefecto": "Cause and effect",
+      "fechas": "Exact dates"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practice",
+        "description": "Choose a Historia mode to practice."
+      },
+      "titulo": "Which mode should we practice?",
+      "subtitulo": "Choose a mode to get started.",
+      "modos": {
+        "cronologia": {
+          "nombre": "Chronology",
+          "desc": "Order events, or identify the century"
+        },
+        "personajes": {
+          "nombre": "Figures",
+          "desc": "Identify the historical figure from clues"
+        },
+        "causaefecto": {
+          "nombre": "Cause and effect",
+          "desc": "The most widely recognized direct consequence"
+        },
+        "fechas": {
+          "nombre": "Exact dates 🔥",
+          "desc": "Precise year or decade — the hardest one"
+        }
+      }
+    },
+    "practicaClient": {
+      "noSePudoCerrar": "Couldn't close the match.",
+      "errorDeRed": "We couldn't connect to the server. Try again.",
+      "noPudimosCerrar": "We couldn't close the match: {error}",
+      "volver": "Back",
+      "rondaSerie": "Round {numero}/{total} · Historia",
+      "boostActivo": "⚡ Boost active — Chispas ×1.5 on this match",
+      "instrucciones": "10 questions or 60 seconds, whichever comes first.",
+      "iniciarPartida": "Start match",
+      "ahiQuedo": "Nailed it.",
+      "experiencia": "Experience",
+      "aciertos": "Correct",
+      "precision": "Accuracy",
+      "experienciaHoy": "XP today",
+      "repasemosEsto": "Let's review this",
+      "ningunoFallado": "Nothing missed — that's how it's done. 🎯"
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} shields available",
+      "exp": "{n} XP",
+      "segundos": "{n}s"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Historia diagnostic",
+        "description": "A few quick questions to calibrate your starting level."
+      },
+      "intro": {
+        "titulo": "A few facts to calibrate",
+        "subtitulo": "No pressure — 8 varied questions, just to start at the right level.",
+        "empezar": "Start",
+        "arrancarNivel1": "I'd rather start at level 1"
+      },
+      "guardando": "Saving your diagnostic...",
+      "resultado": {
+        "titulo": "This is how you start",
+        "nivel": "Level {n}",
+        "errorGuardado": "We couldn't save your progress — try again before continuing.",
+        "continuar": "Continue",
+        "reintentar": "Retry"
+      }
+    },
+    "aprenderPage": {
+      "metadata": {
+        "title": "Learn Historia",
+        "description": "Memory techniques for dates, chronology, and historical figures."
+      },
+      "unidad": {
+        "descripcion": "Memorization techniques for dates and chronology — not a history class."
+      },
+      "progreso": "Progress",
+      "tecnicas": "{dominadas}/{total} techniques",
+      "titulo": "Learn",
+      "subtitulo": "How to remember dates and place events in time without memorizing them number by number."
+    },
+    "leccion": {
+      "tecnica": "Technique",
+      "verElTruco": "See the trick",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "marcarComoAprendida": "Mark as learned",
+      "completaste": "You completed {nombre}!",
+      "volverAAprender": "Back to Learn",
+      "irAPracticar": "Go practice"
+    },
+    "practicaPages": {
+      "cronologia": {
+        "metadata": {
+          "title": "Practice Chronology",
+          "description": "Order historical events or identify the century, with adaptive difficulty."
+        }
+      },
+      "causaefecto": {
+        "metadata": {
+          "title": "Practice Cause and effect",
+          "description": "The most widely recognized direct consequence of a historical event."
+        }
+      },
+      "fechas": {
+        "metadata": {
+          "title": "Practice Exact dates",
+          "description": "Precise year or decade of lesser-known events — the hardest mode."
+        }
+      },
+      "personajes": {
+        "metadata": {
+          "title": "Practice Figures",
+          "description": "Identify the historical figure from clues, with adaptive difficulty."
+        }
+      }
+    }
+  },
+  "Leaderboard": {
+    "metadata": {
+      "title": "Leaderboard",
+      "description": "Weekly Experience leaderboard among Prodigia players."
+    },
+    "titulo": "Weekly leaderboard",
+    "descripcion": "Experience earned this week — it's temporary and resets every Monday. It has nothing to do with your total Sparks, those never go down.",
+    "tabs": {
+      "global": "Global",
+      "amigos": "Friends"
+    },
+    "filtros": {
+      "total": "Total experience",
+      "mundo": "By world"
+    },
+    "cargando": "Loading...",
+    "vacioAmigos": "None of your friends have earned experience this week yet.",
+    "vacioGlobal": "No one has earned experience this week yet — you start!",
+    "noSumasteAmigos": "You haven't earned experience this week yet.",
+    "noSumasteGlobal": "You haven't earned experience this week yet — practice to make the leaderboard.",
+    "expValor": "{n} Exp",
+    "jugadorPorDefecto": "Player",
+    "resto": {
+      "titulo": "Rest of the leaderboard",
+      "irAMiPosicion": "Go to my position",
+      "buscarPlaceholder": "Search by name...",
+      "buscarAriaLabel": "Search by name",
+      "cerrarBusqueda": "Close search",
+      "vacio": "No one else on this week's leaderboard yet.",
+      "sinResultados": "No one with that name on this week's leaderboard."
+    }
+  },
+  "Legal": {
+    "privacidad": {
+      "metadata": {
+        "title": "Privacy — Prodigia",
+        "description": "What data Prodigia stores and what it's used for."
+      },
+      "titulo": "Privacy",
+      "intro": "We're a small education app — this explains in plain language what we store and why.",
+      "datosTitulo": "What data we store",
+      "datosEmail": "Your email (if you created an account with email and password).",
+      "datosPerfil": "Your display name, your profile photo (avatar) if you uploaded one, and your progress: level by world and by topic, streak, Chispas, Experience, achievements, and titles.",
+      "datosActividad": "Your practice activity: what you answered, whether you got it right, how long it took — this is what we use to calibrate difficulty to your level.",
+      "datosDuelos": "Your real-time duel history: who you played against, the result, and how your ELO moved.",
+      "datosClan": "If you're part of a clan: which one, your role there, and the messages you send in the clan chat (visible only to the rest of your clan).",
+      "datosAmistades": "Your friendships within the app (who you added, who added you).",
+      "datosGrupo": "If you're part of a teacher's group, that teacher can see your group's aggregate progress (level, streak, accuracy), never your individual answers beyond that.",
+      "usoTitulo": "What we use it for",
+      "usoTexto": "Only to make the app work: calibrating your level, calculating your progress, showing the ranking, the feed, and your clan's chat, and nothing else. We don't sell your data or share it with third parties for advertising purposes. Clan chat has an automatic filter for offensive language (a message that contains it is rejected before it's saved), and any message can be reported for manual review — there's no automatic content moderation beyond that filter.",
+      "borrarTitulo": "Deleting your data",
+      "borrarTexto": "From <link>your profile</link> you can delete your account completely — your progress, achievements, title, duel history, clan membership, chat messages, friendships, and everything else tied to your account gets erased permanently. One exception to keep in mind: if you played a duel against someone else and that person later deletes their account, the record of that duel may also disappear from your own history — that's not something you can prevent, it's a side effect of how the other account's data gets deleted."
+    },
+    "terminos": {
+      "metadata": {
+        "title": "Terms of use — Prodigia",
+        "description": "Prodigia's terms of use, in plain language."
+      },
+      "titulo": "Terms of use",
+      "intro": "This is written in plain language on purpose — it's not a complex legal contract, it's an honest explanation of what Prodigia is and how it works.",
+      "queEsTitulo": "What Prodigia is",
+      "queEsTexto": "Prodigia is an adaptive practice education app: mental math, logic, geography, chemistry, anatomy, music theory, and other topics that keep getting added, with difficulty that adjusts to how you're doing. It also includes real-time duels against other players (with ELO and rank), clans, friends, achievements, and a social feed. It doesn't replace a class or a formal assessment — it's a practice tool.",
+      "cuentaTitulo": "Your account",
+      "cuentaTexto": "You can create an account with email and password, or sign in as a guest and decide later if you want to save it. You're responsible for keeping your password secure.",
+      "usoTitulo": "Acceptable use",
+      "usoTexto": "Use Prodigia to practice in good faith. Don't try to manipulate the Chispas system, the ranking, or duels with bots, scripts, or automated responses. In your clan chat and anywhere else you can write free text, don't use offensive, discriminatory, or abusive language — messages that contain it are automatically rejected before being saved, and any message or profile can be reported for manual review.",
+      "borrarTitulo": "Deleting your account",
+      "borrarTexto": "You can delete your account anytime from <link>your profile</link>. That action is permanent: it deletes your progress, achievements, duel history, clan membership, chat messages, and everything else tied to your account, and it can't be undone. If you played a duel against someone who later deletes their account, that duel may also disappear from your own history — it's a side effect of how deletion works, not something you can prevent on the other end.",
+      "verTambien": "See also our <link>privacy policy</link>."
+    },
+    "pro": {
+      "metadata": {
+        "title": "Prodigia Pro",
+        "description": "Prodigia Pro's benefits — coming soon."
+      },
+      "marca": "Prodigia",
+      "titulo": "Prodigia Pro",
+      "subtitulo": "Everything you'll get once Pro is available.",
+      "proximamente": "Coming soon",
+      "noDisponible": "Prodigia Pro isn't available to buy yet."
+    }
+  },
+  "Melodia": {
+    "home": {
+      "metadata": {
+        "description": "Staff notation, scales, and chords, with adaptive difficulty."
+      },
+      "avisoIntro": "Real staff notation, scales, and chords, built by formula — with difficulty that adapts to you, just like the other worlds.",
+      "titulo": "Notes, scales, and chords",
+      "metaCumplida": "You already hit your goal for today.",
+      "practicar": "Practice",
+      "practicarDescripcion": "Staff notation, accidentals, scales, and chords.",
+      "aprender": "Learn",
+      "aprenderDescripcion": "How to read the staff and build chords.",
+      "modosTitulo": "Modes",
+      "modos": {
+        "fundamentos": "Fundamentals",
+        "lectura": "Staff reading",
+        "alteraciones": "Accidentals",
+        "escalas": "Scales",
+        "acordes": "Chords",
+        "oidoAbsoluto": "Absolute pitch"
+      }
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practice",
+        "description": "Choose a Melodía mode to practice."
+      },
+      "titulo": "Which mode should we practice?",
+      "subtitulo": "Choose a mode to get started.",
+      "modos": {
+        "fundamentos": {
+          "nombre": "Fundamentals",
+          "descripcion": "Rhythmic figures and American chord notation"
+        },
+        "lectura": {
+          "nombre": "Staff reading",
+          "descripcion": "Identify the note in treble clef"
+        },
+        "alteraciones": {
+          "nombre": "Accidentals",
+          "descripcion": "Sharps and flats"
+        },
+        "escalas": {
+          "nombre": "Scales",
+          "descripcion": "Major, minor, and pentatonic"
+        },
+        "acordes": {
+          "nombre": "Chords",
+          "descripcion": "Triads, sevenths, and extended chords"
+        },
+        "oidoAbsoluto": {
+          "nombre": "Absolute pitch 🔥",
+          "descripcion": "Listen to the note and identify it — the hardest one"
+        }
+      }
+    },
+    "practicaClient": {
+      "errorCierre": "We couldn't close out the game.",
+      "errorConexion": "We couldn't connect to the server. Try again.",
+      "errorCierreConDetalle": "We couldn't close out the game: {error}",
+      "volver": "Go back",
+      "resumenTitulo": "That's a wrap.",
+      "experiencia": "Experience",
+      "aciertos": "Correct",
+      "precision": "Accuracy",
+      "experienciaHoy": "Experience today",
+      "repasemos": "Let's review this",
+      "ningunaFallada": "Nothing missed — that's how it's done. 🎯",
+      "iniciarPartida": "Start game",
+      "boostActivo": "⚡ Boost active — Sparks ×1.5 this game",
+      "instrucciones": "10 questions or 60 seconds, whichever comes first."
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n, plural, one {# shield available} other {# shields available}}",
+      "expCounter": "{n} XP"
+    },
+    "diagnostico": {
+      "titulo": "A few notes to calibrate",
+      "subtitulo": "No pressure — 8 varied questions, just to start you at the right level.",
+      "empezar": "Start",
+      "saltarNivel1": "I'd rather start at level 1",
+      "guardando": "Saving your diagnostic...",
+      "resultadoTitulo": "This is your starting point",
+      "nivelResultado": "Level {n}",
+      "errorGuardado": "We couldn't save your progress — try again before continuing.",
+      "continuar": "Continue",
+      "reintentar": "Try again"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Learn Melodía",
+        "description": "How to read the staff and build scales and chords, step by step."
+      },
+      "unidadDescripcion": "How to read the staff by position and how scales and chords are built from scratch.",
+      "progresoLabel": "Progress",
+      "progresoContador": "{completadas}/{total} techniques",
+      "titulo": "Learn",
+      "descripcion": "How to read the staff and how scales and chords are built — the logic, not memorizing case by case."
+    },
+    "leccion": {
+      "badge": "Technique",
+      "verTruco": "See the trick",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "marcarAprendida": "Mark as learned",
+      "completaste": "You completed {nombre}!",
+      "volverAprender": "Back to Learn",
+      "irPracticar": "Go to Practice"
+    },
+    "practicaPaginas": {
+      "fundamentos": {
+        "metadata": {
+          "title": "Practice Fundamentals",
+          "description": "Rhythmic figures and American chord notation, with adaptive difficulty."
+        }
+      },
+      "acordes": {
+        "metadata": {
+          "title": "Practice Chords",
+          "description": "Triads, sevenths, sus/add9, and extended chords, with adaptive difficulty."
+        }
+      },
+      "alteraciones": {
+        "metadata": {
+          "title": "Practice Accidentals",
+          "description": "Sharps and flats, with adaptive difficulty."
+        }
+      },
+      "escalas": {
+        "metadata": {
+          "title": "Practice Scales",
+          "description": "Major, natural minor, and pentatonic scales, with adaptive difficulty."
+        }
+      },
+      "lectura": {
+        "metadata": {
+          "title": "Practice Staff Reading",
+          "description": "Identify notes in treble clef, with adaptive difficulty."
+        }
+      },
+      "oidoAbsoluto": {
+        "metadata": {
+          "title": "Practice Absolute Pitch",
+          "description": "Listen to the note and identify it — Melodía's hardest mode."
+        }
+      }
+    },
+    "botonEscuchar": {
+      "ariaLabel": "Listen to the note again"
+    },
+    "figuraRitmica": {
+      "ariaLabel": "Rhythmic figure: {figura}"
+    },
+    "pentagrama": {
+      "ariaLabel": "Musical staff"
+    }
+  },
+  "Onboarding": {
+    "onboardingForm": {
+      "nombre": {
+        "titulo": "What should we call you?",
+        "subtitulo": "A short name is enough — you'll see it on your profile and the ranking.",
+        "placeholder": "Your name",
+        "botonSiguiente": "Next",
+        "guardando": "Saving...",
+        "errorGenerico": "Couldn't save. Try again."
+      }
+    },
+    "mundos": {
+      "titulo": "Choose your 2 worlds",
+      "subtitulo": "Everything starts locked — the 2 you choose here are free forever. The rest unlock later with Chispas, by playing.",
+      "elegido": "Chosen",
+      "bloqueado": "Locked",
+      "botonEmpezar": "Start playing",
+      "botonElegirMas": "Choose {n} more",
+      "errorGenerico": "Couldn't save. Try again.",
+      "preguntaCrearCuenta": "Would you rather create an account to save your progress right away?"
+    },
+    "diagnostico": {
+      "operaciones": {
+        "suma": "Addition",
+        "resta": "Subtraction",
+        "multiplicacion": "Multiplication",
+        "division": "Division"
+      },
+      "pregunta": {
+        "titulo": "Let's see where you're at",
+        "subtitulo": "No pressure — this doesn't affect your streak or your experience, it just helps us calibrate things right from the start. What do you want to improve first?",
+        "botonNoSe": "Not sure, show me a bit of everything"
+      },
+      "arrancarNivel1": "I'd rather start at level 1",
+      "ok": "Ok",
+      "guardando": "Saving your diagnostic...",
+      "errorGuardado": "We couldn't save your diagnostic — it might be a connection issue. Your earlier progress is safe.",
+      "botonReintentar": "Retry",
+      "resultado": {
+        "titulo": "Here's how you're starting",
+        "botonContinuar": "Continue"
+      }
+    }
+  },
+  "Potencias": {
+    "metadata": {
+      "description": "Powers, square roots, and scientific notation — adaptive difficulty."
+    },
+    "tipos": {
+      "potencia": "Powers",
+      "raiz": "Square roots",
+      "notacion": "Scientific notation"
+    }
+  },
+  "Profesor": {
+    "metadata": {
+      "title": "Groups",
+      "description": "Class groups in Prodigia: create one or join with a code."
+    },
+    "guardLabel": "Groups",
+    "jugador": "Player",
+    "cancelar": "Cancel",
+    "nunca": "Never",
+    "valorDias": "{n}d",
+    "codigoEtiqueta": "Code: {codigo}",
+    "precision": "Accuracy",
+    "nivelPorOperacion": "Level by operation",
+    "operaciones": {
+      "suma": "Addition",
+      "resta": "Subtraction",
+      "multiplicacion": "Multiplication",
+      "division": "Division"
+    },
+    "lista": {
+      "titulo": "Groups",
+      "subtitulo": "Create a group for your class or join one with the code your teacher gave you.",
+      "tituloCrear": "Create a group",
+      "placeholderNombre": "Group or section name",
+      "creando": "Creating...",
+      "botonCrear": "Create group",
+      "tituloUnirse": "Join with a code",
+      "placeholderCodigo": "6-letter code",
+      "uniendo": "Joining...",
+      "botonUnirse": "Join",
+      "errorCrear": "Couldn't create the group.",
+      "errorCodigoInvalido": "Invalid code."
+    },
+    "grupo": {
+      "volverAGrupos": "← Groups",
+      "puntoDeAtencion": "Point of attention",
+      "operacionMasFloja": "{operacion} is the group's weakest operation",
+      "nivelPromedioNota": "Average level: {promedio} / 10 — worth reinforcing in class.",
+      "vacioGrupo": "No one has joined with this group's code yet.",
+      "columnaAlumno": "Student",
+      "columnaRacha": "Streak",
+      "columnaUltimaActividad": "Last activity",
+      "nivelTooltip": "{operacion}: level {nivel}"
+    },
+    "borrar": {
+      "boton": "Delete group",
+      "confirmarPrefijo": "Delete",
+      "confirmarSufijo": "? Student memberships will be lost — this can't be undone.",
+      "borrando": "Deleting...",
+      "botonConfirmar": "Confirm",
+      "errorBorrar": "Couldn't delete the group."
+    },
+    "alumno": {
+      "volverAlGrupo": "← Back to the group",
+      "chispasTotales": "{n} total Chispas",
+      "rachaActual": "Current streak",
+      "rachaMaxima": "Max streak",
+      "ultimaActividadEtiqueta": "Last activity:"
+    }
+  },
+  "Quimia": {
+    "metadata": {
+      "description": "Elements, symbols, and chemical formulas, with adaptive difficulty."
+    },
+    "aviso": "Elements, symbols, formulas, and the periodic table — with difficulty that adapts to you, just like in the other worlds.",
+    "titulo": "Elements and compounds",
+    "metaCumplida": "You already hit your goal for today.",
+    "practicar": "Practice",
+    "practicarDescripcion": "Elements, formulas, and the periodic table.",
+    "aprender": "Learn",
+    "aprenderDescripcion": "Mnemonic tricks to memorize faster.",
+    "modosTitulo": "Modes",
+    "modos": {
+      "simbolos": "Symbols and elements",
+      "formulas": "Formulas and compounds",
+      "tabla": "Periodic table",
+      "nomenclatura": "Nomenclature",
+      "organica": "Organic chemistry"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practice",
+        "description": "Choose a Quimia mode to practice."
+      },
+      "titulo": "Which mode should we practice?",
+      "subtitulo": "Choose a mode to get started.",
+      "descSimbolos": "Identify elements by their symbol",
+      "descFormulas": "Chemical formulas",
+      "descTabla": "Atomic number, oxidation state",
+      "descNomenclatura": "Name compounds",
+      "descOrganica": "Carbon chains"
+    },
+    "practicaClient": {
+      "errorCerrar": "We couldn't close the game.",
+      "errorConexion": "We couldn't connect to the server. Please try again.",
+      "dueloSubtitulo": "Round {ronda}/{total} · Quimia",
+      "errorCerrarDetalle": "We couldn't close the game: {error}",
+      "volver": "Go back",
+      "ahiQuedo": "That's a wrap.",
+      "experiencia": "Experience",
+      "aciertos": "Correct",
+      "precision": "Accuracy",
+      "experienciaHoy": "Experience today",
+      "repasemosEsto": "Let's review this",
+      "ningunaFallada": "None missed — that's how it's done. 🎯",
+      "boostActivo": "⚡ Boost active — Sparks ×1.5 this game",
+      "preguntasSegundos": "10 questions or 60 seconds, whichever comes first.",
+      "iniciarPartida": "Start game"
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n, plural, one {# shield available} other {# shields available}}",
+      "xpAbreviado": "{xp} XP",
+      "segundosAbrev": "{s}s"
+    },
+    "diagnostico": {
+      "intro": {
+        "titulo": "A few elements to calibrate",
+        "subtitulo": "No pressure — 8 varied questions, just to start at the right level.",
+        "empezar": "Start"
+      },
+      "arrancarNivel1": "I'd rather start at level 1",
+      "guardando": "Saving your diagnostic...",
+      "resultado": {
+        "titulo": "Here's your start",
+        "nivel": "Level {nivel}",
+        "errorGuardado": "We couldn't save your progress — try again before continuing.",
+        "continuar": "Continue",
+        "reintentar": "Retry"
+      }
+    },
+    "aprenderPagina": {
+      "metadata": {
+        "title": "Learn Chemistry",
+        "description": "Mnemonic techniques to memorize elements and compounds."
+      },
+      "progreso": "Progress",
+      "progresoTecnicas": "{completadas}/{total} techniques",
+      "titulo": "Learn",
+      "subtitulo": "Tricks to memorize elements and formulas — not math, ways of seeing.",
+      "descripcionUnidad": "Techniques to memorize elements and compounds — not computation, mnemonics."
+    },
+    "leccion": {
+      "tecnica": "Technique",
+      "verTruco": "See the trick",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "marcarAprendida": "Mark as learned",
+      "completaste": "You completed {nombre}!",
+      "volverAprender": "Back to Learn",
+      "irPracticar": "Go to Practice"
+    },
+    "practicaPaginas": {
+      "simbolos": {
+        "title": "Practice Symbols and elements",
+        "description": "Identify chemical elements by their symbol, with adaptive difficulty."
+      },
+      "formulas": {
+        "title": "Practice Formulas and compounds",
+        "description": "Identify everyday chemical compounds by their formula."
+      },
+      "nomenclatura": {
+        "title": "Practice Nomenclature",
+        "description": "Name real chemical compounds from their formula, and vice versa."
+      },
+      "organica": {
+        "title": "Practice Organic chemistry",
+        "description": "Identify common organic compounds from their structural formula."
+      },
+      "tabla": {
+        "title": "Practice Periodic table",
+        "description": "Locate elements by group and period in the periodic table."
+      }
+    }
+  },
+  "Reto": {
+    "metadataDiario": {
+      "title": "Daily challenge",
+      "description": "5 questions from your unlocked cities, the same for everyone, every day."
+    },
+    "metadataSemanal": {
+      "title": "Weekly challenge",
+      "description": "45 questions from your unlocked cities, the same for everyone, every week."
+    },
+    "mundos": {
+      "numeria": "Numeria",
+      "enigmia": "Enigmia",
+      "geografia": "Geography",
+      "quimia": "Quimia",
+      "anatomia": "Anatomy",
+      "melodia": "Melodia",
+      "trigonometria": "Trigonometry",
+      "historia": "History"
+    },
+    "etiquetaDiario": "Daily challenge",
+    "etiquetaSemanal": "Weekly challenge",
+    "periodoDiario": "today",
+    "periodoSemanal": "this week",
+    "volverDiario": "tomorrow",
+    "volverSemanal": "next week",
+    "totalPreguntas": "{total} questions, the same for everyone {periodo}",
+    "introDescripcion": "Randomly spread across your unlocked cities. Finish it to earn extra Chispas and extend your streak.",
+    "rachaDiaria": "{racha, plural, one {# day} other {# days}} in a row",
+    "rachaSemanal": "{racha, plural, one {# week} other {# weeks}} in a row",
+    "empezar": "Start",
+    "yaCompletadoDiario": "You already completed today's challenge",
+    "yaCompletadoSemanal": "You already completed this week's challenge",
+    "ahiQuedo": "That's a wrap.",
+    "bonusChispas": "+{n} bonus Chispas",
+    "quienMasCompleto": "Who else completed it {periodo}",
+    "vuelvePorProximo": "Come back {volver} for the next one.",
+    "volverAInicio": "Back to Home",
+    "guardando": "Saving..."
+  },
+  "Trigonometria": {
+    "metadata": {
+      "title": "Trigonometry",
+      "description": "Ratios, unit circle, identities, and sine/cosine laws, with adaptive difficulty."
+    },
+    "nombreMundo": "Trigonometry",
+    "aviso": "Ratios, unit circle, identities, and oblique triangles — with difficulty that adapts to you, just like in the other worlds.",
+    "titulo": "Angles, ratios, and triangles",
+    "metaCumplida": "You already hit today's goal.",
+    "practicar": "Practice",
+    "practicarDescripcion": "Ratios, unit circle, identities, and laws.",
+    "aprenderCard": "Learn",
+    "aprenderDescripcion": "Mental tricks so you don't have to memorize everything from scratch.",
+    "modosTitulo": "Modes",
+    "modos": {
+      "razones": "Basic ratios",
+      "circulo": "Unit circle",
+      "identidades": "Identities",
+      "leyes": "Law of sines and cosines"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practice",
+        "description": "Choose a Trigonometry mode to practice."
+      },
+      "titulo": "Which mode should we practice?",
+      "subtitulo": "Choose a mode to get started.",
+      "descripciones": {
+        "razones": "SOHCAHTOA in right triangles",
+        "circulo": "Exact values, in degrees and radians",
+        "identidades": "Pythagorean, double angle, and complementary",
+        "leyes": "Oblique triangles — the hardest"
+      }
+    },
+    "practicaClient": {
+      "subtituloRonda": "Round {numero}/{total} · Trigonometry",
+      "noSePudoCerrar": "We couldn't close the game.",
+      "errorConexion": "We couldn't connect to the server. Try again.",
+      "errorCerrarPartida": "We couldn't close the game: {error}",
+      "volver": "Back",
+      "boostActivo": "⚡ Boost active — Chispas ×1.5 this game",
+      "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
+      "iniciarPartida": "Start game",
+      "resumen": {
+        "ahiQuedo": "Nailed it.",
+        "experiencia": "Experience",
+        "aciertos": "Correct",
+        "precision": "Accuracy",
+        "experienciaHoy": "XP today",
+        "repasemosEsto": "Let's review this",
+        "ningunoFallado": "None missed — that's how it's done. 🎯"
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} shields available",
+      "exp": "{n} XP",
+      "segundos": "{n}s",
+      "ok": "Ok"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Trigonometry Diagnostic",
+        "description": "A few quick questions to calibrate your starting level."
+      },
+      "introTitulo": "A few triangles to calibrate",
+      "introSubtitulo": "No pressure — 8 varied questions, just to start at the right level.",
+      "empezar": "Start",
+      "arrancarNivel1": "I'd rather start at level 1",
+      "ok": "Ok",
+      "guardando": "Saving your diagnostic...",
+      "resultadoTitulo": "This is your starting point",
+      "nivel": "Level {n}",
+      "errorGuardado": "We couldn't save your progress — try again before continuing.",
+      "continuar": "Continue",
+      "reintentar": "Retry"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Learn Trigonometry",
+        "description": "Mental tricks for notable angles, the unit circle, and degree-radian conversion."
+      },
+      "descripcionUnidad": "Mnemonics for SOHCAHTOA, notable unit-circle values, and degree-radian conversion.",
+      "progreso": "Progress",
+      "tecnicas": "{n}/{total} techniques",
+      "titulo": "Learn",
+      "subtitulo": "How to remember SOHCAHTOA and the unit circle without memorizing it all loosely."
+    },
+    "leccion": {
+      "tecnica": "Technique",
+      "verElTruco": "See the trick",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "marcarAprendida": "Mark as learned",
+      "completaste": "You completed {nombre}!",
+      "volverAAprender": "Back to Learn",
+      "irAPracticar": "Go to Practice"
+    },
+    "practica": {
+      "razones": {
+        "metadata": {
+          "title": "Practice Basic Ratios",
+          "description": "SOHCAHTOA on right triangles, with adaptive difficulty."
+        }
+      },
+      "circulo": {
+        "metadata": {
+          "title": "Practice Unit Circle",
+          "description": "Exact sine/cosine/tangent values at notable angles, in degrees and radians."
+        }
+      },
+      "identidades": {
+        "metadata": {
+          "title": "Practice Identities",
+          "description": "Pythagorean, double angle, and complementary, with adaptive difficulty."
+        }
+      },
+      "leyes": {
+        "metadata": {
+          "title": "Practice Law of Sines and Cosines",
+          "description": "Solve oblique triangles with the given data — the hardest mode."
+        }
+      }
     }
   }
 }

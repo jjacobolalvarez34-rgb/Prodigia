@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import AvatarConMarco from "@/components/AvatarConMarco";
 import GlareHover from "@/components/reactbits/GlareHover";
@@ -23,6 +24,7 @@ const TIPOS_PERMITIDOS = new Set(["image/png", "image/jpeg", "image/webp", "imag
 // mismo archivo (nombre fijo "foto"), así no hace falta borrar el
 // anterior a mano ni acumular basura.
 export default function SubirAvatar({ userId, nombre, avatarUrlInicial, marco = "ninguno" }: Props) {
+  const t = useTranslations("Perfil");
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [avatarUrl, setAvatarUrl] = useState(avatarUrlInicial);
@@ -36,11 +38,11 @@ export default function SubirAvatar({ userId, nombre, avatarUrlInicial, marco = 
     setError(null);
 
     if (!TIPOS_PERMITIDOS.has(file.type)) {
-      setError("Tiene que ser una imagen (PNG, JPG, WEBP o GIF).");
+      setError(t("subirAvatar.tipoInvalido"));
       return;
     }
     if (file.size > MAX_BYTES) {
-      setError("La imagen no puede pesar más de 2MB.");
+      setError(t("subirAvatar.tamanoExcedido"));
       return;
     }
 
@@ -55,7 +57,7 @@ export default function SubirAvatar({ userId, nombre, avatarUrlInicial, marco = 
 
     if (subidaError) {
       console.error("[avatar] upload error", subidaError);
-      setError("No pudimos subir la imagen. Probá de nuevo.");
+      setError(t("subirAvatar.errorSubida"));
       setSubiendo(false);
       return;
     }
@@ -73,7 +75,7 @@ export default function SubirAvatar({ userId, nombre, avatarUrlInicial, marco = 
     setSubiendo(false);
     if (updateError) {
       console.error("[avatar] update profile error", updateError);
-      setError("La imagen se subió pero no pudimos guardarla en tu perfil. Probá de nuevo.");
+      setError(t("subirAvatar.errorGuardarPerfil"));
       return;
     }
 
@@ -108,7 +110,7 @@ export default function SubirAvatar({ userId, nombre, avatarUrlInicial, marco = 
           disabled={subiendo}
           className="w-fit rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-primario/40 disabled:opacity-60"
         >
-          {subiendo ? "Subiendo..." : avatarUrl ? "Cambiar foto" : "Subir foto"}
+          {subiendo ? t("subirAvatar.subiendo") : avatarUrl ? t("subirAvatar.cambiarFoto") : t("subirAvatar.subirFoto")}
         </button>
         {error && <p className="text-xs text-error">{error}</p>}
       </div>

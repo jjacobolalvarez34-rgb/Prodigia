@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -29,6 +30,7 @@ interface Props {
 // las lecciones de Fracciones para los slugs sin motor de una sola
 // respuesta.
 export default function LeccionGeografiaClient({ nodo }: Props) {
+  const t = useTranslations("Geografia");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("explicacion");
   const [pasoIdx, setPasoIdx] = useState(0);
@@ -62,7 +64,7 @@ export default function LeccionGeografiaClient({ nodo }: Props) {
                 className="rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wide"
                 style={{ background: `color-mix(in oklab, ${COLOR_GEOGRAFIA} 12%, transparent)`, color: COLOR_GEOGRAFIA }}
               >
-                Técnica
+                {t("leccion.tecnica")}
               </span>
               <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">{nodo.nombre}</h1>
               <p className="mt-2 text-texto-secundario">{nodo.descripcion}</p>
@@ -72,7 +74,7 @@ export default function LeccionGeografiaClient({ nodo }: Props) {
               className="rounded-xl px-4 py-3 font-display font-semibold text-white shadow-lg"
               style={{ background: `linear-gradient(120deg, ${COLOR_GEOGRAFIA}, #3FB88B)` }}
             >
-              Ver el truco
+              {t("leccion.verElTruco")}
             </button>
           </motion.div>
         )}
@@ -102,7 +104,7 @@ export default function LeccionGeografiaClient({ nodo }: Props) {
                 disabled={pasoIdx === 0}
                 className="rounded-xl border border-border px-4 py-3 font-medium text-foreground disabled:opacity-40"
               >
-                Anterior
+                {t("leccion.anterior")}
               </button>
               {pasoIdx < pasos.length - 1 ? (
                 <button
@@ -110,7 +112,7 @@ export default function LeccionGeografiaClient({ nodo }: Props) {
                   className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
                   style={{ background: COLOR_GEOGRAFIA }}
                 >
-                  Siguiente paso
+                  {t("leccion.siguientePaso")}
                 </button>
               ) : (
                 <button
@@ -118,7 +120,7 @@ export default function LeccionGeografiaClient({ nodo }: Props) {
                   className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
                   style={{ background: COLOR_GEOGRAFIA }}
                 >
-                  Marcar como aprendida
+                  {t("leccion.marcarComoAprendida")}
                 </button>
               )}
             </div>
@@ -135,7 +137,7 @@ export default function LeccionGeografiaClient({ nodo }: Props) {
           >
             <span className="text-5xl">🎉</span>
             <h1 className="font-display text-2xl font-black tracking-tight text-foreground">
-              ¡Completaste {nodo.nombre}!
+              {t("leccion.completaste", { nombre: nodo.nombre })}
             </h1>
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
@@ -144,10 +146,10 @@ export default function LeccionGeografiaClient({ nodo }: Props) {
                 className="rounded-xl px-4 py-3 font-display font-semibold text-white"
                 style={{ background: COLOR_GEOGRAFIA }}
               >
-                Volver a Aprender
+                {t("leccion.volverAAprender")}
               </button>
               <Link href="/geografia/practica" className="text-sm font-medium hover:underline" style={{ color: COLOR_GEOGRAFIA }}>
-                Ir a Practicar
+                {t("leccion.irAPracticar")}
               </Link>
             </div>
           </motion.div>

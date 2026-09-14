@@ -246,7 +246,7 @@ function generarOrdenar(nivel: number, usados: Set<string>, rng: Rng): PreguntaH
   const distractores = incorrectas.slice(0, 3) as [string, string, string];
 
   return {
-    enunciado: "Ordená estos 3 eventos de más antiguo a más reciente:",
+    enunciado: "Ordena estos 3 eventos de más antiguo a más reciente:",
     opciones: opcionesConDistractores(correcta, distractores, rng),
     respuesta: correcta,
     clave: correcta,

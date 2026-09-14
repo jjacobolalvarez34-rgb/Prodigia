@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 // Fase 4 de la tanda "Rankeds/Clanes: bugs y ranking visible": contador
 // en vivo hasta que se reinicia el ranking semanal — no había un
@@ -36,6 +37,7 @@ interface Props {
 }
 
 export default function CountdownSemanal({ className = "" }: Props) {
+  const t = useTranslations("Componentes");
   const [restanteMs, setRestanteMs] = useState<number | null>(null);
 
   useEffect(() => {
@@ -52,7 +54,10 @@ export default function CountdownSemanal({ className = "" }: Props) {
 
   return (
     <p className={`font-mono text-xs text-texto-secundario ${className}`}>
-      Se reinicia en <span className="font-semibold text-foreground">{formatearRestante(restanteMs)}</span>
+      {t.rich("countdownSemanal.seReinicia", {
+        tiempo: formatearRestante(restanteMs),
+        destacado: (chunks) => <span className="font-semibold text-foreground">{chunks}</span>,
+      })}
     </p>
   );
 }

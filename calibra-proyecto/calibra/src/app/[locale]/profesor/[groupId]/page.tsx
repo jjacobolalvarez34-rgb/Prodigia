@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { calcularRachaDiaria } from "@/lib/practica/racha";
@@ -19,13 +20,6 @@ interface FilaResumen {
   ultima_actividad: string | null;
 }
 
-const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
-  suma: "Suma",
-  resta: "Resta",
-  multiplicacion: "Multiplicación",
-  division: "División",
-};
-
 const COLOR_NIVEL: Record<ArithmeticProblemType, string> = {
   suma: "bg-primario",
   resta: "bg-correcto",
@@ -39,9 +33,11 @@ interface Props {
 
 export default async function GrupoPage({ params }: Props) {
   const { groupId } = await params;
+  const t = await getTranslations("Profesor");
+  const locale = await getLocale();
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, `/profesor/${groupId}`);
-  bloquearInvitado(user, "Grupos");
+  bloquearInvitado(user, t("guardLabel"));
 
   const { data: grupo, error: grupoError } = await supabase
     .from("groups")
@@ -95,40 +91,42 @@ export default async function GrupoPage({ params }: Props) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <Link href="/profesor" className="text-xs text-texto-secundario hover:underline">
-              ← Grupos
+              {t("grupo.volverAGrupos")}
             </Link>
             <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-foreground">{grupo.nombre}</h1>
-            <p className="font-mono text-xs text-texto-secundario">Código: {grupo.codigo_invitacion}</p>
+            <p className="font-mono text-xs text-texto-secundario">
+              {t("codigoEtiqueta", { codigo: grupo.codigo_invitacion })}
+            </p>
           </div>
           <BorrarGrupo groupId={grupo.id} nombreGrupo={grupo.nombre} />
         </div>
 
         {masFloja && (
           <div className="rounded-2xl bg-primario/10 px-6 py-5">
-            <p className="text-xs font-medium uppercase tracking-wide text-primario">Punto de atención</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-primario">{t("grupo.puntoDeAtencion")}</p>
             <p className="mt-1 font-display text-lg font-bold text-foreground">
-              {NOMBRES_OPERACION[masFloja.tipo]} es la operación más floja del grupo
+              {t("grupo.operacionMasFloja", { operacion: t(`operaciones.${masFloja.tipo}`) })}
             </p>
             <p className="text-sm text-texto-secundario">
-              Nivel promedio: {masFloja.promedio?.toFixed(1)} / 10 — vale la pena reforzarla en clase.
+              {t("grupo.nivelPromedioNota", { promedio: masFloja.promedio?.toFixed(1) ?? "" })}
             </p>
           </div>
         )}
 
         {filas.length === 0 ? (
           <p className="rounded-2xl border border-border bg-surface px-6 py-8 text-center text-texto-secundario">
-            Todavía nadie se unió con el código de este grupo.
+            {t("grupo.vacioGrupo")}
           </p>
         ) : (
           <div className="overflow-x-auto rounded-2xl border border-border">
             <table className="w-full text-left text-sm">
               <thead className="bg-surface-2 text-xs uppercase tracking-wide text-texto-secundario">
                 <tr>
-                  <th className="px-4 py-3">Alumno</th>
-                  <th className="px-4 py-3">Racha</th>
-                  <th className="px-4 py-3">Precisión</th>
-                  <th className="px-4 py-3">Nivel por operación</th>
-                  <th className="px-4 py-3">Última actividad</th>
+                  <th className="px-4 py-3">{t("grupo.columnaAlumno")}</th>
+                  <th className="px-4 py-3">{t("grupo.columnaRacha")}</th>
+                  <th className="px-4 py-3">{t("precision")}</th>
+                  <th className="px-4 py-3">{t("nivelPorOperacion")}</th>
+                  <th className="px-4 py-3">{t("grupo.columnaUltimaActividad")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -139,10 +137,12 @@ export default async function GrupoPage({ params }: Props) {
                         href={`/profesor/${groupId}/${f.user_id}`}
                         className="font-medium text-foreground hover:text-primario hover:underline"
                       >
-                        {f.display_name ?? "Jugador"}
+                        {f.display_name ?? t("jugador")}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 font-mono">{rachaPorAlumno.get(f.user_id) ?? 0}d</td>
+                    <td className="px-4 py-3 font-mono">
+                      {t("valorDias", { n: rachaPorAlumno.get(f.user_id) ?? 0 })}
+                    </td>
                     <td className="px-4 py-3 font-mono">
                       {f.precision_promedio !== null ? `${Math.round(f.precision_promedio * 100)}%` : "—"}
                     </td>
@@ -154,7 +154,7 @@ export default async function GrupoPage({ params }: Props) {
                           return (
                             <span
                               key={tipo}
-                              title={`${NOMBRES_OPERACION[tipo]}: nivel ${nivel}`}
+                              title={t("grupo.nivelTooltip", { operacion: t(`operaciones.${tipo}`), nivel })}
                               className={`h-2.5 w-2.5 rounded-full ${COLOR_NIVEL[tipo]}`}
                               style={{ opacity: 0.3 + (nivel / 10) * 0.7 }}
                             />
@@ -163,7 +163,7 @@ export default async function GrupoPage({ params }: Props) {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-texto-secundario">
-                      {f.ultima_actividad ? new Date(f.ultima_actividad).toLocaleDateString("es-AR") : "Nunca"}
+                      {f.ultima_actividad ? new Date(f.ultima_actividad).toLocaleDateString(locale) : t("nunca")}
                     </td>
                   </tr>
                 ))}

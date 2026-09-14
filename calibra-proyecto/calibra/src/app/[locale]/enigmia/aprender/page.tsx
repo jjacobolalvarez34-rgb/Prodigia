@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoEnigmia, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoEnigmia } from "@/lib/enigmia/path";
@@ -9,6 +10,7 @@ import AprenderSidebar from "@/components/AprenderSidebar";
 const COLOR = "#0E9F6E";
 
 export default async function EnigmiaAprenderPage() {
+  const t = await getTranslations("Enigmia.aprenderPagina");
   const supabase = await createClient();
   const { user } = await requireMundoEnigmia(supabase, "/enigmia/aprender");
   bloquearInvitado(user, "Aprender");
@@ -35,8 +37,10 @@ export default async function EnigmiaAprenderPage() {
               </span>
             </ProgressDial>
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Progreso</p>
-              <p className="font-mono text-sm font-semibold text-foreground">{totalDominadas}/{totalTecnicas} técnicas</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("progreso")}</p>
+              <p className="font-mono text-sm font-semibold text-foreground">
+                {t("progresoTecnicas", { dominadas: totalDominadas, total: totalTecnicas })}
+              </p>
             </div>
           </div>
 
@@ -54,7 +58,7 @@ export default async function EnigmiaAprenderPage() {
         <main className="flex flex-col gap-2">
           <div>
             <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR }}>Enigmia</span>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Aprender</h1>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
           </div>
           <CaminoContinuo unidades={unidadesGenericas} basePath="/enigmia/aprender" colorHex={COLOR} />
         </main>

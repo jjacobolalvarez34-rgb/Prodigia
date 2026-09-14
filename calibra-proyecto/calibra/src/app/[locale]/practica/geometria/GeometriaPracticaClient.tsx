@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { generarProblemaGeometria, TIPOS_GEOMETRIA, type ProblemaGeometria, type TipoGeometria } from "@/lib/practica/geometria";
 import type { Achievement } from "@/types/database";
 import BotonesFinPartida from "@/components/BotonesFinPartida";
@@ -13,13 +14,6 @@ import SubtemaPicker from "@/components/practica/SubtemaPicker";
 import Boton from "@/components/Boton";
 
 type Fase = "inicio" | "sprint" | "resumen";
-
-const NOMBRES: Record<TipoGeometria, string> = {
-  perimetro: "Perímetro",
-  area: "Área",
-  angulos: "Ángulos",
-  ternas: "Ternas pitagóricas",
-};
 
 interface FinishResponse {
   sprint: { total: number; correctos: number; precision: number | null; xpGanado: number; avgTimeMs: number | null };
@@ -41,6 +35,15 @@ interface Props {
 }
 
 export default function GeometriaPracticaClient({ nivelPorTipo, escudosExtra, boostActivo }: Props) {
+  const t = useTranslations("Practica");
+  const tGeometria = useTranslations("Geometria.tipos");
+  const tNumeria = useTranslations("Numeria.temas");
+  const NOMBRES: Record<TipoGeometria, string> = {
+    perimetro: tGeometria("perimetro"),
+    area: tGeometria("area"),
+    angulos: tGeometria("angulos"),
+    ternas: tGeometria("ternas"),
+  };
   const [fase, setFase] = useState<Fase>("inicio");
   const [seleccion, setSeleccion] = useState<TipoGeometria[]>([...TIPOS_GEOMETRIA]);
   const [startedAtIso, setStartedAtIso] = useState("");
@@ -71,13 +74,13 @@ export default function GeometriaPracticaClient({ nivelPorTipo, escudosExtra, bo
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "No se pudo cerrar la partida.");
+        setError(data.error ?? t("cliente.noSePudoCerrar"));
       } else {
         setError(null);
         setResumen(data as FinishResponse);
       }
     } catch {
-      setError("No pudimos conectar con el servidor. Probá de nuevo.");
+      setError(t("cliente.errorDeRed"));
     }
     setFase("resumen");
   }
@@ -100,8 +103,8 @@ export default function GeometriaPracticaClient({ nivelPorTipo, escudosExtra, bo
   if (fase === "resumen" && error) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-16 text-center">
-        <p className="text-error">No pudimos cerrar la partida: {error}</p>
-        <Boton onClick={() => setFase("inicio")}>Volver</Boton>
+        <p className="text-error">{t("cliente.noPudimosCerrar", { error })}</p>
+        <Boton onClick={() => setFase("inicio")}>{t("cliente.volver")}</Boton>
       </div>
     );
   }
@@ -114,37 +117,38 @@ export default function GeometriaPracticaClient({ nivelPorTipo, escudosExtra, bo
 
         <ApuestaResultado apuesta={resumen.apuesta ?? null} />
         <div className="flex flex-col items-center gap-2 text-center">
-          <p className="font-display text-lg font-bold text-foreground">Ahí quedó.</p>
+          <p className="font-display text-lg font-bold text-foreground">{t("resumen.ahiQuedo")}</p>
           <p className="font-mono text-3xl font-bold text-foreground">
-            +{resumen.sprint.xpGanado} <span className="text-base font-medium text-texto-secundario">Experiencia</span>
+            +{resumen.sprint.xpGanado}{" "}
+            <span className="text-base font-medium text-texto-secundario">{t("resumen.experiencia")}</span>
           </p>
         </div>
 
         <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
-          <Fila label="Aciertos" valor={`${resumen.sprint.correctos}/${resumen.sprint.total}`} />
+          <Fila label={t("resumen.aciertos")} valor={`${resumen.sprint.correctos}/${resumen.sprint.total}`} />
           <Fila
-            label="Precisión"
+            label={t("resumen.precision")}
             valor={resumen.sprint.precision === null ? "—" : `${Math.round(resumen.sprint.precision * 100)}%`}
           />
-          <Fila label="Experiencia hoy" valor={`${resumen.xpGanadoHoy}/${resumen.metaXpDiaria}`} />
+          <Fila label={t("resumen.experienciaHoy")} valor={`${resumen.xpGanadoHoy}/${resumen.metaXpDiaria}`} />
         </div>
 
         {errores.length > 0 ? (
           <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
-            <p className="mb-3 font-display text-sm font-semibold text-foreground">Repasemos esto</p>
+            <p className="mb-3 font-display text-sm font-semibold text-foreground">{t("resumen.repasemosEsto")}</p>
             <div className="flex flex-col gap-2.5">
               {errores.map((p, i) => (
                 <div key={i} className="flex items-center justify-between font-mono text-sm">
                   <span className="text-texto-secundario">{p.enunciado}</span>
                   <span className="text-texto-secundario">
-                    era <span className="font-semibold text-error">{p.respuesta}</span>
+                    {t("resumen.era")} <span className="font-semibold text-error">{p.respuesta}</span>
                   </span>
                 </div>
               ))}
             </div>
           </div>
         ) : (
-          <p className="text-sm text-texto-secundario">Ninguna fallada — así se hace. 🎯</p>
+          <p className="text-sm text-texto-secundario">{t("resumen.ningunaFallada")} 🎯</p>
         )}
 
         <BotonesFinPartida onOtraVez={() => setFase("inicio")} volverHref="/numeria" />
@@ -156,12 +160,12 @@ export default function GeometriaPracticaClient({ nivelPorTipo, escudosExtra, bo
     <>
       {boostActivo && (
         <div className="mx-auto mt-6 flex w-full max-w-md items-center justify-center gap-2 rounded-full bg-logro/15 px-4 py-2 text-sm font-medium text-foreground">
-          ⚡ Boost activo — Chispas ×1.5 en tu próxima partida
+          ⚡ {t("cliente.boostActivo")}
         </div>
       )}
       <SubtemaPicker
-        titulo="Geometría básica"
-        subtitulo="Elegí uno o más sub-temas. 10 problemas o 60 segundos."
+        titulo={tNumeria("geometria")}
+        subtitulo={t("subtemaPicker.subtitulo")}
         tipos={TIPOS_GEOMETRIA}
         nombres={NOMBRES}
         nivelPorTipo={nivelPorTipo}

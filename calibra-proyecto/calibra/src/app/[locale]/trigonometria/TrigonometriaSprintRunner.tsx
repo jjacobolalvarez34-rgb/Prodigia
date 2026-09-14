@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { generarProblemaTrigonometria, type ModoTrigonometria, type ProblemaTrigonometria } from "@/lib/practica/trigonometria";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { reproducirTono } from "@/lib/sonido";
@@ -59,6 +60,7 @@ export default function TrigonometriaSprintRunner({
   duracionMs = DURACION_MS,
   onFinish,
 }: Props) {
+  const t = useTranslations("Trigonometria.sprintRunner");
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const correctosRef = useRef(0);
@@ -235,14 +237,14 @@ export default function TrigonometriaSprintRunner({
           </div>
           <div className="flex items-center gap-3">
             <SonidoToggle />
-            <div className="flex items-center gap-1" aria-label={`${escudos} escudos disponibles`}>
+            <div className="flex items-center gap-1" aria-label={t("escudosDisponibles", { n: escudos })}>
               {Array.from({ length: escudosIniciales }).map((_, i) => (
                 <EscudoIcon key={i} activo={i < escudos} colorActivo={COLOR_TRIGONOMETRIA} />
               ))}
             </div>
             <RachaFuego racha={racha} />
-            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">{xpSprint} Exp</span>
-            <span className="font-mono font-medium">{segundos}s</span>
+            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">{t("exp", { n: xpSprint })}</span>
+            <span className="font-mono font-medium">{t("segundos", { n: segundos })}</span>
           </div>
         </div>
 
@@ -292,7 +294,7 @@ export default function TrigonometriaSprintRunner({
               className="rounded-xl px-4 py-2.5 font-display font-semibold text-white disabled:opacity-60"
               style={{ background: COLOR_TRIGONOMETRIA }}
             >
-              Ok
+              {t("ok")}
             </button>
           </form>
         ) : (

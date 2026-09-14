@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import type { CategoriaEnigmia, LogicPuzzle, Achievement } from "@/types/database";
 import Boton from "@/components/Boton";
 import BotonesFinPartida from "@/components/BotonesFinPartida";
@@ -63,6 +64,7 @@ interface Props {
 }
 
 export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
+  const t = useTranslations("Enigmia.practicaClient");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
   const [startedAtIso, setStartedAtIso] = useState("");
@@ -98,7 +100,7 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "No se pudo cerrar la partida.");
+        setError(data.error ?? t("noSePudoCerrar"));
       } else {
         setError(null);
         const finishData = data as FinishResponse;
@@ -132,7 +134,7 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
     } catch {
       // Red caída o el servidor no respondió: no dejamos la partida
       // trabada en la última pregunta, mostramos el resumen con error.
-      setError("No pudimos conectar con el servidor. Probá de nuevo.");
+      setError(t("errorDeRed"));
     }
     setFase("resumen");
   }
@@ -171,7 +173,7 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
         rivalElo={duelo.rivalElo}
         rivalEsBot={duelo.rivalEsBot}
         modo={duelo.serieId ? "mejor_de_3" : "simple"}
-        subtitulo={duelo.serieId ? `Ronda ${duelo.rondaNumero}/${duelo.rondaTotal} · Enigmia` : "Enigmia"}
+        subtitulo={duelo.serieId ? t("dueloSubtitulo", { ronda: duelo.rondaNumero, total: duelo.rondaTotal }) : "Enigmia"}
         onEmpezarAhora={empezarAhora}
         duelId={duelo.duelId}
       />
@@ -212,9 +214,9 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
   if (fase === "resumen" && error) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-16 text-center">
-        <p className="text-error">No pudimos cerrar la partida: {error}</p>
+        <p className="text-error">{t("noPudimosCerrar", { error })}</p>
         <button onClick={() => setFase("inicio")} className="rounded-2xl bg-[#0E9F6E] px-4 py-3 font-medium text-white">
-          Volver
+          {t("volver")}
         </button>
       </div>
     );
@@ -229,37 +231,37 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
         <ApuestaResultado apuesta={resumen.apuesta ?? null} />
         <ResultadoDueloBlock duelo={resultadoDuelo} />
         <div className="flex flex-col items-center gap-2 text-center">
-          <p className="font-display text-lg font-bold text-foreground">Ahí quedó.</p>
+          <p className="font-display text-lg font-bold text-foreground">{t("ahiQuedo")}</p>
           <p className="font-mono text-3xl font-bold text-foreground">
-            +{resumen.partida.xpGanado} <span className="text-base font-medium text-texto-secundario">Experiencia</span>
+            +{resumen.partida.xpGanado} <span className="text-base font-medium text-texto-secundario">{t("experiencia")}</span>
           </p>
         </div>
 
         <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
-          <Fila label="Aciertos" valor={`${resumen.partida.correctos}/${resumen.partida.total}`} />
+          <Fila label={t("aciertos")} valor={`${resumen.partida.correctos}/${resumen.partida.total}`} />
           <Fila
-            label="Precisión"
+            label={t("precision")}
             valor={resumen.partida.precision === null ? "—" : `${Math.round(resumen.partida.precision * 100)}%`}
           />
-          <Fila label="Experiencia hoy" valor={`${resumen.xpGanadoHoy}/${resumen.metaXpDiaria}`} />
+          <Fila label={t("experienciaHoy")} valor={`${resumen.xpGanadoHoy}/${resumen.metaXpDiaria}`} />
         </div>
 
         {errores.length > 0 ? (
           <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
-            <p className="mb-3 font-display text-sm font-semibold text-foreground">Repasemos esto</p>
+            <p className="mb-3 font-display text-sm font-semibold text-foreground">{t("repasemosEsto")}</p>
             <div className="flex flex-col gap-2.5">
               {errores.map((p, i) => (
                 <div key={i} className="flex flex-col gap-0.5 text-sm">
                   <span className="text-texto-secundario">{p.contenido.enunciado}</span>
                   <span className="text-texto-secundario">
-                    la respuesta era <span className="font-semibold text-error">{p.respuesta}</span>
+                    {t("laRespuestaEra")} <span className="font-semibold text-error">{p.respuesta}</span>
                   </span>
                 </div>
               ))}
             </div>
           </div>
         ) : (
-          <p className="text-sm text-texto-secundario">Ninguno fallado — así se hace. 🎯</p>
+          <p className="text-sm text-texto-secundario">{t("ningunoFallado")} 🎯</p>
         )}
 
         <BotonesFinPartida
@@ -275,13 +277,13 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
       {boostActivo && (
         <div className="flex items-center justify-center gap-2 rounded-full bg-logro/15 px-4 py-2 text-sm font-medium text-foreground">
-          ⚡ Boost activo — Chispas ×1.5 en esta partida
+          ⚡ {t("boostActivo")}
         </div>
       )}
-      <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">¿Listo?</h1>
-      <p className="text-texto-secundario">10 acertijos o 60 segundos, lo que llegue primero.</p>
+      <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("listoTitulo")}</h1>
+      <p className="text-texto-secundario">{t("listoDescripcion")}</p>
       <Boton onClick={iniciar} colorHex="#0E9F6E" destacado className="w-full py-5 text-lg">
-        Iniciar partida
+        {t("iniciarPartida")}
       </Boton>
     </div>
   );

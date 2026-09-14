@@ -144,8 +144,92 @@ Lancé una auditoría sistemática (no manual) de las 132 migraciones buscando e
 
 `npx tsc --noEmit` limpio en las dos carpetas después de los 3 cambios de cliente. **Pendiente de correr `0133` en producción.**
 
+## 11. `registrar_xp_diario` — "Experiencia diaria" mostraba null/500 (P0, reportado en vivo por el propietario)
+
+**Síntoma**: al jugar la primera partida del día, "Experiencia diaria" mostraba `null` en vez de un número.
+
+**Causa**: `registrar_xp_diario` (reescrita en la pasada de seguridad 0120 de opencode) hacía `select coalesce(xp_ganado, 0) into v_ya_hoy from daily_progress where ... fecha = current_date` — si es la primera partida del día, esa fila todavía no existe, el `select` no matchea ninguna fila y `v_ya_hoy` queda en `NULL` (el `coalesce` de la columna no cubre "fila ausente", solo "columna nula en una fila que sí existe"). La resta siguiente (`v_real_hoy - v_ya_hoy`) se vuelve `NULL`, y `greatest(0, NULL)` da `0` (Postgres ignora los `NULL` en `greatest`/`least`) — así que no se acreditaba nada, y como tampoco se llegaba a crear la fila, la rama `else` repetía el mismo problema con `v_xp_hoy`, que terminaba devuelto como `NULL` — exactamente el "null/500" visto en pantalla (500 = `meta_xp_diaria`, esa sí se devolvía bien).
+
+**Fix**: `supabase/migrations/0134_fix_xp_diario_null_primera_vez.sql` — `coalesce()` aplicado en el punto de la resta (`v_real_hoy - coalesce(v_ya_hoy, 0)`), no solo al leer la columna, más un `coalesce(v_xp_hoy, 0)` extra en la rama `else` para el mismo caso borde. Diagnosticado por lectura de código (propagación de NULL), **corrido en producción por el propietario la misma sesión** (no se pudo re-verificar en vivo antes del corte por límite de contexto — a diferencia del resto de fixes de esta sesión, éste no tiene una llamada RPC de confirmación registrada).
+
+## 12. Español ES/EN — Fase 1 (normalización de voseo/rioplatense → neutro) completa; Fase 2 (cobertura de next-intl) en curso
+
+Retomando lo que la sección 9 dejó pendiente de consulta ("249 archivos sin next-intl, trabajo grande, se consulta antes de meterle tiempo") — el propietario pidió explícitamente completarlo, con un requisito extra: nada de rioplatense (ni "podés"/"hacé" ni "vos"), pero tampoco español de España — español neutro latinoamericano (tuteo), igual que ya documentaba `docs/TERMINOLOGY.md` de una sesión anterior.
+
+**Hallazgo clave**: `messages/es.json` YA estaba limpio (confirmado por `scripts/detectar-voseo.mjs`, 0 residuos reales) — el voseo real vivía en strings hardcodeados dentro de `.tsx`/`.ts` (fuera del alcance de ese script, que solo mira `messages/es.json`). Escribí `scripts/normalizar-espanol-fuente.mjs` (mismo mapeo token-por-token con límites Unicode-aware que `normalizar-espanol.mjs`, ampliado a ~140 pares y extendido a `src/**/*.{ts,tsx}`) y lo corrí en 2 pasadas (la 2ª agregando tokens que la 1ª dejó pasar, encontrados grepeando manualmente los generadores de preguntas de práctica) más 1 fix a mano (`privacidad/page.tsx`: "evitar vos" no era un simple vos→tú, el pronombre era objeto de la frase, requería reescritura). Total: **182 líneas en ~100 archivos**, incluye textos de UI reales (botones, descripciones, mensajes de error, un título de logro: "Ya Sos de Acá"→"Ya Eres de Acá", "Recién Empezás"→"Recién Empiezas") y comentarios internos. Un caso aparte encontrado por `scripts/analizar-voseo-funciones.mjs` (RPC, no `.tsx`): `enviar_mensaje_clan` devolvía "esperá un momento" en un error real de rate-limit — fix en `supabase/migrations/0135_fix_voseo_enviar_mensaje_clan.sql` (pendiente de correr en producción, mismo patrón que las migraciones anteriores).
+
+**Verificación**: `npx tsc --noEmit` limpio y `npx vitest run` con **147/147 tests pasando** después de aplicar — importa porque el script también toca `.test.ts` junto a los generadores que modifica (p. ej. `enigmia/generadores.ts` + `generadores.test.ts`), así que un cambio de texto sin actualizar su aserción hubiera roto un test, y no rompió ninguno.
+
+**Fase 2 (cobertura next-intl para los ~250 archivos sin `useTranslations`/`getTranslations`)**: ✅ COMPLETA (2026-09-13).
+
+**Cómo se hizo**: 16 agentes en paralelo (Task tool), cada uno con un dominio de archivos disjunto. Regla de oro: ninguno editó `messages/es.json`/`en.json` directamente — cada uno escribió su traducción en un fragmento JSON en el scratchpad de la sesión, y el merge a los 2 archivos reales se hizo centralizado al final con `scripts/merge-i18n-fragments.mjs` (nuevo, queda en el repo). **Incidente en el medio**: los 16 agentes murieron a mitad de carrera por un rate-limit de sesión (429, "You've hit your session limit") — se retomaron todos vía `SendMessage` a su `agentId` (resume-with-context, no relanzamiento desde cero) y terminaron sin perder trabajo previo.
+
+**Bug real encontrado y corregido durante el merge**: 20 de los 30 fragmentos se habían escrito envueltos en una capa extra (`{"Admin": {...}}` en vez de `{...}`, pese a la instrucción explícita de no hacerlo) — el merge automático no lo detectaba como colisión (porque el "hijo autonombrado" no chocaba con ninguna clave hoja existente), así que quedó silenciosamente como `es.Admin.Admin.anuncios...` en vez de `es.Admin.anuncios...`. Se detectó con un script de verificación nuevo (`scripts/verificar-claves-i18n.mjs`, queda en el repo — recorre cada `t("clave")` real del código y confirma que resuelve contra `messages/es.json` dado el namespace declarado en ese archivo) que encontró 545 claves "rotas"; investigado, confirmado que era 100% este bug de doble-envuelto (no 545 bugs reales), corregido en los 2 archivos con un fixup de desenvolver-y-fusionar-hacia-arriba, más 2 colisiones reales residuales (`Practica.subtemaPicker.subtitulo` y `Practica.resumen.{era,ningunaFallada}`, perdidas porque el fixup no fusiona en profundidad cuando hay colisión de objeto) agregadas a mano comparando contra el fragmento original. Segunda corrida de `verificar-claves-i18n.mjs`: 24 "fallas" restantes, las 24 confirmadas como falsos positivos del propio script (claves dinámicas con template literal tipo `` t(`operaciones.${tipo}`) ``, un namespace pasado por ternario, y una coincidencia dentro de un comentario de código) — cobertura real: **0 claves rotas**.
+
+**Resultado final — los 16 lotes**:
+
+| # | Lote | Namespace(s) reales | Claves nuevas | Nota |
+|---|---|---|---|---|
+| 1 | Anatomía | `Anatomia` (nuevo) | 62 | 11/14 archivos (3 sin texto) |
+| 2 | Química | `Quimia` (nuevo) | ~90 | 14/15 archivos (1 sin texto) |
+| 3 | Melodía | `Melodia` (nuevo) | 87 | 16/18 archivos (2 sin texto) |
+| 4 | Geografía (resto) | `Geografia` (extendido) | — | 12/12, reusó `continentes.*` existente |
+| 5 | Historia | `Historia` (nuevo) | 78 | 12/13 (1 sin texto) |
+| 6 | Trigonometría | `Trigonometria` (nuevo) | 76 | 12/14 (2 sin texto: notación matemática universal) |
+| 7 | Enigmia (resto) | `Enigmia` (nuevo) | 45 | 9/9 |
+| 8 | Numeria/práctica core | `Practica` (extendido) + `Algebra`/`Decimales`/`Fracciones`/`Geometria`/`Potencias` (nuevos) | ~27 + reuso de ~15 existentes | 14/16 (2 sin texto); arregló un error real de tsc en `SalaDuelo.tsx` |
+| 9 | Demo (8 mundos) | `Demo` | 0 | no-op real: puro wiring, el copy vive en `landing/Flujo*.tsx` (cubierto por el lote 14) |
+| 10 | Duelos + Rankeds + Leaderboard | `Duelos` (nuevo, 43) + `Rankeds` (extendido, 30) + `Leaderboard` (nuevo, 24) | 97 | 14/14 |
+| 11 | Clanes | `Clanes` (nuevo) | 78 | 8/8; **fix real**: timestamps del chat de clan tenían `"es-AR"` hardcodeado, ahora siguen el locale activo |
+| 12 | Social/Amigos/Feed/Profesor | `Social` (extendido, 62) + `Profesor` (nuevo, 46) | 108 | 10/10 (2 páginas sin texto, son solo `redirect()`) |
+| 13 | Perfil (resto) | `Perfil` (extendido) | — | 7/7; **fix real**: fecha de perfil público tenía `"es-AR"` hardcodeado, ahora sigue el locale; palabra de confirmación de borrado de cuenta ("BORRAR"/"DELETE") ahora traducida en vez de hardcodeada |
+| 14 | Auth + Onboarding | `Auth` (nuevo, 65) + `Onboarding` (nuevo, 28) | 93 | 11/15 (4 sin texto: layouts server-only) |
+| 15 | Páginas sueltas + Tienda | `Legal` (44) + `Bloqueos` (16) + `Ajustes` (10) + `Admin` (11) + `Reto` (23) (nuevos) + `Common` (extendido) | 104 | `Tienda.TiendaClient.tsx` ya estaba migrado de antes, sin cambios |
+| 16 | Componentes compartidos | `Componentes` (nuevo) | ~30 | 14/45 con texto real; 31 saltados (confirmado sin texto, incl. `BubbleMenu.tsx` que es código muerto no importado en ningún lado) |
+
+**Otro patrón real encontrado 3 veces, en 3 lotes distintos, y corregido las 3**: fechas/horas formateadas con `.toLocaleDateString("es-AR")`/`.toLocaleTimeString("es-AR")` hardcodeado en vez de seguir el locale activo del usuario — chat de clan (lote 11), perfil público (lote 13), panel de profesor (lote 12). No es un bug de este sprint — es preexistente, encontrado como efecto colateral de mover ese código a next-intl.
+
+**Verificación final** (después de mergear los 30 fragmentos + arreglar el bug de doble-envuelto): `npx tsc --noEmit -p tsconfig.json` limpio, `npx vitest run` con **147/147 tests**, `scripts/verificar-claves-i18n.mjs` con 0 claves rotas reales.
+
+**Cobertura final**: de 250 archivos `.tsx` sin `useTranslations`/`getTranslations` al empezar, quedan **78** — todos confirmados sin texto de usuario real (páginas que solo hacen `redirect()`, componentes de animación/SVG puros como `reactbits/*` y `TrianguloSVG.tsx`, layouts/loading/template de Next.js, wiring de las páginas demo). Ninguno pendiente por falta de tiempo — todos los que quedan fueron revisados y descartados a propósito por el agente de su lote.
+
+**Herramientas nuevas que quedan en el repo** (reutilizables a futuro): `scripts/merge-i18n-fragments.mjs` (mergea fragmentos de namespace a `messages/{es,en}.json` con detección de colisiones), `scripts/verificar-claves-i18n.mjs` (verifica que todo `t("clave")` del código resuelva contra `messages/es.json`).
+
+**Pendiente real, fuera de alcance de este sprint** (anotado por los agentes, no resuelto):
+- `src/lib/auth/mensajeError.ts` — mensajes de error de Supabase Auth siguen hardcodeados en español (ej. "Email o contraseña incorrectos."), sin next-intl.
+- `src/lib/clanes/tierCiudad.ts` — nombres de tier de clan ("Asentamiento", "Aldea", "Ciudad", "Metrópolis", "Prodigio") hardcodeados, se ven en `EscenaCiudad`/`MundoClanesMapa`.
+- `src/app/opengraph-image.tsx` — tiene texto real horneado en la imagen social pero vive fuera de `[locale]/`, así que no tiene locale disponible; moverlo a `[locale]/opengraph-image.tsx` es un cambio estructural, no una extracción de texto.
+- `src/lib/pro/beneficios.ts` — compartido con `FlujoPromoPro.tsx`, se dejó hardcodeado para no arriesgar romper ese archivo (de otro lote).
+
+## 13. [P0 CONFIRMADO Y CORREGIDO] Trastienda entera rota — "ningún juego funciona, aparece Algo salió mal" (reportado en vivo)
+
+**Diagnóstico en vivo** (cuenta QA, llamadas RPC directas, no solo lectura de código): `girar_ruleta`, `iniciar_la_calcu`, `iniciar_la_pizarra`, `apostar_casino_elementos` y `tirar_volado` devuelven **42702 "column reference puntos_total is ambiguous"** apenas se los llama — el mismo bug recurrente de toda esta sesión (0125/0131/0132/0134): `returns table (..., puntos_total integer, ...)` crea una variable OUT implícita, y un `update public.profiles set puntos_total = puntos_total ± X` sin alias queda ambiguo entre esa variable y la columna real. Como en los casos anteriores, esto solo revienta en tiempo de ejecución, nunca al crear la función — invisible hasta que alguien juega.
+
+**Alcance real**: auditadas las 16 funciones de Trastienda/apuestas/minijuegos con `puntos_total` en su `returns table`, cruzando "tiene la columna ambigua" contra "tiene el patrón `set puntos_total = puntos_total` sin alias" en el cuerpo (no alcanza con buscar el texto solo: `crear_clan` y `resolver_apuesta_partida`/`resolver_prediccion_ranking` tienen el mismo texto pero `returns uuid`/`returns void`, sin OUT que choque — confirmado que esos 3 NO tienen el bug, se dejaron intactos). **13 funciones con el bug real**, todas corregidas en `supabase/migrations/0136_fix_trastienda_ambiguo_puntos_total.sql`: `girar_ruleta`, `tirar_volado`, `iniciar_la_pizarra`, `adivinar_la_pizarra`, `apostar_partida`, `apostar_prediccion_ranking`, `iniciar_la_calcu`, `resolver_la_calcu`, `iniciar_acertijos`, `responder_acertijos`, `iniciar_el_reloj`, `finalizar_el_reloj`, `apostar_casino_elementos`. De esas, `iniciar_acertijos`/`responder_acertijos`/`iniciar_el_reloj`/`finalizar_el_reloj` no tienen ruta de API ni componente que las llame todavía (backend sin UI, ya estaban así antes de esta sesión) — se corrigieron igual por consistencia, sin agregarles UI (fuera de alcance de un fix de regresión).
+
+**Fix**: mismo patrón `update public.profiles as pr set puntos_total = pr.puntos_total ± X where pr.id = ...` que YA usaban (bien) `apostar_doble_o_nada`, `resolver_apuesta_si_activa`, `preview_apuesta_partida` y `desbloquear_mundo` en este mismo archivo — se aplicó el estilo ya establecido del propio proyecto al resto, en vez de renombrar columnas de salida (así ningún cliente necesita cambios, el contrato externo de cada función queda idéntico). `create or replace` alcanza, ninguna firma cambia.
+
+**Verificación en vivo** (antes/después, cuenta QA): confirmado el 42702 en `girar_ruleta`/`iniciar_la_calcu`/`iniciar_la_pizarra`/`apostar_casino_elementos`/`tirar_volado` ANTES de aplicar `0136` (script `scripts/_diagnosticar-trastienda.mjs`, queda en el repo para re-correr después de que el propietario aplique la migración). **Todavía no se pudo confirmar el estado POST-fix porque no hay acceso DDL directo — el propietario tiene que correr `0136` primero.**
+
+## 14. Pedido extra del propietario: "Ruleta Elemental" — apuesta a varias zonas en un mismo giro + rueda visual animada + nombre nuevo
+
+Fuera del alcance de "arreglar lo que rompió opencode" — pedido explícito y nuevo del propietario, apoyado en el fix de la sección 13 (la vieja "ruleta casino"/`apostar_casino_elementos` es exactamente lo que él conoce como "la ruleta de química": una mesa con los 118 elementos de la tabla periódica, apostás a una zona — un elemento, un grupo, un período, una familia, par/impar — y un elemento se sortea al azar).
+
+**Backend nuevo** (`supabase/migrations/0137_ruleta_elemental_multi_zona.sql`): `apostar_casino_elementos_multi(p_zonas text[], p_montos integer[])` — 1 a 5 zonas por giro (tope para no volar el límite diario de 20/día de un solo golpe), **un solo sorteo** (una bolita, como una ruleta de verdad) evaluado contra cada zona apostada, una fila en `trastienda_casino` por zona (aparecen como líneas separadas y legibles en el historial), el premio raro (~5%) se evalúa una sola vez por giro si ganó al menos una ficha. Escrita desde el día uno con el patrón `as pr` de la sección 13 (no repite el 42702). La función original de una sola zona (`apostar_casino_elementos`) queda intacta para compatibilidad, pero el cliente ya no la usa.
+
+**Frontend**: 
+- Nuevo namespace visual: se renombró "La Ruleta del Trastiendista" → **"Ruleta Elemental"** (`Tienda.trastienda.ruleta.titulo`, es/en).
+- `src/components/trastienda/Ruleta.tsx` reescrito: el estado pasó de una sola `zona` a un `Map<zona, monto>` — click en una celda/pill agrega o saca esa zona del giro (tope 5), cada una con la ficha seleccionada en ese momento (se puede mezclar tamaños de ficha entre zonas). Panel nuevo "Zonas en juego" con el costo total y el pago potencial de cada una, más botón para sacar una zona sin tener que reiniciar la selección.
+- Nuevo `src/components/trastienda/RuletaElementalWheel.tsx`: rueda SVG real de 118 gajos (uno por elemento, coloreado por familia, mismo criterio que la mesa) con puntero fijo arriba y giro animado (`transform: rotate()` con transición) que **siempre frena exactamente en el elemento que ya devolvió el server** — la animación arranca DESPUÉS de tener la respuesta del RPC (no antes), así nunca hay que "corregir" un giro a mitad de camino ni hay riesgo de que la rueda muestre algo distinto de lo que ya se resolvió en el backend.
+- Nuevo tipo `ResultadoCasinoMulti` (`src/lib/trastienda/tipos.ts`) y ruta `src/app/api/trastienda/casino-multi/route.ts`.
+- `MAX_ZONAS_CASINO = 5` agregado a `src/lib/trastienda/casino.ts` (sin tocar la lógica de conteo/multiplicador existente, que ya se reutiliza tal cual por zona).
+
+**Verificación**: `npx tsc --noEmit` limpio, `npx vitest run` 147/147 (casino.test.ts no se tocó, sigue validando el catálogo de 118 elementos). **RPC nueva confirmada como "no existe todavía" en producción** (`PGRST202`, esperado — falta correr `0137`); no se pudo probar en vivo por la misma razón que la sección 13.
+
 ## Bloqueos actuales
 
 - **Sin verificar contra la base de datos real todavía**: tengo `.env.local` con la service role key copiado al clon nuevo, así que esto es technically posible en la próxima pasada (leer `pg_proc`, o mejor, reproducir llamadas RPC reales vía las cuentas QA, mismo método que sesiones anteriores). Sección 6/36/37 del brief pendiente de ejecutar.
 - **`npm install` en el clon nuevo falló por conflicto de peer-deps** (`react@19.2.8` vs `react-simple-maps@^3.0.0`, que solo declara soporte hasta React 18) — probablemente preexistente al baseline, no algo que opencode haya introducido (no se tocó `package.json` en ninguna de las 18 migraciones ni until donde se revisó el diff de código no-SQL todavía). Mitigado copiando el `node_modules` ya instalado y funcional desde la carpeta local vieja (en progreso al momento de este commit del changelog).
 - **Código cliente (TypeScript/React) de las 18 migraciones**: todavía no auditado — esta pasada fue 100% SQL. Sección pendiente inmediata.
+- **Migraciones pendientes de correr en producción, EN ESTE ORDEN**: `0134` (xp diario, sección 11), `0135` (voseo en `enviar_mensaje_clan`, sección 12), `0136` (Trastienda entera rota — P0, sección 13), `0137` (Ruleta Elemental multi-zona, sección 14).
+- **Efecto secundario menor**: al diagnosticar `crear_clan` en vivo (confirmando que NO tiene el bug 42702) se creó sin querer un clan real de prueba ("zzz_test_diag") a nombre de la cuenta QA — inofensivo (cuenta de test, no de un usuario real) pero queda esa fila en la base; se puede borrar a mano desde `/clanes` con esa cuenta si molesta.

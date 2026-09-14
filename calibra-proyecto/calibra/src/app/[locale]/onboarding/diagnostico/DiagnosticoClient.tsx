@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { generarProblema, type Problem } from "@/lib/practica/problems";
@@ -15,13 +16,6 @@ type Fase = "pregunta" | "diagnostico" | "guardando" | "resultado";
 
 const PROBLEMAS_POR_OPERACION = 3;
 const NIVEL_INICIAL_BLOQUE = 3;
-
-const NOMBRES: Record<ArithmeticProblemType, string> = {
-  suma: "Suma",
-  resta: "Resta",
-  multiplicacion: "Multiplicación",
-  division: "División",
-};
 
 const ICONOS = {
   suma: IconSuma,
@@ -48,6 +42,13 @@ interface Props {
 
 export default function DiagnosticoClient({ destino }: Props) {
   const router = useRouter();
+  const t = useTranslations("Onboarding.diagnostico");
+  const NOMBRES: Record<ArithmeticProblemType, string> = {
+    suma: t("operaciones.suma"),
+    resta: t("operaciones.resta"),
+    multiplicacion: t("operaciones.multiplicacion"),
+    division: t("operaciones.division"),
+  };
   const [fase, setFase] = useState<Fase>("pregunta");
   const [prioridad, setPrioridad] = useState<ArithmeticProblemType | null>(null);
   const [indice, setIndice] = useState(0);
@@ -188,11 +189,10 @@ export default function DiagnosticoClient({ destino }: Props) {
           >
             <div>
               <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-                Veamos dónde estás
+                {t("pregunta.titulo")}
               </h1>
               <p className="mt-2 text-sm text-texto-secundario">
-                Sin presión — esto no afecta tu racha ni tu experiencia, solo nos ayuda a calibrar
-                bien desde el principio. ¿Qué quieres mejorar primero?
+                {t("pregunta.subtitulo")}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -211,10 +211,10 @@ export default function DiagnosticoClient({ destino }: Props) {
               })}
             </div>
             <Boton onClick={() => empezarDiagnostico(null)} className="py-4">
-              No sé, mostrame de todo
+              {t("pregunta.botonNoSe")}
             </Boton>
             <button onClick={saltear} className="text-sm text-texto-secundario hover:underline">
-              Prefiero arrancar en nivel 1
+              {t("arrancarNivel1")}
             </button>
           </motion.div>
         )}
@@ -263,12 +263,12 @@ export default function DiagnosticoClient({ destino }: Props) {
                   disabled={feedback !== "idle"}
                   className="rounded-xl bg-primario px-5 py-3 font-display font-semibold text-white disabled:opacity-60"
                 >
-                  Ok
+                  {t("ok")}
                 </button>
               </form>
             </div>
             <button onClick={saltear} className="text-sm text-texto-secundario hover:underline">
-              Prefiero arrancar en nivel 1
+              {t("arrancarNivel1")}
             </button>
           </motion.div>
         )}
@@ -280,7 +280,7 @@ export default function DiagnosticoClient({ destino }: Props) {
             animate={{ opacity: 1 }}
             className="text-center text-sm text-texto-secundario"
           >
-            Guardando tu diagnóstico...
+            {t("guardando")}
           </motion.p>
         )}
 
@@ -292,10 +292,9 @@ export default function DiagnosticoClient({ destino }: Props) {
             className="flex flex-col items-center gap-4 text-center"
           >
             <p className="text-sm text-error">
-              No pudimos guardar tu diagnóstico — puede ser un problema de conexión. Tu progreso de
-              antes sigue intacto.
+              {t("errorGuardado")}
             </p>
-            <Boton onClick={() => reintentarRef.current()}>Reintentar</Boton>
+            <Boton onClick={() => reintentarRef.current()}>{t("botonReintentar")}</Boton>
           </motion.div>
         )}
 
@@ -308,7 +307,7 @@ export default function DiagnosticoClient({ destino }: Props) {
             className="flex flex-col items-center gap-6 text-center"
           >
             <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-              Así arrancás
+              {t("resultado.titulo")}
             </h1>
             <div className="grid grid-cols-2 gap-6">
               {ARITHMETIC_PROBLEM_TYPES.map((tipo) => (
@@ -319,7 +318,7 @@ export default function DiagnosticoClient({ destino }: Props) {
               ))}
             </div>
             <Boton onClick={() => continuar(prioridad)} className="w-full py-4">
-              Continuar
+              {t("resultado.botonContinuar")}
             </Boton>
           </motion.div>
         )}

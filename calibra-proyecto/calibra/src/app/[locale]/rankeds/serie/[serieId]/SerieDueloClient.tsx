@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { rangoDeElo, type ArithmeticProblemType } from "@/types/database";
 import CountUp from "@/components/CountUp";
@@ -50,9 +51,10 @@ interface ResultadoFinal {
 // Fase 3 (Clan de Bots): mismo tratamiento que la etiqueta "Casual" del
 // historial de Rankeds — dato secundario discreto, nunca una alerta.
 function TagClanDeBots() {
+  const t = useTranslations("Rankeds");
   return (
     <span className="ml-1.5 rounded-full bg-foreground/[0.06] px-2 py-0.5 align-middle text-[10px] font-medium uppercase tracking-wide text-texto-secundario">
-      Clan de Bots
+      {t("clanDeBots")}
     </span>
   );
 }
@@ -91,7 +93,7 @@ const TT_BUFFER_MS = 300;
 // las estadísticas antes de poder leerlas"): antes la ceremonia de
 // TextType arrancaba apenas se detectaba la próxima ronda, tapando a
 // pantalla completa la fila de resultados que recién acababa de
-// aparecer (vos: X pts · rival: Y pts) sin darle tiempo a nadie de
+// aparecer (tú: X pts · rival: Y pts) sin darle tiempo a nadie de
 // leerla. Este piso de lectura corre ANTES de montar el overlay —
 // durante esos ms la lista de rondas queda a la vista, sin nada
 // encima.
@@ -103,22 +105,23 @@ function duracionTransicionMs(mundoAnterior: string | null, mundoSiguiente: stri
   const anterior = mundoAnterior.length * TT_TYPING_MS + TT_PAUSE_MS + mundoAnterior.length * TT_DELETING_MS;
   return anterior + siguiente + TT_BUFFER_MS;
 }
-const NOMBRE_OPERACION: Record<ArithmeticProblemType, string> = {
-  suma: "Suma",
-  resta: "Resta",
-  multiplicacion: "Multiplicación",
-  division: "División",
-};
-const NOMBRE_CONTENIDO: Record<string, string> = {
-  america: "América",
-  europa: "Europa",
-  africa: "África",
-  asia_oceania: "Asia y Oceanía",
-  memoria: "Memoria",
-  patrones: "Patrones",
-  deduccion: "Deducción",
-  computacional: "Pensamiento computacional",
-};
+// Operaciones (Numeria) y continentes (Geografía) reusan las claves que
+// ya existen para esos mismos conceptos en otros namespaces —mismo
+// criterio que RankedsClient.tsx (tOperaciones) y SelectorMundoDuelo.tsx
+// (tContinentes). Enigmia todavía no tiene namespace propio migrado, así
+// que sus sub-tipos se traducen acá mismo (Rankeds.serieDuelo.contenidos).
+const CONTINENTE_KEYS = new Set(["america", "europa", "africa", "asia_oceania"]);
+const ENIGMIA_CONTENIDO_KEYS = new Set(["memoria", "patrones", "deduccion", "computacional"]);
+
+function nombreContenido(
+  subTipo: string,
+  tContinentes: ReturnType<typeof useTranslations>,
+  tContenidos: ReturnType<typeof useTranslations>
+): string {
+  if (CONTINENTE_KEYS.has(subTipo)) return tContinentes(subTipo);
+  if (ENIGMIA_CONTENIDO_KEYS.has(subTipo)) return tContenidos(subTipo);
+  return subTipo;
+}
 
 // Fase 5: comparativa liviana y persistente — se usa tanto en la
 // pantalla normal como DENTRO del overlay de ceremonia, para que nunca
@@ -132,10 +135,11 @@ function ComparativaSerie({
   victoriasRival: number;
   oponenteNombre: string;
 }) {
+  const t = useTranslations("Rankeds");
   return (
     <div className="flex items-center gap-4">
       <div className="flex flex-col items-center gap-0.5">
-        <span className="text-[10px] font-medium uppercase tracking-wide text-texto-secundario">Vos</span>
+        <span className="text-[10px] font-medium uppercase tracking-wide text-texto-secundario">{t("serieDuelo.tu")}</span>
         <span className="font-mono text-xl font-bold text-foreground">{victoriasMias}</span>
       </div>
       <span className="text-sm font-medium text-texto-secundario">-</span>
@@ -147,9 +151,14 @@ function ComparativaSerie({
   );
 }
 
-function etiquetaRonda(r: FilaRondaSerie): string {
-  if (r.mundo === "numeria" && r.operation_type) return `Numeria · ${NOMBRE_OPERACION[r.operation_type]}`;
-  if (r.sub_tipo) return `${NOMBRE_MUNDO[r.mundo]} · ${NOMBRE_CONTENIDO[r.sub_tipo] ?? r.sub_tipo}`;
+function etiquetaRonda(
+  r: FilaRondaSerie,
+  tOperaciones: ReturnType<typeof useTranslations>,
+  tContinentes: ReturnType<typeof useTranslations>,
+  tContenidos: ReturnType<typeof useTranslations>
+): string {
+  if (r.mundo === "numeria" && r.operation_type) return `Numeria · ${tOperaciones(r.operation_type)}`;
+  if (r.sub_tipo) return `${NOMBRE_MUNDO[r.mundo]} · ${nombreContenido(r.sub_tipo, tContinentes, tContenidos)}`;
   return NOMBRE_MUNDO[r.mundo];
 }
 
@@ -160,10 +169,11 @@ export default function SerieDueloClient({
   serieId: string;
   rondasIniciales: FilaRondaSerie[];
 }) {
+  const t = useTranslations("Rankeds");
   const router = useRouter();
   const [rondas, setRondas] = useState(rondasIniciales);
   const [resultadoFinal, setResultadoFinal] = useState<ResultadoFinal | null>(null);
-  // Fase 2 (auditoría 2026-08-25 — "sacá el botón manual, no debe
+  // Fase 2 (auditoría 2026-08-25 — "saca el botón manual, no debe
   // existir bajo ninguna circunstancia"): antes esto marcaba cuándo la
   // ceremonia de TextType terminaba de tipear para RECIÉN AHÍ mostrar
   // un botón "Jugar ronda" que había que clickear a mano. Ahora el
@@ -295,14 +305,14 @@ export default function SerieDueloClient({
               resultadoFinal.gane ? "text-correcto" : "text-foreground"
             }`}
           >
-            {resultadoFinal.empate ? "Empate" : resultadoFinal.gane ? "Victoria" : "Derrota"}
+            {resultadoFinal.empate ? t("empate") : resultadoFinal.gane ? t("serieDuelo.victoria") : t("serieDuelo.derrota")}
           </p>
           <p className="text-sm font-medium text-texto-secundario">
             {resultadoFinal.empate
-              ? `Empataron la serie con ${oponenteNombre}`
+              ? t("serieDuelo.empataronSerie", { oponente: oponenteNombre })
               : resultadoFinal.gane
-                ? `Ganaste la serie a ${oponenteNombre}`
-                : `Esta vez ganó ${oponenteNombre}`}
+                ? t("serieDuelo.ganasteSerie", { oponente: oponenteNombre })
+                : t("serieDuelo.perdisteSerie", { oponente: oponenteNombre })}
             {resultadoFinal.oponente_es_bot && <TagClanDeBots />}
           </p>
           <p className="font-mono text-2xl font-bold text-foreground">
@@ -310,7 +320,7 @@ export default function SerieDueloClient({
           </p>
           {resultadoFinal.elo_anterior !== null && resultadoFinal.elo_nuevo !== null && (
             <div className="mt-2 flex flex-col items-center gap-0.5">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-texto-secundario">ELO</span>
+              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-texto-secundario">{t("serieDuelo.elo")}</span>
               <CountUp
                 from={resultadoFinal.elo_anterior}
                 value={resultadoFinal.elo_nuevo}
@@ -325,13 +335,13 @@ export default function SerieDueloClient({
               transition={{ delay: 0.3, duration: 0.5, ease: "backOut" }}
               className="mt-1 flex flex-col items-center gap-1 rounded-xl bg-logro/15 px-4 py-3"
             >
-              <span className="text-xs font-semibold uppercase tracking-wide text-texto-secundario">Subiste de rango</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-texto-secundario">{t("serieDuelo.subisteDeRango")}</span>
               <RangoBadge elo={resultadoFinal.elo_nuevo} size="lg" />
             </motion.div>
           )}
           {oponenteId && !resultadoFinal.oponente_es_bot && (
             <Link href={`/perfil/${oponenteId}`} className="mt-1 text-xs font-semibold text-primario hover:underline">
-              Ver perfil
+              {t("serieDuelo.verPerfil")}
             </Link>
           )}
         </motion.div>
@@ -348,13 +358,13 @@ export default function SerieDueloClient({
             className="flex-1 rounded-2xl px-4 py-4 text-center font-display font-semibold text-white shadow-lg"
             style={{ background: "linear-gradient(120deg, var(--primario), var(--logro))" }}
           >
-            Otra partida
+            {t("serieDuelo.otraPartida")}
           </Link>
           <Link
             href="/rankeds"
             className="flex items-center justify-center rounded-2xl border-2 border-border px-6 py-4 font-display font-semibold text-foreground transition-colors hover:border-primario/40"
           >
-            Volver
+            {t("serieDuelo.volver")}
           </Link>
         </div>
       </div>
@@ -364,10 +374,10 @@ export default function SerieDueloClient({
   return (
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
       <span className="rounded-full bg-primario/10 px-3 py-1 text-xs font-medium uppercase tracking-wide text-primario">
-        Todas las ciudades · Mejor de 3
+        {t("serieDuelo.pillTitulo")}
       </span>
       <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-        Vs. {oponenteNombre}
+        {t("serieDuelo.vsOponente", { nombre: oponenteNombre })}
         {oponenteEsBot && <TagClanDeBots />}
       </h1>
       <ComparativaSerie victoriasMias={victoriasMias} victoriasRival={victoriasRival} oponenteNombre={oponenteNombre} />
@@ -380,7 +390,7 @@ export default function SerieDueloClient({
 
       {!proximaRonda && (
         <p className="text-sm text-texto-secundario">
-          Ya jugaste tus 3 rondas — esperando a que {oponenteNombre} termine las suyas.
+          {t("serieDuelo.esperandoTermine", { oponente: oponenteNombre })}
         </p>
       )}
 
@@ -396,7 +406,7 @@ export default function SerieDueloClient({
           >
             <ComparativaSerie victoriasMias={victoriasMias} victoriasRival={victoriasRival} oponenteNombre={oponenteNombre} />
             <span className="text-xs font-medium uppercase tracking-[0.3em] text-texto-secundario">
-              {rondaAnterior ? "Siguiente ciudad" : "Arrancamos en"}
+              {rondaAnterior ? t("serieDuelo.siguienteCiudad") : t("serieDuelo.arrancamosEn")}
             </span>
             <TextType
               as="span"
@@ -417,7 +427,19 @@ export default function SerieDueloClient({
 }
 
 function FilaRondaResumen({ ronda }: { ronda: FilaRondaSerie }) {
+  const t = useTranslations("Rankeds");
+  const tOperaciones = useTranslations("Practica.operationPicker.operaciones");
+  const tContinentes = useTranslations("Geografia.continentes");
+  const tContenidos = useTranslations("Rankeds.serieDuelo.contenidos");
   const resuelta = ronda.estado === "completado";
+  const estado = !resuelta
+    ? ronda.yo_jugue
+      ? t("serieDuelo.esperandoAlRival") + (ronda.mi_puntaje != null ? t("serieDuelo.miPuntajeSufijo", { puntaje: ronda.mi_puntaje }) : "")
+      : t("serieDuelo.todaviaSinJugar")
+    : (ronda.empate_ronda ? t("empate") : ronda.gane_ronda ? t("ganaste") : t("perdiste")) +
+      (ronda.mi_puntaje != null && ronda.rival_puntaje != null
+        ? t("serieDuelo.resultadoPuntajesSufijo", { mio: ronda.mi_puntaje, rival: ronda.rival_puntaje })
+        : "");
   return (
     <div
       className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left ${
@@ -426,19 +448,9 @@ function FilaRondaResumen({ ronda }: { ronda: FilaRondaSerie }) {
     >
       <div className="flex flex-col">
         <span className="text-sm font-medium text-foreground">
-          Ronda {ronda.ronda_numero} · {etiquetaRonda(ronda)}
+          {t("serieDuelo.ronda", { n: ronda.ronda_numero, etiqueta: etiquetaRonda(ronda, tOperaciones, tContinentes, tContenidos) })}
         </span>
-        <span className="text-xs text-texto-secundario">
-          {!resuelta
-            ? ronda.yo_jugue
-              ? `Esperando al rival…${ronda.mi_puntaje != null ? ` · vos: ${ronda.mi_puntaje} pts` : ""}`
-              : "Todavía sin jugar"
-            : `${ronda.empate_ronda ? "Empate" : ronda.gane_ronda ? "Ganaste" : "Perdiste"}${
-                ronda.mi_puntaje != null && ronda.rival_puntaje != null
-                  ? ` · vos: ${ronda.mi_puntaje} pts · rival: ${ronda.rival_puntaje} pts`
-                  : ""
-              }`}
-        </span>
+        <span className="text-xs text-texto-secundario">{estado}</span>
       </div>
       <span className="text-lg">{resuelta ? (ronda.empate_ronda ? "🤝" : ronda.gane_ronda ? "✅" : "❌") : "⏳"}</span>
     </div>

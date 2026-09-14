@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoMelodia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import MelodiaPracticaClient from "../../MelodiaPracticaClient";
 import { cargarDatosPracticaMelodia } from "@/lib/melodia/cargarPractica";
 
-export const metadata: Metadata = {
-  title: "Practicar Alteraciones",
-  description: "Sostenidos y bemoles, con dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Melodia.practicaPaginas.alteraciones.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 interface Props {
   searchParams: Promise<{ duelo?: string }>;

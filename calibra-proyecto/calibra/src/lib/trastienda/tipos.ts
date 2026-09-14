@@ -26,6 +26,27 @@ export interface ResultadoCasino {
   puntos_total: number;
 }
 
+// Ruleta Elemental, apuesta a varias zonas en el mismo giro (0137
+// apostar_casino_elementos_multi) — un solo elemento sorteado, evaluado
+// contra cada ficha puesta.
+export interface ApuestaCasinoMulti {
+  zona: string;
+  monto: number;
+  ganaste: boolean;
+  multiplier: number;
+  chispas_ganadas: number;
+}
+
+export interface ResultadoCasinoMulti {
+  elegido: string;
+  elegido_nombre: string;
+  apuestas: ApuestaCasinoMulti[];
+  premio_tipo: string | null;
+  premio_detalle: Record<string, unknown> | null;
+  apuestas_hoy: number;
+  puntos_total: number;
+}
+
 export interface ResultadoVolado {
   cara: boolean;
   ganaste: boolean;

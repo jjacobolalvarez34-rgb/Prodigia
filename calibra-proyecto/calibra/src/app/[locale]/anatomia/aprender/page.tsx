@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoAnatomia } from "@/lib/anatomia/path";
@@ -7,12 +8,13 @@ import ProgressDial from "@/components/ProgressDial";
 import CaminoContinuo, { type UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import { COLOR_ANATOMIA } from "../colores";
 
-export const metadata: Metadata = {
-  title: "Aprender Anatomía",
-  description: "Técnicas de memorización para huesos, músculos, órganos y sistema nervioso.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Anatomia.aprender.metadata");
+  return { title: t("titulo"), description: t("description") };
+}
 
 export default async function AnatomiaAprenderPage() {
+  const t = await getTranslations("Anatomia");
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/anatomia/aprender");
   bloquearInvitado(user, "Aprender");
@@ -23,8 +25,8 @@ export default async function AnatomiaAprenderPage() {
   const unidadesGenericas: UnidadCaminoGenerico[] = [
     {
       id: "anatomia",
-      nombre: "Anatomía",
-      descripcion: "Técnicas para memorizar términos anatómicos — no son cómputo, son asociaciones y patrones.",
+      nombre: t("nombreMundo"),
+      descripcion: t("aprender.unidadDescripcion"),
       nodos: nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
     },
   ];
@@ -40,21 +42,19 @@ export default async function AnatomiaAprenderPage() {
             </span>
           </ProgressDial>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Progreso</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("aprender.progresoLabel")}</p>
             <p className="font-mono text-sm font-semibold text-foreground">
-              {totalDominadas}/{nodos.length} técnicas
+              {t("aprender.tecnicasContador", { dominadas: totalDominadas, total: nodos.length })}
             </p>
           </div>
         </div>
 
         <div>
           <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_ANATOMIA }}>
-            Anatomía
+            {t("nombreMundo")}
           </span>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Aprender</h1>
-          <p className="mt-1 text-sm text-texto-secundario">
-            Trucos para memorizar términos — no son cuentas, son formas de mirar y agrupar.
-          </p>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("aprender.titulo")}</h1>
+          <p className="mt-1 text-sm text-texto-secundario">{t("aprender.subtitulo")}</p>
         </div>
 
         <CaminoContinuo unidades={unidadesGenericas} basePath="/anatomia/aprender" colorHex={COLOR_ANATOMIA} />

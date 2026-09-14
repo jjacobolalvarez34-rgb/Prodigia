@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import Boton from "@/components/Boton";
 import { IconCandado } from "@/components/icons";
 import { PRECIO_MUNDO_CHISPAS, type MundoPago } from "@/lib/mundos/precios";
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export default function MundoBloqueadoClient({ mundo, nombreMundo, puntosIniciales, destino }: Props) {
+  const t = useTranslations("Bloqueos.mundo");
   const router = useRouter();
   const [puntos, setPuntos] = useState(puntosIniciales);
   const [comprando, setComprando] = useState(false);
@@ -33,14 +35,14 @@ export default function MundoBloqueadoClient({ mundo, nombreMundo, puntosInicial
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.error ?? "No se pudo desbloquear. Probá de nuevo.");
+        setError(data.error ?? t("noSePudoDesbloquear"));
         return;
       }
       setPuntos(data.puntos_total);
       setComprado(true);
       setTimeout(() => router.push(destino), 900);
     } catch {
-      setError("No se pudo conectar. Probá de nuevo.");
+      setError(t("noSePudoConectar"));
     } finally {
       setComprando(false);
     }
@@ -53,25 +55,30 @@ export default function MundoBloqueadoClient({ mundo, nombreMundo, puntosInicial
       </span>
       <div>
         <h1 className="font-display text-xl font-bold tracking-tight text-foreground">
-          {nombreMundo} está bloqueado
+          {t("mundoBloqueado", { mundo: nombreMundo })}
         </h1>
         <p className="mt-2 text-sm text-texto-secundario">
-          Desbloqueá <span className="font-medium text-foreground">{nombreMundo}</span> para siempre por{" "}
-          <span className="font-medium text-foreground">{PRECIO_MUNDO_CHISPAS} Chispas</span>. Tenés{" "}
-          <span className="font-medium text-foreground">{puntos}</span>.
+          {t.rich("desbloqueaPara", {
+            mundo: nombreMundo,
+            precio: PRECIO_MUNDO_CHISPAS,
+            puntos,
+            nombre: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+            chispas: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+            valor: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+          })}
         </p>
       </div>
 
       {comprado ? (
-        <p className="text-sm font-medium text-correcto">¡Desbloqueado! Entrando…</p>
+        <p className="text-sm font-medium text-correcto">{t("desbloqueado")}</p>
       ) : (
         <>
           <Boton onClick={comprar} disabled={!alcanza} cargando={comprando} destacado>
-            {alcanza ? `Desbloquear por ${PRECIO_MUNDO_CHISPAS} Chispas` : "Te faltan Chispas"}
+            {alcanza ? t("desbloquearPor", { precio: PRECIO_MUNDO_CHISPAS }) : t("teFaltanChispas")}
           </Boton>
           {!alcanza && (
             <p className="text-xs text-texto-secundario">
-              Sigue jugando para ganar más Chispas, o mira la tienda.
+              {t("sigueJugando")}
             </p>
           )}
           {error && <p className="text-xs text-error">{error}</p>}

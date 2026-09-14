@@ -1,30 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Boton from "@/components/Boton";
-import { type ArithmeticProblemType } from "@/types/database";
-import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
+import { hrefDuelo } from "@/lib/duelos/rutas";
 import SelectorMundoDuelo, { MUNDOS_DUELO } from "@/components/duelos/SelectorMundoDuelo";
 import type { UseAmigosReturn } from "./useAmigos";
 import { useRetosPendientes, type RetoPendienteBase } from "./useRetosPendientes";
-
-const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
-  suma: "Suma",
-  resta: "Resta",
-  multiplicacion: "Multiplicación",
-  division: "División",
-};
-const NOMBRE_MUNDO: Record<MundoDuelo, string> = {
-  numeria: "Numeria",
-  geografia: "Geografía",
-  enigmia: "Enigmia",
-  quimia: "Quimia",
-  anatomia: "Anatomía",
-  melodia: "Melodía",
-  trigonometria: "Trigonometría",
-  historia: "Historia",
-};
 
 type Panel = "ninguno" | "agregar" | "solicitudes" | "retos";
 
@@ -40,6 +23,7 @@ interface Props {
 // de buscar/pedir/aceptar — solo agrega su propio panel expandible por
 // botón.
 export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
+  const t = useTranslations("Social");
   const [panel, setPanel] = useState<Panel>("ninguno");
   const {
     consulta,
@@ -70,7 +54,7 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
           panel === "agregar" ? "border-primario/40 bg-primario/5 text-primario" : "border-border bg-surface text-foreground hover:border-primario/30"
         }`}
       >
-        + Agregar amigos
+        {t("sidebar.botonAgregarAmigos")}
       </button>
       {/* error compartido entre los 3 paneles (buscar/enviar/responder/
           retar pueden fallar desde cualquiera) — antes solo se veía si
@@ -83,25 +67,25 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
             <input
               value={consulta}
               onChange={(e) => setConsulta(e.target.value)}
-              placeholder="Buscar por nombre..."
+              placeholder={t("buscarPorNombre")}
               className="min-w-0 flex-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground outline-none focus:border-primario"
             />
             <Boton type="submit" disabled={consulta.trim().length < 2} cargando={buscando} className="px-2.5 py-1.5 text-xs">
-              Buscar
+              {t("buscar")}
             </Boton>
           </form>
           {!buscando && !error && consulta.trim().length >= 2 && resultados.length === 0 && (
-            <p className="text-xs text-texto-secundario">No encontramos a nadie con ese nombre.</p>
+            <p className="text-xs text-texto-secundario">{t("noEncontramosANadie")}</p>
           )}
           {resultados.map((r) => (
             <div key={r.id} className="flex items-center justify-between gap-2 text-xs">
-              <span className="truncate font-medium text-foreground">{r.display_name ?? "Jugador"}</span>
+              <span className="truncate font-medium text-foreground">{r.display_name ?? t("jugador")}</span>
               <button
                 onClick={() => enviarSolicitud(r.id)}
                 disabled={enviadas.has(r.id)}
                 className="shrink-0 text-primario hover:underline disabled:text-texto-secundario disabled:no-underline"
               >
-                {enviadas.has(r.id) ? "Enviada" : "Enviar"}
+                {enviadas.has(r.id) ? t("enviada") : t("sidebar.enviarCorto")}
               </button>
             </div>
           ))}
@@ -114,7 +98,7 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
           panel === "solicitudes" ? "border-primario/40 bg-primario/5 text-primario" : "border-border bg-surface text-foreground hover:border-primario/30"
         }`}
       >
-        Solicitudes pendientes
+        {t("solicitudesPendientes")}
         {solicitudes.length > 0 && (
           <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primario px-1 text-[11px] font-bold text-white">
             {solicitudes.length}
@@ -124,17 +108,17 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
       {panel === "solicitudes" && (
         <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-3">
           {solicitudes.length === 0 ? (
-            <p className="text-xs text-texto-secundario">Nada pendiente.</p>
+            <p className="text-xs text-texto-secundario">{t("sidebar.nadaPendiente")}</p>
           ) : (
             solicitudes.map((s) => (
               <div key={s.user_id} className="flex items-center justify-between gap-2 text-xs">
-                <span className="truncate font-medium text-foreground">{s.display_name ?? "Jugador"}</span>
+                <span className="truncate font-medium text-foreground">{s.display_name ?? t("jugador")}</span>
                 <div className="flex shrink-0 gap-2">
                   <button onClick={() => responder(s.user_id, true)} className="font-medium text-correcto hover:underline">
-                    Aceptar
+                    {t("aceptar")}
                   </button>
                   <button onClick={() => responder(s.user_id, false)} className="text-texto-secundario hover:underline">
-                    Rechazar
+                    {t("rechazar")}
                   </button>
                 </div>
               </div>
@@ -149,7 +133,7 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
           panel === "retos" ? "border-primario/40 bg-primario/5 text-primario" : "border-border bg-surface text-foreground hover:border-primario/30"
         }`}
       >
-        Retos pendientes
+        {t("sidebar.retosPendientes")}
         {retos.length > 0 && (
           <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-logro px-1 text-[11px] font-bold text-foreground">
             {retos.length}
@@ -159,14 +143,14 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
       {panel === "retos" && (
         <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-3">
           {retos.length === 0 ? (
-            <p className="text-xs text-texto-secundario">Nadie te retó todavía.</p>
+            <p className="text-xs text-texto-secundario">{t("sidebar.nadieTeReto")}</p>
           ) : (
             retos.map((r) => (
               <div key={r.duel_id} className="flex flex-col gap-1.5 rounded-lg border border-border/60 px-2.5 py-2 text-xs">
                 <div className="flex items-center justify-between gap-2">
                   <span className="truncate font-medium text-foreground">
-                    {r.retador_nombre ?? "Alguien"} ·{" "}
-                    {r.mundo === "numeria" && r.operation_type ? NOMBRES_OPERACION[r.operation_type] : NOMBRE_MUNDO[r.mundo]}
+                    {r.retador_nombre ?? t("sidebar.alguien")} ·{" "}
+                    {r.mundo === "numeria" && r.operation_type ? t(`operaciones.${r.operation_type}`) : t(`mundos.${r.mundo}`)}
                   </span>
                   {r.segundosRestantes !== null && (
                     <span className="shrink-0 font-mono text-[10px] text-texto-secundario">{r.segundosRestantes}s</span>
@@ -174,10 +158,10 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
                 </div>
                 <div className="flex gap-2">
                   <Link href={hrefDuelo(r.mundo, r.operation_type, r.duel_id)} className="font-medium text-primario hover:underline">
-                    Jugar
+                    {t("sidebar.botonJugar")}
                   </Link>
                   <button onClick={() => rechazar(r.duel_id)} className="text-texto-secundario hover:underline">
-                    Rechazar
+                    {t("rechazar")}
                   </button>
                 </div>
               </div>
@@ -187,21 +171,21 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
       )}
 
       <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Tus amigos</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("tusAmigos")}</p>
         {amigos.length === 0 ? (
-          <p className="text-xs text-texto-secundario">Todavía no tienes amigos agregados.</p>
+          <p className="text-xs text-texto-secundario">{t("sidebar.sinAmigos")}</p>
         ) : (
           amigos.map((a) => (
             <div key={a.friend_id} className="flex flex-col gap-1.5 text-xs">
               <div className="flex items-center justify-between gap-2">
                 <Link href={`/perfil/${a.friend_id}`} className="truncate font-medium text-foreground hover:underline">
-                  {a.display_name ?? "Jugador"}
+                  {a.display_name ?? t("jugador")}
                 </Link>
                 <button
                   onClick={() => setRetandoA(retandoA === a.friend_id ? null : a.friend_id)}
                   className="shrink-0 font-medium text-primario hover:underline"
                 >
-                  Retar
+                  {t("sidebar.retarCorto")}
                 </button>
               </div>
               {retandoA === a.friend_id && (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Avatar from "@/components/Avatar";
 import ReportarBoton from "@/app/[locale]/perfil/[userId]/ReportarBoton";
@@ -35,6 +36,8 @@ interface Props {
 // no tiene el chat abierto en ese momento simplemente lo ve la
 // próxima vez que entra (carga inicial, sin pérdida de datos).
 export default function ChatDeClan({ clanId, miUserId }: Props) {
+  const t = useTranslations("Clanes.chat");
+  const locale = useLocale();
   const [mensajes, setMensajes] = useState<Mensaje[]>([]);
   const [cargando, setCargando] = useState(true);
   const [texto, setTexto] = useState("");
@@ -112,13 +115,13 @@ export default function ChatDeClan({ clanId, miUserId }: Props) {
 
   return (
     <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-4 py-4">
-      <h3 className="text-sm font-semibold text-foreground">Chat del clan</h3>
+      <h3 className="text-sm font-semibold text-foreground">{t("titulo")}</h3>
 
       <div className="flex max-h-72 flex-col gap-2.5 overflow-y-auto rounded-xl bg-background px-3 py-3">
         {cargando ? (
-          <p className="text-center text-xs text-texto-secundario">Cargando...</p>
+          <p className="text-center text-xs text-texto-secundario">{t("cargando")}</p>
         ) : mensajes.length === 0 ? (
-          <p className="text-center text-xs text-texto-secundario">Todavía nadie escribió nada acá — arrancá vos.</p>
+          <p className="text-center text-xs text-texto-secundario">{t("vacio")}</p>
         ) : (
           mensajes.map((m) => (
             <div key={m.id} className="group flex items-start gap-2">
@@ -126,10 +129,13 @@ export default function ChatDeClan({ clanId, miUserId }: Props) {
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline gap-1.5">
                   <span className="truncate text-xs font-semibold text-foreground">
-                    {m.autor_id === miUserId ? "Vos" : (m.autor_nombre ?? "Jugador")}
+                    {m.autor_id === miUserId ? t("tu") : (m.autor_nombre ?? t("jugador"))}
                   </span>
                   <span className="shrink-0 font-mono text-[10px] text-texto-secundario">
-                    {new Date(m.created_at).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
+                    {new Date(m.created_at).toLocaleTimeString(locale === "es" ? "es-AR" : "en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
                 <p className="break-words text-sm text-foreground">{m.texto}</p>
@@ -156,7 +162,7 @@ export default function ChatDeClan({ clanId, miUserId }: Props) {
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           maxLength={500}
-          placeholder="Escribí algo para tu clan..."
+          placeholder={t("placeholder")}
           className="min-w-0 flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primario/50"
         />
         <button
@@ -164,7 +170,7 @@ export default function ChatDeClan({ clanId, miUserId }: Props) {
           disabled={enviando || texto.trim().length === 0}
           className="shrink-0 rounded-xl bg-primario px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
         >
-          Enviar
+          {t("enviar")}
         </button>
       </form>
       {error && <p className="text-xs text-error">{error}</p>}

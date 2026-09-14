@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { BENEFICIOS_PRO } from "@/lib/pro/beneficios";
 
-export const metadata: Metadata = {
-  title: "Prodigia Pro",
-  description: "Los beneficios de Prodigia Pro — próximamente.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Legal.pro.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 // Fase 14: pantalla SOLO informativa — el botón está deshabilitado a
 // propósito. Integrar un método de pago real queda pendiente de una
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 // así que acá no hay ningún flujo de compra, solo la lista de
 // beneficios ya definidos.
 export default async function ProPage() {
+  const t = await getTranslations("Legal.pro");
   const supabase = await createClient();
   await requireUsuario(supabase, "/pro");
 
@@ -23,10 +25,10 @@ export default async function ProPage() {
       <Header autenticado />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
         <div className="text-center">
-          <span className="text-xs font-medium uppercase tracking-wide text-primario">Prodigia</span>
-          <h1 className="font-display text-3xl font-bold tracking-tight text-foreground">Prodigia Pro</h1>
+          <span className="text-xs font-medium uppercase tracking-wide text-primario">{t("marca")}</span>
+          <h1 className="font-display text-3xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
           <p className="mt-2 text-sm text-texto-secundario">
-            Todo lo que vas a tener cuando Pro esté disponible.
+            {t("subtitulo")}
           </p>
         </div>
 
@@ -49,9 +51,9 @@ export default async function ProPage() {
             disabled
             className="cursor-not-allowed rounded-xl bg-primario/40 px-6 py-3 font-display font-semibold text-white opacity-70"
           >
-            Próximamente
+            {t("proximamente")}
           </button>
-          <p className="text-xs text-texto-secundario">Todavía no se puede comprar Prodigia Pro.</p>
+          <p className="text-xs text-texto-secundario">{t("noDisponible")}</p>
         </div>
       </div>
     </>

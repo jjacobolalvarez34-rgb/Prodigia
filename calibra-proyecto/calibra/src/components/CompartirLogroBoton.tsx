@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   nombre: string;
@@ -17,7 +18,13 @@ function cssVar(nombre: string, fallback: string): string {
   return valor || fallback;
 }
 
-function dibujarTarjeta(canvas: HTMLCanvasElement, nombre: string, descripcion: string, displayName: string | null) {
+function dibujarTarjeta(
+  canvas: HTMLCanvasElement,
+  nombre: string,
+  descripcion: string,
+  displayName: string | null,
+  textoLogroDe: (nombre: string) => string
+) {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
@@ -86,7 +93,7 @@ function dibujarTarjeta(canvas: HTMLCanvasElement, nombre: string, descripcion: 
   if (displayName) {
     ctx.fillStyle = secundario;
     ctx.font = "24px sans-serif";
-    ctx.fillText(`Logro de ${displayName}`, cx, ALTO - 90);
+    ctx.fillText(textoLogroDe(displayName), cx, ALTO - 90);
   }
 }
 
@@ -95,6 +102,7 @@ function dibujarTarjeta(canvas: HTMLCanvasElement, nombre: string, descripcion: 
 // server-side para esto. Solo se ofrece para logros ya desbloqueados
 // (no tendría sentido "compartir" uno bloqueado).
 export default function CompartirLogroBoton({ nombre, descripcion, displayName }: Props) {
+  const t = useTranslations("Componentes");
   const [generando, setGenerando] = useState(false);
 
   async function compartir() {
@@ -102,7 +110,7 @@ export default function CompartirLogroBoton({ nombre, descripcion, displayName }
     const canvas = document.createElement("canvas");
     canvas.width = ANCHO;
     canvas.height = ALTO;
-    dibujarTarjeta(canvas, nombre, descripcion, displayName);
+    dibujarTarjeta(canvas, nombre, descripcion, displayName, (n) => t("compartirLogroBoton.logroDe", { nombre: n }));
 
     canvas.toBlob((blob) => {
       setGenerando(false);
@@ -124,7 +132,7 @@ export default function CompartirLogroBoton({ nombre, descripcion, displayName }
       disabled={generando}
       className="mt-1 text-[10px] font-medium text-primario hover:underline disabled:opacity-60"
     >
-      {generando ? "Generando…" : "Compartir"}
+      {generando ? t("compartirLogroBoton.generando") : t("compartirLogroBoton.compartir")}
     </button>
   );
 }

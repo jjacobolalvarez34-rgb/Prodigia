@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ARITHMETIC_PROBLEM_TYPES, rangoDeSlug, type ArithmeticProblemType, type FuenteNombre } from "@/types/database";
@@ -36,19 +37,10 @@ export interface PostFeed {
   yoReaccione: boolean;
 }
 
-const NOMBRE_MUNDO: Record<string, string> = { numeria: "Numeria", geografia: "Geografía", enigmia: "Enigmia", quimia: "Quimia", anatomia: "Anatomía", melodia: "Melodía", trigonometria: "Trigonometría", historia: "Historia", aleatorio: "todas las ciudades" };
-
 interface Props {
   posts: PostFeed[];
   puedeCrearProblemaPersonalizado: boolean;
 }
-
-const NOMBRES_OPERACION: Record<string, string> = {
-  suma: "Suma",
-  resta: "Resta",
-  multiplicacion: "Multiplicación",
-  division: "División",
-};
 
 // Fase 3 del rediseño de Social: antes era FeedClient.tsx con su propia
 // columna de "Gente a seguir" — esa columna se reemplazó por completo
@@ -58,6 +50,7 @@ const NOMBRES_OPERACION: Record<string, string> = {
 // (columna central + sidebar fija) y le pasa a este componente solo los
 // posts.
 export default function Feed({ posts: postsIniciales, puedeCrearProblemaPersonalizado }: Props) {
+  const t = useTranslations("Social");
   const [tab, setTab] = useState<"paraTi" | "siguiendo">("paraTi");
   const [posts, setPosts] = useState(postsIniciales);
   const [mostrandoForm, setMostrandoForm] = useState<"ninguno" | "desafio" | "personalizado">("ninguno");
@@ -89,7 +82,7 @@ export default function Feed({ posts: postsIniciales, puedeCrearProblemaPersonal
               tab === "paraTi" ? "bg-primario text-white" : "text-texto-secundario"
             }`}
           >
-            Para ti
+            {t("feed.tabParaTi")}
           </button>
           <button
             onClick={() => setTab("siguiendo")}
@@ -97,7 +90,7 @@ export default function Feed({ posts: postsIniciales, puedeCrearProblemaPersonal
               tab === "siguiendo" ? "bg-primario text-white" : "text-texto-secundario"
             }`}
           >
-            Siguiendo
+            {t("feed.tabSiguiendo")}
           </button>
         </div>
         <div className="flex gap-2">
@@ -106,14 +99,14 @@ export default function Feed({ posts: postsIniciales, puedeCrearProblemaPersonal
               onClick={() => setMostrandoForm((v) => (v === "personalizado" ? "ninguno" : "personalizado"))}
               className="rounded-lg border border-logro/40 px-3 py-1.5 text-sm font-medium text-foreground"
             >
-              + Problema propio
+              {t("feed.botonProblemaPropio")}
             </button>
           )}
           <button
             onClick={() => setMostrandoForm((v) => (v === "desafio" ? "ninguno" : "desafio"))}
             className="rounded-lg bg-primario px-3 py-1.5 text-sm font-medium text-white"
           >
-            + Desafío
+            {t("feed.botonDesafio")}
           </button>
         </div>
       </div>
@@ -137,9 +130,7 @@ export default function Feed({ posts: postsIniciales, puedeCrearProblemaPersonal
 
       {visibles.length === 0 ? (
         <p className="rounded-2xl border border-border bg-surface px-6 py-8 text-center text-sm text-texto-secundario">
-          {tab === "siguiendo"
-            ? "Todavía no sigues a nadie con actividad — agrega amigos desde la barra lateral."
-            : "Todavía no hay nada en el feed."}
+          {tab === "siguiendo" ? t("feed.vacioSiguiendo") : t("feed.vacioFeed")}
         </p>
       ) : (
         <div className="flex flex-col gap-3">
@@ -181,6 +172,7 @@ export function ReaccionBoton({ total, activa, onClick }: { total: number; activ
 }
 
 function TarjetaLogro({ post, onReaccionar }: { post: PostFeed; onReaccionar: (id: string) => void }) {
+  const t = useTranslations("Social");
   return (
     <div className="flex flex-col gap-2 rounded-2xl border border-logro/30 bg-logro/5 px-5 py-4">
       <div className="flex items-center gap-2">
@@ -189,7 +181,7 @@ function TarjetaLogro({ post, onReaccionar }: { post: PostFeed; onReaccionar: (i
           <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
             <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} />
           </Link>{" "}
-          desbloqueó <span className="font-semibold">{post.logroNombre}</span>
+          {t("feed.logroDesbloqueo")} <span className="font-semibold">{post.logroNombre}</span>
         </p>
       </div>
       {post.logroDescripcion && <p className="text-xs text-texto-secundario">{post.logroDescripcion}</p>}
@@ -201,6 +193,7 @@ function TarjetaLogro({ post, onReaccionar }: { post: PostFeed; onReaccionar: (i
 }
 
 function TarjetaDesafio({ post, onReaccionar }: { post: PostFeed; onReaccionar: (id: string) => void }) {
+  const t = useTranslations("Social");
   const router = useRouter();
   const [retando, setRetando] = useState(false);
 
@@ -224,8 +217,9 @@ function TarjetaDesafio({ post, onReaccionar }: { post: PostFeed; onReaccionar: 
         <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
           <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} />
         </Link>{" "}
-        te desafía a <span className="font-semibold">{NOMBRES_OPERACION[post.operationType ?? ""]}</span>, nivel{" "}
-        {post.nivel}, {post.cantidadProblemas} problemas.
+        {t("feed.desafioTe")}{" "}
+        <span className="font-semibold">{post.operationType ? t(`operaciones.${post.operationType}`) : ""}</span>
+        {t("feed.desafioDetalle", { nivel: post.nivel ?? 0, cantidad: post.cantidadProblemas ?? 0 })}
       </p>
       <div className="flex items-center justify-between">
         <ReaccionBoton total={post.reaccionesTotal} activa={post.yoReaccione} onClick={() => onReaccionar(post.id)} />
@@ -235,7 +229,7 @@ function TarjetaDesafio({ post, onReaccionar }: { post: PostFeed; onReaccionar: 
             disabled={retando}
             className="rounded-lg bg-primario px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-60"
           >
-            {retando ? "Creando..." : "Retar"}
+            {retando ? t("feed.retarCreando") : t("feed.botonRetar")}
           </button>
         )}
       </div>
@@ -248,6 +242,7 @@ function TarjetaDesafio({ post, onReaccionar }: { post: PostFeed; onReaccionar: 
 // distinto del resto para no decir "en todas las ciudades" como si
 // fuera una ciudad más.
 function TarjetaResultadoDuelo({ post, onReaccionar }: { post: PostFeed; onReaccionar: (id: string) => void }) {
+  const t = useTranslations("Social");
   return (
     <div className="flex flex-col gap-2 rounded-2xl border border-correcto/30 bg-correcto/5 px-5 py-4">
       <div className="flex items-center gap-2">
@@ -256,11 +251,11 @@ function TarjetaResultadoDuelo({ post, onReaccionar }: { post: PostFeed; onReacc
           <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
             <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} />
           </Link>{" "}
-          venció a <span className="font-semibold">{post.rivalNombre}</span>
+          {t("feed.vencioA")} <span className="font-semibold">{post.rivalNombre}</span>
           {post.mundo && (
             <>
               {" "}
-              en {post.mundo === "aleatorio" ? "todas las ciudades" : NOMBRE_MUNDO[post.mundo]}
+              {t("feed.en")} {post.mundo === "aleatorio" ? t("mundos.aleatorio") : t(`mundos.${post.mundo}`)}
             </>
           )}
         </p>
@@ -276,6 +271,7 @@ function TarjetaResultadoDuelo({ post, onReaccionar }: { post: PostFeed; onReacc
 // rango (mismo RANGOS_ELO que ya usa RangoBadge, ningún color nuevo
 // inventado acá).
 function TarjetaSubidaRango({ post, onReaccionar }: { post: PostFeed; onReaccionar: (id: string) => void }) {
+  const t = useTranslations("Social");
   const rango = post.rangoNuevo ? rangoDeSlug(post.rangoNuevo) : undefined;
   const estiloNombre = rango?.degradado
     ? {
@@ -297,7 +293,7 @@ function TarjetaSubidaRango({ post, onReaccionar }: { post: PostFeed; onReaccion
           <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
             <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} />
           </Link>{" "}
-          subió a <span className="font-bold" style={estiloNombre}>{rango?.nombre ?? post.rangoNuevo}</span>
+          {t("feed.subioA")} <span className="font-bold" style={estiloNombre}>{rango?.nombre ?? post.rangoNuevo}</span>
         </p>
       </div>
       <div>
@@ -310,6 +306,7 @@ function TarjetaSubidaRango({ post, onReaccionar }: { post: PostFeed; onReaccion
 // Fase 5: "Juan alcanzó nivel 10 en Numeria 🎯" — solo hitos (cada 5
 // niveles, ver /api/practica/finish), no cada nivel.
 function TarjetaNivelMundo({ post, onReaccionar }: { post: PostFeed; onReaccionar: (id: string) => void }) {
+  const t = useTranslations("Social");
   return (
     <div className="flex flex-col gap-2 rounded-2xl border border-primario/30 bg-primario/5 px-5 py-4">
       <div className="flex items-center gap-2">
@@ -318,8 +315,8 @@ function TarjetaNivelMundo({ post, onReaccionar }: { post: PostFeed; onReacciona
           <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
             <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} />
           </Link>{" "}
-          alcanzó nivel <span className="font-semibold">{post.nivelMundoValor}</span> en{" "}
-          {post.mundo && post.mundo !== "aleatorio" ? NOMBRE_MUNDO[post.mundo] : "su mundo"}
+          {t("feed.alcanzoNivel")} <span className="font-semibold">{post.nivelMundoValor}</span> {t("feed.en")}{" "}
+          {post.mundo && post.mundo !== "aleatorio" ? t(`mundos.${post.mundo}`) : t("mundos.suMundo")}
         </p>
       </div>
       <div>
@@ -334,6 +331,7 @@ function TarjetaNivelMundo({ post, onReaccionar }: { post: PostFeed; onReacciona
 // crearse). Responder es inline, sin ELO ni duelo sincronizado: solo
 // revela si acertaste o no.
 function TarjetaDesafioPersonalizado({ post, onReaccionar }: { post: PostFeed; onReaccionar: (id: string) => void }) {
+  const t = useTranslations("Social");
   const [respuesta, setRespuesta] = useState("");
   const [resultado, setResultado] = useState<{ correcto: boolean; respuesta: string } | null>(null);
   const [enviando, setEnviando] = useState(false);
@@ -358,14 +356,14 @@ function TarjetaDesafioPersonalizado({ post, onReaccionar }: { post: PostFeed; o
         <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
           <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} />
         </Link>{" "}
-        armó un problema para vos: <span className="font-semibold">✍️ {post.problemaPregunta}</span>
+        {t("feed.problemaMensaje")} <span className="font-semibold">✍️ {post.problemaPregunta}</span>
       </p>
       {!post.esPropio && !resultado && (
         <form onSubmit={responder} className="flex gap-2">
           <input
             value={respuesta}
             onChange={(e) => setRespuesta(e.target.value)}
-            placeholder="Tu respuesta..."
+            placeholder={t("feed.placeholderRespuesta")}
             className="flex-1 rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-foreground outline-none focus:border-primario"
           />
           <button
@@ -373,13 +371,13 @@ function TarjetaDesafioPersonalizado({ post, onReaccionar }: { post: PostFeed; o
             disabled={enviando || !respuesta.trim()}
             className="rounded-lg bg-primario px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-60"
           >
-            Responder
+            {t("feed.botonResponder")}
           </button>
         </form>
       )}
       {resultado && (
         <p className={`text-sm font-medium ${resultado.correcto ? "text-correcto" : "text-error"}`}>
-          {resultado.correcto ? "¡Correcto! 🎉" : `No era — la respuesta era "${resultado.respuesta}"`}
+          {resultado.correcto ? t("feed.resultadoCorrecto") : t("feed.resultadoIncorrecto", { respuesta: resultado.respuesta })}
         </p>
       )}
       <div className="flex items-center justify-between">
@@ -394,6 +392,7 @@ function TarjetaDesafioPersonalizado({ post, onReaccionar }: { post: PostFeed; o
 // servidor (crear_problema_personalizado) es quien realmente lo exige,
 // esto solo evita mostrar un formulario que de entrada va a fallar.
 function CrearProblemaPersonalizadoForm({ onCreado }: { onCreado: () => void }) {
+  const t = useTranslations("Social");
   const [pregunta, setPregunta] = useState("");
   const [respuesta, setRespuesta] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -410,7 +409,7 @@ function CrearProblemaPersonalizadoForm({ onCreado }: { onCreado: () => void }) 
     const data = await res.json();
     setEnviando(false);
     if (!res.ok) {
-      setError(data.error ?? "No se pudo publicar el problema.");
+      setError(data.error ?? t("feed.errorPublicarProblema"));
       return;
     }
     onCreado();
@@ -418,18 +417,18 @@ function CrearProblemaPersonalizadoForm({ onCreado }: { onCreado: () => void }) 
 
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-logro/30 bg-logro/5 px-5 py-4">
-      <p className="font-display text-sm font-semibold text-foreground">Armá tu propio problema</p>
+      <p className="font-display text-sm font-semibold text-foreground">{t("feed.tituloProblemaPropio")}</p>
       <input
         value={pregunta}
         onChange={(e) => setPregunta(e.target.value)}
-        placeholder="Pregunta (ej: ¿Capital de Mongolia?)"
+        placeholder={t("feed.placeholderPregunta")}
         maxLength={200}
         className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primario"
       />
       <input
         value={respuesta}
         onChange={(e) => setRespuesta(e.target.value)}
-        placeholder="Respuesta correcta"
+        placeholder={t("feed.placeholderRespuestaCorrecta")}
         maxLength={100}
         className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primario"
       />
@@ -439,14 +438,15 @@ function CrearProblemaPersonalizadoForm({ onCreado }: { onCreado: () => void }) 
         disabled={enviando || pregunta.trim().length < 3 || respuesta.trim().length < 1}
         className="self-start rounded-lg bg-logro px-4 py-2 text-sm font-semibold text-foreground disabled:opacity-60"
       >
-        {enviando ? "Publicando..." : "Publicar problema"}
+        {enviando ? t("feed.publicando") : t("feed.botonPublicarProblema")}
       </button>
-      <p className="text-[11px] text-texto-secundario">Máximo uno por día — se comparte con todos en el feed.</p>
+      <p className="text-[11px] text-texto-secundario">{t("feed.notaUnoPorDia")}</p>
     </div>
   );
 }
 
 function CrearDesafioForm({ onCreado }: { onCreado: () => void }) {
+  const t = useTranslations("Social");
   const [operacion, setOperacion] = useState<ArithmeticProblemType>("suma");
   const [nivel, setNivel] = useState(5);
   const [cantidad, setCantidad] = useState(10);
@@ -465,7 +465,7 @@ function CrearDesafioForm({ onCreado }: { onCreado: () => void }) {
 
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-5 py-4">
-      <p className="font-display text-sm font-semibold text-foreground">Armá un desafío</p>
+      <p className="font-display text-sm font-semibold text-foreground">{t("feed.tituloArmarDesafio")}</p>
       <div className="grid grid-cols-3 gap-2">
         <select
           value={operacion}
@@ -474,7 +474,7 @@ function CrearDesafioForm({ onCreado }: { onCreado: () => void }) {
         >
           {ARITHMETIC_PROBLEM_TYPES.map((tipo) => (
             <option key={tipo} value={tipo}>
-              {NOMBRES_OPERACION[tipo]}
+              {t(`operaciones.${tipo}`)}
             </option>
           ))}
         </select>
@@ -485,7 +485,7 @@ function CrearDesafioForm({ onCreado }: { onCreado: () => void }) {
         >
           {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
             <option key={n} value={n}>
-              Nivel {n}
+              {t("feed.nivelOpcion", { n })}
             </option>
           ))}
         </select>
@@ -496,7 +496,7 @@ function CrearDesafioForm({ onCreado }: { onCreado: () => void }) {
         >
           {[5, 10, 15, 20].map((c) => (
             <option key={c} value={c}>
-              {c} problemas
+              {t("feed.cantidadProblemasOpcion", { c })}
             </option>
           ))}
         </select>
@@ -506,7 +506,7 @@ function CrearDesafioForm({ onCreado }: { onCreado: () => void }) {
         disabled={enviando}
         className="self-start rounded-lg bg-primario px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
       >
-        {enviando ? "Publicando..." : "Publicar desafío"}
+        {enviando ? t("feed.publicando") : t("feed.botonPublicarDesafio")}
       </button>
     </div>
   );

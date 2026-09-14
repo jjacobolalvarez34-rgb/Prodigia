@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoEnigmia } from "@/lib/auth/guard";
 import { NOMBRE_CATEGORIA_ENIGMIA, type CategoriaEnigmia } from "@/types/database";
@@ -17,12 +18,13 @@ const CATEGORIAS: CategoriaEnigmia[] = ["patrones", "deduccion", "memoria", "com
 
 const COLOR = "#0E9F6E";
 
-export const metadata: Metadata = {
-  title: "Enigmia",
-  description: "Acertijos de lógica: memoria, patrones, deducción y pensamiento computacional.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Enigmia.metadata");
+  return { title: "Enigmia", description: t("description") };
+}
 
 export default async function EnigmiaHomePage() {
+  const t = await getTranslations("Enigmia");
   const supabase = await createClient();
   const { user, profile } = await requireMundoEnigmia(supabase, "/enigmia");
 
@@ -58,7 +60,7 @@ export default async function EnigmiaHomePage() {
             <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR }}>
               Enigmia
             </span>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Lógica</h1>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
             <div className="mt-2">
               <NivelMundoBadge nombreMundo="Enigmia" nivel={nivelMundo} colorHex={COLOR} />
             </div>
@@ -73,29 +75,29 @@ export default async function EnigmiaHomePage() {
         {metaCumplidaHoy && (
           <div className="flex items-center gap-3 rounded-2xl bg-correcto/10 px-5 py-4">
             <IconCheck className="h-5 w-5 shrink-0 text-correcto" />
-            <p className="text-sm font-medium text-foreground">Ya cumpliste tu meta de hoy.</p>
+            <p className="text-sm font-medium text-foreground">{t("metaCumplida")}</p>
           </div>
         )}
 
         <section className="grid gap-4 sm:grid-cols-2">
           <AccionMundo
             href="/enigmia/practica"
-            titulo="Practicar"
-            descripcion="Acertijos de lógica, calibrados a tu nivel."
+            titulo={t("practicar")}
+            descripcion={t("practicarDescripcion")}
             Icono={IconLogica}
             colorHex={COLOR}
           />
           <AccionMundo
             href="/enigmia/aprender"
-            titulo="Aprender"
-            descripcion="Estrategias de razonamiento, una a la vez."
+            titulo={t("aprender")}
+            descripcion={t("aprenderDescripcion")}
             Icono={IconLibro}
             colorHex="#FFC53D"
           />
         </section>
 
         <section className="flex flex-col gap-4">
-          <h2 className="font-display text-lg font-bold text-foreground">Categorías</h2>
+          <h2 className="font-display text-lg font-bold text-foreground">{t("categoriasTitulo")}</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {CATEGORIAS.map((cat) => (
               <TopicCard

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { generarPreguntaMelodia, type PreguntaMelodia } from "@/lib/practica/melodia";
@@ -27,6 +28,7 @@ function claveMelodia(p: PreguntaMelodia): string {
 // Mismo patrón que DiagnosticoQuimiaClient.tsx — acá con preguntas de
 // "Fundamentos" (el modo de entrada) en vez de símbolos químicos.
 export default function DiagnosticoMelodiaClient({ destino }: Props) {
+  const t = useTranslations("Melodia.diagnostico");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("intro");
   const [indice, setIndice] = useState(0);
@@ -139,9 +141,9 @@ export default function DiagnosticoMelodiaClient({ destino }: Props) {
               >
                 Melodía
               </span>
-              <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">Unas notas para calibrar</h1>
+              <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
               <p className="mt-2 text-sm text-texto-secundario">
-                Sin presión — 8 preguntas variadas, solo para arrancar en el nivel justo.
+                {t("subtitulo")}
               </p>
             </div>
             <button
@@ -149,10 +151,10 @@ export default function DiagnosticoMelodiaClient({ destino }: Props) {
               className="rounded-2xl px-6 py-4 font-display font-semibold text-white"
               style={{ background: `linear-gradient(120deg, ${COLOR_MELODIA}, #E8B84B)` }}
             >
-              Empezar
+              {t("empezar")}
             </button>
             <button onClick={saltear} className="text-sm text-texto-secundario hover:underline">
-              Prefiero arrancar en nivel 1
+              {t("saltarNivel1")}
             </button>
           </motion.div>
         )}
@@ -205,26 +207,26 @@ export default function DiagnosticoMelodiaClient({ destino }: Props) {
               </div>
             </div>
             <button onClick={saltear} className="text-sm text-texto-secundario hover:underline">
-              Prefiero arrancar en nivel 1
+              {t("saltarNivel1")}
             </button>
           </motion.div>
         )}
 
         {fase === "guardando" && (
           <motion.p key="guardando" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-sm text-texto-secundario">
-            Guardando tu diagnóstico...
+            {t("guardando")}
           </motion.p>
         )}
 
         {fase === "resultado" && (
           <motion.div key="resultado" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-6 text-center">
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Así arrancás</h1>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("resultadoTitulo")}</h1>
             <p className="font-mono text-4xl font-bold" style={{ color: COLOR_MELODIA }}>
-              Nivel {nivelFinal}
+              {t("nivelResultado", { n: nivelFinal })}
             </p>
             {!guardadoOk && (
               <p className="text-sm text-error">
-                No pudimos guardar tu progreso — prueba de nuevo antes de continuar.
+                {t("errorGuardado")}
               </p>
             )}
             <button
@@ -232,7 +234,7 @@ export default function DiagnosticoMelodiaClient({ destino }: Props) {
               className="w-full rounded-2xl px-6 py-4 font-display font-semibold text-white"
               style={{ background: guardadoOk ? `linear-gradient(120deg, ${COLOR_MELODIA}, #E8B84B)` : "var(--error)" }}
             >
-              {guardadoOk ? "Continuar" : "Reintentar"}
+              {guardadoOk ? t("continuar") : t("reintentar")}
             </button>
           </motion.div>
         )}

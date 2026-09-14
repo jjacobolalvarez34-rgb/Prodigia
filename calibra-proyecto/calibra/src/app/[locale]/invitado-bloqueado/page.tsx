@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import ConvertirCuenta from "@/components/ConvertirCuenta";
 import { IconCandado } from "@/components/icons";
 
-export const metadata: Metadata = {
-  title: "Creá tu cuenta",
-  description: "Esta parte de Prodigia necesita una cuenta real.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Bloqueos.invitado.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 interface Props {
   searchParams: Promise<{ seccion?: string }>;
@@ -23,6 +24,7 @@ interface Props {
 // lo ya jugado (ConvertirCuenta hace un updateUser sobre el mismo
 // user_id anónimo, no crea una cuenta nueva).
 export default async function InvitadoBloqueadoPage({ searchParams }: Props) {
+  const t = await getTranslations("Bloqueos.invitado");
   const { seccion } = await searchParams;
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/invitado-bloqueado");
@@ -33,7 +35,7 @@ export default async function InvitadoBloqueadoPage({ searchParams }: Props) {
     redirect("/");
   }
 
-  const etiqueta = seccion?.trim() || "Esto";
+  const etiqueta = seccion?.trim() || t("etiquetaPorDefecto");
 
   return (
     <>
@@ -44,11 +46,10 @@ export default async function InvitadoBloqueadoPage({ searchParams }: Props) {
         </span>
         <div>
           <h1 className="font-display text-xl font-bold tracking-tight text-foreground">
-            Creá tu cuenta para desbloquear esto
+            {t("titulo")}
           </h1>
           <p className="mt-2 text-sm text-texto-secundario">
-            <span className="font-medium text-foreground">{etiqueta}</span> necesita una cuenta real
-            — es gratis y no perdés nada de lo que ya practicaste.
+            <span className="font-medium text-foreground">{etiqueta}</span> {t("necesitaCuenta")}
           </p>
         </div>
 
@@ -57,7 +58,7 @@ export default async function InvitadoBloqueadoPage({ searchParams }: Props) {
         </div>
 
         <Link href="/" className="text-sm font-medium text-texto-secundario hover:text-foreground">
-          Volver a jugar como invitado
+          {t("volverInvitado")}
         </Link>
       </div>
     </>

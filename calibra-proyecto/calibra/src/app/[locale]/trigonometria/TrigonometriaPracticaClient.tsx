@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import type { ModoTrigonometria, ProblemaTrigonometria } from "@/lib/practica/trigonometria";
 import { NOMBRE_MODO_TRIGONOMETRIA } from "@/lib/practica/trigonometria";
 import type { DueloTrigonometriaInfo } from "@/lib/trigonometria/cargarPractica";
@@ -46,6 +47,7 @@ interface Props {
 
 // Mismo patrón que MelodiaPracticaClient.tsx.
 export default function TrigonometriaPracticaClient({ modo, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
+  const t = useTranslations("Trigonometria");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
   const [startedAtIso, setStartedAtIso] = useState("");
@@ -81,7 +83,7 @@ export default function TrigonometriaPracticaClient({ modo, nivelInicial, escudo
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "No se pudo cerrar la partida.");
+        setError(data.error ?? t("practicaClient.noSePudoCerrar"));
         setFase("resumen");
         return;
       }
@@ -114,7 +116,7 @@ export default function TrigonometriaPracticaClient({ modo, nivelInicial, escudo
         }
       }
     } catch {
-      setError("No pudimos conectar con el servidor. Probá de nuevo.");
+      setError(t("practicaClient.errorConexion"));
     }
     setFase("resumen");
   }
@@ -153,7 +155,7 @@ export default function TrigonometriaPracticaClient({ modo, nivelInicial, escudo
         rivalElo={duelo.rivalElo}
         rivalEsBot={duelo.rivalEsBot}
         modo={duelo.serieId ? "mejor_de_3" : "simple"}
-        subtitulo={duelo.serieId ? `Ronda ${duelo.rondaNumero}/${duelo.rondaTotal} · Trigonometría` : "Trigonometría"}
+        subtitulo={duelo.serieId ? t("practicaClient.subtituloRonda", { numero: duelo.rondaNumero, total: duelo.rondaTotal }) : t("nombreMundo")}
         onEmpezarAhora={empezarAhora}
         duelId={duelo.duelId}
       />
@@ -193,9 +195,9 @@ export default function TrigonometriaPracticaClient({ modo, nivelInicial, escudo
   if (fase === "resumen" && error) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-16 text-center">
-        <p className="text-error">No pudimos cerrar la partida: {error}</p>
+        <p className="text-error">{t("practicaClient.errorCerrarPartida", { error })}</p>
         <button onClick={() => setFase("inicio")} className="rounded-2xl px-4 py-3 font-medium text-white" style={{ background: COLOR_TRIGONOMETRIA }}>
-          Volver
+          {t("practicaClient.volver")}
         </button>
       </div>
     );
@@ -210,21 +212,21 @@ export default function TrigonometriaPracticaClient({ modo, nivelInicial, escudo
         <ApuestaResultado apuesta={resumen.apuesta ?? null} />
         <ResultadoDueloBlock duelo={resultadoDuelo} />
         <div className="flex flex-col items-center gap-2 text-center">
-          <p className="font-display text-lg font-bold text-foreground">Ahí quedó.</p>
+          <p className="font-display text-lg font-bold text-foreground">{t("practicaClient.resumen.ahiQuedo")}</p>
           <p className="font-mono text-3xl font-bold text-foreground">
-            +{resumen.sprint.xpGanado} <span className="text-base font-medium text-texto-secundario">Experiencia</span>
+            +{resumen.sprint.xpGanado} <span className="text-base font-medium text-texto-secundario">{t("practicaClient.resumen.experiencia")}</span>
           </p>
         </div>
 
         <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
-          <Fila label="Aciertos" valor={`${resumen.sprint.correctos}/${resumen.sprint.total}`} />
-          <Fila label="Precisión" valor={resumen.sprint.precision === null ? "—" : `${Math.round(resumen.sprint.precision * 100)}%`} />
-          <Fila label="Experiencia hoy" valor={`${resumen.xpGanadoHoy}/${resumen.metaXpDiaria}`} />
+          <Fila label={t("practicaClient.resumen.aciertos")} valor={`${resumen.sprint.correctos}/${resumen.sprint.total}`} />
+          <Fila label={t("practicaClient.resumen.precision")} valor={resumen.sprint.precision === null ? "—" : `${Math.round(resumen.sprint.precision * 100)}%`} />
+          <Fila label={t("practicaClient.resumen.experienciaHoy")} valor={`${resumen.xpGanadoHoy}/${resumen.metaXpDiaria}`} />
         </div>
 
         {errores.length > 0 ? (
           <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
-            <p className="mb-3 font-display text-sm font-semibold text-foreground">Repasemos esto</p>
+            <p className="mb-3 font-display text-sm font-semibold text-foreground">{t("practicaClient.resumen.repasemosEsto")}</p>
             <div className="flex flex-wrap gap-2">
               {errores.map((p, i) => (
                 <span key={i} className="rounded-full bg-surface-2 px-3 py-1 text-sm text-foreground">
@@ -234,7 +236,7 @@ export default function TrigonometriaPracticaClient({ modo, nivelInicial, escudo
             </div>
           </div>
         ) : (
-          <p className="text-sm text-texto-secundario">Ninguna fallada — así se hace. 🎯</p>
+          <p className="text-sm text-texto-secundario">{t("practicaClient.resumen.ningunoFallado")}</p>
         )}
 
         <BotonesFinPartida
@@ -250,14 +252,14 @@ export default function TrigonometriaPracticaClient({ modo, nivelInicial, escudo
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
       {boostActivo && (
         <div className="flex items-center justify-center gap-2 rounded-full bg-logro/15 px-4 py-2 text-sm font-medium text-foreground">
-          ⚡ Boost activo — Chispas ×1.5 en esta partida
+          {t("practicaClient.boostActivo")}
         </div>
       )}
       <span className="text-4xl">📐</span>
       <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{NOMBRE_MODO_TRIGONOMETRIA[modo]}</h1>
-      <p className="text-texto-secundario">10 preguntas o 60 segundos, lo que llegue primero.</p>
+      <p className="text-texto-secundario">{t("practicaClient.preguntasOSegundos")}</p>
       <Boton onClick={iniciar} colorHex={COLOR_TRIGONOMETRIA} destacado className="w-full py-5 text-lg">
-        Iniciar partida
+        {t("practicaClient.iniciarPartida")}
       </Boton>
     </div>
   );

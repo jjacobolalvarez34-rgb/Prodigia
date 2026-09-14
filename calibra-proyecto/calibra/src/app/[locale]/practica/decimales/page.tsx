@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoNumeria, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { TIPOS_DECIMAL, type TipoDecimal } from "@/lib/practica/decimales";
 import DecimalPracticaClient from "./DecimalPracticaClient";
 
-export const metadata: Metadata = {
-  title: "Decimales y porcentajes",
-  description: "Convertir, calcular porcentajes y redondear — dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [tNumeria, tDecimales] = await Promise.all([
+    getTranslations("Numeria.temas"),
+    getTranslations("Decimales.metadata"),
+  ]);
+  return { title: tNumeria("decimales"), description: tDecimales("description") };
+}
 
 export default async function DecimalesPage() {
   const supabase = await createClient();
   const { user } = await requireMundoNumeria(supabase, "/practica/decimales");
-  bloquearInvitado(user, "Decimales");
+  const tNumeria = await getTranslations("Numeria.temas");
+  bloquearInvitado(user, tNumeria("decimales"));
 
   const [{ data: skillRows }, { data: profile }] = await Promise.all([
     supabase

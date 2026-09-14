@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 import Logo from "@/components/Logo";
 import Boton from "@/components/Boton";
 
@@ -14,6 +15,8 @@ export default function GlobalErrorBoundary({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("Common.errorBoundario");
+
   useEffect(() => {
     console.error("[error boundary]", error);
   }, [error]);
@@ -23,15 +26,14 @@ export default function GlobalErrorBoundary({
       <Logo size={40} className="opacity-70" />
       <div>
         <h1 className="font-display text-xl font-bold tracking-tight text-foreground">
-          Algo no cargó bien
+          {t("titulo")}
         </h1>
         <p className="mt-2 max-w-sm text-sm text-texto-secundario">
-          Puede ser un problema de conexión con el servidor. Probá de nuevo en un momento — tu
-          progreso ya guardado no se pierde.
+          {t("descripcion")}
         </p>
       </div>
       <Boton onClick={reset} className="px-5 py-2.5">
-        Reintentar
+        {t("reintentar")}
       </Boton>
     </div>
   );

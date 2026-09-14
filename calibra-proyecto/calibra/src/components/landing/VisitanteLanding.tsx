@@ -33,7 +33,7 @@ function getServerSnapshot(): RespuestaGuardada {
 }
 
 // Landing pública para visitantes sin sesión — rediseño del flujo
-// (Fase 7): "¿Ya conocés Prodigia?" (paso 0, sin cambios) → si "No":
+// (Fase 7): "¿Ya conoces Prodigia?" (paso 0, sin cambios) → si "No":
 // intro corta con la bifurcación real ("Jugar sin tutorial" manda
 // directo a /login — mismo destino que "Sí, ya la conozco", porque todo
 // lo que sigue es justamente el tutorial; "Hacer el tutorial" sigue acá

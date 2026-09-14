@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import Avatar from "@/components/Avatar";
 import GlareHover from "@/components/reactbits/GlareHover";
 import RangoBadge from "@/components/RangoBadge";
@@ -53,6 +54,7 @@ function fondoPodio(color: string): string {
 }
 
 function TarjetaPodio({ fila, indice, esUsuarioActual }: { fila: FilaRanking; indice: number; esUsuarioActual: boolean }) {
+  const t = useTranslations("Leaderboard");
   const estilo = ESTILO[indice];
   return (
     <Link
@@ -77,7 +79,7 @@ function TarjetaPodio({ fila, indice, esUsuarioActual }: { fila: FilaRanking; in
       {/* Fase 9: rango de Rankeds, información aparte de la Experiencia
           semanal que ordena este ranking — no lo reemplaza. */}
       <RangoBadge elo={fila.elo_rating} tituloNombre={fila.titulo_nombre} size="sm" className="max-w-full" />
-      <span className={`font-mono text-xs font-bold ${estilo.texto}`}>{fila.xp_semana} Exp</span>
+      <span className={`font-mono text-xs font-bold ${estilo.texto}`}>{t("expValor", { n: fila.xp_semana })}</span>
     </Link>
   );
 }

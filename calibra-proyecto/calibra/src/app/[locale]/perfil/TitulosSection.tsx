@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import type { TituloUsuario } from "@/types/database";
 
@@ -17,6 +18,7 @@ interface Props {
 // "rango", así que esta pantalla ya lista por `titulos` genérico, no
 // algo hardcodeado a rangos.
 export default function TitulosSection({ titulos, tituloActivo }: Props) {
+  const t = useTranslations("Perfil");
   const router = useRouter();
   const [activo, setActivo] = useState(tituloActivo);
   const [cambiando, setCambiando] = useState<string | null>(null);
@@ -35,9 +37,9 @@ export default function TitulosSection({ titulos, tituloActivo }: Props) {
   if (titulos.length === 0) {
     return (
       <section>
-        <h2 className="mb-2 font-display text-lg font-bold text-foreground">Títulos</h2>
+        <h2 className="mb-2 font-display text-lg font-bold text-foreground">{t("titulosSection.titulo")}</h2>
         <p className="text-sm text-texto-secundario">
-          Todavía no desbloqueaste ninguno — subí de rango en Rankeds para conseguir el primero.
+          {t("titulosSection.vacio")}
         </p>
       </section>
     );
@@ -45,9 +47,9 @@ export default function TitulosSection({ titulos, tituloActivo }: Props) {
 
   return (
     <section>
-      <h2 className="mb-1 font-display text-lg font-bold text-foreground">Títulos</h2>
+      <h2 className="mb-1 font-display text-lg font-bold text-foreground">{t("titulosSection.titulo")}</h2>
       <p className="mb-3 text-xs text-texto-secundario">
-        Elegí cuál mostrar junto a tu nombre — activar uno no borra los demás.
+        {t("titulosSection.elegirDescripcion")}
       </p>
       <div className="flex flex-wrap gap-2">
         <button
@@ -57,7 +59,7 @@ export default function TitulosSection({ titulos, tituloActivo }: Props) {
             activo === null ? "border-primario bg-primario/10 text-primario" : "border-border text-texto-secundario"
           }`}
         >
-          Ninguno
+          {t("titulosSection.ninguno")}
         </button>
         {titulos.map((t) => (
           <button

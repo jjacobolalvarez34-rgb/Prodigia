@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoHistoria } from "@/lib/auth/guard";
 import Header from "@/components/Header";
@@ -7,14 +8,15 @@ import LevelDial from "@/app/[locale]/practica/LevelDial";
 import { IconHistoria } from "@/components/icons";
 import { COLOR_HISTORIA } from "../colores";
 
-export const metadata: Metadata = {
-  title: "Practicar",
-  description: "Elegí un modo de Historia para practicar.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Historia.elegir.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 const TIPOS_HISTORIA = ["historia_cronologia", "historia_personajes", "historia_causaefecto", "historia_fechas"];
 
 export default async function HistoriaElegirPage() {
+  const t = await getTranslations("Historia.elegir");
   const supabase = await createClient();
   const { user } = await requireMundoHistoria(supabase, "/historia/elegir");
 
@@ -26,10 +28,10 @@ export default async function HistoriaElegirPage() {
   const nivelDe = (tipo: string) => nivelRows?.find((r) => r.problem_type === tipo)?.nivel ?? 1;
 
   const modos = [
-    { nombre: "Cronología", desc: "Ordenar eventos, o identificar el siglo", href: "/historia/practica", nivel: nivelDe("historia_cronologia") },
-    { nombre: "Personajes", desc: "Identificá la figura histórica desde pistas", href: "/historia/practica/personajes", nivel: nivelDe("historia_personajes") },
-    { nombre: "Causa y efecto", desc: "La consecuencia directa más reconocida", href: "/historia/practica/causaefecto", nivel: nivelDe("historia_causaefecto") },
-    { nombre: "Fechas exactas 🔥", desc: "Año o década precisa — el más difícil", href: "/historia/practica/fechas", nivel: nivelDe("historia_fechas") },
+    { nombre: t("modos.cronologia.nombre"), desc: t("modos.cronologia.desc"), href: "/historia/practica", nivel: nivelDe("historia_cronologia") },
+    { nombre: t("modos.personajes.nombre"), desc: t("modos.personajes.desc"), href: "/historia/practica/personajes", nivel: nivelDe("historia_personajes") },
+    { nombre: t("modos.causaefecto.nombre"), desc: t("modos.causaefecto.desc"), href: "/historia/practica/causaefecto", nivel: nivelDe("historia_causaefecto") },
+    { nombre: t("modos.fechas.nombre"), desc: t("modos.fechas.desc"), href: "/historia/practica/fechas", nivel: nivelDe("historia_fechas") },
   ];
 
   return (
@@ -37,8 +39,8 @@ export default async function HistoriaElegirPage() {
       <Header autenticado />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-16">
         <div className="text-center">
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">¿Qué modo practicamos?</h1>
-          <p className="mt-2 text-sm text-texto-secundario">Elegí un modo para arrancar.</p>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
+          <p className="mt-2 text-sm text-texto-secundario">{t("subtitulo")}</p>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {modos.map((m) => (

@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 // Fase 9.4: cosmético de clan. No hay arte curado nuevo para esto (a
 // diferencia de las insignias de rango, que vinieron de un PNG que
 // diste) — así que en vez de imitar ese estilo con placeholders,
@@ -21,12 +23,13 @@ export default function EstandarteClan({
   size?: number;
   imagenUrl?: string | null;
 }) {
+  const t = useTranslations("Clanes.estandarte");
   if (imagenUrl) {
     return (
       // eslint-disable-next-line @next/next/no-img-element -- imagen subida por el usuario, tamaño fijo del contenedor
       <img
         src={imagenUrl}
-        alt="Estandarte del clan"
+        alt={t("alt")}
         width={size}
         height={size}
         className="shrink-0 rounded-full border-2 object-cover"
@@ -41,7 +44,7 @@ export default function EstandarteClan({
   const idGrad = `estandarte-grad-${color.replace("#", "")}`;
 
   return (
-    <svg width={ancho} height={alto} viewBox={`0 0 ${ancho} ${alto}`} role="img" aria-label={`Estandarte de clan, nivel ${nivel}`}>
+    <svg width={ancho} height={alto} viewBox={`0 0 ${ancho} ${alto}`} role="img" aria-label={t("ariaLabel", { nivel })}>
       <defs>
         <linearGradient id={idGrad} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity={1} />

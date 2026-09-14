@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { sonidoHabilitado, sonidoHabilitadoServerSnapshot, setSonidoHabilitado, subscribeSonido } from "@/lib/sonido";
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, setEfectosHabilitados, subscribeEfectos } from "@/lib/efectos";
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export default function AjustesClient({ userId, ocultarDobleONadaInicial }: Props) {
+  const t = useTranslations("Ajustes");
   const [ocultarDobleONada, setOcultarDobleONada] = useState(ocultarDobleONadaInicial);
   const [guardandoApuesta, setGuardandoApuesta] = useState(false);
   const sonido = useSyncExternalStore(subscribeSonido, sonidoHabilitado, sonidoHabilitadoServerSnapshot);
@@ -38,8 +40,8 @@ export default function AjustesClient({ userId, ocultarDobleONadaInicial }: Prop
     <div className="flex flex-col gap-6">
       <section className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4">
         <div>
-          <p className="font-display font-semibold text-foreground">Sonido</p>
-          <p className="text-sm text-texto-secundario">Tonos cortos al acertar o fallar en las partidas.</p>
+          <p className="font-display font-semibold text-foreground">{t("sonido")}</p>
+          <p className="text-sm text-texto-secundario">{t("sonidoDescripcion")}</p>
         </div>
         <button
           onClick={toggleSonido}
@@ -54,10 +56,9 @@ export default function AjustesClient({ userId, ocultarDobleONadaInicial }: Prop
 
       <section className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4">
         <div>
-          <p className="font-display font-semibold text-foreground">Efectos visuales</p>
+          <p className="font-display font-semibold text-foreground">{t("efectosVisuales")}</p>
           <p className="text-sm text-texto-secundario">
-            Fondos animados, partículas y el gesto del logo en celebraciones. Apagarlo no cambia nada
-            de la funcionalidad.
+            {t("efectosVisualesDescripcion")}
           </p>
         </div>
         <button
@@ -73,10 +74,9 @@ export default function AjustesClient({ userId, ocultarDobleONadaInicial }: Prop
 
       <section className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4">
         <div>
-          <p className="font-display font-semibold text-foreground">Ocultar &quot;Doble o nada&quot;</p>
+          <p className="font-display font-semibold text-foreground">{t("ocultarDobleONada")}</p>
           <p className="text-sm text-texto-secundario">
-            Saca la trastienda de apuestas de la Tienda. Siempre es solo con Chispas del juego, nunca dinero real —
-            pero si preferís no verla, la apagás acá.
+            {t("ocultarDobleONadaDescripcion")}
           </p>
         </div>
         <button
@@ -93,8 +93,8 @@ export default function AjustesClient({ userId, ocultarDobleONadaInicial }: Prop
 
       <section className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4">
         <div>
-          <p className="font-display font-semibold text-foreground">Tema</p>
-          <p className="text-sm text-texto-secundario">Claro u oscuro.</p>
+          <p className="font-display font-semibold text-foreground">{t("tema")}</p>
+          <p className="text-sm text-texto-secundario">{t("temaDescripcion")}</p>
         </div>
         <ThemeToggle />
       </section>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import type { NodoCaminoAnatomia } from "@/lib/anatomia/path";
 import type { Achievement } from "@/types/database";
@@ -25,6 +26,7 @@ interface Props {
 // Lecciones mnemotécnicas, no de cómputo — mismo patrón exacto que
 // LeccionQuimiaClient.tsx.
 export default function LeccionAnatomiaClient({ nodo }: Props) {
+  const t = useTranslations("Anatomia");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("explicacion");
   const [pasoIdx, setPasoIdx] = useState(0);
@@ -57,7 +59,7 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
                 className="rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wide"
                 style={{ background: `color-mix(in oklab, ${COLOR_ANATOMIA} 12%, transparent)`, color: COLOR_ANATOMIA }}
               >
-                Técnica
+                {t("leccion.badge")}
               </span>
               <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">{nodo.nombre}</h1>
               <p className="mt-2 text-texto-secundario">{nodo.descripcion}</p>
@@ -67,7 +69,7 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
               className="rounded-xl px-4 py-3 font-display font-semibold text-white shadow-lg"
               style={{ background: `linear-gradient(120deg, ${COLOR_ANATOMIA}, #C9536F)` }}
             >
-              Ver el truco
+              {t("leccion.verTruco")}
             </button>
           </motion.div>
         )}
@@ -97,7 +99,7 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
                 disabled={pasoIdx === 0}
                 className="rounded-xl border border-border px-4 py-3 font-medium text-foreground disabled:opacity-40"
               >
-                Anterior
+                {t("leccion.anterior")}
               </button>
               {pasoIdx < pasos.length - 1 ? (
                 <button
@@ -105,7 +107,7 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
                   className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
                   style={{ background: COLOR_ANATOMIA }}
                 >
-                  Siguiente paso
+                  {t("leccion.siguientePaso")}
                 </button>
               ) : (
                 <button
@@ -113,7 +115,7 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
                   className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
                   style={{ background: COLOR_ANATOMIA }}
                 >
-                  Marcar como aprendida
+                  {t("leccion.marcarAprendida")}
                 </button>
               )}
             </div>
@@ -130,7 +132,7 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
           >
             <span className="text-5xl">🎉</span>
             <h1 className="font-display text-2xl font-black tracking-tight text-foreground">
-              ¡Completaste {nodo.nombre}!
+              {t("leccion.completaste", { nombre: nodo.nombre })}
             </h1>
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
@@ -139,10 +141,10 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
                 className="rounded-xl px-4 py-3 font-display font-semibold text-white"
                 style={{ background: COLOR_ANATOMIA }}
               >
-                Volver a Aprender
+                {t("leccion.volverAprender")}
               </button>
               <Link href="/anatomia/elegir" className="text-sm font-medium hover:underline" style={{ color: COLOR_ANATOMIA }}>
-                Ir a Practicar
+                {t("leccion.irPracticar")}
               </Link>
             </div>
           </motion.div>

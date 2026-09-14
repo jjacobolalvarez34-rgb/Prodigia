@@ -72,7 +72,15 @@
 ## Herramientas
 
 - `scripts/normalizar-espanol.mjs` — aplica el mapeo curando a `messages/es.json` (solo valores).
+- `scripts/normalizar-espanol-fuente.mjs` — mismo mapeo (ampliado, ~140 tokens) pero sobre
+  `src/**/*.{ts,tsx}`: strings de UI, placeholders, mensajes de error de cliente y comentarios.
+  `messages/es.json` ya estaba limpio (el propio patrón de mensajes usa tuteo desde el vamos);
+  el voseo real vivía en JSX/strings hardcodeados fuera de ese archivo. Corrido en 2026-09-13
+  (sprint ES/EN): 182 líneas en ~100 archivos, verificado con `tsc --noEmit` + `vitest run` limpios
+  después de aplicar. Uso: `node scripts/normalizar-espanol-fuente.mjs` (dry-run) / `--write`.
 - `scripts/detectar-voseo.mjs` — reporta voseo residual en `es.json`.
 - `scripts/analizar-voseo-funciones.mjs` + `scripts/generar-migracion-neutro.mjs` +
   `scripts/verificar-0128.mjs` — detectan voseo en RPC y generan/verifican la migración de
-  mensajes neutros (`supabase/migrations/0128_espanol_neutro.sql`).
+  mensajes neutros (`supabase/migrations/0128_espanol_neutro.sql`). Resto residual encontrado
+  2026-09-13 en `enviar_mensaje_clan` ("esperá un momento") y corregido en
+  `supabase/migrations/0135_fix_voseo_enviar_mensaje_clan.sql`.

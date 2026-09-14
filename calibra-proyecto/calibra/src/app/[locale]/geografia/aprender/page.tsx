@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoGeografia, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoGeografia } from "@/lib/geografia/path";
@@ -7,12 +8,13 @@ import ProgressDial from "@/components/ProgressDial";
 import CaminoContinuo, { type UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import { COLOR_GEOGRAFIA } from "../GeografiaMapa";
 
-export const metadata: Metadata = {
-  title: "Aprender Geografía",
-  description: "Técnicas mnemotécnicas para ubicar países más rápido.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Geografia.metadata.aprender");
+  return { title: t("title"), description: t("description") };
+}
 
 export default async function GeografiaAprenderPage() {
+  const t = await getTranslations("Geografia");
   const supabase = await createClient();
   const { user } = await requireMundoGeografia(supabase, "/geografia/aprender");
   bloquearInvitado(user, "Aprender");
@@ -23,8 +25,8 @@ export default async function GeografiaAprenderPage() {
   const unidadesGenericas: UnidadCaminoGenerico[] = [
     {
       id: "geografia",
-      nombre: "Geografía",
-      descripcion: "Técnicas para ubicar países más rápido, no cómputo — son mnemotécnicas.",
+      nombre: t("nombreMundo"),
+      descripcion: t("aprender.descripcionUnidad"),
       nodos: nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
     },
   ];
@@ -40,20 +42,20 @@ export default async function GeografiaAprenderPage() {
             </span>
           </ProgressDial>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Progreso</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("aprender.progreso")}</p>
             <p className="font-mono text-sm font-semibold text-foreground">
-              {totalDominadas}/{nodos.length} técnicas
+              {t("aprender.tecnicas", { completadas: totalDominadas, total: nodos.length })}
             </p>
           </div>
         </div>
 
         <div>
           <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_GEOGRAFIA }}>
-            Geografía
+            {t("nombreMundo")}
           </span>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Aprender</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("aprender.titulo")}</h1>
           <p className="mt-1 text-sm text-texto-secundario">
-            Trucos para memorizar mapas — no son cuentas, son formas de mirar.
+            {t("aprender.subtitulo")}
           </p>
         </div>
 

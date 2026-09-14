@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { frecuenciaDeNota, type NotaMusical } from "@/lib/practica/melodia";
 import { reproducirNotaMusical } from "@/lib/sonido";
 
@@ -14,6 +15,7 @@ interface Props {
 // falta con el mismo botón — nunca se ve el pentagrama (sería trampa,
 // el modo es de oído).
 export default function BotonEscucharNota({ nota, colorHex = "#B8860B" }: Props) {
+  const t = useTranslations("Melodia.botonEscuchar");
   useEffect(() => {
     reproducirNotaMusical(frecuenciaDeNota(nota));
   }, [nota]);
@@ -24,7 +26,7 @@ export default function BotonEscucharNota({ nota, colorHex = "#B8860B" }: Props)
       onClick={() => reproducirNotaMusical(frecuenciaDeNota(nota))}
       className="flex h-20 w-20 items-center justify-center rounded-full text-3xl text-white shadow-lg transition-transform active:scale-95"
       style={{ background: colorHex }}
-      aria-label="Escuchar la nota otra vez"
+      aria-label={t("ariaLabel")}
     >
       🔊
     </button>

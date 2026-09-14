@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { generarPreguntaHistoria, type PreguntaHistoria } from "@/lib/practica/historia";
@@ -22,6 +23,7 @@ interface Props {
 // que Melodía, así que no hace falta el input numérico que sí necesita
 // DiagnosticoTrigonometriaClient.tsx.
 export default function DiagnosticoHistoriaClient({ destino }: Props) {
+  const t = useTranslations("Historia.diagnostico");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("intro");
   const [indice, setIndice] = useState(0);
@@ -135,20 +137,18 @@ export default function DiagnosticoHistoriaClient({ destino }: Props) {
               >
                 Historia
               </span>
-              <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">Unos hechos para calibrar</h1>
-              <p className="mt-2 text-sm text-texto-secundario">
-                Sin presión — 8 preguntas variadas, solo para arrancar en el nivel justo.
-              </p>
+              <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">{t("intro.titulo")}</h1>
+              <p className="mt-2 text-sm text-texto-secundario">{t("intro.subtitulo")}</p>
             </div>
             <button
               onClick={empezar}
               className="rounded-2xl px-6 py-4 font-display font-semibold text-white"
               style={{ background: `linear-gradient(120deg, ${COLOR_HISTORIA}, #C88A5E)` }}
             >
-              Empezar
+              {t("intro.empezar")}
             </button>
             <button onClick={saltear} className="text-sm text-texto-secundario hover:underline">
-              Prefiero arrancar en nivel 1
+              {t("intro.arrancarNivel1")}
             </button>
           </motion.div>
         )}
@@ -193,34 +193,30 @@ export default function DiagnosticoHistoriaClient({ destino }: Props) {
               </div>
             </div>
             <button onClick={saltear} className="text-sm text-texto-secundario hover:underline">
-              Prefiero arrancar en nivel 1
+              {t("intro.arrancarNivel1")}
             </button>
           </motion.div>
         )}
 
         {fase === "guardando" && (
           <motion.p key="guardando" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-sm text-texto-secundario">
-            Guardando tu diagnóstico...
+            {t("guardando")}
           </motion.p>
         )}
 
         {fase === "resultado" && (
           <motion.div key="resultado" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-6 text-center">
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Así arrancás</h1>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("resultado.titulo")}</h1>
             <p className="font-mono text-4xl font-bold" style={{ color: COLOR_HISTORIA }}>
-              Nivel {nivelFinal}
+              {t("resultado.nivel", { n: nivelFinal })}
             </p>
-            {!guardadoOk && (
-              <p className="text-sm text-error">
-                No pudimos guardar tu progreso — prueba de nuevo antes de continuar.
-              </p>
-            )}
+            {!guardadoOk && <p className="text-sm text-error">{t("resultado.errorGuardado")}</p>}
             <button
               onClick={guardadoOk ? () => router.push(destino) : reintentarGuardado}
               className="w-full rounded-2xl px-6 py-4 font-display font-semibold text-white"
               style={{ background: guardadoOk ? `linear-gradient(120deg, ${COLOR_HISTORIA}, #C88A5E)` : "var(--error)" }}
             >
-              {guardadoOk ? "Continuar" : "Reintentar"}
+              {guardadoOk ? t("resultado.continuar") : t("resultado.reintentar")}
             </button>
           </motion.div>
         )}

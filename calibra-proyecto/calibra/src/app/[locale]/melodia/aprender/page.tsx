@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoMelodia } from "@/lib/melodia/path";
@@ -7,12 +8,13 @@ import ProgressDial from "@/components/ProgressDial";
 import CaminoContinuo, { type UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import { COLOR_MELODIA } from "../colores";
 
-export const metadata: Metadata = {
-  title: "Aprender Melodía",
-  description: "Cómo leer el pentagrama y construir escalas y acordes, paso a paso.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Melodia.aprender.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 export default async function MelodiaAprenderPage() {
+  const t = await getTranslations("Melodia.aprender");
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/melodia/aprender");
   bloquearInvitado(user, "Aprender");
@@ -24,7 +26,7 @@ export default async function MelodiaAprenderPage() {
     {
       id: "melodia",
       nombre: "Melodía",
-      descripcion: "Cómo leer el pentagrama por posición y cómo se arman escalas y acordes desde cero.",
+      descripcion: t("unidadDescripcion"),
       nodos: nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
     },
   ];
@@ -40,9 +42,9 @@ export default async function MelodiaAprenderPage() {
             </span>
           </ProgressDial>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Progreso</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("progresoLabel")}</p>
             <p className="font-mono text-sm font-semibold text-foreground">
-              {totalDominadas}/{nodos.length} técnicas
+              {t("progresoContador", { completadas: totalDominadas, total: nodos.length })}
             </p>
           </div>
         </div>
@@ -51,9 +53,9 @@ export default async function MelodiaAprenderPage() {
           <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_MELODIA }}>
             Melodía
           </span>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Aprender</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
           <p className="mt-1 text-sm text-texto-secundario">
-            Cómo leer el pentagrama y cómo se arman escalas y acordes — la lógica, no memorizar caso por caso.
+            {t("descripcion")}
           </p>
         </div>
 

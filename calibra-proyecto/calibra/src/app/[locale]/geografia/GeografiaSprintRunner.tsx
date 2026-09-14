@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { elegirPaisAleatorio, PAISES_POR_CONTINENTE, type Continente, type PaisAmerica } from "@/lib/practica/geografia";
 import {
   elegirPreguntaAvanzada,
@@ -77,6 +78,7 @@ export default function GeografiaSprintRunner({
   duracionMs = DURACION_MS,
   onFinish,
 }: Props) {
+  const t = useTranslations("Geografia");
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
   const paises = PAISES_POR_CONTINENTE[continente];
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
@@ -249,13 +251,15 @@ export default function GeografiaSprintRunner({
           </div>
           <div className="flex items-center gap-3">
             <SonidoToggle />
-            <div className="flex items-center gap-1" aria-label={`${escudos} escudos disponibles`}>
+            <div className="flex items-center gap-1" aria-label={t("sprintRunner.escudosDisponibles", { n: escudos })}>
               {Array.from({ length: escudosIniciales }).map((_, i) => (
                 <EscudoIcon key={i} activo={i < escudos} colorActivo={COLOR_GEOGRAFIA} />
               ))}
             </div>
             <RachaFuego racha={racha} />
-            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">{xpSprint} Exp</span>
+            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">
+              {t("sprintRunner.exp", { n: xpSprint })}
+            </span>
             <span className="font-mono font-medium">{segundos}s</span>
           </div>
         </div>
@@ -314,7 +318,10 @@ export default function GeografiaSprintRunner({
         ) : (
           <>
             <p className="text-center font-display text-lg font-bold text-foreground">
-              ¿Dónde está <span style={{ color: COLOR_GEOGRAFIA }}>{pais.nombre}</span>?
+              {t.rich("sprintRunner.dondeEsta", {
+                pais: pais.nombre,
+                destacado: (chunks) => <span style={{ color: COLOR_GEOGRAFIA }}>{chunks}</span>,
+              })}
             </p>
             <GeografiaMapa
               continente={continente}
@@ -326,7 +333,7 @@ export default function GeografiaSprintRunner({
           </>
         )}
         {respondido && seleccionId === pais.id && (
-          <p className="text-center text-sm font-medium text-texto-secundario">¡Correcto!</p>
+          <p className="text-center text-sm font-medium text-texto-secundario">{t("sprintRunner.correcto")}</p>
         )}
       </TarjetaSprint>
     </div>

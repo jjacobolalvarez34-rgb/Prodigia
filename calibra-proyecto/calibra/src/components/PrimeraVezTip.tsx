@@ -2,6 +2,7 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 const PREFIJO = "prodigia-tip-vista-";
 const TOUR_KEY = "prodigia-tour-onboarding-visto";
@@ -91,6 +92,7 @@ interface Props {
 // dispersos por /numeria y /practica se sacaron porque contradecían el
 // criterio de "solo durante el tour inicial".
 export default function PrimeraVezTip({ tipKey, texto, children }: Props) {
+  const t = useTranslations("Componentes");
   const activo = useSyncExternalStore(
     subscribe,
     () => tipActivo(),
@@ -153,7 +155,7 @@ export default function PrimeraVezTip({ tipKey, texto, children }: Props) {
               onClick={() => marcarVista(tipKey)}
               className="mt-3 rounded-lg bg-primario px-4 py-2 text-sm font-semibold text-white"
             >
-              {restantes > 1 ? "Siguiente" : "Entendido"}
+              {restantes > 1 ? t("primeraVezTip.siguiente") : t("primeraVezTip.entendido")}
             </button>
           </motion.div>
         )}

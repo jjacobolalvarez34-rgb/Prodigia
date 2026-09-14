@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
 import { urlAbsoluta } from "@/lib/auth/urlAbsoluta";
@@ -30,6 +31,7 @@ interface Props {
 }
 
 export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
+  const t = useTranslations("Auth.convertirCuenta");
   const [paso, setPaso] = useState<"cerrado" | "form" | "nombre" | "directo" | "confirmar">(inicial);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,7 +48,7 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
     setError(null);
 
     if (password !== confirmar) {
-      setError("Las contraseñas no coinciden.");
+      setError(t("form.errorPasswordsNoCoinciden"));
       return;
     }
 
@@ -63,7 +65,7 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
     setEnviando(false);
 
     if (authError) {
-      setError(mensajeErrorAuth(authError, "No pudimos guardar la cuenta. Probá de nuevo."));
+      setError(mensajeErrorAuth(authError, t("form.errorGuardar")));
       return;
     }
 
@@ -83,7 +85,7 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
     const { error: rpcError } = await supabase.rpc("cambiar_nombre_usuario", { p_nombre: nombre.trim() });
     setEnviandoNombre(false);
     if (rpcError) {
-      setErrorNombre(rpcError.message ?? "No se pudo guardar. Probá de nuevo.");
+      setErrorNombre(rpcError.message ?? t("pasoNombre.errorGenerico"));
       return;
     }
     setPaso(emailConfirmado ? "directo" : "confirmar");
@@ -92,9 +94,9 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
   if (paso === "nombre") {
     return (
       <div className="flex flex-col gap-3 rounded-2xl border border-primario/30 bg-primario/5 px-6 py-5 text-left">
-        <p className="font-display font-semibold text-foreground">¿Cómo te llamamos?</p>
+        <p className="font-display font-semibold text-foreground">{t("pasoNombre.titulo")}</p>
         <p className="text-sm text-texto-secundario">
-          Tu cuenta ya está guardada — elige tu nombre real para el perfil y el ranking.
+          {t("pasoNombre.subtitulo")}
         </p>
         <form onSubmit={handleGuardarNombre} className="flex flex-col gap-2">
           <input
@@ -104,20 +106,20 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
             maxLength={40}
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
-            placeholder="Tu nombre"
+            placeholder={t("pasoNombre.placeholder")}
             autoFocus
             className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primario"
           />
           <div className="mt-1 flex items-center gap-3">
             <Boton type="submit" disabled={nombre.trim().length < 2} cargando={enviandoNombre} className="px-4 py-2 text-sm">
-              Guardar
+              {t("pasoNombre.botonGuardar")}
             </Boton>
             <button
               type="button"
               onClick={() => setPaso(emailConfirmado ? "directo" : "confirmar")}
               className="text-sm text-texto-secundario hover:underline"
             >
-              Seguir con mi nombre actual
+              {t("pasoNombre.seguirNombreActual")}
             </button>
           </div>
           {errorNombre && <p className="text-sm text-error">{errorNombre}</p>}
@@ -129,7 +131,7 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
   if (paso === "directo") {
     return (
       <p className="rounded-xl bg-correcto/15 px-4 py-3 text-sm text-foreground">
-        Listo, tu cuenta ya tiene email y contraseña — la próxima vez entrá con eso.
+        {t("pasoDirecto")}
       </p>
     );
   }
@@ -137,8 +139,10 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
   if (paso === "confirmar") {
     return (
       <p className="rounded-xl bg-correcto/15 px-4 py-3 text-sm text-foreground">
-        Te mandamos un email a <span className="font-medium">{email}</span> — confírmalo para
-        terminar de guardar tu cuenta. Mientras tanto sigue jugando normal, no pierdes nada.
+        {t.rich("pasoConfirmar", {
+          email,
+          strong: (chunks) => <span className="font-medium">{chunks}</span>,
+        })}
       </p>
     );
   }
@@ -146,13 +150,12 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
   if (paso === "cerrado") {
     return (
       <div className="flex flex-col gap-2 rounded-2xl border border-primario/30 bg-primario/5 px-6 py-5">
-        <p className="font-display font-semibold text-foreground">Estás como invitado</p>
+        <p className="font-display font-semibold text-foreground">{t("pasoCerrado.titulo")}</p>
         <p className="text-sm text-texto-secundario">
-          Tu progreso ya se está guardando, pero si borrás el navegador lo perdés. Agregá un email y
-          contraseña para no perderlo nunca.
+          {t("pasoCerrado.subtitulo")}
         </p>
         <Boton onClick={() => setPaso("form")} className="mt-1 self-start px-4 py-2 text-sm">
-          Guardar mi cuenta
+          {t("pasoCerrado.boton")}
         </Boton>
       </div>
     );
@@ -160,35 +163,35 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
 
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-primario/30 bg-primario/5 px-6 py-5">
-      <p className="font-display font-semibold text-foreground">Guardar mi cuenta</p>
+      <p className="font-display font-semibold text-foreground">{t("form.titulo")}</p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
         <input
           type="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="tu@email.com"
+          placeholder={t("form.emailPlaceholder")}
           autoComplete="email"
           className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primario"
         />
         <CampoPassword
           value={password}
           onChange={setPassword}
-          placeholder="Contraseña (mínimo 6 caracteres)"
+          placeholder={t("form.passwordPlaceholder")}
           autoComplete="new-password"
         />
         <CampoPassword
           value={confirmar}
           onChange={setConfirmar}
-          placeholder="Repetí la contraseña"
+          placeholder={t("form.confirmarPlaceholder")}
           autoComplete="new-password"
         />
         <div className="mt-1 flex items-center gap-3">
           <Boton type="submit" cargando={enviando} className="px-4 py-2 text-sm">
-            Confirmar
+            {t("form.botonConfirmar")}
           </Boton>
           <Boton type="button" variante="fantasma" onClick={() => setPaso("cerrado")}>
-            Cancelar
+            {t("form.botonCancelar")}
           </Boton>
         </div>
         {error && <p className="text-sm text-error">{error}</p>}

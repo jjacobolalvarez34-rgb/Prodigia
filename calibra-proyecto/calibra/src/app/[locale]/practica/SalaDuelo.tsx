@@ -1,15 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { ArithmeticProblemType } from "@/types/database";
 import { useArranqueSincronizado } from "@/lib/duelos/useArranqueSincronizado";
 import SalaEsperaDuelo from "@/components/duelos/SalaEsperaDuelo";
-
-const NOMBRES_OPERACION: Record<ArithmeticProblemType, string> = {
-  suma: "Suma",
-  resta: "Resta",
-  multiplicacion: "Multiplicación",
-  division: "División",
-};
 
 interface Props {
   duelId: string;
@@ -61,8 +55,13 @@ export default function SalaDuelo({
     rivalEsBot,
     onEmpezar,
   });
+  const tOperaciones = useTranslations("Practica.operationPicker.operaciones");
+  const tDuelo = useTranslations("Practica.duelo");
 
-  const subtitulo = serieId ? `Ronda ${rondaNumero}/${rondaTotal} · ${NOMBRES_OPERACION[operacion]}` : NOMBRES_OPERACION[operacion];
+  const nombreOperacion = tOperaciones(operacion);
+  const subtitulo = serieId
+    ? `${tDuelo("rondaDe", { n: rondaNumero ?? 1, total: rondaTotal ?? 1 })} · ${nombreOperacion}`
+    : nombreOperacion;
   const modo = serieId ? "mejor_de_3" : "simple";
 
   return (

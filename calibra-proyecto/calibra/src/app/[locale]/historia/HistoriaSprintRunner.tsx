@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { generarPreguntaHistoria, type ModoHistoria, type PreguntaHistoria } from "@/lib/practica/historia";
 import { reproducirTono } from "@/lib/sonido";
 import { useBonusTiempo } from "@/lib/practica/useBonusTiempo";
@@ -55,6 +56,7 @@ export default function HistoriaSprintRunner({
   duracionMs = DURACION_MS,
   onFinish,
 }: Props) {
+  const t = useTranslations("Historia.sprintRunner");
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const correctosRef = useRef(0);
@@ -208,14 +210,14 @@ export default function HistoriaSprintRunner({
           </div>
           <div className="flex items-center gap-3">
             <SonidoToggle />
-            <div className="flex items-center gap-1" aria-label={`${escudos} escudos disponibles`}>
+            <div className="flex items-center gap-1" aria-label={t("escudosDisponibles", { n: escudos })}>
               {Array.from({ length: escudosIniciales }).map((_, i) => (
                 <EscudoIcon key={i} activo={i < escudos} colorActivo={COLOR_HISTORIA} />
               ))}
             </div>
             <RachaFuego racha={racha} />
-            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">{xpSprint} Exp</span>
-            <span className="font-mono font-medium">{segundos}s</span>
+            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">{t("exp", { n: xpSprint })}</span>
+            <span className="font-mono font-medium">{t("segundos", { n: segundos })}</span>
           </div>
         </div>
 

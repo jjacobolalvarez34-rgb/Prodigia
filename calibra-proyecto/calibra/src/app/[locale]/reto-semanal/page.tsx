@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import { generarRetoSemanal, type MundoRetoDiario } from "@/lib/retoDiario";
@@ -6,10 +7,10 @@ import { calcularRachaSemanal, lunesDeEstaSemanaIso } from "@/lib/practica/racha
 import Header from "@/components/Header";
 import RetoClient, { type FilaRankingReto } from "@/components/reto/RetoClient";
 
-export const metadata: Metadata = {
-  title: "Reto semanal",
-  description: "45 preguntas de tus ciudades desbloqueadas, las mismas para todos, cada semana.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Reto.metadataSemanal");
+  return { title: t("title"), description: t("description") };
+}
 
 export default async function RetoSemanalPage() {
   const supabase = await createClient();

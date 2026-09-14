@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoAnatomia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
@@ -14,12 +15,13 @@ import { IconCheck, IconAnatomia } from "@/components/icons";
 import { NOMBRE_MODO_ANATOMIA, type ModoAnatomia } from "@/lib/practica/anatomia";
 import { COLOR_ANATOMIA } from "./colores";
 
-export const metadata: Metadata = {
-  title: "Anatomía",
-  description: "Huesos, músculos, órganos y sistema nervioso, con dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Anatomia");
+  return { title: t("nombreMundo"), description: t("home.metadata.description") };
+}
 
 export default async function AnatomiaHomePage() {
+  const t = await getTranslations("Anatomia");
   const supabase = await createClient();
   const { user, profile } = await requireMundoAnatomia(supabase, "/anatomia");
 
@@ -53,27 +55,24 @@ export default async function AnatomiaHomePage() {
       <FondoCursorMundo mundo="anatomia" />
       <Header autenticado />
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
-        <AvisoPrimeraVez
-          avisoKey="anatomia-intro"
-          texto="Huesos, músculos, órganos y sistema nervioso — con dificultad que se adapta a vos, igual que en los demás mundos."
-        >
+        <AvisoPrimeraVez avisoKey="anatomia-intro" texto={t("home.avisoIntro")}>
           <div>
             <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_ANATOMIA }}>
-              Anatomía
+              {t("nombreMundo")}
             </span>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">El cuerpo humano</h1>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("home.titulo")}</h1>
             <div className="mt-2">
-              <NivelMundoBadge nombreMundo="Anatomía" nivel={nivelMundo} colorHex={COLOR_ANATOMIA} />
+              <NivelMundoBadge nombreMundo={t("nombreMundo")} nivel={nivelMundo} colorHex={COLOR_ANATOMIA} />
             </div>
           </div>
         </AvisoPrimeraVez>
 
-        <NivelMundoProgreso nombreMundo="Anatomía" colorHex={COLOR_ANATOMIA} progreso={progresoMundo} />
+        <NivelMundoProgreso nombreMundo={t("nombreMundo")} colorHex={COLOR_ANATOMIA} progreso={progresoMundo} />
 
         {metaCumplidaHoy && (
           <div className="flex items-center gap-3 rounded-2xl bg-correcto/10 px-5 py-4">
             <IconCheck className="h-5 w-5 shrink-0 text-correcto" />
-            <p className="text-sm font-medium text-foreground">Ya cumpliste tu meta de hoy.</p>
+            <p className="text-sm font-medium text-foreground">{t("home.metaCumplida")}</p>
           </div>
         )}
 
@@ -90,8 +89,8 @@ export default async function AnatomiaHomePage() {
               <IconAnatomia className="h-5 w-5" />
             </span>
             <div>
-              <span className="font-display text-xl font-bold text-foreground">Practicar</span>
-              <p className="mt-1 text-sm text-texto-secundario">Huesos, músculos, órganos y sistema nervioso.</p>
+              <span className="font-display text-xl font-bold text-foreground">{t("home.practicarTitulo")}</span>
+              <p className="mt-1 text-sm text-texto-secundario">{t("home.practicarDescripcion")}</p>
             </div>
           </Link>
 
@@ -107,14 +106,14 @@ export default async function AnatomiaHomePage() {
               <IconAnatomia className="h-5 w-5" />
             </span>
             <div>
-              <span className="font-display text-xl font-bold text-foreground">Aprender</span>
-              <p className="mt-1 text-sm text-texto-secundario">Técnicas de memorización, un sistema a la vez.</p>
+              <span className="font-display text-xl font-bold text-foreground">{t("home.aprenderTitulo")}</span>
+              <p className="mt-1 text-sm text-texto-secundario">{t("home.aprenderDescripcion")}</p>
             </div>
           </Link>
         </section>
 
         <section className="flex flex-col gap-4">
-          <h2 className="font-display text-lg font-bold text-foreground">Sistemas</h2>
+          <h2 className="font-display text-lg font-bold text-foreground">{t("home.sistemasTitulo")}</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <TopicCard nombre={NOMBRE_MODO_ANATOMIA.oseo} Icono={IconAnatomia} badge={{ tipo: "nivel", nivel: nivelDe("oseo") }} colorHex={COLOR_ANATOMIA} />
             <TopicCard nombre={NOMBRE_MODO_ANATOMIA.muscular} Icono={IconAnatomia} badge={{ tipo: "nivel", nivel: nivelDe("muscular") }} colorHex={COLOR_ANATOMIA} />

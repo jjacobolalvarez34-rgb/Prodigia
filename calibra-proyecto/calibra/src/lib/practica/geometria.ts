@@ -80,13 +80,13 @@ function generarArea(nivel: number): ProblemaGeometria {
     const radio = randomInt(2, 6 + i);
     return {
       tipo: "area",
-      enunciado: `Área de un círculo de radio ${radio} (usá π ≈ 3.14)`,
+      enunciado: `Área de un círculo de radio ${radio} (usa π ≈ 3.14)`,
       respuesta: Math.round(3.14 * radio * radio * 100) / 100,
       tolerancia: 0.1,
     };
   }
   // Compuesta: rectángulo grande menos un rectángulo chico (esquina
-  // faltante) — "dividí en partes simples", el mismo truco que la
+  // faltante) — "divide en partes simples", el mismo truco que la
   // lección de Aprender.
   const baseGrande = randomInt(10, 18);
   const alturaGrande = randomInt(8, 14);

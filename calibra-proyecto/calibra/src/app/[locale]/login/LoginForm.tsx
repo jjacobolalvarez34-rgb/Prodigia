@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Boton from "@/components/Boton";
 import CampoPassword from "@/components/CampoPassword";
@@ -13,6 +14,7 @@ interface Props {
 
 export default function LoginForm({ next }: Props) {
   const router = useRouter();
+  const t = useTranslations("Auth.login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -25,7 +27,7 @@ export default function LoginForm({ next }: Props) {
     const supabase = createClient();
     const { error: authError } = await supabase.auth.signInAnonymously();
     if (authError) {
-      setError(mensajeErrorAuth(authError, "No pudimos crear una sesión de invitado. Probá de nuevo."));
+      setError(mensajeErrorAuth(authError, t("errorInvitado")));
       setEntrandoInvitado(false);
       return;
     }
@@ -42,7 +44,7 @@ export default function LoginForm({ next }: Props) {
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
 
     if (authError) {
-      setError(mensajeErrorAuth(authError, "No pudimos iniciar sesión. Probá de nuevo."));
+      setError(mensajeErrorAuth(authError, t("errorLogin")));
       setEnviando(false);
       return;
     }
@@ -58,7 +60,7 @@ export default function LoginForm({ next }: Props) {
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="tu@email.com"
+        placeholder={t("emailPlaceholder")}
         autoComplete="email"
         autoFocus
         className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
@@ -66,25 +68,25 @@ export default function LoginForm({ next }: Props) {
       <CampoPassword
         value={password}
         onChange={setPassword}
-        placeholder="Contraseña"
+        placeholder={t("passwordPlaceholder")}
         autoComplete="current-password"
       />
       <Boton type="submit" cargando={enviando} className="w-full">
-        {enviando ? "Entrando..." : "Iniciar sesión"}
+        {enviando ? t("entrando") : t("botonIniciarSesion")}
       </Boton>
       {error && <p className="text-sm text-error">{error}</p>}
 
       <div className="my-1 flex items-center gap-3 text-xs text-texto-secundario">
         <span className="h-px flex-1 bg-border" />
-        o
+        {t("separadorO")}
         <span className="h-px flex-1 bg-border" />
       </div>
 
       <Boton type="button" variante="secundario" onClick={handleInvitado} cargando={entrandoInvitado} className="w-full">
-        {entrandoInvitado ? "Entrando..." : "Entrar como invitado"}
+        {entrandoInvitado ? t("entrando") : t("botonInvitado")}
       </Boton>
       <p className="text-center text-xs text-texto-secundario">
-        Practicá sin crear cuenta. Podés guardar tu progreso después.
+        {t("practicaSinCuenta")}
       </p>
     </form>
   );

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { FiguraRitmica } from "@/lib/practica/melodia";
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 // corchete). Nomenclatura estándar de notación musical, no una forma
 // inventada.
 export default function FiguraRitmicaIcono({ figura, colorHex = "#B8860B", className = "" }: Props) {
+  const t = useTranslations("Melodia.figuraRitmica");
   const hueca = figura === "redonda" || figura === "blanca";
   const conPlica = figura !== "redonda";
   const conCorchete = figura === "corchea";
@@ -24,7 +26,7 @@ export default function FiguraRitmicaIcono({ figura, colorHex = "#B8860B", class
   const yPlicaTope = 14;
 
   return (
-    <svg viewBox="0 0 60 76" width={64} height={80} className={className} role="img" aria-label={`Figura rítmica: ${figura}`}>
+    <svg viewBox="0 0 60 76" width={64} height={80} className={className} role="img" aria-label={t("ariaLabel", { figura })}>
       {conPlica && <line x1={xPlica} y1={cy} x2={xPlica} y2={yPlicaTope} stroke={colorHex} strokeWidth={2.4} strokeLinecap="round" />}
       {conCorchete && (
         <path

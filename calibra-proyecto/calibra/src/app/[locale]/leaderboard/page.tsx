@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
@@ -6,12 +7,13 @@ import CountdownSemanal from "@/components/CountdownSemanal";
 import type { FilaRanking } from "./Podio";
 import LeaderboardClient from "./LeaderboardClient";
 
-export const metadata: Metadata = {
-  title: "Ranking",
-  description: "Ranking semanal de Experiencia entre jugadores de Prodigia.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Leaderboard.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 export default async function LeaderboardPage() {
+  const t = await getTranslations("Leaderboard");
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/leaderboard");
 
@@ -27,10 +29,9 @@ export default async function LeaderboardPage() {
       <Header autenticado invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Ranking semanal</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
           <p className="mt-1 text-sm text-texto-secundario">
-            Experiencia ganada esta semana — es temporal, se reinicia solo cada lunes. No tiene nada
-            que ver con tus Chispas totales, esas no bajan nunca.
+            {t("descripcion")}
           </p>
           <CountdownSemanal className="mt-2" />
         </div>

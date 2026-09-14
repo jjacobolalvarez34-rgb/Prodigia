@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Boton from "@/components/Boton";
 import Avatar from "@/components/Avatar";
@@ -13,7 +14,6 @@ import CountdownSemanal from "@/components/CountdownSemanal";
 
 type Rol = "fundador" | "guia" | "miembro";
 
-const NOMBRE_ROL: Record<Rol, string> = { fundador: "Fundador", guia: "Guía", miembro: "Miembro" };
 const COSTO_CREAR_CLAN = 5000;
 
 export interface MiClan {
@@ -101,6 +101,7 @@ export default function ClanesClient({
   miUserId,
   misChispas,
 }: Props) {
+  const t = useTranslations("Clanes");
   const [miClan, setMiClan] = useState(miClanInicial);
   const [miembros, setMiembros] = useState(miembrosIniciales);
   const [mision, setMision] = useState(misionInicial);
@@ -135,7 +136,7 @@ export default function ClanesClient({
   }
 
   async function salirDelClan() {
-    if (!confirm("¿Seguro que quieres salir de tu clan?")) return;
+    if (!confirm(t("confirmarSalir"))) return;
     setCargando(true);
     setError(null);
     const supabase = createClient();
@@ -169,10 +170,8 @@ export default function ClanesClient({
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Clanes</h1>
-        <p className="mt-1 text-sm text-texto-secundario">
-          Sumate a un grupo, cumplan misiones semanales en equipo y compitan en la guerra de clanes.
-        </p>
+        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
+        <p className="mt-1 text-sm text-texto-secundario">{t("subtitulo")}</p>
       </div>
 
       {error && <p className="text-sm text-error">{error}</p>}
@@ -195,12 +194,12 @@ export default function ClanesClient({
 
       <section className="flex flex-col gap-3">
         <div>
-          <h2 className="font-display text-lg font-bold text-foreground">Guerra de clanes — esta semana</h2>
+          <h2 className="font-display text-lg font-bold text-foreground">{t("guerraSemana")}</h2>
           <CountdownSemanal className="mt-0.5" />
         </div>
         {ranking.length === 0 ? (
           <p className="rounded-xl border border-border bg-surface px-4 py-6 text-center text-sm text-texto-secundario">
-            Todavía ningún clan sumó Experiencia esta semana — sé el primero.
+            {t("rankingVacio")}
           </p>
         ) : (
           <div className="flex flex-col gap-2">
@@ -212,9 +211,9 @@ export default function ClanesClient({
                   <p className="truncate text-sm font-semibold text-foreground">
                     {c.nombre} {c.tag && <span className="text-texto-secundario">[{c.tag}]</span>}
                   </p>
-                  <p className="text-xs text-texto-secundario">{c.cantidad_miembros} miembros</p>
+                  <p className="text-xs text-texto-secundario">{t("miembrosCantidad", { n: c.cantidad_miembros })}</p>
                 </div>
-                <span className="font-mono text-sm font-bold text-foreground">{c.xp_semana} Exp</span>
+                <span className="font-mono text-sm font-bold text-foreground">{t("expSemana", { n: c.xp_semana })}</span>
               </div>
             ))}
           </div>
@@ -245,6 +244,7 @@ function MiClanView({
   onImagenSubida: (url: string) => void;
   cargando: boolean;
 }) {
+  const t = useTranslations("Clanes");
   const progresoPct = mision ? Math.min(100, Math.round((mision.progreso_actual / mision.objetivo_cantidad) * 100)) : 0;
   const soyFundador = clan.rol === "fundador";
 
@@ -295,11 +295,9 @@ function MiClanView({
           </p>
           <p className="mt-1 text-sm text-texto-secundario">{clan.descripcion}</p>
           <p className="mt-1 text-xs text-texto-secundario">
-            Nivel {clan.nivel_clan} · {clan.cantidad_miembros} {clan.cantidad_miembros === 1 ? "miembro" : "miembros"} · Sos{" "}
-            {NOMBRE_ROL[clan.rol]}
-            {clan.guerras_ganadas > 0 && (
-              <> · 🏆 {clan.guerras_ganadas} {clan.guerras_ganadas === 1 ? "guerra ganada" : "guerras ganadas"}</>
-            )}
+            {t("nivelLabel", { nivel: clan.nivel_clan })} · {t("miembrosCantidad", { n: clan.cantidad_miembros })} ·{" "}
+            {t("esRol", { rol: t(`roles.${clan.rol}`) })}
+            {clan.guerras_ganadas > 0 && <> · 🏆 {t("guerraGanada", { n: clan.guerras_ganadas })}</>}
           </p>
           {umbralesNivelClan && (
             <div className="mt-2.5 flex flex-col gap-1">
@@ -310,7 +308,10 @@ function MiClanView({
                 />
               </div>
               <span className="text-[10px] text-texto-secundario">
-                {Math.max(0, umbralesNivelClan.siguiente - clan.xp_acumulado_historico).toLocaleString()} Chispas para nivel {clan.nivel_clan + 1}
+                {t("chispasParaNivel", {
+                  n: Math.max(0, umbralesNivelClan.siguiente - clan.xp_acumulado_historico).toLocaleString(),
+                  siguiente: clan.nivel_clan + 1,
+                })}
               </span>
             </div>
           )}
@@ -323,16 +324,16 @@ function MiClanView({
       </div>
 
       <Link href="/clanes/mundo" className="w-fit text-xs font-semibold text-primario hover:underline">
-        🗺️ Ver el Mundo de Clanes
+        {t("verMundo")}
       </Link>
 
       {rival && (
         <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-5 py-4">
           <div className="flex-1 text-center">
-            <p className="text-xs uppercase tracking-wide text-texto-secundario">Tu clan</p>
+            <p className="text-xs uppercase tracking-wide text-texto-secundario">{t("tuClan")}</p>
             <p className="font-mono text-lg font-bold text-foreground">{rival.mi_xp_semana}</p>
           </div>
-          <span className="text-xs font-semibold uppercase text-texto-secundario">vs</span>
+          <span className="text-xs font-semibold uppercase text-texto-secundario">{t("vs")}</span>
           <div className="flex-1 text-center">
             <p className="truncate text-xs uppercase tracking-wide text-texto-secundario">
               {rival.nombre} {rival.tag && `[${rival.tag}]`}
@@ -345,11 +346,11 @@ function MiClanView({
       {mision && (
         <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground">Misión de la semana</h3>
-            <span className="text-xs text-texto-secundario">+{mision.recompensa_chispas} Chispas para todos</span>
+            <h3 className="text-sm font-semibold text-foreground">{t("misionTitulo")}</h3>
+            <span className="text-xs text-texto-secundario">{t("misionRecompensa", { n: mision.recompensa_chispas })}</span>
           </div>
           <p className="text-xs text-texto-secundario">
-            Resolver {mision.objetivo_cantidad} problemas entre todo el clan — {mision.progreso_actual}/{mision.objetivo_cantidad}
+            {t("misionDescripcion", { objetivo: mision.objetivo_cantidad, progreso: mision.progreso_actual })}
           </p>
           <div className="h-2.5 w-full overflow-hidden rounded-full bg-foreground/10">
             <div
@@ -357,36 +358,36 @@ function MiClanView({
               style={{ width: `${progresoPct}%`, background: mision.completada ? "var(--correcto)" : clan.color_estandarte }}
             />
           </div>
-          {mision.completada && <p className="text-xs font-semibold text-correcto">¡Misión cumplida! Chispas repartidas.</p>}
+          {mision.completada && <p className="text-xs font-semibold text-correcto">{t("misionCumplida")}</p>}
         </div>
       )}
 
       <ChatDeClan clanId={clan.clan_id} miUserId={miUserId} />
 
       <div className="flex flex-col gap-2">
-        <h3 className="text-sm font-semibold text-foreground">Miembros</h3>
+        <h3 className="text-sm font-semibold text-foreground">{t("miembrosTitulo")}</h3>
         {miembros.map((m) => (
           <div key={m.user_id} className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-2.5">
             <Link href={`/perfil/${m.user_id}`} className="flex min-w-0 flex-1 items-center gap-3 hover:opacity-80">
               <Avatar url={m.avatar_url} nombre={m.display_name} size={32} />
               <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
-                {m.display_name ?? "Jugador"}
+                {m.display_name ?? t("jugadorDefault")}
                 {m.rol !== "miembro" && (
                   <span className={`ml-1.5 text-xs ${m.rol === "fundador" ? "text-logro" : "text-primario"}`}>
-                    {m.rol === "fundador" ? "★ Fundador" : "Guía"}
+                    {m.rol === "fundador" ? t("fundadorBadge") : t("guiaBadge")}
                   </span>
                 )}
               </span>
             </Link>
-            <span className="shrink-0 font-mono text-xs text-texto-secundario" title="Aporte histórico al clan">
-              {m.xp_aportado} Exp aportada
+            <span className="shrink-0 font-mono text-xs text-texto-secundario" title={t("aporteHistoricoTitle")}>
+              {t("expAportada", { n: m.xp_aportado })}
             </span>
             {soyFundador && m.user_id !== miUserId && (
               <button
                 onClick={() => onCambiarRol(m.user_id, m.rol === "guia" ? "miembro" : "guia")}
                 className="shrink-0 rounded-lg border border-border px-2 py-1 text-[10px] font-medium text-texto-secundario hover:text-foreground"
               >
-                {m.rol === "guia" ? "Bajar a Miembro" : "Nombrar Guía"}
+                {m.rol === "guia" ? t("bajarAMiembro") : t("nombrarGuia")}
               </button>
             )}
           </div>
@@ -398,7 +399,7 @@ function MiClanView({
         disabled={cargando}
         className="w-fit text-xs font-medium text-texto-secundario hover:text-error disabled:opacity-50"
       >
-        Salir del clan
+        {t("salirDelClan")}
       </button>
     </section>
   );
@@ -413,6 +414,7 @@ function SinClanView({
   onCreado: () => void;
   misChispas: number;
 }) {
+  const t = useTranslations("Clanes");
   const [consulta, setConsulta] = useState("");
   const [resultados, setResultados] = useState<ClanBusqueda[]>([]);
   const [buscando, setBuscando] = useState(false);
@@ -450,11 +452,11 @@ function SinClanView({
 
   async function crear() {
     if (nombre.trim().length < 3) {
-      setError("El nombre necesita al menos 3 caracteres.");
+      setError(t("sinClan.errorNombreCorto"));
       return;
     }
     if (misChispas < COSTO_CREAR_CLAN) {
-      setError(`Te faltan Chispas: crear un clan cuesta ${COSTO_CREAR_CLAN} (tienes ${misChispas}).`);
+      setError(t("sinClan.errorFaltanChispas", { costo: COSTO_CREAR_CLAN, tienes: misChispas }));
       return;
     }
     setCreando(true);
@@ -477,20 +479,20 @@ function SinClanView({
   return (
     <section className="flex flex-col gap-4">
       <Link href="/clanes/mundo" className="w-fit text-xs font-semibold text-primario hover:underline">
-        🗺️ Ver el Mundo de Clanes
+        {t("verMundo")}
       </Link>
       <div className="flex flex-col gap-3">
-        <p className="text-sm font-semibold text-foreground">Buscar un clan</p>
+        <p className="text-sm font-semibold text-foreground">{t("sinClan.buscarTitulo")}</p>
         <input
           value={consulta}
           onChange={(e) => buscar(e.target.value)}
-          placeholder="Buscar clan por nombre..."
+          placeholder={t("sinClan.buscarPlaceholder")}
           className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-foreground outline-none focus:border-primario"
         />
         {error && <p className="text-sm text-error">{error}</p>}
-        {buscando && <p className="text-xs text-texto-secundario">Buscando…</p>}
+        {buscando && <p className="text-xs text-texto-secundario">{t("sinClan.buscando")}</p>}
         {!buscando && consulta.trim().length > 0 && resultados.length === 0 && (
-          <p className="text-xs text-texto-secundario">No encontramos ningún clan con ese nombre.</p>
+          <p className="text-xs text-texto-secundario">{t("sinClan.sinResultados")}</p>
         )}
         {resultados.map((c) => (
           <div key={c.id} className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3">
@@ -500,11 +502,11 @@ function SinClanView({
                 {c.nombre} {c.tag && <span className="text-texto-secundario">[{c.tag}]</span>}
               </p>
               <p className="truncate text-xs text-texto-secundario">
-                {c.cantidad_miembros} miembros · {c.descripcion}
+                {t("miembrosCantidad", { n: c.cantidad_miembros })} · {c.descripcion}
               </p>
             </div>
             <Boton onClick={() => unirse(c.id)} cargando={uniendoId === c.id} className="shrink-0 px-4 py-2 text-xs">
-              Unirme
+              {t("sinClan.unirme")}
             </Boton>
           </div>
         ))}
@@ -516,7 +518,8 @@ function SinClanView({
           className="flex w-full items-center justify-between px-5 py-4 text-left"
         >
           <span className="text-sm font-semibold text-foreground">
-            Crear un clan <span className="font-normal text-texto-secundario">— {COSTO_CREAR_CLAN} Chispas</span>
+            {t("sinClan.crearClanTitulo")}{" "}
+            <span className="font-normal text-texto-secundario">{t("sinClan.costoChispas", { n: COSTO_CREAR_CLAN })}</span>
           </span>
           <span className="text-texto-secundario">{crearAbierto ? "−" : "+"}</span>
         </button>
@@ -525,19 +528,19 @@ function SinClanView({
             <input
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
-              placeholder="Nombre del clan"
+              placeholder={t("sinClan.nombrePlaceholder")}
               className="rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primario"
             />
             <input
               value={tag}
               onChange={(e) => setTag(e.target.value.toUpperCase().slice(0, 5))}
-              placeholder="Tag corto (opcional, ej. PRD)"
+              placeholder={t("sinClan.tagPlaceholder")}
               className="w-40 rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primario"
             />
             <textarea
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
-              placeholder="Descripción (opcional)"
+              placeholder={t("sinClan.descripcionPlaceholder")}
               rows={2}
               className="rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primario"
             />
@@ -553,15 +556,16 @@ function SinClanView({
                     transform: color === c ? "scale(1.1)" : undefined,
                     boxShadow: color === c ? `0 0 0 2px var(--surface), 0 0 0 4px ${c}` : undefined,
                   }}
-                  aria-label={`Elegir color ${c}`}
+                  aria-label={t("sinClan.elegirColor", { color: c })}
                 />
               ))}
             </div>
             <p className="text-xs text-texto-secundario">
-              Tenés {misChispas} Chispas {misChispas < COSTO_CREAR_CLAN && "— no te alcanza todavía"}
+              {t("sinClan.tienesChispas", { n: misChispas })}{" "}
+              {misChispas < COSTO_CREAR_CLAN && t("sinClan.noAlcanza")}
             </p>
             <Boton onClick={crear} cargando={creando} disabled={misChispas < COSTO_CREAR_CLAN} className="w-fit">
-              Crear clan
+              {t("sinClan.crearClanBoton")}
             </Boton>
           </div>
         )}

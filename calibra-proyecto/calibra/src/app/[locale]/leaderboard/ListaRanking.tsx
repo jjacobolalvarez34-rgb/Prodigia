@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import Avatar from "@/components/Avatar";
 import RangoBadge from "@/components/RangoBadge";
@@ -24,6 +25,7 @@ interface Props {
 // estado (buscador, filtro en vivo) que un server component no puede
 // tener.
 export default function ListaRanking({ resto, miUserId, colorAcento = "#FFC53D" }: Props) {
+  const t = useTranslations("Leaderboard");
   const [buscadorAbierto, setBuscadorAbierto] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -48,7 +50,7 @@ export default function ListaRanking({ resto, miUserId, colorAcento = "#FFC53D" 
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-display text-sm font-semibold uppercase tracking-wide text-texto-secundario">
-          Resto del ranking
+          {t("resto.titulo")}
         </h2>
         <div className="flex items-center gap-2">
           {estoyFueraDelPodio && (
@@ -57,7 +59,7 @@ export default function ListaRanking({ resto, miUserId, colorAcento = "#FFC53D" 
               onClick={irAMiPosicion}
               className="whitespace-nowrap rounded-full border border-primario/30 bg-primario/5 px-3 py-1.5 text-xs font-medium text-primario transition-colors hover:bg-primario/10"
             >
-              Ir a mi posición
+              {t("resto.irAMiPosicion")}
             </button>
           )}
           <div className="flex items-center">
@@ -72,7 +74,7 @@ export default function ListaRanking({ resto, miUserId, colorAcento = "#FFC53D" 
                   autoFocus
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Buscar por nombre..."
+                  placeholder={t("resto.buscarPlaceholder")}
                   className="mr-1 overflow-hidden rounded-full border border-border bg-background px-3 py-1.5 text-sm text-foreground outline-none focus:border-primario"
                 />
               )}
@@ -80,7 +82,7 @@ export default function ListaRanking({ resto, miUserId, colorAcento = "#FFC53D" 
             <button
               type="button"
               onClick={toggleBuscador}
-              aria-label={buscadorAbierto ? "Cerrar búsqueda" : "Buscar por nombre"}
+              aria-label={buscadorAbierto ? t("resto.cerrarBusqueda") : t("resto.buscarAriaLabel")}
               aria-pressed={buscadorAbierto}
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-texto-secundario transition-colors hover:bg-surface-2 hover:text-foreground"
             >
@@ -92,11 +94,11 @@ export default function ListaRanking({ resto, miUserId, colorAcento = "#FFC53D" 
 
       {resto.length === 0 ? (
         <p className="rounded-xl border border-border bg-surface px-4 py-6 text-center text-sm text-texto-secundario">
-          Todavía no hay nadie más en el ranking de esta semana.
+          {t("resto.vacio")}
         </p>
       ) : filtrado.length === 0 ? (
         <p className="rounded-xl border border-border bg-surface px-4 py-6 text-center text-sm text-texto-secundario">
-          Nadie con ese nombre en el ranking de esta semana.
+          {t("resto.sinResultados")}
         </p>
       ) : (
         <ol className="flex flex-col gap-2">
@@ -126,6 +128,7 @@ function FilaRankingRow({
   esUsuarioActual: boolean;
   colorAcento: string;
 }) {
+  const t = useTranslations("Leaderboard");
   return (
     <li
       id={`fila-ranking-${fila.user_id}`}
@@ -150,14 +153,14 @@ function FilaRankingRow({
               relativos al viewport, no al alto del elemento — ya dan un
               rango de scroll generoso incluso en una fila chica). */}
           <ScrollFloat stagger={0.015} animationDuration={0.7} textClassName={FUENTE_NOMBRE_CLASS[fila.fuente_nombre ?? "default"]}>
-            {fila.display_name ?? "Jugador"}
+            {fila.display_name ?? t("jugadorPorDefecto")}
           </ScrollFloat>
         </span>
         <RangoBadge elo={fila.elo_rating} tituloNombre={fila.titulo_nombre} size="sm" className="shrink-0" />
       </Link>
       <span className="shrink-0 font-mono font-semibold" style={{ color: colorAcento }}>
         <ScrollFloat stagger={0.02} animationDuration={0.7}>
-          {`${fila.xp_semana} Exp`}
+          {t("expValor", { n: fila.xp_semana })}
         </ScrollFloat>
       </span>
     </li>

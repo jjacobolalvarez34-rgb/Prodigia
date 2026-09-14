@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoHistoria } from "@/lib/auth/guard";
 import Header from "@/components/Header";
@@ -13,14 +14,15 @@ import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { IconCheck, IconHistoria } from "@/components/icons";
 import { COLOR_HISTORIA } from "./colores";
 
-export const metadata: Metadata = {
-  title: "Historia",
-  description: "Cronología, personajes, causa y efecto, y fechas exactas, con dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Historia.metadata");
+  return { title: "Historia", description: t("description") };
+}
 
 const TIPOS_HISTORIA = ["historia_cronologia", "historia_personajes", "historia_causaefecto", "historia_fechas"];
 
 export default async function HistoriaHomePage() {
+  const t = await getTranslations("Historia");
   const supabase = await createClient();
   const { user, profile } = await requireMundoHistoria(supabase, "/historia");
 
@@ -50,15 +52,12 @@ export default async function HistoriaHomePage() {
       <FondoCursorMundo mundo="historia" />
       <Header autenticado />
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
-        <AvisoPrimeraVez
-          avisoKey="historia-intro"
-          texto="Cronología, personajes, causa y efecto, y fechas exactas — hechos reales de consenso histórico amplio, con dificultad que se adapta a vos."
-        >
+        <AvisoPrimeraVez avisoKey="historia-intro" texto={t("aviso")}>
           <div>
             <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_HISTORIA }}>
               Historia
             </span>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Hechos, fechas y figuras</h1>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
             <div className="mt-2">
               <NivelMundoBadge nombreMundo="Historia" nivel={nivelMundo} colorHex={COLOR_HISTORIA} />
             </div>
@@ -70,7 +69,7 @@ export default async function HistoriaHomePage() {
         {metaCumplidaHoy && (
           <div className="flex items-center gap-3 rounded-2xl bg-correcto/10 px-5 py-4">
             <IconCheck className="h-5 w-5 shrink-0 text-correcto" />
-            <p className="text-sm font-medium text-foreground">Ya cumpliste tu meta de hoy.</p>
+            <p className="text-sm font-medium text-foreground">{t("metaCumplida")}</p>
           </div>
         )}
 
@@ -87,8 +86,8 @@ export default async function HistoriaHomePage() {
               <IconHistoria className="h-5 w-5" />
             </span>
             <div>
-              <span className="font-display text-xl font-bold text-foreground">Practicar</span>
-              <p className="mt-1 text-sm text-texto-secundario">Cronología, personajes, causa/efecto y fechas.</p>
+              <span className="font-display text-xl font-bold text-foreground">{t("practicar")}</span>
+              <p className="mt-1 text-sm text-texto-secundario">{t("practicarDescripcion")}</p>
             </div>
           </Link>
 
@@ -104,19 +103,19 @@ export default async function HistoriaHomePage() {
               <IconHistoria className="h-5 w-5" />
             </span>
             <div>
-              <span className="font-display text-xl font-bold text-foreground">Aprender</span>
-              <p className="mt-1 text-sm text-texto-secundario">Técnicas de memoria para fechas y cronología.</p>
+              <span className="font-display text-xl font-bold text-foreground">{t("aprender")}</span>
+              <p className="mt-1 text-sm text-texto-secundario">{t("aprenderDescripcion")}</p>
             </div>
           </Link>
         </section>
 
         <section className="flex flex-col gap-4">
-          <h2 className="font-display text-lg font-bold text-foreground">Modos</h2>
+          <h2 className="font-display text-lg font-bold text-foreground">{t("modosTitulo")}</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            <TopicCard nombre="Cronología" Icono={IconHistoria} badge={{ tipo: "nivel", nivel: nivelDe("historia_cronologia") }} colorHex={COLOR_HISTORIA} />
-            <TopicCard nombre="Personajes" Icono={IconHistoria} badge={{ tipo: "nivel", nivel: nivelDe("historia_personajes") }} colorHex={COLOR_HISTORIA} />
-            <TopicCard nombre="Causa y efecto" Icono={IconHistoria} badge={{ tipo: "nivel", nivel: nivelDe("historia_causaefecto") }} colorHex={COLOR_HISTORIA} />
-            <TopicCard nombre="Fechas exactas" Icono={IconHistoria} badge={{ tipo: "nivel", nivel: nivelDe("historia_fechas") }} colorHex={COLOR_HISTORIA} />
+            <TopicCard nombre={t("modos.cronologia")} Icono={IconHistoria} badge={{ tipo: "nivel", nivel: nivelDe("historia_cronologia") }} colorHex={COLOR_HISTORIA} />
+            <TopicCard nombre={t("modos.personajes")} Icono={IconHistoria} badge={{ tipo: "nivel", nivel: nivelDe("historia_personajes") }} colorHex={COLOR_HISTORIA} />
+            <TopicCard nombre={t("modos.causaefecto")} Icono={IconHistoria} badge={{ tipo: "nivel", nivel: nivelDe("historia_causaefecto") }} colorHex={COLOR_HISTORIA} />
+            <TopicCard nombre={t("modos.fechas")} Icono={IconHistoria} badge={{ tipo: "nivel", nivel: nivelDe("historia_fechas") }} colorHex={COLOR_HISTORIA} />
           </div>
         </section>
       </div>

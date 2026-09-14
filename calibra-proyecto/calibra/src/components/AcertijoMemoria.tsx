@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 interface Props {
   secuencia: string[];
@@ -18,6 +19,7 @@ const MS_POR_ITEM = 550;
 // timeout, no de forma síncrona en el cuerpo del efecto) recién ahí
 // dispara que el runner revele la pregunta y oculte esto.
 export default function AcertijoMemoria({ secuencia, colorHex, onListo }: Props) {
+  const t = useTranslations("Componentes");
   const duracionMs = MS_BASE + secuencia.length * MS_POR_ITEM;
 
   useEffect(() => {
@@ -28,7 +30,7 @@ export default function AcertijoMemoria({ secuencia, colorHex, onListo }: Props)
 
   return (
     <div className="flex w-full flex-col items-center gap-6">
-      <p className="text-sm font-medium text-texto-secundario">Memorizá esta secuencia...</p>
+      <p className="text-sm font-medium text-texto-secundario">{t("acertijoMemoria.memorizando")}</p>
       <div className="flex flex-wrap items-center justify-center gap-2">
         {secuencia.map((item, i) => (
           <motion.span

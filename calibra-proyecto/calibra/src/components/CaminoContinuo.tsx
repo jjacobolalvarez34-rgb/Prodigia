@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { IconCheck, IconCandado } from "@/components/icons";
 
 const OFFSETS = [0, 56, 88, 56, 0, -56, -88, -56];
@@ -127,13 +128,14 @@ function Nodo({
 }
 
 function NodoProximamente() {
+  const t = useTranslations("Componentes");
   return (
     <div className="flex flex-col items-center gap-2 py-2">
       <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-border bg-surface text-texto-secundario">
         <span className="text-xl">···</span>
       </div>
       <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-texto-secundario">
-        Próximamente
+        {t("caminoContinuo.proximamente")}
       </span>
     </div>
   );

@@ -17,7 +17,7 @@ interface Params {
 
 // Fase 6: progreso del rival EN VIVO durante un duelo — no confundir con
 // el "fantasma" de Numeria (SprintRunner.tsx), que reproduce respuestas
-// YA guardadas de un rival que terminó antes que vos. Esto es para
+// YA guardadas de un rival que terminó antes que tú. Esto es para
 // cuando los dos están jugando al mismo tiempo: usa el canal `duelo:<id>:vivo`
 // (topic PROPIO, ver comentario en el channel() — supabase.channel() reusa
 // instancias del mismo topic y eso rompe si otro hook comparte el nombre),

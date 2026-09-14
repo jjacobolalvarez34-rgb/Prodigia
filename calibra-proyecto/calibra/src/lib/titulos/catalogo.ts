@@ -46,10 +46,10 @@ export const CATALOGO_TITULOS: TituloCatalogo[] = [
   { slug: "maestro-historia", nombre: "Maestro de Historia", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "historia" } },
 
   // ---------- por volumen de juego (partidas ≈ problemas resueltos / 10) ----------
-  { slug: "partidas-10", nombre: "Recién Empezás", categoria: "volumen", criterio: { tipo: "partidas_totales", valor: 10 } },
+  { slug: "partidas-10", nombre: "Recién Empiezas", categoria: "volumen", criterio: { tipo: "partidas_totales", valor: 10 } },
   { slug: "partidas-50", nombre: "Agarrando la Mano", categoria: "volumen", criterio: { tipo: "partidas_totales", valor: 50 } },
   { slug: "partidas-100", nombre: "De la Casa", categoria: "volumen", criterio: { tipo: "partidas_totales", valor: 100 } },
-  { slug: "partidas-500", nombre: "Ya Sos de Acá", categoria: "volumen", criterio: { tipo: "partidas_totales", valor: 500 } },
+  { slug: "partidas-500", nombre: "Ya Eres de Acá", categoria: "volumen", criterio: { tipo: "partidas_totales", valor: 500 } },
   { slug: "partidas-1000", nombre: "Vicio Sano", categoria: "volumen", criterio: { tipo: "partidas_totales", valor: 1000 } },
   { slug: "partidas-5000", nombre: "Leyenda Viviente", categoria: "volumen", criterio: { tipo: "partidas_totales", valor: 5000 } },
 

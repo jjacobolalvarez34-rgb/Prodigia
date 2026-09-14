@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoHistoria } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import HistoriaPracticaClient from "../../HistoriaPracticaClient";
 import { cargarDatosPracticaHistoria } from "@/lib/historia/cargarPractica";
 
-export const metadata: Metadata = {
-  title: "Practicar Fechas exactas",
-  description: "Año o década precisa de eventos menos conocidos — el modo más difícil.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Historia.practicaPages.fechas.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 interface Props {
   searchParams: Promise<{ duelo?: string }>;

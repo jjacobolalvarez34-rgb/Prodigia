@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo, useSyncExternalStore } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { crearSnapshotProgreso } from "@/lib/progresoReto";
 import type { PreguntaRetoDiario, MundoRetoDiario } from "@/lib/retoDiario";
@@ -47,20 +48,10 @@ const COLOR_MUNDO: Record<MundoRetoDiario, string> = {
   trigonometria: "#84CC16",
   historia: "#A0522D",
 };
-const NOMBRE_MUNDO: Record<MundoRetoDiario, string> = {
-  numeria: "Numeria",
-  enigmia: "Enigmia",
-  geografia: "Geografía",
-  quimia: "Quimia",
-  anatomia: "Anatomía",
-  melodia: "Melodía",
-  trigonometria: "Trigonometría",
-  historia: "Historia",
-};
 
-const TEXTO_TIPO: Record<TipoReto, { etiqueta: string; periodo: string; endpoint: string; volver: string }> = {
-  diario: { etiqueta: "Reto diario", periodo: "hoy", endpoint: "/api/reto-diario/completar", volver: "mañana" },
-  semanal: { etiqueta: "Reto semanal", periodo: "esta semana", endpoint: "/api/reto-semanal/completar", volver: "la semana que viene" },
+const ENDPOINT_TIPO: Record<TipoReto, string> = {
+  diario: "/api/reto-diario/completar",
+  semanal: "/api/reto-semanal/completar",
 };
 
 // Rediseño 2026-08-31: componente único para reto diario (5 preguntas)
@@ -83,6 +74,21 @@ function subscribeNoop() {
 }
 
 export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha, miUserId, rankingInicial }: Props) {
+  const t = useTranslations("Reto");
+  const NOMBRE_MUNDO: Record<MundoRetoDiario, string> = {
+    numeria: t("mundos.numeria"),
+    enigmia: t("mundos.enigmia"),
+    geografia: t("mundos.geografia"),
+    quimia: t("mundos.quimia"),
+    anatomia: t("mundos.anatomia"),
+    melodia: t("mundos.melodia"),
+    trigonometria: t("mundos.trigonometria"),
+    historia: t("mundos.historia"),
+  };
+  const TEXTO_TIPO: Record<TipoReto, { etiqueta: string; periodo: string; endpoint: string; volver: string }> = {
+    diario: { etiqueta: t("etiquetaDiario"), periodo: t("periodoDiario"), endpoint: ENDPOINT_TIPO.diario, volver: t("volverDiario") },
+    semanal: { etiqueta: t("etiquetaSemanal"), periodo: t("periodoSemanal"), endpoint: ENDPOINT_TIPO.semanal, volver: t("volverSemanal") },
+  };
   const [fase, setFase] = useState<Fase>(yaCompletado ? "resumen" : "intro");
   const [indice, setIndice] = useState(0);
   const [seleccion, setSeleccion] = useState<string | null>(null);
@@ -189,20 +195,19 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
                 {texto.etiqueta}
               </span>
               <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">
-                {total} preguntas, las mismas para todos {texto.periodo}
+                {t("totalPreguntas", { total, periodo: texto.periodo })}
               </h1>
               <p className="mt-2 text-sm text-texto-secundario">
-                Repartidas entre tus ciudades desbloqueadas, al azar. Completalo para sumar Chispas extra y
-                estirar tu racha.
+                {t("introDescripcion")}
               </p>
               {racha > 0 && (
                 <p className="mt-3 font-mono text-sm font-semibold text-racha">
-                  🔥 {racha} {tipo === "diario" ? (racha === 1 ? "día" : "días") : racha === 1 ? "semana" : "semanas"} seguidas
+                  🔥 {tipo === "diario" ? t("rachaDiaria", { racha }) : t("rachaSemanal", { racha })}
                 </p>
               )}
             </div>
             <Boton onClick={() => setFase("jugando")} className="py-4">
-              Empezar
+              {t("empezar")}
             </Boton>
           </motion.div>
         )}
@@ -281,25 +286,25 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
             <LogroBanner logros={logrosNuevos} />
             <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
               {yaCompletado || resultado.puntosBonus === 0
-                ? `Ya completaste el reto ${tipo === "diario" ? "de hoy" : "de esta semana"}`
-                : "Ahí quedó."}
+                ? (tipo === "diario" ? t("yaCompletadoDiario") : t("yaCompletadoSemanal"))
+                : t("ahiQuedo")}
             </h1>
             <p className="font-mono text-4xl font-bold text-logro">
               {resultado.correctos}/{total}
             </p>
             {resultado.puntosBonus > 0 && (
-              <p className="text-sm text-texto-secundario">+{resultado.puntosBonus} Chispas de bonus</p>
+              <p className="text-sm text-texto-secundario">{t("bonusChispas", { n: resultado.puntosBonus })}</p>
             )}
             {racha > 0 && (
               <p className="font-mono text-sm font-semibold text-racha">
-                🔥 {racha} {tipo === "diario" ? (racha === 1 ? "día" : "días") : racha === 1 ? "semana" : "semanas"} seguidas
+                🔥 {tipo === "diario" ? t("rachaDiaria", { racha }) : t("rachaSemanal", { racha })}
               </p>
             )}
 
             {ranking.length > 0 && (
               <div className="w-full rounded-2xl border border-border bg-surface px-4 py-4 text-left">
                 <p className="mb-3 text-center text-xs font-medium uppercase tracking-wide text-texto-secundario">
-                  Quién más completó {texto.periodo}
+                  {t("quienMasCompleto", { periodo: texto.periodo })}
                 </p>
                 <ol className="flex flex-col gap-2">
                   {ranking.map((fila, i) => (
@@ -319,18 +324,18 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
               </div>
             )}
 
-            <p className="text-sm text-texto-secundario">Volvé {texto.volver} por el próximo.</p>
+            <p className="text-sm text-texto-secundario">{t("vuelvePorProximo", { volver: texto.volver })}</p>
             <Link
               href="/"
               className="w-full rounded-2xl px-6 py-4 font-display font-semibold text-white"
               style={{ background: "linear-gradient(120deg, var(--primario), var(--logro))" }}
             >
-              Volver a Inicio
+              {t("volverAInicio")}
             </Link>
           </motion.div>
         )}
       </AnimatePresence>
-      {enviando && <p className="text-center text-xs text-texto-secundario">Guardando...</p>}
+      {enviando && <p className="text-center text-xs text-texto-secundario">{t("guardando")}</p>}
     </div>
   );
 }

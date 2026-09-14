@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import ClanesClient, { type MiClan, type ClanRanking, type Miembro, type Mision, type RivalClan } from "./ClanesClient";
 
-export const metadata: Metadata = {
-  title: "Clanes",
-  description: "Creá o unite a un clan, cumplí misiones semanales en equipo y competí en la guerra de clanes.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Clanes.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 export default async function ClanesPage() {
   const supabase = await createClient();

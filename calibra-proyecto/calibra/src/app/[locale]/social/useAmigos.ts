@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { ArithmeticProblemType } from "@/types/database";
@@ -29,6 +30,7 @@ export interface ResultadoBusqueda {
 // termine con su propia copia divergente — SocialClient lo llama UNA
 // vez y reparte el mismo estado a los dos.
 export function useAmigos(solicitudesIniciales: Solicitud[], amigosIniciales: Amigo[]) {
+  const t = useTranslations("Social");
   const router = useRouter();
   const [consulta, setConsulta] = useState("");
   const [resultados, setResultados] = useState<ResultadoBusqueda[]>([]);
@@ -49,7 +51,7 @@ export function useAmigos(solicitudesIniciales: Solicitud[], amigosIniciales: Am
     const { data, error: rpcError } = await supabase.rpc("buscar_usuarios", { p_query: query.trim() });
     setBuscando(false);
     if (rpcError) {
-      setError("No se pudo buscar. Probá de nuevo.");
+      setError(t("hook.errorBuscar"));
       return;
     }
     setResultados((data ?? []) as ResultadoBusqueda[]);
@@ -64,7 +66,7 @@ export function useAmigos(solicitudesIniciales: Solicitud[], amigosIniciales: Am
     });
     const data = await res.json();
     if (!res.ok) {
-      setError(data.error ?? "No se pudo enviar la solicitud.");
+      setError(data.error ?? t("hook.errorEnviarSolicitud"));
       return;
     }
     setEnviadas((prev) => new Set(prev).add(friendId));
@@ -79,7 +81,7 @@ export function useAmigos(solicitudesIniciales: Solicitud[], amigosIniciales: Am
     });
     const data = await res.json();
     if (!res.ok) {
-      setError(data.error ?? "No se pudo procesar la solicitud.");
+      setError(data.error ?? t("hook.errorProcesarSolicitud"));
       return;
     }
     const solicitud = solicitudes.find((s) => s.user_id === userId);
@@ -108,7 +110,7 @@ export function useAmigos(solicitudesIniciales: Solicitud[], amigosIniciales: Am
     });
     const data = await res.json();
     if (!res.ok) {
-      setError(data.error ?? "No se pudo crear el duelo.");
+      setError(data.error ?? t("hook.errorCrearDuelo"));
       return;
     }
     router.push(hrefDuelo(mundo, esNumeria ? (opcion as ArithmeticProblemType) : null, data.duel_id, esNumeria ? null : opcion));

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { rangoDeElo } from "@/types/database";
 
 interface Props {
@@ -24,6 +25,7 @@ interface Props {
 // para Numeria; los demás mundos no necesitan esa sincronización real
 // porque ya son asincrónicos por diseño, un countdown local alcanza).
 export default function PantallaVS({ miNombre, miElo, rivalNombre, rivalElo, rivalEsBot = false, modo = "simple", subtitulo, segundos }: Props) {
+  const t = useTranslations("Duelos.pantallaVS");
   const miRango = rangoDeElo(miElo);
   const rivalRango = rangoDeElo(rivalElo);
 
@@ -38,7 +40,7 @@ export default function PantallaVS({ miNombre, miElo, rivalNombre, rivalElo, riv
       <div className="relative flex w-full max-w-lg flex-col items-center gap-6">
         {modo === "mejor_de_3" && (
           <span className="rounded-full bg-foreground/[0.08] px-4 py-1 font-display text-xs font-bold uppercase tracking-[0.2em] text-foreground">
-            Mejor de 3
+            {t("mejorDe3")}
           </span>
         )}
         {subtitulo && <p className="-mt-2 text-xs font-medium uppercase tracking-wide text-texto-secundario">{subtitulo}</p>}
@@ -47,7 +49,7 @@ export default function PantallaVS({ miNombre, miElo, rivalNombre, rivalElo, riv
           <LadoJugador nombre={miNombre} elo={miElo} colorHex={miRango.colorHex} insigniaSlug={miRango.slug} align="right" />
 
           <div className="flex flex-col items-center gap-1">
-            <span className="font-display text-4xl font-black italic tracking-tight text-foreground sm:text-5xl">VS</span>
+            <span className="font-display text-4xl font-black italic tracking-tight text-foreground sm:text-5xl">{t("vs")}</span>
             {segundos !== null && (
               <span className="font-display text-3xl font-black tabular-nums text-primario">{segundos}</span>
             )}
@@ -82,17 +84,18 @@ function LadoJugador({
   align: "left" | "right";
   esBot?: boolean;
 }) {
+  const t = useTranslations("Duelos.pantallaVS");
   return (
     <div className={`flex min-w-0 flex-col items-center gap-1.5 text-center ${align === "right" ? "sm:items-end sm:text-right" : "sm:items-start sm:text-left"}`}>
       {/* eslint-disable-next-line @next/next/no-img-element -- mismo criterio que RankedsClient: tamaño intrínseco variable por rango */}
       <img src={`/rangos/${insigniaSlug}.png`} alt="" className="h-16 w-auto drop-shadow-lg sm:h-20" />
       <p className="max-w-[9rem] truncate font-display text-lg font-bold text-foreground sm:max-w-[11rem] sm:text-xl">{nombre}</p>
       <p className="font-mono text-sm font-semibold" style={{ color: colorHex }}>
-        {elo} ELO
+        {t("eloValor", { elo })}
       </p>
       {esBot && (
         <span className="rounded-full bg-foreground/[0.06] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-texto-secundario">
-          Clan de Bots
+          {t("clanDeBots")}
         </span>
       )}
     </div>

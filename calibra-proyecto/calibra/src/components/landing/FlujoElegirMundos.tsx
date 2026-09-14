@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import {
   IconSuma,
@@ -38,6 +39,7 @@ const ICONO_MUNDO: Record<MundoPago, typeof IconSuma> = {
 // autogenerado, nunca se le pide acá.
 export default function FlujoElegirMundos() {
   const router = useRouter();
+  const t = useTranslations("Onboarding");
   const [seleccionados, setSeleccionados] = useState<MundoPago[]>([]);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +69,7 @@ export default function FlujoElegirMundos() {
         router.refresh();
         return;
       }
-      setError(rpcError.message ?? "No se pudo guardar. Probá de nuevo.");
+      setError(rpcError.message ?? t("mundos.errorGenerico"));
       setEnviando(false);
       return;
     }
@@ -78,10 +80,9 @@ export default function FlujoElegirMundos() {
   return (
     <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-16">
       <div className="text-center">
-        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Elegí tus 2 mundos</h1>
+        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("mundos.titulo")}</h1>
         <p className="mt-2 text-sm text-texto-secundario">
-          Todos empiezan bloqueados — los 2 que elijas acá son gratis para siempre. Los demás se
-          desbloquean después con Chispas, jugando.
+          {t("mundos.subtitulo")}
         </p>
       </div>
 
@@ -108,11 +109,11 @@ export default function FlujoElegirMundos() {
               <span className="text-sm font-medium text-foreground">{NOMBRE_MUNDO_PAGO[mundo]}</span>
               {elegido ? (
                 <span className="text-xs font-medium" style={{ color }}>
-                  Elegido
+                  {t("mundos.elegido")}
                 </span>
               ) : (
                 <span className="flex items-center gap-1 text-xs text-texto-secundario">
-                  <IconCandado className="h-3 w-3" /> Bloqueado
+                  <IconCandado className="h-3 w-3" /> {t("mundos.bloqueado")}
                 </span>
               )}
             </button>
@@ -122,7 +123,7 @@ export default function FlujoElegirMundos() {
       {error && <p className="text-sm text-error">{error}</p>}
 
       <Boton type="button" onClick={confirmar} disabled={seleccionados.length !== 2} cargando={enviando} className="w-full">
-        {seleccionados.length === 2 ? "Empezar a jugar" : `Elegí ${2 - seleccionados.length} más`}
+        {seleccionados.length === 2 ? t("mundos.botonEmpezar") : t("mundos.botonElegirMas", { n: 2 - seleccionados.length })}
       </Boton>
 
       <div className="border-t border-border pt-5">
@@ -133,7 +134,7 @@ export default function FlujoElegirMundos() {
             onClick={() => setMostrarCuenta(true)}
             className="w-full text-center text-sm text-texto-secundario hover:underline"
           >
-            ¿Preferís crear una cuenta para guardar tu progreso desde ya?
+            {t("mundos.preguntaCrearCuenta")}
           </button>
         )}
       </div>

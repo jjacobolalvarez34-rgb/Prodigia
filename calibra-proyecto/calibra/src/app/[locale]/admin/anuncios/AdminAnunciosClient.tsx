@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Boton from "@/components/Boton";
 
@@ -14,17 +15,15 @@ export interface AnuncioAdmin {
   creado_at: string;
 }
 
-const ETIQUETA_TIPO: Record<AnuncioAdmin["tipo"], string> = {
-  actualizacion: "Actualización",
-  arreglo: "Arreglo",
-  evento: "Evento",
-};
-
 function hoyISO(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+const TIPOS: AnuncioAdmin["tipo"][] = ["actualizacion", "arreglo", "evento"];
+
 export default function AdminAnunciosClient({ anunciosIniciales }: { anunciosIniciales: AnuncioAdmin[] }) {
+  const t = useTranslations("Admin.anuncios");
+  const tTipos = useTranslations("Common.anuncios.tipos");
   const [anuncios, setAnuncios] = useState(anunciosIniciales);
   const [tipo, setTipo] = useState<AnuncioAdmin["tipo"]>("actualizacion");
   const [titulo, setTitulo] = useState("");
@@ -35,7 +34,7 @@ export default function AdminAnunciosClient({ anunciosIniciales }: { anunciosIni
 
   async function crear() {
     if (!titulo.trim() || !descripcion.trim()) {
-      setError("Completá título y descripción.");
+      setError(t("completaTituloYDescripcion"));
       return;
     }
     setEnviando(true);
@@ -69,30 +68,30 @@ export default function AdminAnunciosClient({ anunciosIniciales }: { anunciosIni
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-5 py-5">
-        <h2 className="font-display text-lg font-bold text-foreground">Nuevo anuncio</h2>
+        <h2 className="font-display text-lg font-bold text-foreground">{t("nuevoAnuncio")}</h2>
         <div className="flex flex-wrap gap-2">
-          {(Object.keys(ETIQUETA_TIPO) as AnuncioAdmin["tipo"][]).map((t) => (
+          {TIPOS.map((tipoOpcion) => (
             <button
-              key={t}
-              onClick={() => setTipo(t)}
+              key={tipoOpcion}
+              onClick={() => setTipo(tipoOpcion)}
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
-                tipo === t ? "bg-primario text-white" : "bg-surface-2 text-texto-secundario hover:text-foreground"
+                tipo === tipoOpcion ? "bg-primario text-white" : "bg-surface-2 text-texto-secundario hover:text-foreground"
               }`}
             >
-              {ETIQUETA_TIPO[t]}
+              {tTipos(tipoOpcion)}
             </button>
           ))}
         </div>
         <input
           value={titulo}
           onChange={(e) => setTitulo(e.target.value)}
-          placeholder="Título"
+          placeholder={t("placeholderTitulo")}
           className="rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primario"
         />
         <textarea
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
-          placeholder="Descripción"
+          placeholder={t("placeholderDescripcion")}
           rows={3}
           className="rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:border-primario"
         />
@@ -104,19 +103,19 @@ export default function AdminAnunciosClient({ anunciosIniciales }: { anunciosIni
         />
         {error && <p className="text-sm text-error">{error}</p>}
         <Boton onClick={crear} cargando={enviando} className="w-fit">
-          Publicar
+          {t("publicar")}
         </Boton>
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="font-display text-lg font-bold text-foreground">Todos los anuncios</h2>
-        {anuncios.length === 0 && <p className="text-sm text-texto-secundario">Todavía no creaste ninguno.</p>}
+        <h2 className="font-display text-lg font-bold text-foreground">{t("todosLosAnuncios")}</h2>
+        {anuncios.length === 0 && <p className="text-sm text-texto-secundario">{t("todaviaNoCreaste")}</p>}
         {anuncios.map((a) => (
           <div key={a.id} className="flex items-start justify-between gap-4 rounded-xl border border-border bg-surface px-4 py-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-texto-secundario">
-                {ETIQUETA_TIPO[a.tipo]} · {a.fecha}
-                {!a.activo && <span className="ml-2 text-error">inactivo</span>}
+                {tTipos(a.tipo)} · {a.fecha}
+                {!a.activo && <span className="ml-2 text-error">{t("inactivo")}</span>}
               </p>
               <p className="font-medium text-foreground">{a.titulo}</p>
               <p className="text-sm text-texto-secundario">{a.descripcion}</p>
@@ -125,7 +124,7 @@ export default function AdminAnunciosClient({ anunciosIniciales }: { anunciosIni
               onClick={() => alternar(a.id)}
               className="shrink-0 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-texto-secundario hover:text-foreground"
             >
-              {a.activo ? "Desactivar" : "Activar"}
+              {a.activo ? t("desactivar") : t("activar")}
             </button>
           </div>
         ))}

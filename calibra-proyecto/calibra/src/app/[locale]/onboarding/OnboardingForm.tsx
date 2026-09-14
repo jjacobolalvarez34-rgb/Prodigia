@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -47,6 +48,7 @@ const ICONO_MUNDO: Record<MundoPago, typeof IconSuma> = {
 
 export default function OnboardingForm({ next, saltarPasoNombre }: Props) {
   const router = useRouter();
+  const t = useTranslations("Onboarding");
   const [paso, setPaso] = useState<"nombre" | "mundos">(saltarPasoNombre ? "mundos" : "nombre");
   const [nombre, setNombre] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -68,7 +70,7 @@ export default function OnboardingForm({ next, saltarPasoNombre }: Props) {
 
     setEnviando(false);
     if (rpcError) {
-      setError(rpcError.message ?? "No se pudo guardar. Probá de nuevo.");
+      setError(rpcError.message ?? t("onboardingForm.nombre.errorGenerico"));
       return;
     }
     setPaso("mundos");
@@ -97,7 +99,7 @@ export default function OnboardingForm({ next, saltarPasoNombre }: Props) {
         router.refresh();
         return;
       }
-      setErrorMundo(rpcError.message ?? "No se pudo guardar. Probá de nuevo.");
+      setErrorMundo(rpcError.message ?? t("mundos.errorGenerico"));
       setEnviandoMundos(false);
       return;
     }
@@ -110,10 +112,10 @@ export default function OnboardingForm({ next, saltarPasoNombre }: Props) {
       {paso === "nombre" ? (
         <motion.div key="nombre" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
           <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-            ¿Cómo te llamamos?
+            {t("onboardingForm.nombre.titulo")}
           </h1>
           <p className="mt-2 mb-7 text-sm text-texto-secundario">
-            Un nombre corto alcanza — lo vas a ver en tu perfil y en el ranking.
+            {t("onboardingForm.nombre.subtitulo")}
           </p>
           <form onSubmit={guardarNombre} className="flex flex-col gap-3">
             <input
@@ -123,12 +125,12 @@ export default function OnboardingForm({ next, saltarPasoNombre }: Props) {
               maxLength={40}
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
-              placeholder="Tu nombre"
+              placeholder={t("onboardingForm.nombre.placeholder")}
               autoFocus
               className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
             />
             <Boton type="submit" disabled={nombre.trim().length < 2} cargando={enviando}>
-              {enviando ? "Guardando..." : "Siguiente"}
+              {enviando ? t("onboardingForm.nombre.guardando") : t("onboardingForm.nombre.botonSiguiente")}
             </Boton>
             {error && <p className="text-sm text-error">{error}</p>}
           </form>
@@ -136,11 +138,10 @@ export default function OnboardingForm({ next, saltarPasoNombre }: Props) {
       ) : (
         <motion.div key="mundos" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}>
           <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-            Elegí tus 2 mundos
+            {t("mundos.titulo")}
           </h1>
           <p className="mt-2 mb-6 text-sm text-texto-secundario">
-            Todos empiezan bloqueados — los 2 que elijas acá son gratis para siempre. Los demás se
-            desbloquean después con Chispas, jugando.
+            {t("mundos.subtitulo")}
           </p>
           <div className="grid grid-cols-2 gap-3">
             {MUNDOS_PAGOS.map((mundo) => {
@@ -168,11 +169,11 @@ export default function OnboardingForm({ next, saltarPasoNombre }: Props) {
                   <span className="text-sm font-medium text-foreground">{NOMBRE_MUNDO_PAGO[mundo]}</span>
                   {elegido ? (
                     <span className="text-xs font-medium" style={{ color }}>
-                      Elegido
+                      {t("mundos.elegido")}
                     </span>
                   ) : (
                     <span className="flex items-center gap-1 text-xs text-texto-secundario">
-                      <IconCandado className="h-3 w-3" /> Bloqueado
+                      <IconCandado className="h-3 w-3" /> {t("mundos.bloqueado")}
                     </span>
                   )}
                 </button>
@@ -187,7 +188,7 @@ export default function OnboardingForm({ next, saltarPasoNombre }: Props) {
             cargando={enviandoMundos}
             className="mt-4 w-full"
           >
-            {seleccionados.length === 2 ? "Empezar a jugar" : `Elegí ${2 - seleccionados.length} más`}
+            {seleccionados.length === 2 ? t("mundos.botonEmpezar") : t("mundos.botonElegirMas", { n: 2 - seleccionados.length })}
           </Boton>
         </motion.div>
       )}

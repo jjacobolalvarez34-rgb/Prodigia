@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoTrigonometria } from "@/lib/auth/guard";
 import Header from "@/components/Header";
@@ -13,14 +14,15 @@ import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { IconCheck, IconTrigonometria } from "@/components/icons";
 import { COLOR_TRIGONOMETRIA } from "./colores";
 
-export const metadata: Metadata = {
-  title: "Trigonometría",
-  description: "Razones, círculo unitario, identidades y leyes de seno/coseno, con dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Trigonometria.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 const TIPOS_TRIGONOMETRIA = ["trigonometria_razones", "trigonometria_circulo", "trigonometria_identidades", "trigonometria_leyes"];
 
 export default async function TrigonometriaHomePage() {
+  const t = await getTranslations("Trigonometria");
   const supabase = await createClient();
   const { user, profile } = await requireMundoTrigonometria(supabase, "/trigonometria");
 
@@ -52,25 +54,25 @@ export default async function TrigonometriaHomePage() {
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
         <AvisoPrimeraVez
           avisoKey="trigonometria-intro"
-          texto="Razones, círculo unitario, identidades y triángulos oblicuos — con dificultad que se adapta a vos, igual que en los demás mundos."
+          texto={t("aviso")}
         >
           <div>
             <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_TRIGONOMETRIA }}>
-              Trigonometría
+              {t("nombreMundo")}
             </span>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Ángulos, razones y triángulos</h1>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
             <div className="mt-2">
-              <NivelMundoBadge nombreMundo="Trigonometría" nivel={nivelMundo} colorHex={COLOR_TRIGONOMETRIA} />
+              <NivelMundoBadge nombreMundo={t("nombreMundo")} nivel={nivelMundo} colorHex={COLOR_TRIGONOMETRIA} />
             </div>
           </div>
         </AvisoPrimeraVez>
 
-        <NivelMundoProgreso nombreMundo="Trigonometría" colorHex={COLOR_TRIGONOMETRIA} progreso={progresoMundo} />
+        <NivelMundoProgreso nombreMundo={t("nombreMundo")} colorHex={COLOR_TRIGONOMETRIA} progreso={progresoMundo} />
 
         {metaCumplidaHoy && (
           <div className="flex items-center gap-3 rounded-2xl bg-correcto/10 px-5 py-4">
             <IconCheck className="h-5 w-5 shrink-0 text-correcto" />
-            <p className="text-sm font-medium text-foreground">Ya cumpliste tu meta de hoy.</p>
+            <p className="text-sm font-medium text-foreground">{t("metaCumplida")}</p>
           </div>
         )}
 
@@ -87,8 +89,8 @@ export default async function TrigonometriaHomePage() {
               <IconTrigonometria className="h-5 w-5" />
             </span>
             <div>
-              <span className="font-display text-xl font-bold text-foreground">Practicar</span>
-              <p className="mt-1 text-sm text-texto-secundario">Razones, círculo unitario, identidades y leyes.</p>
+              <span className="font-display text-xl font-bold text-foreground">{t("practicar")}</span>
+              <p className="mt-1 text-sm text-texto-secundario">{t("practicarDescripcion")}</p>
             </div>
           </Link>
 
@@ -104,19 +106,19 @@ export default async function TrigonometriaHomePage() {
               <IconTrigonometria className="h-5 w-5" />
             </span>
             <div>
-              <span className="font-display text-xl font-bold text-foreground">Aprender</span>
-              <p className="mt-1 text-sm text-texto-secundario">Trucos mentales para no memorizar todo de cero.</p>
+              <span className="font-display text-xl font-bold text-foreground">{t("aprenderCard")}</span>
+              <p className="mt-1 text-sm text-texto-secundario">{t("aprenderDescripcion")}</p>
             </div>
           </Link>
         </section>
 
         <section className="flex flex-col gap-4">
-          <h2 className="font-display text-lg font-bold text-foreground">Modos</h2>
+          <h2 className="font-display text-lg font-bold text-foreground">{t("modosTitulo")}</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            <TopicCard nombre="Razones básicas" Icono={IconTrigonometria} badge={{ tipo: "nivel", nivel: nivelDe("trigonometria_razones") }} colorHex={COLOR_TRIGONOMETRIA} />
-            <TopicCard nombre="Círculo unitario" Icono={IconTrigonometria} badge={{ tipo: "nivel", nivel: nivelDe("trigonometria_circulo") }} colorHex={COLOR_TRIGONOMETRIA} />
-            <TopicCard nombre="Identidades" Icono={IconTrigonometria} badge={{ tipo: "nivel", nivel: nivelDe("trigonometria_identidades") }} colorHex={COLOR_TRIGONOMETRIA} />
-            <TopicCard nombre="Leyes de seno y coseno" Icono={IconTrigonometria} badge={{ tipo: "nivel", nivel: nivelDe("trigonometria_leyes") }} colorHex={COLOR_TRIGONOMETRIA} />
+            <TopicCard nombre={t("modos.razones")} Icono={IconTrigonometria} badge={{ tipo: "nivel", nivel: nivelDe("trigonometria_razones") }} colorHex={COLOR_TRIGONOMETRIA} />
+            <TopicCard nombre={t("modos.circulo")} Icono={IconTrigonometria} badge={{ tipo: "nivel", nivel: nivelDe("trigonometria_circulo") }} colorHex={COLOR_TRIGONOMETRIA} />
+            <TopicCard nombre={t("modos.identidades")} Icono={IconTrigonometria} badge={{ tipo: "nivel", nivel: nivelDe("trigonometria_identidades") }} colorHex={COLOR_TRIGONOMETRIA} />
+            <TopicCard nombre={t("modos.leyes")} Icono={IconTrigonometria} badge={{ tipo: "nivel", nivel: nivelDe("trigonometria_leyes") }} colorHex={COLOR_TRIGONOMETRIA} />
           </div>
         </section>
       </div>

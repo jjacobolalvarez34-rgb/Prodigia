@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 interface Props {
@@ -21,6 +22,7 @@ const TIPOS_PERMITIDOS = new Set(["image/png", "image/jpeg", "image/webp", "imag
 // Storage y en la RPC, esto es solo para no ofrecer el botón a quien
 // no puede usarlo.
 export default function SubirImagenClan({ clanId, onSubida }: Props) {
+  const t = useTranslations("Clanes.subirImagen");
   const inputRef = useRef<HTMLInputElement>(null);
   const [subiendo, setSubiendo] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,11 +34,11 @@ export default function SubirImagenClan({ clanId, onSubida }: Props) {
     setError(null);
 
     if (!TIPOS_PERMITIDOS.has(file.type)) {
-      setError("Tiene que ser una imagen (PNG, JPG, WEBP o GIF).");
+      setError(t("errorTipo"));
       return;
     }
     if (file.size > MAX_BYTES) {
-      setError("La imagen no puede pesar más de 2MB.");
+      setError(t("errorTamano"));
       return;
     }
 
@@ -51,7 +53,7 @@ export default function SubirImagenClan({ clanId, onSubida }: Props) {
 
     if (subidaError) {
       console.error("[imagen-clan] upload error", subidaError);
-      setError("No pudimos subir la imagen. Probá de nuevo.");
+      setError(t("errorSubida"));
       setSubiendo(false);
       return;
     }
@@ -64,7 +66,7 @@ export default function SubirImagenClan({ clanId, onSubida }: Props) {
     setSubiendo(false);
     if (rpcError) {
       console.error("[imagen-clan] rpc error", rpcError);
-      setError("La imagen se subió pero no pudimos guardarla. Probá de nuevo.");
+      setError(t("errorGuardado"));
       return;
     }
 
@@ -79,7 +81,7 @@ export default function SubirImagenClan({ clanId, onSubida }: Props) {
         disabled={subiendo}
         className="w-fit rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-primario/40 disabled:opacity-60"
       >
-        {subiendo ? "Subiendo..." : "Cambiar imagen del clan"}
+        {subiendo ? t("subiendo") : t("cambiarImagen")}
       </button>
       {error && <p className="text-xs text-error">{error}</p>}
       <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={handleFile} className="hidden" />

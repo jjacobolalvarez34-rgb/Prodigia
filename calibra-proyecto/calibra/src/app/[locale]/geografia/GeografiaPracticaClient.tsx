@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import type { Continente, PaisAmerica } from "@/lib/practica/geografia";
 import type { PreguntaAvanzada } from "@/lib/practica/geografiaAvanzada";
@@ -62,15 +63,15 @@ interface Props {
   miUserId: string;
 }
 
-const NOMBRE_CONTINENTE: Record<Continente, string> = {
-  america: "América",
-  europa: "Europa",
-  africa: "África",
-  asia_oceania: "Asia y Oceanía",
-};
-
 export default function GeografiaPracticaClient({ continente, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
+  const t = useTranslations("Geografia");
   const router = useRouter();
+  const NOMBRE_CONTINENTE: Record<Continente, string> = {
+    america: t("continentes.america"),
+    europa: t("continentes.europa"),
+    africa: t("continentes.africa"),
+    asia_oceania: t("continentes.asia_oceania"),
+  };
   const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
   const [startedAtIso, setStartedAtIso] = useState("");
   const [startedAtPerf, setStartedAtPerf] = useState(0);
@@ -108,7 +109,7 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "No se pudo cerrar la partida.");
+        setError(data.error ?? t("practicaClient.errorDefault"));
         setFase("resumen");
         return;
       }
@@ -146,7 +147,7 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
         }
       }
     } catch {
-      setError("No pudimos conectar con el servidor. Probá de nuevo.");
+      setError(t("practicaClient.errorDeRed"));
     }
     setFase("resumen");
   }
@@ -185,7 +186,11 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
         rivalElo={duelo.rivalElo}
         rivalEsBot={duelo.rivalEsBot}
         modo={duelo.serieId ? "mejor_de_3" : "simple"}
-        subtitulo={duelo.serieId ? `Ronda ${duelo.rondaNumero}/${duelo.rondaTotal} · Geografía` : "Geografía"}
+        subtitulo={
+          duelo.serieId
+            ? t("practicaClient.rondaSubtitulo", { n: duelo.rondaNumero, total: duelo.rondaTotal })
+            : t("nombreMundo")
+        }
         onEmpezarAhora={empezarAhora}
         duelId={duelo.duelId}
       />
@@ -224,9 +229,9 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
   if (fase === "resumen" && error) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-16 text-center">
-        <p className="text-error">No pudimos cerrar la partida: {error}</p>
+        <p className="text-error">{t("practicaClient.errorConDetalle", { error })}</p>
         <button onClick={() => setFase("inicio")} className="rounded-2xl px-4 py-3 font-medium text-white" style={{ background: COLOR_GEOGRAFIA }}>
-          Volver
+          {t("practicaClient.volver")}
         </button>
       </div>
     );
@@ -241,21 +246,24 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
         <ApuestaResultado apuesta={resumen.apuesta ?? null} />
         <ResultadoDueloBlock duelo={resultadoDuelo} />
         <div className="flex flex-col items-center gap-2 text-center">
-          <p className="font-display text-lg font-bold text-foreground">Ahí quedó.</p>
+          <p className="font-display text-lg font-bold text-foreground">{t("practicaClient.ahiQuedo")}</p>
           <p className="font-mono text-3xl font-bold text-foreground">
-            +{resumen.sprint.xpGanado} <span className="text-base font-medium text-texto-secundario">Experiencia</span>
+            +{resumen.sprint.xpGanado} <span className="text-base font-medium text-texto-secundario">{t("practicaClient.experiencia")}</span>
           </p>
         </div>
 
         <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
-          <Fila label="Aciertos" valor={`${resumen.sprint.correctos}/${resumen.sprint.total}`} />
-          <Fila label="Precisión" valor={resumen.sprint.precision === null ? "—" : `${Math.round(resumen.sprint.precision * 100)}%`} />
-          <Fila label="Experiencia hoy" valor={`${resumen.xpGanadoHoy}/${resumen.metaXpDiaria}`} />
+          <Fila label={t("practicaClient.aciertos")} valor={`${resumen.sprint.correctos}/${resumen.sprint.total}`} />
+          <Fila
+            label={t("practicaClient.precision")}
+            valor={resumen.sprint.precision === null ? t("practicaClient.sinDatos") : `${Math.round(resumen.sprint.precision * 100)}%`}
+          />
+          <Fila label={t("practicaClient.experienciaHoy")} valor={`${resumen.xpGanadoHoy}/${resumen.metaXpDiaria}`} />
         </div>
 
         {errores.length > 0 ? (
           <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
-            <p className="mb-3 font-display text-sm font-semibold text-foreground">Repasemos esto</p>
+            <p className="mb-3 font-display text-sm font-semibold text-foreground">{t("practicaClient.repasemosEsto")}</p>
             <div className="flex flex-wrap gap-2">
               {errores.map((p, i) => (
                 <span key={i} className="rounded-full bg-surface-2 px-3 py-1 text-sm text-foreground">
@@ -265,7 +273,7 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
             </div>
           </div>
         ) : (
-          <p className="text-sm text-texto-secundario">Ninguno fallado — así se hace. 🎯</p>
+          <p className="text-sm text-texto-secundario">{t("practicaClient.ningunoFallado")}</p>
         )}
 
         <BotonesFinPartida
@@ -281,13 +289,13 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
       {boostActivo && (
         <div className="flex items-center justify-center gap-2 rounded-full bg-logro/15 px-4 py-2 text-sm font-medium text-foreground">
-          ⚡ Boost activo — Chispas ×1.5 en esta partida
+          {t("practicaClient.boostActivo")}
         </div>
       )}
       <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{NOMBRE_CONTINENTE[continente]}</h1>
-      <p className="text-texto-secundario">Identificá el país en el mapa. 10 preguntas o 60 segundos.</p>
+      <p className="text-texto-secundario">{t("practicaClient.instrucciones")}</p>
       <Boton onClick={iniciar} colorHex={COLOR_GEOGRAFIA} destacado className="w-full py-5 text-lg">
-        Iniciar partida
+        {t("practicaClient.iniciarPartida")}
       </Boton>
     </div>
   );

@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoTrigonometria } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import TrigonometriaPracticaClient from "../../TrigonometriaPracticaClient";
 import { cargarDatosPracticaTrigonometria } from "@/lib/trigonometria/cargarPractica";
 
-export const metadata: Metadata = {
-  title: "Practicar Leyes de seno y coseno",
-  description: "Resolvé triángulos oblicuos con los datos suficientes — el modo más difícil.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Trigonometria.practica.leyes.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 interface Props {
   searchParams: Promise<{ duelo?: string }>;

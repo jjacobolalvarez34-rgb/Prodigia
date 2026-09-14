@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import { ESTILO_MARCO_PERFIL, type PerfilPublico, type TituloUsuario } from "@/types/database";
@@ -24,19 +25,19 @@ interface LogroPublico {
   desbloqueado: boolean;
 }
 
-const NOMBRE_MUNDO: Record<string, string> = {
-  numeria: "Numeria",
-  enigmia: "Enigmia",
-  geografia: "Geografía",
-  quimia: "Quimia",
-  anatomia: "Anatomía",
-  melodia: "Melodía",
-  trigonometria: "Trigonometría",
-  historia: "Historia",
-};
+const MUNDOS: string[] = [
+  "numeria",
+  "enigmia",
+  "geografia",
+  "quimia",
+  "anatomia",
+  "melodia",
+  "trigonometria",
+  "historia",
+];
 
-function formatearFecha(iso: string): string {
-  return new Date(iso).toLocaleDateString("es-AR", { year: "numeric", month: "long" });
+function formatearFecha(iso: string, locale: string): string {
+  return new Date(iso).toLocaleDateString(locale === "en" ? "en-US" : "es-AR", { year: "numeric", month: "long" });
 }
 
 // Grupo B, Fase 5: perfil público de OTRO usuario con el mismo nivel de
@@ -47,6 +48,8 @@ function formatearFecha(iso: string): string {
 // completa, editable).
 export default async function PerfilPublicoPage({ params }: Props) {
   const { userId } = await params;
+  const t = await getTranslations("Perfil");
+  const locale = (await getLocale()) as string;
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, `/perfil/${userId}`);
 
@@ -109,7 +112,7 @@ export default async function PerfilPublicoPage({ params }: Props) {
               {perfil.titulo_nombre}
             </span>
           )}
-          <p className="text-sm text-texto-secundario">En Prodigia desde {formatearFecha(perfil.created_at)}</p>
+          <p className="text-sm text-texto-secundario">{t("enProdigiaDesde", { fecha: formatearFecha(perfil.created_at, locale) })}</p>
           {clan && (
             <div className="flex items-center gap-2">
               <EstandarteClan color={clan.color_estandarte} nivel={clan.nivel_clan} size={22} />
@@ -121,35 +124,35 @@ export default async function PerfilPublicoPage({ params }: Props) {
 
           <div className="mt-2 grid w-full grid-cols-3 gap-3">
             <div className="rounded-xl border border-border bg-background px-4 py-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Rango</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("rango")}</p>
               <p className="mt-1"><RangoBadge elo={perfil.elo_rating} tituloNombre={perfil.titulo_nombre} size="md" /></p>
-              <p className="text-xs text-texto-secundario">{perfil.elo_rating} ELO</p>
+              <p className="text-xs text-texto-secundario">{t("publico.eloValor", { n: perfil.elo_rating })}</p>
             </div>
             <div className="rounded-xl border border-border bg-background px-4 py-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Nivel</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("publico.nivelLabel")}</p>
               <p className="mt-1 font-mono text-lg font-bold text-foreground">{perfil.nivel_cuenta}</p>
             </div>
             <div className="rounded-xl border border-border bg-background px-4 py-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Chispas</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("publico.chispasLabel")}</p>
               <p className="mt-1 font-mono text-lg font-bold text-foreground">{perfil.puntos_total}</p>
             </div>
           </div>
         </section>
 
         <section>
-          <h2 className="mb-4 font-display text-lg font-bold text-foreground">Nivel por mundo</h2>
+          <h2 className="mb-4 font-display text-lg font-bold text-foreground">{t("publico.nivelPorMundo")}</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {Object.keys(NOMBRE_MUNDO).map((mundo) => {
+            {MUNDOS.map((mundo) => {
               const fila = mundos.find((m) => m.world === mundo);
               const tieneMarco = marcoPerfil === mundo;
               return (
                 <div key={mundo} className="rounded-xl border border-border bg-surface px-4 py-3">
                   <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">
-                    {NOMBRE_MUNDO[mundo]}
+                    {t(`publico.nombreMundo.${mundo}`)}
                     {tieneMarco && " · 🖼️"}
                   </p>
                   <p className="mt-1 font-mono text-xl font-bold text-foreground">{fila?.nivel_mundo ?? 1}</p>
-                  <p className="text-xs text-texto-secundario">de 100</p>
+                  <p className="text-xs text-texto-secundario">{t("publico.de100")}</p>
                 </div>
               );
             })}
@@ -158,22 +161,22 @@ export default async function PerfilPublicoPage({ params }: Props) {
 
         {records && (
           <section>
-            <h2 className="mb-4 font-display text-lg font-bold text-foreground">Récords personales</h2>
+            <h2 className="mb-4 font-display text-lg font-bold text-foreground">{t("recordsPersonales")}</h2>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div className="rounded-xl border border-border bg-surface px-4 py-3">
-                <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Respuesta más rápida</p>
+                <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("respuestaMasRapida")}</p>
                 <p className="mt-1 font-mono text-xl font-bold text-foreground">
-                  {records.mejor_tiempo_ms !== null ? `${(records.mejor_tiempo_ms / 1000).toFixed(2)}s` : "—"}
+                  {records.mejor_tiempo_ms !== null ? `${(records.mejor_tiempo_ms / 1000).toFixed(2)}s` : t("publico.sinDatos")}
                 </p>
               </div>
               <div className="rounded-xl border border-border bg-surface px-4 py-3">
-                <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Racha más larga</p>
-                <p className="mt-1 font-mono text-xl font-bold text-foreground">{records.racha_maxima} días</p>
+                <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("rachaMasLarga")}</p>
+                <p className="mt-1 font-mono text-xl font-bold text-foreground">{t("diasCantidad", { n: records.racha_maxima })}</p>
               </div>
               <div className="rounded-xl border border-border bg-surface px-4 py-3">
-                <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Mejor precisión (1 día)</p>
+                <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("mejorPrecisionUnDia")}</p>
                 <p className="mt-1 font-mono text-xl font-bold text-foreground">
-                  {records.mejor_precision !== null ? `${Math.round(records.mejor_precision * 100)}%` : "—"}
+                  {records.mejor_precision !== null ? `${Math.round(records.mejor_precision * 100)}%` : t("publico.sinDatos")}
                 </p>
               </div>
             </div>
@@ -182,17 +185,17 @@ export default async function PerfilPublicoPage({ params }: Props) {
 
         {titulos.length > 0 && (
           <section>
-            <h2 className="mb-3 font-display text-lg font-bold text-foreground">Títulos</h2>
+            <h2 className="mb-3 font-display text-lg font-bold text-foreground">{t("titulosSection.titulo")}</h2>
             <div className="flex flex-wrap gap-2">
-              {titulos.map((t) => (
+              {titulos.map((tit) => (
                 <span
-                  key={t.slug}
+                  key={tit.slug}
                   className={`rounded-full border px-3 py-1.5 text-sm font-medium ${
-                    t.slug === perfil.titulo_activo ? "border-primario bg-primario/10 text-primario" : "border-border text-texto-secundario"
+                    tit.slug === perfil.titulo_activo ? "border-primario bg-primario/10 text-primario" : "border-border text-texto-secundario"
                   }`}
                 >
-                  {t.nombre}
-                  {t.slug === perfil.titulo_activo && " · activo"}
+                  {tit.nombre}
+                  {tit.slug === perfil.titulo_activo && t("publico.activoSufijo")}
                 </span>
               ))}
             </div>
@@ -200,7 +203,7 @@ export default async function PerfilPublicoPage({ params }: Props) {
         )}
 
         <section>
-          <h2 className="mb-4 font-display text-lg font-bold text-foreground">Logros</h2>
+          <h2 className="mb-4 font-display text-lg font-bold text-foreground">{t("logros")}</h2>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {logros.map((a) => (
               <LogroMedalla key={a.slug} nombre={a.nombre} descripcion={a.descripcion} desbloqueado={a.desbloqueado} />

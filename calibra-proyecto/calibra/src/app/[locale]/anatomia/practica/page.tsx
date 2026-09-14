@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoAnatomia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { cargarDatosPracticaAnatomia } from "@/lib/anatomia/cargarPractica";
 import AnatomiaPracticaClient from "../AnatomiaPracticaClient";
 
-export const metadata: Metadata = {
-  title: "Sistema óseo",
-  description: "Huesos del cuerpo humano, con dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Anatomia.practica.oseo.metadata");
+  return { title: t("titulo"), description: t("description") };
+}
 
 interface Props {
   searchParams: Promise<{ duelo?: string }>;

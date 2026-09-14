@@ -68,6 +68,44 @@
       "nadieMasTodavia": "Nadie más en el ranking todavía.",
       "nadieConEseNombre": "Nadie con ese nombre en el ranking.",
       "todaviaNoJugasteClasificatorio": "Todavía no jugaste ningún duelo clasificatorio."
+    },
+    "serieDuelo": {
+      "tu": "Tú",
+      "pillTitulo": "Todas las ciudades · Mejor de 3",
+      "vsOponente": "Vs. {nombre}",
+      "esperandoTermine": "Ya jugaste tus 3 rondas — esperando a que {oponente} termine las suyas.",
+      "siguienteCiudad": "Siguiente ciudad",
+      "arrancamosEn": "Arrancamos en",
+      "esperandoAlRival": "Esperando al rival…",
+      "miPuntajeSufijo": " · tú: {puntaje} pts",
+      "todaviaSinJugar": "Todavía sin jugar",
+      "resultadoPuntajesSufijo": " · tú: {mio} pts · rival: {rival} pts",
+      "ronda": "Ronda {n} · {etiqueta}",
+      "victoria": "Victoria",
+      "derrota": "Derrota",
+      "empataronSerie": "Empataron la serie con {oponente}",
+      "ganasteSerie": "Ganaste la serie a {oponente}",
+      "perdisteSerie": "Esta vez ganó {oponente}",
+      "elo": "ELO",
+      "subisteDeRango": "Subiste de rango",
+      "verPerfil": "Ver perfil",
+      "otraPartida": "Otra partida",
+      "volver": "Volver",
+      "contenidos": {
+        "memoria": "Memoria",
+        "patrones": "Patrones",
+        "deduccion": "Deducción",
+        "computacional": "Pensamiento computacional"
+      }
+    },
+    "bloqueado": {
+      "metadata": {
+        "title": "Rankeds bloqueado",
+        "description": "Rankeds se desbloquea en nivel {nivel} de cuenta."
+      },
+      "titulo": "Rankeds se desbloquea en nivel {nivel}",
+      "mensaje": "Estás en nivel <n>{nivelActual}</n> de cuenta — te {faltan, plural, one {falta} other {faltan}} <f>{faltan} {faltan, plural, one {nivel} other {niveles}}</f> más. Sigue jugando para ganar Experiencia y subir de nivel.",
+      "seguirPracticando": "Seguir practicando"
     }
   },
   "Social": {
@@ -99,7 +137,81 @@
     "generando": "Generando…",
     "generarLinkDeInvitacion": "Generar link de invitación",
     "compartiseloAQuienQuieras": "Compartiselo a quien quieras — no hace falta que sea tu amigo dentro de la app.",
-    "quienSeRegistre": "Quien se registre entrando por este link queda agregado como tu amigo automáticamente, sin pedir ni aceptar solicitud."
+    "quienSeRegistre": "Quien se registre entrando por este link queda agregado como tu amigo automáticamente, sin pedir ni aceptar solicitud.",
+    "metadata": {
+      "title": "Social",
+      "description": "Feed, amigos y duelos en Prodigia."
+    },
+    "guardLabel": "Social (Feed y Amigos)",
+    "tituloPagina": "Social",
+    "operaciones": {
+      "suma": "Suma",
+      "resta": "Resta",
+      "multiplicacion": "Multiplicación",
+      "division": "División"
+    },
+    "mundos": {
+      "numeria": "Numeria",
+      "geografia": "Geografía",
+      "enigmia": "Enigmia",
+      "quimia": "Quimia",
+      "anatomia": "Anatomía",
+      "melodia": "Melodía",
+      "trigonometria": "Trigonometría",
+      "historia": "Historia",
+      "aleatorio": "todas las ciudades",
+      "suMundo": "su mundo"
+    },
+    "feed": {
+      "tabParaTi": "Para ti",
+      "tabSiguiendo": "Siguiendo",
+      "botonProblemaPropio": "+ Problema propio",
+      "botonDesafio": "+ Desafío",
+      "vacioSiguiendo": "Todavía no sigues a nadie con actividad — agrega amigos desde la barra lateral.",
+      "vacioFeed": "Todavía no hay nada en el feed.",
+      "logroDesbloqueo": "desbloqueó",
+      "desafioTe": "te desafía a",
+      "desafioDetalle": ", nivel {nivel}, {cantidad} problemas.",
+      "botonRetar": "Retar",
+      "retarCreando": "Creando...",
+      "vencioA": "venció a",
+      "en": "en",
+      "subioA": "subió a",
+      "alcanzoNivel": "alcanzó nivel",
+      "problemaMensaje": "armó un problema para ti:",
+      "placeholderRespuesta": "Tu respuesta...",
+      "botonResponder": "Responder",
+      "resultadoCorrecto": "¡Correcto! 🎉",
+      "resultadoIncorrecto": "No era — la respuesta era \"{respuesta}\"",
+      "tituloProblemaPropio": "Arma tu propio problema",
+      "placeholderPregunta": "Pregunta (ej: ¿Capital de Mongolia?)",
+      "placeholderRespuestaCorrecta": "Respuesta correcta",
+      "errorPublicarProblema": "No se pudo publicar el problema.",
+      "publicando": "Publicando...",
+      "botonPublicarProblema": "Publicar problema",
+      "notaUnoPorDia": "Máximo uno por día — se comparte con todos en el feed.",
+      "tituloArmarDesafio": "Arma un desafío",
+      "nivelOpcion": "Nivel {n}",
+      "cantidadProblemasOpcion": "{c} problemas",
+      "botonPublicarDesafio": "Publicar desafío"
+    },
+    "sidebar": {
+      "botonAgregarAmigos": "+ Agregar amigos",
+      "enviarCorto": "Enviar",
+      "nadaPendiente": "Nada pendiente.",
+      "retosPendientes": "Retos pendientes",
+      "nadieTeReto": "Nadie te retó todavía.",
+      "botonJugar": "Jugar",
+      "sinAmigos": "Todavía no tienes amigos agregados.",
+      "retarCorto": "Retar",
+      "alguien": "Alguien"
+    },
+    "hook": {
+      "errorBuscar": "No se pudo buscar. Prueba de nuevo.",
+      "errorEnviarSolicitud": "No se pudo enviar la solicitud.",
+      "errorProcesarSolicitud": "No se pudo procesar la solicitud.",
+      "errorCrearDuelo": "No se pudo crear el duelo."
+    }
   },
   "mundoProgreso": {
     "titulo": "Progreso del mundo",
@@ -153,7 +265,84 @@
     "afinidadDescripcion": "Solo informativo — tu rango y el matchmaking son únicos y globales, esto no los afecta.",
     "duelosCantidad": "{n} {n, plural, one {duelo} other {duelos}}",
     "precisionPct": "{n}% precisión",
-    "logros": "Logros"
+    "logros": "Logros",
+    "borrarCuenta": {
+      "zonaPeligrosa": "Zona peligrosa",
+      "borrarMiCuenta": "Borrar mi cuenta",
+      "confirmacionTexto": "Esto borra tu perfil, tu progreso, tus logros y todo tu historial de verdad — no se puede deshacer. Escribe <b>{palabra}</b> para confirmar.",
+      "palabraConfirmacion": "BORRAR",
+      "borrando": "Borrando...",
+      "confirmarBorrado": "Confirmar borrado",
+      "cancelar": "Cancelar",
+      "errorGenerico": "No se pudo borrar la cuenta."
+    },
+    "nombreEditable": {
+      "jugador": "Jugador",
+      "editar": "Editar",
+      "guardando": "Guardando...",
+      "guardar": "Guardar",
+      "cancelar": "Cancelar",
+      "costoCambiar": "Cambiar de nombre cuesta {costo} Chispas.",
+      "errorGuardar": "No se pudo guardar. Prueba de nuevo."
+    },
+    "subirAvatar": {
+      "tipoInvalido": "Tiene que ser una imagen (PNG, JPG, WEBP o GIF).",
+      "tamanoExcedido": "La imagen no puede pesar más de 2MB.",
+      "errorSubida": "No pudimos subir la imagen. Prueba de nuevo.",
+      "errorGuardarPerfil": "La imagen se subió pero no pudimos guardarla en tu perfil. Prueba de nuevo.",
+      "subiendo": "Subiendo...",
+      "cambiarFoto": "Cambiar foto",
+      "subirFoto": "Subir foto"
+    },
+    "titulosSection": {
+      "titulo": "Títulos",
+      "vacio": "Todavía no desbloqueaste ninguno — sube de rango en Rankeds para conseguir el primero.",
+      "elegirDescripcion": "Elige cuál mostrar junto a tu nombre — activar uno no borra los demás.",
+      "ninguno": "Ninguno"
+    },
+    "amistadBoton": {
+      "yaSonAmigos": "Ya son amigos",
+      "solicitudEnviada": "Solicitud enviada",
+      "aceptarSolicitud": "Aceptar solicitud",
+      "rechazar": "Rechazar",
+      "invitarSerAmigo": "Invitar a ser amigo",
+      "errorEnviarSolicitud": "No se pudo enviar la solicitud.",
+      "errorProcesarSolicitud": "No se pudo procesar la solicitud."
+    },
+    "reportarBoton": {
+      "motivos": {
+        "trampa": "Hizo trampa",
+        "imagenInapropiada": "Foto de perfil inapropiada",
+        "nombreInapropiado": "Nombre inapropiado",
+        "contenidoOfensivo": "Contenido ofensivo",
+        "otro": "Otro motivo"
+      },
+      "reportar": "Reportar",
+      "gracias": "Gracias, lo vamos a revisar.",
+      "porQueReportas": "¿Por qué lo reportas?",
+      "enviarReporte": "Enviar reporte",
+      "cancelar": "Cancelar",
+      "errorEnviar": "No pudimos enviar el reporte. Prueba de nuevo."
+    },
+    "publico": {
+      "nombreMundo": {
+        "numeria": "Numeria",
+        "enigmia": "Enigmia",
+        "geografia": "Geografía",
+        "quimia": "Quimia",
+        "anatomia": "Anatomía",
+        "melodia": "Melodía",
+        "trigonometria": "Trigonometría",
+        "historia": "Historia"
+      },
+      "eloValor": "{n} ELO",
+      "nivelLabel": "Nivel",
+      "chispasLabel": "Chispas",
+      "nivelPorMundo": "Nivel por mundo",
+      "de100": "de 100",
+      "activoSufijo": " · activo",
+      "sinDatos": "—"
+    }
   },
   "Tienda": {
     "metadata": {
@@ -228,7 +417,7 @@
     "ofertaDelVendedor": "Oferta del vendedor de hoy:",
     "porcentajeMenos": "{n}% menos",
     "enItem": "en {nombre}",
-    "tenes": "Tienes: {n}",
+    "tienes": "Tienes: {n}",
     "comprarPor": "Comprar por {costo} Chispas",
     "necesitas": "Necesitas {costo} Chispas",
     "gastarChispas": "¿Gastar {costo} Chispas?",
@@ -313,10 +502,17 @@
         "deNuevo": "Otra ronda"
       },
       "ruleta": {
-        "titulo": "La Ruleta del Trastiendista",
-        "descripcion": "Mesa completa de la tabla periódica. Apuesta a un elemento o a una zona y deja que la casa pague.",
+        "titulo": "Ruleta Elemental",
+        "descripcion": "Mesa completa de la tabla periódica. Elige una o varias zonas y jugate una ficha en cada una — un solo giro, un elemento sorteado entre 118.",
         "ficha": "Ficha",
-        "eligeZona": "Elige tu zona",
+        "eligeZona": "Elige tus zonas",
+        "zonasEnJuego": "Zonas en juego ({n}/{max})",
+        "sinZonasElegidas": "Todavía no elegiste ninguna zona",
+        "maxZonasAlcanzado": "Máximo {max} zonas por giro",
+        "totalEnJuego": "Total en juego: {n} Chispas",
+        "quitarZona": "Quitar",
+        "ganasteEsta": "✓ cayó adentro",
+        "perdisteEsta": "✗ no cayó",
         "mesa": "Mesa de 118 elementos",
         "elemento": "Elemento",
         "paridad": "Paridad",
@@ -435,6 +631,14 @@
       "teRetaronADueloDe": "Te retaron a un duelo de {operacion}",
       "verDuelo": "Ver duelo →",
       "cerrarAviso": "Cerrar aviso"
+    },
+    "errorBoundario": {
+      "titulo": "Algo no cargó bien",
+      "descripcion": "Puede ser un problema de conexión con el servidor. Prueba de nuevo en un momento — tu progreso ya guardado no se pierde.",
+      "reintentar": "Reintentar"
+    },
+    "metadata": {
+      "description": "Práctica adaptativa de cálculo mental y lógica: dificultad que se ajusta a tu nivel."
     }
   },
   "Geografia": {
@@ -443,6 +647,96 @@
       "europa": "Europa",
       "africa": "África",
       "asia_oceania": "Asia y Oceanía"
+    },
+    "nombreMundo": "Geografía",
+    "metadata": {
+      "home": {
+        "description": "Ubica países de América en el mapa, con dificultad adaptativa."
+      },
+      "elegir": {
+        "title": "Practicar",
+        "description": "Elige una región de Geografía para practicar."
+      },
+      "aprender": {
+        "title": "Aprender Geografía",
+        "description": "Técnicas mnemotécnicas para ubicar países más rápido."
+      },
+      "practica": {
+        "title": "Practicar Geografía",
+        "description": "Identifica países de América en el mapa."
+      },
+      "practicaAfrica": {
+        "title": "Practicar Geografía — África",
+        "description": "Identifica países de África en el mapa."
+      },
+      "practicaAsiaOceania": {
+        "title": "Practicar Geografía — Asia y Oceanía",
+        "description": "Identifica países de Asia y Oceanía en el mapa."
+      },
+      "practicaEuropa": {
+        "title": "Practicar Geografía — Europa",
+        "description": "Identifica países de Europa en el mapa."
+      }
+    },
+    "home": {
+      "mapasDelMundo": "Mapas del mundo",
+      "metaCumplida": "Ya cumpliste tu meta de hoy.",
+      "practicar": "Practicar",
+      "practicarDescripcion": "Elige una región y ubica sus países en el mapa.",
+      "aprender": "Aprender",
+      "aprenderDescripcion": "Trucos mnemotécnicos para ubicar países más rápido.",
+      "regiones": "Regiones"
+    },
+    "elegir": {
+      "quePracticamos": "¿Qué región practicamos?",
+      "subtitulo": "Elige una región para arrancar.",
+      "descAmerica": "El continente de base",
+      "descEuropa": "Países europeos",
+      "descAfrica": "Países africanos",
+      "descAsiaOceania": "Países asiáticos y oceánicos",
+      "bloqueadoDesc": "Necesitas una cuenta para practicar esto",
+      "invitado": "Invitado"
+    },
+    "practicaClient": {
+      "rondaSubtitulo": "Ronda {n}/{total} · Geografía",
+      "errorDefault": "No se pudo cerrar la partida.",
+      "errorConDetalle": "No pudimos cerrar la partida: {error}",
+      "errorDeRed": "No pudimos conectar con el servidor. Prueba de nuevo.",
+      "volver": "Volver",
+      "ahiQuedo": "Ahí quedó.",
+      "experiencia": "Experiencia",
+      "aciertos": "Aciertos",
+      "precision": "Precisión",
+      "experienciaHoy": "Experiencia hoy",
+      "sinDatos": "—",
+      "repasemosEsto": "Repasemos esto",
+      "ningunoFallado": "Ninguno fallado — así se hace. 🎯",
+      "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
+      "instrucciones": "Identifica el país en el mapa. 10 preguntas o 60 segundos.",
+      "iniciarPartida": "Iniciar partida"
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n, plural, one {# escudo disponible} other {# escudos disponibles}}",
+      "exp": "{n} Exp",
+      "dondeEsta": "¿Dónde está <destacado>{pais}</destacado>?",
+      "correcto": "¡Correcto!"
+    },
+    "aprender": {
+      "descripcionUnidad": "Técnicas para ubicar países más rápido, no cómputo — son mnemotécnicas.",
+      "progreso": "Progreso",
+      "tecnicas": "{completadas}/{total} técnicas",
+      "titulo": "Aprender",
+      "subtitulo": "Trucos para memorizar mapas — no son cuentas, son formas de mirar."
+    },
+    "leccion": {
+      "tecnica": "Técnica",
+      "verElTruco": "Ver el truco",
+      "anterior": "Anterior",
+      "siguientePaso": "Siguiente paso",
+      "marcarComoAprendida": "Marcar como aprendida",
+      "completaste": "¡Completaste {nombre}!",
+      "volverAAprender": "Volver a Aprender",
+      "irAPracticar": "Ir a Practicar"
     }
   },
   "Nav": {
@@ -625,7 +919,8 @@
     "subtemaPicker": {
       "elegiAlMenosUno": "Elige al menos un sub-tema",
       "iniciarPartida": "Iniciar partida",
-      "iniciarPartidaConCantidad": "Iniciar partida ({n} sub-temas)"
+      "iniciarPartidaConCantidad": "Iniciar partida ({n} sub-temas)",
+      "subtitulo": "Elige uno o más sub-temas. 10 problemas o 60 segundos."
     },
     "cliente": {
       "noSePudoCerrar": "No se pudo cerrar la partida.",
@@ -650,6 +945,8 @@
       "vsTuPromedio": "vs. {historico} tu promedio",
       "sinHistorial": "sin historial",
       "partidaPerfecta": "Partida perfecta — 10/10",
+      "era": "era",
+      "ningunaFallada": "Ninguna fallada — así se hace.",
       "ahiQuedo": "Ahí quedó.",
       "experiencia": "Experiencia",
       "rompisteTuMeta": "Rompiste tu meta de hoy — {ganado}/{meta} de experiencia",
@@ -658,10 +955,18 @@
       "velocidadPromedio": "Velocidad promedio",
       "experienciaHoy": "Experiencia hoy",
       "chispasTotales": "Chispas totales: {n}",
-          "repasemosEsto": "Repasemos esto",
+      "repasemosEsto": "Repasemos esto",
       "laRespuestaEra": "la respuesta era",
       "ningunoFallado": "Ninguno fallado — así se hace."
-    }
+    },
+    "revelarRespuesta": {
+      "tuRespuesta": "Tu respuesta: {respuesta}",
+      "laRespuestaEra": "La respuesta era {respuesta}"
+    },
+    "duelo": {
+      "rondaDe": "Ronda {n}/{total}"
+    },
+    "rivalPredeterminado": "Rival"
   },
   "Aprender": {
     "progreso": "Progreso",
@@ -692,6 +997,1357 @@
       "desbloqueasteEnPracticar": "Desbloqueaste en Practicar:",
       "volverAAprender": "Volver a Aprender",
       "irAPracticar": "Ir a Practicar"
+    }
+  },
+  "Admin": {
+    "anuncios": {
+      "titulo": "Anuncios",
+      "descripcion": "Lo que crees acá aparece como modal a cada usuario que todavía no lo vio, una sola vez.",
+      "nuevoAnuncio": "Nuevo anuncio",
+      "placeholderTitulo": "Título",
+      "placeholderDescripcion": "Descripción",
+      "completaTituloYDescripcion": "Completa título y descripción.",
+      "publicar": "Publicar",
+      "todosLosAnuncios": "Todos los anuncios",
+      "todaviaNoCreaste": "Todavía no creaste ninguno.",
+      "inactivo": "inactivo",
+      "desactivar": "Desactivar",
+      "activar": "Activar"
+    }
+  },
+  "Ajustes": {
+    "metadata": {
+      "title": "Ajustes",
+      "description": "Sonido, efectos y tema de Prodigia."
+    },
+    "titulo": "Ajustes",
+    "sonido": "Sonido",
+    "sonidoDescripcion": "Tonos cortos al acertar o fallar en las partidas.",
+    "efectosVisuales": "Efectos visuales",
+    "efectosVisualesDescripcion": "Fondos animados, partículas y el gesto del logo en celebraciones. Apagarlo no cambia nada de la funcionalidad.",
+    "ocultarDobleONada": "Ocultar \"Doble o nada\"",
+    "ocultarDobleONadaDescripcion": "Saca la trastienda de apuestas de la Tienda. Siempre es solo con Chispas del juego, nunca dinero real — pero si prefieres no verla, la apagas acá.",
+    "tema": "Tema",
+    "temaDescripcion": "Claro u oscuro.",
+    "terminosDeUso": "Términos de uso",
+    "privacidad": "Privacidad"
+  },
+  "Algebra": {
+    "metadata": {
+      "title": "Practicar Álgebra",
+      "description": "Evaluar expresiones y resolver ecuaciones lineales simples."
+    },
+    "tipos": {
+      "evaluar": "Evaluar expresiones",
+      "unPaso": "Ecuaciones de un paso",
+      "dosPasos": "Ecuaciones de dos pasos"
+    }
+  },
+  "Anatomia": {
+    "nombreMundo": "Anatomía",
+    "home": {
+      "metadata": {
+        "description": "Huesos, músculos, órganos y sistema nervioso, con dificultad adaptativa."
+      },
+      "avisoIntro": "Huesos, músculos, órganos y sistema nervioso — con dificultad que se adapta a ti, igual que en los demás mundos.",
+      "titulo": "El cuerpo humano",
+      "metaCumplida": "Ya cumpliste tu meta de hoy.",
+      "practicarTitulo": "Practicar",
+      "practicarDescripcion": "Huesos, músculos, órganos y sistema nervioso.",
+      "aprenderTitulo": "Aprender",
+      "aprenderDescripcion": "Técnicas de memorización, un sistema a la vez.",
+      "sistemasTitulo": "Sistemas"
+    },
+    "elegir": {
+      "metadata": {
+        "titulo": "Practicar",
+        "description": "Elige un sistema de Anatomía para practicar."
+      },
+      "titulo": "¿Qué sistema practicamos?",
+      "subtitulo": "Elige un sistema para arrancar.",
+      "modos": {
+        "oseo": "Huesos del cuerpo",
+        "muscular": "Músculos del cuerpo",
+        "organos": "Órganos principales",
+        "nervioso": "Sistema nervioso y pares craneales"
+      }
+    },
+    "practicaClient": {
+      "errorCerrarPartida": "No se pudo cerrar la partida.",
+      "errorConexion": "No pudimos conectar con el servidor. Prueba de nuevo.",
+      "noPudimosCerrarPartida": "No pudimos cerrar la partida: {error}",
+      "volver": "Volver",
+      "subtituloRonda": "Ronda {ronda}/{total} · Anatomía",
+      "ahiQuedo": "Ahí quedó.",
+      "experiencia": "Experiencia",
+      "aciertos": "Aciertos",
+      "precision": "Precisión",
+      "experienciaHoy": "Experiencia hoy",
+      "repasemosEsto": "Repasemos esto",
+      "ningunaFallada": "Ninguna fallada — así se hace. 🎯",
+      "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
+      "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
+      "iniciarPartida": "Iniciar partida"
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} escudos disponibles",
+      "exp": "{n} Exp",
+      "segundos": "{n}s"
+    },
+    "diagnostico": {
+      "titulo": "Unos huesos para calibrar",
+      "subtitulo": "Sin presión — 8 preguntas variadas, solo para arrancar en el nivel justo.",
+      "empezar": "Empezar",
+      "arrancarNivel1": "Prefiero arrancar en nivel 1",
+      "guardando": "Guardando tu diagnóstico...",
+      "resultadoTitulo": "Así arrancas",
+      "nivelResultado": "Nivel {n}",
+      "errorGuardado": "No pudimos guardar tu progreso — prueba de nuevo antes de continuar.",
+      "continuar": "Continuar",
+      "reintentar": "Reintentar"
+    },
+    "aprender": {
+      "metadata": {
+        "titulo": "Aprender Anatomía",
+        "description": "Técnicas de memorización para huesos, músculos, órganos y sistema nervioso."
+      },
+      "progresoLabel": "Progreso",
+      "tecnicasContador": "{dominadas}/{total} técnicas",
+      "unidadDescripcion": "Técnicas para memorizar términos anatómicos — no son cómputo, son asociaciones y patrones.",
+      "titulo": "Aprender",
+      "subtitulo": "Trucos para memorizar términos — no son cuentas, son formas de mirar y agrupar."
+    },
+    "leccion": {
+      "badge": "Técnica",
+      "verTruco": "Ver el truco",
+      "anterior": "Anterior",
+      "siguientePaso": "Siguiente paso",
+      "marcarAprendida": "Marcar como aprendida",
+      "completaste": "¡Completaste {nombre}!",
+      "volverAprender": "Volver a Aprender",
+      "irPracticar": "Ir a Practicar"
+    },
+    "practica": {
+      "oseo": {
+        "metadata": {
+          "titulo": "Sistema óseo",
+          "description": "Huesos del cuerpo humano, con dificultad adaptativa."
+        }
+      },
+      "muscular": {
+        "metadata": {
+          "titulo": "Sistema muscular",
+          "description": "Músculos del cuerpo humano, con dificultad adaptativa."
+        }
+      },
+      "nervioso": {
+        "metadata": {
+          "titulo": "Sistema nervioso",
+          "description": "Sistema nervioso y pares craneales, con dificultad adaptativa."
+        }
+      },
+      "organos": {
+        "metadata": {
+          "titulo": "Órganos",
+          "description": "Órganos principales del cuerpo humano, con dificultad adaptativa."
+        }
+      }
+    }
+  },
+  "Auth": {
+    "metadata": {
+      "title": "Entrar",
+      "description": "Inicia sesión en Prodigia con tu email y contraseña."
+    },
+    "login": {
+      "titulo": "Entra a Prodigia",
+      "subtitulo": "Con tu email y contraseña.",
+      "errorEnlace": "No pudimos confirmar el enlace — puede haber expirado o ya haberse usado. Pide uno nuevo desde <link>/recuperar</link> o revisa tu email de confirmación de cuenta.",
+      "olvidasteContrasena": "¿Olvidaste tu contraseña?",
+      "noTienesCuenta": "¿No tienes cuenta?",
+      "creaUna": "Crea una",
+      "emailPlaceholder": "tu@email.com",
+      "passwordPlaceholder": "Contraseña",
+      "entrando": "Entrando...",
+      "botonIniciarSesion": "Iniciar sesión",
+      "separadorO": "o",
+      "botonInvitado": "Entrar como invitado",
+      "practicaSinCuenta": "Practica sin crear cuenta. Puedes guardar tu progreso después.",
+      "errorInvitado": "No pudimos crear una sesión de invitado. Prueba de nuevo.",
+      "errorLogin": "No pudimos iniciar sesión. Prueba de nuevo."
+    },
+    "registro": {
+      "titulo": "Crea tu cuenta",
+      "subtitulo": "Con tu email y una contraseña.",
+      "yaTienesCuenta": "¿Ya tienes cuenta?",
+      "iniciaSesion": "Inicia sesión",
+      "emailPlaceholder": "tu@email.com",
+      "passwordPlaceholder": "Contraseña (mínimo 6 caracteres)",
+      "confirmarPlaceholder": "Repite la contraseña",
+      "creandoCuenta": "Creando cuenta...",
+      "botonCrearCuenta": "Crear cuenta",
+      "errorPasswordsNoCoinciden": "Las contraseñas no coinciden.",
+      "errorCrearCuenta": "No pudimos crear la cuenta. Prueba de nuevo.",
+      "errorYaRegistrado": "Ya existe una cuenta con ese email.",
+      "confirmacionPendiente": "Te mandamos un email a <strong>{email}</strong> — confirma tu cuenta desde ahí para poder entrar."
+    },
+    "recuperar": {
+      "titulo": "Recuperar contraseña",
+      "subtitulo": "Te mandamos un enlace por email para elegir una nueva.",
+      "volverIniciarSesion": "Volver a iniciar sesión",
+      "emailPlaceholder": "tu@email.com",
+      "enviando": "Enviando...",
+      "botonEnviar": "Enviarme el enlace",
+      "errorEnviar": "No pudimos enviar el enlace. Prueba de nuevo.",
+      "enviado": "Si hay una cuenta con ese email, te llegó un enlace para elegir una nueva contraseña."
+    },
+    "actualizarPassword": {
+      "titulo": "Elige tu nueva contraseña",
+      "subtitulo": "Esto reemplaza la contraseña anterior de tu cuenta.",
+      "passwordPlaceholder": "Nueva contraseña",
+      "confirmarPlaceholder": "Repite la nueva contraseña",
+      "guardando": "Guardando...",
+      "botonGuardar": "Guardar contraseña",
+      "errorPasswordsNoCoinciden": "Las contraseñas no coinciden.",
+      "errorActualizar": "No pudimos actualizar la contraseña. Pide un enlace nuevo desde /recuperar."
+    },
+    "convertirCuenta": {
+      "pasoCerrado": {
+        "titulo": "Estás como invitado",
+        "subtitulo": "Tu progreso ya se está guardando, pero si borras el navegador lo pierdes. Agrega un email y contraseña para no perderlo nunca.",
+        "boton": "Guardar mi cuenta"
+      },
+      "form": {
+        "titulo": "Guardar mi cuenta",
+        "emailPlaceholder": "tu@email.com",
+        "passwordPlaceholder": "Contraseña (mínimo 6 caracteres)",
+        "confirmarPlaceholder": "Repite la contraseña",
+        "botonConfirmar": "Confirmar",
+        "botonCancelar": "Cancelar",
+        "errorPasswordsNoCoinciden": "Las contraseñas no coinciden.",
+        "errorGuardar": "No pudimos guardar la cuenta. Prueba de nuevo."
+      },
+      "pasoNombre": {
+        "titulo": "¿Cómo te llamamos?",
+        "subtitulo": "Tu cuenta ya está guardada — elige tu nombre real para el perfil y el ranking.",
+        "placeholder": "Tu nombre",
+        "botonGuardar": "Guardar",
+        "seguirNombreActual": "Seguir con mi nombre actual",
+        "errorGenerico": "No se pudo guardar. Prueba de nuevo."
+      },
+      "pasoDirecto": "Listo, tu cuenta ya tiene email y contraseña — la próxima vez entra con eso.",
+      "pasoConfirmar": "Te mandamos un email a <strong>{email}</strong> — confírmalo para terminar de guardar tu cuenta. Mientras tanto sigue jugando normal, no pierdes nada."
+    }
+  },
+  "Bloqueos": {
+    "invitado": {
+      "metadata": {
+        "title": "Crea tu cuenta",
+        "description": "Esta parte de Prodigia necesita una cuenta real."
+      },
+      "titulo": "Crea tu cuenta para desbloquear esto",
+      "necesitaCuenta": "necesita una cuenta real — es gratis y no pierdes nada de lo que ya practicaste.",
+      "etiquetaPorDefecto": "Esto",
+      "volverInvitado": "Volver a jugar como invitado"
+    },
+    "mundo": {
+      "metadata": {
+        "title": "Mundo bloqueado",
+        "description": "Este mundo se desbloquea pagando con Chispas."
+      },
+      "mundoBloqueado": "{mundo} está bloqueado",
+      "desbloqueaPara": "Desbloquea <nombre>{mundo}</nombre> para siempre por <chispas>{precio} Chispas</chispas>. Tienes <valor>{puntos}</valor>.",
+      "desbloqueado": "¡Desbloqueado! Entrando…",
+      "desbloquearPor": "Desbloquear por {precio} Chispas",
+      "teFaltanChispas": "Te faltan Chispas",
+      "sigueJugando": "Sigue jugando para ganar más Chispas, o mira la tienda.",
+      "noSePudoDesbloquear": "No se pudo desbloquear. Prueba de nuevo.",
+      "noSePudoConectar": "No se pudo conectar. Prueba de nuevo."
+    }
+  },
+  "Clanes": {
+    "metadata": {
+      "title": "Clanes",
+      "description": "Crea o únete a un clan, cumple misiones semanales en equipo y compite en la guerra de clanes."
+    },
+    "titulo": "Clanes",
+    "subtitulo": "Únete a un grupo, cumple misiones semanales en equipo y compite en la guerra de clanes.",
+    "confirmarSalir": "¿Seguro que quieres salir de tu clan?",
+    "roles": {
+      "fundador": "Fundador",
+      "guia": "Guía",
+      "miembro": "Miembro"
+    },
+    "nivelLabel": "Nivel {nivel}",
+    "miembrosCantidad": "{n} {n, plural, one {miembro} other {miembros}}",
+    "esRol": "Eres {rol}",
+    "guerraGanada": "{n} {n, plural, one {guerra ganada} other {guerras ganadas}}",
+    "chispasParaNivel": "{n} Chispas para nivel {siguiente}",
+    "verMundo": "🗺️ Ver el Mundo de Clanes",
+    "tuClan": "Tu clan",
+    "vs": "vs",
+    "misionTitulo": "Misión de la semana",
+    "misionRecompensa": "+{n} Chispas para todos",
+    "misionDescripcion": "Resolver {objetivo} problemas entre todo el clan — {progreso}/{objetivo}",
+    "misionCumplida": "¡Misión cumplida! Chispas repartidas.",
+    "miembrosTitulo": "Miembros",
+    "jugadorDefault": "Jugador",
+    "fundadorBadge": "★ Fundador",
+    "guiaBadge": "Guía",
+    "expAportada": "{n} Exp aportada",
+    "aporteHistoricoTitle": "Aporte histórico al clan",
+    "bajarAMiembro": "Bajar a Miembro",
+    "nombrarGuia": "Nombrar Guía",
+    "salirDelClan": "Salir del clan",
+    "guerraSemana": "Guerra de clanes — esta semana",
+    "rankingVacio": "Todavía ningún clan sumó Experiencia esta semana — sé el primero.",
+    "expSemana": "{n} Exp",
+    "sinClan": {
+      "buscarTitulo": "Buscar un clan",
+      "buscarPlaceholder": "Buscar clan por nombre...",
+      "buscando": "Buscando…",
+      "sinResultados": "No encontramos ningún clan con ese nombre.",
+      "unirme": "Unirme",
+      "crearClanTitulo": "Crear un clan",
+      "costoChispas": "— {n} Chispas",
+      "nombrePlaceholder": "Nombre del clan",
+      "tagPlaceholder": "Tag corto (opcional, ej. PRD)",
+      "descripcionPlaceholder": "Descripción (opcional)",
+      "elegirColor": "Elegir color {color}",
+      "tienesChispas": "Tienes {n} Chispas",
+      "noAlcanza": "— no te alcanza todavía",
+      "crearClanBoton": "Crear clan",
+      "errorNombreCorto": "El nombre necesita al menos 3 caracteres.",
+      "errorFaltanChispas": "Te faltan Chispas: crear un clan cuesta {costo} (tienes {tienes})."
+    },
+    "mundo": {
+      "metadata": {
+        "title": "Mundo de Clanes",
+        "description": "El mapa de todos los clanes de Prodigia — una parcela por clan, ordenadas por antigüedad."
+      },
+      "volver": "← Volver a Clanes",
+      "titulo": "Mundo de Clanes",
+      "subtitulo": "Una parcela por clan, en el orden en que se fundaron. Haz click para entrar a su ciudad."
+    },
+    "chat": {
+      "titulo": "Chat del clan",
+      "cargando": "Cargando...",
+      "vacio": "Todavía nadie escribió nada acá — arranca tú.",
+      "tu": "Tú",
+      "jugador": "Jugador",
+      "placeholder": "Escribe algo para tu clan...",
+      "enviar": "Enviar"
+    },
+    "escenaCiudad": {
+      "alt": "Ciudad del clan — {tier}"
+    },
+    "estandarte": {
+      "alt": "Estandarte del clan",
+      "ariaLabel": "Estandarte de clan, nivel {nivel}"
+    },
+    "mapa": {
+      "ayuda": "Arrastra para moverte por el mapa — rueda o los botones para acercar.",
+      "cargando": "Cargando…",
+      "vacio": "Todavía no hay clanes fundados.",
+      "nivelAbrev": "Nv. {nivel}",
+      "lleno": "Lleno",
+      "cerrarInfo": "Cerrar información del clan",
+      "nivel": "Nivel {nivel}",
+      "miembrosCapacidad": "{cantidad}/{capacidad} miembros",
+      "guerrasGanadas": "{n} {n, plural, one {guerra ganada} other {guerras ganadas}}"
+    },
+    "subirImagen": {
+      "errorTipo": "Tiene que ser una imagen (PNG, JPG, WEBP o GIF).",
+      "errorTamano": "La imagen no puede pesar más de 2MB.",
+      "subiendo": "Subiendo...",
+      "cambiarImagen": "Cambiar imagen del clan",
+      "errorSubida": "No pudimos subir la imagen. Prueba de nuevo.",
+      "errorGuardado": "La imagen se subió pero no pudimos guardarla. Prueba de nuevo."
+    }
+  },
+  "Componentes": {
+    "acertijoMemoria": {
+      "memorizando": "Memoriza esta secuencia..."
+    },
+    "apuestaResultado": {
+      "gano": "🎲 Doble o nada: ganaste — +{monto} Chispas",
+      "perdio": "🎲 Doble o nada: esta vez no — perdiste las {monto} Chispas apostadas"
+    },
+    "botonesFinPartida": {
+      "otraPartida": "Otra partida",
+      "volver": "Volver"
+    },
+    "caminoContinuo": {
+      "proximamente": "Próximamente"
+    },
+    "campoPassword": {
+      "ocultarContrasena": "Ocultar contraseña",
+      "mostrarContrasena": "Mostrar contraseña"
+    },
+    "compartirLogroBoton": {
+      "generando": "Generando…",
+      "compartir": "Compartir",
+      "logroDe": "Logro de {nombre}"
+    },
+    "countdownSemanal": {
+      "seReinicia": "Se reinicia en <destacado>{tiempo}</destacado>"
+    },
+    "nivelMundoBadge": {
+      "nivel": "Nivel {nivel}"
+    },
+    "nivelMundoSubio": {
+      "subioANivel": "{nombre} subió a nivel {nivel}",
+      "mundos": {
+        "numeria": "Numeria",
+        "enigmia": "Enigmia",
+        "geografia": "Geografía",
+        "quimia": "Quimia",
+        "anatomia": "Anatomía",
+        "melodia": "Melodía",
+        "trigonometria": "Trigonometría",
+        "historia": "Historia"
+      }
+    },
+    "nombreConFuente": {
+      "jugador": "Jugador"
+    },
+    "primeraVezTip": {
+      "siguiente": "Siguiente",
+      "entendido": "Entendido"
+    },
+    "sonidoToggle": {
+      "silenciar": "Silenciar sonido",
+      "activar": "Activar sonido"
+    },
+    "topicCard": {
+      "nivel": "Nivel {nivel}",
+      "proximamente": "Próximamente"
+    },
+    "worldCard": {
+      "proximamente": "Próximamente",
+      "bloqueado": "Bloqueado"
+    }
+  },
+  "Decimales": {
+    "metadata": {
+      "description": "Convertir, calcular porcentajes y redondear — dificultad adaptativa."
+    },
+    "tipos": {
+      "convertir": "Convertir a decimal",
+      "porcentaje": "Porcentajes",
+      "redondear": "Redondear"
+    }
+  },
+  "Duelos": {
+    "rendirse": {
+      "confirmarPregunta": "¿Rendirte? Cuenta como derrota.",
+      "confirmarBoton": "Sí, rendirme",
+      "enviando": "...",
+      "seguirJugando": "Seguir jugando",
+      "error": "No se pudo rendir el duelo. Prueba de nuevo.",
+      "boton": "Rendirse"
+    },
+    "pantallaVS": {
+      "mejorDe3": "Mejor de 3",
+      "vs": "VS",
+      "eloValor": "{elo} ELO",
+      "clanDeBots": "Clan de Bots"
+    },
+    "progresoRival": {
+      "vasAdelante": "Vas adelante de {rival}",
+      "teLlevaVentaja": "{rival} te lleva ventaja",
+      "vanParejo": "Van parejo con {rival}"
+    },
+    "resultado": {
+      "clanDeBots": "Clan de Bots",
+      "tu": "Tú",
+      "rival": "Rival",
+      "elo": "ELO",
+      "aciertos": "Aciertos",
+      "precision": "Precisión",
+      "tiempoProm": "Tiempo prom.",
+      "puntos": "puntos",
+      "esperandoRival": "Esperando al rival…",
+      "enCuantoTermine": "En cuanto {oponente} termine la suya vas a ver la comparativa completa.",
+      "rivalPorDefecto": "tu rival",
+      "empate": "Empate",
+      "empataronCon": "Empataron con {oponente} — ni más ni menos.",
+      "verPerfil": "Ver perfil",
+      "victoria": "Victoria",
+      "leGanasteA": "Le ganaste a {oponente}",
+      "subisteDeRango": "Subiste de rango",
+      "derrota": "Derrota",
+      "estaVezGano": "Esta vez ganó {oponente} — estuviste cerca.",
+      "pedirRevancha": "Pedir revancha"
+    },
+    "salaEspera": {
+      "tu": "Tú",
+      "rivalNoConectado": "{rival} todavía no se conectó a la sala — puedes seguir esperando o arrancar tu parte ahora (se resuelve el duelo apenas juegue la suya, como antes).",
+      "jugarAhora": "Jugar mi parte ahora",
+      "tuListo": "Tú, listo",
+      "rivalListo": "{rival}, listo",
+      "esperandoA": "Esperando a {rival}…",
+      "arrancaSolo": "Arranca solo apenas estén los dos — no hace falta que aprietes nada."
+    },
+    "transicionFinalizando": {
+      "mensaje": "Cerrando la partida…"
+    },
+    "invitacion": {
+      "tituloInvalido": "Este link de duelo ya no sirve",
+      "esTuPropioLink": "Es tu propio link — compárteselo a otra persona.",
+      "motivoGenerico": "Puede que ya se haya usado, se haya cancelado, o el link esté mal copiado."
+    }
+  },
+  "Enigmia": {
+    "metadata": {
+      "description": "Acertijos de lógica: memoria, patrones, deducción y pensamiento computacional."
+    },
+    "titulo": "Lógica",
+    "metaCumplida": "Ya cumpliste tu meta de hoy.",
+    "practicar": "Practicar",
+    "practicarDescripcion": "Acertijos de lógica, calibrados a tu nivel.",
+    "aprender": "Aprender",
+    "aprenderDescripcion": "Estrategias de razonamiento, una a la vez.",
+    "categoriasTitulo": "Categorías",
+    "practica": {
+      "rivalPorDefecto": "Rival"
+    },
+    "practicaClient": {
+      "noSePudoCerrar": "No se pudo cerrar la partida.",
+      "errorDeRed": "No pudimos conectar con el servidor. Prueba de nuevo.",
+      "noPudimosCerrar": "No pudimos cerrar la partida: {error}",
+      "volver": "Volver",
+      "ahiQuedo": "Ahí quedó.",
+      "experiencia": "Experiencia",
+      "aciertos": "Aciertos",
+      "precision": "Precisión",
+      "experienciaHoy": "Experiencia hoy",
+      "repasemosEsto": "Repasemos esto",
+      "laRespuestaEra": "la respuesta era",
+      "ningunoFallado": "Ninguno fallado — así se hace.",
+      "boostActivo": "Boost activo — Chispas ×1.5 en esta partida",
+      "dueloSubtitulo": "Ronda {ronda}/{total} · Enigmia",
+      "listoTitulo": "¿Listo?",
+      "listoDescripcion": "10 acertijos o 60 segundos, lo que llegue primero.",
+      "iniciarPartida": "Iniciar partida"
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} escudos disponibles",
+      "exp": "{n} Exp",
+      "segundos": "{n}s"
+    },
+    "diagnostico": {
+      "introTitulo": "Unos acertijos para calibrar",
+      "introDescripcion": "Sin presión — 8 acertijos variados, solo para arrancar en el nivel justo.",
+      "empezar": "Empezar",
+      "prefiereNivelUno": "Prefiero arrancar en nivel 1",
+      "guardando": "Guardando tu diagnóstico...",
+      "resultadoTitulo": "Así arrancas",
+      "nivelResultado": "Nivel {nivel}",
+      "continuar": "Continuar"
+    },
+    "aprenderPagina": {
+      "progreso": "Progreso",
+      "progresoTecnicas": "{dominadas}/{total} técnicas",
+      "titulo": "Aprender"
+    },
+    "leccion": {
+      "tecnica": "Técnica",
+      "verElEjemplo": "Ver el ejemplo",
+      "anterior": "Anterior",
+      "siguientePaso": "Siguiente paso",
+      "listo": "Listo",
+      "completaste": "¡Completaste {nombre}!",
+      "volverAAprender": "Volver a Aprender"
+    }
+  },
+  "Fracciones": {
+    "tipos": {
+      "simplificar": "Simplificar",
+      "comparar": "Comparar",
+      "sumar": "Sumar"
+    },
+    "enunciados": {
+      "simplificar": "Simplifica esta fracción",
+      "sumar": "Suma y simplifica el resultado",
+      "comparar": "¿Cuál es mayor?"
+    }
+  },
+  "Geometria": {
+    "metadata": {
+      "description": "Perímetro, área, ángulos y ternas pitagóricas — dificultad adaptativa."
+    },
+    "tipos": {
+      "perimetro": "Perímetro",
+      "area": "Área",
+      "angulos": "Ángulos",
+      "ternas": "Ternas pitagóricas"
+    }
+  },
+  "Historia": {
+    "metadata": {
+      "description": "Cronología, personajes, causa y efecto, y fechas exactas, con dificultad adaptativa."
+    },
+    "aviso": "Cronología, personajes, causa y efecto, y fechas exactas — hechos reales de consenso histórico amplio, con dificultad que se adapta a ti.",
+    "titulo": "Hechos, fechas y figuras",
+    "metaCumplida": "Ya cumpliste tu meta de hoy.",
+    "practicar": "Practicar",
+    "practicarDescripcion": "Cronología, personajes, causa/efecto y fechas.",
+    "aprender": "Aprender",
+    "aprenderDescripcion": "Técnicas de memoria para fechas y cronología.",
+    "modosTitulo": "Modos",
+    "modos": {
+      "cronologia": "Cronología",
+      "personajes": "Personajes",
+      "causaefecto": "Causa y efecto",
+      "fechas": "Fechas exactas"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practicar",
+        "description": "Elige un modo de Historia para practicar."
+      },
+      "titulo": "¿Qué modo practicamos?",
+      "subtitulo": "Elige un modo para arrancar.",
+      "modos": {
+        "cronologia": {
+          "nombre": "Cronología",
+          "desc": "Ordenar eventos, o identificar el siglo"
+        },
+        "personajes": {
+          "nombre": "Personajes",
+          "desc": "Identifica la figura histórica desde pistas"
+        },
+        "causaefecto": {
+          "nombre": "Causa y efecto",
+          "desc": "La consecuencia directa más reconocida"
+        },
+        "fechas": {
+          "nombre": "Fechas exactas 🔥",
+          "desc": "Año o década precisa — el más difícil"
+        }
+      }
+    },
+    "practicaClient": {
+      "noSePudoCerrar": "No se pudo cerrar la partida.",
+      "errorDeRed": "No pudimos conectar con el servidor. Prueba de nuevo.",
+      "noPudimosCerrar": "No pudimos cerrar la partida: {error}",
+      "volver": "Volver",
+      "rondaSerie": "Ronda {numero}/{total} · Historia",
+      "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
+      "instrucciones": "10 preguntas o 60 segundos, lo que llegue primero.",
+      "iniciarPartida": "Iniciar partida",
+      "ahiQuedo": "Ahí quedó.",
+      "experiencia": "Experiencia",
+      "aciertos": "Aciertos",
+      "precision": "Precisión",
+      "experienciaHoy": "Experiencia hoy",
+      "repasemosEsto": "Repasemos esto",
+      "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} escudos disponibles",
+      "exp": "{n} Exp",
+      "segundos": "{n}s"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Diagnóstico de Historia",
+        "description": "Unas preguntas rápidas para calibrar tu nivel inicial."
+      },
+      "intro": {
+        "titulo": "Unos hechos para calibrar",
+        "subtitulo": "Sin presión — 8 preguntas variadas, solo para arrancar en el nivel justo.",
+        "empezar": "Empezar",
+        "arrancarNivel1": "Prefiero arrancar en nivel 1"
+      },
+      "guardando": "Guardando tu diagnóstico...",
+      "resultado": {
+        "titulo": "Así arrancas",
+        "nivel": "Nivel {n}",
+        "errorGuardado": "No pudimos guardar tu progreso — prueba de nuevo antes de continuar.",
+        "continuar": "Continuar",
+        "reintentar": "Reintentar"
+      }
+    },
+    "aprenderPage": {
+      "metadata": {
+        "title": "Aprender Historia",
+        "description": "Técnicas de memoria para fechas, cronología y personajes históricos."
+      },
+      "unidad": {
+        "descripcion": "Técnicas de memorización para fechas y cronología — no clases de historia."
+      },
+      "progreso": "Progreso",
+      "tecnicas": "{dominadas}/{total} técnicas",
+      "titulo": "Aprender",
+      "subtitulo": "Cómo recordar fechas y ubicar eventos en el tiempo sin memorizar número por número."
+    },
+    "leccion": {
+      "tecnica": "Técnica",
+      "verElTruco": "Ver el truco",
+      "anterior": "Anterior",
+      "siguientePaso": "Siguiente paso",
+      "marcarComoAprendida": "Marcar como aprendida",
+      "completaste": "¡Completaste {nombre}!",
+      "volverAAprender": "Volver a Aprender",
+      "irAPracticar": "Ir a Practicar"
+    },
+    "practicaPages": {
+      "cronologia": {
+        "metadata": {
+          "title": "Practicar Cronología",
+          "description": "Ordena eventos históricos o identifica el siglo, con dificultad adaptativa."
+        }
+      },
+      "causaefecto": {
+        "metadata": {
+          "title": "Practicar Causa y efecto",
+          "description": "La consecuencia directa más reconocida de un evento histórico."
+        }
+      },
+      "fechas": {
+        "metadata": {
+          "title": "Practicar Fechas exactas",
+          "description": "Año o década precisa de eventos menos conocidos — el modo más difícil."
+        }
+      },
+      "personajes": {
+        "metadata": {
+          "title": "Practicar Personajes",
+          "description": "Identifica la figura histórica a partir de pistas, con dificultad adaptativa."
+        }
+      }
+    }
+  },
+  "Leaderboard": {
+    "metadata": {
+      "title": "Ranking",
+      "description": "Ranking semanal de Experiencia entre jugadores de Prodigia."
+    },
+    "titulo": "Ranking semanal",
+    "descripcion": "Experiencia ganada esta semana — es temporal, se reinicia solo cada lunes. No tiene nada que ver con tus Chispas totales, esas no bajan nunca.",
+    "tabs": {
+      "global": "Global",
+      "amigos": "Amigos"
+    },
+    "filtros": {
+      "total": "Experiencia total",
+      "mundo": "Por mundo"
+    },
+    "cargando": "Cargando...",
+    "vacioAmigos": "Ninguno de tus amigos sumó experiencia esta semana todavía.",
+    "vacioGlobal": "Todavía nadie sumó experiencia esta semana — ¡arranca tú!",
+    "noSumasteAmigos": "Todavía no sumaste experiencia esta semana.",
+    "noSumasteGlobal": "Todavía no sumaste experiencia esta semana — practica para entrar al ranking.",
+    "expValor": "{n} Exp",
+    "jugadorPorDefecto": "Jugador",
+    "resto": {
+      "titulo": "Resto del ranking",
+      "irAMiPosicion": "Ir a mi posición",
+      "buscarPlaceholder": "Buscar por nombre...",
+      "buscarAriaLabel": "Buscar por nombre",
+      "cerrarBusqueda": "Cerrar búsqueda",
+      "vacio": "Todavía no hay nadie más en el ranking de esta semana.",
+      "sinResultados": "Nadie con ese nombre en el ranking de esta semana."
+    }
+  },
+  "Legal": {
+    "privacidad": {
+      "metadata": {
+        "title": "Privacidad — Prodigia",
+        "description": "Qué datos guarda Prodigia y para qué los usa."
+      },
+      "titulo": "Privacidad",
+      "intro": "Somos una app educativa chica — esto explica en lenguaje simple qué guardamos y por qué.",
+      "datosTitulo": "Qué datos guardamos",
+      "datosEmail": "Tu email (si creaste cuenta con email y contraseña).",
+      "datosPerfil": "Tu nombre visible, tu foto de perfil (avatar) si subiste una, y tu progreso: nivel por mundo y por tema, racha, Chispas, Experiencia, logros y títulos.",
+      "datosActividad": "Tu actividad de práctica: qué respondiste, si acertaste, cuánto tardaste — esto es lo que usamos para calibrar la dificultad a tu nivel.",
+      "datosDuelos": "Tu historial de duelos en tiempo real: contra quién jugaste, el resultado y cómo se movió tu ELO.",
+      "datosClan": "Si eres parte de un clan: a cuál, tu rol ahí, y los mensajes que mandas en el chat del clan (visibles solo para el resto de tu clan).",
+      "datosAmistades": "Tus amistades dentro de la app (a quién agregaste, quién te agregó a ti).",
+      "datosGrupo": "Si eres parte de un grupo de un profesor, ese profesor puede ver tu progreso agregado del grupo (nivel, racha, precisión), nunca tus respuestas individuales fuera de eso.",
+      "usoTitulo": "Para qué lo usamos",
+      "usoTexto": "Solo para que la app funcione: calibrar tu nivel, calcular tu progreso, mostrar el ranking, el feed y el chat de tu clan, y nada más. No vendemos tus datos ni los compartimos con terceros con fines publicitarios. El chat de clan tiene un filtro automático de lenguaje ofensivo (un mensaje que lo contiene se rechaza antes de guardarse) y cualquier mensaje se puede reportar para que lo revisemos a mano — no hay moderación automática de contenido más allá de ese filtro.",
+      "borrarTitulo": "Borrar tus datos",
+      "borrarTexto": "Desde <link>tu perfil</link> puedes borrar tu cuenta por completo — se elimina tu progreso, tus logros, tu título, tu historial de duelos, tu pertenencia a un clan y tus mensajes de chat, tus amistades, y todo lo demás asociado a tu cuenta, de forma permanente. Una excepción a tener en cuenta: si jugaste un duelo contra otra persona y esa persona borra su cuenta más adelante, el registro de ese duelo puede desaparecer también de tu propio historial — no es algo que tú puedas evitar, es un efecto de cómo se borra la información de la otra cuenta."
+    },
+    "terminos": {
+      "metadata": {
+        "title": "Términos de uso — Prodigia",
+        "description": "Términos de uso de Prodigia, en lenguaje simple."
+      },
+      "titulo": "Términos de uso",
+      "intro": "Esto está escrito en lenguaje simple a propósito — no es un contrato legal complejo, es una explicación honesta de qué es Prodigia y cómo funciona.",
+      "queEsTitulo": "Qué es Prodigia",
+      "queEsTexto": "Prodigia es una app educativa de práctica adaptativa: cálculo mental, lógica, geografía, química, anatomía, teoría musical y otros temas que se van agregando, con dificultad que se ajusta a cómo te va. También incluye duelos en tiempo real contra otros jugadores (con ELO y rango), clanes, amigos, logros y un feed social. No reemplaza una clase ni una evaluación formal — es una herramienta de práctica.",
+      "cuentaTitulo": "Tu cuenta",
+      "cuentaTexto": "Puedes crear una cuenta con email y contraseña, o entrar como invitado y decidir más adelante si quieres guardarla. Eres responsable de mantener tu contraseña segura.",
+      "usoTitulo": "Uso aceptable",
+      "usoTexto": "Usa Prodigia para practicar de buena fe. No intentes manipular el sistema de Chispas, el ranking o los duelos con bots, scripts, o respondiendo automáticamente. En el chat de tu clan y en cualquier otro lugar donde puedas escribir texto libre, no uses lenguaje ofensivo, discriminatorio o abusivo — los mensajes que lo contienen se rechazan automáticamente antes de guardarse, y cualquier mensaje o perfil se puede reportar para que lo revisemos a mano.",
+      "borrarTitulo": "Borrar tu cuenta",
+      "borrarTexto": "Puedes borrar tu cuenta cuando quieras desde <link>tu perfil</link>. Esa acción es permanente: borra tu progreso, tus logros, tu historial de duelos, tu pertenencia a un clan, tus mensajes de chat y todo lo demás asociado a tu cuenta, y no se puede deshacer. Si jugaste un duelo contra alguien que después borra su cuenta, ese duelo puede desaparecer también de tu propio historial — es un efecto secundario de cómo funciona el borrado, no algo que puedas evitar del otro lado.",
+      "verTambien": "Ver también nuestra <link>política de privacidad</link>."
+    },
+    "pro": {
+      "metadata": {
+        "title": "Prodigia Pro",
+        "description": "Los beneficios de Prodigia Pro — próximamente."
+      },
+      "marca": "Prodigia",
+      "titulo": "Prodigia Pro",
+      "subtitulo": "Todo lo que vas a tener cuando Pro esté disponible.",
+      "proximamente": "Próximamente",
+      "noDisponible": "Todavía no se puede comprar Prodigia Pro."
+    }
+  },
+  "Melodia": {
+    "home": {
+      "metadata": {
+        "description": "Pentagrama, escalas y acordes, con dificultad adaptativa."
+      },
+      "avisoIntro": "Pentagrama, escalas y acordes reales, construidos por fórmula — con dificultad que se adapta a ti, igual que en los demás mundos.",
+      "titulo": "Notas, escalas y acordes",
+      "metaCumplida": "Ya cumpliste tu meta de hoy.",
+      "practicar": "Practicar",
+      "practicarDescripcion": "Pentagrama, alteraciones, escalas y acordes.",
+      "aprender": "Aprender",
+      "aprenderDescripcion": "Cómo leer el pentagrama y armar acordes.",
+      "modosTitulo": "Modos",
+      "modos": {
+        "fundamentos": "Fundamentos",
+        "lectura": "Lectura en pentagrama",
+        "alteraciones": "Alteraciones",
+        "escalas": "Escalas",
+        "acordes": "Acordes",
+        "oidoAbsoluto": "Oído absoluto"
+      }
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practicar",
+        "description": "Elige un modo de Melodía para practicar."
+      },
+      "titulo": "¿Qué modo practicamos?",
+      "subtitulo": "Elige un modo para arrancar.",
+      "modos": {
+        "fundamentos": {
+          "nombre": "Fundamentos",
+          "descripcion": "Figuras rítmicas y cifrado americano"
+        },
+        "lectura": {
+          "nombre": "Lectura en pentagrama",
+          "descripcion": "Identifica la nota en clave de sol"
+        },
+        "alteraciones": {
+          "nombre": "Alteraciones",
+          "descripcion": "Sostenidos y bemoles"
+        },
+        "escalas": {
+          "nombre": "Escalas",
+          "descripcion": "Mayor, menor y pentatónicas"
+        },
+        "acordes": {
+          "nombre": "Acordes",
+          "descripcion": "Tríadas, séptimas y extendidos"
+        },
+        "oidoAbsoluto": {
+          "nombre": "Oído absoluto 🔥",
+          "descripcion": "Escucha la nota e identifícala — el más difícil"
+        }
+      }
+    },
+    "practicaClient": {
+      "errorCierre": "No se pudo cerrar la partida.",
+      "errorConexion": "No pudimos conectar con el servidor. Prueba de nuevo.",
+      "errorCierreConDetalle": "No pudimos cerrar la partida: {error}",
+      "volver": "Volver",
+      "resumenTitulo": "Ahí quedó.",
+      "experiencia": "Experiencia",
+      "aciertos": "Aciertos",
+      "precision": "Precisión",
+      "experienciaHoy": "Experiencia hoy",
+      "repasemos": "Repasemos esto",
+      "ningunaFallada": "Ninguna fallada — así se hace. 🎯",
+      "iniciarPartida": "Iniciar partida",
+      "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
+      "instrucciones": "10 preguntas o 60 segundos, lo que llegue primero."
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n, plural, one {# escudo disponible} other {# escudos disponibles}}",
+      "expCounter": "{n} Exp"
+    },
+    "diagnostico": {
+      "titulo": "Unas notas para calibrar",
+      "subtitulo": "Sin presión — 8 preguntas variadas, solo para arrancar en el nivel justo.",
+      "empezar": "Empezar",
+      "saltarNivel1": "Prefiero arrancar en nivel 1",
+      "guardando": "Guardando tu diagnóstico...",
+      "resultadoTitulo": "Así arrancas",
+      "nivelResultado": "Nivel {n}",
+      "errorGuardado": "No pudimos guardar tu progreso — prueba de nuevo antes de continuar.",
+      "continuar": "Continuar",
+      "reintentar": "Reintentar"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Aprender Melodía",
+        "description": "Cómo leer el pentagrama y construir escalas y acordes, paso a paso."
+      },
+      "unidadDescripcion": "Cómo leer el pentagrama por posición y cómo se arman escalas y acordes desde cero.",
+      "progresoLabel": "Progreso",
+      "progresoContador": "{completadas}/{total} técnicas",
+      "titulo": "Aprender",
+      "descripcion": "Cómo leer el pentagrama y cómo se arman escalas y acordes — la lógica, no memorizar caso por caso."
+    },
+    "leccion": {
+      "badge": "Técnica",
+      "verTruco": "Ver el truco",
+      "anterior": "Anterior",
+      "siguientePaso": "Siguiente paso",
+      "marcarAprendida": "Marcar como aprendida",
+      "completaste": "¡Completaste {nombre}!",
+      "volverAprender": "Volver a Aprender",
+      "irPracticar": "Ir a Practicar"
+    },
+    "practicaPaginas": {
+      "fundamentos": {
+        "metadata": {
+          "title": "Practicar Fundamentos",
+          "description": "Figuras rítmicas y cifrado americano, con dificultad adaptativa."
+        }
+      },
+      "acordes": {
+        "metadata": {
+          "title": "Practicar Acordes",
+          "description": "Tríadas, séptimas, sus/add9 y extendidos, con dificultad adaptativa."
+        }
+      },
+      "alteraciones": {
+        "metadata": {
+          "title": "Practicar Alteraciones",
+          "description": "Sostenidos y bemoles, con dificultad adaptativa."
+        }
+      },
+      "escalas": {
+        "metadata": {
+          "title": "Practicar Escalas",
+          "description": "Escalas mayor, menor natural y pentatónicas, con dificultad adaptativa."
+        }
+      },
+      "lectura": {
+        "metadata": {
+          "title": "Practicar Lectura en pentagrama",
+          "description": "Identifica notas en clave de sol, con dificultad adaptativa."
+        }
+      },
+      "oidoAbsoluto": {
+        "metadata": {
+          "title": "Practicar Oído absoluto",
+          "description": "Escucha la nota e identifícala — el modo más difícil de Melodía."
+        }
+      }
+    },
+    "botonEscuchar": {
+      "ariaLabel": "Escuchar la nota otra vez"
+    },
+    "figuraRitmica": {
+      "ariaLabel": "Figura rítmica: {figura}"
+    },
+    "pentagrama": {
+      "ariaLabel": "Pentagrama musical"
+    }
+  },
+  "Onboarding": {
+    "onboardingForm": {
+      "nombre": {
+        "titulo": "¿Cómo te llamamos?",
+        "subtitulo": "Un nombre corto alcanza — lo vas a ver en tu perfil y en el ranking.",
+        "placeholder": "Tu nombre",
+        "botonSiguiente": "Siguiente",
+        "guardando": "Guardando...",
+        "errorGenerico": "No se pudo guardar. Prueba de nuevo."
+      }
+    },
+    "mundos": {
+      "titulo": "Elige tus 2 mundos",
+      "subtitulo": "Todos empiezan bloqueados — los 2 que elijas acá son gratis para siempre. Los demás se desbloquean después con Chispas, jugando.",
+      "elegido": "Elegido",
+      "bloqueado": "Bloqueado",
+      "botonEmpezar": "Empezar a jugar",
+      "botonElegirMas": "Elige {n} más",
+      "errorGenerico": "No se pudo guardar. Prueba de nuevo.",
+      "preguntaCrearCuenta": "¿Prefieres crear una cuenta para guardar tu progreso desde ya?"
+    },
+    "diagnostico": {
+      "operaciones": {
+        "suma": "Suma",
+        "resta": "Resta",
+        "multiplicacion": "Multiplicación",
+        "division": "División"
+      },
+      "pregunta": {
+        "titulo": "Veamos dónde estás",
+        "subtitulo": "Sin presión — esto no afecta tu racha ni tu experiencia, solo nos ayuda a calibrar bien desde el principio. ¿Qué quieres mejorar primero?",
+        "botonNoSe": "No sé, muéstrame de todo"
+      },
+      "arrancarNivel1": "Prefiero arrancar en nivel 1",
+      "ok": "Ok",
+      "guardando": "Guardando tu diagnóstico...",
+      "errorGuardado": "No pudimos guardar tu diagnóstico — puede ser un problema de conexión. Tu progreso de antes sigue intacto.",
+      "botonReintentar": "Reintentar",
+      "resultado": {
+        "titulo": "Así arrancas",
+        "botonContinuar": "Continuar"
+      }
+    }
+  },
+  "Potencias": {
+    "metadata": {
+      "description": "Potencias, raíces cuadradas y notación científica — dificultad adaptativa."
+    },
+    "tipos": {
+      "potencia": "Potencias",
+      "raiz": "Raíces cuadradas",
+      "notacion": "Notación científica"
+    }
+  },
+  "Profesor": {
+    "metadata": {
+      "title": "Grupos",
+      "description": "Grupos de clase en Prodigia: crea o únete con un código."
+    },
+    "guardLabel": "Grupos",
+    "jugador": "Jugador",
+    "cancelar": "Cancelar",
+    "nunca": "Nunca",
+    "valorDias": "{n}d",
+    "codigoEtiqueta": "Código: {codigo}",
+    "precision": "Precisión",
+    "nivelPorOperacion": "Nivel por operación",
+    "operaciones": {
+      "suma": "Suma",
+      "resta": "Resta",
+      "multiplicacion": "Multiplicación",
+      "division": "División"
+    },
+    "lista": {
+      "titulo": "Grupos",
+      "subtitulo": "Crea un grupo para tu clase o únete a uno con el código que te pasó tu profesor.",
+      "tituloCrear": "Crear un grupo",
+      "placeholderNombre": "Nombre del grupo o sección",
+      "creando": "Creando...",
+      "botonCrear": "Crear grupo",
+      "tituloUnirse": "Unirme con un código",
+      "placeholderCodigo": "Código de 6 letras",
+      "uniendo": "Uniéndome...",
+      "botonUnirse": "Unirme",
+      "errorCrear": "No se pudo crear el grupo.",
+      "errorCodigoInvalido": "Código inválido."
+    },
+    "grupo": {
+      "volverAGrupos": "← Grupos",
+      "puntoDeAtencion": "Punto de atención",
+      "operacionMasFloja": "{operacion} es la operación más floja del grupo",
+      "nivelPromedioNota": "Nivel promedio: {promedio} / 10 — vale la pena reforzarla en clase.",
+      "vacioGrupo": "Todavía nadie se unió con el código de este grupo.",
+      "columnaAlumno": "Alumno",
+      "columnaRacha": "Racha",
+      "columnaUltimaActividad": "Última actividad",
+      "nivelTooltip": "{operacion}: nivel {nivel}"
+    },
+    "borrar": {
+      "boton": "Borrar grupo",
+      "confirmarPrefijo": "¿Borrar",
+      "confirmarSufijo": "? Se pierden las membresías de los alumnos, no se puede deshacer.",
+      "borrando": "Borrando...",
+      "botonConfirmar": "Confirmar",
+      "errorBorrar": "No se pudo borrar el grupo."
+    },
+    "alumno": {
+      "volverAlGrupo": "← Volver al grupo",
+      "chispasTotales": "{n} Chispas totales",
+      "rachaActual": "Racha actual",
+      "rachaMaxima": "Racha máxima",
+      "ultimaActividadEtiqueta": "Última actividad:"
+    }
+  },
+  "Quimia": {
+    "metadata": {
+      "description": "Elementos, símbolos y fórmulas químicas, con dificultad adaptativa."
+    },
+    "aviso": "Elementos, símbolos, fórmulas y la tabla periódica — con dificultad que se adapta a ti, igual que en los demás mundos.",
+    "titulo": "Elementos y compuestos",
+    "metaCumplida": "Ya cumpliste tu meta de hoy.",
+    "practicar": "Practicar",
+    "practicarDescripcion": "Elementos, fórmulas y la tabla periódica.",
+    "aprender": "Aprender",
+    "aprenderDescripcion": "Trucos mnemotécnicos para memorizar más rápido.",
+    "modosTitulo": "Modos",
+    "modos": {
+      "simbolos": "Símbolos y elementos",
+      "formulas": "Fórmulas y compuestos",
+      "tabla": "Tabla periódica",
+      "nomenclatura": "Nomenclatura",
+      "organica": "Química orgánica"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practicar",
+        "description": "Elige un modo de Quimia para practicar."
+      },
+      "titulo": "¿Qué modo practicamos?",
+      "subtitulo": "Elige un modo para arrancar.",
+      "descSimbolos": "Identifica elementos por su símbolo",
+      "descFormulas": "Fórmulas químicas",
+      "descTabla": "Número atómico, estado de oxidación",
+      "descNomenclatura": "Nombrar compuestos",
+      "descOrganica": "Cadenas de carbono"
+    },
+    "practicaClient": {
+      "errorCerrar": "No se pudo cerrar la partida.",
+      "errorConexion": "No pudimos conectar con el servidor. Prueba de nuevo.",
+      "dueloSubtitulo": "Ronda {ronda}/{total} · Quimia",
+      "errorCerrarDetalle": "No pudimos cerrar la partida: {error}",
+      "volver": "Volver",
+      "ahiQuedo": "Ahí quedó.",
+      "experiencia": "Experiencia",
+      "aciertos": "Aciertos",
+      "precision": "Precisión",
+      "experienciaHoy": "Experiencia hoy",
+      "repasemosEsto": "Repasemos esto",
+      "ningunaFallada": "Ninguna fallada — así se hace. 🎯",
+      "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
+      "preguntasSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
+      "iniciarPartida": "Iniciar partida"
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n, plural, one {# escudo disponible} other {# escudos disponibles}}",
+      "xpAbreviado": "{xp} Exp",
+      "segundosAbrev": "{s}s"
+    },
+    "diagnostico": {
+      "intro": {
+        "titulo": "Unos elementos para calibrar",
+        "subtitulo": "Sin presión — 8 preguntas variadas, solo para arrancar en el nivel justo.",
+        "empezar": "Empezar"
+      },
+      "arrancarNivel1": "Prefiero arrancar en nivel 1",
+      "guardando": "Guardando tu diagnóstico...",
+      "resultado": {
+        "titulo": "Así arrancas",
+        "nivel": "Nivel {nivel}",
+        "errorGuardado": "No pudimos guardar tu progreso — prueba de nuevo antes de continuar.",
+        "continuar": "Continuar",
+        "reintentar": "Reintentar"
+      }
+    },
+    "aprenderPagina": {
+      "metadata": {
+        "title": "Aprender Química",
+        "description": "Técnicas mnemotécnicas para memorizar elementos y compuestos."
+      },
+      "progreso": "Progreso",
+      "progresoTecnicas": "{completadas}/{total} técnicas",
+      "titulo": "Aprender",
+      "subtitulo": "Trucos para memorizar elementos y fórmulas — no son cuentas, son formas de mirar.",
+      "descripcionUnidad": "Técnicas para memorizar elementos y compuestos, no son cómputo — son mnemotécnicas."
+    },
+    "leccion": {
+      "tecnica": "Técnica",
+      "verTruco": "Ver el truco",
+      "anterior": "Anterior",
+      "siguientePaso": "Siguiente paso",
+      "marcarAprendida": "Marcar como aprendida",
+      "completaste": "¡Completaste {nombre}!",
+      "volverAprender": "Volver a Aprender",
+      "irPracticar": "Ir a Practicar"
+    },
+    "practicaPaginas": {
+      "simbolos": {
+        "title": "Practicar Símbolos y elementos",
+        "description": "Identifica elementos químicos por su símbolo, con dificultad adaptativa."
+      },
+      "formulas": {
+        "title": "Practicar Fórmulas y compuestos",
+        "description": "Identifica compuestos químicos cotidianos por su fórmula."
+      },
+      "nomenclatura": {
+        "title": "Practicar Nomenclatura",
+        "description": "Nombra compuestos químicos reales a partir de su fórmula, y viceversa."
+      },
+      "organica": {
+        "title": "Practicar Química orgánica",
+        "description": "Identifica compuestos orgánicos comunes a partir de su fórmula estructural."
+      },
+      "tabla": {
+        "title": "Practicar Tabla periódica",
+        "description": "Ubica elementos por grupo y período en la tabla periódica."
+      }
+    }
+  },
+  "Reto": {
+    "metadataDiario": {
+      "title": "Reto diario",
+      "description": "5 preguntas de tus ciudades desbloqueadas, las mismas para todos, cada día."
+    },
+    "metadataSemanal": {
+      "title": "Reto semanal",
+      "description": "45 preguntas de tus ciudades desbloqueadas, las mismas para todos, cada semana."
+    },
+    "mundos": {
+      "numeria": "Numeria",
+      "enigmia": "Enigmia",
+      "geografia": "Geografía",
+      "quimia": "Quimia",
+      "anatomia": "Anatomía",
+      "melodia": "Melodía",
+      "trigonometria": "Trigonometría",
+      "historia": "Historia"
+    },
+    "etiquetaDiario": "Reto diario",
+    "etiquetaSemanal": "Reto semanal",
+    "periodoDiario": "hoy",
+    "periodoSemanal": "esta semana",
+    "volverDiario": "mañana",
+    "volverSemanal": "la semana que viene",
+    "totalPreguntas": "{total} preguntas, las mismas para todos {periodo}",
+    "introDescripcion": "Repartidas entre tus ciudades desbloqueadas, al azar. Complétalo para sumar Chispas extra y estirar tu racha.",
+    "rachaDiaria": "{racha, plural, one {# día} other {# días}} seguidos",
+    "rachaSemanal": "{racha, plural, one {# semana} other {# semanas}} seguidas",
+    "empezar": "Empezar",
+    "yaCompletadoDiario": "Ya completaste el reto de hoy",
+    "yaCompletadoSemanal": "Ya completaste el reto de esta semana",
+    "ahiQuedo": "Ahí quedó.",
+    "bonusChispas": "+{n} Chispas de bonus",
+    "quienMasCompleto": "Quién más completó {periodo}",
+    "vuelvePorProximo": "Vuelve {volver} por el próximo.",
+    "volverAInicio": "Volver a Inicio",
+    "guardando": "Guardando..."
+  },
+  "Trigonometria": {
+    "metadata": {
+      "title": "Trigonometría",
+      "description": "Razones, círculo unitario, identidades y leyes de seno/coseno, con dificultad adaptativa."
+    },
+    "nombreMundo": "Trigonometría",
+    "aviso": "Razones, círculo unitario, identidades y triángulos oblicuos — con dificultad que se adapta a ti, igual que en los demás mundos.",
+    "titulo": "Ángulos, razones y triángulos",
+    "metaCumplida": "Ya cumpliste tu meta de hoy.",
+    "practicar": "Practicar",
+    "practicarDescripcion": "Razones, círculo unitario, identidades y leyes.",
+    "aprenderCard": "Aprender",
+    "aprenderDescripcion": "Trucos mentales para no memorizar todo de cero.",
+    "modosTitulo": "Modos",
+    "modos": {
+      "razones": "Razones básicas",
+      "circulo": "Círculo unitario",
+      "identidades": "Identidades",
+      "leyes": "Leyes de seno y coseno"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practicar",
+        "description": "Elige un modo de Trigonometría para practicar."
+      },
+      "titulo": "¿Qué modo practicamos?",
+      "subtitulo": "Elige un modo para arrancar.",
+      "descripciones": {
+        "razones": "SOHCAHTOA en triángulos rectángulos",
+        "circulo": "Valores exactos, en grados y radianes",
+        "identidades": "Pitagórica, ángulo doble y complementarios",
+        "leyes": "Triángulos oblicuos — el más difícil"
+      }
+    },
+    "practicaClient": {
+      "subtituloRonda": "Ronda {numero}/{total} · Trigonometría",
+      "noSePudoCerrar": "No se pudo cerrar la partida.",
+      "errorConexion": "No pudimos conectar con el servidor. Prueba de nuevo.",
+      "errorCerrarPartida": "No pudimos cerrar la partida: {error}",
+      "volver": "Volver",
+      "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
+      "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
+      "iniciarPartida": "Iniciar partida",
+      "resumen": {
+        "ahiQuedo": "Ahí quedó.",
+        "experiencia": "Experiencia",
+        "aciertos": "Aciertos",
+        "precision": "Precisión",
+        "experienciaHoy": "Experiencia hoy",
+        "repasemosEsto": "Repasemos esto",
+        "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} escudos disponibles",
+      "exp": "{n} Exp",
+      "segundos": "{n}s",
+      "ok": "Ok"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Diagnóstico de Trigonometría",
+        "description": "Unas preguntas rápidas para calibrar tu nivel inicial."
+      },
+      "introTitulo": "Unos triángulos para calibrar",
+      "introSubtitulo": "Sin presión — 8 preguntas variadas, solo para arrancar en el nivel justo.",
+      "empezar": "Empezar",
+      "arrancarNivel1": "Prefiero arrancar en nivel 1",
+      "ok": "Ok",
+      "guardando": "Guardando tu diagnóstico...",
+      "resultadoTitulo": "Así arrancas",
+      "nivel": "Nivel {n}",
+      "errorGuardado": "No pudimos guardar tu progreso — prueba de nuevo antes de continuar.",
+      "continuar": "Continuar",
+      "reintentar": "Reintentar"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Aprender Trigonometría",
+        "description": "Trucos mentales para ángulos notables, círculo unitario y conversión grados-radianes."
+      },
+      "descripcionUnidad": "Mnemotecnias para SOHCAHTOA, valores notables del círculo unitario y conversión grados-radianes.",
+      "progreso": "Progreso",
+      "tecnicas": "{n}/{total} técnicas",
+      "titulo": "Aprender",
+      "subtitulo": "Cómo acordarte de SOHCAHTOA y del círculo unitario sin memorizar todo suelto."
+    },
+    "leccion": {
+      "tecnica": "Técnica",
+      "verElTruco": "Ver el truco",
+      "anterior": "Anterior",
+      "siguientePaso": "Siguiente paso",
+      "marcarAprendida": "Marcar como aprendida",
+      "completaste": "¡Completaste {nombre}!",
+      "volverAAprender": "Volver a Aprender",
+      "irAPracticar": "Ir a Practicar"
+    },
+    "practica": {
+      "razones": {
+        "metadata": {
+          "title": "Practicar Razones básicas",
+          "description": "SOHCAHTOA sobre triángulos rectángulos, con dificultad adaptativa."
+        }
+      },
+      "circulo": {
+        "metadata": {
+          "title": "Practicar Círculo unitario",
+          "description": "Valores exactos de seno/coseno/tangente en los ángulos notables, en grados y radianes."
+        }
+      },
+      "identidades": {
+        "metadata": {
+          "title": "Practicar Identidades",
+          "description": "Pitagórica, ángulo doble y complementarios, con dificultad adaptativa."
+        }
+      },
+      "leyes": {
+        "metadata": {
+          "title": "Practicar Leyes de seno y coseno",
+          "description": "Resuelve triángulos oblicuos con los datos suficientes — el modo más difícil."
+        }
+      }
     }
   }
 }

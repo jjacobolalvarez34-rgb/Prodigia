@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Boton from "@/components/Boton";
 
 export type EstadoAmistad = "ninguno" | "amigos" | "enviada" | "recibida";
@@ -17,6 +18,7 @@ interface Props {
 // (yo mandé la solicitud, esperando), "recibida" (me invitó, puedo
 // aceptar/rechazar acá mismo) y "amigos" (ya lo son, sin acción).
 export default function AmistadBoton({ userId, estadoInicial }: Props) {
+  const t = useTranslations("Perfil");
   const [estado, setEstado] = useState(estadoInicial);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +34,7 @@ export default function AmistadBoton({ userId, estadoInicial }: Props) {
     const data = await res.json().catch(() => ({}));
     setCargando(false);
     if (!res.ok) {
-      setError(data.error ?? "No se pudo enviar la solicitud.");
+      setError(data.error ?? t("amistadBoton.errorEnviarSolicitud"));
       return;
     }
     setEstado("enviada");
@@ -49,7 +51,7 @@ export default function AmistadBoton({ userId, estadoInicial }: Props) {
     const data = await res.json().catch(() => ({}));
     setCargando(false);
     if (!res.ok) {
-      setError(data.error ?? "No se pudo procesar la solicitud.");
+      setError(data.error ?? t("amistadBoton.errorProcesarSolicitud"));
       return;
     }
     setEstado(aceptar ? "amigos" : "ninguno");
@@ -58,7 +60,7 @@ export default function AmistadBoton({ userId, estadoInicial }: Props) {
   if (estado === "amigos") {
     return (
       <span className="rounded-full border border-correcto/30 bg-correcto/10 px-3 py-1.5 text-sm font-medium text-correcto">
-        Ya son amigos
+        {t("amistadBoton.yaSonAmigos")}
       </span>
     );
   }
@@ -66,7 +68,7 @@ export default function AmistadBoton({ userId, estadoInicial }: Props) {
   if (estado === "enviada") {
     return (
       <span className="rounded-full border border-border px-3 py-1.5 text-sm font-medium text-texto-secundario">
-        Solicitud enviada
+        {t("amistadBoton.solicitudEnviada")}
       </span>
     );
   }
@@ -76,14 +78,14 @@ export default function AmistadBoton({ userId, estadoInicial }: Props) {
       <div className="flex flex-col items-center gap-1.5">
         <div className="flex gap-2">
           <Boton onClick={() => responder(true)} cargando={cargando} className="px-3 py-1.5 text-sm">
-            Aceptar solicitud
+            {t("amistadBoton.aceptarSolicitud")}
           </Boton>
           <button
             onClick={() => responder(false)}
             disabled={cargando}
             className="rounded-full border border-border px-3 py-1.5 text-sm font-medium text-texto-secundario transition-colors hover:border-error/40 hover:text-error disabled:opacity-60"
           >
-            Rechazar
+            {t("amistadBoton.rechazar")}
           </button>
         </div>
         {error && <p className="text-xs text-error">{error}</p>}
@@ -94,7 +96,7 @@ export default function AmistadBoton({ userId, estadoInicial }: Props) {
   return (
     <div className="flex flex-col items-center gap-1.5">
       <Boton onClick={invitar} cargando={cargando} className="px-4 py-2 text-sm">
-        Invitar a ser amigo
+        {t("amistadBoton.invitarSerAmigo")}
       </Boton>
       {error && <p className="text-xs text-error">{error}</p>}
     </div>

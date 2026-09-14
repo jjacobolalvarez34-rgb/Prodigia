@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoQuimia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import QuimiaPracticaClient from "../QuimiaPracticaClient";
 import { cargarDatosPracticaQuimia } from "@/lib/quimia/cargarPractica";
 
-export const metadata: Metadata = {
-  title: "Practicar Símbolos y elementos",
-  description: "Identificá elementos químicos por su símbolo, con dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Quimia.practicaPaginas.simbolos");
+  return { title: t("title"), description: t("description") };
+}
 
 interface Props {
   searchParams: Promise<{ duelo?: string }>;

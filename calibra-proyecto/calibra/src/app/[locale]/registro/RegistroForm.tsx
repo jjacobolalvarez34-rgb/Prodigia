@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
 import { urlAbsoluta } from "@/lib/auth/urlAbsoluta";
@@ -24,6 +25,7 @@ interface Props {
 // se conecta acá mismo, sin esperar el viaje por mail.
 export default function RegistroForm({ refId }: Props) {
   const router = useRouter();
+  const t = useTranslations("Auth.registro");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmar, setConfirmar] = useState("");
@@ -36,7 +38,7 @@ export default function RegistroForm({ refId }: Props) {
     setError(null);
 
     if (password !== confirmar) {
-      setError("Las contraseñas no coinciden.");
+      setError(t("errorPasswordsNoCoinciden"));
       return;
     }
 
@@ -50,14 +52,14 @@ export default function RegistroForm({ refId }: Props) {
     });
 
     if (authError) {
-      const mensaje = mensajeErrorAuth(authError, "No pudimos crear la cuenta. Probá de nuevo.");
+      const mensaje = mensajeErrorAuth(authError, t("errorCrearCuenta"));
       // Fallback por si el mensaje viejo de Supabase ("User already
       // registered") llega sin el código `email_exists` en alguna
       // versión — mensajeErrorAuth ya cubre el código; esto es un
       // segundo intento antes de resignarse al genérico.
       const msg = authError.message.toLowerCase();
       const yaRegistrado = msg.includes("already registered") || msg.includes("already been registered");
-      setError(yaRegistrado ? "Ya existe una cuenta con ese email." : mensaje);
+      setError(yaRegistrado ? t("errorYaRegistrado") : mensaje);
       setEnviando(false);
       return;
     }
@@ -85,8 +87,10 @@ export default function RegistroForm({ refId }: Props) {
   if (confirmacionPendiente) {
     return (
       <p className="rounded-xl bg-correcto/15 px-4 py-3 text-sm text-foreground">
-        Te mandamos un email a <span className="font-medium">{email}</span> — confirmá tu cuenta desde
-        ahí para poder entrar.
+        {t.rich("confirmacionPendiente", {
+          email,
+          strong: (chunks) => <span className="font-medium">{chunks}</span>,
+        })}
       </p>
     );
   }
@@ -98,7 +102,7 @@ export default function RegistroForm({ refId }: Props) {
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="tu@email.com"
+        placeholder={t("emailPlaceholder")}
         autoComplete="email"
         autoFocus
         className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
@@ -106,17 +110,17 @@ export default function RegistroForm({ refId }: Props) {
       <CampoPassword
         value={password}
         onChange={setPassword}
-        placeholder="Contraseña (mínimo 6 caracteres)"
+        placeholder={t("passwordPlaceholder")}
         autoComplete="new-password"
       />
       <CampoPassword
         value={confirmar}
         onChange={setConfirmar}
-        placeholder="Repetí la contraseña"
+        placeholder={t("confirmarPlaceholder")}
         autoComplete="new-password"
       />
       <Boton type="submit" cargando={enviando} className="w-full">
-        {enviando ? "Creando cuenta..." : "Crear cuenta"}
+        {enviando ? t("creandoCuenta") : t("botonCrearCuenta")}
       </Boton>
       {error && <p className="text-sm text-error">{error}</p>}
     </form>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import BorderGlow from "@/components/reactbits/BorderGlow";
 import Podio, { type FilaRanking } from "./Podio";
@@ -33,6 +34,7 @@ interface Props {
 // segundo eje "Global / Amigos". Misma función SQL para las 4
 // combinaciones (ranking_semanal_filtrado).
 export default function LeaderboardClient({ rankingInicial, miUserId }: Props) {
+  const t = useTranslations("Leaderboard");
   const [alcance, setAlcance] = useState<Alcance>("global");
   const [filtro, setFiltro] = useState<Filtro>("total");
   const [mundo, setMundo] = useState<Mundo>("numeria");
@@ -89,7 +91,7 @@ export default function LeaderboardClient({ rankingInicial, miUserId }: Props) {
                   alcance === "global" ? "bg-primario text-white" : "text-texto-secundario"
                 }`}
               >
-                Global
+                {t("tabs.global")}
               </button>
               <button
                 onClick={() => elegirAlcance("amigos")}
@@ -97,7 +99,7 @@ export default function LeaderboardClient({ rankingInicial, miUserId }: Props) {
                   alcance === "amigos" ? "bg-primario text-white" : "text-texto-secundario"
                 }`}
               >
-                Amigos
+                {t("tabs.amigos")}
               </button>
             </div>
             <div className="flex rounded-full border border-border bg-background p-0.5 text-xs">
@@ -107,7 +109,7 @@ export default function LeaderboardClient({ rankingInicial, miUserId }: Props) {
                   filtro === "total" ? "bg-primario text-white" : "text-texto-secundario"
                 }`}
               >
-                Experiencia total
+                {t("filtros.total")}
               </button>
               <button
                 onClick={() => elegirFiltro("mundo")}
@@ -115,7 +117,7 @@ export default function LeaderboardClient({ rankingInicial, miUserId }: Props) {
                   filtro === "mundo" ? "bg-primario text-white" : "text-texto-secundario"
                 }`}
               >
-                Por mundo
+                {t("filtros.mundo")}
               </button>
             </div>
           </div>
@@ -140,12 +142,12 @@ export default function LeaderboardClient({ rankingInicial, miUserId }: Props) {
       </BorderGlow>
 
       {cargando ? (
-        <p className="py-8 text-center text-sm text-texto-secundario">Cargando...</p>
+        <p className="py-8 text-center text-sm text-texto-secundario">{t("cargando")}</p>
       ) : ranking.length === 0 ? (
         <p className="rounded-2xl border border-border bg-surface px-6 py-8 text-center text-texto-secundario">
           {alcance === "amigos"
-            ? "Ninguno de tus amigos sumó experiencia esta semana todavía."
-            : "Todavía nadie sumó experiencia esta semana — ¡arrancá vos!"}
+            ? t("vacioAmigos")
+            : t("vacioGlobal")}
         </p>
       ) : (
         <>
@@ -157,8 +159,8 @@ export default function LeaderboardClient({ rankingInicial, miUserId }: Props) {
       {ranking.length > 0 && posicionUsuario === -1 && (
         <p className="text-sm text-texto-secundario">
           {alcance === "amigos"
-            ? "Todavía no sumaste experiencia esta semana."
-            : "Todavía no sumaste experiencia esta semana — practicá para entrar al ranking."}
+            ? t("noSumasteAmigos")
+            : t("noSumasteGlobal")}
         </p>
       )}
     </div>

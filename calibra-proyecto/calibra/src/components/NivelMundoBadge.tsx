@@ -1,3 +1,7 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
 interface Props {
   nombreMundo: string;
   nivel: number;
@@ -9,13 +13,14 @@ interface Props {
 // tema) — tratamiento visual deliberadamente distinto (pastilla sólida
 // con el nombre del mundo adentro, no un dial) para que no se confundan.
 export default function NivelMundoBadge({ nombreMundo, nivel, colorHex }: Props) {
+  const t = useTranslations("Componentes");
   return (
     <div
       className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-white"
       style={{ background: `linear-gradient(120deg, ${colorHex}, color-mix(in oklab, ${colorHex} 60%, #FFC53D))` }}
     >
       <span className="text-xs font-medium uppercase tracking-wide opacity-80">{nombreMundo}</span>
-      <span className="font-display text-base font-black">Nivel {nivel}</span>
+      <span className="font-display text-base font-black">{t("nivelMundoBadge.nivel", { nivel })}</span>
     </div>
   );
 }

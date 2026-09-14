@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import GestoLogo from "@/components/GestoLogo";
 import { reproducirTono } from "@/lib/sonido";
 
@@ -9,17 +10,6 @@ export interface NivelMundoInfo {
   nivel_mundo: number;
   subio: boolean;
 }
-
-const NOMBRE_MUNDO: Record<string, string> = {
-  numeria: "Numeria",
-  enigmia: "Enigmia",
-  geografia: "Geografía",
-  quimia: "Quimia",
-  anatomia: "Anatomía",
-  melodia: "Melodía",
-  trigonometria: "Trigonometría",
-  historia: "Historia",
-};
 
 const COLOR_MUNDO: Record<string, string> = {
   numeria: "#6C4CF1",
@@ -37,6 +27,7 @@ const COLOR_MUNDO: Record<string, string> = {
 // duelo) — el anillo abriéndose + la chispa escapando (GestoLogo, Fase
 // K2) en vez de quedar como un dato que solo se actualiza en silencio.
 export default function NivelMundoSubio({ nivelMundo }: { nivelMundo: NivelMundoInfo | null | undefined }) {
+  const t = useTranslations("Componentes");
   const sonoRef = useRef(false);
 
   useEffect(() => {
@@ -48,7 +39,12 @@ export default function NivelMundoSubio({ nivelMundo }: { nivelMundo: NivelMundo
 
   if (!nivelMundo?.subio) return null;
   const color = COLOR_MUNDO[nivelMundo.world] ?? "#6C4CF1";
-  const nombre = NOMBRE_MUNDO[nivelMundo.world] ?? nivelMundo.world;
+  const nombreMundoValido = ["numeria", "enigmia", "geografia", "quimia", "anatomia", "melodia", "trigonometria", "historia"].includes(
+    nivelMundo.world
+  );
+  const nombre = nombreMundoValido
+    ? t(`nivelMundoSubio.mundos.${nivelMundo.world}`)
+    : nivelMundo.world;
 
   return (
     <div className="relative flex flex-col items-center gap-1 pb-2 pt-2 text-center">
@@ -56,7 +52,7 @@ export default function NivelMundoSubio({ nivelMundo }: { nivelMundo: NivelMundo
         <GestoLogo size={120} colorHex={color} />
       </div>
       <p className="font-display text-lg font-black tracking-tight" style={{ color }}>
-        {nombre} subió a nivel {nivelMundo.nivel_mundo}
+        {t("nivelMundoSubio.subioANivel", { nombre, nivel: nivelMundo.nivel_mundo })}
       </p>
     </div>
   );

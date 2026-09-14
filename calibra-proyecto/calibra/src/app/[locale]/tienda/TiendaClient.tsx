@@ -532,7 +532,7 @@ function ItemEstante({
           <p className="text-sm text-[#5C3A22]">{descripcion}</p>
         </div>
         <span className="shrink-0 rounded-full bg-[#3D2410]/10 px-2.5 py-1 font-mono text-xs text-[#3D2410]">
-          {t("tenes", { n: cantidad })}
+          {t("tienes", { n: cantidad })}
         </span>
       </div>
 

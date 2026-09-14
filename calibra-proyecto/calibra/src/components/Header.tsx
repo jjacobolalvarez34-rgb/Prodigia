@@ -10,7 +10,7 @@ import ProfileMenu from "./ProfileMenu";
 import ThemeToggle from "./ThemeToggle";
 
 // Fase II: el color de acento del nav sigue al mundo en el que estás
-// parado — no solo el ícono del tema, toda la interfaz "viaja" con vos.
+// parado — no solo el ícono del tema, toda la interfaz "viaja" contigo.
 function colorDelMundo(pathname: string): string {
   if (pathname.startsWith("/enigmia")) return "#0E9F6E";
   if (pathname.startsWith("/geografia")) return "#1E7A8C";

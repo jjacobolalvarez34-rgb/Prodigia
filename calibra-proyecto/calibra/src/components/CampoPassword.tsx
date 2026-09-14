@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { IconOjo, IconOjoTachado } from "@/components/icons";
 
 interface Props {
@@ -19,6 +20,7 @@ interface Props {
 // instancia tiene su propio estado de "visible" — mostrar la de arriba
 // no muestra también la de abajo en los formularios con 2 campos.
 export default function CampoPassword({ value, onChange, placeholder, autoComplete, minLength = 6, autoFocus }: Props) {
+  const t = useTranslations("Componentes");
   const [verPassword, setVerPassword] = useState(false);
 
   return (
@@ -37,7 +39,7 @@ export default function CampoPassword({ value, onChange, placeholder, autoComple
       <button
         type="button"
         onClick={() => setVerPassword((v) => !v)}
-        aria-label={verPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+        aria-label={verPassword ? t("campoPassword.ocultarContrasena") : t("campoPassword.mostrarContrasena")}
         aria-pressed={verPassword}
         className="absolute right-3 top-1/2 -translate-y-1/2 text-texto-secundario transition-colors hover:text-foreground"
       >

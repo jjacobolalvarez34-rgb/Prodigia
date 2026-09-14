@@ -643,7 +643,7 @@ function generarOidoAbsoluto(nivel: number): PreguntaMelodiaAudio {
     modo: "oido_absoluto",
     tipo: "audio",
     dificultad: nivel,
-    enunciado: "Escuchá la nota — ¿cuál es?",
+    enunciado: "Escucha la nota — ¿cuál es?",
     opciones,
     respuesta,
     nota,

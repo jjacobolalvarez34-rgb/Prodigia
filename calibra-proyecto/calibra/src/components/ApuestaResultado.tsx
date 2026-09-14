@@ -1,3 +1,7 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
 interface Props {
   apuesta: { gano: boolean; monto: number } | null;
 }
@@ -5,6 +9,7 @@ interface Props {
 // Resultado de "doble o nada" (Fase G2) en el resumen de partida —
 // solo aparece si había una apuesta activa.
 export default function ApuestaResultado({ apuesta }: Props) {
+  const t = useTranslations("Componentes");
   if (!apuesta) return null;
   return (
     <div
@@ -13,8 +18,8 @@ export default function ApuestaResultado({ apuesta }: Props) {
       }`}
     >
       {apuesta.gano
-        ? `🎲 Doble o nada: ganaste — +${apuesta.monto * 2} Chispas`
-        : `🎲 Doble o nada: esta vez no — perdiste las ${apuesta.monto} Chispas apostadas`}
+        ? t("apuestaResultado.gano", { monto: apuesta.monto * 2 })
+        : t("apuestaResultado.perdio", { monto: apuesta.monto })}
     </div>
   );
 }

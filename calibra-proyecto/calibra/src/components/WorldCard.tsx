@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import type { ReactElement } from "react";
+import { useTranslations } from "next-intl";
 import { IconCandado } from "@/components/icons";
 
 interface Props {
@@ -19,6 +22,7 @@ interface Props {
 }
 
 export default function WorldCard({ nombre, descripcion, Icono, href, colorHex, proximamente, bloqueado }: Props) {
+  const t = useTranslations("Componentes");
   if (proximamente) {
     return (
       <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-surface px-6 py-7">
@@ -30,7 +34,7 @@ export default function WorldCard({ nombre, descripcion, Icono, href, colorHex, 
           <p className="mt-0.5 text-xs text-texto-secundario">{descripcion}</p>
         </div>
         <span className="self-start rounded-full border border-border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-foreground/40">
-          Próximamente
+          {t("worldCard.proximamente")}
         </span>
       </div>
     );
@@ -50,7 +54,7 @@ export default function WorldCard({ nombre, descripcion, Icono, href, colorHex, 
           <p className="mt-0.5 text-xs text-texto-secundario">{descripcion}</p>
         </div>
         <span className="flex items-center gap-1 self-start rounded-full border border-border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-foreground/40">
-          <IconCandado className="h-2.5 w-2.5" /> Bloqueado
+          <IconCandado className="h-2.5 w-2.5" /> {t("worldCard.bloqueado")}
         </span>
       </Link>
     );

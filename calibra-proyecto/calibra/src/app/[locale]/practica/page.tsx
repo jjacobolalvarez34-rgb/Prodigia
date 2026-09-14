@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuarioOnboarded } from "@/lib/auth/guard";
 import {
@@ -52,6 +53,7 @@ export default async function PracticaPage({ searchParams }: Props) {
   const { operacion, duelo } = await searchParams;
   const supabase = await createClient();
   const { user } = await requireUsuarioOnboarded(supabase, "/practica");
+  const t = await getTranslations("Practica");
 
   let dueloInfo: DueloInfo | null = null;
   if (duelo) {
@@ -70,14 +72,14 @@ export default async function PracticaPage({ searchParams }: Props) {
         operacion: fila.operation_type as ArithmeticProblemType,
         nivel: fila.nivel as number,
         rivalId,
-        rivalNombre: (fila.rival_nombre as string | null) ?? "Rival",
+        rivalNombre: (fila.rival_nombre as string | null) ?? t("rivalPredeterminado"),
         miElo: fila.mi_elo as number,
         rivalElo: fila.rival_elo as number,
         miTituloNombre: (fila.mi_titulo_nombre as string | null) ?? null,
         rivalTituloNombre: (fila.rival_titulo_nombre as string | null) ?? null,
         rivalEsBot: fila.rival_es_bot === true,
         // El fantasma solo existe si el rival ya jugó su lado del duelo
-        // antes que vos — si no, jugás normal y tu secuencia de
+        // antes que tú — si no, juegas normal y tu secuencia de
         // respuestas queda guardada para cuando él juegue la suya.
         rivalRespuestas: rivalYaJugo ? (fila.rival_respuestas as RespuestaDuelo[] | null) ?? null : null,
         semilla: (filaSemilla?.semilla_problemas as number | undefined) ?? 1,

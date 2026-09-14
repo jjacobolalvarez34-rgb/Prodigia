@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoNumeria, bloquearInvitado } from "@/lib/auth/guard";
 import { COLOR_DIAL_HEX, type ColorDial } from "@/types/database";
@@ -8,7 +9,8 @@ import FraccionPracticaClient from "./FraccionPracticaClient";
 export default async function FraccionesPracticaPage() {
   const supabase = await createClient();
   const { user } = await requireMundoNumeria(supabase, "/practica/fracciones");
-  bloquearInvitado(user, "Fracciones");
+  const tNumeria = await getTranslations("Numeria.temas");
+  bloquearInvitado(user, tNumeria("fracciones"));
 
   const [{ data: skillRows }, { data: profile }] = await Promise.all([
     supabase

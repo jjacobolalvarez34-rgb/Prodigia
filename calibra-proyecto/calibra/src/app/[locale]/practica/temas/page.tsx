@@ -14,8 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // Fase 2 ("Practicar" estandarizado): "Practicar" ya no lleva directo al
-// selector de operaciones de aritmética — primero elegís el TEMA (esta
-// pantalla), y recién adentro de cada tema elegís qué sub-tema
+// selector de operaciones de aritmética — primero eliges el TEMA (esta
+// pantalla), y recién adentro de cada tema eliges qué sub-tema
 // practicar, CON el nivel de cada uno — mismo patrón para los 6 temas
 // de Numeria, ya no solo Aritmética.
 export default async function TemasPage() {
@@ -78,7 +78,7 @@ export default async function TemasPage() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className={`font-display font-bold ${bloqueado ? "text-foreground/70" : "text-foreground"}`}>{tema.nombre}</p>
-                  <p className="text-xs text-texto-secundario">{bloqueado ? "Necesitás una cuenta para practicar esto" : tema.desc}</p>
+                  <p className="text-xs text-texto-secundario">{bloqueado ? "Necesitas una cuenta para practicar esto" : tema.desc}</p>
                   {bloqueado && (
                     <span className="mt-1 flex w-fit items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-foreground/40">
                       <IconCandado className="h-2.5 w-2.5" /> Invitado

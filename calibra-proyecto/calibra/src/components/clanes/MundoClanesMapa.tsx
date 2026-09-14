@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { tierCiudadDeNivel } from "@/lib/clanes/tierCiudad";
 import EscenaCiudad, { type MiembroCasa } from "./EscenaCiudad";
@@ -49,6 +50,7 @@ const UMBRAL_ARRASTRE_PX = 6;
 // vía rueda del mouse o los botones +/-. Una parcela por clan, en
 // grilla, en orden de creación (mapa_clanes() ya la devuelve ordenada).
 export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] }) {
+  const t = useTranslations("Clanes.mapa");
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [arrastrando, setArrastrando] = useState(false);
@@ -116,7 +118,7 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
       // de miembros nunca se cargaba, así que EscenaCiudad nunca tenía
       // nada que dibujar aparte del tier. miembros_de_clan() ya existe
       // (se usa hoy para MI propio clan en ClanesClient.tsx) y no tiene
-      // ningún chequeo de "sos miembro de este clan" — ya es de lectura
+      // ningún chequeo de "eres miembro de este clan" — ya es de lectura
       // pública para cualquier clan_id, solo nunca se había llamado
       // desde el mapa.
       const [{ data }, { data: miembrosData }] = await Promise.all([
@@ -134,7 +136,7 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <p className="text-xs text-texto-secundario">Arrastrá para moverte por el mapa — rueda o los botones para acercar.</p>
+        <p className="text-xs text-texto-secundario">{t("ayuda")}</p>
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => setZoom((z) => Math.max(ZOOM_MIN, z - 0.2))}
@@ -179,7 +181,7 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
 
         {parcelas.length === 0 && (
           <p className="absolute inset-0 flex items-center justify-center text-sm text-texto-secundario">
-            Todavía no hay clanes fundados.
+            {t("vacio")}
           </p>
         )}
       </div>
@@ -197,6 +199,7 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
 }
 
 function ParcelaTile({ parcela, onClick }: { parcela: ParcelaClan; onClick: () => void }) {
+  const t = useTranslations("Clanes.mapa");
   const tier = tierCiudadDeNivel(parcela.nivel_clan);
   const llena = parcela.cantidad_miembros >= parcela.capacidad;
   return (
@@ -212,8 +215,8 @@ function ParcelaTile({ parcela, onClick }: { parcela: ParcelaClan; onClick: () =
           {parcela.nombre} {parcela.tag && <span className="text-texto-secundario">[{parcela.tag}]</span>}
         </p>
         <p className="text-[10px] text-texto-secundario">
-          Nv. {parcela.nivel_clan} · {parcela.cantidad_miembros}/{parcela.capacidad}
-          {llena && " · Lleno"}
+          {t("nivelAbrev", { nivel: parcela.nivel_clan })} · {parcela.cantidad_miembros}/{parcela.capacidad}
+          {llena && ` · ${t("lleno")}`}
         </p>
       </div>
     </button>
@@ -231,10 +234,11 @@ function PanelClan({
   cargando: boolean;
   onCerrar: () => void;
 }) {
+  const t = useTranslations("Clanes.mapa");
   return (
     <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
       {cargando && !clan ? (
-        <p className="text-sm text-texto-secundario">Cargando…</p>
+        <p className="text-sm text-texto-secundario">{t("cargando")}</p>
       ) : clan ? (
         <div className="flex flex-col gap-3">
           <EscenaCiudad
@@ -255,18 +259,16 @@ function PanelClan({
             </div>
             <button
               onClick={onCerrar}
-              aria-label="Cerrar información del clan"
+              aria-label={t("cerrarInfo")}
               className="shrink-0 text-sm text-texto-secundario hover:text-foreground"
             >
               ✕
             </button>
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-texto-secundario">
-            <span>Nivel {clan.nivel_clan}</span>
-            <span>
-              {clan.cantidad_miembros}/{clan.capacidad} miembros
-            </span>
-            <span>{clan.guerras_ganadas} guerras ganadas</span>
+            <span>{t("nivel", { nivel: clan.nivel_clan })}</span>
+            <span>{t("miembrosCapacidad", { cantidad: clan.cantidad_miembros, capacidad: clan.capacidad })}</span>
+            <span>{t("guerrasGanadas", { n: clan.guerras_ganadas })}</span>
           </div>
         </div>
       ) : null}

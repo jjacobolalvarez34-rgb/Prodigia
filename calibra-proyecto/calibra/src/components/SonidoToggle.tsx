@@ -1,9 +1,11 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { useTranslations } from "next-intl";
 import { sonidoHabilitado, sonidoHabilitadoServerSnapshot, setSonidoHabilitado, subscribeSonido } from "@/lib/sonido";
 
 export default function SonidoToggle({ className }: { className?: string }) {
+  const t = useTranslations("Componentes");
   const habilitado = useSyncExternalStore(subscribeSonido, sonidoHabilitado, sonidoHabilitadoServerSnapshot);
 
   function toggle() {
@@ -13,7 +15,7 @@ export default function SonidoToggle({ className }: { className?: string }) {
   return (
     <button
       onClick={toggle}
-      aria-label={habilitado ? "Silenciar sonido" : "Activar sonido"}
+      aria-label={habilitado ? t("sonidoToggle.silenciar") : t("sonidoToggle.activar")}
       aria-pressed={habilitado}
       className={`flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface text-foreground/60 transition-colors hover:text-foreground ${className ?? ""}`}
     >

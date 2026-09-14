@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoNumeria, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { TIPOS_GEOMETRIA, type TipoGeometria } from "@/lib/practica/geometria";
 import GeometriaPracticaClient from "./GeometriaPracticaClient";
 
-export const metadata: Metadata = {
-  title: "Geometría básica",
-  description: "Perímetro, área, ángulos y ternas pitagóricas — dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [tNumeria, tGeometria] = await Promise.all([
+    getTranslations("Numeria.temas"),
+    getTranslations("Geometria.metadata"),
+  ]);
+  return { title: tNumeria("geometria"), description: tGeometria("description") };
+}
 
 export default async function GeometriaPracticaPage() {
   const supabase = await createClient();
   const { user } = await requireMundoNumeria(supabase, "/practica/geometria");
-  bloquearInvitado(user, "Geometría");
+  const tNumeria = await getTranslations("Numeria.temas");
+  bloquearInvitado(user, tNumeria("geometria"));
 
   const [{ data: skillRows }, { data: profile }] = await Promise.all([
     supabase

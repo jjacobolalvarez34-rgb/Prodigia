@@ -140,7 +140,7 @@ function generarRazones(nivel: number): ProblemaTrigonometriaNumero {
   return {
     modo: "razones",
     entrada: "numero",
-    enunciado: `En este triángulo rectángulo, ¿cuánto es ${fn}(A)? Redondeá a 2 decimales.`,
+    enunciado: `En este triángulo rectángulo, ¿cuánto es ${fn}(A)? Redondea a 2 decimales.`,
     respuesta: redondear2(respuesta),
     tolerancia: 0.01,
     triangulo: {
@@ -233,7 +233,7 @@ function generarPitagorica(): ProblemaTrigonometriaOpciones {
   return {
     modo: "identidades",
     entrada: "opciones",
-    enunciado: `Si ${nombreDado}(θ) = ${dado} y θ está en el primer cuadrante, ¿cuánto vale ${nombreBuscado}(θ)? Usá sen²(θ) + cos²(θ) = 1.`,
+    enunciado: `Si ${nombreDado}(θ) = ${dado} y θ está en el primer cuadrante, ¿cuánto vale ${nombreBuscado}(θ)? Usa sen²(θ) + cos²(θ) = 1.`,
     opciones: opcionesConDistractores(buscado, pool),
     respuesta: buscado,
   };
@@ -261,7 +261,7 @@ function generarComplementario(): ProblemaTrigonometriaOpciones {
   return {
     modo: "identidades",
     entrada: "opciones",
-    enunciado: `¿Cuánto vale sen(90° − ${entrada.grados}°)? Usá sen(90° − x) = cos(x).`,
+    enunciado: `¿Cuánto vale sen(90° − ${entrada.grados}°)? Usa sen(90° − x) = cos(x).`,
     opciones: opcionesConDistractores(entrada.cos, pool),
     respuesta: entrada.cos,
   };
@@ -295,7 +295,7 @@ function generarLeyCoseno(): ProblemaTrigonometriaNumero {
   return {
     modo: "leyes",
     entrada: "numero",
-    enunciado: `Un triángulo tiene dos lados de ${a} y ${b}, con un ángulo de ${anguloCgrados}° entre ellos. ¿Cuánto mide el tercer lado? Ley del coseno, redondeá a 2 decimales.`,
+    enunciado: `Un triángulo tiene dos lados de ${a} y ${b}, con un ángulo de ${anguloCgrados}° entre ellos. ¿Cuánto mide el tercer lado? Ley del coseno, redondea a 2 decimales.`,
     respuesta,
     tolerancia: Math.max(0.1, respuesta * 0.01),
     triangulo: { ladoA: a, ladoB: b, ladoC: respuesta, anguloA: A, anguloB: B, anguloC: anguloCgrados, ocultar: "ladoC" },
@@ -318,7 +318,7 @@ function generarLeySeno(): ProblemaTrigonometriaNumero {
   return {
     modo: "leyes",
     entrada: "numero",
-    enunciado: `Un triángulo tiene ángulos de ${A}° y ${B}°, y el lado opuesto al primer ángulo mide ${a}. ¿Cuánto mide el lado opuesto al segundo ángulo? Ley del seno, redondeá a 2 decimales.`,
+    enunciado: `Un triángulo tiene ángulos de ${A}° y ${B}°, y el lado opuesto al primer ángulo mide ${a}. ¿Cuánto mide el lado opuesto al segundo ángulo? Ley del seno, redondea a 2 decimales.`,
     respuesta,
     tolerancia: Math.max(0.1, respuesta * 0.01),
     triangulo: { ladoA: a, ladoB: respuesta, ladoC: redondear2(c), anguloA: A, anguloB: B, anguloC: C, ocultar: "ladoB" },

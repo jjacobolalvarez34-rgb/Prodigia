@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoQuimia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import QuimiaPracticaClient from "../../QuimiaPracticaClient";
 import { cargarDatosPracticaQuimia } from "@/lib/quimia/cargarPractica";
 
-export const metadata: Metadata = {
-  title: "Practicar Química orgánica",
-  description: "Identificá compuestos orgánicos comunes a partir de su fórmula estructural.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Quimia.practicaPaginas.organica");
+  return { title: t("title"), description: t("description") };
+}
 
 interface Props {
   searchParams: Promise<{ duelo?: string }>;

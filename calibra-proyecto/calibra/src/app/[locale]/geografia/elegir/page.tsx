@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoGeografia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
@@ -7,15 +8,16 @@ import LevelDial from "@/app/[locale]/practica/LevelDial";
 import { IconGeometria, IconCandado } from "@/components/icons";
 import { COLOR_GEOGRAFIA } from "../GeografiaMapa";
 
-export const metadata: Metadata = {
-  title: "Practicar",
-  description: "Elegí una región de Geografía para practicar.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Geografia.metadata.elegir");
+  return { title: t("title"), description: t("description") };
+}
 
 // Fase 2 ("Practicar" estandarizado): la home ya no lleva directo a una
 // región puntual — entra acá primero. Nivel único compartido entre las
 // 4 regiones (no hay sub-tema por continente, a diferencia de Numeria).
 export default async function GeografiaElegirPage() {
+  const t = await getTranslations("Geografia");
   const supabase = await createClient();
   const { user } = await requireMundoGeografia(supabase, "/geografia/elegir");
 
@@ -32,10 +34,10 @@ export default async function GeografiaElegirPage() {
   // (bloquearInvitado en cada page.tsx) — acá solo se avisa antes del
   // clic, mismo criterio que /practica/temas para Numeria.
   const regiones = [
-    { nombre: "América", desc: "El continente de base", href: "/geografia/practica", bloqueadoInvitado: false },
-    { nombre: "Europa", desc: "Países europeos", href: "/geografia/practica/europa", bloqueadoInvitado: true },
-    { nombre: "África", desc: "Países africanos", href: "/geografia/practica/africa", bloqueadoInvitado: true },
-    { nombre: "Asia y Oceanía", desc: "Países asiáticos y oceánicos", href: "/geografia/practica/asia-oceania", bloqueadoInvitado: true },
+    { nombre: t("continentes.america"), desc: t("elegir.descAmerica"), href: "/geografia/practica", bloqueadoInvitado: false },
+    { nombre: t("continentes.europa"), desc: t("elegir.descEuropa"), href: "/geografia/practica/europa", bloqueadoInvitado: true },
+    { nombre: t("continentes.africa"), desc: t("elegir.descAfrica"), href: "/geografia/practica/africa", bloqueadoInvitado: true },
+    { nombre: t("continentes.asia_oceania"), desc: t("elegir.descAsiaOceania"), href: "/geografia/practica/asia-oceania", bloqueadoInvitado: true },
   ];
 
   return (
@@ -43,8 +45,8 @@ export default async function GeografiaElegirPage() {
       <Header autenticado />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-16">
         <div className="text-center">
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">¿Qué región practicamos?</h1>
-          <p className="mt-2 text-sm text-texto-secundario">Elegí una región para arrancar.</p>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("elegir.quePracticamos")}</h1>
+          <p className="mt-2 text-sm text-texto-secundario">{t("elegir.subtitulo")}</p>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {regiones.map((r) => {
@@ -65,10 +67,10 @@ export default async function GeografiaElegirPage() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className={`font-display font-bold ${bloqueado ? "text-foreground/70" : "text-foreground"}`}>{r.nombre}</p>
-                  <p className="text-xs text-texto-secundario">{bloqueado ? "Necesitás una cuenta para practicar esto" : r.desc}</p>
+                  <p className="text-xs text-texto-secundario">{bloqueado ? t("elegir.bloqueadoDesc") : r.desc}</p>
                   {bloqueado && (
                     <span className="mt-1 flex w-fit items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-foreground/40">
-                      <IconCandado className="h-2.5 w-2.5" /> Invitado
+                      <IconCandado className="h-2.5 w-2.5" /> {t("elegir.invitado")}
                     </span>
                   )}
                 </div>

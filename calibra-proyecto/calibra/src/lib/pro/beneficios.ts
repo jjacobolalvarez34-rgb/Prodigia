@@ -25,6 +25,6 @@ export const BENEFICIOS_PRO = [
   {
     emoji: "🚀",
     titulo: "Acceso anticipado",
-    descripcion: "Probá mundos y funciones nuevas antes de que salgan para todos.",
+    descripcion: "Prueba mundos y funciones nuevas antes de que salgan para todos.",
   },
 ] as const;

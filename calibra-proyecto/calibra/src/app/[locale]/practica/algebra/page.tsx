@@ -1,19 +1,21 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoNumeria, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { TIPOS_ALGEBRA, type TipoAlgebra } from "@/lib/practica/algebra";
 import AlgebraPracticaClient from "./AlgebraPracticaClient";
 
-export const metadata: Metadata = {
-  title: "Practicar Álgebra",
-  description: "Evaluar expresiones y resolver ecuaciones lineales simples.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Algebra.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 export default async function AlgebraPracticaPage() {
   const supabase = await createClient();
   const { user } = await requireMundoNumeria(supabase, "/practica/algebra");
-  bloquearInvitado(user, "Álgebra");
+  const tNumeria = await getTranslations("Numeria.temas");
+  bloquearInvitado(user, tNumeria("algebra"));
 
   const [{ data: skillRows }, { data: profile }] = await Promise.all([
     supabase

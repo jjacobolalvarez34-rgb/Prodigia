@@ -179,7 +179,7 @@ export function bloquearInvitado(user: { is_anonymous?: boolean }, etiqueta: str
 // (nivel de cuenta)" y xp_requerido_nivel_cuenta) — nada que ver con el
 // nivel de un mundo puntual (skill_levels.nivel / world_progress). Se
 // llama después de bloquearInvitado, mismo orden que ese otro gate:
-// primero "¿sos cuenta real?", después "¿tu cuenta ya es lo bastante
+// primero "¿eres cuenta real?", después "¿tu cuenta ya es lo bastante
 // veterana?".
 export const NIVEL_CUENTA_MINIMO_RANKEDS = 5;
 

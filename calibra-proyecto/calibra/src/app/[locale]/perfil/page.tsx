@@ -126,7 +126,7 @@ export default async function PerfilPage() {
 
   // Fase 4 (nivel de cuenta): umbral del nivel actual y del siguiente,
   // para la barra de progreso — misma curva que acreditar_chispas usa
-  // para decidir cuándo subís de nivel (xp_requerido_nivel_cuenta).
+  // para decidir cuándo subes de nivel (xp_requerido_nivel_cuenta).
   const nivelCuenta = profileFull?.nivel_cuenta ?? 1;
   const xpHistorico = profileFull?.xp_historico_total ?? 0;
   const [{ data: xpNivelActual }, { data: xpNivelSiguiente }] = await Promise.all([

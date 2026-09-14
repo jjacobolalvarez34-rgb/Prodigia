@@ -27,7 +27,7 @@ export async function POST() {
     }
   } catch (e) {
     console.error("[api:perfil/eliminar-cuenta]", e);
-    return NextResponse.json({ error: "No se pudo borrar la cuenta. Probá de nuevo." }, { status: 500 });
+    return NextResponse.json({ error: "No se pudo borrar la cuenta. Prueba de nuevo." }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });

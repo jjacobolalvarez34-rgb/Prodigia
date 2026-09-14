@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
@@ -6,10 +7,10 @@ import { esMundoPago, NOMBRE_MUNDO_PAGO } from "@/lib/mundos/precios";
 import Header from "@/components/Header";
 import MundoBloqueadoClient from "./MundoBloqueadoClient";
 
-export const metadata: Metadata = {
-  title: "Mundo bloqueado",
-  description: "Este mundo se desbloquea pagando con Chispas.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Bloqueos.mundo.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 interface Props {
   searchParams: Promise<{ mundo?: string; next?: string }>;

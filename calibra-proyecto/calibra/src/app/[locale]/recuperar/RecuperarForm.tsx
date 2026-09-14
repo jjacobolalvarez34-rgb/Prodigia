@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
 import { urlAbsoluta } from "@/lib/auth/urlAbsoluta";
 import Boton from "@/components/Boton";
 
 export default function RecuperarForm() {
+  const t = useTranslations("Auth.recuperar");
   const [email, setEmail] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
@@ -24,7 +26,7 @@ export default function RecuperarForm() {
 
     setEnviando(false);
     if (authError) {
-      setError(mensajeErrorAuth(authError, "No pudimos enviar el enlace. Probá de nuevo."));
+      setError(mensajeErrorAuth(authError, t("errorEnviar")));
       return;
     }
     setEnviado(true);
@@ -33,7 +35,7 @@ export default function RecuperarForm() {
   if (enviado) {
     return (
       <p className="rounded-xl bg-correcto/15 px-4 py-3 text-sm text-foreground">
-        Si hay una cuenta con ese email, te llegó un enlace para elegir una nueva contraseña.
+        {t("enviado")}
       </p>
     );
   }
@@ -45,13 +47,13 @@ export default function RecuperarForm() {
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="tu@email.com"
+        placeholder={t("emailPlaceholder")}
         autoComplete="email"
         autoFocus
         className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
       />
       <Boton type="submit" cargando={enviando} className="w-full">
-        {enviando ? "Enviando..." : "Enviarme el enlace"}
+        {enviando ? t("enviando") : t("botonEnviar")}
       </Boton>
       {error && <p className="text-sm text-error">{error}</p>}
     </form>

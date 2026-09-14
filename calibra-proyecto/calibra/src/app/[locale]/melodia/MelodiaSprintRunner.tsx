@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { generarPreguntaMelodia, type ModoMelodia, type PreguntaMelodia } from "@/lib/practica/melodia";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { reproducirTono } from "@/lib/sonido";
@@ -62,6 +63,7 @@ export default function MelodiaSprintRunner({
   duracionMs = DURACION_MS,
   onFinish,
 }: Props) {
+  const t = useTranslations("Melodia.sprintRunner");
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const correctosRef = useRef(0);
@@ -214,13 +216,13 @@ export default function MelodiaSprintRunner({
           </div>
           <div className="flex items-center gap-3">
             <SonidoToggle />
-            <div className="flex items-center gap-1" aria-label={`${escudos} escudos disponibles`}>
+            <div className="flex items-center gap-1" aria-label={t("escudosDisponibles", { n: escudos })}>
               {Array.from({ length: escudosIniciales }).map((_, i) => (
                 <EscudoIcon key={i} activo={i < escudos} colorActivo={COLOR_MELODIA} />
               ))}
             </div>
             <RachaFuego racha={racha} />
-            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">{xpSprint} Exp</span>
+            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">{t("expCounter", { n: xpSprint })}</span>
             <span className="font-mono font-medium">{segundos}s</span>
           </div>
         </div>

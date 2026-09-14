@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function BorrarGrupo({ groupId, nombreGrupo }: Props) {
+  const t = useTranslations("Profesor");
   const router = useRouter();
   const [confirmando, setConfirmando] = useState(false);
   const [borrando, setBorrando] = useState(false);
@@ -24,7 +26,7 @@ export default function BorrarGrupo({ groupId, nombreGrupo }: Props) {
     });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setError(data.error ?? "No se pudo borrar el grupo.");
+      setError(data.error ?? t("borrar.errorBorrar"));
       setBorrando(false);
       return;
     }
@@ -35,7 +37,7 @@ export default function BorrarGrupo({ groupId, nombreGrupo }: Props) {
   if (!confirmando) {
     return (
       <button onClick={() => setConfirmando(true)} className="text-sm font-medium text-error hover:underline">
-        Borrar grupo
+        {t("borrar.boton")}
       </button>
     );
   }
@@ -43,8 +45,8 @@ export default function BorrarGrupo({ groupId, nombreGrupo }: Props) {
   return (
     <div className="flex flex-col items-end gap-2 rounded-xl border border-error/30 bg-error/5 px-4 py-3">
       <p className="text-sm text-foreground">
-        ¿Borrar <span className="font-semibold">{nombreGrupo}</span>? Se pierden las membresías de los alumnos, no
-        se puede deshacer.
+        {t("borrar.confirmarPrefijo")} <span className="font-semibold">{nombreGrupo}</span>
+        {t("borrar.confirmarSufijo")}
       </p>
       <div className="flex gap-3">
         <button
@@ -52,10 +54,10 @@ export default function BorrarGrupo({ groupId, nombreGrupo }: Props) {
           disabled={borrando}
           className="rounded-lg bg-error px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-60"
         >
-          {borrando ? "Borrando..." : "Confirmar"}
+          {borrando ? t("borrar.borrando") : t("borrar.botonConfirmar")}
         </button>
         <button onClick={() => setConfirmando(false)} className="text-sm text-texto-secundario hover:underline">
-          Cancelar
+          {t("cancelar")}
         </button>
       </div>
       {error && <p className="text-sm text-error">{error}</p>}

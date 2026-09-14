@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { generarPreguntaAnatomia, NOMBRE_POR_HUESO_CLICKEABLE, type ModoAnatomia, type PreguntaAnatomia } from "@/lib/practica/anatomia";
 import { reproducirTono } from "@/lib/sonido";
 import { useBonusTiempo } from "@/lib/practica/useBonusTiempo";
@@ -52,6 +53,7 @@ export default function AnatomiaSprintRunner({
   duracionMs = DURACION_MS,
   onFinish,
 }: Props) {
+  const t = useTranslations("Anatomia");
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const [pregunta, setPregunta] = useState<PreguntaAnatomia | null>(null);
@@ -215,14 +217,16 @@ export default function AnatomiaSprintRunner({
           </div>
           <div className="flex items-center gap-3">
             <SonidoToggle />
-            <div className="flex items-center gap-1" aria-label={`${escudos} escudos disponibles`}>
+            <div className="flex items-center gap-1" aria-label={t("sprintRunner.escudosDisponibles", { n: escudos })}>
               {Array.from({ length: escudosIniciales }).map((_, i) => (
                 <EscudoIcon key={i} activo={i < escudos} colorActivo={COLOR_ANATOMIA} />
               ))}
             </div>
             <RachaFuego racha={racha} />
-            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">{xpSprint} Exp</span>
-            <span className="font-mono font-medium">{segundos}s</span>
+            <span className="rounded-full bg-logro/15 px-2.5 py-1 font-mono font-medium text-foreground">
+              {t("sprintRunner.exp", { n: xpSprint })}
+            </span>
+            <span className="font-mono font-medium">{t("sprintRunner.segundos", { n: segundos })}</span>
           </div>
         </div>
 

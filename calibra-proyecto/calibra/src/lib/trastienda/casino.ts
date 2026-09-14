@@ -170,6 +170,11 @@ export type FichaCasino = (typeof FICHAS_CASINO)[number];
 
 export const LIMITE_CASINO_DIARIO = 20;
 
+// Ruleta Elemental (0137): tope de zonas distintas por giro — varias
+// fichas en el mismo paño, un solo elemento sorteado. El tope evita que
+// un solo giro consuma de golpe media recarga del límite diario.
+export const MAX_ZONAS_CASINO = 5;
+
 // EV de casa: payout_total = monto × (118/n) × EV_CASA_CASINO.
 export const EV_CASA_CASINO = 0.88;
 

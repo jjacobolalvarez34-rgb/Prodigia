@@ -1,17 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import type { MotivoReporte } from "@/types/database";
 import Boton from "@/components/Boton";
-
-const MOTIVOS: { valor: MotivoReporte; nombre: string }[] = [
-  { valor: "trampa", nombre: "Hizo trampa" },
-  { valor: "imagen_inapropiada", nombre: "Foto de perfil inapropiada" },
-  { valor: "nombre_inapropiado", nombre: "Nombre inapropiado" },
-  { valor: "contenido_ofensivo", nombre: "Contenido ofensivo" },
-  { valor: "otro", nombre: "Otro motivo" },
-];
 
 // Fase 6: además de perfiles de usuario, también se puede reportar un
 // problema personalizado específico. Fase (Chat de clan): mismo botón,
@@ -25,11 +18,20 @@ type Props =
 // Fase Q3: reporte manual — se guarda en reportes_usuario para revisión
 // tuya después (sin sistema de moderación automática, a propósito).
 export default function ReportarBoton({ userId, postId, mensajeId }: Props) {
+  const t = useTranslations("Perfil");
   const [abierto, setAbierto] = useState(false);
   const [motivo, setMotivo] = useState<MotivoReporte | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const MOTIVOS: { valor: MotivoReporte; nombre: string }[] = [
+    { valor: "trampa", nombre: t("reportarBoton.motivos.trampa") },
+    { valor: "imagen_inapropiada", nombre: t("reportarBoton.motivos.imagenInapropiada") },
+    { valor: "nombre_inapropiado", nombre: t("reportarBoton.motivos.nombreInapropiado") },
+    { valor: "contenido_ofensivo", nombre: t("reportarBoton.motivos.contenidoOfensivo") },
+    { valor: "otro", nombre: t("reportarBoton.motivos.otro") },
+  ];
 
   async function enviar() {
     if (!motivo) return;
@@ -44,7 +46,7 @@ export default function ReportarBoton({ userId, postId, mensajeId }: Props) {
     setEnviando(false);
     if (reportError) {
       console.error("[reportar] error", reportError);
-      setError("No pudimos enviar el reporte. Probá de nuevo.");
+      setError(t("reportarBoton.errorEnviar"));
       return;
     }
     setEnviado(true);
@@ -56,18 +58,18 @@ export default function ReportarBoton({ userId, postId, mensajeId }: Props) {
         onClick={() => setAbierto(true)}
         className="text-xs font-medium text-texto-secundario transition-colors hover:text-error"
       >
-        Reportar
+        {t("reportarBoton.reportar")}
       </button>
     );
   }
 
   if (enviado) {
-    return <p className="text-xs text-texto-secundario">Gracias, lo vamos a revisar.</p>;
+    return <p className="text-xs text-texto-secundario">{t("reportarBoton.gracias")}</p>;
   }
 
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface px-4 py-3">
-      <p className="text-xs font-medium text-foreground">¿Por qué lo reportás?</p>
+      <p className="text-xs font-medium text-foreground">{t("reportarBoton.porQueReportas")}</p>
       <div className="flex flex-col gap-1.5">
         {MOTIVOS.map((m) => (
           <label key={m.valor} className="flex items-center gap-2 text-xs text-texto-secundario">
@@ -83,10 +85,10 @@ export default function ReportarBoton({ userId, postId, mensajeId }: Props) {
       </div>
       <div className="mt-1 flex items-center gap-2">
         <Boton onClick={enviar} disabled={!motivo} cargando={enviando} className="px-3 py-1.5 text-xs">
-          Enviar reporte
+          {t("reportarBoton.enviarReporte")}
         </Boton>
         <button onClick={() => setAbierto(false)} className="text-xs text-texto-secundario hover:underline">
-          Cancelar
+          {t("reportarBoton.cancelar")}
         </button>
       </div>
       {error && <p className="text-xs text-error">{error}</p>}

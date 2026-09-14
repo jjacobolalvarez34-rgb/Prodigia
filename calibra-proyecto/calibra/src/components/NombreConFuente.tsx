@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { FUENTE_NOMBRE_CLASS, type FuenteNombre } from "@/types/database";
 
 interface Props {
@@ -10,6 +13,7 @@ interface Props {
 // a la clase Tailwind real — usado en perfil, ranking y feed para que la
 // tipografía comprada se vea en todos lados sin duplicar el mapeo.
 export default function NombreConFuente({ nombre, fuente, className = "" }: Props) {
+  const t = useTranslations("Componentes");
   const claseFuente = FUENTE_NOMBRE_CLASS[fuente ?? "default"] ?? "";
-  return <span className={`${claseFuente} ${className}`}>{nombre ?? "Jugador"}</span>;
+  return <span className={`${claseFuente} ${className}`}>{nombre ?? t("nombreConFuente.jugador")}</span>;
 }

@@ -54,7 +54,7 @@ interface Props {
   semillaDuelo?: number;
   // Fase 6: progreso del rival EN VIVO (distinto del fantasma — ver
   // useProgresoEnVivo). Solo tiene efecto si el rival no terminó antes
-  // que vos (si fantasma existe, no hace falta: ya se ve su avance real).
+  // que tú (si fantasma existe, no hace falta: ya se ve su avance real).
   duelId?: string | null;
   miUserId?: string | null;
   rivalNombreEnVivo?: string | null;

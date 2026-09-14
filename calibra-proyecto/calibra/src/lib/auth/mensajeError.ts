@@ -2,7 +2,7 @@ import type { AuthError } from "@supabase/supabase-js";
 
 // Fase V3: antes, cualquier error de Supabase Auth (signUp, login,
 // recuperar contraseña, actualizar contraseña, convertir cuenta de
-// invitado) caía en un mensaje genérico ("Probá de nuevo") sin importar
+// invitado) caía en un mensaje genérico ("Prueba de nuevo") sin importar
 // la causa real — así fue como el bug de "no pudimos enviar el enlace"
 // quedó sin diagnosticar durante toda una sesión: no había forma de ver,
 // ni en pantalla ni en el log, CUÁL de las variantes de error de
@@ -31,7 +31,7 @@ export function mensajeErrorAuth(error: AuthError, mensajeGenerico: string): str
       return "El correo del proyecto todavía no puede mandar a esta dirección — es un tema de configuración, avisale a quien administra Prodigia.";
     case "email_provider_disabled":
     case "signup_disabled":
-      return "Esta acción está temporalmente desactivada. Probá más tarde.";
+      return "Esta acción está temporalmente desactivada. Prueba más tarde.";
     case "email_address_invalid":
       return "Ese email no es válido.";
     case "same_password":

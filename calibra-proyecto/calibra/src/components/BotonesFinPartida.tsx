@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface Props {
   onOtraVez: () => void;
@@ -10,6 +13,7 @@ interface Props {
 // dos salidas — repetir con la misma configuración, o volver a la home
 // del mundo — nunca solo una.
 export default function BotonesFinPartida({ onOtraVez, volverHref, colorHex }: Props) {
+  const t = useTranslations("Componentes");
   return (
     <div className="flex w-full max-w-md gap-3">
       <button
@@ -21,13 +25,13 @@ export default function BotonesFinPartida({ onOtraVez, volverHref, colorHex }: P
             : "linear-gradient(120deg, var(--primario), var(--logro))",
         }}
       >
-        Otra partida
+        {t("botonesFinPartida.otraPartida")}
       </button>
       <Link
         href={volverHref}
         className="flex items-center justify-center rounded-2xl border-2 border-border px-6 py-4 font-display font-semibold text-foreground transition-colors hover:border-primario/40"
       >
-        Volver
+        {t("botonesFinPartida.volver")}
       </Link>
     </div>
   );

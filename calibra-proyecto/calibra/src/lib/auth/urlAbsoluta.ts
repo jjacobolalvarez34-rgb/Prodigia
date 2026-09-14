@@ -19,7 +19,7 @@
 export function urlAbsoluta(path: string): string {
   const origen = window.location.origin;
   if (!/^https?:\/\//.test(origen)) {
-    console.error(`[auth] window.location.origin sin esquema: "${origen}" — revisá cómo se está sirviendo la app.`);
+    console.error(`[auth] window.location.origin sin esquema: "${origen}" — revisa cómo se está sirviendo la app.`);
   }
   return `${origen}${path}`;
 }

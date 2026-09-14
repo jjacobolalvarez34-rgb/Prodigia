@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoGeografia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
@@ -12,12 +13,13 @@ import type { SincronizarProgresoRow } from "@/lib/mundos/progresoNivel";
 import { IconCheck, IconGeometria } from "@/components/icons";
 import { COLOR_GEOGRAFIA } from "./GeografiaMapa";
 
-export const metadata: Metadata = {
-  title: "Geografía",
-  description: "Ubicá países de América en el mapa, con dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Geografia");
+  return { title: t("nombreMundo"), description: t("metadata.home.description") };
+}
 
 export default async function GeografiaHomePage() {
+  const t = await getTranslations("Geografia");
   const supabase = await createClient();
   const { user, profile } = await requireMundoGeografia(supabase, "/geografia");
 
@@ -51,20 +53,20 @@ export default async function GeografiaHomePage() {
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
         <div>
           <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_GEOGRAFIA }}>
-            Geografía
+            {t("nombreMundo")}
           </span>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Mapas del mundo</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("home.mapasDelMundo")}</h1>
           <div className="mt-2">
-            <NivelMundoBadge nombreMundo="Geografía" nivel={nivelMundo} colorHex={COLOR_GEOGRAFIA} />
+            <NivelMundoBadge nombreMundo={t("nombreMundo")} nivel={nivelMundo} colorHex={COLOR_GEOGRAFIA} />
           </div>
         </div>
 
-        <NivelMundoProgreso nombreMundo="Geografía" colorHex={COLOR_GEOGRAFIA} progreso={progresoMundo} />
+        <NivelMundoProgreso nombreMundo={t("nombreMundo")} colorHex={COLOR_GEOGRAFIA} progreso={progresoMundo} />
 
         {metaCumplidaHoy && (
           <div className="flex items-center gap-3 rounded-2xl bg-correcto/10 px-5 py-4">
             <IconCheck className="h-5 w-5 shrink-0 text-correcto" />
-            <p className="text-sm font-medium text-foreground">Ya cumpliste tu meta de hoy.</p>
+            <p className="text-sm font-medium text-foreground">{t("home.metaCumplida")}</p>
           </div>
         )}
 
@@ -84,8 +86,8 @@ export default async function GeografiaHomePage() {
               <IconGeometria className="h-5 w-5" />
             </span>
             <div>
-              <span className="font-display text-xl font-bold text-foreground">Practicar</span>
-              <p className="mt-1 text-sm text-texto-secundario">Elegí una región y ubicá sus países en el mapa.</p>
+              <span className="font-display text-xl font-bold text-foreground">{t("home.practicar")}</span>
+              <p className="mt-1 text-sm text-texto-secundario">{t("home.practicarDescripcion")}</p>
             </div>
           </Link>
 
@@ -104,19 +106,19 @@ export default async function GeografiaHomePage() {
               <IconGeometria className="h-5 w-5" />
             </span>
             <div>
-              <span className="font-display text-xl font-bold text-foreground">Aprender</span>
-              <p className="mt-1 text-sm text-texto-secundario">Trucos mnemotécnicos para ubicar países más rápido.</p>
+              <span className="font-display text-xl font-bold text-foreground">{t("home.aprender")}</span>
+              <p className="mt-1 text-sm text-texto-secundario">{t("home.aprenderDescripcion")}</p>
             </div>
           </Link>
         </section>
 
         <section className="flex flex-col gap-4">
-          <h2 className="font-display text-lg font-bold text-foreground">Regiones</h2>
+          <h2 className="font-display text-lg font-bold text-foreground">{t("home.regiones")}</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <TopicCard nombre="América" Icono={IconGeometria} badge={{ tipo: "nivel", nivel }} colorHex={COLOR_GEOGRAFIA} />
-            <TopicCard nombre="Europa" Icono={IconGeometria} badge={{ tipo: "nivel", nivel }} colorHex={COLOR_GEOGRAFIA} />
-            <TopicCard nombre="África" Icono={IconGeometria} badge={{ tipo: "nivel", nivel }} colorHex={COLOR_GEOGRAFIA} />
-            <TopicCard nombre="Asia y Oceanía" Icono={IconGeometria} badge={{ tipo: "nivel", nivel }} colorHex={COLOR_GEOGRAFIA} />
+            <TopicCard nombre={t("continentes.america")} Icono={IconGeometria} badge={{ tipo: "nivel", nivel }} colorHex={COLOR_GEOGRAFIA} />
+            <TopicCard nombre={t("continentes.europa")} Icono={IconGeometria} badge={{ tipo: "nivel", nivel }} colorHex={COLOR_GEOGRAFIA} />
+            <TopicCard nombre={t("continentes.africa")} Icono={IconGeometria} badge={{ tipo: "nivel", nivel }} colorHex={COLOR_GEOGRAFIA} />
+            <TopicCard nombre={t("continentes.asia_oceania")} Icono={IconGeometria} badge={{ tipo: "nivel", nivel }} colorHex={COLOR_GEOGRAFIA} />
           </div>
         </section>
       </div>

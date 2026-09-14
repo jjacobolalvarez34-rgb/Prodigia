@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import DiagnosticoHistoriaClient from "./DiagnosticoHistoriaClient";
 
-export const metadata: Metadata = {
-  title: "Diagnóstico de Historia",
-  description: "Unas preguntas rápidas para calibrar tu nivel inicial.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Historia.diagnostico.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 interface Props {
   searchParams: Promise<{ next?: string }>;

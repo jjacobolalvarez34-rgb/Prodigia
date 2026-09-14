@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoHistoria } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import HistoriaPracticaClient from "../../HistoriaPracticaClient";
 import { cargarDatosPracticaHistoria } from "@/lib/historia/cargarPractica";
 
-export const metadata: Metadata = {
-  title: "Practicar Personajes",
-  description: "Identificá la figura histórica a partir de pistas, con dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Historia.practicaPages.personajes.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 interface Props {
   searchParams: Promise<{ duelo?: string }>;

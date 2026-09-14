@@ -38,7 +38,7 @@ export async function POST(request: Request) {
 
   if (!data || data.length === 0) {
     return NextResponse.json(
-      { error: "No se pudo borrar el grupo — no existe o no sos su profesor." },
+      { error: "No se pudo borrar el grupo — no existe o no eres su profesor." },
       { status: 403 }
     );
   }

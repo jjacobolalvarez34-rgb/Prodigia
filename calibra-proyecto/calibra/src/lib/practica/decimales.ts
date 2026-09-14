@@ -24,7 +24,7 @@ function generarConvertir(nivel: number): ProblemaDecimal {
   return {
     problemType: "decimales",
     tipo: "convertir",
-    enunciado: `Convertí ${num}/${den} a decimal`,
+    enunciado: `Convierte ${num}/${den} a decimal`,
     respuesta,
     tolerancia: 0.01,
   };
@@ -54,7 +54,7 @@ function generarRedondear(nivel: number): ProblemaDecimal {
   return {
     problemType: "decimales",
     tipo: "redondear",
-    enunciado: `Redondeá ${numero} a ${lugares} decimal${lugares > 1 ? "es" : ""}`,
+    enunciado: `Redondea ${numero} a ${lugares} decimal${lugares > 1 ? "es" : ""}`,
     respuesta,
     tolerancia: 0,
   };

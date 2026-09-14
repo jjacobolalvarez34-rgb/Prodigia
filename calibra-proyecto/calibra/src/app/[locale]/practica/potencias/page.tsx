@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoNumeria, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { TIPOS_POTENCIA, type TipoPotencia } from "@/lib/practica/potencias";
 import PotenciaPracticaClient from "./PotenciaPracticaClient";
 
-export const metadata: Metadata = {
-  title: "Potencias y raíces",
-  description: "Potencias, raíces cuadradas y notación científica — dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [tNumeria, tPotencias] = await Promise.all([
+    getTranslations("Numeria.temas"),
+    getTranslations("Potencias.metadata"),
+  ]);
+  return { title: tNumeria("potencias"), description: tPotencias("description") };
+}
 
 export default async function PotenciasPage() {
   const supabase = await createClient();
   const { user } = await requireMundoNumeria(supabase, "/practica/potencias");
-  bloquearInvitado(user, "Potencias");
+  const tNumeria = await getTranslations("Numeria.temas");
+  bloquearInvitado(user, tNumeria("potencias"));
 
   const [{ data: skillRows }, { data: profile }] = await Promise.all([
     supabase

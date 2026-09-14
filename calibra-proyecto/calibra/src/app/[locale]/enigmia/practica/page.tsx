@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoEnigmia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
@@ -10,6 +11,7 @@ interface Props {
 
 export default async function EnigmiaPracticaPage({ searchParams }: Props) {
   const { duelo } = await searchParams;
+  const t = await getTranslations("Enigmia.practica");
   const supabase = await createClient();
   const { user } = await requireMundoEnigmia(supabase, "/enigmia/practica");
 
@@ -23,7 +25,7 @@ export default async function EnigmiaPracticaPage({ searchParams }: Props) {
       dueloInfo = {
         duelId: duelo,
         rivalId: fila.retador_id === user.id ? (fila.retado_id as string) : (fila.retador_id as string),
-        rivalNombre: (fila.rival_nombre as string | null) ?? "Rival",
+        rivalNombre: (fila.rival_nombre as string | null) ?? t("rivalPorDefecto"),
         miElo: fila.mi_elo as number,
         rivalElo: fila.rival_elo as number,
         miTituloNombre: (fila.mi_titulo_nombre as string | null) ?? null,

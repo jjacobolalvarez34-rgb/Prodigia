@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { tierCiudadDeNivel } from "@/lib/clanes/tierCiudad";
 
 export interface MiembroCasa {
@@ -38,12 +39,13 @@ function hashA0a1(input: string, sal: number): number {
 // Las 5 ilustraciones (public/clan_rangos/1..5.png) se usan tal cual,
 // sin generar otras.
 export default function EscenaCiudad({ nivelClan, colorEstandarte, className = "", miembros = [] }: Props) {
+  const t = useTranslations("Clanes.escenaCiudad");
   const tier = tierCiudadDeNivel(nivelClan);
 
   return (
     <div className={`relative overflow-hidden rounded-2xl ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element -- pixel art, sin necesidad de optimización responsive de next/image */}
-      <img src={tier.imagen} alt={`Ciudad del clan — ${tier.nombre}`} className="block h-full w-full object-cover" />
+      <img src={tier.imagen} alt={t("alt", { tier: tier.nombre })} className="block h-full w-full object-cover" />
 
       {/* Pulso neón tintado del color del estandarte */}
       <div

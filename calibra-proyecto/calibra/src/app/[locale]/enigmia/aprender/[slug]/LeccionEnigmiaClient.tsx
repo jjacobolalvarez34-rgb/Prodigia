@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import type { NodoCaminoEnigmia } from "@/lib/enigmia/path";
 import type { Achievement } from "@/types/database";
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export default function LeccionEnigmiaClient({ nodo }: Props) {
+  const t = useTranslations("Enigmia.leccion");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("explicacion");
   const [pasoIdx, setPasoIdx] = useState(0);
@@ -57,7 +59,7 @@ export default function LeccionEnigmiaClient({ nodo }: Props) {
                 className="rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wide"
                 style={{ background: "rgba(14,159,110,0.1)", color: COLOR }}
               >
-                Técnica
+                {t("tecnica")}
               </span>
               <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">{nodo.nombre}</h1>
               <p className="mt-2 text-texto-secundario">{nodo.descripcion}</p>
@@ -67,7 +69,7 @@ export default function LeccionEnigmiaClient({ nodo }: Props) {
               className="rounded-xl px-4 py-3 font-display font-semibold text-white shadow-lg"
               style={{ background: `linear-gradient(120deg, ${COLOR}, #3FB88B)` }}
             >
-              Ver el ejemplo
+              {t("verElEjemplo")}
             </button>
           </motion.div>
         )}
@@ -126,7 +128,7 @@ export default function LeccionEnigmiaClient({ nodo }: Props) {
                 disabled={pasoIdx === 0}
                 className="rounded-xl border border-border px-4 py-3 font-medium text-foreground disabled:opacity-40"
               >
-                Anterior
+                {t("anterior")}
               </button>
               {pasoIdx < pasos.length - 1 ? (
                 <button
@@ -134,7 +136,7 @@ export default function LeccionEnigmiaClient({ nodo }: Props) {
                   className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
                   style={{ background: COLOR }}
                 >
-                  Siguiente paso
+                  {t("siguientePaso")}
                 </button>
               ) : (
                 <button
@@ -143,7 +145,7 @@ export default function LeccionEnigmiaClient({ nodo }: Props) {
                   className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white disabled:opacity-40"
                   style={{ background: COLOR }}
                 >
-                  Listo
+                  {t("listo")}
                 </button>
               )}
             </div>
@@ -160,7 +162,7 @@ export default function LeccionEnigmiaClient({ nodo }: Props) {
           >
             <span className="text-5xl">🎉</span>
             <h1 className="font-display text-2xl font-black tracking-tight text-foreground">
-              ¡Completaste {nodo.nombre}!
+              {t("completaste", { nombre: nodo.nombre })}
             </h1>
             <LogroBanner logros={logrosNuevos} />
             <button
@@ -168,7 +170,7 @@ export default function LeccionEnigmiaClient({ nodo }: Props) {
               className="mt-2 w-full rounded-xl px-4 py-3 font-display font-semibold text-white"
               style={{ background: COLOR }}
             >
-              Volver a Aprender
+              {t("volverAAprender")}
             </button>
           </motion.div>
         )}

@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoTrigonometria } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import TrigonometriaPracticaClient from "../../TrigonometriaPracticaClient";
 import { cargarDatosPracticaTrigonometria } from "@/lib/trigonometria/cargarPractica";
 
-export const metadata: Metadata = {
-  title: "Practicar Identidades",
-  description: "Pitagórica, ángulo doble y complementarios, con dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Trigonometria.practica.identidades.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 interface Props {
   searchParams: Promise<{ duelo?: string }>;

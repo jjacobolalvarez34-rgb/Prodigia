@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 // Fase 4 ("Duelos: llevar el progreso en vivo..."): bug de freeze de ~1s
 // al terminar tu parte — entre la última respuesta y que el resumen
@@ -9,6 +10,7 @@ import { motion } from "framer-motion";
 // entre "sprint" y "resumen" en cada *PracticaClient — carga
 // intencional, no un freeze accidental.
 export default function TransicionFinalizando() {
+  const t = useTranslations("Duelos.transicionFinalizando");
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -17,7 +19,7 @@ export default function TransicionFinalizando() {
       className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-20"
     >
       <span className="h-8 w-8 animate-spin rounded-full border-2 border-primario/30 border-t-primario" />
-      <p className="text-sm font-medium text-texto-secundario">Cerrando la partida…</p>
+      <p className="text-sm font-medium text-texto-secundario">{t("mensaje")}</p>
     </motion.div>
   );
 }

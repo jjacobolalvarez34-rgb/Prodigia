@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoAnatomia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
@@ -8,22 +9,23 @@ import { IconAnatomia } from "@/components/icons";
 import { NOMBRE_MODO_ANATOMIA, type ModoAnatomia } from "@/lib/practica/anatomia";
 import { COLOR_ANATOMIA } from "../colores";
 
-export const metadata: Metadata = {
-  title: "Practicar",
-  description: "Elegí un sistema de Anatomía para practicar.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Anatomia.elegir.metadata");
+  return { title: t("titulo"), description: t("description") };
+}
 
-const MODOS: { modo: ModoAnatomia; desc: string; href: string }[] = [
-  { modo: "oseo", desc: "Huesos del cuerpo", href: "/anatomia/practica" },
-  { modo: "muscular", desc: "Músculos del cuerpo", href: "/anatomia/practica/muscular" },
-  { modo: "organos", desc: "Órganos principales", href: "/anatomia/practica/organos" },
-  { modo: "nervioso", desc: "Sistema nervioso y pares craneales", href: "/anatomia/practica/nervioso" },
+const MODOS: { modo: ModoAnatomia; descKey: string; href: string }[] = [
+  { modo: "oseo", descKey: "oseo", href: "/anatomia/practica" },
+  { modo: "muscular", descKey: "muscular", href: "/anatomia/practica/muscular" },
+  { modo: "organos", descKey: "organos", href: "/anatomia/practica/organos" },
+  { modo: "nervioso", descKey: "nervioso", href: "/anatomia/practica/nervioso" },
 ];
 
 // Fase 2 desde el día uno ("nace ya bien, no como las otras ciudades
 // que hubo que corregir después"): hub de selección propio, cada modo
 // con su nivel real.
 export default async function AnatomiaElegirPage() {
+  const t = await getTranslations("Anatomia.elegir");
   const supabase = await createClient();
   const { user } = await requireMundoAnatomia(supabase, "/anatomia/elegir");
 
@@ -39,8 +41,8 @@ export default async function AnatomiaElegirPage() {
       <Header autenticado />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-16">
         <div className="text-center">
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">¿Qué sistema practicamos?</h1>
-          <p className="mt-2 text-sm text-texto-secundario">Elegí un sistema para arrancar.</p>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
+          <p className="mt-2 text-sm text-texto-secundario">{t("subtitulo")}</p>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {MODOS.map((m) => (
@@ -57,7 +59,7 @@ export default async function AnatomiaElegirPage() {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="font-display font-bold text-foreground">{NOMBRE_MODO_ANATOMIA[m.modo]}</p>
-                <p className="text-xs text-texto-secundario">{m.desc}</p>
+                <p className="text-xs text-texto-secundario">{t(`modos.${m.descKey}`)}</p>
               </div>
               <LevelDial nivel={nivelDe(m.modo)} size={44} mostrarEtiqueta={false} colorHex={COLOR_ANATOMIA} />
             </Link>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import CountUp from "@/components/CountUp";
 import GestoLogo from "@/components/GestoLogo";
 import RangoBadge from "@/components/RangoBadge";
@@ -35,9 +36,10 @@ export interface ResultadoDuelo {
 // secundario discreto, nunca una alerta. Nunca se oculta, pero tampoco
 // interrumpe nada.
 function TagClanDeBots() {
+  const t = useTranslations("Duelos.resultado");
   return (
     <span className="ml-1.5 rounded-full bg-foreground/[0.06] px-2 py-0.5 align-middle text-[10px] font-medium uppercase tracking-wide text-texto-secundario">
-      Clan de Bots
+      {t("clanDeBots")}
     </span>
   );
 }
@@ -47,11 +49,12 @@ interface Props {
 }
 
 function BarraComparacion({ miPuntaje, rivalPuntaje }: { miPuntaje: number; rivalPuntaje: number }) {
+  const t = useTranslations("Duelos.resultado");
   const max = Math.max(miPuntaje, rivalPuntaje, 1);
   return (
     <div className="mt-3 flex w-full max-w-xs flex-col gap-2">
-      <FilaBarra label="Vos" valor={miPuntaje} max={max} color="var(--primario)" />
-      <FilaBarra label="Rival" valor={rivalPuntaje} max={max} color="var(--texto-secundario)" />
+      <FilaBarra label={t("tu")} valor={miPuntaje} max={max} color="var(--primario)" />
+      <FilaBarra label={t("rival")} valor={rivalPuntaje} max={max} color="var(--texto-secundario)" />
     </div>
   );
 }
@@ -79,9 +82,10 @@ function FilaBarra({ label, valor, max, color }: { label: string; valor: number;
 // título VICTORIA/DERROTA. Los dígitos animados (CountUp) van en un
 // tamaño que ningún otro texto de la pantalla iguala.
 function BloqueElo({ anterior, nuevo }: { anterior: number; nuevo: number }) {
+  const t = useTranslations("Duelos.resultado");
   return (
     <div className="flex flex-col items-center gap-0.5">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-texto-secundario">ELO</span>
+      <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-texto-secundario">{t("elo")}</span>
       <CountUp
         from={anterior}
         value={nuevo}
@@ -112,24 +116,25 @@ function aciertos(p: number | null | undefined): string {
 // promedio), no solo el puntaje final — mismo espíritu que la
 // comparativa de tetr.io.
 function DesgloseCompleto({ duelo }: { duelo: ResultadoDuelo }) {
+  const t = useTranslations("Duelos.resultado");
   const hayDesglose = duelo.mi_precision != null || duelo.rival_precision != null;
   if (!hayDesglose) return null;
   return (
     <div className="mt-3 grid w-full max-w-xs grid-cols-[1fr_auto_1fr] items-center gap-x-3 gap-y-2 text-center">
-      <span className="text-xs font-semibold text-foreground">Vos</span>
+      <span className="text-xs font-semibold text-foreground">{t("tu")}</span>
       <span />
-      <span className="text-xs font-semibold text-foreground">Rival</span>
+      <span className="text-xs font-semibold text-foreground">{t("rival")}</span>
 
       <span className="font-mono text-sm font-bold text-foreground">{aciertos(duelo.mi_precision)}</span>
-      <span className="text-[10px] uppercase tracking-wide text-texto-secundario">Aciertos</span>
+      <span className="text-[10px] uppercase tracking-wide text-texto-secundario">{t("aciertos")}</span>
       <span className="font-mono text-sm font-bold text-foreground">{aciertos(duelo.rival_precision)}</span>
 
       <span className="font-mono text-sm font-bold text-foreground">{pct(duelo.mi_precision)}</span>
-      <span className="text-[10px] uppercase tracking-wide text-texto-secundario">Precisión</span>
+      <span className="text-[10px] uppercase tracking-wide text-texto-secundario">{t("precision")}</span>
       <span className="font-mono text-sm font-bold text-foreground">{pct(duelo.rival_precision)}</span>
 
       <span className="font-mono text-sm font-bold text-foreground">{segundos(duelo.mi_tiempo_promedio)}</span>
-      <span className="text-[10px] uppercase tracking-wide text-texto-secundario">Tiempo prom.</span>
+      <span className="text-[10px] uppercase tracking-wide text-texto-secundario">{t("tiempoProm")}</span>
       <span className="font-mono text-sm font-bold text-foreground">{segundos(duelo.rival_tiempo_promedio)}</span>
     </div>
   );
@@ -142,6 +147,7 @@ function DesgloseCompleto({ duelo }: { duelo: ResultadoDuelo }) {
 // Compartido entre Numeria (SprintSummary) y, a futuro, Geografía/
 // Enigmia — un solo lugar para esta lógica.
 export default function ResultadoDueloBlock({ duelo }: Props) {
+  const t = useTranslations("Duelos.resultado");
   const sonoRef = useRef(false);
   useEffect(() => {
     if (duelo && duelo.resuelto && !duelo.empate && !sonoRef.current) {
@@ -157,12 +163,12 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
       <div className="rounded-2xl border border-border bg-surface px-5 py-4 text-center">
         {duelo.mi_puntaje != null && (
           <p className="font-mono text-2xl font-bold text-foreground">
-            {duelo.mi_puntaje} <span className="text-sm font-normal text-texto-secundario">puntos</span>
+            {duelo.mi_puntaje} <span className="text-sm font-normal text-texto-secundario">{t("puntos")}</span>
           </p>
         )}
-        <p className="mt-1 text-sm font-medium text-foreground">Esperando al rival…</p>
+        <p className="mt-1 text-sm font-medium text-foreground">{t("esperandoRival")}</p>
         <p className="mt-1 text-xs text-texto-secundario">
-          En cuanto {duelo.oponente_nombre ?? "tu rival"} termine la suya vas a ver la comparativa completa.
+          {t("enCuantoTermine", { oponente: duelo.oponente_nombre ?? t("rivalPorDefecto") })}
         </p>
         <DesgloseCompleto duelo={duelo} />
       </div>
@@ -177,9 +183,9 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
   if (duelo.empate) {
     return (
       <div className="flex flex-col items-center gap-1 rounded-2xl bg-surface-2 px-6 pb-5 pt-4 text-center">
-        <p className="font-display text-3xl font-black uppercase tracking-tight text-foreground sm:text-4xl">Empate</p>
+        <p className="font-display text-3xl font-black uppercase tracking-tight text-foreground sm:text-4xl">{t("empate")}</p>
         <p className="mt-1 text-sm font-medium text-texto-secundario">
-          Empataron con {duelo.oponente_nombre ?? "tu rival"} — ni más ni menos.
+          {t("empataronCon", { oponente: duelo.oponente_nombre ?? t("rivalPorDefecto") })}
           {duelo.oponente_es_bot && <TagClanDeBots />}
         </p>
         <div className="mt-3">
@@ -189,7 +195,7 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
         {hayPuntajes && !duelo.mi_precision && <BarraComparacion miPuntaje={duelo.mi_puntaje!} rivalPuntaje={duelo.rival_puntaje!} />}
         {duelo.oponente_id && !duelo.oponente_es_bot && (
           <Link href={`/perfil/${duelo.oponente_id}`} className="mt-3 block text-xs font-semibold text-primario hover:underline">
-            Ver perfil
+            {t("verPerfil")}
           </Link>
         )}
       </div>
@@ -207,9 +213,9 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
         <div className="pointer-events-none -mb-4 -mt-6">
           <GestoLogo size={subioDeRango ? 130 : 90} colorHex={subioDeRango ? undefined : "#3FB88B"} />
         </div>
-        <p className="font-display text-4xl font-black uppercase tracking-tight text-correcto sm:text-5xl">Victoria</p>
+        <p className="font-display text-4xl font-black uppercase tracking-tight text-correcto sm:text-5xl">{t("victoria")}</p>
         <p className="mt-1 text-sm font-medium text-foreground">
-          Le ganaste a {duelo.oponente_nombre ?? "tu rival"}
+          {t("leGanasteA", { oponente: duelo.oponente_nombre ?? t("rivalPorDefecto") })}
           {duelo.oponente_es_bot && <TagClanDeBots />}
         </p>
         <div className="mt-3">
@@ -224,13 +230,13 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
             transition={{ delay: 0.3, duration: 0.5, ease: "backOut" }}
             className="mt-3 flex flex-col items-center gap-1 rounded-xl bg-logro/15 px-4 py-3"
           >
-            <span className="text-xs font-semibold uppercase tracking-wide text-texto-secundario">Subiste de rango</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-texto-secundario">{t("subisteDeRango")}</span>
             <RangoBadge elo={duelo.elo_nuevo} size="lg" />
           </motion.div>
         )}
         {duelo.oponente_id && !duelo.oponente_es_bot && (
           <Link href={`/perfil/${duelo.oponente_id}`} className="mt-3 text-xs font-semibold text-primario hover:underline">
-            Ver perfil
+            {t("verPerfil")}
           </Link>
         )}
       </motion.div>
@@ -242,9 +248,9 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
       {/* Mismo tono suave que ya tenía el texto de derrota — no se
           cambia, solo se le suma el tratamiento tipográfico grande al
           título de arriba. */}
-      <p className="font-display text-3xl font-black uppercase tracking-tight text-foreground sm:text-4xl">Derrota</p>
+      <p className="font-display text-3xl font-black uppercase tracking-tight text-foreground sm:text-4xl">{t("derrota")}</p>
       <p className="mt-1 text-sm font-medium text-texto-secundario">
-        Esta vez ganó {duelo.oponente_nombre ?? "tu rival"} — estuviste cerca.
+        {t("estaVezGano", { oponente: duelo.oponente_nombre ?? t("rivalPorDefecto") })}
         {duelo.oponente_es_bot && <TagClanDeBots />}
       </p>
       <div className="mt-3">
@@ -255,11 +261,11 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
       <div className="mt-3 flex items-center gap-3">
         {duelo.oponente_id && !duelo.oponente_es_bot && (
           <Link href={`/perfil/${duelo.oponente_id}`} className="text-xs font-semibold text-primario hover:underline">
-            Ver perfil
+            {t("verPerfil")}
           </Link>
         )}
         <Link href="/social?tab=amigos" className="text-xs font-semibold text-primario hover:underline">
-          Pedir revancha
+          {t("pedirRevancha")}
         </Link>
       </div>
     </div>

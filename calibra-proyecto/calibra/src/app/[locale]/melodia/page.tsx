@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoMelodia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
@@ -13,14 +14,15 @@ import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { IconCheck, IconMelodia } from "@/components/icons";
 import { COLOR_MELODIA } from "./colores";
 
-export const metadata: Metadata = {
-  title: "Melodía",
-  description: "Pentagrama, escalas y acordes, con dificultad adaptativa.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Melodia.home.metadata");
+  return { title: "Melodía", description: t("description") };
+}
 
 const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"];
 
 export default async function MelodiaHomePage() {
+  const t = await getTranslations("Melodia.home");
   const supabase = await createClient();
   const { user, profile } = await requireMundoMelodia(supabase, "/melodia");
 
@@ -52,13 +54,13 @@ export default async function MelodiaHomePage() {
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
         <AvisoPrimeraVez
           avisoKey="melodia-intro"
-          texto="Pentagrama, escalas y acordes reales, construidos por fórmula — con dificultad que se adapta a vos, igual que en los demás mundos."
+          texto={t("avisoIntro")}
         >
           <div>
             <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_MELODIA }}>
               Melodía
             </span>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Notas, escalas y acordes</h1>
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
             <div className="mt-2">
               <NivelMundoBadge nombreMundo="Melodía" nivel={nivelMundo} colorHex={COLOR_MELODIA} />
             </div>
@@ -70,7 +72,7 @@ export default async function MelodiaHomePage() {
         {metaCumplidaHoy && (
           <div className="flex items-center gap-3 rounded-2xl bg-correcto/10 px-5 py-4">
             <IconCheck className="h-5 w-5 shrink-0 text-correcto" />
-            <p className="text-sm font-medium text-foreground">Ya cumpliste tu meta de hoy.</p>
+            <p className="text-sm font-medium text-foreground">{t("metaCumplida")}</p>
           </div>
         )}
 
@@ -87,8 +89,8 @@ export default async function MelodiaHomePage() {
               <IconMelodia className="h-5 w-5" />
             </span>
             <div>
-              <span className="font-display text-xl font-bold text-foreground">Practicar</span>
-              <p className="mt-1 text-sm text-texto-secundario">Pentagrama, alteraciones, escalas y acordes.</p>
+              <span className="font-display text-xl font-bold text-foreground">{t("practicar")}</span>
+              <p className="mt-1 text-sm text-texto-secundario">{t("practicarDescripcion")}</p>
             </div>
           </Link>
 
@@ -104,21 +106,21 @@ export default async function MelodiaHomePage() {
               <IconMelodia className="h-5 w-5" />
             </span>
             <div>
-              <span className="font-display text-xl font-bold text-foreground">Aprender</span>
-              <p className="mt-1 text-sm text-texto-secundario">Cómo leer el pentagrama y armar acordes.</p>
+              <span className="font-display text-xl font-bold text-foreground">{t("aprender")}</span>
+              <p className="mt-1 text-sm text-texto-secundario">{t("aprenderDescripcion")}</p>
             </div>
           </Link>
         </section>
 
         <section className="flex flex-col gap-4">
-          <h2 className="font-display text-lg font-bold text-foreground">Modos</h2>
+          <h2 className="font-display text-lg font-bold text-foreground">{t("modosTitulo")}</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            <TopicCard nombre="Fundamentos" Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_fundamentos") }} colorHex={COLOR_MELODIA} />
-            <TopicCard nombre="Lectura en pentagrama" Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_lectura") }} colorHex={COLOR_MELODIA} />
-            <TopicCard nombre="Alteraciones" Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_alteraciones") }} colorHex={COLOR_MELODIA} />
-            <TopicCard nombre="Escalas" Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_escalas") }} colorHex={COLOR_MELODIA} />
-            <TopicCard nombre="Acordes" Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_acordes") }} colorHex={COLOR_MELODIA} />
-            <TopicCard nombre="Oído absoluto" Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_oido_absoluto") }} colorHex={COLOR_MELODIA} />
+            <TopicCard nombre={t("modos.fundamentos")} Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_fundamentos") }} colorHex={COLOR_MELODIA} />
+            <TopicCard nombre={t("modos.lectura")} Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_lectura") }} colorHex={COLOR_MELODIA} />
+            <TopicCard nombre={t("modos.alteraciones")} Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_alteraciones") }} colorHex={COLOR_MELODIA} />
+            <TopicCard nombre={t("modos.escalas")} Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_escalas") }} colorHex={COLOR_MELODIA} />
+            <TopicCard nombre={t("modos.acordes")} Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_acordes") }} colorHex={COLOR_MELODIA} />
+            <TopicCard nombre={t("modos.oidoAbsoluto")} Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_oido_absoluto") }} colorHex={COLOR_MELODIA} />
           </div>
         </section>
       </div>
