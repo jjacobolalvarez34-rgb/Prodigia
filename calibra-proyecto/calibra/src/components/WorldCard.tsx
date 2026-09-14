@@ -1,8 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import type { ReactElement } from "react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { IconCandado } from "@/components/icons";
 
 interface Props {
@@ -21,8 +19,8 @@ interface Props {
   bloqueado?: boolean;
 }
 
-export default function WorldCard({ nombre, descripcion, Icono, href, colorHex, proximamente, bloqueado }: Props) {
-  const t = useTranslations("Componentes");
+export default async function WorldCard({ nombre, descripcion, Icono, href, colorHex, proximamente, bloqueado }: Props) {
+  const t = await getTranslations("Componentes");
   if (proximamente) {
     return (
       <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-border bg-surface px-6 py-7">

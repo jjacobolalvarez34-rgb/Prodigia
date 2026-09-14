@@ -1,8 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import type { ReactElement } from "react";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 export type TopicBadge = { tipo: "nivel"; nivel: number } | { tipo: "proximamente" };
 
@@ -23,8 +21,8 @@ interface Props {
 // Jerarquía real (Fase HH): el nombre del tema es lo más grande de la
 // tarjeta, no el ícono — alineado a la izquierda, no centrado, para que
 // no se lea como el mismo componente reciclado que el resto de la app.
-export default function TopicCard({ nombre, Icono, href, badge, colorHex = "#6C4CF1" }: Props) {
-  const t = useTranslations("Componentes");
+export default async function TopicCard({ nombre, Icono, href, badge, colorHex = "#6C4CF1" }: Props) {
+  const t = await getTranslations("Componentes");
   const proximamente = badge.tipo === "proximamente";
   const className = `group relative flex flex-col justify-between gap-6 overflow-hidden rounded-2xl border px-5 py-5 transition-all duration-200 ${
     href ? "hover:-translate-y-1 hover:shadow-lg" : ""
