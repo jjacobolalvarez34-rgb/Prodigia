@@ -1189,7 +1189,12 @@
       "errorPasswordsNoCoinciden": "Las contraseñas no coinciden.",
       "errorCrearCuenta": "No pudimos crear la cuenta. Prueba de nuevo.",
       "errorYaRegistrado": "Ya existe una cuenta con ese email.",
-      "confirmacionPendiente": "Te mandamos un email a <strong>{email}</strong> — confirma tu cuenta desde ahí para poder entrar."
+      "confirmacionPendiente": "Te mandamos un email a <strong>{email}</strong> — confirma tu cuenta desde ahí para poder entrar.",
+      "reenviarCodigo": "¿No te llegó? Reenviar email de confirmación",
+      "reenviando": "Reenviando…",
+      "reenviarEn": "Reenviar en {segundos}s",
+      "codigoReenviado": "Listo, te lo mandamos de nuevo — revisa también spam.",
+      "errorReenviar": "No pudimos reenviarlo. Prueba de nuevo en un momento."
     },
     "recuperar": {
       "titulo": "Recuperar contraseña",
@@ -1236,7 +1241,12 @@
         "errorGenerico": "No se pudo guardar. Prueba de nuevo."
       },
       "pasoDirecto": "Listo, tu cuenta ya tiene email y contraseña — la próxima vez entra con eso.",
-      "pasoConfirmar": "Te mandamos un email a <strong>{email}</strong> — confírmalo para terminar de guardar tu cuenta. Mientras tanto sigue jugando normal, no pierdes nada."
+      "pasoConfirmar": "Te mandamos un email a <strong>{email}</strong> — confírmalo para terminar de guardar tu cuenta. Mientras tanto sigue jugando normal, no pierdes nada.",
+      "reenviarCodigo": "¿No te llegó? Reenviar email de confirmación",
+      "reenviando": "Reenviando…",
+      "reenviarEn": "Reenviar en {segundos}s",
+      "codigoReenviado": "Listo, te lo mandamos de nuevo — revisa también spam.",
+      "errorReenviar": "No pudimos reenviarlo. Prueba de nuevo en un momento."
     }
   },
   "Bloqueos": {

@@ -1,12 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
 import { urlAbsoluta } from "@/lib/auth/urlAbsoluta";
 import Boton from "@/components/Boton";
 import CampoPassword from "@/components/CampoPassword";
+
+// Mismo criterio que RegistroForm.tsx: cooldown de UX, no reemplaza el
+// rate-limit real del servidor. Acá el email quedó pendiente de
+// confirmar vía updateUser({ email }), así que el resend es de tipo
+// "email_change" (no "signup" — la cuenta ya existe, es invitado real).
+const COOLDOWN_REENVIO_SEGUNDOS = 45;
 
 // Un invitado (supabase.auth.signInAnonymously) ya tiene un user_id real y
 // todo su progreso guardado bajo ese id — "guardar la cuenta" no migra
@@ -42,6 +48,38 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
   const [nombre, setNombre] = useState("");
   const [enviandoNombre, setEnviandoNombre] = useState(false);
   const [errorNombre, setErrorNombre] = useState<string | null>(null);
+  const [reenviando, setReenviando] = useState(false);
+  const [reenviado, setReenviado] = useState(false);
+  const [errorReenvio, setErrorReenvio] = useState<string | null>(null);
+  const [segundosCooldown, setSegundosCooldown] = useState(0);
+
+  useEffect(() => {
+    if (segundosCooldown <= 0) return;
+    const id = window.setInterval(() => {
+      setSegundosCooldown((s) => Math.max(0, s - 1));
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [segundosCooldown]);
+
+  async function reenviarCodigo() {
+    if (reenviando || segundosCooldown > 0) return;
+    setReenviando(true);
+    setErrorReenvio(null);
+    setReenviado(false);
+    const supabase = createClient();
+    const { error: resendError } = await supabase.auth.resend({
+      type: "email_change",
+      email,
+      options: { emailRedirectTo: urlAbsoluta("/auth/callback") },
+    });
+    setReenviando(false);
+    if (resendError) {
+      setErrorReenvio(mensajeErrorAuth(resendError, t("errorReenviar")));
+      return;
+    }
+    setReenviado(true);
+    setSegundosCooldown(COOLDOWN_REENVIO_SEGUNDOS);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -88,6 +126,7 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
       setErrorNombre(rpcError.message ?? t("pasoNombre.errorGenerico"));
       return;
     }
+    if (!emailConfirmado) setSegundosCooldown(COOLDOWN_REENVIO_SEGUNDOS);
     setPaso(emailConfirmado ? "directo" : "confirmar");
   }
 
@@ -116,7 +155,10 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
             </Boton>
             <button
               type="button"
-              onClick={() => setPaso(emailConfirmado ? "directo" : "confirmar")}
+              onClick={() => {
+                if (!emailConfirmado) setSegundosCooldown(COOLDOWN_REENVIO_SEGUNDOS);
+                setPaso(emailConfirmado ? "directo" : "confirmar");
+              }}
               className="text-sm text-texto-secundario hover:underline"
             >
               {t("pasoNombre.seguirNombreActual")}
@@ -138,12 +180,30 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
 
   if (paso === "confirmar") {
     return (
-      <p className="rounded-xl bg-correcto/15 px-4 py-3 text-sm text-foreground">
-        {t.rich("pasoConfirmar", {
-          email,
-          strong: (chunks) => <span className="font-medium">{chunks}</span>,
-        })}
-      </p>
+      <div className="flex flex-col gap-3">
+        <p className="rounded-xl bg-correcto/15 px-4 py-3 text-sm text-foreground">
+          {t.rich("pasoConfirmar", {
+            email,
+            strong: (chunks) => <span className="font-medium">{chunks}</span>,
+          })}
+        </p>
+        <div className="flex flex-col items-start gap-1.5">
+          <button
+            type="button"
+            onClick={reenviarCodigo}
+            disabled={reenviando || segundosCooldown > 0}
+            className="text-sm font-medium text-primario underline decoration-primario/40 underline-offset-2 transition-opacity hover:decoration-primario disabled:cursor-not-allowed disabled:text-texto-secundario disabled:no-underline disabled:opacity-70"
+          >
+            {reenviando
+              ? t("reenviando")
+              : segundosCooldown > 0
+                ? t("reenviarEn", { segundos: segundosCooldown })
+                : t("reenviarCodigo")}
+          </button>
+          {reenviado && !errorReenvio && <p className="text-xs text-correcto">{t("codigoReenviado")}</p>}
+          {errorReenvio && <p className="text-xs text-error">{errorReenvio}</p>}
+        </div>
+      </div>
     );
   }
 

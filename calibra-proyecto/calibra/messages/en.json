@@ -1189,7 +1189,12 @@
       "errorPasswordsNoCoinciden": "Passwords don't match.",
       "errorCrearCuenta": "We couldn't create the account. Try again.",
       "errorYaRegistrado": "An account with that email already exists.",
-      "confirmacionPendiente": "We sent an email to <strong>{email}</strong> — confirm your account from there to be able to sign in."
+      "confirmacionPendiente": "We sent an email to <strong>{email}</strong> — confirm your account from there to be able to sign in.",
+      "reenviarCodigo": "Didn't get it? Resend confirmation email",
+      "reenviando": "Resending…",
+      "reenviarEn": "Resend in {segundos}s",
+      "codigoReenviado": "Done, we sent it again — check spam too.",
+      "errorReenviar": "We couldn't resend it. Try again in a moment."
     },
     "recuperar": {
       "titulo": "Recover password",
@@ -1236,7 +1241,12 @@
         "errorGenerico": "Couldn't save. Try again."
       },
       "pasoDirecto": "Done, your account now has an email and password — sign in with those next time.",
-      "pasoConfirmar": "We sent an email to <strong>{email}</strong> — confirm it to finish saving your account. Keep playing normally in the meantime, you won't lose anything."
+      "pasoConfirmar": "We sent an email to <strong>{email}</strong> — confirm it to finish saving your account. Keep playing normally in the meantime, you won't lose anything.",
+      "reenviarCodigo": "Didn't get it? Resend confirmation email",
+      "reenviando": "Resending…",
+      "reenviarEn": "Resend in {segundos}s",
+      "codigoReenviado": "Done, we sent it again — check spam too.",
+      "errorReenviar": "We couldn't resend it. Try again in a moment."
     }
   },
   "Bloqueos": {

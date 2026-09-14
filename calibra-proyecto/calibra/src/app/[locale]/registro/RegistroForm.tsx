@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
@@ -12,6 +12,15 @@ import CampoPassword from "@/components/CampoPassword";
 interface Props {
   refId?: string;
 }
+
+// A veces el mail de confirmación se pierde (spam, proveedor lento, typo
+// que el usuario ya corrigió mentalmente pero no en el campo) — el botón
+// de reenvío usa supabase.auth.resend, que dispara el mismo mail de
+// confirmación de nuevo para la misma cuenta pendiente. El cooldown de
+// acá es puramente de UX (evitar que golpeen el botón 10 veces seguidas);
+// Supabase igual aplica su propio rate-limit del lado del servidor pase
+// lo que pase acá.
+const COOLDOWN_REENVIO_SEGUNDOS = 45;
 
 // Sección 10.2: link de invitación de amigo (?ref=<userId de quien
 // invitó>) — mismo patrón que LoginForm.tsx (next?: string): lo lee el
@@ -32,6 +41,43 @@ export default function RegistroForm({ refId }: Props) {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmacionPendiente, setConfirmacionPendiente] = useState(false);
+  const [reenviando, setReenviando] = useState(false);
+  const [reenviado, setReenviado] = useState(false);
+  const [errorReenvio, setErrorReenvio] = useState<string | null>(null);
+  const [segundosCooldown, setSegundosCooldown] = useState(0);
+  const refId_ = useRef(refId);
+  refId_.current = refId;
+
+  useEffect(() => {
+    if (segundosCooldown <= 0) return;
+    const id = window.setInterval(() => {
+      setSegundosCooldown((s) => Math.max(0, s - 1));
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [segundosCooldown]);
+
+  async function reenviarCodigo() {
+    if (reenviando || segundosCooldown > 0) return;
+    setReenviando(true);
+    setErrorReenvio(null);
+    setReenviado(false);
+    const supabase = createClient();
+    const redirectPath = refId_.current
+      ? `/auth/callback?ref=${encodeURIComponent(refId_.current)}`
+      : "/auth/callback";
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: urlAbsoluta(redirectPath) },
+    });
+    setReenviando(false);
+    if (resendError) {
+      setErrorReenvio(mensajeErrorAuth(resendError, t("errorReenviar")));
+      return;
+    }
+    setReenviado(true);
+    setSegundosCooldown(COOLDOWN_REENVIO_SEGUNDOS);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -69,6 +115,7 @@ export default function RegistroForm({ refId }: Props) {
     // por el link que le llega. Si no, ya queda logueado.
     if (!data.session) {
       setConfirmacionPendiente(true);
+      setSegundosCooldown(COOLDOWN_REENVIO_SEGUNDOS);
       setEnviando(false);
       return;
     }
@@ -86,12 +133,32 @@ export default function RegistroForm({ refId }: Props) {
 
   if (confirmacionPendiente) {
     return (
-      <p className="rounded-xl bg-correcto/15 px-4 py-3 text-sm text-foreground">
-        {t.rich("confirmacionPendiente", {
-          email,
-          strong: (chunks) => <span className="font-medium">{chunks}</span>,
-        })}
-      </p>
+      <div className="flex flex-col gap-3">
+        <p className="rounded-xl bg-correcto/15 px-4 py-3 text-sm text-foreground">
+          {t.rich("confirmacionPendiente", {
+            email,
+            strong: (chunks) => <span className="font-medium">{chunks}</span>,
+          })}
+        </p>
+        <div className="flex flex-col items-start gap-1.5">
+          <button
+            type="button"
+            onClick={reenviarCodigo}
+            disabled={reenviando || segundosCooldown > 0}
+            className="text-sm font-medium text-primario underline decoration-primario/40 underline-offset-2 transition-opacity hover:decoration-primario disabled:cursor-not-allowed disabled:text-texto-secundario disabled:no-underline disabled:opacity-70"
+          >
+            {reenviando
+              ? t("reenviando")
+              : segundosCooldown > 0
+                ? t("reenviarEn", { segundos: segundosCooldown })
+                : t("reenviarCodigo")}
+          </button>
+          {reenviado && !errorReenvio && (
+            <p className="text-xs text-correcto">{t("codigoReenviado")}</p>
+          )}
+          {errorReenvio && <p className="text-xs text-error">{errorReenvio}</p>}
+        </div>
+      </div>
     );
   }
 
