@@ -237,3 +237,80 @@ select:disabled {
 .ciudad-luz {
   animation: ciudad-luz-titilar 2.2s ease-in-out infinite;
 }
+
+/* Fase 10 ("Tienda: animaciones y fondos"): animaciones de nombre
+   compradas (profiles.animacion_nombre) — cada clase es autocontenida
+   y se aplica a cualquier contenedor de texto (ver ANIMACION_NOMBRE_
+   CLASS en types/database.ts y NombreConFuente.tsx), nunca requieren
+   separar el nombre en letras. */
+@keyframes nombre-anim-arcoiris {
+  to {
+    background-position: 200% center;
+  }
+}
+.nombre-anim-arcoiris {
+  background-image: linear-gradient(90deg, #ff5d5d, #ffb627, #3ddc97, #4cc9f0, #7c5cff, #ff5d5d);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: nombre-anim-arcoiris 3.5s linear infinite;
+}
+
+@keyframes nombre-anim-brillo {
+  to {
+    background-position: -200% center;
+  }
+}
+.nombre-anim-brillo {
+  background-image: linear-gradient(100deg, var(--foreground) 40%, #fff8dc 50%, var(--foreground) 60%);
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: nombre-anim-brillo 2.8s ease-in-out infinite;
+}
+
+@keyframes nombre-anim-ondulante {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(-1deg);
+  }
+}
+.nombre-anim-ondulante {
+  display: inline-block;
+  animation: nombre-anim-ondulante 1.6s ease-in-out infinite;
+}
+
+@keyframes nombre-anim-neon {
+  0%,
+  100% {
+    text-shadow: 0 0 4px currentColor, 0 0 8px currentColor;
+  }
+  50% {
+    text-shadow: 0 0 10px currentColor, 0 0 18px currentColor;
+  }
+}
+.nombre-anim-neon {
+  color: var(--primario);
+  animation: nombre-anim-neon 1.8s ease-in-out infinite;
+}
+
+/* Fondo decorativo de la tarjeta de perfil (profiles.fondo_perfil) —
+   franja superior de la tarjeta, el degradé "respira" despacio para
+   que no se sienta una imagen estática pegada. */
+@keyframes fondo-perfil-flujo {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+.fondo-perfil-banner {
+  background-size: 200% 200%;
+  animation: fondo-perfil-flujo 8s ease-in-out infinite alternate;
+}

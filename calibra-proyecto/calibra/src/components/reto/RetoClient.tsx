@@ -221,12 +221,23 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
             transition={{ duration: 0.2 }}
             className="flex flex-col items-center gap-5"
           >
-            <div className="flex w-full flex-col gap-1.5">
-              <div className="flex items-center justify-between text-xs text-texto-secundario">
-                <span className="font-medium" style={{ color: COLOR_MUNDO[pregunta.mundo] }}>
+            <div className="flex w-full flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <Link
+                  href="/"
+                  className="flex items-center gap-1 text-xs font-medium text-texto-secundario transition-colors hover:text-foreground"
+                >
+                  <span aria-hidden>←</span> {t("salirPorAhora")}
+                </Link>
+                <span className="font-medium text-xs" style={{ color: COLOR_MUNDO[pregunta.mundo] }}>
                   {NOMBRE_MUNDO[pregunta.mundo]}
                 </span>
-                <span className="font-mono">{indice + 1}/{total}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="font-display text-sm font-bold text-foreground">
+                  {t("preguntaXdeY", { actual: indice + 1, total })}
+                </span>
+                <span className="font-mono text-xs text-texto-secundario">{t("correctasHastaAhora", { n: correctos })}</span>
               </div>
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-foreground/10">
                 <div

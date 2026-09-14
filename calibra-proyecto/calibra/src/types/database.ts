@@ -77,6 +77,43 @@ export const FUENTE_NOMBRE_CLASS: Record<FuenteNombre, string> = {
   futurista: "font-[family-name:var(--font-orbitron)]",
 };
 
+// Fase 10 ("Tienda: animaciones y fondos"): animación CSS comprable
+// sobre el nombre visible — "ninguna" = sin efecto. Cada clase es
+// autocontenida (@keyframes + estilos en globals.css) y aplicable a
+// cualquier contenedor de texto sin separar en letras, así funciona
+// igual en NombreConFuente.tsx (span simple) como en ScrollFloat (que
+// internamente ya separa el texto en spans para su propia animación de
+// entrada) o en una celda de tabla del ranking.
+export type AnimacionNombre = "ninguna" | "arcoiris" | "brillo" | "ondulante" | "neon";
+
+export const ANIMACION_NOMBRE_CLASS: Record<AnimacionNombre, string> = {
+  ninguna: "",
+  arcoiris: "nombre-anim-arcoiris",
+  brillo: "nombre-anim-brillo",
+  ondulante: "nombre-anim-ondulante",
+  neon: "nombre-anim-neon",
+};
+
+// Fondo decorativo de la tarjeta de perfil (franja superior, arriba del
+// avatar — no reemplaza la foto de perfil). 5 degradés CSS, sin assets
+// de imagen ("ninguno" = tarjeta lisa de siempre) + "personalizado":
+// tu propia imagen (Supabase Storage, bucket "fondos-perfil"), guardada
+// en profiles.fondo_perfil_url — ver guardar_fondo_perfil_url en
+// 0143_fondo_perfil_personalizado.sql. FONDO_PERFIL_ESTILO no tiene
+// entrada de degradé para "personalizado" (queda "") porque ese caso
+// usa la URL, no un background-image de CSS fijo.
+export type FondoPerfil = "ninguno" | "aurora" | "nebulosa" | "dorado" | "oceano" | "bosque" | "personalizado";
+
+export const FONDO_PERFIL_ESTILO: Record<FondoPerfil, string> = {
+  ninguno: "",
+  aurora: "linear-gradient(120deg, #7c5cff, #3ddc97, #4cc9f0, #7c5cff)",
+  nebulosa: "linear-gradient(120deg, #2a0944, #7c5cff, #ff5d5d, #2a0944)",
+  dorado: "linear-gradient(120deg, #3d2410, #e8b34d, #ffc53d, #3d2410)",
+  oceano: "linear-gradient(120deg, #0a2540, #1d7a9c, #4cc9f0, #0a2540)",
+  bosque: "linear-gradient(120deg, #0d2b1a, #2f7d4f, #7ee08a, #0d2b1a)",
+  personalizado: "",
+};
+
 export interface Profile {
   id: string;
   display_name: string | null;
@@ -102,6 +139,11 @@ export interface Profile {
   boost_multiplicador_pendiente: number; // 1 = sin boost activo, ej. 1.5 = próxima partida con +50% Puntos
   fuente_nombre: FuenteNombre;
   fuentes_desbloqueadas: FuenteNombre[];
+  animacion_nombre: AnimacionNombre;
+  animaciones_desbloqueadas: AnimacionNombre[];
+  fondo_perfil: FondoPerfil;
+  fondos_desbloqueados: FondoPerfil[];
+  fondo_perfil_url: string | null;
   ocultar_doble_o_nada: boolean;
   elo_rating: number;
   created_at: string;
@@ -126,6 +168,9 @@ export interface PerfilPublico {
   puntos_total: number;
   created_at: string;
   titulo_nombre: string | null;
+  animacion_nombre: AnimacionNombre;
+  fondo_perfil: FondoPerfil;
+  fondo_perfil_url: string | null;
 }
 
 export type MotivoReporte = "trampa" | "imagen_inapropiada" | "nombre_inapropiado" | "contenido_ofensivo" | "otro";

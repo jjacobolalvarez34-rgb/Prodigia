@@ -294,6 +294,16 @@
       "cambiarFoto": "Change photo",
       "subirFoto": "Upload photo"
     },
+    "subirFondoPerfil": {
+      "tipoInvalido": "It has to be an image (PNG, JPG, WEBP, or GIF).",
+      "tamanoExcedido": "The image can't be larger than 3MB.",
+      "errorSubida": "We couldn't upload the image. Try again.",
+      "errorGuardarPerfil": "The image uploaded but we couldn't save it to your profile. Try again.",
+      "subiendo": "Uploading...",
+      "cambiarImagen": "Change background image",
+      "subirImagen": "Upload background image",
+      "subeUnaImagen": "You picked the custom background — upload an image so it shows up."
+    },
     "titulosSection": {
       "titulo": "Titles",
       "vacio": "You haven't unlocked any yet — rank up in Rankeds to get your first one.",
@@ -373,7 +383,17 @@
       "marcoMelodia": "Melodia Frame",
       "marcoTrigonometria": "Trigonometry Frame",
       "marcoHistoria": "History Frame",
-      "paqueteMarcosMundo": "World Collection"
+      "paqueteMarcosMundo": "World Collection",
+      "animacionOndulante": "Wave Animation",
+      "animacionBrillo": "Shine Animation",
+      "animacionArcoiris": "Rainbow Animation",
+      "animacionNeon": "Neon Animation",
+      "fondoOceano": "Ocean Background",
+      "fondoBosque": "Forest Background",
+      "fondoAurora": "Aurora Background",
+      "fondoDorado": "Golden Background",
+      "fondoNebulosa": "Nebula Background",
+      "fondoPersonalizado": "Custom Background"
     },
     "fuentes": {
       "mono": "Monospace",
@@ -382,6 +402,20 @@
       "impacto": "Impact",
       "script": "Script",
       "futurista": "Futuristic"
+    },
+    "animaciones": {
+      "ondulante": "Wave",
+      "brillo": "Shine",
+      "arcoiris": "Rainbow",
+      "neon": "Neon"
+    },
+    "fondos": {
+      "oceano": "Ocean",
+      "bosque": "Forest",
+      "aurora": "Aurora",
+      "dorado": "Golden",
+      "nebulosa": "Nebula",
+      "personalizado": "Custom"
     },
     "descripciones": {
       "escudo": "One more calibration shield for your next match.",
@@ -394,6 +428,10 @@
     "noSePudoCambiarFuenteConexion": "Couldn't change the font. Check your connection.",
     "noSePudoCambiarMarco": "Couldn't change the frame.",
     "noSePudoCambiarMarcoConexion": "Couldn't change the frame. Check your connection.",
+    "noSePudoCambiarAnimacion": "Couldn't change the animation.",
+    "noSePudoCambiarAnimacionConexion": "Couldn't change the animation. Check your connection.",
+    "noSePudoCambiarFondo": "Couldn't change the background.",
+    "noSePudoCambiarFondoConexion": "Couldn't change the background. Check your connection.",
     "noSePudoApostar": "Couldn't place the bet.",
     "noSePudoApostarConexion": "Couldn't place the bet. Check your connection.",
     "elBazarDeProdigia": "Prodigia's Bazaar",
@@ -414,6 +452,14 @@
     "paqueteMarcosMundoDescripcion": "All 6 world frames together, discounted — for when you're seriously playing all 6.",
     "paqueteMarcosMundoRequisito": "You need level {n} in all 6 worlds to unlock it",
     "paqueteMarcosMundoCompleto": "You already have all 6 world frames",
+    "vidrieraDeAnimaciones": "Name animations",
+    "vidrieraAnimacionesDescripcion": "Your name moves — shows on your profile, Rankeds, the feed, and clan chat.",
+    "sinAnimacion": "No animation",
+    "vidrieraDeFondos": "Profile backgrounds",
+    "vidrieraFondosDescripcion": "A gradient for the top band of your profile card — doesn't replace your photo.",
+    "sinFondo": "No background",
+    "subeTuImagenEnPerfil": "Upload your image from your profile so it shows up.",
+    "irAPerfil": "Go to my profile",
     "ofertaDelVendedor": "Today's vendor deal:",
     "porcentajeMenos": "{n}% off",
     "enItem": "on {nombre}",
@@ -2248,6 +2294,9 @@
     "volverSemanal": "next week",
     "totalPreguntas": "{total} questions, the same for everyone {periodo}",
     "introDescripcion": "Randomly spread across your unlocked cities. Finish it to earn extra Chispas and extend your streak.",
+    "salirPorAhora": "Exit for now",
+    "preguntaXdeY": "Question {actual} of {total}",
+    "correctasHastaAhora": "{n} correct",
     "rachaDiaria": "{racha, plural, one {# day} other {# days}} in a row",
     "rachaSemanal": "{racha, plural, one {# week} other {# weeks}} in a row",
     "empezar": "Start",

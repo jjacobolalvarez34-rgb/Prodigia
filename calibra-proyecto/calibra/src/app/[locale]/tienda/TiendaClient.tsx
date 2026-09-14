@@ -3,7 +3,16 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { RANGOS_ELO, FUENTE_NOMBRE_CLASS, MARCOS_MUNDO, type FuenteNombre } from "@/types/database";
+import {
+  RANGOS_ELO,
+  FUENTE_NOMBRE_CLASS,
+  ANIMACION_NOMBRE_CLASS,
+  FONDO_PERFIL_ESTILO,
+  MARCOS_MUNDO,
+  type FuenteNombre,
+  type AnimacionNombre,
+  type FondoPerfil,
+} from "@/types/database";
 import { IconCandado, IconEscudo } from "@/components/icons";
 import Boton from "@/components/Boton";
 import GlareHover from "@/components/reactbits/GlareHover";
@@ -11,6 +20,7 @@ import BorderGlow from "@/components/reactbits/BorderGlow";
 import ScrollFloat from "@/components/reactbits/ScrollFloat";
 import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiario";
 import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
+import { reproducirTono } from "@/lib/sonido";
 
 // Fase 7: reusa la paleta de rangos de Rankeds (RANGOS_ELO) en vez de
 // inventar colores nuevos — 6 marcos, uno por rango real.
@@ -33,7 +43,7 @@ const MARCOS_MUNDO_COMPRABLES = Object.entries(MARCOS_MUNDO).map(([mundo, { nomb
   imagen,
 }));
 
-type Contexto = "utilidad" | "fuente" | "marco" | "marco-mundo" | "apuesta";
+type Contexto = "utilidad" | "fuente" | "marco" | "marco-mundo" | "animacion" | "fondo" | "apuesta";
 
 interface Props {
   puntosIniciales: number;
@@ -44,6 +54,10 @@ interface Props {
   fuentesDesbloqueadas: string[];
   marcoActual: string;
   marcosDesbloqueados: string[];
+  animacionActual: string;
+  animacionesDesbloqueadas: string[];
+  fondoActual: string;
+  fondosDesbloqueados: string[];
   nivelesMundo: Record<string, number>;
   fechaHoy: string;
 }
@@ -57,6 +71,10 @@ export default function TiendaClient({
   fuentesDesbloqueadas,
   marcoActual,
   marcosDesbloqueados,
+  animacionActual,
+  animacionesDesbloqueadas,
+  fondoActual,
+  fondosDesbloqueados,
   nivelesMundo,
   fechaHoy,
 }: Props) {
@@ -86,6 +104,16 @@ export default function TiendaClient({
     marco_trigonometria: t("items.marcoTrigonometria"),
     marco_historia: t("items.marcoHistoria"),
     paquete_marcos_mundo: t("items.paqueteMarcosMundo"),
+    animacion_ondulante: t("items.animacionOndulante"),
+    animacion_brillo: t("items.animacionBrillo"),
+    animacion_arcoiris: t("items.animacionArcoiris"),
+    animacion_neon: t("items.animacionNeon"),
+    fondo_oceano: t("items.fondoOceano"),
+    fondo_bosque: t("items.fondoBosque"),
+    fondo_aurora: t("items.fondoAurora"),
+    fondo_dorado: t("items.fondoDorado"),
+    fondo_nebulosa: t("items.fondoNebulosa"),
+    fondo_personalizado: t("items.fondoPersonalizado"),
   };
   const FUENTES_COMPRABLES: { fuente: FuenteNombre; item: ItemComprable; nombre: string }[] = [
     { fuente: "mono", item: "fuente_mono", nombre: t("fuentes.mono") },
@@ -95,6 +123,20 @@ export default function TiendaClient({
     { fuente: "script", item: "fuente_script", nombre: t("fuentes.script") },
     { fuente: "futurista", item: "fuente_futurista", nombre: t("fuentes.futurista") },
   ];
+  const ANIMACIONES_COMPRABLES: { animacion: AnimacionNombre; item: ItemComprable; nombre: string }[] = [
+    { animacion: "ondulante", item: "animacion_ondulante", nombre: t("animaciones.ondulante") },
+    { animacion: "brillo", item: "animacion_brillo", nombre: t("animaciones.brillo") },
+    { animacion: "arcoiris", item: "animacion_arcoiris", nombre: t("animaciones.arcoiris") },
+    { animacion: "neon", item: "animacion_neon", nombre: t("animaciones.neon") },
+  ];
+  const FONDOS_COMPRABLES: { fondo: FondoPerfil; item: ItemComprable; nombre: string }[] = [
+    { fondo: "oceano", item: "fondo_oceano", nombre: t("fondos.oceano") },
+    { fondo: "bosque", item: "fondo_bosque", nombre: t("fondos.bosque") },
+    { fondo: "aurora", item: "fondo_aurora", nombre: t("fondos.aurora") },
+    { fondo: "dorado", item: "fondo_dorado", nombre: t("fondos.dorado") },
+    { fondo: "nebulosa", item: "fondo_nebulosa", nombre: t("fondos.nebulosa") },
+    { fondo: "personalizado", item: "fondo_personalizado", nombre: t("fondos.personalizado") },
+  ];
   const [puntos, setPuntos] = useState(puntosIniciales);
   const [escudos, setEscudos] = useState(escudosIniciales);
   const [congelamientos, setCongelamientos] = useState(congelamientosIniciales);
@@ -103,6 +145,10 @@ export default function TiendaClient({
   const [fuenteElegida, setFuenteElegida] = useState(fuenteActual);
   const [marcosDesbl, setMarcosDesbl] = useState(marcosDesbloqueados);
   const [marcoElegido, setMarcoElegido] = useState(marcoActual);
+  const [animacionesDesbl, setAnimacionesDesbl] = useState(animacionesDesbloqueadas);
+  const [animacionElegida, setAnimacionElegida] = useState(animacionActual);
+  const [fondosDesbl, setFondosDesbl] = useState(fondosDesbloqueados);
+  const [fondoElegido, setFondoElegido] = useState(fondoActual);
   const [confirmando, setConfirmando] = useState<ItemComprable | null>(null);
   const [comprando, setComprando] = useState(false);
   const [cambiandoCosmetico, setCambiandoCosmetico] = useState(false);
@@ -134,7 +180,10 @@ export default function TiendaClient({
       setBoost(data.boost_multiplicador_pendiente > 1 ? 1 : 0);
       if (Array.isArray(data.fuentes_desbloqueadas)) setFuentesDesbl(data.fuentes_desbloqueadas);
       if (Array.isArray(data.marcos_desbloqueados)) setMarcosDesbl(data.marcos_desbloqueados);
+      if (Array.isArray(data.animaciones_desbloqueadas)) setAnimacionesDesbl(data.animaciones_desbloqueadas);
+      if (Array.isArray(data.fondos_desbloqueados)) setFondosDesbl(data.fondos_desbloqueados);
       setConfirmando(null);
+      reproducirTono("compra");
     } catch {
       setError({ msg: t("noSePudoComprarConexion"), contexto });
     } finally {
@@ -175,6 +224,44 @@ export default function TiendaClient({
       else setMarcoElegido(marco);
     } catch {
       setError({ msg: t("noSePudoCambiarMarcoConexion"), contexto: "marco" });
+    } finally {
+      setCambiandoCosmetico(false);
+    }
+  }
+
+  async function elegirAnimacion(animacion: string) {
+    setCambiandoCosmetico(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/tienda/elegir-animacion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ animacion }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) setError({ msg: data.error ?? t("noSePudoCambiarAnimacion"), contexto: "animacion" });
+      else setAnimacionElegida(animacion);
+    } catch {
+      setError({ msg: t("noSePudoCambiarAnimacionConexion"), contexto: "animacion" });
+    } finally {
+      setCambiandoCosmetico(false);
+    }
+  }
+
+  async function elegirFondo(fondo: string) {
+    setCambiandoCosmetico(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/tienda/elegir-fondo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fondo }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) setError({ msg: data.error ?? t("noSePudoCambiarFondo"), contexto: "fondo" });
+      else setFondoElegido(fondo);
+    } catch {
+      setError({ msg: t("noSePudoCambiarFondoConexion"), contexto: "fondo" });
     } finally {
       setCambiandoCosmetico(false);
     }
@@ -398,6 +485,116 @@ export default function TiendaClient({
             onComprar={() => comprar("paquete_marcos_mundo", "marco-mundo")}
             costo={costoDe("paquete_marcos_mundo")}
           />
+        </EstanteCategoria>
+
+        <EstanteCategoria titulo={t("vidrieraDeAnimaciones")} franja="#3ddc97">
+          <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraAnimacionesDescripcion")}</p>
+          <div className="flex flex-wrap gap-2">
+            {(["ninguna", ...ANIMACIONES_COMPRABLES.map((a) => a.animacion)] as AnimacionNombre[]).map((animacion) => {
+              const desbloqueada = animacionesDesbl.includes(animacion);
+              const compra = ANIMACIONES_COMPRABLES.find((a) => a.animacion === animacion);
+              const elegida = animacionElegida === animacion;
+              const claseAnimacion = ANIMACION_NOMBRE_CLASS[animacion];
+              if (desbloqueada) {
+                return (
+                  <button
+                    key={animacion}
+                    onClick={() => elegirAnimacion(animacion)}
+                    disabled={cambiandoCosmetico || elegida}
+                    className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                      elegida
+                        ? "border-[#3D2410] bg-[#F4E4C1] text-[#3D2410]"
+                        : "border-[#F4E4C1]/60 bg-[#3D2410]/30 text-[#F4E4C1] hover:border-[#F4E4C1]"
+                    }`}
+                  >
+                    <span className={claseAnimacion}>{animacion === "ninguna" ? t("sinAnimacion") : compra?.nombre}</span>
+                    {elegida && ` · ${t("activa")}`}
+                  </button>
+                );
+              }
+              if (!compra) return null;
+              const costo = costoDe(compra.item);
+              return (
+                <button
+                  key={animacion}
+                  onClick={() => comprar(compra.item, "animacion")}
+                  disabled={comprando || puntos < costo}
+                  className="rounded-full border border-dashed border-[#F4E4C1]/50 px-3 py-1.5 text-sm text-[#F4E4C1]/70 disabled:opacity-40"
+                >
+                  <span className={claseAnimacion}>{t("nombreChispas", { nombre: compra.nombre, costo })}</span>
+                </button>
+              );
+            })}
+          </div>
+          {error?.contexto === "animacion" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
+        </EstanteCategoria>
+
+        <EstanteCategoria titulo={t("vidrieraDeFondos")} franja="#4CC9F0">
+          <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraFondosDescripcion")}</p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => elegirFondo("ninguno")}
+              disabled={cambiandoCosmetico || fondoElegido === "ninguno"}
+              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                fondoElegido === "ninguno"
+                  ? "border-[#3D2410] bg-[#F4E4C1] text-[#3D2410]"
+                  : "border-[#F4E4C1]/60 bg-[#3D2410]/30 text-[#F4E4C1] hover:border-[#F4E4C1]"
+              }`}
+            >
+              {t("sinFondo")}{fondoElegido === "ninguno" && ` · ${t("activo")}`}
+            </button>
+            {FONDOS_COMPRABLES.map(({ fondo, item, nombre }) => {
+              const desbloqueado = fondosDesbl.includes(fondo);
+              const elegido = fondoElegido === fondo;
+              // "personalizado" no tiene degradé fijo (se ve con TU
+              // imagen, subida aparte en /perfil) — un ícono en vez del
+              // puntito de color, para no mostrar un swatch vacío.
+              const swatch =
+                fondo === "personalizado" ? (
+                  <span className="text-xs leading-none">🖼️</span>
+                ) : (
+                  <span className="h-2.5 w-2.5 rounded-full" style={{ background: FONDO_PERFIL_ESTILO[fondo] }} />
+                );
+              if (desbloqueado) {
+                return (
+                  <button
+                    key={fondo}
+                    onClick={() => elegirFondo(fondo)}
+                    disabled={cambiandoCosmetico || elegido}
+                    className={`flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-sm font-medium transition-colors ${
+                      elegido ? "bg-[#F4E4C1] text-[#3D2410]" : "bg-[#3D2410]/30 text-[#F4E4C1]"
+                    }`}
+                    style={{ borderColor: "#F4E4C1" }}
+                  >
+                    {swatch}
+                    {nombre}
+                    {elegido && ` · ${t("activo")}`}
+                  </button>
+                );
+              }
+              const costo = costoDe(item);
+              return (
+                <button
+                  key={fondo}
+                  onClick={() => comprar(item, "fondo")}
+                  disabled={comprando || puntos < costo}
+                  className="flex items-center gap-1.5 rounded-full border border-dashed border-[#F4E4C1]/50 px-3 py-1.5 text-sm text-[#F4E4C1]/70 disabled:opacity-40"
+                >
+                  {swatch}
+                  {t("nombreChispas", { nombre, costo })}
+                </button>
+              );
+            })}
+          </div>
+          {fondoElegido === "personalizado" && (
+            <p className="text-xs text-[#F4E4C1]/70">
+              {t("subeTuImagenEnPerfil")}{" "}
+              <Link href="/perfil" className="underline hover:text-[#F4E4C1]">
+                {t("irAPerfil")}
+              </Link>
+            </p>
+          )}
+          {error?.contexto === "fondo" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
         </EstanteCategoria>
 
         {/* La puerta del sótano — la Trastienda vive en su propia página

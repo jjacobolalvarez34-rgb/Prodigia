@@ -8,7 +8,7 @@ import Avatar from "@/components/Avatar";
 import RangoBadge from "@/components/RangoBadge";
 import ScrollFloat from "@/components/reactbits/ScrollFloat";
 import { IconLupa, IconX } from "@/components/icons";
-import { FUENTE_NOMBRE_CLASS } from "@/types/database";
+import { FUENTE_NOMBRE_CLASS, ANIMACION_NOMBRE_CLASS } from "@/types/database";
 import type { FilaRanking } from "./Podio";
 
 interface Props {
@@ -152,7 +152,11 @@ function FilaRankingRow({
               efecto. scrollStart/scrollEnd quedan en su default (son
               relativos al viewport, no al alto del elemento — ya dan un
               rango de scroll generoso incluso en una fila chica). */}
-          <ScrollFloat stagger={0.015} animationDuration={0.7} textClassName={FUENTE_NOMBRE_CLASS[fila.fuente_nombre ?? "default"]}>
+          <ScrollFloat
+            stagger={0.015}
+            animationDuration={0.7}
+            textClassName={`${FUENTE_NOMBRE_CLASS[fila.fuente_nombre ?? "default"]} ${ANIMACION_NOMBRE_CLASS[fila.animacion_nombre ?? "ninguna"]}`}
+          >
             {fila.display_name ?? t("jugadorPorDefecto")}
           </ScrollFloat>
         </span>

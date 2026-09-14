@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Boton from "@/components/Boton";
 import ScrollFloat from "@/components/reactbits/ScrollFloat";
-import { FUENTE_NOMBRE_CLASS, type FuenteNombre } from "@/types/database";
+import { FUENTE_NOMBRE_CLASS, ANIMACION_NOMBRE_CLASS, type FuenteNombre, type AnimacionNombre } from "@/types/database";
 
 // Fase 6 (mercado): cambiar de nombre después del primero cuesta
 // Chispas — nunca Experiencia, que es semanal/temporal y mediría mal si
@@ -17,9 +17,10 @@ const COSTO_RENOMBRAR = 100;
 interface Props {
   nombreActual: string | null;
   fuente?: FuenteNombre;
+  animacion?: AnimacionNombre;
 }
 
-export default function NombreEditable({ nombreActual, fuente }: Props) {
+export default function NombreEditable({ nombreActual, fuente, animacion }: Props) {
   const t = useTranslations("Perfil");
   const router = useRouter();
   const [editando, setEditando] = useState(false);
@@ -53,7 +54,7 @@ export default function NombreEditable({ nombreActual, fuente }: Props) {
         <ScrollFloat
           tag="h1"
           className="font-display text-2xl font-bold tracking-tight text-foreground"
-          textClassName={FUENTE_NOMBRE_CLASS[fuente ?? "default"] ?? ""}
+          textClassName={`${FUENTE_NOMBRE_CLASS[fuente ?? "default"] ?? ""} ${ANIMACION_NOMBRE_CLASS[animacion ?? "ninguna"] ?? ""}`}
           animationDuration={0.7}
         >
           {nombreActual ?? t("nombreEditable.jugador")}

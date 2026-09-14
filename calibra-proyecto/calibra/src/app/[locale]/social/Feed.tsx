@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ARITHMETIC_PROBLEM_TYPES, rangoDeSlug, type ArithmeticProblemType, type FuenteNombre } from "@/types/database";
+import { ARITHMETIC_PROBLEM_TYPES, rangoDeSlug, type ArithmeticProblemType, type FuenteNombre, type AnimacionNombre } from "@/types/database";
 import type { MundoDuelo } from "@/lib/duelos/rutas";
 import ReportarBoton from "@/app/[locale]/perfil/[userId]/ReportarBoton";
 import NombreConFuente from "@/components/NombreConFuente";
@@ -18,6 +18,7 @@ export interface PostFeed {
   createdAt: string;
   autorNombre: string;
   autorFuente: FuenteNombre;
+  autorAnimacion: AnimacionNombre;
   logroNombre: string | null;
   logroDescripcion: string | null;
   operationType: string | null;
@@ -179,7 +180,7 @@ function TarjetaLogro({ post, onReaccionar }: { post: PostFeed; onReaccionar: (i
         <span className="text-xl">🏅</span>
         <p className="text-sm text-foreground">
           <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
-            <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} />
+            <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} animacion={post.autorAnimacion} />
           </Link>{" "}
           {t("feed.logroDesbloqueo")} <span className="font-semibold">{post.logroNombre}</span>
         </p>
@@ -215,7 +216,7 @@ function TarjetaDesafio({ post, onReaccionar }: { post: PostFeed; onReaccionar: 
     <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-5 py-4 shadow-sm">
       <p className="text-sm text-foreground">
         <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
-          <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} />
+          <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} animacion={post.autorAnimacion} />
         </Link>{" "}
         {t("feed.desafioTe")}{" "}
         <span className="font-semibold">{post.operationType ? t(`operaciones.${post.operationType}`) : ""}</span>
@@ -249,7 +250,7 @@ function TarjetaResultadoDuelo({ post, onReaccionar }: { post: PostFeed; onReacc
         <span className="text-xl">🏆</span>
         <p className="text-sm text-foreground">
           <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
-            <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} />
+            <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} animacion={post.autorAnimacion} />
           </Link>{" "}
           {t("feed.vencioA")} <span className="font-semibold">{post.rivalNombre}</span>
           {post.mundo && (
@@ -291,7 +292,7 @@ function TarjetaSubidaRango({ post, onReaccionar }: { post: PostFeed; onReaccion
         <span className="text-xl">💎</span>
         <p className="text-sm text-foreground">
           <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
-            <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} />
+            <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} animacion={post.autorAnimacion} />
           </Link>{" "}
           {t("feed.subioA")} <span className="font-bold" style={estiloNombre}>{rango?.nombre ?? post.rangoNuevo}</span>
         </p>
@@ -313,7 +314,7 @@ function TarjetaNivelMundo({ post, onReaccionar }: { post: PostFeed; onReacciona
         <span className="text-xl">🎯</span>
         <p className="text-sm text-foreground">
           <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
-            <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} />
+            <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} animacion={post.autorAnimacion} />
           </Link>{" "}
           {t("feed.alcanzoNivel")} <span className="font-semibold">{post.nivelMundoValor}</span> {t("feed.en")}{" "}
           {post.mundo && post.mundo !== "aleatorio" ? t(`mundos.${post.mundo}`) : t("mundos.suMundo")}
@@ -354,7 +355,7 @@ function TarjetaDesafioPersonalizado({ post, onReaccionar }: { post: PostFeed; o
     <div className="flex flex-col gap-3 rounded-2xl border border-logro/30 bg-logro/5 px-5 py-4">
       <p className="text-sm text-foreground">
         <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
-          <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} />
+          <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} animacion={post.autorAnimacion} />
         </Link>{" "}
         {t("feed.problemaMensaje")} <span className="font-semibold">✍️ {post.problemaPregunta}</span>
       </p>

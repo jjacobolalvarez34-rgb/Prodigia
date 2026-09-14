@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Avatar from "@/components/Avatar";
+import NombreConFuente from "@/components/NombreConFuente";
 import ReportarBoton from "@/app/[locale]/perfil/[userId]/ReportarBoton";
+import type { FuenteNombre, AnimacionNombre } from "@/types/database";
 
 interface Mensaje {
   id: string;
@@ -13,6 +15,8 @@ interface Mensaje {
   autor_avatar_url: string | null;
   texto: string;
   created_at: string;
+  autor_fuente_nombre?: FuenteNombre | null;
+  autor_animacion_nombre?: AnimacionNombre | null;
 }
 
 interface Props {
@@ -129,7 +133,11 @@ export default function ChatDeClan({ clanId, miUserId }: Props) {
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline gap-1.5">
                   <span className="truncate text-xs font-semibold text-foreground">
-                    {m.autor_id === miUserId ? t("tu") : (m.autor_nombre ?? t("jugador"))}
+                    {m.autor_id === miUserId ? (
+                      t("tu")
+                    ) : (
+                      <NombreConFuente nombre={m.autor_nombre} fuente={m.autor_fuente_nombre} animacion={m.autor_animacion_nombre} />
+                    )}
                   </span>
                   <span className="shrink-0 font-mono text-[10px] text-texto-secundario">
                     {new Date(m.created_at).toLocaleTimeString(locale === "es" ? "es-AR" : "en-US", {

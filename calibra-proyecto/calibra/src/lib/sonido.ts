@@ -105,14 +105,16 @@ export function reproducirNotaMusical(freq: number) {
   }
 }
 
-export type TipoTono = "correcto" | "error" | "nivel" | "logro" | "duelo_gano" | "duelo_perdio";
+export type TipoTono = "correcto" | "error" | "nivel" | "logro" | "duelo_gano" | "duelo_perdio" | "compra" | "notificacion";
 
 // Tonos generados con Web Audio (sin archivos de audio con licencia):
 // tick agudo al acertar, uno grave al fallar, chime ascendente al subir
 // de nivel, fanfarria corta al desbloquear un logro, y un tono distinto
 // para ganar vs. perder un duelo (Fase I2) — nunca uno punitivo para la
-// derrota, solo más apagado. Respeta el mute de /ajustes y
-// prefers-reduced-motion.
+// derrota, solo más apagado. Fase 10: 2 tonos más — "compra" (un
+// clinc-clinc corto tipo caja registradora, para la Tienda) y
+// "notificacion" (un ping breve de 2 notas, para la campanita de
+// Social). Respeta el mute de /ajustes y prefers-reduced-motion.
 export function reproducirTono(tipo: TipoTono) {
   if (!sonidoHabilitado() || prefiereMenosEstimulo()) return;
   if (typeof window === "undefined") return;
@@ -147,6 +149,16 @@ export function reproducirTono(tipo: TipoTono) {
       reproducirSecuencia([
         { freq: 392.0, inicio: 0, duracion: 0.2, volumen: 0.08 },
         { freq: 329.6, inicio: 0.12, duracion: 0.3, volumen: 0.07 },
+      ]);
+    } else if (tipo === "compra") {
+      reproducirSecuencia([
+        { freq: 1318.5, inicio: 0, duracion: 0.09, tipoOnda: "square", volumen: 0.07 },
+        { freq: 1760.0, inicio: 0.07, duracion: 0.16, tipoOnda: "square", volumen: 0.09 },
+      ]);
+    } else if (tipo === "notificacion") {
+      reproducirSecuencia([
+        { freq: 987.77, inicio: 0, duracion: 0.1, tipoOnda: "sine", volumen: 0.08 },
+        { freq: 1318.5, inicio: 0.09, duracion: 0.14, tipoOnda: "sine", volumen: 0.08 },
       ]);
     }
   } catch {

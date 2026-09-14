@@ -14,6 +14,7 @@ import { IconCampana } from "@/components/icons";
 import type { UseAmigosReturn } from "@/app/[locale]/social/useAmigos";
 import { useRetosPendientes, type RetoPendienteBase } from "@/app/[locale]/social/useRetosPendientes";
 import { useInvitacionesClan, type InvitacionClan } from "@/app/[locale]/social/useInvitacionesClan";
+import { reproducirTono } from "@/lib/sonido";
 
 interface Props {
   amigosState: UseAmigosReturn;
@@ -51,7 +52,12 @@ export default function CampanaNotificaciones({ amigosState, retosIniciales, inv
     <div ref={contenedorRef} className="relative">
       <button
         type="button"
-        onClick={() => setAbierta((v) => !v)}
+        onClick={() => {
+          setAbierta((v) => {
+            if (!v && total > 0) reproducirTono("notificacion");
+            return !v;
+          });
+        }}
         aria-label={t("abrir")}
         className="relative flex h-9 w-9 items-center justify-center rounded-full text-texto-secundario transition-colors hover:bg-surface-2 hover:text-foreground"
       >

@@ -33,7 +33,7 @@ export default async function SocialPage() {
       supabase
         .from("feed_posts")
         .select(
-          "id, user_id, tipo, created_at, operation_type, nivel, cantidad_problemas, mundo, rival_nombre, rango_nuevo, nivel_mundo_valor, achievements(nombre, descripcion), profiles(display_name, fuente_nombre), problemas_personalizados(pregunta)"
+          "id, user_id, tipo, created_at, operation_type, nivel, cantidad_problemas, mundo, rival_nombre, rango_nuevo, nivel_mundo_valor, achievements(nombre, descripcion), profiles(display_name, fuente_nombre, animacion_nombre), problemas_personalizados(pregunta)"
         )
         .order("created_at", { ascending: false })
         .limit(40),
@@ -63,7 +63,7 @@ export default async function SocialPage() {
   }
 
   const postsFormateados: PostFeed[] = (posts ?? []).map((p) => {
-    const autor = p.profiles as unknown as { display_name: string | null; fuente_nombre: string | null } | null;
+    const autor = p.profiles as unknown as { display_name: string | null; fuente_nombre: string | null; animacion_nombre: string | null } | null;
     const logro = p.achievements as unknown as { nombre: string; descripcion: string } | null;
     // Nunca se manda la respuesta al cliente en el listado — solo la
     // pregunta. La respuesta se valida server-side recién cuando alguien
@@ -77,6 +77,7 @@ export default async function SocialPage() {
       createdAt: p.created_at,
       autorNombre: autor?.display_name ?? "Jugador",
       autorFuente: (autor?.fuente_nombre as PostFeed["autorFuente"]) ?? "default",
+      autorAnimacion: (autor?.animacion_nombre as PostFeed["autorAnimacion"]) ?? "ninguna",
       logroNombre: logro?.nombre ?? null,
       logroDescripcion: logro?.descripcion ?? null,
       operationType: p.operation_type,

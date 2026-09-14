@@ -9,7 +9,7 @@ import GlareHover from "@/components/reactbits/GlareHover";
 import RangoBadge from "@/components/RangoBadge";
 import NombreConFuente from "@/components/NombreConFuente";
 import { IconLupa, IconX } from "@/components/icons";
-import type { FuenteNombre } from "@/types/database";
+import type { FuenteNombre, AnimacionNombre } from "@/types/database";
 
 export interface FilaRankingElo {
   user_id: string;
@@ -19,6 +19,7 @@ export interface FilaRankingElo {
   titulo_activo: string | null;
   titulo_nombre: string | null;
   fuente_nombre: FuenteNombre | null;
+  animacion_nombre?: AnimacionNombre | null;
 }
 
 type Alcance = "global" | "amigos";
@@ -137,7 +138,7 @@ export default function RankingElo({ miUserId }: { miUserId: string }) {
                       <span className="text-2xl">{ESTILO[indice].medalla}</span>
                       <Avatar url={fila.avatar_url} nombre={fila.display_name} size={indice === 0 ? 64 : 48} />
                       <span className="max-w-full truncate text-center text-sm font-semibold text-foreground">
-                        <NombreConFuente nombre={fila.display_name} fuente={fila.fuente_nombre} />
+                        <NombreConFuente nombre={fila.display_name} fuente={fila.fuente_nombre} animacion={fila.animacion_nombre} />
                       </span>
                       <RangoBadge elo={fila.elo_rating} tituloNombre={fila.titulo_nombre} size="sm" className="max-w-full" />
                       <span className={`font-mono text-xs font-bold ${ESTILO[indice].texto}`}>{fila.elo_rating} ELO</span>
@@ -201,7 +202,7 @@ export default function RankingElo({ miUserId }: { miUserId: string }) {
                       </span>
                       <Avatar url={fila.avatar_url} nombre={fila.display_name} size={32} />
                       <span className="min-w-0 truncate font-medium text-foreground hover:underline">
-                        <NombreConFuente nombre={fila.display_name} fuente={fila.fuente_nombre} />
+                        <NombreConFuente nombre={fila.display_name} fuente={fila.fuente_nombre} animacion={fila.animacion_nombre} />
                       </span>
                       <RangoBadge elo={fila.elo_rating} tituloNombre={fila.titulo_nombre} size="sm" className="shrink-0" />
                     </Link>

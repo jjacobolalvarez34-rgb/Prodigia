@@ -7,7 +7,7 @@ import Avatar from "@/components/Avatar";
 import GlareHover from "@/components/reactbits/GlareHover";
 import RangoBadge from "@/components/RangoBadge";
 import NombreConFuente from "@/components/NombreConFuente";
-import type { FuenteNombre } from "@/types/database";
+import type { FuenteNombre, AnimacionNombre } from "@/types/database";
 
 export interface FilaRanking {
   user_id: string;
@@ -18,6 +18,7 @@ export interface FilaRanking {
   titulo_activo: string | null;
   titulo_nombre: string | null;
   fuente_nombre?: FuenteNombre | null;
+  animacion_nombre?: AnimacionNombre | null;
 }
 
 interface Props {
@@ -74,7 +75,7 @@ function TarjetaPodio({ fila, indice, esUsuarioActual }: { fila: FilaRanking; in
       <span className="text-2xl">{estilo.medalla}</span>
       <Avatar url={fila.avatar_url} nombre={fila.display_name} size={indice === 0 ? 64 : 48} />
       <span className="max-w-full truncate text-center text-sm font-semibold text-foreground">
-        <NombreConFuente nombre={fila.display_name} fuente={fila.fuente_nombre} />
+        <NombreConFuente nombre={fila.display_name} fuente={fila.fuente_nombre} animacion={fila.animacion_nombre} />
       </span>
       {/* Fase 9: rango de Rankeds, información aparte de la Experiencia
           semanal que ordena este ranking — no lo reemplaza. */}

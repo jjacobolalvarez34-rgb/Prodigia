@@ -1,13 +1,14 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
-import { ESTILO_MARCO_PERFIL, type Achievement, type TituloUsuario } from "@/types/database";
+import { ESTILO_MARCO_PERFIL, FONDO_PERFIL_ESTILO, type Achievement, type TituloUsuario, type FondoPerfil } from "@/types/database";
 import { calcularRachaMaxima, calcularMejorPrecisionDiaria } from "@/lib/perfil/records";
 import Header from "@/components/Header";
 import RangoBadge from "@/components/RangoBadge";
 import BannerHabilidades, { type ItemBanner, type OpcionBanner } from "@/components/BannerHabilidades";
 import NombreEditable from "./NombreEditable";
 import SubirAvatar from "./SubirAvatar";
+import SubirFondoPerfil from "./SubirFondoPerfil";
 import BorrarCuenta from "./BorrarCuenta";
 import ConvertirCuenta from "@/components/ConvertirCuenta";
 import LogroMedalla from "@/components/LogroMedalla";
@@ -75,7 +76,9 @@ export default async function PerfilPage() {
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("created_at, elo_rating, marco_perfil, fuente_nombre, avatar_url, titulo_activo, nivel_cuenta, xp_historico_total, afinidad_banner")
+      .select(
+        "created_at, elo_rating, marco_perfil, fuente_nombre, animacion_nombre, fondo_perfil, fondo_perfil_url, avatar_url, titulo_activo, nivel_cuenta, xp_historico_total, afinidad_banner"
+      )
       .eq("id", user.id)
       .single(),
     supabase.from("daily_progress").select("fecha, meta_alcanzada, congelado").eq("user_id", user.id).limit(1000),
@@ -135,9 +138,20 @@ export default async function PerfilPage() {
   ]);
   const umbralActual = (xpNivelActual as number | null) ?? 0;
   const umbralSiguiente = (xpNivelSiguiente as number | null) ?? umbralActual + 1;
+  // Puede salir negativo (reportado en vivo, 2026-09-13: "Nivel 25,
+  // -6475/1900 XP") y es correcto que se vea así, a pedido explícito:
+  // la curva de niveles se recalibró en 0118_niveles_cuenta_recompensas.sql
+  // (mucho más cara en niveles altos) SIN bajarle el nivel a nadie
+  // (grandfathering, documentado ahí a propósito) — así que una cuenta
+  // que llegó a nivel 25 con la curva VIEJA hoy puede tener menos
+  // xp_historico_total que lo que xp_requerido_nivel_cuenta(25) exige
+  // con la curva NUEVA. El número negativo es justamente cuánto XP de
+  // esa "deuda" de recalibración falta cubrir todavía. La barra sí se
+  // clampea a 0% (no puede tener ancho negativo).
+  const xpEnNivelActual = xpHistorico - umbralActual;
   const progresoNivelPct = Math.min(
     100,
-    Math.max(0, Math.round(((xpHistorico - umbralActual) / Math.max(1, umbralSiguiente - umbralActual)) * 100))
+    Math.max(0, Math.round((xpEnNivelActual / Math.max(1, umbralSiguiente - umbralActual)) * 100))
   );
 
   const nivelMundoDe = (world: string) => worldRows?.find((w) => w.world === world)?.nivel_mundo ?? 1;
@@ -145,6 +159,8 @@ export default async function PerfilPage() {
   const rankingFila = (rankingRows as Array<{ posicion: number; total_jugadores: number }> | null)?.[0];
   const eloRating = profileFull?.elo_rating ?? 800;
   const marcoPerfil = profileFull?.marco_perfil ?? "ninguno";
+  const fondoPerfil = (profileFull?.fondo_perfil as FondoPerfil | undefined) ?? "ninguno";
+  const fondoPerfilUrl = (profileFull?.fondo_perfil_url as string | null | undefined) ?? null;
 
   const MUNDOS_BANNER: Array<[string, string]> = [
     ["numeria", "Numeria"],
@@ -181,10 +197,23 @@ export default async function PerfilPage() {
       <Header autenticado invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
         <section
-          className={`flex flex-col gap-4 rounded-2xl border-2 bg-surface px-6 py-6 shadow-sm transition-colors ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}
+          className={`overflow-hidden rounded-2xl border-2 bg-surface shadow-sm transition-colors ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}
         >
+          {fondoPerfil === "personalizado" ? (
+            fondoPerfilUrl ? (
+              <div className="h-20 w-full bg-cover bg-center" style={{ backgroundImage: `url(${fondoPerfilUrl})` }} />
+            ) : (
+              <div className="h-20 w-full border-b border-dashed border-border bg-surface-2" />
+            )
+          ) : (
+            fondoPerfil !== "ninguno" && (
+              <div className="fondo-perfil-banner h-20 w-full" style={{ backgroundImage: FONDO_PERFIL_ESTILO[fondoPerfil] }} />
+            )
+          )}
+          <div className="flex flex-col gap-4 px-6 py-6">
           <SubirAvatar userId={user.id} nombre={profile.display_name} avatarUrlInicial={profileFull?.avatar_url ?? null} marco={marcoPerfil} />
-          <NombreEditable nombreActual={profile.display_name} fuente={profileFull?.fuente_nombre ?? "default"} />
+          {fondoPerfil === "personalizado" && <SubirFondoPerfil userId={user.id} urlInicial={fondoPerfilUrl} />}
+          <NombreEditable nombreActual={profile.display_name} fuente={profileFull?.fuente_nombre ?? "default"} animacion={profileFull?.animacion_nombre ?? "ninguna"} />
           {(titulosRows as TituloUsuario[] | null)?.find((t) => t.slug === profileFull?.titulo_activo) && (
             <span className="-mt-2 rounded-full bg-primario/10 px-3 py-1 text-xs font-semibold text-primario">
               {(titulosRows as TituloUsuario[]).find((t) => t.slug === profileFull?.titulo_activo)?.nombre}
@@ -205,7 +234,7 @@ export default async function PerfilPage() {
             <div className="flex items-baseline justify-between gap-2">
               <p className="font-display text-lg font-bold text-foreground">{t("nivel", { n: nivelCuenta })}</p>
               <p className="text-xs text-texto-secundario">
-                {xpHistorico - umbralActual}/{umbralSiguiente - umbralActual} XP
+                {xpEnNivelActual}/{umbralSiguiente - umbralActual} XP
               </p>
             </div>
             <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-primario/15">
@@ -243,6 +272,7 @@ export default async function PerfilPage() {
               <span className="text-sm text-texto-secundario">{t("todaviaNoEstasEnClan")}</span>
             )}
           </Link>
+          </div>
         </section>
 
         {user.is_anonymous && <ConvertirCuenta />}

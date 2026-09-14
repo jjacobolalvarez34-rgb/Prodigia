@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
-import { ESTILO_MARCO_PERFIL, type PerfilPublico, type TituloUsuario } from "@/types/database";
+import { ESTILO_MARCO_PERFIL, FONDO_PERFIL_ESTILO, type PerfilPublico, type TituloUsuario, type FondoPerfil } from "@/types/database";
 import Header from "@/components/Header";
 import AvatarConMarco from "@/components/AvatarConMarco";
 import RangoBadge from "@/components/RangoBadge";
@@ -90,6 +90,8 @@ export default async function PerfilPublicoPage({ params }: Props) {
   }
 
   const marcoPerfil = perfil.marco_perfil ?? "ninguno";
+  const fondoPerfil = (perfil.fondo_perfil as FondoPerfil | undefined) ?? "ninguno";
+  const fondoPerfilUrl = perfil.fondo_perfil_url ?? null;
 
   const amistad = amistadRows as { user_id: string; friend_id: string; estado: string } | null;
   let estadoAmistad: EstadoAmistad = "ninguno";
@@ -101,11 +103,19 @@ export default async function PerfilPublicoPage({ params }: Props) {
       <Header autenticado invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
         <section
-          className={`flex flex-col items-center gap-3 rounded-2xl border-2 bg-surface px-6 py-8 text-center shadow-sm ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}
+          className={`overflow-hidden rounded-2xl border-2 bg-surface text-center shadow-sm ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}
         >
+          {fondoPerfil === "personalizado" ? (
+            fondoPerfilUrl && <div className="h-20 w-full bg-cover bg-center" style={{ backgroundImage: `url(${fondoPerfilUrl})` }} />
+          ) : (
+            fondoPerfil !== "ninguno" && (
+              <div className="fondo-perfil-banner h-20 w-full" style={{ backgroundImage: FONDO_PERFIL_ESTILO[fondoPerfil] }} />
+            )
+          )}
+          <div className="flex flex-col items-center gap-3 px-6 py-8">
           <AvatarConMarco url={perfil.avatar_url} nombre={perfil.display_name} marco={marcoPerfil} size={88} />
           <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-            <NombreConFuente nombre={perfil.display_name} fuente={perfil.fuente_nombre} />
+            <NombreConFuente nombre={perfil.display_name} fuente={perfil.fuente_nombre} animacion={perfil.animacion_nombre} />
           </h1>
           {perfil.titulo_nombre && (
             <span className="-mt-2 rounded-full bg-primario/10 px-3 py-1 text-xs font-semibold text-primario">
@@ -136,6 +146,7 @@ export default async function PerfilPublicoPage({ params }: Props) {
               <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("publico.chispasLabel")}</p>
               <p className="mt-1 font-mono text-lg font-bold text-foreground">{perfil.puntos_total}</p>
             </div>
+          </div>
           </div>
         </section>
 

@@ -67,6 +67,26 @@ export const COSTOS = {
   // 6 a 8 mundos (8 × 2400 = 19200 sueltos, ~24% de descuento, mismo
   // criterio que el precio original).
   paquete_marcos_mundo: 14500,
+  // Fase 10 ("Tienda: animaciones y fondos"): mismo escalonado que las
+  // fuentes (todo CSS, sin costo de licencia) — ondulante/brillo cerca
+  // del piso, arcoiris/neon un poco más caras por ser más vistosas.
+  animacion_ondulante: 1200,
+  animacion_brillo: 1400,
+  animacion_arcoiris: 1800,
+  animacion_neon: 2200,
+  // Fondos de tarjeta de perfil: mismo escalón que las animaciones —
+  // nebulosa/dorado un poco más caros (degradé de 3 tonos más vistoso).
+  fondo_oceano: 1600,
+  fondo_bosque: 1600,
+  fondo_aurora: 1600,
+  fondo_dorado: 1800,
+  fondo_nebulosa: 2000,
+  // Tope de prestigio de los fondos — tu propia imagen (Supabase
+  // Storage), no un degradé fijo — mismo escalón que marco_diamante/
+  // fuente_futurista. A diferencia de los otros 5 fondos, comprarlo no
+  // deja nada visible hasta que subes una imagen desde /perfil (ver
+  // SubirFondoPerfil.tsx + guardar_fondo_perfil_url).
+  fondo_personalizado: 4000,
 } as const;
 
 export type ItemComprable = keyof typeof COSTOS;
