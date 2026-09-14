@@ -87,11 +87,11 @@ function Celda({ e, seleccionada, resaltada, ganadora, deshabilitada, onToggle }
       aria-label={`${e.simbolo} — ${e.nombre}`}
       onClick={() => onToggle(zonaElementoCasino(e.simbolo))}
       disabled={deshabilitada}
-      className={`flex aspect-square min-w-0 items-center justify-center rounded-[3px] text-[10px] font-bold leading-none transition-all sm:text-[11px] ${
-        seleccionada ? "z-10 ring-2 ring-tt-accent" : ""
-      } ${ganadora ? "ring-2 ring-white" : ""} ${
-        resaltada ? "saturate-150" : "opacity-80"
-      } disabled:opacity-60`}
+      className={`flex aspect-square min-w-0 items-center justify-center rounded-lg text-[10px] font-bold leading-none shadow-sm transition-all duration-150 sm:text-[11px] ${
+        seleccionada ? "z-10 scale-105 ring-2 ring-tt-accent ring-offset-1 ring-offset-tt-surface" : "hover:scale-105 hover:shadow-md"
+      } ${ganadora ? "ring-2 ring-white ring-offset-1 ring-offset-tt-surface" : ""} ${
+        resaltada ? "saturate-150" : "opacity-85"
+      } disabled:pointer-events-none disabled:opacity-60`}
       style={{ background: colorElementoCasino(e.tipo), color: "#0b0712" }}
     >
       {e.simbolo}
@@ -244,9 +244,9 @@ export default function Ruleta({ puntos, onPuntos, onMovimiento }: Props) {
 
       {/* Mesa: tabla periódica completa */}
       <div className="mt-4 overflow-x-auto pb-2">
-        <div className="space-y-[2px]" style={{ minWidth: "560px" }}>
+        <div className="space-y-1.5" style={{ minWidth: "684px" }}>
           {filasMain.map((fila, i) => (
-            <div key={i} className="grid gap-[2px]" style={{ gridTemplateColumns: "repeat(18, minmax(0, 1fr))" }}>
+            <div key={i} className="grid gap-1.5" style={{ gridTemplateColumns: "repeat(18, minmax(0, 1fr))" }}>
               {fila.map((e) => (
                 <div key={e.simbolo} style={{ gridColumnStart: e.grupo ?? 1 }}>
                   {rendirCelda(e)}
@@ -255,11 +255,11 @@ export default function Ruleta({ puntos, onPuntos, onMovimiento }: Props) {
             </div>
           ))}
         </div>
-        <div className="mt-2 space-y-[2px]" style={{ minWidth: "480px" }}>
-          <div className="grid gap-[2px]" style={{ gridTemplateColumns: "repeat(15, minmax(0, 1fr))" }}>
+        <div className="mt-3 space-y-1.5" style={{ minWidth: "570px" }}>
+          <div className="grid gap-1.5" style={{ gridTemplateColumns: "repeat(15, minmax(0, 1fr))" }}>
             {fBloque6.map((e) => rendirCelda(e))}
           </div>
-          <div className="grid gap-[2px]" style={{ gridTemplateColumns: "repeat(15, minmax(0, 1fr))" }}>
+          <div className="grid gap-1.5" style={{ gridTemplateColumns: "repeat(15, minmax(0, 1fr))" }}>
             {fBloque7.map((e) => rendirCelda(e))}
           </div>
         </div>

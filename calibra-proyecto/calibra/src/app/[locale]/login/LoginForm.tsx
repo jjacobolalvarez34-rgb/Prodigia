@@ -41,7 +41,28 @@ export default function LoginForm({ next }: Props) {
     setError(null);
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    const identificador = email.trim();
+
+    // Acepta email O nombre de usuario: Supabase Auth solo sabe entrar
+    // por email, así que si lo que tipeó no tiene "@" lo resolvemos acá
+    // primero (profiles.display_name es único case-insensitive desde
+    // 0037). Si el nombre no existe, mostramos el mismo error genérico
+    // que una contraseña equivocada — no hay forma de distinguir desde
+    // afuera "no existe esa cuenta" de "contraseña mal".
+    let emailReal = identificador;
+    if (!identificador.includes("@")) {
+      const { data: resuelto } = await supabase.rpc("resolver_email_por_usuario", {
+        p_identificador: identificador,
+      });
+      if (!resuelto) {
+        setError(t("errorLogin"));
+        setEnviando(false);
+        return;
+      }
+      emailReal = resuelto;
+    }
+
+    const { error: authError } = await supabase.auth.signInWithPassword({ email: emailReal, password });
 
     if (authError) {
       setError(mensajeErrorAuth(authError, t("errorLogin")));
@@ -56,12 +77,12 @@ export default function LoginForm({ next }: Props) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <input
-        type="email"
+        type="text"
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder={t("emailPlaceholder")}
-        autoComplete="email"
+        placeholder={t("emailOUsuarioPlaceholder")}
+        autoComplete="username"
         autoFocus
         className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
       />

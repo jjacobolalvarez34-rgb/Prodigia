@@ -10,6 +10,7 @@ import EstandarteClan from "@/components/clanes/EstandarteClan";
 import EscenaCiudad from "@/components/clanes/EscenaCiudad";
 import ChatDeClan from "@/components/clanes/ChatDeClan";
 import SubirImagenClan from "@/components/clanes/SubirImagenClan";
+import InvitarAAmigos from "@/components/clanes/InvitarAAmigos";
 import CountdownSemanal from "@/components/CountdownSemanal";
 
 type Rol = "fundador" | "guia" | "miembro";
@@ -247,6 +248,7 @@ function MiClanView({
   const t = useTranslations("Clanes");
   const progresoPct = mision ? Math.min(100, Math.round((mision.progreso_actual / mision.objetivo_cantidad) * 100)) : 0;
   const soyFundador = clan.rol === "fundador";
+  const puedoInvitar = clan.rol === "fundador" || clan.rol === "guia";
 
   // Fase 7 (auditoría de estabilización, 2026-08-30): "progreso de
   // nivel de clan invisible" — no había ningún lugar donde ver cuánto
@@ -363,6 +365,8 @@ function MiClanView({
       )}
 
       <ChatDeClan clanId={clan.clan_id} miUserId={miUserId} />
+
+      {puedoInvitar && <InvitarAAmigos />}
 
       <div className="flex flex-col gap-2">
         <h3 className="text-sm font-semibold text-foreground">{t("miembrosTitulo")}</h3>

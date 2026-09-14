@@ -27,6 +27,7 @@ export default async function SocialPage() {
     { data: solicitudes },
     { data: amigos },
     { data: retos },
+    { data: invitacionesClan },
     { data: nivelesMundo },
   ] = await Promise.all([
       supabase
@@ -41,6 +42,7 @@ export default async function SocialPage() {
       supabase.rpc("mis_solicitudes_pendientes"),
       supabase.rpc("mis_amigos"),
       supabase.rpc("mis_duelos_pendientes"),
+      supabase.rpc("mis_invitaciones_clan"),
       supabase.from("world_progress").select("nivel_mundo").eq("user_id", user.id),
     ]);
 
@@ -101,6 +103,7 @@ export default async function SocialPage() {
         solicitudesIniciales={solicitudes ?? []}
         amigosIniciales={amigos ?? []}
         retosIniciales={retos ?? []}
+        invitacionesClanIniciales={invitacionesClan ?? []}
         puedeCrearProblemaPersonalizado={puedeCrearProblemaPersonalizado}
       />
     </>

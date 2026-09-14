@@ -613,6 +613,10 @@
     "entendido": "Entendido",
     "nuevoLogro": "Nuevo logro: {nombre}",
     "algoSalioMal": "Algo salió mal. Prueba de nuevo.",
+    "campana": {
+      "abrir": "Notificaciones",
+      "sinNotificaciones": "No tienes notificaciones nuevas."
+    },
     "deteccionConexion": {
       "mensaje": "Notamos que tu conexión anda lenta — ¿quieres desactivar los efectos visuales extra? Puedes cambiarlo cuando quieras en Ajustes.",
       "desactivar": "Desactivar",
@@ -1161,12 +1165,13 @@
     },
     "login": {
       "titulo": "Entra a Prodigia",
-      "subtitulo": "Con tu email y contraseña.",
+      "subtitulo": "Con tu email o tu nombre de usuario, y tu contraseña.",
       "errorEnlace": "No pudimos confirmar el enlace — puede haber expirado o ya haberse usado. Pide uno nuevo desde <link>/recuperar</link> o revisa tu email de confirmación de cuenta.",
       "olvidasteContrasena": "¿Olvidaste tu contraseña?",
       "noTienesCuenta": "¿No tienes cuenta?",
       "creaUna": "Crea una",
       "emailPlaceholder": "tu@email.com",
+      "emailOUsuarioPlaceholder": "Email o nombre de usuario",
       "passwordPlaceholder": "Contraseña",
       "entrando": "Entrando...",
       "botonIniciarSesion": "Iniciar sesión",
@@ -1190,6 +1195,7 @@
       "errorCrearCuenta": "No pudimos crear la cuenta. Prueba de nuevo.",
       "errorYaRegistrado": "Ya existe una cuenta con ese email.",
       "confirmacionPendiente": "Te mandamos un email a <strong>{email}</strong> — confirma tu cuenta desde ahí para poder entrar.",
+      "revisaSpam": "Si no lo ves en unos minutos, revisa la carpeta de spam o promociones.",
       "reenviarCodigo": "¿No te llegó? Reenviar email de confirmación",
       "reenviando": "Reenviando…",
       "reenviarEn": "Reenviar en {segundos}s",
@@ -1242,6 +1248,7 @@
       },
       "pasoDirecto": "Listo, tu cuenta ya tiene email y contraseña — la próxima vez entra con eso.",
       "pasoConfirmar": "Te mandamos un email a <strong>{email}</strong> — confírmalo para terminar de guardar tu cuenta. Mientras tanto sigue jugando normal, no pierdes nada.",
+      "revisaSpam": "Si no lo ves en unos minutos, revisa la carpeta de spam o promociones.",
       "reenviarCodigo": "¿No te llegó? Reenviar email de confirmación",
       "reenviando": "Reenviando…",
       "reenviarEn": "Reenviar en {segundos}s",
@@ -1309,6 +1316,23 @@
     "bajarAMiembro": "Bajar a Miembro",
     "nombrarGuia": "Nombrar Guía",
     "salirDelClan": "Salir del clan",
+    "invitarAmigos": {
+      "titulo": "Invitar amigos",
+      "cargando": "Buscando amigos que se puedan invitar…",
+      "sinAmigosInvitables": "No tienes amigos disponibles para invitar ahora mismo.",
+      "jugadorDefault": "Jugador",
+      "invitar": "Invitar",
+      "invitando": "Invitando…",
+      "invitada": "Invitación enviada"
+    },
+    "invitacionRecibida": {
+      "titulo": "Invitación a un clan",
+      "texto": "{invitador} te invitó a unirte a {clan}",
+      "aceptar": "Unirme",
+      "rechazar": "Rechazar",
+      "aceptando": "Uniéndome…",
+      "sinInvitaciones": "No tienes invitaciones a clanes pendientes."
+    },
     "guerraSemana": "Guerra de clanes — esta semana",
     "rankingVacio": "Todavía ningún clan sumó Experiencia esta semana — sé el primero.",
     "expSemana": "{n} Exp",

@@ -187,6 +187,7 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
             strong: (chunks) => <span className="font-medium">{chunks}</span>,
           })}
         </p>
+        <p className="text-xs text-texto-secundario">⚠️ {t("revisaSpam")}</p>
         <div className="flex flex-col items-start gap-1.5">
           <button
             type="button"

@@ -613,6 +613,10 @@
     "entendido": "Got it",
     "nuevoLogro": "New achievement: {nombre}",
     "algoSalioMal": "Something went wrong. Try again.",
+    "campana": {
+      "abrir": "Notifications",
+      "sinNotificaciones": "You don't have any new notifications."
+    },
     "deteccionConexion": {
       "mensaje": "We noticed your connection is slow — want to turn off the extra visual effects? You can change this anytime in Settings.",
       "desactivar": "Turn off",
@@ -1161,12 +1165,13 @@
     },
     "login": {
       "titulo": "Sign in to Prodigia",
-      "subtitulo": "With your email and password.",
+      "subtitulo": "With your email or username, and your password.",
       "errorEnlace": "We couldn't confirm the link — it may have expired or already been used. Request a new one from <link>/recuperar</link> or check your account confirmation email.",
       "olvidasteContrasena": "Forgot your password?",
       "noTienesCuenta": "Don't have an account?",
       "creaUna": "Create one",
       "emailPlaceholder": "you@email.com",
+      "emailOUsuarioPlaceholder": "Email or username",
       "passwordPlaceholder": "Password",
       "entrando": "Signing in...",
       "botonIniciarSesion": "Sign in",
@@ -1190,6 +1195,7 @@
       "errorCrearCuenta": "We couldn't create the account. Try again.",
       "errorYaRegistrado": "An account with that email already exists.",
       "confirmacionPendiente": "We sent an email to <strong>{email}</strong> — confirm your account from there to be able to sign in.",
+      "revisaSpam": "If you don't see it in a few minutes, check your spam or promotions folder.",
       "reenviarCodigo": "Didn't get it? Resend confirmation email",
       "reenviando": "Resending…",
       "reenviarEn": "Resend in {segundos}s",
@@ -1242,6 +1248,7 @@
       },
       "pasoDirecto": "Done, your account now has an email and password — sign in with those next time.",
       "pasoConfirmar": "We sent an email to <strong>{email}</strong> — confirm it to finish saving your account. Keep playing normally in the meantime, you won't lose anything.",
+      "revisaSpam": "If you don't see it in a few minutes, check your spam or promotions folder.",
       "reenviarCodigo": "Didn't get it? Resend confirmation email",
       "reenviando": "Resending…",
       "reenviarEn": "Resend in {segundos}s",
@@ -1309,6 +1316,23 @@
     "bajarAMiembro": "Demote to Member",
     "nombrarGuia": "Promote to Guide",
     "salirDelClan": "Leave clan",
+    "invitarAmigos": {
+      "titulo": "Invite friends",
+      "cargando": "Looking for friends you can invite…",
+      "sinAmigosInvitables": "You don't have any friends available to invite right now.",
+      "jugadorDefault": "Player",
+      "invitar": "Invite",
+      "invitando": "Inviting…",
+      "invitada": "Invitation sent"
+    },
+    "invitacionRecibida": {
+      "titulo": "Clan invitation",
+      "texto": "{invitador} invited you to join {clan}",
+      "aceptar": "Join",
+      "rechazar": "Decline",
+      "aceptando": "Joining…",
+      "sinInvitaciones": "You don't have any pending clan invitations."
+    },
     "guerraSemana": "Clan war — this week",
     "rankingVacio": "No clan has earned Experience this week yet — be the first.",
     "expSemana": "{n} Exp",
