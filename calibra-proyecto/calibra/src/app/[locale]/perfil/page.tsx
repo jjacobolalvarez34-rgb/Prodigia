@@ -5,7 +5,8 @@ import { ESTILO_MARCO_PERFIL, FONDO_PERFIL_ESTILO, type Achievement, type Titulo
 import { calcularRachaMaxima, calcularMejorPrecisionDiaria } from "@/lib/perfil/records";
 import Header from "@/components/Header";
 import RangoBadge from "@/components/RangoBadge";
-import BannerHabilidades, { type ItemBanner, type OpcionBanner } from "@/components/BannerHabilidades";
+import BannerHabilidades from "@/components/BannerHabilidades";
+import { MUNDOS_LANDING } from "@/lib/mundos";
 import NombreEditable from "./NombreEditable";
 import SubirAvatar from "./SubirAvatar";
 import SubirFondoPerfil from "./SubirFondoPerfil";
@@ -162,29 +163,17 @@ export default async function PerfilPage() {
   const fondoPerfil = (profileFull?.fondo_perfil as FondoPerfil | undefined) ?? "ninguno";
   const fondoPerfilUrl = (profileFull?.fondo_perfil_url as string | null | undefined) ?? null;
 
-  const MUNDOS_BANNER: Array<[string, string]> = [
-    ["numeria", "Numeria"],
-    ["enigmia", "Enigmia"],
-    ["geografia", "Geografía"],
-    ["quimia", "Quimia"],
-    ["anatomia", "Anatomía"],
-    ["melodia", "Melodía"],
-    ["trigonometria", "Trigonometría"],
-    ["historia", "Historia"],
-  ];
-  const TEMAS_BANNER: Array<[string, string]> = [
-    ["aritmetica", tNumeriaTemas("aritmetica")],
-    ["fracciones", tNumeriaTemas("fracciones")],
-    ["decimales", tNumeriaTemas("decimales")],
-    ["potencias", tNumeriaTemas("potencias")],
-    ["algebra", tNumeriaTemas("algebra")],
-    ["geometria", tNumeriaTemas("geometria")],
-  ];
-  const opcionesBanner: OpcionBanner[] = [
-    ...MUNDOS_BANNER.map(([ref, nombre]) => ({ ref, nombre, grupo: t("banner.mundo") })),
-    ...TEMAS_BANNER.map(([ref, nombre]) => ({ ref, nombre, grupo: t("banner.temaNumeria") })),
-  ];
-  const itemsBanner = (profileFull?.afinidad_banner as ItemBanner[] | null) ?? [];
+  // Rediseño del banner de afinidad (2026-09-13, a pedido del
+  // propietario): antes dejaba escribir un "nivel" a mano sin sentido
+  // (nadie valida que sea real) — ahora el nivel SIEMPRE se deriva de
+  // world_progress (mismo helper nivelMundoDe que ya usan las tarjetas
+  // de "Aprender" de abajo), nunca se guarda un número inventado.
+  // También se acota a los 8 mundos reales (se sacan los "temas" de
+  // Numeria — no tienen un nivel de 100 comparable, solo el nivel 1-10
+  // de calibración, así que mostrarlos junto a un nivel_mundo real
+  // habría sido engañoso).
+  const nivelesMundoBanner = Object.fromEntries(MUNDOS_LANDING.map((m) => [m.slug, nivelMundoDe(m.slug)]));
+  const refsBanner = ((profileFull?.afinidad_banner as { ref: string }[] | null) ?? []).map((i) => i.ref);
 
   const rachaMaxima = calcularRachaMaxima(dailyRows ?? []);
   const mejorTiempo = masRapida && masRapida.length > 0 ? masRapida[0].time_ms : null;
@@ -328,7 +317,7 @@ export default async function PerfilPage() {
         <section>
           <h2 className="mb-1 font-display text-lg font-bold text-foreground">{t("banner.titulo")}</h2>
           <p className="-mt-2 mb-4 text-xs text-texto-secundario">{t("banner.descripcion")}</p>
-          <BannerHabilidades itemsIniciales={itemsBanner} opciones={opcionesBanner} />
+          <BannerHabilidades refsIniciales={refsBanner} nivelesMundo={nivelesMundoBanner} />
         </section>
 
         {(leccionesRows as { mundo: string; completadas: number; total: number }[] | null) &&

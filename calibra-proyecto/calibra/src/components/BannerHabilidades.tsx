@@ -3,52 +3,46 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-
-export interface ItemBanner {
-  ref: string;
-  nombre: string;
-  nivel: number;
-}
-
-export interface OpcionBanner {
-  ref: string;
-  nombre: string;
-  grupo: string;
-}
+import { MUNDOS_LANDING } from "@/lib/mundos";
 
 interface Props {
-  itemsIniciales: ItemBanner[];
-  opciones: OpcionBanner[];
+  refsIniciales: string[];
+  nivelesMundo: Record<string, number>;
 }
 
-// Banner de afinidad del perfil: listado editable de "con qué mundo o
-// ciudad te identificas y tu nivel". Cosmético (el usuario se autodefine);
-// el server solo valida forma, tamaños y que sea el dueño del perfil.
-export default function BannerHabilidades({ itemsIniciales, opciones }: Props) {
+// Rediseño (2026-09-13, a pedido del propietario: "no tiene sentido
+// poner el nivel que uno elija... mi idea era mas como elejir la
+// ciudad favorita y que muestre sus estadisticas"). Antes era un
+// dropdown + número a mano + lista de pills — ahora es una grilla de
+// las 8 ciudades reales, coloreada con el color real de cada una
+// (MUNDOS_LANDING, mismo que WorldCard/Header), mostrando el nivel
+// REAL (nivelesMundo, derivado de world_progress — nunca un número que
+// el usuario escriba). Tocar una ciudad la marca/desmarca como
+// favorita; no hay paso separado de "agregar", el toggle Y el guardado
+// final son las únicas dos acciones. MUNDOS_LANDING se importa acá
+// directo (no llega como prop desde el server component padre) para no
+// repetir el bug de RSC de esta sesión: sus objetos traen un componente
+// Icono, y una función nunca puede cruzar de Server a Client Component
+// como prop.
+export default function BannerHabilidades({ refsIniciales, nivelesMundo }: Props) {
   const t = useTranslations("Perfil.banner");
-  const [items, setItems] = useState<ItemBanner[]>(itemsIniciales);
-  const [ref, setRef] = useState("");
-  const [nivel, setNivel] = useState(1);
+  const [seleccionados, setSeleccionados] = useState<Set<string>>(new Set(refsIniciales));
   const [estado, setEstado] = useState<"idle" | "saving" | "ok" | "error">("idle");
 
-  const opc = ref ? opciones.find((o) => o.ref === ref) : null;
-
-  function agregar() {
-    if (!opc || items.some((i) => i.ref === opc.ref)) return;
-    setItems([...items, { ref: opc.ref, nombre: opc.nombre, nivel: Math.min(100, Math.max(1, nivel)) }]);
-    setRef("");
-    setNivel(1);
-    setEstado("idle");
-  }
-
-  function quitar(ref: string) {
-    setItems(items.filter((i) => i.ref !== ref));
+  function alternar(slug: string) {
+    setSeleccionados((prev) => {
+      const siguiente = new Set(prev);
+      if (siguiente.has(slug)) siguiente.delete(slug);
+      else siguiente.add(slug);
+      return siguiente;
+    });
     setEstado("idle");
   }
 
   async function guardar() {
     setEstado("saving");
     try {
+      const items = MUNDOS_LANDING.filter((m) => seleccionados.has(m.slug)).map((m) => ({ ref: m.slug, nombre: m.nombre }));
       const supabase = createClient();
       const { error } = await supabase.rpc("guardar_afinidad_banner", { p_items: items });
       setEstado(error ? "error" : "ok");
@@ -57,78 +51,41 @@ export default function BannerHabilidades({ itemsIniciales, opciones }: Props) {
     }
   }
 
-  const group = (g: string) => opciones.find((o) => o.grupo === g)?.grupo ?? g;
-
   return (
     <section className="flex flex-col gap-4 rounded-2xl border border-border bg-surface px-5 py-5">
-      <div className="flex flex-col gap-3">
-        <select
-          value={ref}
-          onChange={(e) => setRef(e.target.value)}
-          className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm font-medium text-foreground outline-none transition-colors focus:border-primario/60"
-        >
-          <option value="">{t("referente")}…</option>
-          {[...new Set(opciones.map((o) => o.grupo))].map((g) => (
-            <optgroup key={g} label={group(g)}>
-              {opciones
-                .filter((o) => o.grupo === g)
-                .map((o) => (
-                  <option key={o.ref} value={o.ref}>
-                    {o.nombre}
-                  </option>
-                ))}
-            </optgroup>
-          ))}
-        </select>
-
-        <div className="flex items-center gap-2">
-          <label className="shrink-0 text-xs font-semibold uppercase tracking-wide text-texto-secundario">
-            {t("nivel")}
-          </label>
-          <input
-            type="number"
-            min={1}
-            max={100}
-            value={nivel}
-            onChange={(e) => setNivel(Number(e.target.value) || 1)}
-            className="w-24 rounded-xl border border-border bg-surface px-3.5 py-2 text-sm font-mono font-bold text-foreground outline-none transition-colors focus:border-primario/60"
-          />
-          <button
-            onClick={agregar}
-            disabled={!opc || items.some((i) => i.ref === ref)}
-            className="ml-auto shrink-0 rounded-xl bg-primario px-4 py-2 text-sm font-display font-semibold text-white transition-opacity disabled:opacity-40"
-          >
-            {t("agregar")}
-          </button>
-        </div>
+      <div className="flex flex-col gap-1">
+        <h2 className="font-display text-base font-bold text-foreground">{t("titulo")}</h2>
+        <p className="text-sm text-texto-secundario">{t("descripcion")}</p>
       </div>
 
-      {items.length === 0 ? (
-        <p className="rounded-xl bg-foreground/5 px-3.5 py-2.5 text-sm text-texto-secundario">{t("vacio")}</p>
-      ) : (
-        <ul className="flex flex-wrap gap-2">
-          {items.map((item) => (
-            <li
-              key={item.ref}
-              className="flex items-center gap-2 rounded-full border border-primario/30 bg-primario/5 px-3.5 py-1.5 text-sm font-medium text-foreground"
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {MUNDOS_LANDING.map((m) => {
+          const activo = seleccionados.has(m.slug);
+          const nivel = nivelesMundo[m.slug] ?? 1;
+          return (
+            <button
+              key={m.slug}
+              type="button"
+              onClick={() => alternar(m.slug)}
+              className="flex flex-col items-start gap-1 rounded-xl border-2 px-3.5 py-3 text-left transition-all"
+              style={
+                activo
+                  ? { borderColor: m.colorHex, background: `color-mix(in oklab, ${m.colorHex} 16%, var(--surface))` }
+                  : { borderColor: "var(--border)", background: "var(--surface)", opacity: 0.6 }
+              }
             >
-              <span>{item.nombre}</span>
-              <span className="font-mono text-xs font-bold text-primario">{item.nivel}</span>
-              <button
-                onClick={() => quitar(item.ref)}
-                className="ml-1 text-xs text-texto-secundario transition-colors hover:text-danger"
-                aria-label={t("quitar")}
-              >
-                ✕
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+              <span className="text-sm font-display font-bold" style={{ color: activo ? m.colorHex : "var(--foreground)" }}>
+                {m.nombre}
+              </span>
+              <span className="font-mono text-xs font-semibold text-texto-secundario">{t("nivelMundo", { n: nivel })}</span>
+            </button>
+          );
+        })}
+      </div>
 
       <button
         onClick={guardar}
-        disabled={estado === "saving" || items.length === 0}
+        disabled={estado === "saving"}
         className="w-full rounded-xl border-2 border-primario/30 px-4 py-2.5 text-sm font-display font-semibold text-primario transition-colors hover:bg-primario/5 disabled:opacity-40"
       >
         {estado === "saving" ? t("guardando") : t("guardar")}

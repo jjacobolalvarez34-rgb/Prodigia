@@ -107,14 +107,16 @@ export default function FondoMundo({ mundo }: { mundo: MundoFondo }) {
           // aparece y se desvanece de nuevo en su propio ciclo (duración
           // distinta por elemento para que no pulsen todos juntos), a la
           // vez que sube y baja. Sigue siendo puro margen/borde, nunca el
-          // centro, y muy tenue — es ambiente, no protagonista.
-          animate={{ opacity: [0, 0.06, 0.06, 0.015, 0.06], y: [8, -8, 8] }}
+          // centro. Pedido en vivo (2026-09-13: "que se vean un poco
+          // más") — subido de 0.06/0.015 a 0.16/0.04 (casi el triple) y
+          // el tamaño ×1.18, pero sigue siendo ambiente, no protagonista.
+          animate={{ opacity: [0, 0.16, 0.16, 0.04, 0.16], y: [8, -8, 8] }}
           transition={{
             opacity: { duration: 9 + i * 1.5, repeat: Infinity, ease: "easeInOut", delay: p.delay },
             y: { duration: 6 + i, repeat: Infinity, ease: "easeInOut", delay: p.delay },
           }}
           className="absolute select-none font-display font-bold text-foreground"
-          style={{ left: p.left, top: p.top, fontSize: p.size, rotate: `${p.rotate}deg` }}
+          style={{ left: p.left, top: p.top, fontSize: p.size * 1.18, rotate: `${p.rotate}deg` }}
         >
           {p.simbolo}
         </motion.span>
