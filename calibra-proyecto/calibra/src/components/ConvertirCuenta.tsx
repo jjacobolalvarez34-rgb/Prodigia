@@ -29,6 +29,12 @@ const COOLDOWN_REENVIO_SEGUNDOS = 45;
 // guardaron con éxito (nunca antes). Ese primer nombre real sigue
 // siendo gratis (nombre_generado en la base lo garantiza), pero se deja
 // saltear por si prefiere quedarse con el autogenerado.
+//
+// La edad (2026-09-15) YA NO se pide acá — vivía en el primer paso
+// (form), junto a email/contraseña, justo el paso con más fricción y
+// el que más estaba fallando por el correo roto. Ahora la pide
+// <PedirEdadModal /> (montado en Header.tsx) una sola vez, post-login,
+// después de nombre y después de que la cuenta ya está andando.
 interface Props {
   // El flujo de landing (FlujoElegirMundos.tsx) ya muestra su propia
   // explicación antes de esto — ahí conviene arrancar directo en el
@@ -40,7 +46,6 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
   const t = useTranslations("Auth.convertirCuenta");
   const [paso, setPaso] = useState<"cerrado" | "form" | "nombre" | "directo" | "confirmar">(inicial);
   const [email, setEmail] = useState("");
-  const [edad, setEdad] = useState("");
   const [password, setPassword] = useState("");
   const [confirmar, setConfirmar] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -91,12 +96,6 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
       return;
     }
 
-    const edadNum = Number(edad);
-    if (!edad || !Number.isInteger(edadNum) || edadNum < 1 || edadNum > 120) {
-      setError(t("form.errorEdadInvalida"));
-      return;
-    }
-
     setEnviando(true);
     const supabase = createClient();
     // Antes esto no mandaba emailRedirectTo — la confirmación del email
@@ -114,14 +113,6 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
       return;
     }
 
-    // A diferencia de RegistroForm.tsx (cuenta nueva, ver
-    // handle_new_user() + user_metadata), acá ya hay una sesión real
-    // desde que se entró como invitado — updateUser() no crea una fila
-    // nueva en auth.users (mismo user_id de siempre), así que el
-    // trigger que copia la edad no dispara. Se guarda directo con la
-    // sesión ya autenticada. Best-effort: si falla, no bloquea el resto
-    // del flujo de conversión de cuenta.
-    await supabase.rpc("guardar_edad_usuario", { p_edad: edadNum });
     setEnviando(false);
 
     // Si el proyecto pide confirmar el email, el cambio queda pendiente
@@ -250,16 +241,6 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
           onChange={(e) => setEmail(e.target.value)}
           placeholder={t("form.emailPlaceholder")}
           autoComplete="email"
-          className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primario"
-        />
-        <input
-          type="number"
-          required
-          min={1}
-          max={120}
-          value={edad}
-          onChange={(e) => setEdad(e.target.value)}
-          placeholder={t("form.edadPlaceholder")}
           className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primario"
         />
         <CampoPassword

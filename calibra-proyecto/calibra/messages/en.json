@@ -794,6 +794,15 @@
       "modalSubtitulo": "Save your account with an email and password — your current progress stays exactly the same, you just add a way to recover it.",
       "cerrar": "Close"
     },
+    "pedirEdad": {
+      "titulo": "One more thing",
+      "subtitulo": "We need your age to know which sections you can use — some, like the Backroom, are for ages 14 and up only.",
+      "placeholder": "Your age",
+      "boton": "Save",
+      "cerrar": "Close",
+      "errorInvalida": "Enter a valid age.",
+      "errorGenerico": "Couldn't save. Try again."
+    },
     "deteccionConexion": {
       "mensaje": "We noticed your connection is slow — want to turn off the extra visual effects? You can change this anytime in Settings.",
       "desactivar": "Turn off",
@@ -1370,8 +1379,6 @@
       "yaTienesCuenta": "Already have an account?",
       "iniciaSesion": "Sign in",
       "emailPlaceholder": "you@email.com",
-      "edadPlaceholder": "Your age",
-      "errorEdadInvalida": "Enter a valid age.",
       "passwordPlaceholder": "Password (6 characters minimum)",
       "confirmarPlaceholder": "Repeat your password",
       "creandoCuenta": "Creating account...",
@@ -1420,8 +1427,6 @@
       "form": {
         "titulo": "Save my account",
         "emailPlaceholder": "you@email.com",
-        "edadPlaceholder": "Your age",
-        "errorEdadInvalida": "Enter a valid age.",
         "passwordPlaceholder": "Password (6 characters minimum)",
         "confirmarPlaceholder": "Repeat your password",
         "botonConfirmar": "Confirm",

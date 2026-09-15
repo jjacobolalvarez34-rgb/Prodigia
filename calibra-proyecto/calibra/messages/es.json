@@ -794,6 +794,15 @@
       "modalSubtitulo": "Guarda tu cuenta con un correo y contraseña — tu progreso actual se queda igual, solo le agregas una forma de recuperarlo.",
       "cerrar": "Cerrar"
     },
+    "pedirEdad": {
+      "titulo": "Un dato más",
+      "subtitulo": "Necesitamos tu edad para saber qué secciones podés usar — algunas, como la Trastienda, son solo para mayores de 14.",
+      "placeholder": "Tu edad",
+      "boton": "Guardar",
+      "cerrar": "Cerrar",
+      "errorInvalida": "Ingresa una edad válida.",
+      "errorGenerico": "No se pudo guardar. Prueba de nuevo."
+    },
     "deteccionConexion": {
       "mensaje": "Notamos que tu conexión anda lenta — ¿quieres desactivar los efectos visuales extra? Puedes cambiarlo cuando quieras en Ajustes.",
       "desactivar": "Desactivar",
@@ -1370,8 +1379,6 @@
       "yaTienesCuenta": "¿Ya tienes cuenta?",
       "iniciaSesion": "Inicia sesión",
       "emailPlaceholder": "tu@email.com",
-      "edadPlaceholder": "Tu edad",
-      "errorEdadInvalida": "Ingresa una edad válida.",
       "passwordPlaceholder": "Contraseña (mínimo 6 caracteres)",
       "confirmarPlaceholder": "Repite la contraseña",
       "creandoCuenta": "Creando cuenta...",
@@ -1420,8 +1427,6 @@
       "form": {
         "titulo": "Guardar mi cuenta",
         "emailPlaceholder": "tu@email.com",
-        "edadPlaceholder": "Tu edad",
-        "errorEdadInvalida": "Ingresa una edad válida.",
         "passwordPlaceholder": "Contraseña (mínimo 6 caracteres)",
         "confirmarPlaceholder": "Repite la contraseña",
         "botonConfirmar": "Confirmar",
