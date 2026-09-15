@@ -1378,7 +1378,11 @@
       "botonCrearCuenta": "Create account",
       "errorPasswordsNoCoinciden": "Passwords don't match.",
       "errorCrearCuenta": "We couldn't create the account. Try again.",
-      "errorYaRegistrado": "An account with that email already exists.",
+      "yaRegistrado": {
+        "texto": "An account with {email} already exists.",
+        "irALogin": "If you already confirmed it, sign in",
+        "oNoLlego": "Never got the confirmation email, or the link didn't work?"
+      },
       "confirmacionPendiente": "We sent an email to <strong>{email}</strong> — confirm your account from there to be able to sign in.",
       "revisaSpam": "If you don't see it in a few minutes, check your spam or promotions folder.",
       "reenviarCodigo": "Didn't get it? Resend confirmation email",

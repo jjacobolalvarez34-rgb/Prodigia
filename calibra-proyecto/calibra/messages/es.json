@@ -1378,7 +1378,11 @@
       "botonCrearCuenta": "Crear cuenta",
       "errorPasswordsNoCoinciden": "Las contraseñas no coinciden.",
       "errorCrearCuenta": "No pudimos crear la cuenta. Prueba de nuevo.",
-      "errorYaRegistrado": "Ya existe una cuenta con ese email.",
+      "yaRegistrado": {
+        "texto": "Ya existe una cuenta con {email}.",
+        "irALogin": "Si ya la confirmaste, inicia sesión",
+        "oNoLlego": "¿No te llegó nunca el email de confirmación, o el enlace no funcionó?"
+      },
       "confirmacionPendiente": "Te mandamos un email a <strong>{email}</strong> — confirma tu cuenta desde ahí para poder entrar.",
       "revisaSpam": "Si no lo ves en unos minutos, revisa la carpeta de spam o promociones.",
       "reenviarCodigo": "¿No te llegó? Reenviar email de confirmación",

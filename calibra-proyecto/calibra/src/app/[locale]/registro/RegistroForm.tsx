@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
 import { urlAbsoluta } from "@/lib/auth/urlAbsoluta";
@@ -42,6 +43,16 @@ export default function RegistroForm({ refId }: Props) {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmacionPendiente, setConfirmacionPendiente] = useState(false);
+  // Pedido en vivo (2026-09-15): "vuelve a crear la cuenta, no le llega
+  // el correo, ¿por qué?" — la causa real era un callejón sin salida:
+  // reintentar el registro con el mismo email SIEMPRE choca contra
+  // "ya existe una cuenta" (Supabase no crea una fila nueva) y antes
+  // ahí terminaba todo — nunca se llamaba a reenviar el código. La
+  // ÚNICA forma de conseguir un email nuevo era el botón "Reenviar"
+  // de la pantalla de confirmacionPendiente, que se pierde si cerrás
+  // la pestaña o volvés más tarde. Ahora "ya existe" lleva a esta
+  // pantalla en vez de a un error mudo.
+  const [emailYaRegistrado, setEmailYaRegistrado] = useState(false);
   const [reenviando, setReenviando] = useState(false);
   const [reenviado, setReenviado] = useState(false);
   const [errorReenvio, setErrorReenvio] = useState<string | null>(null);
@@ -109,14 +120,26 @@ export default function RegistroForm({ refId }: Props) {
     });
 
     if (authError) {
-      const mensaje = mensajeErrorAuth(authError, t("errorCrearCuenta"));
       // Fallback por si el mensaje viejo de Supabase ("User already
       // registered") llega sin el código `email_exists` en alguna
       // versión — mensajeErrorAuth ya cubre el código; esto es un
       // segundo intento antes de resignarse al genérico.
       const msg = authError.message.toLowerCase();
-      const yaRegistrado = msg.includes("already registered") || msg.includes("already been registered");
-      setError(yaRegistrado ? t("errorYaRegistrado") : mensaje);
+      const yaRegistrado =
+        authError.code === "email_exists" ||
+        authError.code === "user_already_exists" ||
+        msg.includes("already registered") ||
+        msg.includes("already been registered");
+      if (yaRegistrado) {
+        // No sabemos desde acá si esa cuenta ya está confirmada (login
+        // normal) o quedó pendiente de un email que nunca llegó/nunca
+        // sirvió — se ofrecen las dos salidas en vez de adivinar.
+        setEmailYaRegistrado(true);
+        setSegundosCooldown(COOLDOWN_REENVIO_SEGUNDOS);
+        setEnviando(false);
+        return;
+      }
+      setError(mensajeErrorAuth(authError, t("errorCrearCuenta")));
       setEnviando(false);
       return;
     }
@@ -140,6 +163,34 @@ export default function RegistroForm({ refId }: Props) {
 
     router.push("/");
     router.refresh();
+  }
+
+  if (emailYaRegistrado) {
+    return (
+      <div className="flex flex-col gap-3">
+        <p className="rounded-xl bg-primario/10 px-4 py-3 text-sm text-foreground">{t("yaRegistrado.texto", { email })}</p>
+        <Link href="/login" className="text-sm font-medium text-primario hover:underline">
+          {t("yaRegistrado.irALogin")}
+        </Link>
+        <div className="flex flex-col items-start gap-1.5 border-t border-border pt-3">
+          <p className="text-xs text-texto-secundario">{t("yaRegistrado.oNoLlego")}</p>
+          <button
+            type="button"
+            onClick={reenviarCodigo}
+            disabled={reenviando || segundosCooldown > 0}
+            className="text-sm font-medium text-primario underline decoration-primario/40 underline-offset-2 transition-opacity hover:decoration-primario disabled:cursor-not-allowed disabled:text-texto-secundario disabled:no-underline disabled:opacity-70"
+          >
+            {reenviando
+              ? t("reenviando")
+              : segundosCooldown > 0
+                ? t("reenviarEn", { segundos: segundosCooldown })
+                : t("reenviarCodigo")}
+          </button>
+          {reenviado && !errorReenvio && <p className="text-xs text-correcto">{t("codigoReenviado")}</p>}
+          {errorReenvio && <p className="text-xs text-error">{errorReenvio}</p>}
+        </div>
+      </div>
+    );
   }
 
   if (confirmacionPendiente) {
