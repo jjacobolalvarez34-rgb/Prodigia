@@ -35,6 +35,15 @@ interface FilaSubtema {
   precision_pct: number;
 }
 
+interface TiendaTrastiendaStats {
+  gasto_tienda_total: number;
+  items_desbloqueados: number;
+  apostado_total: number;
+  ganado_total: number;
+  perdido_total: number;
+  balance_neto: number;
+}
+
 // No hay traducción por sub-tema exacto para los ~50 problem_type que
 // existen entre los 7 mundos que tienen (fracciones_simplificar,
 // quimia_organica, historia_fechas...) — armar esa tabla habría sido
@@ -63,6 +72,10 @@ function colorDeMundo(mundo: string): string {
   return MUNDOS_LANDING.find((m) => m.slug === mundo)?.colorHex ?? "#6C4CF1";
 }
 
+function formatearChispas(n: number): string {
+  return `${n.toLocaleString()} ⚡`;
+}
+
 // Fase 4 (infraestructura de pagos): primer beneficio de Prodigia Pro
 // con gate real (requirePro, ver src/lib/auth/guard.ts). Rediseño
 // pedido en vivo (2026-09-15): "buenas estadisticas de CADA ciudad,
@@ -81,15 +94,18 @@ export default async function EstadisticasPage() {
   const { user, profile } = await requireUsuario(supabase, "/perfil/estadisticas");
   requirePro(profile, "/perfil/estadisticas");
 
-  const [{ data: porMundo }, { data: actividad }, { data: dailyRows }, { data: subtemas }] = await Promise.all([
-    supabase.rpc("estadisticas_pro_perfil"),
-    supabase.rpc("estadisticas_pro_actividad_diaria"),
-    supabase.from("daily_progress").select("fecha, meta_alcanzada, congelado").eq("user_id", user.id).limit(1000),
-    supabase.rpc("estadisticas_pro_subtemas"),
-  ]);
+  const [{ data: porMundo }, { data: actividad }, { data: dailyRows }, { data: subtemas }, { data: tiendaTrastienda }] =
+    await Promise.all([
+      supabase.rpc("estadisticas_pro_perfil"),
+      supabase.rpc("estadisticas_pro_actividad_diaria"),
+      supabase.from("daily_progress").select("fecha, meta_alcanzada, congelado").eq("user_id", user.id).limit(1000),
+      supabase.rpc("estadisticas_pro_subtemas"),
+      supabase.rpc("estadisticas_pro_tienda_trastienda"),
+    ]);
 
   const filas = (porMundo as FilaEstadistica[] | null) ?? [];
   const filasSubtemas = (subtemas as FilaSubtema[] | null) ?? [];
+  const statsTiendaTrastienda = ((tiendaTrastienda as TiendaTrastiendaStats[] | null) ?? [])[0] ?? null;
   // estadisticas_pro_subtemas ya viene ordenada por precisión asc DENTRO
   // de cada mundo — el primer resultado de cada uno es el más flojo.
   const peorSubtemaDe = (mundo: string) => filasSubtemas.find((s) => s.mundo === mundo) ?? null;
@@ -256,15 +272,55 @@ export default async function EstadisticasPage() {
             </section>
           </>
         )}
+
+        <section className="flex flex-col gap-3">
+          <div>
+            <h2 className="font-display text-sm font-bold text-foreground">{t("tiendaTrastiendaTitulo")}</h2>
+            <p className="text-xs text-texto-secundario">{t("tiendaTrastiendaSubtitulo")}</p>
+          </div>
+          {!statsTiendaTrastienda || (statsTiendaTrastienda.gasto_tienda_total === 0 && statsTiendaTrastienda.items_desbloqueados === 0 && statsTiendaTrastienda.apostado_total === 0) ? (
+            <p className="rounded-2xl border border-border bg-surface px-6 py-8 text-center text-sm text-texto-secundario">
+              {t("tiendaTrastiendaVacio")}
+            </p>
+          ) : (
+            <>
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-texto-secundario">{t("tiendaSubtitulo")}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <TarjetaKpi label={t("kpi.gastoTienda")} valor={formatearChispas(statsTiendaTrastienda.gasto_tienda_total)} />
+                  <TarjetaKpi
+                    label={t("kpi.itemsDesbloqueados")}
+                    valor={statsTiendaTrastienda.items_desbloqueados.toLocaleString()}
+                  />
+                </div>
+                <p className="mt-2 text-[11px] text-texto-secundario">{t("tiendaGastoNota")}</p>
+              </div>
+
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-texto-secundario">{t("trastiendaSubtitulo")}</p>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <TarjetaKpi label={t("kpi.apostadoTotal")} valor={formatearChispas(statsTiendaTrastienda.apostado_total)} />
+                  <TarjetaKpi label={t("kpi.ganadoTotal")} valor={formatearChispas(statsTiendaTrastienda.ganado_total)} />
+                  <TarjetaKpi label={t("kpi.perdidoTotal")} valor={formatearChispas(statsTiendaTrastienda.perdido_total)} />
+                  <TarjetaKpi
+                    label={t("kpi.balanceNeto")}
+                    valor={`${statsTiendaTrastienda.balance_neto >= 0 ? "+" : ""}${formatearChispas(statsTiendaTrastienda.balance_neto)}`}
+                    claseValor={statsTiendaTrastienda.balance_neto >= 0 ? "text-correcto" : "text-error"}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </section>
       </div>
     </>
   );
 }
 
-function TarjetaKpi({ label, valor }: { label: string; valor: string }) {
+function TarjetaKpi({ label, valor, claseValor }: { label: string; valor: string; claseValor?: string }) {
   return (
     <div className="flex flex-col gap-1 rounded-xl border border-border bg-surface px-3 py-3 text-center">
-      <p className="font-mono text-lg font-bold text-foreground">{valor}</p>
+      <p className={`font-mono text-lg font-bold ${claseValor ?? "text-foreground"}`}>{valor}</p>
       <p className="text-[11px] leading-tight text-texto-secundario">{label}</p>
     </div>
   );

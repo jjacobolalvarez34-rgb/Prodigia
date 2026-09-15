@@ -377,7 +377,13 @@
         "rachaMaxima": "Longest streak",
         "dias": "{n} days",
         "minutos": "{n} min",
-        "horasYMinutos": "{h}h {m}min"
+        "horasYMinutos": "{h}h {m}min",
+        "gastoTienda": "Spent in the Shop",
+        "itemsDesbloqueados": "Items unlocked",
+        "apostadoTotal": "Wagered in the Backroom",
+        "ganadoTotal": "Won",
+        "perdidoTotal": "Lost",
+        "balanceNeto": "Net balance"
       },
       "ciudadFavorita": "Your favorite city is <destacado>{ciudad}</destacado> — that's where you played the most.",
       "mejorPrecision": "Your best accuracy is in <destacado>{ciudad}</destacado>: {pct}%.",
@@ -385,7 +391,13 @@
       "actividadTitulo": "Activity over the last 14 days",
       "actividadTooltip": "Day {dia}: {n} attempts",
       "porCiudadTitulo": "By city",
-      "teCuestaMas": "Hardest for you: {tema} ({pct}%)"
+      "teCuestaMas": "Hardest for you: {tema} ({pct}%)",
+      "tiendaTrastiendaTitulo": "Shop and Backroom",
+      "tiendaTrastiendaSubtitulo": "How much you spent on cosmetics and how your bets in the Backroom went.",
+      "tiendaTrastiendaVacio": "You haven't bought anything in the Shop or played in the Backroom yet.",
+      "tiendaSubtitulo": "Shop",
+      "trastiendaSubtitulo": "Backroom",
+      "tiendaGastoNota": "Shop spending has only been tracked since recently — older purchases weren't recorded."
     },
     "titulosSection": {
       "titulo": "Titles",
@@ -596,7 +608,6 @@
     "entrarALaTrastienda": "Enter the back room…",
     "dobleONada": "Double or nothing",
     "dobleONadaDescripcion": "Bet Chispas that your next match beats your historical accuracy. If you win, it doubles.",
-    "dobleONadaAviso": "This never uses real money — it's only with your in-game Chispas. Max bet: {max} Chispas. You can hide this section from Settings if you'd rather not see it.",
     "apuestaActivaAviso": "You have an active bet — it settles with your next match.",
     "apostarMonto": "Bet {monto}",
     "laTrastienda": "The Back Room",
@@ -610,6 +621,7 @@
       "apuestasPartida": {
         "titulo": "The Betting Table",
         "descripcion": "Other players' duels, live. Pick a side, pay your stake and let the best win.",
+        "enVivo": "Live",
         "enLinea": "Live duels: {n}",
         "pagina": "Page {actual} of {total}",
         "anterior": "Previous",
@@ -660,12 +672,14 @@
       },
       "laCalcu": {
         "titulo": "The Calculator",
-        "descripcion": "Use each of the 4 numbers once (+, −, ×, ÷) to hit the target.",
+        "descripcion": "Use each of the 4 numbers once with +, −, × and ÷ (and one pair of parentheses if you need it) to hit the target.",
         "jugar": "Start ({costo} Chispas)",
         "iniciando": "Generating puzzle…",
         "sinChispas": "You need 50 Chispas.",
-        "completa": "Finish the sequence: numbers and operations, in that order.",
-        "deshacer": "Undo",
+        "completa": "Drag or tap numbers, operators and parentheses to build your expression.",
+        "arrastraAqui": "Drag tiles here",
+        "expresionValida": "Valid expression",
+        "limpiar": "Clear all",
         "resolver": "Solve!",
         "resuelta": "Dead on! +{n} Chispas",
         "fallida": "Doesn't hit the target. Your bet is gone.",

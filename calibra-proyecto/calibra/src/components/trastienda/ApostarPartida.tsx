@@ -65,6 +65,16 @@ export default function ApostarPartida({ puntos, onPuntos, onMovimiento }: Props
     };
   }, [cargar]);
 
+  // Pedido en vivo (2026-09-15): "debe actualizarse en vivo" — el feed
+  // solo se cargaba una vez al montar. Ahora refresca sola cada 8s
+  // mientras nadie está a mitad de elegir una apuesta (no tiene sentido
+  // reordenar la lista debajo de alguien que ya seleccionó una partida).
+  useEffect(() => {
+    if (seleccionada) return;
+    const id = window.setInterval(() => void cargar(), 8000);
+    return () => window.clearInterval(id);
+  }, [cargar, seleccionada]);
+
   async function pedirPreview(p: PartidaDisponible, e: "a" | "b" | "empate", m: number) {
     const res = await fetch("/api/trastienda/apuestas", {
       method: "POST",
@@ -124,7 +134,15 @@ export default function ApostarPartida({ puntos, onPuntos, onMovimiento }: Props
     <div className="flex flex-col gap-4 rounded-2xl border border-tt-border bg-tt-surface p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="font-display text-lg font-bold tracking-tight text-tt-text">🎯 {t("titulo")}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-display text-lg font-bold tracking-tight text-tt-text">🎯 {t("titulo")}</h3>
+            {partidas.length > 0 && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-tt-danger/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-tt-danger">
+                <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-tt-danger" aria-hidden />
+                {t("enVivo")}
+              </span>
+            )}
+          </div>
           <p className="mt-1 max-w-md text-sm text-tt-text-muted">{t("descripcion")}</p>
         </div>
         {mostrarLimites && (

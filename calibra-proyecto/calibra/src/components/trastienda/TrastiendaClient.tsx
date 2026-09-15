@@ -13,7 +13,6 @@ import PrediccionRanking from "@/components/trastienda/PrediccionRanking";
 import LaCalcu from "@/components/trastienda/LaCalcu";
 
 const MONTOS_APUESTA = [25, 50, 100];
-const APUESTA_MAXIMA = 200;
 
 interface Props {
   puntosIniciales: number;
@@ -127,10 +126,6 @@ export default function TrastiendaClient({ puntosIniciales, apuestaActivaInicial
               </div>
             </div>
 
-            <div className="mt-4 rounded-xl border border-tt-border bg-tt-surface-2 px-3.5 py-2.5 text-xs font-medium text-tt-text-muted">
-              <span aria-hidden>⚠️</span> {t("dobleONadaAviso", { max: APUESTA_MAXIMA })}
-            </div>
-
             {apuestaActiva ? (
               <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-dashed border-tt-accent/60 bg-tt-surface-2 px-4 py-3">
                 <span className="shrink-0 rounded-full bg-tt-accent px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em] text-tt-bg">
@@ -160,10 +155,12 @@ export default function TrastiendaClient({ puntosIniciales, apuestaActivaInicial
           </section>
         )}
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <ApostarPartida puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
-          <PrediccionRanking puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
-        </div>
+        {/* Pedido en vivo (2026-09-15): la Mesa de Apuestas pasa a tener su
+            propia sección de ancho completo — compartiendo grilla 50/50
+            con Predicción de Ranking quedaba poco evidente que ahí hay
+            partidas EN VIVO ahora mismo, no una lista estática más. */}
+        <ApostarPartida puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
+        <PrediccionRanking puntos={puntos} onPuntos={setPuntos} onMovimiento={() => setHistorialVersion((v) => v + 1)} />
 
         {/* Sub-pestañas: la ruleta casino y los juegos del sótano */}
         <div className="flex gap-2">

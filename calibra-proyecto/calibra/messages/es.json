@@ -377,7 +377,13 @@
         "rachaMaxima": "Racha máxima",
         "dias": "{n} días",
         "minutos": "{n} min",
-        "horasYMinutos": "{h}h {m}min"
+        "horasYMinutos": "{h}h {m}min",
+        "gastoTienda": "Gastado en la Tienda",
+        "itemsDesbloqueados": "Ítems desbloqueados",
+        "apostadoTotal": "Apostado en la Trastienda",
+        "ganadoTotal": "Ganado",
+        "perdidoTotal": "Perdido",
+        "balanceNeto": "Balance neto"
       },
       "ciudadFavorita": "Tu ciudad favorita es <destacado>{ciudad}</destacado> — ahí jugaste más partidas.",
       "mejorPrecision": "Tu mejor precisión es en <destacado>{ciudad}</destacado>: {pct}%.",
@@ -385,7 +391,13 @@
       "actividadTitulo": "Actividad de los últimos 14 días",
       "actividadTooltip": "Día {dia}: {n} intentos",
       "porCiudadTitulo": "Por ciudad",
-      "teCuestaMas": "Te cuesta más: {tema} ({pct}%)"
+      "teCuestaMas": "Te cuesta más: {tema} ({pct}%)",
+      "tiendaTrastiendaTitulo": "Tienda y Trastienda",
+      "tiendaTrastiendaSubtitulo": "Cuánto gastaste en cosméticos y cómo te fue apostando en la Trastienda.",
+      "tiendaTrastiendaVacio": "Todavía no compraste nada en la Tienda ni jugaste en la Trastienda.",
+      "tiendaSubtitulo": "Tienda",
+      "trastiendaSubtitulo": "Trastienda",
+      "tiendaGastoNota": "El gasto en la Tienda se cuenta desde hace poco — las compras muy antiguas no quedaron registradas."
     },
     "titulosSection": {
       "titulo": "Títulos",
@@ -596,7 +608,6 @@
     "entrarALaTrastienda": "Entrar a la trastienda…",
     "dobleONada": "Doble o nada",
     "dobleONadaDescripcion": "Apuesta Chispas a que tu próxima partida supera tu precisión histórica. Si ganas, se duplica.",
-    "dobleONadaAviso": "Esto nunca usa dinero real — es solo con tus Chispas del juego. Apuesta máxima: {max} Chispas. Puedes ocultar esta sección desde Ajustes si prefieres no verla.",
     "apuestaActivaAviso": "Tienes una apuesta activa — se resuelve con tu próxima partida.",
     "apostarMonto": "Apostar {monto}",
     "laTrastienda": "La Trastienda",
@@ -610,6 +621,7 @@
       "apuestasPartida": {
         "titulo": "La Mesa de Apuestas",
         "descripcion": "Duelos de otros jugadores en vivo. Elige un lado, paga tu entrada y que gane el mejor.",
+        "enVivo": "En vivo",
         "enLinea": "Duelos en vivo: {n}",
         "pagina": "Página {actual} de {total}",
         "anterior": "Anterior",
@@ -660,12 +672,14 @@
       },
       "laCalcu": {
         "titulo": "La Calculadora",
-        "descripcion": "Usa los 4 números una vez cada uno con +, −, × y ÷ para llegar al objetivo.",
+        "descripcion": "Usa los 4 números una vez cada uno con +, −, × y ÷ (y un par de paréntesis si hace falta) para llegar al objetivo.",
         "jugar": "Empezar ({costo} Chispas)",
         "iniciando": "Generando puzzle…",
         "sinChispas": "Necesitas 50 Chispas.",
-        "completa": "Completa la secuencia: números y operaciones, en ese orden.",
-        "deshacer": "Deshacer",
+        "completa": "Arrastra o toca números, operadores y paréntesis para armar tu expresión.",
+        "arrastraAqui": "Arrastra fichas acá",
+        "expresionValida": "Expresión válida",
+        "limpiar": "Limpiar todo",
         "resolver": "¡Resolver!",
         "resuelta": "¡Igualdad! +{n} Chispas",
         "fallida": "No da el objetivo. Se te fue la apuesta.",

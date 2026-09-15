@@ -193,33 +193,41 @@ export default function ClanesClient({
         <SinClanView onUnido={recargarMiClan} onCreado={recargarMiClan} misChispas={chispas} />
       )}
 
-      <section className="flex flex-col gap-3">
-        <div>
-          <h2 className="font-display text-lg font-bold text-foreground">{t("guerraSemana")}</h2>
-          <CountdownSemanal className="mt-0.5" />
-        </div>
-        {ranking.length === 0 ? (
-          <p className="rounded-xl border border-border bg-surface px-4 py-6 text-center text-sm text-texto-secundario">
-            {t("rankingVacio")}
-          </p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {ranking.map((c, i) => (
-              <div key={c.clan_id} className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3">
-                <span className="w-6 shrink-0 text-center font-mono text-sm font-bold text-texto-secundario">{i + 1}</span>
-                <EstandarteClan color={c.color_estandarte} nivel={c.nivel_clan} size={36} />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-foreground">
-                    {c.nombre} {c.tag && <span className="text-texto-secundario">[{c.tag}]</span>}
-                  </p>
-                  <p className="text-xs text-texto-secundario">{t("miembrosCantidad", { n: c.cantidad_miembros })}</p>
-                </div>
-                <span className="font-mono text-sm font-bold text-foreground">{t("expSemana", { n: c.xp_semana })}</span>
-              </div>
-            ))}
+      {/* Pedido en vivo (2026-09-15): esta tabla es el ranking semanal de
+          TODOS los clanes, no la guerra 1v1 en sí (esa es `rival`, ver
+          arriba, dentro de MiClanView) — pero mostrarla a alguien sin
+          clan, bajo el título "Guerra de clanes", daba a entender que
+          está participando de algo de lo que no es parte. Ahora solo se
+          muestra si tenés clan. */}
+      {miClan && (
+        <section className="flex flex-col gap-3">
+          <div>
+            <h2 className="font-display text-lg font-bold text-foreground">{t("guerraSemana")}</h2>
+            <CountdownSemanal className="mt-0.5" />
           </div>
-        )}
-      </section>
+          {ranking.length === 0 ? (
+            <p className="rounded-xl border border-border bg-surface px-4 py-6 text-center text-sm text-texto-secundario">
+              {t("rankingVacio")}
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {ranking.map((c, i) => (
+                <div key={c.clan_id} className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3">
+                  <span className="w-6 shrink-0 text-center font-mono text-sm font-bold text-texto-secundario">{i + 1}</span>
+                  <EstandarteClan color={c.color_estandarte} nivel={c.nivel_clan} size={36} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {c.nombre} {c.tag && <span className="text-texto-secundario">[{c.tag}]</span>}
+                    </p>
+                    <p className="text-xs text-texto-secundario">{t("miembrosCantidad", { n: c.cantidad_miembros })}</p>
+                  </div>
+                  <span className="font-mono text-sm font-bold text-foreground">{t("expSemana", { n: c.xp_semana })}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 }
