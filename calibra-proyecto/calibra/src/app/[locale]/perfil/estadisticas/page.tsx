@@ -27,6 +27,28 @@ interface FilaActividad {
   tiempo_ms: number;
 }
 
+interface FilaSubtema {
+  mundo: string;
+  problem_type: string;
+  intentos: number;
+  correctos: number;
+  precision_pct: number;
+}
+
+// No hay traducción por sub-tema exacto para los ~50 problem_type que
+// existen entre los 7 mundos que tienen (fracciones_simplificar,
+// quimia_organica, historia_fechas...) — armar esa tabla habría sido
+// desproporcionado para una frase secundaria. Se "humaniza" el string
+// crudo en vez de traducirlo: saca el prefijo del mundo y separa
+// guiones bajos, sigue siendo entendible aunque no esté 100% prolijo.
+function nombreSubtema(problemType: string, mundo: string): string {
+  const sinPrefijo = problemType.startsWith(`${mundo}_`) ? problemType.slice(mundo.length + 1) : problemType;
+  return sinPrefijo
+    .split("_")
+    .map((palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+    .join(" ");
+}
+
 // Umbral para que una ciudad cuente como "mejor"/"a reforzar" — evita
 // que 1 intento con suerte al 100% se destaque como si fuera un patrón real.
 const INTENTOS_MINIMOS_DESTACAR = 5;
@@ -59,13 +81,18 @@ export default async function EstadisticasPage() {
   const { user, profile } = await requireUsuario(supabase, "/perfil/estadisticas");
   requirePro(profile, "/perfil/estadisticas");
 
-  const [{ data: porMundo }, { data: actividad }, { data: dailyRows }] = await Promise.all([
+  const [{ data: porMundo }, { data: actividad }, { data: dailyRows }, { data: subtemas }] = await Promise.all([
     supabase.rpc("estadisticas_pro_perfil"),
     supabase.rpc("estadisticas_pro_actividad_diaria"),
     supabase.from("daily_progress").select("fecha, meta_alcanzada, congelado").eq("user_id", user.id).limit(1000),
+    supabase.rpc("estadisticas_pro_subtemas"),
   ]);
 
   const filas = (porMundo as FilaEstadistica[] | null) ?? [];
+  const filasSubtemas = (subtemas as FilaSubtema[] | null) ?? [];
+  // estadisticas_pro_subtemas ya viene ordenada por precisión asc DENTRO
+  // de cada mundo — el primer resultado de cada uno es el más flojo.
+  const peorSubtemaDe = (mundo: string) => filasSubtemas.find((s) => s.mundo === mundo) ?? null;
   // La RPC trae hasta 30 días, acá solo se muestran los últimos 14 —
   // 30 barras se apretaban demasiado en pantallas angostas (la app
   // también corre como app Android vía Capacitor).
@@ -159,7 +186,18 @@ export default async function EstadisticasPage() {
             {actividadDiaria.length > 0 && (
               <section className="flex flex-col gap-2">
                 <h2 className="font-display text-sm font-bold text-foreground">{t("actividadTitulo")}</h2>
-                <div className="flex h-28 items-end gap-1 rounded-2xl border border-border bg-surface px-4 py-3">
+                {/* Bug (2026-09-15, reportado en vivo: "se ve vacío, no
+                    muestra nada"): con items-end acá, cada columna del día
+                    se achica a su contenido (align-items: flex-end no
+                    estira los items) — el div interno flex-1 que debía
+                    crecer con la barra terminaba sin altura real de
+                    donde sacar el height: {pct}%, así que la barra medía
+                    0px aunque los datos SÍ estaban (1851 intentos reales
+                    en los últimos 30 días, confirmado). items-stretch
+                    (el default) hace que cada columna sí llegue a los
+                    112px del contenedor, y ahí el %  de la barra tiene
+                    algo real contra qué calcularse. */}
+                <div className="flex h-28 items-stretch gap-1 rounded-2xl border border-border bg-surface px-4 py-3">
                   {actividadDiaria.map((dia) => {
                     const pct = Math.max(4, Math.round((dia.intentos / maxIntentosDia) * 100));
                     const fecha = new Date(`${dia.fecha}T00:00:00Z`);
@@ -184,6 +222,7 @@ export default async function EstadisticasPage() {
               <h2 className="font-display text-sm font-bold text-foreground">{t("porCiudadTitulo")}</h2>
               {filas.map((f) => {
                 const color = colorDeMundo(f.mundo);
+                const peorSubtema = peorSubtemaDe(f.mundo);
                 return (
                   <div key={f.mundo} className="flex flex-col gap-2 rounded-xl border border-border bg-surface px-4 py-3">
                     <div className="flex items-center justify-between gap-4">
@@ -202,6 +241,14 @@ export default async function EstadisticasPage() {
                       <span>{t("intentosCantidad", { n: f.intentos })}</span>
                       <span>{formatearMinutos(f.tiempo_ms, t)}</span>
                     </div>
+                    {peorSubtema && peorSubtema.precision_pct < 0.9 && (
+                      <p className="text-xs text-texto-secundario">
+                        {t("teCuestaMas", {
+                          tema: nombreSubtema(peorSubtema.problem_type, f.mundo),
+                          pct: Math.round(peorSubtema.precision_pct * 100),
+                        })}
+                      </p>
+                    )}
                   </div>
                 );
               })}

@@ -244,11 +244,14 @@ export default async function PerfilPage() {
               })}
             </p>
           )}
+          {/* Antes era un link "fantasma" (borde + fondo casi transparente)
+              que quedaba casi invisible, sobre todo con un fondo de perfil
+              atrás — reportado en vivo (2026-09-15: "tiene un botón que
+              casi no se ve"). Ahora es una píldora sólida, con el mismo
+              contraste alto sin importar si hay fondo de perfil o no. */}
           <Link
             href={profile.plan === "pro" ? "/perfil/estadisticas" : "/pro"}
-            className={`flex w-fit items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors ${
-              claro ? "border-white/30 bg-white/10 text-white hover:border-white/60" : "border-primario/30 bg-primario/5 text-primario hover:border-primario/60"
-            }`}
+            className="flex w-fit items-center gap-2 rounded-xl bg-primario px-4 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_color-mix(in_oklab,var(--primario)_55%,transparent)] transition-transform hover:-translate-y-0.5"
           >
             {profile.plan === "pro" ? `📊 ${t("verEstadisticasAvanzadas")}` : `✨ ${t("hazteProLink")}`}
           </Link>

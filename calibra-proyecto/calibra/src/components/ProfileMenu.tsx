@@ -116,6 +116,18 @@ export default function ProfileMenu() {
             >
               {t("ajustes")}
             </Link>
+            {/* Reportado en vivo (2026-09-15): "no me aparece el botón de
+                docentes... no me sale para verlo" — /docentes existía pero
+                no estaba linkeada desde ningún lado. Acá y no en la navbar
+                principal a propósito: es una página B2B, no algo que un
+                estudiante jugando necesite ver siempre a la vista. */}
+            <Link
+              href="/docentes"
+              role="menuitem"
+              className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-texto-secundario transition-colors hover:bg-surface-2 hover:text-foreground"
+            >
+              {t("docentes")}
+            </Link>
             <button
               onClick={alternarTema}
               role="menuitem"

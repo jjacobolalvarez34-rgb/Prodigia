@@ -14,15 +14,17 @@ export default async function TiendaPage() {
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/tienda");
 
-  const [{ data: profile }, { data: mundosRows }] = await Promise.all([
+  const [{ data: profile }, { data: mundosRows }, { data: fondosGaleriaRows }, { data: desbloqueadosRows }] = await Promise.all([
     supabase
       .from("profiles")
       .select(
-        "puntos_total, escudos_extra_pendientes, congelamientos_disponibles, boost_multiplicador_pendiente, hielos_disponibles, tiempos_extra_disponibles, fuente_nombre, fuentes_desbloqueadas, marco_perfil, marcos_desbloqueados, animacion_nombre, animaciones_desbloqueadas, fondo_perfil, fondos_desbloqueados, plan"
+        "puntos_total, escudos_extra_pendientes, congelamientos_disponibles, boost_multiplicador_pendiente, hielos_disponibles, tiempos_extra_disponibles, fuente_nombre, fuentes_desbloqueadas, marco_perfil, marcos_desbloqueados, animacion_nombre, animaciones_desbloqueadas, fondo_perfil, fondo_perfil_url, fondos_desbloqueados, plan"
       )
       .eq("id", user.id)
       .single(),
     supabase.from("world_progress").select("world, nivel_mundo").eq("user_id", user.id),
+    supabase.from("fondos_galeria").select("slug, nombre, url, costo").eq("activo", true).order("orden"),
+    supabase.from("fondos_galeria_desbloqueados").select("slug").eq("user_id", user.id),
   ]);
 
   const hoyIso = new Date().toISOString().slice(0, 10);
@@ -46,6 +48,9 @@ export default async function TiendaPage() {
         animacionesDesbloqueadas={(profile?.animaciones_desbloqueadas as string[]) ?? ["ninguna"]}
         fondoActual={(profile?.fondo_perfil as string) ?? "ninguno"}
         fondosDesbloqueados={(profile?.fondos_desbloqueados as string[]) ?? ["ninguno"]}
+        fondoPerfilUrlActual={(profile?.fondo_perfil_url as string | null) ?? null}
+        fondosGaleria={fondosGaleriaRows ?? []}
+        fondosGaleriaDesbloqueados={(desbloqueadosRows ?? []).map((r) => r.slug)}
         esPro={profile?.plan === "pro"}
         nivelesMundo={nivelesMundo}
         fechaHoy={hoyIso}

@@ -49,7 +49,7 @@ const MARCOS_MUNDO_COMPRABLES = Object.entries(MARCOS_MUNDO).map(([mundo, { nomb
   imagen,
 }));
 
-type Contexto = "utilidad" | "fuente" | "marco" | "marco-mundo" | "animacion" | "fondo" | "apuesta";
+type Contexto = "utilidad" | "fuente" | "marco" | "marco-mundo" | "animacion" | "fondo" | "fondo-galeria" | "apuesta";
 
 interface Props {
   puntosIniciales: number;
@@ -66,6 +66,9 @@ interface Props {
   animacionesDesbloqueadas: string[];
   fondoActual: string;
   fondosDesbloqueados: string[];
+  fondoPerfilUrlActual: string | null;
+  fondosGaleria: { slug: string; nombre: string; url: string; costo: number }[];
+  fondosGaleriaDesbloqueados: string[];
   nivelesMundo: Record<string, number>;
   fechaHoy: string;
   esPro: boolean;
@@ -86,6 +89,9 @@ export default function TiendaClient({
   animacionesDesbloqueadas,
   fondoActual,
   fondosDesbloqueados,
+  fondoPerfilUrlActual,
+  fondosGaleria,
+  fondosGaleriaDesbloqueados,
   nivelesMundo,
   fechaHoy,
   esPro,
@@ -177,6 +183,9 @@ export default function TiendaClient({
   const [animacionElegida, setAnimacionElegida] = useState(animacionActual);
   const [fondosDesbl, setFondosDesbl] = useState(fondosDesbloqueados);
   const [fondoElegido, setFondoElegido] = useState(fondoActual);
+  const [fondoPerfilUrl, setFondoPerfilUrl] = useState(fondoPerfilUrlActual);
+  const [fondosGaleriaDesbl, setFondosGaleriaDesbl] = useState(fondosGaleriaDesbloqueados);
+  const [confirmandoGaleria, setConfirmandoGaleria] = useState<string | null>(null);
   const [confirmando, setConfirmando] = useState<ItemComprable | null>(null);
   const [comprando, setComprando] = useState(false);
   const [cambiandoCosmetico, setCambiandoCosmetico] = useState(false);
@@ -295,6 +304,59 @@ export default function TiendaClient({
       else setFondoElegido(fondo);
     } catch {
       setError({ msg: t("noSePudoCambiarFondoConexion"), contexto: "fondo" });
+    } finally {
+      setCambiandoCosmetico(false);
+    }
+  }
+
+  // Galería de fondos (0152): catálogo ampliable sin deploy — el dueño
+  // sube un gif/imagen a Storage y agrega una fila por SQL, sin tocar
+  // código. Reusa fondo_perfil='personalizado' + fondo_perfil_url por
+  // debajo (mismo mecanismo que "tu propia imagen"), así que elegir un
+  // ítem de acá también deja marcado "Personalizado" como elegido en
+  // la lista de arriba — es honesto: técnicamente ES lo mismo.
+  async function comprarFondoGaleria(slug: string) {
+    setComprando(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/tienda/comprar-fondo-galeria", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError({ msg: data.error ?? t("noSePudoComprar"), contexto: "fondo-galeria" });
+        return;
+      }
+      setPuntos(data.puntos_total);
+      setFondosGaleriaDesbl((prev) => (prev.includes(slug) ? prev : [...prev, slug]));
+      setConfirmandoGaleria(null);
+      reproducirTono("compra");
+    } catch {
+      setError({ msg: t("noSePudoComprarConexion"), contexto: "fondo-galeria" });
+    } finally {
+      setComprando(false);
+    }
+  }
+
+  async function elegirFondoGaleria(slug: string, url: string) {
+    setCambiandoCosmetico(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/tienda/elegir-fondo-galeria", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) setError({ msg: data.error ?? t("noSePudoCambiarFondo"), contexto: "fondo-galeria" });
+      else {
+        setFondoElegido("personalizado");
+        setFondoPerfilUrl(url);
+      }
+    } catch {
+      setError({ msg: t("noSePudoCambiarFondoConexion"), contexto: "fondo-galeria" });
     } finally {
       setCambiandoCosmetico(false);
     }
@@ -759,6 +821,71 @@ export default function TiendaClient({
           )}
           {error?.contexto === "fondo" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
         </EstanteCategoria>
+
+        {/* Galería de fondos animados (0152) — pedido en vivo
+            (2026-09-15): un catálogo APARTE de los 5 degradés de arriba,
+            pensado para gifs/imágenes reales que el dueño va agregando
+            sin deploy (sube a Storage, agrega una fila por SQL). Si
+            todavía no hay ningún ítem activo, la sección entera no se
+            renderiza — nada raro que mostrar en un catálogo vacío. */}
+        {fondosGaleria.length > 0 && (
+          <EstanteCategoria titulo={t("vidrieraDeFondosGaleria")} franja="#FF5D5D">
+            <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraFondosGaleriaDescripcion")}</p>
+            <div className="flex flex-wrap gap-3">
+              {fondosGaleria.map(({ slug, nombre, url, costo }) => {
+                const desbloqueado = fondosGaleriaDesbl.includes(slug);
+                const elegido = fondoElegido === "personalizado" && fondoPerfilUrl === url;
+                return (
+                  <div key={slug} className="flex w-28 flex-col items-center gap-1.5">
+                    <div
+                      className="h-20 w-28 overflow-hidden rounded-xl border-2 bg-cover bg-center"
+                      style={{ backgroundImage: `url(${url})`, borderColor: elegido ? "#F4E4C1" : "rgba(244,228,193,0.3)" }}
+                    />
+                    <span className="text-center text-xs font-medium text-[#F4E4C1]">{nombre}</span>
+                    {desbloqueado ? (
+                      <button
+                        onClick={() => elegirFondoGaleria(slug, url)}
+                        disabled={cambiandoCosmetico || elegido}
+                        className={`w-full rounded-full border px-2 py-1 text-xs font-medium transition-colors ${
+                          elegido
+                            ? "border-[#3D2410] bg-[#F4E4C1] text-[#3D2410]"
+                            : "border-[#F4E4C1]/60 bg-[#3D2410]/30 text-[#F4E4C1] hover:border-[#F4E4C1]"
+                        }`}
+                      >
+                        {elegido ? t("activo") : t("elegir")}
+                      </button>
+                    ) : confirmandoGaleria === slug ? (
+                      <div className="flex w-full gap-1">
+                        <button
+                          onClick={() => comprarFondoGaleria(slug)}
+                          disabled={comprando}
+                          className="flex-1 rounded-full bg-[#F4E4C1] px-2 py-1 text-xs font-semibold text-[#3D2410] disabled:opacity-60"
+                        >
+                          {t("confirmar")}
+                        </button>
+                        <button
+                          onClick={() => setConfirmandoGaleria(null)}
+                          className="rounded-full border border-[#F4E4C1]/40 px-2 py-1 text-xs text-[#F4E4C1]"
+                        >
+                          {t("cancelar")}
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setConfirmandoGaleria(slug)}
+                        disabled={puntos < costo}
+                        className="w-full rounded-full border border-dashed border-[#F4E4C1]/50 px-2 py-1 text-xs text-[#F4E4C1]/70 disabled:opacity-40"
+                      >
+                        {t("nombreChispas", { nombre: t("comprar"), costo })}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            {error?.contexto === "fondo-galeria" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
+          </EstanteCategoria>
+        )}
 
         {/* La puerta del sótano — la Trastienda vive en su propia página
             ( /trastienda ): acá solo queda el cartel que indica el camino. */}
