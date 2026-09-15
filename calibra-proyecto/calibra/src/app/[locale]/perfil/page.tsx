@@ -11,6 +11,7 @@ import { MUNDOS_LANDING } from "@/lib/mundos";
 import NombreEditable from "./NombreEditable";
 import SubirAvatar from "./SubirAvatar";
 import SubirFondoPerfil from "./SubirFondoPerfil";
+import ColorNombrePicker from "./ColorNombrePicker";
 import BorrarCuenta from "./BorrarCuenta";
 import ConvertirCuenta from "@/components/ConvertirCuenta";
 import LogroMedalla from "@/components/LogroMedalla";
@@ -79,7 +80,7 @@ export default async function PerfilPage() {
     supabase
       .from("profiles")
       .select(
-        "created_at, elo_rating, marco_perfil, fuente_nombre, animacion_nombre, fondo_perfil, fondo_perfil_url, avatar_url, titulo_activo, nivel_cuenta, xp_historico_total, afinidad_banner"
+        "created_at, elo_rating, marco_perfil, fuente_nombre, animacion_nombre, fondo_perfil, fondo_perfil_url, avatar_url, titulo_activo, nivel_cuenta, xp_historico_total, afinidad_banner, color_nombre, color_nombre_desbloqueado"
       )
       .eq("id", user.id)
       .single(),
@@ -200,7 +201,16 @@ export default async function PerfilPage() {
           <div className="relative flex flex-col gap-4 px-6 py-6">
           <SubirAvatar userId={user.id} nombre={profile.display_name} avatarUrlInicial={profileFull?.avatar_url ?? null} marco={marcoPerfil} />
           {fondoPerfil === "personalizado" && <SubirFondoPerfil userId={user.id} urlInicial={fondoPerfilUrl} />}
-          <NombreEditable nombreActual={profile.display_name} fuente={profileFull?.fuente_nombre ?? "default"} animacion={profileFull?.animacion_nombre ?? "ninguna"} />
+          <NombreEditable
+            nombreActual={profile.display_name}
+            fuente={profileFull?.fuente_nombre ?? "default"}
+            animacion={profileFull?.animacion_nombre ?? "ninguna"}
+            claro={claro}
+            color={profileFull?.color_nombre ?? null}
+          />
+          {profileFull?.color_nombre_desbloqueado && (
+            <ColorNombrePicker colorActual={profileFull?.color_nombre ?? null} claro={claro} />
+          )}
           {(titulosRows as TituloUsuario[] | null)?.find((t) => t.slug === profileFull?.titulo_activo) && (
             <span className={`-mt-2 w-fit rounded-full px-3 py-1 text-xs font-semibold ${claro ? "bg-white/15 text-white" : "bg-primario/10 text-primario"}`}>
               {(titulosRows as TituloUsuario[]).find((t) => t.slug === profileFull?.titulo_activo)?.nombre}

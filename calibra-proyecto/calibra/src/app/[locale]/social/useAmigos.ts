@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -40,15 +40,23 @@ export function useAmigos(solicitudesIniciales: Solicitud[], amigosIniciales: Am
   const [enviadas, setEnviadas] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
 
+  // Descarta una respuesta que llega tarde si mientras tanto se disparó
+  // una búsqueda más nueva (typeahead rápido puede desordenar las
+  // respuestas de red) — cada llamada a buscar() se identifica con un
+  // número creciente, solo la última en salir puede escribir resultados.
+  const idBusquedaRef = useRef(0);
+
   async function buscar(query: string) {
     if (query.trim().length < 2) {
       setResultados([]);
       return;
     }
+    const miId = ++idBusquedaRef.current;
     setBuscando(true);
     setError(null);
     const supabase = createClient();
     const { data, error: rpcError } = await supabase.rpc("buscar_usuarios", { p_query: query.trim() });
+    if (miId !== idBusquedaRef.current) return;
     setBuscando(false);
     if (rpcError) {
       setError(t("hook.errorBuscar"));
@@ -56,6 +64,25 @@ export function useAmigos(solicitudesIniciales: Solicitud[], amigosIniciales: Am
     }
     setResultados((data ?? []) as ResultadoBusqueda[]);
   }
+
+  // Pedido en vivo (2026-09-15): "sería bueno que se cargara automático,
+  // en vez de darle a buscar" — typeahead con debounce de 350ms en vez
+  // de esperar el submit del form (que sigue funcionando igual, por si
+  // alguien prefiere Enter).
+  useEffect(() => {
+    // setTimeout incluso para el caso "borrar resultados" — nunca
+    // setState directo en el cuerpo del efecto (react-hooks/set-state-in-effect),
+    // mismo criterio que el resto del proyecto (ver DecryptedText.tsx/Shuffle.tsx).
+    if (consulta.trim().length < 2) {
+      const id = setTimeout(() => setResultados([]), 0);
+      return () => clearTimeout(id);
+    }
+    const id = setTimeout(() => {
+      void buscar(consulta);
+    }, 350);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- buscar es estable dentro del hook, no hace falta como dep
+  }, [consulta]);
 
   async function enviarSolicitud(friendId: string) {
     setError(null);

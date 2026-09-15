@@ -16,13 +16,32 @@ import { FUENTE_NOMBRE_CLASS, ANIMACION_NOMBRE_CLASS, ANIMACIONES_PESADAS, type 
 // acá solo se muestra el costo antes de confirmar.
 const COSTO_RENOMBRAR = 100;
 
+// Pedido en vivo (2026-09-15): "simula que el mouse pasa por encima
+// cada tanto" — Shuffle/DecryptedText solo se repetían con un hover
+// real, que nadie hace sin querer sobre su propio nombre. 2.6s deja que
+// la animación (unos cientos de ms) termine y se aprecie antes de volver
+// a arrancar.
+const AUTOREPLAY_MS = 2600;
+
 interface Props {
   nombreActual: string | null;
   fuente?: FuenteNombre;
   animacion?: AnimacionNombre;
+  // Bug real (2026-09-15): "el nombre desaparece con fondo de perfil" —
+  // este componente hardcodeaba text-foreground sin importar si la
+  // tarjeta tiene un fondo/imagen detrás (page.tsx ya calcula `claro`
+  // para todo lo demás en la tarjeta, pero nunca se lo pasaba a este
+  // componente). Con tema claro + fondo, texto oscuro sobre el velo
+  // oscuro de FondoPerfilCapa = invisible. El perfil público no tenía
+  // este bug porque ahí NombreConFuente no fija color propio y hereda
+  // el <h1> de afuera — acá sí hace falta el prop porque cada rama fija
+  // su propia clase de texto.
+  claro?: boolean;
+  // Pedido en vivo (2026-09-15): "cambiar el color del nombre".
+  color?: string | null;
 }
 
-export default function NombreEditable({ nombreActual, fuente, animacion }: Props) {
+export default function NombreEditable({ nombreActual, fuente, animacion, claro = false, color }: Props) {
   const t = useTranslations("Perfil");
   const router = useRouter();
   const [editando, setEditando] = useState(false);
@@ -53,6 +72,8 @@ export default function NombreEditable({ nombreActual, fuente, animacion }: Prop
     // usa NombreConFuente.tsx.
     const claseFuente = FUENTE_NOMBRE_CLASS[fuente ?? "default"] ?? "";
     const texto = nombreActual ?? t("nombreEditable.jugador");
+    const claseTexto = claro ? "text-white" : "text-foreground";
+    const estiloColor = color ? { color } : undefined;
     // Perfil propio: único lugar (junto al perfil público) con UN
     // nombre en pantalla — acá sí se permite montar el componente
     // pesado de shuffle/decrypted en vez de la clase CSS liviana. Ver
@@ -64,19 +85,24 @@ export default function NombreEditable({ nombreActual, fuente, animacion }: Prop
             <Shuffle
               text={texto}
               tag="h1"
-              className={`font-display text-2xl font-bold tracking-tight text-foreground ${claseFuente}`}
+              autoReplayMs={AUTOREPLAY_MS}
+              className={`font-display text-2xl font-bold tracking-tight ${claseTexto} ${claseFuente}`}
+              style={estiloColor}
             />
           ) : (
             <DecryptedText
               text={texto}
               animateOn="hover"
-              className={`font-display text-2xl font-bold tracking-tight text-foreground ${claseFuente}`}
+              autoReplayMs={AUTOREPLAY_MS}
+              className={`font-display text-2xl font-bold tracking-tight ${claseTexto} ${claseFuente}`}
+              style={estiloColor}
             />
           )
         ) : (
           <ScrollFloat
             tag="h1"
-            className="font-display text-2xl font-bold tracking-tight text-foreground"
+            className={`font-display text-2xl font-bold tracking-tight ${claseTexto}`}
+            style={estiloColor}
             textClassName={`${claseFuente} ${ANIMACION_NOMBRE_CLASS[animacion ?? "ninguna"] ?? ""}`}
             animationDuration={0.7}
           >

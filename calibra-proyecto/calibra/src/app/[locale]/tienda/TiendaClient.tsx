@@ -49,7 +49,7 @@ const MARCOS_MUNDO_COMPRABLES = Object.entries(MARCOS_MUNDO).map(([mundo, { nomb
   imagen,
 }));
 
-type Contexto = "utilidad" | "fuente" | "marco" | "marco-mundo" | "animacion" | "fondo" | "fondo-galeria" | "apuesta";
+type Contexto = "utilidad" | "fuente" | "marco" | "marco-mundo" | "animacion" | "fondo" | "fondo-galeria" | "color-nombre" | "apuesta";
 
 interface Props {
   puntosIniciales: number;
@@ -69,6 +69,7 @@ interface Props {
   fondoPerfilUrlActual: string | null;
   fondosGaleria: { slug: string; nombre: string; url: string; costo: number }[];
   fondosGaleriaDesbloqueados: string[];
+  colorNombreDesbloqueadoInicial: boolean;
   nivelesMundo: Record<string, number>;
   fechaHoy: string;
   esPro: boolean;
@@ -92,6 +93,7 @@ export default function TiendaClient({
   fondoPerfilUrlActual,
   fondosGaleria,
   fondosGaleriaDesbloqueados,
+  colorNombreDesbloqueadoInicial,
   nivelesMundo,
   fechaHoy,
   esPro,
@@ -132,11 +134,13 @@ export default function TiendaClient({
     fondo_dorado: t("items.fondoDorado"),
     fondo_nebulosa: t("items.fondoNebulosa"),
     fondo_personalizado: t("items.fondoPersonalizado"),
+    color_nombre_personalizado: t("items.colorNombrePersonalizado"),
     animacion_prisma: t("items.animacionPrisma"),
     fondo_prodigio: t("items.fondoProdigio"),
     fuente_urbana: t("items.fuenteUrbana"),
     fuente_elegante: t("items.fuenteElegante"),
     animacion_glitch: t("items.animacionGlitch"),
+    animacion_glitch_intenso: t("items.animacionGlitchIntenso"),
     animacion_deconstruccion: t("items.animacionDeconstruccion"),
     animacion_shuffle: t("items.animacionShuffle"),
     animacion_decrypted: t("items.animacionDecrypted"),
@@ -159,6 +163,7 @@ export default function TiendaClient({
     { animacion: "arcoiris", item: "animacion_arcoiris", nombre: t("animaciones.arcoiris") },
     { animacion: "neon", item: "animacion_neon", nombre: t("animaciones.neon") },
     { animacion: "glitch", item: "animacion_glitch", nombre: t("animaciones.glitch") },
+    { animacion: "glitch_intenso", item: "animacion_glitch_intenso", nombre: t("animaciones.glitchIntenso") },
     { animacion: "deconstruccion", item: "animacion_deconstruccion", nombre: t("animaciones.deconstruccion") },
     { animacion: "shuffle", item: "animacion_shuffle", nombre: t("animaciones.shuffle") },
     { animacion: "decrypted", item: "animacion_decrypted", nombre: t("animaciones.decrypted") },
@@ -189,6 +194,7 @@ export default function TiendaClient({
   const [fondoElegido, setFondoElegido] = useState(fondoActual);
   const [fondoPerfilUrl, setFondoPerfilUrl] = useState(fondoPerfilUrlActual);
   const [fondosGaleriaDesbl, setFondosGaleriaDesbl] = useState(fondosGaleriaDesbloqueados);
+  const [colorNombreDesbl, setColorNombreDesbl] = useState(colorNombreDesbloqueadoInicial);
   const [confirmandoGaleria, setConfirmandoGaleria] = useState<string | null>(null);
   const [confirmando, setConfirmando] = useState<ItemComprable | null>(null);
   const [comprando, setComprando] = useState(false);
@@ -228,6 +234,7 @@ export default function TiendaClient({
       if (Array.isArray(data.marcos_desbloqueados)) setMarcosDesbl(data.marcos_desbloqueados);
       if (Array.isArray(data.animaciones_desbloqueadas)) setAnimacionesDesbl(data.animaciones_desbloqueadas);
       if (Array.isArray(data.fondos_desbloqueados)) setFondosDesbl(data.fondos_desbloqueados);
+      if (item === "color_nombre_personalizado") setColorNombreDesbl(true);
       setConfirmando(null);
       reproducirTono("compra");
     } catch {
@@ -749,69 +756,87 @@ export default function TiendaClient({
 
         <EstanteCategoria titulo={t("vidrieraDeFondos")} franja="#4CC9F0">
           <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraFondosDescripcion")}</p>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => elegirFondo("ninguno")}
-              disabled={cambiandoCosmetico || fondoElegido === "ninguno"}
-              className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-                fondoElegido === "ninguno"
-                  ? "border-[#3D2410] bg-[#F4E4C1] text-[#3D2410]"
-                  : "border-[#F4E4C1]/60 bg-[#3D2410]/30 text-[#F4E4C1] hover:border-[#F4E4C1]"
-              }`}
-            >
-              {t("sinFondo")}{fondoElegido === "ninguno" && ` · ${t("activo")}`}
-            </button>
+          {/* Pedido en vivo (2026-09-15): "agrégales vista previa" — antes
+              cada fondo era un puntito de 2.5px de color, casi invisible.
+              Ahora usa la misma tarjeta con muestra grande que ya tiene la
+              Galería de fondos (abajo), con el degradé real de fondo en
+              vez de una miniatura de imagen. */}
+          <div className="flex flex-wrap gap-3">
+            <div className="flex w-28 flex-col items-center gap-1.5">
+              <button
+                onClick={() => elegirFondo("ninguno")}
+                disabled={cambiandoCosmetico || fondoElegido === "ninguno"}
+                className="flex h-20 w-28 items-center justify-center rounded-xl border-2 bg-[#3D2410]/40 text-xs text-[#F4E4C1]/60 disabled:cursor-not-allowed"
+                style={{ borderColor: fondoElegido === "ninguno" ? "#F4E4C1" : "rgba(244,228,193,0.3)" }}
+              >
+                {t("sinFondo")}
+              </button>
+              <span className="text-center text-xs font-medium text-[#F4E4C1]">{t("sinFondo")}</span>
+              {fondoElegido === "ninguno" && (
+                <span className="w-full rounded-full border border-[#3D2410] bg-[#F4E4C1] px-2 py-1 text-center text-xs font-semibold text-[#3D2410]">
+                  {t("activo")}
+                </span>
+              )}
+            </div>
             {FONDOS_COMPRABLES.map(({ fondo, item, nombre, requierePro }) => {
               const desbloqueado = fondosDesbl.includes(fondo);
               const elegido = fondoElegido === fondo;
-              // "personalizado" no tiene degradé fijo (se ve con TU
-              // imagen, subida aparte en /perfil) — un ícono en vez del
-              // puntito de color, para no mostrar un swatch vacío.
-              const swatch =
+              const preview =
                 fondo === "personalizado" ? (
-                  <span className="text-xs leading-none">🖼️</span>
+                  <span className="text-2xl leading-none">🖼️</span>
                 ) : (
-                  <span className="h-2.5 w-2.5 rounded-full" style={{ background: FONDO_PERFIL_ESTILO[fondo] }} />
+                  <div className="h-full w-full" style={{ backgroundImage: FONDO_PERFIL_ESTILO[fondo] }} />
                 );
-              if (desbloqueado) {
-                return (
-                  <button
-                    key={fondo}
-                    onClick={() => elegirFondo(fondo)}
-                    disabled={cambiandoCosmetico || elegido}
-                    className={`flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-sm font-medium transition-colors ${
-                      elegido ? "bg-[#F4E4C1] text-[#3D2410]" : "bg-[#3D2410]/30 text-[#F4E4C1]"
-                    }`}
-                    style={{ borderColor: "#F4E4C1" }}
-                  >
-                    {swatch}
-                    {nombre}
-                    {elegido && ` · ${t("activo")}`}
-                  </button>
-                );
-              }
+              const previewCard = (
+                <div
+                  className="flex h-20 w-28 items-center justify-center overflow-hidden rounded-xl border-2 bg-[#3D2410]/40"
+                  style={{ borderColor: elegido ? "#F4E4C1" : "rgba(244,228,193,0.3)" }}
+                >
+                  {preview}
+                </div>
+              );
+
               if (requierePro && !esPro) {
                 return (
-                  <Link
-                    key={fondo}
-                    href="/pro"
-                    className="flex items-center gap-1.5 rounded-full border border-dashed border-[#F4E4C1]/30 px-3 py-1.5 text-sm text-[#F4E4C1]/40"
-                  >
-                    🔒 {swatch} {nombre} · {t("exclusivoDePro")}
+                  <Link key={fondo} href="/pro" className="flex w-28 flex-col items-center gap-1.5">
+                    <div className="relative h-20 w-28 overflow-hidden rounded-xl border-2 border-dashed border-[#F4E4C1]/30 opacity-40">
+                      {preview}
+                    </div>
+                    <span className="text-center text-xs font-medium text-[#F4E4C1]/60">🔒 {nombre}</span>
+                    <span className="w-full rounded-full border border-[#F4E4C1]/40 px-2 py-1 text-center text-xs text-[#F4E4C1]/70">
+                      {t("exclusivoDePro")}
+                    </span>
                   </Link>
                 );
               }
+
               const costo = costoDe(item);
               return (
-                <button
-                  key={fondo}
-                  onClick={() => comprar(item, "fondo")}
-                  disabled={comprando || puntos < costo}
-                  className="flex items-center gap-1.5 rounded-full border border-dashed border-[#F4E4C1]/50 px-3 py-1.5 text-sm text-[#F4E4C1]/70 disabled:opacity-40"
-                >
-                  {swatch}
-                  {t("nombreChispas", { nombre, costo })}
-                </button>
+                <div key={fondo} className="flex w-28 flex-col items-center gap-1.5">
+                  {previewCard}
+                  <span className="text-center text-xs font-medium text-[#F4E4C1]">{nombre}</span>
+                  {desbloqueado ? (
+                    <button
+                      onClick={() => elegirFondo(fondo)}
+                      disabled={cambiandoCosmetico || elegido}
+                      className={`w-full rounded-full border px-2 py-1 text-xs font-medium transition-colors ${
+                        elegido
+                          ? "border-[#3D2410] bg-[#F4E4C1] text-[#3D2410]"
+                          : "border-[#F4E4C1]/60 bg-[#3D2410]/30 text-[#F4E4C1] hover:border-[#F4E4C1]"
+                      }`}
+                    >
+                      {elegido ? t("activo") : t("elegir")}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => comprar(item, "fondo")}
+                      disabled={comprando || puntos < costo}
+                      className="w-full rounded-full border border-dashed border-[#F4E4C1]/50 px-2 py-1 text-xs text-[#F4E4C1]/70 disabled:opacity-40"
+                    >
+                      {t("nombreChispas", { nombre: t("comprar"), costo })}
+                    </button>
+                  )}
+                </div>
               );
             })}
           </div>
@@ -824,6 +849,32 @@ export default function TiendaClient({
             </p>
           )}
           {error?.contexto === "fondo" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
+        </EstanteCategoria>
+
+        {/* Pedido en vivo (2026-09-15): "¿podrías permitir cambiar el
+            color del nombre?" — un único ítem que desbloquea el picker
+            (cualquier color, no un catálogo fijo). El color en sí se
+            elige en /perfil (ColorNombrePicker.tsx), acá solo se compra
+            el desbloqueo. */}
+        <EstanteCategoria titulo={t("vidrieraDeColorNombre")} franja="#7C5CFF">
+          <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraColorNombreDescripcion")}</p>
+          {colorNombreDesbl ? (
+            <p className="text-sm text-[#F4E4C1]">
+              ✓ {t("colorNombreDesbloqueado")}{" "}
+              <Link href="/perfil" className="underline hover:text-white">
+                {t("irAPerfil")}
+              </Link>
+            </p>
+          ) : (
+            <button
+              onClick={() => comprar("color_nombre_personalizado", "color-nombre")}
+              disabled={comprando || puntos < costoDe("color_nombre_personalizado")}
+              className="w-fit rounded-full border border-dashed border-[#F4E4C1]/50 px-3 py-1.5 text-sm text-[#F4E4C1]/70 disabled:opacity-40"
+            >
+              {t("nombreChispas", { nombre: t("comprar"), costo: costoDe("color_nombre_personalizado") })}
+            </button>
+          )}
+          {error?.contexto === "color-nombre" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
         </EstanteCategoria>
 
         {/* Galería de fondos animados (0152) — pedido en vivo

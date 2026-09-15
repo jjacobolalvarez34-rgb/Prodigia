@@ -9,6 +9,7 @@ gsap.registerPlugin(ScrollTrigger);
 interface Props {
   children: string;
   className?: string;
+  style?: React.CSSProperties;
   scrollContainerRef?: React.RefObject<HTMLElement | null>;
   containerClassName?: string;
   textClassName?: string;
@@ -40,6 +41,7 @@ interface Props {
 export default function ScrollFloat({
   children,
   className = "",
+  style,
   scrollContainerRef,
   containerClassName = "",
   textClassName = "",
@@ -108,7 +110,7 @@ export default function ScrollFloat({
   const Tag = tag as React.ElementType;
 
   return (
-    <Tag ref={containerRef} className={`inline-block overflow-hidden ${containerClassName} ${className}`}>
+    <Tag ref={containerRef} className={`inline-block overflow-hidden ${containerClassName} ${className}`} style={style}>
       {/* data-text: lo necesitan nombre-anim-glitch/deconstruccion (sus
           ::before/::after leen content: attr(data-text)) — inofensivo
           para el resto de las clases que puedan llegar por textClassName. */}

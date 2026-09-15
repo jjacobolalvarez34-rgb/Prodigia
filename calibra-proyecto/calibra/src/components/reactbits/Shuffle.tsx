@@ -11,6 +11,7 @@ gsap.registerPlugin(ScrollTrigger, GSAPSplitText, useGSAP);
 interface Props {
   text: string;
   className?: string;
+  style?: React.CSSProperties;
   shuffleDirection?: "left" | "right";
   duration?: number;
   ease?: string;
@@ -25,6 +26,13 @@ interface Props {
   triggerOnce?: boolean;
   respectReducedMotion?: boolean;
   triggerOnHover?: boolean;
+  // Pedido en vivo (2026-09-15): "simula que el mouse pasa por encima
+  // cada tanto, para que el efecto sea consistente sin necesitar que el
+  // mouse pase por encima" — en perfil/ranking nadie deja el mouse quieto
+  // sobre el nombre, así que el replay-por-hover casi nunca se veía tras
+  // el primer play automático. Con esto seteado, además de seguir
+  // funcionando con un hover real, se re-dispara solo cada N ms.
+  autoReplayMs?: number;
 }
 
 // Cosmético comprable de Prodigia (pedido en vivo, 2026-09-15: "empieza
@@ -41,6 +49,7 @@ interface Props {
 export default function Shuffle({
   text,
   className = "",
+  style,
   shuffleDirection = "right",
   duration = 0.35,
   ease = "power3.out",
@@ -55,6 +64,7 @@ export default function Shuffle({
   triggerOnce = true,
   respectReducedMotion = true,
   triggerOnHover = true,
+  autoReplayMs,
 }: Props) {
   const ref = useRef<HTMLElement | null>(null);
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -65,6 +75,7 @@ export default function Shuffle({
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const playingRef = useRef(false);
   const hoverHandlerRef = useRef<(() => void) | null>(null);
+  const autoReplayIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     // setTimeout (no setState directo en el cuerpo del efecto) por la
@@ -105,6 +116,10 @@ export default function Shuffle({
         if (hoverHandlerRef.current && ref.current) {
           ref.current.removeEventListener("mouseenter", hoverHandlerRef.current);
           hoverHandlerRef.current = null;
+        }
+        if (autoReplayIntervalRef.current) {
+          clearInterval(autoReplayIntervalRef.current);
+          autoReplayIntervalRef.current = null;
         }
       };
 
@@ -267,15 +282,20 @@ export default function Shuffle({
       };
 
       const armHover = () => {
-        if (!triggerOnHover || !ref.current) return;
+        if (!ref.current) return;
         removeHover();
         const handler = () => {
           if (playingRef.current) return;
           build();
           play();
         };
-        hoverHandlerRef.current = handler;
-        ref.current.addEventListener("mouseenter", handler);
+        if (triggerOnHover) {
+          hoverHandlerRef.current = handler;
+          ref.current.addEventListener("mouseenter", handler);
+        }
+        if (autoReplayMs) {
+          autoReplayIntervalRef.current = setInterval(handler, autoReplayMs);
+        }
       };
 
       const create = () => {
@@ -310,6 +330,7 @@ export default function Shuffle({
         triggerOnce,
         respectReducedMotion,
         triggerOnHover,
+        autoReplayMs,
       ],
       scope: ref as React.RefObject<HTMLElement>,
     }
@@ -317,7 +338,7 @@ export default function Shuffle({
 
   const Tag = tag as React.ElementType;
   return (
-    <Tag ref={ref} className={`inline-block ${ready ? "" : "invisible"} ${className}`}>
+    <Tag ref={ref} className={`inline-block ${ready ? "" : "invisible"} ${className}`} style={style}>
       {text}
     </Tag>
   );

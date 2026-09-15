@@ -112,32 +112,26 @@ export default function DiagnosticoClient({ destino }: Props) {
   }
 
   async function guardarNiveles(niveles: Record<ArithmeticProblemType, number>): Promise<boolean> {
+    // Bug real (2026-09-15): esto hacía un upsert directo a skill_levels
+    // desde el cliente — dependía de una policy RLS que 0120_cerrar_s0_s1.sql
+    // dropeó (S2: policies "for all") y nunca reemplazó, porque el
+    // camino esperado desde entonces es un RPC security definer (mismo
+    // criterio que insertar_intento). Ver 0160_fix_guardar_diagnostico_
+    // onboarding.sql para el detalle completo.
     const supabase = createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return false;
     try {
-      const resultados = await Promise.all(
-        ARITHMETIC_PROBLEM_TYPES.map((tipo) =>
-          supabase
-            .from("skill_levels")
-            .upsert(
-              { user_id: user.id, problem_type: tipo, nivel: niveles[tipo], racha_actual: 0 },
-              { onConflict: "user_id,problem_type" }
-            )
-        )
-      );
-      const falloAlgunNivel = resultados.some((r) => r.error);
-      const { error: onboardingError } = await supabase
-        .from("profiles")
-        .update({ onboarding_completado: true })
-        .eq("id", user.id);
-      if (falloAlgunNivel || onboardingError) {
-        console.error("[onboarding/diagnostico] guardarNiveles falló parcialmente", {
-          falloAlgunNivel,
-          onboardingError,
-        });
+      const { error } = await supabase.rpc("guardar_diagnostico_numeria", {
+        p_suma: niveles.suma,
+        p_resta: niveles.resta,
+        p_multiplicacion: niveles.multiplicacion,
+        p_division: niveles.division,
+      });
+      if (error) {
+        console.error("[onboarding/diagnostico] guardarNiveles falló", error);
         return false;
       }
       return true;

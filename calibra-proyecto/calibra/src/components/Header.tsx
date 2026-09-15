@@ -81,8 +81,8 @@ export default function Header({ autenticado = false, invitado = false }: Props)
     <header className="border-b border-border">
       {invitado && <RecordatorioInvitado />}
       {autenticado && !invitado && <PedirEdadModal />}
-      <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-        <div className="flex shrink-0 items-center gap-3">
+      <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <LogoLink colorMundo={colorMundo} />
           {autenticado && <MundoSelector />}
         </div>
@@ -91,8 +91,11 @@ export default function Header({ autenticado = false, invitado = false }: Props)
             (aunque no se pida), lo que cortaba cualquier desplegable
             posicionado debajo de un link (el menú de cuenta, el tour que
             ya se sacó). Envolver a una segunda línea evita ese problema
-            de raíz en vez de pelear con combinaciones de overflow-x/y. */}
-        <nav className="flex flex-1 flex-wrap items-center justify-end gap-x-4 gap-y-2 sm:gap-x-5">
+            de raíz en vez de pelear con combinaciones de overflow-x/y.
+            Pedido en vivo (2026-09-15): "el encabezado es grande en
+            celular" — gap-y más chico en mobile (las filas envueltas
+            quedan más pegadas), vuelve al espaciado normal desde sm. */}
+        <nav className="flex flex-1 flex-wrap items-center justify-end gap-x-4 gap-y-1 sm:gap-x-5 sm:gap-y-2">
           {autenticado && (
             <Link
               href="/"

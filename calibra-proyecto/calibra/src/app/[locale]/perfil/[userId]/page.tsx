@@ -65,6 +65,7 @@ export default async function PerfilPublicoPage({ params }: Props) {
     { data: titulosRows },
     { data: logrosRows },
     { data: recordsRows },
+    { data: duelosRows },
     { data: amistadRows },
   ] = await Promise.all([
     supabase.rpc("obtener_perfil_publico", { p_user_id: userId }),
@@ -73,6 +74,7 @@ export default async function PerfilPublicoPage({ params }: Props) {
     supabase.rpc("titulos_publico", { p_user_id: userId }),
     supabase.rpc("logros_publico", { p_user_id: userId }),
     supabase.rpc("records_publico", { p_user_id: userId }),
+    supabase.rpc("duelos_stats_publico", { p_user_id: userId }),
     supabase
       .from("friendships")
       .select("user_id, friend_id, estado")
@@ -85,6 +87,7 @@ export default async function PerfilPublicoPage({ params }: Props) {
   const titulos = (titulosRows as TituloUsuario[] | null) ?? [];
   const logros = (logrosRows as LogroPublico[] | null) ?? [];
   const records = (recordsRows as { racha_maxima: number; mejor_tiempo_ms: number | null; mejor_precision: number | null }[] | null)?.[0];
+  const duelos = (duelosRows as { jugados: number; victorias: number; derrotas: number }[] | null)?.[0];
 
   if (error || !perfil) {
     notFound();
@@ -114,7 +117,13 @@ export default async function PerfilPublicoPage({ params }: Props) {
           <div className="relative flex flex-col items-center gap-3 px-6 py-8">
           <AvatarConMarco url={perfil.avatar_url} nombre={perfil.display_name} marco={marcoPerfil} size={88} />
           <h1 className={`font-display text-2xl font-bold tracking-tight ${claseTexto}`}>
-            <NombreConFuente nombre={perfil.display_name} fuente={perfil.fuente_nombre} animacion={perfil.animacion_nombre} permitirEfectosPesados />
+            <NombreConFuente
+              nombre={perfil.display_name}
+              fuente={perfil.fuente_nombre}
+              animacion={perfil.animacion_nombre}
+              color={perfil.color_nombre}
+              permitirEfectosPesados
+            />
           </h1>
           {perfil.titulo_nombre && (
             <span className={`-mt-2 rounded-full px-3 py-1 text-xs font-semibold ${claro ? "bg-white/15 text-white" : "bg-primario/10 text-primario"}`}>
@@ -146,6 +155,16 @@ export default async function PerfilPublicoPage({ params }: Props) {
               <p className={`mt-1 font-mono text-lg font-bold ${claseTexto}`}>{perfil.puntos_total}</p>
             </div>
           </div>
+
+          {/* Pedido en vivo (2026-09-15): "quizá mostrar un poco más de
+              información no estaría mal, solo un poco" — un dato
+              competitivo liviano más, sin duplicar records/logros de
+              abajo. */}
+          {duelos && duelos.jugados > 0 && (
+            <p className={`text-sm ${claseTextoSec}`}>
+              {t("publico.duelosResumen", { jugados: duelos.jugados, victorias: duelos.victorias, derrotas: duelos.derrotas })}
+            </p>
+          )}
           </div>
         </section>
 

@@ -119,7 +119,8 @@ export type AnimacionNombre =
   | "glitch"
   | "deconstruccion"
   | "shuffle"
-  | "decrypted";
+  | "decrypted"
+  | "glitch_intenso";
 
 export const ANIMACION_NOMBRE_CLASS: Record<AnimacionNombre, string> = {
   ninguna: "",
@@ -132,6 +133,10 @@ export const ANIMACION_NOMBRE_CLASS: Record<AnimacionNombre, string> = {
   deconstruccion: "nombre-anim-deconstruccion",
   shuffle: "",
   decrypted: "",
+  // Pedido en vivo (2026-09-15): "el de glitch, me gustó cómo se ve" —
+  // versión más intensa, CSS-only igual que "glitch" (no entra en
+  // ANIMACIONES_PESADAS más abajo: no necesita JS por instancia).
+  glitch_intenso: "nombre-anim-glitch-intenso",
 };
 
 // Animaciones que necesitan el componente React pesado (no una clase
@@ -192,6 +197,11 @@ export interface Profile {
   fondo_perfil: FondoPerfil;
   fondos_desbloqueados: FondoPerfil[];
   fondo_perfil_url: string | null;
+  // Pedido en vivo (2026-09-15): "cambiar el color del nombre" — mismo
+  // criterio que fondo_personalizado: un ítem desbloquea la posibilidad,
+  // color_nombre es el hex elegido (null = color normal de la UI).
+  color_nombre: string | null;
+  color_nombre_desbloqueado: boolean;
   ocultar_doble_o_nada: boolean;
   elo_rating: number;
   created_at: string;
@@ -219,6 +229,7 @@ export interface PerfilPublico {
   animacion_nombre: AnimacionNombre;
   fondo_perfil: FondoPerfil;
   fondo_perfil_url: string | null;
+  color_nombre: string | null;
 }
 
 export type MotivoReporte = "trampa" | "imagen_inapropiada" | "nombre_inapropiado" | "contenido_ofensivo" | "otro";

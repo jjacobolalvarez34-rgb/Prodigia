@@ -408,6 +408,123 @@ select:disabled {
   }
 }
 
+/* Pedido en vivo (2026-09-15): "el de glitch, me gustó cómo se ve" —
+   versión más intensa que .nombre-anim-glitch de arriba. Mismo mecanismo
+   (::before/::after duplican el texto vía data-text, RGB-split con
+   text-shadow, cortes con clip-path), pero temblor CONSTANTE en vez de
+   ráfagas cada 2-3s, con más cortes de clip-path por ciclo (inspirada en
+   el technique de GlitchText de React Bits — recreada a mano en CSS
+   puro para este proyecto, sin sumar una dependencia de JS por
+   instancia, así que sigue siendo "liviana" como el resto de las
+   animaciones CSS, no como shuffle/decrypted). */
+.nombre-anim-glitch-intenso {
+  position: relative;
+  display: inline-block;
+}
+.nombre-anim-glitch-intenso::before,
+.nombre-anim-glitch-intenso::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: inherit;
+  background: inherit;
+  -webkit-background-clip: inherit;
+  background-clip: inherit;
+}
+.nombre-anim-glitch-intenso::before {
+  text-shadow: -3px 0 #ff2d6d;
+  animation: nombre-anim-glitch-intenso-1 1.1s infinite linear;
+}
+.nombre-anim-glitch-intenso::after {
+  text-shadow: 3px 0 #29e0ff;
+  animation: nombre-anim-glitch-intenso-2 1.4s infinite linear;
+}
+@keyframes nombre-anim-glitch-intenso-1 {
+  0% {
+    clip-path: inset(0 0 82% 0);
+    transform: translate(0, 0);
+  }
+  10% {
+    clip-path: inset(12% 0 65% 0);
+    transform: translate(-4px, 1px);
+  }
+  20% {
+    clip-path: inset(48% 0 21% 0);
+    transform: translate(4px, -1px);
+  }
+  30% {
+    clip-path: inset(5% 0 78% 0);
+    transform: translate(-3px, 0);
+  }
+  40% {
+    clip-path: inset(70% 0 8% 0);
+    transform: translate(3px, 1px);
+  }
+  50% {
+    clip-path: inset(30% 0 45% 0);
+    transform: translate(-4px, -1px);
+  }
+  60% {
+    clip-path: inset(0 0 90% 0);
+    transform: translate(2px, 0);
+  }
+  70% {
+    clip-path: inset(55% 0 10% 0);
+    transform: translate(-2px, 1px);
+  }
+  80% {
+    clip-path: inset(18% 0 60% 0);
+    transform: translate(4px, 0);
+  }
+  90% {
+    clip-path: inset(62% 0 25% 0);
+    transform: translate(-3px, -1px);
+  }
+  100% {
+    clip-path: inset(0 0 82% 0);
+    transform: translate(0, 0);
+  }
+}
+@keyframes nombre-anim-glitch-intenso-2 {
+  0% {
+    clip-path: inset(75% 0 0 0);
+    transform: translate(0, 0);
+  }
+  12% {
+    clip-path: inset(20% 0 55% 0);
+    transform: translate(4px, -1px);
+  }
+  24% {
+    clip-path: inset(60% 0 15% 0);
+    transform: translate(-4px, 1px);
+  }
+  36% {
+    clip-path: inset(8% 0 72% 0);
+    transform: translate(3px, 0);
+  }
+  48% {
+    clip-path: inset(85% 0 0 0);
+    transform: translate(-3px, -1px);
+  }
+  60% {
+    clip-path: inset(35% 0 40% 0);
+    transform: translate(2px, 1px);
+  }
+  72% {
+    clip-path: inset(15% 0 65% 0);
+    transform: translate(-2px, 0);
+  }
+  84% {
+    clip-path: inset(50% 0 20% 0);
+    transform: translate(4px, -1px);
+  }
+  100% {
+    clip-path: inset(75% 0 0 0);
+    transform: translate(0, 0);
+  }
+}
+
 .nombre-anim-deconstruccion {
   position: relative;
   display: inline-block;

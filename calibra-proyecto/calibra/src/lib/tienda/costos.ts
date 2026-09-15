@@ -94,6 +94,14 @@ export const COSTOS = {
   // de las 6 normales (sin contar prisma, exclusiva de Pro).
   animacion_glitch: 2000,
   animacion_deconstruccion: 2400,
+  // Pedido en vivo (2026-09-15): "el de glitch, me gustó cómo se ve" —
+  // versión más intensa/vistosa del glitch de arriba (más cortes de
+  // clip-path, ráfagas más frecuentes, inspirada en el GlitchText de
+  // React Bits pero recreada a mano en CSS para este proyecto, sin
+  // depender de JS por instancia). Un escalón arriba de deconstruccion,
+  // la más vistosa de las CSS-only (shuffle/decrypted siguen siendo las
+  // únicas con JS real, por eso cuestan más).
+  animacion_glitch_intenso: 2600,
   // Pedido en vivo (2026-09-15): "empieza con shuffle y decripte" — dos
   // escalones arriba del resto (no CSS, GSAP/JS real por instancia,
   // solo se ven en tu perfil propio o público — ver ANIMACIONES_PESADAS
@@ -114,6 +122,10 @@ export const COSTOS = {
   // deja nada visible hasta que subes una imagen desde /perfil (ver
   // SubirFondoPerfil.tsx + guardar_fondo_perfil_url).
   fondo_personalizado: 4000,
+  // Pedido en vivo (2026-09-15): "¿podrías permitir cambiar el color del
+  // nombre?" — un solo desbloqueo (no un catálogo de swatches), mismo
+  // escalón que fuente_script/fondo_aurora.
+  color_nombre_personalizado: 1800,
   // Fase 4 (pagos): exclusivos de Prodigia Pro — gateados server-side
   // por profiles.plan = 'pro' (0146_prodigia_pro_gates_y_estadisticas.sql),
   // no solo por precio. Siguen costando Chispas: Pro te deja COMPRARLOS,

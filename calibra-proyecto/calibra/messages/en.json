@@ -359,6 +359,11 @@
       "subirImagen": "Upload background image",
       "subeUnaImagen": "You picked the custom background — upload an image so it shows up."
     },
+    "colorNombre": {
+      "etiqueta": "Your name's color:",
+      "errorGuardar": "Couldn't save the color. Try again.",
+      "quitar": "Remove"
+    },
     "estadisticas": {
       "metadata": {
         "title": "Advanced stats",
@@ -446,7 +451,8 @@
       "nivelPorMundo": "Level by world",
       "de100": "of 100",
       "activoSufijo": " · active",
-      "sinDatos": "—"
+      "sinDatos": "—",
+      "duelosResumen": "{jugados} duels played · {victorias} won · {derrotas} lost"
     }
   },
   "Tienda": {
@@ -498,9 +504,11 @@
       "fuenteUrbana": "Urban Font",
       "fuenteElegante": "Calligraphy Font",
       "animacionGlitch": "Glitch Animation",
+      "animacionGlitchIntenso": "Intense Glitch Animation",
       "animacionDeconstruccion": "Deconstruction Animation",
       "animacionShuffle": "Shuffle Animation",
       "animacionDecrypted": "Decrypted Animation",
+      "colorNombrePersonalizado": "Custom name color",
       "hielo": "Ice",
       "tiempoExtra": "+3 seconds"
     },
@@ -520,6 +528,7 @@
       "arcoiris": "Rainbow",
       "neon": "Neon",
       "glitch": "Glitch",
+      "glitchIntenso": "Intense Glitch",
       "deconstruccion": "Deconstruction",
       "shuffle": "Shuffle (profile only)",
       "decrypted": "Decrypted (profile only)",
@@ -578,6 +587,9 @@
     "vidrieraFondosDescripcion": "A color for your whole profile card, behind your photo and name.",
     "vidrieraDeFondosGaleria": "Background gallery",
     "vidrieraFondosGaleriaDescripcion": "Animated images for your profile card — a growing catalog.",
+    "vidrieraDeColorNombre": "Name color",
+    "vidrieraColorNombreDescripcion": "Unlock your name's color — pick the exact shade from your profile, any color you want.",
+    "colorNombreDesbloqueado": "You can now pick your name's color.",
     "sinFondo": "No background",
     "subeTuImagenEnPerfil": "Upload your image from your profile so it shows up.",
     "irAPerfil": "Go to my profile",

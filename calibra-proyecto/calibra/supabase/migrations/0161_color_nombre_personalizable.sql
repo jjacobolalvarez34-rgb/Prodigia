@@ -1,76 +1,55 @@
--- 0159: Estadísticas Pro — Tienda y Trastienda, pedido en vivo (2026-09-15):
--- "que haya estadisticas de la tienda y la trastienda tambien" (mismo panel
--- de /perfil/estadisticas que ya cubre precisión/tiempo/actividad por mundo,
--- gateado a Prodigia Pro — ver 0146/0149/0151).
+-- Pedido en vivo (2026-09-15): "¿podrías permitir cambiar el color del
+-- nombre? sería bueno". Mismo criterio que fondo_perfil='personalizado'
+-- (0143): un solo ítem comprable que DESBLOQUEA la posibilidad de elegir
+-- (acá, cualquier color hex vía <input type="color">, no un catálogo
+-- fijo de swatches — más simple de mantener y le da más libertad real).
 --
--- Dos piezas:
---   1) public.tienda_compras: NO existía ningún ledger histórico de compras
---      de la Tienda (comprar_item_tienda solo actualiza columnas/arrays en
---      profiles, nunca dejó rastro con fecha+costo). Se crea la tabla y se
---      inserta en ella de forma ADITIVA, en el único punto de salida
---      exitoso de comprar_item_tienda (después del if/elsif de todas las
---      categorías, antes del "return query" final) — no se toca ninguna
---      otra línea de esa función. Consecuencia real: el GASTO TOTAL en
---      estadísticas solo cuenta compras hechas DESDE esta migración en
---      adelante, no es retroactivo (no hay forma de reconstruir compras
---      pasadas, no quedó rastro). La firma de comprar_item_tienda no cambia
---      (mismas columnas de salida) así que va con create or replace, no
---      hace falta drop.
---   2) public.estadisticas_pro_tienda_trastienda(): RPC nueva, mismo patrón
---      security definer + re-chequeo de auth.uid()/profiles.plan='pro' que
---      estadisticas_pro_perfil/estadisticas_pro_subtemas/estadisticas_pro_
---      actividad_diaria (defensa en profundidad: la página server-side ya
---      gatea con requirePro, pero cada RPC de esta familia se cuida sola).
---      - gasto_tienda_total: sum(costo) de tienda_compras (ver nota arriba,
---        NO retroactivo).
---      - items_desbloqueados: SÍ es retroactivo y completo — se lee del
---        estado actual real (profiles.fuentes_desbloqueadas/marcos_
---        desbloqueados/animaciones_desbloqueadas/fondos_desbloqueados +
---        fondos_galeria_desbloqueados), no del ledger nuevo. Cubre incluso
---        ítems obtenidos gratis (ej. 0153 arcoiris gratis al hacerse Pro) o
---        comprados antes de que existiera tienda_compras.
---      - apostado_total / ganado_total: suma de las 5 fuentes de actividad
---        de Trastienda que YA existen (mismas que agrega
---        fetch_trastienda_historial, 0129): trastienda_ruleta
---        (costo_aplicado / premio_detalle->>'chispas'), trastienda_
---        minijuegos (entrada/salida — cubre volado, la_pizarra, la_calcu,
---        acertijos y el_reloj, todos comparten esa tabla vía minijuego_id),
---        trastienda_casino (monto/pago — cubre la ruleta elemental de una
---        y de varias zonas, 0127/0137), trastienda_apuestas y trastienda_
---        predicciones_ranking (monto/payout, EXCLUYENDO estado='pendiente'
---        — una apuesta o predicción todavía sin resolver no es ganancia ni
---        pérdida, se cuenta cuando el trigger la resuelve).
---      - perdido_total: greatest(apostado_total - ganado_total, 0) — lo que
---        de lo apostado nunca volvió. balance_neto: ganado_total -
---        apostado_total (puede ser negativo). Deliberadamente simple (sin
---        desglose por juego), mismo criterio de "no muy avanzado
---        estadísticamente" que pidió el dueño para el resto del panel.
+-- Convive con las animaciones de nombre existentes: las que usan
+-- background-clip:text + gradiente propio (arcoiris/brillo/neon/
+-- ondulante/prisma) ignoran cualquier color de texto por diseño — elegir
+-- un color mientras una de esas está activa no se nota hasta que se
+-- vuelve a "ninguna" (o a glitch/deconstruccion/shuffle/decrypted, que sí
+-- heredan color). Documentado en NombreConFuente.tsx/NombreEditable.tsx.
 
--- ---------- 1) Ledger de compras de Tienda ----------
-create table if not exists public.tienda_compras (
-  id uuid default gen_random_uuid() primary key,
-  user_id uuid not null references public.profiles(id) on delete cascade,
-  item_slug text not null,
-  categoria text not null check (categoria in ('fuente', 'marco', 'animacion', 'fondo', 'consumible')),
-  costo integer not null check (costo >= 0),
-  creado_at timestamptz not null default now()
-);
+alter table public.profiles add column if not exists color_nombre text;
+alter table public.profiles add column if not exists color_nombre_desbloqueado boolean not null default false;
 
-create index if not exists tienda_compras_user_id_idx on public.tienda_compras (user_id);
+alter table public.profiles drop constraint if exists profiles_color_nombre_check;
+alter table public.profiles add constraint profiles_color_nombre_check
+  check (color_nombre is null or color_nombre ~ '^#[0-9a-fA-F]{6}$');
 
-alter table public.tienda_compras enable row level security;
+create or replace function public.guardar_color_nombre(p_color text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user uuid := auth.uid();
+  v_desbloqueado boolean;
+begin
+  if v_user is null then
+    raise exception 'no autenticado';
+  end if;
+  if p_color is not null and p_color !~ '^#[0-9a-fA-F]{6}$' then
+    raise exception 'color invalido';
+  end if;
 
-drop policy if exists "tienda_compras: lectura propia" on public.tienda_compras;
-create policy "tienda_compras: lectura propia" on public.tienda_compras
-  for select using (auth.uid() = user_id);
+  select pr.color_nombre_desbloqueado into v_desbloqueado from public.profiles pr where pr.id = v_user;
+  if not coalesce(v_desbloqueado, false) then
+    raise exception 'todavia no desbloqueaste el color de nombre personalizado';
+  end if;
 
-grant select on public.tienda_compras to authenticated;
+  update public.profiles set color_nombre = p_color where id = v_user;
+end;
+$$;
 
--- ---------- 2) comprar_item_tienda: agrega el insert al ledger ----------
--- Copia exacta de la versión vigente (0155_animaciones_pesadas_shuffle_
--- decrypted.sql) — el ÚNICO cambio es declarar v_categoria y agregar el
--- insert a public.tienda_compras justo antes del "return query" final.
--- Ninguna otra línea se tocó.
+grant execute on function public.guardar_color_nombre(text) to authenticated;
+
+-- comprar_item_tienda: agrega 'color_nombre_personalizado' como un caso
+-- más, igual que 'fondo_personalizado' — copia exacta de la versión
+-- vigente (0159_estadisticas_tienda_trastienda.sql, que ya sumó el
+-- insert al ledger de 0159) con SOLO ese case nuevo agregado.
 create or replace function public.comprar_item_tienda(p_item text, p_costo integer)
 returns table (
   puntos_total integer,
@@ -137,6 +116,7 @@ begin
     when 'animacion_arcoiris' then 1800
     when 'animacion_neon' then 2200
     when 'animacion_glitch' then 2000
+    when 'animacion_glitch_intenso' then 2600
     when 'animacion_deconstruccion' then 2400
     when 'animacion_shuffle' then 2800
     when 'animacion_decrypted' then 2800
@@ -146,6 +126,7 @@ begin
     when 'fondo_dorado' then 1800
     when 'fondo_nebulosa' then 2000
     when 'fondo_personalizado' then 4000
+    when 'color_nombre_personalizado' then 1800
     when 'animacion_prisma' then 3000
     when 'fondo_prodigio' then 3000
     else null
@@ -233,6 +214,11 @@ begin
           else array_append(pr.animaciones_desbloqueadas, replace(p_item, 'animacion_', ''))
         end
     where pr.id = v_user;
+  elsif p_item = 'color_nombre_personalizado' then
+    update public.profiles as pr
+    set puntos_total = pr.puntos_total - p_costo,
+        color_nombre_desbloqueado = true
+    where pr.id = v_user;
   elsif p_item like 'fondo_%' then
     update public.profiles as pr
     set puntos_total = pr.puntos_total - p_costo,
@@ -253,7 +239,6 @@ begin
     where pr.id = v_user;
   end if;
 
-  -- ---------- Ledger de compras (0159, aditivo, no cambia nada de arriba) ----------
   v_categoria := case
     when p_item like 'fuente_%' then 'fuente'
     when p_item like 'marco_%' or p_item = 'paquete_marcos_mundo' then 'marco'
@@ -275,77 +260,48 @@ $$;
 
 grant execute on function public.comprar_item_tienda(text, integer) to authenticated;
 
--- ---------- 3) estadisticas_pro_tienda_trastienda: agregado Tienda + Trastienda (Pro-only) ----------
-create or replace function public.estadisticas_pro_tienda_trastienda()
+-- obtener_perfil_publico: + color_nombre, para que el perfil público de
+-- otro usuario también respete su color elegido (RETURNS TABLE cambia,
+-- hace falta drop + create, no alcanza con create or replace).
+drop function if exists public.obtener_perfil_publico(uuid);
+
+create function public.obtener_perfil_publico(p_user_id uuid)
 returns table (
-  gasto_tienda_total bigint,
-  items_desbloqueados integer,
-  apostado_total bigint,
-  ganado_total bigint,
-  perdido_total bigint,
-  balance_neto bigint
+  id uuid,
+  display_name text,
+  avatar_url text,
+  marco_perfil text,
+  fuente_nombre text,
+  titulo_activo text,
+  nivel_cuenta integer,
+  elo_rating integer,
+  puntos_total integer,
+  created_at timestamptz,
+  titulo_nombre text,
+  animacion_nombre text,
+  fondo_perfil text,
+  fondo_perfil_url text,
+  color_nombre text
 )
 language plpgsql
 security definer
 set search_path = public
 as $$
-declare
-  v_user uuid := auth.uid();
-  v_plan text;
-  v_gasto_tienda bigint;
-  v_items integer;
-  v_apostado bigint;
-  v_ganado bigint;
 begin
-  if v_user is null then
+  if auth.uid() is null then
     raise exception 'no autenticado';
   end if;
-  select pr.plan into v_plan from public.profiles pr where pr.id = v_user;
-  if v_plan is distinct from 'pro' then
-    raise exception 'estadisticas avanzadas exclusivas de Prodigia Pro';
-  end if;
 
-  select coalesce(sum(tc.costo), 0)
-  into v_gasto_tienda
-  from public.tienda_compras tc
-  where tc.user_id = v_user;
-
-  select
-    coalesce(cardinality(pr.fuentes_desbloqueadas), 0)
-    + coalesce(cardinality(pr.marcos_desbloqueados), 0)
-    + coalesce(cardinality(pr.animaciones_desbloqueadas), 0)
-    + coalesce(cardinality(pr.fondos_desbloqueados), 0)
-    + coalesce((select count(*) from public.fondos_galeria_desbloqueados fg where fg.user_id = v_user), 0)
-  into v_items
-  from public.profiles pr
-  where pr.id = v_user;
-
-  select
-    coalesce((select sum(r.costo_aplicado) from public.trastienda_ruleta r where r.user_id = v_user), 0)
-    + coalesce((select sum(m.entrada) from public.trastienda_minijuegos m where m.user_id = v_user), 0)
-    + coalesce((select sum(c.monto) from public.trastienda_casino c where c.user_id = v_user), 0)
-    + coalesce((select sum(a.monto) from public.trastienda_apuestas a where a.user_id = v_user and a.estado <> 'pendiente'), 0)
-    + coalesce((select sum(p.monto) from public.trastienda_predicciones_ranking p where p.user_id = v_user and p.estado <> 'pendiente'), 0)
-  into v_apostado;
-
-  select
-    coalesce((select sum(coalesce((r.premio_detalle->>'chispas')::integer, 0)) from public.trastienda_ruleta r where r.user_id = v_user), 0)
-    + coalesce((select sum(m.salida) from public.trastienda_minijuegos m where m.user_id = v_user), 0)
-    + coalesce((select sum(c.pago) from public.trastienda_casino c where c.user_id = v_user), 0)
-    + coalesce((select sum(a.payout) from public.trastienda_apuestas a where a.user_id = v_user and a.estado <> 'pendiente'), 0)
-    + coalesce((select sum(p.payout) from public.trastienda_predicciones_ranking p where p.user_id = v_user and p.estado <> 'pendiente'), 0)
-  into v_ganado;
-
-  return query select
-    v_gasto_tienda,
-    v_items,
-    v_apostado,
-    v_ganado,
-    greatest(v_apostado - v_ganado, 0),
-    v_ganado - v_apostado;
+  return query
+    select p.id, p.display_name, p.avatar_url, p.marco_perfil, p.fuente_nombre,
+      p.titulo_activo, p.nivel_cuenta,
+      p.elo_rating, p.puntos_total, p.created_at, public.titulo_nombre_de(p.id),
+      p.animacion_nombre, p.fondo_perfil, p.fondo_perfil_url, p.color_nombre
+    from public.profiles p
+    where p.id = p_user_id and not p.es_bot;
 end;
 $$;
 
-grant execute on function public.estadisticas_pro_tienda_trastienda() to authenticated;
+grant execute on function public.obtener_perfil_publico(uuid) to authenticated;
 
 notify pgrst, 'reload schema';

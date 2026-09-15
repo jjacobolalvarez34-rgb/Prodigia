@@ -123,12 +123,16 @@ export default function LeaderboardClient({ rankingInicial, miUserId }: Props) {
           </div>
 
           {filtro === "mundo" && (
-            <div className="flex gap-1.5">
+            // Bug real (2026-09-15): "el ranking por mundo se desborda en
+            // celular" — 8 mundos en una fila sin wrap ni scroll se salían
+            // del ancho de la pantalla. overflow-x-auto lo vuelve un
+            // carrusel horizontal en vez de desbordar la página entera.
+            <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
               {MUNDOS.map((m) => (
                 <button
                   key={m.id}
                   onClick={() => elegirMundo(m.id)}
-                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                  className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                     mundo === m.id ? "text-white" : "border-border text-texto-secundario"
                   }`}
                   style={mundo === m.id ? { background: m.colorHex, borderColor: m.colorHex } : undefined}

@@ -359,6 +359,11 @@
       "subirImagen": "Subir imagen de fondo",
       "subeUnaImagen": "Elegiste el fondo personalizado — sube una imagen para que se vea."
     },
+    "colorNombre": {
+      "etiqueta": "Color de tu nombre:",
+      "errorGuardar": "No pudimos guardar el color. Prueba de nuevo.",
+      "quitar": "Quitar"
+    },
     "estadisticas": {
       "metadata": {
         "title": "Estadísticas avanzadas",
@@ -446,7 +451,8 @@
       "nivelPorMundo": "Nivel por mundo",
       "de100": "de 100",
       "activoSufijo": " · activo",
-      "sinDatos": "—"
+      "sinDatos": "—",
+      "duelosResumen": "{jugados} duelos jugados · {victorias} ganados · {derrotas} perdidos"
     }
   },
   "Tienda": {
@@ -498,9 +504,11 @@
       "fuenteUrbana": "Fuente Urbana",
       "fuenteElegante": "Fuente Caligrafía",
       "animacionGlitch": "Animación Glitch",
+      "animacionGlitchIntenso": "Animación Glitch Intenso",
       "animacionDeconstruccion": "Animación Deconstrucción",
       "animacionShuffle": "Animación Shuffle",
       "animacionDecrypted": "Animación Decrypted",
+      "colorNombrePersonalizado": "Color de nombre personalizado",
       "hielo": "Hielo",
       "tiempoExtra": "+3 segundos"
     },
@@ -520,6 +528,7 @@
       "arcoiris": "Arcoíris",
       "neon": "Neón",
       "glitch": "Glitch",
+      "glitchIntenso": "Glitch Intenso",
       "deconstruccion": "Deconstrucción",
       "shuffle": "Shuffle (solo en tu perfil)",
       "decrypted": "Decrypted (solo en tu perfil)",
@@ -578,6 +587,9 @@
     "vidrieraFondosDescripcion": "Un color para toda la tarjeta de tu perfil, detrás de tu foto y tu nombre.",
     "vidrieraDeFondosGaleria": "Galería de fondos",
     "vidrieraFondosGaleriaDescripcion": "Imágenes animadas para tu tarjeta de perfil — catálogo en crecimiento.",
+    "vidrieraDeColorNombre": "Color de nombre",
+    "vidrieraColorNombreDescripcion": "Desbloquea el color de tu nombre — elegís el tono exacto desde tu perfil, cualquiera que quieras.",
+    "colorNombreDesbloqueado": "Ya podés elegir el color de tu nombre.",
     "sinFondo": "Sin fondo",
     "subeTuImagenEnPerfil": "Sube tu imagen desde tu perfil para que se vea.",
     "irAPerfil": "Ir a mi perfil",

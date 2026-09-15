@@ -11,8 +11,14 @@ interface Props {
   useOriginalCharsOnly?: boolean;
   characters?: string;
   className?: string;
+  style?: React.CSSProperties;
   encryptedClassName?: string;
   animateOn?: "hover" | "view";
+  // Pedido en vivo (2026-09-15): mismo criterio que Shuffle.tsx —
+  // simular el hover cada tanto para que se vea consistente sin
+  // necesitar que el mouse pase por encima (nadie deja el cursor quieto
+  // sobre un nombre en su perfil).
+  autoReplayMs?: number;
 }
 
 const DEFAULT_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+";
@@ -35,8 +41,10 @@ export default function DecryptedText({
   useOriginalCharsOnly = false,
   characters = DEFAULT_CHARS,
   className = "",
+  style,
   encryptedClassName = "",
   animateOn = "hover",
+  autoReplayMs,
 }: Props) {
   const [displayText, setDisplayText] = useState(text);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -148,6 +156,19 @@ export default function DecryptedText({
     return () => observer.unobserve(el);
   }, [animateOn, hasAnimated, triggerDecrypt]);
 
+  useEffect(() => {
+    if (animateOn !== "hover" || !autoReplayMs) return;
+    const id = setInterval(() => {
+      setIsAnimating((animando) => {
+        if (animando) return animando;
+        setRevealedIndices(new Set());
+        setDisplayText(text);
+        return true;
+      });
+    }, autoReplayMs);
+    return () => clearInterval(id);
+  }, [animateOn, autoReplayMs, text]);
+
   function resetToPlainText() {
     if (intervalRef.current) clearInterval(intervalRef.current);
     setIsAnimating(false);
@@ -169,7 +190,7 @@ export default function DecryptedText({
       : {};
 
   return (
-    <span ref={containerRef} className={className} {...hoverProps}>
+    <span ref={containerRef} className={className} style={style} {...hoverProps}>
       <span aria-hidden="true">
         {displayText.split("").map((char, index) => {
           const isRevealed = revealedIndices.has(index) || (!isAnimating && animateOn !== "hover");
