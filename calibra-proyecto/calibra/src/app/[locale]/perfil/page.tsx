@@ -247,6 +247,12 @@ export default async function PerfilPage() {
             </p>
           )}
           <Link
+            href={profile.plan === "pro" ? "/perfil/estadisticas" : "/pro"}
+            className="flex w-fit items-center gap-2 rounded-xl border border-primario/30 bg-primario/5 px-3 py-2 text-sm font-medium text-primario transition-colors hover:border-primario/60"
+          >
+            {profile.plan === "pro" ? `📊 ${t("verEstadisticasAvanzadas")}` : `✨ ${t("hazteProLink")}`}
+          </Link>
+          <Link
             href="/clanes"
             className="flex w-fit items-center gap-2 rounded-xl border border-border px-3 py-2 transition-colors hover:border-primario/40"
           >

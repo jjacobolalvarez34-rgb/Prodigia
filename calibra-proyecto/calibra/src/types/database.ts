@@ -84,7 +84,10 @@ export const FUENTE_NOMBRE_CLASS: Record<FuenteNombre, string> = {
 // igual en NombreConFuente.tsx (span simple) como en ScrollFloat (que
 // internamente ya separa el texto en spans para su propia animación de
 // entrada) o en una celda de tabla del ranking.
-export type AnimacionNombre = "ninguna" | "arcoiris" | "brillo" | "ondulante" | "neon";
+// "prisma" (Fase 4, pagos): exclusiva de Prodigia Pro — gateada en
+// comprar_item_tienda por plan = 'pro' (0146_prodigia_pro_gates_y_
+// estadisticas.sql), no solo por Chispas como las otras 4.
+export type AnimacionNombre = "ninguna" | "arcoiris" | "brillo" | "ondulante" | "neon" | "prisma";
 
 export const ANIMACION_NOMBRE_CLASS: Record<AnimacionNombre, string> = {
   ninguna: "",
@@ -92,6 +95,7 @@ export const ANIMACION_NOMBRE_CLASS: Record<AnimacionNombre, string> = {
   brillo: "nombre-anim-brillo",
   ondulante: "nombre-anim-ondulante",
   neon: "nombre-anim-neon",
+  prisma: "nombre-anim-prisma",
 };
 
 // Fondo decorativo de la tarjeta de perfil (franja superior, arriba del
@@ -102,7 +106,9 @@ export const ANIMACION_NOMBRE_CLASS: Record<AnimacionNombre, string> = {
 // 0143_fondo_perfil_personalizado.sql. FONDO_PERFIL_ESTILO no tiene
 // entrada de degradé para "personalizado" (queda "") porque ese caso
 // usa la URL, no un background-image de CSS fijo.
-export type FondoPerfil = "ninguno" | "aurora" | "nebulosa" | "dorado" | "oceano" | "bosque" | "personalizado";
+// "prodigio" (Fase 4, pagos): exclusivo de Prodigia Pro, mismo gate
+// que animacion "prisma" — ver 0146_prodigia_pro_gates_y_estadisticas.sql.
+export type FondoPerfil = "ninguno" | "aurora" | "nebulosa" | "dorado" | "oceano" | "bosque" | "personalizado" | "prodigio";
 
 export const FONDO_PERFIL_ESTILO: Record<FondoPerfil, string> = {
   ninguno: "",
@@ -112,6 +118,7 @@ export const FONDO_PERFIL_ESTILO: Record<FondoPerfil, string> = {
   oceano: "linear-gradient(120deg, #0a2540, #1d7a9c, #4cc9f0, #0a2540)",
   bosque: "linear-gradient(120deg, #0d2b1a, #2f7d4f, #7ee08a, #0d2b1a)",
   personalizado: "",
+  prodigio: "linear-gradient(120deg, #3d1a5c, #ffc53d, #7c5cff, #3d1a5c)",
 };
 
 export interface Profile {

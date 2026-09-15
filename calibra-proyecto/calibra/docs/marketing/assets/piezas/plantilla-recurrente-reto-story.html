@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>plantilla-recurrente-reto-story</title>
+<style>
+  /* PLANTILLA RECURRENTE · RETO DIARIO — editá solo los textos marcados [EDITAR].
+     Formato 9:16. La pegamos todos los días cambiando tema, hora y CTA. */
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#fdfbf7; color:#1f2430; }
+  .axis { width:100%; height:100%; padding:64px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .eyebrow { font-size:22px; font-weight:700; letter-spacing:0.14em; color:#6b7280; }
+  .badge { padding:8px 18px; border-radius:9999px; background:#6C4CF1; color:#fff; font-size:18px; font-weight:700; }
+  .headline { font-size:56px; line-height:1.02; font-weight:700; letter-spacing:-0.02em; }
+  .headline em { font-style:normal; color:#6C4CF1; }
+  .card { border-radius:32px; overflow:hidden; box-shadow:0 28px 56px -20px rgba(31,36,48,0.35); height:880px; margin:34px 0; }
+  .card img { width:100%; height:100%; object-fit:cover; display:block; }
+  .state { display:inline-flex; align-items:center; gap:14px; padding:12px 20px; border-radius:9999px; background:#f3efe7; font-size:22px; color:#3d3d45; align-self:flex-start; }
+  .state strong { font-size:26px; color:#1f2430; }
+  .footer { display:flex; align-items:center; justify-content:space-between; margin-top:26px; }
+  .cta { display:inline-flex; align-items:center; gap:12px; padding:18px 34px; border-radius:9999px; background:linear-gradient(120deg,#6C4CF1,#FFC53D); color:#fff; font-size:22px; font-weight:700; box-shadow:0 16px 32px -12px rgba(108,76,241,0.5); }
+  .brand { display:flex; align-items:center; gap:12px; font-size:20px; font-weight:700; color:#9a7b4f; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="eyebrow mono">[EDITAR · TEMA DE HOY] · RETO DIARIO</span>
+      <span class="badge">HOY</span>
+    </div>
+    <h1 class="headline">[EDITAR · problema o dato]<br><em>[EDITAR · gancho]</em></h1>
+    <div class="card"><img src="../pantallas-reales/12-reto-diario.png" alt="Reto diario"></div>
+    <p class="state mono"><span>5 preguntas</span><strong>[EDITAR · hora]</strong><span>[EDITAR · dónde]</span></p>
+    <div class="footer">
+      <span class="cta">[EDITAR · CTA]</span>
+      <span class="brand mono">prodigia.app</span>
+    </div>
+  </div>
+</body>
+</html>

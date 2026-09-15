@@ -21,6 +21,11 @@ import ScrollFloat from "@/components/reactbits/ScrollFloat";
 import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiario";
 import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
 import { reproducirTono } from "@/lib/sonido";
+import { PRODUCTOS } from "@/lib/pagos/productos";
+import { abrirCheckoutPaddle } from "@/lib/pagos/paddleClient";
+import type { Proveedor, ProductoComprable } from "@/lib/pagos/tipos";
+
+const PACKS_CHISPAS: ProductoComprable[] = ["chispas_1000", "chispas_2500", "chispas_6000", "chispas_15000"];
 
 // Fase 7: reusa la paleta de rangos de Rankeds (RANGOS_ELO) en vez de
 // inventar colores nuevos — 6 marcos, uno por rango real.
@@ -60,6 +65,7 @@ interface Props {
   fondosDesbloqueados: string[];
   nivelesMundo: Record<string, number>;
   fechaHoy: string;
+  esPro: boolean;
 }
 
 export default function TiendaClient({
@@ -77,6 +83,7 @@ export default function TiendaClient({
   fondosDesbloqueados,
   nivelesMundo,
   fechaHoy,
+  esPro,
 }: Props) {
   const t = useTranslations("Tienda");
   const NOMBRES_ITEM: Record<ItemComprable, string> = {
@@ -114,6 +121,8 @@ export default function TiendaClient({
     fondo_dorado: t("items.fondoDorado"),
     fondo_nebulosa: t("items.fondoNebulosa"),
     fondo_personalizado: t("items.fondoPersonalizado"),
+    animacion_prisma: t("items.animacionPrisma"),
+    fondo_prodigio: t("items.fondoProdigio"),
   };
   const FUENTES_COMPRABLES: { fuente: FuenteNombre; item: ItemComprable; nombre: string }[] = [
     { fuente: "mono", item: "fuente_mono", nombre: t("fuentes.mono") },
@@ -123,19 +132,21 @@ export default function TiendaClient({
     { fuente: "script", item: "fuente_script", nombre: t("fuentes.script") },
     { fuente: "futurista", item: "fuente_futurista", nombre: t("fuentes.futurista") },
   ];
-  const ANIMACIONES_COMPRABLES: { animacion: AnimacionNombre; item: ItemComprable; nombre: string }[] = [
+  const ANIMACIONES_COMPRABLES: { animacion: AnimacionNombre; item: ItemComprable; nombre: string; requierePro?: boolean }[] = [
     { animacion: "ondulante", item: "animacion_ondulante", nombre: t("animaciones.ondulante") },
     { animacion: "brillo", item: "animacion_brillo", nombre: t("animaciones.brillo") },
     { animacion: "arcoiris", item: "animacion_arcoiris", nombre: t("animaciones.arcoiris") },
     { animacion: "neon", item: "animacion_neon", nombre: t("animaciones.neon") },
+    { animacion: "prisma", item: "animacion_prisma", nombre: t("animaciones.prisma"), requierePro: true },
   ];
-  const FONDOS_COMPRABLES: { fondo: FondoPerfil; item: ItemComprable; nombre: string }[] = [
+  const FONDOS_COMPRABLES: { fondo: FondoPerfil; item: ItemComprable; nombre: string; requierePro?: boolean }[] = [
     { fondo: "oceano", item: "fondo_oceano", nombre: t("fondos.oceano") },
     { fondo: "bosque", item: "fondo_bosque", nombre: t("fondos.bosque") },
     { fondo: "aurora", item: "fondo_aurora", nombre: t("fondos.aurora") },
     { fondo: "dorado", item: "fondo_dorado", nombre: t("fondos.dorado") },
     { fondo: "nebulosa", item: "fondo_nebulosa", nombre: t("fondos.nebulosa") },
     { fondo: "personalizado", item: "fondo_personalizado", nombre: t("fondos.personalizado") },
+    { fondo: "prodigio", item: "fondo_prodigio", nombre: t("fondos.prodigio"), requierePro: true },
   ];
   const [puntos, setPuntos] = useState(puntosIniciales);
   const [escudos, setEscudos] = useState(escudosIniciales);
@@ -153,6 +164,9 @@ export default function TiendaClient({
   const [comprando, setComprando] = useState(false);
   const [cambiandoCosmetico, setCambiandoCosmetico] = useState(false);
   const [error, setError] = useState<{ msg: string; contexto: Contexto } | null>(null);
+  const [proveedorPago, setProveedorPago] = useState<Proveedor>("mercadopago");
+  const [comprandoPago, setComprandoPago] = useState<ProductoComprable | null>(null);
+  const [errorPago, setErrorPago] = useState<string | null>(null);
 
   const oferta = obtenerDescuentoDelDia(fechaHoy);
 
@@ -267,6 +281,41 @@ export default function TiendaClient({
     }
   }
 
+  // Fase 5 (pagos): Chispas con dinero real. A diferencia de comprar()
+  // (que gasta Chispas ya ganadas), esto arranca un checkout real vía
+  // /api/pagos/checkout — el otorgamiento de Chispas NUNCA pasa por
+  // acá, pasa server-to-server cuando llega el webhook del proveedor
+  // (ver src/lib/pagos/servicio.ts). Esta función solo abre el
+  // checkout; si el proveedor todavía no está conectado (Fase 2/3 del
+  // plan de pagos), la ruta devuelve un 503 con el motivo, que se
+  // muestra tal cual.
+  async function comprarChispasReales(producto: ProductoComprable) {
+    setComprandoPago(producto);
+    setErrorPago(null);
+    try {
+      const res = await fetch("/api/pagos/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ producto, proveedor: proveedorPago }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setErrorPago(data.error ?? t("pagos.errorGenerico"));
+        return;
+      }
+      if (data.tipo === "redirect") {
+        window.location.assign(data.url);
+      } else if (data.tipo === "overlay") {
+        const abierto = await abrirCheckoutPaddle(data.transactionId, () => window.location.reload());
+        if (!abierto) setErrorPago(t("pagos.overlayNoDisponible"));
+      }
+    } catch {
+      setErrorPago(t("pagos.errorConexion"));
+    } finally {
+      setComprandoPago(null);
+    }
+  }
+
   return (
     <div
       className="flex-1"
@@ -281,6 +330,47 @@ export default function TiendaClient({
         </div>
 
         <OfertaDelDia oferta={oferta} nombre={NOMBRES_ITEM[oferta.item as ItemComprable]} />
+
+        <EstanteCategoria titulo={t("pagos.titulo")} franja="#FFC53D">
+          <p className="text-sm text-[#F4E4C1]/90">{t("pagos.descripcion")}</p>
+          <div className="flex w-fit gap-1 rounded-full border border-[#F4E4C1]/30 bg-[#3D2410]/30 p-1">
+            <button
+              onClick={() => setProveedorPago("mercadopago")}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                proveedorPago === "mercadopago" ? "bg-[#F4E4C1] text-[#3D2410]" : "text-[#F4E4C1]/70"
+              }`}
+            >
+              {t("pagos.colombia")}
+            </button>
+            <button
+              onClick={() => setProveedorPago("paddle")}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                proveedorPago === "paddle" ? "bg-[#F4E4C1] text-[#3D2410]" : "text-[#F4E4C1]/70"
+              }`}
+            >
+              {t("pagos.internacional")}
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {PACKS_CHISPAS.map((producto) => {
+              const def = PRODUCTOS[producto];
+              return (
+                <button
+                  key={producto}
+                  onClick={() => comprarChispasReales(producto)}
+                  disabled={comprandoPago !== null}
+                  className="flex flex-col items-center gap-0.5 rounded-xl border border-[#F4E4C1]/50 bg-[#3D2410]/30 px-4 py-2.5 text-[#F4E4C1] transition-colors hover:border-[#F4E4C1] disabled:opacity-50"
+                >
+                  <span className="font-mono text-sm font-bold">{t("pagos.packChispas", { n: def.montoChispas ?? 0 })}</span>
+                  <span className="text-xs text-[#F4E4C1]/70">
+                    {comprandoPago === producto ? t("pagos.procesando") : t("pagos.precioUsd", { precio: def.precioUsd })}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          {errorPago && <p className="text-sm font-medium text-[#5C1A1A]">{errorPago}</p>}
+        </EstanteCategoria>
 
         <EstanteCategoria titulo={t("puestoDeUtilidad")} franja="#6C4CF1">
           <ItemEstante
@@ -513,6 +603,17 @@ export default function TiendaClient({
                 );
               }
               if (!compra) return null;
+              if (compra.requierePro && !esPro) {
+                return (
+                  <Link
+                    key={animacion}
+                    href="/pro"
+                    className="flex items-center gap-1.5 rounded-full border border-dashed border-[#F4E4C1]/30 px-3 py-1.5 text-sm text-[#F4E4C1]/40"
+                  >
+                    🔒 <span className={claseAnimacion}>{compra.nombre}</span> · {t("exclusivoDePro")}
+                  </Link>
+                );
+              }
               const costo = costoDe(compra.item);
               return (
                 <button
@@ -543,7 +644,7 @@ export default function TiendaClient({
             >
               {t("sinFondo")}{fondoElegido === "ninguno" && ` · ${t("activo")}`}
             </button>
-            {FONDOS_COMPRABLES.map(({ fondo, item, nombre }) => {
+            {FONDOS_COMPRABLES.map(({ fondo, item, nombre, requierePro }) => {
               const desbloqueado = fondosDesbl.includes(fondo);
               const elegido = fondoElegido === fondo;
               // "personalizado" no tiene degradé fijo (se ve con TU
@@ -570,6 +671,17 @@ export default function TiendaClient({
                     {nombre}
                     {elegido && ` · ${t("activo")}`}
                   </button>
+                );
+              }
+              if (requierePro && !esPro) {
+                return (
+                  <Link
+                    key={fondo}
+                    href="/pro"
+                    className="flex items-center gap-1.5 rounded-full border border-dashed border-[#F4E4C1]/30 px-3 py-1.5 text-sm text-[#F4E4C1]/40"
+                  >
+                    🔒 {swatch} {nombre} · {t("exclusivoDePro")}
+                  </Link>
                 );
               }
               const costo = costoDe(item);

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>plantilla-semanal-problema-square</title>
+<meta name="prodigia:plantilla" content="true">
+<!--
+  PLANTILLA SEMANAL · PROBLEMA EN EL FEED (1:1 · Instagram)
+  Editá solo los [EDITAR]. Release loop: Lun problema → Mar respuesta.
+  - [EDITAR · número] = N° de semana
+  - [EDITAR · mundo] = NUMERIA / MELODÍA / QUIMIA / ...
+  - [EDITAR · problema] = operación o dato en mono (tomar de retos/diagnóstico reales)
+  - [EDITAR · opciones A-D] = una es la correcta (pon "✓" al lado)
+  - [EDITAR · cta] = verbo corto
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#fdfbf7; color:#1f2430; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .axis { width:100%; height:100%; padding:56px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .kicker { font-size:20px; font-weight:700; letter-spacing:0.14em; color:#6b7280; }
+  .num { padding:10px 20px; border-radius:9999px; background:#f3efe7; font-size:20px; font-weight:700; color:#6b7280; }
+  .cuerpo { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:40px; text-align:center; }
+  .mundo { display:inline-flex; align-items:center; gap:12px; padding:12px 24px; border-radius:9999px; background:linear-gradient(120deg,#6C4CF1,#FFC53D); color:#fff; font-size:20px; font-weight:700; letter-spacing:0.08em; box-shadow:0 12px 24px -10px rgba(108,76,241,0.5); }
+  .problema { font-size:150px; line-height:1; font-weight:700; letter-spacing:-0.02em; color:#1f2430; }
+  .problema em { font-style:normal; color:#6C4CF1; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; width:100%; }
+  .op { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:22px 26px; border-radius:24px; background:#fff; border:2px solid #ece8df; box-shadow:0 10px 20px -12px rgba(31,36,48,0.25); text-align:left; }
+  .op b { font-family:'JetBrains Mono','Cascadia Mono',Consolas,monospace; font-size:24px; font-weight:700; color:#6C4CF1; }
+  .op span { font-family:'JetBrains Mono','Cascadia Mono',Consolas,monospace; font-size:32px; font-weight:700; }
+  .op .ok { display:none; }
+  .op.correcta { border-color:#3fb88b; }
+  .op.correcta .ok { display:inline; color:#3fb88b; }
+  .footer { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
+  .cta { display:inline-flex; align-items:center; gap:12px; padding:18px 34px; border-radius:9999px; background:linear-gradient(120deg,#6C4CF1,#FFC53D); color:#fff; font-size:22px; font-weight:700; box-shadow:0 16px 32px -12px rgba(108,76,241,0.5); }
+  .brand { font-size:20px; font-weight:700; color:#9a7b4f; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="kicker mono">PROBLEMA DE LA SEMANA · N°[EDITAR · número]</span>
+      <span class="num mono">LUNES</span>
+    </div>
+    <div class="cuerpo">
+      <span class="mundo mono">[EDITAR · mundo]</span>
+      <p class="problema">[EDITAR · problema]<em> = ?</em></p>
+      <div class="grid">
+        <div class="op"><b>A</b><span>[EDITAR · opción A]</span></div>
+        <div class="op correcta"><b>B</b><span>[EDITAR · opción B]</span><span class="ok">✓</span></div>
+        <div class="op"><b>C</b><span>[EDITAR · opción C]</span></div>
+        <div class="op"><b>D</b><span>[EDITAR · opción D]</span></div>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="cta">[EDITAR · cta]</span>
+      <span class="brand mono">prodigia.app</span>
+    </div>
+  </div>
+</body>
+</html>

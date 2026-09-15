@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>pieza-oscura-carrusel-trastienda-1-story</title>
+<meta name="prodigia:eje" content="oscuro">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#090c14; color:#f4f6fb; }
+  .axis { width:100%; height:100%; padding:64px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .eyebrow { font-size:24px; font-weight:700; letter-spacing:0.14em; color:#8892b0; }
+  .top-right { font-size:24px; font-weight:700; color:#8892b0; }
+  .headline { font-size:64px; line-height:1.0; font-weight:700; letter-spacing:-0.02em; }
+  .headline em { font-style:normal; background:linear-gradient(120deg,#7C5CFF,#FFC53D); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .panel { border-radius:32px; background:#12172a; border:1px solid #232b47; height:700px; margin:40px 0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px; box-shadow:0 0 0 1px rgba(124,92,255,0.16), 0 32px 64px -24px rgba(0,0,0,0.7); }
+  .panel .big { font-size:120px; font-weight:700; line-height:1; background:linear-gradient(120deg,#7C5CFF,#FFC53D); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .panel .note { font-size:28px; color:#8892b0; margin-top:24px; }
+  .state { display:inline-flex; align-items:center; gap:14px; padding:12px 20px; border-radius:9999px; background:#12172a; border:1px solid #232b47; font-size:22px; color:#8892b0; align-self:flex-start; }
+  .state strong { font-size:26px; color:#FFC53D; }
+  .footer { display:flex; align-items:center; justify-content:space-between; margin-top:26px; }
+  .cta { display:inline-flex; align-items:center; gap:12px; padding:20px 38px; border-radius:9999px; background:linear-gradient(120deg,#7C5CFF,#FFC53D); color:#fff; font-size:24px; font-weight:700; box-shadow:0 16px 32px -12px rgba(124,92,255,0.55); }
+  .brand { display:flex; align-items:center; gap:12px; font-size:22px; font-weight:700; color:#8892b0; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="eyebrow mono">PRODIGIA · TRASTIENDA</span>
+      <span class="top-right mono">1/3</span>
+    </div>
+    <h1 class="headline">La trivia<br><em>tiene su salón.</em></h1>
+    <div class="panel">
+      <p class="big">20/día</p>
+      <p class="note">giros gratis de la ruleta para complicar tu suerte.</p>
+    </div>
+    <p class="state mono"><span>ruleta</span><strong>20 giros/día</strong></p>
+    <div class="footer">
+      <span class="cta">Entra a la Trastienda</span>
+      <span class="brand mono">prodigia.app</span>
+    </div>
+  </div>
+</body>
+</html>

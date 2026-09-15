@@ -4,21 +4,23 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { BENEFICIOS_PRO } from "@/lib/pro/beneficios";
+import ProClient from "./ProClient";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Legal.pro.metadata");
   return { title: t("title"), description: t("description") };
 }
 
-// Fase 14: pantalla SOLO informativa — el botón está deshabilitado a
-// propósito. Integrar un método de pago real queda pendiente de una
-// decisión de proveedor aparte (Stripe no cubre Colombia directamente),
-// así que acá no hay ningún flujo de compra, solo la lista de
-// beneficios ya definidos.
+// Fase 4 (infraestructura de pagos): ya no es solo informativa — el
+// checkout real vive en ProClient.tsx (pega a /api/pagos/checkout,
+// mismo Payment Service que la Tienda). Acá solo se resuelve si el
+// usuario ya es Pro (profiles.plan, ver 0145/0146) para decidir qué
+// variante de ProClient mostrar.
 export default async function ProPage() {
   const t = await getTranslations("Legal.pro");
   const supabase = await createClient();
-  await requireUsuario(supabase, "/pro");
+  const { user } = await requireUsuario(supabase, "/pro");
+  const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
 
   return (
     <>
@@ -45,16 +47,7 @@ export default async function ProPage() {
           ))}
         </div>
 
-        <div className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-surface-2 px-6 py-8 text-center">
-          <button
-            type="button"
-            disabled
-            className="cursor-not-allowed rounded-xl bg-primario/40 px-6 py-3 font-display font-semibold text-white opacity-70"
-          >
-            {t("proximamente")}
-          </button>
-          <p className="text-xs text-texto-secundario">{t("noDisponible")}</p>
-        </div>
+        <ProClient esPro={profile?.plan === "pro"} />
       </div>
     </>
   );

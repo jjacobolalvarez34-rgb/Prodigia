@@ -87,6 +87,12 @@ export const COSTOS = {
   // deja nada visible hasta que subes una imagen desde /perfil (ver
   // SubirFondoPerfil.tsx + guardar_fondo_perfil_url).
   fondo_personalizado: 4000,
+  // Fase 4 (pagos): exclusivos de Prodigia Pro — gateados server-side
+  // por profiles.plan = 'pro' (0146_prodigia_pro_gates_y_estadisticas.sql),
+  // no solo por precio. Siguen costando Chispas: Pro te deja COMPRARLOS,
+  // no te los regala.
+  animacion_prisma: 3000,
+  fondo_prodigio: 3000,
 } as const;
 
 export type ItemComprable = keyof typeof COSTOS;

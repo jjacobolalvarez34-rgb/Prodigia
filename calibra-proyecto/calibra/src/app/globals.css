@@ -299,6 +299,27 @@ select:disabled {
   animation: nombre-anim-neon 1.8s ease-in-out infinite;
 }
 
+/* Fase 4 (pagos): "prisma", exclusiva de Prodigia Pro — el degradé de
+   nombre-anim-arcoiris más el brillo pulsante de nombre-anim-neon
+   juntos, un escalón arriba de las 4 animaciones normales. */
+@keyframes nombre-anim-prisma-brillo {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 3px #7c5cff);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px #7c5cff);
+  }
+}
+.nombre-anim-prisma {
+  background-image: linear-gradient(90deg, #ff5d5d, #ffc53d, #3ddc97, #4cc9f0, #7c5cff, #ff5d5d);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: nombre-anim-arcoiris 3.5s linear infinite, nombre-anim-prisma-brillo 1.8s ease-in-out infinite;
+}
+
 /* Fondo decorativo de la tarjeta de perfil (profiles.fondo_perfil) —
    franja superior de la tarjeta, el degradé "respira" despacio para
    que no se sienta una imagen estática pegada. */

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>plantilla-semanal-problema-story</title>
+<meta name="prodigia:plantilla" content="true">
+<!--
+  PLANTILLA SEMANAL · PROBLEMA EN HISTORIA (9:16 · Instagram Stories)
+  Editá solo los [EDITAR]. Dejá un hueco inferior: pegá el sticker de ENCUESTA ahí
+  (este es el piso del diseño). Release loop: Lun problema → Mar respuesta.
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#fdfbf7; color:#1f2430; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .axis { width:100%; height:100%; padding:72px 64px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .kicker { font-size:22px; font-weight:700; letter-spacing:0.14em; color:#6b7280; }
+  .num { padding:10px 20px; border-radius:9999px; background:#f3efe7; font-size:20px; font-weight:700; color:#6b7280; }
+  .cuerpo { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:44px; text-align:center; }
+  .mundo { display:inline-flex; align-items:center; gap:12px; padding:14px 28px; border-radius:9999px; background:linear-gradient(120deg,#6C4CF1,#FFC53D); color:#fff; font-size:22px; font-weight:700; letter-spacing:0.1em; box-shadow:0 12px 24px -10px rgba(108,76,241,0.5); }
+  .problema { font-size:170px; line-height:0.98; font-weight:700; letter-spacing:-0.02em; }
+  .problema em { font-style:normal; color:#6C4CF1; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; width:100%; }
+  .op { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:30px 32px; border-radius:28px; background:#fff; border:2px solid #ece8df; box-shadow:0 10px 20px -12px rgba(31,36,48,0.25); text-align:left; }
+  .op b { font-family:'JetBrains Mono','Cascadia Mono',Consolas,monospace; font-size:28px; font-weight:700; color:#6C4CF1; }
+  .op span { font-family:'JetBrains Mono','Cascadia Mono',Consolas,monospace; font-size:44px; font-weight:700; }
+  .sticker { margin-top:22px; align-self:stretch; border:3px dashed #d4cfc4; border-radius:24px; height:190px; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; color:#9a7b4f; letter-spacing:0.06em; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="kicker mono">PROBLEMA DE LA SEMANA · N°[EDITAR · número]</span>
+      <span class="num mono">HISTORIA</span>
+    </div>
+    <div class="cuerpo">
+      <span class="mundo mono">[EDITAR · mundo]</span>
+      <p class="problema">[EDITAR · problema]<br><em>= ?</em></p>
+      <div class="grid">
+        <div class="op"><b>A</b><span>[EDITAR]</span></div>
+        <div class="op"><b>B</b><span>[EDITAR]</span></div>
+        <div class="op"><b>C</b><span>[EDITAR]</span></div>
+        <div class="op"><b>D</b><span>[EDITAR]</span></div>
+      </div>
+    </div>
+    <div class="sticker">TU STICKER DE ENCUESTA VA ACÁ</div>
+  </div>
+</body>
+</html>

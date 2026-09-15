@@ -186,7 +186,20 @@ export default function EnigmiaSprintRunner({
         duracionMs + bonusAcumuladoRef.current - (performance.now() - startedAt)
       );
       setRemainingMs(restante);
-      if (restante <= 0) {
+      // Bug reportado en vivo (2026-09-14, "el conteo de aciertos sigue
+      // fallando... al terminar sin responder todas, o respondiéndolas
+      // todas y equivocándome"): este intervalo corre cada 100ms
+      // totalmente independiente de handleElegir — si el reloj llega a
+      // 0 justo mientras la ÚLTIMA respuesta todavía está en vuelo
+      // (fetch a /api/logic-attempts sin resolver), terminar() disparaba
+      // onFinish/el fetch a /api/enigmia/finish ANTES de que esa fila se
+      // terminara de guardar, así que el conteo del servidor no la veía
+      // — un intento real, a veces correcto, desaparecía del resumen.
+      // Con !submittingRef.current el intervalo se salta ese tick (sin
+      // limpiarse) y recién corta cuando handleElegir ya terminó de
+      // guardar — mismo patrón en los 10 SprintRunners de la app, se
+      // corrigió en todos a la vez, no solo acá.
+      if (restante <= 0 && !submittingRef.current) {
         clearInterval(interval);
         terminar();
       }

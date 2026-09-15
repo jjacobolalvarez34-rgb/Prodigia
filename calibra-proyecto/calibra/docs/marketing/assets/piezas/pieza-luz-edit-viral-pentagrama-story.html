@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>pieza-luz-edit-viral-pentagrama-story</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#fdfbf7; color:#1f2430; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .escena { position:relative; width:100%; height:100%; }
+  .fondo { position:absolute; inset:0; overflow:hidden; }
+  .fondo img { width:100%; height:100%; object-fit:cover; transform:scale(1.1); }
+  .velo { position:absolute; inset:0; background:linear-gradient(180deg, rgba(253,251,247,0.2) 0%, rgba(253,251,247,0.88) 70%); }
+  .glifos { position:absolute; inset:0; font-size:110px; color:#B8860B; opacity:0.2; }
+  .g1 { position:absolute; top:8%; left:8%; font-size:140px; } .g2 { position:absolute; top:16%; right:12%; font-size:80px; }
+  .g3 { position:absolute; bottom:30%; left:12%; font-size:70px; } .g4 { position:absolute; bottom:14%; right:10%; font-size:100px; }
+  .contenido { position:relative; z-index:2; width:100%; height:100%; padding:72px 64px; display:flex; flex-direction:column; justify-content:flex-end; }
+  .eyebrow { font-size:22px; font-weight:700; letter-spacing:0.16em; color:#6b7280; margin-bottom:10px; }
+  .mega { font-size:112px; line-height:0.96; font-weight:700; letter-spacing:-0.03em; }
+  .mega em { font-style:normal; background:linear-gradient(120deg,#B8860B,#FFC53D); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .sub { margin-top:18px; font-size:26px; color:#6b7280; max-width:720px; }
+  .cta { margin-top:34px; align-self:flex-start; padding:22px 44px; border-radius:9999px; background:linear-gradient(120deg,#6C4CF1,#FFC53D); color:#fff; font-size:26px; font-weight:700; box-shadow:0 24px 48px -16px rgba(108,76,241,0.55); }
+</style>
+</head>
+<body>
+  <div class="escena">
+    <div class="fondo"><img src="../pantallas-reales/24-demo-melodia-figuras.png" alt="Pentagrama de Melodía"></div>
+    <div class="velo"></div>
+    <div class="glifos"><span class="g1">𝄞</span><span class="g2">♪</span><span class="g3">♫</span><span class="g4">♩</span></div>
+    <div class="contenido">
+      <span class="eyebrow mono">MELODÍA · EL PENTAGRAMA</span>
+      <h1 class="mega">Oído<br><em>absoluto</em></h1>
+      <p class="sub">Una app de matemática… con música. Escalas, acordes y notas.</p>
+      <span class="cta">Jugar Melodía</span>
+    </div>
+  </div>
+</body>
+</html>

@@ -48,10 +48,24 @@ export async function obtenerCamino(
   supabase: SupabaseClient,
   userId: string
 ): Promise<UnidadCamino[]> {
+  // Bug reportado en vivo (2026-09-14): "aprender de numeria queda
+  // bloqueado después de la 2da lección". Causa real: esta consulta
+  // traía TODAS las técnicas de la tabla compartida `techniques` (los
+  // 8 mundos la usan, cada uno con su propio /mundo/aprender), sin
+  // filtrar por tema — el resto de esta función solo sabe reconocer
+  // los 9 temas de Numeria (TEMAS_ORDEN), así que una técnica de otro
+  // mundo (ej. Quimia) terminaba quedándose con el único cupo global
+  // de "activo" del camino y después se descartaba en silencio en el
+  // agrupado final (que sí filtra por TEMAS_ORDEN) — dejando TODO
+  // Numeria en "bloqueado" hasta que, por pura casualidad, el usuario
+  // completara suficientes técnicas de otros mundos como para que el
+  // puntero global de "activo" derivara hacia una de Numeria. Filtrar
+  // acá mismo, en el origen, es la fuente de verdad correcta.
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("techniques")
       .select("id, slug, nombre, descripcion, contenido, orden, problem_type")
+      .in("problem_type", TEMAS_ORDEN)
       .order("orden", { ascending: true }),
     supabase.from("technique_progress").select("technique_id, dominado").eq("user_id", userId),
   ]);

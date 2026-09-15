@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>plantilla-motivacion-semana-square</title>
+<meta name="prodigia:plantilla" content="true">
+<!--
+  PLANTILLA · MOTIVACIÓN SEMANAL (1:1)
+  Claims REALES de la app (REAL-APP-2026-09-08): "Entrená tu cabeza como si fuera
+  un músculo"; "Partidas cortas de práctica, un ranking en vivo y duelos contra
+  otros jugadores". No inventar features.
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#fdfbf7; color:#1f2430; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .axis { width:100%; height:100%; padding:56px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .kicker { font-size:20px; font-weight:700; letter-spacing:0.14em; color:#6b7280; }
+  .num { padding:10px 20px; border-radius:9999px; background:#f3efe7; font-size:20px; font-weight:700; color:#6b7280; }
+  .cuerpo { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:26px; text-align:center; }
+  .frase { font-size:92px; line-height:1.02; font-weight:700; letter-spacing:-0.03em; max-width:980px; }
+  .frase em { font-style:normal; background:linear-gradient(120deg,#6C4CF1,#FFC53D); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .refuerzo { font-size:30px; line-height:1.5; color:#3d3d45; max-width:900px; }
+  .footer { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
+  .cta { display:inline-flex; align-items:center; gap:12px; padding:18px 34px; border-radius:9999px; background:linear-gradient(120deg,#6C4CF1,#FFC53D); color:#fff; font-size:22px; font-weight:700; box-shadow:0 16px 32px -12px rgba(108,76,241,0.5); }
+  .brand { font-size:20px; font-weight:700; color:#9a7b4f; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="kicker mono">REPETÍ EN VOZ ALTA · SEMANA [EDITAR · número]</span>
+      <span class="num mono">MOTIVACIÓN</span>
+    </div>
+    <div class="cuerpo">
+      <h1 class="frase">Entrená tu cabeza<br>como si fuera<em> un músculo.</em></h1>
+      <p class="refuerzo">[EDITAR · refuerzo corto real: "Partidas cortas de práctica. Un ranking en vivo. Todos los días."]</p>
+    </div>
+    <div class="footer">
+      <span class="cta">[EDITAR · cta]</span>
+      <span class="brand mono">prodigia.app</span>
+    </div>
+  </div>
+</body>
+</html>

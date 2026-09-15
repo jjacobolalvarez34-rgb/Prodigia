@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>plantilla-minuto-cada-manana-square</title>
+<meta name="prodigia:plantilla" content="true">
+<!--
+  PLANTILLA · 1 MINUTO CADA MAÑANA (1:1)
+  Hábito real: reto diario se juega en partidas cortas. La app vende "Partidas
+  cortas de práctica". No prometer streaks de fuego ficticias: usar "rachas" que es
+  feature real del juego.
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#fdfbf7; color:#1f2430; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .axis { width:100%; height:100%; padding:56px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .kicker { font-size:20px; font-weight:700; letter-spacing:0.14em; color:#6b7280; }
+  .num { padding:10px 20px; border-radius:9999px; background:#f3efe7; font-size:20px; font-weight:700; color:#6b7280; }
+  .cuerpo { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:24px; text-align:center; }
+  .numero { font-family:'JetBrains Mono','Cascadia Mono',Consolas,monospace; font-size:210px; line-height:0.96; font-weight:700; background:linear-gradient(120deg,#6C4CF1,#FFC53D); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .etiqueta { display:inline-flex; align-items:center; gap:14px; padding:14px 30px; border-radius:9999px; background:#f3efe7; font-family:'JetBrains Mono','Cascadia Mono',Consolas,monospace; font-size:26px; font-weight:700; color:#1f2430; }
+  .titulo { font-size:56px; line-height:1.05; font-weight:700; letter-spacing:-0.02em; max-width:920px; }
+  .sub { font-size:28px; line-height:1.5; color:#3d3d45; max-width:880px; }
+  .footer { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
+  .cta { display:inline-flex; align-items:center; gap:12px; padding:18px 34px; border-radius:9999px; background:linear-gradient(120deg,#6C4CF1,#FFC53D); color:#fff; font-size:22px; font-weight:700; box-shadow:0 16px 32px -12px rgba(108,76,241,0.5); }
+  .brand { font-size:20px; font-weight:700; color:#9a7b4f; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="kicker mono">HÁBITO · ANTES DEL CAFÉ</span>
+      <span class="num mono">RETO DIARIO</span>
+    </div>
+    <div class="cuerpo">
+      <p class="numero">1'</p>
+      <span class="etiqueta mono">CADA MAÑANA · 5 PREGUNTAS</span>
+      <h1 class="titulo">[EDITAR · frase de hábito, ej. "Ese minuto cuenta."]</h1>
+      <p class="sub">[EDITAR · refuerzo real: rachas + ranking del día]</p>
+    </div>
+    <div class="footer">
+      <span class="cta">[EDITAR · cta]</span>
+      <span class="brand mono">prodigia.app</span>
+    </div>
+  </div>
+</body>
+</html>

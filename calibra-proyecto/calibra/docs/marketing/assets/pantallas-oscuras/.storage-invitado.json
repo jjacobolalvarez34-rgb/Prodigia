@@ -1,0 +1,35 @@
+{
+  "cookies": [
+    {
+      "name": "NEXT_LOCALE",
+      "value": "es",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "sb-yawsxywljqebtthfyafz-auth-token",
+      "value": "base64-eyJhY2Nlc3NfdG9rZW4iOiJleUpoYkdjaU9pSkZVekkxTmlJc0ltdHBaQ0k2SWpWa09ERTFabVUwTFRJMFl6RXRORGcwWWkxaE1qQXdMV0ZpTURVNFlUa3haVGxqTVNJc0luUjVjQ0k2SWtwWFZDSjkuZXlKcGMzTWlPaUpvZEhSd2N6b3ZMM2xoZDNONGVYZHNhbkZsWW5SMGFHWjVZV1o2TG5OMWNHRmlZWE5sTG1OdkwyRjFkR2d2ZGpFaUxDSnpkV0lpT2lJNE0yTTRNakF4T0MwM01XWTBMVFF6T1RJdFltTmtOeTAxTmpVMlptUTJZbVJoWmpVaUxDSmhkV1FpT2lKaGRYUm9aVzUwYVdOaGRHVmtJaXdpWlhod0lqb3hOemc1TXprM05qTXpMQ0pwWVhRaU9qRTNPRGt6T1RRd016TXNJbVZ0WVdsc0lqb2lJaXdpY0dodmJtVWlPaUlpTENKaGNIQmZiV1YwWVdSaGRHRWlPbnQ5TENKMWMyVnlYMjFsZEdGa1lYUmhJanA3ZlN3aWNtOXNaU0k2SW1GMWRHaGxiblJwWTJGMFpXUWlMQ0poWVd3aU9pSmhZV3d4SWl3aVlXMXlJanBiZXlKdFpYUm9iMlFpT2lKaGJtOXVlVzF2ZFhNaUxDSjBhVzFsYzNSaGJYQWlPakUzT0Rrek9UUXdNek45WFN3aWMyVnpjMmx2Ymw5cFpDSTZJamt6WVdReU1EVXhMVGswTVRNdE5EVTJOUzA1WXpsa0xUSmtaRFptWkdKaU1tWTVPQ0lzSW1selgyRnViMjU1Ylc5MWN5STZkSEoxWlgwLjQ2SllrTEkxNklOM3NRdHo2TGtVQ0x1bUt0Qnc4UU1XVEJVWXZTT1Y3QjlhbGx3WUZJWk5ESWVJWGxvZzI5N0g2aUFMNWFSeVN5Z0tLNUltVDlfX0J3IiwidG9rZW5fdHlwZSI6ImJlYXJlciIsImV4cGlyZXNfaW4iOjM2MDAsImV4cGlyZXNfYXQiOjE3ODkzOTc2MzMsInJlZnJlc2hfdG9rZW4iOiJ1a2g3dXZwZ2JkZjMiLCJ1c2VyIjp7ImlkIjoiODNjODIwMTgtNzFmNC00MzkyLWJjZDctNTY1NmZkNmJkYWY1IiwiYXVkIjoiYXV0aGVudGljYXRlZCIsInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiZW1haWwiOiIiLCJwaG9uZSI6IiIsImxhc3Rfc2lnbl9pbl9hdCI6IjIwMjYtMDktMTRUMTM6NTM6NTMuNjQ4Njk0NTA4WiIsImFwcF9tZXRhZGF0YSI6e30sInVzZXJfbWV0YWRhdGEiOnt9LCJpZGVudGl0aWVzIjpbXSwiY3JlYXRlZF9hdCI6IjIwMjYtMDktMTRUMTM6NTM6NTMuNTg2MTQ1WiIsInVwZGF0ZWRfYXQiOiIyMDI2LTA5LTE0VDEzOjUzOjUzLjY2NjQ3M1oiLCJpc19hbm9ueW1vdXMiOnRydWV9fQ",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1823954035.888399,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "prodigia-theme",
+          "value": "dark"
+        }
+      ]
+    }
+  ]
+}

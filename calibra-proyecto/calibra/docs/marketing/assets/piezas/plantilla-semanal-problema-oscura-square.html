@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>plantilla-semanal-problema-oscura-square</title>
+<meta name="prodigia:plantilla" content="true">
+<!--
+  PLANTILLA SEMANAL · PROBLEMA EN EL FEED · VARIANTE NOCTURNA (1:1)
+  Ídem `plantilla-semanal-problema-square` pero con tokens dark REALES
+  (src/app/globals.css:47-56). Mismo workflow: Lun problema → Mar respuesta.
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#090c14; color:#f4f6fb; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .axis { width:100%; height:100%; padding:56px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .kicker { font-size:20px; font-weight:700; letter-spacing:0.14em; color:#8892b0; }
+  .num { padding:10px 20px; border-radius:9999px; background:#12172a; border:1px solid #232b47; font-size:20px; font-weight:700; color:#8892b0; }
+  .cuerpo { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:40px; text-align:center; }
+  .mundo { display:inline-flex; align-items:center; gap:12px; padding:12px 24px; border-radius:9999px; background:linear-gradient(120deg,#7C5CFF,#FFC53D); color:#fff; font-size:20px; font-weight:700; letter-spacing:0.08em; box-shadow:0 12px 24px -10px rgba(124,92,255,0.5); }
+  .problema { font-size:150px; line-height:1; font-weight:700; letter-spacing:-0.02em; color:#f4f6fb; }
+  .problema em { font-style:normal; color:#7C5CFF; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; width:100%; }
+  .op { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:22px 26px; border-radius:24px; background:#12172a; border:1px solid #232b47; text-align:left; }
+  .op b { font-family:'JetBrains Mono','Cascadia Mono',Consolas,monospace; font-size:24px; font-weight:700; color:#7C5CFF; }
+  .op span { font-family:'JetBrains Mono','Cascadia Mono',Consolas,monospace; font-size:32px; font-weight:700; color:#f4f6fb; }
+  .op .ok { display:none; }
+  .op.correcta { border-color:#3fb88b; }
+  .op.correcta .ok { display:inline; color:#3fb88b; }
+  .footer { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
+  .cta { display:inline-flex; align-items:center; gap:12px; padding:18px 34px; border-radius:9999px; background:linear-gradient(120deg,#7C5CFF,#FFC53D); color:#fff; font-size:22px; font-weight:700; box-shadow:0 16px 32px -12px rgba(124,92,255,0.55); }
+  .brand { font-size:20px; font-weight:700; color:#8892b0; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="kicker mono">PROBLEMA DE LA SEMANA · N°[EDITAR · número]</span>
+      <span class="num mono">NOCTURNO</span>
+    </div>
+    <div class="cuerpo">
+      <span class="mundo mono">[EDITAR · mundo]</span>
+      <p class="problema">[EDITAR · problema]<em> = ?</em></p>
+      <div class="grid">
+        <div class="op"><b>A</b><span>[EDITAR · opción A]</span></div>
+        <div class="op correcta"><b>B</b><span>[EDITAR · opción B]</span><span class="ok">✓</span></div>
+        <div class="op"><b>C</b><span>[EDITAR · opción C]</span></div>
+        <div class="op"><b>D</b><span>[EDITAR · opción D]</span></div>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="cta">[EDITAR · cta]</span>
+      <span class="brand mono">prodigia.app</span>
+    </div>
+  </div>
+</body>
+</html>

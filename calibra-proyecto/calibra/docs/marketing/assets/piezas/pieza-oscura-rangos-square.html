@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>pieza-oscura-rangos-square</title>
+<meta name="prodigia:eje" content="oscuro">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#090c14; color:#f4f6fb; }
+  .axis { width:100%; height:100%; padding:56px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .eyebrow { font-size:20px; font-weight:700; letter-spacing:0.14em; color:#8892b0; }
+  .top-right { font-size:20px; font-weight:700; color:#8892b0; }
+  .rangos { margin-top:28px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+  .rango { border-radius:20px; padding:24px 8px; text-align:center; background:#12172a; border:1px solid #232b47; }
+  .rango strong { font-size:26px; letter-spacing:0.02em; color:#f4f6fb; }
+  .rango span { display:block; margin-top:8px; font-size:15px; color:#8892b0; }
+  .headline { margin-top:28px; font-size:46px; line-height:1.02; font-weight:700; letter-spacing:-0.02em; }
+  .headline em { font-style:normal; background:linear-gradient(120deg,#7C5CFF,#FFC53D); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .state { display:inline-flex; align-items:center; gap:10px; margin-top:16px; padding:10px 18px; border-radius:9999px; background:#12172a; border:1px solid #232b47; font-size:18px; color:#8892b0; }
+  .state strong { font-size:22px; color:#f4f6fb; }
+  .footer { display:flex; align-items:center; justify-content:space-between; margin-top:30px; }
+  .cta { display:inline-flex; align-items:center; gap:12px; padding:18px 34px; border-radius:9999px; background:linear-gradient(120deg,#7C5CFF,#FFC53D); color:#fff; font-size:22px; font-weight:700; box-shadow:0 16px 32px -12px rgba(124,92,255,0.55); }
+  .brand { display:flex; align-items:center; gap:12px; font-size:20px; font-weight:700; color:#8892b0; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="eyebrow mono">PRODIGIA · RANKED</span>
+      <span class="top-right mono">elo · 6 rangos</span>
+    </div>
+    <div class="rangos">
+      <div class="rango" style="border-top:8px solid #B08D57;"><strong>BRONCE</strong><span>punto de partida</span></div>
+      <div class="rango" style="border-top:8px solid #B8C4D9;"><strong>PLATA</strong><span>en camino</span></div>
+      <div class="rango" style="border-top:8px solid #E8B34D;"><strong>ORO</strong><span>arriba de la tabla</span></div>
+      <div class="rango" style="border-top:8px solid #5FBFA8;"><strong>PLATINO</strong><span>élite</span></div>
+      <div class="rango" style="border-top:8px solid #5DC8F5;"><strong>DIAMANTE</strong><span>poco habitual</span></div>
+      <div class="rango" style="border-top:8px solid #FFC53D; box-shadow:0 0 0 1px #FFC53D40, 0 12px 24px -12px rgba(255,197,61,0.5);"><strong>PRODIGIO</strong><span>la cima</span></div>
+    </div>
+    <h1 class="headline">Del Bronce<br><em>al Prodigio.</em></h1>
+    <p class="state mono"><span>se desbloquean</span><strong>nivel 5</strong></p>
+    <div class="footer">
+      <span class="cta">Compite en rankeds</span>
+      <span class="brand mono">prodigia.app</span>
+    </div>
+  </div>
+</body>
+</html>

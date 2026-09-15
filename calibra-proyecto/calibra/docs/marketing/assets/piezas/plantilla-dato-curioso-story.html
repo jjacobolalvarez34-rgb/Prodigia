@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>plantilla-dato-curioso-story</title>
+<meta name="prodigia:plantilla" content="true">
+<!--
+  PLANTILLA · DATO CURIOSO EN HISTORIA (9:16)
+  Versión vertical de la 1:1. Hueco inferior para sticker (encuesta/quiz).
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#fdfbf7; color:#1f2430; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .axis { width:100%; height:100%; padding:72px 64px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .kicker { font-size:22px; font-weight:700; letter-spacing:0.14em; color:#6b7280; }
+  .num { padding:10px 20px; border-radius:9999px; background:#f3efe7; font-size:20px; font-weight:700; color:#6b7280; }
+  .cuerpo { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:12px; text-align:center; }
+  .tema { display:inline-flex; align-items:center; gap:12px; padding:14px 28px; border-radius:9999px; background:#f3efe7; font-size:22px; font-weight:700; color:#1f2430; margin-bottom:20px; }
+  .dato { font-size:260px; line-height:0.96; font-weight:700; letter-spacing:-0.03em; background:linear-gradient(120deg,#6C4CF1,#FFC53D); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .titulo { font-size:64px; line-height:1.02; font-weight:700; letter-spacing:-0.02em; max-width:900px; }
+  .sticker { margin-top:22px; align-self:stretch; border:3px dashed #d4cfc4; border-radius:24px; height:180px; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; color:#9a7b4f; letter-spacing:0.06em; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="kicker mono">DATO · N°[EDITAR · número]</span>
+      <span class="num mono">HISTORIA</span>
+    </div>
+    <div class="cuerpo">
+      <span class="tema mono">[EDITAR · tema]</span>
+      <p class="dato">[EDITAR · dato-fuerte]</p>
+      <h1 class="titulo">[EDITAR · título corto]</h1>
+    </div>
+    <div class="sticker">TU STICKER VA ACÁ</div>
+  </div>
+</body>
+</html>

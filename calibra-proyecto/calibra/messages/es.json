@@ -230,6 +230,8 @@
     "xpHistoricaAcumulada": "{xp} XP histórica acumulada — nunca baja",
     "puestoDe": "Puesto <destacado>#{posicion}</destacado> de {total} en el ranking general de Chispas",
     "todaviaNoEstasEnClan": "Todavía no estás en ningún clan — busca uno →",
+    "verEstadisticasAvanzadas": "Ver estadísticas avanzadas",
+    "hazteProLink": "Hazte Pro",
     "rangoDeDuelos": "Rango de duelos",
     "rango": "Rango",
     "banner": {
@@ -297,6 +299,18 @@
       "cambiarImagen": "Cambiar imagen de fondo",
       "subirImagen": "Subir imagen de fondo",
       "subeUnaImagen": "Elegiste el fondo personalizado — sube una imagen para que se vea."
+    },
+    "estadisticas": {
+      "metadata": {
+        "title": "Estadísticas avanzadas",
+        "description": "Precisión y volumen por mundo — exclusivo de Prodigia Pro."
+      },
+      "volverAlPerfil": "Volver a tu perfil",
+      "titulo": "Estadísticas avanzadas",
+      "subtitulo": "Precisión por mundo, con más detalle que el perfil normal.",
+      "vacio": "Todavía no hay suficientes partidas para mostrar estadísticas.",
+      "intentosCantidad": "{n} intentos",
+      "totalIntentos": "{n} intentos en total"
     },
     "titulosSection": {
       "titulo": "Títulos",
@@ -387,7 +401,9 @@
       "fondoAurora": "Fondo Aurora",
       "fondoDorado": "Fondo Dorado",
       "fondoNebulosa": "Fondo Nebulosa",
-      "fondoPersonalizado": "Fondo Personalizado"
+      "fondoPersonalizado": "Fondo Personalizado",
+      "animacionPrisma": "Animación Prisma",
+      "fondoProdigio": "Fondo Prodigio"
     },
     "fuentes": {
       "mono": "Monoespaciada",
@@ -401,7 +417,8 @@
       "ondulante": "Ondulante",
       "brillo": "Brillo",
       "arcoiris": "Arcoíris",
-      "neon": "Neón"
+      "neon": "Neón",
+      "prisma": "Prisma"
     },
     "fondos": {
       "oceano": "Océano",
@@ -409,7 +426,8 @@
       "aurora": "Aurora",
       "dorado": "Dorado",
       "nebulosa": "Nebulosa",
-      "personalizado": "Personalizado"
+      "personalizado": "Personalizado",
+      "prodigio": "Prodigio"
     },
     "descripciones": {
       "escudo": "Un escudo de calibración de más para tu próxima partida.",
@@ -454,6 +472,19 @@
     "sinFondo": "Sin fondo",
     "subeTuImagenEnPerfil": "Sube tu imagen desde tu perfil para que se vea.",
     "irAPerfil": "Ir a mi perfil",
+    "exclusivoDePro": "Exclusivo de Pro",
+    "pagos": {
+      "titulo": "Comprar Chispas",
+      "descripcion": "Recarga con dinero real — sirve para todo el catálogo, igual que las Chispas que ganas jugando.",
+      "colombia": "Colombia (Mercado Pago)",
+      "internacional": "Internacional (Paddle)",
+      "packChispas": "{n} Chispas",
+      "precioUsd": "US$ {precio}",
+      "procesando": "Procesando…",
+      "errorGenerico": "No se pudo iniciar el pago.",
+      "errorConexion": "No se pudo iniciar el pago. Revisa tu conexión.",
+      "overlayNoDisponible": "Este método de pago todavía no está disponible. Prueba con el otro."
+    },
     "ofertaDelVendedor": "Oferta del vendedor de hoy:",
     "porcentajeMenos": "{n}% menos",
     "enItem": "en {nombre}",
@@ -656,6 +687,13 @@
     "campana": {
       "abrir": "Notificaciones",
       "sinNotificaciones": "No tienes notificaciones nuevas."
+    },
+    "recordatorioInvitado": {
+      "banner": "Estás jugando como invitado — tu progreso se puede perder si cambias de dispositivo.",
+      "bannerBoton": "Crear cuenta gratis",
+      "modalTitulo": "No pierdas tu progreso",
+      "modalSubtitulo": "Guarda tu cuenta con un correo y contraseña — tu progreso actual se queda igual, solo le agregas una forma de recuperarlo.",
+      "cerrar": "Cerrar"
     },
     "deteccionConexion": {
       "mensaje": "Notamos que tu conexión anda lenta — ¿quieres desactivar los efectos visuales extra? Puedes cambiarlo cuando quieras en Ajustes.",
@@ -1867,13 +1905,22 @@
     "pro": {
       "metadata": {
         "title": "Prodigia Pro",
-        "description": "Los beneficios de Prodigia Pro — próximamente."
+        "description": "Suscríbete a Prodigia Pro: Chispas mensuales, cosméticos exclusivos, sin anuncios y más."
       },
       "marca": "Prodigia",
       "titulo": "Prodigia Pro",
-      "subtitulo": "Todo lo que vas a tener cuando Pro esté disponible.",
-      "proximamente": "Próximamente",
-      "noDisponible": "Todavía no se puede comprar Prodigia Pro."
+      "subtitulo": "Todo lo que tienes con una suscripción.",
+      "colombia": "Colombia (Mercado Pago)",
+      "internacional": "Internacional (Paddle)",
+      "planMensual": "Mensual",
+      "planAnual": "Anual",
+      "precioUsd": "US$ {precio}",
+      "procesando": "Procesando…",
+      "errorGenerico": "No se pudo iniciar la suscripción.",
+      "errorConexion": "No se pudo iniciar la suscripción. Revisa tu conexión.",
+      "overlayNoDisponible": "Este método de pago todavía no está disponible. Prueba con el otro.",
+      "yaSosPro": "Ya eres Prodigia Pro",
+      "yaSosProDetalle": "Tus Chispas mensuales y beneficios ya están activos."
     }
   },
   "Melodia": {

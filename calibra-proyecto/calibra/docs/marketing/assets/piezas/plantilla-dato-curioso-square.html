@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>plantilla-dato-curioso-square</title>
+<meta name="prodigia:plantilla" content="true">
+<!--
+  PLANTILLA · DATO CURIOSO DE LA SEMANA (1:1 · Instagram)
+  Editá solo los [EDITAR]. Dato corto, anclado a los mundos reales (números,
+  música, química, anatomía, geografía). Públicalo el día que no toca problema.
+  - [EDITAR · número] = edición
+  - [EDITAR · tema] = NUMERIA / MELODÍA / QUIMIA ...
+  - [EDITAR · dato-fuerte] = el número/palabra gigante en mono
+  - [EDITAR · título] = frase de una línea sobre el dato
+  - [EDITAR · cta]
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#fdfbf7; color:#1f2430; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .axis { width:100%; height:100%; padding:56px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .kicker { font-size:20px; font-weight:700; letter-spacing:0.14em; color:#6b7280; }
+  .num { padding:10px 20px; border-radius:9999px; background:#f3efe7; font-size:20px; font-weight:700; color:#6b7280; }
+  .cuerpo { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px; text-align:center; }
+  .tema { display:inline-flex; align-items:center; gap:12px; padding:12px 24px; border-radius:9999px; background:#f3efe7; font-size:20px; font-weight:700; color:#1f2430; margin-bottom:16px; }
+  .dato { font-size:190px; line-height:0.98; font-weight:700; letter-spacing:-0.03em; background:linear-gradient(120deg,#6C4CF1,#FFC53D); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .titulo { font-size:56px; line-height:1.05; font-weight:700; letter-spacing:-0.02em; max-width:880px; }
+  .regla { margin-top:22px; padding:14px 28px; border-radius:9999px; background:#fff; border:2px solid #ece8df; font-family:'JetBrains Mono','Cascadia Mono',Consolas,monospace; font-size:20px; font-weight:700; color:#6b7280; }
+  .footer { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
+  .cta { display:inline-flex; align-items:center; gap:12px; padding:18px 34px; border-radius:9999px; background:linear-gradient(120deg,#6C4CF1,#FFC53D); color:#fff; font-size:22px; font-weight:700; box-shadow:0 16px 32px -12px rgba(108,76,241,0.5); }
+  .brand { font-size:20px; font-weight:700; color:#9a7b4f; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="kicker mono">LO QUE APRENDÉS JUGANDO · N°[EDITAR · número]</span>
+      <span class="num mono">DATOS</span>
+    </div>
+    <div class="cuerpo">
+      <span class="tema mono">[EDITAR · tema]</span>
+      <p class="dato">[EDITAR · dato-fuerte]</p>
+      <h1 class="titulo">[EDITAR · título corto]</h1>
+      <span class="regla mono">SEGUÍ JUGANDO Y VA PEGANDO SOLO</span>
+    </div>
+    <div class="footer">
+      <span class="cta">[EDITAR · cta]</span>
+      <span class="brand mono">prodigia.app</span>
+    </div>
+  </div>
+</body>
+</html>

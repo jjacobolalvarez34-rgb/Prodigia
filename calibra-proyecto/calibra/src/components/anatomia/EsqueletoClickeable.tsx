@@ -9,26 +9,49 @@ interface Props {
   onClickHueso: (hueso: string) => void;
 }
 
-// Diagrama interactivo del esqueleto óseo (Fase 2 de Anatomía, nivel
-// 3+): el SVG real (public/data/esqueleto-oseo.svg, LadyofHats/Wikimedia
-// Commons, dominio público — ver el comment de licencia dentro del
-// archivo) se inyecta tal cual con dangerouslySetInnerHTML y se
-// delega el click sobre cualquier elemento con data-hueso, en vez de
-// armar ~100 elementos React a mano por cada hueso del dibujo.
-export default function EsqueletoClickeable({ objetivoHueso, respondido, seleccion, onClickHueso }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [svgMarkup, setSvgMarkup] = useState<string | null>(null);
+// Caché a nivel de módulo, fuera del componente a propósito. Bug
+// reportado en vivo (2026-09-14, "se traba al hacer click en las
+// preguntas... anatomía, el mapa del cuerpo"): TarjetaSprint envuelve
+// a sus children en un `key={cardKey}` (para el swipe de entrada/
+// salida de cada pregunta) — eso hace que este componente se desmonte
+// y remonte de CERO en cada pregunta de tipo "click", no solo una vez
+// por partida. Sin caché, cada remonte volvía a pedir por red y
+// parsear el SVG entero (843KB, 918 elementos <path> — LadyofHats/
+// Wikimedia Commons, dominio público, ver el comment de licencia
+// dentro del archivo) — con varias preguntas de este tipo en un mismo
+// sprint de 60s, eso se sentía como una traba justo después de cada
+// respuesta. El módulo se carga una sola vez por sesión del navegador;
+// los remontes posteriores leen el string ya resuelto, sin red.
+let svgCacheado: string | null = null;
+let svgFetchEnCurso: Promise<string> | null = null;
 
-  useEffect(() => {
-    let cancelado = false;
-    fetch("/data/esqueleto-oseo.svg")
+function obtenerSvgEsqueleto(): Promise<string> {
+  if (svgCacheado !== null) return Promise.resolve(svgCacheado);
+  if (!svgFetchEnCurso) {
+    svgFetchEnCurso = fetch("/data/esqueleto-oseo.svg")
       .then((r) => r.text())
       .then((texto) => {
-        if (!cancelado) setSvgMarkup(texto);
+        svgCacheado = texto;
+        return texto;
       });
+  }
+  return svgFetchEnCurso;
+}
+
+export default function EsqueletoClickeable({ objetivoHueso, respondido, seleccion, onClickHueso }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [svgMarkup, setSvgMarkup] = useState<string | null>(svgCacheado);
+
+  useEffect(() => {
+    if (svgMarkup !== null) return;
+    let cancelado = false;
+    obtenerSvgEsqueleto().then((texto) => {
+      if (!cancelado) setSvgMarkup(texto);
+    });
     return () => {
       cancelado = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

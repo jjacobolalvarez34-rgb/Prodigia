@@ -230,6 +230,8 @@
     "xpHistoricaAcumulada": "{xp} lifetime XP earned — never goes down",
     "puestoDe": "Rank <destacado>#{posicion}</destacado> of {total} on the overall Chispas leaderboard",
     "todaviaNoEstasEnClan": "You're not in a clan yet — find one →",
+    "verEstadisticasAvanzadas": "View advanced stats",
+    "hazteProLink": "Go Pro",
     "rangoDeDuelos": "Duel rank",
     "rango": "Rank",
     "banner": {
@@ -297,6 +299,18 @@
       "cambiarImagen": "Change background image",
       "subirImagen": "Upload background image",
       "subeUnaImagen": "You picked the custom background — upload an image so it shows up."
+    },
+    "estadisticas": {
+      "metadata": {
+        "title": "Advanced stats",
+        "description": "Accuracy and volume by world — exclusive to Prodigia Pro."
+      },
+      "volverAlPerfil": "Back to your profile",
+      "titulo": "Advanced stats",
+      "subtitulo": "Accuracy by world, with more detail than the regular profile.",
+      "vacio": "Not enough matches yet to show stats.",
+      "intentosCantidad": "{n} attempts",
+      "totalIntentos": "{n} attempts total"
     },
     "titulosSection": {
       "titulo": "Titles",
@@ -387,7 +401,9 @@
       "fondoAurora": "Aurora Background",
       "fondoDorado": "Golden Background",
       "fondoNebulosa": "Nebula Background",
-      "fondoPersonalizado": "Custom Background"
+      "fondoPersonalizado": "Custom Background",
+      "animacionPrisma": "Prism Animation",
+      "fondoProdigio": "Prodigy Background"
     },
     "fuentes": {
       "mono": "Monospace",
@@ -401,7 +417,8 @@
       "ondulante": "Wave",
       "brillo": "Shine",
       "arcoiris": "Rainbow",
-      "neon": "Neon"
+      "neon": "Neon",
+      "prisma": "Prism"
     },
     "fondos": {
       "oceano": "Ocean",
@@ -409,7 +426,8 @@
       "aurora": "Aurora",
       "dorado": "Golden",
       "nebulosa": "Nebula",
-      "personalizado": "Custom"
+      "personalizado": "Custom",
+      "prodigio": "Prodigy"
     },
     "descripciones": {
       "escudo": "One more calibration shield for your next match.",
@@ -454,6 +472,19 @@
     "sinFondo": "No background",
     "subeTuImagenEnPerfil": "Upload your image from your profile so it shows up.",
     "irAPerfil": "Go to my profile",
+    "exclusivoDePro": "Pro exclusive",
+    "pagos": {
+      "titulo": "Buy Chispas",
+      "descripcion": "Top up with real money — works for the whole catalog, same as Chispas you earn playing.",
+      "colombia": "Colombia (Mercado Pago)",
+      "internacional": "International (Paddle)",
+      "packChispas": "{n} Chispas",
+      "precioUsd": "US$ {precio}",
+      "procesando": "Processing…",
+      "errorGenerico": "Couldn't start the payment.",
+      "errorConexion": "Couldn't start the payment. Check your connection.",
+      "overlayNoDisponible": "This payment method isn't available yet. Try the other one."
+    },
     "ofertaDelVendedor": "Today's vendor deal:",
     "porcentajeMenos": "{n}% off",
     "enItem": "on {nombre}",
@@ -656,6 +687,13 @@
     "campana": {
       "abrir": "Notifications",
       "sinNotificaciones": "You don't have any new notifications."
+    },
+    "recordatorioInvitado": {
+      "banner": "You're playing as a guest — your progress can be lost if you switch devices.",
+      "bannerBoton": "Create a free account",
+      "modalTitulo": "Don't lose your progress",
+      "modalSubtitulo": "Save your account with an email and password — your current progress stays exactly the same, you just add a way to recover it.",
+      "cerrar": "Close"
     },
     "deteccionConexion": {
       "mensaje": "We noticed your connection is slow — want to turn off the extra visual effects? You can change this anytime in Settings.",
@@ -1867,13 +1905,22 @@
     "pro": {
       "metadata": {
         "title": "Prodigia Pro",
-        "description": "Prodigia Pro's benefits — coming soon."
+        "description": "Subscribe to Prodigia Pro: monthly Chispas, exclusive cosmetics, no ads, and more."
       },
       "marca": "Prodigia",
       "titulo": "Prodigia Pro",
-      "subtitulo": "Everything you'll get once Pro is available.",
-      "proximamente": "Coming soon",
-      "noDisponible": "Prodigia Pro isn't available to buy yet."
+      "subtitulo": "Everything you get with a subscription.",
+      "colombia": "Colombia (Mercado Pago)",
+      "internacional": "International (Paddle)",
+      "planMensual": "Monthly",
+      "planAnual": "Annual",
+      "precioUsd": "US$ {precio}",
+      "procesando": "Processing…",
+      "errorGenerico": "Couldn't start the subscription.",
+      "errorConexion": "Couldn't start the subscription. Check your connection.",
+      "overlayNoDisponible": "This payment method isn't available yet. Try the other one.",
+      "yaSosPro": "You're already Prodigia Pro",
+      "yaSosProDetalle": "Your monthly Chispas and benefits are already active."
     }
   },
   "Melodia": {

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>plantilla-semanal-respuesta-story</title>
+<meta name="prodigia:plantilla" content="true">
+<!--
+  PLANTILLA SEMANAL · RESPUESTA EN HISTORIA (9:16)
+  Se publica el día siguiente como cierre. Texto grande + "¿Llegaste al reto?".
+  Dejá hueco inferior para tu CTA/sticker de link.
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#fdfbf7; color:#1f2430; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .axis { width:100%; height:100%; padding:72px 64px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .kicker { font-size:22px; font-weight:700; letter-spacing:0.14em; color:#6b7280; }
+  .num { padding:10px 20px; border-radius:9999px; background:#f3efe7; font-size:20px; font-weight:700; color:#6b7280; }
+  .cuerpo { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:48px; text-align:center; }
+  .mundo { display:inline-flex; align-items:center; gap:12px; padding:14px 28px; border-radius:9999px; background:linear-gradient(120deg,#6C4CF1,#FFC53D); color:#fff; font-size:22px; font-weight:700; letter-spacing:0.1em; }
+  .problema { font-size:100px; line-height:1; font-weight:700; letter-spacing:-0.02em; color:#6b7280; }
+  .respuesta { display:inline-flex; align-items:center; gap:20px; padding:28px 48px; border-radius:9999px; background:#e9f7f1; border:3px solid #3fb88b; font-family:'JetBrains Mono','Cascadia Mono',Consolas,monospace; font-size:72px; font-weight:700; color:#1f2430; }
+  .respuesta span { color:#3fb88b; }
+  .porque { max-width:880px; font-size:34px; line-height:1.45; color:#3d3d45; }
+  .porque b { color:#1f2430; }
+  .sticker { margin-top:24px; align-self:stretch; border:3px dashed #d4cfc4; border-radius:24px; height:150px; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; color:#9a7b4f; letter-spacing:0.06em; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="kicker mono">RESPUESTA · N°[EDITAR · número]</span>
+      <span class="num mono">MARTES</span>
+    </div>
+    <div class="cuerpo">
+      <span class="mundo mono">[EDITAR · mundo]</span>
+      <p class="problema">[EDITAR · problema] = ?</p>
+      <div class="respuesta"><span>✓</span>[EDITAR · respuesta correcta]</div>
+      <p class="porque"><b>Por qué:</b> [EDITAR · por qué]</p>
+    </div>
+    <div class="sticker">TU CTA / STICKER VA ACÁ</div>
+  </div>
+</body>
+</html>

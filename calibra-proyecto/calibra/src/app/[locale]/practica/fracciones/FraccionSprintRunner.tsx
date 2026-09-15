@@ -117,7 +117,11 @@ export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccio
         DURACION_MS + bonusAcumuladoRef.current - (performance.now() - startedAt)
       );
       setRemainingMs(restante);
-      if (restante <= 0) {
+      // Mismo fix de carrera que EnigmiaSprintRunner.tsx (2026-09-14, "conteo
+      // de aciertos raro"): sin !submittingRef.current, el intervalo podia
+      // cortar la partida mientras la ULTIMA respuesta todavia se estaba
+      // guardando, perdiendo ese intento del conteo final.
+      if (restante <= 0 && !submittingRef.current) {
         clearInterval(interval);
         terminar("tiempo");
       }

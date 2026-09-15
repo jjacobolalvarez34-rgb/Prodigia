@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { IconCasa } from "@/components/icons";
 import { useTrackearPresenciaGlobal } from "@/lib/presencia/useTrackearPresenciaGlobal";
+import RecordatorioInvitado from "./RecordatorioInvitado";
 import Logo from "./Logo";
 import MundoSelector from "./MundoSelector";
 import ProfileMenu from "./ProfileMenu";
@@ -77,6 +78,7 @@ export default function Header({ autenticado = false, invitado = false }: Props)
 
   return (
     <header className="border-b border-border">
+      {invitado && <RecordatorioInvitado />}
       <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
         <div className="flex shrink-0 items-center gap-3">
           <LogoLink colorMundo={colorMundo} />

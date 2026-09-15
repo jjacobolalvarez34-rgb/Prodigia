@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>plantilla-meme-matematico-story</title>
+<meta name="prodigia:plantilla" content="true">
+<!--
+  PLANTILLA · MEME EDUCATIVO EN HISTORIA (9:16)
+  Texto arriba y abajo + problema gigante al centro. Hueco para sticker de encuesta.
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#fdfbf7; color:#1f2430; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .meme { width:100%; height:100%; padding:72px 64px; display:flex; flex-direction:column; justify-content:space-between; align-items:center; text-align:center; }
+  .top-text { font-size:44px; line-height:1.15; font-weight:700; letter-spacing:-0.01em; max-width:920px; text-transform:uppercase; }
+  .centro { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:22px; }
+  .problema { font-size:200px; line-height:0.96; font-weight:700; letter-spacing:-0.02em; }
+  .problema em { font-style:normal; color:#6C4CF1; }
+  .explicacion { max-width:900px; font-size:32px; line-height:1.4; color:#3d3d45; }
+  .bottom-text { font-size:44px; line-height:1.15; font-weight:700; letter-spacing:-0.01em; max-width:920px; text-transform:uppercase; background:linear-gradient(120deg,#6C4CF1,#FFC53D); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .sticker { margin-top:22px; align-self:stretch; border:3px dashed #d4cfc4; border-radius:24px; height:150px; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:#9a7b4f; letter-spacing:0.06em; }
+</style>
+</head>
+<body>
+  <div class="meme">
+    <p class="top-text">[EDITAR · reacción]</p>
+    <div class="centro">
+      <p class="problema">[EDITAR · problema]<em> = ?</em></p>
+      <p class="explicacion">[EDITAR · micro-explicación]</p>
+    </div>
+    <p class="bottom-text">[EDITAR · remate]</p>
+    <div class="sticker">STICKER</div>
+  </div>
+</body>
+</html>

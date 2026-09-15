@@ -188,3 +188,14 @@ export function requireNivelCuentaRankeds(profile: Profile) {
     redirect(`/rankeds-bloqueado?nivel=${profile.nivel_cuenta ?? 1}`);
   }
 }
+
+// Fase 4 (infraestructura de pagos): profiles.plan (0145/0146) recién
+// empieza a aplicarse en código real — esta es la primera pantalla
+// gateada. Redirige a /pro (la propia página de venta) en vez de un
+// "bloqueado" genérico, para que quien tropieza acá vea justo la
+// oferta que le falta.
+export function requirePro(profile: Profile, pathActual: string) {
+  if (profile.plan !== "pro") {
+    redirect(`/pro?next=${encodeURIComponent(pathActual)}`);
+  }
+}

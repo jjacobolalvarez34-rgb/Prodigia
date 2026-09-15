@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>plantilla-semanal-respuesta-square</title>
+<meta name="prodigia:plantilla" content="true">
+<!--
+  PLANTILLA SEMANAL · RESPUESTA EN EL FEED (1:1)
+  Se publica el día siguiente. Muestra la opción correcta + POR QUÉ (concepto corto).
+  - [EDITAR · número], [EDITAR · mundo], [EDITAR · problema]
+  - [EDITAR · respuesta] = opción correcta
+  - [EDITAR · por qué] = explicación real (misma propiedad que trabaja el reto)
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body { font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif; background:#fdfbf7; color:#1f2430; }
+  .mono { font-family:'JetBrains Mono','Cascadia Mono',Consolas,'Courier New',monospace; font-variant-numeric:tabular-nums; }
+  .axis { width:100%; height:100%; padding:56px; display:flex; flex-direction:column; justify-content:space-between; }
+  .top { display:flex; align-items:center; justify-content:space-between; }
+  .kicker { font-size:20px; font-weight:700; letter-spacing:0.14em; color:#6b7280; }
+  .num { padding:10px 20px; border-radius:9999px; background:#f3efe7; font-size:20px; font-weight:700; color:#6b7280; }
+  .cuerpo { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:34px; text-align:center; }
+  .mundo { display:inline-flex; align-items:center; gap:12px; padding:12px 24px; border-radius:9999px; background:linear-gradient(120deg,#6C4CF1,#FFC53D); color:#fff; font-size:20px; font-weight:700; letter-spacing:0.08em; }
+  .problema { font-size:110px; line-height:1; font-weight:700; letter-spacing:-0.02em; color:#6b7280; }
+  .respuesta { display:inline-flex; align-items:center; gap:18px; padding:24px 42px; border-radius:9999px; background:#e9f7f1; border:3px solid #3fb88b; font-family:'JetBrains Mono','Cascadia Mono',Consolas,monospace; font-size:56px; font-weight:700; color:#1f2430; }
+  .respuesta span { color:#3fb88b; }
+  .porque { max-width:860px; font-size:30px; line-height:1.45; color:#3d3d45; }
+  .porque b { color:#1f2430; }
+  .footer { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
+  .cta { display:inline-flex; align-items:center; gap:12px; padding:18px 34px; border-radius:9999px; background:linear-gradient(120deg,#6C4CF1,#FFC53D); color:#fff; font-size:22px; font-weight:700; box-shadow:0 16px 32px -12px rgba(108,76,241,0.5); }
+  .brand { font-size:20px; font-weight:700; color:#9a7b4f; }
+</style>
+</head>
+<body>
+  <div class="axis">
+    <div class="top">
+      <span class="kicker mono">PROBLEMA DE LA SEMANA · N°[EDITAR · número] · RESPUESTA</span>
+      <span class="num mono">MARTES</span>
+    </div>
+    <div class="cuerpo">
+      <span class="mundo mono">[EDITAR · mundo]</span>
+      <p class="problema">[EDITAR · problema] = ?</p>
+      <div class="respuesta"><span>✓</span>[EDITAR · respuesta correcta]</div>
+      <p class="porque"><b>Por qué:</b> [EDITAR · por qué, en una frase]</p>
+    </div>
+    <div class="footer">
+      <span class="cta">[EDITAR · cta]</span>
+      <span class="brand mono">prodigia.app</span>
+    </div>
+  </div>
+</body>
+</html>
