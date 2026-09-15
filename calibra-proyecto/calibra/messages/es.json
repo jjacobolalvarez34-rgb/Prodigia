@@ -1,4 +1,63 @@
 {
+  "Docentes": {
+    "metadata": {
+      "title": "Prodigia para colegios",
+      "description": "Lleva la práctica adaptativa de Prodigia a todo tu curso, con seguimiento real del progreso de cada estudiante."
+    },
+    "iniciarSesion": "Iniciar sesión",
+    "hero": {
+      "marca": "Prodigia para colegios",
+      "titulo": "Práctica adaptativa para todo tu curso",
+      "subtitulo": "Cálculo mental, lógica, geografía, química, anatomía, teoría musical, trigonometría e historia — con dificultad que se ajusta a cada estudiante y duelos que los mantienen enganchados.",
+      "boton": "Hablemos de tu colegio"
+    },
+    "mundos": {
+      "titulo": "8 mundos, un mismo sistema de práctica",
+      "descripcion": "Cada mundo calibra su propio nivel por estudiante — nadie se aburre por ir muy lento, ni se frustra por ir muy rápido."
+    },
+    "beneficios": {
+      "adaptativo": {
+        "titulo": "Dificultad adaptativa de verdad",
+        "descripcion": "El nivel de cada estudiante sube y baja solo, según cómo le va — no hay una sola dificultad para todo el curso."
+      },
+      "gamificado": {
+        "titulo": "Pensado para que vuelvan solos",
+        "descripcion": "Rachas, logros, Chispas y cosméticos — la misma mecánica que hace que un estudiante abra la app sin que se lo pidas."
+      },
+      "duelos": {
+        "titulo": "Duelos en tiempo real",
+        "descripcion": "Competencia sana entre compañeros de curso, con ranking y rango — practicar se vuelve un juego, no una tarea."
+      },
+      "seguimiento": {
+        "titulo": "Seguimiento real del progreso",
+        "descripcion": "Precisión, tiempo jugado y actividad por tema — no solo si entraron, sino cómo les está yendo de verdad."
+      }
+    },
+    "estadisticas": {
+      "titulo": "Estadísticas por estudiante",
+      "descripcion": "Cada cuenta Pro ya tiene su propio panel de estadísticas: precisión por ciudad, tiempo jugado y actividad diaria, con gráficos simples de leer.",
+      "piloto": "Estamos abriendo un piloto para colegios que quieran una vista de curso completo, agregando a todos sus estudiantes en un solo panel para el docente. Cuéntanos de tu colegio y te avisamos apenas esté lista."
+    },
+    "precio": {
+      "titulo": "Precio a medida",
+      "descripcion": "El precio depende del tamaño de tu colegio y de si ya usan cuentas propias o no. Escríbenos y te mandamos una cotización."
+    },
+    "formulario": {
+      "titulo": "Cuéntanos de tu colegio",
+      "subtitulo": "Te respondemos por email en los próximos días.",
+      "nombreColegio": "Nombre del colegio",
+      "nombreContacto": "Tu nombre",
+      "email": "Email",
+      "telefono": "Teléfono (opcional)",
+      "numEstudiantes": "Cantidad aproximada de estudiantes",
+      "mensaje": "Contanos qué estás buscando (opcional)",
+      "enviar": "Enviar",
+      "errorGenerico": "No se pudo enviar. Revisa los campos e intenta de nuevo.",
+      "errorConexion": "No se pudo enviar. Revisa tu conexión.",
+      "gracias": "¡Gracias! Ya recibimos tus datos.",
+      "graciasDescripcion": "Te vamos a escribir por email en los próximos días."
+    }
+  },
   "Rankeds": {
     "metadata": {
       "description": "Tu competitivo en Prodigia: ELO, historial y matchmaking de duelos."
@@ -303,14 +362,29 @@
     "estadisticas": {
       "metadata": {
         "title": "Estadísticas avanzadas",
-        "description": "Precisión y volumen por mundo — exclusivo de Prodigia Pro."
+        "description": "Precisión, tiempo jugado y actividad por mundo — exclusivo de Prodigia Pro."
       },
       "volverAlPerfil": "Volver a tu perfil",
       "titulo": "Estadísticas avanzadas",
-      "subtitulo": "Precisión por mundo, con más detalle que el perfil normal.",
+      "subtitulo": "Tiempo jugado, precisión y actividad de cada ciudad, con más detalle que el perfil normal.",
       "vacio": "Todavía no hay suficientes partidas para mostrar estadísticas.",
       "intentosCantidad": "{n} intentos",
-      "totalIntentos": "{n} intentos en total"
+      "totalIntentos": "{n} intentos en total",
+      "kpi": {
+        "tiempoJugado": "Tiempo jugado",
+        "intentos": "Intentos totales",
+        "precisionGlobal": "Precisión global",
+        "rachaMaxima": "Racha máxima",
+        "dias": "{n} días",
+        "minutos": "{n} min",
+        "horasYMinutos": "{h}h {m}min"
+      },
+      "ciudadFavorita": "Tu ciudad favorita es <destacado>{ciudad}</destacado> — ahí jugaste más partidas.",
+      "mejorPrecision": "Tu mejor precisión es en <destacado>{ciudad}</destacado>: {pct}%.",
+      "aReforzar": "Podrías reforzar <destacado>{ciudad}</destacado>: {pct}% de precisión.",
+      "actividadTitulo": "Actividad de los últimos 14 días",
+      "actividadTooltip": "Día {dia}: {n} intentos",
+      "porCiudadTitulo": "Por ciudad"
     },
     "titulosSection": {
       "titulo": "Títulos",
@@ -403,7 +477,13 @@
       "fondoNebulosa": "Fondo Nebulosa",
       "fondoPersonalizado": "Fondo Personalizado",
       "animacionPrisma": "Animación Prisma",
-      "fondoProdigio": "Fondo Prodigio"
+      "fondoProdigio": "Fondo Prodigio",
+      "fuenteUrbana": "Fuente Urbana",
+      "fuenteElegante": "Fuente Caligrafía",
+      "animacionGlitch": "Animación Glitch",
+      "animacionDeconstruccion": "Animación Deconstrucción",
+      "hielo": "Hielo",
+      "tiempoExtra": "+3 segundos"
     },
     "fuentes": {
       "mono": "Monoespaciada",
@@ -411,13 +491,17 @@
       "manuscrita": "Manuscrita",
       "impacto": "Impacto",
       "script": "Script",
-      "futurista": "Futurista"
+      "futurista": "Futurista",
+      "urbana": "Urbana",
+      "elegante": "Caligrafía"
     },
     "animaciones": {
       "ondulante": "Ondulante",
       "brillo": "Brillo",
       "arcoiris": "Arcoíris",
       "neon": "Neón",
+      "glitch": "Glitch",
+      "deconstruccion": "Deconstrucción",
       "prisma": "Prisma"
     },
     "fondos": {
@@ -432,7 +516,9 @@
     "descripciones": {
       "escudo": "Un escudo de calibración de más para tu próxima partida.",
       "congelamiento": "Si un día no practicas, no se corta tu racha.",
-      "boost": "×1.5 Chispas en tu próxima partida, cualquier mundo."
+      "boost": "×1.5 Chispas en tu próxima partida, cualquier mundo.",
+      "hielo": "Detiene el reloj 10 segundos a mitad de una partida. Prohibido en duelos.",
+      "tiempoExtra": "Suma 3 segundos al reloj de una partida, al usarlo. Prohibido en duelos."
     },
     "noSePudoComprar": "No se pudo comprar.",
     "noSePudoComprarConexion": "No se pudo comprar. Revisa tu conexión.",
@@ -869,7 +955,8 @@
     },
     "grid": {
       "titulo": "Elige una ciudad para probar",
-      "descripcion": "Una partida de prueba de 5 preguntas, directo — sin registrarte."
+      "descripcion": "Una partida de prueba de 5 preguntas, directo — sin registrarte.",
+      "pista": "Deja el cursor sobre una ciudad (o mantenla presionada) para ver qué se estudia ahí."
     },
     "mecanismo": {
       "titulo": "Cómo funciona una partida",
@@ -1010,6 +1097,10 @@
       "noPudimosCerrar": "No pudimos cerrar la partida: {error}",
       "volver": "Volver",
       "boostActivo": "Boost activo — Chispas ×1.5 en tu próxima partida"
+    },
+    "consumibles": {
+      "usarHielo": "Usar hielo — detiene el reloj 10 segundos",
+      "usarTiempoExtra": "Usar +3 segundos"
     },
     "sprint": {
       "superasteTuTecho": "Superaste tu techo — nivel {nivel}.",
@@ -1920,7 +2011,9 @@
       "errorConexion": "No se pudo iniciar la suscripción. Revisa tu conexión.",
       "overlayNoDisponible": "Este método de pago todavía no está disponible. Prueba con el otro.",
       "yaSosPro": "Ya eres Prodigia Pro",
-      "yaSosProDetalle": "Tus Chispas mensuales y beneficios ya están activos."
+      "yaSosProDetalle": "Tus Chispas mensuales y beneficios ya están activos.",
+      "proximamente": "Próximamente",
+      "noDisponible": "Todavía no se puede comprar Prodigia Pro."
     }
   },
   "Melodia": {

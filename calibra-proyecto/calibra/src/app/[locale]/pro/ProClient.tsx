@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { PRODUCTOS } from "@/lib/pagos/productos";
 import { abrirCheckoutPaddle } from "@/lib/pagos/paddleClient";
+import { PAGOS_REALES_HABILITADOS } from "@/lib/pagos/flags";
 import type { Proveedor, ProductoComprable } from "@/lib/pagos/tipos";
 
 interface Props {
@@ -57,6 +58,21 @@ export default function ProClient({ esPro }: Props) {
         <span className="text-2xl">✨</span>
         <p className="font-display text-lg font-bold text-foreground">{t("yaSosPro")}</p>
         <p className="text-xs text-texto-secundario">{t("yaSosProDetalle")}</p>
+      </div>
+    );
+  }
+
+  if (!PAGOS_REALES_HABILITADOS) {
+    return (
+      <div className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-surface-2 px-6 py-8 text-center">
+        <button
+          type="button"
+          disabled
+          className="cursor-not-allowed rounded-xl bg-primario/40 px-6 py-3 font-display font-semibold text-white opacity-70"
+        >
+          {t("proximamente")}
+        </button>
+        <p className="text-xs text-texto-secundario">{t("noDisponible")}</p>
       </div>
     );
   }

@@ -109,7 +109,12 @@ export default function ScrollFloat({
 
   return (
     <Tag ref={containerRef} className={`inline-block overflow-hidden ${containerClassName} ${className}`}>
-      <span className={`inline-block ${textClassName}`}>{caracteres}</span>
+      {/* data-text: lo necesitan nombre-anim-glitch/deconstruccion (sus
+          ::before/::after leen content: attr(data-text)) — inofensivo
+          para el resto de las clases que puedan llegar por textClassName. */}
+      <span className={`inline-block ${textClassName}`} data-text={children}>
+        {caracteres}
+      </span>
     </Tag>
   );
 }

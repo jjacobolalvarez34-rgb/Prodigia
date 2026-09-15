@@ -23,7 +23,7 @@ export default async function FraccionesPracticaPage() {
       ),
     supabase
       .from("profiles")
-      .select("escudos_extra_pendientes, boost_multiplicador_pendiente, color_dial")
+      .select("escudos_extra_pendientes, boost_multiplicador_pendiente, color_dial, hielos_disponibles, tiempos_extra_disponibles")
       .eq("id", user.id)
       .single(),
   ]);
@@ -46,6 +46,8 @@ export default async function FraccionesPracticaPage() {
       <FraccionPracticaClient
         nivelPorTipo={nivelPorTipo}
         escudosExtra={escudosExtra}
+        hielosDisponibles={profile?.hielos_disponibles ?? 0}
+        tiemposExtraDisponibles={profile?.tiempos_extra_disponibles ?? 0}
         boostActivo={boostActivo}
         colorDial={colorDial}
       />

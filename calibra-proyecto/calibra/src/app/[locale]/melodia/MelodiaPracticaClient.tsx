@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
 import type { ModoMelodia, PreguntaMelodia } from "@/lib/practica/melodia";
 import { NOMBRE_MODO_MELODIA } from "@/lib/practica/melodia";
 import type { DueloMelodiaInfo } from "@/lib/melodia/cargarPractica";
@@ -40,6 +41,8 @@ interface Props {
   modo: ModoMelodia;
   nivelInicial: number;
   escudosExtra: number;
+  hielosDisponibles: number;
+  tiemposExtraDisponibles: number;
   boostActivo: boolean;
   duelo?: DueloMelodiaInfo | null;
   miUserId: string;
@@ -48,7 +51,7 @@ interface Props {
 // Fase 2 ("extender duelos a los mundos que faltan"): mismo patrón que
 // EnigmiaPracticaClient.tsx (sin sala de espera sincronizada propia,
 // sin semilla — ver comentario en cargarPractica.ts).
-export default function MelodiaPracticaClient({ modo, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
+export default function MelodiaPracticaClient({ modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, duelo, miUserId }: Props) {
   const t = useTranslations("Melodia.practicaClient");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
@@ -69,6 +72,10 @@ export default function MelodiaPracticaClient({ modo, nivelInicial, escudosExtra
 
   function iniciar() {
     setStartedAtIso(new Date().toISOString());
+    // Bug de reloj de navegador (2026-09-14, ver src/app/api/hora-servidor/route.ts) —
+    // se pide la hora real del servidor en paralelo, sin bloquear el arranque,
+    // y reemplaza este valor optimista apenas responde.
+    obtenerHoraServidor().then((h) => { if (h) setStartedAtIso(h); });
     setStartedAtPerf(performance.now());
     setResumen(null);
     setFase("sprint");
@@ -180,6 +187,8 @@ export default function MelodiaPracticaClient({ modo, nivelInicial, escudosExtra
           startedAt={startedAtPerf}
           nivelInicial={nivelInicial}
           escudosExtra={escudosExtra}
+          hielosIniciales={hielosDisponibles}
+          tiemposExtraIniciales={tiemposExtraDisponibles}
           nivelForzado={duelo?.nivel}
           duelId={duelo?.duelId}
           miUserId={miUserId}

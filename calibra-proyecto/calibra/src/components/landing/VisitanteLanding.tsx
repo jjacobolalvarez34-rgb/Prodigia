@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
+import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { MUNDOS_LANDING } from "@/lib/mundos";
+import { MUNDOS_LANDING, type MundoLanding } from "@/lib/mundos";
 
 const CLAVE_CONOCE = "prodigia-conoce-prodigia";
 
@@ -169,31 +170,126 @@ export default function VisitanteLanding() {
         <div className="text-center">
           <h2 className="font-display text-lg font-bold text-foreground">{t("grid.titulo")}</h2>
           <p className="text-xs text-texto-secundario">{t("grid.descripcion")}</p>
+          <p className="mt-1 text-xs text-texto-secundario/70">{t("grid.pista")}</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {MUNDOS_LANDING.map((mundo) => (
-            <button
+            <TarjetaCiudadMisteriosa
               key={mundo.slug}
-              onClick={() => {
+              mundo={mundo}
+              descripcion={tHome(`mundos.${mundo.slug}`)}
+              onElegir={() => {
                 setCiudadElegida(mundo.slug);
                 setPaso("mecanismo");
               }}
-              className="group flex flex-col gap-3 rounded-2xl px-6 py-7 text-left text-white shadow-lg transition-all duration-200 hover:-translate-y-1 hover:-rotate-1 hover:shadow-xl"
-              style={{
-                background: `linear-gradient(120deg, ${mundo.colorHex}, color-mix(in oklab, ${mundo.colorHex} 55%, white))`,
-              }}
-            >
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/15">
-                <mundo.Icono className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="font-display text-lg font-bold">{mundo.nombre}</p>
-                <p className="mt-0.5 text-sm text-white/80">{tHome(`mundos.${mundo.slug}`)}</p>
-              </div>
-            </button>
+            />
           ))}
         </div>
       </section>
     </div>
+  );
+}
+
+// Rediseño pedido en vivo (2026-09-15): "prefiero que la lista no
+// especifique que ciudades hay, sino que si dejas el mouse encima 0.5s
+// aparezca un cuadro que dice qué se estudia ahí; en celular sería
+// mantener oprimida la pantalla". La tarjeta ya no muestra nombre ni
+// descripción — solo el ícono — y revela ambos en un tooltip flotante
+// tras 500ms de hover (desktop) o de mantener presionado (touch). En
+// touch, un mantener-presionado NO navega (largoRef corta el click que
+// el navegador dispara igual al soltar); un toque rápido sí navega,
+// igual que antes.
+function TarjetaCiudadMisteriosa({
+  mundo,
+  descripcion,
+  onElegir,
+}: {
+  mundo: MundoLanding;
+  descripcion: string;
+  onElegir: () => void;
+}) {
+  const [tooltip, setTooltip] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const largoRef = useRef(false);
+
+  function cancelarTimeout() {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }
+
+  function iniciarPresion() {
+    largoRef.current = false;
+    cancelarTimeout();
+    timeoutRef.current = setTimeout(() => {
+      largoRef.current = true;
+      setTooltip(true);
+    }, 500);
+  }
+
+  function salirMouse() {
+    cancelarTimeout();
+    setTooltip(false);
+    largoRef.current = false;
+  }
+
+  function terminarToque() {
+    cancelarTimeout();
+    if (largoRef.current) {
+      // Fue un mantener-presionado: se queda un instante visible y se
+      // cierra solo, sin navegar.
+      setTimeout(() => {
+        setTooltip(false);
+        largoRef.current = false;
+      }, 1500);
+    }
+  }
+
+  function handleClick() {
+    if (largoRef.current) {
+      // El navegador dispara "click" igual al soltar un touch largo —
+      // si el tooltip ya se mostró por mantener presionado, este click
+      // no cuenta como elección.
+      largoRef.current = false;
+      return;
+    }
+    onElegir();
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      onMouseEnter={iniciarPresion}
+      onMouseLeave={salirMouse}
+      onTouchStart={iniciarPresion}
+      onTouchEnd={terminarToque}
+      onTouchCancel={salirMouse}
+      className="group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl px-6 py-9 text-center text-white shadow-lg transition-all duration-200 hover:-translate-y-1 hover:-rotate-1 hover:shadow-xl"
+      style={{
+        background: `linear-gradient(120deg, ${mundo.colorHex}, color-mix(in oklab, ${mundo.colorHex} 55%, white))`,
+      }}
+    >
+      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15">
+        <mundo.Icono className="h-6 w-6" />
+      </span>
+      <span className="font-display text-2xl font-black tracking-widest text-white/60">?</span>
+
+      <AnimatePresence>
+        {tooltip && (
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="pointer-events-none absolute inset-x-3 bottom-3 rounded-xl bg-black/85 px-3 py-2.5 text-left shadow-lg backdrop-blur-sm"
+          >
+            <p className="font-display text-sm font-bold text-white">{mundo.nombre}</p>
+            <p className="mt-0.5 text-xs text-white/85">{descripcion}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </button>
   );
 }

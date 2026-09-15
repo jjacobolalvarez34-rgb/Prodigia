@@ -45,7 +45,7 @@ export default async function EnigmiaPracticaPage({ searchParams }: Props) {
     supabase.from("logic_skill_levels").select("nivel").eq("user_id", user.id).maybeSingle(),
     supabase
       .from("profiles")
-      .select("escudos_extra_pendientes, boost_multiplicador_pendiente")
+      .select("escudos_extra_pendientes, boost_multiplicador_pendiente, hielos_disponibles, tiempos_extra_disponibles")
       .eq("id", user.id)
       .single(),
   ]);
@@ -65,6 +65,8 @@ export default async function EnigmiaPracticaPage({ searchParams }: Props) {
         puzzles={(puzzles ?? []) as LogicPuzzle[]}
         nivelInicial={nivelRow?.nivel ?? 1}
         escudosExtra={escudosExtra}
+        hielosDisponibles={profile?.hielos_disponibles ?? 0}
+        tiemposExtraDisponibles={profile?.tiempos_extra_disponibles ?? 0}
         boostActivo={boostActivo}
         duelo={dueloInfo}
         miUserId={user.id}

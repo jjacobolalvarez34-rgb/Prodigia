@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
 import { TIPOS_FRACCION, type ProblemaFraccion, type TipoFraccion } from "@/lib/practica/fracciones";
 import type { Achievement } from "@/types/database";
 import BotonesFinPartida from "@/components/BotonesFinPartida";
@@ -31,6 +32,8 @@ interface FinishResponse {
 interface Props {
   nivelPorTipo: Record<TipoFraccion, number>;
   escudosExtra: number;
+  hielosDisponibles: number;
+  tiemposExtraDisponibles: number;
   boostActivo: boolean;
   colorDial?: string;
 }
@@ -47,7 +50,14 @@ function respuestaCorrecta(p: ProblemaFraccion): string {
   return p.respuestaComparacion ?? "";
 }
 
-export default function FraccionPracticaClient({ nivelPorTipo, escudosExtra, boostActivo, colorDial }: Props) {
+export default function FraccionPracticaClient({
+  nivelPorTipo,
+  escudosExtra,
+  hielosDisponibles,
+  tiemposExtraDisponibles,
+  boostActivo,
+  colorDial,
+}: Props) {
   const t = useTranslations("Practica");
   const tFracciones = useTranslations("Fracciones.tipos");
   const tNumeria = useTranslations("Numeria.temas");
@@ -71,6 +81,10 @@ export default function FraccionPracticaClient({ nivelPorTipo, escudosExtra, boo
   function iniciar() {
     if (seleccion.length === 0) return;
     setStartedAtIso(new Date().toISOString());
+    // Bug de reloj de navegador (2026-09-14, ver src/app/api/hora-servidor/route.ts) —
+    // se pide la hora real del servidor en paralelo, sin bloquear el arranque,
+    // y reemplaza este valor optimista apenas responde.
+    obtenerHoraServidor().then((h) => { if (h) setStartedAtIso(h); });
     setStartedAtPerf(performance.now());
     setResumen(null);
     setFase("sprint");
@@ -106,6 +120,8 @@ export default function FraccionPracticaClient({ nivelPorTipo, escudosExtra, boo
         nivelPorTipo={nivelPorTipo}
         seleccion={seleccion}
         escudosExtra={escudosExtra}
+        hielosIniciales={hielosDisponibles}
+        tiemposExtraIniciales={tiemposExtraDisponibles}
         colorDial={colorDial}
         onFinish={handleFinish}
       />

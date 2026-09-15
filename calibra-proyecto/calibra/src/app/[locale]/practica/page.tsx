@@ -108,7 +108,7 @@ export default async function PracticaPage({ searchParams }: Props) {
       .eq("user_id", user.id),
     supabase
       .from("profiles")
-      .select("escudos_extra_pendientes, boost_multiplicador_pendiente, color_dial")
+      .select("escudos_extra_pendientes, boost_multiplicador_pendiente, color_dial, hielos_disponibles, tiempos_extra_disponibles")
       .eq("id", user.id)
       .single(),
   ]);
@@ -151,6 +151,8 @@ export default async function PracticaPage({ searchParams }: Props) {
         modificadoresPorOperacion={modificadoresPorOperacion}
         operacionPreseleccionada={operacionPreseleccionada}
         escudosExtra={escudosExtra}
+        hielosDisponibles={profile?.hielos_disponibles ?? 0}
+        tiemposExtraDisponibles={profile?.tiempos_extra_disponibles ?? 0}
         boostActivo={boostActivo}
         duelo={dueloInfo}
         miUserId={user.id}

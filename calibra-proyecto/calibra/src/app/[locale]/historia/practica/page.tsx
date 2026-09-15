@@ -20,7 +20,7 @@ export default async function HistoriaPracticaCronologiaPage({ searchParams }: P
   const supabase = await createClient();
   const { user } = await requireMundoHistoria(supabase, "/historia/practica");
 
-  const { modo, nivelInicial, escudosExtra, boostActivo, dueloInfo } = await cargarDatosPracticaHistoria(supabase, user.id, "cronologia", duelo);
+  const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaHistoria(supabase, user.id, "cronologia", duelo);
 
   return (
     <>
@@ -29,6 +29,8 @@ export default async function HistoriaPracticaCronologiaPage({ searchParams }: P
         modo={modo}
         nivelInicial={nivelInicial}
         escudosExtra={escudosExtra}
+        hielosDisponibles={hielosDisponibles}
+        tiemposExtraDisponibles={tiemposExtraDisponibles}
         boostActivo={boostActivo}
         duelo={dueloInfo}
         miUserId={user.id}

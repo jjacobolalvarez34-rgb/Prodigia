@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
-import { ESTILO_MARCO_PERFIL, FONDO_PERFIL_ESTILO, type PerfilPublico, type TituloUsuario, type FondoPerfil } from "@/types/database";
+import { ESTILO_MARCO_PERFIL, type PerfilPublico, type TituloUsuario, type FondoPerfil } from "@/types/database";
 import Header from "@/components/Header";
 import AvatarConMarco from "@/components/AvatarConMarco";
 import RangoBadge from "@/components/RangoBadge";
@@ -11,6 +11,7 @@ import LogroMedalla from "@/components/LogroMedalla";
 import ReportarBoton from "./ReportarBoton";
 import AmistadBoton, { type EstadoAmistad } from "./AmistadBoton";
 import EstandarteClan from "@/components/clanes/EstandarteClan";
+import FondoPerfilCapa, { tieneFondoPerfil } from "@/components/FondoPerfilCapa";
 
 interface Props {
   params: Promise<{ userId: string }>;
@@ -92,6 +93,10 @@ export default async function PerfilPublicoPage({ params }: Props) {
   const marcoPerfil = perfil.marco_perfil ?? "ninguno";
   const fondoPerfil = (perfil.fondo_perfil as FondoPerfil | undefined) ?? "ninguno";
   const fondoPerfilUrl = perfil.fondo_perfil_url ?? null;
+  const claro = tieneFondoPerfil(fondoPerfil, fondoPerfilUrl);
+  const claseTexto = claro ? "text-white" : "text-foreground";
+  const claseTextoSec = claro ? "text-white/75" : "text-texto-secundario";
+  const claseCaja = claro ? "border-white/25 bg-white/10" : "border-border bg-background";
 
   const amistad = amistadRows as { user_id: string; friend_id: string; estado: string } | null;
   let estadoAmistad: EstadoAmistad = "ninguno";
@@ -103,48 +108,42 @@ export default async function PerfilPublicoPage({ params }: Props) {
       <Header autenticado invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
         <section
-          className={`overflow-hidden rounded-2xl border-2 bg-surface text-center shadow-sm ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}
+          className={`relative overflow-hidden rounded-2xl border-2 text-center shadow-sm ${claro ? "" : "bg-surface"} ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}
         >
-          {fondoPerfil === "personalizado" ? (
-            fondoPerfilUrl && <div className="h-20 w-full bg-cover bg-center" style={{ backgroundImage: `url(${fondoPerfilUrl})` }} />
-          ) : (
-            fondoPerfil !== "ninguno" && (
-              <div className="fondo-perfil-banner h-20 w-full" style={{ backgroundImage: FONDO_PERFIL_ESTILO[fondoPerfil] }} />
-            )
-          )}
-          <div className="flex flex-col items-center gap-3 px-6 py-8">
+          <FondoPerfilCapa fondoPerfil={fondoPerfil} fondoPerfilUrl={fondoPerfilUrl} />
+          <div className="relative flex flex-col items-center gap-3 px-6 py-8">
           <AvatarConMarco url={perfil.avatar_url} nombre={perfil.display_name} marco={marcoPerfil} size={88} />
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
+          <h1 className={`font-display text-2xl font-bold tracking-tight ${claseTexto}`}>
             <NombreConFuente nombre={perfil.display_name} fuente={perfil.fuente_nombre} animacion={perfil.animacion_nombre} />
           </h1>
           {perfil.titulo_nombre && (
-            <span className="-mt-2 rounded-full bg-primario/10 px-3 py-1 text-xs font-semibold text-primario">
+            <span className={`-mt-2 rounded-full px-3 py-1 text-xs font-semibold ${claro ? "bg-white/15 text-white" : "bg-primario/10 text-primario"}`}>
               {perfil.titulo_nombre}
             </span>
           )}
-          <p className="text-sm text-texto-secundario">{t("enProdigiaDesde", { fecha: formatearFecha(perfil.created_at, locale) })}</p>
+          <p className={`text-sm ${claseTextoSec}`}>{t("enProdigiaDesde", { fecha: formatearFecha(perfil.created_at, locale) })}</p>
           {clan && (
             <div className="flex items-center gap-2">
               <EstandarteClan color={clan.color_estandarte} nivel={clan.nivel_clan} size={22} />
-              <span className="text-sm text-texto-secundario">
+              <span className={`text-sm ${claseTextoSec}`}>
                 {clan.nombre} {clan.tag && `[${clan.tag}]`}
               </span>
             </div>
           )}
 
           <div className="mt-2 grid w-full grid-cols-3 gap-3">
-            <div className="rounded-xl border border-border bg-background px-4 py-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("rango")}</p>
+            <div className={`rounded-xl border px-4 py-3 ${claseCaja}`}>
+              <p className={`text-xs font-medium uppercase tracking-wide ${claseTextoSec}`}>{t("rango")}</p>
               <p className="mt-1"><RangoBadge elo={perfil.elo_rating} tituloNombre={perfil.titulo_nombre} size="md" /></p>
-              <p className="text-xs text-texto-secundario">{t("publico.eloValor", { n: perfil.elo_rating })}</p>
+              <p className={`text-xs ${claseTextoSec}`}>{t("publico.eloValor", { n: perfil.elo_rating })}</p>
             </div>
-            <div className="rounded-xl border border-border bg-background px-4 py-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("publico.nivelLabel")}</p>
-              <p className="mt-1 font-mono text-lg font-bold text-foreground">{perfil.nivel_cuenta}</p>
+            <div className={`rounded-xl border px-4 py-3 ${claseCaja}`}>
+              <p className={`text-xs font-medium uppercase tracking-wide ${claseTextoSec}`}>{t("publico.nivelLabel")}</p>
+              <p className={`mt-1 font-mono text-lg font-bold ${claseTexto}`}>{perfil.nivel_cuenta}</p>
             </div>
-            <div className="rounded-xl border border-border bg-background px-4 py-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("publico.chispasLabel")}</p>
-              <p className="mt-1 font-mono text-lg font-bold text-foreground">{perfil.puntos_total}</p>
+            <div className={`rounded-xl border px-4 py-3 ${claseCaja}`}>
+              <p className={`text-xs font-medium uppercase tracking-wide ${claseTextoSec}`}>{t("publico.chispasLabel")}</p>
+              <p className={`mt-1 font-mono text-lg font-bold ${claseTexto}`}>{perfil.puntos_total}</p>
             </div>
           </div>
           </div>

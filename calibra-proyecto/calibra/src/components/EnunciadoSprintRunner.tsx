@@ -12,6 +12,8 @@ import LevelDial from "@/app/[locale]/practica/LevelDial";
 import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/TarjetaSprint";
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
+import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
+import { usarConsumible } from "@/lib/practica/consumibles";
 
 const TOTAL_PROBLEMAS = 10;
 const DURACION_MS = 60_000;
@@ -32,6 +34,8 @@ interface Props<T extends ProblemaGenerico, TTipo extends string> {
   nivelPorTipoInicial: Record<TTipo, number>;
   seleccion: TTipo[];
   escudosExtra: number;
+  hielosIniciales?: number;
+  tiemposExtraIniciales?: number;
   colorDial?: string;
   apiPath: string; // /api/attempts, con problem_type dinámico por sub-tema
   problemTypeDe: (tipo: TTipo) => string;
@@ -51,6 +55,8 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico, TTipo 
   nivelPorTipoInicial,
   seleccion,
   escudosExtra,
+  hielosIniciales = 0,
+  tiemposExtraIniciales = 0,
   colorDial,
   apiPath,
   problemTypeDe,
@@ -58,6 +64,9 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico, TTipo 
 }: Props<T, TTipo>) {
   const t = useTranslations("Practica.sprint");
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
+  const [hielosDisp, setHielosDisp] = useState(hielosIniciales);
+  const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
+  const [usandoConsumible, setUsandoConsumible] = useState<TipoUso>(null);
   const [problema, setProblema] = useState<T | null>(null);
   const [cardKey, setCardKey] = useState(0);
   const [respuesta, setRespuesta] = useState("");
@@ -71,7 +80,8 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico, TTipo 
   const [escudos, setEscudos] = useState(escudosIniciales);
   const { racha, registrarResultado } = useRachaCombo();
 
-  const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(DURACION_MS);
+  const { duracionTotalMs, bonusTiempo, evaluarBonus, agregarBonusExtra, limpiarBonus, pausarPorHielo, calcularRestante } =
+    useBonusTiempo(DURACION_MS);
 
   const nivelPorTipoRef = useRef<Record<TTipo, number>>(nivelPorTipoInicial);
   const escudosRef = useRef(escudosIniciales);
@@ -107,9 +117,31 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico, TTipo 
     onFinish(erroresRef.current);
   }
 
+  async function usarHielo() {
+    if (usandoConsumible !== null || hielosDisp <= 0) return;
+    setUsandoConsumible("hielo");
+    const r = await usarConsumible("hielo");
+    if (r) {
+      setHielosDisp(r.hielos_disponibles);
+      pausarPorHielo();
+    }
+    setUsandoConsumible(null);
+  }
+
+  async function usarTiempoExtra() {
+    if (usandoConsumible !== null || tiemposExtraDisp <= 0) return;
+    setUsandoConsumible("tiempo_extra");
+    const r = await usarConsumible("tiempo_extra");
+    if (r) {
+      setTiemposExtraDisp(r.tiempos_extra_disponibles);
+      agregarBonusExtra();
+    }
+    setUsandoConsumible(null);
+  }
+
   useEffect(() => {
     const interval = setInterval(() => {
-      const restante = Math.max(0, DURACION_MS + bonusAcumuladoRef.current - (performance.now() - startedAt));
+      const restante = calcularRestante(startedAt);
       setRemainingMs(restante);
       // Mismo fix de carrera que EnigmiaSprintRunner.tsx (2026-09-14, "conteo
       // de aciertos raro"): sin !submittingRef.current, el intervalo podia
@@ -213,6 +245,13 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico, TTipo 
             ))}
           </div>
           <div className="flex items-center gap-3">
+            <ConsumiblesPartida
+              hielos={hielosDisp}
+              tiemposExtra={tiemposExtraDisp}
+              usando={usandoConsumible}
+              onUsarHielo={usarHielo}
+              onUsarTiempoExtra={usarTiempoExtra}
+            />
             <SonidoToggle />
             <div className="flex items-center gap-1" aria-label={t("escudosDisponibles", { n: escudos })}>
               {Array.from({ length: escudosIniciales }).map((_, i) => (

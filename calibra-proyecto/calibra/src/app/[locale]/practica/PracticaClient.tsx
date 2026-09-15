@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
 import { useRouter } from "@/i18n/navigation";
 import type { ArithmeticProblemType, ModifierSlug } from "@/types/database";
 import type { Problem } from "@/lib/practica/problems";
@@ -23,6 +24,8 @@ interface Props {
   modificadoresPorOperacion: Record<ArithmeticProblemType, ModifierSlug[]>;
   operacionPreseleccionada?: ArithmeticProblemType;
   escudosExtra: number;
+  hielosDisponibles: number;
+  tiemposExtraDisponibles: number;
   boostActivo: boolean;
   duelo: DueloInfo | null;
   miUserId: string;
@@ -35,6 +38,8 @@ export default function PracticaClient({
   modificadoresPorOperacion,
   operacionPreseleccionada,
   escudosExtra,
+  hielosDisponibles,
+  tiemposExtraDisponibles,
   boostActivo,
   duelo,
   miUserId,
@@ -70,6 +75,10 @@ export default function PracticaClient({
     if (esInvitado && seleccion.some((tipo) => !operacionPermitidaInvitado(tipo))) return;
     setSeleccionSprint(seleccion);
     setStartedAtIso(new Date().toISOString());
+    // Bug de reloj de navegador (2026-09-14, ver src/app/api/hora-servidor/route.ts) —
+    // se pide la hora real del servidor en paralelo, sin bloquear el arranque,
+    // y reemplaza este valor optimista apenas responde.
+    obtenerHoraServidor().then((h) => { if (h) setStartedAtIso(h); });
     setStartedAtPerf(performance.now());
     setResumen(null);
     setFase("sprint");
@@ -213,6 +222,8 @@ export default function PracticaClient({
           nivelPorOperacion={nivelPorOperacion}
           modificadoresPorOperacion={duelo ? { ...modificadoresPorOperacion, [duelo.operacion]: [] } : modificadoresPorOperacion}
           escudosExtra={escudosExtra}
+          hielosIniciales={hielosDisponibles}
+          tiemposExtraIniciales={tiemposExtraDisponibles}
           colorDial={colorDial}
           fantasma={duelo?.rivalRespuestas ? { rivalNombre: duelo.rivalNombre, respuestas: duelo.rivalRespuestas } : null}
           semillaDuelo={duelo?.semilla}

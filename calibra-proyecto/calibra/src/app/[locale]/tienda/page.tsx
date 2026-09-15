@@ -18,7 +18,7 @@ export default async function TiendaPage() {
     supabase
       .from("profiles")
       .select(
-        "puntos_total, escudos_extra_pendientes, congelamientos_disponibles, boost_multiplicador_pendiente, fuente_nombre, fuentes_desbloqueadas, marco_perfil, marcos_desbloqueados, animacion_nombre, animaciones_desbloqueadas, fondo_perfil, fondos_desbloqueados, plan"
+        "puntos_total, escudos_extra_pendientes, congelamientos_disponibles, boost_multiplicador_pendiente, hielos_disponibles, tiempos_extra_disponibles, fuente_nombre, fuentes_desbloqueadas, marco_perfil, marcos_desbloqueados, animacion_nombre, animaciones_desbloqueadas, fondo_perfil, fondos_desbloqueados, plan"
       )
       .eq("id", user.id)
       .single(),
@@ -36,6 +36,8 @@ export default async function TiendaPage() {
         escudosIniciales={profile?.escudos_extra_pendientes ?? 0}
         congelamientosIniciales={profile?.congelamientos_disponibles ?? 0}
         boostIniciales={(profile?.boost_multiplicador_pendiente ?? 1) > 1 ? 1 : 0}
+        hielosIniciales={profile?.hielos_disponibles ?? 0}
+        tiemposExtraIniciales={profile?.tiempos_extra_disponibles ?? 0}
         fuenteActual={(profile?.fuente_nombre as string) ?? "default"}
         fuentesDesbloqueadas={(profile?.fuentes_desbloqueadas as string[]) ?? ["default"]}
         marcoActual={(profile?.marco_perfil as string) ?? "ninguno"}

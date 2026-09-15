@@ -1,4 +1,63 @@
 {
+  "Docentes": {
+    "metadata": {
+      "title": "Prodigia for schools",
+      "description": "Bring Prodigia's adaptive practice to your whole classroom, with real progress tracking for every student."
+    },
+    "iniciarSesion": "Log in",
+    "hero": {
+      "marca": "Prodigia for schools",
+      "titulo": "Adaptive practice for your whole classroom",
+      "subtitulo": "Mental math, logic, geography, chemistry, anatomy, music theory, trigonometry and history — with difficulty that adjusts to each student, plus duels that keep them coming back.",
+      "boton": "Let's talk about your school"
+    },
+    "mundos": {
+      "titulo": "8 worlds, one practice system",
+      "descripcion": "Every world calibrates its own level per student — nobody gets bored going too slow, or frustrated going too fast."
+    },
+    "beneficios": {
+      "adaptativo": {
+        "titulo": "Real adaptive difficulty",
+        "descripcion": "Each student's level goes up and down on its own, based on how they're doing — not one fixed difficulty for the whole class."
+      },
+      "gamificado": {
+        "titulo": "Built to bring them back",
+        "descripcion": "Streaks, achievements, Chispas and cosmetics — the same mechanics that get a student to open the app without being told to."
+      },
+      "duelos": {
+        "titulo": "Real-time duels",
+        "descripcion": "Friendly competition between classmates, with ranking and rank — practice turns into a game, not homework."
+      },
+      "seguimiento": {
+        "titulo": "Real progress tracking",
+        "descripcion": "Accuracy, playtime and activity by topic — not just whether they logged in, but how they're actually doing."
+      }
+    },
+    "estadisticas": {
+      "titulo": "Per-student statistics",
+      "descripcion": "Every Pro account already has its own stats panel: accuracy by city, playtime and daily activity, with simple, easy-to-read charts.",
+      "piloto": "We're opening a pilot for schools that want a full-classroom view, combining all their students into one panel for the teacher. Tell us about your school and we'll let you know as soon as it's ready."
+    },
+    "precio": {
+      "titulo": "Custom pricing",
+      "descripcion": "Pricing depends on your school's size and whether your students already have their own accounts. Write to us and we'll send you a quote."
+    },
+    "formulario": {
+      "titulo": "Tell us about your school",
+      "subtitulo": "We'll reply by email within a few days.",
+      "nombreColegio": "School name",
+      "nombreContacto": "Your name",
+      "email": "Email",
+      "telefono": "Phone (optional)",
+      "numEstudiantes": "Approximate number of students",
+      "mensaje": "Tell us what you're looking for (optional)",
+      "enviar": "Send",
+      "errorGenerico": "Couldn't send it. Check the fields and try again.",
+      "errorConexion": "Couldn't send it. Check your connection.",
+      "gracias": "Thanks! We received your details.",
+      "graciasDescripcion": "We'll email you within the next few days."
+    }
+  },
   "Rankeds": {
     "metadata": {
       "description": "Your competitive scene in Prodigia: ELO, history, and duel matchmaking."
@@ -303,14 +362,29 @@
     "estadisticas": {
       "metadata": {
         "title": "Advanced stats",
-        "description": "Accuracy and volume by world — exclusive to Prodigia Pro."
+        "description": "Accuracy, playtime and activity by world — exclusive to Prodigia Pro."
       },
       "volverAlPerfil": "Back to your profile",
       "titulo": "Advanced stats",
-      "subtitulo": "Accuracy by world, with more detail than the regular profile.",
+      "subtitulo": "Playtime, accuracy and activity for every city, with more detail than the regular profile.",
       "vacio": "Not enough matches yet to show stats.",
       "intentosCantidad": "{n} attempts",
-      "totalIntentos": "{n} attempts total"
+      "totalIntentos": "{n} attempts total",
+      "kpi": {
+        "tiempoJugado": "Time played",
+        "intentos": "Total attempts",
+        "precisionGlobal": "Overall accuracy",
+        "rachaMaxima": "Longest streak",
+        "dias": "{n} days",
+        "minutos": "{n} min",
+        "horasYMinutos": "{h}h {m}min"
+      },
+      "ciudadFavorita": "Your favorite city is <destacado>{ciudad}</destacado> — that's where you played the most.",
+      "mejorPrecision": "Your best accuracy is in <destacado>{ciudad}</destacado>: {pct}%.",
+      "aReforzar": "You could work on <destacado>{ciudad}</destacado>: {pct}% accuracy.",
+      "actividadTitulo": "Activity over the last 14 days",
+      "actividadTooltip": "Day {dia}: {n} attempts",
+      "porCiudadTitulo": "By city"
     },
     "titulosSection": {
       "titulo": "Titles",
@@ -403,7 +477,13 @@
       "fondoNebulosa": "Nebula Background",
       "fondoPersonalizado": "Custom Background",
       "animacionPrisma": "Prism Animation",
-      "fondoProdigio": "Prodigy Background"
+      "fondoProdigio": "Prodigy Background",
+      "fuenteUrbana": "Urban Font",
+      "fuenteElegante": "Calligraphy Font",
+      "animacionGlitch": "Glitch Animation",
+      "animacionDeconstruccion": "Deconstruction Animation",
+      "hielo": "Ice",
+      "tiempoExtra": "+3 seconds"
     },
     "fuentes": {
       "mono": "Monospace",
@@ -411,13 +491,17 @@
       "manuscrita": "Handwritten",
       "impacto": "Impact",
       "script": "Script",
-      "futurista": "Futuristic"
+      "futurista": "Futuristic",
+      "urbana": "Urban",
+      "elegante": "Calligraphy"
     },
     "animaciones": {
       "ondulante": "Wave",
       "brillo": "Shine",
       "arcoiris": "Rainbow",
       "neon": "Neon",
+      "glitch": "Glitch",
+      "deconstruccion": "Deconstruction",
       "prisma": "Prism"
     },
     "fondos": {
@@ -432,7 +516,9 @@
     "descripciones": {
       "escudo": "One more calibration shield for your next match.",
       "congelamiento": "If you miss a day of practice, your streak won't break.",
-      "boost": "×1.5 Chispas on your next match, any world."
+      "boost": "×1.5 Chispas on your next match, any world.",
+      "hielo": "Stops the clock for 10 seconds mid-match. Banned in duels.",
+      "tiempoExtra": "Adds 3 seconds to a match's clock when used. Banned in duels."
     },
     "noSePudoComprar": "Couldn't complete the purchase.",
     "noSePudoComprarConexion": "Couldn't complete the purchase. Check your connection.",
@@ -869,7 +955,8 @@
     },
     "grid": {
       "titulo": "Pick a city to try",
-      "descripcion": "A 5-question trial round, right away — no sign-up."
+      "descripcion": "A 5-question trial round, right away — no sign-up.",
+      "pista": "Hover over a city (or press and hold) to see what it teaches."
     },
     "mecanismo": {
       "titulo": "How a round works",
@@ -1010,6 +1097,10 @@
       "noPudimosCerrar": "We couldn't close the match: {error}",
       "volver": "Back",
       "boostActivo": "Boost active — ×1.5 Chispas on your next match"
+    },
+    "consumibles": {
+      "usarHielo": "Use ice — stops the clock for 10 seconds",
+      "usarTiempoExtra": "Use +3 seconds"
     },
     "sprint": {
       "superasteTuTecho": "You broke through your ceiling — level {nivel}.",
@@ -1920,7 +2011,9 @@
       "errorConexion": "Couldn't start the subscription. Check your connection.",
       "overlayNoDisponible": "This payment method isn't available yet. Try the other one.",
       "yaSosPro": "You're already Prodigia Pro",
-      "yaSosProDetalle": "Your monthly Chispas and benefits are already active."
+      "yaSosProDetalle": "Your monthly Chispas and benefits are already active.",
+      "proximamente": "Coming soon",
+      "noDisponible": "Prodigia Pro isn't available to buy yet."
     }
   },
   "Melodia": {

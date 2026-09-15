@@ -20,7 +20,7 @@ export default async function MelodiaPracticaFundamentosPage({ searchParams }: P
   const supabase = await createClient();
   const { user } = await requireMundoMelodia(supabase, "/melodia/practica");
 
-  const { modo, nivelInicial, escudosExtra, boostActivo, dueloInfo } = await cargarDatosPracticaMelodia(supabase, user.id, "fundamentos", duelo);
+  const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaMelodia(supabase, user.id, "fundamentos", duelo);
 
   return (
     <>
@@ -29,6 +29,8 @@ export default async function MelodiaPracticaFundamentosPage({ searchParams }: P
         modo={modo}
         nivelInicial={nivelInicial}
         escudosExtra={escudosExtra}
+        hielosDisponibles={hielosDisponibles}
+        tiemposExtraDisponibles={tiemposExtraDisponibles}
         boostActivo={boostActivo}
         duelo={dueloInfo}
         miUserId={user.id}

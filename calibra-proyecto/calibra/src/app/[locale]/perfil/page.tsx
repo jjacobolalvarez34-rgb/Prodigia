@@ -1,11 +1,12 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
-import { ESTILO_MARCO_PERFIL, FONDO_PERFIL_ESTILO, type Achievement, type TituloUsuario, type FondoPerfil } from "@/types/database";
+import { ESTILO_MARCO_PERFIL, type Achievement, type TituloUsuario, type FondoPerfil } from "@/types/database";
 import { calcularRachaMaxima, calcularMejorPrecisionDiaria } from "@/lib/perfil/records";
 import Header from "@/components/Header";
 import RangoBadge from "@/components/RangoBadge";
 import BannerHabilidades from "@/components/BannerHabilidades";
+import FondoPerfilCapa, { tieneFondoPerfil } from "@/components/FondoPerfilCapa";
 import { MUNDOS_LANDING } from "@/lib/mundos";
 import NombreEditable from "./NombreEditable";
 import SubirAvatar from "./SubirAvatar";
@@ -162,6 +163,10 @@ export default async function PerfilPage() {
   const marcoPerfil = profileFull?.marco_perfil ?? "ninguno";
   const fondoPerfil = (profileFull?.fondo_perfil as FondoPerfil | undefined) ?? "ninguno";
   const fondoPerfilUrl = (profileFull?.fondo_perfil_url as string | null | undefined) ?? null;
+  const claro = tieneFondoPerfil(fondoPerfil, fondoPerfilUrl);
+  const claseTexto = claro ? "text-white" : "text-foreground";
+  const claseTextoSec = claro ? "text-white/75" : "text-texto-secundario";
+  const claseCaja = claro ? "border-white/30 bg-white/10" : "border-primario/30 bg-primario/5";
 
   // Rediseño del banner de afinidad (2026-09-13, a pedido del
   // propietario): antes dejaba escribir un "nivel" a mano sin sentido
@@ -186,85 +191,80 @@ export default async function PerfilPage() {
       <Header autenticado invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
         <section
-          className={`overflow-hidden rounded-2xl border-2 bg-surface shadow-sm transition-colors ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}
+          className={`relative overflow-hidden rounded-2xl border-2 shadow-sm transition-colors ${claro ? "" : "bg-surface"} ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}
         >
-          {fondoPerfil === "personalizado" ? (
-            fondoPerfilUrl ? (
-              <div className="h-20 w-full bg-cover bg-center" style={{ backgroundImage: `url(${fondoPerfilUrl})` }} />
-            ) : (
-              <div className="h-20 w-full border-b border-dashed border-border bg-surface-2" />
-            )
-          ) : (
-            fondoPerfil !== "ninguno" && (
-              <div className="fondo-perfil-banner h-20 w-full" style={{ backgroundImage: FONDO_PERFIL_ESTILO[fondoPerfil] }} />
-            )
+          <FondoPerfilCapa fondoPerfil={fondoPerfil} fondoPerfilUrl={fondoPerfilUrl} />
+          {fondoPerfil === "personalizado" && !fondoPerfilUrl && (
+            <div className="h-20 w-full border-b border-dashed border-border bg-surface-2" />
           )}
-          <div className="flex flex-col gap-4 px-6 py-6">
+          <div className="relative flex flex-col gap-4 px-6 py-6">
           <SubirAvatar userId={user.id} nombre={profile.display_name} avatarUrlInicial={profileFull?.avatar_url ?? null} marco={marcoPerfil} />
           {fondoPerfil === "personalizado" && <SubirFondoPerfil userId={user.id} urlInicial={fondoPerfilUrl} />}
           <NombreEditable nombreActual={profile.display_name} fuente={profileFull?.fuente_nombre ?? "default"} animacion={profileFull?.animacion_nombre ?? "ninguna"} />
           {(titulosRows as TituloUsuario[] | null)?.find((t) => t.slug === profileFull?.titulo_activo) && (
-            <span className="-mt-2 rounded-full bg-primario/10 px-3 py-1 text-xs font-semibold text-primario">
+            <span className={`-mt-2 w-fit rounded-full px-3 py-1 text-xs font-semibold ${claro ? "bg-white/15 text-white" : "bg-primario/10 text-primario"}`}>
               {(titulosRows as TituloUsuario[]).find((t) => t.slug === profileFull?.titulo_activo)?.nombre}
             </span>
           )}
-          <p className="text-sm text-texto-secundario">
+          <p className={`text-sm ${claseTextoSec}`}>
             {t("enProdigiaDesde", { fecha: formatearFecha(profileFull?.created_at ?? new Date().toISOString(), locale) })}
           </p>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("rango")}</span>
+            <span className={`text-xs font-medium uppercase tracking-wide ${claseTextoSec}`}>{t("rango")}</span>
             <RangoBadge elo={eloRating} size="md" mostrarElo />
           </div>
-          <p className="font-mono text-lg font-bold text-foreground">
-            {profile.puntos_total} <span className="text-sm font-normal text-texto-secundario">{t("chispasTotales")}</span>
+          <p className={`font-mono text-lg font-bold ${claseTexto}`}>
+            {profile.puntos_total} <span className={`text-sm font-normal ${claseTextoSec}`}>{t("chispasTotales")}</span>
           </p>
 
-          <div className="rounded-xl border-2 border-primario/30 bg-primario/5 px-4 py-3">
+          <div className={`rounded-xl border-2 px-4 py-3 ${claseCaja}`}>
             <div className="flex items-baseline justify-between gap-2">
-              <p className="font-display text-lg font-bold text-foreground">{t("nivel", { n: nivelCuenta })}</p>
-              <p className="text-xs text-texto-secundario">
+              <p className={`font-display text-lg font-bold ${claseTexto}`}>{t("nivel", { n: nivelCuenta })}</p>
+              <p className={`text-xs ${claseTextoSec}`}>
                 {xpEnNivelActual}/{umbralSiguiente - umbralActual} XP
               </p>
             </div>
-            <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-primario/15">
+            <div className={`mt-2 h-2.5 w-full overflow-hidden rounded-full ${claro ? "bg-white/15" : "bg-primario/15"}`}>
               <div
-                className="h-full rounded-full bg-primario transition-all"
+                className={`h-full rounded-full transition-all ${claro ? "bg-white" : "bg-primario"}`}
                 style={{ width: `${progresoNivelPct}%` }}
               />
             </div>
-            <p className="mt-1.5 text-xs text-texto-secundario">
+            <p className={`mt-1.5 text-xs ${claseTextoSec}`}>
               {t("xpHistoricaAcumulada", { xp: xpHistorico.toLocaleString(locale === "en" ? "en-US" : "es-AR") })}
             </p>
           </div>
 
           {rankingFila && (
-            <p className="text-sm text-texto-secundario">
+            <p className={`text-sm ${claseTextoSec}`}>
               {t.rich("puestoDe", {
                 posicion: rankingFila.posicion,
                 total: rankingFila.total_jugadores,
-                destacado: (chunks) => <span className="font-mono font-semibold text-foreground">{chunks}</span>,
+                destacado: (chunks) => <span className={`font-mono font-semibold ${claseTexto}`}>{chunks}</span>,
               })}
             </p>
           )}
           <Link
             href={profile.plan === "pro" ? "/perfil/estadisticas" : "/pro"}
-            className="flex w-fit items-center gap-2 rounded-xl border border-primario/30 bg-primario/5 px-3 py-2 text-sm font-medium text-primario transition-colors hover:border-primario/60"
+            className={`flex w-fit items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors ${
+              claro ? "border-white/30 bg-white/10 text-white hover:border-white/60" : "border-primario/30 bg-primario/5 text-primario hover:border-primario/60"
+            }`}
           >
             {profile.plan === "pro" ? `📊 ${t("verEstadisticasAvanzadas")}` : `✨ ${t("hazteProLink")}`}
           </Link>
           <Link
             href="/clanes"
-            className="flex w-fit items-center gap-2 rounded-xl border border-border px-3 py-2 transition-colors hover:border-primario/40"
+            className={`flex w-fit items-center gap-2 rounded-xl border px-3 py-2 transition-colors ${claro ? "border-white/25 hover:border-white/50" : "border-border hover:border-primario/40"}`}
           >
             {miClan ? (
               <>
                 <EstandarteClan color={miClan.color_estandarte} nivel={miClan.nivel_clan} size={28} />
-                <span className="text-sm font-medium text-foreground">
-                  {miClan.nombre} {miClan.tag && <span className="text-texto-secundario">[{miClan.tag}]</span>}
+                <span className={`text-sm font-medium ${claseTexto}`}>
+                  {miClan.nombre} {miClan.tag && <span className={claseTextoSec}>[{miClan.tag}]</span>}
                 </span>
               </>
             ) : (
-              <span className="text-sm text-texto-secundario">{t("todaviaNoEstasEnClan")}</span>
+              <span className={`text-sm ${claseTextoSec}`}>{t("todaviaNoEstasEnClan")}</span>
             )}
           </Link>
           </div>

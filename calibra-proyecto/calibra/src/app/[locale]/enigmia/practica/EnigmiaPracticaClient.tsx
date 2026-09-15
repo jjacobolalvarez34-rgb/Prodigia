@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
 import type { CategoriaEnigmia, LogicPuzzle, Achievement } from "@/types/database";
 import Boton from "@/components/Boton";
 import BotonesFinPartida from "@/components/BotonesFinPartida";
@@ -58,12 +59,23 @@ interface Props {
   puzzles: LogicPuzzle[];
   nivelInicial: number;
   escudosExtra: number;
+  hielosDisponibles: number;
+  tiemposExtraDisponibles: number;
   boostActivo: boolean;
   duelo?: DueloGenericoInfo | null;
   miUserId: string;
 }
 
-export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
+export default function EnigmiaPracticaClient({
+  puzzles,
+  nivelInicial,
+  escudosExtra,
+  hielosDisponibles,
+  tiemposExtraDisponibles,
+  boostActivo,
+  duelo,
+  miUserId,
+}: Props) {
   const t = useTranslations("Enigmia.practicaClient");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
@@ -84,6 +96,10 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
 
   function iniciar() {
     setStartedAtIso(new Date().toISOString());
+    // Bug de reloj de navegador (2026-09-14, ver src/app/api/hora-servidor/route.ts) —
+    // se pide la hora real del servidor en paralelo, sin bloquear el arranque,
+    // y reemplaza este valor optimista apenas responde.
+    obtenerHoraServidor().then((h) => { if (h) setStartedAtIso(h); });
     setStartedAtPerf(performance.now());
     setResumen(null);
     setFase("sprint");
@@ -196,6 +212,8 @@ export default function EnigmiaPracticaClient({ puzzles, nivelInicial, escudosEx
           startedAt={startedAtPerf}
           nivelInicial={nivelInicial}
           escudosExtra={escudosExtra}
+          hielosIniciales={hielosDisponibles}
+          tiemposExtraIniciales={tiemposExtraDisponibles}
           categoriaForzada={duelo?.categoria}
           nivelForzado={duelo?.nivel}
           duelId={duelo?.duelId}

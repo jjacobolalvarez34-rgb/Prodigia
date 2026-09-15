@@ -20,7 +20,7 @@ export default async function QuimiaPracticaNomenclaturaPage({ searchParams }: P
   const supabase = await createClient();
   const { user } = await requireMundoQuimia(supabase, "/quimia/practica/nomenclatura");
 
-  const { modo, nivelInicial, escudosExtra, boostActivo, dueloInfo } = await cargarDatosPracticaQuimia(
+  const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaQuimia(
     supabase,
     user.id,
     "nomenclatura",
@@ -34,6 +34,8 @@ export default async function QuimiaPracticaNomenclaturaPage({ searchParams }: P
         modo={modo}
         nivelInicial={nivelInicial}
         escudosExtra={escudosExtra}
+        hielosDisponibles={hielosDisponibles}
+        tiemposExtraDisponibles={tiemposExtraDisponibles}
         boostActivo={boostActivo}
         duelo={dueloInfo}
         miUserId={user.id}

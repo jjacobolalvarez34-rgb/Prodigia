@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
 import { useRouter } from "next/navigation";
 import type { Continente, PaisAmerica } from "@/lib/practica/geografia";
 import type { PreguntaAvanzada } from "@/lib/practica/geografiaAvanzada";
@@ -58,12 +59,14 @@ interface Props {
   continente: Continente;
   nivelInicial: number;
   escudosExtra: number;
+  hielosDisponibles: number;
+  tiemposExtraDisponibles: number;
   boostActivo: boolean;
   duelo?: DueloGenericoInfo | null;
   miUserId: string;
 }
 
-export default function GeografiaPracticaClient({ continente, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
+export default function GeografiaPracticaClient({ continente, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, duelo, miUserId }: Props) {
   const t = useTranslations("Geografia");
   const router = useRouter();
   const NOMBRE_CONTINENTE: Record<Continente, string> = {
@@ -93,6 +96,10 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
 
   function iniciar() {
     setStartedAtIso(new Date().toISOString());
+    // Bug de reloj de navegador (2026-09-14, ver src/app/api/hora-servidor/route.ts) —
+    // se pide la hora real del servidor en paralelo, sin bloquear el arranque,
+    // y reemplaza este valor optimista apenas responde.
+    obtenerHoraServidor().then((h) => { if (h) setStartedAtIso(h); });
     setStartedAtPerf(performance.now());
     setResumen(null);
     setFase("sprint");
@@ -213,6 +220,8 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
           startedAt={startedAtPerf}
           nivelInicial={nivelInicial}
           escudosExtra={escudosExtra}
+          hielosIniciales={hielosDisponibles}
+          tiemposExtraIniciales={tiemposExtraDisponibles}
           duelId={duelo?.duelId}
           miUserId={miUserId}
           rivalNombre={duelo?.rivalNombre}

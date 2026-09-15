@@ -18,5 +18,13 @@ export default function NombreConFuente({ nombre, fuente, animacion, className =
   const t = useTranslations("Componentes");
   const claseFuente = FUENTE_NOMBRE_CLASS[fuente ?? "default"] ?? "";
   const claseAnimacion = ANIMACION_NOMBRE_CLASS[animacion ?? "ninguna"] ?? "";
-  return <span className={`${claseFuente} ${claseAnimacion} ${className}`}>{nombre ?? t("nombreConFuente.jugador")}</span>;
+  const texto = nombre ?? t("nombreConFuente.jugador");
+  // data-text: solo lo usan nombre-anim-glitch/deconstruccion (sus
+  // ::before/::after leen content: attr(data-text)) — inofensivo para
+  // el resto de las animaciones, así que se manda siempre.
+  return (
+    <span className={`${claseFuente} ${claseAnimacion} ${className}`} data-text={texto}>
+      {texto}
+    </span>
+  );
 }

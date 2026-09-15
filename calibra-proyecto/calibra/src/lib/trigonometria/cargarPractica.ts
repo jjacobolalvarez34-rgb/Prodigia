@@ -20,6 +20,8 @@ export interface DatosPracticaTrigonometria {
   modo: ModoTrigonometria;
   nivelInicial: number;
   escudosExtra: number;
+  hielosDisponibles: number;
+  tiemposExtraDisponibles: number;
   boostActivo: boolean;
   dueloInfo: DueloTrigonometriaInfo | null;
 }
@@ -64,10 +66,12 @@ export async function cargarDatosPracticaTrigonometria(
 
   const [{ data: nivelRow }, { data: profile }] = await Promise.all([
     supabase.from("skill_levels").select("nivel").eq("user_id", userId).eq("problem_type", `trigonometria_${modo}`).maybeSingle(),
-    supabase.from("profiles").select("escudos_extra_pendientes, boost_multiplicador_pendiente").eq("id", userId).single(),
+    supabase.from("profiles").select("escudos_extra_pendientes, boost_multiplicador_pendiente, hielos_disponibles, tiempos_extra_disponibles").eq("id", userId).single(),
   ]);
 
   const escudosExtra = profile?.escudos_extra_pendientes ?? 0;
+  const hielosDisponibles = profile?.hielos_disponibles ?? 0;
+  const tiemposExtraDisponibles = profile?.tiempos_extra_disponibles ?? 0;
   const boostActivo = (profile?.boost_multiplicador_pendiente ?? 1) > 1;
   if (escudosExtra > 0) {
     await supabase.rpc("consumir_escudos_pendientes");
@@ -77,6 +81,8 @@ export async function cargarDatosPracticaTrigonometria(
     modo,
     nivelInicial: nivelRow?.nivel ?? 1,
     escudosExtra,
+    hielosDisponibles,
+    tiemposExtraDisponibles,
     boostActivo,
     dueloInfo,
   };

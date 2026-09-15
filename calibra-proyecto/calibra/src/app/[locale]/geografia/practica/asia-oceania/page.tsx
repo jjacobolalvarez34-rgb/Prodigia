@@ -17,10 +17,12 @@ export default async function GeografiaPracticaAsiaOceaniaPage() {
 
   const [{ data: nivelRow }, { data: profile }] = await Promise.all([
     supabase.from("skill_levels").select("nivel").eq("user_id", user.id).eq("problem_type", "geografia").maybeSingle(),
-    supabase.from("profiles").select("escudos_extra_pendientes, boost_multiplicador_pendiente").eq("id", user.id).single(),
+    supabase.from("profiles").select("escudos_extra_pendientes, boost_multiplicador_pendiente, hielos_disponibles, tiempos_extra_disponibles").eq("id", user.id).single(),
   ]);
 
   const escudosExtra = profile?.escudos_extra_pendientes ?? 0;
+  const hielosDisponibles = profile?.hielos_disponibles ?? 0;
+  const tiemposExtraDisponibles = profile?.tiempos_extra_disponibles ?? 0;
   const boostActivo = (profile?.boost_multiplicador_pendiente ?? 1) > 1;
   if (escudosExtra > 0) {
     await supabase.rpc("consumir_escudos_pendientes");
@@ -33,6 +35,8 @@ export default async function GeografiaPracticaAsiaOceaniaPage() {
         continente="asia_oceania"
         nivelInicial={nivelRow?.nivel ?? 1}
         escudosExtra={escudosExtra}
+        hielosDisponibles={hielosDisponibles}
+        tiemposExtraDisponibles={tiemposExtraDisponibles}
         boostActivo={boostActivo}
         miUserId={user.id}
       />

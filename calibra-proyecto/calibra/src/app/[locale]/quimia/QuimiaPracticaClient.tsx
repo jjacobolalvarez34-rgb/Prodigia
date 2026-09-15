@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
 import type { ModoQuimia, PreguntaQuimia } from "@/lib/practica/quimia";
 import { NOMBRE_MODO_QUIMIA } from "@/lib/practica/quimia";
 import type { Achievement } from "@/types/database";
@@ -58,12 +59,14 @@ interface Props {
   modo: ModoQuimia;
   nivelInicial: number;
   escudosExtra: number;
+  hielosDisponibles: number;
+  tiemposExtraDisponibles: number;
   boostActivo: boolean;
   duelo?: DueloQuimicoInfo | null;
   miUserId: string;
 }
 
-export default function QuimiaPracticaClient({ modo, nivelInicial, escudosExtra, boostActivo, duelo, miUserId }: Props) {
+export default function QuimiaPracticaClient({ modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, duelo, miUserId }: Props) {
   const t = useTranslations("Quimia.practicaClient");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
@@ -84,6 +87,10 @@ export default function QuimiaPracticaClient({ modo, nivelInicial, escudosExtra,
 
   function iniciar() {
     setStartedAtIso(new Date().toISOString());
+    // Bug de reloj de navegador (2026-09-14, ver src/app/api/hora-servidor/route.ts) —
+    // se pide la hora real del servidor en paralelo, sin bloquear el arranque,
+    // y reemplaza este valor optimista apenas responde.
+    obtenerHoraServidor().then((h) => { if (h) setStartedAtIso(h); });
     setStartedAtPerf(performance.now());
     setResumen(null);
     setFase("sprint");
@@ -196,6 +203,8 @@ export default function QuimiaPracticaClient({ modo, nivelInicial, escudosExtra,
           startedAt={startedAtPerf}
           nivelInicial={nivelInicial}
           escudosExtra={escudosExtra}
+          hielosIniciales={hielosDisponibles}
+          tiemposExtraIniciales={tiemposExtraDisponibles}
           nivelForzado={duelo?.nivelForzado}
           semillaDuelo={duelo?.semilla}
           duelId={duelo?.duelId}

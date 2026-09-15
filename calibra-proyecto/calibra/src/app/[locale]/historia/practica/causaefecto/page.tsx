@@ -20,7 +20,7 @@ export default async function HistoriaPracticaCausaEfectoPage({ searchParams }: 
   const supabase = await createClient();
   const { user } = await requireMundoHistoria(supabase, "/historia/practica/causaefecto");
 
-  const { modo, nivelInicial, escudosExtra, boostActivo, dueloInfo } = await cargarDatosPracticaHistoria(supabase, user.id, "causaefecto", duelo);
+  const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaHistoria(supabase, user.id, "causaefecto", duelo);
 
   return (
     <>
@@ -29,6 +29,8 @@ export default async function HistoriaPracticaCausaEfectoPage({ searchParams }: 
         modo={modo}
         nivelInicial={nivelInicial}
         escudosExtra={escudosExtra}
+        hielosDisponibles={hielosDisponibles}
+        tiemposExtraDisponibles={tiemposExtraDisponibles}
         boostActivo={boostActivo}
         duelo={dueloInfo}
         miUserId={user.id}

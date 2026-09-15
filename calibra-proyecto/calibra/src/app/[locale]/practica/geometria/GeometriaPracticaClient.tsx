@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
 import { generarProblemaGeometria, TIPOS_GEOMETRIA, type ProblemaGeometria, type TipoGeometria } from "@/lib/practica/geometria";
 import type { Achievement } from "@/types/database";
 import BotonesFinPartida from "@/components/BotonesFinPartida";
@@ -31,10 +32,12 @@ interface FinishResponse {
 interface Props {
   nivelPorTipo: Record<TipoGeometria, number>;
   escudosExtra: number;
+  hielosDisponibles: number;
+  tiemposExtraDisponibles: number;
   boostActivo: boolean;
 }
 
-export default function GeometriaPracticaClient({ nivelPorTipo, escudosExtra, boostActivo }: Props) {
+export default function GeometriaPracticaClient({ nivelPorTipo, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo }: Props) {
   const t = useTranslations("Practica");
   const tGeometria = useTranslations("Geometria.tipos");
   const tNumeria = useTranslations("Numeria.temas");
@@ -59,6 +62,10 @@ export default function GeometriaPracticaClient({ nivelPorTipo, escudosExtra, bo
   function iniciar() {
     if (seleccion.length === 0) return;
     setStartedAtIso(new Date().toISOString());
+    // Bug de reloj de navegador (2026-09-14, ver src/app/api/hora-servidor/route.ts) —
+    // se pide la hora real del servidor en paralelo, sin bloquear el arranque,
+    // y reemplaza este valor optimista apenas responde.
+    obtenerHoraServidor().then((h) => { if (h) setStartedAtIso(h); });
     setStartedAtPerf(performance.now());
     setResumen(null);
     setFase("sprint");
@@ -93,6 +100,8 @@ export default function GeometriaPracticaClient({ nivelPorTipo, escudosExtra, bo
         nivelPorTipoInicial={nivelPorTipo}
         seleccion={seleccion}
         escudosExtra={escudosExtra}
+        hielosIniciales={hielosDisponibles}
+        tiemposExtraIniciales={tiemposExtraDisponibles}
         apiPath="/api/attempts"
         problemTypeDe={(tipo) => `geometria_${tipo}`}
         onFinish={handleFinish}

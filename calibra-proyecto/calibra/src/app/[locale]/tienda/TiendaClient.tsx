@@ -23,6 +23,7 @@ import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
 import { reproducirTono } from "@/lib/sonido";
 import { PRODUCTOS } from "@/lib/pagos/productos";
 import { abrirCheckoutPaddle } from "@/lib/pagos/paddleClient";
+import { PAGOS_REALES_HABILITADOS } from "@/lib/pagos/flags";
 import type { Proveedor, ProductoComprable } from "@/lib/pagos/tipos";
 
 const PACKS_CHISPAS: ProductoComprable[] = ["chispas_1000", "chispas_2500", "chispas_6000", "chispas_15000"];
@@ -55,6 +56,8 @@ interface Props {
   escudosIniciales: number;
   congelamientosIniciales: number;
   boostIniciales: number;
+  hielosIniciales: number;
+  tiemposExtraIniciales: number;
   fuenteActual: string;
   fuentesDesbloqueadas: string[];
   marcoActual: string;
@@ -73,6 +76,8 @@ export default function TiendaClient({
   escudosIniciales,
   congelamientosIniciales,
   boostIniciales,
+  hielosIniciales,
+  tiemposExtraIniciales,
   fuenteActual,
   fuentesDesbloqueadas,
   marcoActual,
@@ -123,6 +128,12 @@ export default function TiendaClient({
     fondo_personalizado: t("items.fondoPersonalizado"),
     animacion_prisma: t("items.animacionPrisma"),
     fondo_prodigio: t("items.fondoProdigio"),
+    fuente_urbana: t("items.fuenteUrbana"),
+    fuente_elegante: t("items.fuenteElegante"),
+    animacion_glitch: t("items.animacionGlitch"),
+    animacion_deconstruccion: t("items.animacionDeconstruccion"),
+    hielo: t("items.hielo"),
+    tiempo_extra: t("items.tiempoExtra"),
   };
   const FUENTES_COMPRABLES: { fuente: FuenteNombre; item: ItemComprable; nombre: string }[] = [
     { fuente: "mono", item: "fuente_mono", nombre: t("fuentes.mono") },
@@ -131,12 +142,16 @@ export default function TiendaClient({
     { fuente: "impacto", item: "fuente_impacto", nombre: t("fuentes.impacto") },
     { fuente: "script", item: "fuente_script", nombre: t("fuentes.script") },
     { fuente: "futurista", item: "fuente_futurista", nombre: t("fuentes.futurista") },
+    { fuente: "urbana", item: "fuente_urbana", nombre: t("fuentes.urbana") },
+    { fuente: "elegante", item: "fuente_elegante", nombre: t("fuentes.elegante") },
   ];
   const ANIMACIONES_COMPRABLES: { animacion: AnimacionNombre; item: ItemComprable; nombre: string; requierePro?: boolean }[] = [
     { animacion: "ondulante", item: "animacion_ondulante", nombre: t("animaciones.ondulante") },
     { animacion: "brillo", item: "animacion_brillo", nombre: t("animaciones.brillo") },
     { animacion: "arcoiris", item: "animacion_arcoiris", nombre: t("animaciones.arcoiris") },
     { animacion: "neon", item: "animacion_neon", nombre: t("animaciones.neon") },
+    { animacion: "glitch", item: "animacion_glitch", nombre: t("animaciones.glitch") },
+    { animacion: "deconstruccion", item: "animacion_deconstruccion", nombre: t("animaciones.deconstruccion") },
     { animacion: "prisma", item: "animacion_prisma", nombre: t("animaciones.prisma"), requierePro: true },
   ];
   const FONDOS_COMPRABLES: { fondo: FondoPerfil; item: ItemComprable; nombre: string; requierePro?: boolean }[] = [
@@ -152,6 +167,8 @@ export default function TiendaClient({
   const [escudos, setEscudos] = useState(escudosIniciales);
   const [congelamientos, setCongelamientos] = useState(congelamientosIniciales);
   const [boost, setBoost] = useState(boostIniciales);
+  const [hielos, setHielos] = useState(hielosIniciales);
+  const [tiemposExtra, setTiemposExtra] = useState(tiemposExtraIniciales);
   const [fuentesDesbl, setFuentesDesbl] = useState(fuentesDesbloqueadas);
   const [fuenteElegida, setFuenteElegida] = useState(fuenteActual);
   const [marcosDesbl, setMarcosDesbl] = useState(marcosDesbloqueados);
@@ -192,6 +209,8 @@ export default function TiendaClient({
       setEscudos(data.escudos_extra_pendientes);
       setCongelamientos(data.congelamientos_disponibles);
       setBoost(data.boost_multiplicador_pendiente > 1 ? 1 : 0);
+      if (typeof data.hielos_disponibles === "number") setHielos(data.hielos_disponibles);
+      if (typeof data.tiempos_extra_disponibles === "number") setTiemposExtra(data.tiempos_extra_disponibles);
       if (Array.isArray(data.fuentes_desbloqueadas)) setFuentesDesbl(data.fuentes_desbloqueadas);
       if (Array.isArray(data.marcos_desbloqueados)) setMarcosDesbl(data.marcos_desbloqueados);
       if (Array.isArray(data.animaciones_desbloqueadas)) setAnimacionesDesbl(data.animaciones_desbloqueadas);
@@ -331,6 +350,7 @@ export default function TiendaClient({
 
         <OfertaDelDia oferta={oferta} nombre={NOMBRES_ITEM[oferta.item as ItemComprable]} />
 
+        {PAGOS_REALES_HABILITADOS && (
         <EstanteCategoria titulo={t("pagos.titulo")} franja="#FFC53D">
           <p className="text-sm text-[#F4E4C1]/90">{t("pagos.descripcion")}</p>
           <div className="flex w-fit gap-1 rounded-full border border-[#F4E4C1]/30 bg-[#3D2410]/30 p-1">
@@ -371,6 +391,7 @@ export default function TiendaClient({
           </div>
           {errorPago && <p className="text-sm font-medium text-[#5C1A1A]">{errorPago}</p>}
         </EstanteCategoria>
+        )}
 
         <EstanteCategoria titulo={t("puestoDeUtilidad")} franja="#6C4CF1">
           <ItemEstante
@@ -414,6 +435,34 @@ export default function TiendaClient({
             onConfirmar={() => setConfirmando("boost")}
             onCancelar={() => setConfirmando(null)}
             onComprar={() => comprar("boost", "utilidad")}
+          />
+          <ItemEstante
+            icono={<span className="text-2xl">🧊</span>}
+            nombre={t("items.hielo")}
+            descripcion={t("descripciones.hielo")}
+            costo={costoDe("hielo")}
+            costoOriginal={COSTOS.hielo}
+            cantidad={hielos}
+            puntos={puntos}
+            confirmando={confirmando === "hielo"}
+            comprando={comprando}
+            onConfirmar={() => setConfirmando("hielo")}
+            onCancelar={() => setConfirmando(null)}
+            onComprar={() => comprar("hielo", "utilidad")}
+          />
+          <ItemEstante
+            icono={<span className="text-2xl">⏱️</span>}
+            nombre={t("items.tiempoExtra")}
+            descripcion={t("descripciones.tiempoExtra")}
+            costo={costoDe("tiempo_extra")}
+            costoOriginal={COSTOS.tiempo_extra}
+            cantidad={tiemposExtra}
+            puntos={puntos}
+            confirmando={confirmando === "tiempo_extra"}
+            comprando={comprando}
+            onConfirmar={() => setConfirmando("tiempo_extra")}
+            onCancelar={() => setConfirmando(null)}
+            onComprar={() => comprar("tiempo_extra", "utilidad")}
           />
           {error?.contexto === "utilidad" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
         </EstanteCategoria>
@@ -597,7 +646,9 @@ export default function TiendaClient({
                         : "border-[#F4E4C1]/60 bg-[#3D2410]/30 text-[#F4E4C1] hover:border-[#F4E4C1]"
                     }`}
                   >
-                    <span className={claseAnimacion}>{animacion === "ninguna" ? t("sinAnimacion") : compra?.nombre}</span>
+                    <span className={claseAnimacion} data-text={animacion === "ninguna" ? t("sinAnimacion") : compra?.nombre}>
+                      {animacion === "ninguna" ? t("sinAnimacion") : compra?.nombre}
+                    </span>
                     {elegida && ` · ${t("activa")}`}
                   </button>
                 );
@@ -610,7 +661,7 @@ export default function TiendaClient({
                     href="/pro"
                     className="flex items-center gap-1.5 rounded-full border border-dashed border-[#F4E4C1]/30 px-3 py-1.5 text-sm text-[#F4E4C1]/40"
                   >
-                    🔒 <span className={claseAnimacion}>{compra.nombre}</span> · {t("exclusivoDePro")}
+                    🔒 <span className={claseAnimacion} data-text={compra.nombre}>{compra.nombre}</span> · {t("exclusivoDePro")}
                   </Link>
                 );
               }
@@ -622,7 +673,7 @@ export default function TiendaClient({
                   disabled={comprando || puntos < costo}
                   className="rounded-full border border-dashed border-[#F4E4C1]/50 px-3 py-1.5 text-sm text-[#F4E4C1]/70 disabled:opacity-40"
                 >
-                  <span className={claseAnimacion}>{t("nombreChispas", { nombre: compra.nombre, costo })}</span>
+                  <span className={claseAnimacion} data-text={compra.nombre}>{t("nombreChispas", { nombre: compra.nombre, costo })}</span>
                 </button>
               );
             })}

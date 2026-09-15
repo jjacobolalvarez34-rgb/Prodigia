@@ -20,7 +20,7 @@ export default async function AnatomiaMuscularPage({ searchParams }: Props) {
   const supabase = await createClient();
   const { user } = await requireMundoAnatomia(supabase, "/anatomia/practica/muscular");
 
-  const { modo, nivelInicial, escudosExtra, boostActivo, dueloInfo } = await cargarDatosPracticaAnatomia(supabase, user.id, "muscular", duelo);
+  const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaAnatomia(supabase, user.id, "muscular", duelo);
 
   return (
     <>
@@ -29,6 +29,8 @@ export default async function AnatomiaMuscularPage({ searchParams }: Props) {
         modo={modo}
         nivelInicial={nivelInicial}
         escudosExtra={escudosExtra}
+        hielosDisponibles={hielosDisponibles}
+        tiemposExtraDisponibles={tiemposExtraDisponibles}
         boostActivo={boostActivo}
         duelo={dueloInfo}
         miUserId={user.id}

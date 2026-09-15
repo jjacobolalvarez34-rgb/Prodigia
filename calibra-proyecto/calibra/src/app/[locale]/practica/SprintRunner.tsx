@@ -21,6 +21,11 @@ import LevelDial from "./LevelDial";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
+import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
+import { usarConsumible } from "@/lib/practica/consumibles";
+
+const PAUSA_HIELO_MS = 10_000;
+const BONUS_TIEMPO_EXTRA_MS = 3_000;
 
 const TOTAL_PROBLEMAS = 10;
 const DURACION_MS = 60_000;
@@ -45,6 +50,8 @@ interface Props {
   nivelPorOperacion: Record<ArithmeticProblemType, number>;
   modificadoresPorOperacion: Record<ArithmeticProblemType, ModifierSlug[]>;
   escudosExtra: number;
+  hielosIniciales?: number;
+  tiemposExtraIniciales?: number;
   colorDial?: string;
   fantasma?: Fantasma | null;
   // Fase T3: si viene seteada, TODOS los problemas de este sprint salen
@@ -104,6 +111,8 @@ export default function SprintRunner({
   nivelPorOperacion,
   modificadoresPorOperacion,
   escudosExtra,
+  hielosIniciales = 0,
+  tiemposExtraIniciales = 0,
   colorDial,
   fantasma,
   semillaDuelo,
@@ -153,6 +162,13 @@ export default function SprintRunner({
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  // Consumibles de partida (pedido en vivo, 2026-09-15): hielo pausa el
+  // reloj 10s (pausaAcumuladaRef/pausaDesdeRef, mismo patrón que ya usa
+  // EnigmiaSprintRunner.tsx para la fase de memorización) y tiempo_extra
+  // reusa bonusAcumuladoRef (el mismo bucket que ya suma segundos por
+  // responder rápido) — no hace falta un mecanismo nuevo para eso.
+  const pausaAcumuladaRef = useRef(0);
+  const pausaDesdeRef = useRef<number | null>(null);
 
   function generarNuevo(): Problem {
     return generarSinRepetir(
@@ -204,6 +220,9 @@ export default function SprintRunner({
   const [nudgeRanking, setNudgeRanking] = useState<string | null>(null);
   const [fantasmaRespondidos, setFantasmaRespondidos] = useState(0);
   const [errorGuardado, setErrorGuardado] = useState<string | null>(null);
+  const [hielosDisp, setHielosDisp] = useState(hielosIniciales);
+  const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
+  const [usandoConsumible, setUsandoConsumible] = useState<TipoUso>(null);
 
   useEffect(() => {
     nivelesRef.current = nivelPorOperacion;
@@ -256,10 +275,42 @@ export default function SprintRunner({
     onFinish(erroresRef.current, respuestasRef.current);
   }
 
+  async function usarHielo() {
+    if (usandoConsumible !== null || hielosDisp <= 0) return;
+    setUsandoConsumible("hielo");
+    const r = await usarConsumible("hielo");
+    if (r) {
+      setHielosDisp(r.hielos_disponibles);
+      pausaDesdeRef.current = performance.now();
+      setTimeout(() => {
+        if (pausaDesdeRef.current !== null) {
+          pausaAcumuladaRef.current += performance.now() - pausaDesdeRef.current;
+          pausaDesdeRef.current = null;
+        }
+      }, PAUSA_HIELO_MS);
+    }
+    setUsandoConsumible(null);
+  }
+
+  async function usarTiempoExtra() {
+    if (usandoConsumible !== null || tiemposExtraDisp <= 0) return;
+    setUsandoConsumible("tiempo_extra");
+    const r = await usarConsumible("tiempo_extra");
+    if (r) {
+      setTiemposExtraDisp(r.tiempos_extra_disponibles);
+      bonusAcumuladoRef.current += BONUS_TIEMPO_EXTRA_MS;
+      setDuracionTotalMs(duracionMs + bonusAcumuladoRef.current);
+      setBonusTiempo(BONUS_TIEMPO_EXTRA_MS / 1000);
+    }
+    setUsandoConsumible(null);
+  }
+
   useEffect(() => {
     const interval = setInterval(() => {
       const transcurrido = performance.now() - startedAt;
-      const restante = Math.max(0, duracionMs + bonusAcumuladoRef.current - transcurrido);
+      const pausaEnCurso = pausaDesdeRef.current !== null ? performance.now() - pausaDesdeRef.current : 0;
+      const transcurridoEfectivo = transcurrido - pausaAcumuladaRef.current - pausaEnCurso;
+      const restante = Math.max(0, duracionMs + bonusAcumuladoRef.current - transcurridoEfectivo);
       setRemainingMs(restante);
       if (acumuladoFantasma) {
         setFantasmaRespondidos(acumuladoFantasma.filter((t) => t <= transcurrido).length);
@@ -444,6 +495,17 @@ export default function SprintRunner({
             ))}
           </div>
           <div className="flex items-center gap-3">
+            {/* Prohibidos en duelos (pedido en vivo, 2026-09-15) — solo se
+                renderizan fuera de un duelo real (sin duelId ni fantasma). */}
+            {!duelId && !fantasma && (
+              <ConsumiblesPartida
+                hielos={hielosDisp}
+                tiemposExtra={tiemposExtraDisp}
+                usando={usandoConsumible}
+                onUsarHielo={usarHielo}
+                onUsarTiempoExtra={usarTiempoExtra}
+              />
+            )}
             <SonidoToggle />
             <div className="flex items-center gap-1" aria-label={t("escudosDisponibles", { n: escudos })}>
               {Array.from({ length: escudosIniciales }).map((_, i) => (

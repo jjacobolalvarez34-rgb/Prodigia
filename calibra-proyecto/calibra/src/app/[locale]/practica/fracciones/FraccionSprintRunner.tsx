@@ -13,6 +13,8 @@ import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/Tarjet
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import LevelDial from "../LevelDial";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
+import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
+import { usarConsumible } from "@/lib/practica/consumibles";
 
 const TOTAL_PROBLEMAS = 10;
 const DURACION_MS = 60_000;
@@ -27,6 +29,8 @@ interface Props {
   nivelPorTipo: Record<TipoFraccion, number>;
   seleccion: TipoFraccion[];
   escudosExtra: number;
+  hielosIniciales?: number;
+  tiemposExtraIniciales?: number;
   colorDial?: string;
   onFinish: (errores: ProblemaFraccion[]) => void;
 }
@@ -48,10 +52,22 @@ function FraccionVisual({ num, den }: { num: number; den: number }) {
   );
 }
 
-export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccion, escudosExtra, colorDial, onFinish }: Props) {
+export default function FraccionSprintRunner({
+  startedAt,
+  nivelPorTipo,
+  seleccion,
+  escudosExtra,
+  hielosIniciales = 0,
+  tiemposExtraIniciales = 0,
+  colorDial,
+  onFinish,
+}: Props) {
   const t = useTranslations("Practica.sprint");
   const tFracciones = useTranslations("Fracciones.enunciados");
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
+  const [hielosDisp, setHielosDisp] = useState(hielosIniciales);
+  const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
+  const [usandoConsumible, setUsandoConsumible] = useState<TipoUso>(null);
   const [problema, setProblema] = useState<ProblemaFraccion | null>(null);
   const [cardKey, setCardKey] = useState(0);
   const [num, setNum] = useState("");
@@ -67,7 +83,8 @@ export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccio
   const [escudos, setEscudos] = useState(escudosIniciales);
   const { racha, registrarResultado } = useRachaCombo();
 
-  const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(DURACION_MS);
+  const { duracionTotalMs, bonusTiempo, evaluarBonus, agregarBonusExtra, limpiarBonus, pausarPorHielo, calcularRestante } =
+    useBonusTiempo(DURACION_MS);
 
   const nivelPorTipoRef = useRef<Record<TipoFraccion, number>>(nivelPorTipo);
   const escudosRef = useRef(escudosIniciales);
@@ -110,12 +127,31 @@ export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccio
     onFinish(erroresRef.current);
   }
 
+  async function usarHielo() {
+    if (usandoConsumible !== null || hielosDisp <= 0) return;
+    setUsandoConsumible("hielo");
+    const r = await usarConsumible("hielo");
+    if (r) {
+      setHielosDisp(r.hielos_disponibles);
+      pausarPorHielo();
+    }
+    setUsandoConsumible(null);
+  }
+
+  async function usarTiempoExtra() {
+    if (usandoConsumible !== null || tiemposExtraDisp <= 0) return;
+    setUsandoConsumible("tiempo_extra");
+    const r = await usarConsumible("tiempo_extra");
+    if (r) {
+      setTiemposExtraDisp(r.tiempos_extra_disponibles);
+      agregarBonusExtra();
+    }
+    setUsandoConsumible(null);
+  }
+
   useEffect(() => {
     const interval = setInterval(() => {
-      const restante = Math.max(
-        0,
-        DURACION_MS + bonusAcumuladoRef.current - (performance.now() - startedAt)
-      );
+      const restante = calcularRestante(startedAt);
       setRemainingMs(restante);
       // Mismo fix de carrera que EnigmiaSprintRunner.tsx (2026-09-14, "conteo
       // de aciertos raro"): sin !submittingRef.current, el intervalo podia
@@ -242,6 +278,13 @@ export default function FraccionSprintRunner({ startedAt, nivelPorTipo, seleccio
             ))}
           </div>
           <div className="flex items-center gap-3">
+            <ConsumiblesPartida
+              hielos={hielosDisp}
+              tiemposExtra={tiemposExtraDisp}
+              usando={usandoConsumible}
+              onUsarHielo={usarHielo}
+              onUsarTiempoExtra={usarTiempoExtra}
+            />
             <SonidoToggle />
             <div className="flex items-center gap-1" aria-label={t("escudosDisponibles", { n: escudos })}>
               {Array.from({ length: escudosIniciales }).map((_, i) => (

@@ -22,6 +22,16 @@ export const COSTOS = {
   escudo: 350,
   congelamiento: 450,
   boost: 600,
+  // Pedido en vivo (2026-09-15): consumibles de PARTIDA (no utilidades
+  // pasivas como las 3 de arriba) — "hielo para detener el reloj 10
+  // segundos" y "+3s al tiempo de la partida", usables a mitad de una
+  // partida, prohibidos en duelos (gate 100% client-side, ver
+  // ConsumiblesPartida.tsx). Precio bajo a propósito: se consumen 1 a 1
+  // por uso, no por partida — más baratos que escudo/congelamiento/
+  // boost, que duran hasta usarse una vez pero cuestan más por cubrir
+  // una partida entera de protección.
+  hielo: 300,
+  tiempo_extra: 250,
   fuente_mono: 1000,
   fuente_serif: 1400,
   fuente_manuscrita: 5000,
@@ -34,6 +44,11 @@ export const COSTOS = {
   fuente_impacto: 1200,
   fuente_script: 1800,
   fuente_futurista: 2500,
+  // Pedido en vivo (2026-09-15): "más fuentes para los nombres" — mismo
+  // escalón que impacto/script (ninguna licencia especial, ambas
+  // Google Fonts vía next/font/google).
+  fuente_urbana: 1200,
+  fuente_elegante: 1800,
   marco_bronce: 1000,
   marco_plata: 1300,
   marco_oro: 1700,
@@ -74,6 +89,11 @@ export const COSTOS = {
   animacion_brillo: 1400,
   animacion_arcoiris: 1800,
   animacion_neon: 2200,
+  // Pedido en vivo (2026-09-15): "agregar más efectos, glitch o nombres
+  // que se deconstruyen" — un escalón arriba de neon, las más vistosas
+  // de las 6 normales (sin contar prisma, exclusiva de Pro).
+  animacion_glitch: 2000,
+  animacion_deconstruccion: 2400,
   // Fondos de tarjeta de perfil: mismo escalón que las animaciones —
   // nebulosa/dorado un poco más caros (degradé de 3 tonos más vistoso).
   fondo_oceano: 1600,

@@ -31,7 +31,7 @@ export default async function DecimalesPage() {
       ),
     supabase
       .from("profiles")
-      .select("escudos_extra_pendientes, boost_multiplicador_pendiente")
+      .select("escudos_extra_pendientes, boost_multiplicador_pendiente, hielos_disponibles, tiempos_extra_disponibles")
       .eq("id", user.id)
       .single(),
   ]);
@@ -41,6 +41,8 @@ export default async function DecimalesPage() {
   ) as Record<TipoDecimal, number>;
 
   const escudosExtra = profile?.escudos_extra_pendientes ?? 0;
+  const hielosDisponibles = profile?.hielos_disponibles ?? 0;
+  const tiemposExtraDisponibles = profile?.tiempos_extra_disponibles ?? 0;
   const boostActivo = (profile?.boost_multiplicador_pendiente ?? 1) > 1;
   if (escudosExtra > 0) {
     await supabase.rpc("consumir_escudos_pendientes");
@@ -49,7 +51,7 @@ export default async function DecimalesPage() {
   return (
     <>
       <Header autenticado />
-      <DecimalPracticaClient nivelPorTipo={nivelPorTipo} escudosExtra={escudosExtra} boostActivo={boostActivo} />
+      <DecimalPracticaClient nivelPorTipo={nivelPorTipo} escudosExtra={escudosExtra} hielosDisponibles={hielosDisponibles} tiemposExtraDisponibles={tiemposExtraDisponibles} boostActivo={boostActivo} />
     </>
   );
 }

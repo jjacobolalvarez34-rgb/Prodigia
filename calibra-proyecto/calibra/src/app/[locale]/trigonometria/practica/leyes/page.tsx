@@ -20,7 +20,7 @@ export default async function TrigonometriaPracticaLeyesPage({ searchParams }: P
   const supabase = await createClient();
   const { user } = await requireMundoTrigonometria(supabase, "/trigonometria/practica/leyes");
 
-  const { modo, nivelInicial, escudosExtra, boostActivo, dueloInfo } = await cargarDatosPracticaTrigonometria(supabase, user.id, "leyes", duelo);
+  const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaTrigonometria(supabase, user.id, "leyes", duelo);
 
   return (
     <>
@@ -29,6 +29,8 @@ export default async function TrigonometriaPracticaLeyesPage({ searchParams }: P
         modo={modo}
         nivelInicial={nivelInicial}
         escudosExtra={escudosExtra}
+        hielosDisponibles={hielosDisponibles}
+        tiemposExtraDisponibles={tiemposExtraDisponibles}
         boostActivo={boostActivo}
         duelo={dueloInfo}
         miUserId={user.id}

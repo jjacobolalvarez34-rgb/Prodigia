@@ -17,6 +17,8 @@ import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
+import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
+import { usarConsumible } from "@/lib/practica/consumibles";
 
 const TOTAL_PREGUNTAS = 10;
 // Fase V2: 60s se sentía corto para acertijos de lógica (no es lo mismo
@@ -85,6 +87,8 @@ interface Props {
   startedAt: number;
   nivelInicial: number;
   escudosExtra: number;
+  hielosIniciales?: number;
+  tiemposExtraIniciales?: number;
   categoriaForzada?: CategoriaEnigmia;
   // Corrección: en un duelo, la complejidad la decide el rango de los
   // dos duelistas (nivel_enigmia_por_rango), no logic_skill_levels
@@ -109,6 +113,8 @@ export default function EnigmiaSprintRunner({
   startedAt,
   nivelInicial,
   escudosExtra,
+  hielosIniciales = 0,
+  tiemposExtraIniciales = 0,
   categoriaForzada,
   nivelForzado,
   duelId,
@@ -136,9 +142,22 @@ export default function EnigmiaSprintRunner({
   const [remainingMs, setRemainingMs] = useState(duracionMs);
   const [nivel, setNivel] = useState(nivelForzado ?? nivelInicial);
   const [escudos, setEscudos] = useState(escudosIniciales);
+  const [hielosDisp, setHielosDisp] = useState(hielosIniciales);
+  const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
+  const [usandoConsumible, setUsandoConsumible] = useState<TipoUso>(null);
   const { racha, registrarResultado } = useRachaCombo();
 
-  const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(duracionMs);
+  // Pedido explícito del propietario (2026-09-14): "cuando esté en
+  // tiempo de memorización, el tiempo se detenga para que no consuma
+  // el tiempo de responder" — antes el reloj general de la partida
+  // seguía corriendo mientras se mostraba la secuencia a memorizar, así
+  // que memorizar 3-4s "robaba" ese tiempo de las preguntas reales.
+  // iniciarPausa/terminarPausa (2026-09-15: generalizado en useBonusTiempo
+  // para compartirlo con el consumible "hielo", que pausa el reloj del
+  // mismo modo) reemplazan lo que antes era un pausaAcumuladaRef/
+  // memorizandoDesdeRef propios de este archivo.
+  const { duracionTotalMs, bonusTiempo, evaluarBonus, agregarBonusExtra, limpiarBonus, iniciarPausa, terminarPausa, pausarPorHielo, calcularRestante } =
+    useBonusTiempo(duracionMs);
 
   const nivelRef = useRef(nivelForzado ?? nivelInicial);
   const escudosRef = useRef(escudosIniciales);
@@ -162,6 +181,7 @@ export default function EnigmiaSprintRunner({
       // El cronómetro de respuesta arranca recién cuando termine la
       // memorización (ver onListo de AcertijoMemoria más abajo), no acá.
       setFaseMemoria("memorizando");
+      iniciarPausa();
     } else {
       setFaseMemoria("respondiendo");
       shownAtRef.current = performance.now();
@@ -179,12 +199,31 @@ export default function EnigmiaSprintRunner({
     onFinish(erroresRef.current, correctosRef.current);
   }
 
+  async function usarHielo() {
+    if (usandoConsumible !== null || hielosDisp <= 0) return;
+    setUsandoConsumible("hielo");
+    const r = await usarConsumible("hielo");
+    if (r) {
+      setHielosDisp(r.hielos_disponibles);
+      pausarPorHielo();
+    }
+    setUsandoConsumible(null);
+  }
+
+  async function usarTiempoExtra() {
+    if (usandoConsumible !== null || tiemposExtraDisp <= 0) return;
+    setUsandoConsumible("tiempo_extra");
+    const r = await usarConsumible("tiempo_extra");
+    if (r) {
+      setTiemposExtraDisp(r.tiempos_extra_disponibles);
+      agregarBonusExtra();
+    }
+    setUsandoConsumible(null);
+  }
+
   useEffect(() => {
     const interval = setInterval(() => {
-      const restante = Math.max(
-        0,
-        duracionMs + bonusAcumuladoRef.current - (performance.now() - startedAt)
-      );
+      const restante = calcularRestante(startedAt);
       setRemainingMs(restante);
       // Bug reportado en vivo (2026-09-14, "el conteo de aciertos sigue
       // fallando... al terminar sin responder todas, o respondiéndolas
@@ -301,6 +340,15 @@ export default function EnigmiaSprintRunner({
             ))}
           </div>
           <div className="flex items-center gap-3">
+            {!duelId && (
+              <ConsumiblesPartida
+                hielos={hielosDisp}
+                tiemposExtra={tiemposExtraDisp}
+                usando={usandoConsumible}
+                onUsarHielo={usarHielo}
+                onUsarTiempoExtra={usarTiempoExtra}
+              />
+            )}
             <SonidoToggle />
             <div className="flex items-center gap-1" aria-label={t("escudosDisponibles", { n: escudos })}>
               {Array.from({ length: escudosIniciales }).map((_, i) => (
@@ -342,6 +390,7 @@ export default function EnigmiaSprintRunner({
             secuencia={puzzle.contenido.secuencia}
             colorHex={COLOR}
             onListo={() => {
+              terminarPausa();
               setFaseMemoria("respondiendo");
               shownAtRef.current = performance.now();
             }}

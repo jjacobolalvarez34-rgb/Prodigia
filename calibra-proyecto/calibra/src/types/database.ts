@@ -63,7 +63,7 @@ export const COLOR_DIAL_HEX: Record<ColorDial, string> = {
 // Fase 5 (mercado): tipografías comprables para el nombre de usuario —
 // el cosmético nuevo que reemplaza al dial en la vidriera de la tienda.
 // "default" = tipografía normal de la UI.
-export type FuenteNombre = "default" | "mono" | "serif" | "manuscrita" | "impacto" | "script" | "futurista";
+export type FuenteNombre = "default" | "mono" | "serif" | "manuscrita" | "impacto" | "script" | "futurista" | "urbana" | "elegante";
 
 export const FUENTE_NOMBRE_CLASS: Record<FuenteNombre, string> = {
   default: "",
@@ -75,6 +75,11 @@ export const FUENTE_NOMBRE_CLASS: Record<FuenteNombre, string> = {
   impacto: "font-[family-name:var(--font-bebas-neue)]",
   script: "font-[family-name:var(--font-pacifico)]",
   futurista: "font-[family-name:var(--font-orbitron)]",
+  // Pedido en vivo (2026-09-15): "más fuentes para los nombres" — Anton
+  // (poster/urbana, condensada y muy negra) y Dancing Script (cursiva
+  // más prolija/elegante que Caveat, que es una manuscrita casual).
+  urbana: "font-[family-name:var(--font-anton)]",
+  elegante: "font-[family-name:var(--font-dancing-script)]",
 };
 
 // Fase 10 ("Tienda: animaciones y fondos"): animación CSS comprable
@@ -87,7 +92,13 @@ export const FUENTE_NOMBRE_CLASS: Record<FuenteNombre, string> = {
 // "prisma" (Fase 4, pagos): exclusiva de Prodigia Pro — gateada en
 // comprar_item_tienda por plan = 'pro' (0146_prodigia_pro_gates_y_
 // estadisticas.sql), no solo por Chispas como las otras 4.
-export type AnimacionNombre = "ninguna" | "arcoiris" | "brillo" | "ondulante" | "neon" | "prisma";
+// "glitch"/"deconstruccion" (pedido en vivo, 2026-09-15: "agregar más
+// efectos, glitch o nombres que se deconstruyen") — a diferencia de las
+// 6 anteriores, sus @keyframes usan pseudo-elementos ::before/::after
+// con content: attr(data-text), así que NombreConFuente.tsx les pasa
+// data-text con el nombre (ver ese archivo) para que el efecto tenga
+// algo que duplicar sin separar el texto en spans por letra.
+export type AnimacionNombre = "ninguna" | "arcoiris" | "brillo" | "ondulante" | "neon" | "prisma" | "glitch" | "deconstruccion";
 
 export const ANIMACION_NOMBRE_CLASS: Record<AnimacionNombre, string> = {
   ninguna: "",
@@ -96,6 +107,8 @@ export const ANIMACION_NOMBRE_CLASS: Record<AnimacionNombre, string> = {
   ondulante: "nombre-anim-ondulante",
   neon: "nombre-anim-neon",
   prisma: "nombre-anim-prisma",
+  glitch: "nombre-anim-glitch",
+  deconstruccion: "nombre-anim-deconstruccion",
 };
 
 // Fondo decorativo de la tarjeta de perfil (franja superior, arriba del

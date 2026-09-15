@@ -15,6 +15,8 @@ import EsqueletoClickeable from "@/components/anatomia/EsqueletoClickeable";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
+import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
+import { usarConsumible } from "@/lib/practica/consumibles";
 import { COLOR_ANATOMIA } from "./colores";
 
 const TOTAL_PREGUNTAS = 10;
@@ -28,6 +30,8 @@ interface Props {
   startedAt: number;
   nivelInicial: number;
   escudosExtra: number;
+  hielosIniciales?: number;
+  tiemposExtraIniciales?: number;
   // Duelo: si viene nivelForzado, el nivel personal no gobierna la
   // partida — mismo criterio que Enigmia/Quimia.
   nivelForzado?: number;
@@ -45,6 +49,8 @@ export default function AnatomiaSprintRunner({
   startedAt,
   nivelInicial,
   escudosExtra,
+  hielosIniciales = 0,
+  tiemposExtraIniciales = 0,
   nivelForzado,
   duelId,
   miUserId,
@@ -55,6 +61,9 @@ export default function AnatomiaSprintRunner({
 }: Props) {
   const t = useTranslations("Anatomia");
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
+  const [hielosDisp, setHielosDisp] = useState(hielosIniciales);
+  const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
+  const [usandoConsumible, setUsandoConsumible] = useState<TipoUso>(null);
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const [pregunta, setPregunta] = useState<PreguntaAnatomia | null>(null);
   const [cardKey, setCardKey] = useState(0);
@@ -68,7 +77,8 @@ export default function AnatomiaSprintRunner({
   const [escudos, setEscudos] = useState(escudosIniciales);
   const { racha, registrarResultado } = useRachaCombo();
 
-  const { duracionTotalMs, bonusTiempo, bonusAcumuladoRef, evaluarBonus, limpiarBonus } = useBonusTiempo(duracionMs);
+  const { duracionTotalMs, bonusTiempo, evaluarBonus, agregarBonusExtra, limpiarBonus, pausarPorHielo, calcularRestante } =
+    useBonusTiempo(duracionMs);
 
   const nivelRef = useRef(nivelForzado ?? nivelInicial);
   const correctosRef = useRef(0);
@@ -102,9 +112,31 @@ export default function AnatomiaSprintRunner({
     onFinish(erroresRef.current, correctosRef.current);
   }
 
+  async function usarHielo() {
+    if (usandoConsumible !== null || hielosDisp <= 0) return;
+    setUsandoConsumible("hielo");
+    const r = await usarConsumible("hielo");
+    if (r) {
+      setHielosDisp(r.hielos_disponibles);
+      pausarPorHielo();
+    }
+    setUsandoConsumible(null);
+  }
+
+  async function usarTiempoExtra() {
+    if (usandoConsumible !== null || tiemposExtraDisp <= 0) return;
+    setUsandoConsumible("tiempo_extra");
+    const r = await usarConsumible("tiempo_extra");
+    if (r) {
+      setTiemposExtraDisp(r.tiempos_extra_disponibles);
+      agregarBonusExtra();
+    }
+    setUsandoConsumible(null);
+  }
+
   useEffect(() => {
     const interval = setInterval(() => {
-      const restante = Math.max(0, duracionMs + bonusAcumuladoRef.current - (performance.now() - startedAt));
+      const restante = calcularRestante(startedAt);
       setRemainingMs(restante);
       // Mismo fix de carrera que EnigmiaSprintRunner.tsx (2026-09-14, "conteo
       // de aciertos raro"): sin !submittingRef.current, el intervalo podia
@@ -220,6 +252,15 @@ export default function AnatomiaSprintRunner({
             ))}
           </div>
           <div className="flex items-center gap-3">
+            {!duelId && (
+              <ConsumiblesPartida
+                hielos={hielosDisp}
+                tiemposExtra={tiemposExtraDisp}
+                usando={usandoConsumible}
+                onUsarHielo={usarHielo}
+                onUsarTiempoExtra={usarTiempoExtra}
+              />
+            )}
             <SonidoToggle />
             <div className="flex items-center gap-1" aria-label={t("sprintRunner.escudosDisponibles", { n: escudos })}>
               {Array.from({ length: escudosIniciales }).map((_, i) => (

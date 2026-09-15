@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
 import { generarProblemaDecimal, TIPOS_DECIMAL, type ProblemaDecimal, type TipoDecimal } from "@/lib/practica/decimales";
 import type { Achievement } from "@/types/database";
 import BotonesFinPartida from "@/components/BotonesFinPartida";
@@ -31,10 +32,12 @@ interface FinishResponse {
 interface Props {
   nivelPorTipo: Record<TipoDecimal, number>;
   escudosExtra: number;
+  hielosDisponibles: number;
+  tiemposExtraDisponibles: number;
   boostActivo: boolean;
 }
 
-export default function DecimalPracticaClient({ nivelPorTipo, escudosExtra, boostActivo }: Props) {
+export default function DecimalPracticaClient({ nivelPorTipo, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo }: Props) {
   const t = useTranslations("Practica");
   const tDecimales = useTranslations("Decimales.tipos");
   const tNumeria = useTranslations("Numeria.temas");
@@ -58,6 +61,10 @@ export default function DecimalPracticaClient({ nivelPorTipo, escudosExtra, boos
   function iniciar() {
     if (seleccion.length === 0) return;
     setStartedAtIso(new Date().toISOString());
+    // Bug de reloj de navegador (2026-09-14, ver src/app/api/hora-servidor/route.ts) —
+    // se pide la hora real del servidor en paralelo, sin bloquear el arranque,
+    // y reemplaza este valor optimista apenas responde.
+    obtenerHoraServidor().then((h) => { if (h) setStartedAtIso(h); });
     setStartedAtPerf(performance.now());
     setResumen(null);
     setFase("sprint");
@@ -92,6 +99,8 @@ export default function DecimalPracticaClient({ nivelPorTipo, escudosExtra, boos
         nivelPorTipoInicial={nivelPorTipo}
         seleccion={seleccion}
         escudosExtra={escudosExtra}
+        hielosIniciales={hielosDisponibles}
+        tiemposExtraIniciales={tiemposExtraDisponibles}
         apiPath="/api/attempts"
         problemTypeDe={(tipo) => `decimales_${tipo}`}
         onFinish={handleFinish}

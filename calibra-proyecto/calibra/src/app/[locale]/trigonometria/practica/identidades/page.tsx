@@ -20,7 +20,7 @@ export default async function TrigonometriaPracticaIdentidadesPage({ searchParam
   const supabase = await createClient();
   const { user } = await requireMundoTrigonometria(supabase, "/trigonometria/practica/identidades");
 
-  const { modo, nivelInicial, escudosExtra, boostActivo, dueloInfo } = await cargarDatosPracticaTrigonometria(supabase, user.id, "identidades", duelo);
+  const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaTrigonometria(supabase, user.id, "identidades", duelo);
 
   return (
     <>
@@ -29,6 +29,8 @@ export default async function TrigonometriaPracticaIdentidadesPage({ searchParam
         modo={modo}
         nivelInicial={nivelInicial}
         escudosExtra={escudosExtra}
+        hielosDisponibles={hielosDisponibles}
+        tiemposExtraDisponibles={tiemposExtraDisponibles}
         boostActivo={boostActivo}
         duelo={dueloInfo}
         miUserId={user.id}

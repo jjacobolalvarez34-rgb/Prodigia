@@ -299,25 +299,183 @@ select:disabled {
   animation: nombre-anim-neon 1.8s ease-in-out infinite;
 }
 
-/* Fase 4 (pagos): "prisma", exclusiva de Prodigia Pro — el degradé de
-   nombre-anim-arcoiris más el brillo pulsante de nombre-anim-neon
-   juntos, un escalón arriba de las 4 animaciones normales. */
+/* Fase 4 (pagos): "prisma", exclusiva de Prodigia Pro. Antes reusaba
+   literalmente el keyframe de nombre-anim-arcoiris (mismo degradé,
+   misma dirección) más un glow sutil — a simple vista quedaban
+   indistinguibles (reportado en vivo, 2026-09-15: "el prisma y el
+   arcoiris se ven iguales"). Ahora tiene su PROPIO keyframe (paleta fría
+   violeta/cian/magenta en vez del arcoíris cálido, y barre en dirección
+   contraria) + más velocidad + un glow más fuerte con leve pulso de
+   escala — se nota de lejos que es un efecto distinto, no solo una
+   variante del arcoiris. */
+@keyframes nombre-anim-prisma-mov {
+  to {
+    background-position: -220% center;
+  }
+}
 @keyframes nombre-anim-prisma-brillo {
   0%,
   100% {
-    filter: drop-shadow(0 0 3px #7c5cff);
+    filter: drop-shadow(0 0 2px #7c5cff) drop-shadow(0 0 2px #4cc9f0);
+    transform: scale(1);
   }
   50% {
-    filter: drop-shadow(0 0 8px #7c5cff);
+    filter: drop-shadow(0 0 9px #7c5cff) drop-shadow(0 0 9px #ff5df0);
+    transform: scale(1.035);
   }
 }
 .nombre-anim-prisma {
-  background-image: linear-gradient(90deg, #ff5d5d, #ffc53d, #3ddc97, #4cc9f0, #7c5cff, #ff5d5d);
-  background-size: 200% auto;
+  display: inline-block;
+  background-image: linear-gradient(90deg, #7c5cff, #4cc9f0, #ff5df0, #4cc9f0, #7c5cff);
+  background-size: 220% auto;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: nombre-anim-arcoiris 3.5s linear infinite, nombre-anim-prisma-brillo 1.8s ease-in-out infinite;
+  animation: nombre-anim-prisma-mov 2.1s linear infinite, nombre-anim-prisma-brillo 1.4s ease-in-out infinite;
+}
+
+/* Pedido en vivo (2026-09-15): "agregar más efectos, glitch o nombres
+   que se deconstruyen". Las dos usan el mismo truco (2 capas fantasma
+   con content: attr(data-text) sobre el texto real, ver data-text en
+   NombreConFuente.tsx/ScrollFloat.tsx) para no tener que separar el
+   nombre en spans por letra — el requisito que ya regía para el resto
+   de las animaciones de nombre. */
+.nombre-anim-glitch {
+  position: relative;
+  display: inline-block;
+}
+.nombre-anim-glitch::before,
+.nombre-anim-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: inherit;
+  background: inherit;
+  -webkit-background-clip: inherit;
+  background-clip: inherit;
+}
+.nombre-anim-glitch::before {
+  text-shadow: -2px 0 #ff4d6d;
+  clip-path: inset(0 0 55% 0);
+  animation: nombre-anim-glitch-1 2.6s infinite linear;
+}
+.nombre-anim-glitch::after {
+  text-shadow: 2px 0 #4cc9f0;
+  clip-path: inset(45% 0 0 0);
+  animation: nombre-anim-glitch-2 3.1s infinite linear;
+}
+/* La mayor parte del ciclo no pasa nada (opacity 0) — el glitch aparece
+   en ráfagas cortas cada 2-3s, no un temblor constante todo el rato. */
+@keyframes nombre-anim-glitch-1 {
+  0%,
+  92%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  93% {
+    transform: translate(-3px, -1px);
+    opacity: 1;
+  }
+  95% {
+    transform: translate(3px, 1px);
+    opacity: 1;
+  }
+  97% {
+    transform: translate(-2px, 0);
+    opacity: 1;
+  }
+  98% {
+    opacity: 0;
+  }
+}
+@keyframes nombre-anim-glitch-2 {
+  0%,
+  90%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  91% {
+    transform: translate(3px, 1px);
+    opacity: 1;
+  }
+  94% {
+    transform: translate(-3px, -1px);
+    opacity: 1;
+  }
+  96% {
+    transform: translate(2px, 0);
+    opacity: 1;
+  }
+  97% {
+    opacity: 0;
+  }
+}
+
+.nombre-anim-deconstruccion {
+  position: relative;
+  display: inline-block;
+  animation: nombre-anim-deconstruccion-base 4.5s ease-in-out infinite;
+}
+.nombre-anim-deconstruccion::before,
+.nombre-anim-deconstruccion::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: inherit;
+  opacity: 0;
+}
+.nombre-anim-deconstruccion::before {
+  animation: nombre-anim-deconstruccion-izq 4.5s ease-in-out infinite;
+}
+.nombre-anim-deconstruccion::after {
+  animation: nombre-anim-deconstruccion-der 4.5s ease-in-out infinite;
+}
+/* El nombre real se desenfoca apenas un instante (mismo % que las capas
+   fantasma de abajo) mientras 2 copias se "rompen" hacia afuera en
+   direcciones opuestas y vuelven a encajar — la ilusión de que se
+   deconstruye y se recompone, sin tocar el texto letra por letra. */
+@keyframes nombre-anim-deconstruccion-base {
+  0%,
+  28%,
+  100% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  12% {
+    opacity: 0.45;
+    filter: blur(0.6px);
+  }
+}
+@keyframes nombre-anim-deconstruccion-izq {
+  0%,
+  28%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+    filter: blur(0);
+    opacity: 0;
+  }
+  12% {
+    transform: translate(-13px, -4px) rotate(-9deg);
+    filter: blur(1.5px);
+    opacity: 0.85;
+  }
+}
+@keyframes nombre-anim-deconstruccion-der {
+  0%,
+  28%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+    filter: blur(0);
+    opacity: 0;
+  }
+  12% {
+    transform: translate(13px, 4px) rotate(9deg);
+    filter: blur(1.5px);
+    opacity: 0.85;
+  }
 }
 
 /* Fondo decorativo de la tarjeta de perfil (profiles.fondo_perfil) —

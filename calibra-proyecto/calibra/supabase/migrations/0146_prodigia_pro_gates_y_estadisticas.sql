@@ -207,8 +207,13 @@ grant execute on function public.comprar_item_tienda(text, integer) to authentic
 -- existe en el proyecto (documentado como riesgo aceptado en varias
 -- migraciones anteriores) así que se repite el mismo patrón ya
 -- establecido, no se inventa uno nuevo.
+-- "precision" solo (sin calificar) revienta con 42601 dentro de una
+-- lista de columnas de RETURNS TABLE — Postgres lo trata como palabra
+-- reservada de tipo justo en esa posición (confirmado en vivo,
+-- 2026-09-14: "ERROR: 42601: syntax error at or near 'precision'").
+-- Se renombra a precision_pct, sin tocar nada más de la función.
 create or replace function public.estadisticas_pro_perfil()
-returns table (mundo text, intentos bigint, correctos bigint, precision numeric)
+returns table (mundo text, intentos bigint, correctos bigint, precision_pct numeric)
 language plpgsql
 security definer
 set search_path = public

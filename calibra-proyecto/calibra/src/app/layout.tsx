@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono, Playfair_Display, Caveat, Bebas_Neue, Pacifico, Orbitron } from "next/font/google";
+import { Space_Grotesk, Inter, JetBrains_Mono, Playfair_Display, Caveat, Bebas_Neue, Pacifico, Orbitron, Anton, Dancing_Script } from "next/font/google";
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
@@ -69,6 +69,22 @@ const pacifico = Pacifico({
 
 const orbitron = Orbitron({
   variable: "--font-orbitron",
+  subsets: ["latin"],
+  weight: ["600", "700"],
+});
+
+// Pedido en vivo (2026-09-15): "más fuentes para los nombres" — mismo
+// criterio que las 6 de arriba (Google Fonts vía next/font/google,
+// nunca dafont.com por licencias), solo se usan a través de
+// NombreConFuente.tsx.
+const anton = Anton({
+  variable: "--font-anton",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
+const dancingScript = Dancing_Script({
+  variable: "--font-dancing-script",
   subsets: ["latin"],
   weight: ["600", "700"],
 });
@@ -147,7 +163,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable} ${caveat.variable} ${bebasNeue.variable} ${pacifico.variable} ${orbitron.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable} ${caveat.variable} ${bebasNeue.variable} ${pacifico.variable} ${orbitron.variable} ${anton.variable} ${dancingScript.variable} h-full antialiased`}
     >
       <head>
         <Script id="theme-init" strategy="beforeInteractive">
