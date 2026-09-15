@@ -803,6 +803,12 @@
       "errorInvalida": "Ingresa una edad válida.",
       "errorGenerico": "No se pudo guardar. Prueba de nuevo."
     },
+    "confirmarCuenta": {
+      "titulo": "Ya casi",
+      "subtitulo": "Por seguridad, algunos correos revisan los links automáticamente antes de que los abras — por eso pedimos un click extra acá para confirmar que sos vos.",
+      "boton": "Confirmar mi cuenta",
+      "invalido": "Este link no es válido o ya se usó. Pedí uno nuevo desde /recuperar o volviendo a intentar el registro."
+    },
     "deteccionConexion": {
       "mensaje": "Notamos que tu conexión anda lenta — ¿quieres desactivar los efectos visuales extra? Puedes cambiarlo cuando quieras en Ajustes.",
       "desactivar": "Desactivar",

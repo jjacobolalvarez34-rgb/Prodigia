@@ -803,6 +803,12 @@
       "errorInvalida": "Enter a valid age.",
       "errorGenerico": "Couldn't save. Try again."
     },
+    "confirmarCuenta": {
+      "titulo": "Almost there",
+      "subtitulo": "For security, some email providers automatically scan links before you open them — that's why we ask for one extra click here to confirm it's really you.",
+      "boton": "Confirm my account",
+      "invalido": "This link isn't valid or was already used. Request a new one from /recuperar or by trying to sign up again."
+    },
     "deteccionConexion": {
       "mensaje": "We noticed your connection is slow — want to turn off the extra visual effects? You can change this anytime in Settings.",
       "desactivar": "Turn off",
