@@ -1,15 +1,22 @@
 <!--
   Prodigia — email de confirmación de cuenta (registro con email+contraseña)
   Pegar en: Supabase Dashboard → Authentication → Emails → Templates →
-  "Confirm signup". Usa la variable {{ .ConfirmationURL }} que Supabase
-  reemplaza automáticamente por el link real con el `code` de un solo uso.
+  "Confirm signup".
+
+  2026-09-15: cambiado de {{ .ConfirmationURL }} a un link armado a mano
+  con {{ .TokenHash }} apuntando a /auth/confirm (src/app/auth/confirm/route.ts).
+  Motivo: {{ .ConfirmationURL }} usa el flujo PKCE (/auth/callback?code=...),
+  que necesita una cookie que Supabase guarda en el navegador donde se
+  llamó signUp() — si el link se abre en otro navegador/dispositivo (el
+  celular, o la app de Gmail que abre los links en su propio WebView), la
+  confirmación falla siempre. /auth/confirm usa verifyOtp con token_hash,
+  que no depende de esa cookie. Ver docs/PROGRESO.md (entrada "TERCERA
+  causa distinta") para el diagnóstico completo.
 
   Nota de origen: no encontré docs/email-template-magic-link.html en el
   repo (no existe en ningún lado del working tree) — así que este HTML se
   armó desde cero, no "adaptado" de ese archivo, tomando la paleta y
   tipografía de src/app/globals.css y el logo de src/components/Logo.tsx.
-  Si ese archivo existe en otro lado y querías que partiera de ahí,
-  avisame y lo reescribo sobre esa base.
 
   Reglas de compatibilidad de email respetadas: todo con estilos inline,
   layout con tablas (no flex/grid), sin JS, sin CSS externo, ancho fijo
@@ -80,7 +87,7 @@
                     <table role="presentation" cellpadding="0" cellspacing="0">
                       <tr>
                         <td align="center" style="border-radius:14px; background-color:#6C4CF1;">
-                          <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block; padding:14px 32px; font-family: 'Space Grotesk', Inter, sans-serif; font-size:15px; font-weight:600; color:#FFFFFF; text-decoration:none; border-radius:14px;">
+                          <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup" target="_blank" style="display:inline-block; padding:14px 32px; font-family: 'Space Grotesk', Inter, sans-serif; font-size:15px; font-weight:600; color:#FFFFFF; text-decoration:none; border-radius:14px;">
                             Confirmar mi cuenta
                           </a>
                         </td>
@@ -88,7 +95,7 @@
                     </table>
                     <p style="margin:24px 0 0; font-size:12px; line-height:1.6; color:#9AA1B2;">
                       Si el botón no funciona, copiá y pegá este link en el navegador:<br />
-                      <a href="{{ .ConfirmationURL }}" style="color:#6C4CF1; word-break:break-all;">{{ .ConfirmationURL }}</a>
+                      <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup" style="color:#6C4CF1; word-break:break-all;">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup</a>
                     </p>
                   </td>
                 </tr>
