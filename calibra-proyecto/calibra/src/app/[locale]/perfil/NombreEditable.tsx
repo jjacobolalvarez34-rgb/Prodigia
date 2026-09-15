@@ -6,7 +6,9 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Boton from "@/components/Boton";
 import ScrollFloat from "@/components/reactbits/ScrollFloat";
-import { FUENTE_NOMBRE_CLASS, ANIMACION_NOMBRE_CLASS, type FuenteNombre, type AnimacionNombre } from "@/types/database";
+import Shuffle from "@/components/reactbits/Shuffle";
+import DecryptedText from "@/components/reactbits/DecryptedText";
+import { FUENTE_NOMBRE_CLASS, ANIMACION_NOMBRE_CLASS, ANIMACIONES_PESADAS, type FuenteNombre, type AnimacionNombre } from "@/types/database";
 
 // Fase 6 (mercado): cambiar de nombre después del primero cuesta
 // Chispas — nunca Experiencia, que es semanal/temporal y mediría mal si
@@ -49,16 +51,38 @@ export default function NombreEditable({ nombreActual, fuente, animacion }: Prop
     // ahora también en tu propio perfil. La tipografía comprada
     // (fuente_nombre) se preserva vía textClassName, mismo mapeo que
     // usa NombreConFuente.tsx.
+    const claseFuente = FUENTE_NOMBRE_CLASS[fuente ?? "default"] ?? "";
+    const texto = nombreActual ?? t("nombreEditable.jugador");
+    // Perfil propio: único lugar (junto al perfil público) con UN
+    // nombre en pantalla — acá sí se permite montar el componente
+    // pesado de shuffle/decrypted en vez de la clase CSS liviana. Ver
+    // el mismo criterio en NombreConFuente.tsx (permitirEfectosPesados).
     return (
       <div className="flex items-center gap-3">
-        <ScrollFloat
-          tag="h1"
-          className="font-display text-2xl font-bold tracking-tight text-foreground"
-          textClassName={`${FUENTE_NOMBRE_CLASS[fuente ?? "default"] ?? ""} ${ANIMACION_NOMBRE_CLASS[animacion ?? "ninguna"] ?? ""}`}
-          animationDuration={0.7}
-        >
-          {nombreActual ?? t("nombreEditable.jugador")}
-        </ScrollFloat>
+        {animacion && ANIMACIONES_PESADAS.has(animacion) ? (
+          animacion === "shuffle" ? (
+            <Shuffle
+              text={texto}
+              tag="h1"
+              className={`font-display text-2xl font-bold tracking-tight text-foreground ${claseFuente}`}
+            />
+          ) : (
+            <DecryptedText
+              text={texto}
+              animateOn="hover"
+              className={`font-display text-2xl font-bold tracking-tight text-foreground ${claseFuente}`}
+            />
+          )
+        ) : (
+          <ScrollFloat
+            tag="h1"
+            className="font-display text-2xl font-bold tracking-tight text-foreground"
+            textClassName={`${claseFuente} ${ANIMACION_NOMBRE_CLASS[animacion ?? "ninguna"] ?? ""}`}
+            animationDuration={0.7}
+          >
+            {texto}
+          </ScrollFloat>
+        )}
         <button
           onClick={() => setEditando(true)}
           className="text-xs font-medium text-primario hover:underline"

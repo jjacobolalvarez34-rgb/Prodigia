@@ -438,6 +438,10 @@
     }
   },
   "Tienda": {
+    "trastiendaGateEdad": {
+      "titulo": "La Trastienda es para mayores de {n} años",
+      "descripcion": "Tiene ruleta y apuestas — el resto de Prodigia (mundos, duelos, tienda de cosméticos) sigue disponible como siempre."
+    },
     "metadata": {
       "title": "Tienda",
       "description": "Gasta tus Chispas en escudos, boosts y cosméticos del bazar de Prodigia."
@@ -483,6 +487,8 @@
       "fuenteElegante": "Fuente Caligrafía",
       "animacionGlitch": "Animación Glitch",
       "animacionDeconstruccion": "Animación Deconstrucción",
+      "animacionShuffle": "Animación Shuffle",
+      "animacionDecrypted": "Animación Decrypted",
       "hielo": "Hielo",
       "tiempoExtra": "+3 segundos"
     },
@@ -503,6 +509,8 @@
       "neon": "Neón",
       "glitch": "Glitch",
       "deconstruccion": "Deconstrucción",
+      "shuffle": "Shuffle (solo en tu perfil)",
+      "decrypted": "Decrypted (solo en tu perfil)",
       "prisma": "Prisma"
     },
     "fondos": {
@@ -1362,6 +1370,8 @@
       "yaTienesCuenta": "¿Ya tienes cuenta?",
       "iniciaSesion": "Inicia sesión",
       "emailPlaceholder": "tu@email.com",
+      "edadPlaceholder": "Tu edad",
+      "errorEdadInvalida": "Ingresa una edad válida.",
       "passwordPlaceholder": "Contraseña (mínimo 6 caracteres)",
       "confirmarPlaceholder": "Repite la contraseña",
       "creandoCuenta": "Creando cuenta...",
@@ -1406,6 +1416,8 @@
       "form": {
         "titulo": "Guardar mi cuenta",
         "emailPlaceholder": "tu@email.com",
+        "edadPlaceholder": "Tu edad",
+        "errorEdadInvalida": "Ingresa una edad válida.",
         "passwordPlaceholder": "Contraseña (mínimo 6 caracteres)",
         "confirmarPlaceholder": "Repite la contraseña",
         "botonConfirmar": "Confirmar",
@@ -1589,6 +1601,16 @@
     "caminoContinuo": {
       "proximamente": "Próximamente"
     },
+    "nivelCuentaSubio": {
+      "aria": "Subiste al nivel {nivel} — ganaste {bonus} Chispas",
+      "titulo": "¡NIVEL {nivel}!",
+      "chispas": "Chispas",
+      "subtitulo": "Seguí sumando para el nivel {siguiente}",
+      "continuar": "¡Continuar!"
+    },
+    "chispasGanadas": {
+      "texto": "+{n} Chispas ganadas"
+    },
     "campoPassword": {
       "ocultarContrasena": "Ocultar contraseña",
       "mostrarContrasena": "Mostrar contraseña"
@@ -1738,7 +1760,10 @@
       "dueloSubtitulo": "Ronda {ronda}/{total} · Enigmia",
       "listoTitulo": "¿Listo?",
       "listoDescripcion": "10 acertijos o 60 segundos, lo que llegue primero.",
-      "iniciarPartida": "Iniciar partida"
+      "iniciarPartida": "Iniciar partida",
+      "categorias": {
+        "mezcla": "Mezcla (recomendado)"
+      }
     },
     "sprintRunner": {
       "escudosDisponibles": "{n} escudos disponibles",

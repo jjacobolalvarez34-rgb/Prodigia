@@ -20,6 +20,9 @@ interface RegistrarXpDiarioResult {
   xp_ganado_hoy: number;
   meta_alcanzada: boolean;
   meta_xp_diaria: number;
+  nivel_cuenta_subio: boolean;
+  nivel_cuenta_nuevo: number;
+  nivel_cuenta_bonus: number;
 }
 
 // Nombres de columna del RPC registrar_progreso_mundo (0132): world/
@@ -233,5 +236,11 @@ export async function POST(request: Request) {
       nivel_mundo: nivelMundo.nivel_mundo_out,
       subio: nivelMundo.nivel_mundo_out > nivelMundo.nivel_anterior,
     },
+    // Pedido en vivo (2026-09-15) — spec previa en
+    // docs/audits/LEVEL-UP-ANIMACION-2026-09-08.md: el hueco real era
+    // que este endpoint nunca exponía si subió profiles.nivel_cuenta.
+    nivelCuenta: registro.nivel_cuenta_subio
+      ? { subio: true, nivel: registro.nivel_cuenta_nuevo, bonus: registro.nivel_cuenta_bonus }
+      : null,
   });
 }

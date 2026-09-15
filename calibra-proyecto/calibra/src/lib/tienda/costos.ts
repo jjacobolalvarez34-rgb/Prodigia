@@ -94,6 +94,13 @@ export const COSTOS = {
   // de las 6 normales (sin contar prisma, exclusiva de Pro).
   animacion_glitch: 2000,
   animacion_deconstruccion: 2400,
+  // Pedido en vivo (2026-09-15): "empieza con shuffle y decripte" — dos
+  // escalones arriba del resto (no CSS, GSAP/JS real por instancia,
+  // solo se ven en tu perfil propio o público — ver ANIMACIONES_PESADAS
+  // en types/database.ts), consistente con lo que ya cuesta más lo que
+  // es más vistoso/costoso de construir.
+  animacion_shuffle: 2800,
+  animacion_decrypted: 2800,
   // Fondos de tarjeta de perfil: mismo escalón que las animaciones —
   // nebulosa/dorado un poco más caros (degradé de 3 tonos más vistoso).
   fondo_oceano: 1600,

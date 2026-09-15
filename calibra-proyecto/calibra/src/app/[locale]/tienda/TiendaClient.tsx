@@ -138,6 +138,8 @@ export default function TiendaClient({
     fuente_elegante: t("items.fuenteElegante"),
     animacion_glitch: t("items.animacionGlitch"),
     animacion_deconstruccion: t("items.animacionDeconstruccion"),
+    animacion_shuffle: t("items.animacionShuffle"),
+    animacion_decrypted: t("items.animacionDecrypted"),
     hielo: t("items.hielo"),
     tiempo_extra: t("items.tiempoExtra"),
   };
@@ -158,6 +160,8 @@ export default function TiendaClient({
     { animacion: "neon", item: "animacion_neon", nombre: t("animaciones.neon") },
     { animacion: "glitch", item: "animacion_glitch", nombre: t("animaciones.glitch") },
     { animacion: "deconstruccion", item: "animacion_deconstruccion", nombre: t("animaciones.deconstruccion") },
+    { animacion: "shuffle", item: "animacion_shuffle", nombre: t("animaciones.shuffle") },
+    { animacion: "decrypted", item: "animacion_decrypted", nombre: t("animaciones.decrypted") },
     { animacion: "prisma", item: "animacion_prisma", nombre: t("animaciones.prisma"), requierePro: true },
   ];
   const FONDOS_COMPRABLES: { fondo: FondoPerfil; item: ItemComprable; nombre: string; requierePro?: boolean }[] = [

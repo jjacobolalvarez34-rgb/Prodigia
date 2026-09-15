@@ -15,6 +15,9 @@ interface RegistrarXpDiarioResult {
   xp_ganado_hoy: number;
   meta_alcanzada: boolean;
   meta_xp_diaria: number;
+  nivel_cuenta_subio: boolean;
+  nivel_cuenta_nuevo: number;
+  nivel_cuenta_bonus: number;
 }
 
 // Nombres de columna del RPC registrar_progreso_mundo (0132): world/
@@ -157,5 +160,8 @@ const { data: registroRows, error: registroError } = await supabase.rpc("registr
       nivel_mundo: nivelMundo.nivel_mundo_out,
       subio: nivelMundo.nivel_mundo_out > nivelMundo.nivel_anterior,
     },
+    nivelCuenta: registro.nivel_cuenta_subio
+      ? { subio: true, nivel: registro.nivel_cuenta_nuevo, bonus: registro.nivel_cuenta_bonus }
+      : null,
   });
 }

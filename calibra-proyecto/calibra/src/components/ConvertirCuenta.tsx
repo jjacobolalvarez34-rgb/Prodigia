@@ -40,6 +40,7 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
   const t = useTranslations("Auth.convertirCuenta");
   const [paso, setPaso] = useState<"cerrado" | "form" | "nombre" | "directo" | "confirmar">(inicial);
   const [email, setEmail] = useState("");
+  const [edad, setEdad] = useState("");
   const [password, setPassword] = useState("");
   const [confirmar, setConfirmar] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -90,6 +91,12 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
       return;
     }
 
+    const edadNum = Number(edad);
+    if (!edad || !Number.isInteger(edadNum) || edadNum < 1 || edadNum > 120) {
+      setError(t("form.errorEdadInvalida"));
+      return;
+    }
+
     setEnviando(true);
     const supabase = createClient();
     // Antes esto no mandaba emailRedirectTo — la confirmación del email
@@ -100,12 +107,22 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
       { email, password },
       { emailRedirectTo: urlAbsoluta("/auth/callback") }
     );
-    setEnviando(false);
 
     if (authError) {
+      setEnviando(false);
       setError(mensajeErrorAuth(authError, t("form.errorGuardar")));
       return;
     }
+
+    // A diferencia de RegistroForm.tsx (cuenta nueva, ver
+    // handle_new_user() + user_metadata), acá ya hay una sesión real
+    // desde que se entró como invitado — updateUser() no crea una fila
+    // nueva en auth.users (mismo user_id de siempre), así que el
+    // trigger que copia la edad no dispara. Se guarda directo con la
+    // sesión ya autenticada. Best-effort: si falla, no bloquea el resto
+    // del flujo de conversión de cuenta.
+    await supabase.rpc("guardar_edad_usuario", { p_edad: edadNum });
+    setEnviando(false);
 
     // Si el proyecto pide confirmar el email, el cambio queda pendiente
     // hasta que confirmes desde el link que te llega; si no, ya quedó —
@@ -233,6 +250,16 @@ export default function ConvertirCuenta({ inicial = "cerrado" }: Props) {
           onChange={(e) => setEmail(e.target.value)}
           placeholder={t("form.emailPlaceholder")}
           autoComplete="email"
+          className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primario"
+        />
+        <input
+          type="number"
+          required
+          min={1}
+          max={120}
+          value={edad}
+          onChange={(e) => setEdad(e.target.value)}
+          placeholder={t("form.edadPlaceholder")}
           className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primario"
         />
         <CampoPassword

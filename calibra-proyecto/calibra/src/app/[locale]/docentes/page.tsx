@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/server";
+import Header from "@/components/Header";
 import Logo from "@/components/Logo";
 import ThemeToggle from "@/components/ThemeToggle";
 import { IconCheck } from "@/components/icons";
@@ -24,23 +26,36 @@ export async function generateMetadata(): Promise<Metadata> {
 // prometer algo que no está construido.
 export default async function DocentesPage() {
   const t = await getTranslations("Docentes");
+  // Bug reportado en vivo (2026-09-15): esta página siempre mostraba
+  // "Iniciar sesión" en el encabezado, sin importar si ya había una
+  // sesión real — nunca se consultaba. Ahora sí: con sesión, mismo
+  // Header de siempre (para volver a la app sin perderse); sin sesión,
+  // el encabezado minimalista original con el link real a /login.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <>
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-2 font-display text-lg font-bold tracking-tight text-foreground">
-            <Logo size={26} colorAro="#6C4CF1" />
-            Prodigia
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm font-medium text-primario hover:underline">
-              {t("iniciarSesion")}
+      {user ? (
+        <Header autenticado invitado={user.is_anonymous} />
+      ) : (
+        <header className="border-b border-border">
+          <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+            <Link href="/" className="flex items-center gap-2 font-display text-lg font-bold tracking-tight text-foreground">
+              <Logo size={26} colorAro="#6C4CF1" />
+              Prodigia
             </Link>
-            <ThemeToggle />
+            <div className="flex items-center gap-4">
+              <Link href="/login" className="text-sm font-medium text-primario hover:underline">
+                {t("iniciarSesion")}
+              </Link>
+              <ThemeToggle />
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-16 px-4 py-16 sm:px-6">
         <section className="flex flex-col items-center gap-4 text-center">

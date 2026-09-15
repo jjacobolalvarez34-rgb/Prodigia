@@ -98,7 +98,28 @@ export const FUENTE_NOMBRE_CLASS: Record<FuenteNombre, string> = {
 // con content: attr(data-text), así que NombreConFuente.tsx les pasa
 // data-text con el nombre (ver ese archivo) para que el efecto tenga
 // algo que duplicar sin separar el texto en spans por letra.
-export type AnimacionNombre = "ninguna" | "arcoiris" | "brillo" | "ondulante" | "neon" | "prisma" | "glitch" | "deconstruccion";
+// "shuffle"/"decrypted" (pedido en vivo, 2026-09-15): a diferencia de
+// las 7 animaciones de arriba (una sola clase CSS, funciona en
+// cualquier <span>), estas dos son componentes React con GSAP/JS real
+// corriendo por instancia — demasiado pesado para listas con muchos
+// nombres a la vez (ranking, chat de clan, vidriera de la tienda). Por
+// eso NO tienen clase CSS acá (quedan "" a propósito) — solo se
+// renderizan de verdad en los 2 lugares "hero" con un único nombre en
+// pantalla (perfil propio y perfil público), ver
+// `permitirEfectosPesados` en NombreConFuente.tsx y el mismo criterio
+// en NombreEditable.tsx. En cualquier otro lugar caen a texto plano,
+// sin animación — mejor eso que 50 instancias de GSAP a la vez.
+export type AnimacionNombre =
+  | "ninguna"
+  | "arcoiris"
+  | "brillo"
+  | "ondulante"
+  | "neon"
+  | "prisma"
+  | "glitch"
+  | "deconstruccion"
+  | "shuffle"
+  | "decrypted";
 
 export const ANIMACION_NOMBRE_CLASS: Record<AnimacionNombre, string> = {
   ninguna: "",
@@ -109,7 +130,14 @@ export const ANIMACION_NOMBRE_CLASS: Record<AnimacionNombre, string> = {
   prisma: "nombre-anim-prisma",
   glitch: "nombre-anim-glitch",
   deconstruccion: "nombre-anim-deconstruccion",
+  shuffle: "",
+  decrypted: "",
 };
+
+// Animaciones que necesitan el componente React pesado (no una clase
+// CSS) — usado por NombreConFuente.tsx/NombreEditable.tsx para decidir
+// cuándo montar Shuffle/DecryptedText en vez de un <span> con clase.
+export const ANIMACIONES_PESADAS: ReadonlySet<AnimacionNombre> = new Set(["shuffle", "decrypted"]);
 
 // Fondo decorativo de la tarjeta de perfil (franja superior, arriba del
 // avatar — no reemplaza la foto de perfil). 5 degradés CSS, sin assets

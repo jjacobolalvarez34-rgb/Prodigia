@@ -36,6 +36,7 @@ export default function RegistroForm({ refId }: Props) {
   const router = useRouter();
   const t = useTranslations("Auth.registro");
   const [email, setEmail] = useState("");
+  const [edad, setEdad] = useState("");
   const [password, setPassword] = useState("");
   const [confirmar, setConfirmar] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -88,13 +89,23 @@ export default function RegistroForm({ refId }: Props) {
       return;
     }
 
+    const edadNum = Number(edad);
+    if (!edad || !Number.isInteger(edadNum) || edadNum < 1 || edadNum > 120) {
+      setError(t("errorEdadInvalida"));
+      return;
+    }
+
     setEnviando(true);
     const supabase = createClient();
     const redirectPath = refId ? `/auth/callback?ref=${encodeURIComponent(refId)}` : "/auth/callback";
+    // La edad viaja en user_metadata (no hay sesión todavía si el
+    // proyecto pide confirmar el email) — handle_new_user() la copia a
+    // profiles.edad_ingresada al crear la fila, ver
+    // 0157_edad_y_gate_trastienda.sql.
     const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: urlAbsoluta(redirectPath) },
+      options: { emailRedirectTo: urlAbsoluta(redirectPath), data: { edad_ingresada: Number(edad) } },
     });
 
     if (authError) {
@@ -173,6 +184,16 @@ export default function RegistroForm({ refId }: Props) {
         placeholder={t("emailPlaceholder")}
         autoComplete="email"
         autoFocus
+        className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
+      />
+      <input
+        type="number"
+        required
+        min={1}
+        max={120}
+        value={edad}
+        onChange={(e) => setEdad(e.target.value)}
+        placeholder={t("edadPlaceholder")}
         className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primario"
       />
       <CampoPassword

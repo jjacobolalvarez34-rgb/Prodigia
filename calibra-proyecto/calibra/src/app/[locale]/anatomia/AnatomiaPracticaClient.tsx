@@ -12,6 +12,8 @@ import BotonesFinPartida from "@/components/BotonesFinPartida";
 import LogroBanner from "@/components/LogroBanner";
 import ApuestaResultado from "@/components/ApuestaResultado";
 import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSubio";
+import NivelCuentaSubio, { type NivelCuentaInfo } from "@/components/NivelCuentaSubio";
+import ChispasGanadasNota from "@/components/ChispasGanadasNota";
 
 import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/ResultadoDueloBlock";
 import SalaEsperaDuelo from "@/components/duelos/SalaEsperaDuelo";
@@ -33,6 +35,7 @@ interface FinishResponse {
   logrosNuevos: Achievement[];
   apuesta?: { gano: boolean; monto: number } | null;
   nivelMundo?: NivelMundoInfo | null;
+  nivelCuenta?: NivelCuentaInfo | null;
 
 }
 
@@ -226,6 +229,7 @@ export default function AnatomiaPracticaClient({ modo, nivelInicial, escudosExtr
       <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-20">
         <LogroBanner logros={resumen.logrosNuevos} />
         <NivelMundoSubio nivelMundo={resumen.nivelMundo} />
+        <NivelCuentaSubio nivelCuenta={resumen.nivelCuenta} />
 
         <ApuestaResultado apuesta={resumen.apuesta ?? null} />
         <ResultadoDueloBlock duelo={resultadoDuelo} />
@@ -235,6 +239,7 @@ export default function AnatomiaPracticaClient({ modo, nivelInicial, escudosExtr
             +{resumen.sprint.xpGanado}{" "}
             <span className="text-base font-medium text-texto-secundario">{t("practicaClient.experiencia")}</span>
           </p>
+          <ChispasGanadasNota valor={resumen.sprint.xpGanado} />
         </div>
 
         <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">

@@ -438,6 +438,10 @@
     }
   },
   "Tienda": {
+    "trastiendaGateEdad": {
+      "titulo": "The Backroom is for ages {n} and up",
+      "descripcion": "It has roulette and betting — the rest of Prodigia (worlds, duels, cosmetics shop) is still available as always."
+    },
     "metadata": {
       "title": "Shop",
       "description": "Spend your Chispas on shields, boosts, and cosmetics from Prodigia's bazaar."
@@ -483,6 +487,8 @@
       "fuenteElegante": "Calligraphy Font",
       "animacionGlitch": "Glitch Animation",
       "animacionDeconstruccion": "Deconstruction Animation",
+      "animacionShuffle": "Shuffle Animation",
+      "animacionDecrypted": "Decrypted Animation",
       "hielo": "Ice",
       "tiempoExtra": "+3 seconds"
     },
@@ -503,6 +509,8 @@
       "neon": "Neon",
       "glitch": "Glitch",
       "deconstruccion": "Deconstruction",
+      "shuffle": "Shuffle (profile only)",
+      "decrypted": "Decrypted (profile only)",
       "prisma": "Prism"
     },
     "fondos": {
@@ -1362,6 +1370,8 @@
       "yaTienesCuenta": "Already have an account?",
       "iniciaSesion": "Sign in",
       "emailPlaceholder": "you@email.com",
+      "edadPlaceholder": "Your age",
+      "errorEdadInvalida": "Enter a valid age.",
       "passwordPlaceholder": "Password (6 characters minimum)",
       "confirmarPlaceholder": "Repeat your password",
       "creandoCuenta": "Creating account...",
@@ -1406,6 +1416,8 @@
       "form": {
         "titulo": "Save my account",
         "emailPlaceholder": "you@email.com",
+        "edadPlaceholder": "Your age",
+        "errorEdadInvalida": "Enter a valid age.",
         "passwordPlaceholder": "Password (6 characters minimum)",
         "confirmarPlaceholder": "Repeat your password",
         "botonConfirmar": "Confirm",
@@ -1589,6 +1601,16 @@
     "caminoContinuo": {
       "proximamente": "Coming soon"
     },
+    "nivelCuentaSubio": {
+      "aria": "You reached level {nivel} — you earned {bonus} Chispas",
+      "titulo": "LEVEL {nivel}!",
+      "chispas": "Chispas",
+      "subtitulo": "Keep going for level {siguiente}",
+      "continuar": "Continue!"
+    },
+    "chispasGanadas": {
+      "texto": "+{n} Chispas earned"
+    },
     "campoPassword": {
       "ocultarContrasena": "Hide password",
       "mostrarContrasena": "Show password"
@@ -1738,7 +1760,10 @@
       "dueloSubtitulo": "Round {ronda}/{total} · Enigmia",
       "listoTitulo": "Ready?",
       "listoDescripcion": "10 puzzles or 60 seconds, whichever comes first.",
-      "iniciarPartida": "Start match"
+      "iniciarPartida": "Start match",
+      "categorias": {
+        "mezcla": "Mix (recommended)"
+      }
     },
     "sprintRunner": {
       "escudosDisponibles": "{n} shields available",

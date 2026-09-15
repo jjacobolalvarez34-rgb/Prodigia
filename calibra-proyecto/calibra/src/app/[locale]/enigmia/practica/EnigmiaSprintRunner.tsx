@@ -145,6 +145,7 @@ export default function EnigmiaSprintRunner({
   const [hielosDisp, setHielosDisp] = useState(hielosIniciales);
   const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
   const [usandoConsumible, setUsandoConsumible] = useState<TipoUso>(null);
+  const [errorGuardado, setErrorGuardado] = useState<string | null>(null);
   const { racha, registrarResultado } = useRachaCombo();
 
   // Pedido explícito del propietario (2026-09-14): "cuando esté en
@@ -286,6 +287,20 @@ export default function EnigmiaSprintRunner({
         }),
       });
       const data = await res.json();
+      if (!res.ok || data.error) {
+        // Bug real encontrado en vivo (2026-09-15, "sigue fallando el
+        // conteo"): logic_attempts.puzzle_id era uuid con FK a
+        // logic_puzzles — el 75% de los acertijos son procedurales (sin
+        // fila real ahí, ids falsos tipo "memoria-..."), así que la
+        // mayoría de los intentos ni se guardaban y acá nunca se
+        // revisaba res.ok para darse cuenta (ver 0154_fix_enigmia_
+        // puzzle_id_procedural.sql, ya arreglado del lado de la base).
+        // Este chequeo queda para que un fallo futuro se vea en vez de
+        // desaparecer en silencio.
+        setErrorGuardado(typeof data.error === "string" ? data.error : `HTTP ${res.status}`);
+      } else {
+        setErrorGuardado(null);
+      }
       let xpGanado = 0;
       let nivelSubio = false;
       if (typeof data.xp === "number" && data.xp > 0) {
@@ -304,8 +319,8 @@ export default function EnigmiaSprintRunner({
       if (correct && xpGanado > 0) {
         setPuntaje({ total: xpGanado, intensidad: nivelSubio ? "grande" : xpGanado >= 20 ? "medio" : "chico" });
       }
-    } catch {
-      // Si falla el guardado, la partida sigue igual.
+    } catch (err) {
+      setErrorGuardado(err instanceof Error ? err.message : String(err));
     }
 
     setTimeout(() => {
@@ -375,6 +390,12 @@ export default function EnigmiaSprintRunner({
         )}
 
         <BarraTiempo remainingMs={remainingMs} duracionTotalMs={duracionTotalMs} bonusTiempo={bonusTiempo} cardKey={cardKey} />
+
+        {errorGuardado && (
+          <div className="rounded-lg border border-error/40 bg-error/10 px-3 py-2 text-xs font-medium text-error">
+            No se pudo guardar el intento: {errorGuardado}
+          </div>
+        )}
       </div>
 
       <TarjetaSprint

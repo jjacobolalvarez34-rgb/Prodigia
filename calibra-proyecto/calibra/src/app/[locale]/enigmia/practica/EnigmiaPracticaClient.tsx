@@ -4,12 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
-import type { CategoriaEnigmia, LogicPuzzle, Achievement } from "@/types/database";
+import { NOMBRE_CATEGORIA_ENIGMIA, type CategoriaEnigmia, type LogicPuzzle, type Achievement } from "@/types/database";
 import Boton from "@/components/Boton";
 import BotonesFinPartida from "@/components/BotonesFinPartida";
 import LogroBanner from "@/components/LogroBanner";
 import ApuestaResultado from "@/components/ApuestaResultado";
 import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSubio";
+import NivelCuentaSubio, { type NivelCuentaInfo } from "@/components/NivelCuentaSubio";
+import ChispasGanadasNota from "@/components/ChispasGanadasNota";
 
 import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/ResultadoDueloBlock";
 import SalaEsperaDuelo from "@/components/duelos/SalaEsperaDuelo";
@@ -31,6 +33,7 @@ interface FinishResponse {
   logrosNuevos: Achievement[];
   apuesta?: { gano: boolean; monto: number } | null;
   nivelMundo?: NivelMundoInfo | null;
+  nivelCuenta?: NivelCuentaInfo | null;
 
 }
 
@@ -85,6 +88,15 @@ export default function EnigmiaPracticaClient({
   const [errores, setErrores] = useState<LogicPuzzle[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [resultadoDuelo, setResultadoDuelo] = useState<ResultadoDuelo | null>(null);
+  // Paridad con el resto de los mundos (pedido en vivo, 2026-09-15):
+  // Enigmia era el único mundo cuya práctica libre no dejaba elegir
+  // tema — siempre la mezcla fija 75% procedural / 25% deducción. Acá
+  // se reusa categoriaForzada (ya existía, pensado solo para duelos)
+  // para practicar UNA categoría a la vez si el jugador la elige; null
+  // = la mezcla de siempre. Nunca se usa junto con nivelForzado (eso
+  // sigue siendo exclusivo de duelos): el nivel de práctica libre
+  // siempre es el personal, elegir tema no lo cambia.
+  const [categoriaElegida, setCategoriaElegida] = useState<CategoriaEnigmia | null>(null);
 
   const { estado: estadoArranque, segundos: segundosVs, rivalPresente, empezarAhora } = useArranqueSincronizado({
     duelId: duelo?.duelId,
@@ -214,7 +226,7 @@ export default function EnigmiaPracticaClient({
           escudosExtra={escudosExtra}
           hielosIniciales={hielosDisponibles}
           tiemposExtraIniciales={tiemposExtraDisponibles}
-          categoriaForzada={duelo?.categoria}
+          categoriaForzada={duelo?.categoria ?? categoriaElegida ?? undefined}
           nivelForzado={duelo?.nivel}
           duelId={duelo?.duelId}
           miUserId={miUserId}
@@ -245,6 +257,7 @@ export default function EnigmiaPracticaClient({
       <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-20">
         <LogroBanner logros={resumen.logrosNuevos} />
         <NivelMundoSubio nivelMundo={resumen.nivelMundo} />
+        <NivelCuentaSubio nivelCuenta={resumen.nivelCuenta} />
 
         <ApuestaResultado apuesta={resumen.apuesta ?? null} />
         <ResultadoDueloBlock duelo={resultadoDuelo} />
@@ -253,6 +266,7 @@ export default function EnigmiaPracticaClient({
           <p className="font-mono text-3xl font-bold text-foreground">
             +{resumen.partida.xpGanado} <span className="text-base font-medium text-texto-secundario">{t("experiencia")}</span>
           </p>
+          <ChispasGanadasNota valor={resumen.partida.xpGanado} />
         </div>
 
         <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
@@ -300,6 +314,38 @@ export default function EnigmiaPracticaClient({
       )}
       <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("listoTitulo")}</h1>
       <p className="text-texto-secundario">{t("listoDescripcion")}</p>
+
+      {/* Pedido en vivo (2026-09-15): "no me da a elegir las diferentes
+          afinidades, eso debe ser también paridad en todos los mundos" —
+          Enigmia era el único mundo sin selector de tema en su práctica
+          libre. Nunca aparece en duelo (el tema ahí lo decide el
+          matchmaking, no el jugador). */}
+      {!duelo && (
+        <div className="flex w-full flex-wrap items-center justify-center gap-2">
+          <button
+            onClick={() => setCategoriaElegida(null)}
+            aria-pressed={categoriaElegida === null}
+            className={`rounded-full border-2 px-3 py-1.5 text-xs font-semibold transition-colors ${
+              categoriaElegida === null ? "border-[#0E9F6E] bg-[#0E9F6E] text-white" : "border-border text-texto-secundario hover:border-[#0E9F6E]/50"
+            }`}
+          >
+            {t("categorias.mezcla")}
+          </button>
+          {(Object.keys(NOMBRE_CATEGORIA_ENIGMIA) as CategoriaEnigmia[]).map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setCategoriaElegida(cat)}
+              aria-pressed={categoriaElegida === cat}
+              className={`rounded-full border-2 px-3 py-1.5 text-xs font-semibold transition-colors ${
+                categoriaElegida === cat ? "border-[#0E9F6E] bg-[#0E9F6E] text-white" : "border-border text-texto-secundario hover:border-[#0E9F6E]/50"
+              }`}
+            >
+              {NOMBRE_CATEGORIA_ENIGMIA[cat]}
+            </button>
+          ))}
+        </div>
+      )}
+
       <Boton onClick={iniciar} colorHex="#0E9F6E" destacado className="w-full py-5 text-lg">
         {t("iniciarPartida")}
       </Boton>

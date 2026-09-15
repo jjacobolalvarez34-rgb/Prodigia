@@ -105,7 +105,7 @@ export function reproducirNotaMusical(freq: number) {
   }
 }
 
-export type TipoTono = "correcto" | "error" | "nivel" | "logro" | "duelo_gano" | "duelo_perdio" | "compra" | "notificacion";
+export type TipoTono = "correcto" | "error" | "nivel" | "nivel_cuenta" | "logro" | "duelo_gano" | "duelo_perdio" | "compra" | "notificacion";
 
 // Tonos generados con Web Audio (sin archivos de audio con licencia):
 // tick agudo al acertar, uno grave al fallar, chime ascendente al subir
@@ -129,6 +129,22 @@ export function reproducirTono(tipo: TipoTono) {
         { freq: 523.25, inicio: 0, duracion: 0.16, tipoOnda: "triangle" },
         { freq: 659.25, inicio: 0.09, duracion: 0.16, tipoOnda: "triangle" },
         { freq: 784.0, inicio: 0.18, duracion: 0.28, tipoOnda: "triangle" },
+      ]);
+    } else if (tipo === "nivel_cuenta") {
+      // Pedido en vivo (2026-09-15, "cápsula de chispas" al subir de
+      // nivel de cuenta) — mismo criterio conceptual que el spec previo
+      // (docs/audits/LEVEL-UP-ANIMACION-2026-09-08.md): un glissando
+      // corto que "carga" energía, un golpe grave (la cápsula se abre),
+      // y una fanfarria mayor arriba (la recompensa) — todo en una sola
+      // secuencia Web Audio, sin archivos de audio.
+      reproducirSecuencia([
+        { freq: 392.0, inicio: 0, duracion: 0.1, tipoOnda: "triangle", volumen: 0.05 },
+        { freq: 440.0, inicio: 0.08, duracion: 0.1, tipoOnda: "triangle", volumen: 0.06 },
+        { freq: 523.25, inicio: 0.16, duracion: 0.12, tipoOnda: "triangle", volumen: 0.07 },
+        { freq: 130.81, inicio: 0.3, duracion: 0.15, tipoOnda: "square", volumen: 0.1 },
+        { freq: 659.25, inicio: 0.42, duracion: 0.18, tipoOnda: "triangle", volumen: 0.1 },
+        { freq: 784.0, inicio: 0.54, duracion: 0.18, tipoOnda: "triangle", volumen: 0.1 },
+        { freq: 1046.5, inicio: 0.66, duracion: 0.5, tipoOnda: "triangle", volumen: 0.12 },
       ]);
     } else if (tipo === "logro") {
       reproducirSecuencia([

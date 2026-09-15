@@ -114,7 +114,7 @@ export default async function PerfilPublicoPage({ params }: Props) {
           <div className="relative flex flex-col items-center gap-3 px-6 py-8">
           <AvatarConMarco url={perfil.avatar_url} nombre={perfil.display_name} marco={marcoPerfil} size={88} />
           <h1 className={`font-display text-2xl font-bold tracking-tight ${claseTexto}`}>
-            <NombreConFuente nombre={perfil.display_name} fuente={perfil.fuente_nombre} animacion={perfil.animacion_nombre} />
+            <NombreConFuente nombre={perfil.display_name} fuente={perfil.fuente_nombre} animacion={perfil.animacion_nombre} permitirEfectosPesados />
           </h1>
           {perfil.titulo_nombre && (
             <span className={`-mt-2 rounded-full px-3 py-1 text-xs font-semibold ${claro ? "bg-white/15 text-white" : "bg-primario/10 text-primario"}`}>
