@@ -81,7 +81,7 @@ export default async function EnigmiaHomePage() {
 
         <section className="grid gap-4 sm:grid-cols-2">
           <AccionMundo
-            href="/enigmia/practica"
+            href="/enigmia/elegir"
             titulo={t("practicar")}
             descripcion={t("practicarDescripcion")}
             Icono={IconLogica}

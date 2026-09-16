@@ -4,6 +4,7 @@ import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoMelodia } from "@/lib/melodia/path";
 import Header from "@/components/Header";
 import LeccionMelodiaClient from "./LeccionMelodiaClient";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -13,7 +14,8 @@ export default async function LeccionMelodiaPage({ params }: Props) {
   const { slug } = await params;
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, `/melodia/aprender/${slug}`);
-  bloquearInvitado(user, "Aprender");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("aprender"));
 
   const nodos = await obtenerCaminoMelodia(supabase, user.id);
   const nodo = nodos.find((n) => n.slug === slug);

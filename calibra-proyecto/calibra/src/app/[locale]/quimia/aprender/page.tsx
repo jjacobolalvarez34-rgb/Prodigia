@@ -17,7 +17,9 @@ export default async function QuimiaAprenderPage() {
   const t = await getTranslations("Quimia.aprenderPagina");
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/quimia/aprender");
-  bloquearInvitado(user, "Aprender");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  const tMundos = await getTranslations("Mundos.nombres");
+  bloquearInvitado(user, tBloqueos("aprender"));
   const nodos = await obtenerCaminoQuimia(supabase, user.id);
 
   const totalDominadas = nodos.filter((n) => n.estado === "completado").length;
@@ -25,7 +27,7 @@ export default async function QuimiaAprenderPage() {
   const unidadesGenericas: UnidadCaminoGenerico[] = [
     {
       id: "quimia",
-      nombre: "Quimia",
+      nombre: tMundos("quimia"),
       descripcion: t("descripcionUnidad"),
       nodos: nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
     },

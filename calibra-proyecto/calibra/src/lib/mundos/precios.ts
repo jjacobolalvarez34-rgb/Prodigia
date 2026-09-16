@@ -18,17 +18,10 @@ export function esMundoPago(valor: string): valor is MundoPago {
   return (MUNDOS_PAGOS as readonly string[]).includes(valor);
 }
 
-export const NOMBRE_MUNDO_PAGO: Record<MundoPago, string> = {
-  numeria: "Numeria",
-  geografia: "Geografía",
-  enigmia: "Enigmia",
-  quimia: "Quimia",
-  anatomia: "Anatomía",
-  melodia: "Melodía",
-  trigonometria: "Trigonometría",
-  historia: "Historia",
-};
-
+// El nombre para mostrar de cada mundo vive en i18n (Mundos.nombres),
+// no acá — Geografía/Anatomía/Melodía/Trigonometría/Historia se
+// traducen según el locale, Numeria/Enigmia/Quimia se mantienen
+// iguales en ambos idiomas (nombres propios inventados).
 export const COLOR_MUNDO_PAGO: Record<MundoPago, string> = {
   numeria: "#6C4CF1",
   enigmia: "#0E9F6E",

@@ -5,12 +5,20 @@ import Header from "@/components/Header";
 import type { CategoriaEnigmia, LogicPuzzle } from "@/types/database";
 import EnigmiaPracticaClient, { type DueloGenericoInfo } from "./EnigmiaPracticaClient";
 
+const CATEGORIAS_VALIDAS: CategoriaEnigmia[] = ["memoria", "patrones", "deduccion", "computacional"];
+
 interface Props {
-  searchParams: Promise<{ duelo?: string }>;
+  searchParams: Promise<{ duelo?: string; categoria?: string }>;
 }
 
 export default async function EnigmiaPracticaPage({ searchParams }: Props) {
-  const { duelo } = await searchParams;
+  const { duelo, categoria } = await searchParams;
+  // Pedido en vivo (2026-09-15): llega acá desde /enigmia/elegir con
+  // ?categoria=X — se valida contra la lista real en vez de castear a
+  // ciegas, por si alguien pega una URL con basura en el parámetro.
+  const categoriaInicial = CATEGORIAS_VALIDAS.includes(categoria as CategoriaEnigmia)
+    ? (categoria as CategoriaEnigmia)
+    : null;
   const t = await getTranslations("Enigmia.practica");
   const supabase = await createClient();
   const { user } = await requireMundoEnigmia(supabase, "/enigmia/practica");
@@ -70,6 +78,7 @@ export default async function EnigmiaPracticaPage({ searchParams }: Props) {
         boostActivo={boostActivo}
         duelo={dueloInfo}
         miUserId={user.id}
+        categoriaInicial={categoriaInicial}
       />
     </>
   );

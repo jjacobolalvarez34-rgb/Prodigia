@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
 import { NOMBRE_CATEGORIA_ENIGMIA, type CategoriaEnigmia, type LogicPuzzle, type Achievement } from "@/types/database";
@@ -67,6 +67,10 @@ interface Props {
   boostActivo: boolean;
   duelo?: DueloGenericoInfo | null;
   miUserId: string;
+  // Pedido en vivo (2026-09-15): llega desde /enigmia/elegir — mismo
+  // criterio que categoriaElegida (ver más abajo), pero como valor
+  // inicial en vez de default null.
+  categoriaInicial?: CategoriaEnigmia | null;
 }
 
 export default function EnigmiaPracticaClient({
@@ -78,6 +82,7 @@ export default function EnigmiaPracticaClient({
   boostActivo,
   duelo,
   miUserId,
+  categoriaInicial = null,
 }: Props) {
   const t = useTranslations("Enigmia.practicaClient");
   const router = useRouter();
@@ -96,7 +101,7 @@ export default function EnigmiaPracticaClient({
   // = la mezcla de siempre. Nunca se usa junto con nivelForzado (eso
   // sigue siendo exclusivo de duelos): el nivel de práctica libre
   // siempre es el personal, elegir tema no lo cambia.
-  const [categoriaElegida, setCategoriaElegida] = useState<CategoriaEnigmia | null>(null);
+  const [categoriaElegida, setCategoriaElegida] = useState<CategoriaEnigmia | null>(categoriaInicial);
 
   const { estado: estadoArranque, segundos: segundosVs, rivalPresente, empezarAhora } = useArranqueSincronizado({
     duelId: duelo?.duelId,

@@ -17,7 +17,9 @@ export default async function HistoriaAprenderPage() {
   const t = await getTranslations("Historia.aprenderPage");
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/historia/aprender");
-  bloquearInvitado(user, "Aprender");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  const tMundos = await getTranslations("Mundos.nombres");
+  bloquearInvitado(user, tBloqueos("aprender"));
   const nodos = await obtenerCaminoHistoria(supabase, user.id);
 
   const totalDominadas = nodos.filter((n) => n.estado === "completado").length;
@@ -25,7 +27,7 @@ export default async function HistoriaAprenderPage() {
   const unidadesGenericas: UnidadCaminoGenerico[] = [
     {
       id: "historia",
-      nombre: "Historia",
+      nombre: tMundos("historia"),
       descripcion: t("unidad.descripcion"),
       nodos: nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
     },

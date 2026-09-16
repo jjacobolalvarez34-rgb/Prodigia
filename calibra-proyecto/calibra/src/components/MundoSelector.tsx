@@ -5,15 +5,15 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 
 const MUNDOS = [
-  { href: "/numeria", nombre: "Numeria", colorHex: "#6C4CF1" },
-  { href: "/enigmia", nombre: "Enigmia", colorHex: "#0E9F6E" },
-  { href: "/geografia", nombre: "Geografía", colorHex: "#1E7A8C" },
-  { href: "/quimia", nombre: "Quimia", colorHex: "#C026D3" },
-  { href: "/anatomia", nombre: "Anatomía", colorHex: "#8B2942" },
-  { href: "/melodia", nombre: "Melodía", colorHex: "#B8860B" },
-  { href: "/trigonometria", nombre: "Trigonometría", colorHex: "#84CC16" },
-  { href: "/historia", nombre: "Historia", colorHex: "#A0522D" },
-];
+  { href: "/numeria", slug: "numeria", colorHex: "#6C4CF1" },
+  { href: "/enigmia", slug: "enigmia", colorHex: "#0E9F6E" },
+  { href: "/geografia", slug: "geografia", colorHex: "#1E7A8C" },
+  { href: "/quimia", slug: "quimia", colorHex: "#C026D3" },
+  { href: "/anatomia", slug: "anatomia", colorHex: "#8B2942" },
+  { href: "/melodia", slug: "melodia", colorHex: "#B8860B" },
+  { href: "/trigonometria", slug: "trigonometria", colorHex: "#84CC16" },
+  { href: "/historia", slug: "historia", colorHex: "#A0522D" },
+] as const;
 
 function mundoActual(pathname: string) {
   return MUNDOS.find((m) => pathname.startsWith(m.href)) ?? null;
@@ -24,6 +24,7 @@ function mundoActual(pathname: string) {
 // pantalla, no solo en la home de Prodigia.
 export default function MundoSelector() {
   const t = useTranslations("Nav.mundoSelector");
+  const tMundos = useTranslations("Mundos.nombres");
   const pathname = usePathname() ?? "/";
   const actual = mundoActual(pathname);
   const [abierto, setAbierto] = useState(false);
@@ -65,7 +66,7 @@ export default function MundoSelector() {
           className="h-2 w-2 rounded-full"
           style={{ background: actual?.colorHex ?? "var(--texto-secundario)" }}
         />
-        {actual?.nombre ?? t("mundos")}
+        {actual ? tMundos(actual.slug) : t("mundos")}
         <svg width="10" height="10" viewBox="0 0 10 10" className={`transition-transform ${abierto ? "rotate-180" : ""}`}>
           <path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -94,7 +95,7 @@ export default function MundoSelector() {
               }`}
             >
               <span className="h-2 w-2 rounded-full" style={{ background: m.colorHex }} />
-              {m.nombre}
+              {tMundos(m.slug)}
             </Link>
           ))}
         </div>

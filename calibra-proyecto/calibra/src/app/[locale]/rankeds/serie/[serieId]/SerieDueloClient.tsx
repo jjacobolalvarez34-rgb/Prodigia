@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { Link, useRouter } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { rangoDeElo, type ArithmeticProblemType } from "@/types/database";
@@ -60,16 +59,6 @@ function TagClanDeBots() {
 }
 
 const POLL_MS = 3000;
-const NOMBRE_MUNDO: Record<MundoDuelo, string> = {
-  numeria: "Numeria",
-  geografia: "Geografía",
-  enigmia: "Enigmia",
-  quimia: "Quimia",
-  anatomia: "Anatomía",
-  melodia: "Melodía",
-  trigonometria: "Trigonometría",
-  historia: "Historia",
-};
 // Mismos hex que Header.tsx (colorDelMundo) y RankedsClient.tsx.
 const COLOR_MUNDO: Record<MundoDuelo, string> = {
   numeria: "#6C4CF1",
@@ -155,11 +144,12 @@ function etiquetaRonda(
   r: FilaRondaSerie,
   tOperaciones: ReturnType<typeof useTranslations>,
   tContinentes: ReturnType<typeof useTranslations>,
-  tContenidos: ReturnType<typeof useTranslations>
+  tContenidos: ReturnType<typeof useTranslations>,
+  tMundos: ReturnType<typeof useTranslations>
 ): string {
-  if (r.mundo === "numeria" && r.operation_type) return `Numeria · ${tOperaciones(r.operation_type)}`;
-  if (r.sub_tipo) return `${NOMBRE_MUNDO[r.mundo]} · ${nombreContenido(r.sub_tipo, tContinentes, tContenidos)}`;
-  return NOMBRE_MUNDO[r.mundo];
+  if (r.mundo === "numeria" && r.operation_type) return `${tMundos("numeria")} · ${tOperaciones(r.operation_type)}`;
+  if (r.sub_tipo) return `${tMundos(r.mundo)} · ${nombreContenido(r.sub_tipo, tContinentes, tContenidos)}`;
+  return tMundos(r.mundo);
 }
 
 export default function SerieDueloClient({
@@ -170,6 +160,7 @@ export default function SerieDueloClient({
   rondasIniciales: FilaRondaSerie[];
 }) {
   const t = useTranslations("Rankeds");
+  const tMundos = useTranslations("Mundos.nombres");
   const router = useRouter();
   const [rondas, setRondas] = useState(rondasIniciales);
   const [resultadoFinal, setResultadoFinal] = useState<ResultadoFinal | null>(null);
@@ -230,7 +221,7 @@ export default function SerieDueloClient({
   // visible.
   useEffect(() => {
     if (!proximaRonda || navegandoA === proximaRonda.duel_id || !listoParaCeremonia || resultadoFinal?.finalizada) return;
-    const duracion = duracionTransicionMs(rondaAnterior ? NOMBRE_MUNDO[rondaAnterior.mundo] : null, NOMBRE_MUNDO[proximaRonda.mundo]);
+    const duracion = duracionTransicionMs(rondaAnterior ? tMundos(rondaAnterior.mundo) : null, tMundos(proximaRonda.mundo));
     const t = setTimeout(() => {
       setNavegandoA(proximaRonda.duel_id);
       router.push(hrefDuelo(proximaRonda.mundo, proximaRonda.operation_type, proximaRonda.duel_id));
@@ -410,7 +401,7 @@ export default function SerieDueloClient({
             </span>
             <TextType
               as="span"
-              text={rondaAnterior ? [NOMBRE_MUNDO[rondaAnterior.mundo], NOMBRE_MUNDO[proximaRonda.mundo]] : [NOMBRE_MUNDO[proximaRonda.mundo]]}
+              text={rondaAnterior ? [tMundos(rondaAnterior.mundo), tMundos(proximaRonda.mundo)] : [tMundos(proximaRonda.mundo)]}
               textColors={rondaAnterior ? [COLOR_MUNDO[rondaAnterior.mundo], COLOR_MUNDO[proximaRonda.mundo]] : [COLOR_MUNDO[proximaRonda.mundo]]}
               typingSpeed={TT_TYPING_MS}
               deletingSpeed={TT_DELETING_MS}
@@ -431,6 +422,7 @@ function FilaRondaResumen({ ronda }: { ronda: FilaRondaSerie }) {
   const tOperaciones = useTranslations("Practica.operationPicker.operaciones");
   const tContinentes = useTranslations("Geografia.continentes");
   const tContenidos = useTranslations("Rankeds.serieDuelo.contenidos");
+  const tMundos = useTranslations("Mundos.nombres");
   const resuelta = ronda.estado === "completado";
   const estado = !resuelta
     ? ronda.yo_jugue
@@ -448,7 +440,7 @@ function FilaRondaResumen({ ronda }: { ronda: FilaRondaSerie }) {
     >
       <div className="flex flex-col">
         <span className="text-sm font-medium text-foreground">
-          {t("serieDuelo.ronda", { n: ronda.ronda_numero, etiqueta: etiquetaRonda(ronda, tOperaciones, tContinentes, tContenidos) })}
+          {t("serieDuelo.ronda", { n: ronda.ronda_numero, etiqueta: etiquetaRonda(ronda, tOperaciones, tContinentes, tContenidos, tMundos) })}
         </span>
         <span className="text-xs text-texto-secundario">{estado}</span>
       </div>

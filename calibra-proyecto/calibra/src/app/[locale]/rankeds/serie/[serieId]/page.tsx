@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import SerieDueloClient, { type FilaRondaSerie } from "./SerieDueloClient";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: Promise<{ serieId: string }>;
@@ -18,7 +19,8 @@ export default async function SerieDueloPage({ params }: Props) {
   const { serieId } = await params;
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, `/rankeds/serie/${serieId}`);
-  bloquearInvitado(user, "Rankeds");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("rankeds"));
 
   const { data, error } = await supabase.rpc("estado_serie_duelo", { p_serie_id: serieId });
   const rondas = (data as FilaRondaSerie[] | null) ?? [];

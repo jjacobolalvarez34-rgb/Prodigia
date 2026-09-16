@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoHistoria } from "@/lib/auth/guard";
@@ -16,13 +16,15 @@ import { COLOR_HISTORIA } from "./colores";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Historia.metadata");
-  return { title: "Historia", description: t("description") };
+  const tMundos = await getTranslations("Mundos.nombres");
+  return { title: tMundos("historia"), description: t("description") };
 }
 
 const TIPOS_HISTORIA = ["historia_cronologia", "historia_personajes", "historia_causaefecto", "historia_fechas"];
 
 export default async function HistoriaHomePage() {
   const t = await getTranslations("Historia");
+  const tMundos = await getTranslations("Mundos.nombres");
   const supabase = await createClient();
   const { user, profile } = await requireMundoHistoria(supabase, "/historia");
 
@@ -55,16 +57,16 @@ export default async function HistoriaHomePage() {
         <AvisoPrimeraVez avisoKey="historia-intro" texto={t("aviso")}>
           <div>
             <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_HISTORIA }}>
-              Historia
+              {tMundos("historia")}
             </span>
             <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
             <div className="mt-2">
-              <NivelMundoBadge nombreMundo="Historia" nivel={nivelMundo} colorHex={COLOR_HISTORIA} />
+              <NivelMundoBadge nombreMundo={tMundos("historia")} nivel={nivelMundo} colorHex={COLOR_HISTORIA} />
             </div>
           </div>
         </AvisoPrimeraVez>
 
-        <NivelMundoProgreso nombreMundo="Historia" colorHex={COLOR_HISTORIA} progreso={progresoMundo} />
+        <NivelMundoProgreso nombreMundo={tMundos("historia")} colorHex={COLOR_HISTORIA} progreso={progresoMundo} />
 
         {metaCumplidaHoy && (
           <div className="flex items-center gap-3 rounded-2xl bg-correcto/10 px-5 py-4">

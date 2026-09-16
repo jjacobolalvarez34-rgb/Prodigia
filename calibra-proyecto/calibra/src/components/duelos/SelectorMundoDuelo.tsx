@@ -16,30 +16,19 @@ export type SeleccionMundoDuelo = MundoDuelo | "aleatorio";
 
 const CONTINENTES: Continente[] = ["america", "europa", "africa", "asia_oceania"];
 
-// Los 6 mundos elegibles para duelar, sin descripción — lista base para
+// Los 8 mundos elegibles para duelar, sin descripción — lista base para
 // retar a un amigo / invitar por link (Rankeds arma la suya propia, con
 // descripciones traducidas y la opción "todas las ciudades").
-export const MUNDOS_DUELO: { id: MundoDuelo; nombre: string }[] = [
-  { id: "numeria", nombre: "Numeria" },
-  { id: "geografia", nombre: "Geografía" },
-  { id: "enigmia", nombre: "Enigmia" },
-  { id: "quimia", nombre: "Quimia" },
-  { id: "anatomia", nombre: "Anatomía" },
-  { id: "melodia", nombre: "Melodía" },
-  { id: "trigonometria", nombre: "Trigonometría" },
-  { id: "historia", nombre: "Historia" },
-];
+const MUNDOS_DUELO_IDS: MundoDuelo[] = ["numeria", "geografia", "enigmia", "quimia", "anatomia", "melodia", "trigonometria", "historia"];
 
-const NOMBRES_MUNDO: Record<MundoDuelo, string> = {
-  numeria: "Numeria",
-  geografia: "Geografía",
-  enigmia: "Enigmia",
-  quimia: "Quimia",
-  anatomia: "Anatomía",
-  melodia: "Melodía",
-  trigonometria: "Trigonometría",
-  historia: "Historia",
-};
+// Hook (no una constante) porque el nombre de cada mundo depende del
+// locale activo (Mundos.nombres) — Numeria/Enigmia/Quimia se mantienen
+// iguales en ambos idiomas (nombres propios inventados), el resto se
+// traduce (Geografía → Geography, etc.).
+export function useMundosDuelo(): { id: MundoDuelo; nombre: string }[] {
+  const tMundos = useTranslations("Mundos.nombres");
+  return MUNDOS_DUELO_IDS.map((id) => ({ id, nombre: tMundos(id) }));
+}
 
 // nombre/etiqueta de una elección ya hecha (mundo + operación/continente/
 // categoría/modo) — usado tanto por SelectorMundoDuelo como por
@@ -52,9 +41,10 @@ const NOMBRES_MUNDO: Record<MundoDuelo, string> = {
 export function useEtiquetasDuelo() {
   const tOperaciones = useTranslations("Practica.operationPicker.operaciones");
   const tContinentes = useTranslations("Geografia.continentes");
+  const tMundos = useTranslations("Mundos.nombres");
 
   function nombreMundo(mundo: MundoDuelo): string {
-    return NOMBRES_MUNDO[mundo] ?? mundo;
+    return tMundos(mundo) ?? mundo;
   }
 
   function etiquetaOpcion(mundo: MundoDuelo, opcion: string): string {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
 import type { ModoMelodia, PreguntaMelodia } from "@/lib/practica/melodia";
@@ -56,6 +56,7 @@ interface Props {
 // sin semilla — ver comentario en cargarPractica.ts).
 export default function MelodiaPracticaClient({ modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, duelo, miUserId }: Props) {
   const t = useTranslations("Melodia.practicaClient");
+  const tMundos = useTranslations("Mundos.nombres");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
   const [startedAtIso, setStartedAtIso] = useState("");
@@ -167,7 +168,7 @@ export default function MelodiaPracticaClient({ modo, nivelInicial, escudosExtra
         rivalElo={duelo.rivalElo}
         rivalEsBot={duelo.rivalEsBot}
         modo={duelo.serieId ? "mejor_de_3" : "simple"}
-        subtitulo={duelo.serieId ? `Ronda ${duelo.rondaNumero}/${duelo.rondaTotal} · Melodía` : "Melodía"}
+        subtitulo={duelo.serieId ? t("rondaSerie", { numero: duelo.rondaNumero, total: duelo.rondaTotal }) : tMundos("melodia")}
         onEmpezarAhora={empezarAhora}
         duelId={duelo.duelId}
       />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
@@ -17,7 +17,7 @@ import {
   IconCandado,
 } from "@/components/icons";
 import Boton from "@/components/Boton";
-import { MUNDOS_PAGOS, NOMBRE_MUNDO_PAGO, COLOR_MUNDO_PAGO, type MundoPago } from "@/lib/mundos/precios";
+import { MUNDOS_PAGOS, COLOR_MUNDO_PAGO, type MundoPago } from "@/lib/mundos/precios";
 
 interface Props {
   next: string;
@@ -49,6 +49,7 @@ const ICONO_MUNDO: Record<MundoPago, typeof IconSuma> = {
 export default function OnboardingForm({ next, saltarPasoNombre }: Props) {
   const router = useRouter();
   const t = useTranslations("Onboarding");
+  const tMundos = useTranslations("Mundos.nombres");
   const [paso, setPaso] = useState<"nombre" | "mundos">(saltarPasoNombre ? "mundos" : "nombre");
   const [nombre, setNombre] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -166,7 +167,7 @@ export default function OnboardingForm({ next, saltarPasoNombre }: Props) {
                   >
                     <Icono className="h-4 w-4" />
                   </span>
-                  <span className="text-sm font-medium text-foreground">{NOMBRE_MUNDO_PAGO[mundo]}</span>
+                  <span className="text-sm font-medium text-foreground">{tMundos(mundo)}</span>
                   {elegido ? (
                     <span className="text-xs font-medium" style={{ color }}>
                       {t("mundos.elegido")}

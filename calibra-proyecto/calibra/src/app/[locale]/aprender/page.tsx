@@ -3,11 +3,13 @@ import { requireUsuarioOnboarded, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCamino } from "@/lib/aprender/path";
 import Header from "@/components/Header";
 import AprenderShell from "./AprenderShell";
+import { getTranslations } from "next-intl/server";
 
 export default async function AprenderPage() {
   const supabase = await createClient();
   const { user } = await requireUsuarioOnboarded(supabase, "/aprender");
-  bloquearInvitado(user, "Aprender");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("aprender"));
 
   const unidades = await obtenerCamino(supabase, user.id);
 

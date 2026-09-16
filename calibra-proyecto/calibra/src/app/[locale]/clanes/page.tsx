@@ -13,7 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ClanesPage() {
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/clanes");
-  bloquearInvitado(user, "Clanes");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("clanes"));
 
   // Cierre perezoso de la guerra de la semana pasada (Fase 7) — sin
   // cron, se dispara acá; el insert con clave primaria por semana en

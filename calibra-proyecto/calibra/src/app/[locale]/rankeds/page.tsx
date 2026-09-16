@@ -18,7 +18,8 @@ export default async function RankedsPage({ searchParams }: Props) {
   const { tab } = await searchParams;
   const supabase = await createClient();
   const { user, profile } = await requireUsuario(supabase, "/rankeds");
-  bloquearInvitado(user, "Rankeds");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("rankeds"));
   requireNivelCuentaRankeds(profile);
 
   const [{ data: historial }, { data: pendientes }, { data: miTituloNombre }, { data: statsCasual }] = await Promise.all([

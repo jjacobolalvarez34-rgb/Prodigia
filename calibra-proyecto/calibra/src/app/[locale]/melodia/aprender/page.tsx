@@ -17,7 +17,9 @@ export default async function MelodiaAprenderPage() {
   const t = await getTranslations("Melodia.aprender");
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/melodia/aprender");
-  bloquearInvitado(user, "Aprender");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  const tMundos = await getTranslations("Mundos.nombres");
+  bloquearInvitado(user, tBloqueos("aprender"));
   const nodos = await obtenerCaminoMelodia(supabase, user.id);
 
   const totalDominadas = nodos.filter((n) => n.estado === "completado").length;
@@ -25,7 +27,7 @@ export default async function MelodiaAprenderPage() {
   const unidadesGenericas: UnidadCaminoGenerico[] = [
     {
       id: "melodia",
-      nombre: "Melodía",
+      nombre: tMundos("melodia"),
       descripcion: t("unidadDescripcion"),
       nodos: nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
     },

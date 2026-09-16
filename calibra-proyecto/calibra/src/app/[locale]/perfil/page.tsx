@@ -35,19 +35,20 @@ function formatearFecha(iso: string, locale: string): string {
 export default async function PerfilPage() {
   const t = await getTranslations("Perfil");
   const tNumeriaTemas = await getTranslations("Numeria.temas");
+  const tMundos = await getTranslations("Mundos.nombres");
   const locale = await getLocale();
   const supabase = await createClient();
   const { user, profile } = await requireUsuario(supabase, "/perfil");
 
   const NOMBRE_MUNDO_AFINIDAD: Record<string, string> = {
-    numeria: "Numeria",
-    enigmia: "Enigmia",
-    geografia: "Geografía",
-    quimia: "Quimia",
-    anatomia: "Anatomía",
-    melodia: "Melodía",
-    trigonometria: "Trigonometría",
-    historia: "Historia",
+    numeria: tMundos("numeria"),
+    enigmia: tMundos("enigmia"),
+    geografia: tMundos("geografia"),
+    quimia: tMundos("quimia"),
+    anatomia: tMundos("anatomia"),
+    melodia: tMundos("melodia"),
+    trigonometria: tMundos("trigonometria"),
+    historia: tMundos("historia"),
     geometria: tNumeriaTemas("geometria"),
     fracciones: tNumeriaTemas("fracciones"),
     decimales: tNumeriaTemas("decimales"),
@@ -292,42 +293,42 @@ export default async function PerfilPage() {
             <p className="text-xs text-texto-secundario">{eloRating} ELO</p>
           </div>
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Numeria</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("numeria")}</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{numeriaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("numeria") })}</p>
           </div>
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Enigmia</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("enigmia")}</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{enigmiaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">{t("acertijosResueltosNivel", { n: nivelMundoDe("enigmia") })}</p>
           </div>
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Geografía</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("geografia")}</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{geografiaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">{t("paisesAcertadosNivel", { n: nivelMundoDe("geografia") })}</p>
           </div>
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Quimia</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("quimia")}</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{quimiaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("quimia") })}</p>
           </div>
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Anatomía</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("anatomia")}</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{anatomiaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">{t("preguntasResueltasNivel", { n: nivelMundoDe("anatomia") })}</p>
           </div>
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Melodía</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("melodia")}</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{melodiaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">{t("preguntasResueltasNivel", { n: nivelMundoDe("melodia") })}</p>
           </div>
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Trigonometría</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("trigonometria")}</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{trigonometriaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("trigonometria") })}</p>
           </div>
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">Historia</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("historia")}</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{historiaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("historia") })}</p>
           </div>

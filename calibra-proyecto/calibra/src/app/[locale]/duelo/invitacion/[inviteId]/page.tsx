@@ -21,7 +21,8 @@ export default async function InvitacionDueloPage({ params }: Props) {
   const t = await getTranslations("Duelos.invitacion");
   const supabase = await createClient();
   const { user } = await requireUsuarioOnboarded(supabase, `/duelo/invitacion/${inviteId}`);
-  bloquearInvitado(user, "Amigos");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("amigos"));
 
   const { data, error } = await supabase.rpc("unirse_invitacion_duelo", { p_invite_id: inviteId });
   const fila = (data as Array<{ duel_id: string; mundo: MundoDuelo; operation_type: string | null; sub_tipo: string | null }> | null)?.[0];

@@ -4,6 +4,7 @@ import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoHistoria } from "@/lib/historia/path";
 import Header from "@/components/Header";
 import LeccionHistoriaClient from "./LeccionHistoriaClient";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -13,7 +14,8 @@ export default async function LeccionHistoriaPage({ params }: Props) {
   const { slug } = await params;
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, `/historia/aprender/${slug}`);
-  bloquearInvitado(user, "Aprender");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("aprender"));
 
   const nodos = await obtenerCaminoHistoria(supabase, user.id);
   const nodo = nodos.find((n) => n.slug === slug);

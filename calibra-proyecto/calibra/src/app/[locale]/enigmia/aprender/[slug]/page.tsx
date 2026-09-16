@@ -4,6 +4,7 @@ import { requireMundoEnigmia, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoEnigmia } from "@/lib/enigmia/path";
 import Header from "@/components/Header";
 import LeccionEnigmiaClient from "./LeccionEnigmiaClient";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -13,7 +14,8 @@ export default async function LeccionEnigmiaPage({ params }: Props) {
   const { slug } = await params;
   const supabase = await createClient();
   const { user } = await requireMundoEnigmia(supabase, `/enigmia/aprender/${slug}`);
-  bloquearInvitado(user, "Aprender");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("aprender"));
 
   const unidades = await obtenerCaminoEnigmia(supabase, user.id);
   const nodo = unidades.flatMap((u) => u.nodos).find((n) => n.slug === slug);

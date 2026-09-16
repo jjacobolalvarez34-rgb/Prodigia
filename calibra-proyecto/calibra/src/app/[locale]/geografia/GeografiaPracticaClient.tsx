@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import type { Continente, PaisAmerica } from "@/lib/practica/geografia";
 import type { PreguntaAvanzada } from "@/lib/practica/geografiaAvanzada";
 import type { Achievement } from "@/types/database";

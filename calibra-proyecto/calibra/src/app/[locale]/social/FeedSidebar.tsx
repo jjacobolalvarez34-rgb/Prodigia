@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Boton from "@/components/Boton";
 import { hrefDuelo } from "@/lib/duelos/rutas";
-import SelectorMundoDuelo, { MUNDOS_DUELO } from "@/components/duelos/SelectorMundoDuelo";
+import SelectorMundoDuelo, { useMundosDuelo } from "@/components/duelos/SelectorMundoDuelo";
 import type { UseAmigosReturn } from "./useAmigos";
 import { useRetosPendientes, type RetoPendienteBase } from "./useRetosPendientes";
 
@@ -24,6 +24,7 @@ interface Props {
 // botón.
 export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
   const t = useTranslations("Social");
+  const mundosDuelo = useMundosDuelo();
   const [panel, setPanel] = useState<Panel>("ninguno");
   const {
     consulta,
@@ -190,7 +191,7 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
               </div>
               {retandoA === a.friend_id && (
                 <SelectorMundoDuelo
-                  mundos={MUNDOS_DUELO}
+                  mundos={mundosDuelo}
                   requiereSubopcion
                   onElegirSubopcion={(mundo, opcion) => retar(a.friend_id, mundo, opcion)}
                 />

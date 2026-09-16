@@ -4,6 +4,7 @@ import { requireUsuarioOnboarded, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCamino } from "@/lib/aprender/path";
 import Header from "@/components/Header";
 import LeccionClient from "./LeccionClient";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -13,7 +14,8 @@ export default async function LeccionPage({ params }: Props) {
   const { slug } = await params;
   const supabase = await createClient();
   const { user } = await requireUsuarioOnboarded(supabase, `/aprender/${slug}`);
-  bloquearInvitado(user, "Aprender");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("aprender"));
 
   const unidades = await obtenerCamino(supabase, user.id);
   const nodo = unidades.flatMap((u) => u.nodos).find((n) => n.slug === slug);

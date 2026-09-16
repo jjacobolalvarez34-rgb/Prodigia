@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -17,7 +17,7 @@ import {
 } from "@/components/icons";
 import Boton from "@/components/Boton";
 import ConvertirCuenta from "@/components/ConvertirCuenta";
-import { MUNDOS_PAGOS, NOMBRE_MUNDO_PAGO, COLOR_MUNDO_PAGO, type MundoPago } from "@/lib/mundos/precios";
+import { MUNDOS_PAGOS, COLOR_MUNDO_PAGO, type MundoPago } from "@/lib/mundos/precios";
 
 const ICONO_MUNDO: Record<MundoPago, typeof IconSuma> = {
   numeria: IconSuma,
@@ -40,6 +40,7 @@ const ICONO_MUNDO: Record<MundoPago, typeof IconSuma> = {
 export default function FlujoElegirMundos() {
   const router = useRouter();
   const t = useTranslations("Onboarding");
+  const tMundos = useTranslations("Mundos.nombres");
   const [seleccionados, setSeleccionados] = useState<MundoPago[]>([]);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -106,7 +107,7 @@ export default function FlujoElegirMundos() {
               <span className="flex h-9 w-9 items-center justify-center rounded-full text-white" style={{ background: color }}>
                 <Icono className="h-4 w-4" />
               </span>
-              <span className="text-sm font-medium text-foreground">{NOMBRE_MUNDO_PAGO[mundo]}</span>
+              <span className="text-sm font-medium text-foreground">{tMundos(mundo)}</span>
               {elegido ? (
                 <span className="text-xs font-medium" style={{ color }}>
                   {t("mundos.elegido")}

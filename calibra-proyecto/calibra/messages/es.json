@@ -62,6 +62,14 @@
     "metadata": {
       "description": "Tu competitivo en Prodigia: ELO, historial y matchmaking de duelos."
     },
+    "rangos": {
+      "bronce": "Bronce",
+      "plata": "Plata",
+      "oro": "Oro",
+      "platino": "Platino",
+      "diamante": "Diamante",
+      "prodigio": "Prodigio"
+    },
     "tabs": {
       "competitivo": "Mi competitivo",
       "buscar": "Buscar partida",
@@ -1493,7 +1501,16 @@
       "titulo": "Crea tu cuenta para desbloquear esto",
       "necesitaCuenta": "necesita una cuenta real — es gratis y no pierdes nada de lo que ya practicaste.",
       "etiquetaPorDefecto": "Esto",
-      "volverInvitado": "Volver a jugar como invitado"
+      "volverInvitado": "Volver a jugar como invitado",
+      "secciones": {
+        "aprender": "Aprender",
+        "clanes": "Clanes",
+        "rankeds": "Rankeds",
+        "amigos": "Amigos",
+        "geografiaEuropa": "Geografía — Europa",
+        "geografiaAsiaOceania": "Geografía — Asia y Oceanía",
+        "geografiaAfrica": "Geografía — África"
+      }
     },
     "mundo": {
       "metadata": {
@@ -1781,6 +1798,14 @@
     "aprender": "Aprender",
     "aprenderDescripcion": "Estrategias de razonamiento, una a la vez.",
     "categoriasTitulo": "Categorías",
+    "elegir": {
+      "metadata": {
+        "title": "Practicar",
+        "description": "Elige una categoría de Enigmia para practicar."
+      },
+      "titulo": "¿Qué practicamos?",
+      "subtitulo": "Elige una categoría para arrancar."
+    },
     "practica": {
       "rivalPorDefecto": "Rival"
     },
@@ -2158,7 +2183,8 @@
       "ningunaFallada": "Ninguna fallada — así se hace. 🎯",
       "iniciarPartida": "Iniciar partida",
       "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
-      "instrucciones": "10 preguntas o 60 segundos, lo que llegue primero."
+      "instrucciones": "10 preguntas o 60 segundos, lo que llegue primero.",
+      "rondaSerie": "Ronda {numero}/{total} · Melodía"
     },
     "sprintRunner": {
       "escudosDisponibles": "{n, plural, one {# escudo disponible} other {# escudos disponibles}}",
@@ -2243,6 +2269,18 @@
     },
     "pentagrama": {
       "ariaLabel": "Pentagrama musical"
+    }
+  },
+  "Mundos": {
+    "nombres": {
+      "numeria": "Numeria",
+      "enigmia": "Enigmia",
+      "geografia": "Geografía",
+      "quimia": "Quimia",
+      "anatomia": "Anatomía",
+      "melodia": "Melodía",
+      "trigonometria": "Trigonometría",
+      "historia": "Historia"
     }
   },
   "Onboarding": {

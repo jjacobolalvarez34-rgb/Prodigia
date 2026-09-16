@@ -62,6 +62,14 @@
     "metadata": {
       "description": "Your competitive scene in Prodigia: ELO, history, and duel matchmaking."
     },
+    "rangos": {
+      "bronce": "Bronze",
+      "plata": "Silver",
+      "oro": "Gold",
+      "platino": "Platinum",
+      "diamante": "Diamond",
+      "prodigio": "Prodigy"
+    },
     "tabs": {
       "competitivo": "My Competitive",
       "buscar": "Find a Match",
@@ -215,7 +223,7 @@
       "enigmia": "Enigmia",
       "quimia": "Quimia",
       "anatomia": "Anatomy",
-      "melodia": "Melodia",
+      "melodia": "Melody",
       "trigonometria": "Trigonometry",
       "historia": "History",
       "aleatorio": "all the cities",
@@ -441,7 +449,7 @@
         "geografia": "Geography",
         "quimia": "Quimia",
         "anatomia": "Anatomy",
-        "melodia": "Melodia",
+        "melodia": "Melody",
         "trigonometria": "Trigonometry",
         "historia": "History"
       },
@@ -1493,7 +1501,16 @@
       "titulo": "Create your account to unlock this",
       "necesitaCuenta": "needs a real account — it's free and you won't lose anything you've already practiced.",
       "etiquetaPorDefecto": "This",
-      "volverInvitado": "Keep playing as a guest"
+      "volverInvitado": "Keep playing as a guest",
+      "secciones": {
+        "aprender": "Learn",
+        "clanes": "Clans",
+        "rankeds": "Rankeds",
+        "amigos": "Friends",
+        "geografiaEuropa": "Geography — Europe",
+        "geografiaAsiaOceania": "Geography — Asia and Oceania",
+        "geografiaAfrica": "Geography — Africa"
+      }
     },
     "mundo": {
       "metadata": {
@@ -1675,7 +1692,7 @@
         "geografia": "Geography",
         "quimia": "Quimia",
         "anatomia": "Anatomy",
-        "melodia": "Melodia",
+        "melodia": "Melody",
         "trigonometria": "Trigonometry",
         "historia": "History"
       }
@@ -1781,6 +1798,14 @@
     "aprender": "Learn",
     "aprenderDescripcion": "Reasoning strategies, one at a time.",
     "categoriasTitulo": "Categories",
+    "elegir": {
+      "metadata": {
+        "title": "Practice",
+        "description": "Choose an Enigmia category to practice."
+      },
+      "titulo": "What are we practicing?",
+      "subtitulo": "Pick a category to start."
+    },
     "practica": {
       "rivalPorDefecto": "Rival"
     },
@@ -1908,7 +1933,7 @@
       "errorDeRed": "We couldn't connect to the server. Try again.",
       "noPudimosCerrar": "We couldn't close the match: {error}",
       "volver": "Back",
-      "rondaSerie": "Round {numero}/{total} · Historia",
+      "rondaSerie": "Round {numero}/{total} · History",
       "boostActivo": "⚡ Boost active — Chispas ×1.5 on this match",
       "instrucciones": "10 questions or 60 seconds, whichever comes first.",
       "iniciarPartida": "Start match",
@@ -2158,7 +2183,8 @@
       "ningunaFallada": "Nothing missed — that's how it's done. 🎯",
       "iniciarPartida": "Start game",
       "boostActivo": "⚡ Boost active — Sparks ×1.5 this game",
-      "instrucciones": "10 questions or 60 seconds, whichever comes first."
+      "instrucciones": "10 questions or 60 seconds, whichever comes first.",
+      "rondaSerie": "Round {numero}/{total} · Melody"
     },
     "sprintRunner": {
       "escudosDisponibles": "{n, plural, one {# shield available} other {# shields available}}",
@@ -2243,6 +2269,18 @@
     },
     "pentagrama": {
       "ariaLabel": "Musical staff"
+    }
+  },
+  "Mundos": {
+    "nombres": {
+      "numeria": "Numeria",
+      "enigmia": "Enigmia",
+      "geografia": "Geography",
+      "quimia": "Quimia",
+      "anatomia": "Anatomy",
+      "melodia": "Melody",
+      "trigonometria": "Trigonometry",
+      "historia": "History"
     }
   },
   "Onboarding": {
@@ -2488,7 +2526,7 @@
       "geografia": "Geography",
       "quimia": "Quimia",
       "anatomia": "Anatomy",
-      "melodia": "Melodia",
+      "melodia": "Melody",
       "trigonometria": "Trigonometry",
       "historia": "History"
     },

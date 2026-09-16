@@ -15,7 +15,8 @@ export default async function MundoClanesPage() {
   const t = await getTranslations("Clanes.mundo");
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/clanes/mundo");
-  bloquearInvitado(user, "Clanes");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("clanes"));
 
   const { data } = await supabase.rpc("mapa_clanes");
 

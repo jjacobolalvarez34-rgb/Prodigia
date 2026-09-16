@@ -17,7 +17,8 @@ export default async function AnatomiaAprenderPage() {
   const t = await getTranslations("Anatomia");
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/anatomia/aprender");
-  bloquearInvitado(user, "Aprender");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("aprender"));
   const nodos = await obtenerCaminoAnatomia(supabase, user.id);
 
   const totalDominadas = nodos.filter((n) => n.estado === "completado").length;

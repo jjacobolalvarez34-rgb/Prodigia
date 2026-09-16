@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
 import type { ModoHistoria, PreguntaHistoria } from "@/lib/practica/historia";
@@ -54,6 +54,7 @@ interface Props {
 // Mismo patrón que MelodiaPracticaClient.tsx/TrigonometriaPracticaClient.tsx.
 export default function HistoriaPracticaClient({ modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, duelo, miUserId }: Props) {
   const t = useTranslations("Historia.practicaClient");
+  const tMundos = useTranslations("Mundos.nombres");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
   const [startedAtIso, setStartedAtIso] = useState("");
@@ -165,7 +166,7 @@ export default function HistoriaPracticaClient({ modo, nivelInicial, escudosExtr
         rivalElo={duelo.rivalElo}
         rivalEsBot={duelo.rivalEsBot}
         modo={duelo.serieId ? "mejor_de_3" : "simple"}
-        subtitulo={duelo.serieId ? t("rondaSerie", { numero: duelo.rondaNumero, total: duelo.rondaTotal }) : "Historia"}
+        subtitulo={duelo.serieId ? t("rondaSerie", { numero: duelo.rondaNumero, total: duelo.rondaTotal }) : tMundos("historia")}
         onEmpezarAhora={empezarAhora}
         duelId={duelo.duelId}
       />

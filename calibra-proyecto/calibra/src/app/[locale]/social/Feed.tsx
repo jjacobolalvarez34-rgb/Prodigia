@@ -273,6 +273,7 @@ function TarjetaResultadoDuelo({ post, onReaccionar }: { post: PostFeed; onReacc
 // inventado acá).
 function TarjetaSubidaRango({ post, onReaccionar }: { post: PostFeed; onReaccionar: (id: string) => void }) {
   const t = useTranslations("Social");
+  const tRangos = useTranslations("Rankeds.rangos");
   const rango = post.rangoNuevo ? rangoDeSlug(post.rangoNuevo) : undefined;
   const estiloNombre = rango?.degradado
     ? {
@@ -294,7 +295,7 @@ function TarjetaSubidaRango({ post, onReaccionar }: { post: PostFeed; onReaccion
           <Link href={`/perfil/${post.userId}`} className="font-semibold hover:underline">
             <NombreConFuente nombre={post.autorNombre} fuente={post.autorFuente} animacion={post.autorAnimacion} />
           </Link>{" "}
-          {t("feed.subioA")} <span className="font-bold" style={estiloNombre}>{rango?.nombre ?? post.rangoNuevo}</span>
+          {t("feed.subioA")} <span className="font-bold" style={estiloNombre}>{rango ? tRangos(rango.slug) : post.rangoNuevo}</span>
         </p>
       </div>
       <div>

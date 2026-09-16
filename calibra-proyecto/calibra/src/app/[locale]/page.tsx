@@ -32,6 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ProdigiaHomePage() {
   const t = await getTranslations("Home");
+  const tMundos = await getTranslations("Mundos.nombres");
   const supabase = await createClient();
 
   const {
@@ -164,7 +165,7 @@ export default async function ProdigiaHomePage() {
           <PrimeraVezTip tipKey="tour-mundos" texto={t("tourMundos")}>
             <div className="grid gap-4 sm:grid-cols-2">
               <WorldCard
-                nombre="Numeria"
+                nombre={tMundos("numeria")}
                 descripcion={t("mundos.numeria")}
                 Icono={IconSuma}
                 href="/numeria"
@@ -172,7 +173,7 @@ export default async function ProdigiaHomePage() {
                 bloqueado={!profile.mundos_desbloqueados?.includes("numeria")}
               />
               <WorldCard
-                nombre="Enigmia"
+                nombre={tMundos("enigmia")}
                 descripcion={t("mundos.enigmia")}
                 Icono={IconLogica}
                 href="/enigmia"
@@ -180,7 +181,7 @@ export default async function ProdigiaHomePage() {
                 bloqueado={!profile.mundos_desbloqueados?.includes("enigmia")}
               />
               <WorldCard
-                nombre="Geografía"
+                nombre={tMundos("geografia")}
                 descripcion={t("mundos.geografia")}
                 Icono={IconGeometria}
                 href="/geografia"
@@ -188,7 +189,7 @@ export default async function ProdigiaHomePage() {
                 bloqueado={!profile.mundos_desbloqueados?.includes("geografia")}
               />
               <WorldCard
-                nombre="Quimia"
+                nombre={tMundos("quimia")}
                 descripcion={t("mundos.quimia")}
                 Icono={IconQuimica}
                 href="/quimia"
@@ -196,7 +197,7 @@ export default async function ProdigiaHomePage() {
                 bloqueado={!profile.mundos_desbloqueados?.includes("quimia")}
               />
               <WorldCard
-                nombre="Anatomía"
+                nombre={tMundos("anatomia")}
                 descripcion={t("mundos.anatomia")}
                 Icono={IconAnatomia}
                 href="/anatomia"
@@ -204,7 +205,7 @@ export default async function ProdigiaHomePage() {
                 bloqueado={!profile.mundos_desbloqueados?.includes("anatomia")}
               />
               <WorldCard
-                nombre="Melodía"
+                nombre={tMundos("melodia")}
                 descripcion={t("mundos.melodia")}
                 Icono={IconMelodia}
                 href="/melodia"
@@ -212,7 +213,7 @@ export default async function ProdigiaHomePage() {
                 bloqueado={!profile.mundos_desbloqueados?.includes("melodia")}
               />
               <WorldCard
-                nombre="Trigonometría"
+                nombre={tMundos("trigonometria")}
                 descripcion={t("mundos.trigonometria")}
                 Icono={IconTrigonometria}
                 href="/trigonometria"
@@ -220,7 +221,7 @@ export default async function ProdigiaHomePage() {
                 bloqueado={!profile.mundos_desbloqueados?.includes("trigonometria")}
               />
               <WorldCard
-                nombre="Historia"
+                nombre={tMundos("historia")}
                 descripcion={t("mundos.historia")}
                 Icono={IconHistoria}
                 href="/historia"

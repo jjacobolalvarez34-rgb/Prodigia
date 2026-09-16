@@ -17,7 +17,8 @@ export default async function TrigonometriaAprenderPage() {
   const t = await getTranslations("Trigonometria");
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/trigonometria/aprender");
-  bloquearInvitado(user, "Aprender");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("aprender"));
   const nodos = await obtenerCaminoTrigonometria(supabase, user.id);
 
   const totalDominadas = nodos.filter((n) => n.estado === "completado").length;

@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
-import { esMundoPago, NOMBRE_MUNDO_PAGO } from "@/lib/mundos/precios";
+import { esMundoPago } from "@/lib/mundos/precios";
 import Header from "@/components/Header";
 import MundoBloqueadoClient from "./MundoBloqueadoClient";
 
@@ -22,6 +22,7 @@ interface Props {
 // RPC exige) y deja comprarlo ahí mismo, sin ir hasta /tienda.
 export default async function MundoBloqueadoPage({ searchParams }: Props) {
   const { mundo, next } = await searchParams;
+  const tMundos = await getTranslations("Mundos.nombres");
   const supabase = await createClient();
   const { profile } = await requireUsuario(supabase, "/mundo-bloqueado");
 
@@ -41,7 +42,7 @@ export default async function MundoBloqueadoPage({ searchParams }: Props) {
       <Header autenticado />
       <MundoBloqueadoClient
         mundo={mundo}
-        nombreMundo={NOMBRE_MUNDO_PAGO[mundo]}
+        nombreMundo={tMundos(mundo)}
         puntosIniciales={profile.puntos_total}
         destino={next || "/"}
       />

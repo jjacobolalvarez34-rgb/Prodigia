@@ -45,17 +45,6 @@ interface StatsCasual {
 
 type FilaPendiente = RetoPendienteBase;
 
-const NOMBRE_MUNDO: Record<MundoDuelo, string> = {
-  numeria: "Numeria",
-  geografia: "Geografía",
-  enigmia: "Enigmia",
-  anatomia: "Anatomía",
-  melodia: "Melodía",
-  quimia: "Quimia",
-  trigonometria: "Trigonometría",
-  historia: "Historia",
-};
-
 interface Props {
   miElo: number;
   miTituloNombre: string | null;
@@ -198,6 +187,7 @@ function UsuariosEnLinea() {
 function DuelosPendientes({ pendientes: pendientesIniciales }: { pendientes: FilaPendiente[] }) {
   const t = useTranslations("Rankeds");
   const tOperaciones = useTranslations("Practica.operationPicker.operaciones");
+  const tMundos = useTranslations("Mundos.nombres");
   // Fase 4: mismo hook que la barra lateral de Social — cuenta
   // regresiva de 60s visible y auto-rechazo al llegar a 0, una sola
   // implementación para las dos pantallas donde se ven retos pendientes.
@@ -229,7 +219,7 @@ function DuelosPendientes({ pendientes: pendientesIniciales }: { pendientes: Fil
               <span className="truncate text-sm font-medium text-foreground">
                 {t("teRetoA", {
                   nombre: p.retador_nombre ?? t("alguien"),
-                  que: p.mundo === "numeria" && p.operation_type ? tOperaciones(p.operation_type) : NOMBRE_MUNDO[p.mundo],
+                  que: p.mundo === "numeria" && p.operation_type ? tOperaciones(p.operation_type) : tMundos(p.mundo),
                 })}
               </span>
               <div className="flex items-center gap-1.5">
@@ -276,6 +266,7 @@ function MiCompetitivo({
 }) {
   const t = useTranslations("Rankeds");
   const tOperaciones = useTranslations("Practica.operationPicker.operaciones");
+  const tMundos = useTranslations("Mundos.nombres");
   const locale = useLocale();
   const historialCompetitivo = historial.filter((h) => h.clasificatorio);
   const jugados = historialCompetitivo.filter((h) => !h.empate).length;
@@ -354,7 +345,7 @@ function MiCompetitivo({
                   )}
                 </span>
                 <span className="text-xs text-texto-secundario">
-                  {h.mundo === "numeria" && h.operation_type ? tOperaciones(h.operation_type) : NOMBRE_MUNDO[h.mundo]}
+                  {h.mundo === "numeria" && h.operation_type ? tOperaciones(h.operation_type) : tMundos(h.mundo)}
                   {" · "}
                   {new Date(h.creado_at).toLocaleDateString(locale === "en" ? "en-US" : "es-AR")}
                 </span>
@@ -392,16 +383,17 @@ function BuscarPartida({
   miUserId: string;
 }) {
   const t = useTranslations("Rankeds");
+  const tMundos = useTranslations("Mundos.nombres");
   const router = useRouter();
   const MUNDOS_SELECCIONABLES: { id: SeleccionMundo; nombre: string; descripcion: string }[] = [
-    { id: "numeria", nombre: "Numeria", descripcion: t("ciudades.numeria") },
-    { id: "geografia", nombre: "Geografía", descripcion: t("ciudades.geografia") },
-    { id: "enigmia", nombre: "Enigmia", descripcion: t("ciudades.enigmia") },
-    { id: "quimia", nombre: "Quimia", descripcion: t("ciudades.quimia") },
-    { id: "anatomia", nombre: "Anatomía", descripcion: t("ciudades.anatomia") },
-    { id: "melodia", nombre: "Melodía", descripcion: t("ciudades.melodia") },
-    { id: "trigonometria", nombre: "Trigonometría", descripcion: t("ciudades.trigonometria") },
-    { id: "historia", nombre: "Historia", descripcion: t("ciudades.historia") },
+    { id: "numeria", nombre: tMundos("numeria"), descripcion: t("ciudades.numeria") },
+    { id: "geografia", nombre: tMundos("geografia"), descripcion: t("ciudades.geografia") },
+    { id: "enigmia", nombre: tMundos("enigmia"), descripcion: t("ciudades.enigmia") },
+    { id: "quimia", nombre: tMundos("quimia"), descripcion: t("ciudades.quimia") },
+    { id: "anatomia", nombre: tMundos("anatomia"), descripcion: t("ciudades.anatomia") },
+    { id: "melodia", nombre: tMundos("melodia"), descripcion: t("ciudades.melodia") },
+    { id: "trigonometria", nombre: tMundos("trigonometria"), descripcion: t("ciudades.trigonometria") },
+    { id: "historia", nombre: tMundos("historia"), descripcion: t("ciudades.historia") },
     { id: "aleatorio", nombre: t("todasLasCiudades"), descripcion: t("ciudades.aleatorio") },
   ];
   // Fase 7 (Rankeds: Platino+ solo "todas las ciudades"): desde Platino

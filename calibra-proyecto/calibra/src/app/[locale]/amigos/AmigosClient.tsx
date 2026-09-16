@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { ArithmeticProblemType } from "@/types/database";
 import Boton from "@/components/Boton";
 import type { UseAmigosReturn } from "@/app/[locale]/social/useAmigos";
-import SelectorMundoDuelo, { MUNDOS_DUELO, QUIMIA_MODOS_INVITACION, useEtiquetasDuelo } from "@/components/duelos/SelectorMundoDuelo";
+import SelectorMundoDuelo, { QUIMIA_MODOS_INVITACION, useEtiquetasDuelo, useMundosDuelo } from "@/components/duelos/SelectorMundoDuelo";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 
 // Fase 3 del rediseño de Social: ya no maneja su propio estado — recibe
@@ -20,6 +20,7 @@ interface Props {
 
 export default function AmigosClient({ amigosState }: Props) {
   const t = useTranslations("Social");
+  const mundosDuelo = useMundosDuelo();
   const {
     consulta,
     setConsulta,
@@ -127,7 +128,7 @@ export default function AmigosClient({ amigosState }: Props) {
               {retandoA === a.friend_id && (
                 <div className="border-t border-border pt-2">
                   <SelectorMundoDuelo
-                    mundos={MUNDOS_DUELO}
+                    mundos={mundosDuelo}
                     requiereSubopcion
                     onElegirSubopcion={(mundo, opcion) => retar(a.friend_id, mundo, opcion)}
                   />
@@ -155,6 +156,7 @@ export default function AmigosClient({ amigosState }: Props) {
 // primero y luego operación/continente/categoría/modo según corresponda.
 function InvitarPorLink() {
   const t = useTranslations("Social");
+  const mundosDuelo = useMundosDuelo();
   const { nombreMundo, etiquetaOpcion } = useEtiquetasDuelo();
   const router = useRouter();
   const [seleccion, setSeleccion] = useState<{ mundo: MundoDuelo; opcion: string } | null>(null);
@@ -269,7 +271,7 @@ function InvitarPorLink() {
       <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
         <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("elegiCiudadYModo")}</p>
         <SelectorMundoDuelo
-          mundos={MUNDOS_DUELO}
+          mundos={mundosDuelo}
           requiereSubopcion
           subopcionesPorMundo={{ quimia: QUIMIA_MODOS_INVITACION }}
           onElegirSubopcion={(mundo, opcion) => setSeleccion({ mundo, opcion })}

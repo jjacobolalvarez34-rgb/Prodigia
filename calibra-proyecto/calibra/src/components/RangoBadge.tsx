@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { rangoDeElo } from "@/types/database";
 import { IconRango } from "@/components/icons";
 
@@ -29,6 +32,7 @@ const TAMANOS = {
 // resultado visual, y acá el texto es lo más visible de la insignia).
 export default function RangoBadge({ elo, size = "md", mostrarElo = false, tituloNombre, className = "" }: Props) {
   const rango = rangoDeElo(elo);
+  const tRangos = useTranslations("Rankeds.rangos");
   const t = TAMANOS[size];
 
   const estiloNombre: React.CSSProperties = rango.degradado
@@ -45,7 +49,7 @@ export default function RangoBadge({ elo, size = "md", mostrarElo = false, titul
       <span className="shrink-0" style={{ color: rango.colorHex }}>
         <IconRango className={t.icon} />
       </span>
-      <span className="shrink-0" style={estiloNombre}>{rango.nombre}</span>
+      <span className="shrink-0" style={estiloNombre}>{tRangos(rango.slug)}</span>
       {tituloNombre && (
         // min-w-0 + truncate: sin esto, un título largo ("Bautismo de
         // Fuego") nunca se achicaba (audit del podio "cortado",

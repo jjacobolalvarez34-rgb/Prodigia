@@ -13,7 +13,8 @@ export default async function EnigmiaAprenderPage() {
   const t = await getTranslations("Enigmia.aprenderPagina");
   const supabase = await createClient();
   const { user } = await requireMundoEnigmia(supabase, "/enigmia/aprender");
-  bloquearInvitado(user, "Aprender");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("aprender"));
   const unidades = await obtenerCaminoEnigmia(supabase, user.id);
 
   const totalDominadas = unidades.reduce((acc, u) => acc + u.nodos.filter((n) => n.estado === "completado").length, 0);

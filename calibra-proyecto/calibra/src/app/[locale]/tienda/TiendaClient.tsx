@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import {
   RANGOS_ELO,
@@ -33,7 +33,6 @@ const PACKS_CHISPAS: ProductoComprable[] = ["chispas_1000", "chispas_2500", "chi
 const MARCOS_COMPRABLES = RANGOS_ELO.map((r) => ({
   marco: r.slug,
   item: `marco_${r.slug}` as ItemComprable,
-  nombre: r.nombre,
   colorHex: r.colorHex,
 }));
 
@@ -42,10 +41,9 @@ const MARCOS_COMPRABLES = RANGOS_ELO.map((r) => ({
 // nivel_mundo >= 40 en ese mundo (validado server-side en
 // comprar_item_tienda), no solo Chispas.
 const NIVEL_MUNDO_REQUERIDO_MARCO = 40;
-const MARCOS_MUNDO_COMPRABLES = Object.entries(MARCOS_MUNDO).map(([mundo, { nombre, imagen }]) => ({
+const MARCOS_MUNDO_COMPRABLES = Object.entries(MARCOS_MUNDO).map(([mundo, { imagen }]) => ({
   mundo,
   item: `marco_${mundo}` as ItemComprable,
-  nombre,
   imagen,
 }));
 
@@ -99,6 +97,8 @@ export default function TiendaClient({
   esPro,
 }: Props) {
   const t = useTranslations("Tienda");
+  const tMundos = useTranslations("Mundos.nombres");
+  const tRangos = useTranslations("Rankeds.rangos");
   const NOMBRES_ITEM: Record<ItemComprable, string> = {
     escudo: t("items.escudo"),
     congelamiento: t("items.congelamiento"),
@@ -596,7 +596,8 @@ export default function TiendaClient({
             >
               {t("sinMarco")}{marcoElegido === "ninguno" && ` · ${t("activo")}`}
             </button>
-            {MARCOS_COMPRABLES.map(({ marco, item, nombre, colorHex }) => {
+            {MARCOS_COMPRABLES.map(({ marco, item, colorHex }) => {
+              const nombre = tRangos(marco);
               const desbloqueado = marcosDesbl.includes(marco);
               const elegido = marcoElegido === marco;
               if (desbloqueado) {
@@ -636,7 +637,8 @@ export default function TiendaClient({
         <EstanteCategoria titulo={t("vidrieraDeMarcosTematicos")} franja="#6C4CF1">
           <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraMarcosTematicosDescripcion", { n: NIVEL_MUNDO_REQUERIDO_MARCO })}</p>
           <div className="flex flex-wrap gap-3">
-            {MARCOS_MUNDO_COMPRABLES.map(({ mundo, item, nombre, imagen }) => {
+            {MARCOS_MUNDO_COMPRABLES.map(({ mundo, item, imagen }) => {
+              const nombre = tMundos(mundo);
               const desbloqueado = marcosDesbl.includes(mundo);
               const elegido = marcoElegido === mundo;
               const nivelActual = nivelesMundo[mundo] ?? 0;

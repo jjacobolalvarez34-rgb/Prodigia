@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { gsap } from "gsap";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { efectosHabilitados } from "@/lib/efectos";
 
 interface Props {

@@ -11,15 +11,15 @@ type Alcance = "global" | "amigos";
 type Filtro = "total" | "mundo";
 type Mundo = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia";
 
-const MUNDOS: { id: Mundo; nombre: string; colorHex: string }[] = [
-  { id: "numeria", nombre: "Numeria", colorHex: "#6C4CF1" },
-  { id: "enigmia", nombre: "Enigmia", colorHex: "#0E9F6E" },
-  { id: "geografia", nombre: "Geografía", colorHex: "#1E7A8C" },
-  { id: "quimia", nombre: "Quimia", colorHex: "#C026D3" },
-  { id: "anatomia", nombre: "Anatomía", colorHex: "#8B2942" },
-  { id: "melodia", nombre: "Melodía", colorHex: "#B8860B" },
-  { id: "trigonometria", nombre: "Trigonometría", colorHex: "#84CC16" },
-  { id: "historia", nombre: "Historia", colorHex: "#A0522D" },
+const MUNDOS: { id: Mundo; colorHex: string }[] = [
+  { id: "numeria", colorHex: "#6C4CF1" },
+  { id: "enigmia", colorHex: "#0E9F6E" },
+  { id: "geografia", colorHex: "#1E7A8C" },
+  { id: "quimia", colorHex: "#C026D3" },
+  { id: "anatomia", colorHex: "#8B2942" },
+  { id: "melodia", colorHex: "#B8860B" },
+  { id: "trigonometria", colorHex: "#84CC16" },
+  { id: "historia", colorHex: "#A0522D" },
 ];
 
 interface Props {
@@ -35,6 +35,7 @@ interface Props {
 // combinaciones (ranking_semanal_filtrado).
 export default function LeaderboardClient({ rankingInicial, miUserId }: Props) {
   const t = useTranslations("Leaderboard");
+  const tMundos = useTranslations("Mundos.nombres");
   const [alcance, setAlcance] = useState<Alcance>("global");
   const [filtro, setFiltro] = useState<Filtro>("total");
   const [mundo, setMundo] = useState<Mundo>("numeria");
@@ -137,7 +138,7 @@ export default function LeaderboardClient({ rankingInicial, miUserId }: Props) {
                   }`}
                   style={mundo === m.id ? { background: m.colorHex, borderColor: m.colorHex } : undefined}
                 >
-                  {m.nombre}
+                  {tMundos(m.id)}
                 </button>
               ))}
             </div>

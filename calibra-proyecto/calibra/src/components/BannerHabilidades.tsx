@@ -26,6 +26,7 @@ interface Props {
 // como prop.
 export default function BannerHabilidades({ refsIniciales, nivelesMundo }: Props) {
   const t = useTranslations("Perfil.banner");
+  const tMundos = useTranslations("Mundos.nombres");
   const [seleccionados, setSeleccionados] = useState<Set<string>>(new Set(refsIniciales));
   const [estado, setEstado] = useState<"idle" | "saving" | "ok" | "error">("idle");
 
@@ -42,7 +43,7 @@ export default function BannerHabilidades({ refsIniciales, nivelesMundo }: Props
   async function guardar() {
     setEstado("saving");
     try {
-      const items = MUNDOS_LANDING.filter((m) => seleccionados.has(m.slug)).map((m) => ({ ref: m.slug, nombre: m.nombre }));
+      const items = MUNDOS_LANDING.filter((m) => seleccionados.has(m.slug)).map((m) => ({ ref: m.slug, nombre: tMundos(m.slug) }));
       const supabase = createClient();
       const { error } = await supabase.rpc("guardar_afinidad_banner", { p_items: items });
       setEstado(error ? "error" : "ok");
@@ -75,7 +76,7 @@ export default function BannerHabilidades({ refsIniciales, nivelesMundo }: Props
               }
             >
               <span className="text-sm font-display font-bold" style={{ color: activo ? m.colorHex : "var(--foreground)" }}>
-                {m.nombre}
+                {tMundos(m.slug)}
               </span>
               <span className="font-mono text-xs font-semibold text-texto-secundario">{t("nivelMundo", { n: nivel })}</span>
             </button>

@@ -13,7 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function GeografiaPracticaAsiaOceaniaPage() {
   const supabase = await createClient();
   const { user } = await requireMundoGeografia(supabase, "/geografia/practica/asia-oceania");
-  bloquearInvitado(user, "Geografía — Asia y Oceanía");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("geografiaAsiaOceania"));
 
   const [{ data: nivelRow }, { data: profile }] = await Promise.all([
     supabase.from("skill_levels").select("nivel").eq("user_id", user.id).eq("problem_type", "geografia").maybeSingle(),

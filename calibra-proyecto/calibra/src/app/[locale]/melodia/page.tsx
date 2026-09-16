@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoMelodia } from "@/lib/auth/guard";
@@ -16,13 +16,15 @@ import { COLOR_MELODIA } from "./colores";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Melodia.home.metadata");
-  return { title: "Melodía", description: t("description") };
+  const tMundos = await getTranslations("Mundos.nombres");
+  return { title: tMundos("melodia"), description: t("description") };
 }
 
 const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"];
 
 export default async function MelodiaHomePage() {
   const t = await getTranslations("Melodia.home");
+  const tMundos = await getTranslations("Mundos.nombres");
   const supabase = await createClient();
   const { user, profile } = await requireMundoMelodia(supabase, "/melodia");
 
@@ -58,16 +60,16 @@ export default async function MelodiaHomePage() {
         >
           <div>
             <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_MELODIA }}>
-              Melodía
+              {tMundos("melodia")}
             </span>
             <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
             <div className="mt-2">
-              <NivelMundoBadge nombreMundo="Melodía" nivel={nivelMundo} colorHex={COLOR_MELODIA} />
+              <NivelMundoBadge nombreMundo={tMundos("melodia")} nivel={nivelMundo} colorHex={COLOR_MELODIA} />
             </div>
           </div>
         </AvisoPrimeraVez>
 
-        <NivelMundoProgreso nombreMundo="Melodía" colorHex={COLOR_MELODIA} progreso={progresoMundo} />
+        <NivelMundoProgreso nombreMundo={tMundos("melodia")} colorHex={COLOR_MELODIA} progreso={progresoMundo} />
 
         {metaCumplidaHoy && (
           <div className="flex items-center gap-3 rounded-2xl bg-correcto/10 px-5 py-4">

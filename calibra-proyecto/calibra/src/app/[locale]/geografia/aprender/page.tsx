@@ -17,7 +17,8 @@ export default async function GeografiaAprenderPage() {
   const t = await getTranslations("Geografia");
   const supabase = await createClient();
   const { user } = await requireMundoGeografia(supabase, "/geografia/aprender");
-  bloquearInvitado(user, "Aprender");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("aprender"));
   const nodos = await obtenerCaminoGeografia(supabase, user.id);
 
   const totalDominadas = nodos.filter((n) => n.estado === "completado").length;
