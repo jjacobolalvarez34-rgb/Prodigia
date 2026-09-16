@@ -238,6 +238,30 @@ select:disabled {
   animation: ciudad-luz-titilar 2.2s ease-in-out infinite;
 }
 
+/* Bug real (2026-09-15): "arcoiris y prisma no funcionan, el nombre se
+   hace invisible" — ScrollFloat.tsx (usado en NombreEditable.tsx y en
+   el ranking) separa el texto en un <span class="sf-char"> por letra
+   para su propia animación de entrada. background-image/background-clip
+   (lo que pinta el degradé de arcoiris/brillo/prisma) NO se hereda a
+   los hijos en CSS — solo `color` sí — así que cada letra terminaba con
+   color:transparent (heredado) pero sin ningún degradé propio para
+   mostrar a través: invisible siempre, con cualquier fondo de perfil o
+   sin ninguno. `inherit` explícito en background-image/-clip SÍ copia
+   el valor computado del padre (mismo truco que ya usan ::before/::after
+   de nombre-anim-glitch más abajo) — arregla arcoiris/brillo/prisma sin
+   tocar glitch/deconstruccion (que no usan .sf-char, pintan vía
+   pseudo-elementos con content: attr(data-text)) ni el resto de las
+   animaciones (que no tienen background-image propio, heredar "nada"
+   es inofensivo).
+   Neon no tenía este bug — usa color sólido + text-shadow, sin
+   background-clip:text. */
+.sf-char {
+  background-image: inherit;
+  -webkit-background-clip: inherit;
+  background-clip: inherit;
+  color: inherit;
+}
+
 /* Fase 10 ("Tienda: animaciones y fondos"): animaciones de nombre
    compradas (profiles.animacion_nombre) — cada clase es autocontenida
    y se aplica a cualquier contenedor de texto (ver ANIMACION_NOMBRE_
