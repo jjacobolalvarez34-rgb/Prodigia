@@ -67,9 +67,9 @@ interface Props {
   boostActivo: boolean;
   duelo?: DueloGenericoInfo | null;
   miUserId: string;
-  // Pedido en vivo (2026-09-15): llega desde /enigmia/elegir — mismo
-  // criterio que categoriaElegida (ver más abajo), pero como valor
-  // inicial en vez de default null.
+  // Pedido en vivo (2026-09-15): llega desde /enigmia/elegir (?categoria=X
+  // en la URL) — la categoría elegida se practica directo, sin volver a
+  // preguntar acá adentro.
   categoriaInicial?: CategoriaEnigmia | null;
 }
 
@@ -95,13 +95,15 @@ export default function EnigmiaPracticaClient({
   const [resultadoDuelo, setResultadoDuelo] = useState<ResultadoDuelo | null>(null);
   // Paridad con el resto de los mundos (pedido en vivo, 2026-09-15):
   // Enigmia era el único mundo cuya práctica libre no dejaba elegir
-  // tema — siempre la mezcla fija 75% procedural / 25% deducción. Acá
-  // se reusa categoriaForzada (ya existía, pensado solo para duelos)
-  // para practicar UNA categoría a la vez si el jugador la elige; null
+  // tema. La elección pasa por /enigmia/elegir ANTES de llegar acá
+  // (categoriaInicial, vía ?categoria= en la URL) — un selector propio
+  // adentro de esta pantalla quedaba preguntando lo mismo dos veces
+  // (reportado en vivo: "por qué me pregunta dos veces... los recuadros
+  // sobran"), así que se sacó. Se reusa categoriaForzada (ya existía,
+  // pensado solo para duelos) para practicar esa única categoría; null
   // = la mezcla de siempre. Nunca se usa junto con nivelForzado (eso
   // sigue siendo exclusivo de duelos): el nivel de práctica libre
   // siempre es el personal, elegir tema no lo cambia.
-  const [categoriaElegida, setCategoriaElegida] = useState<CategoriaEnigmia | null>(categoriaInicial);
 
   const { estado: estadoArranque, segundos: segundosVs, rivalPresente, empezarAhora } = useArranqueSincronizado({
     duelId: duelo?.duelId,
@@ -231,7 +233,7 @@ export default function EnigmiaPracticaClient({
           escudosExtra={escudosExtra}
           hielosIniciales={hielosDisponibles}
           tiemposExtraIniciales={tiemposExtraDisponibles}
-          categoriaForzada={duelo?.categoria ?? categoriaElegida ?? undefined}
+          categoriaForzada={duelo?.categoria ?? categoriaInicial ?? undefined}
           nivelForzado={duelo?.nivel}
           duelId={duelo?.duelId}
           miUserId={miUserId}
@@ -319,36 +321,10 @@ export default function EnigmiaPracticaClient({
       )}
       <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("listoTitulo")}</h1>
       <p className="text-texto-secundario">{t("listoDescripcion")}</p>
-
-      {/* Pedido en vivo (2026-09-15): "no me da a elegir las diferentes
-          afinidades, eso debe ser también paridad en todos los mundos" —
-          Enigmia era el único mundo sin selector de tema en su práctica
-          libre. Nunca aparece en duelo (el tema ahí lo decide el
-          matchmaking, no el jugador). */}
-      {!duelo && (
-        <div className="flex w-full flex-wrap items-center justify-center gap-2">
-          <button
-            onClick={() => setCategoriaElegida(null)}
-            aria-pressed={categoriaElegida === null}
-            className={`rounded-full border-2 px-3 py-1.5 text-xs font-semibold transition-colors ${
-              categoriaElegida === null ? "border-[#0E9F6E] bg-[#0E9F6E] text-white" : "border-border text-texto-secundario hover:border-[#0E9F6E]/50"
-            }`}
-          >
-            {t("categorias.mezcla")}
-          </button>
-          {(Object.keys(NOMBRE_CATEGORIA_ENIGMIA) as CategoriaEnigmia[]).map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setCategoriaElegida(cat)}
-              aria-pressed={categoriaElegida === cat}
-              className={`rounded-full border-2 px-3 py-1.5 text-xs font-semibold transition-colors ${
-                categoriaElegida === cat ? "border-[#0E9F6E] bg-[#0E9F6E] text-white" : "border-border text-texto-secundario hover:border-[#0E9F6E]/50"
-              }`}
-            >
-              {NOMBRE_CATEGORIA_ENIGMIA[cat]}
-            </button>
-          ))}
-        </div>
+      {!duelo && categoriaInicial && (
+        <p className="text-sm font-semibold" style={{ color: "#0E9F6E" }}>
+          {NOMBRE_CATEGORIA_ENIGMIA[categoriaInicial]}
+        </p>
       )}
 
       <Boton onClick={iniciar} colorHex="#0E9F6E" destacado className="w-full py-5 text-lg">
