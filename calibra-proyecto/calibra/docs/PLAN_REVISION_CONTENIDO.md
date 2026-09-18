@@ -243,10 +243,20 @@ separados (regla #6).
     ambos locales válido, los 9 quiz de Geografía validados por script
     (JSON parseable, respuesta dentro de opciones, sin duplicados).
 
+- **2026-09-18 — Anatomía, Proceso 1 completo**: las 5 técnicas
+  (huesos del cráneo por zona, nombre del músculo, pares craneales por
+  función, simple-a-compuesto, órganos por cavidad) ya eran correctas
+  — se verificó cada dato usado en el quiz contra la clasificación
+  anatómica estándar. Se les agregó quiz (migración `0173`, 15
+  preguntas en total) y, exactamente como se anticipó al cerrar
+  Geografía, `LeccionAnatomiaClient.tsx` tampoco tenía fase de quiz —
+  se le agregó con el mismo patrón. Sin notación matemática, no aplica
+  la conversión `$...$`. `tsc`/`eslint`/`vitest` limpios (186/186), los
+  15 quiz validados por script.
+
 ## Siguiente paso concreto
 
-Anatomía es el siguiente mundo en el orden sugerido. Antes de escribir
-su quiz, revisar primero si `LeccionAnatomiaClient.tsx` ya tiene fase
-de quiz (probablemente no, ver hallazgo de Geografía arriba) y agregarla
-con el mismo patrón si falta, antes o junto con escribir el contenido
-del quiz mismo.
+Melodía es el siguiente mundo en el orden sugerido. Mismo procedimiento:
+revisar si `LeccionMelodiaClient.tsx` tiene fase de quiz (asumir que no
+hasta confirmar) y agregarla junto con el contenido del quiz, verificando
+cada dato de teoría musical contra fuentes reales antes de escribirlo.

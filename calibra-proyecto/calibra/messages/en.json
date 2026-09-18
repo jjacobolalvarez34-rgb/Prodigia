@@ -1380,7 +1380,14 @@
       "marcarAprendida": "Mark as learned",
       "completaste": "You completed {nombre}!",
       "volverAprender": "Back to Learn",
-      "irPracticar": "Go practice"
+      "irPracticar": "Go practice",
+      "continuarAlQuiz": "Continue to quiz",
+      "quizTitulo": "Comprehension quiz",
+      "quizSubtitulo": "Answer the questions to mark this technique as learned. You can retry as many times as you want.",
+      "respuestaIncorrecta": "That's not it — check again",
+      "enviarRespuestas": "Submit answers",
+      "enviando": "Submitting...",
+      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want."
     },
     "practica": {
       "oseo": {
