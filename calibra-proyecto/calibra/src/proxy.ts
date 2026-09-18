@@ -163,7 +163,17 @@ export const config = {
   // dos archivos de SEO. El resto de los archivos especiales de
   // app/ (icon.svg, apple-touch-icon.png, favicon.ico) ya colaban por
   // el filtro de extensiones de imagen que ya estaba.
+  //
+  // Mismo bug de nuevo, encontrado en vivo (2026-09-18): el archivo de
+  // verificación de Google Search Console (public/google<id>.html)
+  // tiene que servirse tal cual en la raíz, sin prefijo de idioma —
+  // ".html" nunca estaba en la lista de extensiones excluidas (solo
+  // había imágenes), así que next-intl lo redirigía a
+  // "/es/google<id>.html" (que no existe) antes de que Google pudiera
+  // leerlo, y Search Console reportaba "no se encontró el archivo de
+  // verificación en la ubicación esperada" pese a que el archivo
+  // estaba bien puesto en public/.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api|auth/callback|data/|manifest\\.webmanifest|sw\\.js|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api|auth/callback|data/|manifest\\.webmanifest|sw\\.js|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)",
   ],
 };
