@@ -18,19 +18,23 @@ interface Body {
 // tenga asociados en technique_modifiers. Idempotente: completar de nuevo
 // una técnica ya dominada no rompe nada ni duplica desbloqueos.
 //
-// Fase C: si la técnica es requiere_pro=true y tiene contenido.quiz con
-// preguntas, esto deja de ser incondicional — hay que:
-//   1) confirmar que quien llama es realmente Pro (defensa en
-//      profundidad — la UI ya no debería dejar que un usuario free
-//      llegue hasta acá, pero el server nunca puede confiar solo en
-//      eso: cualquiera puede pegarle directo a este endpoint);
+// Fase C (Calculia): si la técnica tiene contenido.quiz con preguntas
+// — sea Pro o técnica rápida gratuita, ver docs/PLAN_REVISION_CONTENIDO.md
+// Proceso 1 — esto deja de ser incondicional:
+//   1) si además requiere_pro=true, confirmar que quien llama es
+//      realmente Pro (defensa en profundidad — la UI ya no debería
+//      dejar que un usuario free llegue hasta acá, pero el server
+//      nunca puede confiar solo en eso: cualquiera puede pegarle
+//      directo a este endpoint);
 //   2) validar cada respuesta enviada contra quiz[i].respuesta — si
 //      alguna está mal (o falta `respuestas`/tiene longitud distinta),
 //      se devuelve { ok:false, aprobado:false } SIN tocar
 //      technique_progress (no se marca dominado, no hay reintentos
 //      gratis del lado del servidor).
-// Las técnicas rápidas (requiere_pro=false, sin quiz) siguen el camino
-// incondicional de siempre, sin cambios.
+// Una técnica SIN quiz (contenido.quiz vacío o ausente) sigue el camino
+// incondicional de siempre, sin cambios — la mayoría de las técnicas
+// rápidas viejas todavía están en ese estado mientras se les va
+// agregando quiz mundo por mundo.
 export async function POST(request: Request) {
   const supabase = await createClient();
 
@@ -59,11 +63,13 @@ export async function POST(request: Request) {
 
   const quiz = ((tecnica.contenido as { quiz?: TechniqueQuizPregunta[] } | null)?.quiz ?? []) as TechniqueQuizPregunta[];
 
-  if (tecnica.requiere_pro && quiz.length > 0) {
-    const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
+  if (quiz.length > 0) {
+    if (tecnica.requiere_pro) {
+      const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
 
-    if (profile?.plan !== "pro") {
-      return NextResponse.json({ error: "Esta lección requiere plan Pro" }, { status: 403 });
+      if (profile?.plan !== "pro") {
+        return NextResponse.json({ error: "Esta lección requiere plan Pro" }, { status: 403 });
+      }
     }
 
     const respuestas = body.respuestas;

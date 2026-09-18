@@ -974,7 +974,14 @@
       "marcarComoAprendida": "Marcar como aprendida",
       "completaste": "¡Completaste {nombre}!",
       "volverAAprender": "Volver a Aprender",
-      "irAPracticar": "Ir a Practicar"
+      "irAPracticar": "Ir a Practicar",
+      "continuarAlQuiz": "Continuar al quiz",
+      "quizTitulo": "Quiz de comprensión",
+      "quizSubtitulo": "Respondé las preguntas para marcar esta técnica como aprendida. Podés reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "enviarRespuestas": "Enviar respuestas",
+      "enviando": "Enviando...",
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
     }
   },
   "Nav": {

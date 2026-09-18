@@ -210,10 +210,43 @@ separados (regla #6).
 - Cualquier cambio de layout/UI que no sea el renderizado de fórmulas
   en sí (eso ya se resolvió aparte, ver `PARIDAD_MUNDOS.md` footnote ⁹).
 
+## Progreso real (se actualiza a medida que se hace, no es la guía en sí)
+
+- **2026-09-18 — Fundación**: `katex` instalado, `MathText.tsx` +
+  `src/lib/texto/mathText.ts` construidos y probados en aislamiento (8
+  tests). Nada de contenido real tocado todavía en este paso.
+- **2026-09-18 — Geografía, Proceso 1 completo**: las 3 técnicas
+  (`dividir-en-subregiones`, `anclar-por-vecinos`, `forma-caracteristica`)
+  ya eran pedagógicamente correctas (son estrategias de memoria, no
+  datos factuales) — no hicieron falta correcciones. Se les agregó un
+  quiz de 3 preguntas cada una (migración `0172`), cada pregunta
+  probando específicamente la técnica de esa lección (nunca trivia
+  suelta) con datos reales verificados (Argentina al sur de Brasil;
+  Italia con forma de bota; Chile como franja angosta — estos dos
+  últimos son los mismos ejemplos que ya trae cada lección). Sin
+  notación matemática que convertir (Geografía no usa ninguna).
+  - **Bug real encontrado y corregido de paso**: `/api/aprender/completar`
+    solo validaba el quiz en el servidor cuando `requiere_pro=true` —
+    el quiz de una técnica rápida gratuita (como las de Geografía) se
+    hubiera mostrado en la UI pero nunca se habría verificado en el
+    servidor, un usuario podía pegarle directo al endpoint y saltárselo
+    sin ninguna consecuencia. Corregido para que la validación aplique
+    a cualquier técnica con `contenido.quiz`, sea Pro o gratuita.
+  - **Componente extendido**: `LeccionGeografiaClient.tsx` no tenía
+    ninguna fase de quiz (iba directo de los pasos a "marcar como
+    aprendida") — se le agregó la misma fase "quiz" que ya tenía
+    `LeccionCalculiaClient.tsx`. Este mismo hueco (falta la fase de
+    quiz en el componente) muy probablemente existe en los otros 6
+    mundos que todavía no pasaron por el Proceso 1 — revisar el
+    componente de lección de cada mundo, no asumir que ya soporta quiz.
+  - Verificado: `tsc`/`eslint`/`vitest` limpios (186/186), JSON de
+    ambos locales válido, los 9 quiz de Geografía validados por script
+    (JSON parseable, respuesta dentro de opciones, sin duplicados).
+
 ## Siguiente paso concreto
 
-Nada de este documento se ejecutó todavía — es la guía. El primer paso
-real, cuando se dé la orden de arrancar, es: instalar `katex`, construir
-y probar `MathText.tsx` en aislamiento, y recién después arrancar por
-Geografía (el mundo más chico) con el Proceso 1 completo antes de tocar
-ningún otro mundo.
+Anatomía es el siguiente mundo en el orden sugerido. Antes de escribir
+su quiz, revisar primero si `LeccionAnatomiaClient.tsx` ya tiene fase
+de quiz (probablemente no, ver hallazgo de Geografía arriba) y agregarla
+con el mismo patrón si falta, antes o junto con escribir el contenido
+del quiz mismo.
