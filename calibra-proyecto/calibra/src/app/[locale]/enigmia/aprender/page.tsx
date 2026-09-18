@@ -3,9 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { requireMundoEnigmia, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoEnigmia } from "@/lib/enigmia/path";
 import Header from "@/components/Header";
-import ProgressDial from "@/components/ProgressDial";
 import CaminoContinuo, { type UnidadCaminoGenerico } from "@/components/CaminoContinuo";
-import AprenderSidebar from "@/components/AprenderSidebar";
+import AprenderLayout from "@/components/AprenderLayout";
 
 const COLOR = "#0E9F6E";
 
@@ -29,40 +28,24 @@ export default async function EnigmiaAprenderPage() {
   return (
     <>
       <Header autenticado />
-      <div className="mx-auto grid w-full max-w-4xl flex-1 grid-cols-1 gap-8 px-4 py-12 sm:px-6 md:grid-cols-[220px_1fr]">
-        <aside className="flex flex-col gap-4 md:h-fit">
-          <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3">
-            <ProgressDial value={totalDominadas} max={Math.max(1, totalTecnicas)} size={44} colorDesde={COLOR} colorHasta="#3FB88B">
-              <span className="font-mono text-xs font-bold text-foreground">
-                {totalTecnicas > 0 ? Math.round((totalDominadas / totalTecnicas) * 100) : 0}%
-              </span>
-            </ProgressDial>
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("progreso")}</p>
-              <p className="font-mono text-sm font-semibold text-foreground">
-                {t("progresoTecnicas", { dominadas: totalDominadas, total: totalTecnicas })}
-              </p>
-            </div>
-          </div>
-
-          <AprenderSidebar
-            colorHex={COLOR}
-            unidades={unidades.map((u) => ({
-              id: u.categoria,
-              nombre: u.nombre,
-              dominadas: u.nodos.filter((n) => n.estado === "completado").length,
-              total: u.nodos.length,
-            }))}
-          />
-        </aside>
-
-        <main className="flex flex-col gap-2">
-          <div>
-            <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR }}>Enigmia</span>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
-          </div>
+      <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
+        <AprenderLayout
+          titulo={t("titulo")}
+          subtitulo=""
+          progresoLabel={t("progreso")}
+          tecnicasTexto={t("progresoTecnicas", { dominadas: totalDominadas, total: totalTecnicas })}
+          colorHex={COLOR}
+          totalDominadas={totalDominadas}
+          totalTecnicas={totalTecnicas}
+          unidadesSidebar={unidades.map((u) => ({
+            id: u.categoria,
+            nombre: u.nombre,
+            dominadas: u.nodos.filter((n) => n.estado === "completado").length,
+            total: u.nodos.length,
+          }))}
+        >
           <CaminoContinuo unidades={unidadesGenericas} basePath="/enigmia/aprender" colorHex={COLOR} />
-        </main>
+        </AprenderLayout>
       </div>
     </>
   );

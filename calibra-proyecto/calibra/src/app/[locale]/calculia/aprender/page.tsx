@@ -4,8 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoCalculia } from "@/lib/calculia/path";
 import Header from "@/components/Header";
-import ProgressDial from "@/components/ProgressDial";
 import CaminoContinuo, { type UnidadCaminoGenerico } from "@/components/CaminoContinuo";
+import AprenderLayout from "@/components/AprenderLayout";
 import { COLOR_CALCULIA } from "../colores";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -61,30 +61,24 @@ export default async function CalculiaAprenderPage() {
   return (
     <>
       <Header autenticado />
-      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
-        <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3">
-          <ProgressDial value={totalDominadas} max={Math.max(1, nodos.length)} size={44} colorDesde={COLOR_CALCULIA}>
-            <span className="font-mono text-xs font-bold text-foreground">
-              {nodos.length > 0 ? Math.round((totalDominadas / nodos.length) * 100) : 0}%
-            </span>
-          </ProgressDial>
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("aprender.progreso")}</p>
-            <p className="font-mono text-sm font-semibold text-foreground">
-              {t("aprender.tecnicas", { n: totalDominadas, total: nodos.length })}
-            </p>
-          </div>
-        </div>
-
-        <div>
-          <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_CALCULIA }}>
-            {t("nombreMundo")}
-          </span>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("aprender.titulo")}</h1>
-          <p className="mt-1 text-sm text-texto-secundario">{t("aprender.subtitulo")}</p>
-        </div>
-
-        <CaminoContinuo unidades={unidadesGenericas} basePath="/calculia/aprender" colorHex={COLOR_CALCULIA} />
+      <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
+        <AprenderLayout
+          titulo={t("aprender.titulo")}
+          subtitulo={t("aprender.subtitulo")}
+          progresoLabel={t("aprender.progreso")}
+          tecnicasTexto={t("aprender.tecnicas", { n: totalDominadas, total: nodos.length })}
+          colorHex={COLOR_CALCULIA}
+          totalDominadas={totalDominadas}
+          totalTecnicas={nodos.length}
+          unidadesSidebar={unidadesGenericas.map((u) => ({
+            id: u.id,
+            nombre: u.nombre,
+            dominadas: u.nodos.filter((n) => n.estado === "completado").length,
+            total: u.nodos.length,
+          }))}
+        >
+          <CaminoContinuo unidades={unidadesGenericas} basePath="/calculia/aprender" colorHex={COLOR_CALCULIA} />
+        </AprenderLayout>
       </div>
     </>
   );

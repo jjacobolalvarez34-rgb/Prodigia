@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
-import { obtenerCaminoQuimia } from "@/lib/quimia/path";
+import { obtenerCaminoQuimia, ORDEN_GRUPOS_QUIMIA, type GrupoQuimia } from "@/lib/quimia/path";
 import Header from "@/components/Header";
-import ProgressDial from "@/components/ProgressDial";
 import CaminoContinuo, { type UnidadCaminoGenerico } from "@/components/CaminoContinuo";
+import AprenderLayout from "@/components/AprenderLayout";
 import { COLOR_QUIMIA } from "../colores";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -15,53 +15,63 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function QuimiaAprenderPage() {
   const t = await getTranslations("Quimia.aprenderPagina");
+  // Grupos (modos.simbolos/formulas/tabla y elegir.desc*) ya existen en
+  // i18n para la pantalla de práctica — se reutilizan acá para nombrar
+  // los mismos 3 grupos en el sidebar de Aprender (Fase paridad-sidebar,
+  // ver docs/PARIDAD_MUNDOS.md footnote ⁹), sin duplicar strings nuevos.
+  const tQuimia = await getTranslations("Quimia");
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/quimia/aprender");
   const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
-  const tMundos = await getTranslations("Mundos.nombres");
   bloquearInvitado(user, tBloqueos("aprender"));
   const nodos = await obtenerCaminoQuimia(supabase, user.id);
 
   const totalDominadas = nodos.filter((n) => n.estado === "completado").length;
 
-  const unidadesGenericas: UnidadCaminoGenerico[] = [
-    {
-      id: "quimia",
-      nombre: tMundos("quimia"),
-      descripcion: t("descripcionUnidad"),
-      nodos: nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
-    },
-  ];
+  const NOMBRE_GRUPO: Record<GrupoQuimia, string> = {
+    simbolos: tQuimia("modos.simbolos"),
+    formulas: tQuimia("modos.formulas"),
+    tabla: tQuimia("modos.tabla"),
+  };
+  const DESCRIPCION_GRUPO: Record<GrupoQuimia, string> = {
+    simbolos: tQuimia("elegir.descSimbolos"),
+    formulas: tQuimia("elegir.descFormulas"),
+    tabla: tQuimia("elegir.descTabla"),
+  };
+
+  const unidadesGenericas: UnidadCaminoGenerico[] = ORDEN_GRUPOS_QUIMIA.map((grupo) => ({
+    grupo,
+    nodos: nodos.filter((n) => n.grupo === grupo),
+  }))
+    .filter((g) => g.nodos.length > 0)
+    .map((g) => ({
+      id: `quimia-${g.grupo}`,
+      nombre: NOMBRE_GRUPO[g.grupo],
+      descripcion: DESCRIPCION_GRUPO[g.grupo],
+      nodos: g.nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
+    }));
 
   return (
     <>
       <Header autenticado />
-      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
-        <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3">
-          <ProgressDial value={totalDominadas} max={Math.max(1, nodos.length)} size={44} colorDesde={COLOR_QUIMIA}>
-            <span className="font-mono text-xs font-bold text-foreground">
-              {nodos.length > 0 ? Math.round((totalDominadas / nodos.length) * 100) : 0}%
-            </span>
-          </ProgressDial>
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("progreso")}</p>
-            <p className="font-mono text-sm font-semibold text-foreground">
-              {t("progresoTecnicas", { completadas: totalDominadas, total: nodos.length })}
-            </p>
-          </div>
-        </div>
-
-        <div>
-          <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_QUIMIA }}>
-            Quimia
-          </span>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
-          <p className="mt-1 text-sm text-texto-secundario">
-            {t("subtitulo")}
-          </p>
-        </div>
-
-        <CaminoContinuo unidades={unidadesGenericas} basePath="/quimia/aprender" colorHex={COLOR_QUIMIA} />
+      <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
+        <AprenderLayout
+          titulo={t("titulo")}
+          subtitulo={t("subtitulo")}
+          progresoLabel={t("progreso")}
+          tecnicasTexto={t("progresoTecnicas", { completadas: totalDominadas, total: nodos.length })}
+          colorHex={COLOR_QUIMIA}
+          totalDominadas={totalDominadas}
+          totalTecnicas={nodos.length}
+          unidadesSidebar={unidadesGenericas.map((u) => ({
+            id: u.id,
+            nombre: u.nombre,
+            dominadas: u.nodos.filter((n) => n.estado === "completado").length,
+            total: u.nodos.length,
+          }))}
+        >
+          <CaminoContinuo unidades={unidadesGenericas} basePath="/quimia/aprender" colorHex={COLOR_QUIMIA} />
+        </AprenderLayout>
       </div>
     </>
   );
