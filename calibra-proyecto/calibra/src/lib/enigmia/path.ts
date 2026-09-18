@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { NOMBRE_CATEGORIA_ENIGMIA, type CategoriaEnigmia } from "@/types/database";
+import type { TechniqueQuizPregunta } from "@/types/database";
 
 export type NodoEstado = "completado" | "activo" | "bloqueado";
 
@@ -8,7 +9,7 @@ export interface NodoCaminoEnigmia {
   slug: string;
   nombre: string;
   descripcion: string | null;
-  contenido: { pasos: string[]; ejemplo: { enunciado: string; opciones: string[]; respuesta: string } };
+  contenido: { pasos: string[]; quiz?: TechniqueQuizPregunta[] };
   categoria: CategoriaEnigmia;
   estado: NodoEstado;
 }

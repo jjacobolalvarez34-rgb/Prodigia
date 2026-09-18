@@ -449,17 +449,43 @@ separados (regla #6).
     usarlo, mismo criterio que en `0181`). `tsc`/`eslint`/`vitest`
     limpios (186/186, mismo baseline que al empezar).
 
+- **2026-09-18 — Enigmia, Proceso 1 completo (último mundo — Proceso 1
+  cerrado en los 10 mundos)**: Enigmia usa su propia tabla
+  `logic_techniques`/`logic_technique_progress` (no `techniques`), con
+  6 lecciones (patrón numérico, encontrar el intruso, analogías,
+  condicional si-entonces, memoria por grupos, pensar como algoritmo)
+  repartidas en 2 migraciones históricas (`0015`/`0020`). Las 6 ya eran
+  correctas — se verificó cada dato/ejemplo contra lógica real
+  (incluidos los 2 casos válidos de inferencia — modus ponens y modus
+  tollens — para la lección de condicionales, y el resultado de "x=2,
+  repetir x=x×2 tres veces" para la de pensamiento algorítmico).
+  - **Bug real encontrado y corregido — el más serio de todo el
+    Proceso 1**: a diferencia de cualquier otro mundo, Enigmia SÍ tenía
+    un intento de ejercicio desde el inicio (`contenido.ejemplo`, una
+    sola pregunta), pero nunca se verificaba de verdad. El botón
+    "Listo" de `LeccionEnigmiaClient.tsx` se habilitaba con
+    `respuesta !== null` — CUALQUIER opción elegida, correcta o no — y
+    `POST /api/enigmia/completar-leccion` marcaba `dominado=true` sin
+    recibir ni mirar ninguna respuesta. Se podía "aprobar" cualquier
+    lección eligiendo la opción incorrecta a propósito. Corregido:
+    `ejemplo` (1 pregunta) se convirtió a `quiz` (3 preguntas, mismo
+    formato `TechniqueQuizPregunta` que el resto de la app — migración
+    `0186`, `jsonb_build_object` reescribe `contenido` completo por
+    slug), el componente ganó la misma fase "quiz" de siempre, y el
+    endpoint ahora valida `respuestas` contra `quiz[].respuesta` antes
+    de marcar dominado — mismo criterio ya probado en
+    `/api/aprender/completar`.
+  - Sin notación LaTeX real en estas 6 lecciones (son razonamiento
+    lógico, no fórmulas), MathText ya estaba conectado desde la pasada
+    anterior.
+  - Verificado: 18 preguntas de quiz validadas (respuesta en opciones,
+    sin duplicados, explicacion no vacía), `tsc`/`eslint`/`vitest`
+    limpios (186/186).
+
 ## Siguiente paso concreto
 
-Enigmia es el último mundo pendiente del Proceso 1 (Geografía,
-Anatomía, Melodía, Quimia, Historia, Trigonometría, Calculia/Circuitia
-—técnicas rápidas— y Numeria ya están). A diferencia de los otros 9
-mundos, Enigmia usa su propia tabla `logic_techniques` en vez de
-`techniques` — antes de aplicar el mismo procedimiento (revisar si su
-componente de lección tiene fase de quiz, agregar quiz verificando cada
-técnica contra el generador real de acertijos, convertir notación si
-corresponde) hace falta investigar el shape real de esa tabla y su
-componente de lección propios, que ningún mundo anterior comparte.
+**Proceso 1 (revisión pedagógica + quiz de Aprender) está completo en
+los 10 mundos.** Lo que queda:
 
 Para la notación (ya con MathText conectado): sigue pendiente convertir
 a `$...$` las 5 técnicas rápidas de Circuitia y las 4 lecciones
