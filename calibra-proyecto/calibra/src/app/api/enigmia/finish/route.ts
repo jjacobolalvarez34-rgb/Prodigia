@@ -8,6 +8,10 @@ interface FinishBody {
   started_at: string;
   // Ver el mismo comentario en /api/practica/finish — mismo bug, mismo fix.
   total_problemas: number;
+  // "Todas las ciudades" (2026-09-18): ver el comentario completo en
+  // /api/practica/finish — duelo casual en un mundo no comprado no
+  // suma nivel de mundo, ranked sí suma siempre.
+  duel_id?: string;
 }
 
 interface RegistrarXpDiarioResult {
@@ -99,8 +103,28 @@ const { data: registroRows, error: registroError } = await supabase.rpc("registr
 
   // Fase DD2: nivel de mundo, siempre "enigmia" acá — a diferencia de
   // /api/practica/finish no hace falta derivar el mundo del problem_type.
+  let sumaNivelMundo = true;
+  if (body.duel_id) {
+    const { data: duelRow } = await supabase
+      .from("duels")
+      .select("clasificatorio, retador_id, retado_id")
+      .eq("id", body.duel_id)
+      .maybeSingle();
+    const esParticipante = !!duelRow && (duelRow.retador_id === user.id || duelRow.retado_id === user.id);
+    if (duelRow && esParticipante && !duelRow.clasificatorio) {
+      const { data: miProfile } = await supabase
+        .from("profiles")
+        .select("mundos_desbloqueados")
+        .eq("id", user.id)
+        .single();
+      if (!miProfile?.mundos_desbloqueados?.includes("enigmia")) {
+        sumaNivelMundo = false;
+      }
+    }
+  }
+
   let nivelMundo: RegistrarPuntosMundoResult | null = null;
-  if (xpGanado > 0) {
+  if (xpGanado > 0 && sumaNivelMundo) {
     const { data: mundoRows } = await supabase.rpc("registrar_progreso_mundo", { p_world: "enigmia", p_puntos: xpGanado });
     nivelMundo = (mundoRows as RegistrarPuntosMundoResult[] | null)?.[0] ?? null;
 

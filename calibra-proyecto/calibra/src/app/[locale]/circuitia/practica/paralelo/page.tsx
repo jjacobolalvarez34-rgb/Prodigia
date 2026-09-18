@@ -18,7 +18,7 @@ interface Props {
 export default async function CircuitiaPracticaParaleloPage({ searchParams }: Props) {
   const { duelo } = await searchParams;
   const supabase = await createClient();
-  const { user } = await requireMundoCircuitia(supabase, "/circuitia/practica/paralelo");
+  const { user } = await requireMundoCircuitia(supabase, "/circuitia/practica/paralelo", Boolean(duelo));
 
   const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaCircuitia(supabase, user.id, "paralelo", duelo);
 

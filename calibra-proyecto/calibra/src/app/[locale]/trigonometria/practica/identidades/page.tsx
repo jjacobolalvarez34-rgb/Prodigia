@@ -18,7 +18,7 @@ interface Props {
 export default async function TrigonometriaPracticaIdentidadesPage({ searchParams }: Props) {
   const { duelo } = await searchParams;
   const supabase = await createClient();
-  const { user } = await requireMundoTrigonometria(supabase, "/trigonometria/practica/identidades");
+  const { user } = await requireMundoTrigonometria(supabase, "/trigonometria/practica/identidades", Boolean(duelo));
 
   const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaTrigonometria(supabase, user.id, "identidades", duelo);
 

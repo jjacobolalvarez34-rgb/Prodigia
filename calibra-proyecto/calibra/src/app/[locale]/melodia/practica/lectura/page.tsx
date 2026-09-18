@@ -18,7 +18,7 @@ interface Props {
 export default async function MelodiaPracticaLecturaPage({ searchParams }: Props) {
   const { duelo } = await searchParams;
   const supabase = await createClient();
-  const { user } = await requireMundoMelodia(supabase, "/melodia/practica/lectura");
+  const { user } = await requireMundoMelodia(supabase, "/melodia/practica/lectura", Boolean(duelo));
 
   const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaMelodia(supabase, user.id, "lectura", duelo);
 

@@ -41,8 +41,23 @@ export async function requireUsuario(supabase: SupabaseClient, pathActual: strin
   return { user, profile: profile as Profile };
 }
 
-export async function requireMundoNumeria(supabase: SupabaseClient, pathActual: string) {
+// `enDuelo` (agregado cuando Rankeds pasó a permitir "Todas las
+// ciudades" sin importar qué mundos compraste — pedido explícito del
+// usuario 2026-09-18): un duelo real (ranked O casual, viene de
+// matchmaking, de un reto a un amigo, o de una invitación) nunca debe
+// poder trabarte a mitad de partida contra una pantalla de "comprá
+// este mundo" o "hacé el diagnóstico primero" — eso rompería la serie
+// (mejor de 3) o dejaría a tu rival esperando sin salida. Con
+// enDuelo=true se saltea el chequeo de compra Y el de diagnóstico
+// completo; sin él (el 99% de los casos, práctica normal) el
+// comportamiento es exactamente el de siempre. El nivel de dificultad
+// de un duelo nunca depende de skill_levels/onboarding de todos modos
+// (viene resuelto server-side en el propio duelo, ver
+// nivel_<mundo>_por_rango en buscar_rival_duelo), así que saltear el
+// diagnóstico no deja ningún hueco de "qué nivel le doy".
+export async function requireMundoNumeria(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
   const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
   requireMundoComprado(profile, "numeria", pathActual);
 
   if (!profile.onboarding_completado) {
@@ -65,8 +80,9 @@ function requireMundoComprado(profile: Profile, mundo: MundoPago, pathActual: st
   }
 }
 
-export async function requireMundoEnigmia(supabase: SupabaseClient, pathActual: string) {
+export async function requireMundoEnigmia(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
   const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
   requireMundoComprado(profile, "enigmia", pathActual);
 
   if (!profile.onboarding_enigmia_completado) {
@@ -76,8 +92,9 @@ export async function requireMundoEnigmia(supabase: SupabaseClient, pathActual: 
   return { user, profile };
 }
 
-export async function requireMundoQuimia(supabase: SupabaseClient, pathActual: string) {
+export async function requireMundoQuimia(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
   const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
   requireMundoComprado(profile, "quimia", pathActual);
 
   if (!profile.onboarding_quimia_completado) {
@@ -89,8 +106,9 @@ export async function requireMundoQuimia(supabase: SupabaseClient, pathActual: s
 
 // Fase 5 ("Anatomía"): mismo patrón que los demás mundos — diagnóstico
 // inicial propio antes de dejar entrar a practicar/aprender.
-export async function requireMundoAnatomia(supabase: SupabaseClient, pathActual: string) {
+export async function requireMundoAnatomia(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
   const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
   requireMundoComprado(profile, "anatomia", pathActual);
 
   if (!profile.onboarding_anatomia_completado) {
@@ -101,8 +119,9 @@ export async function requireMundoAnatomia(supabase: SupabaseClient, pathActual:
 }
 
 // Mundo Melodía (Fase 1, 2026-08-24): mismo patrón que Quimia/Anatomía.
-export async function requireMundoMelodia(supabase: SupabaseClient, pathActual: string) {
+export async function requireMundoMelodia(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
   const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
   requireMundoComprado(profile, "melodia", pathActual);
 
   if (!profile.onboarding_melodia_completado) {
@@ -113,8 +132,9 @@ export async function requireMundoMelodia(supabase: SupabaseClient, pathActual: 
 }
 
 // Mundo Trigonometría: mismo patrón que Quimia/Anatomía/Melodía.
-export async function requireMundoTrigonometria(supabase: SupabaseClient, pathActual: string) {
+export async function requireMundoTrigonometria(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
   const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
   requireMundoComprado(profile, "trigonometria", pathActual);
 
   if (!profile.onboarding_trigonometria_completado) {
@@ -125,8 +145,9 @@ export async function requireMundoTrigonometria(supabase: SupabaseClient, pathAc
 }
 
 // Mundo Historia: mismo patrón que Trigonometría/Quimia/Anatomía/Melodía.
-export async function requireMundoHistoria(supabase: SupabaseClient, pathActual: string) {
+export async function requireMundoHistoria(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
   const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
   requireMundoComprado(profile, "historia", pathActual);
 
   if (!profile.onboarding_historia_completado) {
@@ -138,8 +159,9 @@ export async function requireMundoHistoria(supabase: SupabaseClient, pathActual:
 
 // Mundo Calculia: mismo patrón que Trigonometría/Historia/Quimia/
 // Anatomía/Melodía.
-export async function requireMundoCalculia(supabase: SupabaseClient, pathActual: string) {
+export async function requireMundoCalculia(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
   const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
   requireMundoComprado(profile, "calculia", pathActual);
 
   if (!profile.onboarding_calculia_completado) {
@@ -151,8 +173,9 @@ export async function requireMundoCalculia(supabase: SupabaseClient, pathActual:
 
 // Mundo Circuitia: mismo patrón que Calculia/Trigonometría/Historia/
 // Quimia/Anatomía/Melodía.
-export async function requireMundoCircuitia(supabase: SupabaseClient, pathActual: string) {
+export async function requireMundoCircuitia(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
   const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
   requireMundoComprado(profile, "circuitia", pathActual);
 
   if (!profile.onboarding_circuitia_completado) {
@@ -165,8 +188,9 @@ export async function requireMundoCircuitia(supabase: SupabaseClient, pathActual
 // Geografía nunca tuvo diagnóstico propio (arranca directo) — con Fase
 // 12 pasa a necesitar este guard nuevo en vez de requireUsuario a
 // secas, solo para el chequeo de compra.
-export async function requireMundoGeografia(supabase: SupabaseClient, pathActual: string) {
+export async function requireMundoGeografia(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
   const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
   requireMundoComprado(profile, "geografia", pathActual);
 
   return { user, profile };

@@ -18,7 +18,7 @@ interface Props {
 export default async function CircuitiaPracticaCualitativoPage({ searchParams }: Props) {
   const { duelo } = await searchParams;
   const supabase = await createClient();
-  const { user } = await requireMundoCircuitia(supabase, "/circuitia/practica/cualitativo");
+  const { user } = await requireMundoCircuitia(supabase, "/circuitia/practica/cualitativo", Boolean(duelo));
 
   const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaCircuitia(supabase, user.id, "cualitativo", duelo);
 

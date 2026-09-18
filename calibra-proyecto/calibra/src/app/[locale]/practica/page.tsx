@@ -52,7 +52,7 @@ export interface DueloInfo {
 export default async function PracticaPage({ searchParams }: Props) {
   const { operacion, duelo } = await searchParams;
   const supabase = await createClient();
-  const { user } = await requireUsuarioOnboarded(supabase, "/practica");
+  const { user } = await requireUsuarioOnboarded(supabase, "/practica", Boolean(duelo));
   const t = await getTranslations("Practica");
 
   let dueloInfo: DueloInfo | null = null;

@@ -21,7 +21,7 @@ export default async function EnigmiaPracticaPage({ searchParams }: Props) {
     : null;
   const t = await getTranslations("Enigmia.practica");
   const supabase = await createClient();
-  const { user } = await requireMundoEnigmia(supabase, "/enigmia/practica");
+  const { user } = await requireMundoEnigmia(supabase, "/enigmia/practica", Boolean(duelo));
 
   // Fase 3 de Rankeds: si vengo de matchmaking, la categoría la decide
   // el rango de los dos duelistas (sub_tipo, elegido server-side).

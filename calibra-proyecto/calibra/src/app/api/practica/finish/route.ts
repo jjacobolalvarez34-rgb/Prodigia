@@ -13,6 +13,17 @@ interface FinishBody {
   // mostraba "5/7" en vez de "5/10". El total real lo sabe el cliente
   // (TOTAL_PROBLEMAS/TOTAL_PREGUNTAS de cada runner), no la base.
   total_problemas: number;
+  // "Todas las ciudades" en Rankeds (2026-09-18): un duelo, ranked o
+  // casual, puede caer en un mundo que el jugador no tiene comprado —
+  // eso ya se permite jugar (ver guard.ts, parámetro enDuelo). Lo que
+  // NO debe pasar es que un duelo CASUAL en un mundo no comprado sume
+  // nivel de mundo gratis, esquivando la economía de "pagá Chispas
+  // para desbloquearlo" — un ranked sí suma igual, sin excepción,
+  // porque Rankeds necesita ser jugable sin huecos. duel_id es opcional
+  // y, cuando viene, se vuelve a resolver contra la fila REAL de
+  // `duels` (nunca se confía en un mundo/clasificatorio mandado por el
+  // cliente) antes de decidir si corresponde saltear el XP de mundo.
+  duel_id?: string;
 }
 
 interface RegistrarXpDiarioResult {
@@ -179,8 +190,33 @@ export async function POST(request: Request) {
 
   const registro = (registroRows as RegistrarXpDiarioResult[])[0];
 
+  let mundo = mundoDeProblemType(sprintRows[0]?.problem_type);
+
+  // Duelo casual en un mundo no comprado: no suma nivel de mundo (ver
+  // comentario de duel_id en FinishBody). Se resuelve SIEMPRE contra la
+  // fila real de `duels`, nunca contra lo que mande el body — así un
+  // cliente no puede mentir "es ranked" para esquivar esta regla.
+  if (mundo && body.duel_id) {
+    const { data: duelRow } = await supabase
+      .from("duels")
+      .select("mundo, clasificatorio, retador_id, retado_id")
+      .eq("id", body.duel_id)
+      .maybeSingle();
+
+    const esParticipante = !!duelRow && (duelRow.retador_id === user.id || duelRow.retado_id === user.id);
+    if (duelRow && esParticipante && !duelRow.clasificatorio) {
+      const { data: miProfile } = await supabase
+        .from("profiles")
+        .select("mundos_desbloqueados")
+        .eq("id", user.id)
+        .single();
+      if (!miProfile?.mundos_desbloqueados?.includes(duelRow.mundo)) {
+        mundo = null;
+      }
+    }
+  }
+
   let nivelMundo: RegistrarPuntosMundoResult | null = null;
-  const mundo = mundoDeProblemType(sprintRows[0]?.problem_type);
   if (mundo && sprintXp > 0) {
     const { data: mundoRows } = await supabase.rpc("registrar_progreso_mundo", { p_world: mundo, p_puntos: sprintXp });
     nivelMundo = (mundoRows as RegistrarPuntosMundoResult[] | null)?.[0] ?? null;

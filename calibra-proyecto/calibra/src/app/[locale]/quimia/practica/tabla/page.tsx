@@ -18,7 +18,7 @@ interface Props {
 export default async function QuimiaPracticaTablaPage({ searchParams }: Props) {
   const { duelo } = await searchParams;
   const supabase = await createClient();
-  const { user } = await requireMundoQuimia(supabase, "/quimia/practica/tabla");
+  const { user } = await requireMundoQuimia(supabase, "/quimia/practica/tabla", Boolean(duelo));
 
   const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaQuimia(
     supabase,

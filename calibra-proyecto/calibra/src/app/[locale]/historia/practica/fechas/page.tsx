@@ -18,7 +18,7 @@ interface Props {
 export default async function HistoriaPracticaFechasPage({ searchParams }: Props) {
   const { duelo } = await searchParams;
   const supabase = await createClient();
-  const { user } = await requireMundoHistoria(supabase, "/historia/practica/fechas");
+  const { user } = await requireMundoHistoria(supabase, "/historia/practica/fechas", Boolean(duelo));
 
   const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaHistoria(supabase, user.id, "fechas", duelo);
 

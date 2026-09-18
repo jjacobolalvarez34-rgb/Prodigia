@@ -85,7 +85,7 @@ export default function CircuitiaPracticaClient({ modo, nivelInicial, escudosExt
       const res = await fetch("/api/practica/finish", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ started_at: startedAtIso, total_problemas: 10 }),
+        body: JSON.stringify({ started_at: startedAtIso, total_problemas: 10, duel_id: duelo?.duelId }),
       });
       const data = await res.json();
       if (!res.ok) {

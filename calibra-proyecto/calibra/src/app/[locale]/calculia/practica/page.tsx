@@ -18,7 +18,7 @@ interface Props {
 export default async function CalculiaPracticaDerivadasPage({ searchParams }: Props) {
   const { duelo } = await searchParams;
   const supabase = await createClient();
-  const { user } = await requireMundoCalculia(supabase, "/calculia/practica");
+  const { user } = await requireMundoCalculia(supabase, "/calculia/practica", Boolean(duelo));
 
   const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaCalculia(supabase, user.id, "derivadas", duelo);
 

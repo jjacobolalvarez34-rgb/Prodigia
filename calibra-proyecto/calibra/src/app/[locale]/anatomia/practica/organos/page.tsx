@@ -18,7 +18,7 @@ interface Props {
 export default async function AnatomiaOrganosPage({ searchParams }: Props) {
   const { duelo } = await searchParams;
   const supabase = await createClient();
-  const { user } = await requireMundoAnatomia(supabase, "/anatomia/practica/organos");
+  const { user } = await requireMundoAnatomia(supabase, "/anatomia/practica/organos", Boolean(duelo));
 
   const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaAnatomia(supabase, user.id, "organos", duelo);
 

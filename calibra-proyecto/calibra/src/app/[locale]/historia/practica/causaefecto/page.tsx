@@ -18,7 +18,7 @@ interface Props {
 export default async function HistoriaPracticaCausaEfectoPage({ searchParams }: Props) {
   const { duelo } = await searchParams;
   const supabase = await createClient();
-  const { user } = await requireMundoHistoria(supabase, "/historia/practica/causaefecto");
+  const { user } = await requireMundoHistoria(supabase, "/historia/practica/causaefecto", Boolean(duelo));
 
   const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaHistoria(supabase, user.id, "causaefecto", duelo);
 

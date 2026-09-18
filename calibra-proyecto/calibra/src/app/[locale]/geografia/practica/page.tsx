@@ -18,7 +18,7 @@ interface Props {
 export default async function GeografiaPracticaPage({ searchParams }: Props) {
   const { duelo } = await searchParams;
   const supabase = await createClient();
-  const { user } = await requireMundoGeografia(supabase, "/geografia/practica");
+  const { user } = await requireMundoGeografia(supabase, "/geografia/practica", Boolean(duelo));
 
   // Fase 3 de Rankeds: si vengo de matchmaking para Geografía, el
   // continente lo decide el rango de los dos duelistas (sub_tipo,

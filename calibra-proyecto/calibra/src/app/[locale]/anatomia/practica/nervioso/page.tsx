@@ -18,7 +18,7 @@ interface Props {
 export default async function AnatomiaNerviosoPage({ searchParams }: Props) {
   const { duelo } = await searchParams;
   const supabase = await createClient();
-  const { user } = await requireMundoAnatomia(supabase, "/anatomia/practica/nervioso");
+  const { user } = await requireMundoAnatomia(supabase, "/anatomia/practica/nervioso", Boolean(duelo));
 
   const { modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, dueloInfo } = await cargarDatosPracticaAnatomia(supabase, user.id, "nervioso", duelo);
 
