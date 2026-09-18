@@ -30,6 +30,7 @@ function claveSerie(p: ProblemaCircuitiaNumero): string {
 // simple en vez de la grilla de opciones de los mundos 100% MCQ.
 export default function DiagnosticoCircuitiaClient({ destino }: Props) {
   const t = useTranslations("Circuitia");
+  const tRevelar = useTranslations("Practica.revelarRespuesta");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("intro");
   const [indice, setIndice] = useState(0);
@@ -176,7 +177,11 @@ export default function DiagnosticoCircuitiaClient({ destino }: Props) {
                 <span key={i} className="h-1.5 w-5 rounded-full" style={{ background: i <= indice ? COLOR_CIRCUITIA : undefined }} />
               ))}
             </div>
-            <div className="flex w-full flex-col items-center gap-6 rounded-3xl border-2 border-border bg-surface px-8 py-10">
+            <div
+              className={`flex w-full flex-col items-center gap-6 rounded-3xl border-2 bg-surface px-8 py-10 transition-colors ${
+                feedback === "correcto" ? "border-correcto" : feedback === "incorrecto" ? "border-error" : "border-border"
+              }`}
+            >
               <div className="w-full overflow-x-auto">
                 <CircuitoSVG topologia={pregunta.topologia} vFuente={pregunta.vFuente} resaltarId={pregunta.resaltarId} colorHex={COLOR_CIRCUITIA} />
               </div>
@@ -189,7 +194,13 @@ export default function DiagnosticoCircuitiaClient({ destino }: Props) {
                   onChange={(e) => setRespuestaTexto(e.target.value)}
                   disabled={feedback !== "idle"}
                   autoFocus
-                  className="w-28 rounded-xl border border-border bg-background px-3 py-2 text-center font-mono text-lg font-semibold text-foreground outline-none focus:border-primario disabled:opacity-60"
+                  className={`w-28 rounded-xl border px-3 py-2 text-center font-mono text-lg font-semibold outline-none focus:border-primario disabled:opacity-90 transition-colors ${
+                    feedback === "correcto"
+                      ? "border-correcto bg-correcto/10 text-correcto"
+                      : feedback === "incorrecto"
+                        ? "border-error bg-error/10 text-error"
+                        : "border-border bg-background text-foreground"
+                  }`}
                 />
                 <button
                   type="submit"
@@ -200,6 +211,9 @@ export default function DiagnosticoCircuitiaClient({ destino }: Props) {
                   {t("diagnostico.ok")}
                 </button>
               </form>
+              {feedback === "incorrecto" && (
+                <p className="text-sm text-error">{tRevelar("laRespuestaEra", { respuesta: pregunta.respuesta })}</p>
+              )}
             </div>
             <button onClick={saltear} className="text-sm text-texto-secundario hover:underline">
               {t("diagnostico.arrancarNivel1")}

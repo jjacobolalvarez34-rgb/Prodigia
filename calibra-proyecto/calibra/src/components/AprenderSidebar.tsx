@@ -45,7 +45,7 @@ export default function AprenderSidebar({ unidades, colorHex }: Props) {
   }
 
   return (
-    <nav className="flex flex-col gap-1 md:sticky md:top-6">
+    <nav className="flex flex-col gap-1 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
       {unidades.map((u) => {
         const activa = u.id === activaId;
         return (

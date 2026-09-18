@@ -1219,6 +1219,8 @@
     "tecnicas": "{dominadas}/{total} techniques",
     "titulo": "Learn",
     "subtitulo": "One path: unlock techniques in order, or jump to a unit from the left.",
+    "ocultarTemas": "Hide topics",
+    "mostrarTemas": "Show topics",
     "descripcionUnidad": {
       "suma": "Add faster by combining numbers in simpler ways.",
       "resta": "Subtract with confidence, even when the numbers don't cooperate.",

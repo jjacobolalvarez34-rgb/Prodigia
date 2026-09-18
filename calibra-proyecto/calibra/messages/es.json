@@ -1219,6 +1219,8 @@
     "tecnicas": "{dominadas}/{total} técnicas",
     "titulo": "Aprender",
     "subtitulo": "Un solo camino: anda desbloqueando técnicas en orden, o salta a una unidad desde la izquierda.",
+    "ocultarTemas": "Ocultar temas",
+    "mostrarTemas": "Mostrar temas",
     "descripcionUnidad": {
       "suma": "Suma más rápido combinando números de formas más simples.",
       "resta": "Resta con confianza, incluso cuando los números no cooperan.",
