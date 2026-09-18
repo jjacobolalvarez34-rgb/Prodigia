@@ -2408,7 +2408,11 @@
       "columnaAlumno": "Alumno",
       "columnaRacha": "Racha",
       "columnaUltimaActividad": "Última actividad",
-      "nivelTooltip": "{operacion}: nivel {nivel}"
+      "nivelTooltip": "{operacion}: nivel {nivel}",
+      "nivelPorMundoTitulo": "Nivel por mundo",
+      "nivelMundoTooltip": "{mundo}: nivel {nivel}",
+      "verDetalleSubtema": "Ver detalle por sub-tema →",
+      "verDetalleSubtemaBloqueado": "Detalle por sub-tema (Prodigia Pro)"
     },
     "borrar": {
       "boton": "Borrar grupo",
@@ -2424,6 +2428,17 @@
       "rachaActual": "Racha actual",
       "rachaMaxima": "Racha máxima",
       "ultimaActividadEtiqueta": "Última actividad:"
+    },
+    "estadisticas": {
+      "metadata": {
+        "title": "Detalle por sub-tema",
+        "description": "Precisión por sub-tema y alerta de estancamiento para cada alumno del grupo — exclusivo de Prodigia Pro."
+      },
+      "titulo": "Detalle por sub-tema",
+      "subtitulo": "En qué le cuesta más a cada alumno, ordenado de peor a mejor precisión.",
+      "vacio": "Todavía no hay suficientes intentos de los alumnos para mostrar un detalle por sub-tema (hace falta al menos 5 intentos en un mismo sub-tema).",
+      "intentosCantidad": "{n} intentos",
+      "estancado": "Estancado"
     }
   },
   "Quimia": {
@@ -2793,7 +2808,15 @@
       "progreso": "Progreso",
       "tecnicas": "{n}/{total} técnicas",
       "titulo": "Aprender",
-      "subtitulo": "Cómo reconocer de un vistazo qué regla o técnica corresponde."
+      "subtitulo": "Cómo reconocer de un vistazo qué regla o técnica corresponde.",
+      "tecnicasRapidas": {
+        "titulo": "Técnicas rápidas"
+      },
+      "cursoPro": {
+        "titulo": "Curso estructurado (Pro)",
+        "descripcion": "Lecciones completas de cada modo, con ejemplos resueltos paso a paso y un quiz de comprensión.",
+        "desbloqueaConPro": "Desbloqueá con Pro"
+      }
     },
     "leccion": {
       "tecnica": "Técnica",
@@ -2803,7 +2826,14 @@
       "marcarAprendida": "Marcar como aprendida",
       "completaste": "¡Completaste {nombre}!",
       "volverAAprender": "Volver a Aprender",
-      "irAPracticar": "Ir a Practicar"
+      "irAPracticar": "Ir a Practicar",
+      "continuarAlQuiz": "Continuar al quiz",
+      "quizTitulo": "Quiz de comprensión",
+      "quizSubtitulo": "Respondé las preguntas para marcar este módulo como aprendido. Podés reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "enviarRespuestas": "Enviar respuestas",
+      "enviando": "Enviando...",
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
     },
     "practica": {
       "derivadas": {

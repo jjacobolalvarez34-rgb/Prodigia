@@ -2408,7 +2408,11 @@
       "columnaAlumno": "Student",
       "columnaRacha": "Streak",
       "columnaUltimaActividad": "Last activity",
-      "nivelTooltip": "{operacion}: level {nivel}"
+      "nivelTooltip": "{operacion}: level {nivel}",
+      "nivelPorMundoTitulo": "Level by world",
+      "nivelMundoTooltip": "{mundo}: level {nivel}",
+      "verDetalleSubtema": "See sub-topic detail →",
+      "verDetalleSubtemaBloqueado": "Sub-topic detail (Prodigia Pro)"
     },
     "borrar": {
       "boton": "Delete group",
@@ -2424,6 +2428,17 @@
       "rachaActual": "Current streak",
       "rachaMaxima": "Max streak",
       "ultimaActividadEtiqueta": "Last activity:"
+    },
+    "estadisticas": {
+      "metadata": {
+        "title": "Sub-topic detail",
+        "description": "Accuracy by sub-topic and a stagnation alert for each student in the group — exclusive to Prodigia Pro."
+      },
+      "titulo": "Sub-topic detail",
+      "subtitulo": "What's hardest for each student, sorted worst to best accuracy.",
+      "vacio": "There aren't enough student attempts yet to show a sub-topic breakdown (at least 5 attempts on the same sub-topic are needed).",
+      "intentosCantidad": "{n} attempts",
+      "estancado": "Stagnant"
     }
   },
   "Quimia": {
@@ -2793,7 +2808,15 @@
       "progreso": "Progress",
       "tecnicas": "{n}/{total} techniques",
       "titulo": "Learn",
-      "subtitulo": "How to spot which rule or technique applies at a glance."
+      "subtitulo": "How to spot which rule or technique applies at a glance.",
+      "tecnicasRapidas": {
+        "titulo": "Quick techniques"
+      },
+      "cursoPro": {
+        "titulo": "Structured course (Pro)",
+        "descripcion": "Full lessons for each mode, with step-by-step worked examples and a comprehension quiz.",
+        "desbloqueaConPro": "Unlock with Pro"
+      }
     },
     "leccion": {
       "tecnica": "Technique",
@@ -2803,7 +2826,14 @@
       "marcarAprendida": "Mark as learned",
       "completaste": "You completed {nombre}!",
       "volverAAprender": "Back to Learn",
-      "irAPracticar": "Go to Practice"
+      "irAPracticar": "Go to Practice",
+      "continuarAlQuiz": "Continue to quiz",
+      "quizTitulo": "Comprehension quiz",
+      "quizSubtitulo": "Answer the questions to mark this module as learned. You can retry as many times as you want.",
+      "respuestaIncorrecta": "That's not it — check again",
+      "enviarRespuestas": "Submit answers",
+      "enviando": "Submitting...",
+      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want."
     },
     "practica": {
       "derivadas": {

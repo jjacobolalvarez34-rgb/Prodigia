@@ -269,14 +269,30 @@ export interface DailyProgress {
   congelado: boolean;
 }
 
+// Fase C (Calculia — Curso estructurado Pro): una pregunta de
+// comprensión opcional dentro de `contenido`. `explicacion` es
+// opcional — cuando está presente, se muestra como feedback de POR QUÉ
+// una respuesta es incorrecta (no solo "incorrecto"), ver
+// LeccionCalculiaClient.tsx. Técnicas rápidas viejas no tienen `quiz`
+// en su `contenido`, así que este campo queda opcional a propósito.
+export interface TechniqueQuizPregunta {
+  pregunta: string;
+  opciones: string[];
+  respuesta: string;
+  explicacion?: string;
+}
+
 export interface Technique {
   id: string;
   slug: string;
   nombre: string;
   descripcion: string | null;
-  contenido: { pasos: string[] };
+  contenido: { pasos: string[]; quiz?: TechniqueQuizPregunta[] };
   orden: number;
   problem_type: ArithmeticProblemType;
+  // 0169_calculia_curso_pro.sql: columna global (no específica de
+  // Calculia), default false — piloto solo en Calculia por ahora.
+  requiere_pro: boolean;
 }
 
 export interface TechniqueProgress {

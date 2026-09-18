@@ -1,18 +1,36 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import type { Modifier } from "@/types/database";
+import type { Modifier, TechniqueQuizPregunta } from "@/types/database";
 import { verificarLogros } from "@/lib/logros/verificar";
 import { verificarTitulos } from "@/lib/titulos/verificar";
 import { respuestaError } from "@/lib/api/respuestaError";
 
 interface Body {
   technique_id: string;
+  // Fase C (Calculia — Curso estructurado Pro): array paralelo a
+  // contenido.quiz[], una respuesta enviada por pregunta. Opcional y
+  // sin efecto para técnicas rápidas (requiere_pro=false, sin quiz).
+  respuestas?: string[];
 }
 
 // POST /api/aprender/completar
 // Marca una técnica como dominada y desbloquea los modificadores que
 // tenga asociados en technique_modifiers. Idempotente: completar de nuevo
 // una técnica ya dominada no rompe nada ni duplica desbloqueos.
+//
+// Fase C: si la técnica es requiere_pro=true y tiene contenido.quiz con
+// preguntas, esto deja de ser incondicional — hay que:
+//   1) confirmar que quien llama es realmente Pro (defensa en
+//      profundidad — la UI ya no debería dejar que un usuario free
+//      llegue hasta acá, pero el server nunca puede confiar solo en
+//      eso: cualquiera puede pegarle directo a este endpoint);
+//   2) validar cada respuesta enviada contra quiz[i].respuesta — si
+//      alguna está mal (o falta `respuestas`/tiene longitud distinta),
+//      se devuelve { ok:false, aprobado:false } SIN tocar
+//      technique_progress (no se marca dominado, no hay reintentos
+//      gratis del lado del servidor).
+// Las técnicas rápidas (requiere_pro=false, sin quiz) siguen el camino
+// incondicional de siempre, sin cambios.
 export async function POST(request: Request) {
   const supabase = await createClient();
 
@@ -25,6 +43,42 @@ export async function POST(request: Request) {
   }
 
   const body = (await request.json()) as Body;
+
+  const { data: tecnica, error: tecnicaError } = await supabase
+    .from("techniques")
+    .select("id, requiere_pro, contenido")
+    .eq("id", body.technique_id)
+    .maybeSingle();
+
+  if (tecnicaError) {
+    return respuestaError("aprender/completar:tecnica", tecnicaError);
+  }
+  if (!tecnica) {
+    return NextResponse.json({ error: "Técnica no encontrada" }, { status: 404 });
+  }
+
+  const quiz = ((tecnica.contenido as { quiz?: TechniqueQuizPregunta[] } | null)?.quiz ?? []) as TechniqueQuizPregunta[];
+
+  if (tecnica.requiere_pro && quiz.length > 0) {
+    const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
+
+    if (profile?.plan !== "pro") {
+      return NextResponse.json({ error: "Esta lección requiere plan Pro" }, { status: 403 });
+    }
+
+    const respuestas = body.respuestas;
+    const todasCorrectas =
+      Array.isArray(respuestas) &&
+      respuestas.length === quiz.length &&
+      quiz.every((pregunta, i) => respuestas[i] === pregunta.respuesta);
+
+    if (!todasCorrectas) {
+      const incorrectas = quiz
+        .map((pregunta, i) => (Array.isArray(respuestas) && respuestas[i] === pregunta.respuesta ? -1 : i))
+        .filter((i) => i >= 0);
+      return NextResponse.json({ ok: false, aprobado: false, incorrectas });
+    }
+  }
 
   const { data: progresoActual } = await supabase
     .from("technique_progress")

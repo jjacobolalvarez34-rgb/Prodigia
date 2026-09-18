@@ -16,21 +16,47 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CalculiaAprenderPage() {
   const t = await getTranslations("Calculia");
   const supabase = await createClient();
-  const { user } = await requireUsuario(supabase, "/calculia/aprender");
+  const { user, profile } = await requireUsuario(supabase, "/calculia/aprender");
   const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
   bloquearInvitado(user, tBloqueos("aprender"));
-  const nodos = await obtenerCaminoCalculia(supabase, user.id);
+  const esPro = profile.plan === "pro";
+  const nodos = await obtenerCaminoCalculia(supabase, user.id, esPro);
 
   const totalDominadas = nodos.filter((n) => n.estado === "completado").length;
 
+  const tecnicasRapidas = nodos.filter((n) => !n.requierePro);
+  const cursoPro = nodos.filter((n) => n.requierePro);
+
   const unidadesGenericas: UnidadCaminoGenerico[] = [
     {
-      id: "calculia",
-      nombre: t("nombreMundo"),
+      id: "calculia-tecnicas-rapidas",
+      nombre: t("aprender.tecnicasRapidas.titulo"),
       descripcion: t("aprender.descripcionUnidad"),
-      nodos: nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
+      nodos: tecnicasRapidas.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
     },
   ];
+
+  // Curso estructurado (Pro) — piloto único en Calculia, ver el plan de
+  // Fase C. Módulo 1 (orden más bajo) siempre viene "activo" (preview
+  // gratis) desde obtenerCaminoCalculia; los módulos 2+ para quien no
+  // es Pro vienen "bloqueado" con bloqueadoPorPlan=true, así que acá se
+  // les agrega el CTA a /pro en vez del bloqueo mudo normal.
+  if (cursoPro.length > 0) {
+    unidadesGenericas.push({
+      id: "calculia-curso-pro",
+      nombre: t("aprender.cursoPro.titulo"),
+      descripcion: t("aprender.cursoPro.descripcion"),
+      nodos: cursoPro.map((n) => ({
+        id: n.id,
+        slug: n.slug,
+        nombre: n.nombre,
+        estado: n.estado,
+        ctaPro: n.bloqueadoPorPlan
+          ? { label: t("aprender.cursoPro.desbloqueaConPro"), href: "/pro?next=/calculia/aprender" }
+          : undefined,
+      })),
+    });
+  }
 
   return (
     <>

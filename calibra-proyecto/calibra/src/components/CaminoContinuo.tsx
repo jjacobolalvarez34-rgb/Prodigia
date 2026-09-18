@@ -14,6 +14,13 @@ export interface NodoCaminoGenerico {
   slug: string;
   nombre: string;
   estado: EstadoNodo;
+  // Opcional — solo lo usa el "Curso estructurado (Pro)" de Calculia
+  // (piloto único, ver src/app/[locale]/calculia/aprender/page.tsx):
+  // cuando un nodo "bloqueado" tiene esto, en vez del bloqueo mudo de
+  // siempre se muestra como link a `href` con un pill `label` debajo
+  // ("Desbloqueá con Pro"). El resto de los mundos nunca lo setea, así
+  // que su comportamiento queda idéntico al de antes.
+  ctaPro?: { label: string; href: string };
 }
 
 export interface UnidadCaminoGenerico {
@@ -113,8 +120,20 @@ function Nodo({
       >
         {nodo.nombre}
       </span>
+      {nodo.estado === "bloqueado" && nodo.ctaPro && (
+        <span
+          className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white"
+          style={{ background: colorHex }}
+        >
+          {nodo.ctaPro.label}
+        </span>
+      )}
     </motion.div>
   );
+
+  if (nodo.estado === "bloqueado" && nodo.ctaPro) {
+    return <Link href={nodo.ctaPro.href}>{circulo}</Link>;
+  }
 
   if (nodo.estado === "bloqueado") {
     return (
