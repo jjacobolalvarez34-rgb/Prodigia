@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "katex/dist/katex.min.css";
 
 /* Barras de desplazamiento horizontales que existen por funcionalidad
    (ej. el nav del header en viewports angostos) pero no deben verse como
