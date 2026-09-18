@@ -8,6 +8,7 @@ import type { NodoCamino } from "@/lib/aprender/path";
 import { generarProblemaTecnica, type Problem } from "@/lib/practica/problems";
 import type { Achievement } from "@/types/database";
 import LogroBanner from "@/components/LogroBanner";
+import MathText from "@/components/MathText";
 import Boton from "@/components/Boton";
 
 type Fase = "explicacion" | "ejemplo" | "practica" | "celebracion";
@@ -146,7 +147,7 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
                   }`}
                 >
                   <span className="mr-2 font-bold text-logro">{i + 1}</span>
-                  {paso}
+                  <MathText texto={paso} />
                 </div>
               ))}
             </div>

@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { NodoCaminoEnigmia } from "@/lib/enigmia/path";
 import type { Achievement } from "@/types/database";
 import LogroBanner from "@/components/LogroBanner";
+import MathText from "@/components/MathText";
 
 type Fase = "explicacion" | "ejemplo" | "celebracion";
 
@@ -89,7 +90,7 @@ export default function LeccionEnigmiaClient({ nodo }: Props) {
                   }`}
                 >
                   <span className="mr-2 font-bold text-logro">{i + 1}</span>
-                  {paso}
+                  <MathText texto={paso} />
                 </div>
               ))}
             </div>

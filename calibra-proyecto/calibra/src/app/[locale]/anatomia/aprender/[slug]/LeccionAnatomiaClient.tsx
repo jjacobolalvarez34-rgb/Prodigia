@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { NodoCaminoAnatomia } from "@/lib/anatomia/path";
 import type { Achievement } from "@/types/database";
 import LogroBanner from "@/components/LogroBanner";
+import MathText from "@/components/MathText";
 import { COLOR_ANATOMIA } from "../../colores";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
@@ -118,7 +119,7 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
                   }`}
                 >
                   <span className="mr-2 font-bold text-logro">{i + 1}</span>
-                  {paso}
+                  <MathText texto={paso} />
                 </div>
               ))}
             </div>
@@ -171,7 +172,7 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
                 return (
                   <div key={qi} className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">
                     <p className="text-sm font-semibold text-foreground">
-                      {qi + 1}. {pregunta.pregunta}
+                      {qi + 1}. <MathText texto={pregunta.pregunta} />
                     </p>
                     <div className="flex flex-col gap-2">
                       {pregunta.opciones.map((opcion) => {
@@ -189,7 +190,7 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
                                   : "border-border bg-background text-foreground"
                             }`}
                           >
-                            {opcion}
+                            <MathText texto={opcion} />
                           </button>
                         );
                       })}

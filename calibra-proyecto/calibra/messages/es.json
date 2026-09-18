@@ -2738,7 +2738,18 @@
       "respuestaIncorrecta": "Esa no es — revisá de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras.",
+      "mano": {
+        "pulgar": "Pulgar",
+        "indice": "Índice",
+        "medio": "Medio",
+        "anular": "Anular",
+        "menique": "Meñique",
+        "instruccion": "Dedo elegido: {dedo}. Los dedos azules cuentan para el seno, los naranjas para el coseno.",
+        "cuentaSeno": "dedos entre el pulgar y el elegido",
+        "cuentaCoseno": "dedos entre el elegido y el meñique",
+        "tocarDedo": "Tocá cualquier dedo para probar otro ángulo."
+      }
     },
     "practica": {
       "razones": {

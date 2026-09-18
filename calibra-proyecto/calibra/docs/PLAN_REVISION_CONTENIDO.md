@@ -352,13 +352,49 @@ separados (regla #6).
   incluía `quiz?: TechniqueQuizPregunta[]`, verificado, no re-agregado).
   `tsc`/`eslint`/`vitest` limpios (186/186, mismo baseline).
 
+- **2026-09-18 — Corrección real de Trigonometría + diagrama interactivo**:
+  se rehizo `pasos` de `trigonometria-truco-mano-circulo` (migración
+  `0180`, `jsonb_set` sobre la fila existente, `quiz` de `0177` queda
+  intacto) con la fórmula correcta verificada de nuevo en código
+  independiente del texto (sen(dedo_k)=√k/2, cos(dedo_k)=√(4-k)/2 con
+  k=0..4 para pulgar..meñique — coincide con los 5 valores notables
+  reales). Además, pedido explícito del usuario, se construyó
+  `src/components/trigonometria/ManoCirculoSVG.tsx`: una mano
+  interactiva donde tocar un dedo colorea en vivo cuáles cuentan para
+  el seno (azul) y cuáles para el coseno (naranja), con los valores
+  calculados en código (nunca hardcodeados por dedo) — reemplaza la
+  necesidad de memorizar la dirección de conteo, ahora se ve. Wireada
+  solo en esa lección puntual de `LeccionTrigonometriaClient.tsx`.
+
+- **2026-09-18 — MathText conectado de verdad, primera conversión real
+  a `$...$`**: hasta este punto `MathText.tsx` estaba construido y
+  probado, pero NINGÚN contenido real lo usaba — por eso no se notaba
+  ningún cambio visual pese a tener KaTeX instalado. Se conectó
+  `<MathText texto={...} />` en el render de `pasos` y de cada
+  pregunta/opción de quiz en los 10 componentes `Leccion*Client.tsx`
+  (mecánico, retrocompatible — un texto sin `$` se ve exactamente
+  igual que antes). Se convirtieron además las 5 técnicas rápidas de
+  Calculia (migración `0181`) a la notación `$...$` real (ej. `x⁴` →
+  `$x^4$`, `∫xⁿ dx = xⁿ⁺¹/(n+1) + C` → `$\int x^n\,dx =
+  \dfrac{x^{n+1}}{n+1} + C$`) — cada fragmento LaTeX se renderizó de
+  verdad contra KaTeX (`throwOnError:true`) antes de guardarlo, 24
+  fragmentos validados sin error. Circuitia y el resto de Trigonometría
+  quedan con la misma conversión pendiente — ya con la plomería lista,
+  solo falta escribir el contenido mundo por mundo.
+
 ## Siguiente paso concreto
 
 Numeria (la más grande, ~8 sub-temas) es el siguiente mundo pendiente en
-el orden sugerido — Geografía, Anatomía, Melodía, Quimia, Historia,
-Trigonometría, Calculia/Circuitia (técnicas rápidas) ya están. Mismo
-procedimiento: revisar si su componente de lección tiene fase de quiz
-(asumir que no hasta confirmar) y agregarla junto con el contenido del
-quiz, verificando cada fórmula contra `src/lib/practica/*.ts` antes de
-escribirla. Enigmia queda aparte al final (tabla `logic_techniques`, no
-`techniques`).
+el orden sugerido para el Proceso 1 — Geografía, Anatomía, Melodía,
+Quimia, Historia, Trigonometría, Calculia/Circuitia (técnicas rápidas)
+ya están. Mismo procedimiento: revisar si su componente de lección
+tiene fase de quiz (asumir que no hasta confirmar) y agregarla junto
+con el contenido del quiz, verificando cada fórmula contra
+`src/lib/practica/*.ts` antes de escribirla. Enigmia queda aparte al
+final (tabla `logic_techniques`, no `techniques`).
+
+Para la notación (ya con MathText conectado): sigue pendiente convertir
+a `$...$` las 5 técnicas rápidas de Circuitia y las 4 lecciones
+restantes de Trigonometría (ya arreglada la de la mano), y — más
+grande — todo el Proceso 2 (generadores de preguntas de los 10 mundos,
+ver checklist más arriba), que todavía no arrancó.

@@ -2738,7 +2738,18 @@
       "respuestaIncorrecta": "That's not it — check again",
       "enviarRespuestas": "Submit answers",
       "enviando": "Submitting...",
-      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want."
+      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want.",
+      "mano": {
+        "pulgar": "Thumb",
+        "indice": "Index",
+        "medio": "Middle",
+        "anular": "Ring",
+        "menique": "Pinky",
+        "instruccion": "Selected finger: {dedo}. Blue fingers count toward sine, orange ones toward cosine.",
+        "cuentaSeno": "fingers between the thumb and the selected one",
+        "cuentaCoseno": "fingers between the selected one and the pinky",
+        "tocarDedo": "Tap any finger to try another angle."
+      }
     },
     "practica": {
       "razones": {
