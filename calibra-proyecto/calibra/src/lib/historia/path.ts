@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { TechniqueQuizPregunta } from "@/types/database";
 
 export type NodoEstado = "completado" | "activo" | "bloqueado";
 
@@ -7,7 +8,7 @@ export interface NodoCaminoHistoria {
   slug: string;
   nombre: string;
   descripcion: string | null;
-  contenido: { pasos: string[] };
+  contenido: { pasos: string[]; quiz?: TechniqueQuizPregunta[] };
   estado: NodoEstado;
 }
 
@@ -43,7 +44,7 @@ export async function obtenerCaminoHistoria(supabase: SupabaseClient, userId: st
       slug: t.slug,
       nombre: t.nombre,
       descripcion: t.descripcion,
-      contenido: t.contenido as { pasos: string[] },
+      contenido: t.contenido as { pasos: string[]; quiz?: TechniqueQuizPregunta[] },
       estado,
     };
   });

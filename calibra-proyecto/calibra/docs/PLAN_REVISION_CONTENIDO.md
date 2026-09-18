@@ -264,10 +264,101 @@ separados (regla #6).
   quiz — mismo patrón agregado. Sin notación LaTeX (los símbolos ♯/♭ ya
   son unicode nativo). `tsc`/`eslint`/`vitest` limpios (186/186).
 
+- **2026-09-18 — Quimia, Proceso 1 completo**: las 4 técnicas (agrupar
+  por familia, asociación por color/uso, la tabla como mapa, patrones
+  en fórmulas) ya eran correctas — se verificó cada dato químico usado
+  en el quiz contra `src/lib/practica/quimia.ts` (banco real de
+  elementos/compuestos: Au=Oro, Fe=Hierro, Cu=Cobre; Li/Na/K son
+  metales alcalinos, grupo 1; Na período 3 grupo 1, Mg período 3 grupo
+  2, vecinos reales) y contra nomenclatura química estándar (oxiácidos
+  terminados en "-ico" como sulfúrico H2SO4; hidrácidos con patrón
+  "ácido ...hídrico" como clorhídrico HCl; sales binarias con patrón
+  "[segundo elemento] de [primer elemento]" como cloruro de sodio).
+  **No se encontró ningún error factual** en las 4 lecciones. Se les
+  agregó quiz (migración `0175`, 12 preguntas) y, como en los mundos
+  anteriores, `LeccionQuimiaClient.tsx` no tenía fase de quiz — se le
+  agregó con el mismo patrón. Sin notación LaTeX (las fórmulas cortas
+  tipo "H2SO4" ya son legibles como texto plano). `tsc`/`eslint`/
+  `vitest` limpios (186/186), los 12 quiz validados por script.
+
+- **2026-09-18 — Historia, Proceso 1 completo**: las 5 técnicas
+  (anclaje cronológico, bloques por siglo, asociación memorable, línea
+  de tiempo mental, siglas para secuencias) son estrategias de memoria,
+  no trivia factual fija — se verificó la única cuenta numérica citada
+  (2000 − 1969 = 31 años, el ejemplo de anclaje) y que el modo de
+  práctica que menciona la lección de línea de tiempo mental
+  ("Cronología") sigue existiendo con ese nombre en `Historia.modos`.
+  **No se encontró ningún error** en las 5 lecciones. Se confirmó
+  leyendo `src/lib/historia/path.ts` que Historia sigue siendo una
+  lista plana (sin agrupar por modo, a diferencia de Anatomía/Quimia) —
+  tal como anticipaba el rollout de AprenderLayout. Se le agregó quiz
+  (migración `0176`, 15 preguntas) y `LeccionHistoriaClient.tsx`
+  tampoco tenía fase de quiz — se le agregó con el mismo patrón. Sin
+  notación matemática. `tsc`/`eslint`/`vitest` limpios (186/186), los
+  15 quiz validados por script.
+
+- **2026-09-18 — Trigonometría, Proceso 1 completo**: las 5 técnicas
+  (SOHCAHTOA, truco de la mano para el círculo unitario, simetría por
+  cuadrante, conversión grados-radianes, cuándo usar ley de senos vs.
+  cosenos) se verificaron contra las fórmulas reales de
+  `src/lib/practica/trigonometria.ts` (tabla de valores notables,
+  ASTC, leyes). Se les agregó quiz (migración `0177`, 15 preguntas).
+  `LeccionTrigonometriaClient.tsx` tampoco tenía fase de quiz — mismo
+  patrón agregado (ahora con `t()` sobre el namespace
+  `Trigonometria.leccion` directo en vez de `Trigonometria` +
+  `t("leccion.xxx")`, que es como ya llamaba este componente en
+  particular). Se agregaron las 7 claves de i18n de quiz
+  (`continuarAlQuiz`, `quizTitulo`, etc.) a `Trigonometria.leccion` en
+  `es.json`/`en.json`, que no las tenía (a diferencia de Calculia/
+  Circuitia, que ya las tenían por el curso Pro).
+  - **Bug real encontrado, NO corregido (solo flaggeado, por
+    instrucción explícita de esta tarea)**: la lección
+    `trigonometria-truco-mano-circulo` describe el método de conteo
+    con la dirección invertida — dice "Para el seno de un dedo: contá
+    los dedos DESDE ESE HASTA el meñique (incluyéndolo)" y "Para el
+    coseno... contá los dedos DESDE EL PULGAR hasta ese
+    (incluyéndolo)". Aplicado literalmente al pulgar (0°), el seno
+    daría √5/2 ≈ 1.118 — imposible, el seno nunca supera 1. El método
+    real (verificado a mano contra los 5 valores notables) es: sen(θ)
+    = √(cantidad de dedos entre el pulgar y el dedo, SIN incluir el
+    propio dedo)/2, cos(θ) = √(cantidad de dedos entre el dedo y el
+    meñique, SIN incluirlo)/2 — la dirección de conteo está al revés
+    en el texto, y además dice "incluyéndolo" cuando debería excluir
+    el propio dedo. El ejemplo final que ya trae la lección (anular
+    60°: sen=√3/2, cos=1/2) sí es matemáticamente correcto — solo la
+    explicación general del método está mal redactada. El quiz nuevo
+    de esta lección evita reproducir la regla rota: prueba los valores
+    finales correctos (sen(90°)=1, cos(0°)=1, sen(60°)>cos(60°)) sin
+    pedir aplicar el método de conteo tal como está descrito. Requiere
+    una migración de corrección aparte, fuera del alcance de esta
+    tarea (que era solo agregar quiz).
+  - `tsc`/`eslint`/`vitest` limpios (186/186, mismo baseline).
+
+- **2026-09-18 — Calculia y Circuitia: quiz para las técnicas rápidas
+  gratuitas**: las 5 técnicas rápidas de cada mundo (`requiere_pro=false`,
+  de `0165_mundo_calculia.sql`/`0167_mundo_circuitia.sql` — distintas de
+  las 7 lecciones del Curso Pro de `0170`/`0171`, que ya tenían quiz) se
+  verificaron contra los generadores reales
+  (`src/lib/practica/calculia.ts`, `src/lib/practica/circuitia.ts` y el
+  kernel `src/lib/circuitos/resolver.ts` para las de Circuitia) — no se
+  encontró ningún error. Se les agregó quiz de reconocimiento/
+  clasificación (2-3 preguntas cada una, más corto que el del Curso Pro
+  porque estas técnicas son atajos de patrón, no lecciones completas):
+  migraciones `0178` (Calculia, 15 preguntas) y `0179` (Circuitia, 15
+  preguntas). Ninguno de los dos mundos necesitó agregar la fase de quiz
+  al componente de lección (`LeccionCalculiaClient.tsx`/
+  `LeccionCircuitiaClient.tsx` ya la soportaban, por las lecciones Pro) ni
+  al tipo de `contenido` en `calculia/path.ts`/`circuitia/path.ts` (ya
+  incluía `quiz?: TechniqueQuizPregunta[]`, verificado, no re-agregado).
+  `tsc`/`eslint`/`vitest` limpios (186/186, mismo baseline).
+
 ## Siguiente paso concreto
 
-Quimia es el siguiente mundo en el orden sugerido. Mismo procedimiento:
-revisar si su componente de lección tiene fase de quiz (asumir que no
-hasta confirmar) y agregarla junto con el contenido del quiz, verificando
-cada dato químico contra la tabla periódica/nomenclatura real antes de
-escribirlo.
+Numeria (la más grande, ~8 sub-temas) es el siguiente mundo pendiente en
+el orden sugerido — Geografía, Anatomía, Melodía, Quimia, Historia,
+Trigonometría, Calculia/Circuitia (técnicas rápidas) ya están. Mismo
+procedimiento: revisar si su componente de lección tiene fase de quiz
+(asumir que no hasta confirmar) y agregarla junto con el contenido del
+quiz, verificando cada fórmula contra `src/lib/practica/*.ts` antes de
+escribirla. Enigmia queda aparte al final (tabla `logic_techniques`, no
+`techniques`).
