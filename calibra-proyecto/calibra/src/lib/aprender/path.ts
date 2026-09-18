@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType } from "@/types/database";
+import type { TechniqueQuizPregunta } from "@/types/database";
 
 export type NodoEstado = "completado" | "activo" | "bloqueado";
 
@@ -15,7 +16,7 @@ export interface NodoCamino {
   nombre: string;
   descripcion: string | null;
   problemType: TemaAprendible;
-  contenido: { pasos: string[] };
+  contenido: { pasos: string[]; quiz?: TechniqueQuizPregunta[] };
   estado: NodoEstado;
 }
 
@@ -97,7 +98,7 @@ export async function obtenerCamino(
       nombre: t.nombre,
       descripcion: t.descripcion,
       problemType: t.problem_type as TemaAprendible,
-      contenido: t.contenido as { pasos: string[] },
+      contenido: t.contenido as { pasos: string[]; quiz?: TechniqueQuizPregunta[] },
       estado,
     };
   });

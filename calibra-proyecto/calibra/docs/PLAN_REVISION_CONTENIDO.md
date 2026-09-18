@@ -382,16 +382,84 @@ separados (regla #6).
   quedan con la misma conversión pendiente — ya con la plomería lista,
   solo falta escribir el contenido mundo por mundo.
 
+- **2026-09-18 — Numeria, Proceso 1 completo (el mundo más grande hasta
+  ahora)**: a diferencia de todos los mundos anteriores, Numeria no
+  tiene sus técnicas en una sola migración — están repartidas en 8
+  migraciones distintas (`0005`, `0007`, `0018`, `0019`, `0026`,
+  `0032`, `0079`, `0101`), sembradas a lo largo de toda la historia del
+  proyecto. Se hizo el inventario completo de las 39 técnicas reales
+  (9 sub-temas: suma 6, resta 4, multiplicación 8, división 4 —
+  incluidas las 8 técnicas "avanzadas" de números grandes de `0101` —,
+  fracciones 4, decimales 3, potencias 3, álgebra 3, geometría 4) y se
+  verificó cada dato numérico citado contra el ejemplo real de su
+  propia lección y contra los generadores reales de `/practica`
+  (`src/lib/practica/{algebra,decimales,fracciones,potencias,
+  geometria}.ts` para los sub-temas avanzados; `problems.ts` para
+  aritmética básica). **No se encontró ningún error factual en ninguna
+  de las 39 técnicas** — a diferencia de Trigonometría, este mundo
+  estaba limpio.
+  - Se agregó quiz a las 39 técnicas (2-3 preguntas cada una, 106 en
+    total) en 3 migraciones agrupadas por sub-tema: `0182`
+    (aritmética básica, 58 preguntas), `0183` (fracciones/decimales/
+    potencias, 27 preguntas), `0184` (álgebra/geometría, 21
+    preguntas) — separadas de la migración de notación, siguiendo la
+    regla del plan de no mezclar una migración pura de notación con
+    contenido nuevo.
+  - `LeccionClient.tsx` (el componente de Numeria, distinto de los
+    demás porque ya tenía una fase `"practica"` propia con problemas
+    numéricos generados por `generarProblemaTecnica()`) no tenía fase
+    de quiz — se le agregó con el mismo patrón que el resto de los
+    mundos (`Fase` gana `"quiz"`, estado de respuestas/envío/resultado,
+    `completarLeccion` acepta `respuestasEnviadas` opcional). Se decidió
+    que el quiz, cuando existe, REEMPLAZA a la práctica numérica como
+    paso final (en vez de sumarse a ella): las lecciones que menos
+    calzaban en el motor de "a symbol b = ?" (las 4 de Geometría y las
+    8 "avanzadas" de números grandes, que no tienen entrada en
+    `generarProblemaTecnica()` y antes de este cambio caían al `default`
+    silencioso de esa función — una suma de nivel 1 sin relación
+    ninguna con la lección, bug preexistente que quedó neutralizado de
+    hecho al darles quiz en vez de práctica numérica genérica) son
+    justo las que más se benefician de un chequeo de comprensión real.
+    Se agregaron las 7 claves de i18n de quiz a `Aprender.leccion` en
+    `es.json`/`en.json` (no las tenía, a diferencia de Geografía/
+    Calculia/Circuitia).
+  - `src/lib/aprender/path.ts`: mismo cambio de tipo que en los demás
+    mundos, `contenido: { pasos: string[] }` → `{ pasos: string[]; quiz?:
+    TechniqueQuizPregunta[] }`.
+  - Notación: Numeria es, con diferencia, el mundo con más matemática
+    real de los revisados hasta ahora (fracciones, exponentes, raíces,
+    ecuaciones, π). Migración `0185` convierte a `$...$` los `pasos`
+    viejos de las 13 técnicas que tenían notación matemática real
+    (`cuadrado-terminado-en-5`; las 4 de Fracciones;
+    `convertir-fraccion-decimal`; las 3 de Potencias; las 3 de Álgebra;
+    `geometria-pi-fraccion`) — el resto de aritmética básica es
+    puramente textual/numérica sin exponentes, raíces ni fracciones, así
+    que no necesitaba conversión. `porcentaje-como-decimal` se dejó
+    deliberadamente sin convertir: su único símbolo matemático es "%",
+    que dentro de `$...$` es el carácter de comentario de LaTeX (haría
+    falta escaparlo como `\%` sin ganar legibilidad real). El contenido
+    NUEVO de los quiz de `0183`/`0184` ya se escribió directamente con
+    `$...$` desde el principio (no es una conversión de contenido
+    viejo, así que no hacía falta una migración separada para eso).
+  - Verificación: 106 preguntas de quiz validadas (cada `respuesta`
+    presente en sus propias `opciones`, sin duplicados, `explicacion`
+    no vacía) y 93 fragmentos LaTeX (`pasos` + quiz nuevo) renderizados
+    de verdad contra KaTeX (`throwOnError:true`) sin ningún error, con
+    un script temporal (`scripts/_verify_latex.js`, borrado después de
+    usarlo, mismo criterio que en `0181`). `tsc`/`eslint`/`vitest`
+    limpios (186/186, mismo baseline que al empezar).
+
 ## Siguiente paso concreto
 
-Numeria (la más grande, ~8 sub-temas) es el siguiente mundo pendiente en
-el orden sugerido para el Proceso 1 — Geografía, Anatomía, Melodía,
-Quimia, Historia, Trigonometría, Calculia/Circuitia (técnicas rápidas)
-ya están. Mismo procedimiento: revisar si su componente de lección
-tiene fase de quiz (asumir que no hasta confirmar) y agregarla junto
-con el contenido del quiz, verificando cada fórmula contra
-`src/lib/practica/*.ts` antes de escribirla. Enigmia queda aparte al
-final (tabla `logic_techniques`, no `techniques`).
+Enigmia es el último mundo pendiente del Proceso 1 (Geografía,
+Anatomía, Melodía, Quimia, Historia, Trigonometría, Calculia/Circuitia
+—técnicas rápidas— y Numeria ya están). A diferencia de los otros 9
+mundos, Enigmia usa su propia tabla `logic_techniques` en vez de
+`techniques` — antes de aplicar el mismo procedimiento (revisar si su
+componente de lección tiene fase de quiz, agregar quiz verificando cada
+técnica contra el generador real de acertijos, convertir notación si
+corresponde) hace falta investigar el shape real de esa tabla y su
+componente de lección propios, que ningún mundo anterior comparte.
 
 Para la notación (ya con MathText conectado): sigue pendiente convertir
 a `$...$` las 5 técnicas rápidas de Circuitia y las 4 lecciones

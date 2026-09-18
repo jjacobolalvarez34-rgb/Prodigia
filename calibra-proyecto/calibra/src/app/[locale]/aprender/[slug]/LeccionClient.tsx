@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,7 +11,7 @@ import LogroBanner from "@/components/LogroBanner";
 import MathText from "@/components/MathText";
 import Boton from "@/components/Boton";
 
-type Fase = "explicacion" | "ejemplo" | "practica" | "celebracion";
+type Fase = "explicacion" | "ejemplo" | "practica" | "quiz" | "celebracion";
 
 const PROBLEMAS_PRACTICA = 4;
 
@@ -58,6 +58,20 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
   const esFraccion = SLUGS_FRACCIONES.has(nodo.slug);
   const saltaPractica = esFraccion || SLUGS_ALGEBRA.has(nodo.slug);
 
+  // Proceso 1 (docs/PLAN_REVISION_CONTENIDO.md): mismo patrón de quiz que
+  // los otros 9 mundos — SOLO aparece cuando nodo.contenido.quiz tiene
+  // preguntas. Cuando una lección tiene quiz, este reemplaza a la
+  // práctica numérica de siempre como paso final: son las lecciones que
+  // menos calzan en el motor de "a symbol b = ?" (geometría, técnicas
+  // avanzadas de números grandes) las que más se benefician de un
+  // chequeo de comprensión real en vez de un ejercicio genérico.
+  const quiz = useMemo(() => nodo.contenido.quiz ?? [], [nodo.contenido.quiz]);
+  const tieneQuiz = quiz.length > 0;
+
+  const [respuestas, setRespuestas] = useState<string[]>(() => quiz.map(() => ""));
+  const [enviandoQuiz, setEnviandoQuiz] = useState(false);
+  const [resultadoQuiz, setResultadoQuiz] = useState<{ incorrectas: number[] } | null>(null);
+
   function empezarPractica() {
     setProblemaIdx(0);
     setProblema(generarProblemaTecnica(nodo.slug));
@@ -66,14 +80,23 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
     setFase("practica");
   }
 
-  async function completarLeccion() {
+  async function completarLeccion(respuestasEnviadas?: string[]) {
     try {
       const res = await fetch("/api/aprender/completar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ technique_id: nodo.id }),
+        body: JSON.stringify(
+          respuestasEnviadas
+            ? { technique_id: nodo.id, respuestas: respuestasEnviadas }
+            : { technique_id: nodo.id }
+        ),
       });
       const data = await res.json();
+      if (data.ok === false || data.aprobado === false) {
+        setResultadoQuiz({ incorrectas: Array.isArray(data.incorrectas) ? data.incorrectas : [] });
+        setEnviandoQuiz(false);
+        return;
+      }
       if (Array.isArray(data.logrosNuevos)) setLogrosNuevos(data.logrosNuevos);
       // Fase 8 (auditoría de estabilización, 2026-08-30 — "después de
       // completar la 2da lección, el resto queda con candado
@@ -91,9 +114,22 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
       router.refresh();
     } catch {
       // Si falla el guardado, igual mostramos la celebración: no vale la
-      // pena trabar al usuario por un error de red puntual acá.
+      // pena trabar al usuario por un error de red puntual acá. Un quiz
+      // que falla de red no debería festejar sin confirmación del
+      // server, así que ahí sí se corta.
+      if (respuestasEnviadas) {
+        setEnviandoQuiz(false);
+        return;
+      }
     }
+    setEnviandoQuiz(false);
     setFase("celebracion");
+  }
+
+  async function enviarQuiz() {
+    setEnviandoQuiz(true);
+    setResultadoQuiz(null);
+    await completarLeccion(respuestas);
   }
 
   function handleResponder(e: React.FormEvent) {
@@ -159,8 +195,12 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
                 <Boton className="flex-1" onClick={() => setPasoIdx((p) => Math.min(pasos.length - 1, p + 1))}>
                   {t("siguientePaso")}
                 </Boton>
+              ) : tieneQuiz ? (
+                <Boton className="flex-1" onClick={() => setFase("quiz")}>
+                  {t("continuarAlQuiz")}
+                </Boton>
               ) : saltaPractica ? (
-                <Boton className="flex-1" onClick={completarLeccion}>
+                <Boton className="flex-1" onClick={() => completarLeccion()}>
                   {t("marcarComoAprendida")}
                 </Boton>
               ) : (
@@ -226,6 +266,63 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
             >
               {t("teTrabaste")}
             </button>
+          </motion.div>
+        )}
+
+        {fase === "quiz" && (
+          <motion.div key="quiz" {...transicion} className="flex flex-col gap-6">
+            <div>
+              <h1 className="font-display text-xl font-bold tracking-tight text-foreground">{t("quizTitulo")}</h1>
+              <p className="mt-1 text-sm text-texto-secundario">{t("quizSubtitulo")}</p>
+            </div>
+            <div className="flex flex-col gap-4">
+              {quiz.map((pregunta, qi) => {
+                const estaMal = resultadoQuiz?.incorrectas.includes(qi) ?? false;
+                return (
+                  <div key={qi} className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">
+                    <p className="text-sm font-semibold text-foreground">
+                      {qi + 1}. <MathText texto={pregunta.pregunta} />
+                    </p>
+                    <div className="flex flex-col gap-2">
+                      {pregunta.opciones.map((opcion) => {
+                        const seleccionada = respuestas[qi] === opcion;
+                        return (
+                          <button
+                            key={opcion}
+                            type="button"
+                            onClick={() => setRespuestas((prev) => prev.map((v, i) => (i === qi ? opcion : v)))}
+                            className={`rounded-xl border-2 px-4 py-2.5 text-left text-sm font-medium transition-colors ${
+                              seleccionada && estaMal
+                                ? "border-error bg-error/10 text-error"
+                                : seleccionada
+                                  ? "border-logro/50 bg-logro/10 text-foreground"
+                                  : "border-border bg-background text-foreground"
+                            }`}
+                          >
+                            <MathText texto={opcion} />
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {estaMal && (
+                      <p className="text-xs font-medium text-error">
+                        {t("respuestaIncorrecta")}
+                        {pregunta.explicacion ? ` — ${pregunta.explicacion}` : ""}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <Boton
+              className="w-full"
+              onClick={enviarQuiz}
+              disabled={enviandoQuiz || respuestas.some((r) => !r)}
+              cargando={enviandoQuiz}
+            >
+              {enviandoQuiz ? t("enviando") : t("enviarRespuestas")}
+            </Boton>
+            {resultadoQuiz && <p className="text-center text-sm text-texto-secundario">{t("reintentaCuandoQuieras")}</p>}
           </motion.div>
         )}
 
