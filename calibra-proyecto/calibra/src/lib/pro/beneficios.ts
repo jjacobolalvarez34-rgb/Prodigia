@@ -35,4 +35,9 @@ export const BENEFICIOS_PRO = [
     titulo: "Acceso anticipado",
     descripcion: "Prueba mundos y funciones nuevas antes de que salgan para todos.",
   },
+  {
+    emoji: "🎓",
+    titulo: "Curso estructurado",
+    descripcion: "Lecciones a fondo con ejemplos resueltos paso a paso y un quiz que hay que aprobar para avanzar — en Calculia y Circuitia por ahora.",
+  },
 ] as const;
