@@ -254,9 +254,20 @@ separados (regla #6).
   la conversión `$...$`. `tsc`/`eslint`/`vitest` limpios (186/186), los
   15 quiz validados por script.
 
+- **2026-09-18 — Melodía, Proceso 1 completo**: las 5 técnicas (leer el
+  pentagrama por posición, truco mnemotécnico, tríada fundamental-3ra-5ta,
+  de tríada a séptima, sostenidos y bemoles) ya eran correctas — se
+  verificó cada intervalo en semitonos contra teoría musical estándar
+  (3ra mayor=4 semitonos/menor=3; 5ta normal=7/disminuida=6/aumentada=8;
+  séptima mayor=11/dominante=10) antes de escribir el quiz (migración
+  `0174`, 15 preguntas). `LeccionMelodiaClient.tsx` tampoco tenía fase de
+  quiz — mismo patrón agregado. Sin notación LaTeX (los símbolos ♯/♭ ya
+  son unicode nativo). `tsc`/`eslint`/`vitest` limpios (186/186).
+
 ## Siguiente paso concreto
 
-Melodía es el siguiente mundo en el orden sugerido. Mismo procedimiento:
-revisar si `LeccionMelodiaClient.tsx` tiene fase de quiz (asumir que no
+Quimia es el siguiente mundo en el orden sugerido. Mismo procedimiento:
+revisar si su componente de lección tiene fase de quiz (asumir que no
 hasta confirmar) y agregarla junto con el contenido del quiz, verificando
-cada dato de teoría musical contra fuentes reales antes de escribirlo.
+cada dato químico contra la tabla periódica/nomenclatura real antes de
+escribirlo.
