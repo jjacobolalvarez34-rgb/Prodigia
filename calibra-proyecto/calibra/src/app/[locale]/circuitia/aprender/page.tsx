@@ -16,21 +16,48 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CircuitiaAprenderPage() {
   const t = await getTranslations("Circuitia");
   const supabase = await createClient();
-  const { user } = await requireUsuario(supabase, "/circuitia/aprender");
+  const { user, profile } = await requireUsuario(supabase, "/circuitia/aprender");
   const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
   bloquearInvitado(user, tBloqueos("aprender"));
-  const nodos = await obtenerCaminoCircuitia(supabase, user.id);
+  const esPro = profile.plan === "pro";
+  const nodos = await obtenerCaminoCircuitia(supabase, user.id, esPro);
 
   const totalDominadas = nodos.filter((n) => n.estado === "completado").length;
 
+  const tecnicasRapidas = nodos.filter((n) => !n.requierePro);
+  const cursoPro = nodos.filter((n) => n.requierePro);
+
   const unidadesGenericas: UnidadCaminoGenerico[] = [
     {
-      id: "circuitia",
-      nombre: t("nombreMundo"),
+      id: "circuitia-tecnicas-rapidas",
+      nombre: t("aprender.tecnicasRapidas.titulo"),
       descripcion: t("aprender.descripcionUnidad"),
-      nodos: nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
+      nodos: tecnicasRapidas.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
     },
   ];
+
+  // Curso estructurado (Pro) — mismo patrón que Calculia, ver el plan de
+  // paridad en docs/PARIDAD_MUNDOS.md. Módulo 1 (orden más bajo) siempre
+  // viene "activo" (preview gratis) desde obtenerCaminoCircuitia; los
+  // módulos 2+ para quien no es Pro vienen "bloqueado" con
+  // bloqueadoPorPlan=true, así que acá se les agrega el CTA a /pro en
+  // vez del bloqueo mudo normal.
+  if (cursoPro.length > 0) {
+    unidadesGenericas.push({
+      id: "circuitia-curso-pro",
+      nombre: t("aprender.cursoPro.titulo"),
+      descripcion: t("aprender.cursoPro.descripcion"),
+      nodos: cursoPro.map((n) => ({
+        id: n.id,
+        slug: n.slug,
+        nombre: n.nombre,
+        estado: n.estado,
+        ctaPro: n.bloqueadoPorPlan
+          ? { label: t("aprender.cursoPro.desbloqueaConPro"), href: "/pro?next=/circuitia/aprender" }
+          : undefined,
+      })),
+    });
+  }
 
   return (
     <>

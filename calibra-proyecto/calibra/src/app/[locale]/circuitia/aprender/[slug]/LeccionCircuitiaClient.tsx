@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -10,7 +10,7 @@ import type { Achievement } from "@/types/database";
 import LogroBanner from "@/components/LogroBanner";
 import { COLOR_CIRCUITIA } from "../../colores";
 
-type Fase = "explicacion" | "ejemplo" | "celebracion";
+type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
 
 const transicion = {
   initial: { opacity: 0, x: 12 },
@@ -23,7 +23,11 @@ interface Props {
   nodo: NodoCaminoCircuitia;
 }
 
-// Mismo patrón exacto que LeccionCalculiaClient.tsx.
+// Mismo patrón exacto que LeccionCalculiaClient.tsx, con una fase "quiz"
+// opcional — SOLO cuando `nodo.contenido.quiz` tiene preguntas (el
+// "Curso estructurado (Pro)" de Circuitia). Las técnicas rápidas de
+// siempre no tienen `quiz`, así que para ellas el flujo queda idéntico
+// al de antes: explicación -> ejemplo -> completar.
 export default function LeccionCircuitiaClient({ nodo }: Props) {
   const t = useTranslations("Circuitia.leccion");
   const router = useRouter();
@@ -32,20 +36,53 @@ export default function LeccionCircuitiaClient({ nodo }: Props) {
   const [logrosNuevos, setLogrosNuevos] = useState<Achievement[]>([]);
 
   const pasos = nodo.contenido.pasos;
+  const quiz = useMemo(() => nodo.contenido.quiz ?? [], [nodo.contenido.quiz]);
+  const tieneQuiz = quiz.length > 0;
 
-  async function completarLeccion() {
+  const [respuestas, setRespuestas] = useState<string[]>(() => quiz.map(() => ""));
+  const [enviandoQuiz, setEnviandoQuiz] = useState(false);
+  const [resultadoQuiz, setResultadoQuiz] = useState<{ incorrectas: number[] } | null>(null);
+
+  async function completarLeccion(respuestasEnviadas?: string[]) {
     try {
       const res = await fetch("/api/aprender/completar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ technique_id: nodo.id }),
+        body: JSON.stringify(
+          respuestasEnviadas
+            ? { technique_id: nodo.id, respuestas: respuestasEnviadas }
+            : { technique_id: nodo.id }
+        ),
       });
       const data = await res.json();
+      // Las técnicas rápidas (sin quiz) siempre devuelven ok:true sin
+      // `aprobado` — solo el curso Pro con quiz puede devolver
+      // ok:false/aprobado:false cuando alguna respuesta está mal, y en
+      // ese caso NO se debe festejar ni marcar dominado.
+      if (data.ok === false || data.aprobado === false) {
+        setResultadoQuiz({ incorrectas: Array.isArray(data.incorrectas) ? data.incorrectas : [] });
+        setEnviandoQuiz(false);
+        return;
+      }
       if (Array.isArray(data.logrosNuevos)) setLogrosNuevos(data.logrosNuevos);
     } catch {
-      // Si falla el guardado, igual mostramos la celebración.
+      // Si falla el guardado de una técnica rápida (sin quiz), igual
+      // mostramos la celebración — mismo comportamiento de siempre. Un
+      // quiz Pro que falla de red no debería festejar sin confirmación
+      // del server, así que ahí SÍ se corta acá.
+      if (respuestasEnviadas) {
+        setEnviandoQuiz(false);
+        return;
+      }
     }
+    setEnviandoQuiz(false);
     setFase("celebracion");
+  }
+
+  async function enviarQuiz() {
+    setEnviandoQuiz(true);
+    setResultadoQuiz(null);
+    await completarLeccion(respuestas);
   }
 
   return (
@@ -108,9 +145,17 @@ export default function LeccionCircuitiaClient({ nodo }: Props) {
                 >
                   {t("siguientePaso")}
                 </button>
+              ) : tieneQuiz ? (
+                <button
+                  onClick={() => setFase("quiz")}
+                  className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
+                  style={{ background: COLOR_CIRCUITIA }}
+                >
+                  {t("continuarAlQuiz")}
+                </button>
               ) : (
                 <button
-                  onClick={completarLeccion}
+                  onClick={() => completarLeccion()}
                   className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
                   style={{ background: COLOR_CIRCUITIA }}
                 >
@@ -118,6 +163,67 @@ export default function LeccionCircuitiaClient({ nodo }: Props) {
                 </button>
               )}
             </div>
+          </motion.div>
+        )}
+
+        {fase === "quiz" && (
+          <motion.div key="quiz" {...transicion} className="flex flex-col gap-6">
+            <div>
+              <h1 className="font-display text-xl font-bold tracking-tight text-foreground">{t("quizTitulo")}</h1>
+              <p className="mt-1 text-sm text-texto-secundario">{t("quizSubtitulo")}</p>
+            </div>
+            <div className="flex flex-col gap-4">
+              {quiz.map((pregunta, qi) => {
+                const estaMal = resultadoQuiz?.incorrectas.includes(qi) ?? false;
+                return (
+                  <div key={qi} className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">
+                    <p className="text-sm font-semibold text-foreground">
+                      {qi + 1}. {pregunta.pregunta}
+                    </p>
+                    <div className="flex flex-col gap-2">
+                      {pregunta.opciones.map((opcion) => {
+                        const seleccionada = respuestas[qi] === opcion;
+                        return (
+                          <button
+                            key={opcion}
+                            type="button"
+                            onClick={() =>
+                              setRespuestas((prev) => prev.map((v, i) => (i === qi ? opcion : v)))
+                            }
+                            className={`rounded-xl border-2 px-4 py-2.5 text-left text-sm font-medium transition-colors ${
+                              seleccionada && estaMal
+                                ? "border-error bg-error/10 text-error"
+                                : seleccionada
+                                  ? "border-logro/50 bg-logro/10 text-foreground"
+                                  : "border-border bg-background text-foreground"
+                            }`}
+                          >
+                            {opcion}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {estaMal && (
+                      <p className="text-xs font-medium text-error">
+                        {t("respuestaIncorrecta")}
+                        {pregunta.explicacion ? ` — ${pregunta.explicacion}` : ""}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <button
+              onClick={enviarQuiz}
+              disabled={enviandoQuiz || respuestas.some((r) => !r)}
+              className="rounded-xl px-4 py-3 font-display font-semibold text-white disabled:opacity-50"
+              style={{ background: COLOR_CIRCUITIA }}
+            >
+              {enviandoQuiz ? t("enviando") : t("enviarRespuestas")}
+            </button>
+            {resultadoQuiz && (
+              <p className="text-center text-sm text-texto-secundario">{t("reintentaCuandoQuieras")}</p>
+            )}
           </motion.div>
         )}
 

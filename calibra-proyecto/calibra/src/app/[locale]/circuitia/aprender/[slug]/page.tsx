@@ -13,11 +13,11 @@ interface Props {
 export default async function LeccionCircuitiaPage({ params }: Props) {
   const { slug } = await params;
   const supabase = await createClient();
-  const { user } = await requireUsuario(supabase, `/circuitia/aprender/${slug}`);
+  const { user, profile } = await requireUsuario(supabase, `/circuitia/aprender/${slug}`);
   const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
   bloquearInvitado(user, tBloqueos("aprender"));
 
-  const nodos = await obtenerCaminoCircuitia(supabase, user.id);
+  const nodos = await obtenerCaminoCircuitia(supabase, user.id, profile.plan === "pro");
   const nodo = nodos.find((n) => n.slug === slug);
 
   if (!nodo) {

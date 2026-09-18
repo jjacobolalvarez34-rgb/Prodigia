@@ -2947,7 +2947,15 @@
       "progreso": "Progreso",
       "tecnicas": "{n}/{total} técnicas",
       "titulo": "Aprender",
-      "subtitulo": "Cómo reconocer de un vistazo qué tipo de circuito es y qué le pasa a corriente/voltaje."
+      "subtitulo": "Cómo reconocer de un vistazo qué tipo de circuito es y qué le pasa a corriente/voltaje.",
+      "tecnicasRapidas": {
+        "titulo": "Técnicas rápidas"
+      },
+      "cursoPro": {
+        "titulo": "Curso estructurado (Pro)",
+        "descripcion": "Lecciones completas de cada modo, con ejemplos resueltos paso a paso y un quiz de comprensión.",
+        "desbloqueaConPro": "Desbloqueá con Pro"
+      }
     },
     "leccion": {
       "tecnica": "Técnica",
@@ -2957,7 +2965,14 @@
       "marcarAprendida": "Marcar como aprendida",
       "completaste": "¡Completaste {nombre}!",
       "volverAAprender": "Volver a Aprender",
-      "irAPracticar": "Ir a Practicar"
+      "irAPracticar": "Ir a Practicar",
+      "continuarAlQuiz": "Continuar al quiz",
+      "quizTitulo": "Quiz de comprensión",
+      "quizSubtitulo": "Respondé las preguntas para marcar este módulo como aprendido. Podés reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "enviarRespuestas": "Enviar respuestas",
+      "enviando": "Enviando...",
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
     },
     "practica": {
       "serie": {
