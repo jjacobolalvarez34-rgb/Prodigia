@@ -72,16 +72,24 @@ export const COSTOS = {
   // nivel_mundo >= 40 que los 6 marcos anteriores.
   marco_trigonometria: 2400,
   marco_historia: 2400,
+  // Calculia (mundo 9): mismo precio y mismo gate de nivel_mundo >= 40
+  // que los 8 marcos anteriores.
+  marco_calculia: 2400,
+  // Circuitia (mundo 10): mismo precio y mismo gate de nivel_mundo >= 40
+  // que los 9 marcos anteriores.
+  marco_circuitia: 2400,
   // Grupo B, Fase 7: "Colección de Mundos" — los marcos de mundo de una
   // sola vez, con descuento (comprados sueltos costarían más), pero SIN
   // saltarse el requisito de nivel de cada uno — exige nivel_mundo >= 40
   // en TODOS a la vez (validado server-side en comprar_item_tienda, ver
-  // 0107_paquete_marcos_mundo.sql y 0110_ocho_mundos.sql). Es un ítem de
-  // coleccionista para quien ya juega todos los mundos, no un atajo
-  // para principiantes. Precio actualizado de 11000 a 14500 al pasar de
-  // 6 a 8 mundos (8 × 2400 = 19200 sueltos, ~24% de descuento, mismo
-  // criterio que el precio original).
-  paquete_marcos_mundo: 14500,
+  // 0107_paquete_marcos_mundo.sql, 0110_ocho_mundos.sql y
+  // 0166_nueve_mundos.sql). Es un ítem de coleccionista para quien ya
+  // juega todos los mundos, no un atajo para principiantes. Precio
+  // actualizado de 14500 a 16200 al pasar de 8 a 9 mundos (9 × 2400 =
+  // 21600 sueltos, ~25% de descuento, mismo criterio que el precio
+  // original). Ahora de 16200 a 18000 al pasar de 9 a 10 mundos (10 ×
+  // 2400 = 24000 sueltos, mismo ~25% de descuento).
+  paquete_marcos_mundo: 18000,
   // Fase 10 ("Tienda: animaciones y fondos"): mismo escalonado que las
   // fuentes (todo CSS, sin costo de licencia) — ondulante/brillo cerca
   // del piso, arcoiris/neon un poco más caras por ser más vistosas.

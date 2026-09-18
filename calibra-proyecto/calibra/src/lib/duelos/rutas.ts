@@ -1,6 +1,6 @@
 import type { ArithmeticProblemType } from "@/types/database";
 
-export type MundoDuelo = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia";
+export type MundoDuelo = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia";
 
 // Paleta de acento por mundo — fuente única para todo lo relacionado a
 // duelos (antes vivía duplicada, mismos 6 hex, en RankedsClient,
@@ -15,6 +15,8 @@ export const COLOR_MUNDO: Record<MundoDuelo, string> = {
   quimia: "#C026D3",
   trigonometria: "#84CC16",
   historia: "#A0522D",
+  calculia: "#4338CA",
+  circuitia: "#F59E0B",
 };
 
 // A dónde lleva jugar un duelo según en qué ciudad cayó — un solo lugar,
@@ -59,6 +61,18 @@ export function hrefDuelo(mundo: MundoDuelo, operationType: ArithmeticProblemTyp
     if (subTipo === "causaefecto") return `/historia/practica/causaefecto?duelo=${duelId}`;
     if (subTipo === "fechas") return `/historia/practica/fechas?duelo=${duelId}`;
     return `/historia/practica?duelo=${duelId}`;
+  }
+  if (mundo === "calculia") {
+    if (subTipo === "integrales") return `/calculia/practica/integrales?duelo=${duelId}`;
+    if (subTipo === "series") return `/calculia/practica/series?duelo=${duelId}`;
+    if (subTipo === "multivariable") return `/calculia/practica/multivariable?duelo=${duelId}`;
+    return `/calculia/practica?duelo=${duelId}`;
+  }
+  if (mundo === "circuitia") {
+    if (subTipo === "paralelo") return `/circuitia/practica/paralelo?duelo=${duelId}`;
+    if (subTipo === "mixto") return `/circuitia/practica/mixto?duelo=${duelId}`;
+    if (subTipo === "cualitativo") return `/circuitia/practica/cualitativo?duelo=${duelId}`;
+    return `/circuitia/practica?duelo=${duelId}`;
   }
   // La operación real (asignada por buscar_rival_duelo, ver Rankeds) se
   // lee siempre del duelo en sí (obtener_duelo) apenas se carga

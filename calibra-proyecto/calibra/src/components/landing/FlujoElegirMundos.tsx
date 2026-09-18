@@ -13,6 +13,8 @@ import {
   IconMelodia,
   IconTrigonometria,
   IconHistoria,
+  IconCalculia,
+  IconCircuitia,
   IconCandado,
 } from "@/components/icons";
 import Boton from "@/components/Boton";
@@ -28,6 +30,8 @@ const ICONO_MUNDO: Record<MundoPago, typeof IconSuma> = {
   melodia: IconMelodia,
   trigonometria: IconTrigonometria,
   historia: IconHistoria,
+  calculia: IconCalculia,
+  circuitia: IconCircuitia,
 };
 
 // Último paso del flujo (Fase 6/7 del rediseño): 2 mundos gratis en vez

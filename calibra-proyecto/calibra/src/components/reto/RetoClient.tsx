@@ -47,6 +47,8 @@ const COLOR_MUNDO: Record<MundoRetoDiario, string> = {
   melodia: "#B8860B",
   trigonometria: "#84CC16",
   historia: "#A0522D",
+  calculia: "#4338CA",
+  circuitia: "#F59E0B",
 };
 
 const ENDPOINT_TIPO: Record<TipoReto, string> = {
@@ -84,6 +86,8 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
     melodia: t("mundos.melodia"),
     trigonometria: t("mundos.trigonometria"),
     historia: t("mundos.historia"),
+    calculia: t("mundos.calculia"),
+    circuitia: t("mundos.circuitia"),
   };
   const TEXTO_TIPO: Record<TipoReto, { etiqueta: string; periodo: string; endpoint: string; volver: string }> = {
     diario: { etiqueta: t("etiquetaDiario"), periodo: t("periodoDiario"), endpoint: ENDPOINT_TIPO.diario, volver: t("volverDiario") },

@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, subscribeEfectos } from "@/lib/efectos";
 import GhostCursor from "@/components/reactbits/GhostCursor";
 
-export type MundoCursor = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia";
+export type MundoCursor = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia";
 
 const COLOR_MUNDO: Record<MundoCursor, string> = {
   numeria: "#6C4CF1",
@@ -15,6 +15,8 @@ const COLOR_MUNDO: Record<MundoCursor, string> = {
   melodia: "#B8860B",
   trigonometria: "#84CC16",
   historia: "#A0522D",
+  calculia: "#4338CA",
+  circuitia: "#F59E0B",
 };
 
 // Fase L3: solo en las homes de mundo, nunca durante una partida activa

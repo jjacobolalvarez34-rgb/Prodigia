@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!--
+    Marco temático de Circuitia (mundo 10) — generado programáticamente
+    (anillo + motivo simple: 4 zigzags de resistor + 4 nodos de unión),
+    mismo espíritu que los marcos de Trigonometría/Historia/Calculia
+    (0110_ocho_mundos.sql / 0166_nueve_mundos.sql: "generados
+    programáticamente... notablemente más simples" que los assets de
+    diseño originales). Centro transparente a propósito: se superpone
+    sobre el avatar vía AvatarConMarco.tsx, no lo reemplaza.
+    TODO: reemplazar por un asset de diseño real cuando esté disponible,
+    igual que los otros 9 mundos.
+  -->
+  <defs>
+    <linearGradient id="anilloCircuitia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#FCD34D" />
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="92" fill="none" stroke="url(#anilloCircuitia)" stroke-width="10" />
+  <g fill="none" stroke="#F59E0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="82,16 88,16 91,10 97,22 103,10 109,22 112,16 118,16" />
+    <polyline points="184,82 184,88 190,91 178,97 190,103 178,109 184,112 184,118" />
+    <polyline points="118,184 112,184 109,190 103,178 97,190 91,178 88,184 82,184" />
+    <polyline points="16,118 16,112 10,109 22,103 10,97 22,91 16,88 16,82" />
+  </g>
+  <g fill="#F59E0B">
+    <circle cx="100" cy="14" r="3.5" />
+    <circle cx="186" cy="100" r="3.5" />
+    <circle cx="100" cy="186" r="3.5" />
+    <circle cx="14" cy="100" r="3.5" />
+  </g>
+</svg>

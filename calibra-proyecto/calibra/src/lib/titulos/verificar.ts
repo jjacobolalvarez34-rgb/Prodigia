@@ -8,6 +8,8 @@ const TIPOS_ANATOMIA = ["anatomia_oseo", "anatomia_muscular", "anatomia_organos"
 const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"];
 const TIPOS_TRIGONOMETRIA = ["trigonometria_razones", "trigonometria_circulo", "trigonometria_identidades", "trigonometria_leyes"];
 const TIPOS_HISTORIA = ["historia_cronologia", "historia_personajes", "historia_causaefecto", "historia_fechas"];
+const TIPOS_CALCULIA = ["calculia_derivadas", "calculia_integrales", "calculia_series", "calculia_multivariable"];
+const TIPOS_CIRCUITIA = ["circuitia_serie", "circuitia_paralelo", "circuitia_mixto", "circuitia_cualitativo"];
 
 // Mismo espíritu que verificarLogros (src/lib/logros/verificar.ts):
 // solo calcula lo que hace falta para los títulos todavía no
@@ -220,6 +222,12 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
     } else if (mundo === "historia") {
       const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_HISTORIA);
       mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_HISTORIA.length && (rows ?? []).every((r) => r.nivel >= 10));
+    } else if (mundo === "calculia") {
+      const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_CALCULIA);
+      mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_CALCULIA.length && (rows ?? []).every((r) => r.nivel >= 10));
+    } else if (mundo === "circuitia") {
+      const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_CIRCUITIA);
+      mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_CIRCUITIA.length && (rows ?? []).every((r) => r.nivel >= 10));
     }
   }
 

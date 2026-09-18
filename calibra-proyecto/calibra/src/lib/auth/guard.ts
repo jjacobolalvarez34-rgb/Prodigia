@@ -136,6 +136,32 @@ export async function requireMundoHistoria(supabase: SupabaseClient, pathActual:
   return { user, profile };
 }
 
+// Mundo Calculia: mismo patrón que Trigonometría/Historia/Quimia/
+// Anatomía/Melodía.
+export async function requireMundoCalculia(supabase: SupabaseClient, pathActual: string) {
+  const { user, profile } = await requireUsuario(supabase, pathActual);
+  requireMundoComprado(profile, "calculia", pathActual);
+
+  if (!profile.onboarding_calculia_completado) {
+    redirect(`/calculia/diagnostico?next=${encodeURIComponent(pathActual)}`);
+  }
+
+  return { user, profile };
+}
+
+// Mundo Circuitia: mismo patrón que Calculia/Trigonometría/Historia/
+// Quimia/Anatomía/Melodía.
+export async function requireMundoCircuitia(supabase: SupabaseClient, pathActual: string) {
+  const { user, profile } = await requireUsuario(supabase, pathActual);
+  requireMundoComprado(profile, "circuitia", pathActual);
+
+  if (!profile.onboarding_circuitia_completado) {
+    redirect(`/circuitia/diagnostico?next=${encodeURIComponent(pathActual)}`);
+  }
+
+  return { user, profile };
+}
+
 // Geografía nunca tuvo diagnóstico propio (arranca directo) — con Fase
 // 12 pasa a necesitar este guard nuevo en vez de requireUsuario a
 // secas, solo para el chequeo de compra.

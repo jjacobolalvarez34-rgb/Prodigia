@@ -9,6 +9,8 @@ const TOTAL_SUBTEMAS: Record<string, number> = {
   melodia: 6,
   trigonometria: 4,
   historia: 4,
+  calculia: 4,
+  circuitia: 4,
 };
 
 const SUBTIPOS: Record<string, string[]> = {
@@ -40,6 +42,14 @@ const SUBTIPOS: Record<string, string[]> = {
   historia: [
     "historia_cronologia", "historia_personajes",
     "historia_causaefecto", "historia_fechas",
+  ],
+  calculia: [
+    "calculia_derivadas", "calculia_integrales",
+    "calculia_series", "calculia_multivariable",
+  ],
+  circuitia: [
+    "circuitia_serie", "circuitia_paralelo",
+    "circuitia_mixto", "circuitia_cualitativo",
   ],
 };
 

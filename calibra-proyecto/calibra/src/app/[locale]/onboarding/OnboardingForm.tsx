@@ -14,6 +14,8 @@ import {
   IconMelodia,
   IconTrigonometria,
   IconHistoria,
+  IconCalculia,
+  IconCircuitia,
   IconCandado,
 } from "@/components/icons";
 import Boton from "@/components/Boton";
@@ -44,6 +46,8 @@ const ICONO_MUNDO: Record<MundoPago, typeof IconSuma> = {
   melodia: IconMelodia,
   trigonometria: IconTrigonometria,
   historia: IconHistoria,
+  calculia: IconCalculia,
+  circuitia: IconCircuitia,
 };
 
 export default function OnboardingForm({ next, saltarPasoNombre }: Props) {

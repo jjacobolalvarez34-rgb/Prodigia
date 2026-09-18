@@ -13,6 +13,8 @@ const MUNDOS = [
   { href: "/melodia", slug: "melodia", colorHex: "#B8860B" },
   { href: "/trigonometria", slug: "trigonometria", colorHex: "#84CC16" },
   { href: "/historia", slug: "historia", colorHex: "#A0522D" },
+  { href: "/calculia", slug: "calculia", colorHex: "#4338CA" },
+  { href: "/circuitia", slug: "circuitia", colorHex: "#F59E0B" },
 ] as const;
 
 function mundoActual(pathname: string) {

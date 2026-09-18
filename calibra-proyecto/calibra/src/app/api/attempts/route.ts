@@ -108,6 +108,14 @@ export async function POST(request: Request) {
     "historia_personajes",
     "historia_causaefecto",
     "historia_fechas",
+    "calculia_derivadas",
+    "calculia_integrales",
+    "calculia_series",
+    "calculia_multivariable",
+    "circuitia_serie",
+    "circuitia_paralelo",
+    "circuitia_mixto",
+    "circuitia_cualitativo",
   ];
   const calibrar = !sospechoso && (tiposCalibrables as string[]).includes(body.problem_type);
 

@@ -27,12 +27,25 @@ export default async function PrivacidadPage() {
             <li>{t("datosClan")}</li>
             <li>{t("datosAmistades")}</li>
             <li>{t("datosGrupo")}</li>
+            <li>{t("datosEdad")}</li>
+            <li>{t("datosPago")}</li>
+            <li>{t("datosDocente")}</li>
           </ul>
         </section>
 
         <section className="flex flex-col gap-2">
           <h2 className="font-display text-lg font-bold text-foreground">{t("usoTitulo")}</h2>
           <p className="text-sm text-texto-secundario">{t("usoTexto")}</p>
+        </section>
+
+        <section className="flex flex-col gap-2">
+          <h2 className="font-display text-lg font-bold text-foreground">{t("tercerosTitulo")}</h2>
+          <p className="text-sm text-texto-secundario">{t("tercerosTexto")}</p>
+        </section>
+
+        <section className="flex flex-col gap-2">
+          <h2 className="font-display text-lg font-bold text-foreground">{t("menoresTitulo")}</h2>
+          <p className="text-sm text-texto-secundario">{t("menoresTexto")}</p>
         </section>
 
         <section className="flex flex-col gap-2">

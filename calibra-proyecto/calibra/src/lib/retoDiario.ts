@@ -8,6 +8,8 @@ import { generarPreguntaAnatomia, type ModoAnatomia } from "@/lib/practica/anato
 import { generarPreguntaMelodia, conRngSembrado as conRngSembradoMelodia, type ModoMelodia, type NotaMusical, type FiguraRitmica } from "@/lib/practica/melodia";
 import { generarProblemaTrigonometria, conRngSembrado as conRngSembradoTrigonometria, type ModoTrigonometria } from "@/lib/practica/trigonometria";
 import { generarPreguntaHistoria, conRngSembrado as conRngSembradoHistoria, type ModoHistoria } from "@/lib/practica/historia";
+import { generarProblemaCalculia, conRngSembrado as conRngSembradoCalculia, type ModoCalculia } from "@/lib/practica/calculia";
+import { generarProblemaCircuitia, conRngSembrado as conRngSembradoCircuitia, type ModoCircuitia } from "@/lib/practica/circuitia";
 
 // Fase 3 (reto diario multi-ciudad, 2026-08-25): antes esto solo
 // generaba 5 sumas/restas/multiplicaciones/divisiones — pasó a 45
@@ -19,7 +21,7 @@ import { generarPreguntaHistoria, conRngSembrado as conRngSembradoHistoria, type
 // mundos_desbloqueados de profiles (Fase 12, Chispas) — el llamador
 // (reto-diario/page.tsx, reto-semanal/page.tsx) manda esa lista desde
 // afuera, esta función no la calcula.
-export type MundoRetoDiario = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia";
+export type MundoRetoDiario = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia";
 
 export const TOTAL_PREGUNTAS_RETO_DIARIO = 5;
 export const TOTAL_PREGUNTAS_RETO_SEMANAL = 45;
@@ -186,6 +188,42 @@ function preguntaHistoria(rng: () => number): PreguntaRetoDiario {
   return { mundo: "historia", enunciado: p.enunciado, opciones: p.opciones, respuesta: p.respuesta };
 }
 
+// Derivadas/Integrales/Multivariable son 100% opción múltiple (ver
+// calculia.ts) — quedan afuera "series", que mezcla numérico
+// (suma geométrica/criterio de la razón) con opciones (clasificación
+// de convergencia), mismo criterio que "razones"/"leyes" en
+// Trigonometría (no forzar un formato genérico sobre un modo mixto).
+const MODOS_CALCULIA_RETO: ModoCalculia[] = ["derivadas", "integrales", "multivariable"];
+
+function preguntaCalculia(rng: () => number): PreguntaRetoDiario {
+  const modo = elegirRng(rng, MODOS_CALCULIA_RETO);
+  const p = conRngSembradoCalculia(rng, () => generarProblemaCalculia(modo, nivelMedio(rng)));
+  if (p.entrada !== "opciones") {
+    // No debería pasar nunca para estos 3 modos — guard defensivo, nunca un crash si algún día cambia.
+    return { mundo: "calculia", enunciado: p.enunciado, opciones: [String(p.respuesta)], respuesta: String(p.respuesta) };
+  }
+  return { mundo: "calculia", enunciado: p.enunciado, opciones: p.opciones, respuesta: p.respuesta };
+}
+
+// A diferencia de Calculia (3 de 4 modos son 100% opción múltiple),
+// Circuitia tiene la mezcla invertida: "serie"/"paralelo"/"mixto" son
+// SIEMPRE de entrada numérica (corriente/voltaje con tolerancia, ver
+// circuitia.ts) — solo "cualitativo" es 100% opción múltiple. Mismo
+// criterio que "organica"/"oseo"/"memoria"/"razones"-"leyes" arriba:
+// los modos numéricos quedan afuera del reto diario en vez de forzarlos
+// en un formato genérico de opciones.
+const MODOS_CIRCUITIA_RETO: ModoCircuitia[] = ["cualitativo"];
+
+function preguntaCircuitia(rng: () => number): PreguntaRetoDiario {
+  const modo = elegirRng(rng, MODOS_CIRCUITIA_RETO);
+  const p = conRngSembradoCircuitia(rng, () => generarProblemaCircuitia(modo, nivelMedio(rng)));
+  if (p.entrada !== "opciones") {
+    // No debería pasar nunca para "cualitativo" — guard defensivo, nunca un crash si algún día cambia.
+    return { mundo: "circuitia", enunciado: p.enunciado, opciones: [String(p.respuesta)], respuesta: String(p.respuesta) };
+  }
+  return { mundo: "circuitia", enunciado: p.enunciado, opciones: p.opciones, respuesta: p.respuesta };
+}
+
 const GENERADORES: Record<MundoRetoDiario, (rng: () => number) => PreguntaRetoDiario> = {
   numeria: preguntaNumeria,
   geografia: preguntaGeografia,
@@ -195,6 +233,8 @@ const GENERADORES: Record<MundoRetoDiario, (rng: () => number) => PreguntaRetoDi
   melodia: preguntaMelodia,
   trigonometria: preguntaTrigonometria,
   historia: preguntaHistoria,
+  calculia: preguntaCalculia,
+  circuitia: preguntaCircuitia,
 };
 
 function claveDePregunta(p: PreguntaRetoDiario): string {

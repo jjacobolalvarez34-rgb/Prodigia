@@ -43,7 +43,9 @@ export type Mundo =
   | "anatomia"
   | "melodia"
   | "trigonometria"
-  | "historia";
+  | "historia"
+  | "calculia"
+  | "circuitia";
 
 // Fase 5 (mercado): "color del dial" se retiró de la tienda — no
 // generaba sensación de diferencia real jugando de verdad — pero el
@@ -183,6 +185,8 @@ export interface Profile {
   onboarding_melodia_completado: boolean; // diagnóstico de Melodía hecho/salteado
   onboarding_trigonometria_completado: boolean; // diagnóstico de Trigonometría hecho/salteado
   onboarding_historia_completado: boolean; // diagnóstico de Historia hecho/salteado
+  onboarding_calculia_completado: boolean; // diagnóstico de Calculia hecho/salteado
+  onboarding_circuitia_completado: boolean; // diagnóstico de Circuitia hecho/salteado
   mundos_desbloqueados: string[]; // Fase 12: qué mundos ya compró/eligió — puede no incluir 'numeria'
   nivel_cuenta: number; // Fase 4 (nivel de cuenta): nivel general de la cuenta, no el de un mundo puntual
   idioma: "es" | "en";
@@ -422,6 +426,22 @@ export const MARCOS_MUNDO: Record<string, { nombre: string; imagen: string }> = 
   melodia: { nombre: "Melodía", imagen: "/marcos/marco_melodia.png" },
   trigonometria: { nombre: "Trigonometría", imagen: "/marcos/marco_trigonometria.png" },
   historia: { nombre: "Historia", imagen: "/marcos/marco_historia.png" },
+  // Mundo 9 (Calculia): a diferencia de los 8 marcos anteriores (PNG de
+  // diseño real), todavía no hay un asset comisionado — AvatarConMarco.tsx
+  // usa un <img> plano sin fallback, así que un archivo ausente se
+  // vería como ícono de imagen rota, no "degrada gracil" de verdad. Se
+  // generó un placeholder real y liviano (public/marcos/marco_calculia.svg:
+  // anillo con degradé índigo + 4 glifos de integral/sumatoria/infinito/
+  // parcial, centro transparente), mismo criterio que los marcos
+  // "generados programáticamente" de Trigonometría/Historia
+  // (0110_ocho_mundos.sql). TODO: reemplazar por un PNG de diseño real
+  // cuando esté disponible, igual que los otros 8.
+  calculia: { nombre: "Calculia", imagen: "/marcos/marco_calculia.svg" },
+  // Mundo 10 (Circuitia): mismo criterio que Calculia — SVG generado
+  // programáticamente en vez de un PNG de diseño real (AvatarConMarco.tsx
+  // no degrada gracil un <img> ausente). TODO: reemplazar por un PNG de
+  // diseño real cuando esté disponible, igual que los otros 9 mundos.
+  circuitia: { nombre: "Circuitia", imagen: "/marcos/marco_circuitia.svg" },
 };
 
 // ---------- Rankeds: títulos (Fase 2) ----------
@@ -445,7 +465,9 @@ export type MundoDuelo =
   | "anatomia"
   | "melodia"
   | "trigonometria"
-  | "historia";
+  | "historia"
+  | "calculia"
+  | "circuitia";
 export type ModoDuelo = "simple" | "mejor_de_3";
 
 // ---------- Enigmia (Fase X): mundo de lógica ----------

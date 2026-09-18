@@ -113,6 +113,8 @@
       "melodia": "Mode based on your rank",
       "trigonometria": "Mode based on your rank",
       "historia": "Mode based on your rank",
+      "calculia": "Mode based on your rank",
+      "circuitia": "Mode based on your rank",
       "aleatorio": "Best of 3, one city per round"
     },
     "buscandoRival": "Looking for a rival…",
@@ -226,6 +228,8 @@
       "melodia": "Melody",
       "trigonometria": "Trigonometry",
       "historia": "History",
+      "calculia": "Calculia",
+      "circuitia": "Circuitia",
       "aleatorio": "all the cities",
       "suMundo": "their world"
     },
@@ -451,7 +455,9 @@
         "anatomia": "Anatomy",
         "melodia": "Melody",
         "trigonometria": "Trigonometry",
-        "historia": "History"
+        "historia": "History",
+        "calculia": "Calculia",
+        "circuitia": "Circuitia"
       },
       "eloValor": "{n} ELO",
       "nivelLabel": "Level",
@@ -496,6 +502,8 @@
       "marcoMelodia": "Melodia Frame",
       "marcoTrigonometria": "Trigonometry Frame",
       "marcoHistoria": "History Frame",
+      "marcoCalculia": "Calculia Frame",
+      "marcoCircuitia": "Circuitia Frame",
       "paqueteMarcosMundo": "World Collection",
       "animacionOndulante": "Wave Animation",
       "animacionBrillo": "Shine Animation",
@@ -585,9 +593,9 @@
     "vidrieraDeMarcosTematicos": "World frames",
     "vidrieraMarcosTematicosDescripcion": "A different ring for each world, for your avatar. Unlocks at level {n} in that world — or free, as a gift, if you fully master it.",
     "requiereNivelMundo": "Level {n} in {mundo} to unlock",
-    "paqueteMarcosMundoDescripcion": "All 6 world frames together, discounted — for when you're seriously playing all 6.",
-    "paqueteMarcosMundoRequisito": "You need level {n} in all 6 worlds to unlock it",
-    "paqueteMarcosMundoCompleto": "You already have all 6 world frames",
+    "paqueteMarcosMundoDescripcion": "All 9 world frames together, discounted — for when you're seriously playing all 9.",
+    "paqueteMarcosMundoRequisito": "You need level {n} in all 9 worlds to unlock it",
+    "paqueteMarcosMundoCompleto": "You already have all 9 world frames",
     "vidrieraDeAnimaciones": "Name animations",
     "vidrieraAnimacionesDescripcion": "Your name moves — shows on your profile, Rankeds, the feed, and clan chat.",
     "sinAnimacion": "No animation",
@@ -1086,7 +1094,9 @@
       "anatomia": "Bones, muscles, organs, and the nervous system.",
       "melodia": "Staff notation, scales, and chords built from formulas.",
       "trigonometria": "Ratios, unit circle, identities, and triangles.",
-      "historia": "Chronology, figures, cause and effect, and exact dates."
+      "historia": "Chronology, figures, cause and effect, and exact dates.",
+      "calculia": "Derivatives, integrals, series, and differential equations.",
+      "circuitia": "Series, parallel, mixed circuits, and qualitative analysis."
     }
   },
   "Numeria": {
@@ -1261,8 +1271,8 @@
     "sonidoDescripcion": "Short tones when you get an answer right or wrong during matches.",
     "efectosVisuales": "Visual effects",
     "efectosVisualesDescripcion": "Animated backgrounds, particles, and the logo's gesture during celebrations. Turning it off doesn't change any functionality.",
-    "ocultarDobleONada": "Hide \"Double or nothing\"",
-    "ocultarDobleONadaDescripcion": "Removes the betting backroom from the Shop. It's always just game Chispas, never real money — but if you'd rather not see it, turn it off here.",
+    "ocultarTrastienda": "Hide the Backroom",
+    "ocultarTrastiendaDescripcion": "Removes the Backroom (casino, betting and Double or nothing) from the Shop. It's always just game Chispas, never real money — but if you'd rather not see it, turn it off here.",
     "tema": "Theme",
     "temaDescripcion": "Light or dark.",
     "terminosDeUso": "Terms of use",
@@ -1694,7 +1704,9 @@
         "anatomia": "Anatomy",
         "melodia": "Melody",
         "trigonometria": "Trigonometry",
-        "historia": "History"
+        "historia": "History",
+        "calculia": "Calculia",
+        "circuitia": "Circuitia"
       }
     },
     "nombreConFuente": {
@@ -2068,10 +2080,17 @@
       "datosClan": "If you're part of a clan: which one, your role there, and the messages you send in the clan chat (visible only to the rest of your clan).",
       "datosAmistades": "Your friendships within the app (who you added, who added you).",
       "datosGrupo": "If you're part of a teacher's group, that teacher can see your group's aggregate progress (level, streak, accuracy), never your individual answers beyond that.",
+      "datosEdad": "Your age, if you entered it — asked once, right after you create your account, only to know whether you can enter the Backroom (14 and up). We don't use it for anything else.",
+      "datosPago": "If you bought Chispas or Prodigia Pro: what you bought, when, and your subscription status. Your card number and payment details themselves are received and processed directly by Mercado Pago or Paddle (see below) — they never pass through our servers and we never store them.",
+      "datosDocente": "If you filled out the Prodigia for schools form: the school's name, your name, your email, your phone, and any message you wrote — used only to respond to that inquiry, it's separate from any student account.",
       "usoTitulo": "What we use it for",
-      "usoTexto": "Only to make the app work: calibrating your level, calculating your progress, showing the ranking, the feed, and your clan's chat, and nothing else. We don't sell your data or share it with third parties for advertising purposes. Clan chat has an automatic filter for offensive language (a message that contains it is rejected before it's saved), and any message can be reported for manual review — there's no automatic content moderation beyond that filter.",
+      "usoTexto": "Only to make the app work: calibrating your level, calculating your progress, showing the ranking, the feed, and your clan's chat, processing your purchases if you make any, and nothing else. We don't sell your data or share it with third parties for advertising purposes. Clan chat has an automatic filter for offensive language (a message that contains it is rejected before it's saved), and any message can be reported for manual review — there's no automatic content moderation beyond that filter.",
+      "tercerosTitulo": "Who we share data with",
+      "tercerosTexto": "We use a handful of providers to make Prodigia work, each gets only what it needs for its part: Supabase hosts the database, authentication, and file storage (avatars, profile backgrounds); Mercado Pago and Paddle process payments (Paddle also acts as the merchant of record for purchases outside Colombia, so the invoice comes from Paddle, not Prodigia directly); Brevo sends account emails (confirmation, password reset). None of these use your data for their own advertising or resell it — they only have it to provide us that one specific service.",
+      "menoresTitulo": "Minors",
+      "menoresTexto": "Prodigia can be used by school-age kids. We ask for the minimum amount of data from any user, minor or not, and the one specific age question (see above) exists only to gate the Backroom for under-14s, not to build a profile on that person. If you're a parent or guardian and want to review or delete a minor's data, you can delete the account yourself from the profile (see below) or write to us.",
       "borrarTitulo": "Deleting your data",
-      "borrarTexto": "From <link>your profile</link> you can delete your account completely — your progress, achievements, title, duel history, clan membership, chat messages, friendships, and everything else tied to your account gets erased permanently. One exception to keep in mind: if you played a duel against someone else and that person later deletes their account, the record of that duel may also disappear from your own history — that's not something you can prevent, it's a side effect of how the other account's data gets deleted."
+      "borrarTexto": "From <link>your profile</link> you can delete your account completely — your progress, achievements, title, duel history, clan membership, chat messages, friendships, your Chispas and Pro subscription if you had one, and everything else tied to your account gets erased permanently. One exception to keep in mind: if you played a duel against someone else and that person later deletes their account, the record of that duel may also disappear from your own history — that's not something you can prevent, it's a side effect of how the other account's data gets deleted."
     },
     "terminos": {
       "metadata": {
@@ -2086,8 +2105,16 @@
       "cuentaTexto": "You can create an account with email and password, or sign in as a guest and decide later if you want to save it. You're responsible for keeping your password secure.",
       "usoTitulo": "Acceptable use",
       "usoTexto": "Use Prodigia to practice in good faith. Don't try to manipulate the Chispas system, the ranking, or duels with bots, scripts, or automated responses. In your clan chat and anywhere else you can write free text, don't use offensive, discriminatory, or abusive language — messages that contain it are automatically rejected before being saved, and any message or profile can be reported for manual review.",
+      "edadTitulo": "Minimum age",
+      "edadTexto": "Prodigia is built to be usable from school age, with or without adult supervision. Some sections have their own age limit: the Backroom (casino-style minigames, always played with in-game Chispas, never real money) is for users 14 and up only — we ask your age once, right after you create your account, only to apply that one limit, never for anything else. If you're a parent or guardian and want a minor's account deleted, you can do it yourself from <linkPerfil>their profile</linkPerfil> or write to us.",
+      "proTitulo": "Prodigia Pro (subscription)",
+      "proTexto": "Prodigia Pro is an optional subscription (monthly or annual) that grants extra Chispas every month, exclusive cosmetics, and other perks shown on <linkPro>the Pro page</linkPro> before you subscribe. It's charged upfront and renews automatically at the end of each period until you cancel — cancellation happens through your Mercado Pago (Colombia) or Paddle (rest of the world) account, the processors that handle the actual charge; Prodigia never sees or stores your card number. If you cancel, you keep Pro until the end of the period you already paid for, with no refund for that period unless your local law requires otherwise. We may change Pro's price or perks going forward, never retroactively on a period you already paid for.",
+      "chispasTitulo": "Chispas and in-app purchases",
+      "chispasTexto": "Chispas are the game's currency: most are earned by playing, and some can also be bought with real money in fixed packs. They have no cash value, can't be transferred to another account or withdrawn as money, and purchases aren't refundable once credited, unless your local law requires otherwise. If you delete your account, you lose any Chispas and active Pro benefits at that moment, with no refund — that's why <linkPerfil>deleting your account</linkPerfil> warns you about this before you confirm.",
+      "docentesTitulo": "For schools and teachers",
+      "docentesTexto": "If you fill out the <linkDocentes>Prodigia for schools</linkDocentes> form, we use that information (school name, your name, email, phone, and anything else you add) only to respond to your inquiry — it doesn't create or change any student account. An actual agreement with a school (licenses, student accounts, what data teachers would see) is defined separately, in writing, before it goes live.",
       "borrarTitulo": "Deleting your account",
-      "borrarTexto": "You can delete your account anytime from <link>your profile</link>. That action is permanent: it deletes your progress, achievements, duel history, clan membership, chat messages, and everything else tied to your account, and it can't be undone. If you played a duel against someone who later deletes their account, that duel may also disappear from your own history — it's a side effect of how deletion works, not something you can prevent on the other end.",
+      "borrarTexto": "You can delete your account anytime from <link>your profile</link>. That action is permanent: it deletes your progress, achievements, duel history, clan membership, chat messages, Chispas and Pro subscription if you had one, and everything else tied to your account — it can't be undone and nothing already paid is refunded. If you played a duel against someone who later deletes their account, that duel may also disappear from your own history — it's a side effect of how deletion works, not something you can prevent on the other end.",
       "verTambien": "See also our <link>privacy policy</link>."
     },
     "pro": {
@@ -2280,7 +2307,9 @@
       "anatomia": "Anatomy",
       "melodia": "Melody",
       "trigonometria": "Trigonometry",
-      "historia": "History"
+      "historia": "History",
+      "calculia": "Calculia",
+      "circuitia": "Circuitia"
     }
   },
   "Onboarding": {
@@ -2528,7 +2557,9 @@
       "anatomia": "Anatomy",
       "melodia": "Melody",
       "trigonometria": "Trigonometry",
-      "historia": "History"
+      "historia": "History",
+      "calculia": "Calculia",
+      "circuitia": "Circuitia"
     },
     "etiquetaDiario": "Daily challenge",
     "etiquetaSemanal": "Weekly challenge",
@@ -2673,6 +2704,254 @@
         "metadata": {
           "title": "Practice Law of Sines and Cosines",
           "description": "Solve oblique triangles with the given data — the hardest mode."
+        }
+      }
+    }
+  },
+  "Calculia": {
+    "metadata": {
+      "title": "Calculia",
+      "description": "Derivatives, integrals, series, and multivariable/ODEs, with adaptive difficulty."
+    },
+    "nombreMundo": "Calculia",
+    "aviso": "Derivatives, integrals, series, and ODEs — with difficulty that adapts to you, just like in the other worlds.",
+    "titulo": "Derivatives, integrals, and series",
+    "metaCumplida": "You already hit today's goal.",
+    "practicar": "Practice",
+    "practicarDescripcion": "Derivatives, integrals, series, and multivariable/ODEs.",
+    "aprenderCard": "Learn",
+    "aprenderDescripcion": "Tricks to spot the right rule at a glance.",
+    "modosTitulo": "Modes",
+    "modos": {
+      "derivadas": "Derivatives",
+      "integrales": "Integrals",
+      "series": "Series",
+      "multivariable": "Multivariable and ODEs"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practice",
+        "description": "Choose a Calculia mode to practice."
+      },
+      "titulo": "Which mode should we practice?",
+      "subtitulo": "Choose a mode to get started.",
+      "descripciones": {
+        "derivadas": "Power, product, quotient, and chain rules",
+        "integrales": "Common antiderivatives and simple substitution",
+        "series": "Geometric sums, convergence, and the ratio test",
+        "multivariable": "Partial derivatives and separable ODEs — the hardest"
+      }
+    },
+    "practicaClient": {
+      "subtituloRonda": "Round {numero}/{total} · Calculia",
+      "noSePudoCerrar": "We couldn't close the game.",
+      "errorConexion": "We couldn't connect to the server. Try again.",
+      "errorCerrarPartida": "We couldn't close the game: {error}",
+      "volver": "Back",
+      "boostActivo": "⚡ Boost active — Chispas ×1.5 this game",
+      "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
+      "iniciarPartida": "Start game",
+      "resumen": {
+        "ahiQuedo": "Nailed it.",
+        "experiencia": "Experience",
+        "aciertos": "Correct",
+        "precision": "Accuracy",
+        "experienciaHoy": "XP today",
+        "repasemosEsto": "Let's review this",
+        "ningunoFallado": "None missed — that's how it's done. 🎯"
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} shields available",
+      "exp": "{n} XP",
+      "segundos": "{n}s",
+      "ok": "Ok"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Calculia Diagnostic",
+        "description": "A few quick questions to calibrate your starting level."
+      },
+      "introTitulo": "A few derivatives to calibrate",
+      "introSubtitulo": "No pressure — 8 varied questions, just to start at the right level.",
+      "empezar": "Start",
+      "arrancarNivel1": "I'd rather start at level 1",
+      "ok": "Ok",
+      "guardando": "Saving your diagnostic...",
+      "resultadoTitulo": "This is your starting point",
+      "nivel": "Level {n}",
+      "errorGuardado": "We couldn't save your progress — try again before continuing.",
+      "continuar": "Continue",
+      "reintentar": "Retry"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Learn Calculia",
+        "description": "Mental tricks for spotting derivative rules, common integrals, and series."
+      },
+      "descripcionUnidad": "Pattern recognition for derivatives, integrals, series, and ODEs.",
+      "progreso": "Progress",
+      "tecnicas": "{n}/{total} techniques",
+      "titulo": "Learn",
+      "subtitulo": "How to spot which rule or technique applies at a glance."
+    },
+    "leccion": {
+      "tecnica": "Technique",
+      "verElTruco": "See the trick",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "marcarAprendida": "Mark as learned",
+      "completaste": "You completed {nombre}!",
+      "volverAAprender": "Back to Learn",
+      "irAPracticar": "Go to Practice"
+    },
+    "practica": {
+      "derivadas": {
+        "metadata": {
+          "title": "Practice Derivatives",
+          "description": "Power, product, quotient, and chain rules, with adaptive difficulty."
+        }
+      },
+      "integrales": {
+        "metadata": {
+          "title": "Practice Integrals",
+          "description": "Common antiderivatives and simple substitution, with adaptive difficulty."
+        }
+      },
+      "series": {
+        "metadata": {
+          "title": "Practice Series",
+          "description": "Geometric sums, convergence, and the ratio test."
+        }
+      },
+      "multivariable": {
+        "metadata": {
+          "title": "Practice Multivariable and ODEs",
+          "description": "Partial derivatives and separable differential equations — the hardest mode."
+        }
+      }
+    }
+  },
+  "Circuitia": {
+    "metadata": {
+      "title": "Circuitia",
+      "description": "Series, parallel, mixed circuits, and qualitative analysis, with real interactive diagrams and adaptive difficulty."
+    },
+    "nombreMundo": "Circuitia",
+    "aviso": "Electric circuits with real diagrams — with difficulty that adapts to you, just like in the other worlds.",
+    "titulo": "Resistors, current, and voltage",
+    "metaCumplida": "You already hit today's goal.",
+    "practicar": "Practice",
+    "practicarDescripcion": "Series, parallel, mixed circuits, and qualitative analysis.",
+    "aprenderCard": "Learn",
+    "aprenderDescripcion": "Tricks to spot series vs. parallel at a glance.",
+    "modosTitulo": "Modes",
+    "modos": {
+      "serie": "Series",
+      "paralelo": "Parallel",
+      "mixto": "Mixed",
+      "cualitativo": "Qualitative analysis"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practice",
+        "description": "Choose a Circuitia mode to practice."
+      },
+      "titulo": "Which mode should we practice?",
+      "subtitulo": "Choose a mode to get started.",
+      "descripciones": {
+        "serie": "2-3 resistors in series: current and voltage",
+        "paralelo": "2-3 resistors in parallel: current and voltage",
+        "mixto": "A series branch with a parallel block inside",
+        "cualitativo": "Does it increase, decrease, or stay the same? — the hardest"
+      }
+    },
+    "practicaClient": {
+      "subtituloRonda": "Round {numero}/{total} · Circuitia",
+      "noSePudoCerrar": "We couldn't close the game.",
+      "errorConexion": "We couldn't connect to the server. Try again.",
+      "errorCerrarPartida": "We couldn't close the game: {error}",
+      "volver": "Back",
+      "boostActivo": "⚡ Boost active — Chispas ×1.5 this game",
+      "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
+      "iniciarPartida": "Start game",
+      "resumen": {
+        "ahiQuedo": "Nailed it.",
+        "experiencia": "Experience",
+        "aciertos": "Correct",
+        "precision": "Accuracy",
+        "experienciaHoy": "XP today",
+        "repasemosEsto": "Let's review this",
+        "ningunoFallado": "None missed — that's how it's done. 🎯"
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} shields available",
+      "exp": "{n} XP",
+      "segundos": "{n}s",
+      "ok": "Ok"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Circuitia Diagnostic",
+        "description": "A few quick questions to calibrate your starting level."
+      },
+      "introTitulo": "A few series circuits to calibrate",
+      "introSubtitulo": "No pressure — 8 varied questions, just to start at the right level.",
+      "empezar": "Start",
+      "arrancarNivel1": "I'd rather start at level 1",
+      "ok": "Ok",
+      "guardando": "Saving your diagnostic...",
+      "resultadoTitulo": "This is your starting point",
+      "nivel": "Level {n}",
+      "errorGuardado": "We couldn't save your progress — try again before continuing.",
+      "continuar": "Continue",
+      "reintentar": "Retry"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Learn Circuitia",
+        "description": "Mental tricks for spotting series/parallel circuits and estimating current and voltage."
+      },
+      "descripcionUnidad": "Pattern recognition for series, parallel, mixed circuits, and qualitative analysis.",
+      "progreso": "Progress",
+      "tecnicas": "{n}/{total} techniques",
+      "titulo": "Learn",
+      "subtitulo": "How to spot what kind of circuit it is and what happens to current/voltage at a glance."
+    },
+    "leccion": {
+      "tecnica": "Technique",
+      "verElTruco": "See the trick",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "marcarAprendida": "Mark as learned",
+      "completaste": "You completed {nombre}!",
+      "volverAAprender": "Back to Learn",
+      "irAPracticar": "Go to Practice"
+    },
+    "practica": {
+      "serie": {
+        "metadata": {
+          "title": "Practice Series Circuits",
+          "description": "Current and voltage in series circuits, with adaptive difficulty."
+        }
+      },
+      "paralelo": {
+        "metadata": {
+          "title": "Practice Parallel Circuits",
+          "description": "Current and voltage in parallel circuits, with adaptive difficulty."
+        }
+      },
+      "mixto": {
+        "metadata": {
+          "title": "Practice Mixed Circuits",
+          "description": "A series branch with a parallel block inside."
+        }
+      },
+      "cualitativo": {
+        "metadata": {
+          "title": "Practice Qualitative Analysis",
+          "description": "Does it increase, decrease, or stay the same? — the hardest mode."
         }
       }
     }

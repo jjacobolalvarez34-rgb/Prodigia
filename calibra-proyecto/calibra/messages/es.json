@@ -113,6 +113,8 @@
       "melodia": "Modo según tu rango",
       "trigonometria": "Modo según tu rango",
       "historia": "Modo según tu rango",
+      "calculia": "Modo según tu rango",
+      "circuitia": "Modo según tu rango",
       "aleatorio": "Mejor de 3, una ciudad por ronda"
     },
     "buscandoRival": "Buscando rival…",
@@ -226,6 +228,8 @@
       "melodia": "Melodía",
       "trigonometria": "Trigonometría",
       "historia": "Historia",
+      "calculia": "Calculia",
+      "circuitia": "Circuitia",
       "aleatorio": "todas las ciudades",
       "suMundo": "su mundo"
     },
@@ -451,7 +455,9 @@
         "anatomia": "Anatomía",
         "melodia": "Melodía",
         "trigonometria": "Trigonometría",
-        "historia": "Historia"
+        "historia": "Historia",
+        "calculia": "Calculia",
+        "circuitia": "Circuitia"
       },
       "eloValor": "{n} ELO",
       "nivelLabel": "Nivel",
@@ -496,6 +502,8 @@
       "marcoMelodia": "Marco Melodía",
       "marcoTrigonometria": "Marco Trigonometría",
       "marcoHistoria": "Marco Historia",
+      "marcoCalculia": "Marco Calculia",
+      "marcoCircuitia": "Marco Circuitia",
       "paqueteMarcosMundo": "Colección de Mundos",
       "animacionOndulante": "Animación Ondulante",
       "animacionBrillo": "Animación Brillo",
@@ -585,9 +593,9 @@
     "vidrieraDeMarcosTematicos": "Marcos de mundo",
     "vidrieraMarcosTematicosDescripcion": "Un anillo distinto para cada mundo, para tu avatar. Se desbloquea al llegar a nivel {n} en ese mundo — o gratis, de regalo, si lo dominas por completo.",
     "requiereNivelMundo": "Nivel {n} en {mundo} para desbloquear",
-    "paqueteMarcosMundoDescripcion": "Los 6 marcos de mundo juntos, con descuento — para cuando ya juegas los 6 en serio.",
-    "paqueteMarcosMundoRequisito": "Necesitas nivel {n} en los 6 mundos para desbloquearlo",
-    "paqueteMarcosMundoCompleto": "Ya tienes los 6 marcos de mundo",
+    "paqueteMarcosMundoDescripcion": "Los 9 marcos de mundo juntos, con descuento — para cuando ya juegas los 9 en serio.",
+    "paqueteMarcosMundoRequisito": "Necesitas nivel {n} en los 9 mundos para desbloquearlo",
+    "paqueteMarcosMundoCompleto": "Ya tienes los 9 marcos de mundo",
     "vidrieraDeAnimaciones": "Animaciones de nombre",
     "vidrieraAnimacionesDescripcion": "Tu nombre se mueve — se ve en tu perfil, en Rankeds, en el feed y en el chat de clan.",
     "sinAnimacion": "Sin animación",
@@ -1086,7 +1094,9 @@
       "anatomia": "Huesos, músculos, órganos y sistema nervioso.",
       "melodia": "Pentagrama, escalas y acordes construidos por fórmula.",
       "trigonometria": "Razones, círculo unitario, identidades y triángulos.",
-      "historia": "Cronología, personajes, causa y efecto, y fechas exactas."
+      "historia": "Cronología, personajes, causa y efecto, y fechas exactas.",
+      "calculia": "Derivadas, integrales, series y ecuaciones diferenciales.",
+      "circuitia": "Circuitos en serie, en paralelo, mixtos y análisis cualitativo."
     }
   },
   "Numeria": {
@@ -1261,8 +1271,8 @@
     "sonidoDescripcion": "Tonos cortos al acertar o fallar en las partidas.",
     "efectosVisuales": "Efectos visuales",
     "efectosVisualesDescripcion": "Fondos animados, partículas y el gesto del logo en celebraciones. Apagarlo no cambia nada de la funcionalidad.",
-    "ocultarDobleONada": "Ocultar \"Doble o nada\"",
-    "ocultarDobleONadaDescripcion": "Saca la trastienda de apuestas de la Tienda. Siempre es solo con Chispas del juego, nunca dinero real — pero si prefieres no verla, la apagas acá.",
+    "ocultarTrastienda": "Ocultar la Trastienda",
+    "ocultarTrastiendaDescripcion": "Saca la Trastienda (casino, apuestas y Doble o nada) de la Tienda. Siempre es solo con Chispas del juego, nunca dinero real — pero si prefieres no verla, la apagas acá.",
     "tema": "Tema",
     "temaDescripcion": "Claro u oscuro.",
     "terminosDeUso": "Términos de uso",
@@ -1694,7 +1704,9 @@
         "anatomia": "Anatomía",
         "melodia": "Melodía",
         "trigonometria": "Trigonometría",
-        "historia": "Historia"
+        "historia": "Historia",
+        "calculia": "Calculia",
+        "circuitia": "Circuitia"
       }
     },
     "nombreConFuente": {
@@ -2068,10 +2080,17 @@
       "datosClan": "Si eres parte de un clan: a cuál, tu rol ahí, y los mensajes que mandas en el chat del clan (visibles solo para el resto de tu clan).",
       "datosAmistades": "Tus amistades dentro de la app (a quién agregaste, quién te agregó a ti).",
       "datosGrupo": "Si eres parte de un grupo de un profesor, ese profesor puede ver tu progreso agregado del grupo (nivel, racha, precisión), nunca tus respuestas individuales fuera de eso.",
+      "datosEdad": "Tu edad, si la ingresaste — se pide una sola vez, después de crear tu cuenta, únicamente para saber si podés entrar a la Trastienda (mayores de 14). No la usamos para nada más.",
+      "datosPago": "Si compraste Chispas o Prodigia Pro: qué compraste, cuándo y el estado de tu suscripción. El número de tu tarjeta y los datos de pago en sí los recibe y procesa directamente Mercado Pago o Paddle (ver más abajo) — nunca pasan por nuestros servidores ni los guardamos nosotros.",
+      "datosDocente": "Si completaste el formulario de Prodigia para colegios: el nombre del colegio, tu nombre, tu email, tu teléfono y el mensaje que hayas escrito — se usa solo para responder esa consulta, es información separada de cualquier cuenta de estudiante.",
       "usoTitulo": "Para qué lo usamos",
-      "usoTexto": "Solo para que la app funcione: calibrar tu nivel, calcular tu progreso, mostrar el ranking, el feed y el chat de tu clan, y nada más. No vendemos tus datos ni los compartimos con terceros con fines publicitarios. El chat de clan tiene un filtro automático de lenguaje ofensivo (un mensaje que lo contiene se rechaza antes de guardarse) y cualquier mensaje se puede reportar para que lo revisemos a mano — no hay moderación automática de contenido más allá de ese filtro.",
+      "usoTexto": "Solo para que la app funcione: calibrar tu nivel, calcular tu progreso, mostrar el ranking, el feed y el chat de tu clan, procesar tus compras si hacés alguna, y nada más. No vendemos tus datos ni los compartimos con terceros con fines publicitarios. El chat de clan tiene un filtro automático de lenguaje ofensivo (un mensaje que lo contiene se rechaza antes de guardarse) y cualquier mensaje se puede reportar para que lo revisemos a mano — no hay moderación automática de contenido más allá de ese filtro.",
+      "tercerosTitulo": "Con quién compartimos datos",
+      "tercerosTexto": "Usamos un puñado de proveedores para que Prodigia funcione, cada uno recibe solo lo que necesita para su parte: Supabase aloja la base de datos, la autenticación y el almacenamiento de archivos (avatares, fondos de perfil); Mercado Pago y Paddle procesan los pagos (Paddle además actúa como vendedor registrado para las compras fuera de Colombia, así que la factura la emite Paddle, no Prodigia directamente); Brevo manda los emails de la cuenta (confirmación, recuperar contraseña). Ninguno de estos usa tus datos para publicidad propia ni los revende — los tienen únicamente para prestarnos ese servicio puntual.",
+      "menoresTitulo": "Menores de edad",
+      "menoresTexto": "Prodigia puede ser usada por chicos en edad escolar. Pedimos el mínimo de datos posible de cualquier usuario, sea menor o no, y la única pregunta específica de edad (ver arriba) existe solo para bloquear la Trastienda a menores de 14, no para armar un perfil sobre esa persona. Si sos padre, madre o tutor y querés revisar o borrar los datos de un menor a tu cargo, podés borrar la cuenta vos mismo desde el perfil (ver abajo) o escribirnos.",
       "borrarTitulo": "Borrar tus datos",
-      "borrarTexto": "Desde <link>tu perfil</link> puedes borrar tu cuenta por completo — se elimina tu progreso, tus logros, tu título, tu historial de duelos, tu pertenencia a un clan y tus mensajes de chat, tus amistades, y todo lo demás asociado a tu cuenta, de forma permanente. Una excepción a tener en cuenta: si jugaste un duelo contra otra persona y esa persona borra su cuenta más adelante, el registro de ese duelo puede desaparecer también de tu propio historial — no es algo que tú puedas evitar, es un efecto de cómo se borra la información de la otra cuenta."
+      "borrarTexto": "Desde <link>tu perfil</link> puedes borrar tu cuenta por completo — se elimina tu progreso, tus logros, tu título, tu historial de duelos, tu pertenencia a un clan y tus mensajes de chat, tus amistades, tus Chispas y tu suscripción a Pro si la tenías, y todo lo demás asociado a tu cuenta, de forma permanente. Una excepción a tener en cuenta: si jugaste un duelo contra otra persona y esa persona borra su cuenta más adelante, el registro de ese duelo puede desaparecer también de tu propio historial — no es algo que tú puedas evitar, es un efecto de cómo se borra la información de la otra cuenta."
     },
     "terminos": {
       "metadata": {
@@ -2086,8 +2105,16 @@
       "cuentaTexto": "Puedes crear una cuenta con email y contraseña, o entrar como invitado y decidir más adelante si quieres guardarla. Eres responsable de mantener tu contraseña segura.",
       "usoTitulo": "Uso aceptable",
       "usoTexto": "Usa Prodigia para practicar de buena fe. No intentes manipular el sistema de Chispas, el ranking o los duelos con bots, scripts, o respondiendo automáticamente. En el chat de tu clan y en cualquier otro lugar donde puedas escribir texto libre, no uses lenguaje ofensivo, discriminatorio o abusivo — los mensajes que lo contienen se rechazan automáticamente antes de guardarse, y cualquier mensaje o perfil se puede reportar para que lo revisemos a mano.",
+      "edadTitulo": "Edad mínima",
+      "edadTexto": "Prodigia está pensada para poder usarse desde edades escolares, con o sin la supervisión de un adulto. Algunas secciones tienen su propio límite de edad: la Trastienda (los minijuegos de estilo casino, siempre con Chispas del juego, nunca dinero real) es exclusiva para mayores de 14 años, y se te pregunta tu edad una sola vez, después de crear tu cuenta, solo para aplicar ese límite — no la usamos para nada más. Si sos padre, madre o tutor y querés que se borre la cuenta de un menor a tu cargo, podés hacerlo vos mismo desde <linkPerfil>el perfil</linkPerfil> o escribirnos.",
+      "proTitulo": "Prodigia Pro (suscripción)",
+      "proTexto": "Prodigia Pro es una suscripción opcional (mensual o anual) que da Chispas extra todos los meses, cosméticos exclusivos y otros beneficios que se muestran en <linkPro>la página de Pro</linkPro> antes de suscribirte. Se cobra por adelantado y se renueva automáticamente al final de cada período hasta que la cancelás — la cancelación se hace desde tu cuenta de Mercado Pago (Colombia) o Paddle (el resto del mundo), los procesadores que gestionan el cobro real; Prodigia nunca ve ni guarda el número de tu tarjeta. Al cancelar, seguís teniendo Pro hasta el final del período ya pagado, sin devolución de lo ya cobrado salvo que la ley de tu país exija lo contrario. Podemos cambiar el precio o los beneficios de Pro hacia adelante, nunca de forma retroactiva sobre un período ya pagado.",
+      "chispasTitulo": "Chispas y compras dentro de la app",
+      "chispasTexto": "Las Chispas son la moneda del juego: la mayoría se ganan jugando, y también se pueden comprar con dinero real en paquetes fijos. No tienen valor en efectivo, no se pueden transferir a otra cuenta ni retirar como dinero, y las compras no son reembolsables una vez acreditadas, salvo que la ley de tu país exija lo contrario. Si borrás tu cuenta, perdés las Chispas y los beneficios de Pro que tuvieras activos en ese momento, sin devolución — por eso <linkPerfil>borrar tu cuenta</linkPerfil> te lo advierte antes de confirmar.",
+      "docentesTitulo": "Para colegios y docentes",
+      "docentesTexto": "Si completás el formulario de <linkDocentes>Prodigia para colegios</linkDocentes>, usamos esos datos (nombre del colegio, tu nombre, email, teléfono y la información que agregues) únicamente para responder tu consulta — no crea ni modifica ninguna cuenta de estudiante. Un acuerdo real con un colegio (licencias, cuentas de alumnos, qué datos verían los docentes) se define aparte, por escrito, antes de activarse.",
       "borrarTitulo": "Borrar tu cuenta",
-      "borrarTexto": "Puedes borrar tu cuenta cuando quieras desde <link>tu perfil</link>. Esa acción es permanente: borra tu progreso, tus logros, tu historial de duelos, tu pertenencia a un clan, tus mensajes de chat y todo lo demás asociado a tu cuenta, y no se puede deshacer. Si jugaste un duelo contra alguien que después borra su cuenta, ese duelo puede desaparecer también de tu propio historial — es un efecto secundario de cómo funciona el borrado, no algo que puedas evitar del otro lado.",
+      "borrarTexto": "Puedes borrar tu cuenta cuando quieras desde <link>tu perfil</link>. Esa acción es permanente: borra tu progreso, tus logros, tu historial de duelos, tu pertenencia a un clan, tus mensajes de chat, tus Chispas y tu suscripción a Pro si la tenías, y todo lo demás asociado a tu cuenta — no se puede deshacer ni se reembolsa nada de lo ya pagado. Si jugaste un duelo contra alguien que después borra su cuenta, ese duelo puede desaparecer también de tu propio historial — es un efecto secundario de cómo funciona el borrado, no algo que puedas evitar del otro lado.",
       "verTambien": "Ver también nuestra <link>política de privacidad</link>."
     },
     "pro": {
@@ -2280,7 +2307,9 @@
       "anatomia": "Anatomía",
       "melodia": "Melodía",
       "trigonometria": "Trigonometría",
-      "historia": "Historia"
+      "historia": "Historia",
+      "calculia": "Calculia",
+      "circuitia": "Circuitia"
     }
   },
   "Onboarding": {
@@ -2528,7 +2557,9 @@
       "anatomia": "Anatomía",
       "melodia": "Melodía",
       "trigonometria": "Trigonometría",
-      "historia": "Historia"
+      "historia": "Historia",
+      "calculia": "Calculia",
+      "circuitia": "Circuitia"
     },
     "etiquetaDiario": "Reto diario",
     "etiquetaSemanal": "Reto semanal",
@@ -2673,6 +2704,254 @@
         "metadata": {
           "title": "Practicar Leyes de seno y coseno",
           "description": "Resuelve triángulos oblicuos con los datos suficientes — el modo más difícil."
+        }
+      }
+    }
+  },
+  "Calculia": {
+    "metadata": {
+      "title": "Calculia",
+      "description": "Derivadas, integrales, series y multivariable/EDOs, con dificultad adaptativa."
+    },
+    "nombreMundo": "Calculia",
+    "aviso": "Derivadas, integrales, series y EDOs — con dificultad que se adapta a ti, igual que en los demás mundos.",
+    "titulo": "Derivadas, integrales y series",
+    "metaCumplida": "Ya cumpliste tu meta de hoy.",
+    "practicar": "Practicar",
+    "practicarDescripcion": "Derivadas, integrales, series y multivariable/EDOs.",
+    "aprenderCard": "Aprender",
+    "aprenderDescripcion": "Trucos para reconocer qué regla usar de un vistazo.",
+    "modosTitulo": "Modos",
+    "modos": {
+      "derivadas": "Derivadas",
+      "integrales": "Integrales",
+      "series": "Series",
+      "multivariable": "Multivariable y EDOs"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practicar",
+        "description": "Elige un modo de Calculia para practicar."
+      },
+      "titulo": "¿Qué modo practicamos?",
+      "subtitulo": "Elige un modo para arrancar.",
+      "descripciones": {
+        "derivadas": "Potencia, producto, cociente y cadena",
+        "integrales": "Antiderivadas y sustitución simple",
+        "series": "Sumas geométricas, convergencia y criterio de la razón",
+        "multivariable": "Derivadas parciales y EDOs separables — el más difícil"
+      }
+    },
+    "practicaClient": {
+      "subtituloRonda": "Ronda {numero}/{total} · Calculia",
+      "noSePudoCerrar": "No se pudo cerrar la partida.",
+      "errorConexion": "No pudimos conectar con el servidor. Prueba de nuevo.",
+      "errorCerrarPartida": "No pudimos cerrar la partida: {error}",
+      "volver": "Volver",
+      "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
+      "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
+      "iniciarPartida": "Iniciar partida",
+      "resumen": {
+        "ahiQuedo": "Ahí quedó.",
+        "experiencia": "Experiencia",
+        "aciertos": "Aciertos",
+        "precision": "Precisión",
+        "experienciaHoy": "Experiencia hoy",
+        "repasemosEsto": "Repasemos esto",
+        "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} escudos disponibles",
+      "exp": "{n} Exp",
+      "segundos": "{n}s",
+      "ok": "Ok"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Diagnóstico de Calculia",
+        "description": "Unas preguntas rápidas para calibrar tu nivel inicial."
+      },
+      "introTitulo": "Unas derivadas para calibrar",
+      "introSubtitulo": "Sin presión — 8 preguntas variadas, solo para arrancar en el nivel justo.",
+      "empezar": "Empezar",
+      "arrancarNivel1": "Prefiero arrancar en nivel 1",
+      "ok": "Ok",
+      "guardando": "Guardando tu diagnóstico...",
+      "resultadoTitulo": "Así arrancas",
+      "nivel": "Nivel {n}",
+      "errorGuardado": "No pudimos guardar tu progreso — prueba de nuevo antes de continuar.",
+      "continuar": "Continuar",
+      "reintentar": "Reintentar"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Aprender Calculia",
+        "description": "Trucos mentales para reconocer reglas de derivación, integrales comunes y series."
+      },
+      "descripcionUnidad": "Reconocimiento de patrones para derivadas, integrales, series y EDOs.",
+      "progreso": "Progreso",
+      "tecnicas": "{n}/{total} técnicas",
+      "titulo": "Aprender",
+      "subtitulo": "Cómo reconocer de un vistazo qué regla o técnica corresponde."
+    },
+    "leccion": {
+      "tecnica": "Técnica",
+      "verElTruco": "Ver el truco",
+      "anterior": "Anterior",
+      "siguientePaso": "Siguiente paso",
+      "marcarAprendida": "Marcar como aprendida",
+      "completaste": "¡Completaste {nombre}!",
+      "volverAAprender": "Volver a Aprender",
+      "irAPracticar": "Ir a Practicar"
+    },
+    "practica": {
+      "derivadas": {
+        "metadata": {
+          "title": "Practicar Derivadas",
+          "description": "Potencia, producto, cociente y cadena, con dificultad adaptativa."
+        }
+      },
+      "integrales": {
+        "metadata": {
+          "title": "Practicar Integrales",
+          "description": "Antiderivadas comunes y sustitución simple, con dificultad adaptativa."
+        }
+      },
+      "series": {
+        "metadata": {
+          "title": "Practicar Series",
+          "description": "Sumas geométricas, convergencia y criterio de la razón."
+        }
+      },
+      "multivariable": {
+        "metadata": {
+          "title": "Practicar Multivariable y EDOs",
+          "description": "Derivadas parciales y ecuaciones diferenciales separables — el modo más difícil."
+        }
+      }
+    }
+  },
+  "Circuitia": {
+    "metadata": {
+      "title": "Circuitia",
+      "description": "Circuitos en serie, en paralelo, mixtos y análisis cualitativo, con diagramas interactivos y dificultad adaptativa."
+    },
+    "nombreMundo": "Circuitia",
+    "aviso": "Circuitos eléctricos con diagramas reales — con dificultad que se adapta a ti, igual que en los demás mundos.",
+    "titulo": "Resistores, corriente y voltaje",
+    "metaCumplida": "Ya cumpliste tu meta de hoy.",
+    "practicar": "Practicar",
+    "practicarDescripcion": "Circuitos en serie, en paralelo, mixtos y análisis cualitativo.",
+    "aprenderCard": "Aprender",
+    "aprenderDescripcion": "Trucos para reconocer serie vs. paralelo de un vistazo.",
+    "modosTitulo": "Modos",
+    "modos": {
+      "serie": "Serie",
+      "paralelo": "Paralelo",
+      "mixto": "Mixto",
+      "cualitativo": "Análisis cualitativo"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practicar",
+        "description": "Elige un modo de Circuitia para practicar."
+      },
+      "titulo": "¿Qué modo practicamos?",
+      "subtitulo": "Elige un modo para arrancar.",
+      "descripciones": {
+        "serie": "2-3 resistores en serie: corriente y voltaje",
+        "paralelo": "2-3 resistores en paralelo: corriente y voltaje",
+        "mixto": "Una rama en serie con un bloque en paralelo adentro",
+        "cualitativo": "¿Aumenta, disminuye o no cambia? — el más difícil"
+      }
+    },
+    "practicaClient": {
+      "subtituloRonda": "Ronda {numero}/{total} · Circuitia",
+      "noSePudoCerrar": "No se pudo cerrar la partida.",
+      "errorConexion": "No pudimos conectar con el servidor. Prueba de nuevo.",
+      "errorCerrarPartida": "No pudimos cerrar la partida: {error}",
+      "volver": "Volver",
+      "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
+      "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
+      "iniciarPartida": "Iniciar partida",
+      "resumen": {
+        "ahiQuedo": "Ahí quedó.",
+        "experiencia": "Experiencia",
+        "aciertos": "Aciertos",
+        "precision": "Precisión",
+        "experienciaHoy": "Experiencia hoy",
+        "repasemosEsto": "Repasemos esto",
+        "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} escudos disponibles",
+      "exp": "{n} Exp",
+      "segundos": "{n}s",
+      "ok": "Ok"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Diagnóstico de Circuitia",
+        "description": "Unas preguntas rápidas para calibrar tu nivel inicial."
+      },
+      "introTitulo": "Unos circuitos en serie para calibrar",
+      "introSubtitulo": "Sin presión — 8 preguntas variadas, solo para arrancar en el nivel justo.",
+      "empezar": "Empezar",
+      "arrancarNivel1": "Prefiero arrancar en nivel 1",
+      "ok": "Ok",
+      "guardando": "Guardando tu diagnóstico...",
+      "resultadoTitulo": "Así arrancas",
+      "nivel": "Nivel {n}",
+      "errorGuardado": "No pudimos guardar tu progreso — prueba de nuevo antes de continuar.",
+      "continuar": "Continuar",
+      "reintentar": "Reintentar"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Aprender Circuitia",
+        "description": "Trucos mentales para reconocer circuitos en serie/paralelo y estimar corriente y voltaje."
+      },
+      "descripcionUnidad": "Reconocimiento de patrones para circuitos serie, paralelo, mixtos y análisis cualitativo.",
+      "progreso": "Progreso",
+      "tecnicas": "{n}/{total} técnicas",
+      "titulo": "Aprender",
+      "subtitulo": "Cómo reconocer de un vistazo qué tipo de circuito es y qué le pasa a corriente/voltaje."
+    },
+    "leccion": {
+      "tecnica": "Técnica",
+      "verElTruco": "Ver el truco",
+      "anterior": "Anterior",
+      "siguientePaso": "Siguiente paso",
+      "marcarAprendida": "Marcar como aprendida",
+      "completaste": "¡Completaste {nombre}!",
+      "volverAAprender": "Volver a Aprender",
+      "irAPracticar": "Ir a Practicar"
+    },
+    "practica": {
+      "serie": {
+        "metadata": {
+          "title": "Practicar Circuitos en Serie",
+          "description": "Corriente y voltaje en circuitos en serie, con dificultad adaptativa."
+        }
+      },
+      "paralelo": {
+        "metadata": {
+          "title": "Practicar Circuitos en Paralelo",
+          "description": "Corriente y voltaje en circuitos en paralelo, con dificultad adaptativa."
+        }
+      },
+      "mixto": {
+        "metadata": {
+          "title": "Practicar Circuitos Mixtos",
+          "description": "Una rama en serie con un bloque en paralelo adentro."
+        }
+      },
+      "cualitativo": {
+        "metadata": {
+          "title": "Practicar Análisis Cualitativo",
+          "description": "¿Aumenta, disminuye o no cambia? — el modo más difícil."
         }
       }
     }

@@ -305,6 +305,74 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     historiaNivelMundo = worldRow?.nivel_mundo ?? 0;
   }
 
+  // Mundo Calculia — mismo patrón que Historia, sus 4 modos.
+  const TIPOS_CALCULIA = ["calculia_derivadas", "calculia_integrales", "calculia_series", "calculia_multivariable"];
+
+  let calculiaProblemasTotales = 0;
+  if (tiposNecesarios.has("calculia_problemas_totales")) {
+    const { count } = await supabase
+      .from("attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_CALCULIA);
+    calculiaProblemasTotales = count ?? 0;
+  }
+
+  let calculiaModosVariados = 0;
+  if (tiposNecesarios.has("calculia_modos_variados")) {
+    const { data: calculiaRows } = await supabase
+      .from("attempts")
+      .select("problem_type")
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_CALCULIA);
+    calculiaModosVariados = new Set((calculiaRows ?? []).map((r) => r.problem_type)).size;
+  }
+
+  let calculiaNivelMundo = 0;
+  if (tiposNecesarios.has("calculia_nivel_mundo")) {
+    const { data: worldRow } = await supabase
+      .from("world_progress")
+      .select("nivel_mundo")
+      .eq("user_id", userId)
+      .eq("world", "calculia")
+      .maybeSingle();
+    calculiaNivelMundo = worldRow?.nivel_mundo ?? 0;
+  }
+
+  // Mundo Circuitia — mismo patrón que Calculia, sus 4 modos.
+  const TIPOS_CIRCUITIA = ["circuitia_serie", "circuitia_paralelo", "circuitia_mixto", "circuitia_cualitativo"];
+
+  let circuitiaProblemasTotales = 0;
+  if (tiposNecesarios.has("circuitia_problemas_totales")) {
+    const { count } = await supabase
+      .from("attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_CIRCUITIA);
+    circuitiaProblemasTotales = count ?? 0;
+  }
+
+  let circuitiaModosVariados = 0;
+  if (tiposNecesarios.has("circuitia_modos_variados")) {
+    const { data: circuitiaRows } = await supabase
+      .from("attempts")
+      .select("problem_type")
+      .eq("user_id", userId)
+      .in("problem_type", TIPOS_CIRCUITIA);
+    circuitiaModosVariados = new Set((circuitiaRows ?? []).map((r) => r.problem_type)).size;
+  }
+
+  let circuitiaNivelMundo = 0;
+  if (tiposNecesarios.has("circuitia_nivel_mundo")) {
+    const { data: worldRow } = await supabase
+      .from("world_progress")
+      .select("nivel_mundo")
+      .eq("user_id", userId)
+      .eq("world", "circuitia")
+      .maybeSingle();
+    circuitiaNivelMundo = worldRow?.nivel_mundo ?? 0;
+  }
+
   let rachaRetosDiarios = 0;
   if (tiposNecesarios.has("racha_retos_diarios")) {
     const { data: retoRows } = await supabase
@@ -418,6 +486,12 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     else if (tipo === "historia_problemas_totales") cumplido = historiaProblemasTotales >= valor;
     else if (tipo === "historia_modos_variados") cumplido = historiaModosVariados >= valor;
     else if (tipo === "historia_nivel_mundo") cumplido = historiaNivelMundo >= valor;
+    else if (tipo === "calculia_problemas_totales") cumplido = calculiaProblemasTotales >= valor;
+    else if (tipo === "calculia_modos_variados") cumplido = calculiaModosVariados >= valor;
+    else if (tipo === "calculia_nivel_mundo") cumplido = calculiaNivelMundo >= valor;
+    else if (tipo === "circuitia_problemas_totales") cumplido = circuitiaProblemasTotales >= valor;
+    else if (tipo === "circuitia_modos_variados") cumplido = circuitiaModosVariados >= valor;
+    else if (tipo === "circuitia_nivel_mundo") cumplido = circuitiaNivelMundo >= valor;
     else if (tipo === "mundo_completado_numeria") cumplido = numeriaCompletado;
     else if (tipo === "mundo_completado_geografia") cumplido = geografiaCompletado;
     else if (tipo === "mundo_completado_quimia") cumplido = quimiaCompletado;

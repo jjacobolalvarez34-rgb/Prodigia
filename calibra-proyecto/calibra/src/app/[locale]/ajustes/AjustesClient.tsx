@@ -74,9 +74,9 @@ export default function AjustesClient({ userId, ocultarDobleONadaInicial }: Prop
 
       <section className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4">
         <div>
-          <p className="font-display font-semibold text-foreground">{t("ocultarDobleONada")}</p>
+          <p className="font-display font-semibold text-foreground">{t("ocultarTrastienda")}</p>
           <p className="text-sm text-texto-secundario">
-            {t("ocultarDobleONadaDescripcion")}
+            {t("ocultarTrastiendaDescripcion")}
           </p>
         </div>
         <button

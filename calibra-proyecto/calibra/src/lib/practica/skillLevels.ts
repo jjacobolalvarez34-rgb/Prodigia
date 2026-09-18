@@ -83,7 +83,15 @@ export type ProblemTypeCalibrable =
   | "historia_cronologia"
   | "historia_personajes"
   | "historia_causaefecto"
-  | "historia_fechas";
+  | "historia_fechas"
+  | "calculia_derivadas"
+  | "calculia_integrales"
+  | "calculia_series"
+  | "calculia_multivariable"
+  | "circuitia_serie"
+  | "circuitia_paralelo"
+  | "circuitia_mixto"
+  | "circuitia_cualitativo";
 
 export async function actualizarSkillLevel(
   supabase: SupabaseClient,

@@ -18,7 +18,7 @@ export default async function TiendaPage() {
     supabase
       .from("profiles")
       .select(
-        "puntos_total, escudos_extra_pendientes, congelamientos_disponibles, boost_multiplicador_pendiente, hielos_disponibles, tiempos_extra_disponibles, fuente_nombre, fuentes_desbloqueadas, marco_perfil, marcos_desbloqueados, animacion_nombre, animaciones_desbloqueadas, fondo_perfil, fondo_perfil_url, fondos_desbloqueados, color_nombre_desbloqueado, plan"
+        "puntos_total, escudos_extra_pendientes, congelamientos_disponibles, boost_multiplicador_pendiente, hielos_disponibles, tiempos_extra_disponibles, fuente_nombre, fuentes_desbloqueadas, marco_perfil, marcos_desbloqueados, animacion_nombre, animaciones_desbloqueadas, fondo_perfil, fondo_perfil_url, fondos_desbloqueados, color_nombre_desbloqueado, ocultar_doble_o_nada, plan"
       )
       .eq("id", user.id)
       .single(),
@@ -52,6 +52,7 @@ export default async function TiendaPage() {
         fondosGaleria={fondosGaleriaRows ?? []}
         fondosGaleriaDesbloqueados={(desbloqueadosRows ?? []).map((r) => r.slug)}
         colorNombreDesbloqueadoInicial={profile?.color_nombre_desbloqueado ?? false}
+        ocultarTrastienda={profile?.ocultar_doble_o_nada ?? false}
         esPro={profile?.plan === "pro"}
         nivelesMundo={nivelesMundo}
         fechaHoy={hoyIso}

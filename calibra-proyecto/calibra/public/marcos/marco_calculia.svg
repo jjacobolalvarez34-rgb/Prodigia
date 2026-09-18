@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!--
+    Marco temático de Calculia (mundo 9) — generado programáticamente
+    (anillo + motivo simple: símbolos de integral), en el mismo espíritu
+    que los marcos de Trigonometría/Historia (0110_ocho_mundos.sql:
+    "generados programáticamente... notablemente más simples" que los 8
+    assets de diseño originales). Centro transparente a propósito: se
+    superpone sobre el avatar vía AvatarConMarco.tsx, no lo reemplaza.
+    TODO: reemplazar por un asset de diseño real cuando esté disponible.
+  -->
+  <defs>
+    <linearGradient id="anilloCalculia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4338CA" />
+      <stop offset="100%" stop-color="#818CF8" />
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="92" fill="none" stroke="url(#anilloCalculia)" stroke-width="10" />
+  <g fill="#4338CA" font-family="Georgia, serif" font-size="22" font-weight="bold" text-anchor="middle">
+    <text x="100" y="20">∫</text>
+    <text x="180" y="105">∑</text>
+    <text x="100" y="190">∞</text>
+    <text x="20" y="105">∂</text>
+  </g>
+</svg>

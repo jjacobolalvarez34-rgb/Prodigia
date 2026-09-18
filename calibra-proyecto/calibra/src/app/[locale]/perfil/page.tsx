@@ -49,6 +49,8 @@ export default async function PerfilPage() {
     melodia: tMundos("melodia"),
     trigonometria: tMundos("trigonometria"),
     historia: tMundos("historia"),
+    calculia: tMundos("calculia"),
+    circuitia: tMundos("circuitia"),
     geometria: tNumeriaTemas("geometria"),
     fracciones: tNumeriaTemas("fracciones"),
     decimales: tNumeriaTemas("decimales"),
@@ -72,6 +74,8 @@ export default async function PerfilPage() {
     { count: melodiaTotal },
     { count: trigonometriaTotal },
     { count: historiaTotal },
+    { count: calculiaTotal },
+    { count: circuitiaTotal },
     { data: worldRows },
     { data: titulosRows },
     { data: afinidadRows },
@@ -114,7 +118,9 @@ export default async function PerfilPage() {
       .not("problem_type", "like", "anatomia_%")
       .not("problem_type", "like", "melodia_%")
       .not("problem_type", "like", "trigonometria_%")
-      .not("problem_type", "like", "historia_%"),
+      .not("problem_type", "like", "historia_%")
+      .not("problem_type", "like", "calculia_%")
+      .not("problem_type", "like", "circuitia_%"),
     supabase.from("logic_attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("problem_type", "geografia"),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"]),
@@ -122,6 +128,8 @@ export default async function PerfilPage() {
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"]),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["trigonometria_razones", "trigonometria_circulo", "trigonometria_identidades", "trigonometria_leyes"]),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["historia_cronologia", "historia_personajes", "historia_causaefecto", "historia_fechas"]),
+    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["calculia_derivadas", "calculia_integrales", "calculia_series", "calculia_multivariable"]),
+    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["circuitia_serie", "circuitia_paralelo", "circuitia_mixto", "circuitia_cualitativo"]),
     supabase.from("world_progress").select("world, nivel_mundo").eq("user_id", user.id),
     supabase.rpc("mis_titulos"),
     supabase.rpc("afinidad_por_mundo"),
@@ -331,6 +339,16 @@ export default async function PerfilPage() {
             <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("historia")}</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{historiaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("historia") })}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("calculia")}</p>
+            <p className="mt-1 font-mono text-xl font-bold text-foreground">{calculiaTotal ?? 0}</p>
+            <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("calculia") })}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("circuitia")}</p>
+            <p className="mt-1 font-mono text-xl font-bold text-foreground">{circuitiaTotal ?? 0}</p>
+            <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("circuitia") })}</p>
           </div>
         </section>
 

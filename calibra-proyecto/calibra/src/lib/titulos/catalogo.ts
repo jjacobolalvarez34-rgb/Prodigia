@@ -7,8 +7,8 @@
 // idempotente, el primero que se desbloquea se activa solo), solo que
 // disparado desde acá (verificar.ts) en vez de desde SQL.
 export type CriterioTitulo =
-  | { tipo: "mundo_completado"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" }
-  | { tipo: "aprender_completo"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" }
+  | { tipo: "mundo_completado"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" }
+  | { tipo: "aprender_completo"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" }
   | { tipo: "partidas_totales"; valor: number }
   | { tipo: "precision_semana"; valor: number }
   | { tipo: "duelos_ganados"; valor: number }
@@ -44,6 +44,8 @@ export const CATALOGO_TITULOS: TituloCatalogo[] = [
   { slug: "maestro-melodia", nombre: "Maestro de Melodía", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "melodia" } },
   { slug: "maestro-trigonometria", nombre: "Maestro de Trigonometría", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "trigonometria" } },
   { slug: "maestro-historia", nombre: "Maestro de Historia", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "historia" } },
+  { slug: "maestro-calculia", nombre: "Maestro de Calculia", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "calculia" } },
+  { slug: "maestro-circuitia", nombre: "Maestro de Circuitia", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "circuitia" } },
 
   // ---------- por volumen de juego (partidas ≈ problemas resueltos / 10) ----------
   { slug: "partidas-10", nombre: "Recién Empiezas", categoria: "volumen", criterio: { tipo: "partidas_totales", valor: 10 } },
@@ -83,12 +85,12 @@ export const CATALOGO_TITULOS: TituloCatalogo[] = [
   { slug: "retos-30", nombre: "Ritual Diario", categoria: "constancia", criterio: { tipo: "racha_retos_diarios", valor: 30 } },
 
   // ---------- por curiosidad / exploración ----------
-  // Sube de 6 a 8: con Trigonometría e Historia, "todos los mundos" ya
-  // son 8 — dejarlo en 6 hacía que el título se desbloqueara sin haber
-  // tocado los 2 nuevos, contradiciendo el propio nombre ("Total").
-  // Mismo ajuste que se hizo cuando entraron Anatomía (4→5) y Melodía
-  // (5→6).
-  { slug: "explorador-total", nombre: "Explorador Total", categoria: "curiosidad", criterio: { tipo: "mundos_explorados", valor: 8 } },
+  // Sube de 9 a 10: con Circuitia, "todos los mundos" ya son 10 —
+  // dejarlo en 9 hacía que el título se desbloqueara sin haber tocado
+  // el nuevo, contradiciendo el propio nombre ("Total"). Mismo ajuste
+  // que se hizo cuando entraron Anatomía (4→5), Melodía (5→6),
+  // Trigonometría/Historia (6→8) y Calculia (8→9).
+  { slug: "explorador-total", nombre: "Explorador Total", categoria: "curiosidad", criterio: { tipo: "mundos_explorados", valor: 10 } },
   { slug: "embajador", nombre: "Embajador", categoria: "curiosidad", criterio: { tipo: "embajador" } },
   { slug: "chispas-de-sobra", nombre: "Chispas de Sobra", categoria: "curiosidad", criterio: { tipo: "chispas_balance", valor: 5000 } },
   { slug: "estudioso-numeria", nombre: "Estudioso de Numeria", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "numeria" } },
@@ -99,6 +101,8 @@ export const CATALOGO_TITULOS: TituloCatalogo[] = [
   { slug: "estudioso-melodia", nombre: "Estudioso de Melodía", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "melodia" } },
   { slug: "estudioso-trigonometria", nombre: "Estudioso de Trigonometría", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "trigonometria" } },
   { slug: "estudioso-historia", nombre: "Estudioso de Historia", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "historia" } },
+  { slug: "estudioso-calculia", nombre: "Estudioso de Calculia", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "calculia" } },
+  { slug: "estudioso-circuitia", nombre: "Estudioso de Circuitia", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "circuitia" } },
 
   // ---------- por Trastienda (apuestas y predicciones de ranking) ---------
   // M3 de TRASTIENDA-ECONOMIA.md §3. Los slugs/nombres son los mismos que

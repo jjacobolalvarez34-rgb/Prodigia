@@ -33,6 +33,58 @@ export default async function TerminosPage() {
         </section>
 
         <section className="flex flex-col gap-2">
+          <h2 className="font-display text-lg font-bold text-foreground">{t("edadTitulo")}</h2>
+          <p className="text-sm text-texto-secundario">
+            {t.rich("edadTexto", {
+              linkPerfil: (chunks) => (
+                <Link href="/perfil" className="text-primario hover:underline">
+                  {chunks}
+                </Link>
+              ),
+            })}
+          </p>
+        </section>
+
+        <section className="flex flex-col gap-2">
+          <h2 className="font-display text-lg font-bold text-foreground">{t("proTitulo")}</h2>
+          <p className="text-sm text-texto-secundario">
+            {t.rich("proTexto", {
+              linkPro: (chunks) => (
+                <Link href="/pro" className="text-primario hover:underline">
+                  {chunks}
+                </Link>
+              ),
+            })}
+          </p>
+        </section>
+
+        <section className="flex flex-col gap-2">
+          <h2 className="font-display text-lg font-bold text-foreground">{t("chispasTitulo")}</h2>
+          <p className="text-sm text-texto-secundario">
+            {t.rich("chispasTexto", {
+              linkPerfil: (chunks) => (
+                <Link href="/perfil" className="text-primario hover:underline">
+                  {chunks}
+                </Link>
+              ),
+            })}
+          </p>
+        </section>
+
+        <section className="flex flex-col gap-2">
+          <h2 className="font-display text-lg font-bold text-foreground">{t("docentesTitulo")}</h2>
+          <p className="text-sm text-texto-secundario">
+            {t.rich("docentesTexto", {
+              linkDocentes: (chunks) => (
+                <Link href="/docentes" className="text-primario hover:underline">
+                  {chunks}
+                </Link>
+              ),
+            })}
+          </p>
+        </section>
+
+        <section className="flex flex-col gap-2">
           <h2 className="font-display text-lg font-bold text-foreground">{t("borrarTitulo")}</h2>
           <p className="text-sm text-texto-secundario">
             {t.rich("borrarTexto", {

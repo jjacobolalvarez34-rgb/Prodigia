@@ -13,7 +13,7 @@ import PrimeraVezTip from "@/components/PrimeraVezTip";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { calcularRachaDiaria, lunesDeEstaSemanaIso } from "@/lib/practica/racha";
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
-import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria } from "@/components/icons";
+import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria, IconCalculia, IconCircuitia } from "@/components/icons";
 import Greeting from "./Greeting";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -227,6 +227,22 @@ export default async function ProdigiaHomePage() {
                 href="/historia"
                 colorHex="#A0522D"
                 bloqueado={!profile.mundos_desbloqueados?.includes("historia")}
+              />
+              <WorldCard
+                nombre={tMundos("calculia")}
+                descripcion={t("mundos.calculia")}
+                Icono={IconCalculia}
+                href="/calculia"
+                colorHex="#4338CA"
+                bloqueado={!profile.mundos_desbloqueados?.includes("calculia")}
+              />
+              <WorldCard
+                nombre={tMundos("circuitia")}
+                descripcion={t("mundos.circuitia")}
+                Icono={IconCircuitia}
+                href="/circuitia"
+                colorHex="#F59E0B"
+                bloqueado={!profile.mundos_desbloqueados?.includes("circuitia")}
               />
             </div>
           </PrimeraVezTip>

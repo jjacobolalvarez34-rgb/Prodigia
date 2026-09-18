@@ -212,6 +212,27 @@ export function IconHistoria({ className }: IconProps) {
   );
 }
 
+// Mundo Calculia: símbolo de integral (∫) — mismo trazo de 2px que el
+// resto de los íconos de mundo.
+export function IconCalculia({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M8 20c-1.5 0-2-1-1.6-2.4L9 8.4C9.6 6 11 5 13 5" />
+      <path d="M16 4c1.5 0 2 1 1.6 2.4L15 15.6C14.4 18 13 19 11 19" />
+    </svg>
+  );
+}
+
+// Mundo Circuitia: resistor en zigzag — mismo trazo de 2px que el
+// resto de los íconos de mundo.
+export function IconCircuitia({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M3 12h3l1.5-3.5L10 15.5 12.5 8.5 14.5 15.5 16.5 8.5 18 12h3" />
+    </svg>
+  );
+}
+
 export function IconEscudo({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

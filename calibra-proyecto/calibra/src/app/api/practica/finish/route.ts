@@ -66,8 +66,12 @@ const TIPOS_MELODIA = new Set(["melodia_fundamentos", "melodia_lectura", "melodi
 const TIPOS_TRIGONOMETRIA = new Set(["trigonometria_razones", "trigonometria_circulo", "trigonometria_identidades", "trigonometria_leyes"]);
 // Mundo Historia — mismos 4 problem_type que ProblemTypeCalibrable/tiposCalibrables (skillLevels.ts, api/attempts).
 const TIPOS_HISTORIA = new Set(["historia_cronologia", "historia_personajes", "historia_causaefecto", "historia_fechas"]);
+// Mundo Calculia — mismos 4 problem_type que ProblemTypeCalibrable/tiposCalibrables (skillLevels.ts, api/attempts).
+const TIPOS_CALCULIA = new Set(["calculia_derivadas", "calculia_integrales", "calculia_series", "calculia_multivariable"]);
+// Mundo Circuitia — mismos 4 problem_type que ProblemTypeCalibrable/tiposCalibrables (skillLevels.ts, api/attempts).
+const TIPOS_CIRCUITIA = new Set(["circuitia_serie", "circuitia_paralelo", "circuitia_mixto", "circuitia_cualitativo"]);
 
-function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | null {
+function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | null {
   if (!problemType) return null;
   if (problemType === "geografia") return "geografia";
   if (TIPOS_QUIMIA.has(problemType)) return "quimia";
@@ -75,6 +79,8 @@ function mundoDeProblemType(problemType: string | undefined): "numeria" | "geogr
   if (TIPOS_MELODIA.has(problemType)) return "melodia";
   if (TIPOS_TRIGONOMETRIA.has(problemType)) return "trigonometria";
   if (TIPOS_HISTORIA.has(problemType)) return "historia";
+  if (TIPOS_CALCULIA.has(problemType)) return "calculia";
+  if (TIPOS_CIRCUITIA.has(problemType)) return "circuitia";
   if (TIPOS_NUMERIA.has(problemType)) return "numeria";
   return null;
 }

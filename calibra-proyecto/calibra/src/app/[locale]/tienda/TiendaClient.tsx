@@ -71,6 +71,7 @@ interface Props {
   nivelesMundo: Record<string, number>;
   fechaHoy: string;
   esPro: boolean;
+  ocultarTrastienda: boolean;
 }
 
 export default function TiendaClient({
@@ -95,6 +96,7 @@ export default function TiendaClient({
   nivelesMundo,
   fechaHoy,
   esPro,
+  ocultarTrastienda,
 }: Props) {
   const t = useTranslations("Tienda");
   const tMundos = useTranslations("Mundos.nombres");
@@ -123,6 +125,8 @@ export default function TiendaClient({
     marco_melodia: t("items.marcoMelodia"),
     marco_trigonometria: t("items.marcoTrigonometria"),
     marco_historia: t("items.marcoHistoria"),
+    marco_calculia: t("items.marcoCalculia"),
+    marco_circuitia: t("items.marcoCircuitia"),
     paquete_marcos_mundo: t("items.paqueteMarcosMundo"),
     animacion_ondulante: t("items.animacionOndulante"),
     animacion_brillo: t("items.animacionBrillo"),
@@ -945,23 +949,30 @@ export default function TiendaClient({
         )}
 
         {/* La puerta del sótano — la Trastienda vive en su propia página
-            ( /trastienda ): acá solo queda el cartel que indica el camino. */}
-        <Link
-          href="/trastienda"
-          aria-label={t("entrarALaTrastienda")}
-          className="group flex w-full items-center justify-between gap-4 rounded-2xl border border-tt-border bg-tt-surface px-6 py-5 text-left shadow-[0_8px_32px_-8px_rgba(0,0,0,0.55)] transition-colors hover:border-tt-accent/60"
-        >
-          <span className="flex min-w-0 items-center gap-3">
-            <IconCandado className="h-6 w-6 shrink-0 text-tt-text-muted transition-colors group-hover:text-tt-accent" />
-            <span className="flex flex-col gap-0.5">
-              <span className="font-display text-base font-bold tracking-tight text-tt-text">{t("laTrastienda")}</span>
-              <span className="text-sm text-tt-text-muted">{t("sotanoDescripcion")}</span>
+            ( /trastienda ): acá solo queda el cartel que indica el camino.
+            Bug real (2026-09-17): "ocultar doble o nada" en Ajustes decía
+            en su descripción que sacaba la Trastienda de la Tienda, pero
+            este cartel nunca chequeaba ese flag — solo escondía el
+            widget de Doble o Nada DENTRO de /trastienda. Ahora sí se
+            oculta acá también, para que el ajuste haga lo que promete. */}
+        {!ocultarTrastienda && (
+          <Link
+            href="/trastienda"
+            aria-label={t("entrarALaTrastienda")}
+            className="group flex w-full items-center justify-between gap-4 rounded-2xl border border-tt-border bg-tt-surface px-6 py-5 text-left shadow-[0_8px_32px_-8px_rgba(0,0,0,0.55)] transition-colors hover:border-tt-accent/60"
+          >
+            <span className="flex min-w-0 items-center gap-3">
+              <IconCandado className="h-6 w-6 shrink-0 text-tt-text-muted transition-colors group-hover:text-tt-accent" />
+              <span className="flex flex-col gap-0.5">
+                <span className="font-display text-base font-bold tracking-tight text-tt-text">{t("laTrastienda")}</span>
+                <span className="text-sm text-tt-text-muted">{t("sotanoDescripcion")}</span>
+              </span>
             </span>
-          </span>
-          <span className="shrink-0 font-mono text-lg font-bold leading-none text-tt-accent" aria-hidden>
-            ↓
-          </span>
-        </Link>
+            <span className="shrink-0 font-mono text-lg font-bold leading-none text-tt-accent" aria-hidden>
+              ↓
+            </span>
+          </Link>
+        )}
       </div>
     </div>
   );
