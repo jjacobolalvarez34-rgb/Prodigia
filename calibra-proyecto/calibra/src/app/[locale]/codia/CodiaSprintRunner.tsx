@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { generarProblemaCodia, type ModoCodia, type ProblemaCodia } from "@/lib/practica/codia";
 import BloqueCodigo from "@/components/codia/BloqueCodigo";
 import InsigniaLenguaje from "@/components/codia/InsigniaLenguaje";
+import type { Lenguaje } from "@/lib/codia/tipos";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { reproducirTono } from "@/lib/sonido";
 import { useBonusTiempo } from "@/lib/practica/useBonusTiempo";
@@ -33,6 +34,8 @@ function claveCodia(p: ProblemaCodia): string {
 
 interface Props {
   modo: ModoCodia;
+  // Si viene, TODOS los problemas son de ese lenguaje (elegido en /codia/elegir).
+  lenguaje?: Lenguaje;
   startedAt: number;
   nivelInicial: number;
   escudosExtra: number;
@@ -55,6 +58,7 @@ interface Props {
 // necesita para mostrar el resultado.
 export default function CodiaSprintRunner({
   modo,
+  lenguaje,
   startedAt,
   nivelInicial,
   escudosExtra,
@@ -101,7 +105,7 @@ export default function CodiaSprintRunner({
   const finishedRef = useRef(false);
 
   function siguiente() {
-    const p = generarSinRepetir(() => generarProblemaCodia(modo, nivelRef.current), claveCodia, usadosRef.current);
+    const p = generarSinRepetir(() => generarProblemaCodia(modo, nivelRef.current, lenguaje), claveCodia, usadosRef.current);
     setProblema(p);
     setCardKey((k) => k + 1);
     setSeleccion(null);

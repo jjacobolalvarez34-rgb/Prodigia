@@ -31,7 +31,7 @@ export default async function TrigonometriaElegirPage() {
     { nombre: t("modos.razones"), desc: t("elegir.descripciones.razones"), href: "/trigonometria/practica", nivel: nivelDe("trigonometria_razones") },
     { nombre: t("modos.circulo"), desc: t("elegir.descripciones.circulo"), href: "/trigonometria/practica/circulo", nivel: nivelDe("trigonometria_circulo") },
     { nombre: t("modos.identidades"), desc: t("elegir.descripciones.identidades"), href: "/trigonometria/practica/identidades", nivel: nivelDe("trigonometria_identidades") },
-    { nombre: `${t("modos.leyes")} 🔥`, desc: t("elegir.descripciones.leyes"), href: "/trigonometria/practica/leyes", nivel: nivelDe("trigonometria_leyes") },
+    { nombre: `${t("modos.leyes")}`, desc: t("elegir.descripciones.leyes"), href: "/trigonometria/practica/leyes", nivel: nivelDe("trigonometria_leyes") },
   ];
 
   return (

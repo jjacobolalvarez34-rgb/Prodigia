@@ -23,6 +23,10 @@ export async function POST(request: Request) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+  // Un invitado (signInAnonymously) no puede comprar Pro ni nada con plata
+  // real: no hay cuenta a la que atar el entitlement. La UI ya lo bloquea
+  // (/pro está en rutasInvitado.ts); esto cubre pegarle directo a la API.
+  if (user.is_anonymous) return NextResponse.json({ error: "Necesitas una cuenta real para comprar" }, { status: 403 });
 
   const body = (await request.json()) as Body;
   const producto = body.producto as ProductoComprable;

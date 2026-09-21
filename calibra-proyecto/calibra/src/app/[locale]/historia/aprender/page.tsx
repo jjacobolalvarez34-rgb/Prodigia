@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoHistoria } from "@/lib/historia/path";
+import { agruparNodos } from "@/lib/aprender/grupos";
 import Header from "@/components/Header";
 import CaminoContinuo, { type UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import AprenderLayout from "@/components/AprenderLayout";
@@ -18,20 +19,18 @@ export default async function HistoriaAprenderPage() {
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/historia/aprender");
   const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
-  const tMundos = await getTranslations("Mundos.nombres");
   bloquearInvitado(user, tBloqueos("aprender"));
   const nodos = await obtenerCaminoHistoria(supabase, user.id);
 
   const totalDominadas = nodos.filter((n) => n.estado === "completado").length;
 
-  const unidadesGenericas: UnidadCaminoGenerico[] = [
-    {
-      id: "historia",
-      nombre: tMundos("historia"),
-      descripcion: t("unidad.descripcion"),
-      nodos: nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
-    },
-  ];
+  // Temas del panel lateral (ver src/lib/aprender/grupos.ts).
+  const locale = await getLocale();
+  const unidadesGenericas: UnidadCaminoGenerico[] = agruparNodos(nodos, "historia", "tecnicas", locale).map((g) => ({
+    id: g.id,
+    nombre: g.nombre,
+    nodos: g.nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
+  }));
 
   return (
     <>

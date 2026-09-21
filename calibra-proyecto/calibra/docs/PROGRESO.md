@@ -4011,3 +4011,8 @@ Tres mundos nuevos, normales en todo (catálogo, Practicar, Rankeds, duelos, log
 - Nada se vio jugando (no hay servidor en este entorno) y las migraciones `0163`-`0194` siguen sin correrse en Supabase — hay que correrlas en orden.
 - Fase 4: escribir las Clases reales de los 8 mundos originales (un mundo por commit).
 - Reporte del usuario "5.20 = 5.2 da error" en Numeria/geometría básica: no reproducido (0 fallas en un test empírico); esperando el enunciado exacto.
+
+### 2026-09-21 (tarde) — primera prueba en vivo de los mundos 11-13
+- **Bug real**: Codia crasheaba con cualquier pregunta con código en Java/JS/TS (regex del resaltador inválida en el navegador); afectaba diagnóstico, práctica y Rankeds. Corregido + `resaltado.test.ts`. Detalle y causa en `PARIDAD_MUNDOS.md` ("Primera prueba en vivo").
+- Botón de error → pantalla principal (error boundary + 10 diagnósticos); selector de lenguaje en `/codia/elegir`; sin emojis en títulos; invitados sin `/perfil` ni `/pro` (y checkout 403); Aprender con el diseño de Melodía en todos los mundos + pestañas Técnicas | Clases que cambian el camino (`grupos.ts`, Geografía e Historia incluidas).
+- Verificado: `tsc` limpio, `vitest` 372 tests, paridad es/en. No verificado en pantalla: selector de lenguaje, nuevo Aprender, bloqueo de invitados.

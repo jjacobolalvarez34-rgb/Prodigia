@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario, requirePro } from "@/lib/auth/guard";
+import { requireUsuario, requirePro, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { Link } from "@/i18n/navigation";
 import { MUNDOS_LANDING } from "@/lib/mundos";
@@ -92,6 +92,8 @@ export default async function EstadisticasPage() {
   const tPerfil = await getTranslations("Perfil");
   const supabase = await createClient();
   const { user, profile } = await requireUsuario(supabase, "/perfil/estadisticas");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("perfil"));
   requirePro(profile, "/perfil/estadisticas");
 
   const [{ data: porMundo }, { data: actividad }, { data: dailyRows }, { data: subtemas }, { data: tiendaTrastienda }] =

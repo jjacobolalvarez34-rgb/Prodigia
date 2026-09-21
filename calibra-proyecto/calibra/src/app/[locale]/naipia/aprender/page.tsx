@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoNaipia } from "@/lib/naipia/path";
 import { partirCaminoPorClases, resolverPestanaInicial } from "@/lib/aprender/clases";
+import { agruparNodos } from "@/lib/aprender/grupos";
 import Header from "@/components/Header";
-import CaminoContinuo, { type UnidadCaminoGenerico } from "@/components/CaminoContinuo";
-import AprenderLayout from "@/components/AprenderLayout";
+import type { UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import AprenderTabs from "@/components/AprenderTabs";
 import { COLOR_NAIPIA } from "../colores";
 
@@ -22,6 +22,7 @@ interface Props {
 export default async function NaipiaAprenderPage({ searchParams }: Props) {
   const { tab } = await searchParams;
   const t = await getTranslations("Naipia");
+  const locale = await getLocale();
   const supabase = await createClient();
   const { user, profile } = await requireUsuario(supabase, "/naipia/aprender");
   const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
@@ -31,67 +32,51 @@ export default async function NaipiaAprenderPage({ searchParams }: Props) {
 
   const totalDominadas = nodos.filter((n) => n.estado === "completado").length;
 
-  // Pestañas "Técnicas | Clases" (fila 22 de PARIDAD_MUNDOS.md). Mismas
-  // filas techniques y misma lógica de obtenerCaminoNaipia: solo cambia
-  // el render. La clase 1 (orden más bajo de requiere_pro=true) viene
-  // "activo" (preview gratis) y las 2+ para quien no es Pro vienen
-  // "bloqueado" con bloqueadoPorPlan=true, así que acá se les agrega el
-  // CTA a /pro en vez del bloqueo mudo normal.
+  // Aprender con pestañas "Técnicas | Clases" (fila 22 de PARIDAD_MUNDOS.md)
+  // sobre el layout compartido de Aprender (fila 3: panel de temas a la
+  // izquierda + camino a la derecha, como Melodía). Cada pestaña es un camino
+  // con sus propios temas (ver src/lib/aprender/grupos.ts). Misma lógica de
+  // obtenerCaminoNaipia: la clase 1 (orden más bajo de requiere_pro=true) viene
+  // "activo" (preview gratis) y las 2+ para quien no es Pro vienen "bloqueado"
+  // con bloqueadoPorPlan=true, así que acá se les agrega el CTA a /pro en vez
+  // del bloqueo mudo normal.
   const { tecnicas, clases, hayClases } = partirCaminoPorClases(nodos);
-  const dominadasDe = (lista: typeof nodos) => lista.filter((n) => n.estado === "completado").length;
+  const proHref = "/pro?next=%2Fnaipia%2Faprender%3Ftab%3Dclases";
 
-  const unidadTecnicas: UnidadCaminoGenerico = {
-    id: "naipia-tecnicas",
-    nombre: t("aprender.tecnicasRapidas.titulo"),
-    descripcion: t("aprender.descripcionUnidad"),
-    nodos: tecnicas.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
-  };
-  const unidadClases: UnidadCaminoGenerico = {
-    id: "naipia-clases",
-    nombre: t("aprender.clases.titulo"),
-    descripcion: t("aprender.clases.descripcion"),
-    nodos: clases.map((n) => ({
+  const unidadesTecnicas: UnidadCaminoGenerico[] = agruparNodos(tecnicas, "naipia", "tecnicas", locale).map((g) => ({
+    id: g.id,
+    nombre: g.nombre,
+    nodos: g.nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
+  }));
+  const unidadesClases: UnidadCaminoGenerico[] = agruparNodos(clases, "naipia", "clases", locale).map((g) => ({
+    id: g.id,
+    nombre: g.nombre,
+    nodos: g.nodos.map((n) => ({
       id: n.id,
       slug: n.slug,
       nombre: n.nombre,
       estado: n.estado,
-      ctaPro: n.bloqueadoPorPlan
-        ? { label: t("aprender.clases.desbloqueaConPro"), href: "/pro?next=%2Fnaipia%2Faprender%3Ftab%3Dclases" }
-        : undefined,
+      ctaPro: n.bloqueadoPorPlan ? { label: t("aprender.clases.desbloqueaConPro"), href: proHref } : undefined,
     })),
-  };
+  }));
 
   return (
     <>
       <Header autenticado />
       <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
-        {/* Sin panel de temas: cada pestaña tiene una sola unidad, así que
-            unidadesSidebar va vacío (AprenderLayout lo oculta con < 2). */}
-        <AprenderLayout
+        <AprenderTabs
           titulo={t("aprender.titulo")}
           subtitulo={t("aprender.subtitulo")}
           progresoLabel={t("aprender.progreso")}
-          tecnicasTexto={t("aprender.tecnicas", { n: totalDominadas, total: nodos.length })}
+          progresoTexto={t("aprender.tecnicas", { n: totalDominadas, total: nodos.length })}
           colorHex={COLOR_NAIPIA}
-          totalDominadas={totalDominadas}
-          totalTecnicas={nodos.length}
-          unidadesSidebar={[]}
-        >
-          <AprenderTabs
-            colorHex={COLOR_NAIPIA}
-            esPro={esPro}
-            proHref="/pro?next=%2Fnaipia%2Faprender%3Ftab%3Dclases"
-            defaultTab={resolverPestanaInicial(tab, hayClases)}
-            tecnicasBadge={`${dominadasDe(tecnicas)}/${tecnicas.length}`}
-            clasesBadge={`${dominadasDe(clases)}/${clases.length}`}
-            tecnicas={<CaminoContinuo unidades={[unidadTecnicas]} basePath="/naipia/aprender" colorHex={COLOR_NAIPIA} />}
-            clases={
-              hayClases ? (
-                <CaminoContinuo unidades={[unidadClases]} basePath="/naipia/aprender" colorHex={COLOR_NAIPIA} />
-              ) : null
-            }
-          />
-        </AprenderLayout>
+          basePath="/naipia/aprender"
+          tecnicas={unidadesTecnicas}
+          clases={hayClases ? unidadesClases : null}
+          esPro={esPro}
+          proHref={proHref}
+          defaultTab={resolverPestanaInicial(tab, hayClases)}
+        />
       </div>
     </>
   );

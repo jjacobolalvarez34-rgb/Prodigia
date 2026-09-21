@@ -24,6 +24,7 @@ interface Props {
 // (conteo corriente Hi-Lo) y las cartas dibujadas en SVG.
 export default function DiagnosticoNaipiaClient({ destino }: Props) {
   const t = useTranslations("Naipia");
+  const tInicio = useTranslations("Common.errorBoundario");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("intro");
   const [indice, setIndice] = useState(0);
@@ -239,12 +240,17 @@ export default function DiagnosticoNaipiaClient({ destino }: Props) {
             </p>
             {!guardadoOk && <p className="text-sm text-error">{t("diagnostico.errorGuardado")}</p>}
             <button
-              onClick={guardadoOk ? () => router.push(destino) : reintentarGuardado}
+              onClick={() => router.push(guardadoOk ? destino : "/")}
               className="w-full rounded-2xl px-6 py-4 font-display font-semibold text-white"
               style={{ background: guardadoOk ? `linear-gradient(120deg, ${COLOR_NAIPIA}, #F87171)` : "var(--error)" }}
             >
-              {guardadoOk ? t("diagnostico.continuar") : t("diagnostico.reintentar")}
+              {guardadoOk ? t("diagnostico.continuar") : tInicio("irAlInicio")}
             </button>
+            {!guardadoOk && (
+              <button onClick={reintentarGuardado} className="text-sm text-texto-secundario hover:underline">
+                {t("diagnostico.reintentar")}
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import Logo from "@/components/Logo";
 import Boton from "@/components/Boton";
+import { useRouter } from "@/i18n/navigation";
 
 // Error boundary de toda la app (Next.js App Router): cubre fallas no
 // manejadas — típicamente Supabase sin conexión — con una pantalla con
@@ -16,6 +17,7 @@ export default function GlobalErrorBoundary({
   reset: () => void;
 }) {
   const t = useTranslations("Common.errorBoundario");
+  const router = useRouter();
 
   useEffect(() => {
     console.error("[error boundary]", error);
@@ -32,9 +34,18 @@ export default function GlobalErrorBoundary({
           {t("descripcion")}
         </p>
       </div>
-      <Boton onClick={reset} className="px-5 py-2.5">
-        {t("reintentar")}
-      </Boton>
+      {/* El botón principal lleva a la pantalla principal (pedido del usuario
+          2026-09-21): reintentar sobre el mismo error suele repetirlo, y
+          desde el inicio siempre se puede seguir. Reintentar queda como
+          opción secundaria. */}
+      <div className="flex flex-col items-center gap-3">
+        <Boton onClick={() => router.push("/")} className="px-5 py-2.5">
+          {t("irAlInicio")}
+        </Boton>
+        <button onClick={reset} className="text-sm font-medium text-texto-secundario hover:text-foreground">
+          {t("reintentar")}
+        </button>
+      </div>
     </div>
   );
 }

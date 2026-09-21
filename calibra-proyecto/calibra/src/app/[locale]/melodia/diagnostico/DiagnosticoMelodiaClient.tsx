@@ -29,6 +29,7 @@ function claveMelodia(p: PreguntaMelodia): string {
 // "Fundamentos" (el modo de entrada) en vez de símbolos químicos.
 export default function DiagnosticoMelodiaClient({ destino }: Props) {
   const t = useTranslations("Melodia.diagnostico");
+  const tInicio = useTranslations("Common.errorBoundario");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("intro");
   const [indice, setIndice] = useState(0);
@@ -230,12 +231,17 @@ export default function DiagnosticoMelodiaClient({ destino }: Props) {
               </p>
             )}
             <button
-              onClick={guardadoOk ? () => router.push(destino) : reintentarGuardado}
+              onClick={() => router.push(guardadoOk ? destino : "/")}
               className="w-full rounded-2xl px-6 py-4 font-display font-semibold text-white"
               style={{ background: guardadoOk ? `linear-gradient(120deg, ${COLOR_MELODIA}, #E8B84B)` : "var(--error)" }}
             >
-              {guardadoOk ? t("continuar") : t("reintentar")}
+              {guardadoOk ? t("continuar") : tInicio("irAlInicio")}
             </button>
+            {!guardadoOk && (
+              <button onClick={reintentarGuardado} className="text-sm text-texto-secundario hover:underline">
+                {t("reintentar")}
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

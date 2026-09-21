@@ -31,7 +31,7 @@ export default async function CalculiaElegirPage() {
     { nombre: t("modos.derivadas"), desc: t("elegir.descripciones.derivadas"), href: "/calculia/practica", nivel: nivelDe("calculia_derivadas") },
     { nombre: t("modos.integrales"), desc: t("elegir.descripciones.integrales"), href: "/calculia/practica/integrales", nivel: nivelDe("calculia_integrales") },
     { nombre: t("modos.series"), desc: t("elegir.descripciones.series"), href: "/calculia/practica/series", nivel: nivelDe("calculia_series") },
-    { nombre: `${t("modos.multivariable")} 🔥`, desc: t("elegir.descripciones.multivariable"), href: "/calculia/practica/multivariable", nivel: nivelDe("calculia_multivariable") },
+    { nombre: `${t("modos.multivariable")}`, desc: t("elegir.descripciones.multivariable"), href: "/calculia/practica/multivariable", nivel: nivelDe("calculia_multivariable") },
   ];
 
   return (

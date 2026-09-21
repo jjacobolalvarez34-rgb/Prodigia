@@ -32,7 +32,7 @@ export default async function NaipiaElegirPage() {
     { nombre: t("modos.ko"), desc: t("elegir.descripciones.ko"), href: "/naipia/practica/ko", nivel: nivelDe("naipia_ko") },
     { nombre: t("modos.hiopt2"), desc: t("elegir.descripciones.hiopt2"), href: "/naipia/practica/hiopt2", nivel: nivelDe("naipia_hiopt2") },
     { nombre: t("modos.omega2"), desc: t("elegir.descripciones.omega2"), href: "/naipia/practica/omega2", nivel: nivelDe("naipia_omega2") },
-    { nombre: `${t("modos.verdadero")} 🔥`, desc: t("elegir.descripciones.verdadero"), href: "/naipia/practica/verdadero", nivel: nivelDe("naipia_verdadero") },
+    { nombre: `${t("modos.verdadero")}`, desc: t("elegir.descripciones.verdadero"), href: "/naipia/practica/verdadero", nivel: nivelDe("naipia_verdadero") },
   ];
 
   return (

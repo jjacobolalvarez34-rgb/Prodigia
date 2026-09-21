@@ -1,6 +1,6 @@
 import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario } from "@/lib/auth/guard";
+import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { ESTILO_MARCO_PERFIL, type Achievement, type TituloUsuario, type FondoPerfil } from "@/types/database";
 import { calcularRachaMaxima, calcularMejorPrecisionDiaria } from "@/lib/perfil/records";
 import Header from "@/components/Header";
@@ -39,6 +39,8 @@ export default async function PerfilPage() {
   const locale = await getLocale();
   const supabase = await createClient();
   const { user, profile } = await requireUsuario(supabase, "/perfil");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("perfil"));
 
   const NOMBRE_MUNDO_AFINIDAD: Record<string, string> = {
     numeria: tMundos("numeria"),

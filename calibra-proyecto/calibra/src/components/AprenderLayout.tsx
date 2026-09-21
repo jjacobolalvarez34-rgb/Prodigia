@@ -41,7 +41,7 @@ export default function AprenderLayout({
 }: Props) {
   const t = useTranslations("Aprender");
   const [sidebarAbierto, setSidebarAbierto] = useState(true);
-  const mostrarPanel = unidadesSidebar.length > 1;
+  const mostrarPanel = unidadesSidebar.length >= 1;
 
   useEffect(() => {
     // setTimeout evita el cascading-render que marca react-hooks/set-state-

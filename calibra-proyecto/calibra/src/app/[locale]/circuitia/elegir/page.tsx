@@ -31,7 +31,7 @@ export default async function CircuitiaElegirPage() {
     { nombre: t("modos.serie"), desc: t("elegir.descripciones.serie"), href: "/circuitia/practica", nivel: nivelDe("circuitia_serie") },
     { nombre: t("modos.paralelo"), desc: t("elegir.descripciones.paralelo"), href: "/circuitia/practica/paralelo", nivel: nivelDe("circuitia_paralelo") },
     { nombre: t("modos.mixto"), desc: t("elegir.descripciones.mixto"), href: "/circuitia/practica/mixto", nivel: nivelDe("circuitia_mixto") },
-    { nombre: `${t("modos.cualitativo")} 🔥`, desc: t("elegir.descripciones.cualitativo"), href: "/circuitia/practica/cualitativo", nivel: nivelDe("circuitia_cualitativo") },
+    { nombre: `${t("modos.cualitativo")}`, desc: t("elegir.descripciones.cualitativo"), href: "/circuitia/practica/cualitativo", nivel: nivelDe("circuitia_cualitativo") },
   ];
 
   return (

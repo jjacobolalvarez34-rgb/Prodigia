@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario } from "@/lib/auth/guard";
+import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { ESTILO_MARCO_PERFIL, type PerfilPublico, type TituloUsuario, type FondoPerfil } from "@/types/database";
 import Header from "@/components/Header";
 import AvatarConMarco from "@/components/AvatarConMarco";
@@ -58,6 +58,8 @@ export default async function PerfilPublicoPage({ params }: Props) {
   const locale = (await getLocale()) as string;
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, `/perfil/${userId}`);
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("perfil"));
 
   if (userId === user.id) {
     redirect("/perfil");

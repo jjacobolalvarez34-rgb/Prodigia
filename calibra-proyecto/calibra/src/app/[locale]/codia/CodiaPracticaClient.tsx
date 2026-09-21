@@ -22,6 +22,7 @@ import { useArranqueSincronizado } from "@/lib/duelos/useArranqueSincronizado";
 import { useDeteccionAbandono } from "@/lib/duelos/useDeteccionAbandono";
 import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
 import BotonRendirse from "@/components/duelos/BotonRendirse";
+import type { Lenguaje } from "@/lib/codia/tipos";
 import CodiaSprintRunner from "./CodiaSprintRunner";
 import { COLOR_CODIA } from "./colores";
 
@@ -41,6 +42,7 @@ interface FinishResponse {
 
 interface Props {
   modo: ModoCodia;
+  lenguaje?: Lenguaje;
   nivelInicial: number;
   escudosExtra: number;
   hielosDisponibles: number;
@@ -51,7 +53,7 @@ interface Props {
 }
 
 // Mismo patrón que TrigonometriaPracticaClient.tsx.
-export default function CodiaPracticaClient({ modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, duelo, miUserId }: Props) {
+export default function CodiaPracticaClient({ modo, lenguaje, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, duelo, miUserId }: Props) {
   const t = useTranslations("Codia");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
@@ -181,6 +183,7 @@ export default function CodiaPracticaClient({ modo, nivelInicial, escudosExtra, 
         )}
         <CodiaSprintRunner
           modo={modo}
+          lenguaje={lenguaje}
           startedAt={startedAtPerf}
           nivelInicial={nivelInicial}
           escudosExtra={escudosExtra}

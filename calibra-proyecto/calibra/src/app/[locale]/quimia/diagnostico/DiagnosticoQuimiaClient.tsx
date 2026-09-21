@@ -22,6 +22,7 @@ interface Props {
 // "Símbolos y elementos" (el modo de entrada) en vez de acertijos.
 export default function DiagnosticoQuimiaClient({ destino }: Props) {
   const t = useTranslations("Quimia.diagnostico");
+  const tInicio = useTranslations("Common.errorBoundario");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("intro");
   const [indice, setIndice] = useState(0);
@@ -228,12 +229,17 @@ export default function DiagnosticoQuimiaClient({ destino }: Props) {
               </p>
             )}
             <button
-              onClick={guardadoOk ? () => router.push(destino) : reintentarGuardado}
+              onClick={() => router.push(guardadoOk ? destino : "/")}
               className="w-full rounded-2xl px-6 py-4 font-display font-semibold text-white"
               style={{ background: guardadoOk ? `linear-gradient(120deg, ${COLOR_QUIMIA}, #A794FF)` : "var(--error)" }}
             >
-              {guardadoOk ? t("resultado.continuar") : t("resultado.reintentar")}
+              {guardadoOk ? t("resultado.continuar") : tInicio("irAlInicio")}
             </button>
+            {!guardadoOk && (
+              <button onClick={reintentarGuardado} className="text-sm text-texto-secundario hover:underline">
+                {t("resultado.reintentar")}
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

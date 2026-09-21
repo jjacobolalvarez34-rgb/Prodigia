@@ -20,8 +20,14 @@ const CLAVES: Record<Lenguaje, string[]> = {
 
 export function tokenizar(codigo: string, lang: Lenguaje): Token[] {
   const claves = new Set(CLAVES[lang]);
-  const comentario = lang === "python" ? "#[^\n]*" : "//[^\n]*|/\*[\s\S]*?(?:\*/|$)";
-  const re = new RegExp(`(${comentario})|("(?:[^"\\\n]|\\.)*"?|'(?:[^'\\\n]|\\.)*'?)|(\b\d+\b)|([A-Za-z_][A-Za-z0-9_]*)`, "g");
+  // Regex LITERALES + String.raw: en un string normal, "\d", "\s" y "\*" se
+  // comen la barra y "\b" se vuelve un backspace, y el RegExp queda
+  // inválido — eso tiró Codia entera en el navegador (bug real 2026-09-21).
+  const comentario = lang === "python" ? /#[^\n]*/ : /\/\/[^\n]*|\/\*[\s\S]*?(?:\*\/|$)/;
+  const re = new RegExp(
+    String.raw`(${comentario.source})|("(?:[^"\\\n]|\\.)*"?|'(?:[^'\\\n]|\\.)*'?)|(\b\d+\b)|([A-Za-z_][A-Za-z0-9_]*)`,
+    "g"
+  );
   const out: Token[] = [];
   let ultimo = 0;
   let m: RegExpExecArray | null;

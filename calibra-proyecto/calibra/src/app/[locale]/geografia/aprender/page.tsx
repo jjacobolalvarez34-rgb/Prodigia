@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireMundoGeografia, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoGeografia } from "@/lib/geografia/path";
+import { agruparNodos } from "@/lib/aprender/grupos";
 import Header from "@/components/Header";
 import CaminoContinuo, { type UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import AprenderLayout from "@/components/AprenderLayout";
@@ -23,14 +24,13 @@ export default async function GeografiaAprenderPage() {
 
   const totalDominadas = nodos.filter((n) => n.estado === "completado").length;
 
-  const unidadesGenericas: UnidadCaminoGenerico[] = [
-    {
-      id: "geografia",
-      nombre: t("nombreMundo"),
-      descripcion: t("aprender.descripcionUnidad"),
-      nodos: nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
-    },
-  ];
+  // Temas del panel lateral (ver src/lib/aprender/grupos.ts).
+  const locale = await getLocale();
+  const unidadesGenericas: UnidadCaminoGenerico[] = agruparNodos(nodos, "geografia", "tecnicas", locale).map((g) => ({
+    id: g.id,
+    nombre: g.nombre,
+    nodos: g.nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
+  }));
 
   return (
     <>

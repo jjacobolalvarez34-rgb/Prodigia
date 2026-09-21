@@ -883,6 +883,7 @@
       "cerrarAviso": "Close notification"
     },
     "errorBoundario": {
+      "irAlInicio": "Go to home",
       "titulo": "Something didn't load right",
       "descripcion": "It might be a connection problem with the server. Try again in a moment — your already-saved progress isn't lost.",
       "reintentar": "Retry"
@@ -1559,6 +1560,8 @@
       "etiquetaPorDefecto": "This",
       "volverInvitado": "Keep playing as a guest",
       "secciones": {
+        "perfil": "Profile",
+        "pro": "Prodigia Pro",
         "aprender": "Learn",
         "clanes": "Clans",
         "rankeds": "Rankeds",
@@ -1991,7 +1994,7 @@
           "desc": "The most widely recognized direct consequence"
         },
         "fechas": {
-          "nombre": "Exact dates 🔥",
+          "nombre": "Exact dates",
           "desc": "Precise year or decade — the hardest one"
         }
       }
@@ -2254,7 +2257,7 @@
           "descripcion": "Triads, sevenths, and extended chords"
         },
         "oidoAbsoluto": {
-          "nombre": "Absolute pitch 🔥",
+          "nombre": "Absolute pitch",
           "descripcion": "Listen to the note and identify it — the hardest one"
         }
       }
@@ -3451,6 +3454,8 @@
       "estructuras": "Structures and complexity"
     },
     "elegir": {
+      "lenguajeTitulo": "Language",
+      "lenguajeAleatorio": "Random",
       "metadata": {
         "title": "Practice",
         "description": "Pick a Codia mode to practice."

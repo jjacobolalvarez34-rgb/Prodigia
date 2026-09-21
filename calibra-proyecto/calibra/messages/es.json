@@ -883,6 +883,7 @@
       "cerrarAviso": "Cerrar aviso"
     },
     "errorBoundario": {
+      "irAlInicio": "Ir al inicio",
       "titulo": "Algo no cargó bien",
       "descripcion": "Puede ser un problema de conexión con el servidor. Prueba de nuevo en un momento — tu progreso ya guardado no se pierde.",
       "reintentar": "Reintentar"
@@ -1559,6 +1560,8 @@
       "etiquetaPorDefecto": "Esto",
       "volverInvitado": "Volver a jugar como invitado",
       "secciones": {
+        "perfil": "Perfil",
+        "pro": "Prodigia Pro",
         "aprender": "Aprender",
         "clanes": "Clanes",
         "rankeds": "Rankeds",
@@ -1991,7 +1994,7 @@
           "desc": "La consecuencia directa más reconocida"
         },
         "fechas": {
-          "nombre": "Fechas exactas 🔥",
+          "nombre": "Fechas exactas",
           "desc": "Año o década precisa — el más difícil"
         }
       }
@@ -2254,7 +2257,7 @@
           "descripcion": "Tríadas, séptimas y extendidos"
         },
         "oidoAbsoluto": {
-          "nombre": "Oído absoluto 🔥",
+          "nombre": "Oído absoluto",
           "descripcion": "Escucha la nota e identifícala — el más difícil"
         }
       }
@@ -3451,6 +3454,8 @@
       "estructuras": "Estructuras y complejidad"
     },
     "elegir": {
+      "lenguajeTitulo": "Lenguaje",
+      "lenguajeAleatorio": "Aleatorio",
       "metadata": {
         "title": "Practicar",
         "description": "Elige un modo de Codia para practicar."

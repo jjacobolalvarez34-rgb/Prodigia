@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { requireUsuario } from "@/lib/auth/guard";
+import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { BENEFICIOS_PRO } from "@/lib/pro/beneficios";
 import ProClient from "./ProClient";
@@ -20,6 +20,8 @@ export default async function ProPage() {
   const t = await getTranslations("Legal.pro");
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/pro");
+  const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  bloquearInvitado(user, tBloqueos("pro"));
   const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
 
   return (

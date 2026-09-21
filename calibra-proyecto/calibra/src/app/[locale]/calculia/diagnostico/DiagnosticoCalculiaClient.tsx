@@ -28,6 +28,7 @@ function claveDerivadas(p: ProblemaCalculiaOpciones): string {
 // hace falta el input numérico que sí necesita DiagnosticoTrigonometriaClient.tsx.
 export default function DiagnosticoCalculiaClient({ destino }: Props) {
   const t = useTranslations("Calculia");
+  const tInicio = useTranslations("Common.errorBoundario");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("intro");
   const [indice, setIndice] = useState(0);
@@ -219,12 +220,17 @@ export default function DiagnosticoCalculiaClient({ destino }: Props) {
             </p>
             {!guardadoOk && <p className="text-sm text-error">{t("diagnostico.errorGuardado")}</p>}
             <button
-              onClick={guardadoOk ? () => router.push(destino) : reintentarGuardado}
+              onClick={() => router.push(guardadoOk ? destino : "/")}
               className="w-full rounded-2xl px-6 py-4 font-display font-semibold text-white"
               style={{ background: guardadoOk ? `linear-gradient(120deg, ${COLOR_CALCULIA}, #818CF8)` : "var(--error)" }}
             >
-              {guardadoOk ? t("diagnostico.continuar") : t("diagnostico.reintentar")}
+              {guardadoOk ? t("diagnostico.continuar") : tInicio("irAlInicio")}
             </button>
+            {!guardadoOk && (
+              <button onClick={reintentarGuardado} className="text-sm text-texto-secundario hover:underline">
+                {t("diagnostico.reintentar")}
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
