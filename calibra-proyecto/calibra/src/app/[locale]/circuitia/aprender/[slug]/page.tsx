@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoCircuitia } from "@/lib/circuitia/path";
+import { hrefVolverAAprender } from "@/lib/aprender/clases";
 import Header from "@/components/Header";
 import LeccionCircuitiaClient from "./LeccionCircuitiaClient";
 import { getTranslations } from "next-intl/server";
@@ -24,7 +25,7 @@ export default async function LeccionCircuitiaPage({ params }: Props) {
     notFound();
   }
   if (nodo.estado === "bloqueado") {
-    redirect("/circuitia/aprender");
+    redirect(hrefVolverAAprender("/circuitia/aprender", nodo.requierePro));
   }
 
   return (

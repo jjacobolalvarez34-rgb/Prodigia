@@ -185,6 +185,45 @@ export async function requireMundoCircuitia(supabase: SupabaseClient, pathActual
   return { user, profile };
 }
 
+// Mundos 11-13 (Estadística, Naipia, Codia): mismo patrón que Calculia/
+// Circuitia. Las páginas /<mundo>/diagnostico las crea la Fase 1 de cada
+// mundo; el redirect apunta a ellas.
+export async function requireMundoEstadistica(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
+  const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
+  requireMundoComprado(profile, "estadistica", pathActual);
+
+  if (!profile.onboarding_estadistica_completado) {
+    redirect(`/estadistica/diagnostico?next=${encodeURIComponent(pathActual)}`);
+  }
+
+  return { user, profile };
+}
+
+export async function requireMundoNaipia(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
+  const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
+  requireMundoComprado(profile, "naipia", pathActual);
+
+  if (!profile.onboarding_naipia_completado) {
+    redirect(`/naipia/diagnostico?next=${encodeURIComponent(pathActual)}`);
+  }
+
+  return { user, profile };
+}
+
+export async function requireMundoCodia(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
+  const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
+  requireMundoComprado(profile, "codia", pathActual);
+
+  if (!profile.onboarding_codia_completado) {
+    redirect(`/codia/diagnostico?next=${encodeURIComponent(pathActual)}`);
+  }
+
+  return { user, profile };
+}
+
 // Geografía nunca tuvo diagnóstico propio (arranca directo) — con Fase
 // 12 pasa a necesitar este guard nuevo en vez de requireUsuario a
 // secas, solo para el chequeo de compra.

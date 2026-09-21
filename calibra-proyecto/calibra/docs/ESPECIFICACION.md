@@ -102,6 +102,17 @@ Un continente por ruta: `/geografia/practica/europa`, `/africa`, `/asia-oceania`
 ### Anatomía (`/anatomia`)
 4 modos, cada uno con su propio `problem_type` (`anatomia_oseo`, `anatomia_muscular`, `anatomia_organos`, `anatomia_nervioso`). Contenido de nombres verificado (ver `src/lib/practica/anatomia.ts`) — sin una segunda propiedad independiente por término (a diferencia de Quimia, símbolo↔nombre), así que las preguntas son de clasificación ("¿cuál de estas opciones es un hueso del cráneo?"), nunca trivia inventada. Cada modo (salvo Órganos) tiene nivel bajo (términos generales) y nivel alto (el escalón específico: huesos del cráneo, músculos de la cara, pares craneales). Hub de selección en `/anatomia/elegir`. Lecciones en `/anatomia/aprender`. Color de marca bordó `#8B2942` (deliberadamente distinto del coral de error `#FF6B6B`).
 
+### Mundos 9-13 — Calculia, Circuitia, Estadística, Naipia, Codia
+Detalle completo y verificación en `docs/PARIDAD_MUNDOS.md` (secciones por mundo). Resumen de contenido (todos: mundos NORMALES en catálogo, Practicar, Rankeds, duelos, logros y theming; se eligen modos desde `/<mundo>/elegir`, cada modo con su `problem_type` propio y una banda de nivel 1-10 recortada dentro del generador):
+- **Calculia** (`/calculia`, `#4338CA`): `calculia_derivadas`, `_integrales`, `_series`, `_multivariable`. Respuestas por construcción, verificadas numéricamente por tests.
+- **Circuitia** (`/circuitia`, `#F59E0B`): `circuitia_serie`, `_paralelo`, `_mixto`, `_cualitativo`, sobre el kernel `src/lib/circuitos/resolver.ts` + diagrama SVG por código.
+- **Estadística** (`/estadistica`, `#0D9488`): `estadistica_central` (1-3), `_dispersion` (3-6), `_probabilidad` (4-7), `_datos` (6-10), `_graficos` (5-9, lectura de gráficos SVG por código). El enunciado declara siempre el método (varianza poblacional/muestral, cuartiles, percentil por rango más cercano, atípicos 1.5×IQR). Respuestas numéricas comparadas por valor (5.20 = 5.2).
+- **Naipia** (`/naipia`, `#B91C1C`): deporte mental de memoria y conteo de cartas — 5 sistemas de conteo: `naipia_hilo` (1-3), `_ko` (3-5), `_hiopt2` (5-7), `_omega2` (7-9), `_verdadero` (9-10, conteo verdadero con regla de redondeo declarada). Valores de cada sistema como datos (`TABLA_SISTEMAS` en `src/lib/practica/naipia.ts`); cartas en SVG por código. **Regla de encuadre: cero lenguaje de casino/apuestas** (test que escanea todo el texto generado, el i18n y el SQL).
+- **Codia** (`/codia`, `#06B6D4`): leer y razonar código en Python, Java, JavaScript y TypeScript — `codia_sintaxis` (1-3), `_salida` (3-6), `_error` (5-8), `_estructuras` (7-10). Cada problema se arma como programa en un IR mínimo, se renderiza a los 4 lenguajes y la respuesta sale de un intérprete; el test de `src/lib/practica/codia.test.ts` **ejecuta de verdad** los fragmentos (Python 3.12, Node 22, TypeScript real, `javac --release 8` + JRE) y compara stdout real.
+
+### Aprender con pestañas "Técnicas | Clases" (patrón de los mundos 9-13, regla para todos)
+`/<mundo>/aprender` usa `AprenderLayout` + `AprenderTabs` (`src/components/AprenderTabs.tsx`) y el helper `src/lib/aprender/clases.ts` (`obtenerCaminoConClases`, `partirCaminoPorClases`, `resolverPestanaInicial`, `hrefVolverAAprender`). **Técnicas** (gratis): atajos y trucos, filas de `techniques` con `requiere_pro=false`. **Clases** (Pro): lecciones progresivas y dependientes que enseñan el tema desde cero, con ejemplos resueltos y un quiz entre lecciones (`techniques.requiere_pro=true` + `contenido.quiz`, validado en el servidor por `/api/aprender/completar`); la primera clase es preview gratis. La pestaña Clases solo aparece si el mundo tiene ≥1 fila `requiere_pro=true`. Beneficio Pro listado como "Clases" en `src/lib/pro/beneficios.ts`. Rollout pendiente en los 8 mundos originales (fila 22 de `PARIDAD_MUNDOS.md`).
+
 ## Convención fija: flujo de "Practicar"
 
 Regla permanente para cualquier mundo, presente o futuro — no es una preferencia de una tanda puntual:
@@ -170,7 +181,7 @@ Esta regla puntual sobre `/perfil` quedó chica: **Anatomía repitió el mismo p
 
 ## Checklist de mundo nuevo (obligatoria, la misma tarea que agrega el mundo)
 
-Cada mundo (`numeria`, `enigmia`, `geografia`, `quimia`, `anatomia`, `melodia`, `trigonometria`, `historia`, y cualquiera que se agregue después) tiene que aparecer en **todos** estos puntos. La causa raíz de que esto se rompa dos veces seguidas (Quimia, después Anatomía) es siempre la misma: son listas de TypeScript/SQL escritas a mano en varios archivos, no derivadas de una única fuente de verdad — agregar el mundo a la tabla `world_progress_world_check` o al `MundoSelector` no alcanza, hay que tocar cada ítem de acá por separado. Ninguno de estos falla con un error visible cuando falta un mundo — el mundo simplemente no aparece como opción, en silencio.
+Cada mundo (`numeria`, `enigmia`, `geografia`, `quimia`, `anatomia`, `melodia`, `trigonometria`, `historia`, `calculia`, `circuitia`, `estadistica`, `naipia`, `codia`, y cualquiera que se agregue después) tiene que aparecer en **todos** estos puntos. La causa raíz de que esto se rompa dos veces seguidas (Quimia, después Anatomía) es siempre la misma: son listas de TypeScript/SQL escritas a mano en varios archivos, no derivadas de una única fuente de verdad — agregar el mundo a la tabla `world_progress_world_check` o al `MundoSelector` no alcanza, hay que tocar cada ítem de acá por separado. Ninguno de estos falla con un error visible cuando falta un mundo — el mundo simplemente no aparece como opción, en silencio.
 
 | # | Punto de integración | Dónde vive (patrón a repetir) |
 |---|---|---|
@@ -189,6 +200,10 @@ Cada mundo (`numeria`, `enigmia`, `geografia`, `quimia`, `anatomia`, `melodia`, 
 | 13 | Títulos "maestro-X" / "estudioso-X" | `src/lib/titulos/catalogo.ts` (`CriterioTitulo`, entradas del catálogo) **y** `src/lib/titulos/verificar.ts` (switch de `mundoCompletado`) |
 | 14 | Feed social (nombre de mundo en los posts) | `src/app/[locale]/social/Feed.tsx` y `FeedSidebar.tsx` (`NOMBRE_MUNDO`) |
 | 15 | Título "Explorador Total" / logros de "todos los mundos" | `src/lib/titulos/catalogo.ts` — cualquier criterio tipo `mundos_explorados: N` tiene que actualizar `N` al sumar un mundo, si no el logro deja de significar "todos" |
+| 16 | Estadísticas Pro (`/perfil/estadisticas`) | `estadisticas_pro_perfil()`, `estadisticas_pro_subtemas()` y `estadisticas_pro_subtemas_grupo()` (SQL): una rama `'<mundo>_%'` por mundo en cada `case` — un mundo sin rama se filtra en silencio de toda estadística Pro (bug real de Calculia/Circuitia, `0187`) |
+| 17 | Aprender con pestañas Técnicas \| Clases | `AprenderTabs` + `obtenerCaminoConClases` (ver patrón arriba) — fila 22 de `PARIDAD_MUNDOS.md` |
+| 18 | Anuncio en pantalla | migración con `insert into public.anuncios` (sistema de `0065`, `AnunciosModal.tsx`) cada vez que se agrega un mundo o un beneficio Pro nuevo (p. ej. `0188`, `0194`) |
+| 19 | Demo pública | `src/app/[locale]/demo/<mundo>/` desde el primer día (la landing enlaza a `/demo/<slug>`) |
 
 **Cómo usar esta lista**: al cerrar la tarea de un mundo nuevo (o de cualquier feature que dependa de "cuáles son los mundos"), repasarla ítem por ítem y confirmar cada uno con evidencia (archivo + línea), no de memoria — así se armó originalmente, auditando Numeria/Geografía/Enigmia (mundos maduros) contra Quimia y Anatomía (los que quedaron con huecos) el 2026-08-23. Ver `docs/PROGRESO.md` para el detalle punto por punto de qué le faltaba a Anatomía específicamente y qué se corrigió en esa auditoría.
 
@@ -205,7 +220,7 @@ SUPABASE_SERVICE_ROLE_KEY=...   # falta agregarla — ver Pendiente
 ```
 La service_role key solo la usa `src/lib/supabase/admin.ts`, importado únicamente por `api/perfil/eliminar-cuenta/route.ts` (server-only, nunca se expone al cliente — confirmado inspeccionando el bundle real). **Nunca** importar `admin.ts` desde un Client Component.
 
-## Migraciones (`supabase/migrations/`, 0001-0128)
+## Migraciones (`supabase/migrations/`, 0001-0194)
 
 Se aplican en orden, a mano, desde el SQL Editor de Supabase (no hay CLI en este entorno). Resumen por bloques:
 - **0001-0011**: esquema base (perfiles, intentos, técnicas, calibración, progreso diario, modificadores, ranking, onboarding, logros, tienda inicial)
@@ -236,6 +251,14 @@ Se aplican en orden, a mano, desde el SQL Editor de Supabase (no hay CLI en este
 - **0126**: trastienda limpieza (QA oculto, oráculo, mesa paginada, eliminación Acertijos/El Reloj, español normalizado en RPCs)
 - **0127**: trastienda ruleta casino (118 elementos, factor 0.88, 20/día)
 - **0128**: español neutro latinoamericano (9 RPCs con mensajes neutros)
+
+- **0129-0162**: consolidación del sprint 0120-0128, fixes `42702` de columnas ambiguas, seguridad (IDOR invitación/grupos), login con nombre de usuario, invitar a clan, tienda (animaciones/fondos/consumibles), infraestructura de pagos y Prodigia Pro (`0145`-`0146`), estadísticas Pro (`0149`, `0151`), leads de colegios, edad y gate de trastienda
+- **0163-0164**: fix del check de animación glitch intenso y más acertijos de deducción
+- **0165-0171**: mundos Calculia y Circuitia (9 y 10) + `techniques.requiere_pro` y Curso Pro de ambos
+- **0172-0188**: revisión de contenido (Proceso 1), Rankeds en mundos sin comprar, notación KaTeX, estadísticas Pro para Calculia/Circuitia (`0187`) y anuncios (`0188`)
+- **0189-0190**: mundos Estadística, Naipia y Codia (11-13): columnas/checks/logros/ramas de funciones (`0189`) y funciones cross-cutting a 13 mundos + estadísticas Pro con ramas nuevas + `guardar_afinidad_banner` a 13 mundos (`0190`)
+- **0191-0193**: contenido de los mundos nuevos — 5 Técnicas gratis + 8 Clases Pro cada uno (`0191` Estadística, `0192` Naipia, `0193` Codia, generada desde `src/lib/codia/lecciones/`)
+- **0194**: dos anuncios (nuevos mundos 11-13; nueva pestaña Clases de Pro)
 
 **Antes de compartir la app con gente real, confirmar que 0035 y 0036 estén aplicadas** — sin ellas, cualquier usuario logueado puede escribirse Puntos/ELO/items de la tienda directo desde la consola del navegador.
 

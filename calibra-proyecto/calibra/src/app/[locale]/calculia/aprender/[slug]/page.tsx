@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { obtenerCaminoCalculia } from "@/lib/calculia/path";
+import { hrefVolverAAprender } from "@/lib/aprender/clases";
 import Header from "@/components/Header";
 import LeccionCalculiaClient from "./LeccionCalculiaClient";
 import { getTranslations } from "next-intl/server";
@@ -24,7 +25,7 @@ export default async function LeccionCalculiaPage({ params }: Props) {
     notFound();
   }
   if (nodo.estado === "bloqueado") {
-    redirect("/calculia/aprender");
+    redirect(hrefVolverAAprender("/calculia/aprender", nodo.requierePro));
   }
 
   return (

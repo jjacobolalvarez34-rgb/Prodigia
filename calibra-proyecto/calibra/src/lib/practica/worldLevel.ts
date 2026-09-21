@@ -11,6 +11,9 @@ const TOTAL_SUBTEMAS: Record<string, number> = {
   historia: 4,
   calculia: 4,
   circuitia: 4,
+  estadistica: 5,
+  naipia: 5,
+  codia: 4,
 };
 
 const SUBTIPOS: Record<string, string[]> = {
@@ -50,6 +53,17 @@ const SUBTIPOS: Record<string, string[]> = {
   circuitia: [
     "circuitia_serie", "circuitia_paralelo",
     "circuitia_mixto", "circuitia_cualitativo",
+  ],
+  estadistica: [
+    "estadistica_central", "estadistica_dispersion", "estadistica_probabilidad",
+    "estadistica_datos", "estadistica_graficos",
+  ],
+  naipia: [
+    "naipia_hilo", "naipia_ko", "naipia_hiopt2",
+    "naipia_omega2", "naipia_verdadero",
+  ],
+  codia: [
+    "codia_sintaxis", "codia_salida", "codia_error", "codia_estructuras",
   ],
 };
 

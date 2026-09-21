@@ -15,6 +15,9 @@ const MUNDOS = [
   { href: "/historia", slug: "historia", colorHex: "#A0522D" },
   { href: "/calculia", slug: "calculia", colorHex: "#4338CA" },
   { href: "/circuitia", slug: "circuitia", colorHex: "#F59E0B" },
+  { href: "/estadistica", slug: "estadistica", colorHex: "#0D9488" },
+  { href: "/naipia", slug: "naipia", colorHex: "#B91C1C" },
+  { href: "/codia", slug: "codia", colorHex: "#06B6D4" },
 ] as const;
 
 function mundoActual(pathname: string) {

@@ -71,6 +71,9 @@ const COLOR_MUNDO: Record<MundoDuelo, string> = {
   historia: "#A0522D",
   calculia: "#4338CA",
   circuitia: "#F59E0B",
+  estadistica: "#0D9488",
+  naipia: "#B91C1C",
+  codia: "#06B6D4",
 };
 // Fase 2 (transición de ronda con TextType): velocidades elegidas para
 // que la ceremonia completa (tipear el mundo anterior → borrarlo →

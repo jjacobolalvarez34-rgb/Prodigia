@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
-import { IconSuma, IconLogica, IconGeometria, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria, IconCalculia, IconCircuitia } from "@/components/icons";
+import { IconSuma, IconLogica, IconGeometria, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria, IconCalculia, IconCircuitia, IconEstadistica, IconNaipia, IconCodia } from "@/components/icons";
 
-export type MundoSlug = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia";
+export type MundoSlug = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia";
 
 export interface MundoLanding {
   slug: MundoSlug;
@@ -27,4 +27,7 @@ export const MUNDOS_LANDING: MundoLanding[] = [
   { slug: "historia", nombre: "Historia", colorHex: "#A0522D", Icono: IconHistoria },
   { slug: "calculia", nombre: "Calculia", colorHex: "#4338CA", Icono: IconCalculia },
   { slug: "circuitia", nombre: "Circuitia", colorHex: "#F59E0B", Icono: IconCircuitia },
+  { slug: "estadistica", nombre: "Estadística", colorHex: "#0D9488", Icono: IconEstadistica },
+  { slug: "naipia", nombre: "Naipia", colorHex: "#B91C1C", Icono: IconNaipia },
+  { slug: "codia", nombre: "Codia", colorHex: "#06B6D4", Icono: IconCodia },
 ];

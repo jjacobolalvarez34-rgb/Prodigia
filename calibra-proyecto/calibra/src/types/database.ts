@@ -45,7 +45,10 @@ export type Mundo =
   | "trigonometria"
   | "historia"
   | "calculia"
-  | "circuitia";
+  | "circuitia"
+  | "estadistica"
+  | "naipia"
+  | "codia";
 
 // Fase 5 (mercado): "color del dial" se retiró de la tienda — no
 // generaba sensación de diferencia real jugando de verdad — pero el
@@ -187,6 +190,9 @@ export interface Profile {
   onboarding_historia_completado: boolean; // diagnóstico de Historia hecho/salteado
   onboarding_calculia_completado: boolean; // diagnóstico de Calculia hecho/salteado
   onboarding_circuitia_completado: boolean; // diagnóstico de Circuitia hecho/salteado
+  onboarding_estadistica_completado: boolean; // diagnóstico de Estadística hecho/salteado
+  onboarding_naipia_completado: boolean; // diagnóstico de Naipia hecho/salteado
+  onboarding_codia_completado: boolean; // diagnóstico de Codia hecho/salteado
   mundos_desbloqueados: string[]; // Fase 12: qué mundos ya compró/eligió — puede no incluir 'numeria'
   nivel_cuenta: number; // Fase 4 (nivel de cuenta): nivel general de la cuenta, no el de un mundo puntual
   idioma: "es" | "en";
@@ -458,6 +464,12 @@ export const MARCOS_MUNDO: Record<string, { nombre: string; imagen: string }> = 
   // no degrada gracil un <img> ausente). TODO: reemplazar por un PNG de
   // diseño real cuando esté disponible, igual que los otros 9 mundos.
   circuitia: { nombre: "Circuitia", imagen: "/marcos/marco_circuitia.svg" },
+  // Mundos 11-13 (Estadística, Naipia, Codia): mismo criterio que
+  // Calculia/Circuitia — SVG placeholder generado por código. TODO:
+  // reemplazar por PNG de diseño real cuando esté disponible.
+  estadistica: { nombre: "Estadística", imagen: "/marcos/marco_estadistica.svg" },
+  naipia: { nombre: "Naipia", imagen: "/marcos/marco_naipia.svg" },
+  codia: { nombre: "Codia", imagen: "/marcos/marco_codia.svg" },
 };
 
 // ---------- Rankeds: títulos (Fase 2) ----------
@@ -483,7 +495,10 @@ export type MundoDuelo =
   | "trigonometria"
   | "historia"
   | "calculia"
-  | "circuitia";
+  | "circuitia"
+  | "estadistica"
+  | "naipia"
+  | "codia";
 export type ModoDuelo = "simple" | "mejor_de_3";
 
 // ---------- Enigmia (Fase X): mundo de lógica ----------

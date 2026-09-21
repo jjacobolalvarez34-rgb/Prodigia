@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import type { NodoCaminoCircuitia } from "@/lib/circuitia/path";
+import { hrefVolverAAprender } from "@/lib/aprender/clases";
 import type { Achievement } from "@/types/database";
 import LogroBanner from "@/components/LogroBanner";
 import MathText from "@/components/MathText";
@@ -26,7 +27,7 @@ interface Props {
 
 // Mismo patrón exacto que LeccionCalculiaClient.tsx, con una fase "quiz"
 // opcional — SOLO cuando `nodo.contenido.quiz` tiene preguntas (el
-// "Curso estructurado (Pro)" de Circuitia). Las técnicas rápidas de
+// "Clases" Pro de Circuitia). Las técnicas rápidas de
 // siempre no tienen `quiz`, así que para ellas el flujo queda idéntico
 // al de antes: explicación -> ejemplo -> completar.
 export default function LeccionCircuitiaClient({ nodo }: Props) {
@@ -243,7 +244,7 @@ export default function LeccionCircuitiaClient({ nodo }: Props) {
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
               <button
-                onClick={() => router.push("/circuitia/aprender")}
+                onClick={() => router.push(hrefVolverAAprender("/circuitia/aprender", nodo.requierePro))}
                 className="rounded-xl px-4 py-3 font-display font-semibold text-white"
                 style={{ background: COLOR_CIRCUITIA }}
               >

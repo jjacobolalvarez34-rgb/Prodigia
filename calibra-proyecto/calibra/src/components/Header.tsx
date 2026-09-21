@@ -23,6 +23,9 @@ function colorDelMundo(pathname: string): string {
   if (pathname.startsWith("/historia")) return "#A0522D";
   if (pathname.startsWith("/calculia")) return "#4338CA";
   if (pathname.startsWith("/circuitia")) return "#F59E0B";
+  if (pathname.startsWith("/estadistica")) return "#0D9488";
+  if (pathname.startsWith("/naipia")) return "#B91C1C";
+  if (pathname.startsWith("/codia")) return "#06B6D4";
   return "#6C4CF1"; // Numeria y el resto de Prodigia (fuera de un mundo) usan el violeta de marca
 }
 

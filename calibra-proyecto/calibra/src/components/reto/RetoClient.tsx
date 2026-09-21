@@ -49,6 +49,9 @@ const COLOR_MUNDO: Record<MundoRetoDiario, string> = {
   historia: "#A0522D",
   calculia: "#4338CA",
   circuitia: "#F59E0B",
+  estadistica: "#0D9488",
+  naipia: "#B91C1C",
+  codia: "#06B6D4",
 };
 
 const ENDPOINT_TIPO: Record<TipoReto, string> = {
@@ -88,6 +91,9 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
     historia: t("mundos.historia"),
     calculia: t("mundos.calculia"),
     circuitia: t("mundos.circuitia"),
+    estadistica: t("mundos.estadistica"),
+    naipia: t("mundos.naipia"),
+    codia: t("mundos.codia"),
   };
   const TEXTO_TIPO: Record<TipoReto, { etiqueta: string; periodo: string; endpoint: string; volver: string }> = {
     diario: { etiqueta: t("etiquetaDiario"), periodo: t("periodoDiario"), endpoint: ENDPOINT_TIPO.diario, volver: t("volverDiario") },
@@ -263,7 +269,7 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
               )}
               {pregunta.figuraMelodia && <FiguraRitmicaIcono figura={pregunta.figuraMelodia} colorHex={COLOR_MUNDO.melodia} />}
 
-              <p className="text-center font-medium text-foreground">{pregunta.enunciado}</p>
+              <p className={`font-medium text-foreground ${pregunta.mundo === "codia" ? "w-full overflow-x-auto whitespace-pre-wrap text-left font-mono text-sm" : "text-center"}`}>{pregunta.enunciado}</p>
 
               <div className="grid w-full grid-cols-2 gap-2.5">
                 {pregunta.opciones.map((op) => {
@@ -274,7 +280,7 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
                       key={op}
                       onClick={() => handleElegir(op)}
                       disabled={feedback !== "idle"}
-                      className={`rounded-xl border-2 px-4 py-3 text-sm font-medium transition-colors disabled:opacity-100 ${
+                      className={`rounded-xl border-2 px-4 py-3 text-sm font-medium transition-colors disabled:opacity-100 ${pregunta.mundo === "codia" ? "whitespace-pre-wrap text-left font-mono" : ""} ${
                         esCorrecta
                           ? "border-correcto bg-correcto/10 text-correcto"
                           : esElegida

@@ -12,7 +12,7 @@
       "boton": "Let's talk about your school"
     },
     "mundos": {
-      "titulo": "8 worlds, one practice system",
+      "titulo": "13 worlds, one practice system",
       "descripcion": "Every world calibrates its own level per student — nobody gets bored going too slow, or frustrated going too fast."
     },
     "beneficios": {
@@ -115,6 +115,9 @@
       "historia": "Mode based on your rank",
       "calculia": "Mode based on your rank",
       "circuitia": "Mode based on your rank",
+      "estadistica": "Mode based on your rank",
+      "naipia": "Counting system based on your rank",
+      "codia": "Mode based on your rank",
       "aleatorio": "Best of 3, one city per round"
     },
     "buscandoRival": "Looking for a rival…",
@@ -230,6 +233,9 @@
       "historia": "History",
       "calculia": "Calculia",
       "circuitia": "Circuitia",
+      "estadistica": "Statistics",
+      "naipia": "Naipia",
+      "codia": "Codia",
       "aleatorio": "all the cities",
       "suMundo": "their world"
     },
@@ -457,7 +463,10 @@
         "trigonometria": "Trigonometry",
         "historia": "History",
         "calculia": "Calculia",
-        "circuitia": "Circuitia"
+        "circuitia": "Circuitia",
+        "estadistica": "Statistics",
+        "naipia": "Naipia",
+        "codia": "Codia"
       },
       "eloValor": "{n} ELO",
       "nivelLabel": "Level",
@@ -504,6 +513,9 @@
       "marcoHistoria": "History Frame",
       "marcoCalculia": "Calculia Frame",
       "marcoCircuitia": "Circuitia Frame",
+      "marcoEstadistica": "Statistics Frame",
+      "marcoNaipia": "Naipia Frame",
+      "marcoCodia": "Codia Frame",
       "paqueteMarcosMundo": "World Collection",
       "animacionOndulante": "Wave Animation",
       "animacionBrillo": "Shine Animation",
@@ -593,9 +605,9 @@
     "vidrieraDeMarcosTematicos": "World frames",
     "vidrieraMarcosTematicosDescripcion": "A different ring for each world, for your avatar. Unlocks at level {n} in that world — or free, as a gift, if you fully master it.",
     "requiereNivelMundo": "Level {n} in {mundo} to unlock",
-    "paqueteMarcosMundoDescripcion": "All 9 world frames together, discounted — for when you're seriously playing all 9.",
-    "paqueteMarcosMundoRequisito": "You need level {n} in all 9 worlds to unlock it",
-    "paqueteMarcosMundoCompleto": "You already have all 9 world frames",
+    "paqueteMarcosMundoDescripcion": "All 13 world frames together, discounted — for when you're seriously playing all 13.",
+    "paqueteMarcosMundoRequisito": "You need level {n} in all 13 worlds to unlock it",
+    "paqueteMarcosMundoCompleto": "You already have all 13 world frames",
     "vidrieraDeAnimaciones": "Name animations",
     "vidrieraAnimacionesDescripcion": "Your name moves — shows on your profile, Rankeds, the feed, and clan chat.",
     "sinAnimacion": "No animation",
@@ -1103,7 +1115,10 @@
       "trigonometria": "Ratios, unit circle, identities, and triangles.",
       "historia": "Chronology, figures, cause and effect, and exact dates.",
       "calculia": "Derivatives, integrals, series, and differential equations.",
-      "circuitia": "Series, parallel, mixed circuits, and qualitative analysis."
+      "circuitia": "Series, parallel, mixed circuits, and qualitative analysis.",
+      "estadistica": "Central tendency, dispersion, probability, data analysis, and chart reading.",
+      "naipia": "A memory mind-sport: mental counting with five point systems, from Hi-Lo to true count.",
+      "codia": "Syntax, code output, bug hunting, and data structures in Python, Java, JavaScript, and TypeScript."
     }
   },
   "Numeria": {
@@ -1228,6 +1243,14 @@
     "subtitulo": "One path: unlock techniques in order, or jump to a unit from the left.",
     "ocultarTemas": "Hide topics",
     "mostrarTemas": "Show topics",
+    "tabs": {
+      "tecnicas": "Techniques",
+      "clases": "Classes",
+      "aria": "Learn sections",
+      "pro": "Pro",
+      "avisoPro": "The first class is free. The rest of the classes unlock with Pro.",
+      "avisoProCta": "See Pro"
+    },
     "descripcionUnidad": {
       "suma": "Add faster by combining numbers in simpler ways.",
       "resta": "Subtract with confidence, even when the numbers don't cooperate.",
@@ -1729,7 +1752,10 @@
         "trigonometria": "Trigonometry",
         "historia": "History",
         "calculia": "Calculia",
-        "circuitia": "Circuitia"
+        "circuitia": "Circuitia",
+        "estadistica": "Statistics",
+        "naipia": "Naipia",
+        "codia": "Codia"
       }
     },
     "nombreConFuente": {
@@ -2353,7 +2379,10 @@
       "trigonometria": "Trigonometry",
       "historia": "History",
       "calculia": "Calculia",
-      "circuitia": "Circuitia"
+      "circuitia": "Circuitia",
+      "estadistica": "Statistics",
+      "naipia": "Naipia",
+      "codia": "Codia"
     }
   },
   "Onboarding": {
@@ -2625,7 +2654,10 @@
       "trigonometria": "Trigonometry",
       "historia": "History",
       "calculia": "Calculia",
-      "circuitia": "Circuitia"
+      "circuitia": "Circuitia",
+      "estadistica": "Statistics",
+      "naipia": "Naipia",
+      "codia": "Codia"
     },
     "etiquetaDiario": "Daily challenge",
     "etiquetaSemanal": "Weekly challenge",
@@ -2881,9 +2913,9 @@
       "tecnicasRapidas": {
         "titulo": "Quick techniques"
       },
-      "cursoPro": {
-        "titulo": "Structured course (Pro)",
-        "descripcion": "Full lessons for each mode, with step-by-step worked examples and a comprehension quiz.",
+      "clases": {
+        "titulo": "Classes",
+        "descripcion": "Progressive lessons that build on each other, with step-by-step worked examples and a quiz between lessons. The first one is free.",
         "desbloqueaConPro": "Unlock with Pro"
       }
     },
@@ -3020,9 +3052,9 @@
       "tecnicasRapidas": {
         "titulo": "Quick techniques"
       },
-      "cursoPro": {
-        "titulo": "Structured course (Pro)",
-        "descripcion": "Full lessons for each mode, with step-by-step worked examples and a comprehension quiz.",
+      "clases": {
+        "titulo": "Classes",
+        "descripcion": "Progressive lessons that build on each other, with step-by-step worked examples and a quiz between lessons. The first one is free.",
         "desbloqueaConPro": "Unlock with Pro"
       }
     },
@@ -3066,6 +3098,475 @@
         "metadata": {
           "title": "Practice Qualitative Analysis",
           "description": "Does it increase, decrease, or stay the same? — the hardest mode."
+        }
+      }
+    }
+  },
+  "Estadistica": {
+    "metadata": {
+      "title": "Statistics",
+      "description": "Central tendency, spread, probability, data analysis, and chart reading, with adaptive difficulty."
+    },
+    "nombreMundo": "Statistics",
+    "aviso": "Mean, probability, data, and charts — with difficulty that adapts to you, just like in the other worlds.",
+    "titulo": "Data, probability, and charts",
+    "metaCumplida": "You already hit today's goal.",
+    "practicar": "Practice",
+    "practicarDescripcion": "Central tendency, spread, probability, data analysis, and charts.",
+    "aprenderCard": "Learn",
+    "aprenderDescripcion": "Mental-math shortcuts for the mean, quartiles, and combinatorics, plus classes from scratch.",
+    "modosTitulo": "Modes",
+    "modos": {
+      "central": "Central tendency",
+      "dispersion": "Spread",
+      "probabilidad": "Probability and combinatorics",
+      "datos": "Data analysis",
+      "graficos": "Chart reading"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practice",
+        "description": "Choose a Statistics mode to practice."
+      },
+      "titulo": "Which mode should we practice?",
+      "subtitulo": "Choose a mode to get started.",
+      "descripciones": {
+        "central": "Mean, median, mode, and range",
+        "dispersion": "Interquartile range, variance, and standard deviation",
+        "probabilidad": "Simple and conditional probability, factorials, permutations, and combinations",
+        "datos": "Percentiles, z-scores, outliers, correlation, and regression",
+        "graficos": "Read bar, line, histogram, and box plots — and spot misleading charts"
+      }
+    },
+    "practicaClient": {
+      "subtituloRonda": "Round {numero}/{total} · Statistics",
+      "noSePudoCerrar": "We couldn't close the game.",
+      "errorConexion": "We couldn't connect to the server. Try again.",
+      "errorCerrarPartida": "We couldn't close the game: {error}",
+      "volver": "Back",
+      "boostActivo": "⚡ Boost active — Chispas ×1.5 this game",
+      "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
+      "iniciarPartida": "Start game",
+      "resumen": {
+        "ahiQuedo": "Nailed it.",
+        "experiencia": "Experience",
+        "aciertos": "Correct",
+        "precision": "Accuracy",
+        "experienciaHoy": "XP today",
+        "repasemosEsto": "Let's review this",
+        "ningunoFallado": "None missed — that's how it's done. 🎯"
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} shields available",
+      "exp": "{n} XP",
+      "segundos": "{n}s",
+      "ok": "Ok"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Statistics Diagnostic",
+        "description": "A few quick questions to calibrate your starting level."
+      },
+      "introTitulo": "Some data to calibrate",
+      "introSubtitulo": "No pressure — 8 questions on mean, median, and mode, just to start at the right level.",
+      "empezar": "Start",
+      "arrancarNivel1": "I'd rather start at level 1",
+      "ok": "Ok",
+      "tuRespuesta": "Your answer",
+      "laCorrectaEra": "The answer was {valor}",
+      "guardando": "Saving your diagnostic...",
+      "resultadoTitulo": "This is your starting point",
+      "nivel": "Level {n}",
+      "errorGuardado": "We couldn't save your progress — try again before continuing.",
+      "continuar": "Continue",
+      "reintentar": "Retry"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Learn Statistics",
+        "description": "Mental-math shortcuts and progressive statistics classes, from data types to critical chart reading."
+      },
+      "descripcionUnidad": "Shortcuts for the mean, median, quartiles, probability, and combinatorics.",
+      "progreso": "Progress",
+      "tecnicas": "{n}/{total} techniques",
+      "titulo": "Learn",
+      "subtitulo": "Shortcuts to calculate faster, and classes to understand why each formula works.",
+      "tecnicasRapidas": {
+        "titulo": "Quick techniques"
+      },
+      "clases": {
+        "titulo": "Classes",
+        "descripcion": "Progressive lessons that build on each other, with step-by-step worked examples and a quiz between lessons. The first one is free.",
+        "desbloqueaConPro": "Unlock with Pro"
+      }
+    },
+    "leccion": {
+      "tecnica": "Technique",
+      "verElTruco": "See the trick",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "marcarAprendida": "Mark as learned",
+      "completaste": "You completed {nombre}!",
+      "volverAAprender": "Back to Learn",
+      "irAPracticar": "Go to Practice",
+      "continuarAlQuiz": "Continue to quiz",
+      "quizTitulo": "Comprehension quiz",
+      "quizSubtitulo": "Answer the questions to mark this module as learned. You can retry as many times as you want.",
+      "respuestaIncorrecta": "That's not it — check again",
+      "enviarRespuestas": "Submit answers",
+      "enviando": "Submitting...",
+      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want."
+    },
+    "practica": {
+      "central": {
+        "metadata": {
+          "title": "Practice Central tendency",
+          "description": "Mean, median, mode, and range, with adaptive difficulty."
+        }
+      },
+      "dispersion": {
+        "metadata": {
+          "title": "Practice Spread",
+          "description": "Interquartile range, variance, and standard deviation, population and sample."
+        }
+      },
+      "probabilidad": {
+        "metadata": {
+          "title": "Practice Probability and combinatorics",
+          "description": "Simple and conditional probability, factorials, permutations, and combinations."
+        }
+      },
+      "datos": {
+        "metadata": {
+          "title": "Practice Data analysis",
+          "description": "Percentiles, z-scores, outliers, correlation, and simple regression."
+        }
+      },
+      "graficos": {
+        "metadata": {
+          "title": "Practice Chart reading",
+          "description": "Read values, trends, and outliers in charts, and spot the ones that mislead through their scale."
+        }
+      }
+    }
+  },
+  "Naipia": {
+    "metadata": {
+      "title": "Naipia",
+      "description": "A mental sport of memory and card counting: four counting systems and true count, with adaptive difficulty."
+    },
+    "nombreMundo": "Naipia",
+    "aviso": "Memory, attention and mental arithmetic with playing cards — with difficulty that adapts to you, just like in the other worlds.",
+    "titulo": "Card counting",
+    "metaCumplida": "You already hit today's goal.",
+    "practicar": "Practice",
+    "practicarDescripcion": "Hi-Lo, KO, Hi-Opt II, Omega II and true count.",
+    "aprenderCard": "Learn",
+    "aprenderDescripcion": "Tricks to count faster and with fewer mistakes: cancelling pairs, blocks and rhythm.",
+    "modosTitulo": "Modes",
+    "modos": {
+      "hilo": "Hi-Lo",
+      "ko": "KO",
+      "hiopt2": "Hi-Opt II",
+      "omega2": "Omega II",
+      "verdadero": "True count"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practice",
+        "description": "Choose a Naipia counting system to practice."
+      },
+      "titulo": "Which mode should we practice?",
+      "subtitulo": "Choose a mode to get started.",
+      "descripciones": {
+        "hilo": "Values +1, 0 and -1 — the starting point",
+        "ko": "Unbalanced system: a full deck adds up to +4",
+        "hiopt2": "Values from +2 to -2 — more precision, more effort",
+        "omega2": "A fine-grained system with the nine as -1",
+        "verdadero": "Running count ÷ remaining decks, with the rounding rule stated — the hardest"
+      }
+    },
+    "practicaClient": {
+      "subtituloRonda": "Round {numero}/{total} · Naipia",
+      "noSePudoCerrar": "We couldn't close the game.",
+      "errorConexion": "We couldn't connect to the server. Try again.",
+      "errorCerrarPartida": "We couldn't close the game: {error}",
+      "volver": "Back",
+      "boostActivo": "⚡ Boost active — Chispas ×1.5 this game",
+      "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
+      "iniciarPartida": "Start game",
+      "resumen": {
+        "ahiQuedo": "Nailed it.",
+        "experiencia": "Experience",
+        "aciertos": "Correct",
+        "precision": "Accuracy",
+        "experienciaHoy": "XP today",
+        "repasemosEsto": "Let's review this",
+        "ningunoFallado": "None missed — that's how it's done. 🎯"
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} shields available",
+      "exp": "{n} XP",
+      "segundos": "{n}s",
+      "ok": "Ok",
+      "tablaTitulo": "System values",
+      "cambiarSigno": "Toggle sign",
+      "tuRespuesta": "Your answer"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Naipia Diagnostic",
+        "description": "A few quick questions to calibrate your starting level."
+      },
+      "introTitulo": "A few card sequences to calibrate",
+      "introSubtitulo": "No pressure — 8 varied questions, just to start at the right level.",
+      "empezar": "Start",
+      "arrancarNivel1": "I'd rather start at level 1",
+      "ok": "Ok",
+      "guardando": "Saving your diagnostic...",
+      "resultadoTitulo": "This is your starting point",
+      "nivel": "Level {n}",
+      "errorGuardado": "We couldn't save your progress — try again before continuing.",
+      "continuar": "Continue",
+      "reintentar": "Retry",
+      "respuestaCorrecta": "Correct count: {n}"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Learn Naipia",
+        "description": "Counting techniques: cancelling pairs, blocks, rhythm and deck check."
+      },
+      "descripcionUnidad": "Techniques to count cards quickly and accurately.",
+      "progreso": "Progress",
+      "tecnicas": "{n}/{total} techniques",
+      "titulo": "Learn",
+      "subtitulo": "How to count faster and make fewer mistakes.",
+      "tecnicasRapidas": {
+        "titulo": "Quick techniques"
+      },
+      "clases": {
+        "titulo": "Classes",
+        "descripcion": "Progressive lessons that build on each other, with step-by-step worked examples and a quiz between lessons. The first one is free.",
+        "desbloqueaConPro": "Unlock with Pro"
+      }
+    },
+    "leccion": {
+      "tecnica": "Technique",
+      "verElTruco": "See the trick",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "marcarAprendida": "Mark as learned",
+      "completaste": "You completed {nombre}!",
+      "volverAAprender": "Back to Learn",
+      "irAPracticar": "Go to Practice",
+      "continuarAlQuiz": "Continue to quiz",
+      "quizTitulo": "Comprehension quiz",
+      "quizSubtitulo": "Answer the questions to mark this module as learned. You can retry as many times as you want.",
+      "respuestaIncorrecta": "That's not it — check again",
+      "enviarRespuestas": "Submit answers",
+      "enviando": "Submitting...",
+      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want."
+    },
+    "practica": {
+      "hilo": {
+        "metadata": {
+          "title": "Practice Hi-Lo",
+          "description": "Running count with values +1, 0 and -1, with adaptive difficulty."
+        }
+      },
+      "ko": {
+        "metadata": {
+          "title": "Practice KO",
+          "description": "Unbalanced system: running count and remaining cards."
+        }
+      },
+      "hiopt2": {
+        "metadata": {
+          "title": "Practice Hi-Opt II",
+          "description": "Counting with values from +2 to -2, with adaptive difficulty."
+        }
+      },
+      "omega2": {
+        "metadata": {
+          "title": "Practice Omega II",
+          "description": "A fine-grained multi-value system, with adaptive difficulty."
+        }
+      },
+      "verdadero": {
+        "metadata": {
+          "title": "Practice true count",
+          "description": "Divide by the remaining decks and estimate how many are left — the hardest mode."
+        }
+      }
+    },
+    "cartas": {
+      "etiqueta": "{valor} of {palo}",
+      "filaEtiqueta": "Sequence of {n} cards",
+      "valores": {
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "5": "5",
+        "6": "6",
+        "7": "7",
+        "8": "8",
+        "9": "9",
+        "10": "10",
+        "A": "ace",
+        "J": "jack",
+        "Q": "queen",
+        "K": "king"
+      },
+      "palos": {
+        "picas": "spades",
+        "corazones": "hearts",
+        "diamantes": "diamonds",
+        "treboles": "clubs"
+      }
+    },
+    "tabla": {
+      "titulo": "Counting system values"
+    }
+  },
+  "Codia": {
+    "metadata": {
+      "title": "Codia",
+      "description": "Read and reason about code in Python, Java, JavaScript and TypeScript, with adaptive difficulty."
+    },
+    "nombreMundo": "Codia",
+    "aviso": "Syntax, code output, bugs and data structures in Python, Java, JavaScript and TypeScript — with difficulty that adapts to you, just like the other worlds.",
+    "titulo": "Read and reason about code",
+    "metaCumplida": "You already hit today's goal.",
+    "practicar": "Practice",
+    "practicarDescripcion": "Syntax, code output, finding the bug and structures.",
+    "aprenderCard": "Learn",
+    "aprenderDescripcion": "Techniques to trace code by hand and classes from scratch with the 4 languages side by side.",
+    "modosTitulo": "Modes",
+    "modos": {
+      "sintaxis": "Syntax",
+      "salida": "Code output",
+      "error": "Find the bug",
+      "estructuras": "Structures and complexity"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practice",
+        "description": "Pick a Codia mode to practice."
+      },
+      "titulo": "Which mode should we practice?",
+      "subtitulo": "Pick a mode to start.",
+      "descripciones": {
+        "sintaxis": "Pick or complete the correct syntax",
+        "salida": "What does this snippet print?",
+        "error": "Find the bug: what fails and on which line",
+        "estructuras": "Stacks, queues, maps and complexity — the hardest"
+      }
+    },
+    "practicaClient": {
+      "subtituloRonda": "Round {numero}/{total} · Codia",
+      "noSePudoCerrar": "The game could not be closed.",
+      "errorConexion": "We couldn't reach the server. Try again.",
+      "errorCerrarPartida": "We couldn't close the game: {error}",
+      "volver": "Back",
+      "boostActivo": "⚡ Boost active — Sparks ×1.5 this game",
+      "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
+      "iniciarPartida": "Start game",
+      "resumen": {
+        "ahiQuedo": "There you go.",
+        "experiencia": "Experience",
+        "aciertos": "Correct",
+        "precision": "Accuracy",
+        "experienciaHoy": "Experience today",
+        "repasemosEsto": "Let's review this",
+        "ningunoFallado": "None missed — nicely done. 🎯"
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} shields available",
+      "exp": "{n} XP",
+      "segundos": "{n}s",
+      "ok": "Ok",
+      "opciones": "Answer options"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Codia placement",
+        "description": "A few quick questions to set your starting level."
+      },
+      "introTitulo": "A few snippets to calibrate",
+      "introSubtitulo": "No pressure — 8 “what does it print?” questions in different languages, just to start at the right level.",
+      "empezar": "Start",
+      "arrancarNivel1": "I'd rather start at level 1",
+      "ok": "Ok",
+      "guardando": "Saving your placement...",
+      "resultadoTitulo": "Here's where you start",
+      "nivel": "Level {n}",
+      "errorGuardado": "We couldn't save your progress — try again before continuing.",
+      "continuar": "Continue",
+      "reintentar": "Retry"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Learn Codia",
+        "description": "Techniques to read code and classes from scratch in Python, Java, JavaScript and TypeScript."
+      },
+      "descripcionUnidad": "Trace variables by hand, read loops and spot the most typical bugs.",
+      "progreso": "Progress",
+      "tecnicas": "{n}/{total} techniques",
+      "titulo": "Learn",
+      "subtitulo": "How to read code step by step, without running it.",
+      "tecnicasRapidas": {
+        "titulo": "Techniques"
+      },
+      "clases": {
+        "titulo": "Classes",
+        "descripcion": "Progressive lessons that build on each other, with the same example in Python, Java, JavaScript and TypeScript, step-by-step worked examples and a quiz between lessons. The first one is free.",
+        "desbloqueaConPro": "Unlock with Pro"
+      }
+    },
+    "leccion": {
+      "tecnica": "Technique",
+      "clase": "Class",
+      "verElTruco": "See the trick",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "marcarAprendida": "Mark as learned",
+      "completaste": "You completed {nombre}!",
+      "volverAAprender": "Back to Learn",
+      "irAPracticar": "Go to Practice",
+      "continuarAlQuiz": "Continue to quiz",
+      "quizTitulo": "Comprehension quiz",
+      "quizSubtitulo": "Answer the questions to mark this module as learned. You can retry as many times as you want.",
+      "respuestaIncorrecta": "That's not it — check again",
+      "enviarRespuestas": "Submit answers",
+      "enviando": "Submitting...",
+      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want."
+    },
+    "practica": {
+      "sintaxis": {
+        "metadata": {
+          "title": "Practice Syntax",
+          "description": "Pick or complete the correct syntax in Python, Java, JavaScript and TypeScript."
+        }
+      },
+      "salida": {
+        "metadata": {
+          "title": "Practice Code output",
+          "description": "Predict what each snippet prints, with adaptive difficulty."
+        }
+      },
+      "error": {
+        "metadata": {
+          "title": "Practice Find the bug",
+          "description": "Find the bug or the cause of the failure in code snippets."
+        }
+      },
+      "estructuras": {
+        "metadata": {
+          "title": "Practice Structures and complexity",
+          "description": "Stacks, queues, sets, maps and O(n) vs O(n²) complexity — the hardest mode."
         }
       }
     }

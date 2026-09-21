@@ -13,7 +13,7 @@ import PrimeraVezTip from "@/components/PrimeraVezTip";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { calcularRachaDiaria, lunesDeEstaSemanaIso } from "@/lib/practica/racha";
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
-import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria, IconCalculia, IconCircuitia } from "@/components/icons";
+import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria, IconCalculia, IconCircuitia, IconEstadistica, IconNaipia, IconCodia } from "@/components/icons";
 import Greeting from "./Greeting";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -243,6 +243,30 @@ export default async function ProdigiaHomePage() {
                 href="/circuitia"
                 colorHex="#F59E0B"
                 bloqueado={!profile.mundos_desbloqueados?.includes("circuitia")}
+              />
+              <WorldCard
+                nombre={tMundos("estadistica")}
+                descripcion={t("mundos.estadistica")}
+                Icono={IconEstadistica}
+                href="/estadistica"
+                colorHex="#0D9488"
+                bloqueado={!profile.mundos_desbloqueados?.includes("estadistica")}
+              />
+              <WorldCard
+                nombre={tMundos("naipia")}
+                descripcion={t("mundos.naipia")}
+                Icono={IconNaipia}
+                href="/naipia"
+                colorHex="#B91C1C"
+                bloqueado={!profile.mundos_desbloqueados?.includes("naipia")}
+              />
+              <WorldCard
+                nombre={tMundos("codia")}
+                descripcion={t("mundos.codia")}
+                Icono={IconCodia}
+                href="/codia"
+                colorHex="#06B6D4"
+                bloqueado={!profile.mundos_desbloqueados?.includes("codia")}
               />
             </div>
           </PrimeraVezTip>

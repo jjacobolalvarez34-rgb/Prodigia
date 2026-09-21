@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, subscribeEfectos } from "@/lib/efectos";
 
-export type MundoFondo = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia";
+export type MundoFondo = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia";
 
 interface Posicion {
   simbolo: string;
@@ -106,6 +106,33 @@ const SETS: Record<MundoFondo, Posicion[]> = {
     { simbolo: "⏚", left: "14%", top: "72%", size: 36, rotate: -4, delay: 1 },
     { simbolo: "⚡", left: "88%", top: "66%", size: 28, rotate: 8, delay: 1.3 },
     { simbolo: "Ω", left: "50%", top: "8%", size: 30, rotate: 6, delay: 0.7 },
+  ],
+  // Mundo Estadística: sigma, mu, porcentaje, más-menos — mismo criterio
+  // (glifos unicode, no imágenes).
+  estadistica: [
+    { simbolo: "σ", left: "8%", top: "14%", size: 58, rotate: -8, delay: 0 },
+    { simbolo: "μ", left: "90%", top: "20%", size: 46, rotate: 4, delay: 0.5 },
+    { simbolo: "%", left: "14%", top: "72%", size: 40, rotate: -4, delay: 1 },
+    { simbolo: "±", left: "88%", top: "66%", size: 34, rotate: 8, delay: 1.3 },
+    { simbolo: "Σ", left: "50%", top: "8%", size: 32, rotate: 6, delay: 0.7 },
+  ],
+  // Mundo Naipia (deporte mental de memoria/conteo): palos de la baraja
+  // y el +1/−1 del conteo — mismo criterio (glifos unicode, no imágenes).
+  naipia: [
+    { simbolo: "♠", left: "8%", top: "14%", size: 58, rotate: -8, delay: 0 },
+    { simbolo: "♥", left: "90%", top: "20%", size: 44, rotate: 4, delay: 0.5 },
+    { simbolo: "+1", left: "14%", top: "72%", size: 36, rotate: -4, delay: 1 },
+    { simbolo: "♦", left: "88%", top: "66%", size: 34, rotate: 8, delay: 1.3 },
+    { simbolo: "♣", left: "50%", top: "8%", size: 32, rotate: 6, delay: 0.7 },
+  ],
+  // Mundo Codia: llaves, etiquetas, punto y coma, flecha — mismo criterio
+  // (glifos unicode, no imágenes).
+  codia: [
+    { simbolo: "{ }", left: "8%", top: "14%", size: 54, rotate: -8, delay: 0 },
+    { simbolo: "</>", left: "90%", top: "20%", size: 38, rotate: 4, delay: 0.5 },
+    { simbolo: ";", left: "14%", top: "72%", size: 44, rotate: -4, delay: 1 },
+    { simbolo: "=>", left: "88%", top: "66%", size: 32, rotate: 8, delay: 1.3 },
+    { simbolo: "[ ]", left: "50%", top: "8%", size: 34, rotate: 6, delay: 0.7 },
   ],
 };
 

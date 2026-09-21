@@ -91,7 +91,21 @@ export type ProblemTypeCalibrable =
   | "circuitia_serie"
   | "circuitia_paralelo"
   | "circuitia_mixto"
-  | "circuitia_cualitativo";
+  | "circuitia_cualitativo"
+  | "estadistica_central"
+  | "estadistica_dispersion"
+  | "estadistica_probabilidad"
+  | "estadistica_datos"
+  | "estadistica_graficos"
+  | "naipia_hilo"
+  | "naipia_ko"
+  | "naipia_hiopt2"
+  | "naipia_omega2"
+  | "naipia_verdadero"
+  | "codia_sintaxis"
+  | "codia_salida"
+  | "codia_error"
+  | "codia_estructuras";
 
 export async function actualizarSkillLevel(
   supabase: SupabaseClient,

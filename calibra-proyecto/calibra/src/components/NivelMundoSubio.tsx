@@ -22,6 +22,9 @@ const COLOR_MUNDO: Record<string, string> = {
   historia: "#A0522D",
   calculia: "#4338CA",
   circuitia: "#F59E0B",
+  estadistica: "#0D9488",
+  naipia: "#B91C1C",
+  codia: "#06B6D4",
 };
 
 // Cierre de Fase DD2: el nivel de mundo ahora tiene el mismo gesto que
@@ -41,7 +44,7 @@ export default function NivelMundoSubio({ nivelMundo }: { nivelMundo: NivelMundo
 
   if (!nivelMundo?.subio) return null;
   const color = COLOR_MUNDO[nivelMundo.world] ?? "#6C4CF1";
-  const nombreMundoValido = ["numeria", "enigmia", "geografia", "quimia", "anatomia", "melodia", "trigonometria", "historia", "calculia", "circuitia"].includes(
+  const nombreMundoValido = ["numeria", "enigmia", "geografia", "quimia", "anatomia", "melodia", "trigonometria", "historia", "calculia", "circuitia", "estadistica", "naipia", "codia"].includes(
     nivelMundo.world
   );
   const nombre = nombreMundoValido

@@ -11,6 +11,9 @@ import { NOMBRE_MODO_TRIGONOMETRIA, type ModoTrigonometria } from "@/lib/practic
 import { NOMBRE_MODO_HISTORIA, type ModoHistoria } from "@/lib/practica/historia";
 import { NOMBRE_MODO_CALCULIA, type ModoCalculia } from "@/lib/practica/calculia";
 import { NOMBRE_MODO_CIRCUITIA, type ModoCircuitia } from "@/lib/practica/circuitia";
+import { NOMBRE_MODO_ESTADISTICA, type ModoEstadistica } from "@/lib/practica/estadistica";
+import { NOMBRE_MODO_NAIPIA, type ModoNaipia } from "@/lib/practica/naipia";
+import { NOMBRE_MODO_CODIA, type ModoCodia } from "@/lib/practica/codia";
 import type { Continente } from "@/lib/practica/geografia";
 import { COLOR_MUNDO, type MundoDuelo } from "@/lib/duelos/rutas";
 
@@ -18,10 +21,10 @@ export type SeleccionMundoDuelo = MundoDuelo | "aleatorio";
 
 const CONTINENTES: Continente[] = ["america", "europa", "africa", "asia_oceania"];
 
-// Los 9 mundos elegibles para duelar, sin descripción — lista base para
+// Los 13 mundos elegibles para duelar, sin descripción — lista base para
 // retar a un amigo / invitar por link (Rankeds arma la suya propia, con
 // descripciones traducidas y la opción "todas las ciudades").
-const MUNDOS_DUELO_IDS: MundoDuelo[] = ["numeria", "geografia", "enigmia", "quimia", "anatomia", "melodia", "trigonometria", "historia", "calculia", "circuitia"];
+const MUNDOS_DUELO_IDS: MundoDuelo[] = ["numeria", "geografia", "enigmia", "quimia", "anatomia", "melodia", "trigonometria", "historia", "calculia", "circuitia", "estadistica", "naipia", "codia"];
 
 // Hook (no una constante) porque el nombre de cada mundo depende del
 // locale activo (Mundos.nombres) — Numeria/Enigmia/Quimia se mantienen
@@ -59,6 +62,9 @@ export function useEtiquetasDuelo() {
     if (mundo === "historia") return NOMBRE_MODO_HISTORIA[opcion as ModoHistoria] ?? opcion;
     if (mundo === "calculia") return NOMBRE_MODO_CALCULIA[opcion as ModoCalculia] ?? opcion;
     if (mundo === "circuitia") return NOMBRE_MODO_CIRCUITIA[opcion as ModoCircuitia] ?? opcion;
+    if (mundo === "estadistica") return NOMBRE_MODO_ESTADISTICA[opcion as ModoEstadistica] ?? opcion;
+    if (mundo === "naipia") return NOMBRE_MODO_NAIPIA[opcion as ModoNaipia] ?? opcion;
+    if (mundo === "codia") return NOMBRE_MODO_CODIA[opcion as ModoCodia] ?? opcion;
     return NOMBRE_MODO_QUIMIA[opcion as ModoQuimia] ?? opcion;
   }
 
@@ -141,6 +147,9 @@ export default function SelectorMundoDuelo({
     historia: (Object.keys(NOMBRE_MODO_HISTORIA) as ModoHistoria[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_HISTORIA[m] })),
     calculia: (Object.keys(NOMBRE_MODO_CALCULIA) as ModoCalculia[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_CALCULIA[m] })),
     circuitia: (Object.keys(NOMBRE_MODO_CIRCUITIA) as ModoCircuitia[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_CIRCUITIA[m] })),
+    estadistica: (Object.keys(NOMBRE_MODO_ESTADISTICA) as ModoEstadistica[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_ESTADISTICA[m] })),
+    naipia: (Object.keys(NOMBRE_MODO_NAIPIA) as ModoNaipia[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_NAIPIA[m] })),
+    codia: (Object.keys(NOMBRE_MODO_CODIA) as ModoCodia[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_CODIA[m] })),
   };
 
   return (

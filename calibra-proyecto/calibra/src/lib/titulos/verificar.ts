@@ -10,6 +10,9 @@ const TIPOS_TRIGONOMETRIA = ["trigonometria_razones", "trigonometria_circulo", "
 const TIPOS_HISTORIA = ["historia_cronologia", "historia_personajes", "historia_causaefecto", "historia_fechas"];
 const TIPOS_CALCULIA = ["calculia_derivadas", "calculia_integrales", "calculia_series", "calculia_multivariable"];
 const TIPOS_CIRCUITIA = ["circuitia_serie", "circuitia_paralelo", "circuitia_mixto", "circuitia_cualitativo"];
+const TIPOS_ESTADISTICA = ["estadistica_central", "estadistica_dispersion", "estadistica_probabilidad", "estadistica_datos", "estadistica_graficos"];
+const TIPOS_NAIPIA = ["naipia_hilo", "naipia_ko", "naipia_hiopt2", "naipia_omega2", "naipia_verdadero"];
+const TIPOS_CODIA = ["codia_sintaxis", "codia_salida", "codia_error", "codia_estructuras"];
 
 // Mismo espíritu que verificarLogros (src/lib/logros/verificar.ts):
 // solo calcula lo que hace falta para los títulos todavía no
@@ -228,6 +231,15 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
     } else if (mundo === "circuitia") {
       const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_CIRCUITIA);
       mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_CIRCUITIA.length && (rows ?? []).every((r) => r.nivel >= 10));
+    } else if (mundo === "estadistica") {
+      const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_ESTADISTICA);
+      mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_ESTADISTICA.length && (rows ?? []).every((r) => r.nivel >= 10));
+    } else if (mundo === "naipia") {
+      const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_NAIPIA);
+      mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_NAIPIA.length && (rows ?? []).every((r) => r.nivel >= 10));
+    } else if (mundo === "codia") {
+      const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_CODIA);
+      mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_CODIA.length && (rows ?? []).every((r) => r.nivel >= 10));
     }
   }
 

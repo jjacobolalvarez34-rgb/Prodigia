@@ -16,6 +16,9 @@ import {
   IconHistoria,
   IconCalculia,
   IconCircuitia,
+  IconEstadistica,
+  IconNaipia,
+  IconCodia,
   IconCandado,
 } from "@/components/icons";
 import Boton from "@/components/Boton";
@@ -36,7 +39,7 @@ interface Props {
 // mundo gratis fijo ni la pantalla de "¿Qué te gustaría mejorar?" (era
 // un resabio de cuando solo existía Numeria, no influía en nada del
 // diagnóstico real de cada mundo) — se eligen directamente 2 mundos
-// gratis acá, mismos 8 mundos y colores que MundoSelector.tsx (nav).
+// gratis acá, mismos 13 mundos y colores que MundoSelector.tsx (nav).
 const ICONO_MUNDO: Record<MundoPago, typeof IconSuma> = {
   numeria: IconSuma,
   geografia: IconGeometria,
@@ -48,6 +51,9 @@ const ICONO_MUNDO: Record<MundoPago, typeof IconSuma> = {
   historia: IconHistoria,
   calculia: IconCalculia,
   circuitia: IconCircuitia,
+  estadistica: IconEstadistica,
+  naipia: IconNaipia,
+  codia: IconCodia,
 };
 
 export default function OnboardingForm({ next, saltarPasoNombre }: Props) {

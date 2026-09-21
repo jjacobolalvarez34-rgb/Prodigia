@@ -1,5 +1,5 @@
 // Fase 12 ("Mundos por Chispas"), con el ajuste posterior (0112): ya no
-// hay un mundo gratis fijo — cada cuenta elige DOS de los 8 como gratis
+// hay un mundo gratis fijo — cada cuenta elige DOS de los 13 como gratis
 // en el onboarding (OnboardingForm, RPC elegir_mundos_iniciales) y el
 // resto se compra con Chispas. Por eso los 8 mundos, Numeria incluida,
 // cuentan acá como "potencialmente pagos" — cuál de ellos es realmente
@@ -10,7 +10,7 @@
 // jamás confía en lo que mande el cliente, ver esa migración).
 export const PRECIO_MUNDO_CHISPAS = 3000;
 
-export const MUNDOS_PAGOS = ["numeria", "geografia", "enigmia", "quimia", "anatomia", "melodia", "trigonometria", "historia", "calculia", "circuitia"] as const;
+export const MUNDOS_PAGOS = ["numeria", "geografia", "enigmia", "quimia", "anatomia", "melodia", "trigonometria", "historia", "calculia", "circuitia", "estadistica", "naipia", "codia"] as const;
 
 export type MundoPago = (typeof MUNDOS_PAGOS)[number];
 
@@ -33,6 +33,9 @@ export const COLOR_MUNDO_PAGO: Record<MundoPago, string> = {
   historia: "#A0522D",
   calculia: "#4338CA",
   circuitia: "#F59E0B",
+  estadistica: "#0D9488",
+  naipia: "#B91C1C",
+  codia: "#06B6D4",
 };
 
 export const RUTA_MUNDO_PAGO: Record<MundoPago, string> = {
@@ -46,4 +49,7 @@ export const RUTA_MUNDO_PAGO: Record<MundoPago, string> = {
   historia: "/historia",
   calculia: "/calculia",
   circuitia: "/circuitia",
+  estadistica: "/estadistica",
+  naipia: "/naipia",
+  codia: "/codia",
 };

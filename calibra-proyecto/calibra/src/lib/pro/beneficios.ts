@@ -37,7 +37,7 @@ export const BENEFICIOS_PRO = [
   },
   {
     emoji: "🎓",
-    titulo: "Curso estructurado",
-    descripcion: "Lecciones a fondo con ejemplos resueltos paso a paso y un quiz que hay que aprobar para avanzar — en Calculia y Circuitia por ahora.",
+    titulo: "Clases",
+    descripcion: "Pestaña Clases dentro de Aprender de cada mundo: lecciones progresivas y dependientes entre sí, con ejemplos resueltos paso a paso y un quiz entre lecciones. La primera clase es gratis.",
   },
 ] as const;

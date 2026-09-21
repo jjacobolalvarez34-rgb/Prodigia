@@ -51,6 +51,9 @@ export default async function PerfilPage() {
     historia: tMundos("historia"),
     calculia: tMundos("calculia"),
     circuitia: tMundos("circuitia"),
+    estadistica: tMundos("estadistica"),
+    naipia: tMundos("naipia"),
+    codia: tMundos("codia"),
     geometria: tNumeriaTemas("geometria"),
     fracciones: tNumeriaTemas("fracciones"),
     decimales: tNumeriaTemas("decimales"),
@@ -76,6 +79,9 @@ export default async function PerfilPage() {
     { count: historiaTotal },
     { count: calculiaTotal },
     { count: circuitiaTotal },
+    { count: estadisticaTotal },
+    { count: naipiaTotal },
+    { count: codiaTotal },
     { data: worldRows },
     { data: titulosRows },
     { data: afinidadRows },
@@ -120,7 +126,10 @@ export default async function PerfilPage() {
       .not("problem_type", "like", "trigonometria_%")
       .not("problem_type", "like", "historia_%")
       .not("problem_type", "like", "calculia_%")
-      .not("problem_type", "like", "circuitia_%"),
+      .not("problem_type", "like", "circuitia_%")
+      .not("problem_type", "like", "estadistica_%")
+      .not("problem_type", "like", "naipia_%")
+      .not("problem_type", "like", "codia_%"),
     supabase.from("logic_attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("problem_type", "geografia"),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"]),
@@ -130,6 +139,9 @@ export default async function PerfilPage() {
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["historia_cronologia", "historia_personajes", "historia_causaefecto", "historia_fechas"]),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["calculia_derivadas", "calculia_integrales", "calculia_series", "calculia_multivariable"]),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["circuitia_serie", "circuitia_paralelo", "circuitia_mixto", "circuitia_cualitativo"]),
+    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["estadistica_central", "estadistica_dispersion", "estadistica_probabilidad", "estadistica_datos", "estadistica_graficos"]),
+    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["naipia_hilo", "naipia_ko", "naipia_hiopt2", "naipia_omega2", "naipia_verdadero"]),
+    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["codia_sintaxis", "codia_salida", "codia_error", "codia_estructuras"]),
     supabase.from("world_progress").select("world, nivel_mundo").eq("user_id", user.id),
     supabase.rpc("mis_titulos"),
     supabase.rpc("afinidad_por_mundo"),
@@ -349,6 +361,21 @@ export default async function PerfilPage() {
             <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("circuitia")}</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{circuitiaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("circuitia") })}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("estadistica")}</p>
+            <p className="mt-1 font-mono text-xl font-bold text-foreground">{estadisticaTotal ?? 0}</p>
+            <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("estadistica") })}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("naipia")}</p>
+            <p className="mt-1 font-mono text-xl font-bold text-foreground">{naipiaTotal ?? 0}</p>
+            <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("naipia") })}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("codia")}</p>
+            <p className="mt-1 font-mono text-xl font-bold text-foreground">{codiaTotal ?? 0}</p>
+            <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("codia") })}</p>
           </div>
         </section>
 

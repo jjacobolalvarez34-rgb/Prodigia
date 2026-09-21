@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!--
+    Marco temático de Codia (mundo 13) — generado programáticamente
+    (anillo + motivo simple: corchetes angulares </> arriba y abajo,
+    llaves a los costados), mismo espíritu que los marcos de
+    Calculia/Circuitia. Centro transparente a propósito: se superpone
+    sobre el avatar vía AvatarConMarco.tsx, no lo reemplaza.
+    TODO: reemplazar por un asset de diseño real cuando esté disponible,
+    igual que los otros mundos.
+  -->
+  <defs>
+    <linearGradient id="anilloCodia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#67E8F9" />
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="92" fill="none" stroke="url(#anilloCodia)" stroke-width="10" />
+  <g fill="none" stroke="#06B6D4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="88,8 80,15 88,22" />
+    <line x1="104" y1="7" x2="96" y2="23" />
+    <polyline points="112,8 120,15 112,22" />
+    <polyline points="88,178 80,185 88,192" />
+    <line x1="104" y1="177" x2="96" y2="193" />
+    <polyline points="112,178 120,185 112,192" />
+    <path d="M14 88 C8 88 10 100 4 100 C10 100 8 112 14 112" />
+    <path d="M186 88 C192 88 190 100 196 100 C190 100 192 112 186 112" />
+  </g>
+</svg>

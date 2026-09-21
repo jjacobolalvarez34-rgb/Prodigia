@@ -40,29 +40,30 @@ confirmar en vivo · ❌ ausente.
 
 ## Matriz completa
 
-| # | Sistema | Numeria | Enigmia | Geografía | Quimia | Anatomía | Melodía | Trigonometría | Historia | Calculia | Circuitia |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | Practicar: tema→sub-tema→chips | ✅ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| 2 | Calibración 1-10 | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 3 | Aprender: camino continuo | ✅ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ |
-| 4 | world_progress avanzando | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 5 | Racha/combo (useRachaCombo) | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 6 | Logros y títulos propios | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 7 | Aparece en /perfil | ✅² | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 8 | Rankeds: ciudad seleccionable | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 9 | Rankeds: dificultad por rango | ✅ | ✅⁵ | ✅ | ✅¹ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 10 | Duelo casual | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 11 | Duelo con amigo (selector) | ✅ | ✅ | ✅ | ✅¹ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 12 | Invitar por link (sin cuenta) | ✅ | ✅ | ✅ | ✅¹ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 13 | Progreso en vivo del rival | ✅ | ✅³ | ✅³ | ✅³ | ✅³ | ✅³ | ⚠️⁶ | ⚠️⁶ | ⚠️⁷ | ⚠️⁸ |
-| 14 | Pantalla VS antes de arrancar | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 15 | TextType "todas las ciudades" | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 16 | Countdown automático 10s | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 17 | Resultados + ELO animado | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 18 | Mundos por Chispas | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 19 | Feed: tarjetas automáticas | ✅ | ✅¹,⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ |
-| 20 | Responsive en mobile real | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| 21 | Aparece en estadísticas Pro (/perfil/estadisticas) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅¹⁰ | ✅¹⁰ |
+| # | Sistema | Numeria | Enigmia | Geografía | Quimia | Anatomía | Melodía | Trigonometría | Historia | Calculia | Circuitia | Estadística | Naipia | Codia |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | Practicar: tema→sub-tema→chips | ✅ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| 2 | Calibración 1-10 | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 3 | Aprender: camino continuo | ✅ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ |
+| 4 | world_progress avanzando | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 5 | Racha/combo (useRachaCombo) | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 6 | Logros y títulos propios | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 7 | Aparece en /perfil | ✅² | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 8 | Rankeds: ciudad seleccionable | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 9 | Rankeds: dificultad por rango | ✅ | ✅⁵ | ✅ | ✅¹ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 10 | Duelo casual | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 11 | Duelo con amigo (selector) | ✅ | ✅ | ✅ | ✅¹ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 12 | Invitar por link (sin cuenta) | ✅ | ✅ | ✅ | ✅¹ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 13 | Progreso en vivo del rival | ✅ | ✅³ | ✅³ | ✅³ | ✅³ | ✅³ | ⚠️⁶ | ⚠️⁶ | ⚠️⁷ | ⚠️⁸ | ⚠️¹¹ | ⚠️¹¹ | ⚠️¹¹ |
+| 14 | Pantalla VS antes de arrancar | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 15 | TextType "todas las ciudades" | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 16 | Countdown automático 10s | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 17 | Resultados + ELO animado | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 18 | Mundos por Chispas | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 19 | Feed: tarjetas automáticas | ✅ | ✅¹,⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 20 | Responsive en mobile real | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| 21 | Aparece en estadísticas Pro (/perfil/estadisticas) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅¹⁰ | ✅¹⁰ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
+| 22 | Aprender con pestañas Técnicas \| Clases (Pro, clase 1 gratis) | ⚠️¹² | ⚠️¹² | ⚠️¹² | ⚠️¹² | ⚠️¹² | ⚠️¹² | ⚠️¹² | ⚠️¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² |
 
 ¹ = bug real encontrado en esta auditoría y **ya corregido en el código** esta sesión — ver "Changelog" abajo. La celda muestra el estado ACTUAL (post-fix), no el que se encontró.
 ² = /perfil de Numeria tenía un bug propio (ver changelog) que inflaba su propio contador con attempts de otros mundos — también corregido.
@@ -80,7 +81,13 @@ confirmar en vivo · ❌ ausente.
 
 ¹⁰ = Calculia y Circuitia no aparecían en `/perfil/estadisticas` (ni en el resumen por mundo ni en el desglose por sub-tema) desde que se agregaron — `estadisticas_pro_perfil()`/`estadisticas_pro_subtemas()` (definición vigente: `0151`) nunca ganaron una rama `'calculia_%'`/`'circuitia_%'` en su `case` de clasificación, así que esos intentos caían en el `else null` y se filtraban en silencio (`where b.m is not null`). Corregido en `0187_estadisticas_pro_calculia_circuitia.sql` (mismo `case` que ya usaba correctamente la versión para docentes, `estadisticas_pro_subtemas_grupo` de `0169`), todavía sin correr en la base real al momento de escribir esto.
 
-**Resumen actual**: de 210 celdas (21 sistemas × 10 mundos), 186 ✅ (5 de ellas confirmadas jugando, no solo por código; 18 de Trigonometría/Historia, 18 de Calculia y 18 de Circuitia son ✅ solo por código+build, ver footnotes ⁶/⁷/⁸), 23 ⚠️ (17 de la matriz de 8 mundos + 3 de Calculia + 3 de Circuitia, mismo patrón que los mundos anteriores), 1 ❌ (Enigmia #1). Ningún mundo tiene un sistema completamente roto sin arreglo disponible; los ⚠️ restantes son gaps de UX/contenido reales (no bugs de wiring), cosas que no se pueden confirmar sin dispositivo real/browser, o (para los mundos nuevos) sistemas pendientes de la primera verificación en vivo post-migración.
+¹¹ = Estadística, Naipia y Codia son los mundos 11, 12 y 13 (2026-09-20/21, migraciones `0189`-`0194`, todavía sin correr en la base real al escribir esto). Mismo significado que las footnotes ⁶/⁷/⁸: "código completo, `tsc --noEmit` y `vitest` limpios, mismo patrón verificado que los 10 mundos anteriores" — nada de esto se confirmó jugando de verdad. La fila 13 queda en ⚠️ por el mismo motivo que en los otros mundos nuevos. Ver "Mundos 11-13" más abajo.
+
+¹² = **Fila 22, regla nueva pedida por el usuario (2026-09-20): "Clases" es una función Pro extra que TODO mundo debe tener.** Cada `/<mundo>/aprender` tiene dos pestañas — **Técnicas** (gratis) y **Clases** (Pro: lecciones progresivas y dependientes que enseñan el tema desde cero, con ejemplos resueltos paso a paso y un quiz entre lecciones; la primera clase es preview gratis). Estado: ✅ en los mundos 9-13. ⚠️ **"pendiente de rollout"** en los 8 originales (Numeria, Enigmia, Geografía, Quimia, Anatomía, Melodía, Trigonometría, Historia): la infraestructura ya es genérica (`AprenderTabs` + `obtenerCaminoConClases`; la pestaña Clases solo aparece si el mundo tiene ≥1 fila `techniques` con `requiere_pro=true`), así que cada rollout es sembrar sus filas + enchufar el componente. **No se marca ✅ hasta que cada mundo tenga sus clases reales** (6-8 lecciones + quiz, verificadas contra el generador del mundo; un mundo por commit, mismo criterio que el Proceso 1 de `PLAN_REVISION_CONTENIDO.md`).
+
+**Resumen (al 2026-09-18, ANTES de los mundos 11-13 y la fila 22 — ver la actualización debajo)**: de 210 celdas (21 sistemas × 10 mundos), 186 ✅ (5 de ellas confirmadas jugando, no solo por código; 18 de Trigonometría/Historia, 18 de Calculia y 18 de Circuitia son ✅ solo por código+build, ver footnotes ⁶/⁷/⁸), 23 ⚠️ (17 de la matriz de 8 mundos + 3 de Calculia + 3 de Circuitia, mismo patrón que los mundos anteriores), 1 ❌ (Enigmia #1). Ningún mundo tiene un sistema completamente roto sin arreglo disponible; los ⚠️ restantes son gaps de UX/contenido reales (no bugs de wiring), cosas que no se pueden confirmar sin dispositivo real/browser, o (para los mundos nuevos) sistemas pendientes de la primera verificación en vivo post-migración.
+
+**Actualización 2026-09-21**: la matriz ahora es de 22 sistemas × 13 mundos (286 celdas). Los mundos 11-13 suman 3 columnas con el mismo perfil que Calculia/Circuitia (✅ por código+build salvo las filas 1, 13 y 20 en ⚠️), y la fila 22 (Clases) queda ✅ en 5 mundos y ⚠️ "pendiente de rollout" en 8.
 
 **⚠️ Fila 21, regla nueva pedida por el usuario (2026-09-18)**: un mundo nuevo tiene que aparecer en `/perfil/estadisticas` (resumen por mundo Y desglose por sub-tema) desde el día uno — no es automático. `estadisticas_pro_perfil()`/`estadisticas_pro_subtemas()` (definición vigente: `0151`) clasifican cada `problem_type` a un mundo con un `case`/`like` a mano; un mundo sin su propia rama ahí cae en el `else null` y sus intentos se filtran en silencio de TODA estadística Pro, sin error visible para el usuario. **Bug real encontrado al agregar esta fila**: exactamente eso le pasaba a Calculia y Circuitia desde que se agregaron (0165-0171) — nadie había extendido el `case` de estas dos funciones (sí se había hecho, correctamente, para la versión de docentes `estadisticas_pro_subtemas_grupo` de `0169`, pero no para la individual). Corregido en `0187_estadisticas_pro_calculia_circuitia.sql`.
 
@@ -299,3 +306,25 @@ Precio del "Colección de Mundos" actualizado de 16200 a 18000 Chispas al pasar 
 **Verificación de esta tanda**: `npx tsc --noEmit -p tsconfig.json` limpio (exit 0). `npx eslint` limpio (0 errores/0 warnings) en los 4 archivos de código tocados (`src/lib/circuitia/path.ts`, `src/app/[locale]/circuitia/aprender/page.tsx`, `src/app/[locale]/circuitia/aprender/[slug]/page.tsx`, `src/app/[locale]/circuitia/aprender/[slug]/LeccionCircuitiaClient.tsx` — `src/app/api/aprender/completar/route.ts` no se tocó, ya era genérico). `npx vitest run`: 18 archivos/178 tests, todos pasando, sin regresión respecto al conteo de la sección de Circuitia arriba (mismo 18/178 — esta tanda no agregó test files nuevos, mismo criterio que la tanda de Calculia: no existe harness establecido para mockear route handlers de Next). `node -e "JSON.parse(...)"` confirmó que `messages/es.json` y `messages/en.json` siguen siendo JSON válido tras agregar las claves nuevas. El contenido jsonb de las 7 lecciones de `0171_circuitia_curso_pro.sql` se validó por script (parseo JSON de cada literal + chequeo de que cada `quiz[i].respuesta` aparece exacto entre sus `opciones`, sin duplicados, con `explicacion` presente en las 21 preguntas) — no corrido contra una base real, igual que el resto de las migraciones de esta matriz.
 
 **Mismo efecto secundario conocido de Calculia, deliberadamente NO corregido acá tampoco**: las 7 filas nuevas suman al total de `techniques where problem_type='circuitia'` que usan `registrar_progreso_mundo`/`detalle_nivel_mundo` para la fracción de "lecciones completadas" del nivel de mundo (de 5 a 12), así que un usuario free de Circuitia tampoco podrá llegar al 100% de esa fracción aunque domine las 5 técnicas rápidas + el preview del curso Pro — mismo fix pendiente documentado arriba para Calculia (filtrar por `and not requiere_pro` en esas funciones cross-cutting), fuera de alcance de esta tanda por la misma razón.
+
+---
+
+## Mundos 11, 12 y 13 — Estadística, Naipia y Codia (2026-09-20/21)
+
+Tres mundos NORMALES en todo — catálogo, Practicar, Rankeds (jugables sin tenerlos comprados), duelos, logros, títulos, tienda (marco temático), estadísticas Pro, reto diario y theming — con la checklist completa (las 22 filas + los puntos 1-19 de `ESPECIFICACION.md`) aplicada desde el día uno. Lo único distinto vive dentro de Aprender: pestañas **Técnicas | Clases** (fila 22). Migraciones: `0189_mundos_estadistica_naipia_codia.sql` (todo lo específico: columnas/checks/logros/ramas de funciones), `0190_trece_mundos.sql` (cross-cutting a 13 mundos + las 3 funciones de estadísticas Pro con rama nueva + `guardar_afinidad_banner`), `0191`/`0192`/`0193` (contenido) y `0194` (anuncios).
+
+**Regla de las funciones SQL** (la de "Mundo 9"): cada función cross-cutting se reescribió a partir de su definición VIGENTE (grep de la última migración que la redefine: `0167` para nivel de mundo/ranking/duelos, `0168` para onboarding/desbloqueo/tienda, `0187` y `0169` para estadísticas Pro), con alias `pr.` en todo acceso a `profiles`. Bugs preexistentes encontrados y corregidos de paso: `crear_invitacion_duelo` rechazaba en SQL los sub-tipos `nomenclatura`/`organica` de Quimia aunque la API ya los aceptaba, y `guardar_afinidad_banner` (`0144`) solo aceptaba 8 mundos (elegir Calculia/Circuitia como favorito fallaba con "item invalido"). Precio del paquete de marcos: 18000 → 23400 Chispas (13 × 2400, ~25% de descuento; `costos.ts` y `comprar_item_tienda` coinciden). También se corrigió `perfil/page.tsx`, donde el contador de Numeria contaba por prefijo intentos de los mundos nuevos (`estadistica_%`/`naipia_%`/`codia_%`).
+
+**Estadística** (`#0D9488`): 5 modos con bandas — central 1-3, dispersión 3-6, probabilidad 4-7, datos 6-10, gráficos 5-9 (lectura de gráficos: barras, líneas, histograma, boxplot, con "gráfico engañoso por escala"; SVG por código en `src/components/estadistica/`). Verificación: `estadistica.test.ts` hace 200 pulls por modo × 10 niveles (10.000 problemas) y recalcula cada respuesta por un método independiente (fracciones exactas en BigInt, varianza por E[x²]−μ², percentil por posición, probabilidad por enumeración, combinatoria por Pascal, regla empírica contra la normal real); `graficos.test.ts` renderiza los SVG y comprueba un elemento por dato y alturas proporcionales al eje. Las respuestas numéricas se comparan por valor (5.20 = 5.2 = 5.200). Contenido: 5 Técnicas + 8 Clases (`0191`), 637 comprobaciones numéricas y 410 fórmulas LaTeX validadas con KaTeX.
+
+**Naipia** (`#B91C1C`): **deporte mental de memoria y conteo — cero lenguaje de casino/apuestas** (un test escanea ~35 patrones en el texto generado, el namespace i18n es/en y el SQL de `0192`). 5 sistemas: Hi-Lo (1-3), KO (3-5), Hi-Opt II (5-7), Omega II (7-9), conteo verdadero (9-10; regla de redondeo declarada en el enunciado). Valores como datos (`TABLA_SISTEMAS`): Hi-Lo 2-6 = +1, 7-9 = 0, 10-A = −1; KO 2-7 = +1, 8-9 = 0, 10-A = −1; Hi-Opt II 2,3,6,7 = +1, 4,5 = +2, 10/J/Q/K = −2, 8,9,A = 0; Omega II 2,3,7 = +1, 4,5,6 = +2, 9 = −1, 10/J/Q/K = −2, 8,A = 0 (no se rotulan "niveles" de sistema). Cartas SVG por código con `aria-label`. Test: 250 pulls por modo y nivel, respuestas recalculadas con tablas independientes y las cartas re-parseadas del texto del enunciado. Contenido: 5 Técnicas + 8 Clases (`0192`).
+
+**Codia** (`#06B6D4`): 4 modos × 4 lenguajes (Python, Java, JavaScript, TypeScript) — sintaxis 1-3, salida 3-6, error 5-8, estructuras 7-10 (incluye complejidad O(n) vs O(n²) medida contando ejecuciones reales). Cada problema es un programa en un IR mínimo, renderizado a los 4 lenguajes; la respuesta sale de un intérprete con la semántica real de cada lenguaje (`//` y `%` con negativos, coerción de JS, etc.). **Verificación por ejecución real** (`codia.test.ts`, pedido explícito equivalente al bug de Enigmia): 100 problemas por modo y lenguaje (400 por lenguaje, 1600 en total) ejecutados con Python 3.12, Node 22, TypeScript real (`typescript` 5.9, strict) y `javac 21 --release 8` sobre JRE 1.8, comparando stdout real contra la respuesta predicha (en los problemas de error, además la causa y la línea reportadas por el runtime); más el catálogo completo de sintaxis con todos los distractores. Se comprobó que los tests no son vacíos rompiendo a propósito el intérprete y una lección (fallaron ambos). Contenido: 5 Técnicas + 8 Clases con equivalencias en los 4 lenguajes (`0193`, generada desde `src/lib/codia/lecciones/`, con un test que compara la migración con lo generado). En el reto diario el código va dentro del enunciado, así que `RetoClient` lo muestra en monoespaciado con `whitespace-pre-wrap`.
+
+**Anuncios (regla vinculante, ya existente, cumplida)**: `0194_anuncios_mundos_11_13_y_clases.sql` inserta DOS anuncios separados — "Nuevos mundos: Estadística, Naipia y Codia" y "Nuevo en Pro: pestaña Clases". Cada vez que se agregue un mundo o un beneficio Pro nuevo hay que agregar su anuncio (`anuncios`, `AnunciosModal.tsx`).
+
+**Estado real de verificación**: `npx tsc --noEmit` limpio; `npx vitest run` 25 archivos / 363 tests pasando; `eslint` limpio en todo lo nuevo (los errores restantes de `eslint src` están en archivos anteriores no tocados); `messages/es.json` y `en.json` con 2538 claves cada uno, paridad exacta. **No se pudo hacer** (igual que con Calculia/Circuitia): levantar el servidor y jugar, ni correr las migraciones contra Supabase — nada se vio renderizado (SVG de gráficos y cartas, `BloqueCodigo`, pestañas, feedback de color, layout responsive) ni se probaron en vivo el flujo de duelo, `correctos` en `onFinish` o `requireMundo*`. Próximo paso natural: correr `0163`→`0194` en orden y repetir el método de Fase 3 (duelo real QA1↔QA2) para las filas 9-13 de estos mundos.
+
+**Retrofit de Calculia y Circuitia**: sus dos "unidades" (técnicas rápidas / Curso Pro) pasaron a las pestañas Técnicas | Clases (mismas filas `techniques`, mismo gating; el "Curso estructurado" se llama ahora "Clases", también en `BENEFICIOS_PRO`). Efecto secundario conocido y aceptado por el usuario ("me gusta que no puedan llegar a 100% sin pagar Pro"): las filas de Clases suman al total de lecciones del nivel de mundo, así que un usuario free no llega al 100% de esa fracción.
+
+**Pendiente (Fase 4, fila 22)**: escribir las Clases reales de los 8 mundos originales (~55 lecciones), un mundo por commit. Nota técnica: el CTA de Clases lleva a `/pro?next=…`, pero la página `/pro` hoy ignora `next`.

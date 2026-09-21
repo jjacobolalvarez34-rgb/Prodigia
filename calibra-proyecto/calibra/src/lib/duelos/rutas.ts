@@ -1,6 +1,6 @@
 import type { ArithmeticProblemType } from "@/types/database";
 
-export type MundoDuelo = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia";
+export type MundoDuelo = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia";
 
 // Paleta de acento por mundo — fuente única para todo lo relacionado a
 // duelos (antes vivía duplicada, mismos 6 hex, en RankedsClient,
@@ -17,6 +17,9 @@ export const COLOR_MUNDO: Record<MundoDuelo, string> = {
   historia: "#A0522D",
   calculia: "#4338CA",
   circuitia: "#F59E0B",
+  estadistica: "#0D9488",
+  naipia: "#B91C1C",
+  codia: "#06B6D4",
 };
 
 // A dónde lleva jugar un duelo según en qué ciudad cayó — un solo lugar,
@@ -73,6 +76,28 @@ export function hrefDuelo(mundo: MundoDuelo, operationType: ArithmeticProblemTyp
     if (subTipo === "mixto") return `/circuitia/practica/mixto?duelo=${duelId}`;
     if (subTipo === "cualitativo") return `/circuitia/practica/cualitativo?duelo=${duelId}`;
     return `/circuitia/practica?duelo=${duelId}`;
+  }
+  // Mundos 11-13: las páginas /<mundo>/practica/<modo> las crea la Fase 1
+  // de cada mundo (el modo por defecto — el primero — vive en /practica).
+  if (mundo === "estadistica") {
+    if (subTipo === "dispersion") return `/estadistica/practica/dispersion?duelo=${duelId}`;
+    if (subTipo === "probabilidad") return `/estadistica/practica/probabilidad?duelo=${duelId}`;
+    if (subTipo === "datos") return `/estadistica/practica/datos?duelo=${duelId}`;
+    if (subTipo === "graficos") return `/estadistica/practica/graficos?duelo=${duelId}`;
+    return `/estadistica/practica?duelo=${duelId}`;
+  }
+  if (mundo === "naipia") {
+    if (subTipo === "ko") return `/naipia/practica/ko?duelo=${duelId}`;
+    if (subTipo === "hiopt2") return `/naipia/practica/hiopt2?duelo=${duelId}`;
+    if (subTipo === "omega2") return `/naipia/practica/omega2?duelo=${duelId}`;
+    if (subTipo === "verdadero") return `/naipia/practica/verdadero?duelo=${duelId}`;
+    return `/naipia/practica?duelo=${duelId}`;
+  }
+  if (mundo === "codia") {
+    if (subTipo === "salida") return `/codia/practica/salida?duelo=${duelId}`;
+    if (subTipo === "error") return `/codia/practica/error?duelo=${duelId}`;
+    if (subTipo === "estructuras") return `/codia/practica/estructuras?duelo=${duelId}`;
+    return `/codia/practica?duelo=${duelId}`;
   }
   // La operación real (asignada por buscar_rival_duelo, ver Rankeds) se
   // lee siempre del duelo en sí (obtener_duelo) apenas se carga

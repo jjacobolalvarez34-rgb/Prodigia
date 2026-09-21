@@ -9,6 +9,9 @@ import { generarPreguntaMelodia, conRngSembrado as conRngSembradoMelodia, type M
 import { generarProblemaTrigonometria, conRngSembrado as conRngSembradoTrigonometria, type ModoTrigonometria } from "@/lib/practica/trigonometria";
 import { generarPreguntaHistoria, conRngSembrado as conRngSembradoHistoria, type ModoHistoria } from "@/lib/practica/historia";
 import { generarProblemaCalculia, conRngSembrado as conRngSembradoCalculia, type ModoCalculia } from "@/lib/practica/calculia";
+import { preguntaEstadistica } from "@/lib/practica/estadistica";
+import { preguntaNaipia } from "@/lib/practica/naipia";
+import { preguntaCodia } from "@/lib/practica/codia";
 import { generarProblemaCircuitia, conRngSembrado as conRngSembradoCircuitia, type ModoCircuitia } from "@/lib/practica/circuitia";
 
 // Fase 3 (reto diario multi-ciudad, 2026-08-25): antes esto solo
@@ -21,7 +24,7 @@ import { generarProblemaCircuitia, conRngSembrado as conRngSembradoCircuitia, ty
 // mundos_desbloqueados de profiles (Fase 12, Chispas) — el llamador
 // (reto-diario/page.tsx, reto-semanal/page.tsx) manda esa lista desde
 // afuera, esta función no la calcula.
-export type MundoRetoDiario = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia";
+export type MundoRetoDiario = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia";
 
 export const TOTAL_PREGUNTAS_RETO_DIARIO = 5;
 export const TOTAL_PREGUNTAS_RETO_SEMANAL = 45;
@@ -224,7 +227,11 @@ function preguntaCircuitia(rng: () => number): PreguntaRetoDiario {
   return { mundo: "circuitia", enunciado: p.enunciado, opciones: p.opciones, respuesta: p.respuesta };
 }
 
-const GENERADORES: Record<MundoRetoDiario, (rng: () => number) => PreguntaRetoDiario> = {
+// Todos los mundos tienen generador; el tipo es Partial por si un mundo
+// futuro se agrega antes de tener el suyo (generarPreguntasReto descarta
+// del pool los mundos sin generador). Cada `pregunta<Mundo>` es solo
+// opción múltiple, mismo criterio que Calculia/Circuitia.
+const GENERADORES: Partial<Record<MundoRetoDiario, (rng: () => number) => PreguntaRetoDiario>> = {
   numeria: preguntaNumeria,
   geografia: preguntaGeografia,
   enigmia: preguntaEnigmia,
@@ -235,6 +242,9 @@ const GENERADORES: Record<MundoRetoDiario, (rng: () => number) => PreguntaRetoDi
   historia: preguntaHistoria,
   calculia: preguntaCalculia,
   circuitia: preguntaCircuitia,
+  estadistica: preguntaEstadistica,
+  naipia: preguntaNaipia,
+  codia: preguntaCodia,
 };
 
 function claveDePregunta(p: PreguntaRetoDiario): string {
@@ -247,7 +257,8 @@ function claveDePregunta(p: PreguntaRetoDiario): string {
 // desbloqueadas ven exactamente las mismas preguntas ese día/semana; si
 // desbloquearon ciudades distintas, divergen a partir de ahí.
 function generarPreguntasReto(seed: string, mundosDesbloqueados: MundoRetoDiario[], total: number): PreguntaRetoDiario[] {
-  const pool = mundosDesbloqueados.length > 0 ? mundosDesbloqueados : (["numeria"] as MundoRetoDiario[]);
+  const conGenerador = mundosDesbloqueados.filter((m) => GENERADORES[m] !== undefined);
+  const pool = conGenerador.length > 0 ? conGenerador : (["numeria"] as MundoRetoDiario[]);
   const rng = mulberry32(hashFecha(seed));
   const usados = new Set<string>();
   const preguntas: PreguntaRetoDiario[] = [];
@@ -257,7 +268,7 @@ function generarPreguntasReto(seed: string, mundosDesbloqueados: MundoRetoDiario
     const mundo = elegirRng(rng, pool);
     let intento: PreguntaRetoDiario | null = null;
     for (let intentos = 0; intentos < MAX_INTENTOS; intentos++) {
-      intento = GENERADORES[mundo](rng);
+      intento = GENERADORES[mundo]!(rng);
       if (!usados.has(claveDePregunta(intento))) break;
     }
     usados.add(claveDePregunta(intento!));

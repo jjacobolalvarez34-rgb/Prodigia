@@ -81,8 +81,12 @@ const TIPOS_HISTORIA = new Set(["historia_cronologia", "historia_personajes", "h
 const TIPOS_CALCULIA = new Set(["calculia_derivadas", "calculia_integrales", "calculia_series", "calculia_multivariable"]);
 // Mundo Circuitia — mismos 4 problem_type que ProblemTypeCalibrable/tiposCalibrables (skillLevels.ts, api/attempts).
 const TIPOS_CIRCUITIA = new Set(["circuitia_serie", "circuitia_paralelo", "circuitia_mixto", "circuitia_cualitativo"]);
+// Mundos 11-13 — mismos problem_type que ProblemTypeCalibrable/tiposCalibrables (skillLevels.ts, api/attempts).
+const TIPOS_ESTADISTICA = new Set(["estadistica_central", "estadistica_dispersion", "estadistica_probabilidad", "estadistica_datos", "estadistica_graficos"]);
+const TIPOS_NAIPIA = new Set(["naipia_hilo", "naipia_ko", "naipia_hiopt2", "naipia_omega2", "naipia_verdadero"]);
+const TIPOS_CODIA = new Set(["codia_sintaxis", "codia_salida", "codia_error", "codia_estructuras"]);
 
-function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | null {
+function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia" | null {
   if (!problemType) return null;
   if (problemType === "geografia") return "geografia";
   if (TIPOS_QUIMIA.has(problemType)) return "quimia";
@@ -92,6 +96,9 @@ function mundoDeProblemType(problemType: string | undefined): "numeria" | "geogr
   if (TIPOS_HISTORIA.has(problemType)) return "historia";
   if (TIPOS_CALCULIA.has(problemType)) return "calculia";
   if (TIPOS_CIRCUITIA.has(problemType)) return "circuitia";
+  if (TIPOS_ESTADISTICA.has(problemType)) return "estadistica";
+  if (TIPOS_NAIPIA.has(problemType)) return "naipia";
+  if (TIPOS_CODIA.has(problemType)) return "codia";
   if (TIPOS_NUMERIA.has(problemType)) return "numeria";
   return null;
 }

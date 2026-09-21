@@ -1,0 +1,285 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
+import type { ModoNaipia, ProblemaNaipia } from "@/lib/practica/naipia";
+import { NOMBRE_MODO_NAIPIA } from "@/lib/practica/naipia";
+import type { DueloNaipiaInfo } from "@/lib/naipia/cargarPractica";
+import type { Achievement } from "@/types/database";
+import Boton from "@/components/Boton";
+import BotonesFinPartida from "@/components/BotonesFinPartida";
+import LogroBanner from "@/components/LogroBanner";
+import ApuestaResultado from "@/components/ApuestaResultado";
+import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSubio";
+import NivelCuentaSubio, { type NivelCuentaInfo } from "@/components/NivelCuentaSubio";
+import ChispasGanadasNota from "@/components/ChispasGanadasNota";
+
+import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/ResultadoDueloBlock";
+import SalaEsperaDuelo from "@/components/duelos/SalaEsperaDuelo";
+import { useArranqueSincronizado } from "@/lib/duelos/useArranqueSincronizado";
+import { useDeteccionAbandono } from "@/lib/duelos/useDeteccionAbandono";
+import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
+import BotonRendirse from "@/components/duelos/BotonRendirse";
+import NaipiaSprintRunner from "./NaipiaSprintRunner";
+import { COLOR_NAIPIA } from "./colores";
+
+type Fase = "inicio" | "vs" | "sprint" | "finalizando" | "resumen";
+
+interface FinishResponse {
+  sprint: { total: number; correctos: number; precision: number | null; xpGanado: number; avgTimeMs: number | null };
+  puntosTotal: number;
+  xpGanadoHoy: number;
+  metaAlcanzada: boolean;
+  metaXpDiaria: number;
+  logrosNuevos: Achievement[];
+  apuesta?: { gano: boolean; monto: number } | null;
+  nivelMundo?: NivelMundoInfo | null;
+  nivelCuenta?: NivelCuentaInfo | null;
+}
+
+interface Props {
+  modo: ModoNaipia;
+  nivelInicial: number;
+  escudosExtra: number;
+  hielosDisponibles: number;
+  tiemposExtraDisponibles: number;
+  boostActivo: boolean;
+  duelo?: DueloNaipiaInfo | null;
+  miUserId: string;
+}
+
+// Mismo patrón que TrigonometriaPracticaClient.tsx.
+export default function NaipiaPracticaClient({ modo, nivelInicial, escudosExtra, hielosDisponibles, tiemposExtraDisponibles, boostActivo, duelo, miUserId }: Props) {
+  const t = useTranslations("Naipia");
+  const router = useRouter();
+  const [fase, setFase] = useState<Fase>(duelo ? "vs" : "inicio");
+  const [startedAtIso, setStartedAtIso] = useState("");
+  const [startedAtPerf, setStartedAtPerf] = useState(0);
+  const [resumen, setResumen] = useState<FinishResponse | null>(null);
+  const [errores, setErrores] = useState<ProblemaNaipia[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [resultadoDuelo, setResultadoDuelo] = useState<ResultadoDuelo | null>(null);
+
+  const { estado: estadoArranque, segundos: segundosVs, rivalPresente, empezarAhora } = useArranqueSincronizado({
+    duelId: duelo?.duelId,
+    miUserId,
+    rivalId: duelo?.rivalId,
+    rivalEsBot: duelo?.rivalEsBot,
+    onEmpezar: () => iniciar(),
+  });
+
+  function iniciar() {
+    setStartedAtIso(new Date().toISOString());
+    obtenerHoraServidor().then((h) => { if (h) setStartedAtIso(h); });
+    setStartedAtPerf(performance.now());
+    setResumen(null);
+    setFase("sprint");
+  }
+
+  async function handleFinish(erroresPartida: ProblemaNaipia[]) {
+    setErrores(erroresPartida);
+    setFase("finalizando");
+    try {
+      const res = await fetch("/api/practica/finish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ started_at: startedAtIso, total_problemas: 10, duel_id: duelo?.duelId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? t("practicaClient.noSePudoCerrar"));
+        setFase("resumen");
+        return;
+      }
+      setError(null);
+      const finishData = data as FinishResponse;
+      setResumen(finishData);
+
+      if (duelo) {
+        try {
+          const resDuelo = await fetch("/api/duelos/resultado", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              duel_id: duelo.duelId,
+              precision: finishData.sprint.precision ?? 0,
+              tiempo_promedio: finishData.sprint.avgTimeMs ?? 0,
+              puntaje: finishData.sprint.xpGanado,
+            }),
+          });
+          const dataDuelo = await resDuelo.json();
+          if (resDuelo.ok) {
+            if (duelo.serieId) {
+              router.push(`/rankeds/serie/${duelo.serieId}`);
+              return;
+            }
+            setResultadoDuelo(dataDuelo as ResultadoDuelo);
+          }
+        } catch {
+          // El duelo no se pudo resolver por un error de red puntual.
+        }
+      }
+    } catch {
+      setError(t("practicaClient.errorConexion"));
+    }
+    setFase("resumen");
+  }
+
+  async function handleAbandonoDetectado() {
+    if (!duelo) return;
+    try {
+      await fetch("/api/duelos/reclamar-abandono", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ duel_id: duelo.duelId }),
+      });
+    } catch {
+      // Si falla, el usuario puede reintentar rindiéndose o navegando afuera.
+    }
+    router.push(duelo.serieId ? `/rankeds/serie/${duelo.serieId}` : "/rankeds");
+  }
+
+  useDeteccionAbandono({
+    duelId: duelo?.duelId,
+    miUserId,
+    rivalId: duelo?.rivalId,
+    rivalEsBot: duelo?.rivalEsBot,
+    activo: fase === "sprint" && !!duelo,
+    onAbandonoDetectado: handleAbandonoDetectado,
+  });
+
+  if (fase === "vs" && duelo) {
+    return (
+      <SalaEsperaDuelo
+        estado={estadoArranque}
+        segundos={segundosVs}
+        rivalPresente={rivalPresente}
+        miElo={duelo.miElo}
+        rivalNombre={duelo.rivalNombre}
+        rivalElo={duelo.rivalElo}
+        rivalEsBot={duelo.rivalEsBot}
+        modo={duelo.serieId ? "mejor_de_3" : "simple"}
+        subtitulo={duelo.serieId ? t("practicaClient.subtituloRonda", { numero: duelo.rondaNumero, total: duelo.rondaTotal }) : t("nombreMundo")}
+        onEmpezarAhora={empezarAhora}
+        duelId={duelo.duelId}
+      />
+    );
+  }
+
+  if (fase === "sprint") {
+    return (
+      <>
+        {duelo && !duelo.rivalEsBot && (
+          <div className="mx-auto flex w-full max-w-lg justify-end px-4 pt-4">
+            <BotonRendirse
+              duelId={duelo.duelId}
+              onRendido={() => router.push(duelo.serieId ? `/rankeds/serie/${duelo.serieId}` : "/rankeds")}
+            />
+          </div>
+        )}
+        <NaipiaSprintRunner
+          modo={modo}
+          startedAt={startedAtPerf}
+          nivelInicial={nivelInicial}
+          escudosExtra={escudosExtra}
+          hielosIniciales={hielosDisponibles}
+          tiemposExtraIniciales={tiemposExtraDisponibles}
+          nivelForzado={duelo?.nivel}
+          duelId={duelo?.duelId}
+          miUserId={miUserId}
+          rivalNombre={duelo?.rivalNombre}
+          onFinish={handleFinish}
+        />
+      </>
+    );
+  }
+
+  if (fase === "finalizando") {
+    return <TransicionFinalizando />;
+  }
+
+  if (fase === "resumen" && error) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-16 text-center">
+        <p className="text-error">{t("practicaClient.errorCerrarPartida", { error })}</p>
+        <button onClick={() => setFase("inicio")} className="rounded-2xl px-4 py-3 font-medium text-white" style={{ background: COLOR_NAIPIA }}>
+          {t("practicaClient.volver")}
+        </button>
+      </div>
+    );
+  }
+
+  if (fase === "resumen" && resumen) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-20">
+        <LogroBanner logros={resumen.logrosNuevos} />
+        <NivelMundoSubio nivelMundo={resumen.nivelMundo} />
+        <NivelCuentaSubio nivelCuenta={resumen.nivelCuenta} />
+
+        <ApuestaResultado apuesta={resumen.apuesta ?? null} />
+        <ResultadoDueloBlock duelo={resultadoDuelo} />
+        <div className="flex flex-col items-center gap-2 text-center">
+          <p className="font-display text-lg font-bold text-foreground">{t("practicaClient.resumen.ahiQuedo")}</p>
+          <p className="font-mono text-3xl font-bold text-foreground">
+            +{resumen.sprint.xpGanado} <span className="text-base font-medium text-texto-secundario">{t("practicaClient.resumen.experiencia")}</span>
+          </p>
+          <ChispasGanadasNota valor={resumen.sprint.xpGanado} />
+        </div>
+
+        <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
+          <Fila label={t("practicaClient.resumen.aciertos")} valor={`${resumen.sprint.correctos}/${resumen.sprint.total}`} />
+          <Fila label={t("practicaClient.resumen.precision")} valor={resumen.sprint.precision === null ? "—" : `${Math.round(resumen.sprint.precision * 100)}%`} />
+          <Fila label={t("practicaClient.resumen.experienciaHoy")} valor={`${resumen.xpGanadoHoy}/${resumen.metaXpDiaria}`} />
+        </div>
+
+        {errores.length > 0 ? (
+          <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
+            <p className="mb-3 font-display text-sm font-semibold text-foreground">{t("practicaClient.resumen.repasemosEsto")}</p>
+            <div className="flex flex-wrap gap-2">
+              {errores.map((p, i) => (
+                <span key={i} className="rounded-full bg-surface-2 px-3 py-1 text-sm text-foreground">
+                  {String(p.respuesta)}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-texto-secundario">{t("practicaClient.resumen.ningunoFallado")}</p>
+        )}
+
+        <BotonesFinPartida
+          onOtraVez={duelo ? () => router.push("/rankeds?tab=buscar") : () => setFase("inicio")}
+          volverHref={duelo ? "/rankeds" : "/naipia"}
+          colorHex={COLOR_NAIPIA}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
+      {boostActivo && (
+        <div className="flex items-center justify-center gap-2 rounded-full bg-logro/15 px-4 py-2 text-sm font-medium text-foreground">
+          {t("practicaClient.boostActivo")}
+        </div>
+      )}
+      <span className="text-4xl" aria-hidden="true">♠</span>
+      <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{NOMBRE_MODO_NAIPIA[modo]}</h1>
+      <p className="text-texto-secundario">{t("practicaClient.preguntasOSegundos")}</p>
+      <Boton onClick={iniciar} colorHex={COLOR_NAIPIA} destacado className="w-full py-5 text-lg">
+        {t("practicaClient.iniciarPartida")}
+      </Boton>
+    </div>
+  );
+}
+
+function Fila({ label, valor }: { label: string; valor: string }) {
+  return (
+    <div className="flex items-center justify-between border-b border-border py-3.5 last:border-0">
+      <span className="text-sm text-texto-secundario">{label}</span>
+      <span className="font-mono font-semibold text-foreground">{valor}</span>
+    </div>
+  );
+}

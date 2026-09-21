@@ -233,6 +233,41 @@ export function IconCircuitia({ className }: IconProps) {
   );
 }
 
+// Mundo Estadística: barras de un histograma con una campana encima —
+// mismo trazo de 2px que el resto de los íconos de mundo.
+export function IconEstadistica({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4 20h16" />
+      <path d="M6 20v-4M10 20v-8M14 20v-8M18 20v-4" />
+      <path d="M3 12c3 0 4-8 9-8s6 8 9 8" />
+    </svg>
+  );
+}
+
+// Mundo Naipia: espada de la baraja (pica) estilizada — mismo trazo de
+// 2px que el resto de los íconos de mundo.
+export function IconNaipia({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 3c3 3.5 7 6 7 10a4 4 0 0 1-7 2.5A4 4 0 0 1 5 13c0-4 4-6.5 7-10z" />
+      <path d="M12 15.5V21M9 21h6" />
+    </svg>
+  );
+}
+
+// Mundo Codia: corchetes angulares con barra (</>) — mismo trazo de 2px
+// que el resto de los íconos de mundo.
+export function IconCodia({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M8 7l-5 5 5 5" />
+      <path d="M16 7l5 5-5 5" />
+      <path d="M14 4l-4 16" />
+    </svg>
+  );
+}
+
 export function IconEscudo({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

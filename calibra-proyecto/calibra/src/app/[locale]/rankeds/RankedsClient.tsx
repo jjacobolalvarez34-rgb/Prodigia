@@ -396,6 +396,9 @@ function BuscarPartida({
     { id: "historia", nombre: tMundos("historia"), descripcion: t("ciudades.historia") },
     { id: "calculia", nombre: tMundos("calculia"), descripcion: t("ciudades.calculia") },
     { id: "circuitia", nombre: tMundos("circuitia"), descripcion: t("ciudades.circuitia") },
+    { id: "estadistica", nombre: tMundos("estadistica"), descripcion: t("ciudades.estadistica") },
+    { id: "naipia", nombre: tMundos("naipia"), descripcion: t("ciudades.naipia") },
+    { id: "codia", nombre: tMundos("codia"), descripcion: t("ciudades.codia") },
     { id: "aleatorio", nombre: t("todasLasCiudades"), descripcion: t("ciudades.aleatorio") },
   ];
   // Fase 7 (Rankeds: Platino+ solo "todas las ciudades"): desde Platino

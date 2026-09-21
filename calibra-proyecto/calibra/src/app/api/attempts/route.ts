@@ -116,6 +116,20 @@ export async function POST(request: Request) {
     "circuitia_paralelo",
     "circuitia_mixto",
     "circuitia_cualitativo",
+    "estadistica_central",
+    "estadistica_dispersion",
+    "estadistica_probabilidad",
+    "estadistica_datos",
+    "estadistica_graficos",
+    "naipia_hilo",
+    "naipia_ko",
+    "naipia_hiopt2",
+    "naipia_omega2",
+    "naipia_verdadero",
+    "codia_sintaxis",
+    "codia_salida",
+    "codia_error",
+    "codia_estructuras",
   ];
   const calibrar = !sospechoso && (tiposCalibrables as string[]).includes(body.problem_type);
 

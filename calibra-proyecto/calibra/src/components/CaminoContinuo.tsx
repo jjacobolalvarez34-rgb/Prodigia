@@ -14,8 +14,8 @@ export interface NodoCaminoGenerico {
   slug: string;
   nombre: string;
   estado: EstadoNodo;
-  // Opcional — solo lo usa el "Curso estructurado (Pro)" de Calculia
-  // (piloto único, ver src/app/[locale]/calculia/aprender/page.tsx):
+  // Opcional — solo lo usan las Clases (Pro) de Calculia/Circuitia
+  // (ver AprenderTabs y src/app/[locale]/calculia/aprender/page.tsx):
   // cuando un nodo "bloqueado" tiene esto, en vez del bloqueo mudo de
   // siempre se muestra como link a `href` con un pill `label` debajo
   // ("Desbloqueá con Pro"). El resto de los mundos nunca lo setea, así

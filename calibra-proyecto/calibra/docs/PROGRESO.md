@@ -3989,3 +3989,25 @@ Sincronizar los docs de diseño vivos con el estado real verificado en F0-F12 (f
   - **Exclusivo Prodigia Pro**: ruta nueva `/profesor/[groupId]/estadisticas` (gateada con `requirePro`, mismo patrón que `/perfil/estadisticas`) — precisión por sub-tema y por alumno, peor primero, con badge "🔻 Estancado" cuando la precisión de los últimos 10 intentos de ese sub-tema es ≤ la de los 10 anteriores (con menos de 20 intentos totales, `estancado` queda `null`, nunca `false`, para no confundir "sin data" con "no estancado"). RPC nueva `estadisticas_pro_subtemas_grupo(p_group_id)`, mismo mapeo `problem_type → mundo` que `estadisticas_pro_subtemas()` (0151) pero extendido con `calculia_%`/`circuitia_%` (mundos 9 y 10, no existían en 0151) y con Enigmia incluida vía `logic_attempts` (la versión individual la deja afuera). El link desde `[groupId]/page.tsx` sigue el mismo criterio condicional por `profile.plan` que `/perfil` y `/tienda`: profesor Pro ve un link real, profesor free ve una píldora bloqueada hacia `/pro?next=...`.
   - Ambas RPCs son `security definer` y verifican `profesor_id = auth.uid()` sobre el grupo antes de devolver nada (mismo patrón de `resumen_grupo`/`resumen_grupo_daily_progress` de 0014) — a diferencia de las RPCs individuales de estadísticas Pro (que comparan `auth.uid()` contra el dueño de los datos), acá el profesor legítimamente ve datos de otros usuarios, así que el gate de plan vive en la página (`requirePro`), no en la RPC.
   - Migración: `0169_profesor_estadisticas_pro_grupo.sql`. Verificado: `tsc --noEmit` limpio, `eslint` limpio en los 2 archivos de página tocados, `vitest run` 178/178 (18 archivos) sin regresiones.
+
+## 2026-09-21 — Mundos 11-13 (Estadística, Naipia, Codia) + pestaña "Clases" (Pro) + anuncios
+
+### Objetivo
+Tres mundos nuevos, normales en todo (catálogo, Practicar, Rankeds, duelos, logros, tienda, estadísticas Pro, reto diario), cuya única diferencia está en Aprender: pestañas **Técnicas** (gratis) y **Clases** (Pro; primera clase gratis). "Clases" pasa a ser una función Pro que todo mundo debe tener (fila 22 de `PARIDAD_MUNDOS.md`). Además: documentar todo y anunciar en pantalla, con dos anuncios separados.
+
+### Construí
+- **Fase 0 (fontanería compartida, una sola pasada)**: los ~40 archivos compartidos de TS/i18n (mundos, guard `requireMundo*`, skillLevels, attempts, finish, duelos, retos, logros, títulos, perfil, leaderboard, tienda, iconos, marcos SVG); migraciones `0189` (específico de los 3 mundos) y `0190` (cross-cutting a 13 mundos + estadísticas Pro + `guardar_afinidad_banner` a 13); componente genérico `AprenderTabs` y helper `src/lib/aprender/clases.ts`; retrofit de Calculia y Circuitia a las pestañas; beneficio Pro renombrado "Curso estructurado" → "Clases".
+- **Fase 1 (un agente por mundo)**: generadores + tests, páginas (hub, elegir, diagnóstico, práctica por modo, aprender con pestañas, demo pública), i18n propio y migración de contenido: `0191` Estadística, `0192` Naipia, `0193` Codia (5 Técnicas + 8 Clases cada una).
+- **Integración**: reto diario (`retoDiario.ts`) y `SelectorMundoDuelo` conectados a los 3 mundos; se borró el archivo provisorio `modosMundosNuevos.ts`; `RetoClient` muestra el código de Codia en monoespaciado.
+- **Fase 2**: `0194_anuncios_mundos_11_13_y_clases.sql` (2 anuncios), `PARIDAD_MUNDOS.md` (13 columnas, fila 22, footnotes ¹¹/¹², sección "Mundos 11-13"), `ESPECIFICACION.md` (mundos 9-13, checklist ampliado a los puntos 16-19, migraciones 0129-0194).
+
+### Verifiqué
+- `tsc --noEmit` limpio; `vitest run` 25 archivos / 363 tests; `eslint` limpio en lo nuevo; JSON es/en con paridad exacta (2538 claves).
+- Estadística: 10.000 problemas recalculados por método independiente; Naipia: 250 pulls por modo×nivel + escaneo de lenguaje de casino; Codia: 1600 fragmentos EJECUTADOS de verdad (Python, Node, TypeScript, Java) con stdout real igual a la respuesta predicha.
+- Comprobación de paridad por grep de los ~30 sitios compartidos: los 3 mundos aparecen en todos los que aparece Calculia (`accesoInvitado.ts` no tiene entradas para ningún mundo nuevo, igual que Calculia/Circuitia).
+- Ajuste de un test lento (`graficos.test.ts`, timeout 5 s → 120 s, agotaba bajo carga).
+
+### Sin verificar / pendiente
+- Nada se vio jugando (no hay servidor en este entorno) y las migraciones `0163`-`0194` siguen sin correrse en Supabase — hay que correrlas en orden.
+- Fase 4: escribir las Clases reales de los 8 mundos originales (un mundo por commit).
+- Reporte del usuario "5.20 = 5.2 da error" en Numeria/geometría básica: no reproducido (0 fallas en un test empírico); esperando el enunciado exacto.

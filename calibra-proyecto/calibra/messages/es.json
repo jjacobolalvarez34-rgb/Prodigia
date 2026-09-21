@@ -12,7 +12,7 @@
       "boton": "Hablemos de tu colegio"
     },
     "mundos": {
-      "titulo": "8 mundos, un mismo sistema de práctica",
+      "titulo": "13 mundos, un mismo sistema de práctica",
       "descripcion": "Cada mundo calibra su propio nivel por estudiante — nadie se aburre por ir muy lento, ni se frustra por ir muy rápido."
     },
     "beneficios": {
@@ -115,6 +115,9 @@
       "historia": "Modo según tu rango",
       "calculia": "Modo según tu rango",
       "circuitia": "Modo según tu rango",
+      "estadistica": "Modo según tu rango",
+      "naipia": "Sistema de conteo según tu rango",
+      "codia": "Modo según tu rango",
       "aleatorio": "Mejor de 3, una ciudad por ronda"
     },
     "buscandoRival": "Buscando rival…",
@@ -230,6 +233,9 @@
       "historia": "Historia",
       "calculia": "Calculia",
       "circuitia": "Circuitia",
+      "estadistica": "Estadística",
+      "naipia": "Naipia",
+      "codia": "Codia",
       "aleatorio": "todas las ciudades",
       "suMundo": "su mundo"
     },
@@ -457,7 +463,10 @@
         "trigonometria": "Trigonometría",
         "historia": "Historia",
         "calculia": "Calculia",
-        "circuitia": "Circuitia"
+        "circuitia": "Circuitia",
+        "estadistica": "Estadística",
+        "naipia": "Naipia",
+        "codia": "Codia"
       },
       "eloValor": "{n} ELO",
       "nivelLabel": "Nivel",
@@ -504,6 +513,9 @@
       "marcoHistoria": "Marco Historia",
       "marcoCalculia": "Marco Calculia",
       "marcoCircuitia": "Marco Circuitia",
+      "marcoEstadistica": "Marco Estadística",
+      "marcoNaipia": "Marco Naipia",
+      "marcoCodia": "Marco Codia",
       "paqueteMarcosMundo": "Colección de Mundos",
       "animacionOndulante": "Animación Ondulante",
       "animacionBrillo": "Animación Brillo",
@@ -593,9 +605,9 @@
     "vidrieraDeMarcosTematicos": "Marcos de mundo",
     "vidrieraMarcosTematicosDescripcion": "Un anillo distinto para cada mundo, para tu avatar. Se desbloquea al llegar a nivel {n} en ese mundo — o gratis, de regalo, si lo dominas por completo.",
     "requiereNivelMundo": "Nivel {n} en {mundo} para desbloquear",
-    "paqueteMarcosMundoDescripcion": "Los 9 marcos de mundo juntos, con descuento — para cuando ya juegas los 9 en serio.",
-    "paqueteMarcosMundoRequisito": "Necesitas nivel {n} en los 9 mundos para desbloquearlo",
-    "paqueteMarcosMundoCompleto": "Ya tienes los 9 marcos de mundo",
+    "paqueteMarcosMundoDescripcion": "Los 13 marcos de mundo juntos, con descuento — para cuando ya juegas los 13 en serio.",
+    "paqueteMarcosMundoRequisito": "Necesitas nivel {n} en los 13 mundos para desbloquearlo",
+    "paqueteMarcosMundoCompleto": "Ya tienes los 13 marcos de mundo",
     "vidrieraDeAnimaciones": "Animaciones de nombre",
     "vidrieraAnimacionesDescripcion": "Tu nombre se mueve — se ve en tu perfil, en Rankeds, en el feed y en el chat de clan.",
     "sinAnimacion": "Sin animación",
@@ -1103,7 +1115,10 @@
       "trigonometria": "Razones, círculo unitario, identidades y triángulos.",
       "historia": "Cronología, personajes, causa y efecto, y fechas exactas.",
       "calculia": "Derivadas, integrales, series y ecuaciones diferenciales.",
-      "circuitia": "Circuitos en serie, en paralelo, mixtos y análisis cualitativo."
+      "circuitia": "Circuitos en serie, en paralelo, mixtos y análisis cualitativo.",
+      "estadistica": "Tendencia central, dispersión, probabilidad, análisis de datos y lectura de gráficos.",
+      "naipia": "Deporte mental de memoria: conteo mental con cinco sistemas de puntos, del Hi-Lo al conteo verdadero.",
+      "codia": "Sintaxis, salida de código, búsqueda de errores y estructuras en Python, Java, JavaScript y TypeScript."
     }
   },
   "Numeria": {
@@ -1228,6 +1243,14 @@
     "subtitulo": "Un solo camino: anda desbloqueando técnicas en orden, o salta a una unidad desde la izquierda.",
     "ocultarTemas": "Ocultar temas",
     "mostrarTemas": "Mostrar temas",
+    "tabs": {
+      "tecnicas": "Técnicas",
+      "clases": "Clases",
+      "aria": "Secciones de Aprender",
+      "pro": "Pro",
+      "avisoPro": "La primera clase es gratis. El resto de las clases se desbloquea con Pro.",
+      "avisoProCta": "Ver Pro"
+    },
     "descripcionUnidad": {
       "suma": "Suma más rápido combinando números de formas más simples.",
       "resta": "Resta con confianza, incluso cuando los números no cooperan.",
@@ -1729,7 +1752,10 @@
         "trigonometria": "Trigonometría",
         "historia": "Historia",
         "calculia": "Calculia",
-        "circuitia": "Circuitia"
+        "circuitia": "Circuitia",
+        "estadistica": "Estadística",
+        "naipia": "Naipia",
+        "codia": "Codia"
       }
     },
     "nombreConFuente": {
@@ -2353,7 +2379,10 @@
       "trigonometria": "Trigonometría",
       "historia": "Historia",
       "calculia": "Calculia",
-      "circuitia": "Circuitia"
+      "circuitia": "Circuitia",
+      "estadistica": "Estadística",
+      "naipia": "Naipia",
+      "codia": "Codia"
     }
   },
   "Onboarding": {
@@ -2625,7 +2654,10 @@
       "trigonometria": "Trigonometría",
       "historia": "Historia",
       "calculia": "Calculia",
-      "circuitia": "Circuitia"
+      "circuitia": "Circuitia",
+      "estadistica": "Estadística",
+      "naipia": "Naipia",
+      "codia": "Codia"
     },
     "etiquetaDiario": "Reto diario",
     "etiquetaSemanal": "Reto semanal",
@@ -2881,9 +2913,9 @@
       "tecnicasRapidas": {
         "titulo": "Técnicas rápidas"
       },
-      "cursoPro": {
-        "titulo": "Curso estructurado (Pro)",
-        "descripcion": "Lecciones completas de cada modo, con ejemplos resueltos paso a paso y un quiz de comprensión.",
+      "clases": {
+        "titulo": "Clases",
+        "descripcion": "Lecciones progresivas que se apoyan una en otra, con ejemplos resueltos paso a paso y un quiz entre lecciones. La primera es gratis.",
         "desbloqueaConPro": "Desbloqueá con Pro"
       }
     },
@@ -3020,9 +3052,9 @@
       "tecnicasRapidas": {
         "titulo": "Técnicas rápidas"
       },
-      "cursoPro": {
-        "titulo": "Curso estructurado (Pro)",
-        "descripcion": "Lecciones completas de cada modo, con ejemplos resueltos paso a paso y un quiz de comprensión.",
+      "clases": {
+        "titulo": "Clases",
+        "descripcion": "Lecciones progresivas que se apoyan una en otra, con ejemplos resueltos paso a paso y un quiz entre lecciones. La primera es gratis.",
         "desbloqueaConPro": "Desbloqueá con Pro"
       }
     },
@@ -3066,6 +3098,475 @@
         "metadata": {
           "title": "Practicar Análisis Cualitativo",
           "description": "¿Aumenta, disminuye o no cambia? — el modo más difícil."
+        }
+      }
+    }
+  },
+  "Estadistica": {
+    "metadata": {
+      "title": "Estadística",
+      "description": "Tendencia central, dispersión, probabilidad, análisis de datos y lectura de gráficos, con dificultad adaptativa."
+    },
+    "nombreMundo": "Estadística",
+    "aviso": "Media, probabilidad, datos y gráficos — con dificultad que se adapta a ti, igual que en los demás mundos.",
+    "titulo": "Datos, probabilidad y gráficos",
+    "metaCumplida": "Ya cumpliste tu meta de hoy.",
+    "practicar": "Practicar",
+    "practicarDescripcion": "Tendencia central, dispersión, probabilidad, análisis de datos y gráficos.",
+    "aprenderCard": "Aprender",
+    "aprenderDescripcion": "Trucos de cálculo mental para media, cuartiles y combinatoria, y clases desde cero.",
+    "modosTitulo": "Modos",
+    "modos": {
+      "central": "Tendencia central",
+      "dispersion": "Dispersión",
+      "probabilidad": "Probabilidad y combinatoria",
+      "datos": "Análisis de datos",
+      "graficos": "Lectura de gráficos"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practicar",
+        "description": "Elige un modo de Estadística para practicar."
+      },
+      "titulo": "¿Qué modo practicamos?",
+      "subtitulo": "Elige un modo para arrancar.",
+      "descripciones": {
+        "central": "Media, mediana, moda y rango",
+        "dispersion": "Rango intercuartílico, varianza y desvío estándar",
+        "probabilidad": "Probabilidad simple y condicional, factorial, permutaciones y combinaciones",
+        "datos": "Percentiles, puntaje z, atípicos, correlación y regresión",
+        "graficos": "Lee barras, líneas, histogramas y diagramas de caja — y detecta gráficos engañosos"
+      }
+    },
+    "practicaClient": {
+      "subtituloRonda": "Ronda {numero}/{total} · Estadística",
+      "noSePudoCerrar": "No se pudo cerrar la partida.",
+      "errorConexion": "No pudimos conectar con el servidor. Prueba de nuevo.",
+      "errorCerrarPartida": "No pudimos cerrar la partida: {error}",
+      "volver": "Volver",
+      "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
+      "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
+      "iniciarPartida": "Iniciar partida",
+      "resumen": {
+        "ahiQuedo": "Ahí quedó.",
+        "experiencia": "Experiencia",
+        "aciertos": "Aciertos",
+        "precision": "Precisión",
+        "experienciaHoy": "Experiencia hoy",
+        "repasemosEsto": "Repasemos esto",
+        "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} escudos disponibles",
+      "exp": "{n} Exp",
+      "segundos": "{n}s",
+      "ok": "Ok"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Diagnóstico de Estadística",
+        "description": "Unas preguntas rápidas para calibrar tu nivel inicial."
+      },
+      "introTitulo": "Unos datos para calibrar",
+      "introSubtitulo": "Sin presión — 8 preguntas de media, mediana y moda, solo para arrancar en el nivel justo.",
+      "empezar": "Empezar",
+      "arrancarNivel1": "Prefiero arrancar en nivel 1",
+      "ok": "Ok",
+      "tuRespuesta": "Tu respuesta",
+      "laCorrectaEra": "La respuesta era {valor}",
+      "guardando": "Guardando tu diagnóstico...",
+      "resultadoTitulo": "Así arrancas",
+      "nivel": "Nivel {n}",
+      "errorGuardado": "No pudimos guardar tu progreso — prueba de nuevo antes de continuar.",
+      "continuar": "Continuar",
+      "reintentar": "Reintentar"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Aprender Estadística",
+        "description": "Atajos de cálculo mental y clases progresivas de estadística, desde los tipos de datos hasta la lectura crítica de gráficos."
+      },
+      "descripcionUnidad": "Atajos para media, mediana, cuartiles, probabilidad y combinatoria.",
+      "progreso": "Progreso",
+      "tecnicas": "{n}/{total} técnicas",
+      "titulo": "Aprender",
+      "subtitulo": "Atajos para calcular más rápido y clases para entender el porqué de cada fórmula.",
+      "tecnicasRapidas": {
+        "titulo": "Técnicas rápidas"
+      },
+      "clases": {
+        "titulo": "Clases",
+        "descripcion": "Lecciones progresivas que se apoyan una en otra, con ejemplos resueltos paso a paso y un quiz entre lecciones. La primera es gratis.",
+        "desbloqueaConPro": "Desbloqueá con Pro"
+      }
+    },
+    "leccion": {
+      "tecnica": "Técnica",
+      "verElTruco": "Ver el truco",
+      "anterior": "Anterior",
+      "siguientePaso": "Siguiente paso",
+      "marcarAprendida": "Marcar como aprendida",
+      "completaste": "¡Completaste {nombre}!",
+      "volverAAprender": "Volver a Aprender",
+      "irAPracticar": "Ir a Practicar",
+      "continuarAlQuiz": "Continuar al quiz",
+      "quizTitulo": "Quiz de comprensión",
+      "quizSubtitulo": "Respondé las preguntas para marcar este módulo como aprendido. Podés reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "enviarRespuestas": "Enviar respuestas",
+      "enviando": "Enviando...",
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+    },
+    "practica": {
+      "central": {
+        "metadata": {
+          "title": "Practicar Tendencia central",
+          "description": "Media, mediana, moda y rango, con dificultad adaptativa."
+        }
+      },
+      "dispersion": {
+        "metadata": {
+          "title": "Practicar Dispersión",
+          "description": "Rango intercuartílico, varianza y desvío estándar, poblacionales y muestrales."
+        }
+      },
+      "probabilidad": {
+        "metadata": {
+          "title": "Practicar Probabilidad y combinatoria",
+          "description": "Probabilidad simple y condicional, factorial, permutaciones y combinaciones."
+        }
+      },
+      "datos": {
+        "metadata": {
+          "title": "Practicar Análisis de datos",
+          "description": "Percentiles, puntaje z, valores atípicos, correlación y regresión simple."
+        }
+      },
+      "graficos": {
+        "metadata": {
+          "title": "Practicar Lectura de gráficos",
+          "description": "Lee valores, tendencias y atípicos en gráficos, y detecta los que engañan por escala."
+        }
+      }
+    }
+  },
+  "Naipia": {
+    "metadata": {
+      "title": "Naipia",
+      "description": "Deporte mental de memoria y conteo de cartas: cuatro sistemas de conteo y conteo verdadero, con dificultad adaptativa."
+    },
+    "nombreMundo": "Naipia",
+    "aviso": "Memoria, atención y aritmética mental con cartas — con dificultad que se adapta a ti, igual que en los demás mundos.",
+    "titulo": "Conteo de cartas",
+    "metaCumplida": "Ya cumpliste tu meta de hoy.",
+    "practicar": "Practicar",
+    "practicarDescripcion": "Hi-Lo, KO, Hi-Opt II, Omega II y conteo verdadero.",
+    "aprenderCard": "Aprender",
+    "aprenderDescripcion": "Trucos para contar más rápido y sin errores: pares que se cancelan, bloques y ritmo.",
+    "modosTitulo": "Modos",
+    "modos": {
+      "hilo": "Hi-Lo",
+      "ko": "KO",
+      "hiopt2": "Hi-Opt II",
+      "omega2": "Omega II",
+      "verdadero": "Conteo verdadero"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practicar",
+        "description": "Elige un sistema de conteo de Naipia para practicar."
+      },
+      "titulo": "¿Qué modo practicamos?",
+      "subtitulo": "Elige un modo para arrancar.",
+      "descripciones": {
+        "hilo": "Valores +1, 0 y -1 — el punto de partida",
+        "ko": "Sistema no balanceado: el mazo completo suma +4",
+        "hiopt2": "Valores de +2 a -2 — más precisión, más esfuerzo",
+        "omega2": "Un sistema fino con nueve como -1",
+        "verdadero": "Conteo corriente ÷ mazos restantes, con la regla de redondeo declarada — el más difícil"
+      }
+    },
+    "practicaClient": {
+      "subtituloRonda": "Ronda {numero}/{total} · Naipia",
+      "noSePudoCerrar": "No se pudo cerrar la partida.",
+      "errorConexion": "No pudimos conectar con el servidor. Prueba de nuevo.",
+      "errorCerrarPartida": "No pudimos cerrar la partida: {error}",
+      "volver": "Volver",
+      "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
+      "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
+      "iniciarPartida": "Iniciar partida",
+      "resumen": {
+        "ahiQuedo": "Ahí quedó.",
+        "experiencia": "Experiencia",
+        "aciertos": "Aciertos",
+        "precision": "Precisión",
+        "experienciaHoy": "Experiencia hoy",
+        "repasemosEsto": "Repasemos esto",
+        "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} escudos disponibles",
+      "exp": "{n} Exp",
+      "segundos": "{n}s",
+      "ok": "Ok",
+      "tablaTitulo": "Valores del sistema",
+      "cambiarSigno": "Cambiar signo",
+      "tuRespuesta": "Tu respuesta"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Diagnóstico de Naipia",
+        "description": "Unas preguntas rápidas para calibrar tu nivel inicial."
+      },
+      "introTitulo": "Unas secuencias de cartas para calibrar",
+      "introSubtitulo": "Sin presión — 8 preguntas variadas, solo para arrancar en el nivel justo.",
+      "empezar": "Empezar",
+      "arrancarNivel1": "Prefiero arrancar en nivel 1",
+      "ok": "Ok",
+      "guardando": "Guardando tu diagnóstico...",
+      "resultadoTitulo": "Así arrancas",
+      "nivel": "Nivel {n}",
+      "errorGuardado": "No pudimos guardar tu progreso — prueba de nuevo antes de continuar.",
+      "continuar": "Continuar",
+      "reintentar": "Reintentar",
+      "respuestaCorrecta": "Conteo correcto: {n}"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Aprender Naipia",
+        "description": "Técnicas de conteo: pares que se cancelan, bloques, ritmo y verificación del mazo."
+      },
+      "descripcionUnidad": "Técnicas para contar cartas con rapidez y precisión.",
+      "progreso": "Progreso",
+      "tecnicas": "{n}/{total} técnicas",
+      "titulo": "Aprender",
+      "subtitulo": "Cómo contar más rápido y equivocarte menos.",
+      "tecnicasRapidas": {
+        "titulo": "Técnicas rápidas"
+      },
+      "clases": {
+        "titulo": "Clases",
+        "descripcion": "Lecciones progresivas que se apoyan una en otra, con ejemplos resueltos paso a paso y un quiz entre lecciones. La primera es gratis.",
+        "desbloqueaConPro": "Desbloqueá con Pro"
+      }
+    },
+    "leccion": {
+      "tecnica": "Técnica",
+      "verElTruco": "Ver el truco",
+      "anterior": "Anterior",
+      "siguientePaso": "Siguiente paso",
+      "marcarAprendida": "Marcar como aprendida",
+      "completaste": "¡Completaste {nombre}!",
+      "volverAAprender": "Volver a Aprender",
+      "irAPracticar": "Ir a Practicar",
+      "continuarAlQuiz": "Continuar al quiz",
+      "quizTitulo": "Quiz de comprensión",
+      "quizSubtitulo": "Respondé las preguntas para marcar este módulo como aprendido. Podés reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "enviarRespuestas": "Enviar respuestas",
+      "enviando": "Enviando...",
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+    },
+    "practica": {
+      "hilo": {
+        "metadata": {
+          "title": "Practicar Hi-Lo",
+          "description": "Conteo corriente con valores +1, 0 y -1, con dificultad adaptativa."
+        }
+      },
+      "ko": {
+        "metadata": {
+          "title": "Practicar KO",
+          "description": "Sistema no balanceado: conteo corriente y cartas restantes."
+        }
+      },
+      "hiopt2": {
+        "metadata": {
+          "title": "Practicar Hi-Opt II",
+          "description": "Conteo con valores de +2 a -2, con dificultad adaptativa."
+        }
+      },
+      "omega2": {
+        "metadata": {
+          "title": "Practicar Omega II",
+          "description": "Un sistema fino de valores múltiples, con dificultad adaptativa."
+        }
+      },
+      "verdadero": {
+        "metadata": {
+          "title": "Practicar conteo verdadero",
+          "description": "Dividir por los mazos restantes y estimar cuántos quedan — el modo más difícil."
+        }
+      }
+    },
+    "cartas": {
+      "etiqueta": "{valor} de {palo}",
+      "filaEtiqueta": "Secuencia de {n} cartas",
+      "valores": {
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "5": "5",
+        "6": "6",
+        "7": "7",
+        "8": "8",
+        "9": "9",
+        "10": "10",
+        "A": "as",
+        "J": "jota",
+        "Q": "reina",
+        "K": "rey"
+      },
+      "palos": {
+        "picas": "picas",
+        "corazones": "corazones",
+        "diamantes": "diamantes",
+        "treboles": "tréboles"
+      }
+    },
+    "tabla": {
+      "titulo": "Valores del sistema de conteo"
+    }
+  },
+  "Codia": {
+    "metadata": {
+      "title": "Codia",
+      "description": "Lee y razona sobre código en Python, Java, JavaScript y TypeScript, con dificultad adaptativa."
+    },
+    "nombreMundo": "Codia",
+    "aviso": "Sintaxis, salida del código, errores y estructuras en Python, Java, JavaScript y TypeScript — con dificultad que se adapta a ti, igual que en los demás mundos.",
+    "titulo": "Leer y razonar sobre código",
+    "metaCumplida": "Ya cumpliste tu meta de hoy.",
+    "practicar": "Practicar",
+    "practicarDescripcion": "Sintaxis, salida del código, encontrar el error y estructuras.",
+    "aprenderCard": "Aprender",
+    "aprenderDescripcion": "Técnicas para seguir el código a mano y clases desde cero con los 4 lenguajes lado a lado.",
+    "modosTitulo": "Modos",
+    "modos": {
+      "sintaxis": "Sintaxis",
+      "salida": "Salida del código",
+      "error": "Encontrá el error",
+      "estructuras": "Estructuras y complejidad"
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practicar",
+        "description": "Elige un modo de Codia para practicar."
+      },
+      "titulo": "¿Qué modo practicamos?",
+      "subtitulo": "Elige un modo para arrancar.",
+      "descripciones": {
+        "sintaxis": "Elegir o completar la sintaxis correcta",
+        "salida": "¿Qué imprime este fragmento?",
+        "error": "Encontrar el bug: qué falla y en qué línea",
+        "estructuras": "Pilas, colas, mapas y complejidad — el más difícil"
+      }
+    },
+    "practicaClient": {
+      "subtituloRonda": "Ronda {numero}/{total} · Codia",
+      "noSePudoCerrar": "No se pudo cerrar la partida.",
+      "errorConexion": "No pudimos conectar con el servidor. Prueba de nuevo.",
+      "errorCerrarPartida": "No pudimos cerrar la partida: {error}",
+      "volver": "Volver",
+      "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
+      "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
+      "iniciarPartida": "Iniciar partida",
+      "resumen": {
+        "ahiQuedo": "Ahí quedó.",
+        "experiencia": "Experiencia",
+        "aciertos": "Aciertos",
+        "precision": "Precisión",
+        "experienciaHoy": "Experiencia hoy",
+        "repasemosEsto": "Repasemos esto",
+        "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} escudos disponibles",
+      "exp": "{n} Exp",
+      "segundos": "{n}s",
+      "ok": "Ok",
+      "opciones": "Opciones de respuesta"
+    },
+    "diagnostico": {
+      "metadata": {
+        "title": "Diagnóstico de Codia",
+        "description": "Unas preguntas rápidas para calibrar tu nivel inicial."
+      },
+      "introTitulo": "Unos fragmentos para calibrar",
+      "introSubtitulo": "Sin presión — 8 preguntas de «¿qué imprime?» en distintos lenguajes, solo para arrancar en el nivel justo.",
+      "empezar": "Empezar",
+      "arrancarNivel1": "Prefiero arrancar en nivel 1",
+      "ok": "Ok",
+      "guardando": "Guardando tu diagnóstico...",
+      "resultadoTitulo": "Así arrancas",
+      "nivel": "Nivel {n}",
+      "errorGuardado": "No pudimos guardar tu progreso — prueba de nuevo antes de continuar.",
+      "continuar": "Continuar",
+      "reintentar": "Reintentar"
+    },
+    "aprender": {
+      "metadata": {
+        "title": "Aprender Codia",
+        "description": "Técnicas para leer código y clases desde cero en Python, Java, JavaScript y TypeScript."
+      },
+      "descripcionUnidad": "Seguir variables a mano, leer bucles y detectar los errores más típicos.",
+      "progreso": "Progreso",
+      "tecnicas": "{n}/{total} técnicas",
+      "titulo": "Aprender",
+      "subtitulo": "Cómo leer código paso a paso, sin ejecutarlo.",
+      "tecnicasRapidas": {
+        "titulo": "Técnicas"
+      },
+      "clases": {
+        "titulo": "Clases",
+        "descripcion": "Lecciones progresivas que se apoyan una en otra, con el mismo ejemplo en Python, Java, JavaScript y TypeScript, ejemplos resueltos paso a paso y un quiz entre lecciones. La primera es gratis.",
+        "desbloqueaConPro": "Desbloqueá con Pro"
+      }
+    },
+    "leccion": {
+      "tecnica": "Técnica",
+      "clase": "Clase",
+      "verElTruco": "Ver el truco",
+      "anterior": "Anterior",
+      "siguientePaso": "Siguiente paso",
+      "marcarAprendida": "Marcar como aprendida",
+      "completaste": "¡Completaste {nombre}!",
+      "volverAAprender": "Volver a Aprender",
+      "irAPracticar": "Ir a Practicar",
+      "continuarAlQuiz": "Continuar al quiz",
+      "quizTitulo": "Quiz de comprensión",
+      "quizSubtitulo": "Respondé las preguntas para marcar este módulo como aprendido. Podés reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "enviarRespuestas": "Enviar respuestas",
+      "enviando": "Enviando...",
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+    },
+    "practica": {
+      "sintaxis": {
+        "metadata": {
+          "title": "Practicar Sintaxis",
+          "description": "Elige o completa la sintaxis correcta en Python, Java, JavaScript y TypeScript."
+        }
+      },
+      "salida": {
+        "metadata": {
+          "title": "Practicar Salida del código",
+          "description": "Predice qué imprime cada fragmento, con dificultad adaptativa."
+        }
+      },
+      "error": {
+        "metadata": {
+          "title": "Practicar Encontrá el error",
+          "description": "Encuentra el bug o la causa del fallo en fragmentos de código."
+        }
+      },
+      "estructuras": {
+        "metadata": {
+          "title": "Practicar Estructuras y complejidad",
+          "description": "Pilas, colas, conjuntos, mapas y complejidad O(n) frente a O(n²) — el modo más difícil."
         }
       }
     }
