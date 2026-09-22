@@ -10,14 +10,18 @@ import Boton from "@/components/Boton";
 // problema personalizado específico. Fase (Chat de clan): mismo botón,
 // mismo flujo otra vez, ahora para un mensaje puntual — solo cambia
 // qué RPC llama (reportar_usuario / reportar_post / reportar_mensaje_clan).
+// Fase (Mensajería directa, 0198_mensajes_directos.sql): 4ta variante,
+// mismo criterio otra vez, ahora para un mensaje directo puntual ->
+// reportar_mensaje_directo.
 type Props =
-  | { userId: string; postId?: undefined; mensajeId?: undefined }
-  | { userId?: undefined; postId: string; mensajeId?: undefined }
-  | { userId?: undefined; postId?: undefined; mensajeId: string };
+  | { userId: string; postId?: undefined; mensajeId?: undefined; mensajeDirectoId?: undefined }
+  | { userId?: undefined; postId: string; mensajeId?: undefined; mensajeDirectoId?: undefined }
+  | { userId?: undefined; postId?: undefined; mensajeId: string; mensajeDirectoId?: undefined }
+  | { userId?: undefined; postId?: undefined; mensajeId?: undefined; mensajeDirectoId: string };
 
 // Fase Q3: reporte manual — se guarda en reportes_usuario para revisión
 // tuya después (sin sistema de moderación automática, a propósito).
-export default function ReportarBoton({ userId, postId, mensajeId }: Props) {
+export default function ReportarBoton({ userId, postId, mensajeId, mensajeDirectoId }: Props) {
   const t = useTranslations("Perfil");
   const [abierto, setAbierto] = useState(false);
   const [motivo, setMotivo] = useState<MotivoReporte | null>(null);
@@ -38,11 +42,13 @@ export default function ReportarBoton({ userId, postId, mensajeId }: Props) {
     setEnviando(true);
     setError(null);
     const supabase = createClient();
-    const { error: reportError } = mensajeId
-      ? await supabase.rpc("reportar_mensaje_clan", { p_mensaje_id: mensajeId, p_motivo: motivo })
-      : postId
-        ? await supabase.rpc("reportar_post", { p_post_id: postId, p_motivo: motivo })
-        : await supabase.rpc("reportar_usuario", { p_reportado_id: userId, p_motivo: motivo });
+    const { error: reportError } = mensajeDirectoId
+      ? await supabase.rpc("reportar_mensaje_directo", { p_mensaje_id: mensajeDirectoId, p_motivo: motivo })
+      : mensajeId
+        ? await supabase.rpc("reportar_mensaje_clan", { p_mensaje_id: mensajeId, p_motivo: motivo })
+        : postId
+          ? await supabase.rpc("reportar_post", { p_post_id: postId, p_motivo: motivo })
+          : await supabase.rpc("reportar_usuario", { p_reportado_id: userId, p_motivo: motivo });
     setEnviando(false);
     if (reportError) {
       console.error("[reportar] error", reportError);

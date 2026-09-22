@@ -1,7 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuarioOnboarded, bloquearInvitado } from "@/lib/auth/guard";
-import { obtenerCamino } from "@/lib/aprender/path";
+import { obtenerCaminoConClasesNumeria } from "@/lib/aprender/pathClases";
+import { hrefVolverAAprender } from "@/lib/aprender/clases";
 import Header from "@/components/Header";
 import LeccionClient from "./LeccionClient";
 import { getTranslations } from "next-intl/server";
@@ -13,22 +14,26 @@ interface Props {
 export default async function LeccionPage({ params }: Props) {
   const { slug } = await params;
   const supabase = await createClient();
-  const { user } = await requireUsuarioOnboarded(supabase, `/aprender/${slug}`);
+  const { user, profile } = await requireUsuarioOnboarded(supabase, `/aprender/${slug}`);
   const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
   bloquearInvitado(user, tBloqueos("aprender"));
 
-  const unidades = await obtenerCamino(supabase, user.id);
-  const nodo = unidades.flatMap((u) => u.nodos).find((n) => n.slug === slug);
+  const nodos = await obtenerCaminoConClasesNumeria(supabase, user.id, profile.plan === "pro");
+  const nodo = nodos.find((n) => n.slug === slug);
 
   if (!nodo) {
     notFound();
   }
-  // Acceso directo por URL a un nodo bloqueado: no lo dejamos entrar, pero
-  // tampoco es un error — simplemente lo mandamos de vuelta al camino.
+  // Acceso directo por URL a un nodo bloqueado (progresión normal, o Clase
+  // 2+ sin Pro): no lo dejamos entrar, pero tampoco es un error — lo
+  // mandamos de vuelta a la pestaña de la que viene.
   if (nodo.estado === "bloqueado") {
-    redirect("/aprender");
+    redirect(hrefVolverAAprender("/aprender", nodo.requierePro));
   }
 
+  // Las Técnicas rápidas (requiere_pro=false) siguen desbloqueando
+  // modificadores de /practica como siempre; las Clases nuevas (Pro) no
+  // tienen esa relación (usan quiz + visuales, no práctica numérica).
   const { data: relaciones } = await supabase
     .from("technique_modifiers")
     .select("modifiers(nombre, descripcion)")

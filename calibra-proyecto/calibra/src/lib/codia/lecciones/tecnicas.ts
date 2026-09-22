@@ -10,8 +10,8 @@ export const TECNICAS: LeccionCodia[] = [
     orden: 1,
     requierePro: false,
     pasos: [
-      "Para saber qué imprime un fragmento no adivines: hacé una tabla con una columna por variable y una fila por cada línea que cambia algo. Así no dependés de la memoria y encontrás el resultado paso a paso.",
-      `Ejemplo resuelto. Seguí este programa:
+      "Para saber qué imprime un fragmento no adivines: haz una tabla con una columna por variable y una fila por cada línea que cambia algo. Así no dependes de la memoria y encuentras el resultado paso a paso.",
+      `Ejemplo resuelto. Sigue este programa:
 ~~~python
 a = 3
 b = 4
@@ -23,7 +23,7 @@ Tabla: línea 1 deja a=3. Línea 2 deja a=3, b=4. Línea 3 calcula a + b = 7 y l
 ~~~salida
 7 3
 ~~~`,
-      "Regla de oro: en a = a + b primero se calcula el lado derecho con los valores que las variables tienen AHORA, y recién después se guarda el resultado en el lado izquierdo. El signo = no es una igualdad de matemática: significa guardá esto en esa variable.",
+      "Regla de oro: en a = a + b primero se calcula el lado derecho con los valores que las variables tienen AHORA, y recién después se guarda el resultado en el lado izquierdo. El signo = no es una igualdad de matemática: significa guarda esto en esa variable.",
       `El mismo programa en los otros tres lenguajes: la tabla es idéntica, solo cambia cómo se escribe.
 ~~~java
 int a = 3;
@@ -61,8 +61,8 @@ Línea 3: a pasa a valer 2 y el 1 original se pierde. Línea 4: b = a copia ese 
 ~~~salida
 2 2
 ~~~
-Para intercambiar necesitás una variable temporal: t = a, luego a = b y por último b = t.`,
-      "Consejo de examen: tachá el valor viejo cada vez que una variable cambia y escribí el nuevo al lado. Si el fragmento tiene un bucle, agregá una fila por vuelta. Tardás un minuto y evitás casi todos los errores de lectura.",
+Para intercambiar necesitas una variable temporal: t = a, luego a = b y por último b = t.`,
+      "Consejo de examen: tachá el valor viejo cada vez que una variable cambia y escribe el nuevo al lado. Si el fragmento tiene un bucle, agrega una fila por vuelta. Tardas un minuto y evitas casi todos los errores de lectura.",
     ],
     quiz: [
       {
@@ -99,7 +99,7 @@ print(x)
     orden: 2,
     requierePro: false,
     pasos: [
-      "Frente a un bucle hacé siempre tres preguntas: ¿con qué valor arranca? ¿cuándo se corta? ¿qué cambia en cada vuelta? Con esas tres respuestas sabés cuántas vueltas da y no te perdés.",
+      "Frente a un bucle haz siempre tres preguntas: ¿con qué valor arranca? ¿cuándo se corta? ¿qué cambia en cada vuelta? Con esas tres respuestas sabes cuántas vueltas da y no te pierdes.",
       `En un for con rango el límite superior NO se incluye: range(2, 6) recorre 2, 3, 4 y 5. Las vueltas son límite - inicio = 6 - 2 = 4.
 ~~~python
 for i in range(2, 6):
@@ -133,7 +133,7 @@ for (let i = 2; i < 6; i++) {
 4
 5
 ~~~`,
-      `En un while, mirá qué cambia en cada vuelta y cuándo deja de cumplirse la condición. Ejemplo resuelto:
+      `En un while, mira qué cambia en cada vuelta y cuándo deja de cumplirse la condición. Ejemplo resuelto:
 ~~~python
 n = 20
 vueltas = 0
@@ -374,7 +374,7 @@ print(-7 // 2)
   {
     slug: "codia-tecnica-complejidad-vistazo",
     nombre: "Complejidad de un vistazo: contar bucles anidados",
-    descripcion: "Con contar cuántos bucles anidados recorren n ya sabés si el código es O(n) o O(n²).",
+    descripcion: "Con contar cuántos bucles anidados recorren n ya sabes si el código es O(n) o O(n²).",
     orden: 5,
     requierePro: false,
     pasos: [

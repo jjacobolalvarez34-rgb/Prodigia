@@ -1,0 +1,39 @@
+.insignia-corte {
+  isolation: isolate;
+}
+
+.insignia-corte__borde {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.92);
+  pointer-events: none;
+}
+
+.insignia-corte__cuerpo {
+  position: absolute;
+  inset: 2px;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Brillo diagonal sutil: un guiño a los adornos de la placa de referencia
+   (triángulos, líneas finas) sin agregar piezas sueltas que puedan romper
+   el layout responsive — ver el comentario de InsigniaCorte.tsx. */
+.insignia-corte__cuerpo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    transparent 22%,
+    transparent 78%,
+    rgba(255, 255, 255, 0.18) 100%
+  );
+  mix-blend-mode: soft-light;
+}
+
+.insignia-corte__contenido {
+  width: 100%;
+  height: 100%;
+}

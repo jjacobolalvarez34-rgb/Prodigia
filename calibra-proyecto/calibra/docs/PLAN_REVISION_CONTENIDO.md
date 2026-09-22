@@ -210,6 +210,12 @@ separados (regla #6).
 - Cualquier cambio de layout/UI que no sea el renderizado de fórmulas
   en sí (eso ya se resolvió aparte, ver `PARIDAD_MUNDOS.md` footnote ⁹).
 
+## Proceso 3 (backlog, no arrancado) — Español neutro: deuda histórica de voseo en lecciones
+
+Descubierto 2026-09-22 (pedido del usuario: "especificá que es español normalizado" tras encontrar "hacé"/"seguí" en varias secciones). Regla completa: `docs/ESPECIFICACION.md` ("Convención fija: español neutro"). Resumen: 33 migraciones (`0005` a `0185`, casi toda la historia del proyecto) tienen voseo real en `techniques.contenido` (pasos/quiz) — ya aplicadas en producción, así que corregirlas exige una migración `UPDATE ... WHERE slug = ...` nueva por cada fila afectada, no editar el archivo viejo. Lista exacta de migraciones con deuda: `DEUDA_HISTORICA_VOSEO` en `src/lib/texto/espanolNeutro.test.ts` (se actualiza sola si se corrige una — sacarla de la lista cuando se le escriba su `UPDATE`).
+
+Mismo criterio que Proceso 1/2: un mundo por tanda, verificado con `npx vitest run src/lib/texto/espanolNeutro.test.ts` (tiene que dejar de fallar para ese archivo) antes de sacarlo de la lista de deuda. No arrancado todavía — las migraciones `0191`/`0193`/`0195` (Estadística/Codia/KaTeX Calculia-Circuitia, escritas en la sesión que encontró el problema) y `messages/es.json` completo ya se corrigieron aparte, por estar sin aplicar todavía (editables en el lugar, sin necesitar un `UPDATE` nuevo).
+
 ## Progreso real (se actualiza a medida que se hace, no es la guía en sí)
 
 - **2026-09-18 — Fundación**: `katex` instalado, `MathText.tsx` +

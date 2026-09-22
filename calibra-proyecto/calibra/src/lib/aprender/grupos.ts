@@ -23,6 +23,76 @@ interface GruposMundo {
 const g = (id: string, es: string, en: string, slugs: string[]): GrupoDef => ({ id, nombre: { es, en }, slugs });
 
 export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
+  // Numeria (retrofit a Técnicas | Clases, docs/PARIDAD_MUNDOS.md fila 22 +
+  // fila 23, 2026-09-22): a diferencia de los mundos de arriba, acá "tema"
+  // ya existía de antes como TemaAprendible (src/lib/aprender/path.ts) — un
+  // grupo por cada uno de los 9 temas, con los slugs reales de las
+  // técnicas sembradas en 0005/0007/0018/0019/0026/0032/0079/0101 (grep
+  // confirmado, no inventados). Las Clases nuevas (0199) son una por tema
+  // salvo Fracciones, que tiene dos (MCM y Operaciones).
+  numeria: {
+    tecnicas: [
+      g("suma", "Suma", "Addition", [
+        "complemento-a-10",
+        "redondear-decena",
+        "sumar-por-la-izquierda",
+        "duplicar-y-ajustar",
+        "sumar-por-posicion-numeros-grandes",
+        "estimar-antes-de-sumar-grande",
+      ]),
+      g("resta", "Resta", "Subtraction", [
+        "resta-compensacion",
+        "complemento-a-100",
+        "restar-por-posicion-numeros-grandes",
+        "restar-completando-al-redondo-mas-cercano",
+      ]),
+      g("multiplicacion", "Multiplicación", "Multiplication", [
+        "x11-segundo",
+        "x5-mitad-de-x10",
+        "cuadrado-terminado-en-5",
+        "x9-es-x10-menos-el-numero",
+        "numeros-cercanos-a-100",
+        "x4-duplicar-dos-veces",
+        "multiplicar-por-partes",
+        "multiplicar-redondeando-primero",
+      ]),
+      g("division", "División", "Division", [
+        "divisibilidad-por-3",
+        "dividir-por-5",
+        "dividir-numeros-grandes-por-partes",
+        "estimar-el-cociente-grande",
+      ]),
+      g("fracciones", "Fracciones", "Fractions", [
+        "sumar-fracciones-igual-denominador",
+        "simplificar-con-mcd",
+        "minimo-comun-denominador",
+        "comparar-con-producto-cruzado",
+      ]),
+      g("decimales", "Decimales y porcentajes", "Decimals and percentages", [
+        "convertir-fraccion-decimal",
+        "porcentaje-como-decimal",
+        "redondear-decimales",
+      ]),
+      g("potencias", "Potencias y raíces", "Powers and roots", [
+        "potencia-como-multiplicacion-repetida",
+        "raiz-cuadrada-por-tanteo",
+        "notacion-cientifica-basica",
+      ]),
+      g("algebra", "Álgebra básica", "Basic algebra", ["que-es-una-variable", "despejar-paso-a-paso", "verificar-sustituyendo"]),
+      g("geometria", "Geometría básica", "Basic geometry", [
+        "geometria-ternas-pitagoricas",
+        "geometria-area-compuestas",
+        "geometria-pi-fraccion",
+        "geometria-angulos-complementarios",
+      ]),
+    ],
+    clases: [
+      g("basicos", "Conceptos básicos", "Basic concepts", ["numeria-clase-conceptos-basicos"]),
+      g("multiplicacion", "Multiplicación", "Multiplication", ["numeria-clase-multiplicacion"]),
+      g("division", "División", "Division", ["numeria-clase-division"]),
+      g("fracciones", "Fracciones y MCM", "Fractions and LCM", ["numeria-clase-mcm", "numeria-clase-fracciones-operaciones"]),
+    ],
+  },
   // Mundos originales que tenían UNA sola unidad (sin panel de temas): se
   // les da división real derivada de sus propias técnicas para que la
   // pantalla de Aprender se vea igual que la de Melodía/Trigonometría.

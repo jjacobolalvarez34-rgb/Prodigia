@@ -183,12 +183,16 @@
   "Social": {
     "amigos": "Friends",
     "subtitulo": "Find people, accept requests, and challenge them to a duel.",
-    "invitarSinCuenta": "Invite a friend (no account yet)",
-    "invitarPorLink": "Invite by link",
+    "invitarSinCuenta": "✨ Invite someone to Prodigia",
+    "invitarSinCuentaDescripcion": "For someone who doesn't use the app yet: whoever signs up through this link gets added as your friend automatically, no request needed.",
+    "invitarPorLink": "⚔️ Invite to play now",
+    "invitarPorLinkDescripcion": "For a one-off duel, right now: they don't have to be your friend in the app yet, just need to open the link.",
     "buscarPorNombre": "Search by name...",
     "buscar": "Search",
     "noEncontramosANadie": "We couldn't find anyone with that name.",
     "resultados": "Results",
+    "buscarEnTusAmigos": "Search your friends...",
+    "sinResultadosBusquedaAmigos": "You don't have any friends with that name.",
     "jugador": "Player",
     "enviada": "Sent",
     "enviarSolicitud": "Send request",
@@ -287,7 +291,28 @@
       "errorBuscar": "Couldn't search. Try again.",
       "errorEnviarSolicitud": "Couldn't send the request.",
       "errorProcesarSolicitud": "Couldn't process the request.",
-      "errorCrearDuelo": "Couldn't create the duel."
+      "errorCrearDuelo": "Couldn't create the duel.",
+      "errorQuitarAmigo": "Couldn't remove the friend."
+    },
+    "placaAmigo": {
+      "verPerfil": "View profile",
+      "mandarMensaje": "Send message",
+      "quitarAmigo": "Remove friend",
+      "confirmarQuitar": "Remove {nombre} from your friends?"
+    },
+    "mensajes": {
+      "volver": "Back to Social",
+      "cargando": "Loading...",
+      "vacio": "No messages yet — send the first one.",
+      "placeholder": "Write a message...",
+      "enviar": "Send",
+      "errorRateLimit": "You're sending messages too fast — wait a moment.",
+      "errorFiltro": "That message couldn't be sent.",
+      "errorGenerico": "Couldn't send. Try again.",
+      "metadata": {
+        "title": "Messages with {nombre}",
+        "description": "Private conversation with {nombre} on Prodigia."
+      }
     }
   },
   "mundoProgreso": {
@@ -1142,6 +1167,42 @@
       "potencias": "Powers & roots",
       "algebra": "Basic algebra",
       "geometria": "Basic geometry"
+    },
+    "aprenderClases": {
+      "desbloqueaConPro": "Unlock with Pro"
+    },
+    "visuales": {
+      "columnas": {
+        "etiqueta": "Column board for {a} and {b}",
+        "acarreo": "Carries",
+        "prestamo": "Borrows",
+        "resultado": "Result: {n}"
+      },
+      "multiplicacion": {
+        "etiqueta": "Column multiplication of {a} by {b}",
+        "parcial": "Partial product (digit {d}): {n}",
+        "suma": "Sum of the partial products: {n}"
+      },
+      "division": {
+        "etiqueta": "Long division of {dividendo} by {divisor}",
+        "bajar": "Bring down the {d}.",
+        "conArrastre": "Together with the {arrastre} left over, that's {numero}.",
+        "resto": "Remainder: {n}",
+        "paso": "Bring down the {bajado}: {numero} ÷ {divisor} = {digito}, {digito} × {divisor} = {producto}, remainder {resto}",
+        "final": "Quotient {cociente}, remainder {resto}"
+      },
+      "mcm": {
+        "etiqueta": "Least common multiple of {a} and {b}",
+        "multiplosDe": "Multiples of {n}",
+        "resultado": "LCM: {n}"
+      },
+      "fraccion": {
+        "etiqueta": "{num1}/{den1} {simbolo} {num2}/{den2}",
+        "original": "{num}/{den}",
+        "convertida": "= {num}/{den} (common denominator)",
+        "reciproca": "Reciprocal: {num}/{den}",
+        "resultado": "Result: {num}/{den}"
+      }
     }
   },
   "Practica": {

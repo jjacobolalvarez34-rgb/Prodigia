@@ -204,6 +204,22 @@ export default async function PerfilPage() {
   const nivelesMundoBanner = Object.fromEntries(MUNDOS_LANDING.map((m) => [m.slug, nivelMundoDe(m.slug)]));
   const refsBanner = ((profileFull?.afinidad_banner as { ref: string }[] | null) ?? []).map((i) => i.ref);
 
+  // afinidad_por_mundo() (SQL) solo devuelve mundos con AL MENOS un duelo
+  // completado — un mundo sin duelos simplemente no aparece en la fila.
+  // Acá se completa con los 13 mundos de MUNDOS_LANDING que falten, en 0,
+  // para que un mundo nuevo (o cualquiera sin duelos todavía) se vea
+  // explícitamente "0 duelos" en vez de desaparecer de la lista, como si
+  // no existiera. Orden: primero los que sí tienen duelos (más jugados
+  // primero, ya vienen así de la RPC), después el resto en el orden de
+  // MUNDOS_LANDING.
+  const afinidadPorMundoMap = new Map(((afinidadRows as FilaAfinidad[] | null) ?? []).map((f) => [f.mundo, f]));
+  const filasAfinidadCompletas: FilaAfinidad[] = [
+    ...((afinidadRows as FilaAfinidad[] | null) ?? []),
+    ...MUNDOS_LANDING.filter((m) => !afinidadPorMundoMap.has(m.slug)).map(
+      (m): FilaAfinidad => ({ mundo: m.slug, duelos_jugados: 0, victorias: 0, derrotas: 0, empates: 0, precision_promedio: null })
+    ),
+  ];
+
   const rachaMaxima = calcularRachaMaxima(dailyRows ?? []);
   const mejorTiempo = masRapida && masRapida.length > 0 ? masRapida[0].time_ms : null;
   const mejorPrecision = calcularMejorPrecisionDiaria(attemptsParaPrecision ?? []);
@@ -435,7 +451,12 @@ export default async function PerfilPage() {
             <h2 className="mb-1 font-display text-lg font-bold text-foreground">{t("afinidadPorMundo")}</h2>
             <p className="-mt-2 mb-4 text-xs text-texto-secundario">{t("afinidadDescripcion")}</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              {(afinidadRows as FilaAfinidad[]).map((fila) => (
+              {/* Bug real reportado por el usuario (2026-09-22): esta sección solo
+                  listaba los mundos que YA tenían duelos jugados — un mundo nuevo
+                  (o cualquiera sin duelos todavía) desaparecía en vez de mostrarse
+                  en 0, dando la falsa impresión de que ni existía. Se completa acá
+                  con los mundos de MUNDOS_LANDING que la RPC no devolvió, en 0. */}
+              {filasAfinidadCompletas.map((fila) => (
                 <div key={fila.mundo} className="rounded-xl border border-border bg-surface px-4 py-3">
                   <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">
                     {NOMBRE_MUNDO_AFINIDAD[fila.mundo] ?? fila.mundo}

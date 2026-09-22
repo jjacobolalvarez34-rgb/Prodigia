@@ -183,12 +183,16 @@
   "Social": {
     "amigos": "Amigos",
     "subtitulo": "Busca gente, acepta solicitudes y rétalos a duelo.",
-    "invitarSinCuenta": "Invitar a un amigo (sin cuenta todavía)",
-    "invitarPorLink": "Invitar por link",
+    "invitarSinCuenta": "✨ Invitá a alguien a Prodigia",
+    "invitarSinCuentaDescripcion": "Para quien todavía no usa la app: quien se registre por este link queda agregado como tu amigo automáticamente, sin pedir ni aceptar solicitud.",
+    "invitarPorLink": "⚔️ Invitar a jugar ahora",
+    "invitarPorLinkDescripcion": "Para un duelo puntual, ya mismo: no hace falta que ya sean amigos en la app, alcanza con que abran el link.",
     "buscarPorNombre": "Buscar por nombre...",
     "buscar": "Buscar",
     "noEncontramosANadie": "No encontramos a nadie con ese nombre.",
     "resultados": "Resultados",
+    "buscarEnTusAmigos": "Buscar en tus amigos...",
+    "sinResultadosBusquedaAmigos": "No tienes amigos con ese nombre.",
     "jugador": "Jugador",
     "enviada": "Enviada",
     "enviarSolicitud": "Enviar solicitud",
@@ -287,7 +291,28 @@
       "errorBuscar": "No se pudo buscar. Prueba de nuevo.",
       "errorEnviarSolicitud": "No se pudo enviar la solicitud.",
       "errorProcesarSolicitud": "No se pudo procesar la solicitud.",
-      "errorCrearDuelo": "No se pudo crear el duelo."
+      "errorCrearDuelo": "No se pudo crear el duelo.",
+      "errorQuitarAmigo": "No se pudo quitar de amigos."
+    },
+    "placaAmigo": {
+      "verPerfil": "Ver perfil",
+      "mandarMensaje": "Mandar mensaje",
+      "quitarAmigo": "Quitar de amigos",
+      "confirmarQuitar": "¿Quitar a {nombre} de tus amigos?"
+    },
+    "mensajes": {
+      "volver": "Volver a Social",
+      "cargando": "Cargando...",
+      "vacio": "Todavía no hay mensajes — manda el primero.",
+      "placeholder": "Escribe un mensaje...",
+      "enviar": "Enviar",
+      "errorRateLimit": "Estás mandando mensajes muy rápido — espera un momento.",
+      "errorFiltro": "Ese mensaje no se pudo enviar.",
+      "errorGenerico": "No se pudo enviar. Prueba de nuevo.",
+      "metadata": {
+        "title": "Mensajes con {nombre}",
+        "description": "Conversación privada con {nombre} en Prodigia."
+      }
     }
   },
   "mundoProgreso": {
@@ -616,8 +641,8 @@
     "vidrieraDeFondosGaleria": "Galería de fondos",
     "vidrieraFondosGaleriaDescripcion": "Imágenes animadas para tu tarjeta de perfil — catálogo en crecimiento.",
     "vidrieraDeColorNombre": "Color de nombre",
-    "vidrieraColorNombreDescripcion": "Desbloquea el color de tu nombre — elegís el tono exacto desde tu perfil, cualquiera que quieras.",
-    "colorNombreDesbloqueado": "Ya podés elegir el color de tu nombre.",
+    "vidrieraColorNombreDescripcion": "Desbloquea el color de tu nombre — eliges el tono exacto desde tu perfil, cualquiera que quieras.",
+    "colorNombreDesbloqueado": "Ya puedes elegir el color de tu nombre.",
     "sinFondo": "Sin fondo",
     "subeTuImagenEnPerfil": "Sube tu imagen desde tu perfil para que se vea.",
     "irAPerfil": "Ir a mi perfil",
@@ -850,7 +875,7 @@
     },
     "pedirEdad": {
       "titulo": "Un dato más",
-      "subtitulo": "Necesitamos tu edad para saber qué secciones podés usar — algunas, como la Trastienda, son solo para mayores de 14.",
+      "subtitulo": "Necesitamos tu edad para saber qué secciones puedes usar — algunas, como la Trastienda, son solo para mayores de 14.",
       "placeholder": "Tu edad",
       "boton": "Guardar",
       "cerrar": "Cerrar",
@@ -859,7 +884,7 @@
     },
     "confirmarCuenta": {
       "titulo": "Ya casi",
-      "subtitulo": "Por seguridad, algunos correos revisan los links automáticamente antes de que los abras — por eso pedimos un click extra acá para confirmar que sos vos.",
+      "subtitulo": "Por seguridad, algunos correos revisan los links automáticamente antes de que los abras — por eso pedimos un click extra acá para confirmar que eres tú.",
       "boton": "Confirmar mi cuenta",
       "invalido": "Este link no es válido o ya se usó. Pedí uno nuevo desde /recuperar o volviendo a intentar el registro."
     },
@@ -990,11 +1015,11 @@
       "irAPracticar": "Ir a Practicar",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Respondé las preguntas para marcar esta técnica como aprendida. Podés reintentar todas las veces que quieras.",
-      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "quizSubtitulo": "Responde las preguntas para marcar esta técnica como aprendida. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
     }
   },
   "Nav": {
@@ -1142,6 +1167,42 @@
       "potencias": "Potencias y raíces",
       "algebra": "Álgebra básica",
       "geometria": "Geometría básica"
+    },
+    "aprenderClases": {
+      "desbloqueaConPro": "Desbloqueá con Pro"
+    },
+    "visuales": {
+      "columnas": {
+        "etiqueta": "Tablero en columna de {a} y {b}",
+        "acarreo": "Se lleva",
+        "prestamo": "Pide prestado",
+        "resultado": "Resultado: {n}"
+      },
+      "multiplicacion": {
+        "etiqueta": "Multiplicación en columna de {a} por {b}",
+        "parcial": "Producto parcial (dígito {d}): {n}",
+        "suma": "Suma de los productos parciales: {n}"
+      },
+      "division": {
+        "etiqueta": "División larga de {dividendo} entre {divisor}",
+        "bajar": "Baja el {d}.",
+        "conArrastre": "Junto con el {arrastre} que sobraba, queda {numero}.",
+        "resto": "Resto: {n}",
+        "paso": "Baja el {bajado}: {numero} ÷ {divisor} = {digito}, {digito} × {divisor} = {producto}, resto {resto}",
+        "final": "Cociente {cociente}, resto {resto}"
+      },
+      "mcm": {
+        "etiqueta": "Mínimo común múltiplo de {a} y {b}",
+        "multiplosDe": "Múltiplos de {n}",
+        "resultado": "MCM: {n}"
+      },
+      "fraccion": {
+        "etiqueta": "{num1}/{den1} {simbolo} {num2}/{den2}",
+        "original": "{num}/{den}",
+        "convertida": "= {num}/{den} (denominador común)",
+        "reciproca": "Recíproca: {num}/{den}",
+        "resultado": "Resultado: {num}/{den}"
+      }
     }
   },
   "Practica": {
@@ -1288,11 +1349,11 @@
       "irAPracticar": "Ir a Practicar",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Respondé las preguntas para marcar esta técnica como aprendida. Podés reintentar todas las veces que quieras.",
-      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "quizSubtitulo": "Responde las preguntas para marcar esta técnica como aprendida. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
     }
   },
   "Admin": {
@@ -1424,11 +1485,11 @@
       "irPracticar": "Ir a Practicar",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Respondé las preguntas para marcar esta técnica como aprendida. Podés reintentar todas las veces que quieras.",
-      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "quizSubtitulo": "Responde las preguntas para marcar esta técnica como aprendida. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
     },
     "practica": {
       "oseo": {
@@ -1732,7 +1793,7 @@
       "aria": "Subiste al nivel {nivel} — ganaste {bonus} Chispas",
       "titulo": "¡NIVEL {nivel}!",
       "chispas": "Chispas",
-      "subtitulo": "Seguí sumando para el nivel {siguiente}",
+      "subtitulo": "Sigue sumando para el nivel {siguiente}",
       "continuar": "¡Continuar!"
     },
     "chispasGanadas": {
@@ -1935,11 +1996,11 @@
       "volverAAprender": "Volver a Aprender",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Respondé las preguntas para marcar esta técnica como aprendida. Podés reintentar todas las veces que quieras.",
-      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "quizSubtitulo": "Responde las preguntas para marcar esta técnica como aprendida. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
     }
   },
   "Fracciones": {
@@ -2075,11 +2136,11 @@
       "irAPracticar": "Ir a Practicar",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Respondé las preguntas para marcar esta técnica como aprendida. Podés reintentar todas las veces que quieras.",
-      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "quizSubtitulo": "Responde las preguntas para marcar esta técnica como aprendida. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
     },
     "practicaPages": {
       "cronologia": {
@@ -2156,15 +2217,15 @@
       "datosClan": "Si eres parte de un clan: a cuál, tu rol ahí, y los mensajes que mandas en el chat del clan (visibles solo para el resto de tu clan).",
       "datosAmistades": "Tus amistades dentro de la app (a quién agregaste, quién te agregó a ti).",
       "datosGrupo": "Si eres parte de un grupo de un profesor, ese profesor puede ver tu progreso agregado del grupo (nivel, racha, precisión), nunca tus respuestas individuales fuera de eso.",
-      "datosEdad": "Tu edad, si la ingresaste — se pide una sola vez, después de crear tu cuenta, únicamente para saber si podés entrar a la Trastienda (mayores de 14). No la usamos para nada más.",
+      "datosEdad": "Tu edad, si la ingresaste — se pide una sola vez, después de crear tu cuenta, únicamente para saber si puedes entrar a la Trastienda (mayores de 14). No la usamos para nada más.",
       "datosPago": "Si compraste Chispas o Prodigia Pro: qué compraste, cuándo y el estado de tu suscripción. El número de tu tarjeta y los datos de pago en sí los recibe y procesa directamente Mercado Pago o Paddle (ver más abajo) — nunca pasan por nuestros servidores ni los guardamos nosotros.",
       "datosDocente": "Si completaste el formulario de Prodigia para colegios: el nombre del colegio, tu nombre, tu email, tu teléfono y el mensaje que hayas escrito — se usa solo para responder esa consulta, es información separada de cualquier cuenta de estudiante.",
       "usoTitulo": "Para qué lo usamos",
-      "usoTexto": "Solo para que la app funcione: calibrar tu nivel, calcular tu progreso, mostrar el ranking, el feed y el chat de tu clan, procesar tus compras si hacés alguna, y nada más. No vendemos tus datos ni los compartimos con terceros con fines publicitarios. El chat de clan tiene un filtro automático de lenguaje ofensivo (un mensaje que lo contiene se rechaza antes de guardarse) y cualquier mensaje se puede reportar para que lo revisemos a mano — no hay moderación automática de contenido más allá de ese filtro.",
+      "usoTexto": "Solo para que la app funcione: calibrar tu nivel, calcular tu progreso, mostrar el ranking, el feed y el chat de tu clan, procesar tus compras si haces alguna, y nada más. No vendemos tus datos ni los compartimos con terceros con fines publicitarios. El chat de clan tiene un filtro automático de lenguaje ofensivo (un mensaje que lo contiene se rechaza antes de guardarse) y cualquier mensaje se puede reportar para que lo revisemos a mano — no hay moderación automática de contenido más allá de ese filtro.",
       "tercerosTitulo": "Con quién compartimos datos",
       "tercerosTexto": "Usamos un puñado de proveedores para que Prodigia funcione, cada uno recibe solo lo que necesita para su parte: Supabase aloja la base de datos, la autenticación y el almacenamiento de archivos (avatares, fondos de perfil); Mercado Pago y Paddle procesan los pagos (Paddle además actúa como vendedor registrado para las compras fuera de Colombia, así que la factura la emite Paddle, no Prodigia directamente); Brevo manda los emails de la cuenta (confirmación, recuperar contraseña). Ninguno de estos usa tus datos para publicidad propia ni los revende — los tienen únicamente para prestarnos ese servicio puntual.",
       "menoresTitulo": "Menores de edad",
-      "menoresTexto": "Prodigia puede ser usada por chicos en edad escolar. Pedimos el mínimo de datos posible de cualquier usuario, sea menor o no, y la única pregunta específica de edad (ver arriba) existe solo para bloquear la Trastienda a menores de 14, no para armar un perfil sobre esa persona. Si sos padre, madre o tutor y querés revisar o borrar los datos de un menor a tu cargo, podés borrar la cuenta vos mismo desde el perfil (ver abajo) o escribirnos.",
+      "menoresTexto": "Prodigia puede ser usada por chicos en edad escolar. Pedimos el mínimo de datos posible de cualquier usuario, sea menor o no, y la única pregunta específica de edad (ver arriba) existe solo para bloquear la Trastienda a menores de 14, no para armar un perfil sobre esa persona. Si eres padre, madre o tutor y quieres revisar o borrar los datos de un menor a tu cargo, puedes borrar la cuenta tú mismo desde el perfil (ver abajo) o escribirnos.",
       "borrarTitulo": "Borrar tus datos",
       "borrarTexto": "Desde <link>tu perfil</link> puedes borrar tu cuenta por completo — se elimina tu progreso, tus logros, tu título, tu historial de duelos, tu pertenencia a un clan y tus mensajes de chat, tus amistades, tus Chispas y tu suscripción a Pro si la tenías, y todo lo demás asociado a tu cuenta, de forma permanente. Una excepción a tener en cuenta: si jugaste un duelo contra otra persona y esa persona borra su cuenta más adelante, el registro de ese duelo puede desaparecer también de tu propio historial — no es algo que tú puedas evitar, es un efecto de cómo se borra la información de la otra cuenta."
     },
@@ -2182,13 +2243,13 @@
       "usoTitulo": "Uso aceptable",
       "usoTexto": "Usa Prodigia para practicar de buena fe. No intentes manipular el sistema de Chispas, el ranking o los duelos con bots, scripts, o respondiendo automáticamente. En el chat de tu clan y en cualquier otro lugar donde puedas escribir texto libre, no uses lenguaje ofensivo, discriminatorio o abusivo — los mensajes que lo contienen se rechazan automáticamente antes de guardarse, y cualquier mensaje o perfil se puede reportar para que lo revisemos a mano.",
       "edadTitulo": "Edad mínima",
-      "edadTexto": "Prodigia está pensada para poder usarse desde edades escolares, con o sin la supervisión de un adulto. Algunas secciones tienen su propio límite de edad: la Trastienda (los minijuegos de estilo casino, siempre con Chispas del juego, nunca dinero real) es exclusiva para mayores de 14 años, y se te pregunta tu edad una sola vez, después de crear tu cuenta, solo para aplicar ese límite — no la usamos para nada más. Si sos padre, madre o tutor y querés que se borre la cuenta de un menor a tu cargo, podés hacerlo vos mismo desde <linkPerfil>el perfil</linkPerfil> o escribirnos.",
+      "edadTexto": "Prodigia está pensada para poder usarse desde edades escolares, con o sin la supervisión de un adulto. Algunas secciones tienen su propio límite de edad: la Trastienda (los minijuegos de estilo casino, siempre con Chispas del juego, nunca dinero real) es exclusiva para mayores de 14 años, y se te pregunta tu edad una sola vez, después de crear tu cuenta, solo para aplicar ese límite — no la usamos para nada más. Si eres padre, madre o tutor y quieres que se borre la cuenta de un menor a tu cargo, puedes hacerlo tú mismo desde <linkPerfil>el perfil</linkPerfil> o escribirnos.",
       "proTitulo": "Prodigia Pro (suscripción)",
-      "proTexto": "Prodigia Pro es una suscripción opcional (mensual o anual) que da Chispas extra todos los meses, cosméticos exclusivos y otros beneficios que se muestran en <linkPro>la página de Pro</linkPro> antes de suscribirte. Se cobra por adelantado y se renueva automáticamente al final de cada período hasta que la cancelás — la cancelación se hace desde tu cuenta de Mercado Pago (Colombia) o Paddle (el resto del mundo), los procesadores que gestionan el cobro real; Prodigia nunca ve ni guarda el número de tu tarjeta. Al cancelar, seguís teniendo Pro hasta el final del período ya pagado, sin devolución de lo ya cobrado salvo que la ley de tu país exija lo contrario. Podemos cambiar el precio o los beneficios de Pro hacia adelante, nunca de forma retroactiva sobre un período ya pagado.",
+      "proTexto": "Prodigia Pro es una suscripción opcional (mensual o anual) que da Chispas extra todos los meses, cosméticos exclusivos y otros beneficios que se muestran en <linkPro>la página de Pro</linkPro> antes de suscribirte. Se cobra por adelantado y se renueva automáticamente al final de cada período hasta que la cancelas — la cancelación se hace desde tu cuenta de Mercado Pago (Colombia) o Paddle (el resto del mundo), los procesadores que gestionan el cobro real; Prodigia nunca ve ni guarda el número de tu tarjeta. Al cancelar, sigues teniendo Pro hasta el final del período ya pagado, sin devolución de lo ya cobrado salvo que la ley de tu país exija lo contrario. Podemos cambiar el precio o los beneficios de Pro hacia adelante, nunca de forma retroactiva sobre un período ya pagado.",
       "chispasTitulo": "Chispas y compras dentro de la app",
-      "chispasTexto": "Las Chispas son la moneda del juego: la mayoría se ganan jugando, y también se pueden comprar con dinero real en paquetes fijos. No tienen valor en efectivo, no se pueden transferir a otra cuenta ni retirar como dinero, y las compras no son reembolsables una vez acreditadas, salvo que la ley de tu país exija lo contrario. Si borrás tu cuenta, perdés las Chispas y los beneficios de Pro que tuvieras activos en ese momento, sin devolución — por eso <linkPerfil>borrar tu cuenta</linkPerfil> te lo advierte antes de confirmar.",
+      "chispasTexto": "Las Chispas son la moneda del juego: la mayoría se ganan jugando, y también se pueden comprar con dinero real en paquetes fijos. No tienen valor en efectivo, no se pueden transferir a otra cuenta ni retirar como dinero, y las compras no son reembolsables una vez acreditadas, salvo que la ley de tu país exija lo contrario. Si borras tu cuenta, pierdes las Chispas y los beneficios de Pro que tuvieras activos en ese momento, sin devolución — por eso <linkPerfil>borrar tu cuenta</linkPerfil> te lo advierte antes de confirmar.",
       "docentesTitulo": "Para colegios y docentes",
-      "docentesTexto": "Si completás el formulario de <linkDocentes>Prodigia para colegios</linkDocentes>, usamos esos datos (nombre del colegio, tu nombre, email, teléfono y la información que agregues) únicamente para responder tu consulta — no crea ni modifica ninguna cuenta de estudiante. Un acuerdo real con un colegio (licencias, cuentas de alumnos, qué datos verían los docentes) se define aparte, por escrito, antes de activarse.",
+      "docentesTexto": "Si completas el formulario de <linkDocentes>Prodigia para colegios</linkDocentes>, usamos esos datos (nombre del colegio, tu nombre, email, teléfono y la información que agregues) únicamente para responder tu consulta — no crea ni modifica ninguna cuenta de estudiante. Un acuerdo real con un colegio (licencias, cuentas de alumnos, qué datos verían los docentes) se define aparte, por escrito, antes de activarse.",
       "borrarTitulo": "Borrar tu cuenta",
       "borrarTexto": "Puedes borrar tu cuenta cuando quieras desde <link>tu perfil</link>. Esa acción es permanente: borra tu progreso, tus logros, tu historial de duelos, tu pertenencia a un clan, tus mensajes de chat, tus Chispas y tu suscripción a Pro si la tenías, y todo lo demás asociado a tu cuenta — no se puede deshacer ni se reembolsa nada de lo ya pagado. Si jugaste un duelo contra alguien que después borra su cuenta, ese duelo puede desaparecer también de tu propio historial — es un efecto secundario de cómo funciona el borrado, no algo que puedas evitar del otro lado.",
       "verTambien": "Ver también nuestra <link>política de privacidad</link>."
@@ -2327,11 +2388,11 @@
       "irPracticar": "Ir a Practicar",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Respondé las preguntas para marcar esta técnica como aprendida. Podés reintentar todas las veces que quieras.",
-      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "quizSubtitulo": "Responde las preguntas para marcar esta técnica como aprendida. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
     },
     "practicaPaginas": {
       "fundamentos": {
@@ -2619,11 +2680,11 @@
       "irPracticar": "Ir a Practicar",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Respondé las preguntas para marcar esta técnica como aprendida. Podés reintentar todas las veces que quieras.",
-      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "quizSubtitulo": "Responde las preguntas para marcar esta técnica como aprendida. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
     },
     "practicaPaginas": {
       "simbolos": {
@@ -2793,11 +2854,11 @@
       "irAPracticar": "Ir a Practicar",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Respondé las preguntas para marcar esta técnica como aprendida. Podés reintentar todas las veces que quieras.",
-      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "quizSubtitulo": "Responde las preguntas para marcar esta técnica como aprendida. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras.",
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras.",
       "mano": {
         "pulgar": "Pulgar",
         "indice": "Índice",
@@ -2807,7 +2868,7 @@
         "instruccion": "Dedo elegido: {dedo}. Los dedos azules cuentan para el seno, los naranjas para el coseno.",
         "cuentaSeno": "dedos entre el pulgar y el elegido",
         "cuentaCoseno": "dedos entre el elegido y el meñique",
-        "tocarDedo": "Tocá cualquier dedo para probar otro ángulo."
+        "tocarDedo": "Toca cualquier dedo para probar otro ángulo."
       }
     },
     "practica": {
@@ -2943,11 +3004,11 @@
       "irAPracticar": "Ir a Practicar",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Respondé las preguntas para marcar este módulo como aprendido. Podés reintentar todas las veces que quieras.",
-      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "quizSubtitulo": "Responde las preguntas para marcar este módulo como aprendido. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
     },
     "practica": {
       "derivadas": {
@@ -3082,11 +3143,11 @@
       "irAPracticar": "Ir a Practicar",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Respondé las preguntas para marcar este módulo como aprendido. Podés reintentar todas las veces que quieras.",
-      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "quizSubtitulo": "Responde las preguntas para marcar este módulo como aprendido. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
     },
     "practica": {
       "serie": {
@@ -3225,11 +3286,11 @@
       "irAPracticar": "Ir a Practicar",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Respondé las preguntas para marcar este módulo como aprendido. Podés reintentar todas las veces que quieras.",
-      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "quizSubtitulo": "Responde las preguntas para marcar este módulo como aprendido. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
     },
     "practica": {
       "central": {
@@ -3376,11 +3437,11 @@
       "irAPracticar": "Ir a Practicar",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Respondé las preguntas para marcar este módulo como aprendido. Podés reintentar todas las veces que quieras.",
-      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "quizSubtitulo": "Responde las preguntas para marcar este módulo como aprendido. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
     },
     "practica": {
       "hilo": {
@@ -3611,11 +3672,11 @@
       "irAPracticar": "Ir a Practicar",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Respondé las preguntas para marcar este módulo como aprendido. Podés reintentar todas las veces que quieras.",
-      "respuestaIncorrecta": "Esa no es — revisá de nuevo",
+      "quizSubtitulo": "Responde las preguntas para marcar este módulo como aprendido. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisá el porqué arriba y reintentá cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
     },
     "practica": {
       "sintaxis": {

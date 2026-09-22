@@ -4,12 +4,16 @@ import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import type { NodoCamino } from "@/lib/aprender/path";
+import type { NodoCaminoNumeria } from "@/lib/aprender/pathClases";
+import { hrefVolverAAprender } from "@/lib/aprender/clases";
 import { generarProblemaTecnica, type Problem } from "@/lib/practica/problems";
 import type { Achievement } from "@/types/database";
 import LogroBanner from "@/components/LogroBanner";
 import MathText from "@/components/MathText";
 import Boton from "@/components/Boton";
+import CuerpoVisual from "@/components/aprender/CuerpoVisual";
+import { REGISTRO_VISUALES_NUMERIA } from "@/components/numeria/visuales/registro";
+import { visualesDeContenido } from "@/lib/aprender/visuales";
 
 type Fase = "explicacion" | "ejemplo" | "practica" | "quiz" | "celebracion";
 
@@ -39,7 +43,7 @@ const transicion = {
 };
 
 interface Props {
-  nodo: NodoCamino;
+  nodo: NodoCaminoNumeria;
   desbloquea: { nombre: string; descripcion: string | null }[];
 }
 
@@ -56,7 +60,12 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
 
   const pasos = nodo.contenido.pasos;
   const esFraccion = SLUGS_FRACCIONES.has(nodo.slug);
-  const saltaPractica = esFraccion || SLUGS_ALGEBRA.has(nodo.slug);
+  // Las Clases nuevas (Pro, con visuales animados) usan quiz en vez de la
+  // práctica numérica de "a symbol b = ?" — mismo motivo que Fracciones y
+  // Álgebra: no calzan en ese motor. Ver CuerpoVisual/REGISTRO_VISUALES_NUMERIA.
+  const visuales = useMemo(() => visualesDeContenido(nodo.contenido.visuales), [nodo.contenido.visuales]);
+  const esVisual = visuales.length > 0;
+  const saltaPractica = esFraccion || SLUGS_ALGEBRA.has(nodo.slug) || esVisual;
 
   // Proceso 1 (docs/PLAN_REVISION_CONTENIDO.md): mismo patrón de quiz que
   // los otros 9 mundos — SOLO aparece cuando nodo.contenido.quiz tiene
@@ -170,45 +179,56 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
 
         {fase === "ejemplo" && (
           <motion.div key="ejemplo" {...transicion} className="flex flex-col gap-6">
-            <div className="flex flex-col gap-3">
-              {pasos.map((paso, i) => (
-                <div
-                  key={i}
-                  className={`rounded-xl border px-4 py-3 font-mono text-sm transition-all duration-300 ${
-                    i === pasoIdx
-                      ? "border-logro/50 bg-logro/10 text-foreground"
-                      : i < pasoIdx
-                        ? "border-border bg-surface text-foreground/40"
-                        : "border-border bg-surface text-foreground/25"
-                  }`}
-                >
-                  <span className="mr-2 font-bold text-logro">{i + 1}</span>
-                  <MathText texto={paso} />
+            {esVisual ? (
+              <CuerpoVisual pasos={pasos} visuales={visuales} registro={REGISTRO_VISUALES_NUMERIA} />
+            ) : (
+              <>
+                <div className="flex flex-col gap-3">
+                  {pasos.map((paso, i) => (
+                    <div
+                      key={i}
+                      className={`rounded-xl border px-4 py-3 font-mono text-sm transition-all duration-300 ${
+                        i === pasoIdx
+                          ? "border-logro/50 bg-logro/10 text-foreground"
+                          : i < pasoIdx
+                            ? "border-border bg-surface text-foreground/40"
+                            : "border-border bg-surface text-foreground/25"
+                      }`}
+                    >
+                      <span className="mr-2 font-bold text-logro">{i + 1}</span>
+                      <MathText texto={paso} />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="flex gap-3">
-              <Boton variante="secundario" onClick={() => setPasoIdx((p) => Math.max(0, p - 1))} disabled={pasoIdx === 0}>
-                {t("anterior")}
+                <div className="flex gap-3">
+                  <Boton variante="secundario" onClick={() => setPasoIdx((p) => Math.max(0, p - 1))} disabled={pasoIdx === 0}>
+                    {t("anterior")}
+                  </Boton>
+                  {pasoIdx < pasos.length - 1 ? (
+                    <Boton className="flex-1" onClick={() => setPasoIdx((p) => Math.min(pasos.length - 1, p + 1))}>
+                      {t("siguientePaso")}
+                    </Boton>
+                  ) : tieneQuiz ? (
+                    <Boton className="flex-1" onClick={() => setFase("quiz")}>
+                      {t("continuarAlQuiz")}
+                    </Boton>
+                  ) : saltaPractica ? (
+                    <Boton className="flex-1" onClick={() => completarLeccion()}>
+                      {t("marcarComoAprendida")}
+                    </Boton>
+                  ) : (
+                    <Boton className="flex-1" onClick={empezarPractica}>
+                      {t("practicar")}
+                    </Boton>
+                  )}
+                </div>
+              </>
+            )}
+            {esVisual && (
+              <Boton onClick={() => (tieneQuiz ? setFase("quiz") : completarLeccion())}>
+                {tieneQuiz ? t("continuarAlQuiz") : t("marcarComoAprendida")}
               </Boton>
-              {pasoIdx < pasos.length - 1 ? (
-                <Boton className="flex-1" onClick={() => setPasoIdx((p) => Math.min(pasos.length - 1, p + 1))}>
-                  {t("siguientePaso")}
-                </Boton>
-              ) : tieneQuiz ? (
-                <Boton className="flex-1" onClick={() => setFase("quiz")}>
-                  {t("continuarAlQuiz")}
-                </Boton>
-              ) : saltaPractica ? (
-                <Boton className="flex-1" onClick={() => completarLeccion()}>
-                  {t("marcarComoAprendida")}
-                </Boton>
-              ) : (
-                <Boton className="flex-1" onClick={empezarPractica}>
-                  {t("practicar")}
-                </Boton>
-              )}
-            </div>
+            )}
           </motion.div>
         )}
 
@@ -353,7 +373,7 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
             )}
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
-              <Boton onClick={() => router.push("/aprender")}>{t("volverAAprender")}</Boton>
+              <Boton onClick={() => router.push(hrefVolverAAprender("/aprender", nodo.requierePro))}>{t("volverAAprender")}</Boton>
               <Link
                 href={esFraccion ? "/practica/fracciones" : SLUGS_ALGEBRA.has(nodo.slug) ? "/practica/algebra" : "/practica"}
                 className="text-sm font-medium text-primario hover:underline"

@@ -1,14 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Link, useRouter } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { ArithmeticProblemType } from "@/types/database";
 import Boton from "@/components/Boton";
+import PlacaAmigo from "@/components/PlacaAmigo";
 import type { UseAmigosReturn } from "@/app/[locale]/social/useAmigos";
 import SelectorMundoDuelo, { QUIMIA_MODOS_INVITACION, useEtiquetasDuelo, useMundosDuelo } from "@/components/duelos/SelectorMundoDuelo";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
+
+// Compara nombres ignorando mayúsculas y acentos — mismo criterio
+// simple sugerido para el filtro local de "Tus amigos" (no hay otro
+// filtro por nombre en el proyecto del que copiar un helper ya hecho).
+export function normalizarNombre(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
+}
 
 // Fase 3 del rediseño de Social: ya no maneja su propio estado — recibe
 // todo de useAmigos() (llamado una sola vez en SocialClient) para que la
@@ -34,8 +45,16 @@ export default function AmigosClient({ amigosState }: Props) {
     enviarSolicitud,
     responder,
     retar,
+    quitarAmigo,
   } = amigosState;
   const [retandoA, setRetandoA] = useState<string | null>(null);
+  const [filtroAmigos, setFiltroAmigos] = useState("");
+
+  const amigosFiltrados = useMemo(() => {
+    const filtro = normalizarNombre(filtroAmigos.trim());
+    if (!filtro) return amigos;
+    return amigos.filter((a) => normalizarNombre(a.display_name ?? "").includes(filtro));
+  }, [amigos, filtroAmigos]);
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
@@ -44,16 +63,28 @@ export default function AmigosClient({ amigosState }: Props) {
         <p className="mt-1 text-sm text-texto-secundario">{t("subtitulo")}</p>
       </div>
 
-      <section className="flex flex-col gap-2">
-        <h2 className="text-xs font-medium uppercase tracking-wide text-texto-secundario">
-          {t("invitarSinCuenta")}
-        </h2>
-        <InvitarAmigoSinCuenta />
+      {/* Rediseño (2026-09-22): antes eran dos <section> genéricas
+          idénticas, una debajo de la otra, con títulos parecidos
+          ("Invitar a un amigo (sin cuenta todavía)" / "Invitar por
+          link") — fáciles de confundir a primera vista aunque hacen
+          cosas MUY distintas (una es un referido a la app, la otra un
+          duelo puntual). Ahora son 2 tarjetas con borde/color/ícono
+          bien diferenciados — sin tocar la lógica de ninguna de las
+          dos, solo jerarquía visual y copy. */}
+      <section className="flex flex-col gap-2 rounded-2xl border-2 border-logro/30 bg-logro/5 p-4">
+        <div>
+          <h2 className="font-display text-sm font-bold text-foreground">{t("invitarPorLink")}</h2>
+          <p className="mt-0.5 text-xs text-texto-secundario">{t("invitarPorLinkDescripcion")}</p>
+        </div>
+        <InvitarPorLink />
       </section>
 
-      <section className="flex flex-col gap-2">
-        <h2 className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{t("invitarPorLink")}</h2>
-        <InvitarPorLink />
+      <section className="flex flex-col gap-2 rounded-2xl border-2 border-primario/30 bg-primario/5 p-4">
+        <div>
+          <h2 className="font-display text-sm font-bold text-foreground">{t("invitarSinCuenta")}</h2>
+          <p className="mt-0.5 text-xs text-texto-secundario">{t("invitarSinCuentaDescripcion")}</p>
+        </div>
+        <InvitarAmigoSinCuenta />
       </section>
 
       <form onSubmit={(e) => { e.preventDefault(); buscar(consulta); }} className="flex gap-2">
@@ -112,30 +143,44 @@ export default function AmigosClient({ amigosState }: Props) {
             {t("todaviaNoTenesAmigos")}
           </p>
         ) : (
-          amigos.map((a) => (
-            <div key={a.friend_id} className="flex flex-col gap-2 rounded-xl border border-border bg-surface px-4 py-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Link href={`/perfil/${a.friend_id}`} className="font-medium text-foreground hover:underline">
-                    {a.display_name ?? t("jugador")}
-                  </Link>
-                  <span className="ml-2 font-mono text-xs text-texto-secundario">{a.elo_rating} ELO</span>
-                </div>
-                <Boton onClick={() => setRetandoA(retandoA === a.friend_id ? null : a.friend_id)} className="px-3 py-1.5 text-sm">
-                  {t("retarADuelo")}
-                </Boton>
-              </div>
-              {retandoA === a.friend_id && (
-                <div className="border-t border-border pt-2">
-                  <SelectorMundoDuelo
-                    mundos={mundosDuelo}
-                    requiereSubopcion
-                    onElegirSubopcion={(mundo, opcion) => retar(a.friend_id, mundo, opcion)}
+          <>
+            {/* Buscador de la lista YA agregada (filtro local, sin red) —
+                distinto del buscador de arriba, que llama a buscar_usuarios
+                para encontrar gente nueva. Solo tiene sentido mostrarlo con
+                2+ amigos; con la lista corta filtrar no ahorra nada. */}
+            {amigos.length > 1 && (
+              <input
+                value={filtroAmigos}
+                onChange={(e) => setFiltroAmigos(e.target.value)}
+                placeholder={t("buscarEnTusAmigos")}
+                className="rounded-xl border border-border bg-background px-4 py-2 text-sm text-foreground outline-none focus:border-primario"
+              />
+            )}
+            {amigosFiltrados.length === 0 ? (
+              <p className="rounded-xl border border-border bg-surface px-4 py-6 text-center text-sm text-texto-secundario">
+                {t("sinResultadosBusquedaAmigos")}
+              </p>
+            ) : (
+              amigosFiltrados.map((a) => (
+                <div key={a.friend_id} className="flex flex-col gap-2">
+                  <PlacaAmigo
+                    amigo={a}
+                    onRetar={() => setRetandoA(retandoA === a.friend_id ? null : a.friend_id)}
+                    onQuitar={() => quitarAmigo(a.friend_id)}
                   />
+                  {retandoA === a.friend_id && (
+                    <div className="rounded-xl border border-border bg-surface px-4 py-3">
+                      <SelectorMundoDuelo
+                        mundos={mundosDuelo}
+                        requiereSubopcion
+                        onElegirSubopcion={(mundo, opcion) => retar(a.friend_id, mundo, opcion)}
+                      />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          ))
+              ))
+            )}
+          </>
         )}
       </section>
 

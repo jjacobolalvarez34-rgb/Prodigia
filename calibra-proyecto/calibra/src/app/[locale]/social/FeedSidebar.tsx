@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import Boton from "@/components/Boton";
+import PlacaAmigo from "@/components/PlacaAmigo";
 import { hrefDuelo } from "@/lib/duelos/rutas";
 import SelectorMundoDuelo, { useMundosDuelo } from "@/components/duelos/SelectorMundoDuelo";
 import type { UseAmigosReturn } from "./useAmigos";
@@ -38,6 +39,7 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
     enviarSolicitud,
     responder,
     retar,
+    quitarAmigo,
     error,
   } = amigosState;
   const { retos, rechazar } = useRetosPendientes(retosIniciales);
@@ -177,18 +179,13 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
           <p className="text-xs text-texto-secundario">{t("sidebar.sinAmigos")}</p>
         ) : (
           amigos.map((a) => (
-            <div key={a.friend_id} className="flex flex-col gap-1.5 text-xs">
-              <div className="flex items-center justify-between gap-2">
-                <Link href={`/perfil/${a.friend_id}`} className="truncate font-medium text-foreground hover:underline">
-                  {a.display_name ?? t("jugador")}
-                </Link>
-                <button
-                  onClick={() => setRetandoA(retandoA === a.friend_id ? null : a.friend_id)}
-                  className="shrink-0 font-medium text-primario hover:underline"
-                >
-                  {t("sidebar.retarCorto")}
-                </button>
-              </div>
+            <div key={a.friend_id} className="flex flex-col gap-1.5">
+              <PlacaAmigo
+                amigo={a}
+                compacto
+                onRetar={() => setRetandoA(retandoA === a.friend_id ? null : a.friend_id)}
+                onQuitar={() => quitarAmigo(a.friend_id)}
+              />
               {retandoA === a.friend_id && (
                 <SelectorMundoDuelo
                   mundos={mundosDuelo}

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import type { ArithmeticProblemType } from "@/types/database";
+import type { ArithmeticProblemType, FondoPerfil, FuenteNombre, AnimacionNombre } from "@/types/database";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 
 export interface Solicitud {
@@ -12,10 +12,24 @@ export interface Solicitud {
   display_name: string | null;
 }
 
+// Rediseño "placa de amigo" (2026-09-22): antes solo traía nombre+ELO —
+// ahora trae todo lo que PlacaAmigo.tsx necesita para verse igual que
+// la tarjeta de /perfil/[userId] (fondo, marco, fuente, animación,
+// color, título ya resuelto a texto). Mismas columnas que devuelve la
+// RPC mis_amigos() (0197_amigos_placa_y_quitar.sql).
 export interface Amigo {
   friend_id: string;
   display_name: string | null;
   elo_rating: number;
+  avatar_url: string | null;
+  marco_perfil: string;
+  fondo_perfil: FondoPerfil;
+  fondo_perfil_url: string | null;
+  titulo_activo: string | null;
+  titulo_nombre: string | null;
+  color_nombre: string | null;
+  fuente_nombre: FuenteNombre;
+  animacion_nombre: AnimacionNombre;
 }
 
 export interface ResultadoBusqueda {
@@ -114,8 +128,43 @@ export function useAmigos(solicitudesIniciales: Solicitud[], amigosIniciales: Am
     const solicitud = solicitudes.find((s) => s.user_id === userId);
     setSolicitudes((prev) => prev.filter((s) => s.user_id !== userId));
     if (aceptar && solicitud) {
-      setAmigos((prev) => [...prev, { friend_id: userId, display_name: solicitud.display_name, elo_rating: 800 }]);
+      // Datos de placa mínimos (sin fondo/marco/fuente/animación/título
+      // propios): el resto de los campos de Amigo llegan recién en el
+      // próximo mis_amigos() real (recarga de página) — no vale la pena
+      // ir a buscarlos acá solo para pintar una placa neutra un rato.
+      setAmigos((prev) => [
+        ...prev,
+        {
+          friend_id: userId,
+          display_name: solicitud.display_name,
+          elo_rating: 800,
+          avatar_url: null,
+          marco_perfil: "ninguno",
+          fondo_perfil: "ninguno",
+          fondo_perfil_url: null,
+          titulo_activo: null,
+          titulo_nombre: null,
+          color_nombre: null,
+          fuente_nombre: "default",
+          animacion_nombre: "ninguna",
+        },
+      ]);
     }
+  }
+
+  async function quitarAmigo(friendId: string) {
+    setError(null);
+    const res = await fetch("/api/amigos/eliminar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ friend_id: friendId }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setError(data.error ?? t("hook.errorQuitarAmigo"));
+      return;
+    }
+    setAmigos((prev) => prev.filter((a) => a.friend_id !== friendId));
   }
 
   // `opcion` es la operación (Numeria) o el sub_tipo (continente de
@@ -156,6 +205,7 @@ export function useAmigos(solicitudesIniciales: Solicitud[], amigosIniciales: Am
     enviarSolicitud,
     responder,
     retar,
+    quitarAmigo,
   };
 }
 

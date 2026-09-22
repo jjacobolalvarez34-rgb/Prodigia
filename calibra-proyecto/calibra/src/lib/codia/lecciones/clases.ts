@@ -378,7 +378,7 @@ else:
     orden: 8,
     requierePro: true,
     pasos: [
-      "Un bucle repite un bloque. Usá for cuando sabés cuántas vueltas hay (recorrer un rango o una lista) y while cuando repetís hasta que algo cambie. En los dos casos hacé las tres preguntas: dónde arranca, cuándo termina, qué cambia por vuelta.",
+      "Un bucle repite un bloque. Usa for cuando sabes cuántas vueltas hay (recorrer un rango o una lista) y while cuando repites hasta que algo cambie. En los dos casos haz las tres preguntas: dónde arranca, cuándo termina, qué cambia por vuelta.",
       `for de 0 a 2 en los cuatro lenguajes (el límite superior no se incluye):
 ~~~python
 for i in range(3):
@@ -435,7 +435,7 @@ console.log(total);
 ~~~salida
 15
 ~~~
-Fijate que range(1, 6) equivale a i <= 5: las dos formas llegan hasta 5.`,
+Fíjate que range(1, 6) equivale a i <= 5: las dos formas llegan hasta 5.`,
       `while: cuenta regresiva. La condición se revisa ANTES de cada vuelta y algo adentro tiene que acercarla a falsa; si no, el bucle no termina nunca.
 ~~~python
 n = 3
@@ -573,7 +573,7 @@ System.out.println(t);
     orden: 9,
     requierePro: true,
     pasos: [
-      "Una función agrupa código bajo un nombre. Recibe parámetros (los datos de entrada) y con return devuelve un resultado a quien la llamó. Reutilizás la lógica sin copiarla y podés probarla con distintos valores.",
+      "Una función agrupa código bajo un nombre. Recibe parámetros (los datos de entrada) y con return devuelve un resultado a quien la llamó. Reutilizas la lógica sin copiarla y puedes probarla con distintos valores.",
       `Una función que duplica un número, en los cuatro lenguajes:
 ~~~python
 def doble(x):
@@ -685,7 +685,7 @@ console.log(x);
 ~~~salida
 error de compilación
 ~~~`,
-      `Una función con condicional: devuelve el mayor de dos números. Fijate que hay un return en cada camino.
+      `Una función con condicional: devuelve el mayor de dos números. Fíjate que hay un return en cada camino.
 ~~~python
 def mayor(a, b):
     if a > b:
@@ -1394,7 +1394,7 @@ i = 2 total = 3
 i = 3 total = 6
 6
 ~~~
-Método: 1) leé el nombre del error y la línea; 2) reproducí el problema con el fragmento más chico posible; 3) trazá con una tabla o con print; 4) cambiá UNA cosa por vez y volvé a probar.`,
+Método: 1) lee el nombre del error y la línea; 2) reproducí el problema con el fragmento más chico posible; 3) trazá con una tabla o con print; 4) cambiá UNA cosa por vez y vuelve a probar.`,
     ],
     quiz: [
       {
@@ -1522,7 +1522,7 @@ console.log(cola.shift());
 1
 2
 ~~~
-En Python usá deque para colas: con una lista, pop(0) mueve todos los elementos de lugar (O(n)); popleft de deque es O(1).`,
+En Python usa deque para colas: con una lista, pop(0) mueve todos los elementos de lugar (O(n)); popleft de deque es O(1).`,
       `Conjunto: agregar elementos repetidos no hace nada. Agregamos 2, 6, 2, 6 y 1:
 ~~~python
 s = set()
