@@ -625,8 +625,13 @@
     "activo": "Activo",
     "nombreChispas": "{nombre} · {costo} Chispas",
     "herreroDeMarcos": "Herrero de marcos",
-    "herreroDescripcion": "Un borde cosmético para tu nombre en el perfil — los mismos colores que los rangos de Rankeds.",
+    "herreroDescripcion": "Un borde cosmético para tu tarjeta de perfil — los rangos de Rankeds, o un marco neón animado.",
     "sinMarco": "Sin marco",
+    "marcosNeon": {
+      "neon_violeta": "Neón violeta",
+      "neon_cian": "Neón cian",
+      "neon_magenta": "Neón magenta"
+    },
     "vidrieraDeMarcosTematicos": "Marcos de mundo",
     "vidrieraMarcosTematicosDescripcion": "Un anillo distinto para cada mundo, para tu avatar. Se desbloquea al llegar a nivel {n} en ese mundo — o gratis, de regalo, si lo dominas por completo.",
     "requiereNivelMundo": "Nivel {n} en {mundo} para desbloquear",
@@ -979,7 +984,7 @@
       "errorConDetalle": "No pudimos cerrar la partida: {error}",
       "errorDeRed": "No pudimos conectar con el servidor. Prueba de nuevo.",
       "volver": "Volver",
-      "ahiQuedo": "Ahí quedó.",
+      "ahiQuedo": "Resultado de la partida",
       "experiencia": "Experiencia",
       "aciertos": "Aciertos",
       "precision": "Precisión",
@@ -987,6 +992,8 @@
       "sinDatos": "—",
       "repasemosEsto": "Repasemos esto",
       "ningunoFallado": "Ninguno fallado — así se hace. 🎯",
+      "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+      "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras.",
       "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
       "instrucciones": "Identifica el país en el mapa. 10 preguntas o 60 segundos.",
       "iniciarPartida": "Iniciar partida"
@@ -1202,6 +1209,37 @@
         "convertida": "= {num}/{den} (denominador común)",
         "reciproca": "Recíproca: {num}/{den}",
         "resultado": "Resultado: {num}/{den}"
+      },
+      "recta": {
+        "etiqueta": "Recta numérica de {min} a {max}",
+        "valor": "{n}"
+      },
+      "potencia": {
+        "etiqueta": "Potencia: {base} elevado a {exponente}",
+        "inicial": "Empieza en {base}",
+        "paso": "× {base} = {acumulado}",
+        "resultado": "{base} elevado a {exponente} = {n}",
+        "cuadricula": "Cuadrícula de {base} por {base} = {n}"
+      },
+      "balanza": {
+        "etiqueta": "Balanza: {izq} = {der}",
+        "resultado": "x = {n}",
+        "comprobacion": "Sustituyendo x, el lado izquierdo da {n} — coincide con el derecho"
+      },
+      "figura": {
+        "etiquetaTriangulo": "Triángulo rectángulo con catetos {c1} y {c2}",
+        "cateto": "Cateto {n}: {valor}",
+        "hipotenusa": "Hipotenusa: {n}",
+        "etiquetaArea": "Área compuesta de un rectángulo de {ancho} por {alto}",
+        "areaGrande": "Rectángulo grande {ancho} × {alto} = {n}",
+        "areaRecorte": "Recorte {ancho} × {alto} = {n}",
+        "areaFinal": "Área final: {n}",
+        "etiquetaCirculo": "Círculo de radio {n}",
+        "radio": "Radio: {n}",
+        "area": "Área = {pi} × radio² = {n}",
+        "etiquetaAngulos": "Dos ángulos que suman {total} grados, uno mide {n} grados",
+        "conocido": "Ángulo conocido: {n} grados",
+        "otro": "El otro ángulo mide {n} grados"
       }
     }
   },
@@ -1277,7 +1315,7 @@
       "partidaPerfecta": "Partida perfecta — 10/10",
       "era": "era",
       "ningunaFallada": "Ninguna fallada — así se hace.",
-      "ahiQuedo": "Ahí quedó.",
+      "ahiQuedo": "Resultado de la partida",
       "experiencia": "Experiencia",
       "rompisteTuMeta": "Rompiste tu meta de hoy — {ganado}/{meta} de experiencia",
       "aciertos": "Aciertos",
@@ -1287,7 +1325,9 @@
       "chispasTotales": "Chispas totales: {n}",
       "repasemosEsto": "Repasemos esto",
       "laRespuestaEra": "la respuesta era",
-      "ningunoFallado": "Ninguno fallado — así se hace."
+      "ningunoFallado": "Ninguno fallado — así se hace.",
+      "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+      "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras."
     },
     "revelarRespuesta": {
       "tuRespuesta": "Tu respuesta: {respuesta}",
@@ -1435,13 +1475,15 @@
       "noPudimosCerrarPartida": "No pudimos cerrar la partida: {error}",
       "volver": "Volver",
       "subtituloRonda": "Ronda {ronda}/{total} · Anatomía",
-      "ahiQuedo": "Ahí quedó.",
+      "ahiQuedo": "Resultado de la partida",
       "experiencia": "Experiencia",
       "aciertos": "Aciertos",
       "precision": "Precisión",
       "experienciaHoy": "Experiencia hoy",
       "repasemosEsto": "Repasemos esto",
       "ningunaFallada": "Ninguna fallada — así se hace. 🎯",
+      "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+      "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras.",
       "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
       "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
       "iniciarPartida": "Iniciar partida"
@@ -1949,7 +1991,7 @@
       "errorDeRed": "No pudimos conectar con el servidor. Prueba de nuevo.",
       "noPudimosCerrar": "No pudimos cerrar la partida: {error}",
       "volver": "Volver",
-      "ahiQuedo": "Ahí quedó.",
+      "ahiQuedo": "Resultado de la partida",
       "experiencia": "Experiencia",
       "aciertos": "Aciertos",
       "precision": "Precisión",
@@ -1957,6 +1999,8 @@
       "repasemosEsto": "Repasemos esto",
       "laRespuestaEra": "la respuesta era",
       "ningunoFallado": "Ninguno fallado — así se hace.",
+      "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+      "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras.",
       "boostActivo": "Boost activo — Chispas ×1.5 en esta partida",
       "dueloSubtitulo": "Ronda {ronda}/{total} · Enigmia",
       "listoTitulo": "¿Listo?",
@@ -2079,13 +2123,15 @@
       "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
       "instrucciones": "10 preguntas o 60 segundos, lo que llegue primero.",
       "iniciarPartida": "Iniciar partida",
-      "ahiQuedo": "Ahí quedó.",
+      "ahiQuedo": "Resultado de la partida",
       "experiencia": "Experiencia",
       "aciertos": "Aciertos",
       "precision": "Precisión",
       "experienciaHoy": "Experiencia hoy",
       "repasemosEsto": "Repasemos esto",
-      "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+      "ningunoFallado": "Ninguna fallada — así se hace. 🎯",
+      "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+      "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras."
     },
     "sprintRunner": {
       "escudosDisponibles": "{n} escudos disponibles",
@@ -2338,13 +2384,15 @@
       "errorConexion": "No pudimos conectar con el servidor. Prueba de nuevo.",
       "errorCierreConDetalle": "No pudimos cerrar la partida: {error}",
       "volver": "Volver",
-      "resumenTitulo": "Ahí quedó.",
+      "resumenTitulo": "Resultado de la partida",
       "experiencia": "Experiencia",
       "aciertos": "Aciertos",
       "precision": "Precisión",
       "experienciaHoy": "Experiencia hoy",
       "repasemos": "Repasemos esto",
       "ningunaFallada": "Ninguna fallada — así se hace. 🎯",
+      "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+      "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras.",
       "iniciarPartida": "Iniciar partida",
       "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
       "instrucciones": "10 preguntas o 60 segundos, lo que llegue primero.",
@@ -2626,13 +2674,15 @@
       "dueloSubtitulo": "Ronda {ronda}/{total} · Quimia",
       "errorCerrarDetalle": "No pudimos cerrar la partida: {error}",
       "volver": "Volver",
-      "ahiQuedo": "Ahí quedó.",
+      "ahiQuedo": "Resultado de la partida",
       "experiencia": "Experiencia",
       "aciertos": "Aciertos",
       "precision": "Precisión",
       "experienciaHoy": "Experiencia hoy",
       "repasemosEsto": "Repasemos esto",
       "ningunaFallada": "Ninguna fallada — así se hace. 🎯",
+      "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+      "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras.",
       "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
       "preguntasSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
       "iniciarPartida": "Iniciar partida"
@@ -2749,7 +2799,7 @@
     "empezar": "Empezar",
     "yaCompletadoDiario": "Ya completaste el reto de hoy",
     "yaCompletadoSemanal": "Ya completaste el reto de esta semana",
-    "ahiQuedo": "Ahí quedó.",
+    "ahiQuedo": "Resultado de la partida",
     "bonusChispas": "+{n} Chispas de bonus",
     "quienMasCompleto": "Quién más completó {periodo}",
     "vuelvePorProximo": "Vuelve {volver} por el próximo.",
@@ -2800,13 +2850,15 @@
       "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
       "iniciarPartida": "Iniciar partida",
       "resumen": {
-        "ahiQuedo": "Ahí quedó.",
+        "ahiQuedo": "Resultado de la partida",
         "experiencia": "Experiencia",
         "aciertos": "Aciertos",
         "precision": "Precisión",
         "experienciaHoy": "Experiencia hoy",
         "repasemosEsto": "Repasemos esto",
-        "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+        "ningunoFallado": "Ninguna fallada — así se hace. 🎯",
+        "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+        "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras."
       }
     },
     "sprintRunner": {
@@ -2942,13 +2994,15 @@
       "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
       "iniciarPartida": "Iniciar partida",
       "resumen": {
-        "ahiQuedo": "Ahí quedó.",
+        "ahiQuedo": "Resultado de la partida",
         "experiencia": "Experiencia",
         "aciertos": "Aciertos",
         "precision": "Precisión",
         "experienciaHoy": "Experiencia hoy",
         "repasemosEsto": "Repasemos esto",
-        "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+        "ningunoFallado": "Ninguna fallada — así se hace. 🎯",
+        "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+        "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras."
       }
     },
     "sprintRunner": {
@@ -3081,13 +3135,15 @@
       "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
       "iniciarPartida": "Iniciar partida",
       "resumen": {
-        "ahiQuedo": "Ahí quedó.",
+        "ahiQuedo": "Resultado de la partida",
         "experiencia": "Experiencia",
         "aciertos": "Aciertos",
         "precision": "Precisión",
         "experienciaHoy": "Experiencia hoy",
         "repasemosEsto": "Repasemos esto",
-        "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+        "ningunoFallado": "Ninguna fallada — así se hace. 🎯",
+        "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+        "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras."
       }
     },
     "sprintRunner": {
@@ -3222,13 +3278,15 @@
       "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
       "iniciarPartida": "Iniciar partida",
       "resumen": {
-        "ahiQuedo": "Ahí quedó.",
+        "ahiQuedo": "Resultado de la partida",
         "experiencia": "Experiencia",
         "aciertos": "Aciertos",
         "precision": "Precisión",
         "experienciaHoy": "Experiencia hoy",
         "repasemosEsto": "Repasemos esto",
-        "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+        "ningunoFallado": "Ninguna fallada — así se hace. 🎯",
+        "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+        "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras."
       }
     },
     "sprintRunner": {
@@ -3371,13 +3429,15 @@
       "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
       "iniciarPartida": "Iniciar partida",
       "resumen": {
-        "ahiQuedo": "Ahí quedó.",
+        "ahiQuedo": "Resultado de la partida",
         "experiencia": "Experiencia",
         "aciertos": "Aciertos",
         "precision": "Precisión",
         "experienciaHoy": "Experiencia hoy",
         "repasemosEsto": "Repasemos esto",
-        "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+        "ningunoFallado": "Ninguna fallada — así se hace. 🎯",
+        "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+        "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras."
       }
     },
     "sprintRunner": {
@@ -3608,13 +3668,15 @@
       "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
       "iniciarPartida": "Iniciar partida",
       "resumen": {
-        "ahiQuedo": "Ahí quedó.",
+        "ahiQuedo": "Resultado de la partida",
         "experiencia": "Experiencia",
         "aciertos": "Aciertos",
         "precision": "Precisión",
         "experienciaHoy": "Experiencia hoy",
         "repasemosEsto": "Repasemos esto",
-        "ningunoFallado": "Ninguna fallada — así se hace. 🎯"
+        "ningunoFallado": "Ninguna fallada — así se hace. 🎯",
+        "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+        "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras."
       }
     },
     "sprintRunner": {

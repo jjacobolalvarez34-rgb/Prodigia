@@ -66,15 +66,23 @@ export async function obtenerCaminoQuimia(supabase: SupabaseClient, userId: stri
     return a.orden - b.orden;
   });
 
-  let activoAsignado = false;
+  // Desbloqueo por grupo (pedido del usuario 2026-09-22): antes había un
+  // único puntero "activo" para TODO el camino — completar TODO
+  // "Símbolos" era requisito para que apareciera la primera de
+  // "Fórmulas". Ahora cada grupo tiene su propio puntero independiente
+  // (`activoPorGrupo`), así que la primera técnica de cada grupo queda
+  // "activo" desde el principio; dentro de un mismo grupo se sigue
+  // siendo estrictamente lineal.
+  const activoPorGrupo = new Set<GrupoQuimia | null>();
   return ordenadas.map((t) => {
     const completado = dominadas.has(t.id);
+    const grupo = GRUPO_POR_SLUG[t.slug] ?? null;
     let estado: NodoEstado;
     if (completado) {
       estado = "completado";
-    } else if (!activoAsignado) {
+    } else if (!activoPorGrupo.has(grupo)) {
       estado = "activo";
-      activoAsignado = true;
+      activoPorGrupo.add(grupo);
     } else {
       estado = "bloqueado";
     }
@@ -85,7 +93,7 @@ export async function obtenerCaminoQuimia(supabase: SupabaseClient, userId: stri
       descripcion: t.descripcion,
       contenido: t.contenido as { pasos: string[]; quiz?: TechniqueQuizPregunta[] },
       estado,
-      grupo: GRUPO_POR_SLUG[t.slug] ?? null,
+      grupo,
     };
   });
 }

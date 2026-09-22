@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import CountUp from "@/components/CountUp";
 import { formatearProblema, type Problem } from "@/lib/practica/problems";
+import { estadoResumenPartida } from "@/lib/practica/resumenPartida";
 import { IconCheck } from "@/components/icons";
 import BotonesFinPartida from "@/components/BotonesFinPartida";
 import LogroBanner from "@/components/LogroBanner";
@@ -42,6 +43,11 @@ export interface FinishResponse {
 }
 
 export type { ResultadoDuelo };
+
+// Objetivo de preguntas de una partida completa (mismo valor que
+// TOTAL_PROBLEMAS en SprintRunner.tsx — se repite acá porque son
+// componentes separados y ese archivo no lo exporta).
+const OBJETIVO_SPRINT = 10;
 
 interface Props {
   resumen: FinishResponse;
@@ -86,6 +92,7 @@ export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volv
   const hayHistorial = historico.total > 0;
   const sprintPerfecto = sprint.total === 10 && sprint.correctos === 10;
   const sinHistorial = t("sinHistorial");
+  const estadoResumen = estadoResumenPartida(sprint.total, sprint.correctos, errores.length, OBJETIVO_SPRINT);
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-20">
@@ -167,6 +174,10 @@ export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volv
             ))}
           </div>
         </div>
+      ) : estadoResumen === "sinRespuestas" ? (
+        <p className="text-sm text-texto-secundario">{t("sinRespuestas")}</p>
+      ) : estadoResumen === "incompletaSinErrores" ? (
+        <p className="text-sm text-texto-secundario">{t("incompletaSinErrores")}</p>
       ) : (
         <p className="text-sm text-texto-secundario">{t("ningunoFallado")} 🎯</p>
       )}

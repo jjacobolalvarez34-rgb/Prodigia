@@ -55,6 +55,14 @@ export const COSTOS = {
   marco_platino: 2200,
   marco_diamante: 3200,
   marco_prodigio: 5000,
+  // Pedido 2026-09-22 (video de referencia del usuario, "efecto neón" —
+  // ver el comentario largo en src/types/database.ts): un escalón por
+  // encima de prodigio, mismo precio los 3 (son variantes de color de
+  // la misma rareza, no una progresión entre ellos) — solo Chispas,
+  // sin requisito de nivel_mundo, mismo criterio que bronce..prodigio.
+  marco_neon_violeta: 6000,
+  marco_neon_cian: 6000,
+  marco_neon_magenta: 6000,
   // Grupo B, Fase 1: 6 marcos temáticos (uno por mundo, assets reales
   // en public/marcos/) — un escalón arriba de platino, abajo de
   // diamante: exclusivos, pero el tope de prestigio sigue siendo

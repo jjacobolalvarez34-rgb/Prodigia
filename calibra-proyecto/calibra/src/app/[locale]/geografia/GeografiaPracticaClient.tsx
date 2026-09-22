@@ -23,6 +23,11 @@ import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
 import BotonRendirse from "@/components/duelos/BotonRendirse";
 import GeografiaSprintRunner from "./GeografiaSprintRunner";
 import { COLOR_GEOGRAFIA } from "./GeografiaMapa";
+import { estadoResumenPartida } from "@/lib/practica/resumenPartida";
+
+// Mismo valor que TOTAL_PREGUNTAS en GeografiaSprintRunner.tsx (archivo
+// separado que no lo exporta).
+const OBJETIVO_SPRINT = 10;
 
 type Fase = "inicio" | "vs" | "sprint" | "finalizando" | "resumen";
 
@@ -250,6 +255,7 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
   }
 
   if (fase === "resumen" && resumen) {
+    const estadoResumen = estadoResumenPartida(resumen.sprint.total, resumen.sprint.correctos, errores.length, OBJETIVO_SPRINT);
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-20">
         <LogroBanner logros={resumen.logrosNuevos} />
@@ -286,6 +292,10 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
               ))}
             </div>
           </div>
+        ) : estadoResumen === "sinRespuestas" ? (
+          <p className="text-sm text-texto-secundario">{t("practicaClient.sinRespuestas")}</p>
+        ) : estadoResumen === "incompletaSinErrores" ? (
+          <p className="text-sm text-texto-secundario">{t("practicaClient.incompletaSinErrores")}</p>
         ) : (
           <p className="text-sm text-texto-secundario">{t("practicaClient.ningunoFallado")}</p>
         )}

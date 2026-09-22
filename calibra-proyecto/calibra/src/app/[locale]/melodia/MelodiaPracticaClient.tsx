@@ -24,6 +24,11 @@ import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
 import BotonRendirse from "@/components/duelos/BotonRendirse";
 import MelodiaSprintRunner from "./MelodiaSprintRunner";
 import { COLOR_MELODIA } from "./colores";
+import { estadoResumenPartida } from "@/lib/practica/resumenPartida";
+
+// Mismo valor que TOTAL_PREGUNTAS en MelodiaSprintRunner.tsx (archivo
+// separado que no lo exporta).
+const OBJETIVO_SPRINT = 10;
 
 type Fase = "inicio" | "vs" | "sprint" | "finalizando" | "resumen";
 
@@ -219,6 +224,7 @@ export default function MelodiaPracticaClient({ modo, nivelInicial, escudosExtra
   }
 
   if (fase === "resumen" && resumen) {
+    const estadoResumen = estadoResumenPartida(resumen.sprint.total, resumen.sprint.correctos, errores.length, OBJETIVO_SPRINT);
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-20">
         <LogroBanner logros={resumen.logrosNuevos} />
@@ -252,6 +258,10 @@ export default function MelodiaPracticaClient({ modo, nivelInicial, escudosExtra
               ))}
             </div>
           </div>
+        ) : estadoResumen === "sinRespuestas" ? (
+          <p className="text-sm text-texto-secundario">{t("sinRespuestas")}</p>
+        ) : estadoResumen === "incompletaSinErrores" ? (
+          <p className="text-sm text-texto-secundario">{t("incompletaSinErrores")}</p>
         ) : (
           <p className="text-sm text-texto-secundario">{t("ningunaFallada")}</p>
         )}

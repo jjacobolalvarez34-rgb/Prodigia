@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   DEGRADE_PRIMARIO_DEFAULT,
+  colorSolidoPrimario,
   contrasteConBlanco,
   degradeCalidoMundo,
   gradientePrimario,
@@ -75,5 +76,24 @@ describe("degradeBoton", () => {
     expect(paradasPrimario()).toEqual(DEGRADE_PRIMARIO_DEFAULT);
     const calculia = MUNDOS_LANDING.find((m) => m.slug === "calculia")!;
     expect(paradasPrimario(calculia.colorHex)).toEqual(degradeCalidoMundo(calculia.colorHex));
+  });
+
+  // Pedido en vivo (2026-09-22): "no me gustó el degradé — prefiero el
+  // mismo diseño de bordes, pero con un color que no tenga ese
+  // degradado". colorSolidoPrimario es la primera parada de siempre
+  // (protagonista, ya ajustada a contraste AA), sin mezclar hacia
+  // rosa/naranja — un solo color plano, no un linear-gradient.
+  it("colorSolidoPrimario devuelve un color plano (no un linear-gradient) y cumple contraste AA para el default y los 13 mundos", () => {
+    const solidoDefault = colorSolidoPrimario();
+    expect(solidoDefault).toMatch(/^#[0-9a-fA-F]{6}$/);
+    expect(solidoDefault).toBe(DEGRADE_PRIMARIO_DEFAULT[0]);
+    expect(contrasteConBlanco(solidoDefault)).toBeGreaterThanOrEqual(4.5);
+
+    for (const { slug, colorHex } of MUNDOS_LANDING) {
+      const solido = colorSolidoPrimario(colorHex);
+      expect(solido, `${slug}: colorSolidoPrimario no es un color hex plano`).toMatch(/^#[0-9a-fA-F]{6}$/);
+      expect(solido).toBe(degradeCalidoMundo(colorHex)[0]);
+      expect(contrasteConBlanco(solido), `${slug} (${colorHex}) no llega a 4.5:1 como color sólido`).toBeGreaterThanOrEqual(4.5);
+    }
   });
 });

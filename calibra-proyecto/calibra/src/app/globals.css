@@ -556,6 +556,65 @@ select:disabled {
   }
 }
 
+/* Marcos de perfil "neón" (pedido 2026-09-22, video de referencia del
+   usuario: docs/vecteezy_abstract-neon-square-frame-animation-frame-
+   background_51599918.mp4 — un marco cuadrado de plasma eléctrico
+   orgánico/burbujeante). Se reinterpreta como CSS puro en vez de
+   incrustar el video: los 4 lugares que aplican ESTILO_MARCO_PERFIL
+   (perfil propio, perfil público, PlacaAmigo) ya usan `overflow-hidden`
+   en el MISMO elemento — un pseudo-elemento que sobresaliera del
+   recuadro (la textura orgánica del video) quedaría cortado por ese
+   overflow, así que en vez de eso se anima el `box-shadow` (nunca se
+   recorta, aunque el elemento tenga overflow-hidden) en capas, con más
+   paradas de las que tendría un pulso simple para sugerir el
+   "parpadeo" eléctrico del video sin la textura burbujeante literal —
+   liviano (una sola animación CSS, sin JS, sin asset de video) y
+   trivial de re-usar en 3 colores distintos via variables CSS por
+   clase, sin tocar ningún componente. Restraint deliberado: un pulso
+   elegante como .nombre-anim-neon de arriba, no un parpadeo frenético
+   — es el borde de TODA la tarjeta de perfil, tiene que poder verse un
+   rato sin cansar. */
+@keyframes marco-neon-pulso {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px var(--mn-color), 0 0 10px 1px var(--mn-glow), 0 0 24px 4px var(--mn-glow-suave);
+  }
+  30% {
+    box-shadow: 0 0 0 3px var(--mn-color), 0 0 16px 3px var(--mn-glow), 0 0 32px 8px var(--mn-glow-suave);
+  }
+  45% {
+    box-shadow: 0 0 0 2px var(--mn-color), 0 0 8px 1px var(--mn-glow), 0 0 20px 3px var(--mn-glow-suave);
+  }
+  70% {
+    box-shadow: 0 0 0 3px var(--mn-color), 0 0 18px 4px var(--mn-glow), 0 0 36px 10px var(--mn-glow-suave);
+  }
+}
+.marco-neon-perfil {
+  border-color: var(--mn-color) !important;
+  animation: marco-neon-pulso 2.6s ease-in-out infinite;
+}
+.marco-neon-violeta {
+  --mn-color: #a855f7;
+  --mn-glow: rgba(168, 85, 247, 0.55);
+  --mn-glow-suave: rgba(168, 85, 247, 0.25);
+}
+.marco-neon-cian {
+  --mn-color: #22d3ee;
+  --mn-glow: rgba(34, 211, 238, 0.55);
+  --mn-glow-suave: rgba(34, 211, 238, 0.25);
+}
+.marco-neon-magenta {
+  --mn-color: #f472b6;
+  --mn-glow: rgba(244, 114, 182, 0.55);
+  --mn-glow-suave: rgba(244, 114, 182, 0.25);
+}
+@media (prefers-reduced-motion: reduce) {
+  .marco-neon-perfil {
+    animation: none;
+    box-shadow: 0 0 0 3px var(--mn-color), 0 0 16px 3px var(--mn-glow), 0 0 28px 6px var(--mn-glow-suave);
+  }
+}
+
 .nombre-anim-deconstruccion {
   position: relative;
   display: inline-block;

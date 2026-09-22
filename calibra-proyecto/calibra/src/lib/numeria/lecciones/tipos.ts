@@ -27,3 +27,18 @@ export interface ClaseNumeria {
   visuales: VisualLeccion[];
   quiz: PreguntaLeccionNumeria[];
 }
+
+// Una Técnica rápida ya existente de Numeria (requiere_pro = false,
+// sembrada en migraciones viejas: 0007/0018/0019/0026/0032/0079/0101) a
+// la que se le agrega su apartado visual (2026-09-22, "revisa TODAS y
+// colócales su apartado visual"). A diferencia de ClaseNumeria, esto NO
+// es una fila nueva: es un UPDATE sobre `contenido` de una fila que ya
+// existe, así que solo hace falta lo que cambia — `pasos` (introducción
+// corta reescrita en español neutro) y `visuales` (nuevos). `quiz` NO se
+// toca (ya lo agregaron 0182/0183/0184; el generador de SQL usa
+// jsonb_set para dejarlo intacto).
+export interface TecnicaVisualNumeria {
+  slug: string;
+  pasos: string[];
+  visuales: VisualLeccion[];
+}

@@ -20,6 +20,11 @@ import { useDeteccionAbandono } from "@/lib/duelos/useDeteccionAbandono";
 import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
 import BotonRendirse from "@/components/duelos/BotonRendirse";
 import EnigmiaSprintRunner from "./EnigmiaSprintRunner";
+import { estadoResumenPartida } from "@/lib/practica/resumenPartida";
+
+// Mismo valor que TOTAL_PREGUNTAS en EnigmiaSprintRunner.tsx (archivo
+// separado que no lo exporta).
+const OBJETIVO_SPRINT = 10;
 
 type Fase = "inicio" | "vs" | "sprint" | "finalizando" | "resumen";
 
@@ -260,6 +265,7 @@ export default function EnigmiaPracticaClient({
   }
 
   if (fase === "resumen" && resumen) {
+    const estadoResumen = estadoResumenPartida(resumen.partida.total, resumen.partida.correctos, errores.length, OBJETIVO_SPRINT);
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-20">
         <LogroBanner logros={resumen.logrosNuevos} />
@@ -299,6 +305,10 @@ export default function EnigmiaPracticaClient({
               ))}
             </div>
           </div>
+        ) : estadoResumen === "sinRespuestas" ? (
+          <p className="text-sm text-texto-secundario">{t("sinRespuestas")}</p>
+        ) : estadoResumen === "incompletaSinErrores" ? (
+          <p className="text-sm text-texto-secundario">{t("incompletaSinErrores")}</p>
         ) : (
           <p className="text-sm text-texto-secundario">{t("ningunoFallado")} 🎯</p>
         )}

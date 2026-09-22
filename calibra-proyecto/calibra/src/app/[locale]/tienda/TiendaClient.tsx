@@ -9,6 +9,7 @@ import {
   ANIMACION_NOMBRE_CLASS,
   FONDO_PERFIL_ESTILO,
   MARCOS_MUNDO,
+  MARCOS_NEON,
   type FuenteNombre,
   type AnimacionNombre,
   type FondoPerfil,
@@ -34,6 +35,17 @@ const MARCOS_COMPRABLES = RANGOS_ELO.map((r) => ({
   marco: r.slug,
   item: `marco_${r.slug}` as ItemComprable,
   colorHex: r.colorHex,
+}));
+
+// Pedido 2026-09-22: 3 marcos "neón" animados (mismo mecanismo que
+// MARCOS_COMPRABLES — solo Chispas, sin requisito de nivel_mundo — ver
+// el comentario largo de MARCOS_NEON en src/types/database.ts). Se
+// muestran en la MISMA sección "Herrero de marcos" ("la sección de
+// bordes"), no en una vidriera aparte.
+const MARCOS_NEON_COMPRABLES = MARCOS_NEON.map((m) => ({
+  marco: m.slug,
+  item: `marco_${m.slug}` as ItemComprable,
+  colorHex: m.colorHex,
 }));
 
 // Grupo B, Fase 1: 6 marcos temáticos, uno por mundo — a diferencia de
@@ -101,6 +113,7 @@ export default function TiendaClient({
   const t = useTranslations("Tienda");
   const tMundos = useTranslations("Mundos.nombres");
   const tRangos = useTranslations("Rankeds.rangos");
+  const tMarcosNeon = useTranslations("Tienda.marcosNeon");
   const NOMBRES_ITEM: Record<ItemComprable, string> = {
     escudo: t("items.escudo"),
     congelamiento: t("items.congelamiento"),
@@ -117,6 +130,9 @@ export default function TiendaClient({
     marco_platino: t("items.marcoPlatino"),
     marco_diamante: t("items.marcoDiamante"),
     marco_prodigio: t("items.marcoProdigio"),
+    marco_neon_violeta: t("marcosNeon.neon_violeta"),
+    marco_neon_cian: t("marcosNeon.neon_cian"),
+    marco_neon_magenta: t("marcosNeon.neon_magenta"),
     marco_numeria: t("items.marcoNumeria"),
     marco_enigmia: t("items.marcoEnigmia"),
     marco_geografia: t("items.marcoGeografia"),
@@ -603,8 +619,12 @@ export default function TiendaClient({
             >
               {t("sinMarco")}{marcoElegido === "ninguno" && ` · ${t("activo")}`}
             </button>
-            {MARCOS_COMPRABLES.map(({ marco, item, colorHex }) => {
-              const nombre = tRangos(marco);
+            {[...MARCOS_COMPRABLES, ...MARCOS_NEON_COMPRABLES].map(({ marco, item, colorHex }) => {
+              // Los 3 marcos "neón" (pedido 2026-09-22) no son un rango de
+              // Rankeds — su nombre sale de Tienda.marcosNeon, no de
+              // Rankeds.rangos.
+              const esNeon = marco.startsWith("neon_");
+              const nombre = esNeon ? tMarcosNeon(marco) : tRangos(marco);
               const desbloqueado = marcosDesbl.includes(marco);
               const elegido = marcoElegido === marco;
               if (desbloqueado) {
@@ -618,7 +638,10 @@ export default function TiendaClient({
                     }`}
                     style={{ borderColor: colorHex }}
                   >
-                    <span className="h-2.5 w-2.5 rounded-full" style={{ background: colorHex }} />
+                    <span
+                      className={`h-2.5 w-2.5 rounded-full ${esNeon ? "marco-neon-perfil" : ""} ${esNeon ? `marco-${marco.replace("_", "-")}` : ""}`}
+                      style={{ background: colorHex }}
+                    />
                     {nombre}
                     {elegido && ` · ${t("activo")}`}
                   </button>
@@ -632,7 +655,10 @@ export default function TiendaClient({
                   disabled={comprando || puntos < costo}
                   className="flex items-center gap-1.5 rounded-full border border-dashed border-[#F4E4C1]/50 px-3 py-1.5 text-sm text-[#F4E4C1]/70 disabled:opacity-40"
                 >
-                  <span className="h-2.5 w-2.5 rounded-full" style={{ background: colorHex }} />
+                  <span
+                    className={`h-2.5 w-2.5 rounded-full ${esNeon ? "marco-neon-perfil" : ""} ${esNeon ? `marco-${marco.replace("_", "-")}` : ""}`}
+                    style={{ background: colorHex }}
+                  />
                   {t("nombreChispas", { nombre, costo })}
                 </button>
               );

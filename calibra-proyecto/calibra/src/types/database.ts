@@ -430,7 +430,31 @@ export const ESTILO_MARCO_PERFIL: Record<string, string> = {
   platino: "border-[#5FBFA8] shadow-[0_0_0_3px_rgba(95,191,168,0.25)]",
   diamante: "border-[#5DC8F5] shadow-[0_0_0_3px_rgba(93,200,245,0.25)]",
   prodigio: "border-[#FFC53D] shadow-[0_0_0_3px_rgba(255,197,61,0.35)]",
+  // Marcos "neón" (pedido 2026-09-22, ver docs/PARIDAD_MUNDOS.md — el
+  // video de referencia era un marco cuadrado animado, reinterpretado
+  // en CSS puro: `.marco-neon-perfil` anima el box-shadow en
+  // globals.css, `.marco-neon-<color>` solo fija 3 variables de color.
+  // A diferencia de los marcos de arriba, la clase de color hace TODO
+  // el trabajo (borde + resplandor animado) — no hace falta un
+  // `shadow-[...]` estático acá. Slug con GUION BAJO (no guion medio,
+  // a diferencia del resto de esta lista) porque sale literal de
+  // `replace(p_item, 'marco_', '')` sobre el item `marco_neon_violeta`
+  // en `comprar_item_tienda` (0202) — tiene que ser exactamente lo
+  // mismo que termina en `profiles.marco_perfil`.
+  neon_violeta: "border-[#A855F7] marco-neon-perfil marco-neon-violeta",
+  neon_cian: "border-[#22D3EE] marco-neon-perfil marco-neon-cian",
+  neon_magenta: "border-[#F472B6] marco-neon-perfil marco-neon-magenta",
 };
+
+// Los 3 marcos neón de arriba, con su color para la vidriera de la
+// Tienda — el NOMBRE se resuelve por i18n (Tienda.marcosNeon.<slug>),
+// mismo criterio que los marcos de rango (tRangos(marco) en
+// TiendaClient.tsx), nunca hardcodeado acá.
+export const MARCOS_NEON: { slug: string; colorHex: string }[] = [
+  { slug: "neon_violeta", colorHex: "#A855F7" },
+  { slug: "neon_cian", colorHex: "#22D3EE" },
+  { slug: "neon_magenta", colorHex: "#F472B6" },
+];
 
 // Grupo B, Fase 1: 6 marcos temáticos, uno por mundo — a diferencia de
 // los de rango (arriba, tiñen el borde de la tarjeta entera),

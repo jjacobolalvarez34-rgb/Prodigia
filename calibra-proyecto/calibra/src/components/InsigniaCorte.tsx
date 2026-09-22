@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { gradientePrimario } from "@/lib/degradeBoton";
+import { colorSolidoPrimario } from "@/lib/degradeBoton";
 import "./InsigniaCorte.css";
 
 interface Props {
@@ -24,9 +24,11 @@ function recorte(corte: number): string {
 }
 
 /**
- * Placa con dos esquinas cortadas en diagonal + degradé cálido + borde
+ * Placa con dos esquinas cortadas en diagonal + color sólido + borde
  * blanco fino — la estética "cupón/ticket premium" de la referencia
- * visual. Reservada a los CTAs grandes de Boton.tsx (`primario` +
+ * visual (pedido 2026-09-22: color sólido, no el degradé de la primera
+ * versión — ver colorSolidoPrimario en degradeBoton.ts). Reservada a
+ * los CTAs grandes de Boton.tsx (`primario` +
  * `destacado`, ej. "Practicar"/"Jugar"): NO se usa en botones comunes
  * (formularios chicos, checkboxes de UI) porque el recorte sería ruidoso
  * ahí — ver Boton.tsx, que solo la aplica cuando `destacado` es true.
@@ -53,7 +55,7 @@ export default function InsigniaCorte({ children, colorHex, className = "", disa
       <span className="insignia-corte__borde" style={{ clipPath: recorte(CORTE_BORDE) }} aria-hidden="true" />
       <span
         className="insignia-corte__cuerpo"
-        style={{ clipPath: recorte(CORTE_CUERPO), background: gradientePrimario(colorHex) }}
+        style={{ clipPath: recorte(CORTE_CUERPO), background: colorSolidoPrimario(colorHex) }}
         aria-hidden="true"
       />
       <span className="insignia-corte__contenido relative z-10 inline-flex items-center justify-center">

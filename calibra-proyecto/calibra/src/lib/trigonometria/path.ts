@@ -68,15 +68,19 @@ export async function obtenerCaminoTrigonometria(supabase: SupabaseClient, userI
     return a.orden - b.orden;
   });
 
-  let activoAsignado = false;
+  // Desbloqueo por grupo (pedido del usuario 2026-09-22): puntero "activo"
+  // independiente por grupo, no uno global para todo el camino — ver el
+  // mismo cambio en src/lib/quimia/path.ts para el detalle completo.
+  const activoPorGrupo = new Set<GrupoTrigonometria | null>();
   return ordenadas.map((t) => {
     const completado = dominadas.has(t.id);
+    const grupo = GRUPO_POR_SLUG[t.slug] ?? null;
     let estado: NodoEstado;
     if (completado) {
       estado = "completado";
-    } else if (!activoAsignado) {
+    } else if (!activoPorGrupo.has(grupo)) {
       estado = "activo";
-      activoAsignado = true;
+      activoPorGrupo.add(grupo);
     } else {
       estado = "bloqueado";
     }
@@ -87,7 +91,7 @@ export async function obtenerCaminoTrigonometria(supabase: SupabaseClient, userI
       descripcion: t.descripcion,
       contenido: t.contenido as { pasos: string[]; quiz?: TechniqueQuizPregunta[] },
       estado,
-      grupo: GRUPO_POR_SLUG[t.slug] ?? null,
+      grupo,
     };
   });
 }

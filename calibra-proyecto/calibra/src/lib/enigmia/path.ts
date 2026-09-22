@@ -46,15 +46,19 @@ export async function obtenerCaminoEnigmia(
     return a.orden - b.orden;
   });
 
-  let activoAsignado = false;
+  // Desbloqueo por categoría (pedido del usuario 2026-09-22): puntero
+  // "activo" independiente por categoría, no uno global para todo el
+  // camino — ver el mismo cambio en src/lib/quimia/path.ts.
+  const activoPorCategoria = new Set<CategoriaEnigmia>();
   const nodos: NodoCaminoEnigmia[] = ordenadas.map((t) => {
     const completado = dominadas.has(t.id);
+    const categoria = t.categoria as CategoriaEnigmia;
     let estado: NodoEstado;
     if (completado) {
       estado = "completado";
-    } else if (!activoAsignado) {
+    } else if (!activoPorCategoria.has(categoria)) {
       estado = "activo";
-      activoAsignado = true;
+      activoPorCategoria.add(categoria);
     } else {
       estado = "bloqueado";
     }

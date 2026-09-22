@@ -184,3 +184,15 @@ export function gradientePrimario(colorHex?: string): string {
   const [s1, s2, s3] = paradasPrimario(colorHex);
   return `linear-gradient(120deg, ${s1}, ${s2} 55%, ${s3})`;
 }
+
+// Pedido en vivo (2026-09-22): "no me gustó [el degradé] — prefiero el
+// mismo diseño de bordes [el recorte de InsigniaCorte], pero con un
+// color que no tenga ese degradado". El botón primario (con o sin
+// `destacado`) pasa a un color SÓLIDO — la misma primera parada del
+// degradé de arriba (el color del mundo, o la marca por defecto, ya
+// ajustado a contraste AA contra texto blanco), sin mezclar hacia
+// rosa/naranja. `gradientePrimario`/`paradasPrimario` quedan (BorderGlow
+// todavía usa 3 tonos para el halo detrás del botón destacado).
+export function colorSolidoPrimario(colorHex?: string): string {
+  return paradasPrimario(colorHex)[0];
+}

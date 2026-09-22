@@ -48,9 +48,59 @@ export interface VisualNumeriaFraccion extends VisualBase {
   den2: number;
 }
 
+// Técnicas (2026-09-22): recta numérica (decimales), potencia/raíz
+// (multiplicación repetida o cuadrícula de área), balanza (álgebra) y
+// figura (geometría) — mismo criterio, props con datos crudos que cada
+// componente recalcula con src/lib/numeria/visualesDatos.ts.
+
+// Un punto marcado en la recta, con etiqueta opcional (admite $...$).
+export interface MarcaRecta {
+  valor: number;
+  etiqueta?: string;
+}
+
+export interface VisualNumeriaRecta extends VisualBase {
+  tipo: "numeria.recta";
+  min: number;
+  max: number;
+  marcas: MarcaRecta[];
+}
+
+export interface VisualNumeriaPotencia extends VisualBase {
+  tipo: "numeria.potencia";
+  base: number;
+  exponente: number;
+  // "cadena": multiplicación repetida paso a paso (potencia).
+  // "cuadricula": área de base×base (raíz cuadrada de un cuadrado perfecto).
+  modo: "cadena" | "cuadricula";
+}
+
+export interface VisualNumeriaBalanza {
+  tipo: "numeria.balanza";
+  despuesDePaso?: number;
+  titulo?: string;
+  estatico?: boolean;
+  coefX: number;
+  constante: number;
+  resultado: number;
+  // "despejar": pasos de resta y división hasta llegar a x.
+  // "verificar": sustituye x de vuelta y compara los dos lados.
+  modo: "despejar" | "verificar";
+}
+
+export type VisualNumeriaFigura =
+  | ({ tipo: "numeria.figura"; modo: "triangulo"; cateto1: number; cateto2: number } & VisualBase)
+  | ({ tipo: "numeria.figura"; modo: "areaCompuesta"; anchoGrande: number; altoGrande: number; anchoRecorte: number; altoRecorte: number } & VisualBase)
+  | ({ tipo: "numeria.figura"; modo: "circulo"; radio: number } & VisualBase)
+  | ({ tipo: "numeria.figura"; modo: "angulos"; tipoAngulo: "complementario" | "suplementario"; conocido: number } & VisualBase);
+
 export type VisualNumeria =
   | VisualNumeriaColumnas
   | VisualNumeriaMultiplicacion
   | VisualNumeriaDivision
   | VisualNumeriaMcm
-  | VisualNumeriaFraccion;
+  | VisualNumeriaFraccion
+  | VisualNumeriaRecta
+  | VisualNumeriaPotencia
+  | VisualNumeriaBalanza
+  | VisualNumeriaFigura;

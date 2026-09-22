@@ -4,7 +4,7 @@ import type { ButtonHTMLAttributes } from "react";
 import BorderGlow from "@/components/reactbits/BorderGlow";
 import SpecularButton from "@/components/reactbits/SpecularButton";
 import InsigniaCorte from "@/components/InsigniaCorte";
-import { gradientePrimario, paradasPrimario } from "@/lib/degradeBoton";
+import { colorSolidoPrimario, paradasPrimario } from "@/lib/degradeBoton";
 
 type Variante = "primario" | "secundario" | "fantasma" | "peligro";
 
@@ -68,14 +68,15 @@ export default function Boton({
   destacado = false,
   ...rest
 }: Props) {
-  // Fase G4: degradé cálido de 3 paradas (antes: 2 paradas planas que
-  // SIEMPRE terminaban en #FFC53D amarillo, sin importar el mundo — ver
-  // src/lib/degradeBoton.ts para la fórmula y el porqué). Cuando el botón
-  // es `destacado`, el fondo lo pone InsigniaCorte (más abajo) y este
-  // <button> queda transparente, así que acá no hace falta calcularlo.
+  // Fase G5 (pedido 2026-09-22, "sin ese degradado"): color SÓLIDO — antes
+  // degradé de 3 paradas, y antes de eso 2 paradas planas que SIEMPRE
+  // terminaban en #FFC53D amarillo sin importar el mundo (ver
+  // src/lib/degradeBoton.ts). Cuando el botón es `destacado`, el fondo lo
+  // pone InsigniaCorte (más abajo) y este <button> queda transparente, así
+  // que acá no hace falta calcularlo.
   const esDestacadoPrimario = variante === "primario" && destacado;
   const estiloDegrade =
-    variante === "primario" && !esDestacadoPrimario ? { background: gradientePrimario(colorHex) } : undefined;
+    variante === "primario" && !esDestacadoPrimario ? { background: colorSolidoPrimario(colorHex) } : undefined;
 
   if (variante === "secundario") {
     return (

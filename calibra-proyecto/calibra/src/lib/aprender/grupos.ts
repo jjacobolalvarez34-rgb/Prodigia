@@ -5,6 +5,22 @@
 // código (sin columna nueva ni migración), igual que hicieron Quimia,
 // Anatomía, Melodía y Trigonometría con el suyo. Un slug que no figure acá
 // cae en un tema "Otras"/"Other" para que ninguna lección quede invisible.
+//
+// Desbloqueo por tema en Técnicas (pedido del usuario 2026-09-22): antes
+// TODO el camino (los 9 temas de Numeria, o los N grupos de cualquier otro
+// mundo) tenía un único puntero "activo" global, ordenado por (grupo,
+// orden) — terminar TODA la Suma era requisito para que apareciera la
+// primera técnica de Resta. Ahora cada grupo/tema tiene su PROPIO puntero
+// independiente: la primera técnica no dominada de cada tema queda
+// "activo" a la vez (uno por tema, todos abiertos desde el principio),
+// y dentro de un mismo tema se sigue siendo estrictamente lineal (hay que
+// dominar la 1 antes de que la 2 de ESE tema se desbloquee). Ver
+// `recalcularActivoPorGrupo` más abajo. Aplica SOLO a la pestaña
+// "tecnicas" — las Clases siguen siendo una única progresión dependiente
+// a propósito (son un curso, no atajos sueltos; ver fila 22 de
+// PARIDAD_MUNDOS.md: "lecciones progresivas y dependientes entre sí").
+
+import type { NodoEstado } from "@/lib/aprender/clases";
 
 export type PestanaGrupos = "tecnicas" | "clases";
 type Idioma = "es" | "en";
@@ -211,8 +227,13 @@ export interface GrupoNodos<T> {
 
 // Reparte los nodos (en el orden en que vienen, que ya es el del camino) en
 // los temas del mundo/pestaña. Los temas vacíos se omiten; los slugs sin tema
-// van a "Otras" para no perder ninguna lección.
-export function agruparNodos<T extends { slug: string }>(
+// van a "Otras" para no perder ninguna lección. Para "tecnicas", además
+// recalcula el estado activo/bloqueado POR GRUPO (ver comentario de
+// cabecera) — el estado que traía cada nodo desde el camino (calculado
+// como un único puntero global) se descarta para ese propósito; lo único
+// que se conserva de la fuente es si ya estaba "completado" (verdad de
+// base, no depende de agrupación).
+export function agruparNodos<T extends { slug: string; estado?: NodoEstado }>(
   nodos: T[],
   mundo: string,
   pestana: PestanaGrupos,
@@ -230,5 +251,21 @@ export function agruparNodos<T extends { slug: string }>(
   if (sueltos.length > 0) {
     grupos.push({ id: `${pestana}-otras`, nombre: idioma === "en" ? "Other" : "Otras", nodos: sueltos });
   }
-  return grupos.filter((gr) => gr.nodos.length > 0);
+  const filtrados = grupos.filter((gr) => gr.nodos.length > 0);
+  return pestana === "tecnicas" ? filtrados.map(recalcularActivoPorGrupo) : filtrados;
+}
+
+function recalcularActivoPorGrupo<T extends { estado?: NodoEstado }>(grupo: GrupoNodos<T>): GrupoNodos<T> {
+  let activoAsignado = false;
+  return {
+    ...grupo,
+    nodos: grupo.nodos.map((n) => {
+      if (n.estado === "completado") return n;
+      if (!activoAsignado) {
+        activoAsignado = true;
+        return { ...n, estado: "activo" as NodoEstado };
+      }
+      return { ...n, estado: "bloqueado" as NodoEstado };
+    }),
+  };
 }

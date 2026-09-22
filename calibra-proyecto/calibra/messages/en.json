@@ -625,8 +625,13 @@
     "activo": "Active",
     "nombreChispas": "{nombre} · {costo} Chispas",
     "herreroDeMarcos": "Frame smith",
-    "herreroDescripcion": "A cosmetic border for your name on your profile — the same colors as Rankeds ranks.",
+    "herreroDescripcion": "A cosmetic border for your profile card — Rankeds ranks, or an animated neon frame.",
     "sinMarco": "No frame",
+    "marcosNeon": {
+      "neon_violeta": "Neon violet",
+      "neon_cian": "Neon cyan",
+      "neon_magenta": "Neon magenta"
+    },
     "vidrieraDeMarcosTematicos": "World frames",
     "vidrieraMarcosTematicosDescripcion": "A different ring for each world, for your avatar. Unlocks at level {n} in that world — or free, as a gift, if you fully master it.",
     "requiereNivelMundo": "Level {n} in {mundo} to unlock",
@@ -979,7 +984,7 @@
       "errorConDetalle": "We couldn't close the match: {error}",
       "errorDeRed": "We couldn't connect to the server. Try again.",
       "volver": "Back",
-      "ahiQuedo": "That's a wrap.",
+      "ahiQuedo": "Match result",
       "experiencia": "Experience",
       "aciertos": "Correct",
       "precision": "Accuracy",
@@ -987,6 +992,8 @@
       "sinDatos": "—",
       "repasemosEsto": "Let's review this",
       "ningunoFallado": "None missed — that's how it's done. 🎯",
+      "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+      "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want.",
       "boostActivo": "⚡ Boost active — Sparks ×1.5 on this match",
       "instrucciones": "Locate the country on the map. 10 questions or 60 seconds.",
       "iniciarPartida": "Start match"
@@ -1202,6 +1209,37 @@
         "convertida": "= {num}/{den} (common denominator)",
         "reciproca": "Reciprocal: {num}/{den}",
         "resultado": "Result: {num}/{den}"
+      },
+      "recta": {
+        "etiqueta": "Number line from {min} to {max}",
+        "valor": "{n}"
+      },
+      "potencia": {
+        "etiqueta": "Power: {base} to the {exponente}",
+        "inicial": "Starts at {base}",
+        "paso": "× {base} = {acumulado}",
+        "resultado": "{base} to the {exponente} = {n}",
+        "cuadricula": "Grid of {base} by {base} = {n}"
+      },
+      "balanza": {
+        "etiqueta": "Balance: {izq} = {der}",
+        "resultado": "x = {n}",
+        "comprobacion": "Substituting x, the left side gives {n} — matches the right side"
+      },
+      "figura": {
+        "etiquetaTriangulo": "Right triangle with legs {c1} and {c2}",
+        "cateto": "Leg {n}: {valor}",
+        "hipotenusa": "Hypotenuse: {n}",
+        "etiquetaArea": "Compound area of a {ancho} by {alto} rectangle",
+        "areaGrande": "Large rectangle {ancho} × {alto} = {n}",
+        "areaRecorte": "Cutout {ancho} × {alto} = {n}",
+        "areaFinal": "Final area: {n}",
+        "etiquetaCirculo": "Circle with radius {n}",
+        "radio": "Radius: {n}",
+        "area": "Area = {pi} × radius² = {n}",
+        "etiquetaAngulos": "Two angles that add up to {total} degrees, one measures {n} degrees",
+        "conocido": "Known angle: {n} degrees",
+        "otro": "The other angle measures {n} degrees"
       }
     }
   },
@@ -1277,7 +1315,7 @@
       "partidaPerfecta": "Perfect match — 10/10",
       "era": "was",
       "ningunaFallada": "None missed — that's how it's done.",
-      "ahiQuedo": "Nailed it.",
+      "ahiQuedo": "Match result",
       "experiencia": "Experience",
       "rompisteTuMeta": "You crushed today's goal — {ganado}/{meta} XP",
       "aciertos": "Correct",
@@ -1287,7 +1325,9 @@
       "chispasTotales": "Total Chispas: {n}",
       "repasemosEsto": "Let's review this",
       "laRespuestaEra": "the answer was",
-      "ningunoFallado": "Nothing missed — that's how it's done."
+      "ningunoFallado": "Nothing missed — that's how it's done.",
+      "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+      "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want."
     },
     "revelarRespuesta": {
       "tuRespuesta": "Your answer: {respuesta}",
@@ -1435,13 +1475,15 @@
       "noPudimosCerrarPartida": "We couldn't close the match: {error}",
       "volver": "Back",
       "subtituloRonda": "Round {ronda}/{total} · Anatomy",
-      "ahiQuedo": "Nailed it.",
+      "ahiQuedo": "Match result",
       "experiencia": "Experience",
       "aciertos": "Correct",
       "precision": "Accuracy",
       "experienciaHoy": "XP today",
       "repasemosEsto": "Let's review this",
       "ningunaFallada": "Nothing missed — that's how it's done. 🎯",
+      "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+      "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want.",
       "boostActivo": "⚡ Boost active — ×1.5 Chispas in this match",
       "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
       "iniciarPartida": "Start match"
@@ -1949,7 +1991,7 @@
       "errorDeRed": "We couldn't connect to the server. Try again.",
       "noPudimosCerrar": "We couldn't close the match: {error}",
       "volver": "Back",
-      "ahiQuedo": "Nailed it.",
+      "ahiQuedo": "Match result",
       "experiencia": "Experience",
       "aciertos": "Correct",
       "precision": "Accuracy",
@@ -1957,6 +1999,8 @@
       "repasemosEsto": "Let's review this",
       "laRespuestaEra": "the answer was",
       "ningunoFallado": "Nothing missed — that's how it's done.",
+      "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+      "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want.",
       "boostActivo": "Boost active — ×1.5 Chispas on this match",
       "dueloSubtitulo": "Round {ronda}/{total} · Enigmia",
       "listoTitulo": "Ready?",
@@ -2079,13 +2123,15 @@
       "boostActivo": "⚡ Boost active — Chispas ×1.5 on this match",
       "instrucciones": "10 questions or 60 seconds, whichever comes first.",
       "iniciarPartida": "Start match",
-      "ahiQuedo": "Nailed it.",
+      "ahiQuedo": "Match result",
       "experiencia": "Experience",
       "aciertos": "Correct",
       "precision": "Accuracy",
       "experienciaHoy": "XP today",
       "repasemosEsto": "Let's review this",
-      "ningunoFallado": "Nothing missed — that's how it's done. 🎯"
+      "ningunoFallado": "Nothing missed — that's how it's done. 🎯",
+      "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+      "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want."
     },
     "sprintRunner": {
       "escudosDisponibles": "{n} shields available",
@@ -2338,13 +2384,15 @@
       "errorConexion": "We couldn't connect to the server. Try again.",
       "errorCierreConDetalle": "We couldn't close out the game: {error}",
       "volver": "Go back",
-      "resumenTitulo": "That's a wrap.",
+      "resumenTitulo": "Match result",
       "experiencia": "Experience",
       "aciertos": "Correct",
       "precision": "Accuracy",
       "experienciaHoy": "Experience today",
       "repasemos": "Let's review this",
       "ningunaFallada": "Nothing missed — that's how it's done. 🎯",
+      "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+      "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want.",
       "iniciarPartida": "Start game",
       "boostActivo": "⚡ Boost active — Sparks ×1.5 this game",
       "instrucciones": "10 questions or 60 seconds, whichever comes first.",
@@ -2626,13 +2674,15 @@
       "dueloSubtitulo": "Round {ronda}/{total} · Quimia",
       "errorCerrarDetalle": "We couldn't close the game: {error}",
       "volver": "Go back",
-      "ahiQuedo": "That's a wrap.",
+      "ahiQuedo": "Match result",
       "experiencia": "Experience",
       "aciertos": "Correct",
       "precision": "Accuracy",
       "experienciaHoy": "Experience today",
       "repasemosEsto": "Let's review this",
       "ningunaFallada": "None missed — that's how it's done. 🎯",
+      "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+      "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want.",
       "boostActivo": "⚡ Boost active — Sparks ×1.5 this game",
       "preguntasSegundos": "10 questions or 60 seconds, whichever comes first.",
       "iniciarPartida": "Start game"
@@ -2749,7 +2799,7 @@
     "empezar": "Start",
     "yaCompletadoDiario": "You already completed today's challenge",
     "yaCompletadoSemanal": "You already completed this week's challenge",
-    "ahiQuedo": "That's a wrap.",
+    "ahiQuedo": "Match result",
     "bonusChispas": "+{n} bonus Chispas",
     "quienMasCompleto": "Who else completed it {periodo}",
     "vuelvePorProximo": "Come back {volver} for the next one.",
@@ -2800,13 +2850,15 @@
       "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
       "iniciarPartida": "Start game",
       "resumen": {
-        "ahiQuedo": "Nailed it.",
+        "ahiQuedo": "Match result",
         "experiencia": "Experience",
         "aciertos": "Correct",
         "precision": "Accuracy",
         "experienciaHoy": "XP today",
         "repasemosEsto": "Let's review this",
-        "ningunoFallado": "None missed — that's how it's done. 🎯"
+        "ningunoFallado": "None missed — that's how it's done. 🎯",
+        "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+        "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want."
       }
     },
     "sprintRunner": {
@@ -2942,13 +2994,15 @@
       "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
       "iniciarPartida": "Start game",
       "resumen": {
-        "ahiQuedo": "Nailed it.",
+        "ahiQuedo": "Match result",
         "experiencia": "Experience",
         "aciertos": "Correct",
         "precision": "Accuracy",
         "experienciaHoy": "XP today",
         "repasemosEsto": "Let's review this",
-        "ningunoFallado": "None missed — that's how it's done. 🎯"
+        "ningunoFallado": "None missed — that's how it's done. 🎯",
+        "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+        "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want."
       }
     },
     "sprintRunner": {
@@ -3081,13 +3135,15 @@
       "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
       "iniciarPartida": "Start game",
       "resumen": {
-        "ahiQuedo": "Nailed it.",
+        "ahiQuedo": "Match result",
         "experiencia": "Experience",
         "aciertos": "Correct",
         "precision": "Accuracy",
         "experienciaHoy": "XP today",
         "repasemosEsto": "Let's review this",
-        "ningunoFallado": "None missed — that's how it's done. 🎯"
+        "ningunoFallado": "None missed — that's how it's done. 🎯",
+        "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+        "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want."
       }
     },
     "sprintRunner": {
@@ -3222,13 +3278,15 @@
       "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
       "iniciarPartida": "Start game",
       "resumen": {
-        "ahiQuedo": "Nailed it.",
+        "ahiQuedo": "Match result",
         "experiencia": "Experience",
         "aciertos": "Correct",
         "precision": "Accuracy",
         "experienciaHoy": "XP today",
         "repasemosEsto": "Let's review this",
-        "ningunoFallado": "None missed — that's how it's done. 🎯"
+        "ningunoFallado": "None missed — that's how it's done. 🎯",
+        "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+        "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want."
       }
     },
     "sprintRunner": {
@@ -3371,13 +3429,15 @@
       "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
       "iniciarPartida": "Start game",
       "resumen": {
-        "ahiQuedo": "Nailed it.",
+        "ahiQuedo": "Match result",
         "experiencia": "Experience",
         "aciertos": "Correct",
         "precision": "Accuracy",
         "experienciaHoy": "XP today",
         "repasemosEsto": "Let's review this",
-        "ningunoFallado": "None missed — that's how it's done. 🎯"
+        "ningunoFallado": "None missed — that's how it's done. 🎯",
+        "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+        "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want."
       }
     },
     "sprintRunner": {
@@ -3608,13 +3668,15 @@
       "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
       "iniciarPartida": "Start game",
       "resumen": {
-        "ahiQuedo": "There you go.",
+        "ahiQuedo": "Match result",
         "experiencia": "Experience",
         "aciertos": "Correct",
         "precision": "Accuracy",
         "experienciaHoy": "Experience today",
         "repasemosEsto": "Let's review this",
-        "ningunoFallado": "None missed — nicely done. 🎯"
+        "ningunoFallado": "None missed — nicely done. 🎯",
+        "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+        "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want."
       }
     },
     "sprintRunner": {
