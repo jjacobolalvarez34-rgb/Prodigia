@@ -1238,6 +1238,16 @@
     "rivalPredeterminado": "Opponent"
   },
   "Aprender": {
+    "visual": {
+      "controles": "Animation controls",
+      "anterior": "Previous",
+      "siguiente": "Next",
+      "pausa": "Pause",
+      "reproducir": "Play",
+      "repetir": "Replay",
+      "indicador": "{actual} of {total}",
+      "cuadrosEtiqueta": "Explanation in {n} frames"
+    },
     "progreso": "Progress",
     "tecnicas": "{dominadas}/{total} techniques",
     "titulo": "Learn",
@@ -3404,9 +3414,18 @@
         }
       }
     },
+    "memoria": {
+      "modoTitulo": "Memory mode",
+      "modoDescripcion": "The cards disappear: count from memory.",
+      "preparando": "Get ready: the cards will come out one by one",
+      "progreso": "Card {n} of {total}",
+      "terminado": "All {total} cards are out. Give your count.",
+      "anuncio": "Card {n} of {total}: {carta}"
+    },
     "cartas": {
       "etiqueta": "{valor} of {palo}",
       "filaEtiqueta": "Sequence of {n} cards",
+      "dorso": "Face-down card",
       "valores": {
         "2": "2",
         "3": "3",
@@ -3431,6 +3450,55 @@
     },
     "tabla": {
       "titulo": "Counting system values"
+    },
+    "visuales": {
+      "valoresEtiqueta": "Card values in {sistema}",
+      "valoresGrupo": "The cards {rangos} are worth {valor}",
+      "conteoEtiqueta": "Running count with {sistema}: {n} cards",
+      "conteoCartaAlt": "{carta}: worth {valor}; the count becomes {conteo}",
+      "conteoFinal": "Final count: {n}",
+      "conteoCorriente": "Running count",
+      "ritmo": "Pace: one card every {s} s",
+      "ritmoBloque": "Pace: one block of {n} cards every {s} s",
+      "bloqueEtiqueta": "Block {n}: {valor}",
+      "cancelacionEtiqueta": "Pairs that cancel out with {sistema}: {n} cards",
+      "cancelacionNeutrasAlt": "Neutral cards are not counted: {cartas}",
+      "cancelacionParAlt": "{a} ({va}) and {b} ({vb}) cancel out: they add up to 0",
+      "cancelacionSobranAlt": "Cards left without a partner: {cartas}. Their sum is {n}",
+      "cancelacionNadaSobraAlt": "No cards are left over: the count is {n}",
+      "cancelacionConteo": "Count",
+      "cancelacionNeutras": "Neutral cards are worth 0: they are not counted",
+      "cancelacionNadaQueCancelar": "There are no pairs to cancel",
+      "cancelacionBuscar": "Find a low card and a high card: together they add up to 0",
+      "cancelacionSigueIgual": "The count stays the same: each pair adds up to 0",
+      "cancelacionSobran": "Only the cards without a partner count: the count is {n}",
+      "cancelacionNadaSobra": "Nothing is left over: the count is {n}",
+      "verdaderoEtiqueta": "True count: running count divided by the decks remaining",
+      "verdaderoConjunto": "A set of {m} decks",
+      "verdaderoConjuntoAlt": "A set of {m} decks of 52 cards is used",
+      "verdaderoJugadas": "{j} cards have come out and {r} remain ({mazos} decks). To the nearest half deck: {medio}",
+      "verdaderoJugadasAlt": "{j} cards have come out and {r} remain ({mazos} decks). To the nearest half deck: {medio}",
+      "verdaderoRestantes": "{mazos} decks remain",
+      "verdaderoRestantesAlt": "{mazos} decks remain",
+      "verdaderoDivisionAlt": "The running count {c} divided by {m} decks gives {q}",
+      "verdaderoRegla": "Rounding rule: {regla}",
+      "verdaderoReglaAlt": "Rounding rule: {regla}. The true count is {n}",
+      "verdaderoConteo": "True count",
+      "regla": {
+        "cercano": "to the nearest integer",
+        "truncar": "truncating (drop the decimals)",
+        "abajo": "rounding down (to the lower integer)"
+      },
+      "mazoEtiqueta": "Sum of the full deck with {sistema}",
+      "mazoFilaAlt": "{cartas} cards ({rangos}) are worth {valor} each: they contribute {aporte}",
+      "mazoBalanceado": "Balanced system: the full deck adds up to {n}",
+      "mazoNoBalanceado": "Unbalanced system: the full deck adds up to {n}, it does not return to 0",
+      "mazoCartas": "{n} cards",
+      "mazoTotal": "Deck sum",
+      "mazoSumaHastaAhora": "Sum so far",
+      "compararEtiqueta": "The same {n} cards with different systems",
+      "compararTotalesAlt": "Final count: {totales}",
+      "compararConteo": "Count"
     }
   },
   "Codia": {

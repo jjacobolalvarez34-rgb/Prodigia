@@ -20,7 +20,14 @@ export default function MathText({ texto, className }: Props) {
           <span key={i}>{parte.valor}</span>
         ) : (
           // HTML generado por katex.renderToString a partir de contenido propio, no de input de usuario.
-          <span key={i} dangerouslySetInnerHTML={{ __html: parte.html }} />
+          // inline-block + max-w-full + overflow-x-auto: una fórmula ancha (una
+          // fracción larga en un botón de opción en un celular) se desplaza
+          // dentro de su propio cuadro en vez de desbordar toda la página.
+          <span
+            key={i}
+            className="inline-block max-w-full overflow-x-auto overflow-y-hidden py-0.5 align-middle"
+            dangerouslySetInnerHTML={{ __html: parte.html }}
+          />
         )
       )}
     </span>

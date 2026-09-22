@@ -10,6 +10,7 @@ import SonidoToggle from "@/components/SonidoToggle";
 import EscudoIcon from "@/components/EscudoIcon";
 import RachaFuego from "@/components/RachaFuego";
 import LevelDial from "@/app/[locale]/practica/LevelDial";
+import MathText from "@/components/MathText";
 import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/TarjetaSprint";
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import TrianguloSVG from "@/components/trigonometria/TrianguloSVG";
@@ -320,7 +321,7 @@ export default function TrigonometriaSprintRunner({
             <TrianguloSVG triangulo={problema.triangulo} colorHex={COLOR_TRIGONOMETRIA} />
           </div>
         )}
-        <p className="text-center font-display text-base font-bold text-foreground">{problema.enunciado}</p>
+        <p className="text-center font-display text-base font-bold text-foreground"><MathText texto={problema.enunciado} /></p>
 
         {problema.entrada === "numero" ? (
           <form onSubmit={handleSubmitNumero} className="flex items-center gap-2">
@@ -360,7 +361,7 @@ export default function TrigonometriaSprintRunner({
                         : "border-border bg-background text-foreground"
                   }`}
                 >
-                  {op}
+                  <MathText texto={op} />
                 </button>
               );
             })}

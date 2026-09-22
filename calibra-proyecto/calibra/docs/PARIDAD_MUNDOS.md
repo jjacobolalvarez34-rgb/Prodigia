@@ -64,6 +64,7 @@ confirmar en vivo · ❌ ausente.
 | 20 | Responsive en mobile real | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | 21 | Aparece en estadísticas Pro (/perfil/estadisticas) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅¹⁰ | ✅¹⁰ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
 | 22 | Aprender con pestañas Técnicas \| Clases (Pro, clase 1 gratis) | ⚠️¹² | ⚠️¹² | ⚠️¹² | ⚠️¹² | ⚠️¹² | ⚠️¹² | ⚠️¹² | ⚠️¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² |
+| 23 | Aprender con explicación visual animada (no solo texto) | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ✅¹³ | ⚠️¹³ |
 
 ¹ = bug real encontrado en esta auditoría y **ya corregido en el código** esta sesión — ver "Changelog" abajo. La celda muestra el estado ACTUAL (post-fix), no el que se encontró.
 ² = /perfil de Numeria tenía un bug propio (ver changelog) que inflaba su propio contador con attempts de otros mundos — también corregido.
@@ -307,6 +308,9 @@ Precio del "Colección de Mundos" actualizado de 16200 a 18000 Chispas al pasar 
 
 **Mismo efecto secundario conocido de Calculia, deliberadamente NO corregido acá tampoco**: las 7 filas nuevas suman al total de `techniques where problem_type='circuitia'` que usan `registrar_progreso_mundo`/`detalle_nivel_mundo` para la fracción de "lecciones completadas" del nivel de mundo (de 5 a 12), así que un usuario free de Circuitia tampoco podrá llegar al 100% de esa fracción aunque domine las 5 técnicas rápidas + el preview del curso Pro — mismo fix pendiente documentado arriba para Calculia (filtrar por `and not requiere_pro` en esas funciones cross-cutting), fuera de alcance de esta tanda por la misma razón.
 
+
+¹³ = **Fila 23, pedido del usuario 2026-09-21: "un recuadro de texto no es óptimo — que la explicación real sea visual/animada, no solo texto".** Probado primero en Naipia (mundo 12), única columna ✅: 6 visuales propios (tabla de valores por grupos, conteo corriente animado, cancelación de pares, conteo verdadero, mazo completo, comparación de sistemas), con el texto reducido a una introducción corta. El motor es genérico (`contenido.visuales?`, `VisualLeccion` dispatcher con registro por mundo, primitivo `cuadros` reutilizable) y retrocompatible: un mundo sin `visuales` se ve exactamente igual que antes. **No se marca ✅ hasta que cada mundo tenga sus propios visuales** (mismo criterio de rollout que la fila 22 — ver "Ronda 2" más abajo para el detalle completo).
+
 ---
 
 ## Mundos 11, 12 y 13 — Estadística, Naipia y Codia (2026-09-20/21)
@@ -349,3 +353,44 @@ El usuario probó los mundos nuevos como invitado en el deploy. Lo que apareció
 **6. Aprender: el diseño de Melodía/Trigonometría en TODOS los mundos, con las pestañas encima (fila 3 + fila 22).** Al agregar las pestañas Técnicas | Clases se había ocultado el panel lateral en Calculia/Circuitia/Estadística/Naipia/Codia, y Historia y Geografía nunca lo habían tenido (una sola unidad). El diseño único es: panel de temas sticky a la izquierda con el progreso y "Ocultar temas", camino a la derecha; **las pestañas Técnicas | Clases solo cambian el camino que se muestra** (y con él los temas del panel). Implementación: `AprenderTabs` ahora incluye `AprenderLayout` y recibe los temas de cada pestaña; el panel se muestra con 1 o más temas; `src/lib/aprender/grupos.ts` define los temas de cada mundo (mapeo slug → tema, también para Geografía e Historia) con un test que exige que todo slug sembrado en las migraciones caiga en un tema. **Regla vinculante**: toda pantalla `/<mundo>/aprender` usa este diseño; una pestaña Clases nueva en cualquier mundo aporta sus temas en `grupos.ts`, nunca un layout propio.
 
 **Sin verificar todavía**: el selector de lenguaje, el nuevo Aprender con panel + pestañas y las pantallas bloqueadas para invitados están cubiertos por `tsc`, `eslint` y tests de datos, pero no se vieron en pantalla (el usuario de QA no tiene los mundos desbloqueados y crear invitados en la base real no se hizo).
+
+
+---
+
+## Ronda 2 (2026-09-21, tarde) — notación matemática visible, lecciones con explicación animada, modo memoria de Naipia
+
+Tres pedidos del usuario tras la primera prueba en vivo, hechos en paralelo con archivos disjuntos.
+
+### KaTeX también en preguntas, no solo en lecciones
+
+**Bug real encontrado**: la conversión a KaTeX de la sesión anterior (`docs/PLAN_REVISION_CONTENIDO.md`, Proceso 1) solo había llegado a los `pasos`/`quiz` de las lecciones. Los enunciados y opciones de la PRÁCTICA — lo que el usuario más ve, en cada partida — seguían en texto plano ASCII/unicode (`3x^2`, `∫ 5/x dx`, `R1=680Ω`, `σ²`) en Calculia, Circuitia, Estadística, Trigonometría y los modos de Numeria con notación (potencias, álgebra, decimales). Por eso "sigo viendo los / y los ^" pese a que KaTeX ya estaba instalado desde la sesión anterior.
+
+**Corregido**: los generadores de esos 7 módulos ahora emiten LaTeX real entre `$...$` (`\frac{x^{3}}{3}`, `R_{1}`, `\Omega`, `\operatorname{sen}`); la `respuesta` de opción múltiple sigue siendo exactamente uno de los strings de `opciones` (comparación por igualdad exacta sin cambios en `/api/attempts`/`/api/aprender/completar`). Todo punto de render que antes imprimía el string crudo ahora usa `<MathText>`: los 4 `*SprintRunner.tsx`, los 4 `Diagnostico*Client.tsx`, los 4 `*PracticaClient.tsx` ("repasemos esto"), `RevelarRespuesta.tsx`, `RetoClient.tsx` (gateado por mundo para no tocar Codia/Naipia, que no usan esta convención), y `EnunciadoSprintRunner.tsx` (compartido por Álgebra/Decimales/Geometría/Potencias). `MathText.tsx` ganó `overflow-x-auto` para fórmulas anchas en mobile.
+
+Migración `0195_latex_clases_calculia_circuitia.sql`: convierte a `$...$` las Clases Pro de Calculia (0170) y Circuitia (0171) y las técnicas rápidas de Circuitia (0167/0179), que habían quedado afuera de la conversión anterior (0181 solo tocó las 5 técnicas de Calculia). 607 fórmulas nuevas, todas validadas con `katex.renderToString(expr,{throwOnError:true})`.
+
+**Regla nueva, sacada del bug de Codia**: verificar un generador no alcanza — hace falta un test que además RENDERICE el resultado (`mathRender.test.ts` usa `react-dom/server` para confirmar que aparece `class="katex"` y que no queda ningún `$`/`\`/`^` crudo visible). Confirmado en navegador real (Playwright) para Calculia, Circuitia y Trigonometría; Estadística quedó cubierto solo por los tests (la cuenta de QA usada cayó en la pantalla de resumen antes de llegar a una pregunta activa).
+
+Quimia y Melodía se revisaron aparte y NO se tocaron: ya habían pasado por el Proceso 1 y se decidió que sus fórmulas cortas (H₂O, ♯/♭) no necesitan KaTeX.
+
+### Fila 23 — Lecciones con explicación visual animada (empezó en Naipia)
+
+El usuario reportó que las lecciones de Aprender (Quimia, Circuitia, Melodía, Naipia, Numeria, y por extensión el resto) son "un recuadro de texto tedioso de leer" y pidió un formato nuevo: el texto queda como introducción corta y la explicación real es visual/animada — su ejemplo: en vez de decir en texto qué vale cada carta, mostrar las cartas agrupadas con su valor debajo, animado; o en Numeria, para raíz cuadrada mental, mostrar el razonamiento paso a paso como cuadros. Pedido explícito: probarlo primero en Naipia; si funciona, generalizarlo a los otros mundos y documentarlo en esta tabla.
+
+**Motor genérico construido** (para reutilizar en cualquier mundo futuro): `contenido.visuales?: VisualLeccion[]` opcional en `techniques` (retrocompatible — sin este campo, todo mundo se ve exactamente igual que antes), `src/lib/aprender/visuales.ts` (tipos + validador tolerante a tipos desconocidos), `src/components/aprender/VisualLeccion.tsx` (dispatcher con un registro por mundo `{tipo: Componente}`, mezclado sobre un registro base que ya trae el primitivo genérico `cuadros` — explicación por cuadros animados con texto/fórmula KaTeX, controles Anterior/Siguiente/Repetir/Reproducir-Pausa, arranca al entrar en viewport, respeta `prefers-reduced-motion`), `CuerpoVisual.tsx` (junta introducción + visuales por `despuesDePaso`). `LeccionNaipiaClient.tsx` usa este flujo cuando la lección trae visuales; sin ellos, el flujo viejo de pasos con Anterior/Siguiente sigue intacto (usado por los otros 12 mundos, sin tocar).
+
+**Naipia, las 13 lecciones reescritas con este formato** (mismos slugs/orden/`requiere_pro`/quiz que 0192 — el quiz se extrajo literal, nunca se reescribió a mano): 6 visuales propios (`naipia.valores` tabla animada por grupos con cartas SVG y chip de valor, `naipia.conteo` conteo corriente carta a carta con marcador que sube/baja, `naipia.cancelacion` pares que se cancelan, `naipia.verdadero` mazos como pilas que se vacían, `naipia.mazoCompleto`, `naipia.comparar` los 4 sistemas lado a lado), todos con los valores sacados de `TABLA_SISTEMAS`/`naipia.ts`, nunca escritos a mano. Migración `0196_naipia_lecciones_visuales.sql` (generada por script desde `src/lib/naipia/lecciones/`, con test que compara migración vs. generado, mismo patrón que Codia).
+
+**Verificado en navegador real** (Playwright, ruta temporal borrada al terminar): las 6 animaciones se vieron funcionando; se encontró y corrigió un overflow horizontal real de ~20px por los springs de framer-motion (`overflow-x-hidden` agregado a los contenedores).
+
+**Estado de la fila**: ✅ solo en Naipia. Pendiente de rollout en los otros 12 mundos — la infraestructura ya es genérica, cada rollout futuro es solo construir los visuales propios de ese mundo (como el ejemplo de raíz cuadrada de Numeria que dio el usuario) y sembrar `visuales` en su contenido, un mundo por commit, mismo criterio que la fila 22.
+
+### Modo memoria de Naipia (dificultades altas)
+
+Pedido explícito: "que las cartas vayan saliendo y se den vuelta, y al final haya que dar el conteo de memoria, como el conteo real". Implementado en los 4 sistemas de secuencia, activo desde nivel 6 (Hi-Lo/KO/Hi-Opt II) o nivel 8 (Omega II, para no solaparse con su escalón de aprendizaje); niveles bajos y "conteo verdadero" quedan visibles como siempre (verdadero no tiene secuencia de cartas que ocultar). Ritmo de 1600ms/carta (nivel 6) a 500ms/carta (nivel 10), con tope de 16s de reparto total. El reloj de la partida se pausa durante el reparto (mismo mecanismo que ya usa Enigmia para memorizar); el tiempo de respuesta para calibración/XP se mide desde que termina el reparto, no desde que arrancó la pregunta. El enunciado nunca lista la secuencia (verificado con un test que escanea >1000 problemas). Reto diario y diagnóstico quedan siempre en modo visible (el diagnóstico mide fluidez de conteo, no memoria).
+
+**Sin resolver, documentado como limitación conocida**: en duelos cada jugador genera su propia secuencia en el cliente (no hay semilla compartida — esto ya era así antes de esta tanda, no es nuevo); lo que sí es idéntico entre los dos jugadores es la regla de ritmo (depende solo del nivel forzado del duelo, nunca de `Math.random`). Compartir la secuencia exacta exigiría un seed guardado en la base, fuera de alcance de esta tanda.
+
+### Verificación conjunta de la Ronda 2
+
+`npx tsc --noEmit` limpio. `npx eslint src` sin errores nuevos (los 6 errores/4 warnings que quedan son preexistentes, en archivos no tocados por esta tanda — confirmado con `git blame`). `npx vitest run`: **448/448** (34 archivos, subió de 372 con los tests nuevos de las tres tareas). `messages/es.json`/`en.json`: 2603 claves cada uno, paridad exacta. Migraciones `0195` y `0196` no corridas contra Supabase (como el resto de esta tabla).

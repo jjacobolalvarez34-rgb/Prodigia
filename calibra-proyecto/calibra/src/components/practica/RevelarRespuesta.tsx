@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
+import MathText from "@/components/MathText";
 import PixelTransition from "@/components/reactbits/PixelTransition";
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, subscribeEfectos } from "@/lib/efectos";
 
@@ -41,7 +42,7 @@ export default function RevelarRespuesta({ activo, miRespuesta, respuestaCorrect
   if (!efectos) {
     return (
       <span className="font-mono text-sm font-semibold text-error">
-        {t("laRespuestaEra", { respuesta: respuestaCorrecta })}
+        <MathText texto={t("laRespuestaEra", { respuesta: respuestaCorrecta })} />
       </span>
     );
   }
@@ -59,12 +60,12 @@ export default function RevelarRespuesta({ activo, miRespuesta, respuestaCorrect
       style={{ minHeight: 24 }}
       firstContent={
         <span className="flex h-full w-full items-center justify-center font-mono text-sm font-semibold text-error">
-          {t("tuRespuesta", { respuesta: miRespuesta || "—" })}
+          <MathText texto={t("tuRespuesta", { respuesta: miRespuesta || "—" })} />
         </span>
       }
       secondContent={
         <span className="flex h-full w-full items-center justify-center font-mono text-sm font-semibold text-error">
-          {t("laRespuestaEra", { respuesta: respuestaCorrecta })}
+          <MathText texto={t("laRespuestaEra", { respuesta: respuestaCorrecta })} />
         </span>
       }
     />

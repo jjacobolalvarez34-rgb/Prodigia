@@ -11,6 +11,7 @@ import SonidoToggle from "@/components/SonidoToggle";
 import EscudoIcon from "@/components/EscudoIcon";
 import RachaFuego from "@/components/RachaFuego";
 import LevelDial from "@/app/[locale]/practica/LevelDial";
+import MathText from "@/components/MathText";
 import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/TarjetaSprint";
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
@@ -310,7 +311,7 @@ export default function EstadisticaSprintRunner({
         padding="px-6 py-10"
       >
         {problema.grafico && <GraficoEstadistico grafico={problema.grafico} colorHex={COLOR_ESTADISTICA} />}
-        <p className="text-center font-display text-sm font-bold leading-relaxed text-foreground sm:text-base">{problema.enunciado}</p>
+        <p className="text-center font-display text-sm font-bold leading-relaxed text-foreground sm:text-base"><MathText texto={problema.enunciado} /></p>
 
         {problema.entrada === "numero" ? (
           <form onSubmit={handleSubmitNumero} className="flex items-center gap-2">
@@ -350,7 +351,7 @@ export default function EstadisticaSprintRunner({
                         : "border-border bg-background text-foreground"
                   }`}
                 >
-                  {op}
+                  <MathText texto={op} />
                 </button>
               );
             })}

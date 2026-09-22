@@ -14,6 +14,7 @@ import {
   SISTEMAS_CONTEO,
   VALORES_CARTA,
   NOMBRE_MODO_NAIPIA,
+  TOPE_TOTAL_MEMORIA_MS,
   type ModoNaipia,
   type ProblemaNaipia,
   type SistemaConteo,
@@ -164,6 +165,22 @@ function num(texto: string): number {
   return Number(texto.replace(",", ".").replace("+", ""));
 }
 
+// ---------- El enunciado del modo memoria no revela la secuencia ----------
+
+// true si el enunciado no contiene la secuencia como texto: ni la cadena
+// "7♠ K♥ ...", ni "Cartas:", ni ninguna carta suelta escrita como valor+palo
+// (con símbolo o con el nombre del palo), ni la palabra "indicadas" (que
+// remite a cartas a la vista).
+function enunciadoNoFiltraSecuencia(p: ProblemaNaipia): boolean {
+  const e = p.enunciado;
+  if (e.includes(cartasATexto(p.cartas))) return false;
+  if (/Cartas:/i.test(e)) return false;
+  if (/[♠♥♦♣]/.test(e)) return false;
+  if (/\b(10|[2-9AJQK]) de (picas|corazones|diamantes|tr[eé]boles)/i.test(e)) return false;
+  if (/indicadas/i.test(e)) return false;
+  return true;
+}
+
 // ---------- Verificación por problema ----------
 
 function verificarProblema(p: ProblemaNaipia, sistemaEsperado: ModoNaipia) {
@@ -172,6 +189,17 @@ function verificarProblema(p: ProblemaNaipia, sistemaEsperado: ModoNaipia) {
   expect(p.tolerancia).toBe(0);
   expect(Number.isFinite(p.respuesta)).toBe(true);
   expect(Number.isInteger(p.respuesta * 2)).toBe(true); // enteros o medios
+
+  // Modo memoria: solo en los sistemas por secuencia, con ritmo válido y sin
+  // filtrar la secuencia por el enunciado (las cartas viajan solo en p.cartas).
+  if (p.memoria) {
+    expect(p.modo).not.toBe("verdadero");
+    expect(Number.isInteger(p.memoria.msPorCarta)).toBe(true);
+    expect(p.memoria.msPorCarta).toBeGreaterThanOrEqual(400);
+    expect(p.memoria.msPorCarta).toBeLessThanOrEqual(1600);
+    expect(p.memoria.msPorCarta * p.cartas.length).toBeLessThanOrEqual(TOPE_TOTAL_MEMORIA_MS);
+    expect(enunciadoNoFiltraSecuencia(p)).toBe(true);
+  }
 
   if (p.modo !== "verdadero") {
     const sistema = p.modo;

@@ -1,5 +1,6 @@
 "use client";
 
+import MathText from "@/components/MathText";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { reproducirTono } from "@/lib/sonido";
@@ -276,7 +277,7 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico, TTipo 
         padding="px-8 py-14"
       >
         <span className="text-center font-mono text-3xl font-bold text-foreground sm:text-4xl">
-          {problema.enunciado}
+          <MathText texto={problema.enunciado} />
         </span>
 
         <form onSubmit={handleSubmit} className="flex w-full max-w-sm gap-2">

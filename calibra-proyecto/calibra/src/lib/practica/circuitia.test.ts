@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mulberry32 } from "@/lib/rng";
+import { textoPlano } from "@/lib/texto/latexAPlano";
 import { resolverCircuito, compararTrasPerturbacion, type NodoCircuito } from "@/lib/circuitos/resolver";
 import {
   generarProblemaCircuitia,
@@ -10,6 +11,10 @@ import {
 
 const ITERACIONES = 220;
 
+// El enunciado sale con LaTeX entre $...$ (R_{1}, 100\,\Omega); los regex de abajo leen
+// el texto plano equivalente (R1, Rp1, "100 Ω") — misma verificación de siempre.
+const plano = (t: string) => textoPlano(t).replace(/R_\((\w+)\)/g, "R$1");
+
 // Regex sobre el enunciado (formato controlado por circuitia.ts) — se
 // usa para extraer, de forma INDEPENDIENTE del generador (nunca
 // importando sus funciones internas), qué magnitud se preguntó y sobre
@@ -17,7 +22,7 @@ const ITERACIONES = 220;
 // contra el kernel real (resolverCircuito/compararTrasPerturbacion).
 const RE_PREGUNTA_NUMERO = /¿Cuál es (la corriente que pasa por|el voltaje sobre) (R\w+)\?/;
 const RE_PREGUNTA_CUALITATIVA =
-  /Si (R\w+) \(([\d.]+)Ω\) (se duplica a|se reduce a la mitad, a) ([\d.]+)Ω, ¿qué le pasa a (la corriente|el voltaje) en (R\w+)\?/;
+  /Si (R\w+) \(([\d.]+) Ω\) (se duplica a|se reduce a la mitad, a) ([\d.]+) Ω, ¿qué le pasa a (la corriente|el voltaje) en (R\w+)\?/;
 
 // Clon independiente de "reemplazar el ohmiaje de un resistor" — a
 // propósito NO se importa la función interna homónima de circuitia.ts,
@@ -56,7 +61,7 @@ describe("circuitia — modos numéricos (serie/paralelo/mixto)", () => {
         expect(p.entrada).toBe("numero");
         expect(p.modo).toBe(modo);
 
-        const m = p.enunciado.match(RE_PREGUNTA_NUMERO);
+        const m = plano(p.enunciado).match(RE_PREGUNTA_NUMERO);
         expect(m, `enunciado no matcheó el formato esperado: ${p.enunciado}`).not.toBeNull();
         const magnitud: "corriente" | "voltaje" = m![1].startsWith("la corriente") ? "corriente" : "voltaje";
         const targetId = m![2];
@@ -126,7 +131,7 @@ describe("circuitia — modo cualitativo", () => {
       expect([...p.opciones].sort()).toEqual(["Aumenta", "Disminuye", "No cambia"].sort());
       expect(p.opciones).toContain(p.respuesta);
 
-      const m = p.enunciado.match(RE_PREGUNTA_CUALITATIVA);
+      const m = plano(p.enunciado).match(RE_PREGUNTA_CUALITATIVA);
       expect(m, `enunciado no matcheó el formato esperado: ${p.enunciado}`).not.toBeNull();
       const idPerturbado = m![1];
       const nuevoOhmios = Number(m![4]);

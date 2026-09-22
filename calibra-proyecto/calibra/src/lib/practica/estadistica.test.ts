@@ -12,6 +12,7 @@ import {
   type ProblemaEstadisticaNumero,
 } from "./estadistica";
 import { mulberry32 } from "@/lib/rng";
+import { textoPlano as sinMarcas } from "@/lib/texto/latexAPlano";
 
 // Verificación "recalculada por método independiente" del mundo
 // Estadística. NO se reutiliza ninguna función del generador:
@@ -160,7 +161,9 @@ function parsearBolsa(enunciado: string): string[] {
   }
   return bolas;
 }
-function fraccionDeOpcion(s: string): Q {
+function fraccionDeOpcion(conMarcas: string): Q {
+  // Las opciones de probabilidad salen como $\frac{3}{7}$: se leen en texto plano (3/7).
+  const s = sinMarcas(conMarcas);
   if (s.includes("/")) {
     const [a, b] = s.split("/");
     return q(BigInt(a), BigInt(b));
@@ -181,7 +184,7 @@ const PRED_DADO: Record<string, (x: number) => boolean> = {
 };
 
 function esperadoProbabilidad(p: ProblemaEstadistica): Q {
-  const e = p.enunciado;
+  const e = sinMarcas(p.enunciado);
   const tipo = p.detalle.tipo;
   if (tipo === "prob_dado") {
     const caras = Number(/dado justo de (\d+) caras/.exec(e)![1]);
@@ -292,7 +295,7 @@ function regresion(xs: Q[], ys: Q[]) {
 // ---------- Verificador por problema ----------
 
 function verificar(p: ProblemaEstadistica, ctx: string) {
-  const e = p.enunciado;
+  const e = sinMarcas(p.enunciado);
   const tipo = p.detalle.tipo;
   const g = grupos(e);
   const pr = p.detalle.params ?? {};
@@ -445,7 +448,7 @@ function verificar(p: ProblemaEstadistica, ctx: string) {
 function verificarOpciones(p: ProblemaEstadistica, ctx: string) {
   if (p.entrada !== "opciones") throw new Error("solo opciones");
   const tipo = p.detalle.tipo;
-  const e = p.enunciado;
+  const e = sinMarcas(p.enunciado);
   const pr = p.detalle.params ?? {};
   if (tipo.startsWith("prob_")) {
     const esperado = esperadoProbabilidad(p);
@@ -453,7 +456,7 @@ function verificarOpciones(p: ProblemaEstadistica, ctx: string) {
     // Todas las opciones: fracción reducida, valor en (0,1), distintas en VALOR.
     const valores = p.opciones.map((o) => {
       const f = fraccionDeOpcion(o);
-      expect(`${f.n}${f.d === B1 ? "" : "/" + f.d}`, `${ctx}: opción no reducida ${o}`).toBe(o);
+      expect(`${f.n}${f.d === B1 ? "" : "/" + f.d}`, `${ctx}: opción no reducida ${o}`).toBe(sinMarcas(o));
       expect(cmp(f, ZERO)).toBeGreaterThan(0);
       expect(cmp(f, q(1))).toBeLessThan(0);
       return `${f.n}/${f.d}`;
@@ -521,7 +524,7 @@ function verificarGraficoNumerico(p: ProblemaEstadistica, ctx: string) {
   if (p.entrada !== "numero" || !p.grafico) throw new Error(`${ctx}: sin gráfico`);
   const g = p.grafico;
   verificarEje(g, true, ctx);
-  const e = p.enunciado;
+  const e = sinMarcas(p.enunciado);
   const tipo = p.detalle.tipo;
   const nombres = [...e.matchAll(CATS_RE)].map((m) => m[1]);
   if (g.tipo === "barras" && tipo === "grafico_valor") {
@@ -787,21 +790,22 @@ describe("estadistica: rigor de declaraciones en el enunciado", () => {
   it("varianza/desvío dicen si son poblacionales o muestrales", () => {
     for (let i = 0; i < 600; i++) {
       const p = generarProblemaEstadistica("dispersion", 6);
-      if (/varianza|desvío/.test(p.enunciado) && /^Calcula/.test(p.enunciado)) {
-        expect(p.enunciado).toMatch(/poblacional \(σ.?, se divide por n\)|muestral \(s.?, se divide por n − 1\)/);
+      const e = sinMarcas(p.enunciado); // σ², s², n − 1 salen en LaTeX: se lee el texto plano (σ^2, s^2, n - 1)
+      if (/varianza|desvío/.test(e) && /^Calcula/.test(e)) {
+        expect(e).toMatch(/poblacional \(σ.{0,2}, se divide por n\)|muestral \(s.{0,2}, se divide por n [−-] 1\)/);
       }
     }
   });
   it("percentil, cuartiles y atípicos declaran su método", () => {
     for (let i = 0; i < 600; i++) {
       const d = generarProblemaEstadistica("datos", 10);
-      if (d.detalle.tipo === "percentil") expect(d.enunciado).toContain("Método del rango más cercano");
+      if (d.detalle.tipo === "percentil") expect(sinMarcas(d.enunciado)).toContain("Método del rango más cercano");
       if (d.detalle.tipo.startsWith("atipicos")) {
-        expect(d.enunciado).toContain("método de las mitades");
-        expect(d.enunciado).toContain("1.5·IQR");
+        expect(sinMarcas(d.enunciado)).toContain("método de las mitades");
+        expect(sinMarcas(d.enunciado)).toContain("1.5·IQR");
       }
       const s = generarProblemaEstadistica("dispersion", 6);
-      if (s.detalle.tipo === "iqr") expect(s.enunciado).toContain("método de las mitades");
+      if (s.detalle.tipo === "iqr") expect(sinMarcas(s.enunciado)).toContain("método de las mitades");
     }
   });
 });

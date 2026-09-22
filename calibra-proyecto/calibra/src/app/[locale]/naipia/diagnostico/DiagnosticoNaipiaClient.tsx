@@ -41,7 +41,9 @@ export default function DiagnosticoNaipiaClient({ destino }: Props) {
 
   function siguientePregunta() {
     const p = generarSinRepetir(
-      () => generarProblemaNaipia("hilo", nivelRef.current),
+      // El diagnóstico mide fluidez de conteo con las cartas a la vista: el
+      // modo memoria (niveles altos) queda para la práctica.
+      () => generarProblemaNaipia("hilo", nivelRef.current, { sinMemoria: true }),
       claveNaipia,
       usadosRef.current
     );

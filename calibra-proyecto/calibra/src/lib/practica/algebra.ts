@@ -23,7 +23,7 @@ function generarEvaluar(nivel: number): ProblemaAlgebra {
   return {
     problemType: "algebra",
     tipo: "evaluar",
-    enunciado: `Si x = ${x}, ¿cuánto vale ${a}x ${suma ? "+" : "−"} ${b}?`,
+    enunciado: `Si $x = ${x}$, ¿cuánto vale $${a}x ${suma ? "+" : "-"} ${b}$?`,
     respuesta,
     tolerancia: 0,
   };
@@ -38,7 +38,7 @@ function generarUnPaso(nivel: number): ProblemaAlgebra {
     return {
       problemType: "algebra",
       tipo: "un-paso",
-      enunciado: `x + ${b} = ${x + b}. ¿Cuánto vale x?`,
+      enunciado: `$x + ${b} = ${x + b}$. ¿Cuánto vale $x$?`,
       respuesta: x,
       tolerancia: 0,
     };
@@ -48,7 +48,7 @@ function generarUnPaso(nivel: number): ProblemaAlgebra {
     return {
       problemType: "algebra",
       tipo: "un-paso",
-      enunciado: `x − ${b} = ${x - b}. ¿Cuánto vale x?`,
+      enunciado: `$x - ${b} = ${x - b}$. ¿Cuánto vale $x$?`,
       respuesta: x,
       tolerancia: 0,
     };
@@ -57,7 +57,7 @@ function generarUnPaso(nivel: number): ProblemaAlgebra {
   return {
     problemType: "algebra",
     tipo: "un-paso",
-    enunciado: `${a}x = ${a * x}. ¿Cuánto vale x?`,
+    enunciado: `$${a}x = ${a * x}$. ¿Cuánto vale $x$?`,
     respuesta: x,
     tolerancia: 0,
   };
@@ -73,7 +73,7 @@ function generarDosPasos(nivel: number): ProblemaAlgebra {
   return {
     problemType: "algebra",
     tipo: "dos-pasos",
-    enunciado: `${a}x ${suma ? "+" : "−"} ${b} = ${resultado}. ¿Cuánto vale x?`,
+    enunciado: `$${a}x ${suma ? "+" : "-"} ${b} = ${resultado}$. ¿Cuánto vale $x$?`,
     respuesta: x,
     tolerancia: 0,
   };

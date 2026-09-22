@@ -1238,6 +1238,16 @@
     "rivalPredeterminado": "Rival"
   },
   "Aprender": {
+    "visual": {
+      "controles": "Controles de la animación",
+      "anterior": "Anterior",
+      "siguiente": "Siguiente",
+      "pausa": "Pausa",
+      "reproducir": "Reproducir",
+      "repetir": "Repetir",
+      "indicador": "{actual} de {total}",
+      "cuadrosEtiqueta": "Explicación en {n} cuadros"
+    },
     "progreso": "Progreso",
     "tecnicas": "{dominadas}/{total} técnicas",
     "titulo": "Aprender",
@@ -3404,9 +3414,18 @@
         }
       }
     },
+    "memoria": {
+      "modoTitulo": "Modo memoria",
+      "modoDescripcion": "Las cartas desaparecen: cuenta de memoria.",
+      "preparando": "Prepárate: las cartas van a salir una a una",
+      "progreso": "Carta {n} de {total}",
+      "terminado": "Ya salieron las {total} cartas. Da tu conteo.",
+      "anuncio": "Carta {n} de {total}: {carta}"
+    },
     "cartas": {
       "etiqueta": "{valor} de {palo}",
       "filaEtiqueta": "Secuencia de {n} cartas",
+      "dorso": "Carta boca abajo",
       "valores": {
         "2": "2",
         "3": "3",
@@ -3431,6 +3450,55 @@
     },
     "tabla": {
       "titulo": "Valores del sistema de conteo"
+    },
+    "visuales": {
+      "valoresEtiqueta": "Valores de las cartas en {sistema}",
+      "valoresGrupo": "Las cartas {rangos} valen {valor}",
+      "conteoEtiqueta": "Conteo corriente con {sistema}: {n} cartas",
+      "conteoCartaAlt": "{carta}: vale {valor}; el conteo queda en {conteo}",
+      "conteoFinal": "Conteo final: {n}",
+      "conteoCorriente": "Conteo corriente",
+      "ritmo": "Ritmo: una carta cada {s} s",
+      "ritmoBloque": "Ritmo: un bloque de {n} cartas cada {s} s",
+      "bloqueEtiqueta": "Bloque {n}: {valor}",
+      "cancelacionEtiqueta": "Pares que se cancelan con {sistema}: {n} cartas",
+      "cancelacionNeutrasAlt": "Las cartas neutras no se cuentan: {cartas}",
+      "cancelacionParAlt": "{a} ({va}) y {b} ({vb}) se cancelan: suman 0",
+      "cancelacionSobranAlt": "Sin pareja quedan: {cartas}. Su suma es {n}",
+      "cancelacionNadaSobraAlt": "No sobra ninguna carta: el conteo es {n}",
+      "cancelacionConteo": "Conteo",
+      "cancelacionNeutras": "Las neutras valen 0: no se cuentan",
+      "cancelacionNadaQueCancelar": "No hay pares para cancelar",
+      "cancelacionBuscar": "Busca una carta baja y una alta: juntas suman 0",
+      "cancelacionSigueIgual": "El conteo sigue igual: cada par suma 0",
+      "cancelacionSobran": "Solo cuentan las cartas sin pareja: el conteo es {n}",
+      "cancelacionNadaSobra": "No sobra nada: el conteo es {n}",
+      "verdaderoEtiqueta": "Conteo verdadero: conteo corriente dividido por los mazos restantes",
+      "verdaderoConjunto": "Un conjunto de {m} mazos",
+      "verdaderoConjuntoAlt": "Se usa un conjunto de {m} mazos de 52 cartas",
+      "verdaderoJugadas": "Salieron {j} cartas y quedan {r} ({mazos} mazos). Al medio mazo más cercano: {medio}",
+      "verdaderoJugadasAlt": "Salieron {j} cartas y quedan {r} ({mazos} mazos). Al medio mazo más cercano: {medio}",
+      "verdaderoRestantes": "Quedan {mazos} mazos",
+      "verdaderoRestantesAlt": "Quedan {mazos} mazos",
+      "verdaderoDivisionAlt": "El conteo corriente {c} dividido por {m} mazos da {q}",
+      "verdaderoRegla": "Regla de redondeo: {regla}",
+      "verdaderoReglaAlt": "Regla de redondeo: {regla}. El conteo verdadero es {n}",
+      "verdaderoConteo": "Conteo verdadero",
+      "regla": {
+        "cercano": "al entero más cercano",
+        "truncar": "truncando (se descartan los decimales)",
+        "abajo": "hacia abajo (al entero menor)"
+      },
+      "mazoEtiqueta": "Suma del mazo completo con {sistema}",
+      "mazoFilaAlt": "{cartas} cartas ({rangos}) valen {valor} cada una: aportan {aporte}",
+      "mazoBalanceado": "Sistema balanceado: el mazo completo suma {n}",
+      "mazoNoBalanceado": "Sistema no balanceado: el mazo completo suma {n}, no vuelve a 0",
+      "mazoCartas": "{n} cartas",
+      "mazoTotal": "Suma del mazo",
+      "mazoSumaHastaAhora": "Suma hasta ahora",
+      "compararEtiqueta": "Las mismas {n} cartas con distintos sistemas",
+      "compararTotalesAlt": "Conteo final: {totales}",
+      "compararConteo": "Conteo"
     }
   },
   "Codia": {

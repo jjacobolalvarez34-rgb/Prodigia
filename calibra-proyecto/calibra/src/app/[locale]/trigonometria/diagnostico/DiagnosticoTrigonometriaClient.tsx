@@ -1,5 +1,6 @@
 "use client";
 
+import MathText from "@/components/MathText";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -192,7 +193,7 @@ export default function DiagnosticoTrigonometriaClient({ destino }: Props) {
                   <TrianguloSVG triangulo={pregunta.triangulo} colorHex={COLOR_TRIGONOMETRIA} />
                 </div>
               )}
-              <p className="text-center font-medium text-foreground">{pregunta.enunciado}</p>
+              <p className="text-center font-medium text-foreground"><MathText texto={pregunta.enunciado} /></p>
               <form onSubmit={handleResponder} className="flex items-center gap-2">
                 <input
                   type="number"

@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TechniqueQuizPregunta } from "@/types/database";
+import type { VisualLeccion } from "@/lib/aprender/visuales";
 
 // Infraestructura compartida de la pestaña "Clases" de Aprender (fila 22
 // de docs/PARIDAD_MUNDOS.md). Cada mundo tiene, dentro de la misma tabla
@@ -27,7 +28,7 @@ export interface NodoCaminoConClases {
   slug: string;
   nombre: string;
   descripcion: string | null;
-  contenido: { pasos: string[]; quiz?: TechniqueQuizPregunta[] };
+  contenido: { pasos: string[]; visuales?: VisualLeccion[]; quiz?: TechniqueQuizPregunta[] };
   estado: NodoEstado;
   // true para las filas de la pestaña "Clases" (techniques.requiere_pro).
   requierePro: boolean;

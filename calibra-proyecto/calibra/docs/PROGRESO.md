@@ -4016,3 +4016,10 @@ Tres mundos nuevos, normales en todo (catálogo, Practicar, Rankeds, duelos, log
 - **Bug real**: Codia crasheaba con cualquier pregunta con código en Java/JS/TS (regex del resaltador inválida en el navegador); afectaba diagnóstico, práctica y Rankeds. Corregido + `resaltado.test.ts`. Detalle y causa en `PARIDAD_MUNDOS.md` ("Primera prueba en vivo").
 - Botón de error → pantalla principal (error boundary + 10 diagnósticos); selector de lenguaje en `/codia/elegir`; sin emojis en títulos; invitados sin `/perfil` ni `/pro` (y checkout 403); Aprender con el diseño de Melodía en todos los mundos + pestañas Técnicas | Clases que cambian el camino (`grupos.ts`, Geografía e Historia incluidas).
 - Verificado: `tsc` limpio, `vitest` 372 tests, paridad es/en. No verificado en pantalla: selector de lenguaje, nuevo Aprender, bloqueo de invitados.
+
+### 2026-09-21 (noche) — KaTeX en preguntas de práctica, lecciones con explicación visual animada (Naipia), modo memoria
+
+- **KaTeX**: la conversión anterior solo cubría lecciones. Ahora los enunciados/opciones de práctica de Calculia, Circuitia, Estadística, Trigonometría, Potencias, Álgebra y Decimales usan `$...$`/MathText de verdad (antes se veían `/`, `^`, `_` crudos). Migración `0195` convierte las Clases Pro de Calculia/Circuitia que habían quedado afuera. Confirmado en navegador real para Calculia/Circuitia/Trigonometría.
+- **Fila 23 nueva (PARIDAD_MUNDOS.md)**: "Aprender con explicación visual animada", probada primero en Naipia (pedido explícito del usuario) — motor genérico `visuales` + 6 visuales propios de Naipia, verificado en navegador. Pendiente de rollout en los otros 12 mundos.
+- **Modo memoria de Naipia**: cartas que se dan vuelta y hay que contar de memoria, activo en niveles altos (6-8 según sistema). Reloj pausado durante el reparto; tiempo de respuesta medido desde que termina.
+- Verificado en conjunto: `tsc` limpio, `eslint` sin errores nuevos, `vitest` 448/448, i18n 2603 claves paridad exacta.

@@ -20,6 +20,15 @@
 // variable "constante" en una derivada parcial, omitir el factor 1/a en
 // una sustitución).
 
+// FORMATO DE SALIDA (convención $...$ de MathText, ver
+// docs/PLAN_REVISION_CONTENIDO.md): todo fragmento matemático de
+// `enunciado` y de `opciones`/`respuesta` sale entre `$...$` con LaTeX
+// real (`\frac{x^{3}}{3}`, `x^{2}`, `\int ... \,dx`). La respuesta y las
+// opciones son el MISMO string (comparación por igualdad, con los `$`
+// incluidos). Los runners lo dibujan con <MathText>; para aria-label o
+// texto plano, `textoPlano()` de @/lib/texto/latexAPlano lo vuelve a
+// `x^3/3`. Las respuestas NUMÉRICAS (input) no llevan marcas.
+
 export type ModoCalculia = "derivadas" | "integrales" | "series" | "multivariable";
 
 export const NOMBRE_MODO_CALCULIA: Record<ModoCalculia, string> = {
@@ -78,6 +87,9 @@ function randomIntNoCero(max: number): number {
   return n;
 }
 
+// Envuelve una expresión LaTeX en la marca $...$ de MathText.
+const m = (expr: string): string => `$${expr}$`;
+
 function mezclar<T>(arr: T[]): T[] {
   const copia = [...arr];
   for (let i = copia.length - 1; i > 0; i--) {
@@ -104,6 +116,14 @@ function armarOpciones(correcta: string, distractoresBrutos: string[]): string[]
   return mezclar([correcta, ...distractores]);
 }
 
+// Igual que armarOpciones, pero para expresiones matemáticas: la
+// deduplicación se hace sobre el LaTeX crudo y después se envuelve cada
+// opción en $...$ (la `respuesta` sigue siendo EXACTAMENTE uno de los
+// strings de `opciones`).
+function opcionesMath(correcta: string, distractoresBrutos: string[]): { opciones: string[]; respuesta: string } {
+  return { opciones: armarOpciones(correcta, distractoresBrutos).map(m), respuesta: m(correcta) };
+}
+
 // ---------- Formato de expresiones (nunca parseo, solo construcción) ----------
 
 // Un solo término c·x^n (o c·y^n con otra variable), con el formato
@@ -112,7 +132,7 @@ function termino(coef: number, exp: number, variable = "x"): string {
   if (coef === 0) return "0";
   const abs = Math.abs(coef);
   const coefTexto = exp === 0 ? `${abs}` : abs === 1 ? "" : `${abs}`;
-  const varTexto = exp === 0 ? "" : exp === 1 ? variable : `${variable}^${exp}`;
+  const varTexto = exp === 0 ? "" : exp === 1 ? variable : `${variable}^{${exp}}`;
   const cuerpo = `${coefTexto}${varTexto}` || "1";
   return coef < 0 ? `-${cuerpo}` : cuerpo;
 }
@@ -121,8 +141,8 @@ function termino(coef: number, exp: number, variable = "x"): string {
 function termino2(coef: number, expX: number, expY: number): string {
   if (coef === 0) return "0";
   const abs = Math.abs(coef);
-  const xTexto = expX === 0 ? "" : expX === 1 ? "x" : `x^${expX}`;
-  const yTexto = expY === 0 ? "" : expY === 1 ? "y" : `y^${expY}`;
+  const xTexto = expX === 0 ? "" : expX === 1 ? "x" : `x^{${expX}}`;
+  const yTexto = expY === 0 ? "" : expY === 1 ? "y" : `y^{${expY}}`;
   const varsTexto = `${xTexto}${yTexto}`;
   const coefTexto = varsTexto === "" ? `${abs}` : abs === 1 ? "" : `${abs}`;
   const cuerpo = `${coefTexto}${varsTexto}` || "1";
@@ -161,7 +181,7 @@ function potenciaDeFactor(coef: number, inner: string, exp: number): string {
   const coefTexto = abs === 1 ? "" : `${abs}`;
   const signo = coef < 0 ? "-" : "";
   if (exp === 1) return `${signo}${coefTexto}(${inner})`;
-  return `${signo}${coefTexto}(${inner})^${exp}`;
+  return `${signo}${coefTexto}(${inner})^{${exp}}`;
 }
 
 function redondear2(n: number): number {
@@ -210,9 +230,8 @@ function derivadaPotencia(nivelEfectivo: number): ProblemaCalculiaOpciones {
   return {
     modo: "derivadas",
     entrada: "opciones",
-    enunciado: `Deriva f(x) = ${termino(c, n)} respecto de x.`,
-    opciones: armarOpciones(correcta, [noDecrementaExponente, noMultiplicaPorN]),
-    respuesta: correcta,
+    enunciado: `Deriva ${m(`f(x) = ${termino(c, n)}`)} respecto de ${m("x")}.`,
+    ...opcionesMath(correcta, [noDecrementaExponente, noMultiplicaPorN]),
   };
 }
 
@@ -235,9 +254,8 @@ function derivadaProducto(nivelEfectivo: number): ProblemaCalculiaOpciones {
   return {
     modo: "derivadas",
     entrada: "opciones",
-    enunciado: `Deriva f(x) = (${termino(a, p)})(${termino(b, q)}) respecto de x usando la regla del producto.`,
-    opciones: armarOpciones(correcta, [multiplicaDerivadas, olvidaSegundoTermino]),
-    respuesta: correcta,
+    enunciado: `Deriva ${m(`f(x) = (${termino(a, p)})(${termino(b, q)})`)} respecto de ${m("x")} usando la regla del producto.`,
+    ...opcionesMath(correcta, [multiplicaDerivadas, olvidaSegundoTermino]),
   };
 }
 
@@ -261,9 +279,8 @@ function derivadaCociente(nivelEfectivo: number): ProblemaCalculiaOpciones {
   return {
     modo: "derivadas",
     entrada: "opciones",
-    enunciado: `Deriva f(x) = (${termino(a, p)}) / (${termino(b, q)}) respecto de x usando la regla del cociente.`,
-    opciones: armarOpciones(correcta, [signoInvertido, noDecrementaExponente]),
-    respuesta: correcta,
+    enunciado: `Deriva ${m(`f(x) = \\frac{${termino(a, p)}}{${termino(b, q)}}`)} respecto de ${m("x")} usando la regla del cociente.`,
+    ...opcionesMath(correcta, [signoInvertido, noDecrementaExponente]),
   };
 }
 
@@ -282,9 +299,8 @@ function derivadaCadena(nivelEfectivo: number): ProblemaCalculiaOpciones {
   return {
     modo: "derivadas",
     entrada: "opciones",
-    enunciado: `Deriva f(x) = (${inner})^${n} respecto de x usando la regla de la cadena.`,
-    opciones: armarOpciones(correcta, [olvidaFactorInterno, noDecrementaExponente]),
-    respuesta: correcta,
+    enunciado: `Deriva ${m(`f(x) = (${inner})^{${n}}`)} respecto de ${m("x")} usando la regla de la cadena.`,
+    ...opcionesMath(correcta, [olvidaFactorInterno, noDecrementaExponente]),
   };
 }
 
@@ -320,9 +336,8 @@ function integralPotencia(nivelEfectivo: number): ProblemaCalculiaOpciones {
   return {
     modo: "integrales",
     entrada: "opciones",
-    enunciado: `Calcula ∫ ${integrando} dx.`,
-    opciones: armarOpciones(correcta, [copiaIntegrando, noIncrementaExponente]),
-    respuesta: correcta,
+    enunciado: `Calcula ${m(`\\int ${integrando}\\,dx`)}.`,
+    ...opcionesMath(correcta, [copiaIntegrando, noIncrementaExponente]),
   };
 }
 
@@ -331,15 +346,14 @@ function integralPotencia(nivelEfectivo: number): ProblemaCalculiaOpciones {
 function integralLn(nivelEfectivo: number): ProblemaCalculiaOpciones {
   const k = randomInt(2, 2 + nivelEfectivo);
   const kTexto = k === 1 ? "" : `${k}`;
-  const correcta = `${kTexto}ln|x| + C`;
-  const copiaIntegrando = `${k}/x + C`;
-  const olvidaCoeficiente = `ln|x| + C`;
+  const correcta = `${kTexto}\\ln|x| + C`;
+  const copiaIntegrando = `\\frac{${k}}{x} + C`;
+  const olvidaCoeficiente = `\\ln|x| + C`;
   return {
     modo: "integrales",
     entrada: "opciones",
-    enunciado: `Calcula ∫ ${k}/x dx.`,
-    opciones: armarOpciones(correcta, [copiaIntegrando, olvidaCoeficiente]),
-    respuesta: correcta,
+    enunciado: `Calcula ${m(`\\int \\frac{${k}}{x}\\,dx`)}.`,
+    ...opcionesMath(correcta, [copiaIntegrando, olvidaCoeficiente]),
   };
 }
 
@@ -348,50 +362,51 @@ function integralLn(nivelEfectivo: number): ProblemaCalculiaOpciones {
 // correcta (si a=1 ambas dirían lo mismo).
 function integralExponencial(nivelEfectivo: number): ProblemaCalculiaOpciones {
   const a = randomInt(2, 2 + nivelEfectivo);
-  const correcta = `(1/${a})e^${a}x + C`;
-  const olvidaFactor = `e^${a}x + C`;
-  const copiaIntegrando = `e^${a}x + C`;
+  const correcta = `\\frac{1}{${a}}e^{${a}x} + C`;
+  const olvidaFactor = `e^{${a}x} + C`;
+  const copiaIntegrando = `e^{${a}x} + C`;
   return {
     modo: "integrales",
     entrada: "opciones",
-    enunciado: `Calcula ∫ e^${a}x dx.`,
+    enunciado: `Calcula ${m(`\\int e^{${a}x}\\,dx`)}.`,
     // copiaIntegrando y olvidaFactor coinciden a propósito en este caso
     // (copiar el integrando ES el mismo error que olvidar 1/a cuando el
     // integrando ya viene sin coeficiente) — armarOpciones descarta el
     // duplicado solo, dejando 2 opciones reales en vez de 3.
-    opciones: armarOpciones(correcta, [olvidaFactor, copiaIntegrando]),
-    respuesta: correcta,
+    ...opcionesMath(correcta, [olvidaFactor, copiaIntegrando]),
   };
 }
 
 // ∫ k·cos(x) dx = k·sen(x) + C · ∫ k·sen(x) dx = -k·cos(x) + C.
 // Distractor real: error de signo (la confusión más común entre las 2
 // reglas). Segundo distractor: copiar el integrando.
+// "sen" (notación en español, la misma que usa Trigonometría) como
+// operador de KaTeX — \sin mostraría "sin".
+const SEN = "\\operatorname{sen}";
+
 function integralTrig(nivelEfectivo: number): ProblemaCalculiaOpciones {
   const k = randomInt(1, 1 + nivelEfectivo);
   const kTexto = k === 1 ? "" : `${k}`;
   const esCoseno = rngActual() < 0.5;
   if (esCoseno) {
-    const correcta = `${kTexto}sen(x) + C`;
-    const errorDeSigno = `-${kTexto}sen(x) + C`;
-    const copiaIntegrando = `${kTexto}cos(x) + C`;
+    const correcta = `${kTexto}${SEN}(x) + C`;
+    const errorDeSigno = `-${kTexto}${SEN}(x) + C`;
+    const copiaIntegrando = `${kTexto}\\cos(x) + C`;
     return {
       modo: "integrales",
       entrada: "opciones",
-      enunciado: `Calcula ∫ ${kTexto}cos(x) dx.`,
-      opciones: armarOpciones(correcta, [errorDeSigno, copiaIntegrando]),
-      respuesta: correcta,
+      enunciado: `Calcula ${m(`\\int ${kTexto}\\cos(x)\\,dx`)}.`,
+      ...opcionesMath(correcta, [errorDeSigno, copiaIntegrando]),
     };
   }
-  const correcta = `-${kTexto}cos(x) + C`;
-  const errorDeSigno = `${kTexto}cos(x) + C`;
-  const copiaIntegrando = `${kTexto}sen(x) + C`;
+  const correcta = `-${kTexto}\\cos(x) + C`;
+  const errorDeSigno = `${kTexto}\\cos(x) + C`;
+  const copiaIntegrando = `${kTexto}${SEN}(x) + C`;
   return {
     modo: "integrales",
     entrada: "opciones",
-    enunciado: `Calcula ∫ ${kTexto}sen(x) dx.`,
-    opciones: armarOpciones(correcta, [errorDeSigno, copiaIntegrando]),
-    respuesta: correcta,
+    enunciado: `Calcula ${m(`\\int ${kTexto}${SEN}(x)\\,dx`)}.`,
+    ...opcionesMath(correcta, [errorDeSigno, copiaIntegrando]),
   };
 }
 
@@ -416,9 +431,8 @@ function integralSustitucionSimple(nivelEfectivo: number): ProblemaCalculiaOpcio
   return {
     modo: "integrales",
     entrada: "opciones",
-    enunciado: `Calcula ∫ ${integrando} dx usando sustitución u = ${inner}.`,
-    opciones: armarOpciones(correcta, [olvidaFactor1SobreA, noIncrementaExponente]),
-    respuesta: correcta,
+    enunciado: `Calcula ${m(`\\int ${integrando}\\,dx`)} usando sustitución ${m(`u = ${inner}`)}.`,
+    ...opcionesMath(correcta, [olvidaFactor1SobreA, noIncrementaExponente]),
   };
 }
 
@@ -453,8 +467,11 @@ function razonAlAzar(): { num: number; den: number; valor: number } {
   return { num: signo * num, den, valor: (signo * num) / den };
 }
 
+// LaTeX de la razón: -\frac{3}{4} (o el entero solo cuando el
+// denominador es 1, nunca "\frac{3}{1}").
 function formatoRazon(num: number, den: number): string {
-  return num < 0 ? `-${Math.abs(num)}/${den}` : `${num}/${den}`;
+  const abs = den === 1 ? `${Math.abs(num)}` : `\\frac{${Math.abs(num)}}{${den}}`;
+  return num < 0 ? `-${abs}` : abs;
 }
 
 // Suma de una serie geométrica infinita: S = a/(1-r), con |r|<1
@@ -467,7 +484,7 @@ function seriesSumaGeometrica(): ProblemaCalculiaNumero {
   return {
     modo: "series",
     entrada: "numero",
-    enunciado: `Calcula la suma de la serie geométrica infinita con primer término a = ${a} y razón r = ${formatoRazon(num, den)}. Redondea a 2 decimales.`,
+    enunciado: `Calcula la suma de la serie geométrica infinita con primer término ${m(`a = ${a}`)} y razón ${m(`r = ${formatoRazon(num, den)}`)}. Redondea a 2 decimales.`,
     respuesta: suma,
     tolerancia: 0.02,
   };
@@ -487,7 +504,7 @@ function seriesClasificarGeometrica(): ProblemaCalculiaOpciones {
   return {
     modo: "series",
     entrada: "opciones",
-    enunciado: `¿La serie geométrica con razón r = ${formatoRazon(signo * num, den)} converge o diverge?`,
+    enunciado: `¿La serie geométrica con razón ${m(`r = ${formatoRazon(signo * num, den)}`)} converge o diverge?`,
     opciones: mezclar(["Converge", "Diverge"]),
     respuesta,
   };
@@ -501,7 +518,7 @@ function seriesClasificarP(): ProblemaCalculiaOpciones {
   return {
     modo: "series",
     entrada: "opciones",
-    enunciado: `¿La serie p, ∑ 1/n^${p}, converge o diverge?`,
+    enunciado: `¿La serie p, ${m(`\\sum_{n=1}^{\\infty} \\frac{1}{n^{${p}}}`)}, converge o diverge?`,
     opciones: mezclar(["Converge", "Diverge"]),
     respuesta,
   };
@@ -517,7 +534,7 @@ function seriesCriterioDeLaRazon(): ProblemaCalculiaNumero {
   return {
     modo: "series",
     entrada: "numero",
-    enunciado: `Para la sucesión aₙ = ${c}·(${formatoRazon(num, den)})^n, calcula el límite del criterio de la razón: lim_(n→∞) |a_(n+1)/a_n|. Redondea a 2 decimales.`,
+    enunciado: `Para la sucesión ${m(`a_{n} = ${c}\\cdot\\left(${formatoRazon(num, den)}\\right)^{n}`)}, calcula el límite del criterio de la razón: ${m("\\lim_{n\\to\\infty} \\left|\\frac{a_{n+1}}{a_{n}}\\right|")}. Redondea a 2 decimales.`,
     respuesta: redondear2(Math.abs(r)),
     tolerancia: 0.01,
   };
@@ -623,9 +640,8 @@ function multivariableParcial(nivelEfectivo: number): ProblemaCalculiaOpciones {
   return {
     modo: "multivariable",
     entrada: "opciones",
-    enunciado: `Calcula ∂f/∂${variable} para f(x, y) = ${original} (trata ${otraVariable} como constante).`,
-    opciones: armarOpciones(correcta, [derivaAmbasVariables, olvidaOtraVariable]),
-    respuesta: correcta,
+    enunciado: `Calcula ${m(`\\frac{\\partial f}{\\partial ${variable}}`)} para ${m(`f(x, y) = ${original}`)} (trata ${m(otraVariable)} como constante).`,
+    ...opcionesMath(correcta, [derivaAmbasVariables, olvidaOtraVariable]),
   };
 }
 
@@ -639,17 +655,17 @@ function multivariableParcial(nivelEfectivo: number): ProblemaCalculiaOpciones {
 // el exponente de x dentro del exponencial.
 function multivariableEdoSeparable(nivelEfectivo: number): ProblemaCalculiaOpciones {
   const n = randomInt(1, 1 + (nivelEfectivo - 9) * 2 + 1);
-  const m = randomIntNoCero(4);
-  const k = m * (n + 1);
-  const correcta = `y = A·e^${m === 1 ? "" : m}x^${n + 1}`;
-  const olvidaDividirPorNMas1 = `y = A·e^${k === 1 ? "" : k}x^${n + 1}`;
-  const noIncrementaExponente = `y = A·e^${m === 1 ? "" : m}x^${n}`;
+  const m1 = randomIntNoCero(4);
+  const k = m1 * (n + 1);
+  const coefM = m1 === 1 ? "" : m1 === -1 ? "-" : `${m1}`;
+  const correcta = `y = Ae^{${coefM}x^{${n + 1}}}`;
+  const olvidaDividirPorNMas1 = `y = Ae^{${k}x^{${n + 1}}}`;
+  const noIncrementaExponente = `y = Ae^{${coefM}x^{${n}}}`;
   return {
     modo: "multivariable",
     entrada: "opciones",
-    enunciado: `Resuelve la EDO separable dy/dx = ${k}·x^${n}·y (deja la solución en términos de la constante A). ¿Cuál es la solución general?`,
-    opciones: armarOpciones(correcta, [olvidaDividirPorNMas1, noIncrementaExponente]),
-    respuesta: correcta,
+    enunciado: `Resuelve la EDO separable ${m(`\\frac{dy}{dx} = ${k}\\cdot x^{${n}}\\cdot y`)} (deja la solución en términos de la constante ${m("A")}). ¿Cuál es la solución general?`,
+    ...opcionesMath(correcta, [olvidaDividirPorNMas1, noIncrementaExponente]),
   };
 }
 

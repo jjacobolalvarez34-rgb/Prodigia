@@ -23,6 +23,14 @@ import {
   type NodoCircuito,
 } from "@/lib/circuitos/resolver";
 
+// FORMATO DE SALIDA (convención $...$ de MathText, ver
+// docs/PLAN_REVISION_CONTENIDO.md): los resistores (`R_{1}`, `R_{p1}`),
+// los valores (ohmios con \Omega) y la fuente (voltios con \text{V}) salen entre
+// `$...$` con LaTeX real. Las opciones del modo cualitativo son palabras
+// ("Aumenta"/"Disminuye"/"No cambia") y quedan como texto plano. Las
+// respuestas NUMÉRICAS (input) no llevan marcas. `resaltarId` (id crudo
+// "R1"/"Rp1", lo usa CircuitoSVG) NO se toca.
+
 export type ModoCircuitia = "serie" | "paralelo" | "mixto" | "cualitativo";
 
 export const NOMBRE_MODO_CIRCUITIA: Record<ModoCircuitia, string> = {
@@ -82,6 +90,17 @@ function mezclar<T>(arr: T[]): T[] {
   }
   return copia;
 }
+
+// Envuelve LaTeX en $...$, y helpers de las tres piezas de notación que
+// repite todo enunciado: el resistor con subíndice (R1 -> R_{1}), el valor
+// en ohmios y el voltaje de la fuente.
+const m = (expr: string): string => `$${expr}$`;
+function idTex(id: string): string {
+  const partes = /^R([a-z]*)(\d+)$/.exec(id);
+  return partes ? `R_{${partes[1]}${partes[2]}}` : id;
+}
+const ohmiosTex = (ohmios: number): string => `${ohmios}\\,\\Omega`;
+const voltiosTex = (v: number): string => `${v}\\,\\text{V}`;
 
 function redondear2(n: number): number {
   return Math.round(n * 100) / 100;
@@ -163,7 +182,7 @@ function construirMixto(nivel: number): TopologiaArmada {
 }
 
 function describirTopologia(tipo: "serie" | "paralelo" | "mixto", resistores: ResistorInfo[]): string {
-  const lista = resistores.map((r) => `${r.id}=${r.ohmios}Ω`).join(", ");
+  const lista = resistores.map((r) => m(`${idTex(r.id)} = ${ohmiosTex(r.ohmios)}`)).join(", ");
   if (tipo === "serie") return `Circuito en serie con ${lista}.`;
   if (tipo === "paralelo") return `Circuito en paralelo con ${lista}.`;
   return `Circuito mixto (una rama en serie con un bloque en paralelo adentro) con ${lista}.`;
@@ -201,8 +220,8 @@ function construirPreguntaNumero(tipo: "serie" | "paralelo" | "mixto", nivel: nu
   }
 
   const respuesta = redondear2(valor[magnitud]);
-  const pregunta = magnitud === "corriente" ? `la corriente que pasa por ${target.id}` : `el voltaje sobre ${target.id}`;
-  const enunciado = `${describirTopologia(tipo, resistores)} ¿Cuál es ${pregunta}? (fuente de ${vFuente}V)`;
+  const pregunta = magnitud === "corriente" ? `la corriente que pasa por ${m(idTex(target.id))}` : `el voltaje sobre ${m(idTex(target.id))}`;
+  const enunciado = `${describirTopologia(tipo, resistores)} ¿Cuál es ${pregunta}? (fuente de ${m(voltiosTex(vFuente))})`;
 
   return {
     modo: tipo,
@@ -266,9 +285,9 @@ function construirPreguntaCualitativa(nivel: number): ProblemaCircuitiaOpciones 
   const respuesta = ETIQUETA_RESULTADO[resultado];
   const opciones = mezclar(["Aumenta", "Disminuye", "No cambia"]);
 
-  const cambio = accion === "duplica" ? `se duplica a ${nuevoOhmios}Ω` : `se reduce a la mitad, a ${nuevoOhmios}Ω`;
+  const cambio = accion === "duplica" ? `se duplica a ${m(ohmiosTex(nuevoOhmios))}` : `se reduce a la mitad, a ${m(ohmiosTex(nuevoOhmios))}`;
   const magnitudTexto = magnitud === "corriente" ? "la corriente" : "el voltaje";
-  const enunciado = `${describirTopologia(tipoBase, resistores)} Si ${idPerturbado.id} (${idPerturbado.ohmios}Ω) ${cambio}, ¿qué le pasa a ${magnitudTexto} en ${idObjetivo.id}? (fuente de ${vFuente}V)`;
+  const enunciado = `${describirTopologia(tipoBase, resistores)} Si ${m(idTex(idPerturbado.id))} (${m(ohmiosTex(idPerturbado.ohmios))}) ${cambio}, ¿qué le pasa a ${magnitudTexto} en ${m(idTex(idObjetivo.id))}? (fuente de ${m(voltiosTex(vFuente))})`;
 
   return {
     modo: "cualitativo",

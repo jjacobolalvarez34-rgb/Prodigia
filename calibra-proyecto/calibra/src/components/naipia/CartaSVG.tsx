@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { useTranslations } from "next-intl";
 import type { Carta, Palo } from "@/lib/practica/naipia";
 
@@ -36,6 +37,41 @@ function SiluetaPalo({ palo }: { palo: Palo }) {
       <circle cx="17.4" cy="14" r="4.4" />
       <path d="M12 11.5v5c0 2.8-1.4 4.4-3.5 5.5h7c-2.1-1.1-3.5-2.7-3.5-5.5z" />
     </g>
+  );
+}
+
+interface PropsDorso {
+  ancho?: number;
+  colorHex?: string;
+  // Dorso decorativo (p. ej. la fila de cartas ya vistas del modo memoria):
+  // oculto a lectores de pantalla; el progreso se anuncia por texto aparte.
+  decorativo?: boolean;
+}
+
+// Dorso del mazo dibujado por código (misma proporción y borde que la
+// carta): fondo del color del mundo, marco interior claro, rombos en
+// retícula y un rombo central. Sin imágenes externas.
+export function DorsoSVG({ ancho = 44, colorHex = "#B91C1C", decorativo = false }: PropsDorso) {
+  const t = useTranslations("Naipia.cartas");
+  const idPatron = `dorso-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  return (
+    <svg
+      {...(decorativo ? { "aria-hidden": true } : { role: "img", "aria-label": t("dorso") })}
+      width={ancho}
+      height={(ancho * ALTO_VB) / ANCHO_VB}
+      viewBox={`0 0 ${ANCHO_VB} ${ALTO_VB}`}
+      className="shrink-0 drop-shadow-sm"
+    >
+      <defs>
+        <pattern id={idPatron} width={8} height={8} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width={8} height={8} fill={colorHex} />
+          <path d="M0 4H8M4 0V8" stroke="#FFFFFF" strokeOpacity={0.28} strokeWidth={0.9} />
+        </pattern>
+      </defs>
+      <rect x={1} y={1} width={ANCHO_VB - 2} height={ALTO_VB - 2} rx={6} fill="#FFFFFF" stroke="#D1D5DB" strokeWidth={1.5} />
+      <rect x={5} y={5} width={ANCHO_VB - 10} height={ALTO_VB - 10} rx={3} fill={`url(#${idPatron})`} stroke={colorHex} strokeWidth={1} />
+      <path d="M30 30l9 12-9 12-9-12z" fill="#FFFFFF" fillOpacity={0.92} stroke={colorHex} strokeWidth={1.2} />
+    </svg>
   );
 }
 

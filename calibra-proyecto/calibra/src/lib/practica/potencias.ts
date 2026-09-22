@@ -16,8 +16,6 @@ function banda(nivel: number): number {
   return Math.min(4, Math.floor((nivel - 1) / 2));
 }
 
-const SUPERINDICES: Record<number, string> = { 2: "²", 3: "³", 4: "⁴", 5: "⁵" };
-
 function generarPotencia(nivel: number): ProblemaPotencia {
   const bases = [2, 3, 4, 5, 6];
   const exponentes = [2, 2, 3, 3, 4];
@@ -26,7 +24,7 @@ function generarPotencia(nivel: number): ProblemaPotencia {
   return {
     problemType: "potencias",
     tipo: "potencia",
-    enunciado: `${base}${SUPERINDICES[exp] ?? `^${exp}`}`,
+    enunciado: `$${base}^{${exp}}$`,
     respuesta: base ** exp,
     tolerancia: 0,
   };
@@ -38,7 +36,7 @@ function generarRaiz(nivel: number): ProblemaPotencia {
   return {
     problemType: "potencias",
     tipo: "raiz",
-    enunciado: `√${raiz * raiz}`,
+    enunciado: `$\\sqrt{${raiz * raiz}}$`,
     respuesta: raiz,
     tolerancia: 0,
   };

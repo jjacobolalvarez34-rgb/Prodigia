@@ -1,3 +1,4 @@
+import type { VisualLeccion } from "@/lib/aprender/visuales";
 // Tipos que reflejan el esquema de supabase/migrations/*.sql.
 // Cuando el esquema crezca, lo ideal es generar esto automáticamente con:
 //   supabase gen types typescript --project-id TU_PROJECT_ID > src/types/database.ts
@@ -293,7 +294,7 @@ export interface Technique {
   slug: string;
   nombre: string;
   descripcion: string | null;
-  contenido: { pasos: string[]; quiz?: TechniqueQuizPregunta[] };
+  contenido: { pasos: string[]; visuales?: VisualLeccion[]; quiz?: TechniqueQuizPregunta[] };
   orden: number;
   problem_type: ArithmeticProblemType;
   // 0169_calculia_curso_pro.sql: columna global (no específica de

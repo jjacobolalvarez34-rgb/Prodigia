@@ -1,5 +1,6 @@
 "use client";
 
+import MathText from "@/components/MathText";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -240,7 +241,7 @@ export default function EstadisticaPracticaClient({ modo, nivelInicial, escudosE
             <div className="flex flex-wrap gap-2">
               {errores.map((p, i) => (
                 <span key={i} className="rounded-full bg-surface-2 px-3 py-1 text-sm text-foreground">
-                  {String(p.respuesta)}
+                  <MathText texto={String(p.respuesta)} />
                 </span>
               ))}
             </div>

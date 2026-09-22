@@ -17,7 +17,10 @@
 // naipia.test.ts la recalcula con un método independiente.
 //
 // Sin semilla compartida entre rivales de duelo (mismo criterio que
-// Calculia/Circuitia/etc., ver src/lib/duelos/rutas.ts).
+// Calculia/Circuitia/etc., ver src/lib/duelos/rutas.ts): cada jugador
+// genera SUS problemas en el cliente. Lo que sí es idéntico para ambos es
+// la regla del modo memoria (depende solo del nivel forzado del duelo y del
+// largo de la secuencia, sin ningún azar propio: ver `memoriaParaNivel`).
 
 import type { PreguntaRetoDiario } from "@/lib/retoDiario";
 
@@ -151,8 +154,21 @@ export interface ProblemaNaipia {
   entrada: "numero";
   respuesta: number;
   tolerancia: number;
+  // Modo memoria (niveles altos de los 4 sistemas por secuencia): las cartas
+  // salen una a una, cada una queda visible `msPorCarta` y luego se oculta;
+  // el conteo se da de memoria al final. `cartas`/`respuesta` siguen completos
+  // (la UI necesita las cartas para dibujarlas mientras están visibles) pero
+  // el `enunciado` NUNCA lista la secuencia. Ausente = cartas visibles.
+  memoria?: MemoriaNaipia;
 }
 
+export interface MemoriaNaipia {
+  msPorCarta: number;
+}
+
+// Texto plano con la secuencia. SOLO para contextos donde la secuencia se
+// muestra como texto (reto diario, que se genera con sinMemoria); un problema
+// con `memoria` no debe pasar por acá en la UI o se revelarían las cartas.
 export function enunciadoCompleto(p: ProblemaNaipia): string {
   return p.cartas.length > 0 ? `${p.enunciado} Cartas: ${cartasATexto(p.cartas)}` : p.enunciado;
 }
@@ -219,6 +235,66 @@ const LARGO_BASE: Record<SistemaConteo, number[]> = {
 // Fracción de la secuencia armada con pares que se cancelan (recurso
 // didáctico): alta al empezar la banda, baja después.
 const FRACCION_PARES = [0.6, 0.4, 0.3];
+
+// ---------- Modo memoria (niveles altos) ----------
+//
+// Decisión pedagógica: primero se aprende el sistema con las cartas a la
+// vista (tabla de valores incluida al empezar la banda); recién cuando el
+// conteo ya es fluido las cartas desaparecen, como en el conteo real, donde
+// nadie puede volver a mirar una carta que ya salió.
+//
+// Se activa cuando el NIVEL del jugador en ese sistema (skill_levels, 1-10,
+// sin recortar a la banda) es >= NIVEL_MIN_MEMORIA **y** la banda del sistema
+// ya no está en su primer escalón (ahí se enseña la tabla de valores y hay
+// que verla; el modo memoria jamás convive con la tabla). Efecto por sistema:
+//   Hi-Lo     (banda 1-3): nivel 6-10
+//   KO        (banda 3-5): nivel 6-10
+//   Hi-Opt II (banda 5-7): nivel 6-10
+//   Omega II  (banda 7-9): nivel 8-10 (el 7 es el escalón de aprendizaje)
+// Un jugador de nivel alto que practica un sistema "fácil" (Hi-Lo) también lo
+// hace de memoria: es justamente su desafío. Conteo verdadero no aplica: sus
+// datos son cifras ya calculadas (conteo corriente y mazos que quedan), sin
+// secuencia de cartas que ocultar; ocultarlas sería solo pedir retener un
+// número, no contar.
+//
+// Tabla nivel -> ms por carta (lineal, más rápido a mayor nivel):
+//   6: 1600 · 7: 1325 · 8: 1050 · 9: 775 · 10: 500
+// Tope de reparto por problema (TOPE_TOTAL_MEMORIA_MS): con secuencias
+// largas msPorCarta baja lo necesario para que n × ms <= 16 s (sin esto,
+// 14 cartas a 1600 ms serían 22 s de mirar); el reloj de la partida se
+// detiene durante el reparto (ver NaipiaSprintRunner), así que esto no
+// resta tiempo de respuesta sino que acota lo largo de la sesión.
+export const NIVEL_MIN_MEMORIA = 6;
+export const MS_CARTA_NIVEL_MIN_MEMORIA = 1600;
+export const MS_CARTA_NIVEL_MAX_MEMORIA = 500;
+export const TOPE_TOTAL_MEMORIA_MS = 16_000;
+export const MS_CARTA_MINIMO = 400;
+
+// ms por carta según el nivel (sin considerar el tope por largo).
+export function msPorCartaBase(nivel: number): number {
+  const n = Math.min(10, Math.max(NIVEL_MIN_MEMORIA, Math.round(nivel)));
+  const pasos = 10 - NIVEL_MIN_MEMORIA;
+  const paso = (MS_CARTA_NIVEL_MIN_MEMORIA - MS_CARTA_NIVEL_MAX_MEMORIA) / pasos;
+  return Math.round(MS_CARTA_NIVEL_MIN_MEMORIA - (n - NIVEL_MIN_MEMORIA) * paso);
+}
+
+// Devuelve el ritmo del modo memoria para (sistema, nivel, largo) o null si
+// esas cartas se muestran a la vista. Función pura y determinista: nada de
+// azar, así que dos jugadores con el mismo nivel forzado (duelo) juegan al
+// mismo ritmo por carta.
+export function memoriaParaNivel(modo: ModoNaipia, nivel: number, nCartas: number): MemoriaNaipia | null {
+  if (modo === "verdadero" || nCartas <= 0) return null;
+  if (nivel < NIVEL_MIN_MEMORIA) return null;
+  if (bandaNaipia(modo, nivel) === BANDA_NAIPIA[modo].min) return null;
+  const tope = Math.floor(TOPE_TOTAL_MEMORIA_MS / nCartas);
+  return { msPorCarta: Math.max(MS_CARTA_MINIMO, Math.min(msPorCartaBase(nivel), tope)) };
+}
+
+export interface OpcionesNaipia {
+  // Fuerza cartas visibles aunque el nivel active el modo memoria (reto
+  // diario, que muestra la secuencia como texto, y diagnóstico).
+  sinMemoria?: boolean;
+}
 
 // ---------- Mazo y secuencias ----------
 
@@ -288,13 +364,16 @@ function formatoMazos(n: number): string {
 
 // ---------- Modos por secuencia (Hi-Lo, KO, Hi-Opt II, Omega II) ----------
 
-function generarSecuencia(modo: SistemaConteo, nivel: number): ProblemaNaipia {
+function generarSecuencia(modo: SistemaConteo, nivel: number, opciones: OpcionesNaipia): ProblemaNaipia {
   const banda = bandaNaipia(modo, nivel);
   const idx = banda - BANDA_NAIPIA[modo].min;
   const largo = LARGO_BASE[modo][idx] + randomInt(0, 2);
   const cartas = armarSecuencia(modo, largo, idx);
   const nombre = NOMBRE_MODO_NAIPIA[modo];
   const corriente = conteoCorriente(modo, cartas);
+  // Sin consumo de rng: activar el modo memoria no altera la secuencia ni la
+  // respuesta que saldría con la misma semilla.
+  const memoria = opciones.sinMemoria ? null : memoriaParaNivel(modo, nivel, cartas.length);
 
   // Desde la segunda posición de la banda, parte de las preguntas piden el
   // conteo de las cartas que QUEDAN en el mazo, usando la suma conocida del
@@ -308,22 +387,28 @@ function generarSecuencia(modo: SistemaConteo, nivel: number): ProblemaNaipia {
     return {
       modo,
       tipo: "restante",
-      enunciado: `Sistema ${nombre}: ${dato}. Ya salieron las cartas indicadas, de un mazo de 52. ¿Cuál es el conteo de las cartas que quedan en el mazo?`,
+      enunciado: memoria
+        ? `Sistema ${nombre}: ${dato}. Salen cartas de un mazo de 52, una a una, y desaparecen. Cuenta de memoria las que salieron: ¿cuál es el conteo de las cartas que quedan en el mazo?`
+        : `Sistema ${nombre}: ${dato}. Ya salieron las cartas indicadas, de un mazo de 52. ¿Cuál es el conteo de las cartas que quedan en el mazo?`,
       cartas,
       entrada: "numero",
       respuesta: total - corriente,
       tolerancia: 0,
+      ...(memoria ? { memoria } : {}),
     };
   }
 
   return {
     modo,
     tipo: "corriente",
-    enunciado: `Sistema ${nombre}: cuenta las cartas en orden. ¿Cuál es el conteo corriente final?`,
+    enunciado: memoria
+      ? `Sistema ${nombre}: las cartas salen una a una y desaparecen. Cuéntalas de memoria, en orden. ¿Cuál es el conteo corriente final?`
+      : `Sistema ${nombre}: cuenta las cartas en orden. ¿Cuál es el conteo corriente final?`,
     cartas,
     entrada: "numero",
     respuesta: corriente,
     tolerancia: 0,
+    ...(memoria ? { memoria } : {}),
   };
 }
 
@@ -456,9 +541,9 @@ function generarVerdadero(nivel: number): ProblemaNaipia {
   return r < 0.6 ? verdaderoDirecto(banda) : estimarMazos();
 }
 
-export function generarProblemaNaipia(modo: ModoNaipia, nivel: number): ProblemaNaipia {
+export function generarProblemaNaipia(modo: ModoNaipia, nivel: number, opciones: OpcionesNaipia = {}): ProblemaNaipia {
   if (modo === "verdadero") return generarVerdadero(nivel);
-  return generarSecuencia(modo, nivel);
+  return generarSecuencia(modo, nivel, opciones);
 }
 
 export function claveNaipia(p: ProblemaNaipia): string {
@@ -485,11 +570,12 @@ function distractoresEnteros(rng: () => number, correcto: number): string[] {
 }
 
 // Misma forma que preguntaCalculia de retoDiario.ts: (rng) -> PreguntaRetoDiario.
-// La secuencia viaja en el texto del enunciado ("7♠ K♥ ...").
+// La secuencia viaja en el texto del enunciado ("7♠ K♥ ..."): por eso el reto
+// SIEMPRE se genera con sinMemoria (el modo memoria no tiene versión en texto).
 export function preguntaNaipia(rng: () => number): PreguntaRetoDiario {
   const modo = MODOS_NAIPIA_RETO[Math.floor(rng() * MODOS_NAIPIA_RETO.length)];
   const nivel = Math.floor(rng() * 5) + 3; // 3-7, igual que nivelMedio() del reto
-  const p = conRngSembrado(rng, () => generarProblemaNaipia(modo, nivel));
+  const p = conRngSembrado(rng, () => generarProblemaNaipia(modo, nivel, { sinMemoria: true }));
   const respuesta = String(p.respuesta);
   const opciones = [respuesta, ...distractoresEnteros(rng, p.respuesta)];
   for (let i = opciones.length - 1; i > 0; i--) {

@@ -1,5 +1,6 @@
 "use client";
 
+import MathText from "@/components/MathText";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -176,7 +177,7 @@ export default function DiagnosticoCalculiaClient({ destino }: Props) {
               ))}
             </div>
             <div className="flex w-full flex-col items-center gap-6 rounded-3xl border-2 border-border bg-surface px-8 py-10">
-              <p className="text-center font-medium text-foreground">{pregunta.enunciado}</p>
+              <p className="text-center font-medium text-foreground"><MathText texto={pregunta.enunciado} /></p>
               <div className="flex w-full flex-col gap-2">
                 {pregunta.opciones.map((op) => {
                   const esElegida = seleccion === op;
@@ -194,7 +195,7 @@ export default function DiagnosticoCalculiaClient({ destino }: Props) {
                             : "border-border bg-background text-foreground"
                       }`}
                     >
-                      {op}
+                      <MathText texto={op} />
                     </button>
                   );
                 })}

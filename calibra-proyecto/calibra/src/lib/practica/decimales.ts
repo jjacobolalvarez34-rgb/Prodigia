@@ -24,7 +24,7 @@ function generarConvertir(nivel: number): ProblemaDecimal {
   return {
     problemType: "decimales",
     tipo: "convertir",
-    enunciado: `Convierte ${num}/${den} a decimal`,
+    enunciado: `Convierte $\\frac{${num}}{${den}}$ a decimal`,
     respuesta,
     tolerancia: 0.01,
   };

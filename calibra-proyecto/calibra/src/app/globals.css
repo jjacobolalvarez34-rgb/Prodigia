@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "katex/dist/katex.min.css";
 
+/* KaTeX trae font-size 1.21em por defecto: se ve más grande que el texto que
+   lo rodea (botones de opción, enunciados). Un poco más chico queda parejo. */
+.katex {
+  font-size: 1.08em;
+}
+
 /* Barras de desplazamiento horizontales que existen por funcionalidad
    (ej. el nav del header en viewports angostos) pero no deben verse como
    una scrollbar de navegador — se puede seguir desplazando con touch/

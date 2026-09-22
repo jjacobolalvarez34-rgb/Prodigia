@@ -13,6 +13,7 @@ import Boton from "@/components/Boton";
 import Avatar from "@/components/Avatar";
 import Pentagrama from "@/components/melodia/Pentagrama";
 import FiguraRitmicaIcono from "@/components/melodia/FiguraRitmicaIcono";
+import MathText from "@/components/MathText";
 
 type Fase = "intro" | "jugando" | "resumen";
 export type TipoReto = "diario" | "semanal";
@@ -37,6 +38,11 @@ interface Props {
   miUserId: string;
   rankingInicial: FilaRankingReto[];
 }
+
+// Los mundos cuyo enunciado/opciones llevan LaTeX entre $...$ (ver MathText). Solo
+// ellos pasan por MathText: en el resto (Codia trae código con "$", Naipia
+// puede traer montos) un "$" suelto nunca debe tratarse como marca de fórmula.
+const MUNDOS_CON_MATH: ReadonlySet<MundoRetoDiario> = new Set<MundoRetoDiario>(["calculia", "circuitia", "estadistica", "trigonometria"]);
 
 const COLOR_MUNDO: Record<MundoRetoDiario, string> = {
   numeria: "#6C4CF1",
@@ -269,7 +275,7 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
               )}
               {pregunta.figuraMelodia && <FiguraRitmicaIcono figura={pregunta.figuraMelodia} colorHex={COLOR_MUNDO.melodia} />}
 
-              <p className={`font-medium text-foreground ${pregunta.mundo === "codia" ? "w-full overflow-x-auto whitespace-pre-wrap text-left font-mono text-sm" : "text-center"}`}>{pregunta.enunciado}</p>
+              <p className={`font-medium text-foreground ${pregunta.mundo === "codia" ? "w-full overflow-x-auto whitespace-pre-wrap text-left font-mono text-sm" : "text-center"}`}>{MUNDOS_CON_MATH.has(pregunta.mundo) ? <MathText texto={pregunta.enunciado} /> : pregunta.enunciado}</p>
 
               <div className="grid w-full grid-cols-2 gap-2.5">
                 {pregunta.opciones.map((op) => {
@@ -288,7 +294,7 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
                             : "border-border bg-background text-foreground"
                       }`}
                     >
-                      {op}
+                      {MUNDOS_CON_MATH.has(pregunta.mundo) ? <MathText texto={op} /> : op}
                     </button>
                   );
                 })}

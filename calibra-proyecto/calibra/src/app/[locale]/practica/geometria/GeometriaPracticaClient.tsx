@@ -1,5 +1,6 @@
 "use client";
 
+import MathText from "@/components/MathText";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
@@ -153,7 +154,7 @@ export default function GeometriaPracticaClient({ nivelPorTipo, escudosExtra, hi
             <div className="flex flex-col gap-2.5">
               {errores.map((p, i) => (
                 <div key={i} className="flex items-center justify-between font-mono text-sm">
-                  <span className="text-texto-secundario">{p.enunciado}</span>
+                  <span className="text-texto-secundario"><MathText texto={p.enunciado} /></span>
                   <span className="text-texto-secundario">
                     {t("resumen.era")} <span className="font-semibold text-error">{p.respuesta}</span>
                   </span>

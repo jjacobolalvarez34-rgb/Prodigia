@@ -10,7 +10,17 @@
 // Enigmia/Geografía/Anatomía/Melodía (Numeria y Quimia son la
 // excepción con semilla, no la regla, ver src/lib/duelos/rutas.ts).
 
-export type ModoTrigonometria = "razones" | "circulo" | "identidades" | "leyes";
+// FORMATO DE SALIDA (convención $...$ de MathText, ver
+// docs/PLAN_REVISION_CONTENIDO.md): los valores exactos (\frac{\sqrt{3}}{2}),
+// los ángulos en radianes (\frac{\pi}{6}), las funciones (sen, cos, tan) y
+// los grados (30^{\circ}) salen entre $...$ con LaTeX real. La tabla del
+// círculo unitario de abajo sigue escrita en texto simple ("√3/2", "π/6");
+// valorTex() la pasa a LaTeX al armar el enunciado y las opciones, y la
+// opción correcta es EXACTAMENTE uno de los strings de opciones.
+// "indefinido" es una palabra y queda como texto plano. Las respuestas
+// NUMÉRICAS (input) no llevan marcas.
+
+export type ModoTrigonometria ="razones" | "circulo" | "identidades" | "leyes";
 
 export const NOMBRE_MODO_TRIGONOMETRIA: Record<ModoTrigonometria, string> = {
   razones: "Razones básicas",
@@ -80,6 +90,30 @@ function randomInt(min: number, max: number): number {
   return Math.floor(rngActual() * (max - min + 1)) + min;
 }
 
+// Envuelve LaTeX en $...$.
+const m = (expr: string): string => `$${expr}$`;
+
+// "√3/2" -> \frac{\sqrt{3}}{2}, "-√2/2" -> -\frac{\sqrt{2}}{2}, "√3" -> \sqrt{3},
+// "1/2" -> \frac{1}{2}, "2π/3" -> \frac{2\pi}{3}, "π" -> \pi.
+function valorTex(v: string): string {
+  const signo = v.startsWith("-") ? "-" : "";
+  const cuerpo = signo ? v.slice(1) : v;
+  const [num, den] = cuerpo.split("/");
+  const conv = (t: string) => t.replace(/√(\d+)/g, "\\sqrt{$1}").replace(/π/g, "\\pi");
+  return den === undefined ? `${signo}${conv(num)}` : `${signo}\\frac{${conv(num)}}{${conv(den)}}`;
+}
+// "indefinido" (la tangente de 90° y 270°) no es una fórmula: queda como texto.
+const valorMath = (v: string): string => (v === "indefinido" ? v : m(valorTex(v)));
+
+// Las funciones, en notación en español (sen, no sin) como operador de KaTeX.
+const fnTex = (fn: "sen" | "cos" | "tan"): string => (fn === "sen" ? "\\operatorname{sen}" : `\\${fn}`);
+
+// Opciones de un valor exacto: la deduplicación va sobre el texto simple y
+// después cada opción se pasa a $...$ (la respuesta es una de las opciones).
+function opcionesValor(correcta: string, pool: string[]): { opciones: string[]; respuesta: string } {
+  return { opciones: opcionesConDistractores(correcta, pool).map(valorMath), respuesta: valorMath(correcta) };
+}
+
 function opcionesConDistractores(correcta: string, pool: string[], cantidad = 4): string[] {
   const distractores = Array.from(new Set(pool.filter((x) => x !== correcta)));
   const elegidos: string[] = [];
@@ -140,7 +174,7 @@ function generarRazones(nivel: number): ProblemaTrigonometriaNumero {
   return {
     modo: "razones",
     entrada: "numero",
-    enunciado: `En este triángulo rectángulo, ¿cuánto es ${fn}(A)? Redondea a 2 decimales.`,
+    enunciado: `En este triángulo rectángulo, ¿cuánto es ${m(`${fnTex(fn)}(A)`)}? Redondea a 2 decimales.`,
     respuesta: redondear2(respuesta),
     tolerancia: 0.01,
     triangulo: {
@@ -204,15 +238,14 @@ function generarCirculo(nivel: number): ProblemaTrigonometriaOpciones {
   const fn = funciones[randomInt(0, 2)];
   const respuesta = entrada[fn];
   const enGrados = rngActual() < 0.5;
-  const anguloTexto = enGrados ? `${entrada.grados}°` : entrada.radianLabel;
+  const anguloTexto = enGrados ? `${entrada.grados}^{\\circ}` : valorTex(entrada.radianLabel);
   const pool = TABLA_CIRCULO.map((v) => v[fn]);
 
   return {
     modo: "circulo",
     entrada: "opciones",
-    enunciado: `¿Cuánto es ${fn}(${anguloTexto})? Valor exacto, no aproximado.`,
-    opciones: opcionesConDistractores(respuesta, pool),
-    respuesta,
+    enunciado: `¿Cuánto es ${m(`${fnTex(fn)}(${anguloTexto})`)}? Valor exacto, no aproximado.`,
+    ...opcionesValor(respuesta, pool),
   };
 }
 
@@ -233,9 +266,8 @@ function generarPitagorica(): ProblemaTrigonometriaOpciones {
   return {
     modo: "identidades",
     entrada: "opciones",
-    enunciado: `Si ${nombreDado}(θ) = ${dado} y θ está en el primer cuadrante, ¿cuánto vale ${nombreBuscado}(θ)? Usa sen²(θ) + cos²(θ) = 1.`,
-    opciones: opcionesConDistractores(buscado, pool),
-    respuesta: buscado,
+    enunciado: `Si ${m(`${fnTex(nombreDado)}(\\theta) = ${valorTex(dado)}`)} y ${m("\\theta")} está en el primer cuadrante, ¿cuánto vale ${m(`${fnTex(nombreBuscado)}(\\theta)`)}? Usa ${m("\\operatorname{sen}^{2}(\\theta) + \\cos^{2}(\\theta) = 1")}.`,
+    ...opcionesValor(buscado, pool),
   };
 }
 
@@ -247,9 +279,8 @@ function generarAnguloDoble(): ProblemaTrigonometriaOpciones {
   return {
     modo: "identidades",
     entrada: "opciones",
-    enunciado: `Si θ = ${base}°, ¿cuánto vale sen(2θ)?`,
-    opciones: opcionesConDistractores(doble.sen, pool),
-    respuesta: doble.sen,
+    enunciado: `Si ${m(`\\theta = ${base}^{\\circ}`)}, ¿cuánto vale ${m("\\operatorname{sen}(2\\theta)")}?`,
+    ...opcionesValor(doble.sen, pool),
   };
 }
 
@@ -261,9 +292,8 @@ function generarComplementario(): ProblemaTrigonometriaOpciones {
   return {
     modo: "identidades",
     entrada: "opciones",
-    enunciado: `¿Cuánto vale sen(90° − ${entrada.grados}°)? Usa sen(90° − x) = cos(x).`,
-    opciones: opcionesConDistractores(entrada.cos, pool),
-    respuesta: entrada.cos,
+    enunciado: `¿Cuánto vale ${m(`\\operatorname{sen}(90^{\\circ} - ${entrada.grados}^{\\circ})`)}? Usa ${m("\\operatorname{sen}(90^{\\circ} - x) = \\cos(x)")}.`,
+    ...opcionesValor(entrada.cos, pool),
   };
 }
 
@@ -295,7 +325,7 @@ function generarLeyCoseno(): ProblemaTrigonometriaNumero {
   return {
     modo: "leyes",
     entrada: "numero",
-    enunciado: `Un triángulo tiene dos lados de ${a} y ${b}, con un ángulo de ${anguloCgrados}° entre ellos. ¿Cuánto mide el tercer lado? Ley del coseno, redondea a 2 decimales.`,
+    enunciado: `Un triángulo tiene dos lados de ${a} y ${b}, con un ángulo de ${m(`${anguloCgrados}^{\\circ}`)} entre ellos. ¿Cuánto mide el tercer lado? Ley del coseno, redondea a 2 decimales.`,
     respuesta,
     tolerancia: Math.max(0.1, respuesta * 0.01),
     triangulo: { ladoA: a, ladoB: b, ladoC: respuesta, anguloA: A, anguloB: B, anguloC: anguloCgrados, ocultar: "ladoC" },
@@ -318,7 +348,7 @@ function generarLeySeno(): ProblemaTrigonometriaNumero {
   return {
     modo: "leyes",
     entrada: "numero",
-    enunciado: `Un triángulo tiene ángulos de ${A}° y ${B}°, y el lado opuesto al primer ángulo mide ${a}. ¿Cuánto mide el lado opuesto al segundo ángulo? Ley del seno, redondea a 2 decimales.`,
+    enunciado: `Un triángulo tiene ángulos de ${m(`${A}^{\\circ}`)} y ${m(`${B}^{\\circ}`)}, y el lado opuesto al primer ángulo mide ${a}. ¿Cuánto mide el lado opuesto al segundo ángulo? Ley del seno, redondea a 2 decimales.`,
     respuesta,
     tolerancia: Math.max(0.1, respuesta * 0.01),
     triangulo: { ladoA: a, ladoB: respuesta, ladoC: redondear2(c), anguloA: A, anguloB: B, anguloC: C, ocultar: "ladoB" },

@@ -1,5 +1,6 @@
 "use client";
 
+import MathText from "@/components/MathText";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -186,7 +187,7 @@ export default function DiagnosticoCircuitiaClient({ destino }: Props) {
               <div className="w-full overflow-x-auto">
                 <CircuitoSVG topologia={pregunta.topologia} vFuente={pregunta.vFuente} resaltarId={pregunta.resaltarId} colorHex={COLOR_CIRCUITIA} />
               </div>
-              <p className="text-center font-medium text-foreground">{pregunta.enunciado}</p>
+              <p className="text-center font-medium text-foreground"><MathText texto={pregunta.enunciado} /></p>
               <form onSubmit={handleResponder} className="flex items-center gap-2">
                 <input
                   type="number"

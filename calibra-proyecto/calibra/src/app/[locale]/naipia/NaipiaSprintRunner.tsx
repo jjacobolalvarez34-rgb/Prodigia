@@ -26,6 +26,8 @@ import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
 import { usarConsumible } from "@/lib/practica/consumibles";
 import FilaCartas from "@/components/naipia/FilaCartas";
+import MemoriaCartas from "@/components/naipia/MemoriaCartas";
+import { crearCronometroRespuesta } from "@/lib/practica/memoriaNaipia";
 import TablaSistema from "@/components/naipia/TablaSistema";
 import { COLOR_NAIPIA } from "./colores";
 
@@ -56,6 +58,25 @@ interface Props {
 // (tolerancia 0): el conteo corriente puede ser negativo, así que junto al
 // campo hay un botón "±" (los teclados numéricos de celular no siempre
 // traen el signo menos). Las cartas se dibujan en SVG (FilaCartas).
+//
+// Modo memoria (problema.memoria, niveles altos): las cartas salen una a una
+// y se dan vuelta (MemoriaCartas); el campo de respuesta aparece recién al
+// terminar el reparto. Decisión sobre el tiempo (mismo criterio que la
+// memorización de Enigmia, pedido del propietario 2026-09-14):
+//   - El reloj de la PARTIDA se pausa mientras dura el reparto
+//     (iniciarPausa/terminarPausa de useBonusTiempo): mirar cartas no gasta
+//     los 60 s de responder.
+//   - El tiempo de respuesta (time_ms de /api/attempts, evaluarBonus de
+//     tiempo, XP por velocidad y calibración de nivel) se mide desde que
+//     termina el reparto, con crearCronometroRespuesta. tiempoEsperadoMs(nivel)
+//     sigue siendo el mismo que en modo visible: el reparto no se descuenta
+//     de un esperado inflado, directamente no entra en la medición. Así el
+//     modo memoria no penaliza ni premia de más: el jugador rápido igual
+//     puntúa por lo que tarda en dar su conteo. El piso "sospechoso" de
+//     /api/attempts (max(150, 12 % del esperado)) no se activa con una
+//     respuesta humana tipeada tras el último dorso.
+//   - Los consumibles se desactivan durante el reparto (el hielo comparte
+//     el mismo bucket de pausa y podría cerrarla antes de tiempo).
 export default function NaipiaSprintRunner({
   modo,
   startedAt,
@@ -80,6 +101,8 @@ export default function NaipiaSprintRunner({
   const correctosRef = useRef(0);
   const [problema, setProblema] = useState<ProblemaNaipia | null>(null);
   const [cardKey, setCardKey] = useState(0);
+  // "viendo" solo en problemas con `memoria`, mientras salen las cartas.
+  const [faseMemoria, setFaseMemoria] = useState<"viendo" | "respondiendo">("respondiendo");
   const [respuestaTexto, setRespuestaTexto] = useState("");
   const [feedback, setFeedback] = useState<"idle" | "correcto" | "incorrecto">("idle");
   const [miRespuestaTexto, setMiRespuestaTexto] = useState("");
@@ -91,14 +114,14 @@ export default function NaipiaSprintRunner({
   const [escudos, setEscudos] = useState(escudosIniciales);
   const { racha, registrarResultado } = useRachaCombo();
 
-  const { duracionTotalMs, bonusTiempo, evaluarBonus, agregarBonusExtra, limpiarBonus, pausarPorHielo, calcularRestante } =
+  const { duracionTotalMs, bonusTiempo, evaluarBonus, agregarBonusExtra, limpiarBonus, iniciarPausa, terminarPausa, pausarPorHielo, calcularRestante } =
     useBonusTiempo(duracionMs);
 
   const nivelRef = useRef(nivelForzado ?? nivelInicial);
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<ProblemaNaipia[]>([]);
-  const shownAtRef = useRef(0);
+  const cronoRef = useRef(crearCronometroRespuesta());
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
 
@@ -111,7 +134,21 @@ export default function NaipiaSprintRunner({
     setMiRespuestaTexto("");
     setPuntaje(null);
     limpiarBonus();
-    shownAtRef.current = performance.now();
+    if (p.memoria) {
+      // El cronómetro de respuesta arranca cuando termina el reparto
+      // (terminarMemoria), no acá.
+      setFaseMemoria("viendo");
+      iniciarPausa();
+    } else {
+      setFaseMemoria("respondiendo");
+      cronoRef.current.marcarInicio();
+    }
+  }
+
+  function terminarMemoria() {
+    terminarPausa();
+    setFaseMemoria("respondiendo");
+    cronoRef.current.marcarInicio();
   }
 
   useEffect(() => {
@@ -126,7 +163,7 @@ export default function NaipiaSprintRunner({
   }
 
   async function usarHielo() {
-    if (usandoConsumible !== null || hielosDisp <= 0) return;
+    if (usandoConsumible !== null || hielosDisp <= 0 || faseMemoria === "viendo") return;
     setUsandoConsumible("hielo");
     const r = await usarConsumible("hielo");
     if (r) {
@@ -137,7 +174,7 @@ export default function NaipiaSprintRunner({
   }
 
   async function usarTiempoExtra() {
-    if (usandoConsumible !== null || tiemposExtraDisp <= 0) return;
+    if (usandoConsumible !== null || tiemposExtraDisp <= 0 || faseMemoria === "viendo") return;
     setUsandoConsumible("tiempo_extra");
     const r = await usarConsumible("tiempo_extra");
     if (r) {
@@ -229,9 +266,9 @@ export default function NaipiaSprintRunner({
 
   function handleSubmitNumero(e: React.FormEvent) {
     e.preventDefault();
-    if (submittingRef.current || !problema || respuestaTexto === "" || respuestaTexto === "-") return;
+    if (submittingRef.current || !problema || faseMemoria === "viendo" || respuestaTexto === "" || respuestaTexto === "-") return;
     submittingRef.current = true;
-    const timeMs = Math.round(performance.now() - shownAtRef.current);
+    const timeMs = cronoRef.current.transcurrido();
     const valor = Number(respuestaTexto);
     const correct = Number.isFinite(valor) && Math.abs(valor - problema.respuesta) <= problema.tolerancia + 1e-9;
     registrar(correct, timeMs, respuestaTexto);
@@ -270,7 +307,7 @@ export default function NaipiaSprintRunner({
               <ConsumiblesPartida
                 hielos={hielosDisp}
                 tiemposExtra={tiemposExtraDisp}
-                usando={usandoConsumible}
+                usando={faseMemoria === "viendo" ? "hielo" : usandoConsumible}
                 onUsarHielo={usarHielo}
                 onUsarTiempoExtra={usarTiempoExtra}
               />
@@ -311,7 +348,17 @@ export default function NaipiaSprintRunner({
       >
         <p className="text-center font-display text-base font-bold text-foreground">{problema.enunciado}</p>
 
-        {problema.cartas.length > 0 && <FilaCartas cartas={problema.cartas} />}
+        {problema.memoria ? (
+          <MemoriaCartas
+            key={cardKey}
+            cartas={problema.cartas}
+            msPorCarta={problema.memoria.msPorCarta}
+            colorHex={COLOR_NAIPIA}
+            onTerminar={terminarMemoria}
+          />
+        ) : (
+          problema.cartas.length > 0 && <FilaCartas cartas={problema.cartas} />
+        )}
 
         {mostrarTabla && (
           <div className="flex flex-col items-center gap-1.5">
@@ -320,6 +367,7 @@ export default function NaipiaSprintRunner({
           </div>
         )}
 
+        {faseMemoria === "respondiendo" && (
         <form onSubmit={handleSubmitNumero} className="flex items-center gap-2">
           <button
             type="button"
@@ -350,6 +398,7 @@ export default function NaipiaSprintRunner({
             {t("ok")}
           </button>
         </form>
+        )}
       </TarjetaSprint>
     </div>
   );

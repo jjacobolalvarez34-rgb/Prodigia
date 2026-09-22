@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
+import katex from "katex";
 import { generarProblemaCalculia, type ProblemaCalculia } from "./calculia";
+import { textoPlano as sinMarcas } from "@/lib/texto/latexAPlano";
 
 // Verificación "real, nunca aproximada" pedida para Calculia: para cada
 // generador, no alcanza con revisar la FORMA de la respuesta (eso ya lo
@@ -22,6 +24,14 @@ import { generarProblemaCalculia, type ProblemaCalculia } from "./calculia";
 // Los evaluadores de abajo son parsers/aritmética de cero, escritos a
 // mano contra el formato de texto exacto que emite calculia.ts — nunca
 // llaman a ninguna función interna del generador.
+//
+// Desde que calculia.ts emite LaTeX entre $...$ (para que MathText lo
+// dibuje con KaTeX), estos parsers reciben el enunciado/respuesta a
+// través de `sinMarcas` (= textoPlano de @/lib/texto/latexAPlano: quita
+// los $ y pasa el LaTeX de vuelta a `x^3/3`, `R1`, `√3`...). La
+// verificación numérica independiente es exactamente la misma; solo
+// cambia el formato que se le muestra al parser. Un test aparte valida
+// que TODA fórmula emitida compile en KaTeX.
 
 const H = 1e-4;
 
@@ -107,8 +117,8 @@ function evalLogShape(strBruto: string, x: number): number {
 
 function evalExpShape(strBruto: string, x: number): number {
   const str = stripMasC(strBruto);
-  let m = /^\(1\/(\d+)\)e\^(\d+)x$/.exec(str);
-  if (m) return (1 / Number(m[1])) * Math.exp(Number(m[2]) * x);
+  let m = /^(\d+)\/(\d+)e\^(\d+)x$/.exec(str);
+  if (m) return (Number(m[1]) / Number(m[2])) * Math.exp(Number(m[3]) * x);
   m = /^e\^(\d+)x$/.exec(str);
   if (m) return Math.exp(Number(m[1]) * x);
   throw new Error(`no pude parsear exp shape: "${str}"`);
@@ -145,9 +155,10 @@ function evalTerminoXY(str: string, x: number, y: number): number {
 }
 
 function evalEdoShape(str: string): { coef: number; exp: number } {
-  const m = /^y = A·e\^(-?\d+)?x\^(\d+)$/.exec(str.trim());
+  // y = Ae^(2x^3) / y = Ae^(-x^3) / y = Ae^(x^3)
+  const m = /^y = Ae\^\((-?)(\d*)x\^(\d+)\)$/.exec(str.trim());
   if (!m) throw new Error(`no pude parsear edo shape: "${str}"`);
-  return { coef: m[1] ? Number(m[1]) : 1, exp: Number(m[2]) };
+  return { coef: (m[1] ? -1 : 1) * (m[2] ? Number(m[2]) : 1), exp: Number(m[3]) };
 }
 
 // ---------- Invariantes comunes de toda pregunta de opción múltiple ----------
@@ -170,34 +181,36 @@ describe("Calculia — generarProblemaCalculia('derivadas', nivel)", () => {
       chequearOpcionesValidas(p);
       expect(p.entrada).toBe("opciones");
       if (p.entrada !== "opciones") continue;
+      const enunciado = sinMarcas(p.enunciado);
+      const respuesta = sinMarcas(p.respuesta);
 
       let mm: RegExpExecArray | null;
-      if ((mm = /^Deriva f\(x\) = \(([^)]+)\)\(([^)]+)\) respecto de x usando la regla del producto\.$/.exec(p.enunciado))) {
+      if ((mm = /^Deriva f\(x\) = \(([^)]+)\)\(([^)]+)\) respecto de x usando la regla del producto\.$/.exec(enunciado))) {
         const [, f1, f2] = mm;
         const f = (x: number) => evalMonoX(f1, x) * evalMonoX(f2, x);
         for (const x of X_MUESTRAS) {
-          expectClose(evalShapeA(p.respuesta, x), centralDiff(f, x));
+          expectClose(evalShapeA(respuesta, x), centralDiff(f, x));
         }
-      } else if ((mm = /^Deriva f\(x\) = \(([^)]+)\) \/ \(([^)]+)\) respecto de x usando la regla del cociente\.$/.exec(p.enunciado))) {
+      } else if ((mm = /^Deriva f\(x\) = ([^/ ]+)\/([^/ ]+) respecto de x usando la regla del cociente\.$/.exec(enunciado))) {
         const [, num, den] = mm;
         const f = (x: number) => evalMonoX(num, x) / evalMonoX(den, x);
         for (const x of [1.1, 1.7, 2.3]) {
-          expectClose(evalShapeA(p.respuesta, x), centralDiff(f, x));
+          expectClose(evalShapeA(respuesta, x), centralDiff(f, x));
         }
-      } else if ((mm = /^Deriva f\(x\) = \(([^)]+)\)\^(\d+) respecto de x usando la regla de la cadena\.$/.exec(p.enunciado))) {
+      } else if ((mm = /^Deriva f\(x\) = \(([^)]+)\)\^(\d+) respecto de x usando la regla de la cadena\.$/.exec(enunciado))) {
         const [, inner] = mm;
         const f = (x: number) => Math.pow(evalFactorLineal(inner, x), Number(mm![2]));
         for (const x of X_MUESTRAS) {
-          expectClose(evalShapeB(p.respuesta, x), centralDiff(f, x));
+          expectClose(evalShapeB(respuesta, x), centralDiff(f, x));
         }
-      } else if ((mm = /^Deriva f\(x\) = (.+) respecto de x\.$/.exec(p.enunciado))) {
+      } else if ((mm = /^Deriva f\(x\) = (.+) respecto de x\.$/.exec(enunciado))) {
         const [, fTexto] = mm;
         const f = (x: number) => evalMonoX(fTexto, x);
         for (const x of X_MUESTRAS) {
-          expectClose(evalShapeA(p.respuesta, x), centralDiff(f, x));
+          expectClose(evalShapeA(respuesta, x), centralDiff(f, x));
         }
       } else {
-        throw new Error(`enunciado de derivadas sin patrón reconocido: "${p.enunciado}"`);
+        throw new Error(`enunciado de derivadas sin patrón reconocido: "${enunciado}"`);
       }
     }
   });
@@ -211,48 +224,50 @@ describe("Calculia — generarProblemaCalculia('integrales', nivel)", () => {
       chequearOpcionesValidas(p);
       expect(p.entrada).toBe("opciones");
       if (p.entrada !== "opciones") continue;
+      const enunciado = sinMarcas(p.enunciado);
+      const respuesta = sinMarcas(p.respuesta);
 
       let mm: RegExpExecArray | null;
-      if ((mm = /^Calcula ∫ (.+) dx usando sustitución u = (.+)\.$/.exec(p.enunciado))) {
+      if ((mm = /^Calcula ∫ (.+) dx usando sustitución u = (.+)\.$/.exec(enunciado))) {
         const [, integrando] = mm;
         // El integrando de la sustitución simple siempre tiene forma
         // B (coef·(lineal)^n) — nunca forma A.
         const f = (x: number) => evalShapeB(integrando, x);
         const x0 = 0.3;
         const x1 = 1.6;
-        const F = (x: number) => evalShapeB(p.respuesta, x);
+        const F = (x: number) => evalShapeB(respuesta, x);
         expectClose(F(x1) - F(x0), simpson(f, x0, x1));
-      } else if ((mm = /^Calcula ∫ (\d+)\/x dx\.$/.exec(p.enunciado))) {
+      } else if ((mm = /^Calcula ∫ (\d+)\/x dx\.$/.exec(enunciado))) {
         const k = Number(mm[1]);
         const f = (x: number) => k / x;
         const x0 = 1.2;
         const x1 = 2.8;
-        const F = (x: number) => evalLogShape(p.respuesta, x);
+        const F = (x: number) => evalLogShape(respuesta, x);
         expectClose(F(x1) - F(x0), simpson(f, x0, x1));
-      } else if ((mm = /^Calcula ∫ e\^(\d+)x dx\.$/.exec(p.enunciado))) {
+      } else if ((mm = /^Calcula ∫ e\^(\d+)x dx\.$/.exec(enunciado))) {
         const a = Number(mm[1]);
         const f = (x: number) => Math.exp(a * x);
         const x0 = 0.1;
         const x1 = 0.6;
-        const F = (x: number) => evalExpShape(p.respuesta, x);
+        const F = (x: number) => evalExpShape(respuesta, x);
         expectClose(F(x1) - F(x0), simpson(f, x0, x1));
-      } else if ((mm = /^Calcula ∫ (\d*)(cos|sen)\(x\) dx\.$/.exec(p.enunciado))) {
+      } else if ((mm = /^Calcula ∫ (\d*)(cos|sen)\(x\) dx\.$/.exec(enunciado))) {
         const k = mm[1] ? Number(mm[1]) : 1;
         const fn = mm[2] === "cos" ? Math.cos : Math.sin;
         const f = (x: number) => k * fn(x);
         const x0 = 0.2;
         const x1 = 1.1;
-        const F = (x: number) => evalTrigShape(p.respuesta, x);
+        const F = (x: number) => evalTrigShape(respuesta, x);
         expectClose(F(x1) - F(x0), simpson(f, x0, x1));
-      } else if ((mm = /^Calcula ∫ (.+) dx\.$/.exec(p.enunciado))) {
+      } else if ((mm = /^Calcula ∫ (.+) dx\.$/.exec(enunciado))) {
         const [, integrando] = mm;
         const f = (x: number) => evalMonoX(integrando, x);
         const x0 = 0.4;
         const x1 = 1.9;
-        const F = (x: number) => evalShapeA(p.respuesta, x);
+        const F = (x: number) => evalShapeA(respuesta, x);
         expectClose(F(x1) - F(x0), simpson(f, x0, x1));
       } else {
-        throw new Error(`enunciado de integrales sin patrón reconocido: "${p.enunciado}"`);
+        throw new Error(`enunciado de integrales sin patrón reconocido: "${enunciado}"`);
       }
     }
   });
@@ -263,17 +278,18 @@ describe("Calculia — generarProblemaCalculia('series', nivel)", () => {
     for (let i = 0; i < ITERACIONES; i++) {
       const nivel = 1 + (i % 10);
       const p = generarProblemaCalculia("series", nivel);
+      const enunciado = sinMarcas(p.enunciado);
 
       let mm: RegExpExecArray | null;
       if (
-        (mm = /^Calcula la suma de la serie geométrica infinita con primer término a = (-?\d+) y razón r = (-?\d+)\/(\d+)\. Redondea a 2 decimales\.$/.exec(
-          p.enunciado
+        (mm = /^Calcula la suma de la serie geométrica infinita con primer término a = (-?\d+) y razón r = (-?\d+)(?:\/(\d+))?\. Redondea a 2 decimales\.$/.exec(
+          enunciado
         ))
       ) {
         expect(p.entrada).toBe("numero");
         if (p.entrada !== "numero") continue;
         const a = Number(mm[1]);
-        const r = Number(mm[2]) / Number(mm[3]);
+        const r = Number(mm[2]) / Number(mm[3] ?? 1);
         expect(Math.abs(r)).toBeLessThan(1);
         // Convergencia numérica: suma parcial de muchos términos, en vez
         // de reusar la fórmula a/(1-r) del generador.
@@ -284,21 +300,21 @@ describe("Calculia — generarProblemaCalculia('series', nivel)", () => {
           termino *= r;
         }
         expect(p.respuesta).toBeCloseTo(sumaParcial, 1);
-      } else if ((mm = /^¿La serie geométrica con razón r = (-?\d+)\/(\d+) converge o diverge\?$/.exec(p.enunciado))) {
+      } else if ((mm = /^¿La serie geométrica con razón r = (-?\d+)(?:\/(\d+))? converge o diverge\?$/.exec(enunciado))) {
         expect(p.entrada).toBe("opciones");
         if (p.entrada !== "opciones") continue;
         chequearOpcionesValidas(p);
-        const r = Number(mm[1]) / Number(mm[2]);
+        const r = Number(mm[1]) / Number(mm[2] ?? 1);
         expect(p.respuesta).toBe(Math.abs(r) < 1 ? "Converge" : "Diverge");
-      } else if ((mm = /^¿La serie p, ∑ 1\/n\^(\d+(?:\.\d+)?), converge o diverge\?$/.exec(p.enunciado))) {
+      } else if ((mm = /^¿La serie p, ∑ _\(n=1\)\^\(∞\) 1\/n\^(\d+(?:\.\d+)?), converge o diverge\?$/.exec(enunciado))) {
         expect(p.entrada).toBe("opciones");
         if (p.entrada !== "opciones") continue;
         chequearOpcionesValidas(p);
         const pExp = Number(mm[1]);
         expect(p.respuesta).toBe(pExp > 1 ? "Converge" : "Diverge");
       } else if (
-        (mm = /^Para la sucesión aₙ = (-?\d+)·\((-?\d+)\/(\d+)\)\^n, calcula el límite del criterio de la razón: lim_\(n→∞\) \|a_\(n\+1\)\/a_n\|\. Redondea a 2 decimales\.$/.exec(
-          p.enunciado
+        (mm = /^Para la sucesión a_n = (-?\d+)·\((-?\d+)\/(\d+)\)\^n, calcula el límite del criterio de la razón: lim_\(n→∞\) \|a_\(n\+1\)\/a_n\|\. Redondea a 2 decimales\.$/.exec(
+          enunciado
         ))
       ) {
         expect(p.entrada).toBe("numero");
@@ -306,7 +322,7 @@ describe("Calculia — generarProblemaCalculia('series', nivel)", () => {
         const r = Number(mm[2]) / Number(mm[3]);
         expect(p.respuesta).toBeCloseTo(Math.abs(r), 2);
       } else {
-        throw new Error(`enunciado de series sin patrón reconocido: "${p.enunciado}"`);
+        throw new Error(`enunciado de series sin patrón reconocido: "${enunciado}"`);
       }
     }
   });
@@ -320,10 +336,12 @@ describe("Calculia — generarProblemaCalculia('multivariable', nivel)", () => {
       chequearOpcionesValidas(p);
       expect(p.entrada).toBe("opciones");
       if (p.entrada !== "opciones") continue;
+      const enunciado = sinMarcas(p.enunciado);
+      const respuesta = sinMarcas(p.respuesta);
 
       let mm: RegExpExecArray | null;
       if (
-        (mm = /^Calcula ∂f\/∂(x|y) para f\(x, y\) = (.+) \(trata (x|y) como constante\)\.$/.exec(p.enunciado))
+        (mm = /^Calcula ∂f\/∂(x|y) para f\(x, y\) = (.+) \(trata (x|y) como constante\)\.$/.exec(enunciado))
       ) {
         const variable = mm[1];
         const original = mm[2];
@@ -335,17 +353,17 @@ describe("Calculia — generarProblemaCalculia('multivariable', nivel)", () => {
           const f = (v: number) => (variable === "x" ? evalPolyXY(original, v, y) : evalPolyXY(original, x, v));
           const puntoActual = variable === "x" ? x : y;
           const derivadaNumerica = centralDiff(f, puntoActual);
-          const derivadaReclamada = evalPolyXY(p.respuesta, x, y);
+          const derivadaReclamada = evalPolyXY(respuesta, x, y);
           expectClose(derivadaReclamada, derivadaNumerica);
         }
       } else if (
         (mm = /^Resuelve la EDO separable dy\/dx = (-?\d+)·x\^(\d+)·y \(deja la solución en términos de la constante A\)\. ¿Cuál es la solución general\?$/.exec(
-          p.enunciado
+          enunciado
         ))
       ) {
         const k = Number(mm[1]);
         const n = Number(mm[2]);
-        const { coef, exp } = evalEdoShape(p.respuesta);
+        const { coef, exp } = evalEdoShape(respuesta);
         // y = e^(coef * x^exp) (A=1) debe satisfacer dy/dx = k*x^n*y en
         // varios puntos, verificado por diferencia central — no se
         // reusa la tabla de antiderivadas del generador para nada.
@@ -355,8 +373,70 @@ describe("Calculia — generarProblemaCalculia('multivariable', nivel)", () => {
           expectClose(dydx, k * Math.pow(x, n) * y(x));
         }
       } else {
-        throw new Error(`enunciado de multivariable sin patrón reconocido: "${p.enunciado}"`);
+        throw new Error(`enunciado de multivariable sin patrón reconocido: "${enunciado}"`);
       }
+    }
+  });
+});
+
+// ---------- Render: TODA fórmula emitida debe compilar en KaTeX ----------
+
+const MODOS = ["derivadas", "integrales", "series", "multivariable"] as const;
+
+function fragmentosMath(texto: string): string[] {
+  return [...texto.matchAll(/\$([^$]+)\$/g)].map((m) => m[1]);
+}
+
+describe("Calculia — formato $...$ (MathText/KaTeX)", () => {
+  it("cada $...$ de enunciado, opciones y respuesta compila en KaTeX (throwOnError) — 100 pulls por modo y nivel", () => {
+    // Cada expresión distinta se compila UNA vez (hay muchísimas repetidas);
+    // los fallos se juntan y se afirman al final (un expect() por texto
+    // haría el test 10 veces más lento sin verificar nada más).
+    const yaCompiladas = new Set<string>();
+    const fallos: string[] = [];
+    for (const modo of MODOS) {
+      for (let nivel = 1; nivel <= 10; nivel++) {
+        for (let i = 0; i < 100; i++) {
+          const p = generarProblemaCalculia(modo, nivel);
+          const textos = p.entrada === "opciones" ? [p.enunciado, ...p.opciones] : [p.enunciado];
+          for (const t of textos) {
+            if ((t.match(/\$/g) ?? []).length % 2 !== 0) fallos.push(`$ sin cerrar en "${t}"`);
+            for (const expr of fragmentosMath(t)) {
+              if (yaCompiladas.has(expr)) continue;
+              yaCompiladas.add(expr);
+              try {
+                katex.renderToString(expr, { throwOnError: true });
+              } catch (e) {
+                fallos.push(`KaTeX no compila "${expr}": ${(e as Error).message}`);
+              }
+            }
+          }
+        }
+      }
+    }
+    expect(yaCompiladas.size).toBeGreaterThan(50);
+    expect(fallos).toEqual([]);
+  }, 60_000);
+
+  it("fuera de $...$ no queda notación cruda (^, \\frac, ∫, ∂) en ningún enunciado ni opción", () => {
+    for (const modo of MODOS) {
+      for (let i = 0; i < 200; i++) {
+        const p = generarProblemaCalculia(modo, 1 + (i % 10));
+        const textos = p.entrada === "opciones" ? [p.enunciado, ...p.opciones] : [p.enunciado];
+        for (const t of textos) {
+          const fuera = t.replace(/\$[^$]+\$/g, "");
+          expect(fuera, `notación cruda fuera de $ en "${t}"`).not.toMatch(/[\^∫∂∑√]|\\[a-z]|\d\/\d/);
+        }
+      }
+    }
+  });
+
+  it("las respuestas de opción múltiple con matemática van completas entre $ (la opción ES la respuesta, mismo string)", () => {
+    for (let i = 0; i < 200; i++) {
+      const p = generarProblemaCalculia("derivadas", 1 + (i % 4));
+      if (p.entrada !== "opciones") continue;
+      expect(p.respuesta).toMatch(/^\$[^$]+\$$/);
+      expect(p.opciones.filter((o) => o === p.respuesta)).toHaveLength(1);
     }
   });
 });

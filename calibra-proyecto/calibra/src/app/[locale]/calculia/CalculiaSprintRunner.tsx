@@ -10,6 +10,7 @@ import SonidoToggle from "@/components/SonidoToggle";
 import EscudoIcon from "@/components/EscudoIcon";
 import RachaFuego from "@/components/RachaFuego";
 import LevelDial from "@/app/[locale]/practica/LevelDial";
+import MathText from "@/components/MathText";
 import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/TarjetaSprint";
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
@@ -312,7 +313,7 @@ export default function CalculiaSprintRunner({
         respuestaCorrecta={respuestaCorrectaTexto}
         padding="px-6 py-10"
       >
-        <p className="text-center font-display text-base font-bold text-foreground">{problema.enunciado}</p>
+        <p className="text-center font-display text-base font-bold text-foreground"><MathText texto={problema.enunciado} /></p>
 
         {problema.entrada === "numero" ? (
           <form onSubmit={handleSubmitNumero} className="flex items-center gap-2">
@@ -352,7 +353,7 @@ export default function CalculiaSprintRunner({
                         : "border-border bg-background text-foreground"
                   }`}
                 >
-                  {op}
+                  <MathText texto={op} />
                 </button>
               );
             })}
