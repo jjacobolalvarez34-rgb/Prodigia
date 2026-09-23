@@ -36,6 +36,16 @@
 --    poner not null).
 alter table public.logic_skill_levels add column if not exists categoria text;
 
+-- 1.5) Hay que soltar la PK vieja (user_id solo) ANTES de expandir las
+--      filas: mientras siga activa, el paso 2 no puede insertar 4
+--      filas con el mismo user_id (viola esa PK) aunque cada una vaya
+--      a tener una categoria distinta — la PK compuesta recién se
+--      crea al final, en el paso 4. (Este fue el error real: "ERROR
+--      23505: duplicate key value violates unique constraint
+--      logic_skill_levels_pkey" — la migración intentaba insertar las
+--      4 filas ANTES de soltar la restricción vieja.)
+alter table public.logic_skill_levels drop constraint logic_skill_levels_pkey;
+
 -- 2) Expandir cada fila vieja (sin categoría) en 4 filas, una por
 --    categoría, heredando nivel/racha_actual/updated_at tal cual
 --    estaban. El SELECT corre sobre el snapshot de ANTES de este
@@ -53,7 +63,6 @@ delete from public.logic_skill_levels where categoria is null;
 
 -- 4) La PK pasa de (user_id) a (user_id, categoria) — ahora cada
 --    usuario tiene hasta 4 filas, una por categoría.
-alter table public.logic_skill_levels drop constraint logic_skill_levels_pkey;
 alter table public.logic_skill_levels add primary key (user_id, categoria);
 
 -- 5) Constraint de valores válidos (mismo set que logic_techniques.categoria
