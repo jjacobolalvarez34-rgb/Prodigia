@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import type { CategoriaEnigmia, LogicPuzzle } from "@/types/database";
+import { CATEGORIA_DE_TIPO, type CategoriaEnigmia, type LogicPuzzle } from "@/types/database";
 import { reproducirTono } from "@/lib/sonido";
 import { useBonusTiempo } from "@/lib/practica/useBonusTiempo";
 import SonidoToggle from "@/components/SonidoToggle";
@@ -13,6 +13,7 @@ import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/Tarjet
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import AcertijoMemoria from "@/components/AcertijoMemoria";
 import { generarAcertijoProcedural, type CategoriaGenerada } from "@/lib/enigmia/generadores";
+import { elegirDelBanco } from "@/lib/enigmia/seleccionDificultad";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
@@ -48,9 +49,15 @@ function claveAcertijo(p: LogicPuzzle): string {
 // Fase 4 de Rankeds: en un duelo, `categoriaForzada` restringe TODOS los
 // acertijos a esa única categoría (el contenido elegible según el rango
 // de los dos duelistas) — nada de la mezcla normal 75/25.
+//
+// Fase de calibración por categoría (0205_enigmia_niveles_por_categoria.sql):
+// `niveles` reemplaza al nivel único de antes — cada categoría (memoria/
+// patrones/deduccion/computacional) tiene su propio nivel, y la dificultad
+// del acertijo que se genera/elige siempre sale del nivel de SU PROPIA
+// categoría, nunca de un nivel global compartido.
 function elegirSiguiente(
   puzzlesDB: LogicPuzzle[],
-  nivel: number,
+  niveles: Record<CategoriaEnigmia, number>,
   usados: Set<string>,
   categoriaForzada?: CategoriaEnigmia
 ): LogicPuzzle {
@@ -58,34 +65,27 @@ function elegirSiguiente(
     if (categoriaForzada === "deduccion") {
       const soloDeduccion = puzzlesDB.filter((p) => p.tipo === "deduccion");
       const banco = soloDeduccion.length > 0 ? soloDeduccion : puzzlesDB;
-      const candidatos = banco.filter((p) => !usados.has(p.id));
-      const pool = candidatos.length > 0 ? candidatos : banco;
-      return pool[Math.floor(Math.random() * pool.length)] ?? generarAcertijoProcedural("patrones", nivel);
+      return elegirDelBanco(banco, niveles.deduccion, usados) ?? generarAcertijoProcedural("patrones", niveles.patrones);
     }
-    return generarSinRepetir(() => generarAcertijoProcedural(categoriaForzada, nivel), claveAcertijo, usados);
+    return generarSinRepetir(() => generarAcertijoProcedural(categoriaForzada, niveles[categoriaForzada]), claveAcertijo, usados);
   }
 
   if (Math.random() < PROBABILIDAD_PROCEDURAL) {
     const categoria = CATEGORIAS_PROCEDURALES[Math.floor(Math.random() * CATEGORIAS_PROCEDURALES.length)];
-    return generarSinRepetir(() => generarAcertijoProcedural(categoria, nivel), claveAcertijo, usados);
+    return generarSinRepetir(() => generarAcertijoProcedural(categoria, niveles[categoria]), claveAcertijo, usados);
   }
 
   const soloDeduccion = puzzlesDB.filter((p) => p.tipo === "deduccion");
   const banco = soloDeduccion.length > 0 ? soloDeduccion : puzzlesDB;
-  const min = Math.max(1, nivel - 1);
-  const max = Math.min(10, nivel + 1);
-  const candidatos = banco.filter((p) => p.dificultad >= min && p.dificultad <= max && !usados.has(p.id));
-  const pool = candidatos.length > 0 ? candidatos : banco.filter((p) => !usados.has(p.id));
-  if (pool.length === 0) {
-    return banco[Math.floor(Math.random() * banco.length)] ?? generarAcertijoProcedural("patrones", nivel);
-  }
-  return pool[Math.floor(Math.random() * pool.length)];
+  return elegirDelBanco(banco, niveles.deduccion, usados) ?? generarAcertijoProcedural("patrones", niveles.patrones);
 }
 
 interface Props {
   puzzles: LogicPuzzle[];
   startedAt: number;
-  nivelInicial: number;
+  // Un nivel por categoría (0205_enigmia_niveles_por_categoria.sql) —
+  // reemplaza al nivelInicial único de antes.
+  nivelesIniciales: Record<CategoriaEnigmia, number>;
   escudosExtra: number;
   hielosIniciales?: number;
   tiemposExtraIniciales?: number;
@@ -111,7 +111,7 @@ interface Props {
 export default function EnigmiaSprintRunner({
   puzzles,
   startedAt,
-  nivelInicial,
+  nivelesIniciales,
   escudosExtra,
   hielosIniciales = 0,
   tiemposExtraIniciales = 0,
@@ -140,7 +140,10 @@ export default function EnigmiaSprintRunner({
   const [xpSprint, setXpSprint] = useState(0);
   const [respondidos, setRespondidos] = useState(0);
   const [remainingMs, setRemainingMs] = useState(duracionMs);
-  const [nivel, setNivel] = useState(nivelForzado ?? nivelInicial);
+  // Nivel MOSTRADO en el dial: siempre el de la categoría del acertijo
+  // que está en pantalla (se actualiza en siguiente() y otra vez al
+  // recibir la respuesta) — ya no un único nivel global.
+  const [nivel, setNivel] = useState(nivelForzado ?? nivelesIniciales.patrones);
   const [escudos, setEscudos] = useState(escudosIniciales);
   const [hielosDisp, setHielosDisp] = useState(hielosIniciales);
   const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
@@ -160,7 +163,15 @@ export default function EnigmiaSprintRunner({
   const { duracionTotalMs, bonusTiempo, evaluarBonus, agregarBonusExtra, limpiarBonus, iniciarPausa, terminarPausa, pausarPorHielo, calcularRestante } =
     useBonusTiempo(duracionMs);
 
-  const nivelRef = useRef(nivelForzado ?? nivelInicial);
+  // En duelo, categoriaForzada + nivelForzado dejan una sola categoría
+  // activa (el resto de las entradas de este record nunca se leen) —
+  // se completan igual con nivelForzado para que el tipo siga siendo
+  // total, sin volverlo opcional en el resto del componente.
+  const nivelesRef = useRef<Record<CategoriaEnigmia, number>>(
+    nivelForzado != null
+      ? { memoria: nivelForzado, patrones: nivelForzado, deduccion: nivelForzado, computacional: nivelForzado }
+      : nivelesIniciales
+  );
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<LogicPuzzle[]>([]);
@@ -169,10 +180,13 @@ export default function EnigmiaSprintRunner({
   const finishedRef = useRef(false);
 
   function siguiente() {
-    const p = elegirSiguiente(puzzles, nivelRef.current, usadosRef.current, categoriaForzada);
+    const p = elegirSiguiente(puzzles, nivelesRef.current, usadosRef.current, categoriaForzada);
     usadosRef.current.add(p.id);
     if (usadosRef.current.size > 200) usadosRef.current = new Set();
     setPuzzle(p);
+    // El dial siempre muestra el nivel de la categoría del acertijo que
+    // se está por mostrar, no un valor global.
+    setNivel(nivelForzado ?? nivelesRef.current[CATEGORIA_DE_TIPO[p.tipo]]);
     setCardKey((k) => k + 1);
     setSeleccion(null);
     setFeedback("idle");
@@ -274,6 +288,8 @@ export default function EnigmiaSprintRunner({
       }
     }
 
+    const categoriaPuzzle = CATEGORIA_DE_TIPO[puzzle.tipo];
+
     try {
       const res = await fetch("/api/logic-attempts", {
         method: "POST",
@@ -283,6 +299,7 @@ export default function EnigmiaSprintRunner({
           dificultad: puzzle.dificultad,
           correct,
           time_ms: timeMs,
+          categoria: categoriaPuzzle,
           protegido,
         }),
       });
@@ -310,8 +327,8 @@ export default function EnigmiaSprintRunner({
       if (correct) correctosRef.current += 1;
       if (data.skillLevel) {
         if (!nivelForzado) {
-          nivelSubio = data.skillLevel.nivel > nivelRef.current;
-          nivelRef.current = data.skillLevel.nivel;
+          nivelSubio = data.skillLevel.nivel > nivelesRef.current[categoriaPuzzle];
+          nivelesRef.current = { ...nivelesRef.current, [categoriaPuzzle]: data.skillLevel.nivel };
           setNivel(data.skillLevel.nivel);
         }
         emitirProgreso({ respondidos: respondidos + 1, correctos: correctosRef.current, racha: rachaActual });

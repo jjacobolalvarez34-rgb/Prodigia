@@ -333,3 +333,369 @@ export const CLASES_ENIGMIA: ClaseEnigmia[] = [
     ],
   },
 ];
+
+// 5 Clases NUEVAS (2026-09-22, expansión de contenido — mismo pedido del
+// usuario que TECNICAS_ENIGMIA_NUEVAS: "está muy vacío"). Van en un
+// arreglo APARTE de CLASES_ENIGMIA a propósito: ese arreglo genera la
+// migración 0203 ya aplicada/comparada byte a byte en lecciones.test.ts —
+// agregar filas ahí rompería esa comparación. Estas 5 generan la migración
+// 0205 (ver sql.ts: generarSqlEnigmiaMasContenido). `orden` continúa la
+// numeración de CLASES_ENIGMIA dentro de cada categoría (patrones hasta 2,
+// deduccion hasta 2, memoria hasta 1, computacional hasta 1) — el sort
+// real (pathClases.ts) es (categoria, orden), y las dos fuentes (0203 +
+// 0205) terminan compartiendo la misma tabla en runtime.
+export const CLASES_ENIGMIA_NUEVAS: ClaseEnigmia[] = [
+  {
+    slug: "enigmia-clase-patrones-compuestos-dos-reglas",
+    categoria: "patrones",
+    orden: 3,
+    requierePro: true,
+    nombre: "Patrones compuestos: dos reglas combinadas",
+    descripcion: "Cuando una secuencia no tiene una sola regla, separa las posiciones impares de las pares — cada una puede seguir su propia regla.",
+    pasos: [
+      "Un patrón compuesto combina dos reglas distintas en una sola secuencia — una regla para las posiciones impares (1ª, 3ª, 5ª...) y otra para las pares (2ª, 4ª, 6ª...).",
+      "Para resolverlo, separa la secuencia en dos listas: los términos de posición impar por un lado, los de posición par por otro.",
+      "Encuentra el patrón de cada lista por separado (puede ser aritmético en una y geométrico en la otra) y aplícalo para hallar el término que falta.",
+    ],
+    visuales: [
+      { tipo: "enigmia.secuencia", modo: "aritmetica", primerTermino: 1, paso: 4, cantidad: 5, despuesDePaso: 1, titulo: "Posiciones impares: secuencia aritmética +4" },
+      { tipo: "enigmia.secuencia", modo: "geometrica", primerTermino: 2, paso: 3, cantidad: 4, despuesDePaso: 1, titulo: "Posiciones pares: secuencia geométrica ×3" },
+      {
+        tipo: "cuadros",
+        despuesDePaso: 2,
+        titulo: "La secuencia combinada",
+        cuadros: [{ texto: "1, 2, 5, 6, 9, 18, 13, 54, ?", resaltar: "Impares: 1, 5, 9, 13, 17 (+4) — Pares: 2, 6, 18, 54 (×3)" }],
+      },
+    ],
+    quiz: [
+      {
+        pregunta: "¿Cuál es el siguiente número: 1, 2, 5, 6, 9, 18, 13, 54, ?",
+        opciones: ["17", "21", "162", "20"],
+        respuesta: "17",
+        explicacion: "La posición 9 es impar: la secuencia de posiciones impares es 1, 5, 9, 13, 17 (+4 cada vez), así que el siguiente término es 17.",
+      },
+      {
+        pregunta: "En la secuencia de posiciones impares 1, 5, 9, 13, 17, ¿qué tipo de patrón es?",
+        opciones: ["Aritmético, con diferencia constante +4", "Geométrico, con razón ×4", "Alternante entre pares e impares", "No tiene ningún patrón"],
+        respuesta: "Aritmético, con diferencia constante +4",
+        explicacion: "Cada término es el anterior más 4: 5−1=4, 9−5=4, 13−9=4, 17−13=4 — diferencia constante.",
+      },
+      {
+        pregunta: "En la secuencia de posiciones pares 2, 6, 18, 54, ¿qué tipo de patrón es?",
+        opciones: ["Geométrico, con razón constante ×3", "Aritmético, con diferencia +4", "Alternante", "No tiene patrón"],
+        respuesta: "Geométrico, con razón constante ×3",
+        explicacion: "Cada término es el anterior multiplicado por 3: 6/2=3, 18/6=3, 54/18=3 — razón constante.",
+      },
+      {
+        pregunta: "¿Cómo se resuelve un patrón compuesto de dos reglas?",
+        opciones: [
+          "Separando la secuencia en posiciones impares y pares, y buscando el patrón de cada una por separado",
+          "Buscando una sola regla que explique todos los términos juntos",
+          "Es imposible resolverlo sin más información",
+          "Promediando todos los términos",
+        ],
+        respuesta: "Separando la secuencia en posiciones impares y pares, y buscando el patrón de cada una por separado",
+        explicacion: "Un patrón compuesto mezcla dos reglas distintas — separarlas por posición (impar/par) revela cada regla individual.",
+      },
+      {
+        pregunta: "¿Puede una de las dos reglas ser aritmética y la otra geométrica, dentro del mismo patrón compuesto?",
+        opciones: [
+          "Sí, cada posición (impar o par) puede seguir un tipo de regla distinto",
+          "No, las dos reglas siempre tienen que ser del mismo tipo",
+          "Solo si la secuencia tiene menos de 4 términos",
+          "No, un patrón compuesto siempre es aritmético",
+        ],
+        respuesta: "Sí, cada posición (impar o par) puede seguir un tipo de regla distinto",
+        explicacion: "Es justamente el caso de este ejemplo: posiciones impares aritméticas (+4), posiciones pares geométricas (×3).",
+      },
+    ],
+  },
+  {
+    slug: "enigmia-clase-deduccion-por-eliminacion",
+    categoria: "deduccion",
+    orden: 3,
+    requierePro: true,
+    nombre: "Deducción por eliminación",
+    descripcion: "Cuando ninguna pista apunta directo a la respuesta, pero cada una descarta una opción, la que sobrevive a todas es la conclusión.",
+    pasos: [
+      "La eliminación es una forma de deducción indirecta: en vez de probar que algo ES cierto, se prueba que todas las demás opciones NO lo son.",
+      "Cada pista descarta exactamente un candidato — no hace falta que ninguna pista mencione a la respuesta correcta.",
+      "Si al aplicar todas las pistas queda un solo candidato sin descartar, esa es la conclusión — con la misma certeza que si una pista lo hubiera confirmado directamente.",
+      "Este método funciona porque las opciones son mutuamente excluyentes: si no puede ser ninguna de las otras, tiene que ser la que queda.",
+    ],
+    visuales: [
+      {
+        tipo: "enigmia.eliminacion",
+        candidatos: ["Bruno", "Elena", "Marco", "Sofía"],
+        descartes: [
+          { candidato: "Bruno", motivo: "no llegó tarde esa noche" },
+          { candidato: "Marco", motivo: "no tiene el pelo castaño" },
+          { candidato: "Sofía", motivo: "no estaba en el edificio esa noche" },
+        ],
+        despuesDePaso: 1,
+        titulo: "¿Quién queda tras descartar a los otros tres?",
+      },
+    ],
+    quiz: [
+      {
+        pregunta: "Bruno no llegó tarde. Marco no tiene el pelo castaño. Sofía no estaba en el edificio. Entre Bruno, Elena, Marco y Sofía, ¿quién queda como el único candidato posible?",
+        opciones: ["Elena", "Bruno", "Marco", "Sofía"],
+        respuesta: "Elena",
+        explicacion: "Las tres pistas descartan a Bruno, Marco y Sofía — el único candidato que no se descarta es Elena.",
+      },
+      {
+        pregunta: "¿Qué prueba la eliminación, a diferencia de una deducción directa?",
+        opciones: [
+          "Que todas las opciones excepto una NO son ciertas, en vez de probar directamente cuál SÍ lo es",
+          "Que la respuesta es siempre la primera opción",
+          "Que ninguna pista puede usarse dos veces",
+          "Que hace falta una pista que confirme la respuesta",
+        ],
+        respuesta: "Que todas las opciones excepto una NO son ciertas, en vez de probar directamente cuál SÍ lo es",
+        explicacion: "Es un razonamiento indirecto: se descarta todo lo que NO puede ser, y lo que sobrevive es la conclusión.",
+      },
+      {
+        pregunta: "¿Por qué funciona la eliminación cuando las opciones son mutuamente excluyentes?",
+        opciones: [
+          "Porque si ninguna de las otras puede ser la respuesta, la que queda tiene que serlo",
+          "Porque las opciones se pueden repetir",
+          "Porque siempre hay más de una respuesta posible",
+          "No funciona, hace falta una pista directa",
+        ],
+        respuesta: "Porque si ninguna de las otras puede ser la respuesta, la que queda tiene que serlo",
+        explicacion: "Si exactamente una de las opciones es correcta, y se descartan todas menos una, esa una es forzosamente la correcta.",
+      },
+      {
+        pregunta: "¿Hace falta que alguna pista mencione directamente al candidato correcto?",
+        opciones: [
+          "No, alcanza con que las pistas descarten a todos los demás",
+          "Sí, siempre hace falta una pista directa",
+          "Solo si hay más de 4 candidatos",
+          "Solo si las pistas son ambiguas",
+        ],
+        respuesta: "No, alcanza con que las pistas descarten a todos los demás",
+        explicacion: "La eliminación funciona incluso sin ninguna pista directa — el candidato que sobrevive a todos los descartes es la respuesta.",
+      },
+      {
+        pregunta: "Si en el ejemplo una cuarta pista descartara también a Elena, ¿qué pasaría?",
+        opciones: [
+          "No quedaría ningún candidato posible — habría un error en las pistas o en la lista de candidatos",
+          "La respuesta seguiría siendo Elena de todas formas",
+          "Se agregaría un candidato nuevo automáticamente",
+          "No cambiaría nada",
+        ],
+        respuesta: "No quedaría ningún candidato posible — habría un error en las pistas o en la lista de candidatos",
+        explicacion: "Si se descarta a todos los candidatos, algo está mal planteado: la respuesta correcta tiene que sobrevivir a las pistas verdaderas.",
+      },
+    ],
+  },
+  {
+    slug: "enigmia-clase-repeticion-espaciada-y-recuerdo-activo",
+    categoria: "memoria",
+    orden: 2,
+    requierePro: true,
+    nombre: "Repetición espaciada y recuerdo activo",
+    descripcion: "Repasar un dato en intervalos cada vez más largos, y probarte a ti mismo en vez de releer, multiplica cuánto tiempo lo recuerdas.",
+    pasos: [
+      "La repetición espaciada consiste en repasar un dato en intervalos cada vez más largos, en vez de repasarlo todos los días seguidos.",
+      "Un patrón simple es duplicar el intervalo cada vez: repasas al día 1, después al día 2, después al día 4, y así — cada repaso hace que el siguiente pueda esperar más.",
+      'El recuerdo activo consiste en probarte a ti mismo ("¿qué era esto?") antes de mirar la respuesta, en vez de solo releer el material — cuesta más en el momento, pero se recuerda mejor después.',
+      "Combinar las dos técnicas (espaciar los repasos y probarte activamente en cada uno) es lo que más multiplica cuánto tiempo se recuerda un dato.",
+    ],
+    visuales: [
+      { tipo: "enigmia.secuencia", modo: "geometrica", primerTermino: 1, paso: 2, cantidad: 5, despuesDePaso: 1, titulo: "Intervalos de repaso que se duplican: día 1, 2, 4, 8, 16" },
+      {
+        tipo: "cuadros",
+        despuesDePaso: 2,
+        titulo: "Recuerdo activo vs. releer",
+        cuadros: [
+          { texto: "Releer: mirar el material de nuevo, de principio a fin, sin ponerte a prueba.", resaltar: "Se siente fácil, pero se recuerda poco" },
+          { texto: "Recuerdo activo: taparte la respuesta e intentar recordarla antes de mirarla.", resaltar: "Cuesta más en el momento, se recuerda mucho más después" },
+        ],
+      },
+    ],
+    quiz: [
+      {
+        pregunta: "Si el primer repaso es al día 1 y cada intervalo se duplica, ¿en qué día cae el quinto repaso?",
+        opciones: ["16", "8", "10", "32"],
+        respuesta: "16",
+        explicacion: "1, 2, 4, 8, 16: cada intervalo es el doble del anterior — el quinto término de esa secuencia geométrica es 16.",
+      },
+      {
+        pregunta: "¿Cuál es la razón constante de la secuencia de intervalos 1, 2, 4, 8, 16?",
+        opciones: ["×2", "+2", "×4", "+1"],
+        respuesta: "×2",
+        explicacion: "Cada intervalo es el doble del anterior: 2/1=2, 4/2=2, 8/4=2, 16/8=2 — razón constante ×2.",
+      },
+      {
+        pregunta: "¿Qué es el recuerdo activo?",
+        opciones: ["Probarte a ti mismo antes de mirar la respuesta, en vez de solo releer", "Repasar el material todos los días sin excepción", "Escribir el material una sola vez", "Escuchar el material en voz alta"],
+        respuesta: "Probarte a ti mismo antes de mirar la respuesta, en vez de solo releer",
+        explicacion: "El recuerdo activo obliga a la mente a recuperar el dato por sí misma, lo que lo fija mucho mejor que solo releerlo.",
+      },
+      {
+        pregunta: "¿Por qué repasar en intervalos cada vez más largos (en vez de todos los días) ayuda a recordar más tiempo?",
+        opciones: [
+          "Porque cada repaso exitoso demuestra que el dato ya está más fijo, y puede esperar más antes del siguiente repaso",
+          "Porque repasar todos los días está prohibido",
+          "Porque los intervalos largos hacen el dato más corto",
+          "Porque no importa cuándo se repasa",
+        ],
+        respuesta: "Porque cada repaso exitoso demuestra que el dato ya está más fijo, y puede esperar más antes del siguiente repaso",
+        explicacion: "Espaciar los repasos aprovecha que, cuanto mejor fijado está un dato, más tiempo tarda en olvidarse — no hace falta repasarlo todos los días.",
+      },
+      {
+        pregunta: "¿Qué combinación multiplica más cuánto tiempo se recuerda un dato?",
+        opciones: ["Espaciar los repasos Y probarte activamente en cada uno", "Solo releer todos los días", "Solo espaciar los repasos, sin probarte", "Ninguna combinación cambia nada"],
+        respuesta: "Espaciar los repasos Y probarte activamente en cada uno",
+        explicacion: "Las dos técnicas se refuerzan: espaciar aprovecha la curva del olvido, y el recuerdo activo fija el dato mejor en cada repaso.",
+      },
+    ],
+  },
+  {
+    slug: "enigmia-clase-bucles-y-repeticion",
+    categoria: "computacional",
+    orden: 2,
+    requierePro: true,
+    nombre: "Bucles y repetición",
+    descripcion: "Un bucle repite el mismo bloque de instrucciones varias veces — entender cuántas veces se repite y sobre qué valor es la clave para trazarlo bien.",
+    pasos: [
+      "Un bucle es una instrucción que se repite un número de veces, o hasta que se cumple una condición — en vez de escribir la misma instrucción una y otra vez, el bucle la repite por ti.",
+      "Cada repetición del bucle se aplica sobre el resultado de la repetición anterior, nunca sobre el valor original con el que empezó el bucle.",
+      "Para trazar un bucle a mano, simula cada repetición una por una, anotando el valor después de cada una — es exactamente lo mismo que escribir la instrucción repetida esa cantidad de veces.",
+    ],
+    visuales: [
+      {
+        tipo: "enigmia.algoritmo",
+        inicial: 0,
+        pasos: [
+          { tipo: "sumar", valor: 2 },
+          { tipo: "sumar", valor: 2 },
+          { tipo: "sumar", valor: 2 },
+          { tipo: "sumar", valor: 2 },
+        ],
+        despuesDePaso: 1,
+        titulo: "x=0: bucle que repite 'x = x + 2' cuatro veces",
+      },
+      {
+        tipo: "cuadros",
+        despuesDePaso: 2,
+        titulo: "Por qué el bucle no vuelve a arrancar del valor original",
+        cuadros: [{ texto: "Cada vuelta del bucle parte del resultado de la vuelta anterior, no de x=0 de nuevo.", resaltar: "Por eso 4 repeticiones de +2 dan 8, no 2" }],
+      },
+    ],
+    quiz: [
+      {
+        pregunta: "x=0. Un bucle repite 'x = x + 2' cuatro veces. ¿Cuánto vale x al final?",
+        opciones: ["8", "2", "6", "10"],
+        respuesta: "8",
+        explicacion: "0+2=2, 2+2=4, 4+2=6, 6+2=8 — cuatro repeticiones de +2, cada una sobre el resultado anterior.",
+      },
+      {
+        pregunta: "¿Cuántas veces se repitió la instrucción para llegar de 0 a 8 sumando de a 2?",
+        opciones: ["4", "2", "8", "1"],
+        respuesta: "4",
+        explicacion: "0→2→4→6→8 son cuatro pasos de +2 — la misma cantidad que se repitió el bucle.",
+      },
+      {
+        pregunta: "¿Sobre qué valor se aplica la segunda repetición de un bucle?",
+        opciones: ["Sobre el resultado de la primera repetición", "Sobre el valor original con el que empezó el bucle", "Sobre un valor al azar", "Sobre el resultado de la última repetición"],
+        respuesta: "Sobre el resultado de la primera repetición",
+        explicacion: "Cada repetición encadena con la anterior — la segunda parte de donde dejó la primera, no del valor inicial.",
+      },
+      {
+        pregunta: "¿Qué es, en esencia, un bucle?",
+        opciones: [
+          "Una instrucción que se repite un número de veces o hasta que se cumple una condición",
+          "Una instrucción que se ejecuta una sola vez",
+          "Un tipo de variable que guarda texto",
+          "Una forma de saltarse pasos de un algoritmo",
+        ],
+        respuesta: "Una instrucción que se repite un número de veces o hasta que se cumple una condición",
+        explicacion: "Esa es la definición central de un bucle: repetición controlada, ya sea por una cantidad fija o por una condición.",
+      },
+      {
+        pregunta: "¿Por qué trazar un bucle a mano da el mismo resultado que escribir la instrucción repetida esa cantidad de veces?",
+        opciones: [
+          "Porque un bucle ES, en el fondo, la misma instrucción repetida esa cantidad de veces",
+          "Porque son dos cosas completamente distintas",
+          "Porque trazar a mano siempre da un resultado distinto",
+          "Porque los bucles no se pueden trazar a mano",
+        ],
+        respuesta: "Porque un bucle ES, en el fondo, la misma instrucción repetida esa cantidad de veces",
+        explicacion: 'Un bucle es un atajo para no repetir la instrucción a mano — trazarlo a mano es "desenrollar" ese atajo, paso por paso.',
+      },
+    ],
+  },
+  {
+    slug: "enigmia-clase-depuracion-por-que-falla-un-algoritmo",
+    categoria: "computacional",
+    orden: 3,
+    requierePro: true,
+    nombre: "Depuración: por qué falla un algoritmo",
+    descripcion: "Cuando un algoritmo no da el resultado esperado, el error más común no está en los pasos en sí, sino en el orden en que se ejecutan.",
+    pasos: [
+      'Depurar es encontrar por qué un algoritmo no da el resultado esperado — casi nunca es un paso "mal escrito", sino un paso en el orden equivocado.',
+      "Para depurar, ejecuta el algoritmo paso a paso (traza a mano) y compara el valor después de cada paso con lo que esperabas — el primer paso donde se separan es donde está el error.",
+      "Si los mismos pasos, en otro orden, dan el resultado esperado, el bug era el orden — no hace falta cambiar ninguna operación, solo reordenarlas.",
+    ],
+    visuales: [
+      {
+        tipo: "enigmia.algoritmo",
+        inicial: 10,
+        pasos: [
+          { tipo: "dividir", valor: 2 },
+          { tipo: "restar", valor: 4 },
+        ],
+        despuesDePaso: 1,
+        titulo: "Algoritmo con bug: divide primero, después resta",
+      },
+      {
+        tipo: "enigmia.algoritmo",
+        inicial: 10,
+        pasos: [
+          { tipo: "restar", valor: 4 },
+          { tipo: "dividir", valor: 2 },
+        ],
+        despuesDePaso: 1,
+        titulo: "Algoritmo corregido: resta primero, después divide",
+      },
+    ],
+    quiz: [
+      {
+        pregunta: "El resultado esperado es 3. El algoritmo (dividir entre 2, después restar 4), empezando en 10, da 1. ¿Cuál es el bug?",
+        opciones: ["Los pasos están en el orden equivocado", "Falta un paso adicional", "El valor inicial está mal", "No hay ningún bug, 1 es correcto"],
+        respuesta: "Los pasos están en el orden equivocado",
+        explicacion: "10÷2=5, 5−4=1 (el algoritmo con bug). Restar primero y dividir después da el resultado esperado.",
+      },
+      {
+        pregunta: "¿Cuál es el resultado del algoritmo corregido (restar 4, después dividir entre 2), empezando en 10?",
+        opciones: ["3", "1", "6", "2"],
+        respuesta: "3",
+        explicacion: "10−4=6, 6÷2=3 — el orden corregido da el resultado esperado.",
+      },
+      {
+        pregunta: "Al depurar un algoritmo, ¿qué paso señala dónde está el error?",
+        opciones: [
+          "El primer paso donde el valor trazado a mano se separa del valor esperado",
+          "Siempre el último paso",
+          "Siempre el primer paso, sin importar el resultado",
+          "Ningún paso lo señala, hay que adivinar",
+        ],
+        respuesta: "El primer paso donde el valor trazado a mano se separa del valor esperado",
+        explicacion: "Comparar paso a paso contra lo esperado ubica exactamente dónde empieza a desviarse — ahí está el bug.",
+      },
+      {
+        pregunta: "Si reordenar los mismos pasos arregla el resultado, ¿qué significa eso sobre el bug?",
+        opciones: [
+          "El bug era el orden — no hace falta cambiar ninguna operación",
+          "El bug estaba en una operación mal escrita",
+          "No había ningún bug real",
+          "Hay que agregar un paso nuevo",
+        ],
+        respuesta: "El bug era el orden — no hace falta cambiar ninguna operación",
+        explicacion: "Las mismas operaciones, en otro orden, dando el resultado esperado confirman que el problema nunca fue QUÉ se hacía, sino CUÁNDO.",
+      },
+    ],
+  },
+];

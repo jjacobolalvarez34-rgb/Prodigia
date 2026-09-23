@@ -41,4 +41,28 @@ export interface VisualEnigmiaAlgoritmo extends VisualBase {
   variable?: string;
 }
 
-export type VisualEnigmia = VisualEnigmiaSecuencia | VisualEnigmiaCadena | VisualEnigmiaAgrupacion | VisualEnigmiaAlgoritmo;
+// Eliminación por descarte (Deducción): candidatos que se van descartando
+// uno a uno por un motivo, hasta que queda uno solo — la Técnica rápida
+// "eliminacion-por-descarte" y la Clase "deduccion-por-eliminacion"
+// (2026-09-22, expansión de contenido) comparten este primitivo.
+export interface VisualEnigmiaEliminacion extends VisualBase {
+  tipo: "enigmia.eliminacion";
+  candidatos: string[];
+  descartes: { candidato: string; motivo: string }[];
+}
+
+// Método de loci (Memoria): cada elemento a memorizar asociado a un lugar
+// de un recorrido conocido, revelado un par a la vez.
+export interface VisualEnigmiaLoci extends VisualBase {
+  tipo: "enigmia.loci";
+  lugares: string[];
+  items: string[];
+}
+
+export type VisualEnigmia =
+  | VisualEnigmiaSecuencia
+  | VisualEnigmiaCadena
+  | VisualEnigmiaAgrupacion
+  | VisualEnigmiaAlgoritmo
+  | VisualEnigmiaEliminacion
+  | VisualEnigmiaLoci;

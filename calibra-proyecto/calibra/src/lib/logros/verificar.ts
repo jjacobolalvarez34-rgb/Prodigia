@@ -552,8 +552,12 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
 
   let enigmiaCompletado = false;
   if (tiposNecesarios.has("mundo_completado_enigmia")) {
-    const { data: row } = await supabase.from("logic_skill_levels").select("nivel").eq("user_id", userId).maybeSingle();
-    enigmiaCompletado = (row?.nivel ?? 0) >= 10;
+    // Enigmia calibra por categoría desde 0205_enigmia_niveles_por_categoria.sql
+    // (memoria/patrones/deduccion/computacional) — "completado" ahora
+    // exige nivel 10 en las 4, mismo criterio que ya usan Quimia/Anatomía/
+    // Melodía con sus propios sub-tipos de skill_levels.
+    const { data: rows } = await supabase.from("logic_skill_levels").select("nivel").eq("user_id", userId);
+    enigmiaCompletado = (rows ?? []).length === 4 && (rows ?? []).every((r) => r.nivel >= 10);
   }
 
   const desbloqueadosAhora: Achievement[] = [];

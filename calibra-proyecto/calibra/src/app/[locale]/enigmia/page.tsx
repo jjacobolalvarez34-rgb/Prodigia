@@ -6,7 +6,6 @@ import { NOMBRE_CATEGORIA_ENIGMIA, type CategoriaEnigmia } from "@/types/databas
 import Header from "@/components/Header";
 import FondoMundo from "@/components/FondoMundo";
 import FondoCursorMundo from "@/components/FondoCursorMundo";
-import ProgressDial from "@/components/ProgressDial";
 import AccionMundo from "@/components/AccionMundo";
 import NivelMundoBadge from "@/components/NivelMundoBadge";
 import NivelMundoProgreso from "@/components/NivelMundoProgreso";
@@ -30,13 +29,15 @@ export default async function EnigmiaHomePage() {
 
   const hoyIso = new Date().toISOString().slice(0, 10);
 
-  const [{ data: nivelRow }, { data: dailyHoy }, { data: mundoProgreso }] = await Promise.all([
-    supabase.from("logic_skill_levels").select("nivel").eq("user_id", user.id).maybeSingle(),
+  const [{ data: nivelRows }, { data: dailyHoy }, { data: mundoProgreso }] = await Promise.all([
+    // Un nivel por categoría desde 0205_enigmia_niveles_por_categoria.sql
+    // (antes una sola fila global) — mismo patrón que Quimia/Anatomía.
+    supabase.from("logic_skill_levels").select("categoria, nivel").eq("user_id", user.id),
     supabase.from("daily_progress").select("xp_ganado").eq("user_id", user.id).eq("fecha", hoyIso).maybeSingle(),
     supabase.rpc("sincronizar_progreso_mundo", { p_world: "enigmia" }).returns<SincronizarProgresoRow[]>().maybeSingle(),
   ]);
 
-  const nivel = nivelRow?.nivel ?? 1;
+  const nivelDe = (cat: CategoriaEnigmia) => nivelRows?.find((r) => r.categoria === cat)?.nivel ?? 1;
   const nivelMundo = mundoProgreso?.nivel_mundo ?? 1;
   const progresoMundo = {
     puntos: mundoProgreso?.puntos_mundo ?? 0,
@@ -55,19 +56,14 @@ export default async function EnigmiaHomePage() {
       <FondoCursorMundo mundo="enigmia" />
       <Header autenticado />
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR }}>
-              Enigmia
-            </span>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
-            <div className="mt-2">
-              <NivelMundoBadge nombreMundo="Enigmia" nivel={nivelMundo} colorHex={COLOR} />
-            </div>
+        <div>
+          <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR }}>
+            Enigmia
+          </span>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
+          <div className="mt-2">
+            <NivelMundoBadge nombreMundo="Enigmia" nivel={nivelMundo} colorHex={COLOR} />
           </div>
-          <ProgressDial value={nivel} max={10} size={56} colorDesde={COLOR} colorHasta="#3FB88B">
-            <span className="font-mono text-lg font-bold text-foreground">{nivel}</span>
-          </ProgressDial>
         </div>
 
         <NivelMundoProgreso nombreMundo="Enigmia" colorHex={COLOR} progreso={progresoMundo} />
@@ -104,7 +100,7 @@ export default async function EnigmiaHomePage() {
                 key={cat}
                 nombre={NOMBRE_CATEGORIA_ENIGMIA[cat]}
                 Icono={IconLogica}
-                badge={{ tipo: "nivel", nivel }}
+                badge={{ tipo: "nivel", nivel: nivelDe(cat) }}
                 colorHex={COLOR}
               />
             ))}

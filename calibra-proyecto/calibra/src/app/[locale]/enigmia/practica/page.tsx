@@ -48,15 +48,22 @@ export default async function EnigmiaPracticaPage({ searchParams }: Props) {
     }
   }
 
-  const [{ data: puzzles }, { data: nivelRow }, { data: profile }] = await Promise.all([
+  const [{ data: puzzles }, { data: nivelRows }, { data: profile }] = await Promise.all([
     supabase.from("logic_puzzles").select("id, tipo, dificultad, contenido, respuesta"),
-    supabase.from("logic_skill_levels").select("nivel").eq("user_id", user.id).maybeSingle(),
+    // Un nivel por categoría desde 0205_enigmia_niveles_por_categoria.sql
+    // (antes era una sola fila global) — hasta 4 filas, una por categoría.
+    supabase.from("logic_skill_levels").select("categoria, nivel").eq("user_id", user.id),
     supabase
       .from("profiles")
       .select("escudos_extra_pendientes, boost_multiplicador_pendiente, hielos_disponibles, tiempos_extra_disponibles")
       .eq("id", user.id)
       .single(),
   ]);
+
+  const nivelesIniciales = CATEGORIAS_VALIDAS.reduce((acc, cat) => {
+    acc[cat] = nivelRows?.find((r) => r.categoria === cat)?.nivel ?? 1;
+    return acc;
+  }, {} as Record<CategoriaEnigmia, number>);
 
   // Ver nota en /practica/page.tsx: el boost se apaga recién al cerrar
   // la partida (/api/enigmia/finish), no acá.
@@ -71,7 +78,7 @@ export default async function EnigmiaPracticaPage({ searchParams }: Props) {
       <Header autenticado />
       <EnigmiaPracticaClient
         puzzles={(puzzles ?? []) as LogicPuzzle[]}
-        nivelInicial={nivelRow?.nivel ?? 1}
+        nivelesIniciales={nivelesIniciales}
         escudosExtra={escudosExtra}
         hielosDisponibles={profile?.hielos_disponibles ?? 0}
         tiemposExtraDisponibles={profile?.tiempos_extra_disponibles ?? 0}

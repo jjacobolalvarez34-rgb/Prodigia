@@ -20,9 +20,19 @@ export default async function DiagnosticoEnigmiaPage({ searchParams }: Props) {
     redirect(destino);
   }
 
+  // Mismo criterio que Estadística/Naipia/Codia (ver docs/PARIDAD_MUNDOS.md,
+  // sección "Enigmia: niveles por categoría"): el diagnóstico calibra a
+  // fondo UNA categoría representativa — "patrones" (secuencia + patron
+  // en logic_puzzles.tipo, el banco con más contenido y la categoría que
+  // ya se usa como fallback general en el resto del código de Enigmia) —
+  // en vez de mezclar las 4 categorías en 8 preguntas (ni siquiera
+  // alcanzaría para calibrar ninguna con precisión). Las otras 3
+  // categorías arrancan en nivel 1 y suben solas jugando (ver guardar()
+  // en DiagnosticoEnigmiaClient.tsx).
   const { data: puzzles } = await supabase
     .from("logic_puzzles")
-    .select("id, tipo, dificultad, contenido, respuesta");
+    .select("id, tipo, dificultad, contenido, respuesta")
+    .in("tipo", ["secuencia", "patron"]);
 
   return (
     <>

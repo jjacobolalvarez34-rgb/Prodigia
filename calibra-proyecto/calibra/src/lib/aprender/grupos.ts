@@ -120,22 +120,43 @@ export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
   // de ese archivo).
   enigmia: {
     tecnicas: [
-      g("patrones", "Patrones", "Patterns", ["patron-numerico", "encontrar-intruso", "analogias"]),
-      g("deduccion", "Deducción", "Deduction", ["condicional-si-entonces"]),
-      g("memoria", "Memoria", "Memory", ["tecnicas-de-memoria"]),
-      g("computacional", "Pensamiento computacional", "Computational thinking", ["pensar-como-algoritmo"]),
+      g("patrones", "Patrones", "Patterns", ["patron-numerico", "encontrar-intruso", "analogias", "enigmia-tecnica-patrones-alternantes"]),
+      g("deduccion", "Deducción", "Deduction", [
+        "condicional-si-entonces",
+        "enigmia-tecnica-silogismos-dos-premisas",
+        "enigmia-tecnica-negacion-ningun-x-es-y",
+        "enigmia-tecnica-eliminacion-por-descarte",
+      ]),
+      g("memoria", "Memoria", "Memory", [
+        "tecnicas-de-memoria",
+        "enigmia-tecnica-metodo-de-loci",
+        "enigmia-tecnica-agrupar-por-categoria",
+        "enigmia-tecnica-visualizar-en-vez-de-repetir",
+      ]),
+      g("computacional", "Pensamiento computacional", "Computational thinking", [
+        "pensar-como-algoritmo",
+        "enigmia-tecnica-trazar-un-bucle-a-mano",
+        "enigmia-tecnica-condicion-de-corte",
+        "enigmia-tecnica-simplificar-antes-de-ejecutar",
+      ]),
     ],
     clases: [
       g("patrones", "Patrones", "Patterns", [
         "enigmia-clase-secuencias-aritmeticas-geometricas",
         "enigmia-clase-patrones-no-numericos",
+        "enigmia-clase-patrones-compuestos-dos-reglas",
       ]),
       g("deduccion", "Deducción", "Deduction", [
         "enigmia-clase-proposiciones-y-contrapositiva",
         "enigmia-clase-silogismos-simples",
+        "enigmia-clase-deduccion-por-eliminacion",
       ]),
-      g("memoria", "Memoria", "Memory", ["enigmia-clase-chunking-y-asociacion"]),
-      g("computacional", "Pensamiento computacional", "Computational thinking", ["enigmia-clase-que-es-un-algoritmo"]),
+      g("memoria", "Memoria", "Memory", ["enigmia-clase-chunking-y-asociacion", "enigmia-clase-repeticion-espaciada-y-recuerdo-activo"]),
+      g("computacional", "Pensamiento computacional", "Computational thinking", [
+        "enigmia-clase-que-es-un-algoritmo",
+        "enigmia-clase-bucles-y-repeticion",
+        "enigmia-clase-depuracion-por-que-falla-un-algoritmo",
+      ]),
     ],
   },
   // Mundos originales que tenían UNA sola unidad (sin panel de temas): se

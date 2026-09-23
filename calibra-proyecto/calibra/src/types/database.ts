@@ -560,7 +560,11 @@ export interface LogicPuzzle {
 
 export interface LogicSkillLevel {
   user_id: string;
-  nivel: number; // 1-10, calibración única (no por tipo de acertijo)
+  // Desde 0205_enigmia_niveles_por_categoria.sql: calibra por categoría
+  // (memoria/patrones/deduccion/computacional), como el resto de los
+  // mundos — PK real es (user_id, categoria), no user_id solo.
+  categoria: CategoriaEnigmia;
+  nivel: number; // 1-10
   racha_actual: number;
   updated_at: string;
 }

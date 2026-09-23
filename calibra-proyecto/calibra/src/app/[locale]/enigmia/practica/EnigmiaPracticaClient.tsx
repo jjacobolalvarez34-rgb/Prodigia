@@ -65,7 +65,9 @@ export interface DueloGenericoInfo {
 
 interface Props {
   puzzles: LogicPuzzle[];
-  nivelInicial: number;
+  // Un nivel por categoría (0205_enigmia_niveles_por_categoria.sql) —
+  // reemplaza al nivelInicial único de antes.
+  nivelesIniciales: Record<CategoriaEnigmia, number>;
   escudosExtra: number;
   hielosDisponibles: number;
   tiemposExtraDisponibles: number;
@@ -80,7 +82,7 @@ interface Props {
 
 export default function EnigmiaPracticaClient({
   puzzles,
-  nivelInicial,
+  nivelesIniciales,
   escudosExtra,
   hielosDisponibles,
   tiemposExtraDisponibles,
@@ -234,7 +236,7 @@ export default function EnigmiaPracticaClient({
         <EnigmiaSprintRunner
           puzzles={puzzles}
           startedAt={startedAtPerf}
-          nivelInicial={nivelInicial}
+          nivelesIniciales={nivelesIniciales}
           escudosExtra={escudosExtra}
           hielosIniciales={hielosDisponibles}
           tiemposExtraIniciales={tiemposExtraDisponibles}

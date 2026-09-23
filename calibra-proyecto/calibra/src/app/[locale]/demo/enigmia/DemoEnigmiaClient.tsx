@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { LogicPuzzle } from "@/types/database";
+import type { CategoriaEnigmia, LogicPuzzle } from "@/types/database";
 import EnigmiaSprintRunner from "@/app/[locale]/enigmia/practica/EnigmiaSprintRunner";
 import FlujoResultado from "@/components/landing/FlujoResultado";
 import FlujoTour from "@/components/landing/FlujoTour";
@@ -11,6 +11,10 @@ import FlujoElegirMundos from "@/components/landing/FlujoElegirMundos";
 const TOTAL_DEMO = 5;
 const DURACION_DEMO_MS = 30_000;
 const COLOR_ENIGMIA = "#0E9F6E";
+// Landing pública, sin cuenta — no hay logic_skill_levels que leer todavía,
+// arranca en nivel 1 en las 4 categorías (mismo criterio que un usuario
+// nuevo real antes de su primer diagnóstico).
+const NIVELES_DEMO: Record<CategoriaEnigmia, number> = { memoria: 1, patrones: 1, deduccion: 1, computacional: 1 };
 
 type Fase = "sprint" | "resultado" | "tour" | "promo" | "mundos";
 
@@ -47,7 +51,7 @@ export default function DemoEnigmiaClient({ puzzles }: Props) {
     <EnigmiaSprintRunner
       puzzles={puzzles}
       startedAt={startedAt}
-      nivelInicial={1}
+      nivelesIniciales={NIVELES_DEMO}
       escudosExtra={0}
       totalPreguntas={TOTAL_DEMO}
       duracionMs={DURACION_DEMO_MS}

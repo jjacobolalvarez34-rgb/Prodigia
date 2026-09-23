@@ -2071,6 +2071,15 @@
         "pasoCondicional": "si {variable} {comparacion} {umbral}",
         "ramaVerdadero": "se cumple",
         "ramaFalso": "no se cumple"
+      },
+      "eliminacion": {
+        "etiqueta": "Eliminación por descarte",
+        "descartado": "{candidato} descartado: {motivo}",
+        "restante": "Queda: {candidato}"
+      },
+      "loci": {
+        "etiqueta": "Método de loci",
+        "resultado": "{lugar}: {item}"
       }
     }
   },

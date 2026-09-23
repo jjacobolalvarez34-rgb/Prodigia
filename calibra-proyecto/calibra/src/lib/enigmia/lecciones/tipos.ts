@@ -26,3 +26,23 @@ export interface ClaseEnigmia {
   visuales: VisualLeccion[];
   quiz: PreguntaLeccionEnigmia[];
 }
+
+// Una Técnica NUEVA de Enigmia (2026-09-22, expansión "está muy vacío"):
+// mismo formato de contenido que ClaseEnigmia (pasos + visuales + quiz),
+// pero `requierePro: false` (gratis, atajo rápido) y va a
+// `logic_techniques` como INSERT nuevo, igual que las 6 Técnicas
+// históricas de 0015/0020 pero CON `visuales` (esas no tenían). A
+// diferencia de las Clases (curso progresivo, enseña el concepto desde
+// cero), una Técnica es un atajo puntual — más corta, sin necesidad de
+// dependencia con la anterior.
+export interface TecnicaEnigmia {
+  slug: string;
+  categoria: CategoriaEnigmia;
+  orden: number;
+  requierePro: false;
+  nombre: string;
+  descripcion: string;
+  pasos: string[];
+  visuales: VisualLeccion[];
+  quiz: PreguntaLeccionEnigmia[];
+}

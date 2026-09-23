@@ -211,8 +211,11 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
       const { data: row } = await supabase.from("skill_levels").select("nivel").eq("user_id", userId).eq("problem_type", "geografia").maybeSingle();
       mundoCompletado.set(mundo, (row?.nivel ?? 0) >= 10);
     } else if (mundo === "enigmia") {
-      const { data: row } = await supabase.from("logic_skill_levels").select("nivel").eq("user_id", userId).maybeSingle();
-      mundoCompletado.set(mundo, (row?.nivel ?? 0) >= 10);
+      // Enigmia calibra por categoría desde 0205_enigmia_niveles_por_categoria.sql
+      // — "completado" exige nivel 10 en las 4 (memoria/patrones/deduccion/
+      // computacional), mismo criterio que Quimia/Anatomía/Melodía.
+      const { data: rows } = await supabase.from("logic_skill_levels").select("nivel").eq("user_id", userId);
+      mundoCompletado.set(mundo, (rows ?? []).length === 4 && (rows ?? []).every((r) => r.nivel >= 10));
     } else if (mundo === "anatomia") {
       const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_ANATOMIA);
       mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_ANATOMIA.length && (rows ?? []).every((r) => r.nivel >= 10));

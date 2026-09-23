@@ -2,12 +2,20 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { calcularXpDetallado, tiempoEsperadoMs } from "@/lib/practica/formulas";
 import { respuestaError } from "@/lib/api/respuestaError";
+import type { CategoriaEnigmia } from "@/types/database";
 
 interface Body {
   puzzle_id: string;
   dificultad: number;
   correct: boolean;
   time_ms: number;
+  // Enigmia calibra por categoría desde 0205_enigmia_niveles_por_categoria.sql
+  // (antes era una fila global) — el cliente manda la categoría del
+  // acertijo respondido (CATEGORIA_DE_TIPO[puzzle.tipo]) para que el RPC
+  // sepa qué fila de logic_skill_levels actualizar. Mismo nivel de
+  // confianza que ya se le daba a `dificultad`, que también viene del
+  // cliente desde el día 1 de este endpoint.
+  categoria: CategoriaEnigmia;
   protegido?: boolean;
 }
 
@@ -44,6 +52,7 @@ export async function POST(request: Request) {
     p_dificultad: body.dificultad,
     p_correct: body.correct,
     p_time_ms: body.time_ms,
+    p_categoria: body.categoria,
     p_protegido: body.protegido ?? false,
   });
 

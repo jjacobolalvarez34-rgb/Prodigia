@@ -161,3 +161,43 @@ export function trazarAlgoritmo(inicial: number, pasos: PasoAlgoritmoEntrada[]):
   });
   return { inicial, pasos: trazados, final: actual };
 }
+
+// ============================================================
+// Deducción: eliminación por descarte — se van descartando candidatos uno
+// a uno por un motivo concreto, hasta que queda uno solo (la conclusión).
+// ============================================================
+
+export interface DatosEliminacion {
+  candidatos: string[];
+  descartes: { candidato: string; motivo: string }[];
+  // null si el descarte no deja exactamente un candidato (dato mal armado).
+  restante: string | null;
+}
+
+export function resolverPorEliminacion(
+  candidatos: string[],
+  descartes: { candidato: string; motivo: string }[]
+): DatosEliminacion {
+  const descartados = new Set(descartes.map((d) => d.candidato));
+  const restantes = candidatos.filter((c) => !descartados.has(c));
+  return { candidatos, descartes, restante: restantes.length === 1 ? restantes[0] : null };
+}
+
+// ============================================================
+// Memoria: método de loci — asocia cada elemento a memorizar con un lugar
+// de un recorrido conocido, en el mismo orden (zip de las dos listas).
+// ============================================================
+
+export interface DatosLoci {
+  lugares: string[];
+  items: string[];
+  pares: { lugar: string; item: string }[];
+}
+
+export function asociarLoci(lugares: string[], items: string[]): DatosLoci {
+  const cantidad = Math.min(lugares.length, items.length);
+  const lugaresUsados = lugares.slice(0, cantidad);
+  const itemsUsados = items.slice(0, cantidad);
+  const pares = lugaresUsados.map((lugar, i) => ({ lugar, item: itemsUsados[i] }));
+  return { lugares: lugaresUsados, items: itemsUsados, pares };
+}

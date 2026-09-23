@@ -6,10 +6,16 @@ import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { tiempoEsperadoMs } from "@/lib/practica/formulas";
-import type { LogicPuzzle } from "@/types/database";
+import type { CategoriaEnigmia, LogicPuzzle } from "@/types/database";
+import { filasDiagnostico } from "@/lib/enigmia/diagnostico";
 import AcertijoMemoria from "@/components/AcertijoMemoria";
 
 type Fase = "intro" | "diagnostico" | "guardando" | "resultado";
+
+// Ver el comentario completo en diagnostico/page.tsx: este diagnóstico
+// solo trae puzzles de "patrones" (secuencia+patron) — es la categoría
+// que se calibra a fondo. Las otras 3 arrancan en nivel 1.
+const CATEGORIA_DIAGNOSTICADA: CategoriaEnigmia = "patrones";
 
 const TOTAL_PREGUNTAS = 8;
 const NIVEL_INICIAL = 3;
@@ -107,9 +113,13 @@ export default function DiagnosticoEnigmiaClient({ puzzles, destino }: Props) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return;
-    await supabase
-      .from("logic_skill_levels")
-      .upsert({ user_id: user.id, nivel, racha_actual: 0 }, { onConflict: "user_id" });
+    // Inserta las 4 filas de una vez (0205_enigmia_niveles_por_categoria.sql
+    // ya no acepta una sola fila global): la categoría diagnosticada con
+    // el nivel real calculado arriba, las otras 3 en nivel 1 — para que
+    // existan desde el día uno y empiecen a subir jugando, sin bloquear
+    // ningún modo.
+    const filas = filasDiagnostico(user.id, CATEGORIA_DIAGNOSTICADA, nivel);
+    await supabase.from("logic_skill_levels").upsert(filas, { onConflict: "user_id,categoria" });
     await supabase.from("profiles").update({ onboarding_enigmia_completado: true }).eq("id", user.id);
   }
 
