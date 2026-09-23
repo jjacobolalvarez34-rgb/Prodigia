@@ -95,16 +95,9 @@
 -- Correr después de 0206_enigmia_mas_contenido.sql
 -- ============================================================
 
--- ---------- 1) Migración de datos ----------
-insert into public.skill_levels (user_id, problem_type, nivel, racha_actual, updated_at)
-select user_id, pt, nivel, racha_actual, updated_at
-from public.skill_levels, unnest(array['geografia_america', 'geografia_europa', 'geografia_africa', 'geografia_asia_oceania']) as pt
-where problem_type = 'geografia'
-on conflict (user_id, problem_type) do nothing;
-
-delete from public.skill_levels where problem_type = 'geografia';
-
--- ---------- 2) Check constraints: sumar los 4 problem_type nuevos ----------
+-- ---------- 1) Check constraints: sumar los 4 problem_type nuevos ----------
+-- (ANTES de migrar los datos: el insert de la sección 2 escribe filas con
+-- los problem_type nuevos, y el check viejo las rechazaba con 23514.)
 alter table public.skill_levels drop constraint if exists skill_levels_problem_type_check;
 alter table public.skill_levels add constraint skill_levels_problem_type_check
   check (problem_type in (
@@ -148,6 +141,16 @@ alter table public.attempts add constraint attempts_problem_type_check
     'naipia_hilo', 'naipia_ko', 'naipia_hiopt2', 'naipia_omega2', 'naipia_verdadero',
     'codia_sintaxis', 'codia_salida', 'codia_error', 'codia_estructuras'
   ));
+
+-- ---------- 2) Migración de datos ----------
+insert into public.skill_levels (user_id, problem_type, nivel, racha_actual, updated_at)
+select user_id, pt, nivel, racha_actual, updated_at
+from public.skill_levels, unnest(array['geografia_america', 'geografia_europa', 'geografia_africa', 'geografia_asia_oceania']) as pt
+where problem_type = 'geografia'
+on conflict (user_id, problem_type) do nothing;
+
+delete from public.skill_levels where problem_type = 'geografia';
+
 
 -- insertar_intento (RPC genérico security definer que escribe attempts +
 -- skill_levels para TODOS los mundos que calibran por problem_type, ver
