@@ -22,6 +22,7 @@ import { useDeteccionAbandono } from "@/lib/duelos/useDeteccionAbandono";
 import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
 import BotonRendirse from "@/components/duelos/BotonRendirse";
 import QuimiaSprintRunner from "./QuimiaSprintRunner";
+import TextoQuimica from "@/components/quimia/TextoQuimica";
 import { COLOR_QUIMIA } from "./colores";
 import { estadoResumenPartida } from "@/lib/practica/resumenPartida";
 
@@ -269,7 +270,7 @@ export default function QuimiaPracticaClient({ modo, nivelInicial, escudosExtra,
             <div className="flex flex-wrap gap-2">
               {errores.map((p, i) => (
                 <span key={i} className="rounded-full bg-surface-2 px-3 py-1 text-sm text-foreground">
-                  {p.respuesta}
+                  <TextoQuimica texto={p.respuesta} />
                 </span>
               ))}
             </div>

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { generarPreguntaQuimia, type ModoQuimia, type PreguntaQuimia } from "@/lib/practica/quimia";
 import { generarPreguntaOrganica, COMPUESTOS_ORGANICOS } from "@/lib/practica/quimicaOrganica";
 import MoleculaSVG from "@/components/quimia/MoleculaSVG";
+import TextoQuimica from "@/components/quimia/TextoQuimica";
 import { mulberry32 } from "@/lib/rng";
 import { reproducirTono } from "@/lib/sonido";
 import { useBonusTiempo } from "@/lib/practica/useBonusTiempo";
@@ -306,11 +307,11 @@ export default function QuimiaSprintRunner({
         padding="px-6 py-10"
       >
         {pregunta.diagramaId && (
-          <div className="flex justify-center overflow-x-auto py-1">
+          <div className="flex w-full justify-center py-1">
             <MoleculaSVG compuesto={COMPUESTOS_ORGANICOS.find((c) => c.id === pregunta.diagramaId)!} />
           </div>
         )}
-        <p className="text-center font-display text-lg font-bold text-foreground">{pregunta.enunciado}</p>
+        <p className="text-center font-display text-lg font-bold text-foreground"><TextoQuimica texto={pregunta.enunciado} /></p>
         <div className="grid w-full max-w-sm grid-cols-2 gap-2">
           {pregunta.opciones.map((op) => {
             const esElegida = seleccion === op;
@@ -328,7 +329,7 @@ export default function QuimiaSprintRunner({
                       : "border-border bg-background text-foreground"
                 }`}
               >
-                {op}
+                <TextoQuimica texto={op} />
               </button>
             );
           })}

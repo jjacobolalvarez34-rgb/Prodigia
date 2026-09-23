@@ -1,8 +1,15 @@
 import type { CompuestoOrganico } from "@/lib/practica/quimicaOrganica";
 
-const ANCHO_CAJA = 56;
 const ALTO = 48;
-const GAP = 28;
+
+// Moléculas largas (glucosa: 6 grupos) achican la caja y el espacio entre
+// cajas para que el dibujo quepa en una pantalla angosta sin perder
+// legibilidad. Antes eran 56/28 fijos para todos y el SVG tenía `width`
+// en píxeles (476px para la glucosa), así que se salía del borde en el
+// celular. Ahora, además, el SVG es responsive (width 100% + viewBox).
+function medidas(n: number) {
+  return n >= 5 ? { anchoCaja: 46, gap: 16, fuente: 14 } : { anchoCaja: 56, gap: 28, fuente: 15 };
+}
 
 // Fórmula estructural condensada (Sección 5, ítem 3): cajas de texto
 // con cada grupo (ej. "CH₃", "OH") unidas por líneas — simple línea
@@ -21,7 +28,7 @@ export default function MoleculaSVG({ compuesto }: { compuesto: CompuestoOrganic
       return { x: cx + radio * Math.cos(angulo), y: cy + radio * Math.sin(angulo) };
     });
     return (
-      <svg width={120} height={120} viewBox="0 0 120 120" role="img" aria-label={compuesto.nombre}>
+      <svg width="100%" style={{ maxWidth: 120 }} viewBox="0 0 120 120" role="img" aria-label={compuesto.nombre}>
         {puntos.map((p, i) => {
           const q = puntos[(i + 1) % puntos.length];
           const doble = i % 2 === 0;
@@ -45,11 +52,12 @@ export default function MoleculaSVG({ compuesto }: { compuesto: CompuestoOrganic
   }
 
   const n = compuesto.grupos.length;
+  const { anchoCaja: ANCHO_CAJA, gap: GAP, fuente } = medidas(n);
   const ancho = n * ANCHO_CAJA + Math.max(0, n - 1) * GAP;
   const cy = ALTO / 2;
 
   return (
-    <svg width={ancho} height={ALTO} viewBox={`0 0 ${ancho} ${ALTO}`} role="img" aria-label={compuesto.nombre}>
+    <svg width="100%" style={{ maxWidth: ancho }} viewBox={`0 0 ${ancho} ${ALTO}`} role="img" aria-label={compuesto.nombre}>
       {compuesto.grupos.slice(0, -1).map((_, i) => {
         const x1 = i * (ANCHO_CAJA + GAP) + ANCHO_CAJA;
         const x2 = x1 + GAP;
@@ -66,7 +74,7 @@ export default function MoleculaSVG({ compuesto }: { compuesto: CompuestoOrganic
         return (
           <g key={i}>
             <rect x={x} y={4} width={ANCHO_CAJA} height={ALTO - 8} rx={8} fill="var(--surface)" stroke="var(--border)" />
-            <text x={x + ANCHO_CAJA / 2} y={ALTO / 2} textAnchor="middle" dominantBaseline="central" fontSize={15} fontWeight={700} fill="var(--foreground)">
+            <text x={x + ANCHO_CAJA / 2} y={ALTO / 2} textAnchor="middle" dominantBaseline="central" fontSize={fuente} fontWeight={700} fill="var(--foreground)">
               {g}
             </text>
           </g>

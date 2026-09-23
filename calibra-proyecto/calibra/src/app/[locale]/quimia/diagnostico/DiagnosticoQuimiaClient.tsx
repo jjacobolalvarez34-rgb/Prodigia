@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import TextoQuimica from "@/components/quimia/TextoQuimica";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { generarPreguntaQuimia, type PreguntaQuimia } from "@/lib/practica/quimia";
@@ -181,7 +182,7 @@ export default function DiagnosticoQuimiaClient({ destino }: Props) {
               ))}
             </div>
             <div className="flex w-full flex-col items-center gap-6 rounded-3xl border-2 border-border bg-surface px-8 py-10">
-              <p className="text-center font-medium text-foreground">{pregunta.enunciado}</p>
+              <p className="text-center font-medium text-foreground"><TextoQuimica texto={pregunta.enunciado} /></p>
               <div className="grid w-full grid-cols-2 gap-2">
                 {pregunta.opciones.map((op) => {
                   const esElegida = seleccion === op;
@@ -199,7 +200,7 @@ export default function DiagnosticoQuimiaClient({ destino }: Props) {
                             : "border-border bg-background text-foreground"
                       }`}
                     >
-                      {op}
+                      <TextoQuimica texto={op} />
                     </button>
                   );
                 })}
