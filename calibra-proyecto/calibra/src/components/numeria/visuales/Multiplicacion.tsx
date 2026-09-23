@@ -17,9 +17,19 @@ function digitosAlineados(valor: number, ancho: number): (number | null)[] {
   return Array.from({ length: ancho }, (_, i) => (i < relleno ? null : Number(texto[i - relleno])));
 }
 
-function Fila({ digitos, activo = false }: { digitos: (number | null)[]; activo?: boolean }) {
+// Toda fila (factores, parciales, resultado) comparte esta misma
+// columna de operador a la izquierda — aunque solo la fila de `b` la
+// use (el símbolo "×") — para que las columnas de dígitos empiecen
+// exactamente en el mismo x en todas las filas. Antes el "×" vivía en
+// un <span> aparte sin ancho fijo (más angosto que una columna de
+// dígito), así que la fila de `b` quedaba corrida respecto a la fila
+// de `a` y a los parciales de abajo.
+function Fila({ digitos, activo = false, operador }: { digitos: (number | null)[]; activo?: boolean; operador?: string }) {
   return (
-    <div className="flex gap-1">
+    <div className="flex items-center gap-1">
+      <span className="inline-flex h-10 min-w-10 items-center justify-center text-lg font-bold" style={{ color: COLOR_NUMERIA }}>
+        {operador}
+      </span>
       {digitos.map((d, i) => (
         <span key={i} className={d === null ? "inline-flex h-10 min-w-10" : ""}>
           {d !== null && <CasillaDigito valor={d} activo={activo} />}
@@ -70,12 +80,7 @@ export default function Multiplicacion({ visual }: Props) {
       controles={<ControlesReproductor r={r} />}
     >
       <Fila digitos={digitosAlineados(a, ancho)} />
-      <div className="flex items-center gap-1 self-start">
-        <span className="text-lg font-bold" style={{ color: COLOR_NUMERIA }}>
-          ×
-        </span>
-        <Fila digitos={digitosAlineados(b, ancho)} />
-      </div>
+      <Fila digitos={digitosAlineados(b, ancho)} operador="×" />
       <div className="h-0.5 w-full rounded-full" style={{ background: COLOR_NUMERIA, opacity: 0.5 }} />
       {parciales.map((p, i) => {
         const revelado = i < r.paso;
