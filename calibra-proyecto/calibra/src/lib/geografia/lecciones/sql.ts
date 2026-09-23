@@ -1,4 +1,4 @@
-import type { TecnicaGeografia, ClaseGeografia, PreguntaLeccionGeografia } from "./tipos";
+import type { TecnicaGeografia, TecnicaGeneralGeografia, ClaseGeografia, PreguntaLeccionGeografia } from "./tipos";
 import type { VisualGeografia } from "@/lib/geografia/visuales";
 
 // Genera la migración 0207_geografia_mas_contenido.sql a partir del
@@ -93,5 +93,39 @@ ${tecnicas.map(filaTecnica).join(",\n\n")};
 insert into public.techniques (slug, nombre, descripcion, problem_type, contenido, orden, requiere_pro) values
 
 ${clases.map(filaClase).join(",\n\n")};
+`;
+}
+
+// Migración que REESCRIBE por slug las 3 Técnicas genéricas históricas
+// (grupo "general"): las filas ya existen desde 0027 (+ quiz de 0172), así
+// que acá va un update por slug —nunca se edita una migración vieja— que
+// pisa nombre, descripción y contenido (español neutro + `visuales`).
+export function generarSqlGeografiaGenerales(generales: TecnicaGeneralGeografia[], numero: string): string {
+  const update = (t: TecnicaGeneralGeografia) =>
+    `update public.techniques\nset nombre = '${escaparSql(t.nombre)}',\n  descripcion = '${escaparSql(t.descripcion)}',\n  contenido = $geografia$${contenidoJson(t)}$geografia$::jsonb\nwhere slug = '${escaparSql(t.slug)}' and problem_type = 'geografia';`;
+
+  return `-- ============================================================
+-- Prodigia — Geografía: las 3 Técnicas del grupo "general" pasan a tener
+-- mapas animados y español neutro (migración ${numero}).
+--
+-- Las Técnicas genéricas históricas (0027_geografia_lecciones.sql, con el
+-- quiz de 0172_geografia_lecciones_quiz.sql): dividir-en-subregiones,
+-- anclar-por-vecinos y forma-caracteristica. Al hacer el retrofit por
+-- continente (0208) solo las 20 Técnicas y 16 Clases nuevas recibieron el
+-- visual "geografia.mapa"; estas 3 quedaron como texto plano, sin ninguna
+-- animación, y con voseo rioplatense en los imperativos y los verbos,
+-- contra la convención de español neutro (docs/ESPECIFICACION.md).
+--
+-- Se REESCRIBEN por slug (update, nunca se edita una migración vieja):
+-- misma idea y mismos ejemplos de cada técnica, en español neutro, con
+-- mapas animados de países reales (src/lib/geografia/visualesDatos.ts).
+-- La fila conserva su \`orden\` y \`requiere_pro = false\`.
+--
+-- Este archivo se GENERA desde src/lib/geografia/lecciones/ (fuente
+-- única) y lecciones.test.ts comprueba que coincida. No editar a mano.
+-- Regenerar: GEOGRAFIA_ESCRIBIR_SQL=1 npx vitest run src/lib/geografia/lecciones
+-- ============================================================
+
+${generales.map(update).join("\n\n")}
 `;
 }

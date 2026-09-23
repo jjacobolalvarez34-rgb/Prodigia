@@ -3,7 +3,7 @@ import type { TechniqueQuizPregunta } from "@/types/database";
 import type { VisualLeccion } from "@/lib/aprender/visuales";
 import type { NodoEstado } from "@/lib/aprender/clases";
 import type { Continente } from "@/lib/practica/geografia";
-import { TECNICAS_GEOGRAFIA, CLASES_GEOGRAFIA } from "@/lib/geografia/lecciones";
+import { TECNICAS_GEOGRAFIA, TECNICAS_GENERALES_GEOGRAFIA, CLASES_GEOGRAFIA } from "@/lib/geografia/lecciones";
 
 export type { NodoEstado };
 
@@ -33,7 +33,7 @@ export const ORDEN_GRUPOS_GEOGRAFIA: GrupoGeografia[] = ["general", "america", "
 // del mapeo slug→grupo sale directo del contenido tipado
 // (src/lib/geografia/lecciones/), nunca repetido a mano acá: una sola
 // fuente de verdad para qué continente le toca a cada slug.
-const SLUGS_GENERAL = new Set(["dividir-en-subregiones", "anclar-por-vecinos", "forma-caracteristica"]);
+const SLUGS_GENERAL = new Set(TECNICAS_GENERALES_GEOGRAFIA.map((t) => t.slug));
 
 function construirMapaGrupos(): Map<string, GrupoGeografia> {
   const mapa = new Map<string, GrupoGeografia>();

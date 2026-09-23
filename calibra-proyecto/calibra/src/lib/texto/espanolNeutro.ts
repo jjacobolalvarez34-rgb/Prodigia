@@ -50,6 +50,9 @@ const NO_ES_VOSEO = new Set([
   // "tienes"/"puedes"). Mismo caso con "das"/"vas" (dar/ir), pero esas
   // no llevan tilde y ya no matchean el patrón de regex.
   "estás", "estas",
+  // Futuro simple: "tú vencerás" = "vos vencerás" (idéntico en tuteo y
+  // voseo). Aparece en el título de la técnica "Divide y vencerás".
+  "vencerás",
 ]);
 
 const PATRON_VOSEO = new RegExp(

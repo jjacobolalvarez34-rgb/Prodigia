@@ -44,3 +44,18 @@ export interface ClaseGeografia {
   visuales: VisualGeografia[];
   quiz: PreguntaLeccionGeografia[];
 }
+
+// Una Técnica GENÉRICA histórica de Geografía (0027_geografia_lecciones.sql
+// + su quiz en 0172): estrategia de memoria que no mapea a un continente
+// concreto y por eso vive en el grupo "general" (ver src/lib/geografia/
+// path.ts). La fila YA existe en `techniques`, así que se REESCRIBE por
+// slug (update, nunca insert): español neutro sin voseo y, sobre todo, con
+// `visuales` (mapa animado), que las 3 no tenían.
+export interface TecnicaGeneralGeografia {
+  slug: string;
+  nombre: string;
+  descripcion: string;
+  pasos: string[];
+  visuales: VisualGeografia[];
+  quiz: PreguntaLeccionGeografia[];
+}

@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { TECNICAS_GEOGRAFIA, CLASES_GEOGRAFIA } from "./index";
-import { generarSqlGeografia } from "./sql";
+import { TECNICAS_GEOGRAFIA, TECNICAS_GENERALES_GEOGRAFIA, CLASES_GEOGRAFIA } from "./index";
+import { generarSqlGeografia, generarSqlGeografiaGenerales } from "./sql";
 import { esVisualLeccion } from "@/lib/aprender/visuales";
 import { REGISTRO_VISUALES_GEOGRAFIA } from "@/components/geografia/visuales/registro";
 import { COORDENADAS_PAIS, resolverPaisesResaltados } from "../visualesDatos";
@@ -20,6 +20,7 @@ import { PAIS_SUBREGION, SUBREGIONES_POR_CONTINENTE } from "../subregiones";
 
 const raiz = path.resolve(__dirname, "../../../..");
 const ruta0208 = path.join(raiz, "supabase", "migrations", "0208_geografia_mas_contenido.sql");
+const ruta0210 = path.join(raiz, "supabase", "migrations", "0210_geografia_tecnicas_generales.sql");
 
 const TIPOS_CONOCIDOS = new Set(["cuadros", ...Object.keys(REGISTRO_VISUALES_GEOGRAFIA)]);
 const CONTINENTES_VALIDOS = new Set(["america", "europa", "africa", "asia_oceania"]);
@@ -231,5 +232,72 @@ describe("Geografía: migración 0208", () => {
       total++;
     }
     expect(total).toBe(36); // 20 técnicas + 16 clases
+  });
+});
+
+describe("Geografía: Técnicas generales (grupo \"general\") con mapas y español neutro", () => {
+  const SLUGS_HISTORICOS = ["dividir-en-subregiones", "anclar-por-vecinos", "forma-caracteristica"];
+
+  it("son las 3 históricas de 0027, con sus mismos slugs (se reescriben por slug, no se insertan)", () => {
+    expect(TECNICAS_GENERALES_GEOGRAFIA.map((t) => t.slug)).toEqual(SLUGS_HISTORICOS);
+  });
+
+  it("cada una trae al menos un mapa animado válido, con países reales que tienen coordenada curada", () => {
+    for (const t of TECNICAS_GENERALES_GEOGRAFIA) {
+      expect(t.visuales.length, `${t.slug} sin visuales (es lo que se reportó: solo texto)`).toBeGreaterThanOrEqual(1);
+      for (const v of t.visuales) {
+        expect(esVisualLeccion(v), t.slug).toBe(true);
+        expect(v.tipo).toBe("geografia.mapa");
+        expect(v.despuesDePaso, `${t.slug}: despuesDePaso obligatorio`).toBeDefined();
+        expect(v.despuesDePaso!).toBeLessThan(t.pasos.length);
+        expect(v.paisesIds.length).toBeGreaterThanOrEqual(1);
+        expect(v.paisesIds.length).toBeLessThanOrEqual(4);
+        for (const id of v.paisesIds) {
+          expect(IDS_POR_CONTINENTE[v.continente].has(id), `${t.slug}: ${id} no es de ${v.continente}`).toBe(true);
+          expect(COORDENADAS_PAIS[id], `${t.slug}: ${id} sin coordenada curada`).toBeDefined();
+        }
+        expect(resolverPaisesResaltados(v.paisesIds)).toHaveLength(v.paisesIds.length);
+      }
+    }
+  });
+
+  it("cada quiz: 3 preguntas, respuesta entre las opciones, sin opciones repetidas", () => {
+    for (const t of TECNICAS_GENERALES_GEOGRAFIA) {
+      expect(t.quiz).toHaveLength(3);
+      for (const q of t.quiz) {
+        expect(q.opciones, `${t.slug}: ${q.pregunta}`).toContain(q.respuesta);
+        expect(new Set(q.opciones).size).toBe(q.opciones.length);
+        expect(q.explicacion.length).toBeGreaterThan(10);
+      }
+    }
+  });
+
+  it("español neutro: sin voseo en pasos, quiz ni descripción", () => {
+    // Solo las formas acentuadas del voseo: "practica tapando" es tuteo correcto, "practicá" no.
+    const VOSEO = /(agrupalos|aprendé|ubicás|buscás|necesitás|fijate|practicá|elegí|usalo|preguntate|sabés|reconocés|recordás|podés)/i;
+    for (const t of TECNICAS_GENERALES_GEOGRAFIA) {
+      const textos = [t.nombre, t.descripcion, ...t.pasos, ...t.quiz.flatMap((q) => [q.pregunta, q.explicacion, q.respuesta, ...q.opciones])];
+      for (const x of textos) expect(x, `${t.slug}: voseo en «${x}»`).not.toMatch(VOSEO);
+    }
+  });
+
+  it("la migración 0210 es exactamente lo que se genera del contenido tipado", () => {
+    const esperado = generarSqlGeografiaGenerales(TECNICAS_GENERALES_GEOGRAFIA, "0210");
+    if (process.env.GEOGRAFIA_ESCRIBIR_SQL === "1") fs.writeFileSync(ruta0210, esperado, "utf8");
+    expect(fs.existsSync(ruta0210), "falta 0210: GEOGRAFIA_ESCRIBIR_SQL=1 npx vitest run src/lib/geografia/lecciones").toBe(true);
+    expect(fs.readFileSync(ruta0210, "utf8")).toBe(esperado);
+  });
+
+  it("el SQL: 3 updates por slug con jsonb parseable y sin insert", () => {
+    const sql = fs.readFileSync(ruta0210, "utf8");
+    expect(sql).not.toMatch(/insert into/);
+    expect((sql.match(/update public\.techniques/g) ?? []).length).toBe(3);
+    const bloques = [...sql.matchAll(/\$geografia\$([\s\S]*?)\$geografia\$::jsonb/g)];
+    expect(bloques).toHaveLength(3);
+    for (const m of bloques) {
+      const c = JSON.parse(m[1]) as { pasos: string[]; visuales: { tipo: string }[]; quiz: unknown[] };
+      expect(c.visuales.length).toBeGreaterThanOrEqual(1);
+      for (const v of c.visuales) expect(TIPOS_CONOCIDOS.has(v.tipo)).toBe(true);
+    }
   });
 });
