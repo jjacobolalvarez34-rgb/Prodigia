@@ -2757,13 +2757,22 @@
     "aprenderPagina": {
       "metadata": {
         "title": "Learn Chemistry",
-        "description": "Mnemonic techniques to memorize elements and compounds."
+        "description": "Techniques and classes to master the periodic table, formulas, nomenclature and more."
       },
       "progreso": "Progress",
-      "progresoTecnicas": "{completadas}/{total} techniques",
+      "progresoTecnicas": "{completadas}/{total} lessons",
       "titulo": "Learn",
-      "subtitulo": "Tricks to memorize elements and formulas — not math, ways of seeing.",
-      "descripcionUnidad": "Techniques to memorize elements and compounds — not computation, mnemonics."
+      "subtitulo": "Techniques to memorize and classes to understand chemistry from scratch.",
+      "descripcionUnidad": "Techniques to memorize elements and compounds — not computation, mnemonics.",
+      "grupos": {
+        "tabla": "Atom and periodic table",
+        "simbolos": "Symbols and elements",
+        "formulas": "Bonds and formulas",
+        "nomenclatura": "Inorganic nomenclature",
+        "redox": "Oxidation states and redox",
+        "organica": "Organic chemistry"
+      },
+      "desbloqueaConPro": "Unlock with Pro"
     },
     "leccion": {
       "tecnica": "Technique",
@@ -2776,11 +2785,12 @@
       "irPracticar": "Go to Practice",
       "continuarAlQuiz": "Continue to quiz",
       "quizTitulo": "Comprehension quiz",
-      "quizSubtitulo": "Answer the questions to mark this technique as learned. You can retry as many times as you want.",
+      "quizSubtitulo": "Answer the questions to mark this lesson as learned. You can retry as many times as you want.",
       "respuestaIncorrecta": "That's not it — check again",
       "enviarRespuestas": "Submit answers",
       "enviando": "Submitting...",
-      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want."
+      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want.",
+      "clase": "Class"
     },
     "practicaPaginas": {
       "simbolos": {
@@ -2802,6 +2812,116 @@
       "tabla": {
         "title": "Practice Periodic table",
         "description": "Locate elements by group and period in the periodic table."
+      }
+    },
+    "visuales": {
+      "tabla": {
+        "etiqueta": "Animated periodic table",
+        "familias": {
+          "alcalino": "Alkali metals",
+          "alcalinoterreo": "Alkaline earth metals",
+          "transicion": "Transition metals",
+          "otrosMetales": "Other metals",
+          "metaloide": "Metalloids",
+          "noMetal": "Nonmetals",
+          "halogeno": "Halogens",
+          "gasNoble": "Noble gases",
+          "lantanido": "Lanthanides",
+          "actinido": "Actinides"
+        }
+      },
+      "elemento": {
+        "etiqueta": "Element card: {nombre}",
+        "grupo": "group",
+        "periodo": "period",
+        "bloqueF": "f-block (no defined group)",
+        "sinElectronegatividad": "not defined (noble gas)",
+        "estados": {
+          "solido": "solid",
+          "liquido": "liquid",
+          "gas": "gas"
+        },
+        "campos": {
+          "numeroAtomico": {
+            "titulo": "Atomic number (Z)",
+            "explicacion": "The number of protons in the nucleus, and also the order in the table. It identifies the element: atoms with a different Z belong to different elements."
+          },
+          "simbolo": {
+            "titulo": "Symbol",
+            "explicacion": "One or two letters: the first is uppercase and the second, if any, lowercase. It comes from the name, sometimes from the Latin name (Na from natrium)."
+          },
+          "nombre": {
+            "titulo": "Name",
+            "explicacion": "The name of the element, used when naming compounds."
+          },
+          "masa": {
+            "titulo": "Atomic mass",
+            "explicacion": "Average mass of an atom of the element, in atomic mass units (u). It is the same number as the grams in one mole of atoms (molar mass)."
+          },
+          "configuracion": {
+            "titulo": "Electron configuration",
+            "explicacion": "How the electrons are distributed in shells and subshells. The outermost ones (valence electrons) decide how the element reacts."
+          },
+          "electronegatividad": {
+            "titulo": "Electronegativity",
+            "explicacion": "How strongly an atom attracts the electrons of a bond (Pauling scale, from 0.7 to 4.0). It helps decide whether a bond is ionic, polar covalent or nonpolar."
+          },
+          "oxidacion": {
+            "titulo": "Oxidation states",
+            "explicacion": "Charges the atom has or seems to have in its compounds. A positive number means it gives up electrons; a negative one, that it attracts them. They are used to write formulas and name compounds."
+          },
+          "estado": {
+            "titulo": "State of matter",
+            "explicacion": "Whether the element is a solid, a liquid or a gas at 25 °C and 1 atmosphere."
+          },
+          "posicion": {
+            "titulo": "Position",
+            "explicacion": "The column (group) and the row (period) in the table. The group tells the number of valence electrons; the period, the number of shells."
+          },
+          "familia": {
+            "titulo": "Family",
+            "explicacion": "A set of elements with similar chemical properties, such as the alkali metals or the halogens."
+          }
+        }
+      },
+      "enlace": {
+        "etiqueta": "Animated chemical bond",
+        "ionico": {
+          "p1": "Neutral atoms: {cation} has {ec, plural, one {# valence electron} other {# valence electrons}} and {anion} has {ea, plural, one {# valence electron} other {# valence electrons}}.",
+          "p2": "{cation} gives {n, plural, one {# electron} other {# electrons}} to {anion}. That is a transfer of electrons.",
+          "p3": "Ions form: {ionCation} (cation, positive charge) and {ionAnion} (anion, negative charge). Both end up with a full outer shell of eight electrons.",
+          "p4": "Opposite charges attract: that electrostatic attraction is the ionic bond. Formula: {formula}."
+        },
+        "covalente": {
+          "p1": "Separate atoms: {a} has {va, plural, one {# valence electron} other {# valence electrons}} and {b} has {vb, plural, one {# valence electron} other {# valence electrons}}.",
+          "p2": "The atoms come closer and share {pares, plural, one {one pair} other {# pairs}} of electrons.",
+          "p3": "Each atom counts the shared electrons as its own and completes its outer shell (two electrons for hydrogen, eight for the rest).",
+          "p4Apolar": "{tipo, select, simple {Single} doble {Double} other {Triple}} covalent bond. Both atoms are identical and attract the pair equally: the bond is nonpolar. Formula: {formula}.",
+          "p4Polar": "{tipo, select, simple {Single} doble {Double} other {Triple}} covalent bond. {masElectronegativo} is more electronegative (difference of {dif}) and attracts the pair more: the bond is polar, with a partial negative charge (δ−) on {masElectronegativo}. Formula: {formula}."
+        },
+        "metalico": {
+          "p1": "A metal ({simbolo}) is made of a huge number of atoms arranged in a lattice. Each atom has {n, plural, one {# valence electron} other {# valence electrons}}.",
+          "p2": "Each atom releases {n, plural, one {its valence electron} other {its # valence electrons}} and becomes the cation {ion}.",
+          "p3": "The released electrons do not belong to any particular atom: they form a “sea of electrons” that moves freely among the cations.",
+          "p4": "The sea of electrons holds the cations together. That explains why metals conduct electricity and can be deformed without breaking."
+        }
+      },
+      "cruce": {
+        "etiqueta": "How to cross the charges",
+        "p1": "Write the cation and the anion with their charges.",
+        "p2": "Cross them: the value of each ion charge (without the sign) becomes the subscript of the other.",
+        "p3Simplifica": "If the subscripts share a common divisor, divide by it: {cruda} simplifies to {formula}.",
+        "pVerifica": "Check that the total charge is zero: {cuenta}.",
+        "pResultado": "Final formula: {formula}.",
+        "pResultadoNombre": "Final formula: {formula}, called {nombre}."
+      },
+      "cuadro": {
+        "etiqueta": "Data table"
+      },
+      "orbitales": {
+        "etiqueta": "Subshell filling for {nombre}",
+        "paso": "Subshell {sub}: {e} of {cap} possible electrons. {total} electrons placed so far.",
+        "excepcion": "exception to the filling rule"
       }
     }
   },

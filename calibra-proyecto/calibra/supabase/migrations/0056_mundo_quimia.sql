@@ -407,8 +407,8 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
   'En vez de memorizar elementos sueltos, agruparlos por familia química.',
   'quimia',
   '{"pasos": [
-    "No memorices los elementos sueltos, uno por uno — agrupalos por familia química: metales alcalinos (Li, Na, K...), halógenos (Cl...), gases nobles (He...).",
-    "Cada familia comparte comportamiento — si sabés que el sodio (Na) es un metal alcalino muy reactivo, ya sabés algo real del litio (Li) y el potasio (K) sin memorizarlos aparte.",
+    "No memorices los elementos sueltos, uno por uno — agrúpalos por familia química: metales alcalinos (Li, Na, K...), halógenos (Cl...), gases nobles (He...).",
+    "Cada familia comparte comportamiento — si sabes que el sodio (Na) es un metal alcalino muy reactivo, ya sabes algo real del litio (Li) y el potasio (K) sin memorizarlos aparte.",
     "Menos datos sueltos que recordar, más patrones que reconocer — así funciona la memoria a largo plazo."
   ]}'::jsonb,
   1
@@ -419,9 +419,9 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
   'Conectar el símbolo con algo visual conocido en vez de memorizar la letra sola.',
   'quimia',
   '{"pasos": [
-    "Au es oro — pensá en el brillo dorado de una joya, no en la letra sola.",
-    "Fe es hierro — pensá en el óxido rojizo (la herrumbre) que ves en un portón viejo.",
-    "Cu es cobre — pensá en el tono anaranjado de un cable eléctrico pelado.",
+    "Au es oro — piensa en el brillo dorado de una joya, no en la letra sola.",
+    "Fe es hierro — piensa en el óxido rojizo (la herrumbre) que ves en un portón viejo.",
+    "Cu es cobre — piensa en el tono anaranjado de un cable eléctrico pelado.",
     "Una imagen cotidiana pega más fuerte en la memoria que una letra abstracta."
   ]}'::jsonb,
   2
@@ -433,8 +433,8 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
   'quimia',
   '{"pasos": [
     "La tabla periódica no es una lista para memorizar de memoria — es un mapa con coordenadas: fila (período) y columna (grupo).",
-    "Mismo truco que usás en Geografía con país-vecino: si sabés dónde está el sodio (Na, período 3, grupo 1), el magnesio (Mg) está justo al lado.",
-    "Elementos del mismo grupo (misma columna) se parecen entre sí — usá esa cercanía como pista, no memorices cada casillero suelto."
+    "Mismo truco que usas en Geografía con país-vecino: si sabes dónde está el sodio (Na, período 3, grupo 1), el magnesio (Mg) está justo al lado.",
+    "Elementos del mismo grupo (misma columna) se parecen entre sí — usa esa cercanía como pista, no memorices cada casillero suelto."
   ]}'::jsonb,
   3
 ),
@@ -446,7 +446,7 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
   '{"pasos": [
     "Muchos ácidos que contienen oxígeno terminan en \"-ico\" (sulfúrico, H2SO4) — los que no tienen oxígeno suelen empezar con \"ácido ... hídrico\" (clorhídrico, HCl).",
     "Un compuesto de dos elementos suele nombrarse \"[segundo elemento] de [primer elemento]\" — cloruro DE sodio (NaCl), óxido DE calcio.",
-    "Reconocer el patrón te ahorra memorizar cada fórmula suelta — podés deducir varias a partir de una sola regla."
+    "Reconocer el patrón te ahorra memorizar cada fórmula suelta — puedes deducir varias a partir de una sola regla."
   ]}'::jsonb,
   4
 )

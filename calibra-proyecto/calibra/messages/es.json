@@ -2757,13 +2757,22 @@
     "aprenderPagina": {
       "metadata": {
         "title": "Aprender Química",
-        "description": "Técnicas mnemotécnicas para memorizar elementos y compuestos."
+        "description": "Técnicas y clases para dominar la tabla periódica, las fórmulas, la nomenclatura y más."
       },
       "progreso": "Progreso",
-      "progresoTecnicas": "{completadas}/{total} técnicas",
+      "progresoTecnicas": "{completadas}/{total} lecciones",
       "titulo": "Aprender",
-      "subtitulo": "Trucos para memorizar elementos y fórmulas — no son cuentas, son formas de mirar.",
-      "descripcionUnidad": "Técnicas para memorizar elementos y compuestos, no son cómputo — son mnemotécnicas."
+      "subtitulo": "Técnicas para memorizar y clases para entender la química desde cero.",
+      "descripcionUnidad": "Técnicas para memorizar elementos y compuestos, no son cómputo — son mnemotécnicas.",
+      "grupos": {
+        "tabla": "Átomo y tabla periódica",
+        "simbolos": "Símbolos y elementos",
+        "formulas": "Enlaces y fórmulas",
+        "nomenclatura": "Nomenclatura inorgánica",
+        "redox": "Estados de oxidación y redox",
+        "organica": "Química orgánica"
+      },
+      "desbloqueaConPro": "Desbloquea con Pro"
     },
     "leccion": {
       "tecnica": "Técnica",
@@ -2776,11 +2785,12 @@
       "irPracticar": "Ir a Practicar",
       "continuarAlQuiz": "Continuar al quiz",
       "quizTitulo": "Quiz de comprensión",
-      "quizSubtitulo": "Responde las preguntas para marcar esta técnica como aprendida. Puedes reintentar todas las veces que quieras.",
+      "quizSubtitulo": "Responde las preguntas para marcar esta lección como aprendida. Puedes reintentar todas las veces que quieras.",
       "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras.",
+      "clase": "Clase"
     },
     "practicaPaginas": {
       "simbolos": {
@@ -2802,6 +2812,116 @@
       "tabla": {
         "title": "Practicar Tabla periódica",
         "description": "Ubica elementos por grupo y período en la tabla periódica."
+      }
+    },
+    "visuales": {
+      "tabla": {
+        "etiqueta": "Tabla periódica animada",
+        "familias": {
+          "alcalino": "Metales alcalinos",
+          "alcalinoterreo": "Metales alcalinotérreos",
+          "transicion": "Metales de transición",
+          "otrosMetales": "Otros metales",
+          "metaloide": "Metaloides",
+          "noMetal": "No metales",
+          "halogeno": "Halógenos",
+          "gasNoble": "Gases nobles",
+          "lantanido": "Lantánidos",
+          "actinido": "Actínidos"
+        }
+      },
+      "elemento": {
+        "etiqueta": "Ficha del elemento {nombre}",
+        "grupo": "grupo",
+        "periodo": "período",
+        "bloqueF": "bloque f (sin grupo definido)",
+        "sinElectronegatividad": "no se define (gas noble)",
+        "estados": {
+          "solido": "sólido",
+          "liquido": "líquido",
+          "gas": "gas"
+        },
+        "campos": {
+          "numeroAtomico": {
+            "titulo": "Número atómico (Z)",
+            "explicacion": "Es la cantidad de protones del núcleo y también el orden en la tabla. Identifica al elemento: dos átomos con distinto Z son de elementos distintos."
+          },
+          "simbolo": {
+            "titulo": "Símbolo",
+            "explicacion": "Una o dos letras: la primera en mayúscula y la segunda, si hay, en minúscula. Sale del nombre, a veces del nombre en latín (Na de natrium)."
+          },
+          "nombre": {
+            "titulo": "Nombre",
+            "explicacion": "El nombre del elemento. Es el que se usa al nombrar compuestos (cloruro de sodio, óxido de hierro...)."
+          },
+          "masa": {
+            "titulo": "Masa atómica",
+            "explicacion": "Masa promedio de un átomo del elemento, en unidades de masa atómica (u). Es el mismo número que los gramos de un mol de átomos (masa molar)."
+          },
+          "configuracion": {
+            "titulo": "Configuración electrónica",
+            "explicacion": "Cómo se reparten los electrones en capas y subcapas. Los de la capa más externa (electrones de valencia) deciden cómo reacciona el elemento."
+          },
+          "electronegatividad": {
+            "titulo": "Electronegatividad",
+            "explicacion": "Mide cuánto atrae un átomo los electrones de un enlace (escala de Pauling, de 0,7 a 4,0). Sirve para decidir si un enlace es iónico, covalente polar o apolar."
+          },
+          "oxidacion": {
+            "titulo": "Estados de oxidación",
+            "explicacion": "Cargas que el átomo tiene o parece tener en sus compuestos. Un número positivo indica que cede electrones; uno negativo, que los atrae. Sirven para armar fórmulas y nombrar compuestos."
+          },
+          "estado": {
+            "titulo": "Estado de agregación",
+            "explicacion": "Si el elemento es sólido, líquido o gas a 25 °C y 1 atmósfera."
+          },
+          "posicion": {
+            "titulo": "Ubicación",
+            "explicacion": "La columna (grupo) y la fila (período) en la tabla. El grupo indica cuántos electrones de valencia tiene; el período, cuántas capas."
+          },
+          "familia": {
+            "titulo": "Familia",
+            "explicacion": "Conjunto de elementos con propiedades químicas parecidas, como los metales alcalinos o los halógenos."
+          }
+        }
+      },
+      "enlace": {
+        "etiqueta": "Enlace químico animado",
+        "ionico": {
+          "p1": "Átomos neutros: {cation} tiene {ec, plural, one {# electrón} other {# electrones}} de valencia y {anion} tiene {ea, plural, one {# electrón} other {# electrones}}.",
+          "p2": "{cation} cede {n, plural, one {# electrón} other {# electrones}} a {anion}. Eso es una transferencia de electrones.",
+          "p3": "Se forman iones: {ionCation} (catión, carga positiva) y {ionAnion} (anión, carga negativa). Los dos quedan con la capa externa completa, con ocho electrones.",
+          "p4": "Las cargas opuestas se atraen: esa atracción electrostática es el enlace iónico. Fórmula: {formula}."
+        },
+        "covalente": {
+          "p1": "Átomos separados: {a} tiene {va, plural, one {# electrón} other {# electrones}} de valencia y {b} tiene {vb, plural, one {# electrón} other {# electrones}}.",
+          "p2": "Los átomos se acercan y comparten {pares, plural, one {un par} other {# pares}} de electrones.",
+          "p3": "Cada átomo cuenta los electrones compartidos como propios y completa su capa externa (dos electrones el hidrógeno, ocho los demás).",
+          "p4Apolar": "Enlace covalente {tipo}. Los dos átomos son iguales y atraen el par por igual: el enlace es apolar. Fórmula: {formula}.",
+          "p4Polar": "Enlace covalente {tipo}. El {masElectronegativo} es más electronegativo (diferencia de {dif}) y atrae más al par: el enlace es polar, con una carga parcial negativa (δ−) sobre el {masElectronegativo}. Fórmula: {formula}."
+        },
+        "metalico": {
+          "p1": "Un metal ({simbolo}) está formado por muchísimos átomos ordenados en una red. Cada átomo tiene {n, plural, one {# electrón} other {# electrones}} de valencia.",
+          "p2": "Cada átomo libera {n, plural, one {su electrón} other {sus # electrones}} de valencia y queda como catión {ion}.",
+          "p3": "Los electrones liberados no pertenecen a ningún átomo en particular: forman un «mar de electrones» que se mueve libremente entre los cationes.",
+          "p4": "El mar de electrones mantiene unidos a los cationes. Eso explica por qué los metales conducen la electricidad y se pueden deformar sin romperse."
+        }
+      },
+      "cruce": {
+        "etiqueta": "Cómo cruzar las cargas",
+        "p1": "Escribe el catión y el anión con sus cargas.",
+        "p2": "Cruza: el valor de la carga de cada ion (sin el signo) pasa a ser el subíndice del otro.",
+        "p3Simplifica": "Si los subíndices tienen un divisor común, se dividen por él: {cruda} se simplifica a {formula}.",
+        "pVerifica": "Comprueba que la carga total sea cero: {cuenta}.",
+        "pResultado": "Fórmula final: {formula}.",
+        "pResultadoNombre": "Fórmula final: {formula}, que se llama {nombre}."
+      },
+      "cuadro": {
+        "etiqueta": "Tabla de datos"
+      },
+      "orbitales": {
+        "etiqueta": "Llenado de subcapas de {nombre}",
+        "paso": "Subcapa {sub}: {e} de {cap} electrones posibles. Ya hay {total} electrones colocados.",
+        "excepcion": "excepción a la regla de llenado"
       }
     }
   },

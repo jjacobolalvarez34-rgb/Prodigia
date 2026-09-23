@@ -23,6 +23,8 @@
 import type { NodoEstado } from "@/lib/aprender/clases";
 import { TECNICAS_GEOGRAFIA, CLASES_GEOGRAFIA } from "@/lib/geografia/lecciones";
 import type { Continente } from "@/lib/practica/geografia";
+import { TECNICAS_QUIMIA, CLASES_QUIMIA } from "@/lib/quimia/lecciones";
+import { ORDEN_GRUPOS_QUIMIA, type GrupoQuimia } from "@/lib/quimia/grupos";
 
 export type PestanaGrupos = "tecnicas" | "clases";
 type Idioma = "es" | "en";
@@ -51,6 +53,18 @@ function nombreContinentes(): [Continente, string, string][] {
     ["asia_oceania", "Asia y Oceanía", "Asia & Oceania"],
   ];
 }
+
+// Nombres de los grupos de Quimia para el sidebar. Repiten los de
+// messages/*.json (Quimia.aprenderPagina.grupos): src/lib/quimia/path.test.ts
+// comprueba que coincidan, para que no se desincronicen.
+export const NOMBRES_GRUPOS_QUIMIA: Record<GrupoQuimia, { es: string; en: string }> = {
+  tabla: { es: "Átomo y tabla periódica", en: "Atom and periodic table" },
+  simbolos: { es: "Símbolos y elementos", en: "Symbols and elements" },
+  formulas: { es: "Enlaces y fórmulas", en: "Bonds and formulas" },
+  nomenclatura: { es: "Nomenclatura inorgánica", en: "Inorganic nomenclature" },
+  redox: { es: "Estados de oxidación y redox", en: "Oxidation states and redox" },
+  organica: { es: "Química orgánica", en: "Organic chemistry" },
+};
 
 export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
   // Numeria (retrofit a Técnicas | Clases, docs/PARIDAD_MUNDOS.md fila 22 +
@@ -208,6 +222,22 @@ export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
         en,
         CLASES_GEOGRAFIA.filter((c) => c.continente === id).map((c) => c.slug)
       )
+    ),
+  },
+  // Quimia (Técnicas | Clases, tanda 1 del retrofit, 2026-09-23 — ver
+  // docs/PARIDAD_MUNDOS.md): igual que Geografía, la fuente de verdad del
+  // desbloqueo es src/lib/quimia/path.ts (Técnicas: un "activo" por grupo;
+  // Clases: un curso lineal único), y la página de Aprender arma el sidebar
+  // leyendo el campo `grupo` de cada nodo. Esta entrada es documentación /
+  // presentación y sale del contenido tipado (nunca slugs repetidos a mano)
+  // para que no se desincronice. Los grupos vacíos (redox y orgánica hasta la
+  // tanda 2) no aparecen en el sidebar (agruparNodos omite los temas vacíos).
+  quimia: {
+    tecnicas: ORDEN_GRUPOS_QUIMIA.map((id) =>
+      g(id, NOMBRES_GRUPOS_QUIMIA[id].es, NOMBRES_GRUPOS_QUIMIA[id].en, TECNICAS_QUIMIA.filter((t) => t.grupo === id).map((t) => t.slug))
+    ),
+    clases: ORDEN_GRUPOS_QUIMIA.map((id) =>
+      g(id, NOMBRES_GRUPOS_QUIMIA[id].es, NOMBRES_GRUPOS_QUIMIA[id].en, CLASES_QUIMIA.filter((c) => c.grupo === id).map((c) => c.slug))
     ),
   },
   historia: {

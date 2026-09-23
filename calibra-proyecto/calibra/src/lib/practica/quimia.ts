@@ -304,8 +304,38 @@ function formatearOxidacion(n: number): string {
 // existía) se le suman 2 escalones más — número atómico en niveles
 // bajos (el dato más directo de leer) y estado de oxidación en niveles
 // altos (el que más exige haber entendido la tabla, no solo leerla).
+// Auditoría de datos (2026-09-23, tanda 1 del retrofit de Aprender de Quimia):
+// tres errores reales de esta pregunta, corregidos sin rediseñar el banco.
+//
+// 1) Estado de oxidación de los elementos superpesados. Los elementos
+//    109-118 (Mt, Ds, Rg, Cn, Nh, Fl, Mc, Lv, Ts, Og) figuran con `0` como
+//    marcador de "dato desconocido" (y Ts con −1, una predicción): son los
+//    últimos de la lista, o sea los de mayor `dificultad`, así que justo en
+//    los niveles 8-10 (donde se pregunta el estado de oxidación) salía
+//    "¿Cuál es el estado de oxidación más común de Meitnerio?" con respuesta
+//    "0", una respuesta falsa. Del 104 al 108 el valor es una predicción por
+//    grupo (con algo de química experimental). Se excluye de esta pregunta
+//    todo elemento con Z > 103: no existe un "estado de oxidación más común"
+//    establecido para ellos.
+export const Z_MAX_CON_ESTADO_OXIDACION = 103;
+
+// 2) Los lantánidos (Z 57-71) y actínidos (Z 89-103) figuran con `grupo: 3`
+//    por una convención práctica (ver src/lib/quimia/tabla.ts), pero según la
+//    convención de la tabla no tienen grupo propio: «¿en qué grupo está el
+//    cerio?» con respuesta «3» presenta una convención discutible como un
+//    hecho. Para ellos solo se pregunta el período.
+export function tieneGrupoDefinido(el: ElementoQuimico): boolean {
+  const z = el.numeroAtomico;
+  return !((z >= 57 && z <= 71) || (z >= 89 && z <= 103));
+}
+
+const PERIODOS_POSIBLES = ["1", "2", "3", "4", "5", "6", "7"];
+const GRUPOS_POSIBLES = Array.from({ length: 18 }, (_, i) => String(i + 1));
+
 function generarPreguntaTabla(nivel: number, usados: Set<string>, rng: Rng): PreguntaQuimia {
-  const el = elegirAlAzar(ELEMENTOS, nivel, usados, (e) => e.simbolo, rng);
+  // Niveles 8-10 (estado de oxidación): solo elementos con Z <= 103 (ver 1).
+  const banco = nivel >= 8 ? ELEMENTOS.filter((e) => e.numeroAtomico <= Z_MAX_CON_ESTADO_OXIDACION) : ELEMENTOS;
+  const el = elegirAlAzar(banco, nivel, usados, (e) => e.simbolo, rng);
 
   if (nivel <= 3) {
     const otros = ELEMENTOS.map((e) => String(e.numeroAtomico));
@@ -318,7 +348,7 @@ function generarPreguntaTabla(nivel: number, usados: Set<string>, rng: Rng): Pre
   }
 
   if (nivel >= 8) {
-    const otros = ELEMENTOS.map((e) => formatearOxidacion(e.estadoOxidacionComun));
+    const otros = banco.map((e) => formatearOxidacion(e.estadoOxidacionComun));
     return {
       enunciado: `¿Cuál es el estado de oxidación más común de ${el.nombre} (${el.simbolo})?`,
       opciones: opcionesConDistractores(formatearOxidacion(el.estadoOxidacionComun), otros, rng),
@@ -327,18 +357,23 @@ function generarPreguntaTabla(nivel: number, usados: Set<string>, rng: Rng): Pre
     };
   }
 
-  const preguntarPeriodo = rng() < 0.5;
+  // 3) Las opciones de período y de grupo eran listas parciales ("1"-"6" y
+  //    "1, 2, 8, 11-18"): la respuesta 7, o un grupo 3-7, 9 o 10, era la
+  //    ÚNICA opción fuera de la lista y se adivinaba por descarte. Ahora los
+  //    distractores salen de todos los períodos (1-7) y todos los grupos (1-18).
+  //    Los lantánidos y actínidos solo reciben la pregunta de período (ver 2).
+  const preguntarPeriodo = rng() < 0.5 || !tieneGrupoDefinido(el);
   if (preguntarPeriodo) {
     return {
       enunciado: `¿En qué período de la tabla periódica está ${el.nombre} (${el.simbolo})?`,
-      opciones: opcionesConDistractores(String(el.periodo), ["1", "2", "3", "4", "5", "6"], rng),
+      opciones: opcionesConDistractores(String(el.periodo), PERIODOS_POSIBLES, rng),
       respuesta: String(el.periodo),
       clave: el.simbolo,
     };
   }
   return {
     enunciado: `¿En qué grupo de la tabla periódica está ${el.nombre} (${el.simbolo})?`,
-    opciones: opcionesConDistractores(String(el.grupo), ["1", "2", "8", "11", "12", "13", "14", "15", "16", "17", "18"], rng),
+    opciones: opcionesConDistractores(String(el.grupo), GRUPOS_POSIBLES, rng),
     respuesta: String(el.grupo),
     clave: el.simbolo,
   };

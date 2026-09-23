@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
-import { obtenerCaminoQuimia, ORDEN_GRUPOS_QUIMIA, type GrupoQuimia } from "@/lib/quimia/path";
+import { obtenerCaminoQuimia, type GrupoQuimia } from "@/lib/quimia/path";
+import { construirUnidadesQuimia } from "@/lib/quimia/unidades";
+import { partirCaminoPorClases, resolverPestanaInicial } from "@/lib/aprender/clases";
 import Header from "@/components/Header";
-import CaminoContinuo, { type UnidadCaminoGenerico } from "@/components/CaminoContinuo";
-import AprenderLayout from "@/components/AprenderLayout";
+import AprenderTabs from "@/components/AprenderTabs";
 import { COLOR_QUIMIA } from "../colores";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -13,65 +14,57 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title"), description: t("description") };
 }
 
-export default async function QuimiaAprenderPage() {
+interface Props {
+  searchParams: Promise<{ tab?: string | string[] }>;
+}
+
+// Aprender de Quimia con pestañas Técnicas | Clases (docs/PARIDAD_MUNDOS.md
+// filas 22/23, tanda 1 del retrofit). El `grupo` y el `estado` de cada nodo
+// ya vienen calculados desde src/lib/quimia/path.ts (con el Pro-gating de
+// las Clases incluido): esta página solo los muestra (construirUnidadesQuimia)
+// y nunca recalcula un estado, así que el sidebar y la validación de
+// [slug]/page.tsx no pueden desincronizarse.
+export default async function QuimiaAprenderPage({ searchParams }: Props) {
+  const { tab } = await searchParams;
   const t = await getTranslations("Quimia.aprenderPagina");
-  // Grupos (modos.simbolos/formulas/tabla y elegir.desc*) ya existen en
-  // i18n para la pantalla de práctica — se reutilizan acá para nombrar
-  // los mismos 3 grupos en el sidebar de Aprender (Fase paridad-sidebar,
-  // ver docs/PARIDAD_MUNDOS.md footnote ⁹), sin duplicar strings nuevos.
-  const tQuimia = await getTranslations("Quimia");
   const supabase = await createClient();
-  const { user } = await requireUsuario(supabase, "/quimia/aprender");
+  const { user, profile } = await requireUsuario(supabase, "/quimia/aprender");
   const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
   bloquearInvitado(user, tBloqueos("aprender"));
-  const nodos = await obtenerCaminoQuimia(supabase, user.id);
+  const esPro = profile.plan === "pro";
 
+  const nodos = await obtenerCaminoQuimia(supabase, user.id, esPro);
   const totalDominadas = nodos.filter((n) => n.estado === "completado").length;
+  const { tecnicas, clases, hayClases } = partirCaminoPorClases(nodos);
+  const proHref = "/pro?next=%2Fquimia%2Faprender%3Ftab%3Dclases";
 
-  const NOMBRE_GRUPO: Record<GrupoQuimia, string> = {
-    simbolos: tQuimia("modos.simbolos"),
-    formulas: tQuimia("modos.formulas"),
-    tabla: tQuimia("modos.tabla"),
+  const nombreGrupo: Record<GrupoQuimia, string> = {
+    tabla: t("grupos.tabla"),
+    simbolos: t("grupos.simbolos"),
+    formulas: t("grupos.formulas"),
+    nomenclatura: t("grupos.nomenclatura"),
+    redox: t("grupos.redox"),
+    organica: t("grupos.organica"),
   };
-  const DESCRIPCION_GRUPO: Record<GrupoQuimia, string> = {
-    simbolos: tQuimia("elegir.descSimbolos"),
-    formulas: tQuimia("elegir.descFormulas"),
-    tabla: tQuimia("elegir.descTabla"),
-  };
-
-  const unidadesGenericas: UnidadCaminoGenerico[] = ORDEN_GRUPOS_QUIMIA.map((grupo) => ({
-    grupo,
-    nodos: nodos.filter((n) => n.grupo === grupo),
-  }))
-    .filter((g) => g.nodos.length > 0)
-    .map((g) => ({
-      id: `quimia-${g.grupo}`,
-      nombre: NOMBRE_GRUPO[g.grupo],
-      descripcion: DESCRIPCION_GRUPO[g.grupo],
-      nodos: g.nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
-    }));
+  const ctaPro = { label: t("desbloqueaConPro"), href: proHref };
 
   return (
     <>
       <Header autenticado />
       <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
-        <AprenderLayout
+        <AprenderTabs
           titulo={t("titulo")}
           subtitulo={t("subtitulo")}
           progresoLabel={t("progreso")}
-          tecnicasTexto={t("progresoTecnicas", { completadas: totalDominadas, total: nodos.length })}
+          progresoTexto={t("progresoTecnicas", { completadas: totalDominadas, total: nodos.length })}
           colorHex={COLOR_QUIMIA}
-          totalDominadas={totalDominadas}
-          totalTecnicas={nodos.length}
-          unidadesSidebar={unidadesGenericas.map((u) => ({
-            id: u.id,
-            nombre: u.nombre,
-            dominadas: u.nodos.filter((n) => n.estado === "completado").length,
-            total: u.nodos.length,
-          }))}
-        >
-          <CaminoContinuo unidades={unidadesGenericas} basePath="/quimia/aprender" colorHex={COLOR_QUIMIA} />
-        </AprenderLayout>
+          basePath="/quimia/aprender"
+          tecnicas={construirUnidadesQuimia(tecnicas, nombreGrupo, ctaPro)}
+          clases={hayClases ? construirUnidadesQuimia(clases, nombreGrupo, ctaPro) : null}
+          esPro={esPro}
+          proHref={proHref}
+          defaultTab={resolverPestanaInicial(tab, hayClases)}
+        />
       </div>
     </>
   );

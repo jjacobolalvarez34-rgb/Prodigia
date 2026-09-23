@@ -35,7 +35,7 @@ set contenido = contenido || '{"quiz": [
     "pregunta": "¿Cuál es la ventaja principal de agrupar elementos por familia química en vez de memorizarlos sueltos?",
     "opciones": ["Compartir comportamiento significa que aprender uno te da información gratis de los demás", "Todos los elementos de una familia tienen el mismo número atómico", "Las familias químicas cambian según el compuesto", "No hace falta aprender ningún elemento individual"],
     "respuesta": "Compartir comportamiento significa que aprender uno te da información gratis de los demás",
-    "explicacion": "Es la idea central: si el sodio es un metal alcalino reactivo, ya sabés algo real de sus vecinos de familia sin memorizarlos aparte."
+    "explicacion": "Es la idea central: si el sodio es un metal alcalino reactivo, ya sabes algo real de sus vecinos de familia sin memorizarlos aparte."
   },
   {
     "pregunta": "¿Cuáles de estos tres elementos pertenecen a la misma familia química (metales alcalinos), según el ejemplo de la lección?",
@@ -44,7 +44,7 @@ set contenido = contenido || '{"quiz": [
     "explicacion": "Li, Na y K son los tres metales alcalinos del ejemplo — mismo grupo 1 de la tabla periódica."
   },
   {
-    "pregunta": "Si sabés que el sodio (Na) es un metal alcalino muy reactivo, ¿qué podés deducir del litio (Li) y el potasio (K) sin memorizarlos aparte?",
+    "pregunta": "Si sabes que el sodio (Na) es un metal alcalino muy reactivo, ¿qué puedes deducir del litio (Li) y el potasio (K) sin memorizarlos aparte?",
     "opciones": ["Que también son metales alcalinos reactivos, por pertenecer a la misma familia", "Que tienen exactamente el mismo número atómico que el sodio", "Que no reaccionan con nada", "Que son gases nobles"],
     "respuesta": "Que también son metales alcalinos reactivos, por pertenecer a la misma familia",
     "explicacion": "Es el mismo ejemplo de la lección: conocer una familia te da el comportamiento de todos sus miembros."
@@ -58,7 +58,7 @@ set contenido = contenido || '{"quiz": [
     "pregunta": "Según esta técnica, ¿qué elemento es \"Au\"?",
     "opciones": ["Oro", "Plata", "Aluminio", "Argón"],
     "respuesta": "Oro",
-    "explicacion": "Au es oro — pensá en el brillo dorado de una joya, no en la letra sola (la plata es Ag, no Au)."
+    "explicacion": "Au es oro — piensa en el brillo dorado de una joya, no en la letra sola (la plata es Ag, no Au)."
   },
   {
     "pregunta": "¿Qué imagen cotidiana ayuda a recordar que Fe es hierro, según esta técnica?",
@@ -70,7 +70,7 @@ set contenido = contenido || '{"quiz": [
     "pregunta": "¿Cuál es el símbolo químico del cobre, según el ejemplo de esta técnica?",
     "opciones": ["Cu", "Co", "C", "Ca"],
     "respuesta": "Cu",
-    "explicacion": "Cu es cobre — pensá en el tono anaranjado de un cable eléctrico pelado (Co es cobalto, un elemento distinto)."
+    "explicacion": "Cu es cobre — piensa en el tono anaranjado de un cable eléctrico pelado (Co es cobalto, un elemento distinto)."
   }
 ]}'::jsonb
 where slug = 'asociacion-color-uso';

@@ -1,99 +1,164 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TechniqueQuizPregunta } from "@/types/database";
+import type { VisualLeccion } from "@/lib/aprender/visuales";
+import type { NodoEstado } from "@/lib/aprender/clases";
+import { TECNICAS_QUIMIA, CLASES_QUIMIA } from "@/lib/quimia/lecciones";
+import { ORDEN_GRUPOS_QUIMIA, type GrupoQuimia } from "@/lib/quimia/grupos";
 
-export type NodoEstado = "completado" | "activo" | "bloqueado";
+export type { NodoEstado, GrupoQuimia };
+export { ORDEN_GRUPOS_QUIMIA };
 
-// Los 4 grupos de "Aprender" (presentación, sin columna nueva en DB —
-// ver docs/PARIDAD_MUNDOS.md footnote ⁹): coinciden 1 a 1 con los modos
-// reales de práctica de Quimia (mismos slugs que usa
-// modo_quimia_aleatorio_por_rango en 0090_duelos_anatomia_melodia.sql
-// y las claves Quimia.modos.* de i18n), en el mismo orden de dificultad
-// con que se van desbloqueando en duelos. "nomenclatura"/"organica" no
-// tienen técnica de Aprender todavía, así que no aparecen acá.
-export type GrupoQuimia = "simbolos" | "formulas" | "tabla";
-export const ORDEN_GRUPOS_QUIMIA: GrupoQuimia[] = ["simbolos", "formulas", "tabla"];
+// Camino de Aprender de Quimia: Técnicas | Clases (docs/PARIDAD_MUNDOS.md
+// filas 22/23). Reutiliza `techniques`/`technique_progress`
+// (problem_type='quimia'), sin tablas nuevas, y arma el estado
+// completado/activo/bloqueado ACÁ, en la fuente: [slug]/page.tsx vuelve a
+// pedir este camino y redirige si el nodo está "bloqueado", así que el
+// estado que ve el sidebar y el que valida la página tienen que ser el mismo
+// (ver el bug de Numeria corregido en src/lib/aprender/pathClases.ts).
+//
+// Dos progresiones con criterio DISTINTO, a propósito:
+//   - Técnicas (gratis): atajos sueltos. Cada grupo (tabla, símbolos,
+//     fórmulas, nomenclatura, redox, orgánica) tiene su propio puntero
+//     "activo" independiente: la primera Técnica no dominada de CADA grupo
+//     está abierta a la vez; dentro de un grupo es estrictamente lineal.
+//   - Clases (Pro): un CURSO con dependencias reales entre sí (los números de
+//     oxidación son prerrequisito de la nomenclatura, la tabla lo es de
+//     todo). Progresión lineal ÚNICA en orden de curso (grupo en
+//     ORDEN_GRUPOS_QUIMIA, después `orden`): solo una Clase "activa" a la
+//     vez. La primera es preview gratis; el resto exige plan Pro.
 
-// Mapeo por slug — juicio de contenido, no un dato de la fila: cada
-// técnica ya dice explícitamente de qué se trata ("Au es oro, pensá en
-// el brillo dorado" = símbolos; "leer la tabla como un mapa" = tabla
-// periódica; "cómo se nombran los compuestos" = fórmulas).
-// agrupar-por-familia también cae en "tabla" porque agrupar por familia
-// química ES agrupar por columna/grupo de la tabla periódica (mismo
-// truco que explica tabla-como-mapa).
-const GRUPO_POR_SLUG: Record<string, GrupoQuimia> = {
-  "agrupar-por-familia": "tabla",
-  "asociacion-color-uso": "simbolos",
-  "tabla-como-mapa": "tabla",
-  "patrones-en-formulas": "formulas",
-};
+// El mapeo slug -> grupo sale del contenido tipado (una sola fuente de
+// verdad, nunca una lista repetida a mano).
+function construirMapaGrupos(): Map<string, GrupoQuimia> {
+  const mapa = new Map<string, GrupoQuimia>();
+  for (const t of TECNICAS_QUIMIA) mapa.set(t.slug, t.grupo);
+  for (const c of CLASES_QUIMIA) mapa.set(c.slug, c.grupo);
+  return mapa;
+}
+const GRUPO_POR_SLUG = construirMapaGrupos();
+
+// Un slug de la base que el contenido tipado no conoce cae en el primer grupo
+// (no se pierde ninguna fila del camino).
+export function grupoDeSlug(slug: string): GrupoQuimia {
+  return GRUPO_POR_SLUG.get(slug) ?? ORDEN_GRUPOS_QUIMIA[0];
+}
 
 export interface NodoCaminoQuimia {
   id: string;
   slug: string;
   nombre: string;
   descripcion: string | null;
-  contenido: { pasos: string[]; quiz?: TechniqueQuizPregunta[] };
+  contenido: { pasos: string[]; visuales?: VisualLeccion[]; quiz?: TechniqueQuizPregunta[] };
   estado: NodoEstado;
-  grupo: GrupoQuimia | null;
+  grupo: GrupoQuimia;
+  // true para las filas de la pestaña "Clases" (techniques.requiere_pro).
+  requierePro: boolean;
+  // true SOLO para Clases bloqueadas porque el usuario no es Pro (no por
+  // progresión normal) — mismo criterio que src/lib/aprender/clases.ts.
+  bloqueadoPorPlan: boolean;
 }
 
-// Camino de Aprender de Quimia — mismo patrón que src/lib/geografia/path.ts:
-// reutiliza `techniques`/`technique_progress` (problem_type='quimia'),
-// no una tabla nueva. La progresión secuencial ("activo" único) ahora
-// ordena primero por grupo (ORDEN_GRUPOS) y dentro de cada grupo por
-// `orden` — mismo criterio que ya usan src/lib/aprender/path.ts
-// (Numeria, por tema) y src/lib/enigmia/path.ts (por categoría), para
-// que el nodo "activo" siempre aparezca dentro del grupo que se
-// renderiza primero, nunca "salteado" visualmente.
-export async function obtenerCaminoQuimia(supabase: SupabaseClient, userId: string): Promise<NodoCaminoQuimia[]> {
+export interface FilaTechnique {
+  id: string;
+  slug: string;
+  nombre: string;
+  descripcion: string | null;
+  contenido: unknown;
+  orden: number;
+  requiere_pro: boolean;
+}
+
+// Lo que la página de lección permite abrir: todo menos "bloqueado". Lo
+// comparten [slug]/page.tsx y los tests de coherencia con el sidebar.
+export function puedeAbrirNodoQuimia(nodo: Pick<NodoCaminoQuimia, "estado">): boolean {
+  return nodo.estado !== "bloqueado";
+}
+
+// Orden de curso: (grupo en ORDEN_GRUPOS_QUIMIA, orden dentro del grupo).
+export function ordenarPorGrupoYOrden(filas: FilaTechnique[]): FilaTechnique[] {
+  return filas.slice().sort((a, b) => {
+    const pa = ORDEN_GRUPOS_QUIMIA.indexOf(grupoDeSlug(a.slug));
+    const pb = ORDEN_GRUPOS_QUIMIA.indexOf(grupoDeSlug(b.slug));
+    if (pa !== pb) return pa - pb;
+    return a.orden - b.orden;
+  });
+}
+
+function nodoDe(t: FilaTechnique, estado: NodoEstado, requierePro: boolean, bloqueadoPorPlan: boolean): NodoCaminoQuimia {
+  return {
+    id: t.id,
+    slug: t.slug,
+    nombre: t.nombre,
+    descripcion: t.descripcion,
+    contenido: t.contenido as NodoCaminoQuimia["contenido"],
+    estado,
+    grupo: grupoDeSlug(t.slug),
+    requierePro,
+    bloqueadoPorPlan,
+  };
+}
+
+// Técnicas (`filas` YA ordenadas por (grupo, orden)): un puntero "activo" por
+// grupo. Nunca dependen del plan.
+export function calcularNodosTecnicas(filas: FilaTechnique[], dominadas: Set<string>): NodoCaminoQuimia[] {
+  const activoPorGrupo = new Set<GrupoQuimia>();
+  return filas.map((t) => {
+    const grupo = grupoDeSlug(t.slug);
+    if (dominadas.has(t.id)) return nodoDe(t, "completado", false, false);
+    if (!activoPorGrupo.has(grupo)) {
+      activoPorGrupo.add(grupo);
+      return nodoDe(t, "activo", false, false);
+    }
+    return nodoDe(t, "bloqueado", false, false);
+  });
+}
+
+// Clases (`filas` YA ordenadas en orden de curso): UNA sola progresión.
+// - completada: "completado".
+// - la primera del curso (preview gratis): "activo" siempre que no esté
+//   completada, sin importar el plan.
+// - el resto sin Pro: "bloqueado" con bloqueadoPorPlan (para mostrar el CTA
+//   "Desbloquea con Pro" en vez de un bloqueo mudo).
+// - el resto con Pro: la primera no completada del curso queda "activo" y las
+//   siguientes "bloqueado" (dependencia real entre clases).
+export function calcularNodosClases(filas: FilaTechnique[], dominadas: Set<string>, esPro: boolean): NodoCaminoQuimia[] {
+  let punteroAsignado = false;
+  return filas.map((t, i) => {
+    if (dominadas.has(t.id)) return nodoDe(t, "completado", true, false);
+    const esPrimera = i === 0;
+    if (esPrimera) {
+      punteroAsignado = true;
+      return nodoDe(t, "activo", true, false);
+    }
+    if (!esPro) return nodoDe(t, "bloqueado", true, true);
+    if (!punteroAsignado) {
+      punteroAsignado = true;
+      return nodoDe(t, "activo", true, false);
+    }
+    return nodoDe(t, "bloqueado", true, false);
+  });
+}
+
+// Camino completo: [...Técnicas, ...Clases] (mismo orden que el resto de los
+// mundos); partirCaminoPorClases (src/lib/aprender/clases.ts) separa las dos
+// pestañas. `esPro` viene del PLAN (profiles.plan), no de ningún nivel de
+// calibración.
+export function calcularCaminoQuimia(filas: FilaTechnique[], dominadas: Set<string>, esPro: boolean): NodoCaminoQuimia[] {
+  const rapidas = ordenarPorGrupoYOrden(filas.filter((t) => !t.requiere_pro));
+  const clases = ordenarPorGrupoYOrden(filas.filter((t) => t.requiere_pro));
+  return [...calcularNodosTecnicas(rapidas, dominadas), ...calcularNodosClases(clases, dominadas, esPro)];
+}
+
+export async function obtenerCaminoQuimia(supabase: SupabaseClient, userId: string, esPro: boolean): Promise<NodoCaminoQuimia[]> {
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("techniques")
-      .select("id, slug, nombre, descripcion, contenido, orden")
+      .select("id, slug, nombre, descripcion, contenido, orden, requiere_pro")
       .eq("problem_type", "quimia")
       .order("orden", { ascending: true }),
     supabase.from("technique_progress").select("technique_id, dominado").eq("user_id", userId),
   ]);
 
-  const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id));
-
-  const ordenadas = (tecnicas ?? []).slice().sort((a, b) => {
-    const ga = GRUPO_POR_SLUG[a.slug];
-    const gb = GRUPO_POR_SLUG[b.slug];
-    const pa = ga ? ORDEN_GRUPOS_QUIMIA.indexOf(ga) : ORDEN_GRUPOS_QUIMIA.length;
-    const pb = gb ? ORDEN_GRUPOS_QUIMIA.indexOf(gb) : ORDEN_GRUPOS_QUIMIA.length;
-    if (pa !== pb) return pa - pb;
-    return a.orden - b.orden;
-  });
-
-  // Desbloqueo por grupo (pedido del usuario 2026-09-22): antes había un
-  // único puntero "activo" para TODO el camino — completar TODO
-  // "Símbolos" era requisito para que apareciera la primera de
-  // "Fórmulas". Ahora cada grupo tiene su propio puntero independiente
-  // (`activoPorGrupo`), así que la primera técnica de cada grupo queda
-  // "activo" desde el principio; dentro de un mismo grupo se sigue
-  // siendo estrictamente lineal.
-  const activoPorGrupo = new Set<GrupoQuimia | null>();
-  return ordenadas.map((t) => {
-    const completado = dominadas.has(t.id);
-    const grupo = GRUPO_POR_SLUG[t.slug] ?? null;
-    let estado: NodoEstado;
-    if (completado) {
-      estado = "completado";
-    } else if (!activoPorGrupo.has(grupo)) {
-      estado = "activo";
-      activoPorGrupo.add(grupo);
-    } else {
-      estado = "bloqueado";
-    }
-    return {
-      id: t.id,
-      slug: t.slug,
-      nombre: t.nombre,
-      descripcion: t.descripcion,
-      contenido: t.contenido as { pasos: string[]; quiz?: TechniqueQuizPregunta[] },
-      estado,
-      grupo,
-    };
-  });
+  const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
+  return calcularCaminoQuimia((tecnicas ?? []) as FilaTechnique[], dominadas, esPro);
 }
