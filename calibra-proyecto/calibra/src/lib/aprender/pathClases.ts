@@ -44,7 +44,7 @@ export interface NodoCaminoNumeria {
   bloqueadoPorPlan: boolean;
 }
 
-interface FilaTechnique {
+export interface FilaTechnique {
   id: string;
   slug: string;
   nombre: string;
@@ -55,7 +55,7 @@ interface FilaTechnique {
   requiere_pro: boolean;
 }
 
-function calcularEstadosSecuenciales(dominadas: Set<string>, ids: string[]): NodoEstado[] {
+export function calcularEstadosSecuenciales(dominadas: Set<string>, ids: string[]): NodoEstado[] {
   let activoAsignado = false;
   return ids.map((id) => {
     if (dominadas.has(id)) return "completado";
@@ -67,7 +67,38 @@ function calcularEstadosSecuenciales(dominadas: Set<string>, ids: string[]): Nod
   });
 }
 
-function ordenarPorTemaYOrden(filas: FilaTechnique[]): FilaTechnique[] {
+// BUG REAL reportado jugando (2026-09-23): con calcularEstadosSecuenciales
+// (un solo puntero global recorriendo los 9 temas en orden), la primera
+// técnica de Fracciones/Geometría/etc. quedaba "bloqueado" en el camino
+// real mientras el usuario todavía estuviera a mitad de Multiplicación —
+// pese a que el sidebar de /aprender (agruparNodos + recalcularActivoPorGrupo
+// en src/lib/aprender/grupos.ts) SÍ la mostraba "activo" y clickeable. Esa
+// recomputación por grupo solo maquillaba el array que arma el sidebar; el
+// nodo real que devuelve obtenerCaminoConClasesNumeria (la fuente que
+// vuelve a consultar /aprender/[slug]/page.tsx al entrar por URL) seguía
+// "bloqueado", así que el usuario hacía click, entraba a
+// /aprender/[slug], veía estado==="bloqueado" ahí y rebotaba de vuelta a
+// /aprender sin abrir nada.
+//
+// Fix: calcular el desbloqueo POR TEMA ya acá, en la fuente de verdad —
+// mismo patrón (Set de grupos ya con su "activo" asignado) que ya usa
+// obtenerCaminoConClasesEnigmia (src/lib/enigmia/pathClases.ts,
+// activoPorCategoria) y los path.ts de Quimia/Anatomía/Melodía/
+// Trigonometría/Enigmia. `filas` YA viene ordenada por (tema, orden) —
+// ordenarPorTemaYOrden corre antes de llamar a esta función.
+export function calcularEstadosPorTema(dominadas: Set<string>, filas: FilaTechnique[]): NodoEstado[] {
+  const activoPorTema = new Set<string>();
+  return filas.map((f) => {
+    if (dominadas.has(f.id)) return "completado";
+    if (!activoPorTema.has(f.problem_type)) {
+      activoPorTema.add(f.problem_type);
+      return "activo";
+    }
+    return "bloqueado";
+  });
+}
+
+export function ordenarPorTemaYOrden(filas: FilaTechnique[]): FilaTechnique[] {
   return filas.slice().sort((a, b) => {
     const pa = TEMAS_ORDEN.indexOf(a.problem_type as TemaAprendible);
     const pb = TEMAS_ORDEN.indexOf(b.problem_type as TemaAprendible);
@@ -96,10 +127,7 @@ export async function obtenerCaminoConClasesNumeria(
   const rapidas = ordenarPorTemaYOrden(todas.filter((t) => !t.requiere_pro));
   const clases = ordenarPorTemaYOrden(todas.filter((t) => t.requiere_pro));
 
-  const estadosRapidas = calcularEstadosSecuenciales(
-    dominadas,
-    rapidas.map((t) => t.id)
-  );
+  const estadosRapidas = calcularEstadosPorTema(dominadas, rapidas);
   const estadosClasesSecuencial = calcularEstadosSecuenciales(
     dominadas,
     clases.map((t) => t.id)
