@@ -25,6 +25,8 @@ import { TECNICAS_GEOGRAFIA, CLASES_GEOGRAFIA } from "@/lib/geografia/lecciones"
 import type { Continente } from "@/lib/practica/geografia";
 import { TECNICAS_QUIMIA, CLASES_QUIMIA } from "@/lib/quimia/lecciones";
 import { ORDEN_GRUPOS_QUIMIA, type GrupoQuimia } from "@/lib/quimia/grupos";
+import { TECNICAS_ANATOMIA, CLASES_ANATOMIA } from "@/lib/anatomia/lecciones";
+import { ORDEN_GRUPOS_ANATOMIA, NOMBRES_GRUPOS_ANATOMIA } from "@/lib/anatomia/grupos";
 
 export type PestanaGrupos = "tecnicas" | "clases";
 type Idioma = "es" | "en";
@@ -238,6 +240,20 @@ export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
     ),
     clases: ORDEN_GRUPOS_QUIMIA.map((id) =>
       g(id, NOMBRES_GRUPOS_QUIMIA[id].es, NOMBRES_GRUPOS_QUIMIA[id].en, CLASES_QUIMIA.filter((c) => c.grupo === id).map((c) => c.slug))
+    ),
+  },
+  // Anatomía (Técnicas | Clases, 2026-09-23 — ver docs/PARIDAD_MUNDOS.md
+  // "Anatomía: Técnicas | Clases"): igual que Geografía y Quimia, la fuente
+  // de verdad del desbloqueo es src/lib/anatomia/path.ts (un "activo" por
+  // sistema en las dos pestañas) y la página arma el sidebar leyendo el
+  // campo `grupo` de cada nodo. Esta entrada es documentación/presentación
+  // derivada del contenido tipado (nunca slugs repetidos a mano).
+  anatomia: {
+    tecnicas: ORDEN_GRUPOS_ANATOMIA.map((id) =>
+      g(id, NOMBRES_GRUPOS_ANATOMIA[id].es, NOMBRES_GRUPOS_ANATOMIA[id].en, TECNICAS_ANATOMIA.filter((t) => t.grupo === id).map((t) => t.slug))
+    ),
+    clases: ORDEN_GRUPOS_ANATOMIA.map((id) =>
+      g(id, NOMBRES_GRUPOS_ANATOMIA[id].es, NOMBRES_GRUPOS_ANATOMIA[id].en, CLASES_ANATOMIA.filter((c) => c.grupo === id).map((c) => c.slug))
     ),
   },
   historia: {

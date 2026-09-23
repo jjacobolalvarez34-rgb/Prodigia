@@ -1518,13 +1518,15 @@
     "aprender": {
       "metadata": {
         "titulo": "Aprender Anatomía",
-        "description": "Técnicas de memorización para huesos, músculos, órganos y sistema nervioso."
+        "description": "Técnicas y clases de huesos, músculos, órganos y sistema nervioso, con esquemas animados."
       },
       "progresoLabel": "Progreso",
       "tecnicasContador": "{dominadas}/{total} técnicas",
       "unidadDescripcion": "Técnicas para memorizar términos anatómicos — no son cómputo, son asociaciones y patrones.",
       "titulo": "Aprender",
-      "subtitulo": "Trucos para memorizar términos — no son cuentas, son formas de mirar y agrupar."
+      "subtitulo": "Trucos para memorizar términos — no son cuentas, son formas de mirar y agrupar.",
+      "desbloqueaConPro": "Desbloquea con Pro",
+      "leccionesContador": "{dominadas}/{total} lecciones"
     },
     "leccion": {
       "badge": "Técnica",
@@ -1541,7 +1543,8 @@
       "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras.",
+      "clase": "Clase"
     },
     "practica": {
       "oseo": {
@@ -1567,6 +1570,27 @@
           "titulo": "Órganos",
           "description": "Órganos principales del cuerpo humano, con dificultad adaptativa."
         }
+      }
+    },
+    "visuales": {
+      "esqueleto": {
+        "etiqueta": "Esqueleto animado",
+        "nota": "Esqueleto real de dominio público: solo se resaltan los grupos de huesos que el dibujo trae separados."
+      },
+      "cuerpo": {
+        "etiqueta": "Esquema de regiones del cuerpo",
+        "nota": "Esquema de regiones, no un dibujo anatómico: sirve para ubicar, no para ver la forma.",
+        "anterior": "Vista anterior",
+        "posterior": "Vista posterior",
+        "region": "Región: {regiones}",
+        "porDetras": "por detrás"
+      },
+      "grupos": {
+        "etiqueta": "Diagrama de grupos"
+      },
+      "flujo": {
+        "etiqueta": "Diagrama de recorrido",
+        "ciclo": "Y vuelve a empezar: es un ciclo"
       }
     }
   },

@@ -15,7 +15,7 @@ export const NOMBRE_MODO_ANATOMIA: Record<ModoAnatomia, string> = {
   nervioso: "Sistema nervioso",
 };
 
-const OSEO_BAJO = ["Fémur", "Húmero", "Tibia", "Peroné", "Radio", "Cúbito", "Costillas", "Columna vertebral", "Cráneo", "Pelvis"];
+export const OSEO_BAJO = ["Fémur", "Húmero", "Tibia", "Peroné", "Radio", "Cúbito", "Costillas", "Columna vertebral", "Cráneo", "Pelvis"];
 // Nivel alto (7-10): huesos del cráneo (sin zona de click propia — el
 // cráneo es un único grupo en el SVG, sin sub-huesos separados) más
 // mano y pie (2026-08-23: el SVG fuente SÍ los trae separados por
@@ -24,18 +24,18 @@ const OSEO_BAJO = ["Fémur", "Húmero", "Tibia", "Peroné", "Radio", "Cúbito", 
 // mano/pie salen como pregunta de click, los del cráneo como opción
 // múltiple — la decisión es por término elegido, no por nivel entero
 // (ver generarPreguntaAnatomia).
-const OSEO_ALTO = [
+export const OSEO_ALTO = [
   "Frontal", "Parietal", "Temporal", "Occipital", "Esfenoides", "Etmoides", "Maxilar", "Mandíbula", "Cigomático", "Nasal",
   "Carpianos", "Metacarpianos", "Falanges de la mano", "Tarsianos", "Metatarsianos", "Falanges del pie",
 ];
 
-const MUSCULAR_BAJO = ["Bíceps", "Tríceps", "Cuádriceps", "Deltoides", "Glúteos", "Recto abdominal", "Pectoral mayor", "Trapecio", "Gastrocnemio", "Dorsal ancho"];
-const MUSCULAR_ALTO = ["Frontal", "Orbicular de los ojos", "Orbicular de la boca", "Masetero", "Temporal", "Buccinador", "Cigomático mayor", "Occipital", "Platisma"];
+export const MUSCULAR_BAJO = ["Bíceps", "Tríceps", "Cuádriceps", "Deltoides", "Glúteos", "Recto abdominal", "Pectoral mayor", "Trapecio", "Gastrocnemio", "Dorsal ancho"];
+export const MUSCULAR_ALTO = ["Frontal", "Orbicular de los ojos", "Orbicular de la boca", "Masetero", "Temporal", "Buccinador", "Cigomático mayor", "Occipital", "Platisma"];
 
-const ORGANOS = ["Corazón", "Pulmones", "Hígado", "Riñones", "Estómago", "Cerebro", "Intestino", "Páncreas", "Vejiga", "Bazo"];
+export const ORGANOS = ["Corazón", "Pulmones", "Hígado", "Riñones", "Estómago", "Cerebro", "Intestino", "Páncreas", "Vejiga", "Bazo"];
 
-const NERVIOSO_BAJO = ["Cerebro", "Cerebelo", "Médula espinal", "Nervio periférico"];
-const NERVIOSO_ALTO = [
+export const NERVIOSO_BAJO = ["Cerebro", "Cerebelo", "Médula espinal", "Nervio periférico"];
+export const NERVIOSO_ALTO = [
   "Olfatorio", "Óptico", "Oculomotor", "Troclear", "Trigémino", "Abducens",
   "Facial", "Vestibulococlear", "Glosofaríngeo", "Vago", "Accesorio", "Hipogloso",
 ];
@@ -50,7 +50,11 @@ const ETIQUETA_BAJO: Record<ModoAnatomia, string> = {
 };
 const ETIQUETA_ALTO: Record<Exclude<ModoAnatomia, "organos">, string> = {
   oseo: "un hueso del cráneo",
-  muscular: "un músculo de la cara",
+  // Auditoría de contenido 2026-09-23: antes decía "un músculo de la
+  // cara", pero MUSCULAR_ALTO incluye el occipital (cuero cabelludo,
+  // parte de atrás de la cabeza) y el platisma (cuello): no son de la
+  // cara. "Cabeza o cuello" describe bien los 9 términos.
+  muscular: "un músculo de la cabeza o del cuello",
   nervioso: "un par craneal",
 };
 
@@ -135,6 +139,28 @@ function opcionesConDistractores(correcta: string, resto: string[], rng: Rng, ca
   return opciones;
 }
 
+// Términos que NO pueden aparecer como distractores en una pregunta de
+// `modo` porque también son una respuesta correcta válida de ese modo
+// (auditoría 2026-09-23: había preguntas con DOS respuestas correctas).
+// - Nombres compartidos entre sistemas: Frontal, Temporal y Occipital son
+//   a la vez huesos del cráneo y músculos de la cabeza; "Cerebro" está en
+//   ORGANOS y en NERVIOSO_BAJO (el modo nervioso lo excluye por su propio
+//   pool y el modo órganos porque excluye NERVIOSO_BAJO completo).
+// - Órganos: el cerebro, el cerebelo y la médula espinal (NERVIOSO_BAJO)
+//   también son órganos, así que tampoco sirven de distractor.
+export function terminosNoDistractores(modo: ModoAnatomia): Set<string> {
+  switch (modo) {
+    case "oseo":
+      return new Set([...OSEO_BAJO, ...OSEO_ALTO]);
+    case "muscular":
+      return new Set([...MUSCULAR_BAJO, ...MUSCULAR_ALTO]);
+    case "organos":
+      return new Set([...ORGANOS, ...NERVIOSO_BAJO]);
+    case "nervioso":
+      return new Set([...NERVIOSO_BAJO, ...NERVIOSO_ALTO]);
+  }
+}
+
 // Pool "de otros sistemas" para armar distractores — bajo (fácil de
 // descartar a simple vista) o alto (términos poco comunes, cuesta más
 // distinguirlos del correcto).
@@ -145,9 +171,11 @@ function poolOtrosSistemas(modo: ModoAnatomia, dificil: boolean): string[] {
     { modo: "organos", bajo: ORGANOS, alto: ORGANOS },
     { modo: "nervioso", bajo: NERVIOSO_BAJO, alto: NERVIOSO_ALTO },
   ];
+  const excluidos = terminosNoDistractores(modo);
   return todos
     .filter((t) => t.modo !== modo)
-    .flatMap((t) => (dificil ? t.alto : t.bajo));
+    .flatMap((t) => (dificil ? t.alto : t.bajo))
+    .filter((x) => !excluidos.has(x));
 }
 
 // Fase 2 (nivel 3-6) + auditoría "Anatomía a nivel 10" (nivel 7-10): en
@@ -173,7 +201,8 @@ export function generarPreguntaAnatomia(modo: ModoAnatomia, nivel: number, usado
     if (huesoClave) {
       return {
         tipo: "click",
-        enunciado: `Clickeá dónde está: ${correcta}`,
+        // Español neutro (sin voseo): "Clickeá" era voseo.
+        enunciado: `Haz clic donde está: ${correcta}`,
         objetivoHueso: huesoClave,
         respuesta: correcta,
         clave: correcta,
@@ -182,7 +211,10 @@ export function generarPreguntaAnatomia(modo: ModoAnatomia, nivel: number, usado
     // Sin zona real (Costillas en cualquier nivel, huesos del cráneo en
     // 7-10) o nivel 1-2 (opción múltiple siempre) — mismo formato de
     // siempre, no se aproxima ninguna zona de click.
-    const etiquetaOseo = band < 3 ? "un hueso" : "un hueso del cráneo, la mano o el pie";
+    // Auditoría 2026-09-23: Cráneo (22 huesos), Columna vertebral (33
+    // vértebras), Costillas y Pelvis no son "un hueso" sino partes del
+    // esqueleto: el enunciado del nivel bajo lo dice con precisión.
+    const etiquetaOseo = band < 3 ? "un hueso o una parte del esqueleto" : "un hueso del cráneo, la mano o el pie";
     const distractoresOseo = poolOtrosSistemas(modo, band >= 2);
     const opcionesOseo = opcionesConDistractores(correcta, distractoresOseo, rng);
     return {

@@ -1,14 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import type { NodoCaminoAnatomia } from "@/lib/anatomia/path";
+import { hrefVolverAAprender } from "@/lib/aprender/clases";
+import { visualesDeContenido } from "@/lib/aprender/visuales";
 import type { Achievement } from "@/types/database";
 import LogroBanner from "@/components/LogroBanner";
 import MathText from "@/components/MathText";
+import CuerpoVisual from "@/components/aprender/CuerpoVisual";
+import { REGISTRO_VISUALES_ANATOMIA } from "@/components/anatomia/visuales/registro";
 import { COLOR_ANATOMIA } from "../../colores";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
@@ -24,10 +28,13 @@ interface Props {
   nodo: NodoCaminoAnatomia;
 }
 
-// Lecciones mnemotécnicas, no de cómputo — mismo patrón exacto que
-// LeccionQuimiaClient.tsx, extendido con la fase "quiz" opcional (ver
-// docs/PLAN_REVISION_CONTENIDO.md Proceso 1), igual que
-// LeccionCalculiaClient.tsx / LeccionGeografiaClient.tsx.
+// Técnicas | Clases de Anatomía (2026-09-23, ver docs/PARIDAD_MUNDOS.md
+// filas 22/23): mismo criterio que LeccionGeografiaClient.tsx — cuando la
+// lección trae `contenido.visuales` (las 21 Técnicas y 22 Clases, todas con
+// visuales "anatomia.*"), la fase "ejemplo" muestra CuerpoVisual en vez del
+// paso-a-paso de texto plano de una lección sin visuales. "Volver a
+// Aprender" respeta de qué pestaña vino la lección (Técnicas o Clases) vía
+// hrefVolverAAprender.
 export default function LeccionAnatomiaClient({ nodo }: Props) {
   const t = useTranslations("Anatomia");
   const router = useRouter();
@@ -36,6 +43,8 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
   const [logrosNuevos, setLogrosNuevos] = useState<Achievement[]>([]);
 
   const pasos = nodo.contenido.pasos;
+  const visuales = useMemo(() => visualesDeContenido(nodo.contenido.visuales), [nodo.contenido.visuales]);
+  const esVisual = visuales.length > 0;
   const quiz = useMemo(() => nodo.contenido.quiz ?? [], [nodo.contenido.quiz]);
   const tieneQuiz = quiz.length > 0;
 
@@ -62,8 +71,10 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
       }
       if (Array.isArray(data.logrosNuevos)) setLogrosNuevos(data.logrosNuevos);
     } catch {
-      // Si falla el guardado, igual mostramos la celebración — salvo
-      // que sea un quiz, ahí no se festeja sin confirmación del server.
+      // Si falla el guardado, igual mostramos la celebración: no vale la
+      // pena trabar al usuario por un error de red puntual acá. Un quiz
+      // que falla de red no debería festejar sin confirmación del
+      // server, así que ahí sí se corta.
       if (respuestasEnviadas) {
         setEnviandoQuiz(false);
         return;
@@ -89,7 +100,7 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
                 className="rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wide"
                 style={{ background: `color-mix(in oklab, ${COLOR_ANATOMIA} 12%, transparent)`, color: COLOR_ANATOMIA }}
               >
-                {t("leccion.badge")}
+                {nodo.requierePro ? t("leccion.clase") : t("leccion.badge")}
               </span>
               <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">{nodo.nombre}</h1>
               <p className="mt-2 text-texto-secundario">{nodo.descripcion}</p>
@@ -106,57 +117,72 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
 
         {fase === "ejemplo" && (
           <motion.div key="ejemplo" {...transicion} className="flex flex-col gap-6">
-            <div className="flex flex-col gap-3">
-              {pasos.map((paso, i) => (
-                <div
-                  key={i}
-                  className={`rounded-xl border px-4 py-3 text-sm transition-all duration-300 ${
-                    i === pasoIdx
-                      ? "border-logro/50 bg-logro/10 text-foreground"
-                      : i < pasoIdx
-                        ? "border-border bg-surface text-foreground/40"
-                        : "border-border bg-surface text-foreground/25"
-                  }`}
+            {esVisual ? (
+              <>
+                <CuerpoVisual pasos={pasos} visuales={visuales} registro={REGISTRO_VISUALES_ANATOMIA} />
+                <button
+                  onClick={() => (tieneQuiz ? setFase("quiz") : completarLeccion())}
+                  className="rounded-xl px-4 py-3 font-display font-semibold text-white"
+                  style={{ background: COLOR_ANATOMIA }}
                 >
-                  <span className="mr-2 font-bold text-logro">{i + 1}</span>
-                  <MathText texto={paso} />
+                  {tieneQuiz ? t("leccion.continuarAlQuiz") : t("leccion.marcarAprendida")}
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col gap-3">
+                  {pasos.map((paso, i) => (
+                    <div
+                      key={i}
+                      className={`rounded-xl border px-4 py-3 text-sm transition-all duration-300 ${
+                        i === pasoIdx
+                          ? "border-logro/50 bg-logro/10 text-foreground"
+                          : i < pasoIdx
+                            ? "border-border bg-surface text-foreground/40"
+                            : "border-border bg-surface text-foreground/25"
+                      }`}
+                    >
+                      <span className="mr-2 font-bold text-logro">{i + 1}</span>
+                      <MathText texto={paso} />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setPasoIdx((p) => Math.max(0, p - 1))}
-                disabled={pasoIdx === 0}
-                className="rounded-xl border border-border px-4 py-3 font-medium text-foreground disabled:opacity-40"
-              >
-                {t("leccion.anterior")}
-              </button>
-              {pasoIdx < pasos.length - 1 ? (
-                <button
-                  onClick={() => setPasoIdx((p) => Math.min(pasos.length - 1, p + 1))}
-                  className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
-                  style={{ background: COLOR_ANATOMIA }}
-                >
-                  {t("leccion.siguientePaso")}
-                </button>
-              ) : tieneQuiz ? (
-                <button
-                  onClick={() => setFase("quiz")}
-                  className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
-                  style={{ background: COLOR_ANATOMIA }}
-                >
-                  {t("leccion.continuarAlQuiz")}
-                </button>
-              ) : (
-                <button
-                  onClick={() => completarLeccion()}
-                  className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
-                  style={{ background: COLOR_ANATOMIA }}
-                >
-                  {t("leccion.marcarAprendida")}
-                </button>
-              )}
-            </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setPasoIdx((p) => Math.max(0, p - 1))}
+                    disabled={pasoIdx === 0}
+                    className="rounded-xl border border-border px-4 py-3 font-medium text-foreground disabled:opacity-40"
+                  >
+                    {t("leccion.anterior")}
+                  </button>
+                  {pasoIdx < pasos.length - 1 ? (
+                    <button
+                      onClick={() => setPasoIdx((p) => Math.min(pasos.length - 1, p + 1))}
+                      className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
+                      style={{ background: COLOR_ANATOMIA }}
+                    >
+                      {t("leccion.siguientePaso")}
+                    </button>
+                  ) : tieneQuiz ? (
+                    <button
+                      onClick={() => setFase("quiz")}
+                      className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
+                      style={{ background: COLOR_ANATOMIA }}
+                    >
+                      {t("leccion.continuarAlQuiz")}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => completarLeccion()}
+                      className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
+                      style={{ background: COLOR_ANATOMIA }}
+                    >
+                      {t("leccion.marcarAprendida")}
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
           </motion.div>
         )}
 
@@ -234,7 +260,7 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
               <button
-                onClick={() => router.push("/anatomia/aprender")}
+                onClick={() => router.push(hrefVolverAAprender("/anatomia/aprender", nodo.requierePro))}
                 className="rounded-xl px-4 py-3 font-display font-semibold text-white"
                 style={{ background: COLOR_ANATOMIA }}
               >

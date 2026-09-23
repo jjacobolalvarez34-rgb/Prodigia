@@ -63,8 +63,8 @@ confirmar en vivo · ❌ ausente.
 | 19 | Feed: tarjetas automáticas | ✅ | ✅¹,⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
 | 20 | Responsive en mobile real | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | 21 | Aparece en estadísticas Pro (/perfil/estadisticas) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅¹⁰ | ✅¹⁰ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 22 | Aprender con pestañas Técnicas \| Clases (Pro, clase 1 gratis) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ⚠️²⁰ | ⚠️¹² | ⚠️¹² | ⚠️¹² | ⚠️¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² |
-| 23 | Aprender con explicación visual animada (no solo texto) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ⚠️²⁰ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ✅¹³ | ⚠️¹³ |
+| 22 | Aprender con pestañas Técnicas \| Clases (Pro, clase 1 gratis) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ⚠️²⁰ | ✅²¹ | ⚠️¹² | ⚠️¹² | ⚠️¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² |
+| 23 | Aprender con explicación visual animada (no solo texto) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ⚠️²⁰ | ✅²¹ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ✅¹³ | ⚠️¹³ |
 | 24 | Español neutro, sin voseo, en el contenido de lecciones | ⚠️¹⁵ | ✅¹⁷ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ✅¹⁵ | ✅¹⁵ | ✅¹⁵ |
 
 ¹ = bug real encontrado en esta auditoría y **ya corregido en el código** esta sesión — ver "Changelog" abajo. La celda muestra el estado ACTUAL (post-fix), no el que se encontró.
@@ -90,6 +90,8 @@ confirmar en vivo · ❌ ausente.
 ¹⁹ = **Geografía, retrofit completo a Técnicas | Clases POR CONTINENTE (2026-09-23)** — ver "Geografía: Técnicas y Clases por continente" más abajo. 20 Técnicas nuevas (5 por continente, gratis) + 16 Clases nuevas (4 por continente, Pro, una por sub-región curada), desbloqueo por continente independiente (mismo patrón que Quimia/Enigmia — `src/lib/geografia/path.ts`), y un visual nuevo (`geografia.mapa`, mapa real animado con el nombre del país superpuesto) para la fila 23.
 
 ²⁰ = **Quimia, Técnicas | Clases, TANDA 1 de 2 (2026-09-23)** — ver "Quimia: Técnicas | Clases (tanda 1)" más abajo. 16 Técnicas (4 existentes corregidas + 12 nuevas) y 17 Clases Pro con 6 visuales animados nuevos (`quimia.*`), desbloqueo por grupo en Técnicas y curso lineal único en Clases. ⚠️ y no ✅ a propósito: el temario completo que pidió el usuario incluye estados de oxidación/redox/balanceo y química orgánica, que son de la tanda 2 (los grupos `redox` y `organica` ya están definidos y vacíos). Pasa a ✅ cuando la tanda 2 cierre.
+
+²¹ = **Anatomía, Técnicas | Clases completas (2026-09-23)** — ver "Anatomía: Técnicas | Clases" más abajo. 21 Técnicas (gratis) + 22 Clases (Pro), todas con visuales propios (`anatomia.esqueleto/cuerpo/grupos/flujo`) y quiz; desbloqueo independiente por sistema (óseo, muscular, órganos, nervioso) en las dos pestañas; cobertura de TODO lo que evalúa la práctica verificada con test. Fila 24 (español neutro) de Anatomía: 0081 corregido, ver la sección.
 
 **Resumen (al 2026-09-18, ANTES de los mundos 11-13 y la fila 22 — ver la actualización debajo)**: de 210 celdas (21 sistemas × 10 mundos), 186 ✅ (5 de ellas confirmadas jugando, no solo por código; 18 de Trigonometría/Historia, 18 de Calculia y 18 de Circuitia son ✅ solo por código+build, ver footnotes ⁶/⁷/⁸), 23 ⚠️ (17 de la matriz de 8 mundos + 3 de Calculia + 3 de Circuitia, mismo patrón que los mundos anteriores), 1 ❌ (Enigmia #1). Ningún mundo tiene un sistema completamente roto sin arreglo disponible; los ⚠️ restantes son gaps de UX/contenido reales (no bugs de wiring), cosas que no se pueden confirmar sin dispositivo real/browser, o (para los mundos nuevos) sistemas pendientes de la primera verificación en vivo post-migración.
 
@@ -736,3 +738,70 @@ Verificado sin errores: número atómico, período y grupo de los 118 elementos 
 - `npx vitest run`: **1027/1027** (67 archivos). Tests nuevos de Quimia: `tabla`, `datos`, `formulas`, `nomenclatura`, `enlaces`, `lewis`, `path` (19), `lecciones` (32: estructura, quiz, KaTeX de más de 700 expresiones, español neutro, números cruzados, afirmaciones químicas, migración 0209), `visuales` de render (13), y `quimiaAuditoria` (11).
 - **Navegador real** (Playwright + Chromium, dev server en el puerto 3455 confirmado libre, ruta temporal `[locale]/preview-quimia-*` sin auth, ya borrada junto con los scripts y capturas): capturas a 360, 380 y 390 px de ancho de la tabla periódica animada (legible, símbolos y números de grupo/período, leyenda), ficha del hierro, los tres enlaces (pasos intermedios incluidos), cruce de cargas, llenado de subcapas, cuadros con fórmulas con subíndices/superíndices bien renderizados, el camino con pestañas Técnicas | Clases (sidebar de 4 grupos, redox y orgánica ausentes, CTA Pro en la Clase 2) y el flujo de una Clase (explicación → visuales → quiz). Sin desborde horizontal de página en ninguna; sin errores de consola tras los dos arreglos de arriba. Las tablas de 4-5 columnas con texto largo se desplazan dentro de su propio cuadro a 360 px (no la página); se redujeron las dos más anchas.
 - **Sin verificar**: el flujo con Supabase y login reales (`0209` no corrió contra una base real; la ruta de preview no pasa por auth), el tema oscuro, el `Anterior/Siguiente` con lector de pantalla, y solo se vieron en pantalla ~20 de los ~90 visuales (el resto está cubierto por los tests de render y de datos). El motor genérico de lecciones tiene un mismatch de hidratación conocido para quien tiene "reducir movimiento" activado (el servidor no puede saberlo); es previo a Quimia y no se tocó.
+
+
+---
+
+## Anatomía: Técnicas | Clases (2026-09-23)
+
+Anatomía tenía 5 Técnicas (0081, con quiz en 0173) y 0 Clases, sin visuales: Aprender no cubría casi nada de lo que la práctica y los duelos evalúan (10 huesos, 16 huesos de cráneo/mano/pie, 19 músculos, 10 órganos, 4 términos del sistema nervioso y los 12 pares craneales). Pedido del usuario: "que quede bien completito con todo lo que se evalúa en Prodigia".
+
+### Números finales
+
+| Sistema | Técnicas (gratis) | Clases (Pro) |
+|---|---|---|
+| Óseo | 5 | 6 |
+| Muscular | 6 | 5 |
+| Órganos | 5 | 5 |
+| Nervioso | 5 | 6 |
+| **Total** | **21** (5 históricas reescritas + 16 nuevas) | **22** |
+
+Cada Técnica: 3-5 pasos + al menos un visual + quiz de 3-5 preguntas. Cada Clase: 5-6 pasos desarrollados (definiciones, ejemplos, "errores comunes"/simplificaciones), 1-3 visuales y quiz de 5 preguntas con `explicacion`. Código en `src/lib/anatomia/lecciones/` (`tecnicas*.ts` y `clases*.ts` por sistema, `sql.ts`, `index.ts`), datos compartidos en `src/lib/anatomia/datos.ts` (pares craneales, cavidades, recorridos). Fuente única: la migración se GENERA de ahí.
+
+Temas fuera de alcance a propósito (la práctica no evalúa nada de ellos): aparato reproductor, sistema endocrino completo (el páncreas, único evaluado, se explica con su función endocrina dentro del aparato digestivo) y los sentidos (más allá de los pares craneales).
+
+### Decisión de desbloqueo (src/lib/anatomia/path.ts, reescrito)
+
+- **Técnicas**: puntero "activo" independiente POR SISTEMA, lineal dentro de cada uno (pedido explícito del usuario para todos los mundos).
+- **Clases**: también un curso independiente POR SISTEMA (mismo criterio que Geografía por continente), no un curso lineal único como Quimia. Motivo: el orden que sí importa está dentro del sistema (posición anatómica, tejido óseo, cráneo, columna, apendicular, articulaciones; tipos de músculo, origen/inserción, cabeza y cuello, tronco, extremidades; neurona, SNC/SNP, encéfalo, médula, pares craneales, autónomo) y cada lección re-explica lo que usa de otro sistema. La primera Clase de todas (`anatomia-clase-posicion-y-planos`) es preview gratis; para un usuario no-Pro las demás "primeras de su sistema" quedan `bloqueadoPorPlan`.
+- El estado (completado/activo/bloqueado) se calcula EN la fuente (`calcularNodos`), no en la presentación: `[slug]/page.tsx` usa `puedeAbrirNodoAnatomia` sobre ese mismo cálculo. `path.test.ts` (17 tests) fija el bug de Numeria (648f2b7): la primera técnica de CADA grupo queda activa a la vez, lineal dentro del grupo, y el nodo activo del sidebar es entrable. `GRUPOS_APRENDER.anatomia` (`src/lib/aprender/grupos.ts`) se deriva del contenido tipado.
+- **Gating Pro en el servidor**: `/api/aprender/completar` valida `requiere_pro` (403 si el plan no es Pro) SOLO cuando la lección trae quiz. Como las 22 Clases traen quiz, están cubiertas (un test lo fija). Hueco heredado, NO tocado (ruta compartida): una fila `requiere_pro` SIN quiz se podría completar sin ser Pro; y, al revés, la Clase de preview gratis tampoco la puede completar (marcar como dominada) un usuario free, porque también es `requiere_pro` y el servidor responde 403 — mismo comportamiento que Geografía y Enigmia.
+
+### Visuales (src/components/anatomia/visuales/, prefijo `anatomia.`)
+
+Regla: nada de anatomía dibujada "de memoria". Qué es cada uno, con honestidad:
+
+- `anatomia.esqueleto`: resalta grupos de huesos sobre el SVG REAL de dominio público que ya usa la práctica (`public/data/esqueleto-oseo.svg`, LadyofHats / Wikimedia Commons): un punto marca el hueso, con su nombre en grande y la lista de la lección. Solo se pueden resaltar las 15 zonas que ese SVG trae separadas (cráneo, columna, pelvis, húmero, radio, cúbito, fémur, tibia, peroné, carpianos, metacarpianos, falanges de la mano, tarsianos, metatarsianos, falanges del pie); costillas, esternón, clavícula, etc. se explican con otros visuales. Un test exige que TODA zona clickeable de la práctica (`HUESO_CLICKEABLE`) se enseñe resaltada en alguna lección.
+- `anatomia.cuerpo`: ESQUEMA de regiones (figura de cajas, vista anterior y posterior), no un dibujo anatómico; ubica un órgano o músculo por región gruesa. Lo dice en pantalla.
+- `anatomia.grupos` y `anatomia.flujo`: diagramas de cajas rotuladas y de etapas con flechas (recorrido del alimento, del aire, de la sangre en ciclo, de la orina, arco reflejo, impulso nervioso, contracción muscular).
+
+Todos: alternativa textual accesible (`figcaption` sr-only con los mismos datos), `prefers-reduced-motion` vía `useReproductor`, datos limpiados por funciones puras (`visualesDatos.ts`: un dato malo del jsonb se descarta sin romper), es/en.
+
+### Cobertura de lo evaluado (con test)
+
+`lecciones.test.ts` importa los 7 bancos de `src/lib/practica/anatomia.ts` (`OSEO_*`, `MUSCULAR_*`, `ORGANOS`, `NERVIOSO_*`, ahora exportados) y exige que CADA término esté enseñado en al menos una lección de su sistema Y en al menos una Clase (texto de pasos, quiz y visuales); si alguien agrega un término al banco sin lección, falla. Además, una tabla de referencia escrita aparte dentro del test (12 pares craneales con tipo sensitivo/motor/mixto, 22 = 8 + 14, mano 8-5-14, pie 7-5-14, columna 7-12-5 + sacro + cóccix, 206 = 80 + 126, 126 = 6 + 2 × 30, 31 pares espinales = 8+12+5+5+1, órganos por cavidad, región de cada órgano y músculo, orden de cada recorrido) se cruza con los datos y el texto de las lecciones, más una lista de afirmaciones conocidas como falsas que ninguna lección puede contener.
+
+### Errores de datos hallados (auditoría de lo existente)
+
+1. **Preguntas con DOS respuestas correctas en la práctica** (`src/lib/practica/anatomia.ts`, corregido con test): Frontal, Temporal y Occipital son a la vez huesos del cráneo Y músculos de la cabeza, y "Cerebro" es órgano Y parte del sistema nervioso, pero cada pregunta armaba distractores con los términos de los otros sistemas sin excluirlos (por ejemplo "¿parte del sistema nervioso?" con Cerebelo correcto y Cerebro entre las opciones; en órganos, "Cerebro", "Cerebelo" o "Médula espinal" de distractor). Nueva `terminosNoDistractores(modo)`; `src/lib/practica/anatomia.test.ts` barre 1500 preguntas por modo y nivel.
+2. **"un músculo de la cara"** para un banco que incluye el occipital (nuca, cuero cabelludo) y el platisma (cuello): ahora "de la cabeza o del cuello".
+3. **"un hueso"** para Cráneo (22 huesos), Columna vertebral (33 vértebras), Costillas y Pelvis (4 huesos): ahora "un hueso o una parte del esqueleto" en nivel bajo.
+4. **Voseo en el enunciado de click** ("Clickeá dónde está"): ahora "Haz clic donde está".
+5. **Técnica `anatomia-nervios-por-funcion`** (0081): decía que el número de cada par craneal "sigue el orden en que salen del tronco encefálico", falso para el I (olfatorio) y el II (óptico), que no nacen en el tronco (del III al XII sí). Se eliminó esa frase.
+6. **Técnica `anatomia-organos-por-cavidad`** (0081/0173): decía que el cerebro "es el único que vive fuera del tronco" (impreciso: vive en la cavidad craneal) y no aclaraba las simplificaciones (riñones y páncreas retroperitoneales; el recto está en la pelvis). Reescrita.
+7. **Técnica `anatomia-craneo-por-zona`**: llamaba "internos" a esfenoides y etmoides (son huesos craneales de la base, no un grupo aparte) y no daba las cifras (8 craneales + 14 faciales = 22). Reescrita con "centro de la base" y las cifras.
+8. Nota (no es un error): `Peroné`, `Cúbito` y `Orbicular de los ojos` no son los términos de la Terminología Anatómica Internacional (fíbula, ulna, orbicular del ojo) pero sí los de uso corriente en Latinoamérica; se mantienen y la Técnica de miembros da la equivalencia.
+
+### Español neutro (fila 24)
+
+Las 5 Técnicas históricas tenían voseo real ("agrupalos", "dividilos", "usás", "dejalos"...); el detector solo marcaba 3 de esas formas. La migración nueva las reescribe con `UPDATE` por slug. Además se corrigió el texto de `0081_mundo_anatomia.sql` (solo las 9 palabras con voseo; el resultado es idéntico al que deja el `UPDATE`, así que una base nueva y una ya migrada quedan iguales) y se sacó `0081_mundo_anatomia.sql` de `DEUDA_HISTORICA_VOSEO` en `src/lib/texto/espanolNeutro.test.ts`. Es una edición de una migración ya aplicada: decisión consciente, solo de texto de lección, sin tocar DDL. `0173` no tenía voseo.
+
+### Migración
+
+`supabase/migrations/0212_anatomia_tecnicas_clases.sql`, generada por `generarSqlAnatomia()` (`ANATOMIA_ESCRIBIR_SQL=1 npx vitest run src/lib/anatomia/lecciones`) y validada con `pglast` (7 sentencias). Orden pensado contra datos y constraints: primero 5 `UPDATE` (por `problem_type` y `slug`, filas que 0081 ya creó), después 2 `INSERT` (16 Técnicas + 22 Clases; `slug` es `unique` y un test comprueba que ningún slug insertado exista en otra migración). No hace falta `ALTER`: `requiere_pro` existe desde 0170 y `problem_type='anatomia'` ya es válido. `technique_progress` no se toca: quien dominó una Técnica histórica la conserva. Se saltó 0210 (Geografía, otro agente) y se dejó libre 0211.
+
+### Verificación
+
+`tsc --noEmit` y `eslint` (lo tocado): limpios. Tests nuevos: `practica/anatomia.test.ts` (6), `anatomia/path.test.ts` (17), `anatomia/lecciones/lecciones.test.ts` (38), `components/anatomia/visuales/visuales.test.ts` (14). Navegador real (Playwright + chromium, ruta temporal sin auth, ya borrada, a 360-390 px): esqueleto con punto y lista, esquema del cuerpo en estado animado y final, recorrido de la sangre (9 etapas + ciclo) y los 12 pares craneales por función; sin overflow horizontal ni errores de consola.
+
+**Sin verificar**: flujo end-to-end con Supabase y login reales (`0212` no corrió contra una base real), tema oscuro, y solo se vieron en pantalla 5 de las 43 lecciones (el resto lo cubren los tests de render y de datos); tampoco se vio el CTA "Desbloquea con Pro" en una sesión real.

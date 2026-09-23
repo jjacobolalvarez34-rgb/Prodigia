@@ -50,8 +50,8 @@ alter table public.world_progress add constraint world_progress_world_check
 -- ---------- Fase 5: 5 lecciones de Anatomía (técnicas de
 -- memorización, no de cómputo — mismo espíritu que Geografía) ----------
 insert into public.techniques (slug, nombre, descripcion, problem_type, contenido, orden) values
-('anatomia-craneo-por-zona', 'Huesos del cráneo: agrupalos por zona',
-  'En vez de memorizar los 10 sueltos, dividilos en 3 grupos: la bóveda (frontal, parietal ×2, temporal ×2, occipital), la cara (maxilar, mandíbula, cigomático ×2, nasal) y los internos (esfenoides, etmoides).',
+('anatomia-craneo-por-zona', 'Huesos del cráneo: agrúpalos por zona',
+  'En vez de memorizar los 10 sueltos, divídelos en 3 grupos: la bóveda (frontal, parietal ×2, temporal ×2, occipital), la cara (maxilar, mandíbula, cigomático ×2, nasal) y los internos (esfenoides, etmoides).',
   'anatomia',
   '{"pasos": [
     "Bóveda (arriba y atrás): frontal, parietal, temporal, occipital",
@@ -61,17 +61,17 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
   ]}',
   1),
 ('anatomia-nombre-del-musculo', 'El nombre del músculo ya te dice dónde está',
-  'Muchos nombres de músculos de la cara son literales: "orbicular" rodea una órbita (ojo o boca), "temporal" está en la sien (la zona del tiempo/las canas), "occipital" en la nuca (occipucio). Leé el nombre antes de memorizarlo de memoria.',
+  'Muchos nombres de músculos de la cara son literales: "orbicular" rodea una órbita (ojo o boca), "temporal" está en la sien (la zona del tiempo/las canas), "occipital" en la nuca (occipucio). Lee el nombre antes de memorizarlo de memoria.',
   'anatomia',
   '{"pasos": [
     "Orbicular de los ojos: forma un círculo (órbita) alrededor del ojo",
     "Orbicular de la boca: mismo patrón, alrededor de la boca",
     "Cigomático mayor: se ancla en el hueso cigomático (el pómulo)",
-    "El nombre casi nunca es arbitrario — leelo como una pista, no como una etiqueta"
+    "El nombre casi nunca es arbitrario — léelo como una pista, no como una etiqueta"
   ]}',
   2),
-('anatomia-nervios-por-funcion', 'Pares craneales: agrupalos por función, no por número',
-  'En vez de memorizar los 12 en fila, separalos en 3 grupos según qué hacen: sensoriales puros (I olfatorio, II óptico, VIII vestibulococlear), motores puros (III oculomotor, IV troclear, VI abducens, XI accesorio, XII hipogloso) y mixtos (V trigémino, VII facial, IX glosofaríngeo, X vago).',
+('anatomia-nervios-por-funcion', 'Pares craneales: agrúpalos por función, no por número',
+  'En vez de memorizar los 12 en fila, sepáralos en 3 grupos según qué hacen: sensoriales puros (I olfatorio, II óptico, VIII vestibulococlear), motores puros (III oculomotor, IV troclear, VI abducens, XI accesorio, XII hipogloso) y mixtos (V trigémino, VII facial, IX glosofaríngeo, X vago).',
   'anatomia',
   '{"pasos": [
     "Sensoriales puros (solo mandan información): olfatorio, óptico, vestibulococlear",
@@ -81,7 +81,7 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
   ]}',
   3),
 ('anatomia-simple-a-compuesto', 'De lo simple a lo compuesto: primero el cuerpo, después la cara',
-  'Los músculos "grandes" (bíceps, cuádriceps, pectoral, trapecio...) son los que ya usás en el día a día para hablar de ejercicio — arrancá por esos. Los de la cara son un grupo aparte, más chico y más fino, dejalos para cuando el primer grupo ya esté firme.',
+  'Los músculos "grandes" (bíceps, cuádriceps, pectoral, trapecio...) son los que ya usas en el día a día para hablar de ejercicio — empieza por esos. Los de la cara son un grupo aparte, más chico y más fino, déjalos para cuando el primer grupo ya esté firme.',
   'anatomia',
   '{"pasos": [
     "Grupo 1 (grande, cotidiano): bíceps, tríceps, cuádriceps, pectoral, trapecio, glúteos...",
@@ -91,7 +91,7 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
   ]}',
   4),
 ('anatomia-organos-por-cavidad', 'Los órganos, por cavidad',
-  'Los 10 órganos principales viven en 4 "cajones" del cuerpo: torácico (corazón, pulmones), abdominal (hígado, estómago, riñones, intestino, páncreas, bazo), pélvico (vejiga) y craneal (cerebro). Ubicalos por cajón, no como una lista suelta.',
+  'Los 10 órganos principales viven en 4 "cajones" del cuerpo: torácico (corazón, pulmones), abdominal (hígado, estómago, riñones, intestino, páncreas, bazo), pélvico (vejiga) y craneal (cerebro). Ubícalos por cajón, no como una lista suelta.',
   'anatomia',
   '{"pasos": [
     "Torácico (pecho): corazón, pulmones",

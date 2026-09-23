@@ -1518,13 +1518,15 @@
     "aprender": {
       "metadata": {
         "titulo": "Learn Anatomy",
-        "description": "Memory techniques for bones, muscles, organs, and the nervous system."
+        "description": "Techniques and classes on bones, muscles, organs and the nervous system, with animated diagrams."
       },
       "progresoLabel": "Progress",
       "tecnicasContador": "{dominadas}/{total} techniques",
       "unidadDescripcion": "Techniques for memorizing anatomical terms — not computation, but associations and patterns.",
       "titulo": "Learn",
-      "subtitulo": "Tricks for memorizing terms — not math, but ways of seeing and grouping."
+      "subtitulo": "Tricks for memorizing terms — not math, but ways of seeing and grouping.",
+      "desbloqueaConPro": "Unlock with Pro",
+      "leccionesContador": "{dominadas}/{total} lessons"
     },
     "leccion": {
       "badge": "Technique",
@@ -1541,7 +1543,8 @@
       "respuestaIncorrecta": "That's not it — check again",
       "enviarRespuestas": "Submit answers",
       "enviando": "Submitting...",
-      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want."
+      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want.",
+      "clase": "Class"
     },
     "practica": {
       "oseo": {
@@ -1567,6 +1570,27 @@
           "titulo": "Organs",
           "description": "Main organs of the human body, with adaptive difficulty."
         }
+      }
+    },
+    "visuales": {
+      "esqueleto": {
+        "etiqueta": "Animated skeleton",
+        "nota": "Real public-domain skeleton: only the bone groups the drawing already keeps separate are highlighted."
+      },
+      "cuerpo": {
+        "etiqueta": "Body region diagram",
+        "nota": "A region diagram, not an anatomical drawing: it shows where, not what it looks like.",
+        "anterior": "Front view",
+        "posterior": "Back view",
+        "region": "Region: {regiones}",
+        "porDetras": "from behind"
+      },
+      "grupos": {
+        "etiqueta": "Group diagram"
+      },
+      "flujo": {
+        "etiqueta": "Pathway diagram",
+        "ciclo": "And it starts again: it is a cycle"
       }
     }
   },
