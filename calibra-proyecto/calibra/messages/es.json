@@ -2032,6 +2032,7 @@
     },
     "leccion": {
       "tecnica": "Técnica",
+      "clase": "Clase",
       "verElEjemplo": "Ver el ejemplo",
       "anterior": "Anterior",
       "siguientePaso": "Siguiente paso",
@@ -2045,6 +2046,32 @@
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
       "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
+    },
+    "aprenderClases": {
+      "desbloqueaConPro": "Desbloquea con Pro"
+    },
+    "visuales": {
+      "secuencia": {
+        "etiqueta": "Secuencia numérica",
+        "diferencia": "Diferencia constante: {n}",
+        "razon": "Razón constante: {n}"
+      },
+      "cadena": {
+        "etiqueta": "Cadena lógica",
+        "conclusion": "Conclusión"
+      },
+      "agrupacion": {
+        "etiqueta": "Agrupación en bloques",
+        "resultado": "Agrupado en {n} bloques"
+      },
+      "algoritmo": {
+        "etiqueta": "Traza del algoritmo",
+        "inicial": "{variable} = {n}",
+        "final": "Valor final: {variable} = {n}",
+        "pasoCondicional": "si {variable} {comparacion} {umbral}",
+        "ramaVerdadero": "se cumple",
+        "ramaFalso": "no se cumple"
+      }
     }
   },
   "Fracciones": {

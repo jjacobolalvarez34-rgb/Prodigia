@@ -2032,6 +2032,7 @@
     },
     "leccion": {
       "tecnica": "Technique",
+      "clase": "Class",
       "verElEjemplo": "See the example",
       "anterior": "Previous",
       "siguientePaso": "Next step",
@@ -2045,6 +2046,32 @@
       "enviarRespuestas": "Submit answers",
       "enviando": "Submitting...",
       "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want."
+    },
+    "aprenderClases": {
+      "desbloqueaConPro": "Unlock with Pro"
+    },
+    "visuales": {
+      "secuencia": {
+        "etiqueta": "Number sequence",
+        "diferencia": "Constant difference: {n}",
+        "razon": "Constant ratio: {n}"
+      },
+      "cadena": {
+        "etiqueta": "Logic chain",
+        "conclusion": "Conclusion"
+      },
+      "agrupacion": {
+        "etiqueta": "Grouped into blocks",
+        "resultado": "Grouped into {n} blocks"
+      },
+      "algoritmo": {
+        "etiqueta": "Algorithm trace",
+        "inicial": "{variable} = {n}",
+        "final": "Final value: {variable} = {n}",
+        "pasoCondicional": "if {variable} {comparacion} {umbral}",
+        "ramaVerdadero": "is true",
+        "ramaFalso": "is false"
+      }
     }
   },
   "Fracciones": {

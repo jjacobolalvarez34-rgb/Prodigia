@@ -109,6 +109,35 @@ export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
       g("fracciones", "Fracciones y MCM", "Fractions and LCM", ["numeria-clase-mcm", "numeria-clase-fracciones-operaciones"]),
     ],
   },
+  // Enigmia (retrofit a Técnicas | Clases, 2026-09-22): ya tenía división
+  // real por categoría desde antes (logic_techniques.categoria) — acá se
+  // usa esa misma partición para las 4 categorías reales, en las dos
+  // pestañas (slugs confirmados por grep contra 0015/0020 para Técnicas y
+  // contra src/lib/enigmia/lecciones/clases.ts para Clases). A diferencia
+  // del resto de los mundos, el desbloqueo por categoría de Enigmia ya se
+  // calcula en src/lib/enigmia/pathClases.ts (no depende de
+  // recalcularActivoPorGrupo para la pestaña "clases" — ver el comentario
+  // de ese archivo).
+  enigmia: {
+    tecnicas: [
+      g("patrones", "Patrones", "Patterns", ["patron-numerico", "encontrar-intruso", "analogias"]),
+      g("deduccion", "Deducción", "Deduction", ["condicional-si-entonces"]),
+      g("memoria", "Memoria", "Memory", ["tecnicas-de-memoria"]),
+      g("computacional", "Pensamiento computacional", "Computational thinking", ["pensar-como-algoritmo"]),
+    ],
+    clases: [
+      g("patrones", "Patrones", "Patterns", [
+        "enigmia-clase-secuencias-aritmeticas-geometricas",
+        "enigmia-clase-patrones-no-numericos",
+      ]),
+      g("deduccion", "Deducción", "Deduction", [
+        "enigmia-clase-proposiciones-y-contrapositiva",
+        "enigmia-clase-silogismos-simples",
+      ]),
+      g("memoria", "Memoria", "Memory", ["enigmia-clase-chunking-y-asociacion"]),
+      g("computacional", "Pensamiento computacional", "Computational thinking", ["enigmia-clase-que-es-un-algoritmo"]),
+    ],
+  },
   // Mundos originales que tenían UNA sola unidad (sin panel de temas): se
   // les da división real derivada de sus propias técnicas para que la
   // pantalla de Aprender se vea igual que la de Melodía/Trigonometría.

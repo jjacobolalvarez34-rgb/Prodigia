@@ -18,6 +18,18 @@ interface Body {
 // POST /api/enigmia/completar-leccion — equivalente de /api/aprender/completar
 // para Enigmia. No hay modificadores que desbloquear (Enigmia no tiene ese
 // sistema todavía), solo marca la técnica como dominada.
+//
+// Bug de seguridad real, cerrado en esta tanda (2026-09-22, retrofit de
+// Clases — docs/PARIDAD_MUNDOS.md fila 22): a diferencia de
+// /api/aprender/completar (que sí valida `requiere_pro`/plan desde la
+// Fase C de Calculia), este endpoint NUNCA chequeaba si la técnica
+// requería Pro — antes de esta tanda `logic_techniques` ni siquiera tenía
+// la columna, así que no había nada que explotar todavía, pero apenas se
+// agregaron las Clases Pro (0203) un usuario free hubiera podido marcar
+// cualquiera como dominada pegándole directo a este endpoint, saltándose
+// la UI. Réplica exacta del mismo criterio de /api/aprender/completar: si
+// `requiere_pro=true` en la técnica, 403 si `profile.plan !== "pro"` —
+// este chequeo corre ANTES de cualquier upsert de logic_technique_progress.
 export async function POST(request: Request) {
   const supabase = await createClient();
 
@@ -33,7 +45,7 @@ export async function POST(request: Request) {
 
   const { data: tecnica, error: tecnicaError } = await supabase
     .from("logic_techniques")
-    .select("id, contenido")
+    .select("id, requiere_pro, contenido")
     .eq("id", body.technique_id)
     .maybeSingle();
 
@@ -47,6 +59,14 @@ export async function POST(request: Request) {
   const quiz = ((tecnica.contenido as { quiz?: TechniqueQuizPregunta[] } | null)?.quiz ?? []) as TechniqueQuizPregunta[];
 
   if (quiz.length > 0) {
+    if (tecnica.requiere_pro) {
+      const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
+
+      if (profile?.plan !== "pro") {
+        return NextResponse.json({ error: "Esta lección requiere plan Pro" }, { status: 403 });
+      }
+    }
+
     const respuestas = body.respuestas;
     const todasCorrectas =
       Array.isArray(respuestas) &&

@@ -1,5 +1,6 @@
 import type { VisualNaipia } from "@/lib/naipia/visuales";
 import type { VisualNumeria } from "@/lib/numeria/visuales";
+import type { VisualEnigmia } from "@/lib/enigmia/visuales";
 
 // Formato de lección con explicación VISUAL/ANIMADA (compartido por todos
 // los mundos). En `techniques.contenido` (jsonb):
@@ -50,7 +51,7 @@ export interface VisualCuadros extends VisualBase {
 
 // ---------- Unión de todos los visuales conocidos ----------
 
-export type VisualLeccion = VisualCuadros | VisualNaipia | VisualNumeria;
+export type VisualLeccion = VisualCuadros | VisualNaipia | VisualNumeria | VisualEnigmia;
 
 // Validador tolerante: solo exige la forma mínima ({ tipo: string no vacío }
 // y `despuesDePaso` entero >= 0 si está). NO valida el tipo (un tipo que
