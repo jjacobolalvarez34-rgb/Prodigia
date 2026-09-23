@@ -540,8 +540,17 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
 
   let geografiaCompletado = false;
   if (tiposNecesarios.has("mundo_completado_geografia")) {
-    const { data: row } = await supabase.from("skill_levels").select("nivel").eq("user_id", userId).eq("problem_type", "geografia").maybeSingle();
-    geografiaCompletado = (row?.nivel ?? 0) >= 10;
+    // Geografía calibra por continente desde
+    // 0207_geografia_niveles_por_continente.sql (américa/europa/áfrica/
+    // asia_oceania) — "completado" exige nivel 10 en los 4, mismo
+    // criterio que Quimia/Anatomía/Melodía/Enigmia con sus propios
+    // sub-tipos de skill_levels.
+    const { data: rows } = await supabase
+      .from("skill_levels")
+      .select("nivel")
+      .eq("user_id", userId)
+      .in("problem_type", ["geografia_america", "geografia_europa", "geografia_africa", "geografia_asia_oceania"]);
+    geografiaCompletado = (rows ?? []).length === 4 && (rows ?? []).every((r) => r.nivel >= 10);
   }
 
   let quimiaCompletado = false;

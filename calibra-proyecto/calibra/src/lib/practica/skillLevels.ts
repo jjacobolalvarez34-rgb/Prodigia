@@ -42,6 +42,10 @@ export type ProblemTypeCalibrable =
   | ArithmeticProblemType
   | "fracciones"
   | "geografia"
+  | "geografia_america"
+  | "geografia_europa"
+  | "geografia_africa"
+  | "geografia_asia_oceania"
   | "decimales"
   | "potencias"
   | "algebra"

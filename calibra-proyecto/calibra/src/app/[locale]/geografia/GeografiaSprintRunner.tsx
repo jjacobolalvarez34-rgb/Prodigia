@@ -211,7 +211,11 @@ export default function GeografiaSprintRunner({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          problem_type: "geografia",
+          // Calibración por continente (2026-09-23, ver
+          // 0207_geografia_niveles_por_continente.sql): cada continente
+          // sube/baja su propio nivel — ya no un único "geografia"
+          // compartido entre las 4 regiones.
+          problem_type: `geografia_${continente}`,
           level: pais.dificultad,
           correct,
           time_ms: timeMs,

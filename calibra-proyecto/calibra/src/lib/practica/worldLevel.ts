@@ -2,7 +2,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 const TOTAL_SUBTEMAS: Record<string, number> = {
   numeria: 20,
-  geografia: 1,
+  // Geografía calibra por continente desde
+  // 0207_geografia_niveles_por_continente.sql (américa/europa/áfrica/
+  // asia_oceania) — ya no un único "geografia" global.
+  geografia: 4,
   quimia: 5,
   enigmia: 1,
   anatomia: 4,
@@ -25,7 +28,7 @@ const SUBTIPOS: Record<string, string[]> = {
     "algebra_evaluar", "algebra_un-paso", "algebra_dos-pasos",
     "geometria_perimetro", "geometria_area", "geometria_angulos", "geometria_ternas",
   ],
-  geografia: ["geografia"],
+  geografia: ["geografia_america", "geografia_europa", "geografia_africa", "geografia_asia_oceania"],
   quimia: [
     "quimia_simbolos", "quimia_formulas", "quimia_tabla",
     "quimia_nomenclatura", "quimia_organica",

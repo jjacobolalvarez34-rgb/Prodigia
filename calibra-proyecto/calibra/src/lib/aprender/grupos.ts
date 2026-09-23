@@ -21,6 +21,8 @@
 // PARIDAD_MUNDOS.md: "lecciones progresivas y dependientes entre sí").
 
 import type { NodoEstado } from "@/lib/aprender/clases";
+import { TECNICAS_GEOGRAFIA, CLASES_GEOGRAFIA } from "@/lib/geografia/lecciones";
+import type { Continente } from "@/lib/practica/geografia";
 
 export type PestanaGrupos = "tecnicas" | "clases";
 type Idioma = "es" | "en";
@@ -37,6 +39,18 @@ interface GruposMundo {
 }
 
 const g = (id: string, es: string, en: string, slugs: string[]): GrupoDef => ({ id, nombre: { es, en }, slugs });
+
+// Nombres de los 4 continentes de Geografía para el sidebar — mismos
+// nombres que ya usa Geografia.continentes en messages/*.json (no se
+// duplican acá strings nuevos, se repiten literalmente).
+function nombreContinentes(): [Continente, string, string][] {
+  return [
+    ["america", "América", "America"],
+    ["europa", "Europa", "Europe"],
+    ["africa", "África", "Africa"],
+    ["asia_oceania", "Asia y Oceanía", "Asia & Oceania"],
+  ];
+}
 
 export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
   // Numeria (retrofit a Técnicas | Clases, docs/PARIDAD_MUNDOS.md fila 22 +
@@ -159,15 +173,42 @@ export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
       ]),
     ],
   },
-  // Mundos originales que tenían UNA sola unidad (sin panel de temas): se
-  // les da división real derivada de sus propias técnicas para que la
-  // pantalla de Aprender se vea igual que la de Melodía/Trigonometría.
+  // Geografía (retrofit completo a Técnicas | Clases POR CONTINENTE,
+  // 2026-09-23 — ver docs/PARIDAD_MUNDOS.md fila 1: "Aprender tiene solo 3
+  // lecciones totales... ninguna por continente. Gap de contenido, no de
+  // código"): a diferencia del resto de los mundos de este objeto, acá la
+  // fuente de verdad del desbloqueo YA NO es agruparNodos/recalcularActivoPorGrupo
+  // — src/lib/geografia/path.ts calcula el grupo y el estado "activo" por
+  // continente directamente en el cargador del camino (mismo patrón que
+  // src/lib/quimia/path.ts), y la página de Aprender arma el sidebar leyendo
+  // ese campo `grupo` sin pasar por acá (mismo criterio que
+  // src/app/[locale]/quimia/aprender/page.tsx). Esta entrada se mantiene
+  // igual de precisa por consistencia/documentación — no por que algo la
+  // use hoy — y sale del contenido tipado real (TECNICAS_GEOGRAFIA/
+  // CLASES_GEOGRAFIA) en vez de repetir slugs a mano, para que nunca quede
+  // desincronizada. Las 3 Técnicas históricas genéricas
+  // (0027_geografia_lecciones.sql) no mapean a un continente específico
+  // (ver línea 82 de PARIDAD_MUNDOS.md) y quedan en el grupo "General".
   geografia: {
     tecnicas: [
-      g("ubicar", "Ubicar y agrupar", "Locate and group", ["dividir-en-subregiones", "anclar-por-vecinos"]),
-      g("formas", "Reconocer formas", "Recognize shapes", ["forma-caracteristica"]),
+      g("general", "General", "General", ["dividir-en-subregiones", "anclar-por-vecinos", "forma-caracteristica"]),
+      ...nombreContinentes().map(([id, es, en]) =>
+        g(
+          id,
+          es,
+          en,
+          TECNICAS_GEOGRAFIA.filter((t) => t.continente === id).map((t) => t.slug)
+        )
+      ),
     ],
-    clases: [],
+    clases: nombreContinentes().map(([id, es, en]) =>
+      g(
+        id,
+        es,
+        en,
+        CLASES_GEOGRAFIA.filter((c) => c.continente === id).map((c) => c.slug)
+      )
+    ),
   },
   historia: {
     tecnicas: [

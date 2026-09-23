@@ -10,6 +10,7 @@ import TopicCard from "@/components/TopicCard";
 import NivelMundoBadge from "@/components/NivelMundoBadge";
 import NivelMundoProgreso from "@/components/NivelMundoProgreso";
 import type { SincronizarProgresoRow } from "@/lib/mundos/progresoNivel";
+import type { Continente } from "@/lib/practica/geografia";
 import { IconCheck, IconGeometria } from "@/components/icons";
 import { COLOR_GEOGRAFIA } from "./GeografiaMapa";
 
@@ -24,15 +25,25 @@ export default async function GeografiaHomePage() {
   const { user, profile } = await requireMundoGeografia(supabase, "/geografia");
 
   const hoyIso = new Date().toISOString().slice(0, 10);
-  const [{ data: nivelRow }, { data: dailyHoy }, { data: mundoProgreso }] = await Promise.all([
-    // Nivel único compartido entre continentes (mismo patrón que el resto
-    // del mundo: un problem_type = un nivel, sin importar qué región).
-    supabase.from("skill_levels").select("nivel").eq("user_id", user.id).eq("problem_type", "geografia").maybeSingle(),
+  const [{ data: nivelesRows }, { data: dailyHoy }, { data: mundoProgreso }] = await Promise.all([
+    // Calibración por continente (2026-09-23, ver
+    // 0207_geografia_niveles_por_continente.sql): un problem_type por
+    // continente, ya no un único "geografia" compartido entre los 4.
+    supabase
+      .from("skill_levels")
+      .select("problem_type, nivel")
+      .eq("user_id", user.id)
+      .in("problem_type", ["geografia_america", "geografia_europa", "geografia_africa", "geografia_asia_oceania"]),
     supabase.from("daily_progress").select("xp_ganado").eq("user_id", user.id).eq("fecha", hoyIso).maybeSingle(),
     supabase.rpc("sincronizar_progreso_mundo", { p_world: "geografia" }).returns<SincronizarProgresoRow[]>().maybeSingle(),
   ]);
 
-  const nivel = nivelRow?.nivel ?? 1;
+  const nivelPorContinente: Record<Continente, number> = {
+    america: nivelesRows?.find((r) => r.problem_type === "geografia_america")?.nivel ?? 1,
+    europa: nivelesRows?.find((r) => r.problem_type === "geografia_europa")?.nivel ?? 1,
+    africa: nivelesRows?.find((r) => r.problem_type === "geografia_africa")?.nivel ?? 1,
+    asia_oceania: nivelesRows?.find((r) => r.problem_type === "geografia_asia_oceania")?.nivel ?? 1,
+  };
   const nivelMundo = mundoProgreso?.nivel_mundo ?? 1;
   const progresoMundo = {
     puntos: mundoProgreso?.puntos_mundo ?? 0,
@@ -115,10 +126,10 @@ export default async function GeografiaHomePage() {
         <section className="flex flex-col gap-4">
           <h2 className="font-display text-lg font-bold text-foreground">{t("home.regiones")}</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <TopicCard nombre={t("continentes.america")} Icono={IconGeometria} badge={{ tipo: "nivel", nivel }} colorHex={COLOR_GEOGRAFIA} />
-            <TopicCard nombre={t("continentes.europa")} Icono={IconGeometria} badge={{ tipo: "nivel", nivel }} colorHex={COLOR_GEOGRAFIA} />
-            <TopicCard nombre={t("continentes.africa")} Icono={IconGeometria} badge={{ tipo: "nivel", nivel }} colorHex={COLOR_GEOGRAFIA} />
-            <TopicCard nombre={t("continentes.asia_oceania")} Icono={IconGeometria} badge={{ tipo: "nivel", nivel }} colorHex={COLOR_GEOGRAFIA} />
+            <TopicCard nombre={t("continentes.america")} Icono={IconGeometria} badge={{ tipo: "nivel", nivel: nivelPorContinente.america }} colorHex={COLOR_GEOGRAFIA} />
+            <TopicCard nombre={t("continentes.europa")} Icono={IconGeometria} badge={{ tipo: "nivel", nivel: nivelPorContinente.europa }} colorHex={COLOR_GEOGRAFIA} />
+            <TopicCard nombre={t("continentes.africa")} Icono={IconGeometria} badge={{ tipo: "nivel", nivel: nivelPorContinente.africa }} colorHex={COLOR_GEOGRAFIA} />
+            <TopicCard nombre={t("continentes.asia_oceania")} Icono={IconGeometria} badge={{ tipo: "nivel", nivel: nivelPorContinente.asia_oceania }} colorHex={COLOR_GEOGRAFIA} />
           </div>
         </section>
       </div>

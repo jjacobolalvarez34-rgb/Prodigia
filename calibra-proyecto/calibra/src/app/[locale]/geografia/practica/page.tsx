@@ -46,8 +46,13 @@ export default async function GeografiaPracticaPage({ searchParams }: Props) {
     }
   }
 
+  // Calibración por continente (2026-09-23, ver
+  // 0207_geografia_niveles_por_continente.sql): el nivel leído es el de
+  // ESTE continente puntual — `continente` ya está resuelto arriba
+  // (duelo o "america" por default), así que el problem_type se arma
+  // dinámicamente, no hardcodeado.
   const [{ data: nivelRow }, { data: profile }] = await Promise.all([
-    supabase.from("skill_levels").select("nivel").eq("user_id", user.id).eq("problem_type", "geografia").maybeSingle(),
+    supabase.from("skill_levels").select("nivel").eq("user_id", user.id).eq("problem_type", `geografia_${continente}`).maybeSingle(),
     supabase.from("profiles").select("escudos_extra_pendientes, boost_multiplicador_pendiente, hielos_disponibles, tiempos_extra_disponibles").eq("id", user.id).single(),
   ]);
 

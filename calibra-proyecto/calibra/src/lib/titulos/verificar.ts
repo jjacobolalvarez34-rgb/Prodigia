@@ -3,6 +3,7 @@ import { calcularRachaDiaria } from "@/lib/practica/racha";
 import { CATALOGO_TITULOS, type TituloCatalogo } from "./catalogo";
 
 const TIPOS_NUMERIA = ["suma", "resta", "multiplicacion", "division", "fracciones", "decimales", "potencias", "algebra"];
+const TIPOS_GEOGRAFIA = ["geografia_america", "geografia_europa", "geografia_africa", "geografia_asia_oceania"];
 const TIPOS_QUIMIA = ["quimia_simbolos", "quimia_formulas", "quimia_tabla"];
 const TIPOS_ANATOMIA = ["anatomia_oseo", "anatomia_muscular", "anatomia_organos", "anatomia_nervioso"];
 const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"];
@@ -208,8 +209,12 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
       const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_QUIMIA);
       mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_QUIMIA.length && (rows ?? []).every((r) => r.nivel >= 10));
     } else if (mundo === "geografia") {
-      const { data: row } = await supabase.from("skill_levels").select("nivel").eq("user_id", userId).eq("problem_type", "geografia").maybeSingle();
-      mundoCompletado.set(mundo, (row?.nivel ?? 0) >= 10);
+      // Geografía calibra por continente desde
+      // 0207_geografia_niveles_por_continente.sql — "completado" exige
+      // nivel 10 en las 4 (américa/europa/áfrica/asia_oceania), mismo
+      // criterio que Quimia/Anatomía/Melodía.
+      const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_GEOGRAFIA);
+      mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_GEOGRAFIA.length && (rows ?? []).every((r) => r.nivel >= 10));
     } else if (mundo === "enigmia") {
       // Enigmia calibra por categoría desde 0205_enigmia_niveles_por_categoria.sql
       // — "completado" exige nivel 10 en las 4 (memoria/patrones/deduccion/

@@ -69,6 +69,10 @@ export async function POST(request: Request) {
   const tiposCalibrables: ProblemTypeCalibrable[] = [
     ...ARITHMETIC_PROBLEM_TYPES,
     "geografia",
+    "geografia_america",
+    "geografia_europa",
+    "geografia_africa",
+    "geografia_asia_oceania",
     "quimia_simbolos",
     "quimia_formulas",
     "quimia_tabla",

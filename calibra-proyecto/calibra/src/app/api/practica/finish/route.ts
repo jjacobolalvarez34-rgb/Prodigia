@@ -65,6 +65,11 @@ const TIPOS_NUMERIA = new Set([
   "algebra_evaluar", "algebra_un-paso", "algebra_dos-pasos",
 ]);
 const TIPOS_QUIMIA = new Set(["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"]);
+// Geografía por continente (2026-09-23, ver 0207_geografia_niveles_por_continente.sql):
+// el "geografia" bare sigue acá porque hay filas viejas de `attempts`
+// con ese problem_type exacto (historial real, no se reescribe) — sigue
+// mapeando a "geografia" igual que los 4 nuevos.
+const TIPOS_GEOGRAFIA = new Set(["geografia", "geografia_america", "geografia_europa", "geografia_africa", "geografia_asia_oceania"]);
 // Auditoría de mundo nuevo (2026-08-23, ver docs/ESPECIFICACION.md): esta
 // función nunca se actualizó cuando se agregó Anatomía — world_progress
 // jamás recibía una fila para ese mundo pese a que el RPC de SQL
@@ -88,7 +93,7 @@ const TIPOS_CODIA = new Set(["codia_sintaxis", "codia_salida", "codia_error", "c
 
 function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia" | null {
   if (!problemType) return null;
-  if (problemType === "geografia") return "geografia";
+  if (TIPOS_GEOGRAFIA.has(problemType)) return "geografia";
   if (TIPOS_QUIMIA.has(problemType)) return "quimia";
   if (TIPOS_ANATOMIA.has(problemType)) return "anatomia";
   if (TIPOS_MELODIA.has(problemType)) return "melodia";

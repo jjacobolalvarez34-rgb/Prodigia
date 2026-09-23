@@ -6,6 +6,7 @@ import { requireMundoGeografia } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import LevelDial from "@/app/[locale]/practica/LevelDial";
 import { IconGeometria, IconCandado } from "@/components/icons";
+import type { Continente } from "@/lib/practica/geografia";
 import { COLOR_GEOGRAFIA } from "../GeografiaMapa";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -14,30 +15,36 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // Fase 2 ("Practicar" estandarizado): la home ya no lleva directo a una
-// región puntual — entra acá primero. Nivel único compartido entre las
-// 4 regiones (no hay sub-tema por continente, a diferencia de Numeria).
+// región puntual — entra acá primero. Calibración por continente
+// (2026-09-23, ver 0207_geografia_niveles_por_continente.sql): cada
+// región ahora tiene su propio nivel real, mismo patrón visual que
+// Quimia/Anatomía (LevelDial por tarjeta con el nivel de ESE sub-tema).
 export default async function GeografiaElegirPage() {
   const t = await getTranslations("Geografia");
   const supabase = await createClient();
   const { user } = await requireMundoGeografia(supabase, "/geografia/elegir");
 
-  const { data: nivelRow } = await supabase
+  const { data: nivelesRows } = await supabase
     .from("skill_levels")
-    .select("nivel")
+    .select("problem_type, nivel")
     .eq("user_id", user.id)
-    .eq("problem_type", "geografia")
-    .maybeSingle();
-  const nivel = nivelRow?.nivel ?? 1;
+    .in("problem_type", ["geografia_america", "geografia_europa", "geografia_africa", "geografia_asia_oceania"]);
+  const nivelPorContinente: Record<Continente, number> = {
+    america: nivelesRows?.find((r) => r.problem_type === "geografia_america")?.nivel ?? 1,
+    europa: nivelesRows?.find((r) => r.problem_type === "geografia_europa")?.nivel ?? 1,
+    africa: nivelesRows?.find((r) => r.problem_type === "geografia_africa")?.nivel ?? 1,
+    asia_oceania: nivelesRows?.find((r) => r.problem_type === "geografia_asia_oceania")?.nivel ?? 1,
+  };
 
   // Deuda técnica invisible, Fase 1: las 3 regiones fuera de América ya
   // están bloqueadas de verdad del lado del servidor para invitados
   // (bloquearInvitado en cada page.tsx) — acá solo se avisa antes del
   // clic, mismo criterio que /practica/temas para Numeria.
-  const regiones = [
-    { nombre: t("continentes.america"), desc: t("elegir.descAmerica"), href: "/geografia/practica", bloqueadoInvitado: false },
-    { nombre: t("continentes.europa"), desc: t("elegir.descEuropa"), href: "/geografia/practica/europa", bloqueadoInvitado: true },
-    { nombre: t("continentes.africa"), desc: t("elegir.descAfrica"), href: "/geografia/practica/africa", bloqueadoInvitado: true },
-    { nombre: t("continentes.asia_oceania"), desc: t("elegir.descAsiaOceania"), href: "/geografia/practica/asia-oceania", bloqueadoInvitado: true },
+  const regiones: { nombre: string; desc: string; href: string; bloqueadoInvitado: boolean; continente: Continente }[] = [
+    { nombre: t("continentes.america"), desc: t("elegir.descAmerica"), href: "/geografia/practica", bloqueadoInvitado: false, continente: "america" },
+    { nombre: t("continentes.europa"), desc: t("elegir.descEuropa"), href: "/geografia/practica/europa", bloqueadoInvitado: true, continente: "europa" },
+    { nombre: t("continentes.africa"), desc: t("elegir.descAfrica"), href: "/geografia/practica/africa", bloqueadoInvitado: true, continente: "africa" },
+    { nombre: t("continentes.asia_oceania"), desc: t("elegir.descAsiaOceania"), href: "/geografia/practica/asia-oceania", bloqueadoInvitado: true, continente: "asia_oceania" },
   ];
 
   return (
@@ -74,7 +81,7 @@ export default async function GeografiaElegirPage() {
                     </span>
                   )}
                 </div>
-                {!bloqueado && <LevelDial nivel={nivel} size={44} mostrarEtiqueta={false} colorHex={COLOR_GEOGRAFIA} />}
+                {!bloqueado && <LevelDial nivel={nivelPorContinente[r.continente]} size={44} mostrarEtiqueta={false} colorHex={COLOR_GEOGRAFIA} />}
               </Link>
             );
           })}

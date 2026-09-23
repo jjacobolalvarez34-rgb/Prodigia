@@ -6,9 +6,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import type { NodoCaminoGeografia } from "@/lib/geografia/path";
+import { hrefVolverAAprender } from "@/lib/aprender/clases";
+import { visualesDeContenido } from "@/lib/aprender/visuales";
 import type { Achievement } from "@/types/database";
 import LogroBanner from "@/components/LogroBanner";
 import MathText from "@/components/MathText";
+import CuerpoVisual from "@/components/aprender/CuerpoVisual";
+import { REGISTRO_VISUALES_GEOGRAFIA } from "@/components/geografia/visuales/registro";
 import { COLOR_GEOGRAFIA } from "../../GeografiaMapa";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
@@ -24,13 +28,14 @@ interface Props {
   nodo: NodoCaminoGeografia;
 }
 
-// Las lecciones de Geografía son mnemotécnicas, no de cómputo — no hay
-// una "práctica guiada" numérica que tenga sentido acá (esa práctica ya
-// existe en el mapa real de /geografia/practica). El flujo es
-// explicación -> pasos -> [quiz opcional] -> marcar como aprendida,
-// mismo patrón que LeccionCalculiaClient.tsx (Proceso 1, ver
-// docs/PLAN_REVISION_CONTENIDO.md) — la fase "quiz" solo aparece cuando
-// nodo.contenido.quiz tiene preguntas.
+// Retrofit a Técnicas | Clases por continente (2026-09-23, ver
+// docs/PARIDAD_MUNDOS.md fila 1 + fila 22/23): mismo criterio que
+// LeccionEnigmiaClient.tsx — cuando la lección trae `contenido.visuales`
+// (las 20 Técnicas y 16 Clases nuevas, todas con el mapa animado
+// "geografia.mapa"), la fase "ejemplo" muestra CuerpoVisual en vez del
+// paso-a-paso de texto plano de las 3 Técnicas históricas (que no traen
+// visuales). "Volver a Aprender" respeta de qué pestaña vino la lección
+// (Técnicas o Clases) vía hrefVolverAAprender.
 export default function LeccionGeografiaClient({ nodo }: Props) {
   const t = useTranslations("Geografia");
   const router = useRouter();
@@ -39,6 +44,8 @@ export default function LeccionGeografiaClient({ nodo }: Props) {
   const [logrosNuevos, setLogrosNuevos] = useState<Achievement[]>([]);
 
   const pasos = nodo.contenido.pasos;
+  const visuales = useMemo(() => visualesDeContenido(nodo.contenido.visuales), [nodo.contenido.visuales]);
+  const esVisual = visuales.length > 0;
   const quiz = useMemo(() => nodo.contenido.quiz ?? [], [nodo.contenido.quiz]);
   const tieneQuiz = quiz.length > 0;
 
@@ -94,7 +101,7 @@ export default function LeccionGeografiaClient({ nodo }: Props) {
                 className="rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wide"
                 style={{ background: `color-mix(in oklab, ${COLOR_GEOGRAFIA} 12%, transparent)`, color: COLOR_GEOGRAFIA }}
               >
-                {t("leccion.tecnica")}
+                {nodo.requierePro ? t("leccion.clase") : t("leccion.tecnica")}
               </span>
               <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">{nodo.nombre}</h1>
               <p className="mt-2 text-texto-secundario">{nodo.descripcion}</p>
@@ -111,57 +118,72 @@ export default function LeccionGeografiaClient({ nodo }: Props) {
 
         {fase === "ejemplo" && (
           <motion.div key="ejemplo" {...transicion} className="flex flex-col gap-6">
-            <div className="flex flex-col gap-3">
-              {pasos.map((paso, i) => (
-                <div
-                  key={i}
-                  className={`rounded-xl border px-4 py-3 text-sm transition-all duration-300 ${
-                    i === pasoIdx
-                      ? "border-logro/50 bg-logro/10 text-foreground"
-                      : i < pasoIdx
-                        ? "border-border bg-surface text-foreground/40"
-                        : "border-border bg-surface text-foreground/25"
-                  }`}
+            {esVisual ? (
+              <>
+                <CuerpoVisual pasos={pasos} visuales={visuales} registro={REGISTRO_VISUALES_GEOGRAFIA} />
+                <button
+                  onClick={() => (tieneQuiz ? setFase("quiz") : completarLeccion())}
+                  className="rounded-xl px-4 py-3 font-display font-semibold text-white"
+                  style={{ background: COLOR_GEOGRAFIA }}
                 >
-                  <span className="mr-2 font-bold text-logro">{i + 1}</span>
-                  <MathText texto={paso} />
+                  {tieneQuiz ? t("leccion.continuarAlQuiz") : t("leccion.marcarComoAprendida")}
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col gap-3">
+                  {pasos.map((paso, i) => (
+                    <div
+                      key={i}
+                      className={`rounded-xl border px-4 py-3 text-sm transition-all duration-300 ${
+                        i === pasoIdx
+                          ? "border-logro/50 bg-logro/10 text-foreground"
+                          : i < pasoIdx
+                            ? "border-border bg-surface text-foreground/40"
+                            : "border-border bg-surface text-foreground/25"
+                      }`}
+                    >
+                      <span className="mr-2 font-bold text-logro">{i + 1}</span>
+                      <MathText texto={paso} />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setPasoIdx((p) => Math.max(0, p - 1))}
-                disabled={pasoIdx === 0}
-                className="rounded-xl border border-border px-4 py-3 font-medium text-foreground disabled:opacity-40"
-              >
-                {t("leccion.anterior")}
-              </button>
-              {pasoIdx < pasos.length - 1 ? (
-                <button
-                  onClick={() => setPasoIdx((p) => Math.min(pasos.length - 1, p + 1))}
-                  className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
-                  style={{ background: COLOR_GEOGRAFIA }}
-                >
-                  {t("leccion.siguientePaso")}
-                </button>
-              ) : tieneQuiz ? (
-                <button
-                  onClick={() => setFase("quiz")}
-                  className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
-                  style={{ background: COLOR_GEOGRAFIA }}
-                >
-                  {t("leccion.continuarAlQuiz")}
-                </button>
-              ) : (
-                <button
-                  onClick={() => completarLeccion()}
-                  className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
-                  style={{ background: COLOR_GEOGRAFIA }}
-                >
-                  {t("leccion.marcarComoAprendida")}
-                </button>
-              )}
-            </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setPasoIdx((p) => Math.max(0, p - 1))}
+                    disabled={pasoIdx === 0}
+                    className="rounded-xl border border-border px-4 py-3 font-medium text-foreground disabled:opacity-40"
+                  >
+                    {t("leccion.anterior")}
+                  </button>
+                  {pasoIdx < pasos.length - 1 ? (
+                    <button
+                      onClick={() => setPasoIdx((p) => Math.min(pasos.length - 1, p + 1))}
+                      className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
+                      style={{ background: COLOR_GEOGRAFIA }}
+                    >
+                      {t("leccion.siguientePaso")}
+                    </button>
+                  ) : tieneQuiz ? (
+                    <button
+                      onClick={() => setFase("quiz")}
+                      className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
+                      style={{ background: COLOR_GEOGRAFIA }}
+                    >
+                      {t("leccion.continuarAlQuiz")}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => completarLeccion()}
+                      className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
+                      style={{ background: COLOR_GEOGRAFIA }}
+                    >
+                      {t("leccion.marcarComoAprendida")}
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
           </motion.div>
         )}
 
@@ -239,7 +261,7 @@ export default function LeccionGeografiaClient({ nodo }: Props) {
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
               <button
-                onClick={() => router.push("/geografia/aprender")}
+                onClick={() => router.push(hrefVolverAAprender("/geografia/aprender", nodo.requierePro))}
                 className="rounded-xl px-4 py-3 font-display font-semibold text-white"
                 style={{ background: COLOR_GEOGRAFIA }}
               >

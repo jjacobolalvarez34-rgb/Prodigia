@@ -2,22 +2,10 @@
 
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import { IDS_POR_CONTINENTE, type Continente } from "@/lib/practica/geografia";
+import { PROYECCION_POR_CONTINENTE } from "@/lib/geografia/proyeccion";
 
 const GEO_URL = "/data/countries-110m.json";
 export const COLOR_GEOGRAFIA = "#1E7A8C";
-
-// Centro y zoom por continente — cada uno necesita su propio encuadre
-// para que el mapa se vea recortado a ese continente, no al mundo.
-const PROYECCION_POR_CONTINENTE: Record<Continente, { scale: number; center: [number, number] }> = {
-  america: { scale: 220, center: [-75, 5] },
-  europa: { scale: 480, center: [15, 55] },
-  africa: { scale: 330, center: [18, 2] },
-  // Asia + Oceanía es la región más ancha de las cuatro (de Turquía a
-  // Nueva Zelanda) — el zoom queda más chico a propósito para que
-  // entre todo el rango; algunos extremos (este de Rusia, NZ) quedan
-  // más cerca del borde del mapa que en los otros continentes.
-  asia_oceania: { scale: 155, center: [95, 15] },
-};
 
 interface Props {
   continente: Continente;

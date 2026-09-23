@@ -1009,10 +1009,20 @@
       "progreso": "Progreso",
       "tecnicas": "{completadas}/{total} técnicas",
       "titulo": "Aprender",
-      "subtitulo": "Trucos para memorizar mapas — no son cuentas, son formas de mirar."
+      "subtitulo": "Trucos para memorizar mapas — no son cuentas, son formas de mirar.",
+      "desbloqueaConPro": "Desbloquea con Pro",
+      "grupos": {
+        "general": "General"
+      }
+    },
+    "visuales": {
+      "mapa": {
+        "etiqueta": "Mapa animado"
+      }
     },
     "leccion": {
       "tecnica": "Técnica",
+      "clase": "Clase",
       "verElTruco": "Ver el truco",
       "anterior": "Anterior",
       "siguientePaso": "Siguiente paso",

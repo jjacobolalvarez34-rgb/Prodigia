@@ -121,7 +121,13 @@ export default async function PerfilPage() {
       .from("attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id)
-      .neq("problem_type", "geografia")
+      // Geografía calibra por continente desde
+      // 0207_geografia_niveles_por_continente.sql — el `.neq` exacto de
+      // antes ya no alcanza (deja pasar "geografia_america" etc, igual
+      // que le pasaba a Quimia con sus sub-tipos antes del fix de
+      // 2026-08-27 documentado arriba); excluir por prefijo (sin guion
+      // bajo, matchea el bare "geografia" histórico Y los 4 nuevos).
+      .not("problem_type", "like", "geografia%")
       .not("problem_type", "like", "quimia_%")
       .not("problem_type", "like", "anatomia_%")
       .not("problem_type", "like", "melodia_%")
@@ -133,7 +139,9 @@ export default async function PerfilPage() {
       .not("problem_type", "like", "naipia_%")
       .not("problem_type", "like", "codia_%"),
     supabase.from("logic_attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
-    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("problem_type", "geografia"),
+    // `like` (no `.in` con lista exacta) para sumar el histórico bare
+    // "geografia" junto con los 4 sub-tipos nuevos por continente.
+    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).like("problem_type", "geografia%"),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"]),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["anatomia_oseo", "anatomia_muscular", "anatomia_organos", "anatomia_nervioso"]),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"]),
