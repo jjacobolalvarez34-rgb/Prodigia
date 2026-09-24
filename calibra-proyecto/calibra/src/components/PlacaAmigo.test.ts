@@ -197,4 +197,15 @@ describe("PlacaAmigo — variante tarjeta (cuadrícula de Tus amigos)", () => {
   it("el menú de acciones de la tarjeta arranca cerrado", () => {
     expect(tarjeta(AMIGO_COMPLETO)).not.toContain('role="menu"');
   });
+
+  it("antes de aplicar la migración 0220 (mis_amigos() sin nivel_cuenta/puntos_total) no tira excepción y muestra Nivel 1 y 0 chispas", () => {
+    const { nivel_cuenta: _n, puntos_total: _p, ...sinCamposNuevos } = AMIGO_COMPLETO;
+    void _n;
+    void _p;
+    const html = tarjeta(sinCamposNuevos as unknown as Amigo);
+    expect(html).toContain("Ada Lovelace");
+    expect(html).toContain("Nivel 1");
+    expect(html).toContain("0 chispas");
+    expect(html).not.toContain("undefined");
+  });
 });

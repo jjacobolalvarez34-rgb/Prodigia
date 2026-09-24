@@ -86,6 +86,9 @@ export default function PlacaAmigo({ amigo, onRetar, onQuitar, compacto = false,
   const claseTextoSec = claro ? "text-white/75" : "text-texto-secundario";
   const marcoEstilo = ESTILO_MARCO_PERFIL[amigo.marco_perfil] ?? ESTILO_MARCO_PERFIL.ninguno;
   const nombreVisible = amigo.display_name ?? t("jugador");
+  // `?? 1` / `?? 0`: el código se despliega antes de que se aplique la migración
+  // 0220 en la base (mis_amigos() todavía no devuelve nivel_cuenta/puntos_total):
+  // sin un valor, next-intl fallaría al formatear "Nivel {n}".
   const esTarjeta = variante === "tarjeta" && !compacto;
   const avatarSize = esTarjeta ? 72 : compacto ? 34 : 52;
 
@@ -134,10 +137,10 @@ export default function PlacaAmigo({ amigo, onRetar, onQuitar, compacto = false,
             </div>
             <div className="mt-1 grid w-full grid-cols-2 gap-1.5">
               <span className={`flex items-center justify-center rounded-lg border px-1.5 py-1 text-center font-mono text-[11px] font-semibold leading-tight ${claseTexto} ${claro ? "border-white/25 bg-white/10" : "border-border bg-background"}`}>
-                {t("placaAmigo.nivel", { n: amigo.nivel_cuenta })}
+                {t("placaAmigo.nivel", { n: amigo.nivel_cuenta ?? 1 })}
               </span>
               <span className={`flex items-center justify-center rounded-lg border px-1.5 py-1 text-center font-mono text-[11px] font-semibold leading-tight ${claseTexto} ${claro ? "border-white/25 bg-white/10" : "border-border bg-background"}`}>
-                {t("placaAmigo.chispas", { n: amigo.puntos_total })}
+                {t("placaAmigo.chispas", { n: amigo.puntos_total ?? 0 })}
               </span>
             </div>
           </div>
