@@ -1,9 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Link, usePathname } from "@/i18n/navigation";
-import { IconCasa } from "@/components/icons";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { IconCasa, IconFlechaAtras } from "@/components/icons";
 import { useTrackearPresenciaGlobal } from "@/lib/presencia/useTrackearPresenciaGlobal";
+import { usePedirConfirmacionSalida } from "@/lib/navegacion/guardiaSalida";
 import RecordatorioInvitado from "./RecordatorioInvitado";
 import PedirEdadModal from "./PedirEdadModal";
 import Logo from "./Logo";
@@ -42,10 +43,11 @@ interface Props {
   invitado?: boolean;
 }
 
-function LogoLink({ colorMundo }: { colorMundo: string }) {
+function LogoLink({ colorMundo, onClic }: { colorMundo: string; onClic: (e: React.MouseEvent, href: string) => void }) {
   return (
     <Link
       href="/"
+      onClick={(e) => onClic(e, "/")}
       className="flex items-center gap-2 font-display text-lg font-bold tracking-tight text-foreground"
     >
       <Logo size={26} colorAro={colorMundo} />
@@ -54,10 +56,46 @@ function LogoLink({ colorMundo }: { colorMundo: string }) {
   );
 }
 
+// Pedido 2026-09-24 (referencia visual): "no hay como devolverse a la
+// página anterior, siempre toca volver al menú principal". Flechita chica,
+// mismo estilo de placa circular que Boton (rediseño 2026-09-24), que hace
+// un `router.back()` real en vez de saltar siempre a "/" — respeta la
+// guardia de salida (BotonRendirse.tsx / GuardiaSalidaProvider) igual que
+// cualquier otro link del Header. Oculta en "/" (no hay a dónde volver).
+function BotonVolverAtras({ colorMundo }: { colorMundo: string }) {
+  const t = useTranslations("Nav");
+  const router = useRouter();
+  const pathname = usePathname();
+  const pedirConfirmacion = usePedirConfirmacionSalida();
+  if (pathname === "/") return null;
+  return (
+    <button
+      type="button"
+      aria-label={t("volver")}
+      onClick={() => pedirConfirmacion(() => router.back())}
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border text-texto-secundario transition-colors hover:border-[color-mix(in_oklab,var(--boton-acento)_60%,var(--border))] hover:text-foreground"
+      style={{ ["--boton-acento" as string]: colorMundo }}
+    >
+      <IconFlechaAtras className="h-4 w-4" />
+    </button>
+  );
+}
+
 export default function Header({ autenticado = false, invitado = false }: Props) {
   const t = useTranslations("Nav");
   const pathname = usePathname();
+  const router = useRouter();
+  const pedirConfirmacion = usePedirConfirmacionSalida();
   const colorMundo = colorDelMundo(pathname ?? "/");
+
+  // Pedido 2026-09-24: cualquier click en el Header (casita, logo, links)
+  // primero pasa por la guardia de salida — si hay una partida o una
+  // lección en curso, `pedirConfirmacion` abre el modal en vez de navegar
+  // y acá se frena la navegación normal del <Link>.
+  function manejarClic(e: React.MouseEvent, href: string) {
+    const interceptado = pedirConfirmacion(() => router.push(href));
+    if (interceptado) e.preventDefault();
+  }
   // Rankeds ("usuarios en línea"): Header renderiza en toda página
   // autenticada, así que trackear presencia acá alcanza para reflejar
   // actividad de la app entera, no solo de quien está mirando Rankeds
@@ -88,7 +126,8 @@ export default function Header({ autenticado = false, invitado = false }: Props)
       {autenticado && !invitado && <PedirEdadModal />}
       <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4">
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <LogoLink colorMundo={colorMundo} />
+          {autenticado && <BotonVolverAtras colorMundo={colorMundo} />}
+          <LogoLink colorMundo={colorMundo} onClic={manejarClic} />
           {autenticado && <MundoSelector />}
         </div>
         {/* flex-wrap en vez de overflow-x-auto a propósito: un contenedor
@@ -104,6 +143,7 @@ export default function Header({ autenticado = false, invitado = false }: Props)
           {autenticado && (
             <Link
               href="/"
+              onClick={(e) => manejarClic(e, "/")}
               aria-label={t("inicio")}
               className="shrink-0 text-texto-secundario transition-colors hover:text-foreground"
               style={pathname === "/" ? { color: colorMundo } : undefined}
@@ -117,6 +157,7 @@ export default function Header({ autenticado = false, invitado = false }: Props)
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={(e) => manejarClic(e, link.href)}
                 className={`shrink-0 whitespace-nowrap text-sm transition-colors ${
                   activo ? "font-semibold" : "font-medium text-texto-secundario hover:text-foreground"
                 }`}

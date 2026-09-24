@@ -920,6 +920,14 @@
     },
     "metadata": {
       "description": "Adaptive practice for mental math and logic: difficulty that adjusts to your level."
+    },
+    "guardiaSalida": {
+      "titulo": "Are you sure you want to leave?",
+      "descripcion": "You'll lose your progress in this match or lesson.",
+      "descripcionRanked": "You'll lose the match and your ELO will drop.",
+      "confirmar": "Yes, leave",
+      "cancelar": "Stay here",
+      "error": "Couldn't leave the match. Try again."
     }
   },
   "Geografia": {
@@ -1041,6 +1049,7 @@
   },
   "Nav": {
     "inicio": "Home",
+    "volver": "Back",
     "ranking": "Ranking",
     "rankeds": "Rankeds",
     "social": "Social",

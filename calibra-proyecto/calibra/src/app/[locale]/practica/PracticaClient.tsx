@@ -15,6 +15,8 @@ import SprintSummary, { type FinishResponse, type ResultadoDuelo } from "./Sprin
 import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
 import BotonRendirse from "@/components/duelos/BotonRendirse";
 import { useDeteccionAbandono } from "@/lib/duelos/useDeteccionAbandono";
+import { rendirseDuelo } from "@/lib/duelos/rendirse";
+import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
 import { operacionPermitidaInvitado } from "@/lib/auth/accesoInvitado";
 
 type Fase = "seleccion" | "duelo-intro" | "sprint" | "finalizando" | "resumen";
@@ -182,6 +184,25 @@ export default function PracticaClient({
     rivalEsBot: duelo?.rivalEsBot,
     activo: fase === "sprint" && !!duelo,
     onAbandonoDetectado: handleAbandonoDetectado,
+  });
+
+  // Pedido 2026-09-24: salir por el Header (la casita, el logo, un link del
+  // nav) durante una partida en curso pide confirmación — igual que
+  // BotonRendirse arriba, pero disparado desde afuera de esta pantalla. En
+  // un duelo Ranked real (no contra el Clan de Bots, que ya no muestra el
+  // botón de Rendirse) el modal avisa la pérdida de ELO y, al confirmar,
+  // rinde el duelo de verdad (mismo POST que BotonRendirse) antes de
+  // navegar al resultado.
+  const dueloRankedReal = !!duelo && !duelo.rivalEsBot;
+  useRegistrarGuardiaSalida({
+    activo: fase === "sprint",
+    ranked: dueloRankedReal,
+    alConfirmar: dueloRankedReal
+      ? async () => {
+          await rendirseDuelo(duelo!.duelId);
+          router.push(duelo!.serieId ? `/rankeds/serie/${duelo!.serieId}` : "/rankeds");
+        }
+      : undefined,
   });
 
   if (fase === "duelo-intro" && duelo) {

@@ -14,6 +14,7 @@ import Boton from "@/components/Boton";
 import CuerpoVisual from "@/components/aprender/CuerpoVisual";
 import { REGISTRO_VISUALES_NUMERIA } from "@/components/numeria/visuales/registro";
 import { visualesDeContenido } from "@/lib/aprender/visuales";
+import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
 
 type Fase = "explicacion" | "ejemplo" | "practica" | "quiz" | "celebracion";
 
@@ -80,6 +81,12 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
   const [respuestas, setRespuestas] = useState<string[]>(() => quiz.map(() => ""));
   const [enviandoQuiz, setEnviandoQuiz] = useState(false);
   const [resultadoQuiz, setResultadoQuiz] = useState<{ incorrectas: number[] } | null>(null);
+
+  // Pedido 2026-09-24: salir por el Header a mitad de una lección (ya
+  // viste el ejemplo, estás practicando o en el quiz) pide confirmación —
+  // en "explicacion" (recién abriste, nada que perder todavía) y en
+  // "celebracion" (ya terminaste) no hace falta.
+  useRegistrarGuardiaSalida({ activo: fase !== "explicacion" && fase !== "celebracion" });
 
   function empezarPractica() {
     setProblemaIdx(0);
@@ -201,7 +208,7 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
                   ))}
                 </div>
                 <div className="flex gap-3">
-                  <Boton variante="secundario" onClick={() => setPasoIdx((p) => Math.max(0, p - 1))} disabled={pasoIdx === 0}>
+                  <Boton variante="secundario" atras onClick={() => setPasoIdx((p) => Math.max(0, p - 1))} disabled={pasoIdx === 0}>
                     {t("anterior")}
                   </Boton>
                   {pasoIdx < pasos.length - 1 ? (
@@ -373,7 +380,7 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
             )}
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
-              <Boton onClick={() => router.push(hrefVolverAAprender("/aprender", nodo.requierePro))}>{t("volverAAprender")}</Boton>
+              <Boton atras onClick={() => router.push(hrefVolverAAprender("/aprender", nodo.requierePro))}>{t("volverAAprender")}</Boton>
               <Link
                 href={esFraccion ? "/practica/fracciones" : SLUGS_ALGEBRA.has(nodo.slug) ? "/practica/algebra" : "/practica"}
                 className="text-sm font-medium text-primario hover:underline"

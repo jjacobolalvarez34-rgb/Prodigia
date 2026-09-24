@@ -294,6 +294,28 @@ export function IconCasa({ className }: IconProps) {
   );
 }
 
+// Flecha simple (línea + punta), no un chevron — pedido explícito 2026-09-24
+// (referencia visual del usuario): el badge circular de "Volver" y la
+// flechita de "ir atrás" del Header usan esta, nunca un chevron "<".
+export function IconFlechaAtras({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M19 12H5" />
+      <path d="M11 6l-6 6 6 6" />
+    </svg>
+  );
+}
+
+// Triángulo de "reproducir/iniciar" — relleno, no de trazo (mismo criterio
+// visual que la referencia: un ícono sólido dentro del badge, no una línea).
+export function IconJugar({ className }: IconProps) {
+  return (
+    <svg width={22} height={22} viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M8 5.14v13.72a1 1 0 0 0 1.5.87l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14z" />
+    </svg>
+  );
+}
+
 export function IconPerfil({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

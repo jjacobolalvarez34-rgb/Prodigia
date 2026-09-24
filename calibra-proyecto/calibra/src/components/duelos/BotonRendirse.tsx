@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { rendirseDuelo } from "@/lib/duelos/rendirse";
 
 interface Props {
   duelId: string;
@@ -25,17 +26,7 @@ export default function BotonRendirse({ duelId, onRendido, className = "" }: Pro
     setEnviando(true);
     setError(null);
     try {
-      const res = await fetch("/api/duelos/rendirse", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ duel_id: duelId }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setError(data.error ?? t("error"));
-        setEnviando(false);
-        return;
-      }
+      await rendirseDuelo(duelId);
       onRendido();
     } catch {
       setError(t("error"));

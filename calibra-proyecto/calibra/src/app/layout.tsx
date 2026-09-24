@@ -11,6 +11,7 @@ import AnunciosModal from "@/components/AnunciosModal";
 import RegistrarServiceWorker from "@/components/RegistrarServiceWorker";
 import NativePush from "@/components/NativePush";
 import NativeBackButton from "@/components/NativeBackButton";
+import { GuardiaSalidaProvider } from "@/lib/navegacion/guardiaSalida";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -172,16 +173,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <ChispaClick>
-            <PageFade>{children}</PageFade>
-          </ChispaClick>
-          <DeteccionConexion />
-          <NotificacionesDuelo />
-          <AnunciosModal />
-          <RegistrarServiceWorker />
-          {/* Solo actúan adentro de la app nativa (Capacitor); 100% inertes en web/PWA */}
-          <NativePush />
-          <NativeBackButton />
+          <GuardiaSalidaProvider>
+            <ChispaClick>
+              <PageFade>{children}</PageFade>
+            </ChispaClick>
+            <DeteccionConexion />
+            <NotificacionesDuelo />
+            <AnunciosModal />
+            <RegistrarServiceWorker />
+            {/* Solo actúan adentro de la app nativa (Capacitor); 100% inertes en web/PWA */}
+            <NativePush />
+            <NativeBackButton />
+          </GuardiaSalidaProvider>
         </NextIntlClientProvider>
       </body>
     </html>

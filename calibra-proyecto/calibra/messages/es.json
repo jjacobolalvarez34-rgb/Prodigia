@@ -920,6 +920,14 @@
     },
     "metadata": {
       "description": "Práctica adaptativa de cálculo mental y lógica: dificultad que se ajusta a tu nivel."
+    },
+    "guardiaSalida": {
+      "titulo": "¿Seguro que quieres abandonar?",
+      "descripcion": "Vas a perder el progreso de esta partida o lección.",
+      "descripcionRanked": "Vas a perder la partida y tu ELO va a bajar.",
+      "confirmar": "Sí, abandonar",
+      "cancelar": "Seguir aquí",
+      "error": "No se pudo abandonar la partida. Intenta de nuevo."
     }
   },
   "Geografia": {
@@ -1041,6 +1049,7 @@
   },
   "Nav": {
     "inicio": "Inicio",
+    "volver": "Volver",
     "ranking": "Ranking",
     "rankeds": "Rankeds",
     "social": "Social",
