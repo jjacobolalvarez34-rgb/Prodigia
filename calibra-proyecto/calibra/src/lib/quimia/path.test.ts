@@ -80,11 +80,11 @@ describe("Quimia Técnicas: cada grupo tiene su propio 'activo' independiente y 
   it("con 0 dominadas, la primera Técnica de CADA grupo queda activa a la vez y el resto bloqueada", () => {
     const nodos = calcularNodosTecnicas(filas, new Set());
     const porId = estados(nodos);
-    for (const g of ["tabla", "simbolos", "formulas", "nomenclatura"]) {
+    for (const g of ["tabla", "simbolos", "formulas", "nomenclatura", "redox", "organica"]) {
       expect(porId.get(idTec(g, 1))!.estado, `${g} #1`).toBe("activo");
       expect(porId.get(idTec(g, 2))!.estado, `${g} #2`).toBe("bloqueado");
     }
-    expect(nodos.filter((n) => n.estado === "activo")).toHaveLength(4);
+    expect(nodos.filter((n) => n.estado === "activo")).toHaveLength(6);
     expect(nodos.every((n) => !n.requierePro && !n.bloqueadoPorPlan)).toBe(true);
   });
 
@@ -184,7 +184,7 @@ describe("Quimia Clases: un curso lineal único en orden de curso, primera grati
 describe("Quimia: el estado del sidebar es el de la fuente y coincide con lo que permite [slug]/page.tsx", () => {
   it("[bug Numeria 648f2b7] la primera Técnica de CADA grupo llega 'activo' desde el camino real y la página la deja abrir", async () => {
     const nodos = await obtenerCaminoQuimia(supabaseFalso(new Set()), "u1", false);
-    for (const g of ["tabla", "simbolos", "formulas", "nomenclatura"] as const) {
+    for (const g of ["tabla", "simbolos", "formulas", "nomenclatura", "redox", "organica"] as const) {
       const primera = nodos.find((n) => !n.requierePro && n.grupo === g && n.slug === TECNICAS_QUIMIA.find((t) => t.grupo === g && t.orden === 1)!.slug)!;
       expect(primera.estado, g).toBe("activo");
       expect(puedeAbrirNodoQuimia(primera), `${g}: la página no debe redirigir`).toBe(true);
@@ -222,12 +222,40 @@ describe("Quimia: el estado del sidebar es el de la fuente y coincide con lo que
     expect(hrefVolverAAprender("/quimia/aprender", tecnica2.requierePro)).toBe("/quimia/aprender");
   });
 
-  it("los grupos sin lecciones (redox y orgánica) no aparecen en el sidebar; los 4 con contenido sí, en orden de curso", async () => {
+  it("con la tanda 2, los 6 grupos aparecen en el sidebar (Técnicas y Clases), en orden de curso: redox y orgánica al final", async () => {
     const nodos = await obtenerCaminoQuimia(supabaseFalso(new Set()), "u1", true);
     const { tecnicas, clases } = partirCaminoPorClases(nodos);
     for (const lista of [tecnicas, clases]) {
-      expect(construirUnidadesQuimia(lista, NOMBRES, CTA).map((u) => u.id)).toEqual(["quimia-tabla", "quimia-simbolos", "quimia-formulas", "quimia-nomenclatura"]);
+      expect(construirUnidadesQuimia(lista, NOMBRES, CTA).map((u) => u.id)).toEqual(["quimia-tabla", "quimia-simbolos", "quimia-formulas", "quimia-nomenclatura", "quimia-redox", "quimia-organica"]);
     }
+  });
+
+  it("las Técnicas de redox y de orgánica arrancan cada una con su propio nodo activo (puntero por grupo); las Clases nuevas siguen el curso lineal después de nomenclatura", () => {
+    const nodos = calcularCaminoQuimia(FILAS, new Set(), true);
+    const porId = estados(nodos);
+    expect(porId.get(idTec("redox", 1))!.estado).toBe("activo");
+    expect(porId.get(idTec("redox", 2))!.estado).toBe("bloqueado");
+    expect(porId.get(idTec("organica", 1))!.estado).toBe("activo");
+    expect(porId.get(idTec("organica", 2))!.estado).toBe("bloqueado");
+    // Clases: solo la primera del curso activa; ninguna de redox/orgánica hasta completar las anteriores
+    expect(porId.get(idCla("redox", 1))!.estado).toBe("bloqueado");
+    const todasLasClases = CLASES_QUIMIA.map((c) => `id-${c.slug}`);
+    const nomenclaturaCompleta = new Set(todasLasClases.slice(0, 17));
+    const luego = estados(calcularCaminoQuimia(FILAS, nomenclaturaCompleta, true));
+    expect(luego.get(idCla("redox", 1))!.estado).toBe("activo");
+    expect(luego.get(idCla("redox", 2))!.estado).toBe("bloqueado");
+    expect(luego.get(idCla("organica", 1))!.estado).toBe("bloqueado");
+    const redoxCompleto = new Set(todasLasClases.slice(0, 24));
+    const luego2 = estados(calcularCaminoQuimia(FILAS, redoxCompleto, true));
+    expect(luego2.get(idCla("organica", 1))!.estado).toBe("activo");
+  });
+
+  it("las Clases de redox y de orgánica son Pro: sin plan quedan bloqueadas por plan (CTA), la primera del curso sigue siendo la única gratis", () => {
+    const nodos = calcularCaminoQuimia(FILAS, new Set(), false);
+    for (const n of nodos.filter((x) => x.requierePro && x.grupo !== "tabla" || (x.requierePro && x.slug !== CLASES_QUIMIA[0].slug))) {
+      expect(n.bloqueadoPorPlan, n.slug).toBe(true);
+    }
+    expect(nodos.find((n) => n.slug === CLASES_QUIMIA[0].slug)!.estado).toBe("activo");
   });
 });
 
@@ -245,7 +273,7 @@ describe("Quimia: GRUPOS_APRENDER.quimia (presentación derivada del contenido t
     }
     const nodos = TECNICAS_QUIMIA.map((t) => ({ slug: t.slug }));
     const grupos = agruparNodos(nodos, "quimia", "tecnicas", "es");
-    expect(grupos.map((x) => x.nombre)).toEqual(["Átomo y tabla periódica", "Símbolos y elementos", "Enlaces y fórmulas", "Nomenclatura inorgánica"]);
+    expect(grupos.map((x) => x.nombre)).toEqual(["Átomo y tabla periódica", "Símbolos y elementos", "Enlaces y fórmulas", "Nomenclatura inorgánica", "Estados de oxidación y redox", "Química orgánica"]);
   });
 
   it("los nombres de los 6 grupos coinciden con messages/es.json y messages/en.json (Quimia.aprenderPagina.grupos)", () => {

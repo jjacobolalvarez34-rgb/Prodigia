@@ -88,10 +88,86 @@ export interface VisualQuimiaOrbitales extends VisualBase {
   z: number;
 }
 
+// ---------- Tanda 2: redox ----------
+
+// Reacción redox paso a paso: números de oxidación sobre cada átomo, quién
+// sube y quién baja, electrones y agentes. `ejemplo` es un id de
+// EJEMPLOS_REDOX (src/lib/quimia/redox.ts).
+export interface VisualQuimiaRedox extends VisualBase {
+  tipo: "quimia.redox";
+  ejemplo: string;
+}
+
+// Cálculo del número de oxidación de UN elemento (regla de la suma cero /
+// carga del ion). `fijos` aclara excepciones (H −1 en hidruros, O −1 en
+// peróxidos).
+export interface VisualQuimiaOxidacion extends VisualBase {
+  tipo: "quimia.oxidacion";
+  formula: string;
+  carga?: number;
+  incognita: string;
+  fijos?: Record<string, number>;
+}
+
+// Balanceo ion-electrón de un caso de CASOS_BALANCEO, por pasos (medio ácido
+// o básico).
+export interface VisualQuimiaBalanceo extends VisualBase {
+  tipo: "quimia.balanceo";
+  caso: string;
+}
+
+// Pila galvánica esquemática (ánodo, cátodo, cable, puente salino) de dos
+// metales de POTENCIALES; el ánodo es el de menor potencial.
+export interface VisualQuimiaPila extends VisualBase {
+  tipo: "quimia.pila";
+  anodo: string;
+  catodo: string;
+}
+
+// ---------- Tanda 2: orgánica ----------
+
+// Esqueleto 2D de una molécula de CATALOGO_MOLECULAS. `modo` "nombrar": cadena
+// principal, numeración, ramificaciones y nombre; "formulas": esqueleto,
+// hidrógenos de cada carbono, fórmula condensada y molecular.
+export interface VisualQuimiaCadena extends VisualBase {
+  tipo: "quimia.cadena";
+  molecula: string;
+  modo?: "nombrar" | "formulas";
+}
+
+// Un grupo funcional por paso, sobre distintas moléculas (con el grupo
+// resaltado, su fórmula general y el nombre).
+export interface VisualQuimiaGrupos extends VisualBase {
+  tipo: "quimia.grupos";
+  moleculas: string[];
+}
+
+// Isómeros de una misma fórmula molecular, uno por paso.
+export interface VisualQuimiaIsomeria extends VisualBase {
+  tipo: "quimia.isomeria";
+  moleculas: string[];
+  isomeria?: "cadena" | "posicion" | "funcion" | "geometrica";
+}
+
+// Hibridación del carbono (sp³, sp², sp) de metano, eteno o etino, con
+// enlaces sigma y pi y el ángulo.
+export interface VisualQuimiaHibridacion extends VisualBase {
+  tipo: "quimia.hibridacion";
+  molecula: "metano" | "eteno" | "etino";
+}
+
 export type VisualQuimia =
   | VisualQuimiaTabla
   | VisualQuimiaElemento
   | VisualQuimiaEnlace
   | VisualQuimiaCruce
   | VisualQuimiaCuadro
-  | VisualQuimiaOrbitales;
+  | VisualQuimiaOrbitales
+  | VisualQuimiaRedox
+  | VisualQuimiaOxidacion
+  | VisualQuimiaBalanceo
+  | VisualQuimiaPila
+  | VisualQuimiaCadena
+  | VisualQuimiaGrupos
+  | VisualQuimiaIsomeria
+  | VisualQuimiaHibridacion;

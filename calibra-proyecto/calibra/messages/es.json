@@ -2946,6 +2946,157 @@
         "etiqueta": "Llenado de subcapas de {nombre}",
         "paso": "Subcapa {sub}: {e} de {cap} electrones posibles. Ya hay {total} electrones colocados.",
         "excepcion": "excepción a la regla de llenado"
+      },
+      "redox": {
+        "etiqueta": "Reacción redox animada",
+        "tipos": {
+          "sintesis": "Síntesis",
+          "desplazamiento": "Desplazamiento",
+          "combustion": "Combustión",
+          "reduccion-oxido": "Reducción de un óxido",
+          "oxidante-fuerte": "Con un oxidante fuerte",
+          "dismutacion": "Dismutación"
+        },
+        "p1": "Reacción redox de tipo «{tipo}». Ya está balanceada: hay los mismos átomos y la misma carga a los dos lados.",
+        "p2": "Se escribe el número de oxidación sobre los elementos que cambian; los demás no se modifican.",
+        "p3": "{oxida} pasa de {deO} a {aO}: el número SUBE, así que pierde electrones y se oxida. {reduce} pasa de {deR} a {aR}: el número BAJA, así que gana electrones y se reduce.",
+        "p3Dismutacion": "El {simbolo} de esta reacción hace las dos cosas a la vez: una parte pasa de {de} a {a1} (sube, se oxida) y otra pasa de {de} a {a2} (baja, se reduce).",
+        "p4": "Balance de electrones: {oxSemi}; {reSemi}. Se pierden {perdidos} e⁻ y se ganan {ganados} e⁻: siempre coinciden.",
+        "p5": "Agente reductor: {reductor} (se oxida y cede los electrones). Agente oxidante: {oxidante} (se reduce y los recibe).",
+        "p5Dismutacion": "{especie} es a la vez agente oxidante y agente reductor: por eso esta reacción se llama dismutación (o desproporción).",
+        "seOxida": "Se oxida",
+        "seReduce": "Se reduce",
+        "pierde": "pierde {n} e⁻",
+        "gana": "gana {n} e⁻"
+      },
+      "oxidacion": {
+        "etiqueta": "Cálculo del número de oxidación",
+        "p1": "Se quiere calcular el número de oxidación de {incognita} en {formula}.",
+        "p2": "Primero se asignan los números que ya se conocen por las reglas: {lista}.",
+        "p3": "La suma de todos los números de oxidación (cada uno multiplicado por la cantidad de átomos) tiene que dar la carga total, {carga}: {ecuacion}",
+        "p4": "Se despeja la incógnita: {incognita} = {valor}.",
+        "p5": "Comprobación: {suma}. La suma coincide con la carga, así que el resultado es correcto.",
+        "reglas": {
+          "hidrogeno": "regla del hidrógeno",
+          "oxigeno": "regla del oxígeno",
+          "fluor": "el flúor es siempre −1",
+          "alcalino": "metal alcalino",
+          "alcalinoterreo": "metal alcalinotérreo",
+          "aluminio": "regla del aluminio",
+          "plata": "la plata en sus compuestos es +1",
+          "zinc": "el zinc es +2",
+          "aclarado": "excepción indicada"
+        }
+      },
+      "balanceo": {
+        "etiqueta": "Balanceo ion-electrón animado",
+        "reduccion": "Reducción",
+        "oxidacion": "Oxidación",
+        "neta": "Ecuación iónica neta",
+        "lado": {
+          "reactivos": "a la izquierda",
+          "productos": "a la derecha",
+          "ninguno": "en ningún lado"
+        },
+        "p1": "Se escriben las dos semirreacciones con el elemento que cambia ya igualado: una de reducción y una de oxidación.",
+        "p2": "Oxígenos: se igualan con H₂O. En la reducción {rd, plural, =0 {no hace falta agregar agua} one {se agrega # H₂O {aRed}} other {se agregan # H₂O {aRed}}}; en la oxidación {ox, plural, =0 {no hace falta agregar agua} one {se agrega # H₂O {aOx}} other {se agregan # H₂O {aOx}}}.",
+        "p3": "Hidrógenos: se igualan con H⁺. En la reducción {rd, plural, =0 {no hace falta agregar H⁺} one {se agrega # H⁺ {aRed}} other {se agregan # H⁺ {aRed}}}; en la oxidación {ox, plural, =0 {no hace falta agregar H⁺} one {se agrega # H⁺ {aOx}} other {se agregan # H⁺ {aOx}}}.",
+        "p4": "Cargas: se igualan con electrones, que van del lado más positivo. La reducción gana {rd} e⁻ y la oxidación pierde {ox} e⁻.",
+        "p5Basico": "Medio básico: se suman a los dos lados tantos OH⁻ como H⁺ hay. En la reducción {rd}; en la oxidación {ox}.",
+        "p6Basico": "Cada H⁺ con un OH⁻ forma H₂O, y se simplifica el agua que quedó a los dos lados. Ya no queda ningún H⁺.",
+        "pMultiplicar": "Se multiplica cada semirreacción para igualar los electrones: reducción × {mr} y oxidación × {mo}, así en las dos hay {e} e⁻.",
+        "pSumar": "Se suman las dos semirreacciones. Los electrones se cancelan, y también el H₂O, el H⁺ o el OH⁻ que queda a los dos lados: {ecuacion}"
+      },
+      "pila": {
+        "etiqueta": "Pila galvánica animada ({anodo} y {catodo})",
+        "nota": "Esquema de una pila: no está a escala ni muestra la forma real del montaje.",
+        "anodo": "Ánodo",
+        "catodo": "Cátodo",
+        "puente": "puente salino",
+        "p1": "Una pila tiene dos semiceldas: cada metal está en una solución de sus propios iones. Se conectan con un cable (por donde van los electrones) y con un puente salino (por donde van los iones).",
+        "p2": "Ánodo (polo negativo): ahí ocurre la oxidación. El {metal} se oxida y libera electrones: {semi} El electrodo se va gastando.",
+        "p3": "Cátodo (polo positivo): ahí ocurre la reducción. El catión de {metal} recibe los electrones: {semi} El electrodo aumenta de masa.",
+        "p4": "Los electrones que libera el ánodo viajan por el cable hasta el cátodo: esa corriente es la que aprovecha un aparato.",
+        "p5": "El puente salino cierra el circuito: los aniones se dirigen al ánodo y los cationes al cátodo, y así las dos soluciones se mantienen eléctricamente neutras.",
+        "p6": "Reacción global: {global} Potencial estándar de la pila: E° = E°(cátodo) − E°(ánodo) = {c} − ({a}) = {e} V."
+      },
+      "cadena": {
+        "etiqueta": "Esqueleto de {nombre}",
+        "nota": "Esquema plano: cada vértice y cada extremo es un carbono y los hidrógenos no se dibujan. No muestra la forma tridimensional real.",
+        "nombrar": {
+          "p1Sola": "Primero se busca la cadena principal: la cadena continua de carbonos más larga. Aquí tiene {n} carbonos, así que la raíz es «{raiz}-».",
+          "p1Grupo": "Primero se busca la cadena principal: la más larga que contiene el grupo principal ({grupo}). Aquí tiene {n} carbonos, así que la raíz es «{raiz}-».",
+          "p1Multiple": "Primero se busca la cadena principal: la más larga que contiene el enlace múltiple. Aquí tiene {n} carbonos, así que la raíz es «{raiz}-».",
+          "p1Ambos": "Primero se busca la cadena principal: la más larga que contiene el grupo principal ({grupo}) y el enlace múltiple. Aquí tiene {n} carbonos, así que la raíz es «{raiz}-».",
+          "p1Anillo": "Es un compuesto cíclico: la cadena principal es el anillo de {n} carbonos y el nombre lleva «ciclo» delante de la raíz.",
+          "p1Benceno": "Es un anillo de seis carbonos con enlaces dobles alternados (estructura de Kekulé); en la realidad los seis enlaces son equivalentes.",
+          "p2Grupo": "Se numera desde el extremo que le da el número más bajo al grupo principal ({grupo}): queda en el carbono {loc}.",
+          "p2Multiple": "Se numera desde el extremo que le da el número más bajo al enlace múltiple: queda en el carbono {loc}.",
+          "p2Ramas": "Se numera desde el extremo que le da los números más bajos a las ramificaciones: {locs}.",
+          "p2Nada": "Se numera de un extremo al otro; en una cadena sin nada más da lo mismo el sentido.",
+          "p3Ramas": "Se identifican las ramificaciones y otros sustituyentes: {lista}.",
+          "p3Sin": "No hay ramificaciones ni otros sustituyentes, así que no se agrega ningún prefijo.",
+          "p3Anillo": "Lo que cuelga del anillo se nombra como prefijo, con su número si hace falta.",
+          "p4": "Se arma el nombre: prefijos (en orden alfabético y con su número) + raíz + terminación. Resultado: {nombre}.",
+          "ramaEn": "{nombre} en el carbono {pos}"
+        },
+        "formulas": {
+          "f1": "El esqueleto muestra solo los carbonos: cada vértice y cada extremo es un átomo de carbono.",
+          "f2": "Cada carbono completa sus 4 enlaces con hidrógenos. En total hay {c} carbonos y {h} hidrógenos.",
+          "f3": "Fórmula condensada (semidesarrollada): {condensada}",
+          "f4": "Fórmula molecular: {formula}, es decir, {conteo}."
+        }
+      },
+      "grupos": {
+        "etiqueta": "Grupos funcionales",
+        "nota": "Esqueleto plano y esquemático: los átomos del grupo funcional van resaltados. No muestra la forma tridimensional real.",
+        "paso": "{grupo}: fórmula general {general} Terminación o prefijo: «{terminacion}». Ejemplo: {nombre}, {formula}.",
+        "nombres": {
+          "alqueno": "alqueno",
+          "alquino": "alquino",
+          "aromatico": "anillo aromático",
+          "alcohol": "alcohol",
+          "eter": "éter",
+          "aldehido": "aldehído",
+          "cetona": "cetona",
+          "acido": "ácido carboxílico",
+          "ester": "éster",
+          "amina": "amina",
+          "amida": "amida",
+          "haluro": "haluro de alquilo"
+        }
+      },
+      "isomeria": {
+        "etiqueta": "Isómeros de {formula}",
+        "nota": "Esqueletos planos y esquemáticos: no muestran la forma tridimensional real.",
+        "formulaComun": "Misma fórmula molecular: {formula}",
+        "isomero": "Isómero {n}: {nombre}, con fórmula molecular {formula}.",
+        "resumen": {
+          "generico": "Los {n} compuestos tienen la misma fórmula molecular, {formula}, pero sus átomos están unidos de otra manera: son isómeros y tienen propiedades distintas.",
+          "cadena": "Isomería de cadena: la misma fórmula, {formula}, con el esqueleto de carbonos ordenado de otra manera (lineal o ramificado).",
+          "posicion": "Isomería de posición: la misma fórmula, {formula}, con el mismo esqueleto pero el grupo o el enlace múltiple en otro carbono.",
+          "funcion": "Isomería de función: la misma fórmula, {formula}, pero con grupos funcionales distintos, o sea, de familias distintas.",
+          "geometrica": "Isomería geométrica: la misma fórmula, {formula}, y el mismo orden de enlaces; cambia de qué lado del doble enlace quedan los sustituyentes (cis, del mismo lado; trans, de lados opuestos)."
+        }
+      },
+      "hibridacion": {
+        "etiqueta": "Hibridación del carbono en {nombre}",
+        "nota": "Dibujo plano: no muestra la forma tridimensional real. En el metano, la cuña y la línea punteada indican un enlace hacia adelante y otro hacia atrás.",
+        "p1": "Molécula: {formula}. Se observa cómo se une el carbono a los demás átomos.",
+        "p2": "Cada carbono forma {sigma} enlaces sigma (σ, uno por cada átomo unido) y {pi, plural, =0 {ningún enlace pi} one {# enlace pi (π)} other {# enlaces pi (π)}}. Un enlace doble tiene un σ y un π; uno triple, un σ y dos π.",
+        "p3": "Con {sigma} enlaces sigma, el carbono mezcla {mezcla}: su hibridación es {hib}.",
+        "p4": "Los orbitales {hib} se ubican lo más lejos posible entre sí: ángulo de {angulo}°, geometría {geometria}.",
+        "mezcla": {
+          "sp3": "un orbital s con tres p (cuatro híbridos)",
+          "sp2": "un orbital s con dos p (tres híbridos; queda un p sin mezclar para el enlace π)",
+          "sp": "un orbital s con un p (dos híbridos; quedan dos p sin mezclar para los enlaces π)"
+        },
+        "geometria": {
+          "sp3": "tetraédrica",
+          "sp2": "trigonal plana",
+          "sp": "lineal"
+        },
+        "notaPlana": "Dibujo plano: no muestra la forma tridimensional real."
       }
     }
   },

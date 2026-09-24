@@ -4,6 +4,7 @@ import {
   COMPUESTOS,
   COMPUESTOS_NOMENCLATURA,
   Z_MAX_CON_ESTADO_OXIDACION,
+  ESTADOS_ALTERNATIVOS,
   generarPreguntaQuimia,
   tieneGrupoDefinido,
 } from "./quimia";
@@ -11,6 +12,7 @@ import { COMPUESTOS_ORGANICOS } from "./quimicaOrganica";
 import { contarAtomos } from "@/lib/quimia/formulas";
 import { COMPUESTOS_IONICOS, HIDRACIDOS, OTROS_COMPUESTOS, OXIDOS_NO_METALICOS, OXOACIDOS } from "@/lib/quimia/nomenclatura";
 import { periodoPorZ } from "@/lib/quimia/tabla";
+import { DATOS_ELEMENTOS } from "@/lib/quimia/datos";
 
 // Auditoría de los datos de PRÁCTICA de Quimia (tanda 1 del retrofit de
 // Aprender, 2026-09-23). Cada test fija un error real encontrado (ver los
@@ -72,6 +74,51 @@ describe("tabla periódica (práctica): estado de oxidación", () => {
     for (const e of ELEMENTOS.filter((x) => x.numeroAtomico <= Z_MAX_CON_ESTADO_OXIDACION)) {
       expect(e.estadoOxidacionComun, e.simbolo).toBeGreaterThanOrEqual(-4);
       expect(e.estadoOxidacionComun, e.simbolo).toBeLessThanOrEqual(7);
+    }
+  });
+});
+
+describe("tabla periódica (práctica): distractores del estado de oxidación (auditoría de la tanda 2)", () => {
+  const signo = (n: number) => (n === 0 ? "0" : n > 0 ? `+${n}` : String(n));
+
+  it("[error real] un distractor nunca es otro estado de oxidación válido del mismo elemento (Fe +2 y +3, Cu +1 y +2, Sn +2 y +4, S −2, +4 y +6...)", () => {
+    const azar = prng(31);
+    const vistos = new Set<string>();
+    for (const nivel of [8, 9, 10]) {
+      const usados = new Set<string>();
+      for (let i = 0; i < 900; i++) {
+        const p = generarPreguntaQuimia("tabla", nivel, usados, azar);
+        const el = elementoDelEnunciado(p.enunciado);
+        const validos = new Set((ESTADOS_ALTERNATIVOS[el.simbolo] ?? []).map(signo));
+        for (const o of p.opciones) if (o !== p.respuesta) expect(validos.has(o), `${el.simbolo}: la opción «${o}» es un estado válido y figura como distractor`).toBe(false);
+        expect(p.respuesta).toBe(signo(el.estadoOxidacionComun));
+        expect(new Set(p.opciones).size).toBe(p.opciones.length);
+        if (validos.size > 0) vistos.add(el.simbolo);
+        usados.add(p.clave);
+        if (usados.size > 60) usados.clear();
+      }
+    }
+    // el arreglo se ejerció con muchos elementos de los que tienen más de un estado
+    expect(vistos.size).toBeGreaterThan(15);
+    for (const s of ["Fe", "Cu", "Sn", "Au", "Hg", "Mn"]) expect(ESTADOS_ALTERNATIVOS[s], s).toBeDefined();
+  });
+
+  it("la tabla de alternativos es coherente: no incluye el estado «común», solo elementos con Z <= 103 y, si el elemento está en datos.ts, solo estados de esa tabla", () => {
+    for (const [simbolo, estados] of Object.entries(ESTADOS_ALTERNATIVOS)) {
+      const el = ELEMENTOS.find((e) => e.simbolo === simbolo);
+      expect(el, simbolo).toBeDefined();
+      expect(el!.numeroAtomico, simbolo).toBeLessThanOrEqual(Z_MAX_CON_ESTADO_OXIDACION);
+      expect(estados, simbolo).not.toContain(el!.estadoOxidacionComun);
+      expect(new Set(estados).size, simbolo).toBe(estados.length);
+      const datos = DATOS_ELEMENTOS.find((d) => d.simbolo === simbolo);
+      if (datos) for (const n of estados) expect(datos.estadosOxidacion, `${simbolo}: ${n}`).toContain(n);
+    }
+  });
+
+  it("el estado «común» de cada elemento cargado en datos.ts figura entre sus estados de oxidación", () => {
+    for (const d of DATOS_ELEMENTOS) {
+      const el = ELEMENTOS.find((e) => e.simbolo === d.simbolo)!;
+      expect(d.estadosOxidacion, d.simbolo).toContain(el.estadoOxidacionComun);
     }
   });
 });

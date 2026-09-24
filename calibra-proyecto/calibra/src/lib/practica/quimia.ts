@@ -329,6 +329,53 @@ export function tieneGrupoDefinido(el: ElementoQuimico): boolean {
   return !((z >= 57 && z <= 71) || (z >= 89 && z <= 103));
 }
 
+// 4) Distractores que eran respuestas válidas. Muchos elementos tienen más de
+//    un estado de oxidación habitual (Fe +2 y +3, Cu +1 y +2, Sn +2 y +4, S −2,
+//    +4 y +6...), y «el más común» es un criterio de tabla escolar: en «¿cuál es
+//    el estado de oxidación más común del hierro?» la opción «+2» (que era un
+//    distractor, porque es el «común» de Mn, Co, Ni...) es un estado real del
+//    hierro. Esta tabla lista, para los elementos con Z <= 103 que tienen otros
+//    estados muy conocidos a nivel colegio, los estados DISTINTOS del «común»:
+//    nunca se ofrecen como distractor. (quimiaAuditoria.test.ts la cruza con
+//    los estados de src/lib/quimia/datos.ts cuando ese elemento está cargado.)
+export const ESTADOS_ALTERNATIVOS: Record<string, number[]> = {
+  H: [-1],
+  C: [-4, 2],
+  N: [1, 2, 3, 4, 5],
+  O: [-1],
+  Si: [-4],
+  P: [-3, 3],
+  S: [4, 6],
+  Cl: [1, 3, 5, 7],
+  Ti: [2, 3],
+  V: [2, 3, 4],
+  Cr: [2, 6],
+  Mn: [4, 6, 7],
+  Fe: [2],
+  Co: [3],
+  Ni: [3],
+  Cu: [1],
+  Ge: [2],
+  As: [-3, 5],
+  Se: [4, 6],
+  Br: [1, 3, 5, 7],
+  Mo: [4, 5],
+  Sn: [2],
+  Sb: [-3, 5],
+  Te: [4, 6],
+  I: [1, 3, 5, 7],
+  Ce: [4],
+  W: [4],
+  Re: [7],
+  Pt: [4],
+  Au: [1],
+  Hg: [1],
+  Tl: [3],
+  Pb: [4],
+  Bi: [5],
+  U: [4],
+};
+
 const PERIODOS_POSIBLES = ["1", "2", "3", "4", "5", "6", "7"];
 const GRUPOS_POSIBLES = Array.from({ length: 18 }, (_, i) => String(i + 1));
 
@@ -348,7 +395,11 @@ function generarPreguntaTabla(nivel: number, usados: Set<string>, rng: Rng): Pre
   }
 
   if (nivel >= 8) {
-    const otros = banco.map((e) => formatearOxidacion(e.estadoOxidacionComun));
+    // Los distractores no pueden ser otro estado de oxidación válido del mismo
+    // elemento (ver ESTADOS_ALTERNATIVOS): «+2» como opción incorrecta para el
+    // hierro sería, en rigor, una respuesta correcta.
+    const validos = new Set([el.estadoOxidacionComun, ...(ESTADOS_ALTERNATIVOS[el.simbolo] ?? [])].map(formatearOxidacion));
+    const otros = banco.map((e) => formatearOxidacion(e.estadoOxidacionComun)).filter((o) => !validos.has(o));
     return {
       enunciado: `¿Cuál es el estado de oxidación más común de ${el.nombre} (${el.simbolo})?`,
       opciones: opcionesConDistractores(formatearOxidacion(el.estadoOxidacionComun), otros, rng),

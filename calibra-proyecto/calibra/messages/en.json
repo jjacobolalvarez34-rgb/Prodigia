@@ -2946,6 +2946,157 @@
         "etiqueta": "Subshell filling for {nombre}",
         "paso": "Subshell {sub}: {e} of {cap} possible electrons. {total} electrons placed so far.",
         "excepcion": "exception to the filling rule"
+      },
+      "redox": {
+        "etiqueta": "Animated redox reaction",
+        "tipos": {
+          "sintesis": "Synthesis",
+          "desplazamiento": "Displacement",
+          "combustion": "Combustion",
+          "reduccion-oxido": "Reduction of an oxide",
+          "oxidante-fuerte": "With a strong oxidizer",
+          "dismutacion": "Disproportionation"
+        },
+        "p1": "Redox reaction of type «{tipo}». It is already balanced: both sides have the same atoms and the same charge.",
+        "p2": "The oxidation number is written over the elements that change; the others stay the same.",
+        "p3": "{oxida} goes from {deO} to {aO}: the number goes UP, so it loses electrons and is oxidized. {reduce} goes from {deR} to {aR}: the number goes DOWN, so it gains electrons and is reduced.",
+        "p3Dismutacion": "The {simbolo} in this reaction does both at once: one part goes from {de} to {a1} (up, oxidized) and another goes from {de} to {a2} (down, reduced).",
+        "p4": "Electron balance: {oxSemi}; {reSemi}. {perdidos} e⁻ are lost and {ganados} e⁻ are gained: they always match.",
+        "p5": "Reducing agent: {reductor} (it is oxidized and gives up the electrons). Oxidizing agent: {oxidante} (it is reduced and receives them).",
+        "p5Dismutacion": "{especie} is both the oxidizing and the reducing agent: that is why this reaction is called disproportionation.",
+        "seOxida": "Oxidized",
+        "seReduce": "Reduced",
+        "pierde": "loses {n} e⁻",
+        "gana": "gains {n} e⁻"
+      },
+      "oxidacion": {
+        "etiqueta": "Calculating the oxidation number",
+        "p1": "We want the oxidation number of {incognita} in {formula}.",
+        "p2": "First, assign the numbers that are already known from the rules: {lista}.",
+        "p3": "All the oxidation numbers (each multiplied by the number of atoms) must add up to the total charge, {carga}: {ecuacion}",
+        "p4": "Solve for the unknown: {incognita} = {valor}.",
+        "p5": "Check: {suma}. The sum matches the charge, so the result is correct.",
+        "reglas": {
+          "hidrogeno": "hydrogen rule",
+          "oxigeno": "oxygen rule",
+          "fluor": "fluorine is always −1",
+          "alcalino": "alkali metal",
+          "alcalinoterreo": "alkaline earth metal",
+          "aluminio": "aluminum rule",
+          "plata": "silver in its compounds is +1",
+          "zinc": "zinc is +2",
+          "aclarado": "stated exception"
+        }
+      },
+      "balanceo": {
+        "etiqueta": "Animated ion-electron balancing",
+        "reduccion": "Reduction",
+        "oxidacion": "Oxidation",
+        "neta": "Net ionic equation",
+        "lado": {
+          "reactivos": "on the left",
+          "productos": "on the right",
+          "ninguno": "on neither side"
+        },
+        "p1": "Write the two half-reactions with the changing element already balanced: one reduction and one oxidation.",
+        "p2": "Oxygens: balance them with H₂O. In the reduction {rd, plural, =0 {no water is needed} one {# H₂O is added {aRed}} other {# H₂O are added {aRed}}}; in the oxidation {ox, plural, =0 {no water is needed} one {# H₂O is added {aOx}} other {# H₂O are added {aOx}}}.",
+        "p3": "Hydrogens: balance them with H⁺. In the reduction {rd, plural, =0 {no H⁺ is needed} one {# H⁺ is added {aRed}} other {# H⁺ are added {aRed}}}; in the oxidation {ox, plural, =0 {no H⁺ is needed} one {# H⁺ is added {aOx}} other {# H⁺ are added {aOx}}}.",
+        "p4": "Charges: balance them with electrons, which go on the more positive side. The reduction gains {rd} e⁻ and the oxidation loses {ox} e⁻.",
+        "p5Basico": "Basic medium: add as many OH⁻ as there are H⁺ on both sides. In the reduction {rd}; in the oxidation {ox}.",
+        "p6Basico": "Each H⁺ with an OH⁻ makes H₂O, and the water left on both sides is simplified. No H⁺ remains.",
+        "pMultiplicar": "Multiply each half-reaction to equalize the electrons: reduction × {mr} and oxidation × {mo}, so both have {e} e⁻.",
+        "pSumar": "Add the two half-reactions. The electrons cancel, and so do the H₂O, H⁺ or OH⁻ left on both sides: {ecuacion}"
+      },
+      "pila": {
+        "etiqueta": "Animated galvanic cell ({anodo} and {catodo})",
+        "nota": "Sketch of a cell: not to scale and not the real shape of the setup.",
+        "anodo": "Anode",
+        "catodo": "Cathode",
+        "puente": "salt bridge",
+        "p1": "A cell has two half-cells: each metal sits in a solution of its own ions. They are connected by a wire (for the electrons) and a salt bridge (for the ions).",
+        "p2": "Anode (negative pole): oxidation happens here. {metal} is oxidized and releases electrons: {semi} The electrode wears away.",
+        "p3": "Cathode (positive pole): reduction happens here. The cation of {metal} receives the electrons: {semi} The electrode gains mass.",
+        "p4": "The electrons released at the anode travel through the wire to the cathode: that current is what a device uses.",
+        "p5": "The salt bridge closes the circuit: anions move toward the anode and cations toward the cathode, so both solutions stay electrically neutral.",
+        "p6": "Overall reaction: {global} Standard cell potential: E° = E°(cathode) − E°(anode) = {c} − ({a}) = {e} V."
+      },
+      "cadena": {
+        "etiqueta": "Skeleton of {nombre}",
+        "nota": "Flat sketch: each vertex and each end is a carbon and the hydrogens are not drawn. It does not show the real three-dimensional shape.",
+        "nombrar": {
+          "p1Sola": "First find the main chain: the longest continuous chain of carbons. Here it has {n} carbons, so the root is «{raiz}-».",
+          "p1Grupo": "First find the main chain: the longest one that contains the main group ({grupo}). Here it has {n} carbons, so the root is «{raiz}-».",
+          "p1Multiple": "First find the main chain: the longest one that contains the multiple bond. Here it has {n} carbons, so the root is «{raiz}-».",
+          "p1Ambos": "First find the main chain: the longest one that contains the main group ({grupo}) and the multiple bond. Here it has {n} carbons, so the root is «{raiz}-».",
+          "p1Anillo": "It is a cyclic compound: the main chain is the ring of {n} carbons and the name has «ciclo» before the root.",
+          "p1Benceno": "It is a ring of six carbons with alternating double bonds (Kekulé structure); in reality the six bonds are equivalent.",
+          "p2Grupo": "Number from the end that gives the lowest number to the main group ({grupo}): it ends up on carbon {loc}.",
+          "p2Multiple": "Number from the end that gives the lowest number to the multiple bond: it ends up on carbon {loc}.",
+          "p2Ramas": "Number from the end that gives the lowest numbers to the branches: {locs}.",
+          "p2Nada": "Number from one end to the other; in a chain with nothing else the direction does not matter.",
+          "p3Ramas": "Identify the branches and other substituents: {lista}.",
+          "p3Sin": "There are no branches or other substituents, so no prefix is added.",
+          "p3Anillo": "What hangs from the ring is named as a prefix, with its number if needed.",
+          "p4": "Build the name: prefixes (alphabetical, with their numbers) + root + ending. Result: {nombre}.",
+          "ramaEn": "{nombre} on carbon {pos}"
+        },
+        "formulas": {
+          "f1": "The skeleton shows only the carbons: each vertex and each end is a carbon atom.",
+          "f2": "Each carbon completes its 4 bonds with hydrogens. In total there are {c} carbons and {h} hydrogens.",
+          "f3": "Condensed (semi-structural) formula: {condensada}",
+          "f4": "Molecular formula: {formula}, that is, {conteo}."
+        }
+      },
+      "grupos": {
+        "etiqueta": "Functional groups",
+        "nota": "Flat, schematic skeleton: the atoms of the functional group are highlighted. It does not show the real three-dimensional shape.",
+        "paso": "{grupo}: general formula {general} Ending or prefix: «{terminacion}». Example: {nombre}, {formula}.",
+        "nombres": {
+          "alqueno": "alkene",
+          "alquino": "alkyne",
+          "aromatico": "aromatic ring",
+          "alcohol": "alcohol",
+          "eter": "ether",
+          "aldehido": "aldehyde",
+          "cetona": "ketone",
+          "acido": "carboxylic acid",
+          "ester": "ester",
+          "amina": "amine",
+          "amida": "amide",
+          "haluro": "alkyl halide"
+        }
+      },
+      "isomeria": {
+        "etiqueta": "Isomers of {formula}",
+        "nota": "Flat, schematic skeletons: they do not show the real three-dimensional shape.",
+        "formulaComun": "Same molecular formula: {formula}",
+        "isomero": "Isomer {n}: {nombre}, with molecular formula {formula}.",
+        "resumen": {
+          "generico": "The {n} compounds have the same molecular formula, {formula}, but their atoms are joined differently: they are isomers and have different properties.",
+          "cadena": "Chain isomerism: the same formula, {formula}, with the carbon skeleton arranged differently (straight or branched).",
+          "posicion": "Position isomerism: the same formula, {formula}, with the same skeleton but the group or the multiple bond on a different carbon.",
+          "funcion": "Function isomerism: the same formula, {formula}, but with different functional groups, that is, from different families.",
+          "geometrica": "Geometric isomerism: the same formula, {formula}, and the same bond order; what changes is which side of the double bond the substituents are on (cis, same side; trans, opposite sides)."
+        }
+      },
+      "hibridacion": {
+        "etiqueta": "Hybridization of carbon in {nombre}",
+        "nota": "Flat drawing: it does not show the real three-dimensional shape. In methane, the wedge and the dashed line show one bond toward the front and one toward the back.",
+        "p1": "Molecule: {formula}. Look at how the carbon is bonded to the other atoms.",
+        "p2": "Each carbon forms {sigma} sigma bonds (σ, one per bonded atom) and {pi, plural, =0 {no pi bond} one {# pi bond (π)} other {# pi bonds (π)}}. A double bond has one σ and one π; a triple bond, one σ and two π.",
+        "p3": "With {sigma} sigma bonds, the carbon mixes {mezcla}: its hybridization is {hib}.",
+        "p4": "The {hib} orbitals point as far from each other as possible: angle of {angulo}°, {geometria} geometry.",
+        "mezcla": {
+          "sp3": "one s orbital with three p (four hybrids)",
+          "sp2": "one s orbital with two p (three hybrids; one p is left unmixed for the π bond)",
+          "sp": "one s orbital with one p (two hybrids; two p are left unmixed for the π bonds)"
+        },
+        "geometria": {
+          "sp3": "tetrahedral",
+          "sp2": "trigonal planar",
+          "sp": "linear"
+        },
+        "notaPlana": "Flat drawing: it does not show the real three-dimensional shape."
       }
     }
   },

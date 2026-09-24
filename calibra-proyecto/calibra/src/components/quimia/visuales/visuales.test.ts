@@ -196,6 +196,125 @@ describe("quimia.cuadro y quimia.orbitales", () => {
   });
 });
 
+describe("visuales de la tanda 2: redox", () => {
+  it("quimia.redox: Zn + Cu²⁺ muestra los números de oxidación, los electrones y los agentes; un ejemplo inexistente no dibuja", () => {
+    const salida = html({ tipo: "quimia.redox", ejemplo: "zn-cu", estatico: true });
+    expect(salida).toContain("\\overset{+2}{\\mathrm{Zn}}");
+    expect(salida).toContain("Se oxida");
+    expect(salida).toContain("Se reduce");
+    expect(salida).toContain("Agente reductor");
+    expect(salida).toContain("2\\,\\mathrm{e^{-}}");
+    expect(html({ tipo: "quimia.redox", ejemplo: "no-existe" })).toBe("");
+    expect(html({ tipo: "quimia.redox" })).toBe("");
+  });
+
+  it("quimia.redox: la dismutación del H₂O₂ usa el texto propio y KMnO₄ + HCl balancea 10 electrones", () => {
+    expect(html({ tipo: "quimia.redox", ejemplo: "h2o2", estatico: true })).toContain("dismutación");
+    const k = html({ tipo: "quimia.redox", ejemplo: "kmno4-hcl", estatico: true });
+    expect(k).toContain("Se pierden 10");
+    expect(k).toContain("\\overset{+7}{\\mathrm{Mn}}");
+  });
+
+  it("quimia.oxidacion: el Mn de KMnO₄ es +7, el S del ion sulfato +6; sin incógnita válida no dibuja", () => {
+    const k = html({ tipo: "quimia.oxidacion", formula: "KMnO4", incognita: "Mn", estatico: true });
+    expect(k).toContain("+7");
+    expect(k).toContain("Comprobación");
+    const so4 = html({ tipo: "quimia.oxidacion", formula: "SO4", carga: -2, incognita: "S", estatico: true });
+    expect(so4).toContain("+6");
+    expect(html({ tipo: "quimia.oxidacion", formula: "KMnO4", incognita: "Zz" })).toBe("");
+    expect(html({ tipo: "quimia.oxidacion", formula: "KMnO4" })).toBe("");
+    // dos incógnitas sin aclarar: no se inventa un resultado
+    expect(html({ tipo: "quimia.oxidacion", formula: "MnCl2", incognita: "Mn" })).toBe("");
+  });
+
+  it("quimia.balanceo: medio ácido (6 pasos) y básico (8 pasos), con la ecuación neta final", () => {
+    const a = html({ tipo: "quimia.balanceo", caso: "mno4-fe2", estatico: true });
+    expect(a).toContain("Ecuación iónica neta");
+    expect(a).toContain("8\\,\\mathrm{H^{+}}");
+    expect(a).toContain("5\\,\\mathrm{Fe^{3+}}");
+    const b = html({ tipo: "quimia.balanceo", caso: "mno4-i", estatico: true });
+    expect(b).toContain("8\\,\\mathrm{OH^{-}}");
+    expect(b).toContain("Medio básico");
+    expect(html({ tipo: "quimia.balanceo", caso: "no-existe" })).toBe("");
+  });
+
+  it("quimia.pila: la pila de Daniell da 1,10 V (1.10 en inglés) y el ánodo es el zinc; un par no espontáneo no dibuja", () => {
+    const es = html({ tipo: "quimia.pila", anodo: "Zn", catodo: "Cu", estatico: true });
+    expect(es).toContain("1,10 V");
+    expect(es).toContain("Ánodo");
+    expect(es).toContain("puente salino");
+    expect(html({ tipo: "quimia.pila", anodo: "Zn", catodo: "Cu", estatico: true }, "en")).toContain("1.10 V");
+    expect(html({ tipo: "quimia.pila", anodo: "Cu", catodo: "Zn" })).toBe("");
+    expect(html({ tipo: "quimia.pila", anodo: "Xx", catodo: "Cu" })).toBe("");
+  });
+});
+
+describe("visuales de la tanda 2: orgánica", () => {
+  it("quimia.cadena (nombrar): calcula el nombre, marca cadena, numeración y ramificaciones", () => {
+    const salida = html({ tipo: "quimia.cadena", molecula: "2,4-dimetilhexano", estatico: true });
+    expect(salida).toContain("2,4-dimetilhexano");
+    expect(salida).toContain("raíz es «hex-»");
+    expect(salida).toContain("metil en el carbono 2; metil en el carbono 4");
+    expect(salida).toContain("<svg");
+    expect(html({ tipo: "quimia.cadena", molecula: "no-existe" })).toBe("");
+    expect(html({ tipo: "quimia.cadena" })).toBe("");
+  });
+
+  it("quimia.cadena: con grupo principal, enlace múltiple y anillos", () => {
+    expect(html({ tipo: "quimia.cadena", molecula: "propan-2-ol", estatico: true })).toContain("grupo principal (alcohol)");
+    expect(html({ tipo: "quimia.cadena", molecula: "but-1-eno", estatico: true })).toContain("enlace múltiple");
+    expect(html({ tipo: "quimia.cadena", molecula: "benceno", estatico: true })).toContain("Kekulé");
+    expect(html({ tipo: "quimia.cadena", molecula: "ciclohexano", estatico: true })).toContain("ciclohexano");
+  });
+
+  it("quimia.cadena (formulas): hidrógenos por carbono, condensada y molecular", () => {
+    const salida = html({ tipo: "quimia.cadena", molecula: "2-metilbutano", modo: "formulas", estatico: true });
+    expect(salida).toContain("5 carbonos y 12 hidrógenos");
+    expect(salida).toContain("C_5H_{12}");
+    expect(salida).toContain("5 C, 12 H");
+    expect(salida).toContain("CH_{3}{-}CH(CH_{3}){-}CH_{2}{-}CH_{3}");
+  });
+
+  it("quimia.grupos: un grupo por paso con su fórmula general y el nombre calculado", () => {
+    const salida = html({ tipo: "quimia.grupos", moleculas: ["etanol", "etanal", "acido-etanoico"], estatico: true });
+    expect(salida).toContain("alcohol");
+    expect(salida).toContain("aldehído");
+    expect(salida).toContain("ácido carboxílico");
+    expect(salida).toContain("etanol");
+    expect(salida).toContain("ácido etanoico");
+    expect(salida).not.toMatch(/mathrm[A-Z]/); // LaTeX bien escapado: la fórmula general se dibuja con KaTeX
+    expect(salida).toContain("katex");
+    expect(html({ tipo: "quimia.grupos", moleculas: ["no-existe"] })).toBe("");
+    expect(html({ tipo: "quimia.grupos", moleculas: [] })).toBe("");
+  });
+
+  it("quimia.isomeria: misma fórmula molecular; si las fórmulas no coinciden (o hay un solo compuesto) no dibuja", () => {
+    const salida = html({ tipo: "quimia.isomeria", moleculas: ["butano", "2-metilpropano"], isomeria: "cadena", estatico: true });
+    expect(salida).toContain("C_4H_{10}");
+    expect(salida).toContain("2-metilpropano");
+    expect(salida).toContain("Isomería de cadena");
+    expect(html({ tipo: "quimia.isomeria", moleculas: ["butano", "pentano"] })).toBe("");
+    expect(html({ tipo: "quimia.isomeria", moleculas: ["butano"] })).toBe("");
+    expect(html({ tipo: "quimia.isomeria", moleculas: ["cis-but-2-eno", "trans-but-2-eno"], isomeria: "geometrica", estatico: true })).toContain("cis-but-2-eno");
+  });
+
+  it("quimia.hibridacion: sp³ 109,5° (metano), sp² ≈120° (eteno), sp 180° (etino); molécula no soportada no dibuja", () => {
+    const m = html({ tipo: "quimia.hibridacion", molecula: "metano", estatico: true });
+    expect(m).toContain("sp^{3}");
+    expect(m).toContain("109,5");
+    expect(m).toContain("tetraédrica");
+    const e = html({ tipo: "quimia.hibridacion", molecula: "eteno", estatico: true });
+    expect(e).toContain("sp^{2}");
+    expect(e).toContain("trigonal plana");
+    expect(e).toContain("1 enlace pi");
+    const i = html({ tipo: "quimia.hibridacion", molecula: "etino", estatico: true });
+    expect(i).toContain("180");
+    expect(i).toContain("lineal");
+    expect(html({ tipo: "quimia.hibridacion", molecula: "benceno" })).toBe("");
+    expect(html({ tipo: "quimia.hibridacion", molecula: "metano", estatico: true }, "en")).toContain("109.5");
+  });
+});
+
 describe("i18n de los visuales", () => {
   const claves = (obj: Record<string, unknown>, pre = ""): Record<string, string> => {
     const r: Record<string, string> = {};

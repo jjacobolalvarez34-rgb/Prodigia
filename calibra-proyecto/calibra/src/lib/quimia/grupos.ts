@@ -10,9 +10,9 @@
 //   nomenclatura  nombrar y escribir compuestos inorgánicos
 //   redox         estados de oxidación completos, método redox y balanceo
 //   organica      química orgánica
-// "redox" y "organica" están definidos pero vacíos (su contenido lo agrega
-// la tanda 2 del retrofit, ver docs/PARIDAD_MUNDOS.md): un grupo sin
-// lecciones NO aparece en el sidebar de Aprender.
+// "redox" y "organica" los llenó la tanda 2 del retrofit (ver
+// docs/PARIDAD_MUNDOS.md); un grupo sin lecciones NO aparece en el sidebar
+// de Aprender, así que estos aparecen solos al tener contenido.
 export type GrupoQuimia = "tabla" | "simbolos" | "formulas" | "nomenclatura" | "redox" | "organica";
 
 export const ORDEN_GRUPOS_QUIMIA: GrupoQuimia[] = ["tabla", "simbolos", "formulas", "nomenclatura", "redox", "organica"];

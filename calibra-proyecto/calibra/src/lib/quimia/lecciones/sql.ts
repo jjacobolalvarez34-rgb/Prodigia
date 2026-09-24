@@ -113,3 +113,30 @@ export const CABECERA_TANDA1: string[] = [
   "cruce de cargas, cuadro de datos y llenado de subcapas) y el primitivo",
   "genérico \"cuadros\".",
 ];
+
+// Cabecera de la migración de la tanda 2 (redox y orgánica).
+export const CABECERA_TANDA2: string[] = [
+  "Prodigia — Quimia: Aprender, tanda 2 de 2 del retrofit a Técnicas | Clases",
+  "(docs/PARIDAD_MUNDOS.md filas 22/23 y la sección \"Quimia: Técnicas |",
+  "Clases (tanda 2)\"). La tanda 1 (0209) sembró tabla, símbolos, fórmulas y",
+  "nomenclatura; esta migración agrega los dos grupos que quedaban:",
+  "  - redox (estados de oxidación completos, reacciones redox, balanceo por",
+  "    número de oxidación y por ion-electrón, serie de actividad, pilas y",
+  "    electrólisis);",
+  "  - orgánica (el carbono, fórmulas, alcanos, alquenos y alquinos, cíclicos",
+  "    y aromáticos, grupos funcionales, isomería, reacciones, glucosa y",
+  "    polímeros).",
+  "",
+  "Solo INSERT de lecciones nuevas (ninguna de las filas de 0209 se toca, y los",
+  "slugs no chocan con los de 0209: techniques.slug es único). Las Clases se",
+  "agregan al final del curso (grupo redox y después orgánica), así que el",
+  "orden de desbloqueo de las 17 anteriores no cambia.",
+  "",
+  "Todo dato químico sale de tablas de referencia con tests (src/lib/quimia/",
+  "{redox,organica,moleculas}.ts): números de oxidación calculados, ecuaciones",
+  "balanceadas en átomos y carga, semirreacciones por el algoritmo ion-electrón,",
+  "nombres IUPAC calculados y contrastados con una tabla curada y con el banco",
+  "de la práctica. Los visuales nuevos son \"quimia.redox\", \"quimia.oxidacion\",",
+  "\"quimia.balanceo\", \"quimia.pila\", \"quimia.cadena\", \"quimia.grupos\",",
+  "\"quimia.isomeria\" y \"quimia.hibridacion\" (esqueletos 2D esquemáticos).",
+];

@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import katex from "katex";
-import { TECNICAS_QUIMIA, CLASES_QUIMIA, TECNICAS_QUIMIA_TANDA1, CLASES_QUIMIA_TANDA1, type VisualLeccionQuimia } from "./index";
-import { CABECERA_TANDA1, generarSqlQuimia } from "./sql";
+import { TECNICAS_QUIMIA, CLASES_QUIMIA, TECNICAS_QUIMIA_TANDA1, CLASES_QUIMIA_TANDA1, TECNICAS_QUIMIA_TANDA2, CLASES_QUIMIA_TANDA2, type VisualLeccionQuimia } from "./index";
+import { CABECERA_TANDA1, CABECERA_TANDA2, generarSqlQuimia } from "./sql";
 import { ORDEN_GRUPOS_QUIMIA } from "@/lib/quimia/grupos";
 import { esVisualLeccion } from "@/lib/aprender/visuales";
 import { REGISTRO_VISUALES_QUIMIA } from "@/components/quimia/visuales/registro";
@@ -15,8 +15,9 @@ import { ejemploEnlace } from "@/lib/quimia/enlaces";
 import { ANIONES, CATIONES, COMPUESTOS_IONICOS, OXIDOS_NO_METALICOS, OXOACIDOS, oxidacionCentral } from "@/lib/quimia/nomenclatura";
 import { cargaTipicaPorGrupo } from "@/lib/quimia/valencia";
 import { masaMolar } from "@/lib/quimia/formulas";
+import { POTENCIALES, POTENCIAL_HIDROGENO_CV, voltios } from "@/lib/quimia/redox";
 
-// Verificación del contenido de Aprender de Quimia (tanda 1 del retrofit a
+// Verificación del contenido de Aprender de Quimia (tandas 1 y 2 del retrofit a
 // Técnicas | Clases, docs/PARIDAD_MUNDOS.md filas 22/23): estructura, quiz,
 // visuales con datos válidos, KaTeX, español neutro, datos numéricos cruzados
 // con las tablas de referencia y la migración 0209 generada byte a byte.
@@ -42,17 +43,20 @@ function textos(l: (typeof LECCIONES)[number]): string[] {
 }
 
 describe("Quimia: Técnicas (estructura)", () => {
-  it("son 16 en total: 5 tabla, 3 símbolos, 3 fórmulas, 5 nomenclatura; todas gratis, slugs únicos", () => {
-    expect(TECNICAS_QUIMIA).toHaveLength(16);
+  it("son 30 en total (tanda 1: 16; tanda 2: 14): 5 tabla, 3 símbolos, 3 fórmulas, 5 nomenclatura, 6 redox y 8 orgánica; todas gratis, slugs únicos", () => {
+    expect(TECNICAS_QUIMIA).toHaveLength(30);
     expect(TECNICAS_QUIMIA_TANDA1).toHaveLength(16);
+    expect(TECNICAS_QUIMIA_TANDA2).toHaveLength(14);
     expect(TECNICAS_QUIMIA.every((t) => t.requierePro === false)).toBe(true);
-    expect(new Set(TECNICAS_QUIMIA.map((t) => t.slug)).size).toBe(16);
+    expect(new Set(TECNICAS_QUIMIA.map((t) => t.slug)).size).toBe(30);
     const porGrupo: Record<string, number> = {};
     for (const t of TECNICAS_QUIMIA) porGrupo[t.grupo] = (porGrupo[t.grupo] ?? 0) + 1;
-    expect(porGrupo).toEqual({ tabla: 5, simbolos: 3, formulas: 3, nomenclatura: 5 });
+    expect(porGrupo).toEqual({ tabla: 5, simbolos: 3, formulas: 3, nomenclatura: 5, redox: 6, organica: 8 });
+    // la tanda 2 solo trae grupos nuevos
+    expect(new Set(TECNICAS_QUIMIA_TANDA2.map((t) => t.grupo))).toEqual(new Set(["redox", "organica"]));
   });
 
-  it("las 4 Técnicas viejas conservan su slug (se actualizan, no se duplican) y las 12 nuevas llevan prefijo quimia-tecnica-", () => {
+  it("las 4 Técnicas viejas conservan su slug (se actualizan, no se duplican) y las 26 nuevas llevan prefijo quimia-tecnica-", () => {
     const viejas = TECNICAS_QUIMIA.filter((t) => t.existente).map((t) => t.slug).sort();
     expect(viejas).toEqual(["agrupar-por-familia", "asociacion-color-uso", "patrones-en-formulas", "tabla-como-mapa"]);
     for (const t of TECNICAS_QUIMIA.filter((x) => !x.existente)) expect(t.slug, t.slug).toMatch(/^quimia-tecnica-[a-z0-9-]+$/);
@@ -76,15 +80,17 @@ describe("Quimia: Técnicas (estructura)", () => {
 });
 
 describe("Quimia: Clases (estructura)", () => {
-  it("son 17 en total: 4 tabla, 2 símbolos, 3 fórmulas, 8 nomenclatura; todas Pro, slugs únicos", () => {
-    expect(CLASES_QUIMIA).toHaveLength(17);
+  it("son 34 en total (tanda 1: 17; tanda 2: 17): 4 tabla, 2 símbolos, 3 fórmulas, 8 nomenclatura, 7 redox y 10 orgánica; todas Pro, slugs únicos", () => {
+    expect(CLASES_QUIMIA).toHaveLength(34);
     expect(CLASES_QUIMIA_TANDA1).toHaveLength(17);
+    expect(CLASES_QUIMIA_TANDA2).toHaveLength(17);
     expect(CLASES_QUIMIA.every((c) => c.requierePro === true)).toBe(true);
-    expect(new Set(CLASES_QUIMIA.map((c) => c.slug)).size).toBe(17);
+    expect(new Set(CLASES_QUIMIA.map((c) => c.slug)).size).toBe(34);
     for (const c of CLASES_QUIMIA) expect(c.slug, c.slug).toMatch(/^quimia-clase-[a-z0-9-]+$/);
     const porGrupo: Record<string, number> = {};
     for (const c of CLASES_QUIMIA) porGrupo[c.grupo] = (porGrupo[c.grupo] ?? 0) + 1;
-    expect(porGrupo).toEqual({ tabla: 4, simbolos: 2, formulas: 3, nomenclatura: 8 });
+    expect(porGrupo).toEqual({ tabla: 4, simbolos: 2, formulas: 3, nomenclatura: 8, redox: 7, organica: 10 });
+    expect(new Set(CLASES_QUIMIA_TANDA2.map((c) => c.grupo))).toEqual(new Set(["redox", "organica"]));
   });
 
   it("el arreglo está en orden de curso: (grupo en ORDEN_GRUPOS_QUIMIA, orden) siempre crece", () => {
@@ -113,12 +119,14 @@ describe("Quimia: Clases (estructura)", () => {
     for (const c of CLASES_QUIMIA) expect(c.quiz.length, c.slug).toBeGreaterThan(0);
   });
 
-  it("los grupos 'redox' y 'organica' están definidos y vacíos (los llena la tanda 2)", () => {
+  it("los grupos 'redox' y 'organica' quedaron llenos en la tanda 2: van al final del curso, después de nomenclatura, y las Clases de la tanda 2 son las últimas 17", () => {
     expect(ORDEN_GRUPOS_QUIMIA).toEqual(["tabla", "simbolos", "formulas", "nomenclatura", "redox", "organica"]);
     for (const g of ["redox", "organica"]) {
-      expect(TECNICAS_QUIMIA.filter((t) => t.grupo === g)).toHaveLength(0);
-      expect(CLASES_QUIMIA.filter((c) => c.grupo === g)).toHaveLength(0);
+      expect(TECNICAS_QUIMIA.filter((t) => t.grupo === g).length, g).toBeGreaterThan(0);
+      expect(CLASES_QUIMIA.filter((c) => c.grupo === g).length, g).toBeGreaterThan(0);
     }
+    expect(CLASES_QUIMIA.slice(-17).map((c) => c.slug)).toEqual(CLASES_QUIMIA_TANDA2.map((c) => c.slug));
+    expect(CLASES_QUIMIA.slice(0, 17).map((c) => c.slug)).toEqual(CLASES_QUIMIA_TANDA1.map((c) => c.slug));
   });
 });
 
@@ -185,7 +193,10 @@ describe("Quimia: KaTeX, español neutro y caracteres raros en todo el texto", (
     // Constantes del texto (umbrales de polaridad, número de Avogadro...) y
     // masas molares que aparecen SOLO como opciones incorrectas de un quiz
     // (88,0 = doble del CO2; 49,0 y 34,1 = errores típicos de H2SO4).
-    const permitidos = new Set<string>(["1,7", "0,4", "0,7", "4,0", "1,6", "6,02", "35,45", "0,9", "88,0", "49,0", "34,1"]);
+    // Tanda 2: 109,5 es el ángulo del tetraedro (constante) y los potenciales
+    // estándar salen de la tabla POTENCIALES (redox.ts); los de las pilas y
+    // las reacciones son diferencias de dos potenciales de esa tabla.
+    const permitidos = new Set<string>(["1,7", "0,4", "0,7", "4,0", "1,6", "6,02", "35,45", "0,9", "88,0", "49,0", "34,1", "109,5"]);
     const fmt = (n: number, d: number) => n.toFixed(d).replace(".", ",");
     const ens = DATOS_ELEMENTOS.map((d) => d.electronegatividad).filter((x): x is number => x !== null);
     for (const e of ens) {
@@ -207,12 +218,21 @@ describe("Quimia: KaTeX, español neutro y caracteres raros en todo el texto", (
         // fórmulas con elementos sin masa cargada: no se usan en texto con masa
       }
     }
+    // potenciales de reducción y sus diferencias (potencial de cada reacción o pila), en V con coma
+    const potenciales = [...POTENCIALES.map((p) => p.cV), POTENCIAL_HIDROGENO_CV];
+    for (const a of potenciales) {
+      permitidos.add(voltios(a).replace("−", ""));
+      for (const b of potenciales) permitidos.add(voltios(Math.abs(a - b)).replace("−", ""));
+    }
     // porcentajes de composición del agua
     permitidos.add(fmt((16 / masaMolar("H2O")) * 100, 1)).add(fmt(((2 * 1.01) / masaMolar("H2O")) * 100, 1));
     const sospechosos: string[] = [];
     for (const l of LECCIONES) {
       for (const t of textos(l)) {
-        for (const m of t.replace(/\$[^$]+\$/g, " ").matchAll(/\d+,\d+/g)) {
+        // Las listas de localizadores de la nomenclatura orgánica ("2,4-dimetilhexano", "buta-1,3-dieno")
+        // no son decimales: van entre guiones o pegadas a un nombre.
+        const sinLocalizadores = t.replace(/\$[^$]+\$/g, " ").replace(/\d+(?:,\d+)+(?=-[a-záéíóúñ])/gi, " ");
+        for (const m of sinLocalizadores.matchAll(/\d+,\d+/g)) {
           if (!permitidos.has(m[0])) sospechosos.push(`${l.slug}: ${m[0]} en «${t.slice(0, 70)}»`);
         }
       }
@@ -408,5 +428,57 @@ describe("Quimia: migración 0209", () => {
     expect(bloques[1]).not.toMatch(/,\n\s+true\)/);
     expect(bloques[2]).not.toMatch(/,\n\s+false\)/);
     expect((bloques[2].match(/,\n {2}true\)/g) ?? []).length).toBe(17);
+  });
+});
+
+describe("Quimia: migración de la tanda 2 (0211)", () => {
+  const ruta0211 = path.join(raiz, "supabase", "migrations", "0211_quimia_redox_organica.sql");
+  const esperado = generarSqlQuimia({ cabecera: CABECERA_TANDA2, tecnicas: TECNICAS_QUIMIA_TANDA2, clases: CLASES_QUIMIA_TANDA2 });
+
+  it("es exactamente lo que se genera de src/lib/quimia/lecciones/", () => {
+    if (process.env.QUIMIA_ESCRIBIR_SQL === "1") fs.writeFileSync(ruta0211, esperado, "utf8");
+    expect(fs.existsSync(ruta0211), "falta 0211: QUIMIA_ESCRIBIR_SQL=1 npx vitest run src/lib/quimia/lecciones").toBe(true);
+    expect(fs.readFileSync(ruta0211, "utf8")).toBe(esperado);
+  });
+
+  it("solo INSERT (sin UPDATE ni DELETE): 2 sentencias, Técnicas (gratis) y después Clases (Pro), 14 + 17 filas", () => {
+    const sql = fs.readFileSync(ruta0211, "utf8");
+    expect(sql).not.toMatch(/^\s*(update|delete|alter|drop)\b/im);
+    const bloques = sql.split("insert into public.techniques");
+    expect(bloques).toHaveLength(3);
+    expect(bloques[1]).not.toMatch(/,\n\s+true\)/);
+    expect((bloques[1].match(/,\n {2}false\)/g) ?? []).length).toBe(14);
+    expect(bloques[2]).not.toMatch(/,\n\s+false\)/);
+    expect((bloques[2].match(/,\n {2}true\)/g) ?? []).length).toBe(17);
+  });
+
+  it("los slugs no chocan con los de 0209 (techniques.slug es único) ni se repiten entre sí", () => {
+    const sql0211 = fs.readFileSync(ruta0211, "utf8");
+    const sql0209 = fs.readFileSync(ruta0209, "utf8");
+    const slugs = (sql: string) => [...sql.matchAll(/^\('([a-z0-9-]+)', '/gm)].map((m) => m[1]);
+    const nuevos = slugs(sql0211);
+    expect(nuevos).toHaveLength(31);
+    expect(new Set(nuevos).size).toBe(31);
+    const viejos = new Set(slugs(sql0209));
+    for (const s of nuevos) expect(viejos.has(s), s).toBe(false);
+    for (const s of nuevos) expect(s).toMatch(/^quimia-(tecnica|clase)-(redox|organica)-/);
+  });
+
+  it("cada bloque de contenido es JSON válido con pasos, visuales de tipo conocido y quiz con respuesta entre las opciones", () => {
+    const sql = fs.readFileSync(ruta0211, "utf8");
+    let total = 0;
+    for (const m of sql.matchAll(/\$quimia\$([\s\S]*?)\$quimia\$::jsonb/g)) {
+      const c = JSON.parse(m[1]) as { pasos: string[]; visuales: { tipo: string }[]; quiz: { opciones: string[]; respuesta: string }[] };
+      expect(c.visuales.length).toBeGreaterThan(0);
+      for (const v of c.visuales) expect(TIPOS_CONOCIDOS.has(v.tipo)).toBe(true);
+      for (const q of c.quiz) expect(q.opciones).toContain(q.respuesta);
+      total++;
+    }
+    expect(total).toBe(31);
+  });
+
+  it("las dos migraciones juntas cubren todo el contenido sin duplicar filas", () => {
+    expect(TECNICAS_QUIMIA.length + CLASES_QUIMIA.length).toBe(16 + 17 + 14 + 17);
+    expect(new Set([...TECNICAS_QUIMIA, ...CLASES_QUIMIA].map((l) => l.slug)).size).toBe(64);
   });
 });
