@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { NodoCaminoAnatomia } from "@/lib/anatomia/path";
 import { hrefVolverAAprender } from "@/lib/aprender/clases";
 import { visualesDeContenido } from "@/lib/aprender/visuales";
+import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
 import type { Achievement } from "@/types/database";
 import LogroBanner from "@/components/LogroBanner";
 import MathText from "@/components/MathText";
@@ -41,6 +42,12 @@ export default function LeccionAnatomiaClient({ nodo }: Props) {
   const [fase, setFase] = useState<Fase>("explicacion");
   const [pasoIdx, setPasoIdx] = useState(0);
   const [logrosNuevos, setLogrosNuevos] = useState<Achievement[]>([]);
+
+  // Pedido 2026-09-24: salir por el Header a mitad de una lección (ya
+  // viste el ejemplo, estás practicando o en el quiz) pide confirmación —
+  // en "explicacion" (recién abriste, nada que perder todavía) y en
+  // "celebracion" (ya terminaste) no hace falta.
+  useRegistrarGuardiaSalida({ activo: fase !== "explicacion" && fase !== "celebracion" });
 
   const pasos = nodo.contenido.pasos;
   const visuales = useMemo(() => visualesDeContenido(nodo.contenido.visuales), [nodo.contenido.visuales]);

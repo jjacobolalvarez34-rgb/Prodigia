@@ -20,6 +20,8 @@ import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/Re
 import SalaEsperaDuelo from "@/components/duelos/SalaEsperaDuelo";
 import { useArranqueSincronizado } from "@/lib/duelos/useArranqueSincronizado";
 import { useDeteccionAbandono } from "@/lib/duelos/useDeteccionAbandono";
+import { rendirseDuelo } from "@/lib/duelos/rendirse";
+import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
 import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
 import BotonRendirse from "@/components/duelos/BotonRendirse";
 import NaipiaSprintRunner from "./NaipiaSprintRunner";
@@ -153,6 +155,23 @@ export default function NaipiaPracticaClient({ modo, nivelInicial, escudosExtra,
     rivalEsBot: duelo?.rivalEsBot,
     activo: fase === "sprint" && !!duelo,
     onAbandonoDetectado: handleAbandonoDetectado,
+  });
+
+  // Pedido 2026-09-24: salir por el Header durante una partida en curso
+  // pide confirmación — mismo patrón que PracticaClient.tsx (Numeria). En
+  // un duelo Ranked real (no contra el Clan de Bots) el modal avisa la
+  // pérdida de ELO y, al confirmar, rinde el duelo de verdad antes de
+  // navegar al resultado.
+  const dueloRankedReal = !!duelo && !duelo.rivalEsBot;
+  useRegistrarGuardiaSalida({
+    activo: fase === "sprint",
+    ranked: dueloRankedReal,
+    alConfirmar: dueloRankedReal
+      ? async () => {
+          await rendirseDuelo(duelo!.duelId);
+          router.push(duelo!.serieId ? `/rankeds/serie/${duelo!.serieId}` : "/rankeds");
+        }
+      : undefined,
   });
 
   if (fase === "vs" && duelo) {

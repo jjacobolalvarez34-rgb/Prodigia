@@ -13,6 +13,7 @@ import MathText from "@/components/MathText";
 import CuerpoVisual from "@/components/aprender/CuerpoVisual";
 import { REGISTRO_VISUALES_NAIPIA } from "@/components/naipia/visuales/registro";
 import { visualesDeContenido } from "@/lib/aprender/visuales";
+import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
 import { COLOR_NAIPIA } from "../../colores";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
@@ -39,6 +40,12 @@ export default function LeccionNaipiaClient({ nodo }: Props) {
   const [fase, setFase] = useState<Fase>("explicacion");
   const [pasoIdx, setPasoIdx] = useState(0);
   const [logrosNuevos, setLogrosNuevos] = useState<Achievement[]>([]);
+
+  // Pedido 2026-09-24: salir por el Header a mitad de una lección (ya
+  // viste el ejemplo, estás practicando o en el quiz) pide confirmación —
+  // en "explicacion" (recién abriste, nada que perder todavía) y en
+  // "celebracion" (ya terminaste) no hace falta.
+  useRegistrarGuardiaSalida({ activo: fase !== "explicacion" && fase !== "celebracion" });
 
   const pasos = nodo.contenido.pasos;
   // Formato visual (contenido.visuales): los pasos son una introducción
