@@ -57,7 +57,7 @@ const NO_ES_VOSEO = new Set([
   // es idéntica en tuteo y voseo, así que no delata voseo. Los usan las lecciones
   // de Trigonometría ("Objetivo: al terminar podrás..."). Una lista cerrada, no
   // una regla por sufijo, porque "mirás" (voseo real) también termina en "-rás".
-  "podrás", "sabrás", "entenderás", "reconocerás", "conocerás", "verás", "usarás", "tendrás", "serás", "harás", "irás", "resolverás", "comprenderás", "aprenderás", "notarás", "obtendrás",
+  "ramsés", "parís", "nicolás", "tomás", "andrés", "cartaginés", "genovés", "portugués", "escocés", "holandés", "irlandés", "danés", "finlandés", "vietnamés", "libanés", "sudanés", "senegalés", "congolés", "milanés", "podrás", "sabrás", "entenderás", "reconocerás", "conocerás", "verás", "usarás", "tendrás", "serás", "harás", "irás", "resolverás", "comprenderás", "aprenderás", "notarás", "obtendrás",
 ]);
 
 const PATRON_VOSEO = new RegExp(

@@ -63,8 +63,8 @@ confirmar en vivo · ❌ ausente.
 | 19 | Feed: tarjetas automáticas | ✅ | ✅¹,⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
 | 20 | Responsive en mobile real | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | 21 | Aparece en estadísticas Pro (/perfil/estadisticas) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅¹⁰ | ✅¹⁰ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 22 | Aprender con pestañas Técnicas \| Clases (Pro, clase 1 gratis) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ✅²³ | ⚠️¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² |
-| 23 | Aprender con explicación visual animada (no solo texto) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ✅²³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ✅¹³ | ⚠️¹³ |
+| 22 | Aprender con pestañas Técnicas \| Clases (Pro, clase 1 gratis) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ✅²³ | ✅²⁴ | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² |
+| 23 | Aprender con explicación visual animada (no solo texto) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ✅²³ | ✅²⁴ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ✅¹³ | ⚠️¹³ |
 | 24 | Español neutro, sin voseo, en el contenido de lecciones | ⚠️¹⁵ | ✅¹⁷ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ✅¹⁵ | ✅¹⁵ | ✅¹⁵ |
 
 ¹ = bug real encontrado en esta auditoría y **ya corregido en el código** esta sesión — ver "Changelog" abajo. La celda muestra el estado ACTUAL (post-fix), no el que se encontró.
@@ -95,7 +95,9 @@ confirmar en vivo · ❌ ausente.
 
 ²² = **Melodía, Técnicas | Clases completas (2026-09-23)** — ver "Melodía: Técnicas | Clases" más abajo. 18 Técnicas (gratis) + 18 Clases (Pro), todas con visuales propios (`melodia.pentagrama/teclado/escala/acorde/ritmo/frecuencia`) o de cuadros y quiz; desbloqueo independiente por grupo (los 6 modos de práctica) en las dos pestañas; cobertura de TODO lo que evalúa la práctica verificada con test, y un error real de dibujo de la Práctica corregido (notas cortadas en el pentagrama). Fila 24 (español neutro): 0089 corregido, ver la sección.
 
-²³ = **Trigonometría, rediseño del mundo, fase 1 (2026-09-24)** — ver "Trigonometría: rediseño del mundo (fase 1)" más abajo. Práctica con escala de dificultad declarativa y cinco errores de datos corregidos; Aprender con 6 bloques en orden escolar, 25 Técnicas (gratis) + 27 Clases (Pro, curso lineal, la primera gratis), 9 visuales animados `trigonometria.*` y migración `0214`. Los bloques "Gráficas y periodo" y "Ecuaciones trigonométricas" solo existen en Aprender (sin modo de práctica todavía: fase 2).
+²³ = **Trigonometría, rediseño del mundo, fase 1 (2026-09-24)** — ver "Trigonometría: rediseño del mundo (fase 1)" más abajo. Práctica con escala de dificultad declarativa y cinco errores de datos corregidos; Aprender con 6 bloques en orden escolar, 25 Técnicas (gratis) + 27 Clases (Pro, desbloqueo independiente por bloque desde la corrección del 2026-09-24, la primera del mundo gratis), 9 visuales animados `trigonometria.*` y migración `0214`. Los bloques "Gráficas y periodo" y "Ecuaciones trigonométricas" solo existen en Aprender (sin modo de práctica todavía: fase 2).
+
+²⁴ = **Historia, rediseño del mundo (2026-09-24)** — ver "Historia: rediseño del mundo" más abajo. Práctica derivada por construcción de una tabla canónica de 193 hechos y 110 personajes (`src/lib/historia/hechos.ts`/`personajes.ts`, listados en `docs/HISTORIA_HECHOS.md` para revisión humana), con escala de dificultad declarativa en los 4 modos existentes; Aprender con 5 bloques por época, 25 Técnicas (gratis, 5 históricas reescritas) + 31 Clases (Pro, desbloqueo independiente por época, la primera del mundo gratis), 6 visuales animados `historia.*` y migración `0215`.
 
 **Resumen (al 2026-09-18, ANTES de los mundos 11-13 y la fila 22 — ver la actualización debajo)**: de 210 celdas (21 sistemas × 10 mundos), 186 ✅ (5 de ellas confirmadas jugando, no solo por código; 18 de Trigonometría/Historia, 18 de Calculia y 18 de Circuitia son ✅ solo por código+build, ver footnotes ⁶/⁷/⁸), 23 ⚠️ (17 de la matriz de 8 mundos + 3 de Calculia + 3 de Circuitia, mismo patrón que los mundos anteriores), 1 ❌ (Enigmia #1). Ningún mundo tiene un sistema completamente roto sin arreglo disponible; los ⚠️ restantes son gaps de UX/contenido reales (no bugs de wiring), cosas que no se pueden confirmar sin dispositivo real/browser, o (para los mundos nuevos) sistemas pendientes de la primera verificación en vivo post-migración.
 
@@ -1020,3 +1022,55 @@ Modos de práctica para "Gráficas y periodo" y "Ecuaciones trigonométricas" (c
 `tsc --noEmit`, `eslint` de lo tocado y `vitest` completo: ver el reporte final. Navegador real (Playwright + chromium, ruta temporal sin auth ya borrada, a 360 px): Clases 01, 04, 10, 11, 16, 17, 19, 22, 23 y 26 (triángulos, círculo, cuadrantes, ondas, ley del seno y del coseno, caso ambiguo, identidad pitagórica, ecuación con onda y círculo) y el triángulo de la práctica; sin desborde horizontal ni errores de consola. Se corrigieron a la vista: etiqueta "opuesto" recortada, choque de etiquetas c/a en la onda, arco del caso ambiguo y una fórmula grande de más en los pasos de conclusión.
 
 **Sin verificar**: flujo end-to-end con Supabase y login reales (`0214` no corrió contra una base real), tema oscuro, el CTA "Desbloquea con Pro" en una sesión real, lectores de pantalla reales, y en pantalla solo se vieron unas 10 de las 52 lecciones (el resto lo cubren los tests de render y de datos). Las lecciones están en español; solo el marco de los visuales tiene es/en.
+
+---
+
+## Historia: rediseño del mundo (2026-09-24)
+
+Historia tenía 5 Técnicas mnemotécnicas genéricas (0109 + quiz en 0176), sin Clases, sin visuales, sin contenido de historia real, y con voseo. El banco de la práctica era minúsculo (~13 personajes, ~10 fechas y unas pocas decenas de causa-efecto, secuencias y siglos, todo tipeado a mano) y muy sesgado a Roma/Europa, así que los 10 niveles no se diferenciaban y las preguntas se repetían enseguida (el reto diario pide 45 por día).
+
+### Alcance (decisión del usuario)
+
+- **Solo historia universal**, sin bloque ni banco nacional (Colombia). Los grandes procesos americanos que son historia universal sí entran (Conquista de América, independencia de EE. UU., Revolución Haitiana, independencias hispanoamericanas con Bolívar y San Martín), sin enfoque nacional.
+- **Incluye el siglo XX y hasta hoy**, solo con hechos de amplio consenso (guerras mundiales, Revolución rusa, ONU y DDHH, Guerra Fría, descolonización, caída del Muro...), con fecha y protagonistas, sin interpretación política ni cifras discutidas.
+- **Aprender por ÉPOCAS** (5 bloques, periodización escolar): Prehistoria, Antigüedad, Edad Media, Edad Moderna, Edad Contemporánea. Las fronteras entre épocas son convenciones documentadas, no hechos: escritura hacia 3500 a. C., caída de Roma de Occidente en 476, llegada de Colón en 1492, Revolución francesa en 1789 (`src/lib/historia/epocas.ts` aclara que otros textos usan otras fechas).
+
+### Diseño: una tabla canónica, todo lo demás se deriva
+
+`src/lib/historia/hechos.ts` y `personajes.ts` son la única fuente de verdad: cada hecho tiene id, año (con `certeza`: exacta/convencional/aproximada), época, región y prominencia (1-10); cada personaje, id, rol, años de vida y época. La práctica (`generarPreguntaHistoria`), las lecciones y los visuales se DERIVAN de esa tabla por código, no se tipean dos veces — así la consistencia (años, siglos, orden, anacronismos) queda garantizada por construcción y por los tests de la tabla (`historiaTabla.test.ts`: nacimiento < muerte, año dentro de los límites de su época, siglo calculado bien con a. C., sin hechos duplicados).
+
+**`docs/HISTORIA_HECHOS.md`** es la lista completa generada desde esa tabla (`HISTORIA_ESCRIBIR_DOC=1 npx vitest run src/lib/historia`), pensada para revisión humana: **193 hechos** y **110 personajes**, solo de historia universal — por época (Prehistoria 10, Antigüedad 42, Edad Media 38, Edad Moderna 35, Contemporánea 68), por región (Europa 70 de 193 ≈ 36 %, dentro del tope pedido; el resto repartido entre África, Oriente Próximo, Asia, América, Oceanía y hechos globales) y por certeza (exacta 138, convencional 17, aproximada 38). Un dato "aproximado" se muestra como "hacia..." y nunca se pregunta como año exacto; uno "convencional" nunca se enseña como si no tuviera discusión. **Este contenido factual no lo verificó un historiador: queda pendiente que el usuario revise `docs/HISTORIA_HECHOS.md` antes de darlo por bueno del todo**, aunque la estructura (fechas y roles) ya pasa los tests de consistencia automáticos.
+
+### Práctica: escala de dificultad declarativa (sin tocar `skill_levels`)
+
+`src/lib/practica/historiaEscala.ts` reemplaza los `if (nivel...)` dispersos por una tabla declarativa por modo (mismo patrón que `trigonometriaEscala.ts`): cada tipo de pregunta declara desde qué nivel aparece y con qué peso, y la dificultad tiene dos ejes crecientes de 1 a 10 — qué tan conocido es el hecho (`prominencia`) y qué tan exigente es el tipo de pregunta (ordenar 3 hechos de épocas distintas → año exacto o cadena de dos causas). `historia.test.ts` exige que los niveles 1-10 de cada modo no tengan huecos y que la huella de cada nivel difiera de la anterior. La firma pública (`generarPreguntaHistoria(modo, nivel, usados)`, `conRngSembrado`) no cambió: el reto diario sigue dando las mismas 45 preguntas con la misma semilla. **No se tocó `skill_levels`, `worldLevel`, duelos ni diagnóstico.**
+
+**Riesgo de recalibración (no resuelto, como en Trigonometría)**: el "nivel N" nuevo no significa lo mismo que la escala vieja (13 personajes y 10 fechas fijos, sin tipos). Quien ya estaba calibrado en `skill_levels historia_*` lo fue contra esa escala plana.
+
+### Aprender: Técnicas | Clases por época
+
+- **25 Técnicas** gratis (5 históricas de 0109 reescritas por slug + 20 nuevas, sin perder el progreso de quien ya las completó porque los ids de fila no cambian): prehistoria 4, antigüedad 5, edad-media 5, edad-moderna 5, contemporánea 6.
+- **31 Clases** Pro: prehistoria 2, antigüedad 8, edad-media 7, edad-moderna 6, contemporánea 8.
+- **Desbloqueo por ÉPOCA** (misma corrección del 2026-09-24 que Quimia y Trigonometría, ver más arriba): la primera Técnica y la primera Clase no dominadas de CADA época están abiertas a la vez; el orden es lineal solo dentro de la época. Como una lección no puede suponer que se hizo la de otra época, cada Clase repasa en un paso "Contexto:" (y cada Técnica en "Recuerda:") lo que usa de épocas anteriores. La primera Clase del mundo (Prehistoria) es la preview gratis.
+- **Dependencias con test**: `src/lib/historia/lecciones/conceptos.ts` es el vocabulario de conceptos del currículo; cada lección declara qué introduce, usa y repasa, y `lecciones.test.ts` falla si una lección usa un concepto no introducido antes en su misma época, si una época repite un concepto, o si un concepto que la práctica pregunta no lo enseña alguna Clase y alguna Técnica de su época.
+- **6 visuales animados** `historia.*` (`src/components/historia/`, registro con prefijo): `historia.linea` (línea de tiempo con escala proporcional y quiebre a. C./d. C.), `historia.epocas` (las 5 épocas con sus fronteras e hitos), `historia.causas` (cadena causa → hecho → consecuencia), `historia.siglos` (año → siglo, con a. C.), `historia.sincronia` (regiones en paralelo en el mismo período) y `historia.personaje` (ficha con rol, años y época). Los datos salen por función pura de la tabla canónica (nunca tipeados dos veces), con alternativa textual sr-only y `prefers-reduced-motion`.
+
+### Correcciones de español neutro
+
+Las 5 Técnicas históricas tenían voseo real; se reescriben por `UPDATE` en la migración. Además, `src/lib/texto/espanolNeutro.ts` suma una lista de excepciones al detector de voseo para nombres propios y gentilicios terminados en "-és" que el patrón genérico marcaba como falso positivo (Ramsés, París, Nicolás, Tomás, Andrés, cartaginés, genovés, portugués, escocés, holandés, irlandés, danés, finlandés, vietnamés, libanés, sudanés, senegalés, congolés, milanés) — inevitables en contenido histórico. 0109 y 0176 se mantienen en `DEUDA_HISTORICA_VOSEO` porque no se editan: la 0215 pisa su contenido con `UPDATE`.
+
+### Migración
+
+`supabase/migrations/0215_historia_tecnicas_clases.sql`, generada desde `src/lib/historia/lecciones/` (`HISTORIA_ESCRIBIR_SQL=1 npx vitest run src/lib/historia/lecciones`), comparada byte a byte por test y validada con pglast. Orden: 5 `update` por slug de las Técnicas históricas, después 2 `insert` (Técnicas nuevas y Clases). No toca `skill_levels` ni agrega columnas.
+
+**Efecto conocido, igual que en Calculia/Anatomía/Quimia/Melodía/Trigonometría**: sumar filas a `techniques` cambia el total de "lecciones completadas" del nivel de mundo (`registrar_puntos_mundo`) para quien no tiene Pro: las Clases cuentan en el total pero el plan gratuito no puede completarlas. Se deja así a propósito, como en los mundos anteriores.
+
+### Verificación
+
+`tsc --noEmit` limpio, `eslint` de lo tocado sin errores nuevos, `vitest run` completo: **1800/1800** (90 archivos). Paridad i18n es/en verificada (3090 claves en cada idioma). El agente que hizo este trabajo llegó a tomar capturas en Playwright a 360 px de varias Clases y Técnicas (líneas de tiempo, cuadrantes de época, sincronía) antes de que la sesión se cortara por el límite de uso de la API; se retomó manualmente para la verificación final y el commit, sin repetir las capturas del navegador.
+
+**Sin verificar**: flujo end-to-end con Supabase y login reales (`0215` no corrió contra una base real), tema oscuro, el CTA "Desbloquea con Pro" en una sesión real, lectores de pantalla reales, y **el contenido factual no lo revisó un historiador** — pendiente que el usuario revise `docs/HISTORIA_HECHOS.md`. Las lecciones están en español; solo el marco de los visuales tiene es/en.
+
+### Fase futura (no implementada)
+
+Un bloque de historia nacional (Colombia u otro país) se agregaría sumando filas a la tabla canónica y un bloque nuevo en `bloques.ts`, sin tocar los generadores.

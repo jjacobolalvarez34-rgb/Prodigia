@@ -6,6 +6,7 @@ import type { VisualQuimia } from "@/lib/quimia/visuales";
 import type { VisualAnatomia } from "@/lib/anatomia/visuales";
 import type { VisualMelodia } from "@/lib/melodia/visuales";
 import type { VisualTrigonometria } from "@/lib/trigonometria/visuales";
+import type { VisualHistoria } from "@/lib/historia/visuales";
 
 // Formato de lección con explicación VISUAL/ANIMADA (compartido por todos
 // los mundos). En `techniques.contenido` (jsonb):
@@ -56,7 +57,7 @@ export interface VisualCuadros extends VisualBase {
 
 // ---------- Unión de todos los visuales conocidos ----------
 
-export type VisualLeccion = VisualCuadros | VisualNaipia | VisualNumeria | VisualEnigmia | VisualGeografia | VisualQuimia | VisualAnatomia | VisualMelodia | VisualTrigonometria;
+export type VisualLeccion = VisualCuadros | VisualNaipia | VisualNumeria | VisualEnigmia | VisualGeografia | VisualQuimia | VisualAnatomia | VisualMelodia | VisualTrigonometria | VisualHistoria;
 
 // Validador tolerante: solo exige la forma mínima ({ tipo: string no vacío }
 // y `despuesDePaso` entero >= 0 si está). NO valida el tipo (un tipo que

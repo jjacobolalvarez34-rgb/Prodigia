@@ -31,6 +31,8 @@ import { TECNICAS_MELODIA, CLASES_MELODIA } from "@/lib/melodia/lecciones";
 import { ORDEN_GRUPOS_MELODIA, NOMBRES_GRUPOS_MELODIA } from "@/lib/melodia/grupos";
 import { TECNICAS_TRIGONOMETRIA, CLASES_TRIGONOMETRIA } from "@/lib/trigonometria/lecciones";
 import { ORDEN_GRUPOS_TRIGONOMETRIA, NOMBRES_GRUPOS_TRIGONOMETRIA } from "@/lib/trigonometria/bloques";
+import { TECNICAS_HISTORIA, CLASES_HISTORIA } from "@/lib/historia/lecciones";
+import { ORDEN_GRUPOS_HISTORIA, NOMBRES_GRUPOS_HISTORIA } from "@/lib/historia/bloques";
 
 export type PestanaGrupos = "tecnicas" | "clases";
 type Idioma = "es" | "en";
@@ -289,12 +291,20 @@ export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
       g(id, NOMBRES_GRUPOS_TRIGONOMETRIA[id].es, NOMBRES_GRUPOS_TRIGONOMETRIA[id].en, CLASES_TRIGONOMETRIA.filter((c) => c.grupo === id).map((c) => c.slug))
     ),
   },
+  // Historia (Técnicas | Clases, 2026-09-24 — ver docs/PARIDAD_MUNDOS.md "Historia:
+  // rediseño del mundo"): los 5 bloques son las 5 épocas (Prehistoria, Antigüedad,
+  // Edad Media, Edad Moderna y Edad Contemporánea). La fuente de verdad del
+  // desbloqueo es src/lib/historia/path.ts (un "activo" por época en las dos
+  // pestañas; entre épocas no se bloquea nada) y la página arma el sidebar leyendo el
+  // campo `grupo`. Esta entrada es presentación derivada del contenido tipado (nunca
+  // slugs repetidos a mano).
   historia: {
-    tecnicas: [
-      g("cronologia", "Cronología", "Chronology", ["historia-anclaje-cronologico", "historia-linea-de-tiempo-mental", "historia-bloques-por-siglo"]),
-      g("memoria", "Memoria", "Memory", ["historia-asociacion-memorable", "historia-siglas-para-secuencias"]),
-    ],
-    clases: [],
+    tecnicas: ORDEN_GRUPOS_HISTORIA.map((id) =>
+      g(id, NOMBRES_GRUPOS_HISTORIA[id].es, NOMBRES_GRUPOS_HISTORIA[id].en, TECNICAS_HISTORIA.filter((t) => t.grupo === id).map((t) => t.slug))
+    ),
+    clases: ORDEN_GRUPOS_HISTORIA.map((id) =>
+      g(id, NOMBRES_GRUPOS_HISTORIA[id].es, NOMBRES_GRUPOS_HISTORIA[id].en, CLASES_HISTORIA.filter((c) => c.grupo === id).map((c) => c.slug))
+    ),
   },
   calculia: {
     tecnicas: [

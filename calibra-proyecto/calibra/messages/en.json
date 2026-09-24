@@ -2150,7 +2150,7 @@
     "practicar": "Practice",
     "practicarDescripcion": "Chronology, figures, cause/effect, and dates.",
     "aprender": "Learn",
-    "aprenderDescripcion": "Memory techniques for dates and chronology.",
+    "aprenderDescripcion": "Techniques and classes by era, with animated timelines.",
     "modosTitulo": "Modes",
     "modos": {
       "cronologia": "Chronology",
@@ -2230,18 +2230,28 @@
     },
     "aprenderPage": {
       "metadata": {
-        "title": "Learn Historia",
-        "description": "Memory techniques for dates, chronology, and historical figures."
+        "title": "Learn History",
+        "description": "Techniques and classes by era, from Prehistory to the Contemporary Age, with animated timelines."
       },
       "unidad": {
-        "descripcion": "Memorization techniques for dates and chronology — not a history class."
+        "descripcion": "Short techniques and classes with timelines, from Prehistory to the Contemporary Age."
       },
       "progreso": "Progress",
       "tecnicas": "{dominadas}/{total} techniques",
       "titulo": "Learn",
-      "subtitulo": "How to remember dates and place events in time without memorizing them number by number."
+      "subtitulo": "Shortcuts to place events in time and a course by era: Prehistory, Antiquity, Middle Ages, Early Modern Age and Contemporary Age.",
+      "leccionesContador": "{dominadas}/{total} lessons",
+      "desbloqueaConPro": "Unlock with Pro",
+      "grupos": {
+        "prehistoria": "Prehistory",
+        "antiguedad": "Antiquity",
+        "edad-media": "Middle Ages",
+        "edad-moderna": "Early Modern Age",
+        "contemporanea": "Contemporary Age"
+      }
     },
     "leccion": {
+      "clase": "Class",
       "tecnica": "Technique",
       "verElTruco": "See the trick",
       "anterior": "Previous",
@@ -2257,6 +2267,80 @@
       "enviarRespuestas": "Submit answers",
       "enviando": "Submitting...",
       "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want."
+    },
+    "visuales": {
+      "etiqueta": {
+        "linea": "Timeline",
+        "epocas": "The five eras of history",
+        "causas": "Chain of causes and consequences",
+        "siglos": "How to go from a year to its century",
+        "sincronia": "What was happening at the same time in different parts of the world",
+        "personaje": "Cards of historical figures"
+      },
+      "regiones": {
+        "europa": "Europe",
+        "africa": "Africa",
+        "oriente-proximo": "Near East",
+        "asia-sur": "South Asia",
+        "asia-oriental": "East Asia",
+        "asia-central": "Central Asia",
+        "asia-sudeste": "Southeast Asia",
+        "america": "The Americas",
+        "oceania": "Oceania",
+        "global": "Worldwide"
+      },
+      "linea": {
+        "alternativa": "Timeline with {n} events, from the oldest to the most recent: {lista}.",
+        "era": "BC | AD",
+        "escala": "Distances are to scale: the axis runs from {desde} to {hasta}",
+        "sinEscala": "The events are in order, but distances are NOT to scale: thousands of years passed between one and the next.",
+        "superposicion": "Some dates overlap because of their margin of error: the order is that of the most common estimate.",
+        "certeza": {
+          "exacta": "Date with broad consensus.",
+          "convencional": "Conventional date: tradition or school convention sets it, although there are variants.",
+          "aproximada": "Approximate date: specialists do not know it exactly."
+        }
+      },
+      "epocas": {
+        "alternativa": "The five eras of history: {lista}",
+        "empiezaCon": "Starts with",
+        "sinFrontera": "Prehistory begins with the first stone tools and ends with the invention of writing.",
+        "sinEscala": "The bands are not to scale: Prehistory lasts far longer than all the others together."
+      },
+      "causas": {
+        "alternativa": "Chain of causes and consequences: {lista}.",
+        "provoco": "led to",
+        "rol": {
+          "causa": "Cause",
+          "hecho": "Intermediate event",
+          "consecuencia": "Consequence"
+        },
+        "explica": {
+          "causa": "This is the starting point: what happens first and pushes the next event.",
+          "hecho": "It is a consequence of the previous event and, at the same time, a cause of the next one.",
+          "consecuencia": "This is what happens as a result of the previous events."
+        }
+      },
+      "siglos": {
+        "alternativa": "Century of each example: {lista}.",
+        "pasoCentenas": "{valor} has {centenas} full hundreds and {resto} more years.",
+        "pasoRedondo": "{valor} is a round year: it has exactly {centenas} hundreds.",
+        "pasoMasUno": "Add 1 to the full hundreds: {centenas} + 1 = {n}.",
+        "pasoSigloRedondo": "A round year closes the century: it is the last year of century {n}.",
+        "pasoRomano": "Century {n} is written {romano} in Roman numerals.",
+        "pasoAC": "Since it is BC, years are counted backwards: the 1st century BC ends in the year 1 BC.",
+        "regla": "Rule: century n runs from year (n − 1) · 100 + 1 to year n · 100. Round years close the century: the year 1900 belongs to the 19th century."
+      },
+      "sincronia": {
+        "alternativa": "What was happening at the same time in different regions: {lista}.",
+        "comparar": "Look at the {region} row and compare it with the others: what was happening in the other regions in those same years?"
+      },
+      "personaje": {
+        "alternativa": "Cards of historical figures: {lista}",
+        "rol": "Figure",
+        "vida": "Life",
+        "aparece": "Appears in"
+      }
     },
     "practicaPages": {
       "cronologia": {

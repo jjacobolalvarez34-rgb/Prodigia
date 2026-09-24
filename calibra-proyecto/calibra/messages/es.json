@@ -2150,7 +2150,7 @@
     "practicar": "Practicar",
     "practicarDescripcion": "Cronología, personajes, causa/efecto y fechas.",
     "aprender": "Aprender",
-    "aprenderDescripcion": "Técnicas de memoria para fechas y cronología.",
+    "aprenderDescripcion": "Técnicas y clases por época, con líneas de tiempo animadas.",
     "modosTitulo": "Modos",
     "modos": {
       "cronologia": "Cronología",
@@ -2231,17 +2231,27 @@
     "aprenderPage": {
       "metadata": {
         "title": "Aprender Historia",
-        "description": "Técnicas de memoria para fechas, cronología y personajes históricos."
+        "description": "Técnicas y clases por época, de la Prehistoria a la Edad Contemporánea, con líneas de tiempo animadas."
       },
       "unidad": {
-        "descripcion": "Técnicas de memorización para fechas y cronología — no clases de historia."
+        "descripcion": "Técnicas cortas y clases con líneas de tiempo, de la Prehistoria a la Edad Contemporánea."
       },
       "progreso": "Progreso",
       "tecnicas": "{dominadas}/{total} técnicas",
       "titulo": "Aprender",
-      "subtitulo": "Cómo recordar fechas y ubicar eventos en el tiempo sin memorizar número por número."
+      "subtitulo": "Atajos para ubicar los hechos en el tiempo y un curso por épocas: Prehistoria, Antigüedad, Edad Media, Edad Moderna y Edad Contemporánea.",
+      "leccionesContador": "{dominadas}/{total} lecciones",
+      "desbloqueaConPro": "Desbloquea con Pro",
+      "grupos": {
+        "prehistoria": "Prehistoria",
+        "antiguedad": "Antigüedad",
+        "edad-media": "Edad Media",
+        "edad-moderna": "Edad Moderna",
+        "contemporanea": "Edad Contemporánea"
+      }
     },
     "leccion": {
+      "clase": "Clase",
       "tecnica": "Técnica",
       "verElTruco": "Ver el truco",
       "anterior": "Anterior",
@@ -2257,6 +2267,80 @@
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
       "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
+    },
+    "visuales": {
+      "etiqueta": {
+        "linea": "Línea de tiempo",
+        "epocas": "Las cinco épocas de la historia",
+        "causas": "Cadena de causas y consecuencias",
+        "siglos": "Cómo pasar de un año a su siglo",
+        "sincronia": "Qué pasaba a la vez en distintas partes del mundo",
+        "personaje": "Fichas de personajes históricos"
+      },
+      "regiones": {
+        "europa": "Europa",
+        "africa": "África",
+        "oriente-proximo": "Oriente Próximo",
+        "asia-sur": "Asia del Sur",
+        "asia-oriental": "Asia Oriental",
+        "asia-central": "Asia Central",
+        "asia-sudeste": "Sudeste asiático",
+        "america": "América",
+        "oceania": "Oceanía",
+        "global": "Mundial"
+      },
+      "linea": {
+        "alternativa": "Línea de tiempo con {n} hechos, del más antiguo al más reciente: {lista}.",
+        "era": "a. C. | d. C.",
+        "escala": "Las distancias están a escala: el eje va de {desde} a {hasta}",
+        "sinEscala": "Los hechos están en orden, pero las distancias NO están a escala: entre uno y otro pasaron miles de años.",
+        "superposicion": "Algunas fechas se superponen por su margen de error: el orden es el de la estimación más habitual.",
+        "certeza": {
+          "exacta": "Fecha de amplio consenso.",
+          "convencional": "Fecha convencional: la tradición o la convención escolar la fija, aunque hay variantes.",
+          "aproximada": "Fecha aproximada: los especialistas no la conocen con exactitud."
+        }
+      },
+      "epocas": {
+        "alternativa": "Las cinco épocas de la historia: {lista}",
+        "empiezaCon": "Empieza con",
+        "sinFrontera": "La Prehistoria empieza con las primeras herramientas de piedra y termina con la invención de la escritura.",
+        "sinEscala": "Las franjas no están a escala: la Prehistoria dura muchísimo más que todas las demás juntas."
+      },
+      "causas": {
+        "alternativa": "Cadena de causas y consecuencias: {lista}.",
+        "provoco": "provocó",
+        "rol": {
+          "causa": "Causa",
+          "hecho": "Hecho intermedio",
+          "consecuencia": "Consecuencia"
+        },
+        "explica": {
+          "causa": "Es el punto de partida: lo que ocurre primero y empuja a lo siguiente.",
+          "hecho": "Es consecuencia del hecho anterior y, a la vez, causa del siguiente.",
+          "consecuencia": "Es lo que ocurre como resultado de los hechos anteriores."
+        }
+      },
+      "siglos": {
+        "alternativa": "Cálculo del siglo de cada ejemplo: {lista}.",
+        "pasoCentenas": "{valor} tiene {centenas} centenas completas y {resto} años más.",
+        "pasoRedondo": "{valor} es un año redondo: tiene exactamente {centenas} centenas.",
+        "pasoMasUno": "Se suma 1 a las centenas completas: {centenas} + 1 = {n}.",
+        "pasoSigloRedondo": "Un año redondo cierra el siglo: es el último año del siglo {n}.",
+        "pasoRomano": "El siglo {n} se escribe {romano} en números romanos.",
+        "pasoAC": "Como es a. C., los años se cuentan hacia atrás: el siglo I a. C. termina en el año 1 a. C.",
+        "regla": "Regla: el siglo n va del año (n − 1) · 100 + 1 al año n · 100. Los años redondos cierran el siglo: el año 1900 es del siglo XIX."
+      },
+      "sincronia": {
+        "alternativa": "Qué pasaba a la vez en distintas regiones: {lista}.",
+        "comparar": "Mira la fila de {region} y compárala con las otras: ¿qué ocurría en las demás regiones en esos mismos años?"
+      },
+      "personaje": {
+        "alternativa": "Fichas de personajes: {lista}",
+        "rol": "Personaje",
+        "vida": "Vida",
+        "aparece": "Aparece en"
+      }
     },
     "practicaPages": {
       "cronologia": {
