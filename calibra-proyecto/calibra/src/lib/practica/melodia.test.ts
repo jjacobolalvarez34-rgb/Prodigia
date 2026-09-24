@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { detectarVoseo } from "@/lib/texto/espanolNeutro";
 import {
   generarPreguntaMelodia, MODOS_MELODIA, construirEscala, construirAcorde,
   semitonoAbsoluto, frecuenciaDeNota, LETRAS, type TipoEscala, type TipoAcorde, type NotaMusical,
@@ -75,5 +76,21 @@ describe("construirAcorde — cada nota cae exactamente en el semitono de su fó
         expect(offsets, tipo).toEqual(formulas[tipo]);
       }
     }
+  });
+});
+
+describe("enunciados en español neutro (auditoría de Aprender de Melodía)", () => {
+  it("ningún enunciado de los 6 modos usa voseo ni «acá» (se dice «aquí»)", () => {
+    const vistos = new Set<string>();
+    for (const modo of MODOS_MELODIA) {
+      for (let nivel = 1; nivel <= 10; nivel++) {
+        for (let i = 0; i < 20; i++) vistos.add(generarPreguntaMelodia(modo, nivel).enunciado.replace(/"[^"]*"|(?:Do|Re|Mi|Fa|Sol|La|Si)[♯♭]?\d/g, ""));
+      }
+    }
+    for (const e of vistos) {
+      expect(e, e).not.toMatch(/acá/i);
+      expect(detectarVoseo(e), e).toEqual([]);
+    }
+    expect(vistos.size).toBeGreaterThanOrEqual(6);
   });
 });

@@ -2487,13 +2487,16 @@
     "aprender": {
       "metadata": {
         "title": "Learn Melodía",
-        "description": "How to read the staff and build scales and chords, step by step."
+        "description": "Techniques and classes on fundamentals, the staff, accidentals, scales, chords and ear training, with animated diagrams."
       },
       "unidadDescripcion": "How to read the staff by position and how scales and chords are built from scratch.",
       "progresoLabel": "Progress",
       "progresoContador": "{completadas}/{total} techniques",
       "titulo": "Learn",
-      "descripcion": "How to read the staff and how scales and chords are built — the logic, not memorizing case by case."
+      "descripcion": "How to read the staff and how scales and chords are built — the logic, not memorizing case by case.",
+      "subtitulo": "Tricks and classes to read the staff, find notes, build scales and chords, and train your ear.",
+      "desbloqueaConPro": "Unlock with Pro",
+      "leccionesContador": "{dominadas}/{total} lessons"
     },
     "leccion": {
       "badge": "Technique",
@@ -2510,7 +2513,8 @@
       "respuestaIncorrecta": "That's not it — check again",
       "enviarRespuestas": "Submit answers",
       "enviando": "Submitting...",
-      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want."
+      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want.",
+      "clase": "Class"
     },
     "practicaPaginas": {
       "fundamentos": {
@@ -2558,6 +2562,38 @@
     },
     "pentagrama": {
       "ariaLabel": "Musical staff"
+    },
+    "visuales": {
+      "escuchar": "Listen",
+      "pentagrama": {
+        "etiqueta": "Notes on the staff",
+        "nota": "Treble-clef staff, the same one used in Practice: lines, spaces and ledger lines, no stems."
+      },
+      "teclado": {
+        "etiqueta": "Piano keyboard",
+        "nota": "Schematic keyboard: it shows distances between notes, it is not a piano lesson."
+      },
+      "escala": {
+        "etiqueta": "Scale on the keyboard",
+        "nota": "W = whole step (2 semitones) · H = half step (1) · 1½ = step and a half (3). Schematic keyboard."
+      },
+      "acorde": {
+        "etiqueta": "Chord on the keyboard",
+        "nota": "Each note is counted in semitones from the root. Schematic keyboard.",
+        "grado": "Degree {grado}",
+        "fundamental": "root",
+        "semitonos": "+{n} semitones"
+      },
+      "ritmo": {
+        "etiqueta": "Note values and their duration",
+        "nota": "Relative durations in a 4/4 bar, with the quarter note as the beat. The bar shows how much of the measure each note takes.",
+        "pulsos": "{count, plural, one {# beat} other {# beats}}",
+        "mediaPulso": "half a beat"
+      },
+      "frecuencia": {
+        "etiqueta": "Notes and frequencies",
+        "nota": "Equal temperament, A4 = 440 Hz. Each arrow shows what the frequency is multiplied by."
+      }
     }
   },
   "Mundos": {

@@ -27,6 +27,8 @@ import { TECNICAS_QUIMIA, CLASES_QUIMIA } from "@/lib/quimia/lecciones";
 import { ORDEN_GRUPOS_QUIMIA, type GrupoQuimia } from "@/lib/quimia/grupos";
 import { TECNICAS_ANATOMIA, CLASES_ANATOMIA } from "@/lib/anatomia/lecciones";
 import { ORDEN_GRUPOS_ANATOMIA, NOMBRES_GRUPOS_ANATOMIA } from "@/lib/anatomia/grupos";
+import { TECNICAS_MELODIA, CLASES_MELODIA } from "@/lib/melodia/lecciones";
+import { ORDEN_GRUPOS_MELODIA, NOMBRES_GRUPOS_MELODIA } from "@/lib/melodia/grupos";
 
 export type PestanaGrupos = "tecnicas" | "clases";
 type Idioma = "es" | "en";
@@ -254,6 +256,20 @@ export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
     ),
     clases: ORDEN_GRUPOS_ANATOMIA.map((id) =>
       g(id, NOMBRES_GRUPOS_ANATOMIA[id].es, NOMBRES_GRUPOS_ANATOMIA[id].en, CLASES_ANATOMIA.filter((c) => c.grupo === id).map((c) => c.slug))
+    ),
+  },
+  // Melodía (Técnicas | Clases, 2026-09-23 — ver docs/PARIDAD_MUNDOS.md
+  // "Melodía: Técnicas | Clases"): igual que Anatomía, la fuente de verdad del
+  // desbloqueo es src/lib/melodia/path.ts (un "activo" por grupo/modo de
+  // práctica en las dos pestañas) y la página arma el sidebar leyendo el
+  // campo `grupo` de cada nodo. Esta entrada es documentación/presentación
+  // derivada del contenido tipado (nunca slugs repetidos a mano).
+  melodia: {
+    tecnicas: ORDEN_GRUPOS_MELODIA.map((id) =>
+      g(id, NOMBRES_GRUPOS_MELODIA[id].es, NOMBRES_GRUPOS_MELODIA[id].en, TECNICAS_MELODIA.filter((t) => t.grupo === id).map((t) => t.slug))
+    ),
+    clases: ORDEN_GRUPOS_MELODIA.map((id) =>
+      g(id, NOMBRES_GRUPOS_MELODIA[id].es, NOMBRES_GRUPOS_MELODIA[id].en, CLASES_MELODIA.filter((c) => c.grupo === id).map((c) => c.slug))
     ),
   },
   historia: {

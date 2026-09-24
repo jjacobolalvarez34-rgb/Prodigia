@@ -56,7 +56,6 @@ const DEUDA_HISTORICA_VOSEO = new Set([
   "0032_algebra_basica.sql",
   "0065_anuncios.sql",
   "0079_practicar_subtemas.sql",
-  "0089_mundo_melodia.sql",
   "0101_lecciones_avanzadas_numeria.sql",
   "0108_mundo_trigonometria.sql",
   "0109_mundo_historia.sql",

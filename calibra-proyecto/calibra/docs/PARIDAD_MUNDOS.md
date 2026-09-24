@@ -63,8 +63,8 @@ confirmar en vivo · ❌ ausente.
 | 19 | Feed: tarjetas automáticas | ✅ | ✅¹,⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
 | 20 | Responsive en mobile real | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | 21 | Aparece en estadísticas Pro (/perfil/estadisticas) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅¹⁰ | ✅¹⁰ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 22 | Aprender con pestañas Técnicas \| Clases (Pro, clase 1 gratis) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ⚠️¹² | ⚠️¹² | ⚠️¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² |
-| 23 | Aprender con explicación visual animada (no solo texto) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ✅¹³ | ⚠️¹³ |
+| 22 | Aprender con pestañas Técnicas \| Clases (Pro, clase 1 gratis) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ⚠️¹² | ⚠️¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² |
+| 23 | Aprender con explicación visual animada (no solo texto) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ✅¹³ | ⚠️¹³ |
 | 24 | Español neutro, sin voseo, en el contenido de lecciones | ⚠️¹⁵ | ✅¹⁷ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ✅¹⁵ | ✅¹⁵ | ✅¹⁵ |
 
 ¹ = bug real encontrado en esta auditoría y **ya corregido en el código** esta sesión — ver "Changelog" abajo. La celda muestra el estado ACTUAL (post-fix), no el que se encontró.
@@ -92,6 +92,8 @@ confirmar en vivo · ❌ ausente.
 ²⁰ = **Quimia, Técnicas | Clases, TANDA 1 de 2 (2026-09-23)** — ver "Quimia: Técnicas | Clases (tanda 1)" más abajo. 16 Técnicas (4 existentes corregidas + 12 nuevas) y 17 Clases Pro con 6 visuales animados nuevos (`quimia.*`), desbloqueo por grupo en Técnicas y curso lineal único en Clases. La **tanda 2 cerró el 2026-09-23** (ver "Quimia: Técnicas | Clases (tanda 2)"): 14 Técnicas y 17 Clases Pro de redox y orgánica con 8 visuales animados más (`quimia.redox`, `oxidacion`, `balanceo`, `pila`, `cadena`, `grupos`, `isomeria`, `hibridacion`), migración `0211`. Totales de Quimia: 30 Técnicas y 34 Clases en 6 grupos. Pasa a ✅ porque lo que evalúa la práctica en sus cinco modos (símbolos, fórmulas, tabla, nomenclatura, orgánica) está enseñado, con un test que cruza los dos lados (`lecciones/cobertura.test.ts`) y que exige un visual en cada lección. Pendiente de verificar en producción: el flujo con Supabase y login reales.
 
 ²¹ = **Anatomía, Técnicas | Clases completas (2026-09-23)** — ver "Anatomía: Técnicas | Clases" más abajo. 21 Técnicas (gratis) + 22 Clases (Pro), todas con visuales propios (`anatomia.esqueleto/cuerpo/grupos/flujo`) y quiz; desbloqueo independiente por sistema (óseo, muscular, órganos, nervioso) en las dos pestañas; cobertura de TODO lo que evalúa la práctica verificada con test. Fila 24 (español neutro) de Anatomía: 0081 corregido, ver la sección.
+
+²² = **Melodía, Técnicas | Clases completas (2026-09-23)** — ver "Melodía: Técnicas | Clases" más abajo. 18 Técnicas (gratis) + 18 Clases (Pro), todas con visuales propios (`melodia.pentagrama/teclado/escala/acorde/ritmo/frecuencia`) o de cuadros y quiz; desbloqueo independiente por grupo (los 6 modos de práctica) en las dos pestañas; cobertura de TODO lo que evalúa la práctica verificada con test, y un error real de dibujo de la Práctica corregido (notas cortadas en el pentagrama). Fila 24 (español neutro): 0089 corregido, ver la sección.
 
 **Resumen (al 2026-09-18, ANTES de los mundos 11-13 y la fila 22 — ver la actualización debajo)**: de 210 celdas (21 sistemas × 10 mundos), 186 ✅ (5 de ellas confirmadas jugando, no solo por código; 18 de Trigonometría/Historia, 18 de Calculia y 18 de Circuitia son ✅ solo por código+build, ver footnotes ⁶/⁷/⁸), 23 ⚠️ (17 de la matriz de 8 mundos + 3 de Calculia + 3 de Circuitia, mismo patrón que los mundos anteriores), 1 ❌ (Enigmia #1). Ningún mundo tiene un sistema completamente roto sin arreglo disponible; los ⚠️ restantes son gaps de UX/contenido reales (no bugs de wiring), cosas que no se pueden confirmar sin dispositivo real/browser, o (para los mundos nuevos) sistemas pendientes de la primera verificación en vivo post-migración.
 
@@ -854,3 +856,73 @@ Las 5 Técnicas históricas tenían voseo real ("agrupalos", "dividilos", "usás
 `tsc --noEmit` y `eslint` (lo tocado): limpios. Tests nuevos: `practica/anatomia.test.ts` (6), `anatomia/path.test.ts` (17), `anatomia/lecciones/lecciones.test.ts` (38), `components/anatomia/visuales/visuales.test.ts` (14). Navegador real (Playwright + chromium, ruta temporal sin auth, ya borrada, a 360-390 px): esqueleto con punto y lista, esquema del cuerpo en estado animado y final, recorrido de la sangre (9 etapas + ciclo) y los 12 pares craneales por función; sin overflow horizontal ni errores de consola.
 
 **Sin verificar**: flujo end-to-end con Supabase y login reales (`0212` no corrió contra una base real), tema oscuro, y solo se vieron en pantalla 5 de las 43 lecciones (el resto lo cubren los tests de render y de datos); tampoco se vio el CTA "Desbloquea con Pro" en una sesión real.
+
+
+## Melodía: Técnicas | Clases (2026-09-23)
+
+Melodía tenía 5 Técnicas (0089, con quiz en 0174) y 0 Clases, sin visuales: Aprender no cubría casi nada de lo que la práctica y los duelos evalúan (figuras y cifrado, notas sobre el pentagrama de Fa3 a Do6, alteraciones, 4 escalas, 14 tipos de acorde y oído). Pedido del usuario: "que quede bien completito con todo lo que se evalúa en Prodigia".
+
+### Números finales
+
+| Grupo (modo de práctica) | Técnicas (gratis) | Clases (Pro) |
+|---|---|---|
+| Fundamentos | 3 | 3 |
+| Lectura en pentagrama | 3 | 3 |
+| Alteraciones | 3 | 3 |
+| Escalas | 3 | 3 |
+| Acordes | 4 | 4 |
+| Oído absoluto | 2 | 2 |
+| **Total** | **18** (5 históricas reescritas + 13 nuevas) | **18** |
+
+Cada Técnica: 3-5 pasos + al menos un visual + quiz de 3-5 preguntas. Cada Clase: 5-6 pasos desarrollados (definiciones, ejemplos, "errores comunes"/simplificaciones), 1-7 visuales y quiz de 5 preguntas con `explicacion`. Código en `src/lib/melodia/lecciones/` (un archivo por grupo con sus Técnicas y sus Clases, `tecnicas.ts`, `clases.ts`, `sql.ts`, `index.ts`), grupos en `src/lib/melodia/grupos.ts`. Fuente única: la migración se GENERA de ahí. Se dejaron fuera a propósito los temas que la práctica no evalúa (armaduras, compases compuestos, silencios más allá de mencionarlos, escalas menores armónica y melódica, inversiones de acordes).
+
+### Decisión de desbloqueo (src/lib/melodia/path.ts, reescrito)
+
+- **Técnicas**: puntero "activo" independiente POR GRUPO, lineal dentro de cada uno (pedido explícito del usuario para todos los mundos).
+- **Clases**: también un curso independiente POR GRUPO (como Anatomía y Geografía), no un curso lineal único como Quimia. Hay dependencias naturales (fundamentos, lectura, alteraciones, escalas, acordes; el oído es transversal) y el sidebar sigue ese orden como recomendado, pero cada Clase re-explica lo que usa de otro grupo (la primera de escalas repasa tonos y semitonos, la de acordes repasa los semitonos), así que no se bloquea a quien ya sabe leer y solo quiere acordes. La primera Clase de todas (`melodia-clase-sonido-y-nota`) es preview gratis; para un usuario no-Pro las demás "primeras de su grupo" quedan `bloqueadoPorPlan`.
+- El estado (completado/activo/bloqueado) se calcula EN la fuente (`calcularNodos`), no en la presentación: `[slug]/page.tsx` usa `puedeAbrirNodoMelodia` sobre ese mismo cálculo. `path.test.ts` fija el bug de Numeria (648f2b7): la primera técnica de CADA grupo queda activa a la vez, lineal dentro del grupo, y el nodo activo es entrable. `GRUPOS_APRENDER.melodia` (`src/lib/aprender/grupos.ts`) se deriva del contenido tipado.
+- **Gating Pro en el servidor**: `/api/aprender/completar` (no tocada) valida `requiere_pro` solo cuando la lección trae quiz; las 18 Clases traen quiz y un test lo fija. Mismo hueco heredado que Anatomía: la Clase de preview gratis tampoco la puede completar un usuario free (responde 403).
+
+### Visuales (src/components/melodia/visuales/, prefijo `melodia.`)
+
+Las escalas, los acordes y las frecuencias NO se guardan tipeados en el jsonb: se guardan los parámetros (fundamental, tipo, sostenidos o bemoles) y el componente llama a `construirEscala`, `construirAcorde` y `frecuenciaDeNota` de `practica/melodia.ts` al dibujar.
+
+- `melodia.pentagrama`: el MISMO `Pentagrama.tsx` de la Práctica (clave de sol, 5 líneas, cabezas en su altura real, líneas adicionales, sin plicas), con las notas apareciendo una a una y su nombre. Esquemático a propósito.
+- `melodia.teclado`: piano esquemático de teclas blancas y negras a escala uniforme (no una foto), con resaltado y nombre, grupos de 2 y 3 negras, pares Mi-Fa y Si-Do, cifrado y saltos T/S.
+- `melodia.escala` y `melodia.acorde`: la escala o el acorde se construye nota a nota sobre el teclado (saltos T/S; grado y semitonos desde la fundamental).
+- `melodia.ritmo`: figuras con su duración y una barra proporcional dentro de un compás de 4/4 (usa `FiguraRitmicaIcono`).
+- `melodia.frecuencia`: notas con su frecuencia (temperamento igual, La4 = 440 Hz) y la razón con la anterior (×2, ×1,0595).
+- **Audio**: los visuales con "Escuchar" solo suenan al tocar el botón (reutilizan `frecuenciaDeNota` y `reproducirNotaMusical`; nunca autoplay, un test revisa el código); la lección funciona igual sin audio.
+- Todos: alternativa textual accesible (`figcaption` sr-only con los mismos datos), `prefers-reduced-motion` vía `useReproductor`, datos limpiados por funciones puras (`visualesDatos.ts`; un dato malo del jsonb se descarta sin romper), mensajes es/en. Extensión de `Pentagrama.tsx` con props opcionales (`visibles`, `etiquetas`, `destacada`) que no cambian el dibujo de la Práctica.
+
+### Cobertura de lo evaluado (con test)
+
+`lecciones.test.ts` cruza los generadores con las lecciones: los 6 modos de la práctica (`MODOS_MELODIA`) tienen Técnicas y Clases (si se agrega un modo sin lección, falla); las 4 figuras y las 7 notas con su cifrado en los dos sentidos; TODA nota que puede aparecer en Lectura (Fa3 a Do6, `RANGO_LECTURA_POR_BANDA`) está dibujada en un pentagrama de una lección y de una Clase; las 7 letras con ♯ y con ♭ y los 4 casos Mi♯, Si♯, Fa♭, Do♭; los 4 tipos de escala con fórmula y visual; los 14 tipos de acorde con su fórmula en semitonos y un visual en una Clase. Además barre cientos de preguntas reales por modo y nivel (las respuestas generadas aparecen todas en las lecciones) y contrasta con una tabla de referencia escrita aparte: fórmulas de escalas y acordes, ortografía correcta de cada escala y acorde mostrado (una letra por grado), frecuencias a 2 decimales, cifrado, duraciones, posiciones de líneas y espacios, y una lista de afirmaciones conocidas como falsas.
+
+### Errores de datos hallados (auditoría de lo existente)
+
+1. **Práctica: notas cortadas o invisibles en el pentagrama** (`Pentagrama.tsx`, corregido con test): el `viewBox` era fijo (0-140), pero la Práctica genera fundamentales en la octava 3 (Do3 y Re3, por debajo del borde) y acordes de oncena y trecena que suben hasta Sol♯6 (por encima del borde). En 72 de 448 combinaciones de fundamental, tipo y grafía había al menos una nota cortada o fuera del dibujo. Ahora el `viewBox` crece lo necesario; si todo cabe, es exactamente el de antes (`visuales.test.ts` renderiza las 448 y comprueba cada cabeza).
+2. **Quiz de 0174: la respuesta correcta era SIEMPRE la primera opción** en las 15 preguntas de las 5 Técnicas históricas (se adivinaba por posición). Ahora la posición varía y un test exige que ninguna posición supere el 50 %.
+3. **Voseo real en las 5 Técnicas históricas de 0089** ("Leé", "sabés", "probá", "armá", "servís", "Arrancás", "Pensalo", "sumás", "memorizá", "a vos"): se reescriben por `UPDATE` y además se corrigió el texto de `0089_mundo_melodia.sql` (solo esas palabras; el resultado es equivalente al `UPDATE`) y se sacó de `DEUDA_HISTORICA_VOSEO`. Es una edición de una migración ya aplicada: decisión consciente, solo de texto, mismo criterio que 0081 en Anatomía.
+4. **Enunciado regional**: "¿Qué nota está marcada acá...?" (Alteraciones) pasó a "aquí"; un test barre los enunciados de los 6 modos.
+5. **Enunciados imprecisos en las históricas**: "sueltan exactamente el mismo sonido" (errata) y que Do♯ y Re♭ son "la misma altura" sin decir que vale en el afinado del piano (temperamento igual); en un violín o en la voz pueden diferir un poco. Ahora está marcado como simplificación.
+6. **Distractor que también era válido**: un test nuevo falla si una opción errónea suena igual (enarmónica) que la respuesta de una pregunta de nota suelta. Detectó dos casos en los borradores de las lecciones nuevas (Sol♭ frente a Fa♯ y Re♭ frente a Do♯), ya corregidos.
+7. **No cambiados a propósito, pero documentados en las lecciones**: (a) la Práctica escribe las notas alteradas siempre con sostenidos o siempre con bemoles según el ejercicio (Do menor puede salir Do-Re♯-Sol, Fa mayor con La♯), que suena igual pero no es la ortografía de una partitura (una letra por grado); (b) las preguntas de Alteraciones pueden incluir una opción que suena igual que la respuesta (Mi♯ frente a Fa): la respuesta la da la posición dibujada, y la Técnica de enarmonía lo enseña; (c) los acordes de oncena y trecena se dibujan completos, apilados por terceras, aunque en la música real suelen omitir notas; (d) el modo Lectura NUNCA pregunta los 4 espacios (Fa4, La4, Do5, Mi5) ni Re4: se enseñan igual porque hacen falta para ubicar el resto; (e) dim7 escribe la 7.ª como La (en teoría, Si con doble bemol), igual que la Práctica.
+
+### Rigor musical: cómo se verificó cada tipo de dato
+
+Escalas, acordes y frecuencias se calculan con las funciones puras de la práctica y se contrastan con la tabla de referencia del test (independiente de esas funciones). Los Hz que las lecciones escriben en el texto deben estar en la tabla (Do4 ≈ 261,63; La4 = 440; Do5 ≈ 523,25...). Simplificaciones marcadas en el texto: temperamento igual, octavas científicas (Do4 = Do central), cifrado americano frente a latino, escala menor solo natural, oncena y trecena completas, compás de 4/4 con la negra como pulso. Sobre el oído absoluto: sin promesas; se dice que es poco frecuente, que no hay consenso sobre cuánto se desarrolla en la adultez y que lo que sí se entrena es el oído relativo (un test rechaza frases de promesa).
+
+### Español neutro (fila 24)
+
+Cero voseo en las 36 lecciones y en la migración (`detectarVoseo` más una lista de formas que el detector no marca). Un test rechaza glifos musicales fuera del BMP (𝄫, 𝄪) que pueden salir como cuadrados: la 7.ª de dim7 se escribe "Si con doble bemol" en palabras.
+
+### Migración
+
+`supabase/migrations/0213_melodia_tecnicas_clases.sql`, generada por `generarSqlMelodia()` (`MELODIA_ESCRIBIR_SQL=1 npx vitest run src/lib/melodia/lecciones`), comparada byte a byte por el test y validada con `pglast` (7 sentencias). Orden pensado contra datos y constraints: primero 5 `UPDATE` (por `problem_type` y `slug`, filas que 0089 ya creó), después 2 `INSERT` (13 Técnicas + 18 Clases; `slug` es `unique` y un test comprueba que ningún slug insertado exista en otra migración). Sin `ALTER`: `requiere_pro` existe desde 0170 y `problem_type='melodia'` ya es válido. `technique_progress` no se toca: quien dominó una Técnica histórica la conserva. 0209, 0210, 0211 y 0212 estaban tomadas.
+
+### Verificación
+
+`tsc --noEmit`, `eslint` de lo tocado y `vitest` completo: ver el reporte final. Tests nuevos: `melodia/path.test.ts`, `melodia/lecciones/lecciones.test.ts`, `components/melodia/visuales/visuales.test.ts` y ampliaciones de `practica/melodia.test.ts`. Navegador real (Playwright + chromium, ruta temporal sin auth ya borrada, a 360 y 390 px): pentagrama de líneas y espacios, líneas adicionales, teclado con cifrado, grupos de 2 y 3 negras, escala de Do mayor con T/S, tríadas y acordes extendidos, enarmonía (etiquetas en dos líneas), frecuencias, figuras rítmicas y los dos casos del pentagrama de la Práctica que se cortaban (trecena desde Si4 y Do3); sin desborde horizontal ni errores de consola. Se corrigieron a la vista: etiquetas de teclas negras superpuestas (ahora en dos líneas) y el hueco entre el pentagrama y sus nombres.
+
+**Sin verificar**: flujo end-to-end con Supabase y login reales (`0213` no corrió contra una base real), tema oscuro, el CTA "Desbloquea con Pro" en una sesión real, que el audio suene de verdad (solo se verificó por código y por render que nunca arranca solo), lectores de pantalla reales, y en pantalla solo se vieron unas 12 de las 36 lecciones (el resto lo cubren los tests de render y de datos). Las lecciones están en español (como en los demás mundos); solo el marco de los visuales tiene es/en.

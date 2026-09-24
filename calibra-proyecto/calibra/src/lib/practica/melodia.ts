@@ -110,7 +110,7 @@ const CROMATICA_BEMOLES: { letra: NotaLetra; alteracion: Alteracion }[] = [
 
 // Construye una nota a partir de una absoluta en semitonos (0 = Do0),
 // eligiendo grafía con sostenidos o bemoles.
-function notaDesdeSemitonoAbsoluto(semitonoAbs: number, usarBemoles: boolean): NotaMusical {
+export function notaDesdeSemitonoAbsoluto(semitonoAbs: number, usarBemoles: boolean): NotaMusical {
   const octava = Math.floor(semitonoAbs / 12);
   const posicion = ((semitonoAbs % 12) + 12) % 12;
   const tabla = usarBemoles ? CROMATICA_BEMOLES : CROMATICA_SOSTENIDOS;
@@ -184,7 +184,7 @@ export const NOMBRE_ESCALA: Record<TipoEscala, string> = {
 // Cada fórmula es la distancia en semitonos ENTRE grados consecutivos
 // (no acumulada) — se acumula al construir la escala. Suman siempre
 // 12 (octava completa).
-const FORMULA_ESCALA: Record<TipoEscala, number[]> = {
+export const FORMULA_ESCALA: Record<TipoEscala, number[]> = {
   mayor: [2, 2, 1, 2, 2, 2, 1],
   menor_natural: [2, 1, 2, 2, 1, 2, 2],
   pentatonica_mayor: [2, 2, 3, 2, 3],
@@ -219,7 +219,7 @@ export const NOMBRE_ACORDE: Record<TipoAcorde, string> = {
 
 // Semitonos desde la fundamental (0), no distancias entre grados —
 // para acordes es más directo que acumular pasos como en las escalas.
-const FORMULA_ACORDE: Record<TipoAcorde, number[]> = {
+export const FORMULA_ACORDE: Record<TipoAcorde, number[]> = {
   mayor: [0, 4, 7],
   menor: [0, 3, 7],
   disminuido: [0, 3, 6],
@@ -306,14 +306,14 @@ function fundamentalAlAzar(rangoOctava: [number, number] = [3, 5]): NotaMusical 
 // banda suma más figuras/notas hasta cubrir el set completo, más
 // preguntas "inversas" (cifrado → nota) en las bandas altas en vez de
 // solo "nota → cifrado".
-const FIGURAS_POR_BANDA: FiguraRitmica[][] = [
+export const FIGURAS_POR_BANDA: FiguraRitmica[][] = [
   ["redonda", "negra"],
   ["redonda", "blanca", "negra"],
   ["redonda", "blanca", "negra", "corchea"],
   ["redonda", "blanca", "negra", "corchea"],
   ["redonda", "blanca", "negra", "corchea"],
 ];
-const NOTAS_POR_BANDA: NotaLetra[][] = [
+export const NOTAS_POR_BANDA: NotaLetra[][] = [
   ["Do", "Re", "Mi"],
   ["Do", "Re", "Mi", "Fa", "Sol"],
   LETRAS,
@@ -393,7 +393,7 @@ function generarFundamentos(nivel: number): PreguntaMelodiaTexto {
 // centrales (sin ledger lines), bandas altas suman notas por encima/
 // debajo del pentagrama (con ledger lines reales, calculadas por el
 // mismo componente que dibuja todo lo demás).
-const RANGO_LECTURA_POR_BANDA: { letra: NotaLetra; octava: number }[][] = [
+export const RANGO_LECTURA_POR_BANDA: { letra: NotaLetra; octava: number }[][] = [
   // banda 0-1: Do4 (primera línea adicional abajo) a Sol5 (dentro del pentagrama)
   [{ letra: "Do", octava: 4 }, { letra: "Mi", octava: 4 }, { letra: "Sol", octava: 4 }, { letra: "Si", octava: 4 }, { letra: "Re", octava: 5 }, { letra: "Fa", octava: 5 }],
   [],
@@ -488,7 +488,7 @@ function generarAlteraciones(nivel: number): PreguntaMelodiaPentagrama {
     modo: "alteraciones",
     tipo: "pentagrama",
     dificultad: nivel,
-    enunciado: "¿Qué nota está marcada acá (con su alteración)?",
+    enunciado: "¿Qué nota está marcada aquí (con su alteración)?",
     opciones: mezclar(opciones),
     respuesta,
     notas: [base],
@@ -501,7 +501,7 @@ function generarAlteraciones(nivel: number): PreguntaMelodiaPentagrama {
 // Banda baja: solo pentatónicas (menos notas, patrón más simple).
 // Banda media (5-7 según el enunciado original): suma mayor/menor
 // natural. Banda alta: las 4 mezcladas, fundamentales menos comunes.
-const ESCALAS_POR_BANDA: TipoEscala[][] = [
+export const ESCALAS_POR_BANDA: TipoEscala[][] = [
   ["pentatonica_mayor", "pentatonica_menor"],
   ["pentatonica_mayor", "pentatonica_menor"],
   ["mayor", "menor_natural", "pentatonica_mayor", "pentatonica_menor"],
@@ -545,7 +545,7 @@ function generarEscalas(nivel: number): PreguntaMelodiaPentagrama {
 // vez de arrancar directo en nivel 6 de complejidad. A partir de ahí
 // sigue tal cual lo pedido: 6-7 las 4 tríadas, 8 séptimas, 9 sus/add9,
 // 10 extendidos.
-function acordesPorNivel(nivel: number): TipoAcorde[] {
+export function acordesPorNivel(nivel: number): TipoAcorde[] {
   if (nivel <= 5) return ["mayor", "menor"];
   if (nivel <= 7) return ["mayor", "menor", "disminuido", "aumentado"];
   if (nivel === 8) return ["maj7", "dominante7", "menor7", "disminuido7"];
@@ -595,7 +595,7 @@ function generarAcordes(nivel: number): PreguntaMelodiaPentagrama {
 // separación a medida que sube el nivel: de un piso/quinta/octava bien
 // distintos hasta semitonos vecinos con alteración, el caso genuinamente
 // difícil de oído absoluto.
-const POOL_OIDO_POR_BANDA: NotaMusical[][] = [
+export const POOL_OIDO_POR_BANDA: NotaMusical[][] = [
   // banda 0 (nivel 1-2): máxima separación — cuarta, quinta y octava.
   // 4 notas, no 3: hacen falta al menos 4 para armar 4 opciones únicas
   // sin repetir la correcta (mismo bug ya encontrado y corregido esta

@@ -295,23 +295,23 @@ on conflict (slug) do nothing;
 
 -- ---------- 5 lecciones de Melodía ("Aprender") ----------
 insert into public.techniques (slug, nombre, descripcion, problem_type, contenido, orden) values
-('melodia-lineas-y-espacios', 'Leé el pentagrama por posición, no nota por nota',
-  'El pentagrama tiene 5 líneas y 4 espacios (de abajo hacia arriba). En clave de sol, cada línea y cada espacio es SIEMPRE la misma nota — memorizá la posición, no cada nota suelta cada vez que aparece.',
+('melodia-lineas-y-espacios', 'Lee el pentagrama por posición, no nota por nota',
+  'El pentagrama tiene 5 líneas y 4 espacios (de abajo hacia arriba). En clave de sol, cada línea y cada espacio es SIEMPRE la misma nota — memoriza la posición, no cada nota suelta cada vez que aparece.',
   'melodia',
   '{"pasos": [
     "Las 5 líneas (de abajo hacia arriba) son: Mi, Sol, Si, Re, Fa",
     "Los 4 espacios (de abajo hacia arriba) son: Fa, La, Do, Mi",
-    "Una vez que sabés las 9 posiciones fijas, cualquier nota del pentagrama es una de esas 9 — no hay que adivinar de nuevo cada vez",
+    "Una vez que sabes las 9 posiciones fijas, cualquier nota del pentagrama es una de esas 9 — no hay que adivinar de nuevo cada vez",
     "Las notas que quedan arriba o abajo de las 5 líneas usan líneas adicionales cortas (ledger lines) — siguen la misma lógica, solo que fuera del pentagrama"
   ]}',
   1),
 ('melodia-truco-lineas-espacios', 'Un truco para no olvidarte de las 9 posiciones',
-  'Armá una frase corta con esas 9 letras en orden — cualquier frase que te resulte fácil de recordar sirve, no hace falta que sea una frase "oficial". Lo importante es el ORDEN de las letras, no la frase en sí.',
+  'Arma una frase corta con esas 9 letras en orden — cualquier frase que te resulte fácil de recordar sirve, no hace falta que sea una frase "oficial". Lo importante es el ORDEN de las letras, no la frase en sí.',
   'melodia',
   '{"pasos": [
-    "Líneas (Mi-Sol-Si-Re-Fa): probá algo tipo \"Mi Sobrina Siempre Repite Frases\"",
-    "Espacios (Fa-La-Do-Mi): probá algo tipo \"Fabio Lava Dos Manzanas\"",
-    "No son frases estándar ni las vas a encontrar en un libro — armá la tuya propia, la que más se te pegue a vos",
+    "Líneas (Mi-Sol-Si-Re-Fa): prueba algo tipo \"Mi Sobrina Siempre Repite Frases\"",
+    "Espacios (Fa-La-Do-Mi): prueba algo tipo \"Fabio Lava Dos Manzanas\"",
+    "No son frases estándar ni las vas a encontrar en un libro — arma la tuya propia, la que más se te pegue a ti",
     "El objetivo es reconocer la posición de un vistazo, sin contar línea por línea cada vez"
   ]}',
   2),
@@ -322,17 +322,17 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
     "Fundamental: la nota base, semitono 0",
     "3ra: 4 semitonos arriba (mayor) o 3 semitonos arriba (menor) — esa sola diferencia decide si suena mayor o menor",
     "5ta: 7 semitonos arriba de la fundamental en la mayoría de los casos (6 si es disminuida, 8 si es aumentada)",
-    "Con esta fórmula servís CUALQUIER fundamental — no hace falta memorizar 12 tríadas mayores sueltas, es la misma receta 12 veces"
+    "Con esta fórmula puedes armar una tríada desde CUALQUIER fundamental — no hace falta memorizar 12 tríadas mayores sueltas, es la misma receta 12 veces"
   ]}',
   3),
 ('melodia-de-triada-a-septima', 'De tríada a séptima: una nota más arriba',
   'Una séptima es una tríada (fundamental-3ra-5ta) con una 4ta nota arriba — 10 u 11 semitonos sobre la fundamental según el tipo. No es un acorde distinto de cero, es la tríada de siempre con un agregado.',
   'melodia',
   '{"pasos": [
-    "Arrancás con la tríada de siempre (fundamental-3ra-5ta)",
-    "Le sumás una nota más: 11 semitonos arriba de la fundamental da séptima mayor (maj7), 10 semitonos da séptima dominante (7)",
+    "Arrancas con la tríada de siempre (fundamental-3ra-5ta)",
+    "Le sumas una nota más: 11 semitonos arriba de la fundamental da séptima mayor (maj7), 10 semitonos da séptima dominante (7)",
     "Sobre una tríada menor, 10 semitonos arriba da séptima menor (m7)",
-    "Pensalo como \"tríada + una nota\", no como una forma nueva que hay que aprender desde cero"
+    "Piénsalo como \"tríada + una nota\", no como una forma nueva que hay que aprender desde cero"
   ]}',
   4),
 ('melodia-sostenidos-bemoles', 'Sostenidos y bemoles: la misma tecla, dos nombres',

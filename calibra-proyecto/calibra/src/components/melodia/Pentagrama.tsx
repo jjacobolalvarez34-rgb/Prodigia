@@ -9,6 +9,16 @@ interface Props {
   disposicion?: "secuencial" | "simultanea";
   colorHex?: string;
   className?: string;
+  // Opcionales usados por los visuales de Aprender (src/components/melodia/
+  // visuales/): ninguno cambia el dibujo de la Práctica cuando no se pasan.
+  // `visibles`: cuántas notas se ven (las demás quedan invisibles pero
+  // ocupan su lugar, así la figura no salta al ir apareciendo una a una).
+  visibles?: number;
+  // Texto corto de cada nota (mismo orden que `notas`): debajo en
+  // "secuencial", a la derecha en "simultanea".
+  etiquetas?: string[];
+  // Índice de la nota destacada (más grande / con borde), si hay.
+  destacada?: number;
 }
 
 const ESPACIO_LINEA = 12;
@@ -45,6 +55,31 @@ function pasosDeNota(nota: NotaMusical): number {
   return indiceDiatonicoAbsoluto(nota) - INDICE_LINEA_INFERIOR;
 }
 
+const Y_LINEA_INFERIOR = 90;
+const ALTO_BASE = 140;
+
+function yDeNotaEnPentagrama(nota: NotaMusical): number {
+  return Y_LINEA_INFERIOR - (pasosDeNota(nota) * ESPACIO_LINEA) / 2;
+}
+
+// Límites verticales del dibujo (cabezas y líneas adicionales, con margen).
+// Bug real corregido (auditoría de Aprender de Melodía): el viewBox era fijo
+// (0-140), pero la Práctica genera fundamentales en la octava 3 (Do3/Re3,
+// por debajo del borde de abajo) y acordes de oncena/trecena que suben hasta
+// Sol♯6 (por encima del borde de arriba): esas notas quedaban cortadas o
+// directamente fuera del dibujo. Ahora el viewBox crece lo que haga falta;
+// si todas las notas caben, es exactamente el de antes.
+export function limitesVerticalesPentagrama(notas: NotaMusical[], altoBase: number = ALTO_BASE): { minY: number; maxY: number } {
+  let minY = 0;
+  let maxY = altoBase;
+  for (const nota of notas) {
+    const y = yDeNotaEnPentagrama(nota);
+    minY = Math.min(minY, y - RADIO_CABEZA - 3);
+    maxY = Math.max(maxY, y + RADIO_CABEZA + 3);
+  }
+  return { minY, maxY };
+}
+
 // Pentagrama en clave de sol, reutilizado por los 4 modos de Melodía
 // que dibujan notas (Lectura, Alteraciones, Escalas, Acordes) — la
 // única infraestructura visual compartida, nada se reconstruye por
@@ -54,23 +89,28 @@ function pasosDeNota(nota: NotaMusical): number {
 // a propósito: no forman parte de lo pedido y para acordes (varias
 // cabezas simultáneas a distinta altura) agregan una complejidad de
 // dibujo real que no aporta nada a un ejercicio de identificación.
-export default function Pentagrama({ notas, disposicion = "secuencial", colorHex = "#B8860B", className = "" }: Props) {
+export default function Pentagrama({ notas, disposicion = "secuencial", colorHex = "#B8860B", className = "", visibles, etiquetas, destacada }: Props) {
   const t = useTranslations("Melodia.pentagrama");
-  const yLineaInferior = 90;
+  const yLineaInferior = Y_LINEA_INFERIOR;
   const xClave = 16;
   const xPrimeraNota = 52;
   const pasoX = 34;
+  const conEtiquetas = etiquetas !== undefined && etiquetas.length > 0;
 
-  const anchoContenido = disposicion === "secuencial" ? xPrimeraNota + pasoX * Math.max(0, notas.length - 1) + 24 : xPrimeraNota + 40;
+  const anchoContenido = disposicion === "secuencial" ? xPrimeraNota + pasoX * Math.max(0, notas.length - 1) + 24 : xPrimeraNota + 40 + (conEtiquetas ? 44 : 0);
   const ancho = Math.max(140, anchoContenido);
-  const alto = 140;
+  // Con etiquetas (visuales de Aprender) el borde de abajo queda más cerca del pentagrama: 22 px bajo la línea inferior.
+  const { minY, maxY } = limitesVerticalesPentagrama(notas, conEtiquetas && disposicion === "secuencial" ? Y_LINEA_INFERIOR + 22 : ALTO_BASE);
+  // Con etiquetas "secuenciales" hace falta una franja debajo para el texto.
+  const altoDibujo = maxY + (conEtiquetas && disposicion === "secuencial" ? 18 : 0);
+  const yEtiquetaSecuencial = altoDibujo - 5;
 
   function yDePasos(pasos: number): number {
     return yLineaInferior - (pasos * ESPACIO_LINEA) / 2;
   }
 
   return (
-    <svg viewBox={`0 0 ${ancho} ${alto}`} width="100%" className={className} role="img" aria-label={t("ariaLabel")}>
+    <svg viewBox={`0 ${minY} ${ancho} ${altoDibujo - minY}`} width="100%" className={className} role="img" aria-label={t("ariaLabel")}>
       {/* 5 líneas del pentagrama */}
       {[0, 1, 2, 3, 4].map((i) => (
         <line
@@ -112,9 +152,12 @@ export default function Pentagrama({ notas, disposicion = "secuencial", colorHex
         const y = yDePasos(pasos);
         const lineasExtra = pasosLineasAdicionales(pasos);
         const simbolo = nota.alteracion === "sostenido" ? "♯" : nota.alteracion === "bemol" ? "♭" : null;
+        const visible = visibles === undefined || i < visibles;
+        const esDestacada = destacada === i;
+        const etiqueta = etiquetas?.[i];
 
         return (
-          <g key={i}>
+          <g key={i} style={{ opacity: visible ? 1 : 0, transition: "opacity 0.4s ease" }} className="motion-reduce:transition-none">
             {lineasExtra.map((p) => (
               <line
                 key={p}
@@ -132,7 +175,28 @@ export default function Pentagrama({ notas, disposicion = "secuencial", colorHex
                 {simbolo}
               </text>
             )}
-            <ellipse cx={x} cy={y} rx={RADIO_CABEZA} ry={RADIO_CABEZA - 1.3} fill={colorHex} transform={`rotate(-18 ${x} ${y})`} />
+            <ellipse
+              cx={x}
+              cy={y}
+              rx={RADIO_CABEZA}
+              ry={RADIO_CABEZA - 1.3}
+              fill={colorHex}
+              stroke={esDestacada ? "currentColor" : "none"}
+              strokeWidth={esDestacada ? 1.6 : 0}
+              transform={`rotate(-18 ${x} ${y})`}
+            />
+            {conEtiquetas && etiqueta && (
+              <text
+                x={disposicion === "secuencial" ? x : x + RADIO_CABEZA + 8}
+                y={disposicion === "secuencial" ? yEtiquetaSecuencial : y + 3.5}
+                fontSize={10.5}
+                textAnchor={disposicion === "secuencial" ? "middle" : "start"}
+                className="fill-foreground"
+                style={{ fontWeight: esDestacada ? 700 : 500 }}
+              >
+                {etiqueta}
+              </text>
+            )}
           </g>
         );
       })}

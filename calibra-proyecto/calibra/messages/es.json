@@ -2487,13 +2487,16 @@
     "aprender": {
       "metadata": {
         "title": "Aprender Melodía",
-        "description": "Cómo leer el pentagrama y construir escalas y acordes, paso a paso."
+        "description": "Técnicas y clases de fundamentos, pentagrama, alteraciones, escalas, acordes y oído, con esquemas animados."
       },
       "unidadDescripcion": "Cómo leer el pentagrama por posición y cómo se arman escalas y acordes desde cero.",
       "progresoLabel": "Progreso",
       "progresoContador": "{completadas}/{total} técnicas",
       "titulo": "Aprender",
-      "descripcion": "Cómo leer el pentagrama y cómo se arman escalas y acordes — la lógica, no memorizar caso por caso."
+      "descripcion": "Cómo leer el pentagrama y cómo se arman escalas y acordes — la lógica, no memorizar caso por caso.",
+      "subtitulo": "Trucos y clases para leer el pentagrama, ubicar las notas, armar escalas y acordes, y entrenar el oído.",
+      "desbloqueaConPro": "Desbloquea con Pro",
+      "leccionesContador": "{dominadas}/{total} lecciones"
     },
     "leccion": {
       "badge": "Técnica",
@@ -2510,7 +2513,8 @@
       "respuestaIncorrecta": "Esa no es — revisa de nuevo",
       "enviarRespuestas": "Enviar respuestas",
       "enviando": "Enviando...",
-      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras.",
+      "clase": "Clase"
     },
     "practicaPaginas": {
       "fundamentos": {
@@ -2558,6 +2562,38 @@
     },
     "pentagrama": {
       "ariaLabel": "Pentagrama musical"
+    },
+    "visuales": {
+      "escuchar": "Escuchar",
+      "pentagrama": {
+        "etiqueta": "Notas sobre el pentagrama",
+        "nota": "Pentagrama en clave de sol, el mismo de la Práctica: líneas, espacios y líneas adicionales, sin plicas."
+      },
+      "teclado": {
+        "etiqueta": "Teclado de piano",
+        "nota": "Teclado esquemático: sirve para ver distancias entre notas, no para aprender a tocar."
+      },
+      "escala": {
+        "etiqueta": "Escala sobre el teclado",
+        "nota": "T = tono (2 semitonos) · S = semitono (1) · 1½ = tono y medio (3). Teclado esquemático."
+      },
+      "acorde": {
+        "etiqueta": "Acorde sobre el teclado",
+        "nota": "Cada nota se cuenta en semitonos desde la fundamental. Teclado esquemático.",
+        "grado": "Grado {grado}",
+        "fundamental": "fundamental",
+        "semitonos": "+{n} semitonos"
+      },
+      "ritmo": {
+        "etiqueta": "Figuras rítmicas y su duración",
+        "nota": "Duraciones relativas en un compás de 4/4, con la negra como pulso. La barra muestra cuánto del compás ocupa cada figura.",
+        "pulsos": "{count, plural, one {# pulso} other {# pulsos}}",
+        "mediaPulso": "medio pulso"
+      },
+      "frecuencia": {
+        "etiqueta": "Notas y frecuencias",
+        "nota": "Temperamento igual, La4 = 440 Hz. Cada flecha muestra por cuánto se multiplica la frecuencia."
+      }
     }
   },
   "Mundos": {
