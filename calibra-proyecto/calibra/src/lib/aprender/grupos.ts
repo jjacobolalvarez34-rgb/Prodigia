@@ -29,6 +29,8 @@ import { TECNICAS_ANATOMIA, CLASES_ANATOMIA } from "@/lib/anatomia/lecciones";
 import { ORDEN_GRUPOS_ANATOMIA, NOMBRES_GRUPOS_ANATOMIA } from "@/lib/anatomia/grupos";
 import { TECNICAS_MELODIA, CLASES_MELODIA } from "@/lib/melodia/lecciones";
 import { ORDEN_GRUPOS_MELODIA, NOMBRES_GRUPOS_MELODIA } from "@/lib/melodia/grupos";
+import { TECNICAS_TRIGONOMETRIA, CLASES_TRIGONOMETRIA } from "@/lib/trigonometria/lecciones";
+import { ORDEN_GRUPOS_TRIGONOMETRIA, NOMBRES_GRUPOS_TRIGONOMETRIA } from "@/lib/trigonometria/bloques";
 
 export type PestanaGrupos = "tecnicas" | "clases";
 type Idioma = "es" | "en";
@@ -270,6 +272,21 @@ export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
     ),
     clases: ORDEN_GRUPOS_MELODIA.map((id) =>
       g(id, NOMBRES_GRUPOS_MELODIA[id].es, NOMBRES_GRUPOS_MELODIA[id].en, CLASES_MELODIA.filter((c) => c.grupo === id).map((c) => c.slug))
+    ),
+  },
+  // Trigonometría (Técnicas | Clases, 2026-09-24 — ver docs/PARIDAD_MUNDOS.md
+  // "Trigonometría: rediseño del mundo (fase 1)"): los 6 bloques del currículo
+  // en orden de colegio. La fuente de verdad del desbloqueo es
+  // src/lib/trigonometria/path.ts (Técnicas: un "activo" por bloque; Clases: un
+  // curso lineal único) y la página arma el sidebar leyendo el campo `grupo`.
+  // Esta entrada es presentación derivada del contenido tipado (nunca slugs
+  // repetidos a mano).
+  trigonometria: {
+    tecnicas: ORDEN_GRUPOS_TRIGONOMETRIA.map((id) =>
+      g(id, NOMBRES_GRUPOS_TRIGONOMETRIA[id].es, NOMBRES_GRUPOS_TRIGONOMETRIA[id].en, TECNICAS_TRIGONOMETRIA.filter((t) => t.grupo === id).map((t) => t.slug))
+    ),
+    clases: ORDEN_GRUPOS_TRIGONOMETRIA.map((id) =>
+      g(id, NOMBRES_GRUPOS_TRIGONOMETRIA[id].es, NOMBRES_GRUPOS_TRIGONOMETRIA[id].en, CLASES_TRIGONOMETRIA.filter((c) => c.grupo === id).map((c) => c.slug))
     ),
   },
   historia: {

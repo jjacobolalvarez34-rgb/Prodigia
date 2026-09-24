@@ -1,97 +1,195 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TechniqueQuizPregunta } from "@/types/database";
+import type { VisualLeccion } from "@/lib/aprender/visuales";
+import type { NodoEstado } from "@/lib/aprender/clases";
+import type { UnidadCaminoGenerico } from "@/components/CaminoContinuo";
+import { TECNICAS_TRIGONOMETRIA, CLASES_TRIGONOMETRIA } from "@/lib/trigonometria/lecciones";
+import { ORDEN_GRUPOS_TRIGONOMETRIA, type GrupoTrigonometria } from "@/lib/trigonometria/bloques";
 
-export type NodoEstado = "completado" | "activo" | "bloqueado";
+export type { NodoEstado, GrupoTrigonometria };
+export { ORDEN_GRUPOS_TRIGONOMETRIA };
 
-// Grupos de "Aprender" (presentación, sin columna nueva en DB — ver
-// docs/PARIDAD_MUNDOS.md footnote ⁹): coinciden con los modos reales
-// de práctica (mismos slugs que modo_trigonometria_aleatorio_por_rango
-// en 0108_mundo_trigonometria.sql y las claves Trigonometria.modos.* de
-// i18n), en el mismo orden de dificultad con que se van desbloqueando
-// en duelos. "identidades" no tiene técnica de Aprender todavía, así
-// que no aparece acá.
-export type GrupoTrigonometria = "razones" | "circulo" | "leyes";
-export const ORDEN_GRUPOS_TRIGONOMETRIA: GrupoTrigonometria[] = ["razones", "circulo", "leyes"];
+// Camino de Aprender de Trigonometría: Técnicas | Clases (docs/PARIDAD_MUNDOS.md
+// filas 22/23). Reutiliza `techniques`/`technique_progress`
+// (problem_type='trigonometria'), sin tablas nuevas, y arma el estado
+// completado/activo/bloqueado ACÁ, en la fuente: [slug]/page.tsx vuelve a pedir
+// este camino y redirige si el nodo está "bloqueado", así que el estado que ve
+// el sidebar y el que valida la página tienen que ser el mismo (bug real de
+// Numeria, commit 648f2b7: el estado se calculaba solo en una capa de
+// presentación y la primera técnica de un tema posterior rebotaba sin abrir).
+//
+// Dos progresiones con criterio DISTINTO, a propósito:
+//   - TÉCNICAS (gratis): atajos sueltos. Cada BLOQUE del currículo (razones,
+//     círculo, gráficas, leyes, identidades, ecuaciones) tiene su puntero
+//     "activo" independiente: la primera Técnica no dominada de CADA bloque
+//     está abierta a la vez; dentro de un bloque es estrictamente lineal (regla
+//     del usuario para todos los mundos).
+//   - CLASES (Pro): UN curso lineal único, en orden de currículo (bloque y
+//     después `orden`), con una sola Clase "activa" a la vez. DECISIÓN
+//     (recomendada por el diseño y documentada en PARIDAD_MUNDOS.md): el temario
+//     es ACUMULATIVO y cada Clase usa conceptos de las anteriores (las razones
+//     se generalizan en el círculo unitario, las gráficas usan los radianes y
+//     los valores exactos, las ecuaciones usan las identidades y las inversas);
+//     lecciones.test.ts verifica ese grafo de dependencias. Dejar abrir, por
+//     ejemplo, «Ecuaciones» antes de «Círculo unitario» produciría una Clase
+//     que usa conceptos aún no enseñados. La primera Clase es preview gratis;
+//     el resto exige plan Pro.
 
-// Mapeo por slug — juicio de contenido: SOHCAHTOA son las razones
-// básicas; el truco de la mano y la simetría por cuadrante son ambos
-// círculo unitario; grados-radianes también cae en "círculo" porque es
-// la conversión que se necesita justo para leer esos mismos valores
-// notables del círculo unitario; "cuándo usar cada ley" es,
-// literalmente, leyes de seno/coseno.
-const GRUPO_POR_SLUG: Record<string, GrupoTrigonometria> = {
-  "trigonometria-sohcahtoa": "razones",
-  "trigonometria-truco-mano-circulo": "circulo",
-  "trigonometria-simetria-cuadrantes": "circulo",
-  "trigonometria-grados-radianes": "circulo",
-  "trigonometria-cuando-usar-cada-ley": "leyes",
-};
+// El mapeo slug -> bloque sale del contenido tipado (una sola fuente de verdad,
+// nunca una lista repetida a mano).
+function construirMapaGrupos(): Map<string, GrupoTrigonometria> {
+  const mapa = new Map<string, GrupoTrigonometria>();
+  for (const t of TECNICAS_TRIGONOMETRIA) mapa.set(t.slug, t.grupo);
+  for (const c of CLASES_TRIGONOMETRIA) mapa.set(c.slug, c.grupo);
+  return mapa;
+}
+const GRUPO_POR_SLUG = construirMapaGrupos();
+
+// Un slug de la base que el contenido tipado no conoce cae en el primer bloque
+// (no se pierde ninguna fila del camino).
+export function grupoDeSlug(slug: string): GrupoTrigonometria {
+  return GRUPO_POR_SLUG.get(slug) ?? ORDEN_GRUPOS_TRIGONOMETRIA[0];
+}
 
 export interface NodoCaminoTrigonometria {
   id: string;
   slug: string;
   nombre: string;
   descripcion: string | null;
-  contenido: { pasos: string[]; quiz?: TechniqueQuizPregunta[] };
+  contenido: { pasos: string[]; visuales?: VisualLeccion[]; quiz?: TechniqueQuizPregunta[] };
   estado: NodoEstado;
-  grupo: GrupoTrigonometria | null;
+  grupo: GrupoTrigonometria;
+  // true para las filas de la pestaña "Clases" (techniques.requiere_pro).
+  requierePro: boolean;
+  // true SOLO para Clases bloqueadas porque el usuario no es Pro (no por
+  // progresión normal) — mismo criterio que src/lib/aprender/clases.ts.
+  bloqueadoPorPlan: boolean;
 }
 
-// Camino de Aprender de Trigonometría — mismo patrón que
-// src/lib/melodia/path.ts: reutiliza techniques/technique_progress
-// (problem_type='trigonometria'), no una tabla nueva. La progresión
-// secuencial ("activo" único) ahora ordena primero por grupo
-// (ORDEN_GRUPOS_TRIGONOMETRIA) y dentro de cada grupo por `orden` —
-// mismo criterio que src/lib/aprender/path.ts (Numeria, por tema) y
-// src/lib/enigmia/path.ts (por categoría). En este mundo el `orden`
-// original de seed ya coincide 1 a 1 con el orden agrupado (razones,
-// círculo×3, leyes), así que no cambia la secuencia real — solo la
-// hace explícita.
-export async function obtenerCaminoTrigonometria(supabase: SupabaseClient, userId: string): Promise<NodoCaminoTrigonometria[]> {
+export interface FilaTechnique {
+  id: string;
+  slug: string;
+  nombre: string;
+  descripcion: string | null;
+  contenido: unknown;
+  orden: number;
+  requiere_pro: boolean;
+}
+
+// Lo que la página de lección permite abrir: todo menos "bloqueado". Lo
+// comparten [slug]/page.tsx y los tests de coherencia con el sidebar.
+export function puedeAbrirNodoTrigonometria(nodo: Pick<NodoCaminoTrigonometria, "estado">): boolean {
+  return nodo.estado !== "bloqueado";
+}
+
+// Orden de curso: (bloque en ORDEN_GRUPOS_TRIGONOMETRIA, orden dentro del bloque).
+export function ordenarPorGrupoYOrden(filas: FilaTechnique[]): FilaTechnique[] {
+  return filas.slice().sort((a, b) => {
+    const pa = ORDEN_GRUPOS_TRIGONOMETRIA.indexOf(grupoDeSlug(a.slug));
+    const pb = ORDEN_GRUPOS_TRIGONOMETRIA.indexOf(grupoDeSlug(b.slug));
+    if (pa !== pb) return pa - pb;
+    return a.orden - b.orden;
+  });
+}
+
+function nodoDe(t: FilaTechnique, estado: NodoEstado, requierePro: boolean, bloqueadoPorPlan: boolean): NodoCaminoTrigonometria {
+  return {
+    id: t.id,
+    slug: t.slug,
+    nombre: t.nombre,
+    descripcion: t.descripcion,
+    contenido: t.contenido as NodoCaminoTrigonometria["contenido"],
+    estado,
+    grupo: grupoDeSlug(t.slug),
+    requierePro,
+    bloqueadoPorPlan,
+  };
+}
+
+// Técnicas (`filas` YA ordenadas por (bloque, orden)): un puntero "activo" por
+// bloque. Nunca dependen del plan.
+export function calcularNodosTecnicas(filas: FilaTechnique[], dominadas: Set<string>): NodoCaminoTrigonometria[] {
+  const activoPorGrupo = new Set<GrupoTrigonometria>();
+  return filas.map((t) => {
+    const grupo = grupoDeSlug(t.slug);
+    if (dominadas.has(t.id)) return nodoDe(t, "completado", false, false);
+    if (!activoPorGrupo.has(grupo)) {
+      activoPorGrupo.add(grupo);
+      return nodoDe(t, "activo", false, false);
+    }
+    return nodoDe(t, "bloqueado", false, false);
+  });
+}
+
+// Clases (`filas` YA ordenadas en orden de curso): UNA sola progresión.
+// - completada: "completado".
+// - la primera del curso (preview gratis): "activo" siempre que no esté
+//   completada, sin importar el plan.
+// - el resto sin Pro: "bloqueado" con bloqueadoPorPlan (para mostrar el CTA
+//   "Desbloquea con Pro" en vez de un bloqueo mudo).
+// - el resto con Pro: la primera no completada del curso queda "activo" y las
+//   siguientes "bloqueado" (dependencia real entre clases).
+export function calcularNodosClases(filas: FilaTechnique[], dominadas: Set<string>, esPro: boolean): NodoCaminoTrigonometria[] {
+  let punteroAsignado = false;
+  return filas.map((t, i) => {
+    if (dominadas.has(t.id)) return nodoDe(t, "completado", true, false);
+    if (i === 0) {
+      punteroAsignado = true;
+      return nodoDe(t, "activo", true, false);
+    }
+    if (!esPro) return nodoDe(t, "bloqueado", true, true);
+    if (!punteroAsignado) {
+      punteroAsignado = true;
+      return nodoDe(t, "activo", true, false);
+    }
+    return nodoDe(t, "bloqueado", true, false);
+  });
+}
+
+// Camino completo: [...Técnicas, ...Clases] (mismo orden que el resto de los
+// mundos); partirCaminoPorClases (src/lib/aprender/clases.ts) separa las dos
+// pestañas. `esPro` viene del PLAN (profiles.plan), no de ningún nivel de
+// calibración (skill_levels `trigonometria_*`, que este archivo no toca).
+export function calcularCaminoTrigonometria(filas: FilaTechnique[], dominadas: Set<string>, esPro: boolean): NodoCaminoTrigonometria[] {
+  const rapidas = ordenarPorGrupoYOrden(filas.filter((t) => !t.requiere_pro));
+  const clases = ordenarPorGrupoYOrden(filas.filter((t) => t.requiere_pro));
+  return [...calcularNodosTecnicas(rapidas, dominadas), ...calcularNodosClases(clases, dominadas, esPro)];
+}
+
+export async function obtenerCaminoTrigonometria(supabase: SupabaseClient, userId: string, esPro: boolean): Promise<NodoCaminoTrigonometria[]> {
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("techniques")
-      .select("id, slug, nombre, descripcion, contenido, orden")
+      .select("id, slug, nombre, descripcion, contenido, orden, requiere_pro")
       .eq("problem_type", "trigonometria")
       .order("orden", { ascending: true }),
     supabase.from("technique_progress").select("technique_id, dominado").eq("user_id", userId),
   ]);
 
-  const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id));
+  const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
+  return calcularCaminoTrigonometria((tecnicas ?? []) as FilaTechnique[], dominadas, esPro);
+}
 
-  const ordenadas = (tecnicas ?? []).slice().sort((a, b) => {
-    const ga = GRUPO_POR_SLUG[a.slug];
-    const gb = GRUPO_POR_SLUG[b.slug];
-    const pa = ga ? ORDEN_GRUPOS_TRIGONOMETRIA.indexOf(ga) : ORDEN_GRUPOS_TRIGONOMETRIA.length;
-    const pb = gb ? ORDEN_GRUPOS_TRIGONOMETRIA.indexOf(gb) : ORDEN_GRUPOS_TRIGONOMETRIA.length;
-    if (pa !== pb) return pa - pb;
-    return a.orden - b.orden;
-  });
-
-  // Desbloqueo por grupo (pedido del usuario 2026-09-22): puntero "activo"
-  // independiente por grupo, no uno global para todo el camino — ver el
-  // mismo cambio en src/lib/quimia/path.ts para el detalle completo.
-  const activoPorGrupo = new Set<GrupoTrigonometria | null>();
-  return ordenadas.map((t) => {
-    const completado = dominadas.has(t.id);
-    const grupo = GRUPO_POR_SLUG[t.slug] ?? null;
-    let estado: NodoEstado;
-    if (completado) {
-      estado = "completado";
-    } else if (!activoPorGrupo.has(grupo)) {
-      estado = "activo";
-      activoPorGrupo.add(grupo);
-    } else {
-      estado = "bloqueado";
-    }
-    return {
-      id: t.id,
-      slug: t.slug,
-      nombre: t.nombre,
-      descripcion: t.descripcion,
-      contenido: t.contenido as { pasos: string[]; quiz?: TechniqueQuizPregunta[] },
-      estado,
-      grupo,
-    };
-  });
+// Arma las "unidades" del sidebar y del camino de Aprender (una por bloque con
+// lecciones) leyendo el `grupo` y el `estado` que ya calculó este archivo: la
+// página NO recalcula ningún estado, así que lo que muestra el sidebar es
+// exactamente lo que después valida [slug]/page.tsx.
+export function construirUnidadesTrigonometria(
+  nodos: NodoCaminoTrigonometria[],
+  nombreGrupo: Record<GrupoTrigonometria, string>,
+  ctaPro: { label: string; href: string }
+): UnidadCaminoGenerico[] {
+  return ORDEN_GRUPOS_TRIGONOMETRIA.map((grupo) => ({ grupo, nodos: nodos.filter((n) => n.grupo === grupo) }))
+    .filter((g) => g.nodos.length > 0)
+    .map((g) => ({
+      id: `trigonometria-${g.grupo}`,
+      nombre: nombreGrupo[g.grupo],
+      nodos: g.nodos.map((n) => ({
+        id: n.id,
+        slug: n.slug,
+        nombre: n.nombre,
+        estado: n.estado,
+        ctaPro: n.bloqueadoPorPlan ? ctaPro : undefined,
+      })),
+    }));
 }

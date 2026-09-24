@@ -3264,13 +3264,23 @@
     "aprender": {
       "metadata": {
         "title": "Aprender Trigonometría",
-        "description": "Trucos mentales para ángulos notables, círculo unitario y conversión grados-radianes."
+        "description": "Técnicas y clases de razones, círculo unitario, gráficas, leyes de seno y coseno, identidades y ecuaciones, con esquemas animados."
       },
-      "descripcionUnidad": "Mnemotecnias para SOHCAHTOA, valores notables del círculo unitario y conversión grados-radianes.",
+      "descripcionUnidad": "Técnicas cortas y clases con ejemplos resueltos, de los triángulos rectángulos a las ecuaciones trigonométricas.",
       "progreso": "Progreso",
       "tecnicas": "{n}/{total} técnicas",
       "titulo": "Aprender",
-      "subtitulo": "Cómo acordarte de SOHCAHTOA y del círculo unitario sin memorizar todo suelto."
+      "subtitulo": "Atajos para no confundirte y un curso completo, en el orden del colegio: razones, círculo unitario, gráficas, leyes, identidades y ecuaciones.",
+      "leccionesContador": "{dominadas}/{total} lecciones",
+      "desbloqueaConPro": "Desbloquea con Pro",
+      "grupos": {
+        "razones": "Razones en el triángulo rectángulo",
+        "circulo": "Ángulos y círculo unitario",
+        "graficas": "Gráficas y periodo",
+        "leyes": "Leyes de seno y coseno",
+        "identidades": "Identidades",
+        "ecuaciones": "Ecuaciones trigonométricas"
+      }
     },
     "leccion": {
       "tecnica": "Técnica",
@@ -3298,7 +3308,8 @@
         "cuentaSeno": "dedos entre el pulgar y el elegido",
         "cuentaCoseno": "dedos entre el elegido y el meñique",
         "tocarDedo": "Toca cualquier dedo para probar otro ángulo."
-      }
+      },
+      "clase": "Clase"
     },
     "practica": {
       "razones": {
@@ -3324,6 +3335,122 @@
           "title": "Practicar Leyes de seno y coseno",
           "description": "Resuelve triángulos oblicuos con los datos suficientes — el modo más difícil."
         }
+      }
+    },
+    "visuales": {
+      "etiqueta": {
+        "triangulo": "Triángulo rectángulo con sus razones",
+        "resolver": "Cómo resolver un triángulo rectángulo",
+        "circulo": "Círculo unitario animado",
+        "cuadrantes": "Signos de las razones por cuadrante",
+        "onda": "Gráfica de una función trigonométrica",
+        "ley": "Triángulo oblicuo",
+        "ecuacion": "Solución de una ecuación trigonométrica",
+        "identidad": "Identidad pitagórica en el círculo unitario",
+        "mano": "El truco de la mano"
+      },
+      "roles": {
+        "opuesto": "opuesto",
+        "adyacente": "adyacente",
+        "hipotenusa": "hipotenusa"
+      },
+      "triangulo": {
+        "hipotenusa": "La hipotenusa es el lado más largo: está frente al ángulo recto y no cambia según el ángulo que elijas.",
+        "opuesto": "El lado opuesto al ángulo {vertice} es el que está frente a él: no lo toca.",
+        "adyacente": "El lado adyacente al ángulo {vertice} es el cateto que sí lo toca (sin ser la hipotenusa).",
+        "razon": {
+          "sen": "Seno: opuesto ÷ hipotenusa.",
+          "cos": "Coseno: adyacente ÷ hipotenusa.",
+          "tan": "Tangente: opuesto ÷ adyacente.",
+          "cosec": "Cosecante: hipotenusa ÷ opuesto (la recíproca del seno).",
+          "sec": "Secante: hipotenusa ÷ adyacente (la recíproca del coseno).",
+          "cot": "Cotangente: adyacente ÷ opuesto (la recíproca de la tangente)."
+        }
+      },
+      "resolver": {
+        "figura": "Dibuja el triángulo y marca lo que sabes y lo que buscas.",
+        "roles": "Nombra los lados según el ángulo A: opuesto, adyacente e hipotenusa.",
+        "razon": "Elige la razón que une los dos lados que intervienen (el dato y la incógnita).",
+        "plantear": "Escribe la ecuación con los números.",
+        "despejar": "Despeja la incógnita.",
+        "calcular": "Calcula con la calculadora en modo grados.",
+        "comprobar": "Comprueba que el resultado tenga sentido."
+      },
+      "circulo": {
+        "angulo": "Ángulo",
+        "sobreEje": "sobre un eje",
+        "cuadrante": "cuadrante {n}",
+        "referencia": "Ángulo de referencia: {g}°",
+        "indefinida": "indefinida"
+      },
+      "cuadrantes": {
+        "angulo": "Cuadrante {n}: θ = {g}° (ángulo de referencia {ref}°). Mira los signos y compara los valores.",
+        "regla": "Cuadrante I: todas las razones son positivas. II: solo el seno. III: solo la tangente. IV: solo el coseno. Se recuerda como «Todos, Seno, Tangente, Coseno»."
+      },
+      "onda": {
+        "curva": {
+          "sen": "La gráfica sube y baja de forma repetida: es una onda (una función periódica).",
+          "cos": "La gráfica sube y baja de forma repetida: es una onda (una función periódica).",
+          "tan": "La gráfica de la tangente crece entre asíntotas verticales y se repite."
+        },
+        "amplitud": "Amplitud: la altura desde la línea media hasta el máximo. Aquí vale {amplitud}.",
+        "periodo": "Periodo: el largo (en el eje x) de un ciclo completo. Aquí es {periodo}.",
+        "desfase": "Desfase: cuánto se corre la gráfica sobre el eje x (a la derecha si es positivo). Aquí es {desfase}.",
+        "vertical": "Desplazamiento vertical: la línea media (punteada) está en y = {medio}.",
+        "puntos": "Cinco puntos clave marcan un ciclo: entre el máximo ({maximo}) y el mínimo ({minimo}) la gráfica cruza dos veces la línea media.",
+        "asintotas": "Las rectas rojas punteadas son asíntotas: la gráfica se acerca a ellas sin tocarlas."
+      },
+      "ley": {
+        "seno": {
+          "datos": "Se conocen dos ángulos y el lado opuesto a uno de ellos.",
+          "parejaA": "Pareja completa: el ángulo A y su lado opuesto a. Con ella se calcula la constante de la ley.",
+          "parejaB": "El ángulo B y su lado opuesto b: solo b es desconocido.",
+          "igualar": "En todo triángulo, cada lado dividido entre el seno de su ángulo opuesto da lo mismo.",
+          "resultado": "Se despeja b."
+        },
+        "coseno": {
+          "datos": "Se conocen dos lados y el ángulo comprendido entre ellos: no hay ninguna pareja ángulo–lado opuesto completa.",
+          "formula": "Ley del coseno: parece el teorema de Pitágoras con un término extra.",
+          "sustituir": "Se reemplazan los datos.",
+          "calcular": "Se calcula c² y después su raíz cuadrada.",
+          "resultado": "El tercer lado. Si C fuera de 90°, cos C = 0 y quedaría Pitágoras."
+        },
+        "area": {
+          "datos": "Se conocen dos lados y el ángulo comprendido entre ellos.",
+          "altura": "La altura sobre el lado b es h = a · sen C: el cateto de un triángulo rectángulo con hipotenusa a.",
+          "formula": "Área = ½ · base · altura, con base b y altura a · sen C.",
+          "resultado": "Área = ½ · a · b · sen C."
+        },
+        "ambiguo": {
+          "datos": "Se conocen dos lados (a y b) y un ángulo A que NO está entre ellos (SSA).",
+          "altura": "La altura desde C hasta la base es h = b · sen A: el segmento más corto posible desde C hasta la base.",
+          "comparar": "El lado a es un radio que gira alrededor de C: compara a con h y con b. Si a < h no llega a la base; si a = h la toca en un punto; si h < a < b la corta en dos.",
+          "conclusion": "Cantidad de triángulos que existen con esos datos: {n}."
+        }
+      },
+      "ecuacion": {
+        "curva": "Dibuja la gráfica de la función entre 0 y 2π (una vuelta completa).",
+        "recta": "Traza la recta horizontal y = {valor}: es el valor que debe tomar la función.",
+        "cortes": "Cada corte de la recta con la gráfica es una solución en [0, 2π): hay {n}.",
+        "circulo": "En el círculo unitario, las soluciones son los puntos con ese valor.",
+        "resumen": "Soluciones en [0, 2π): x = {soluciones}.",
+        "y": " y x = ",
+        "nombres": {
+          "sen": "seno",
+          "cos": "coseno",
+          "tan": "tangente"
+        }
+      },
+      "identidad": {
+        "circulo": "Un círculo de radio 1 y un punto del círculo con θ = {g}°.",
+        "catetos": "El punto forma un triángulo rectángulo con hipotenusa 1: sus catetos son cos θ (horizontal) y sen θ (vertical).",
+        "pitagoras": "Pitágoras en ese triángulo: cateto² + cateto² = hipotenusa² = 1.",
+        "numeros": "Con θ = {g}° y los valores exactos, la suma da 1.",
+        "tangente": "Al dividir entre cos² θ (cuando no es 0) sale 1 + tan² θ = sec² θ. Se cumple con los mismos valores.",
+        "cotangente": "Al dividir entre sen² θ (cuando no es 0) sale 1 + cot² θ = cosec² θ."
+      },
+      "mano": {
+        "alternativa": "Una mano con cinco dedos: pulgar 0°, índice 30°, medio 45°, anular 60° y meñique 90°. El seno de un dedo es raíz de k dividida entre 2, con k dedos entre el pulgar (sin contarlo) y ese dedo (contándolo); el coseno es raíz de m dividida entre 2, con m dedos entre ese dedo (sin contarlo) y el meñique (contándolo)."
       }
     }
   },

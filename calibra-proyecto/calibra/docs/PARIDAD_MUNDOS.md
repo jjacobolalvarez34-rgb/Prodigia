@@ -63,8 +63,8 @@ confirmar en vivo · ❌ ausente.
 | 19 | Feed: tarjetas automáticas | ✅ | ✅¹,⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
 | 20 | Responsive en mobile real | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | 21 | Aparece en estadísticas Pro (/perfil/estadisticas) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅¹⁰ | ✅¹⁰ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 22 | Aprender con pestañas Técnicas \| Clases (Pro, clase 1 gratis) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ⚠️¹² | ⚠️¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² |
-| 23 | Aprender con explicación visual animada (no solo texto) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ✅¹³ | ⚠️¹³ |
+| 22 | Aprender con pestañas Técnicas \| Clases (Pro, clase 1 gratis) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ✅²³ | ⚠️¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² |
+| 23 | Aprender con explicación visual animada (no solo texto) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ✅²³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ✅¹³ | ⚠️¹³ |
 | 24 | Español neutro, sin voseo, en el contenido de lecciones | ⚠️¹⁵ | ✅¹⁷ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ✅¹⁵ | ✅¹⁵ | ✅¹⁵ |
 
 ¹ = bug real encontrado en esta auditoría y **ya corregido en el código** esta sesión — ver "Changelog" abajo. La celda muestra el estado ACTUAL (post-fix), no el que se encontró.
@@ -94,6 +94,8 @@ confirmar en vivo · ❌ ausente.
 ²¹ = **Anatomía, Técnicas | Clases completas (2026-09-23)** — ver "Anatomía: Técnicas | Clases" más abajo. 21 Técnicas (gratis) + 22 Clases (Pro), todas con visuales propios (`anatomia.esqueleto/cuerpo/grupos/flujo`) y quiz; desbloqueo independiente por sistema (óseo, muscular, órganos, nervioso) en las dos pestañas; cobertura de TODO lo que evalúa la práctica verificada con test. Fila 24 (español neutro) de Anatomía: 0081 corregido, ver la sección.
 
 ²² = **Melodía, Técnicas | Clases completas (2026-09-23)** — ver "Melodía: Técnicas | Clases" más abajo. 18 Técnicas (gratis) + 18 Clases (Pro), todas con visuales propios (`melodia.pentagrama/teclado/escala/acorde/ritmo/frecuencia`) o de cuadros y quiz; desbloqueo independiente por grupo (los 6 modos de práctica) en las dos pestañas; cobertura de TODO lo que evalúa la práctica verificada con test, y un error real de dibujo de la Práctica corregido (notas cortadas en el pentagrama). Fila 24 (español neutro): 0089 corregido, ver la sección.
+
+²³ = **Trigonometría, rediseño del mundo, fase 1 (2026-09-24)** — ver "Trigonometría: rediseño del mundo (fase 1)" más abajo. Práctica con escala de dificultad declarativa y cinco errores de datos corregidos; Aprender con 6 bloques en orden escolar, 25 Técnicas (gratis) + 27 Clases (Pro, curso lineal, la primera gratis), 9 visuales animados `trigonometria.*` y migración `0214`. Los bloques "Gráficas y periodo" y "Ecuaciones trigonométricas" solo existen en Aprender (sin modo de práctica todavía: fase 2).
 
 **Resumen (al 2026-09-18, ANTES de los mundos 11-13 y la fila 22 — ver la actualización debajo)**: de 210 celdas (21 sistemas × 10 mundos), 186 ✅ (5 de ellas confirmadas jugando, no solo por código; 18 de Trigonometría/Historia, 18 de Calculia y 18 de Circuitia son ✅ solo por código+build, ver footnotes ⁶/⁷/⁸), 23 ⚠️ (17 de la matriz de 8 mundos + 3 de Calculia + 3 de Circuitia, mismo patrón que los mundos anteriores), 1 ❌ (Enigmia #1). Ningún mundo tiene un sistema completamente roto sin arreglo disponible; los ⚠️ restantes son gaps de UX/contenido reales (no bugs de wiring), cosas que no se pueden confirmar sin dispositivo real/browser, o (para los mundos nuevos) sistemas pendientes de la primera verificación en vivo post-migración.
 
@@ -926,3 +928,93 @@ Cero voseo en las 36 lecciones y en la migración (`detectarVoseo` más una list
 `tsc --noEmit`, `eslint` de lo tocado y `vitest` completo: ver el reporte final. Tests nuevos: `melodia/path.test.ts`, `melodia/lecciones/lecciones.test.ts`, `components/melodia/visuales/visuales.test.ts` y ampliaciones de `practica/melodia.test.ts`. Navegador real (Playwright + chromium, ruta temporal sin auth ya borrada, a 360 y 390 px): pentagrama de líneas y espacios, líneas adicionales, teclado con cifrado, grupos de 2 y 3 negras, escala de Do mayor con T/S, tríadas y acordes extendidos, enarmonía (etiquetas en dos líneas), frecuencias, figuras rítmicas y los dos casos del pentagrama de la Práctica que se cortaban (trecena desde Si4 y Do3); sin desborde horizontal ni errores de consola. Se corrigieron a la vista: etiquetas de teclas negras superpuestas (ahora en dos líneas) y el hueco entre el pentagrama y sus nombres.
 
 **Sin verificar**: flujo end-to-end con Supabase y login reales (`0213` no corrió contra una base real), tema oscuro, el CTA "Desbloquea con Pro" en una sesión real, que el audio suene de verdad (solo se verificó por código y por render que nunca arranca solo), lectores de pantalla reales, y en pantalla solo se vieron unas 12 de las 36 lecciones (el resto lo cubren los tests de render y de datos). Las lecciones están en español (como en los demás mundos); solo el marco de los visuales tiene es/en.
+
+
+
+## Trigonometría: rediseño del mundo (fase 1) (2026-09-24)
+
+Trigonometría tenía 4 modos de práctica, 5 Técnicas (0108, quiz en 0177 y 0180) y 0 Clases, sin visuales, y una práctica cuya dificultad no crecía de verdad (razones estancado desde el nivel 3, leyes sin nivel, identidades con dos escalones, círculo que solo subía por cuadrantes). Pedido: calidad pedagógica y exactitud matemática por encima de la cantidad, con el temario escolar completo (razones, círculo, gráficas, leyes, identidades, ecuaciones).
+
+### Bloques y números finales (orden escolar; `src/lib/trigonometria/bloques.ts`)
+
+| # | Bloque (id) | Modo de práctica | Técnicas (gratis) | Clases (Pro) |
+|---|---|---|---|---|
+| 1 | Razones en el triángulo rectángulo (`razones`) | razones | 5 | 7 |
+| 2 | Ángulos y círculo unitario (`circulo`) | circulo | 5 | 4 |
+| 3 | Gráficas y periodo (`graficas`) | ninguno (solo Aprender) | 5 | 7 |
+| 4 | Leyes de seno y coseno (`leyes`) | leyes | 3 | 4 |
+| 5 | Identidades (`identidades`) | identidades | 4 | 3 |
+| 6 | Ecuaciones trigonométricas (`ecuaciones`) | ninguno (solo Aprender) | 3 | 2 |
+| | **Total** | | **25** (5 históricas reescritas + 20 nuevas) | **27** |
+
+Los bloques son datos (id, nombre es/en, modo de práctica o `null`); dar práctica a "graficas" o "ecuaciones" solo requiere poner su `modoPractica`. Cada Técnica: 3-5 pasos, visual y quiz de exactamente 4 preguntas. Cada Clase: 6 o más pasos (con "Objetivo", "Intuición" y "Errores comunes"), visuales y quiz de 4 a 6 preguntas cuyos distractores salen de errores reales. Código en `src/lib/trigonometria/lecciones/` (un archivo de Técnicas y uno de Clases por bloque, `conceptos.ts`, `sql.ts`). Las 5 Técnicas históricas se reescriben POR SLUG con `UPDATE` (español neutro, con visuales); `technique_progress` se conserva.
+
+### Matemática pura verificada aparte (src/lib/trigonometria/)
+
+Los valores exactos de los múltiplos de 15 grados se calculan en el cuerpo Q(√2, √3) con base [1, √2, √3, √6] y coeficientes racionales (cerrado en suma y producto, con inverso exacto por Gauss-Jordan) y se contrastan con `Math.*` y con una tabla escrita a mano. Otras funciones puras: fracciones, ángulos (radianes, referencia, coterminales), radicales, triángulos (incluido el caso ambiguo SSA por conteo geométrico), ondas, identidades y ecuaciones (soluciones en [0, 2π) con la vuelta `s + 2π − x`). Tests: `matematica.test.ts`, `ecuaciones.test.ts`. Además, un test del texto de las lecciones comprueba todo «fn(g°) = valor» escrito en una fórmula contra `Math.*`.
+
+### Práctica: escala de dificultad declarativa (`src/lib/practica/trigonometriaEscala.ts`)
+
+Para cada modo, una tabla tipo de problema, nivel de entrada, pesos por nivel y conceptos de Aprender que lo enseñan. Los generadores no deciden con `if (nivel ...)`: preguntan `activosEnNivel(modo, nivel)` y usan `dif` (cuántos niveles lleva activo el tipo) para endurecer sus parámetros. La firma pública `generarProblemaTrigonometria(modo, nivel)` y los tipos de problema no cambiaron.
+
+| Modo | Tipos y nivel de entrada |
+|---|---|
+| razones | razon-ternas 1, lado-notable 3, lado-calculadora 5, angulo-inverso 5, reciprocas 6, elevacion 7, depresion 8, dos-pasos 9 |
+| circulo | q1-exactos 1, conversion 3, ref-q2q3 4, todos-cuadrantes 5, coterminales 8, dado-valor 9 |
+| identidades | pitagorica 1, complementarios 1, cociente 2, reciprocas-id 3, doble 4, doble-dado 5, suma-diferencia 7, equivalente 8, equivalente-doble 9 |
+| leyes | seno-lado 1, coseno-lado 3, coseno-angulo 5, area 6, aplicacion 8, ambiguo 9 |
+
+`trigonometria.test.ts` hace cumplir: (1) cada modo cubre 1 a 10 y la huella (tipo, peso, dif) de cada nivel es DISTINTA a la del anterior; (2) cada banda de 2 niveles trae un tipo nuevo y el último nivel no repite los tipos del primero; (3) todo tipo declarado tiene generador y sale de verdad en el muestreo; (4) mismo `conRngSembrado` da las mismas preguntas (Reto Diario) y `Math.random` solo se usa sin semilla; (5) un ORÁCULO independiente rehace cada respuesta desde el texto del enunciado (ley del seno, coordenadas, `Math.*`, conteo geométrico del caso ambiguo); (6) las opciones no repiten valor ni ofrecen dos respuestas válidas; (7) cero voseo y KaTeX renderiza sin restos de `$`.
+
+### Errores de datos hallados en la práctica vieja (antes / después)
+
+1. **Razones: el dibujo mostraba el ángulo A redondeado a entero** (3-4-5 salía 37° en vez de 36,87°): con 20-21-29, `tan 44° = 0,966` contra `tan A = 0,952`, fuera de la tolerancia de 0,01. Ahora las razones con los tres lados dados no muestran ángulos agudos.
+2. **Leyes: el ángulo obtuso salía de `asin`** (confunde un ángulo con su suplementario): con a = 15, b = 4, C = 30° el dibujo mostraba A = 40° cuando mide 140°. Ahora se calcula con la ley del coseno.
+3. **Leyes: tolerancia del 1 % del resultado** (hasta 0,3) sin relación con el redondeo pedido (2 decimales). Ahora es del 0,6 % con mínimo 0,05 y un test acota la relación tolerancia/respuesta.
+4. **Círculo: pedía `tan 90° = indefinido` desde el nivel 1.** Ahora "indefinido" solo es respuesta cuando lo es de verdad y nunca en el nivel 1.
+5. **Dificultad plana**: leyes ignoraba el nivel, razones no cambiaba desde el nivel 3, el círculo solo subía por cuadrantes. Ahora hay escala declarativa con test.
+6. En el primer dibujo del caso ambiguo (SSA) de los visuales nuevos el arco de circunferencia salía en otro lugar (fórmula con el eje y invertido); un test comprueba ahora el radio del arco y que los puntos B caen dentro de su rango angular.
+7. `TrianguloSVG.tsx` se reescribió: márgenes para que las etiquetas no se recorten a 360 px y ángulos con su valor real.
+
+### Decisión de desbloqueo (`src/lib/trigonometria/path.ts`, reescrito)
+
+- **Técnicas**: puntero "activo" independiente POR BLOQUE, lineal dentro de cada uno (pedido para todos los mundos). `path.test.ts` fija el bug de Numeria (648f2b7): la primera Técnica de CADA bloque llega activa desde el camino real y la página la deja abrir.
+- **Clases**: UN solo curso lineal (como Quimia, a diferencia de Anatomía y Melodía). Justificación: el temario es acumulativo (el círculo usa las razones, las identidades usan el círculo, las ecuaciones usan las identidades) y el test de dependencias lo verifica. La primera Clase es preview gratis y siempre activa; para un usuario no-Pro las demás quedan `bloqueadoPorPlan`.
+- **Gating Pro en el servidor**: `/api/aprender/completar` (no tocada) valida `requiere_pro` solo cuando la lección trae quiz; las 27 Clases traen quiz y un test lo fija. Mismo hueco heredado de otros mundos: la Clase de preview gratis tampoco la puede completar un usuario free (403).
+- El estado se calcula EN la fuente (`calcularNodosTecnicas`, `calcularNodosClases`); `[slug]/page.tsx` usa `puedeAbrirNodoTrigonometria` sobre ese mismo cálculo. `GRUPOS_APRENDER.trigonometria` se deriva del contenido tipado.
+
+### Dependencias y cobertura (con test, `lecciones.test.ts`)
+
+- **Grafo de dependencias**: cada lección declara los conceptos que `introduce` y `usa` (`conceptos.ts`). Tests: todo concepto declarado existe en el vocabulario; ninguna Clase usa un concepto que no introdujo antes alguna Clase; cada concepto lo introduce EXACTAMENTE una Clase; lo mismo para las Técnicas en el orden del currículo; el orden de las Clases respeta los bloques 1 a 6.
+- **Cobertura**: cada modo de práctica corresponde a un bloque (los bloques 3 y 6 no tienen modo); cada concepto de cada tipo de la escala lo introduce una Clase del bloque del modo y toda Técnica del bloque lo trata al menos una vez; los bloques sin práctica enseñan todos los temas del currículo objetivo.
+- **Quiz**: la respuesta está entre las opciones, sin opciones repetidas ni equivalentes, la correcta no siempre en la misma posición, y con explicación.
+
+### Visuales (src/components/trigonometria/visuales/, prefijo `trigonometria.`)
+
+`triangulo`, `resolver`, `circulo`, `cuadrantes`, `onda` (amplitud, periodo, desfase, línea media, puntos clave, asíntotas), `ley` (seno, coseno, área y caso ambiguo SSA), `ecuacion` (onda y círculo con las soluciones), `identidad` y `mano` (truco de la mano). Los datos salen de funciones puras (`visualesDatos.ts`, `visualesLey.ts`) con coordenadas redondeadas a 2 decimales (evita diferencias de hidratación Node/Chromium), alternativa accesible sr-only, `prefers-reduced-motion` vía `useReproductor`, animación por transiciones CSS, y un dato malo del jsonb se descarta sin romper. Mensajes es/en en `Trigonometria.visuales`.
+
+### Español neutro (fila 24)
+
+Cero voseo en las 52 lecciones y en la migración. Los futuros ("podrás", "verás"...) son idénticos en tuteo y voseo: se añadieron a `NO_ES_VOSEO` como lista cerrada (no una regla por sufijo, porque "mirás" es voseo real). Las migraciones históricas 0108/0177/0180 siguen en `DEUDA_HISTORICA_VOSEO` (no se editaron); el `UPDATE` de 0214 las sobrescribe.
+
+### Migración
+
+`supabase/migrations/0214_trigonometria_tecnicas_clases.sql`, generada por el TS (`TRIGONOMETRIA_ESCRIBIR_SQL=1 npx vitest run src/lib/trigonometria/lecciones`) y comparada byte a byte por el test. Orden: 5 `UPDATE` (por `slug`; filas que 0108 ya creó), después `INSERT` de 20 Técnicas y `INSERT` de 27 Clases. Sin `ALTER` (`requiere_pro` existe desde 0170) y sin tocar `skill_levels`.
+
+### Riesgo de recalibración (no resuelto a propósito)
+
+El "nivel N" nuevo NO significa lo mismo que el viejo. Los usuarios ya calibrados (`skill_levels`, `worldLevel`, diagnóstico, duelos) lo fueron contra una escala plana: razones sin cambios desde el nivel 3, leyes sin nivel. Con la escala nueva, el nivel 1 de leyes es más fácil (solo ley del seno) y los niveles 9-10 mucho más difíciles (caso ambiguo, problemas de dos pasos, ángulos coterminales); en razones y círculo los niveles altos traen tipos que antes no existían. Puede haber una racha de respuestas peores para quien estaba en niveles altos y de respuestas fáciles para quien estaba en niveles bajos de leyes. No se tocaron `skill_levels`, `worldLevel`, diagnóstico ni duelos; queda decidir si conviene un desplazamiento o reinicio de nivel.
+
+### Efecto en el total de lecciones para un usuario free
+
+Sube el total de lecciones del mundo (25 Técnicas + 27 Clases, 26 de ellas con candado Pro) y baja el porcentaje de completado para un usuario free, como en Anatomía, Quimia y Melodía.
+
+### Pendiente: fase 2
+
+Modos de práctica para "Gráficas y periodo" y "Ecuaciones trigonométricas" (con migración de `skill_levels` y ajuste de duelos, reto, `worldLevel` y logros siguiendo 0205 y 0207) y su enlace en `bloques.ts` (`modoPractica`).
+
+### Verificación
+
+`tsc --noEmit`, `eslint` de lo tocado y `vitest` completo: ver el reporte final. Navegador real (Playwright + chromium, ruta temporal sin auth ya borrada, a 360 px): Clases 01, 04, 10, 11, 16, 17, 19, 22, 23 y 26 (triángulos, círculo, cuadrantes, ondas, ley del seno y del coseno, caso ambiguo, identidad pitagórica, ecuación con onda y círculo) y el triángulo de la práctica; sin desborde horizontal ni errores de consola. Se corrigieron a la vista: etiqueta "opuesto" recortada, choque de etiquetas c/a en la onda, arco del caso ambiguo y una fórmula grande de más en los pasos de conclusión.
+
+**Sin verificar**: flujo end-to-end con Supabase y login reales (`0214` no corrió contra una base real), tema oscuro, el CTA "Desbloquea con Pro" en una sesión real, lectores de pantalla reales, y en pantalla solo se vieron unas 10 de las 52 lecciones (el resto lo cubren los tests de render y de datos). Las lecciones están en español; solo el marco de los visuales tiene es/en.

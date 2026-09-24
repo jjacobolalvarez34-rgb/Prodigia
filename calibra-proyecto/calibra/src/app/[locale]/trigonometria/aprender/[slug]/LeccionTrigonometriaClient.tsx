@@ -6,10 +6,13 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import type { NodoCaminoTrigonometria } from "@/lib/trigonometria/path";
+import { hrefVolverAAprender } from "@/lib/aprender/clases";
+import { visualesDeContenido } from "@/lib/aprender/visuales";
 import type { Achievement } from "@/types/database";
 import LogroBanner from "@/components/LogroBanner";
 import MathText from "@/components/MathText";
-import ManoCirculoSVG from "@/components/trigonometria/ManoCirculoSVG";
+import CuerpoVisual from "@/components/aprender/CuerpoVisual";
+import { REGISTRO_VISUALES_TRIGONOMETRIA } from "@/components/trigonometria/visuales/registro";
 import { COLOR_TRIGONOMETRIA } from "../../colores";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
@@ -25,7 +28,12 @@ interface Props {
   nodo: NodoCaminoTrigonometria;
 }
 
-// Mismo patrón exacto que LeccionMelodiaClient.tsx.
+// Técnicas | Clases de Trigonometría (docs/PARIDAD_MUNDOS.md filas 22/23): mismo
+// criterio que LeccionAnatomiaClient.tsx: cuando la lección trae
+// `contenido.visuales` (las 25 Técnicas y 27 Clases, todas con visuales
+// "trigonometria.*" o el primitivo "cuadros"), la fase "ejemplo" muestra
+// CuerpoVisual en vez del paso-a-paso de texto plano. "Volver a Aprender"
+// respeta de qué pestaña vino la lección (Técnicas o Clases).
 export default function LeccionTrigonometriaClient({ nodo }: Props) {
   const t = useTranslations("Trigonometria.leccion");
   const router = useRouter();
@@ -34,6 +42,8 @@ export default function LeccionTrigonometriaClient({ nodo }: Props) {
   const [logrosNuevos, setLogrosNuevos] = useState<Achievement[]>([]);
 
   const pasos = nodo.contenido.pasos;
+  const visuales = useMemo(() => visualesDeContenido(nodo.contenido.visuales), [nodo.contenido.visuales]);
+  const esVisual = visuales.length > 0;
   const quiz = useMemo(() => nodo.contenido.quiz ?? [], [nodo.contenido.quiz]);
   const tieneQuiz = quiz.length > 0;
 
@@ -46,11 +56,7 @@ export default function LeccionTrigonometriaClient({ nodo }: Props) {
       const res = await fetch("/api/aprender/completar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          respuestasEnviadas
-            ? { technique_id: nodo.id, respuestas: respuestasEnviadas }
-            : { technique_id: nodo.id }
-        ),
+        body: JSON.stringify(respuestasEnviadas ? { technique_id: nodo.id, respuestas: respuestasEnviadas } : { technique_id: nodo.id }),
       });
       const data = await res.json();
       if (data.ok === false || data.aprobado === false) {
@@ -60,10 +66,9 @@ export default function LeccionTrigonometriaClient({ nodo }: Props) {
       }
       if (Array.isArray(data.logrosNuevos)) setLogrosNuevos(data.logrosNuevos);
     } catch {
-      // Si falla el guardado, igual mostramos la celebración: no vale la
-      // pena trabar al usuario por un error de red puntual acá. Un quiz
-      // que falla de red no debería festejar sin confirmación del
-      // server, así que ahí sí se corta.
+      // Si falla el guardado, igual mostramos la celebración: no vale la pena
+      // trabar al usuario por un error de red puntual acá. Un quiz que falla de
+      // red no debería festejar sin confirmación del server, así que ahí sí se corta.
       if (respuestasEnviadas) {
         setEnviandoQuiz(false);
         return;
@@ -89,9 +94,11 @@ export default function LeccionTrigonometriaClient({ nodo }: Props) {
                 className="rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wide"
                 style={{ background: `color-mix(in oklab, ${COLOR_TRIGONOMETRIA} 12%, transparent)`, color: COLOR_TRIGONOMETRIA }}
               >
-                {t("tecnica")}
+                {nodo.requierePro ? t("clase") : t("tecnica")}
               </span>
-              <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">{nodo.nombre}</h1>
+              <h1 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground">
+                <MathText texto={nodo.nombre} />
+              </h1>
               <p className="mt-2 text-texto-secundario">{nodo.descripcion}</p>
             </div>
             <button
@@ -106,60 +113,72 @@ export default function LeccionTrigonometriaClient({ nodo }: Props) {
 
         {fase === "ejemplo" && (
           <motion.div key="ejemplo" {...transicion} className="flex flex-col gap-6">
-            {nodo.slug === "trigonometria-truco-mano-circulo" && (
-              <ManoCirculoSVG colorHex={COLOR_TRIGONOMETRIA} />
-            )}
-            <div className="flex flex-col gap-3">
-              {pasos.map((paso, i) => (
-                <div
-                  key={i}
-                  className={`rounded-xl border px-4 py-3 text-sm transition-all duration-300 ${
-                    i === pasoIdx
-                      ? "border-logro/50 bg-logro/10 text-foreground"
-                      : i < pasoIdx
-                        ? "border-border bg-surface text-foreground/40"
-                        : "border-border bg-surface text-foreground/25"
-                  }`}
+            {esVisual ? (
+              <>
+                <CuerpoVisual pasos={pasos} visuales={visuales} registro={REGISTRO_VISUALES_TRIGONOMETRIA} />
+                <button
+                  onClick={() => (tieneQuiz ? setFase("quiz") : completarLeccion())}
+                  className="rounded-xl px-4 py-3 font-display font-semibold text-white"
+                  style={{ background: COLOR_TRIGONOMETRIA }}
                 >
-                  <span className="mr-2 font-bold text-logro">{i + 1}</span>
-                  <MathText texto={paso} />
+                  {tieneQuiz ? t("continuarAlQuiz") : t("marcarAprendida")}
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col gap-3">
+                  {pasos.map((paso, i) => (
+                    <div
+                      key={i}
+                      className={`rounded-xl border px-4 py-3 text-sm transition-all duration-300 ${
+                        i === pasoIdx
+                          ? "border-logro/50 bg-logro/10 text-foreground"
+                          : i < pasoIdx
+                            ? "border-border bg-surface text-foreground/40"
+                            : "border-border bg-surface text-foreground/25"
+                      }`}
+                    >
+                      <span className="mr-2 font-bold text-logro">{i + 1}</span>
+                      <MathText texto={paso} />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setPasoIdx((p) => Math.max(0, p - 1))}
-                disabled={pasoIdx === 0}
-                className="rounded-xl border border-border px-4 py-3 font-medium text-foreground disabled:opacity-40"
-              >
-                {t("anterior")}
-              </button>
-              {pasoIdx < pasos.length - 1 ? (
-                <button
-                  onClick={() => setPasoIdx((p) => Math.min(pasos.length - 1, p + 1))}
-                  className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
-                  style={{ background: COLOR_TRIGONOMETRIA }}
-                >
-                  {t("siguientePaso")}
-                </button>
-              ) : tieneQuiz ? (
-                <button
-                  onClick={() => setFase("quiz")}
-                  className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
-                  style={{ background: COLOR_TRIGONOMETRIA }}
-                >
-                  {t("continuarAlQuiz")}
-                </button>
-              ) : (
-                <button
-                  onClick={() => completarLeccion()}
-                  className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
-                  style={{ background: COLOR_TRIGONOMETRIA }}
-                >
-                  {t("marcarAprendida")}
-                </button>
-              )}
-            </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setPasoIdx((p) => Math.max(0, p - 1))}
+                    disabled={pasoIdx === 0}
+                    className="rounded-xl border border-border px-4 py-3 font-medium text-foreground disabled:opacity-40"
+                  >
+                    {t("anterior")}
+                  </button>
+                  {pasoIdx < pasos.length - 1 ? (
+                    <button
+                      onClick={() => setPasoIdx((p) => Math.min(pasos.length - 1, p + 1))}
+                      className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
+                      style={{ background: COLOR_TRIGONOMETRIA }}
+                    >
+                      {t("siguientePaso")}
+                    </button>
+                  ) : tieneQuiz ? (
+                    <button
+                      onClick={() => setFase("quiz")}
+                      className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
+                      style={{ background: COLOR_TRIGONOMETRIA }}
+                    >
+                      {t("continuarAlQuiz")}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => completarLeccion()}
+                      className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
+                      style={{ background: COLOR_TRIGONOMETRIA }}
+                    >
+                      {t("marcarAprendida")}
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
           </motion.div>
         )}
 
@@ -201,7 +220,12 @@ export default function LeccionTrigonometriaClient({ nodo }: Props) {
                     {estaMal && (
                       <p className="text-xs font-medium text-error">
                         {t("respuestaIncorrecta")}
-                        {pregunta.explicacion ? ` — ${pregunta.explicacion}` : ""}
+                        {pregunta.explicacion ? (
+                          <>
+                            {" — "}
+                            <MathText texto={pregunta.explicacion} />
+                          </>
+                        ) : null}
                       </p>
                     )}
                   </div>
@@ -216,9 +240,7 @@ export default function LeccionTrigonometriaClient({ nodo }: Props) {
             >
               {enviandoQuiz ? t("enviando") : t("enviarRespuestas")}
             </button>
-            {resultadoQuiz && (
-              <p className="text-center text-sm text-texto-secundario">{t("reintentaCuandoQuieras")}</p>
-            )}
+            {resultadoQuiz && <p className="text-center text-sm text-texto-secundario">{t("reintentaCuandoQuieras")}</p>}
           </motion.div>
         )}
 
@@ -231,13 +253,11 @@ export default function LeccionTrigonometriaClient({ nodo }: Props) {
             className="flex flex-col items-center gap-5 text-center"
           >
             <span className="text-5xl">🎉</span>
-            <h1 className="font-display text-2xl font-black tracking-tight text-foreground">
-              {t("completaste", { nombre: nodo.nombre })}
-            </h1>
+            <h1 className="font-display text-2xl font-black tracking-tight text-foreground">{t("completaste", { nombre: nodo.nombre })}</h1>
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
               <button
-                onClick={() => router.push("/trigonometria/aprender")}
+                onClick={() => router.push(hrefVolverAAprender("/trigonometria/aprender", nodo.requierePro))}
                 className="rounded-xl px-4 py-3 font-display font-semibold text-white"
                 style={{ background: COLOR_TRIGONOMETRIA }}
               >

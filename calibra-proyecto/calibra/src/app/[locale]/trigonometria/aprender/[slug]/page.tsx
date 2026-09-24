@@ -1,7 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
-import { obtenerCaminoTrigonometria } from "@/lib/trigonometria/path";
+import { obtenerCaminoTrigonometria, puedeAbrirNodoTrigonometria } from "@/lib/trigonometria/path";
+import { hrefVolverAAprender } from "@/lib/aprender/clases";
 import Header from "@/components/Header";
 import LeccionTrigonometriaClient from "./LeccionTrigonometriaClient";
 import { getTranslations } from "next-intl/server";
@@ -13,18 +14,21 @@ interface Props {
 export default async function LeccionTrigonometriaPage({ params }: Props) {
   const { slug } = await params;
   const supabase = await createClient();
-  const { user } = await requireUsuario(supabase, `/trigonometria/aprender/${slug}`);
+  const { user, profile } = await requireUsuario(supabase, `/trigonometria/aprender/${slug}`);
   const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
   bloquearInvitado(user, tBloqueos("aprender"));
 
-  const nodos = await obtenerCaminoTrigonometria(supabase, user.id);
+  const nodos = await obtenerCaminoTrigonometria(supabase, user.id, profile.plan === "pro");
   const nodo = nodos.find((n) => n.slug === slug);
 
   if (!nodo) {
     notFound();
   }
-  if (nodo.estado === "bloqueado") {
-    redirect("/trigonometria/aprender");
+  // Acceso directo por URL a un nodo bloqueado (progresión normal, o Clase sin
+  // Pro): no lo dejamos entrar, pero tampoco es un error: lo mandamos de vuelta
+  // a la pestaña de la que viene.
+  if (!puedeAbrirNodoTrigonometria(nodo)) {
+    redirect(hrefVolverAAprender("/trigonometria/aprender", nodo.requierePro));
   }
 
   return (

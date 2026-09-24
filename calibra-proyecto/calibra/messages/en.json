@@ -3264,13 +3264,23 @@
     "aprender": {
       "metadata": {
         "title": "Learn Trigonometry",
-        "description": "Mental tricks for notable angles, the unit circle, and degree-radian conversion."
+        "description": "Techniques and classes on ratios, the unit circle, graphs, the laws of sines and cosines, identities and equations, with animated diagrams."
       },
-      "descripcionUnidad": "Mnemonics for SOHCAHTOA, notable unit-circle values, and degree-radian conversion.",
+      "descripcionUnidad": "Short techniques and classes with worked examples, from right triangles to trigonometric equations.",
       "progreso": "Progress",
       "tecnicas": "{n}/{total} techniques",
       "titulo": "Learn",
-      "subtitulo": "How to remember SOHCAHTOA and the unit circle without memorizing it all loosely."
+      "subtitulo": "Shortcuts so you do not get mixed up and a full course, in school order: ratios, the unit circle, graphs, laws, identities and equations.",
+      "leccionesContador": "{dominadas}/{total} lessons",
+      "desbloqueaConPro": "Unlock with Pro",
+      "grupos": {
+        "razones": "Ratios in the right triangle",
+        "circulo": "Angles and the unit circle",
+        "graficas": "Graphs and period",
+        "leyes": "Laws of sines and cosines",
+        "identidades": "Identities",
+        "ecuaciones": "Trigonometric equations"
+      }
     },
     "leccion": {
       "tecnica": "Technique",
@@ -3298,7 +3308,8 @@
         "cuentaSeno": "fingers between the thumb and the selected one",
         "cuentaCoseno": "fingers between the selected one and the pinky",
         "tocarDedo": "Tap any finger to try another angle."
-      }
+      },
+      "clase": "Class"
     },
     "practica": {
       "razones": {
@@ -3324,6 +3335,122 @@
           "title": "Practice Law of Sines and Cosines",
           "description": "Solve oblique triangles with the given data — the hardest mode."
         }
+      }
+    },
+    "visuales": {
+      "etiqueta": {
+        "triangulo": "Right triangle and its ratios",
+        "resolver": "How to solve a right triangle",
+        "circulo": "Animated unit circle",
+        "cuadrantes": "Signs of the ratios by quadrant",
+        "onda": "Graph of a trigonometric function",
+        "ley": "Oblique triangle",
+        "ecuacion": "Solving a trigonometric equation",
+        "identidad": "Pythagorean identity on the unit circle",
+        "mano": "The hand trick"
+      },
+      "roles": {
+        "opuesto": "opposite",
+        "adyacente": "adjacent",
+        "hipotenusa": "hypotenuse"
+      },
+      "triangulo": {
+        "hipotenusa": "The hypotenuse is the longest side: it faces the right angle and does not change with the angle you pick.",
+        "opuesto": "The side opposite angle {vertice} is the one facing it: it does not touch it.",
+        "adyacente": "The side adjacent to angle {vertice} is the leg that does touch it (not the hypotenuse).",
+        "razon": {
+          "sen": "Sine: opposite ÷ hypotenuse.",
+          "cos": "Cosine: adjacent ÷ hypotenuse.",
+          "tan": "Tangent: opposite ÷ adjacent.",
+          "cosec": "Cosecant: hypotenuse ÷ opposite (the reciprocal of sine).",
+          "sec": "Secant: hypotenuse ÷ adjacent (the reciprocal of cosine).",
+          "cot": "Cotangent: adjacent ÷ opposite (the reciprocal of tangent)."
+        }
+      },
+      "resolver": {
+        "figura": "Draw the triangle and mark what you know and what you are looking for.",
+        "roles": "Name the sides relative to angle A: opposite, adjacent and hypotenuse.",
+        "razon": "Choose the ratio that links the two sides involved (the given one and the unknown).",
+        "plantear": "Write the equation with the numbers.",
+        "despejar": "Solve for the unknown.",
+        "calcular": "Calculate with the calculator in degree mode.",
+        "comprobar": "Check that the result makes sense."
+      },
+      "circulo": {
+        "angulo": "Angle",
+        "sobreEje": "on an axis",
+        "cuadrante": "quadrant {n}",
+        "referencia": "Reference angle: {g}°",
+        "indefinida": "not defined"
+      },
+      "cuadrantes": {
+        "angulo": "Quadrant {n}: θ = {g}° (reference angle {ref}°). Look at the signs and compare the values.",
+        "regla": "Quadrant I: all ratios are positive. II: only sine. III: only tangent. IV: only cosine. Remember it as «All, Sine, Tangent, Cosine» (ASTC)."
+      },
+      "onda": {
+        "curva": {
+          "sen": "The graph rises and falls again and again: it is a wave (a periodic function).",
+          "cos": "The graph rises and falls again and again: it is a wave (a periodic function).",
+          "tan": "The tangent graph rises between vertical asymptotes and repeats."
+        },
+        "amplitud": "Amplitude: the height from the midline to the maximum. Here it is {amplitud}.",
+        "periodo": "Period: the length (along the x axis) of one full cycle. Here it is {periodo}.",
+        "desfase": "Phase shift: how far the graph moves along the x axis (to the right if positive). Here it is {desfase}.",
+        "vertical": "Vertical shift: the midline (dashed) is at y = {medio}.",
+        "puntos": "Five key points mark one cycle: between the maximum ({maximo}) and the minimum ({minimo}) the graph crosses the midline twice.",
+        "asintotas": "The dashed red lines are asymptotes: the graph gets close to them without touching them."
+      },
+      "ley": {
+        "seno": {
+          "datos": "Two angles and the side opposite one of them are known.",
+          "parejaA": "A complete pair: angle A and its opposite side a. It gives the constant of the law.",
+          "parejaB": "Angle B and its opposite side b: only b is unknown.",
+          "igualar": "In every triangle, each side divided by the sine of its opposite angle gives the same number.",
+          "resultado": "Solve for b."
+        },
+        "coseno": {
+          "datos": "Two sides and the angle between them are known: there is no complete angle–opposite side pair.",
+          "formula": "Law of cosines: it looks like the Pythagorean theorem with an extra term.",
+          "sustituir": "Replace the data.",
+          "calcular": "Calculate c² and then take its square root.",
+          "resultado": "The third side. If C were 90°, cos C = 0 and it would be the Pythagorean theorem."
+        },
+        "area": {
+          "datos": "Two sides and the angle between them are known.",
+          "altura": "The height over side b is h = a · sin C: the leg of a right triangle with hypotenuse a.",
+          "formula": "Area = ½ · base · height, with base b and height a · sin C.",
+          "resultado": "Area = ½ · a · b · sin C."
+        },
+        "ambiguo": {
+          "datos": "Two sides (a and b) and an angle A that is NOT between them are known (SSA).",
+          "altura": "The height from C to the base is h = b · sin A: the shortest possible segment from C to the base.",
+          "comparar": "Side a is a radius that swings around C: compare a with h and with b. If a < h it does not reach the base; if a = h it touches it at one point; if h < a < b it cuts it at two.",
+          "conclusion": "Number of triangles that exist with these data: {n}."
+        }
+      },
+      "ecuacion": {
+        "curva": "Draw the graph of the function between 0 and 2π (one full turn).",
+        "recta": "Draw the horizontal line y = {valor}: it is the value the function must take.",
+        "cortes": "Each crossing of the line with the graph is a solution in [0, 2π): there are {n}.",
+        "circulo": "On the unit circle, the solutions are the points with that value.",
+        "resumen": "Solutions in [0, 2π): x = {soluciones}.",
+        "y": " and x = ",
+        "nombres": {
+          "sen": "sine",
+          "cos": "cosine",
+          "tan": "tangent"
+        }
+      },
+      "identidad": {
+        "circulo": "A circle of radius 1 and a point on the circle with θ = {g}°.",
+        "catetos": "The point makes a right triangle with hypotenuse 1: its legs are cos θ (horizontal) and sin θ (vertical).",
+        "pitagoras": "Pythagoras in that triangle: leg² + leg² = hypotenuse² = 1.",
+        "numeros": "With θ = {g}° and the exact values, the sum is 1.",
+        "tangente": "Dividing by cos² θ (when it is not 0) gives 1 + tan² θ = sec² θ. It holds with the same values.",
+        "cotangente": "Dividing by sin² θ (when it is not 0) gives 1 + cot² θ = csc² θ."
+      },
+      "mano": {
+        "alternativa": "A hand with five fingers: thumb 0°, index 30°, middle 45°, ring 60° and little finger 90°. The sine of a finger is the square root of k divided by 2, with k fingers between the thumb (not counting it) and that finger (counting it); the cosine is the square root of m divided by 2, with m fingers between that finger (not counting it) and the little finger (counting it)."
       }
     }
   },

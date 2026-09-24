@@ -53,6 +53,11 @@ const NO_ES_VOSEO = new Set([
   // Futuro simple: "tú vencerás" = "vos vencerás" (idéntico en tuteo y
   // voseo). Aparece en el título de la técnica "Divide y vencerás".
   "vencerás",
+  // Más futuros simples ("al terminar podrás...", "sabrás", "verás"): la forma
+  // es idéntica en tuteo y voseo, así que no delata voseo. Los usan las lecciones
+  // de Trigonometría ("Objetivo: al terminar podrás..."). Una lista cerrada, no
+  // una regla por sufijo, porque "mirás" (voseo real) también termina en "-rás".
+  "podrás", "sabrás", "entenderás", "reconocerás", "conocerás", "verás", "usarás", "tendrás", "serás", "harás", "irás", "resolverás", "comprenderás", "aprenderás", "notarás", "obtendrás",
 ]);
 
 const PATRON_VOSEO = new RegExp(

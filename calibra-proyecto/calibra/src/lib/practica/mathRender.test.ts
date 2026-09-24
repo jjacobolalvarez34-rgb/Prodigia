@@ -140,22 +140,30 @@ describe("Trigonometría: valores exactos del círculo verificados numéricament
     return neg ? -val : val;
   }
   function anguloRad(txt: string): number {
-    const g = /^(\d+)°$/.exec(txt);
-    if (g) return (Number(g[1]) * Math.PI) / 180;
-    const r = /^(\d*)π(?:\/(\d+))?$/.exec(txt);
-    if (r) return (Number(r[1] || 1) * Math.PI) / Number(r[2] ?? 1);
+    const t = txt.replace("−", "-");
+    const sg = t.startsWith("-") ? -1 : 1;
+    const c = t.replace(/^-/, "");
+    const g = /^(\d+)°$/.exec(c);
+    if (g) return (sg * Number(g[1]) * Math.PI) / 180;
+    const r = /^(\d*)π(?:\/(\d+))?$/.exec(c);
+    if (r) return (sg * Number(r[1] || 1) * Math.PI) / Number(r[2] ?? 1);
     if (txt === "0") return 0;
     throw new Error(`ángulo no reconocido: ${txt}`);
   }
 
   it("modo círculo: la respuesta coincide con sen/cos/tan real (300 pulls) y la opción correcta es una de las opciones", () => {
+    let verificadas = 0;
     for (let i = 0; i < 300; i++) {
       const p = generarProblemaTrigonometria("circulo", 1 + (i % 10));
       if (p.entrada !== "opciones") throw new Error("círculo debe ser de opciones");
       expect(p.opciones).toContain(p.respuesta);
       const e = textoPlano(p.enunciado);
-      const m = /^¿Cuánto es (sen|cos|tan)\((.+)\)\? Valor exacto/.exec(e);
-      expect(m, e).not.toBeNull();
+      // Desde el rediseño (fase 1) el círculo tiene más tipos (conversión, coterminales,
+      // dado un valor...): aquí solo se verifica el valor exacto directo; los demás
+      // tipos los verifica el oráculo de src/lib/practica/trigonometria.test.ts.
+      const m = /^¿Cuánto (?:es|vale) (sen|cos|tan)\((.+)\)\? (?:Valor exacto|Da el valor exacto)/.exec(e);
+      if (!m) continue;
+      verificadas++;
       const rad = anguloRad(m![2]);
       const fn = m![1] === "sen" ? Math.sin : m![1] === "cos" ? Math.cos : Math.tan;
       const esperado = fn(rad);
@@ -166,6 +174,7 @@ describe("Trigonometría: valores exactos del círculo verificados numéricament
         expect(dado).toBeCloseTo(esperado, 9);
       }
     }
+    expect(verificadas).toBeGreaterThan(100);
   });
 });
 
