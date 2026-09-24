@@ -64,6 +64,8 @@ const AMIGO_COMPLETO: Amigo = {
   color_nombre: "#FF00AA",
   fuente_nombre: "impacto",
   animacion_nombre: "arcoiris",
+  nivel_cuenta: 26,
+  puntos_total: 272,
 };
 
 const AMIGO_NEUTRO: Amigo = {
@@ -79,6 +81,8 @@ const AMIGO_NEUTRO: Amigo = {
   color_nombre: null,
   fuente_nombre: "default",
   animacion_nombre: "ninguna",
+  nivel_cuenta: 1,
+  puntos_total: 0,
 };
 
 const AMIGO_FONDO_PERSONALIZADO_SIN_URL: Amigo = {
@@ -143,5 +147,54 @@ describe("PlacaAmigo — render", () => {
   it("el menú de acciones arranca cerrado (sin role=menu en el HTML inicial)", () => {
     const html = placa(AMIGO_COMPLETO);
     expect(html).not.toContain('role="menu"');
+  });
+});
+
+// Pedido en vivo (2026-09-24): "dos columnas con un cuadrado relativamente
+// más largo de arriba hacia abajo" — variante "tarjeta" (vertical, con
+// nivel y chispas), sin tocar la placa horizontal que usa FeedSidebar.
+function tarjeta(amigo: Amigo, locale: "es" | "en" = "es"): string {
+  return conIntl(locale, createElement(PlacaAmigo, { amigo, onRetar: () => {}, onQuitar: () => {}, variante: "tarjeta" }));
+}
+
+describe("PlacaAmigo — variante tarjeta (cuadrícula de Tus amigos)", () => {
+  it("es vertical (más alta que ancha), muestra nombre, rango, título, nivel y chispas", () => {
+    const html = tarjeta(AMIGO_COMPLETO);
+    expect(html).toContain("aspect-[4/5]");
+    expect(html).toContain("flex-col");
+    expect(html).toContain("Ada Lovelace");
+    expect(html).toContain("Platino");
+    expect(html).toContain("Bautismo de Fuego");
+    expect(html).toContain("Nivel 26");
+    expect(html).toContain("272 chispas");
+  });
+
+  it("en inglés traduce nivel y chispas", () => {
+    const html = tarjeta(AMIGO_COMPLETO, "en");
+    expect(html).toContain("Level 26");
+    expect(html).toContain("272 Chispas");
+  });
+
+  it("amigo neutro (sin fondo, sin marco, sin título): no tira excepción y muestra nivel 1 y 0 chispas", () => {
+    const html = tarjeta(AMIGO_NEUTRO);
+    expect(html).toContain("Jugador Nuevo");
+    expect(html).toContain("Nivel 1");
+    expect(html).toContain("0 chispas");
+  });
+
+  it("con fondo personalizado con imagen: no tira excepción y conserva la imagen", () => {
+    const html = tarjeta(AMIGO_FONDO_PERSONALIZADO_CON_URL);
+    expect(html).toContain("ejemplo.test/fondo.png");
+  });
+
+  it("la placa horizontal (default y compacta) NO cambia: no lleva nivel/chispas ni la forma vertical", () => {
+    for (const html of [placa(AMIGO_COMPLETO), placa(AMIGO_COMPLETO, true)]) {
+      expect(html).not.toContain("aspect-[4/5]");
+      expect(html).not.toContain("Nivel 26");
+    }
+  });
+
+  it("el menú de acciones de la tarjeta arranca cerrado", () => {
+    expect(tarjeta(AMIGO_COMPLETO)).not.toContain('role="menu"');
   });
 });

@@ -57,7 +57,7 @@ export default function AmigosClient({ amigosState }: Props) {
   }, [amigos, filtroAmigos]);
 
   return (
-    <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
+    <div className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
       <div>
         <h2 className="font-display text-xl font-bold tracking-tight text-foreground">{t("amigos")}</h2>
         <p className="mt-1 text-sm text-texto-secundario">{t("subtitulo")}</p>
@@ -161,24 +161,42 @@ export default function AmigosClient({ amigosState }: Props) {
                 {t("sinResultadosBusquedaAmigos")}
               </p>
             ) : (
-              amigosFiltrados.map((a) => (
-                <div key={a.friend_id} className="flex flex-col gap-2">
-                  <PlacaAmigo
-                    amigo={a}
-                    onRetar={() => setRetandoA(retandoA === a.friend_id ? null : a.friend_id)}
-                    onQuitar={() => quitarAmigo(a.friend_id)}
-                  />
-                  {retandoA === a.friend_id && (
-                    <div className="rounded-xl border border-border bg-surface px-4 py-3">
-                      <SelectorMundoDuelo
-                        mundos={mundosDuelo}
-                        requiereSubopcion
-                        onElegirSubopcion={(mundo, opcion) => retar(a.friend_id, mundo, opcion)}
-                      />
-                    </div>
-                  )}
-                </div>
-              ))
+              // Pedido en vivo (2026-09-24): cuadrícula de 2 columnas de "tarjetas
+              // Prodigia" (cuadrado más alto que ancho), no una lista de placas
+              // horizontales. El panel de "retar a duelo" ocupa el ancho completo
+              // justo debajo de la fila de la tarjeta elegida (col-span-full), así
+              // no deja un hueco al lado ni queda perdido al final de una lista larga.
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                {amigosFiltrados.flatMap((a, i) => {
+                  const elementos = [
+                    <PlacaAmigo
+                      key={a.friend_id}
+                      variante="tarjeta"
+                      amigo={a}
+                      onRetar={() => setRetandoA(retandoA === a.friend_id ? null : a.friend_id)}
+                      onQuitar={() => quitarAmigo(a.friend_id)}
+                    />,
+                  ];
+                  const finDeFila = i % 2 === 1 || i === amigosFiltrados.length - 1;
+                  const filaInicio = i - (i % 2);
+                  const elegidoEnEstaFila = amigosFiltrados.slice(filaInicio, i + 1).find((x) => x.friend_id === retandoA);
+                  if (finDeFila && elegidoEnEstaFila) {
+                    elementos.push(
+                      <div key={`retar-${elegidoEnEstaFila.friend_id}`} className="col-span-2 rounded-xl border border-border bg-surface px-4 py-3">
+                        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-texto-secundario">
+                          {t("placaAmigo.retarA", { nombre: elegidoEnEstaFila.display_name ?? t("jugador") })}
+                        </p>
+                        <SelectorMundoDuelo
+                          mundos={mundosDuelo}
+                          requiereSubopcion
+                          onElegirSubopcion={(mundo, opcion) => retar(elegidoEnEstaFila.friend_id, mundo, opcion)}
+                        />
+                      </div>
+                    );
+                  }
+                  return elementos;
+                })}
+              </div>
             )}
           </>
         )}

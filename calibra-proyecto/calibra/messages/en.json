@@ -298,7 +298,10 @@
       "verPerfil": "View profile",
       "mandarMensaje": "Send message",
       "quitarAmigo": "Remove friend",
-      "confirmarQuitar": "Remove {nombre} from your friends?"
+      "confirmarQuitar": "Remove {nombre} from your friends?",
+      "nivel": "Level {n}",
+      "chispas": "{n} Chispas",
+      "retarA": "Challenge {nombre}"
     },
     "mensajes": {
       "volver": "Back to Social",

@@ -298,7 +298,10 @@
       "verPerfil": "Ver perfil",
       "mandarMensaje": "Mandar mensaje",
       "quitarAmigo": "Quitar de amigos",
-      "confirmarQuitar": "¿Quitar a {nombre} de tus amigos?"
+      "confirmarQuitar": "¿Quitar a {nombre} de tus amigos?",
+      "nivel": "Nivel {n}",
+      "chispas": "{n} chispas",
+      "retarA": "Retar a {nombre}"
     },
     "mensajes": {
       "volver": "Volver a Social",

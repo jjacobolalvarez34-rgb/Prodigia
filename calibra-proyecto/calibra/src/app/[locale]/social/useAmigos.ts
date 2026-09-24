@@ -17,6 +17,10 @@ export interface Solicitud {
 // la tarjeta de /perfil/[userId] (fondo, marco, fuente, animación,
 // color, título ya resuelto a texto). Mismas columnas que devuelve la
 // RPC mis_amigos() (0197_amigos_placa_y_quitar.sql).
+// Rediseño de la cuadrícula de "Tus amigos" (2026-09-24): se agregan
+// nivel_cuenta y puntos_total (0220_amigos_tarjeta_nivel_chispas.sql)
+// para que la tarjeta muestre lo mismo que la placa resumen de /perfil
+// (rango, nivel, chispas), no solo rango.
 export interface Amigo {
   friend_id: string;
   display_name: string | null;
@@ -30,6 +34,8 @@ export interface Amigo {
   color_nombre: string | null;
   fuente_nombre: FuenteNombre;
   animacion_nombre: AnimacionNombre;
+  nivel_cuenta: number;
+  puntos_total: number;
 }
 
 export interface ResultadoBusqueda {
@@ -147,6 +153,10 @@ export function useAmigos(solicitudesIniciales: Solicitud[], amigosIniciales: Am
           color_nombre: null,
           fuente_nombre: "default",
           animacion_nombre: "ninguna",
+          // Igual que el ELO de arriba: valores neutros hasta el próximo
+          // mis_amigos() real (0220_amigos_tarjeta_nivel_chispas.sql).
+          nivel_cuenta: 1,
+          puntos_total: 0,
         },
       ]);
     }

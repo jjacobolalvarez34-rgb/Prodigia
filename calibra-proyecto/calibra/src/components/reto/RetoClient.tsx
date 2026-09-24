@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { crearSnapshotProgreso } from "@/lib/progresoReto";
 import type { PreguntaRetoDiario, MundoRetoDiario } from "@/lib/retoDiario";
@@ -14,6 +14,8 @@ import Avatar from "@/components/Avatar";
 import Pentagrama from "@/components/melodia/Pentagrama";
 import FiguraRitmicaIcono from "@/components/melodia/FiguraRitmicaIcono";
 import MathText from "@/components/MathText";
+import { useRegistrarGuardiaSalida, usePedirConfirmacionSalida } from "@/lib/navegacion/guardiaSalida";
+import { IconFlechaAtras } from "@/components/icons";
 
 type Fase = "intro" | "jugando" | "resumen";
 export type TipoReto = "diario" | "semanal";
@@ -106,6 +108,12 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
     semanal: { etiqueta: t("etiquetaSemanal"), periodo: t("periodoSemanal"), endpoint: ENDPOINT_TIPO.semanal, volver: t("volverSemanal") },
   };
   const [fase, setFase] = useState<Fase>(yaCompletado ? "resumen" : "intro");
+  const router = useRouter();
+  const pedirConfirmacion = usePedirConfirmacionSalida();
+  // Pedido 2026-09-24: salir a mitad del reto (ya arrancaste a responder)
+  // pide confirmación, igual que una partida o una lección — ver
+  // src/lib/navegacion/guardiaSalida.tsx.
+  useRegistrarGuardiaSalida({ activo: fase === "jugando" });
   const [indice, setIndice] = useState(0);
   const [seleccion, setSeleccion] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<"idle" | "correcto" | "incorrecto">("idle");
@@ -164,6 +172,15 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
         setResultado({ correctos: correctosFinal, puntosBonus: data.puntos_bonus });
         if (Array.isArray(data.logrosNuevos)) setLogrosNuevos(data.logrosNuevos);
         if (Array.isArray(data.ranking)) setRanking(data.ranking);
+        // Bug real reportado en vivo (2026-09-24): el reto quedaba "completado" solo
+        // en el estado de este componente — la página (Server Component) que decide
+        // `yaCompletado` sigue cacheada con el valor de ANTES de terminar. Sin este
+        // refresh, volver a esta ruta por el Router Cache de Next (con la flechita de
+        // Header, el botón atrás del navegador, o un link) mostraba el reto como si
+        // nunca se hubiera completado, dejando "repetirlo". `router.refresh()`
+        // invalida el Router Cache de esta ruta ahora mismo, sin resetear el estado
+        // de este componente (sigue en fase "resumen").
+        router.refresh();
       } else {
         setResultado({ correctos: correctosFinal, puntosBonus: 0 });
       }
@@ -241,9 +258,13 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
               <div className="flex items-center justify-between">
                 <Link
                   href="/"
+                  onClick={(e) => {
+                    const interceptado = pedirConfirmacion(() => router.push("/"));
+                    if (interceptado) e.preventDefault();
+                  }}
                   className="flex items-center gap-1 text-xs font-medium text-texto-secundario transition-colors hover:text-foreground"
                 >
-                  <span aria-hidden>←</span> {t("salirPorAhora")}
+                  <IconFlechaAtras className="h-3.5 w-3.5" /> {t("salirPorAhora")}
                 </Link>
                 <span className="font-medium text-xs" style={{ color: COLOR_MUNDO[pregunta.mundo] }}>
                   {NOMBRE_MUNDO[pregunta.mundo]}
@@ -352,13 +373,9 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
             )}
 
             <p className="text-sm text-texto-secundario">{t("vuelvePorProximo", { volver: texto.volver })}</p>
-            <Link
-              href="/"
-              className="w-full rounded-2xl px-6 py-4 font-display font-semibold text-white"
-              style={{ background: "linear-gradient(120deg, var(--primario), var(--logro))" }}
-            >
+            <Boton atras destacado className="w-full py-4" onClick={() => router.push("/")}>
               {t("volverAInicio")}
-            </Link>
+            </Boton>
           </motion.div>
         )}
       </AnimatePresence>
