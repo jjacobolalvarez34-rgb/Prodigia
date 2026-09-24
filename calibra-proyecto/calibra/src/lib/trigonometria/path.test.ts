@@ -28,10 +28,11 @@ import { partirCaminoPorClases, hrefVolverAAprender } from "@/lib/aprender/clase
 // Numeria, commit 648f2b7: el sidebar mostraba "activo" un nodo que la página
 // rebotaba porque el camino real lo traía "bloqueado").
 //
-// Decisión documentada: TÉCNICAS con un puntero "activo" independiente POR
-// BLOQUE (regla del usuario para todos los mundos) y CLASES como un curso
-// lineal único (el temario es acumulativo: lecciones.test.ts verifica que cada
-// Clase solo use conceptos ya enseñados por las anteriores).
+// Decisión documentada: TÉCNICAS y CLASES con un puntero "activo" independiente
+// POR BLOQUE (regla del usuario para todos los mundos: poder hacer las Clases
+// por tema); el orden de currículo es solo el recomendado
+// (lecciones.test.ts verifica que cada Clase solo use conceptos enseñados por
+// las anteriores EN ORDEN DE CURRÍCULO).
 
 const raiz = path.resolve(__dirname, "../../..");
 const messages = (l: string) => JSON.parse(fs.readFileSync(path.join(raiz, "messages", `${l}.json`), "utf8"));
@@ -110,7 +111,7 @@ describe("Trigonometría Técnicas: cada bloque tiene su propio 'activo' indepen
   });
 });
 
-describe("Trigonometría Clases: un curso lineal único en orden de currículo, primera gratis, resto Pro", () => {
+describe("Trigonometría Clases: un puntero activo por bloque (por tema), lineal dentro del bloque, primera gratis, resto Pro", () => {
   const filas = ordenarPorGrupoYOrden(FILAS.filter((f) => f.requiere_pro));
 
   it("el cargador las ordena en orden de curso, aunque la base las devuelva mezcladas", () => {
@@ -135,34 +136,44 @@ describe("Trigonometría Clases: un curso lineal único en orden de currículo, 
     expect(nodos.filter((n) => n.estado === "activo")).toHaveLength(0);
   });
 
-  it("usuario Pro: UNA sola Clase activa (la primera no completada del curso), las demás bloqueadas por progresión, no por plan", () => {
+  it("[pedido del usuario] usuario Pro: la primera Clase de CADA bloque queda activa a la vez; las demás, bloqueadas por progresión y no por plan", () => {
     const nodos = calcularNodosClases(filas, new Set(), true);
-    expect(nodos.filter((n) => n.estado === "activo").map((n) => n.slug)).toEqual([CLASES_TRIGONOMETRIA[0].slug]);
+    const activas = nodos.filter((n) => n.estado === "activo");
+    expect(activas.map((n) => n.grupo)).toEqual(ORDEN_GRUPOS_TRIGONOMETRIA);
+    for (const g of ORDEN_GRUPOS_TRIGONOMETRIA) {
+      expect(activas.find((n) => n.grupo === g)!.slug, g).toBe(CLASES_TRIGONOMETRIA.find((c) => c.grupo === g && c.orden === 1)!.slug);
+    }
     expect(nodos.every((n) => !n.bloqueadoPorPlan)).toBe(true);
-    const tras1 = calcularNodosClases(filas, new Set([CLA[0]]), true);
-    expect(tras1.filter((n) => n.estado === "activo").map((n) => n.slug)).toEqual([CLASES_TRIGONOMETRIA[1].slug]);
+    // completar la 1 de un bloque abre la 2 de ESE bloque y no toca a los demás
+    const tras1 = estados(calcularNodosClases(filas, new Set([idCla("razones", 1)]), true));
+    expect(tras1.get(idCla("razones", 2))!.estado).toBe("activo");
+    expect(tras1.get(idCla("graficas", 1))!.estado).toBe("activo");
+    expect(tras1.get(idCla("ecuaciones", 1))!.estado).toBe("activo");
   });
 
-  it("dependencia real entre bloques: completar todo 'razones' abre la primera de 'circulo'; saltear una no abre nada más", () => {
+  it("el orden es lineal DENTRO de un bloque, pero un bloque no depende de otro: se puede empezar por 'graficas' sin haber hecho 'razones'", () => {
     const razones = CLASES_TRIGONOMETRIA.filter((c) => c.grupo === "razones").map((c) => `id-${c.slug}`);
     const porId = estados(calcularNodosClases(filas, new Set(razones), true));
     expect(porId.get(idCla("circulo", 1))!.estado).toBe("activo");
     expect(porId.get(idCla("circulo", 2))!.estado).toBe("bloqueado");
+    const sinRazones = estados(calcularNodosClases(filas, new Set(), true));
+    expect(sinRazones.get(idCla("razones", 1))!.estado).toBe("activo");
+    expect(sinRazones.get(idCla("graficas", 1))!.estado).toBe("activo");
+    // Dentro de un bloque: solo la 4 de razones completada (salteando 1-3): la 1 sigue siendo la activa.
     const salteada = estados(calcularNodosClases(filas, new Set([idCla("razones", 4)]), true));
     expect(salteada.get(idCla("razones", 1))!.estado).toBe("activo");
-    expect(salteada.get(idCla("circulo", 1))!.estado).toBe("bloqueado");
+    expect(salteada.get(idCla("razones", 2))!.estado).toBe("bloqueado");
   });
 
-  it("el curso recorre los 6 bloques en el orden del currículo: razones, círculo, gráficas, leyes, identidades y ecuaciones", () => {
+  it("el currículo recomendado recorre los 6 bloques en orden: razones, círculo, gráficas, leyes, identidades y ecuaciones", () => {
     expect([...new Set(filas.map((f) => grupoDeSlug(f.slug)))]).toEqual(["razones", "circulo", "graficas", "leyes", "identidades", "ecuaciones"]);
-    const todas = CLASES_TRIGONOMETRIA.map((c) => `id-${c.slug}`);
-    const hastaIdentidades = new Set(todas.slice(0, 25));
-    const luego = estados(calcularNodosClases(filas, hastaIdentidades, true));
-    expect(luego.get(idCla("ecuaciones", 1))!.estado).toBe("activo");
-    expect(luego.get(idCla("ecuaciones", 2))!.estado).toBe("bloqueado");
+    // Completar la primera de ecuaciones abre la segunda de ecuaciones sin haber hecho los bloques anteriores.
+    const luego = estados(calcularNodosClases(filas, new Set([idCla("ecuaciones", 1)]), true));
+    expect(luego.get(idCla("ecuaciones", 2))!.estado).toBe("activo");
+    expect(luego.get(idCla("identidades", 2))!.estado).toBe("bloqueado");
   });
 
-  it("propiedades sobre 400 combinaciones al azar de progreso: nunca más de una Clase activa, nunca más de una Técnica activa por bloque", () => {
+  it("propiedades sobre 400 combinaciones al azar de progreso: nunca más de una Clase ni una Técnica activa por bloque; un usuario Pro siempre tiene una Clase activa por cada bloque con Clases pendientes", () => {
     const azar = prng(2026);
     for (let i = 0; i < 400; i++) {
       const dominadas = new Set([...TEC, ...CLA].filter(() => azar() < 0.4));
@@ -170,8 +181,14 @@ describe("Trigonometría Clases: un curso lineal único en orden de currículo, 
       const nodos = calcularCaminoTrigonometria(FILAS, dominadas, esPro);
       const clases = nodos.filter((n) => n.requierePro);
       const tecnicas = nodos.filter((n) => !n.requierePro);
-      expect(clases.filter((n) => n.estado === "activo").length, `iteración ${i}`).toBeLessThanOrEqual(1);
-      for (const g of ORDEN_GRUPOS_TRIGONOMETRIA) expect(tecnicas.filter((n) => n.grupo === g && n.estado === "activo").length, `iteración ${i} ${g}`).toBeLessThanOrEqual(1);
+      for (const g of ORDEN_GRUPOS_TRIGONOMETRIA) {
+        expect(tecnicas.filter((n) => n.grupo === g && n.estado === "activo").length, `iteración ${i} ${g}`).toBeLessThanOrEqual(1);
+        const delGrupo = clases.filter((n) => n.grupo === g);
+        expect(delGrupo.filter((n) => n.estado === "activo").length, `iteración ${i} clases ${g}`).toBeLessThanOrEqual(1);
+        if (esPro && delGrupo.some((n) => n.estado !== "completado")) {
+          expect(delGrupo.filter((n) => n.estado === "activo").length, `iteración ${i} ${g}: Pro sin Clase abierta`).toBe(1);
+        }
+      }
       for (const n of nodos) {
         expect(n.estado === "completado", n.slug).toBe(dominadas.has(n.id));
         if (n.bloqueadoPorPlan) expect(!esPro && n.requierePro && n.estado === "bloqueado", n.slug).toBe(true);

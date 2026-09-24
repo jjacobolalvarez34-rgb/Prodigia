@@ -114,7 +114,7 @@ describe("Quimia Técnicas: cada grupo tiene su propio 'activo' independiente y 
   });
 });
 
-describe("Quimia Clases: un curso lineal único en orden de curso, primera gratis, resto Pro", () => {
+describe("Quimia Clases: un puntero activo por tema (grupo), lineal dentro del grupo, primera del curso gratis, resto Pro", () => {
   const filas = ordenarPorGrupoYOrden(FILAS.filter((f) => f.requiere_pro));
 
   it("el cargador las ordena en orden de curso, aunque la base las devuelva mezcladas", () => {
@@ -139,27 +139,37 @@ describe("Quimia Clases: un curso lineal único en orden de curso, primera grati
     expect(nodos.filter((n) => n.estado === "activo")).toHaveLength(0);
   });
 
-  it("usuario Pro: UNA sola Clase activa (la primera no completada del curso), las demás bloqueadas por progresión, no por plan", () => {
+  it("[pedido del usuario] usuario Pro: la primera Clase de CADA tema queda activa a la vez; las demás, bloqueadas por progresión y no por plan", () => {
     const nodos = calcularNodosClases(filas, new Set(), true);
-    expect(nodos.filter((n) => n.estado === "activo").map((n) => n.slug)).toEqual([CLASES_QUIMIA[0].slug]);
+    const activas = nodos.filter((n) => n.estado === "activo");
+    expect(activas.map((n) => n.grupo)).toEqual(ORDEN_GRUPOS_QUIMIA);
+    for (const g of ORDEN_GRUPOS_QUIMIA) {
+      expect(activas.find((n) => n.grupo === g)!.slug, g).toBe(CLASES_QUIMIA.find((c) => c.grupo === g && c.orden === 1)!.slug);
+    }
     expect(nodos.every((n) => !n.bloqueadoPorPlan)).toBe(true);
-    // completar la 1 abre la 2 y solo la 2
-    const tras1 = calcularNodosClases(filas, new Set([CLA[0]]), true);
-    expect(tras1.filter((n) => n.estado === "activo").map((n) => n.slug)).toEqual([CLASES_QUIMIA[1].slug]);
+    // completar la 1 de un tema abre la 2 de ESE tema y no toca a los demás
+    const tras1 = estados(calcularNodosClases(filas, new Set([idCla("nomenclatura", 1)]), true));
+    expect(tras1.get(idCla("nomenclatura", 2))!.estado).toBe("activo");
+    expect(tras1.get(idCla("redox", 1))!.estado).toBe("activo");
+    expect(tras1.get(idCla("organica", 1))!.estado).toBe("activo");
   });
 
-  it("dependencia real entre grupos: completar todo 'tabla' abre la primera de 'simbolos'; sin eso, aunque se haya completado otra suelta, no se abre", () => {
+  it("el orden es lineal DENTRO de un tema, pero un tema no depende de otro: se puede empezar por 'nomenclatura' sin haber hecho 'tabla'", () => {
     const tabla = CLASES_QUIMIA.filter((c) => c.grupo === "tabla").map((c) => `id-${c.slug}`);
     const porId = estados(calcularNodosClases(filas, new Set(tabla), true));
     expect(porId.get(idCla("simbolos", 1))!.estado).toBe("activo");
     expect(porId.get(idCla("simbolos", 2))!.estado).toBe("bloqueado");
-    // Solo la 4 de tabla completada (salteando 1-3): la 1 sigue siendo la activa y 'simbolos' sigue cerrado.
+    // Sin haber hecho nada de 'tabla', la primera de 'nomenclatura' ya está abierta.
+    const sinTabla = estados(calcularNodosClases(filas, new Set(), true));
+    expect(sinTabla.get(idCla("tabla", 1))!.estado).toBe("activo");
+    expect(sinTabla.get(idCla("nomenclatura", 1))!.estado).toBe("activo");
+    // Dentro de un tema: solo la 4 de tabla completada (salteando 1-3): la 1 sigue siendo la activa.
     const salteada = estados(calcularNodosClases(filas, new Set([idCla("tabla", 4)]), true));
     expect(salteada.get(idCla("tabla", 1))!.estado).toBe("activo");
-    expect(salteada.get(idCla("simbolos", 1))!.estado).toBe("bloqueado");
+    expect(salteada.get(idCla("tabla", 2))!.estado).toBe("bloqueado");
   });
 
-  it("propiedades sobre 400 combinaciones al azar de progreso: nunca más de una Clase activa, nunca una Técnica activa por grupo repetida", () => {
+  it("propiedades sobre 400 combinaciones al azar de progreso: nunca más de una Clase ni una Técnica activa por grupo; un usuario Pro siempre tiene una Clase activa por cada tema con Clases pendientes", () => {
     const azar = prng(2026);
     for (let i = 0; i < 400; i++) {
       const dominadas = new Set([...TEC, ...CLA].filter(() => azar() < 0.4));
@@ -167,9 +177,14 @@ describe("Quimia Clases: un curso lineal único en orden de curso, primera grati
       const nodos = calcularCaminoQuimia(FILAS, dominadas, esPro);
       const clases = nodos.filter((n) => n.requierePro);
       const tecnicas = nodos.filter((n) => !n.requierePro);
-      expect(clases.filter((n) => n.estado === "activo").length, `iteración ${i}`).toBeLessThanOrEqual(1);
       for (const g of ORDEN_GRUPOS_QUIMIA) {
         expect(tecnicas.filter((n) => n.grupo === g && n.estado === "activo").length, `iteración ${i} ${g}`).toBeLessThanOrEqual(1);
+        const delGrupo = clases.filter((n) => n.grupo === g);
+        expect(delGrupo.filter((n) => n.estado === "activo").length, `iteración ${i} clases ${g}`).toBeLessThanOrEqual(1);
+        // Pro: si al tema le queda alguna Clase sin completar, hay exactamente una abierta.
+        if (esPro && delGrupo.some((n) => n.estado !== "completado")) {
+          expect(delGrupo.filter((n) => n.estado === "activo").length, `iteración ${i} ${g}: Pro sin Clase abierta`).toBe(1);
+        }
       }
       for (const n of nodos) {
         expect(n.estado === "completado", n.slug).toBe(dominadas.has(n.id));
@@ -230,24 +245,22 @@ describe("Quimia: el estado del sidebar es el de la fuente y coincide con lo que
     }
   });
 
-  it("las Técnicas de redox y de orgánica arrancan cada una con su propio nodo activo (puntero por grupo); las Clases nuevas siguen el curso lineal después de nomenclatura", () => {
+  it("redox y orgánica: cada una arranca con su propio nodo activo, tanto en las Técnicas como en las Clases (por tema, sin esperar a completar las anteriores)", () => {
     const nodos = calcularCaminoQuimia(FILAS, new Set(), true);
     const porId = estados(nodos);
     expect(porId.get(idTec("redox", 1))!.estado).toBe("activo");
     expect(porId.get(idTec("redox", 2))!.estado).toBe("bloqueado");
     expect(porId.get(idTec("organica", 1))!.estado).toBe("activo");
     expect(porId.get(idTec("organica", 2))!.estado).toBe("bloqueado");
-    // Clases: solo la primera del curso activa; ninguna de redox/orgánica hasta completar las anteriores
-    expect(porId.get(idCla("redox", 1))!.estado).toBe("bloqueado");
-    const todasLasClases = CLASES_QUIMIA.map((c) => `id-${c.slug}`);
-    const nomenclaturaCompleta = new Set(todasLasClases.slice(0, 17));
-    const luego = estados(calcularCaminoQuimia(FILAS, nomenclaturaCompleta, true));
-    expect(luego.get(idCla("redox", 1))!.estado).toBe("activo");
-    expect(luego.get(idCla("redox", 2))!.estado).toBe("bloqueado");
-    expect(luego.get(idCla("organica", 1))!.estado).toBe("bloqueado");
-    const redoxCompleto = new Set(todasLasClases.slice(0, 24));
-    const luego2 = estados(calcularCaminoQuimia(FILAS, redoxCompleto, true));
-    expect(luego2.get(idCla("organica", 1))!.estado).toBe("activo");
+    // Clases: la primera de redox y la de orgánica están abiertas desde el inicio (usuario Pro).
+    expect(porId.get(idCla("redox", 1))!.estado).toBe("activo");
+    expect(porId.get(idCla("redox", 2))!.estado).toBe("bloqueado");
+    expect(porId.get(idCla("organica", 1))!.estado).toBe("activo");
+    expect(porId.get(idCla("organica", 2))!.estado).toBe("bloqueado");
+    // Completar la 1 de redox abre la 2 de redox, sin tocar orgánica.
+    const luego = estados(calcularCaminoQuimia(FILAS, new Set([idCla("redox", 1)]), true));
+    expect(luego.get(idCla("redox", 2))!.estado).toBe("activo");
+    expect(luego.get(idCla("organica", 2))!.estado).toBe("bloqueado");
   });
 
   it("las Clases de redox y de orgánica son Pro: sin plan quedan bloqueadas por plan (CTA), la primera del curso sigue siendo la única gratis", () => {

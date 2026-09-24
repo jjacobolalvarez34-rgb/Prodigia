@@ -16,16 +16,18 @@ export { ORDEN_GRUPOS_QUIMIA };
 // estado que ve el sidebar y el que valida la página tienen que ser el mismo
 // (ver el bug de Numeria corregido en src/lib/aprender/pathClases.ts).
 //
-// Dos progresiones con criterio DISTINTO, a propósito:
-//   - Técnicas (gratis): atajos sueltos. Cada grupo (tabla, símbolos,
-//     fórmulas, nomenclatura, redox, orgánica) tiene su propio puntero
-//     "activo" independiente: la primera Técnica no dominada de CADA grupo
-//     está abierta a la vez; dentro de un grupo es estrictamente lineal.
-//   - Clases (Pro): un CURSO con dependencias reales entre sí (los números de
-//     oxidación son prerrequisito de la nomenclatura, la tabla lo es de
-//     todo). Progresión lineal ÚNICA en orden de curso (grupo en
-//     ORDEN_GRUPOS_QUIMIA, después `orden`): solo una Clase "activa" a la
-//     vez. La primera es preview gratis; el resto exige plan Pro.
+// Las dos pestañas usan la MISMA regla de desbloqueo, por tema (pedido del
+// usuario: poder hacer las Clases por tema, no solo desde la primera):
+//   - Cada grupo (tabla, símbolos, fórmulas, nomenclatura, redox, orgánica)
+//     tiene su propio puntero "activo" independiente: la primera Técnica y la
+//     primera Clase no dominadas de CADA grupo están abiertas a la vez;
+//     dentro de un grupo el orden es lineal.
+//   - Entre grupos NO se bloquea nada: el orden de curso (tabla → símbolos →
+//     fórmulas → nomenclatura → redox → orgánica) es solo el recomendado y el
+//     del menú lateral. Las Clases que dependen de otras (los números de
+//     oxidación de la nomenclatura, la tabla de todo) re-explican lo que usan.
+//   - Clases (Pro): la primera del curso es preview gratis; el resto exige
+//     plan Pro (bloqueadoPorPlan).
 
 // El mapeo slug -> grupo sale del contenido tipado (una sola fuente de
 // verdad, nunca una lista repetida a mano).
@@ -74,7 +76,7 @@ export function puedeAbrirNodoQuimia(nodo: Pick<NodoCaminoQuimia, "estado">): bo
   return nodo.estado !== "bloqueado";
 }
 
-// Orden de curso: (grupo en ORDEN_GRUPOS_QUIMIA, orden dentro del grupo).
+// Orden recomendado: (grupo en ORDEN_GRUPOS_QUIMIA, orden dentro del grupo).
 export function ordenarPorGrupoYOrden(filas: FilaTechnique[]): FilaTechnique[] {
   return filas.slice().sort((a, b) => {
     const pa = ORDEN_GRUPOS_QUIMIA.indexOf(grupoDeSlug(a.slug));
@@ -113,26 +115,27 @@ export function calcularNodosTecnicas(filas: FilaTechnique[], dominadas: Set<str
   });
 }
 
-// Clases (`filas` YA ordenadas en orden de curso): UNA sola progresión.
+// Clases (`filas` YA ordenadas por (grupo, orden)): un puntero "activo" por
+// grupo, igual que las Técnicas.
 // - completada: "completado".
 // - la primera del curso (preview gratis): "activo" siempre que no esté
 //   completada, sin importar el plan.
 // - el resto sin Pro: "bloqueado" con bloqueadoPorPlan (para mostrar el CTA
 //   "Desbloquea con Pro" en vez de un bloqueo mudo).
-// - el resto con Pro: la primera no completada del curso queda "activo" y las
-//   siguientes "bloqueado" (dependencia real entre clases).
+// - el resto con Pro: la primera no completada de CADA grupo queda "activo" y
+//   las siguientes de ese grupo "bloqueado" (orden lineal dentro del grupo).
 export function calcularNodosClases(filas: FilaTechnique[], dominadas: Set<string>, esPro: boolean): NodoCaminoQuimia[] {
-  let punteroAsignado = false;
+  const activoPorGrupo = new Set<GrupoQuimia>();
   return filas.map((t, i) => {
     if (dominadas.has(t.id)) return nodoDe(t, "completado", true, false);
-    const esPrimera = i === 0;
-    if (esPrimera) {
-      punteroAsignado = true;
+    const grupo = grupoDeSlug(t.slug);
+    if (i === 0) {
+      activoPorGrupo.add(grupo);
       return nodoDe(t, "activo", true, false);
     }
     if (!esPro) return nodoDe(t, "bloqueado", true, true);
-    if (!punteroAsignado) {
-      punteroAsignado = true;
+    if (!activoPorGrupo.has(grupo)) {
+      activoPorGrupo.add(grupo);
       return nodoDe(t, "activo", true, false);
     }
     return nodoDe(t, "bloqueado", true, false);

@@ -18,22 +18,21 @@ export { ORDEN_GRUPOS_TRIGONOMETRIA };
 // Numeria, commit 648f2b7: el estado se calculaba solo en una capa de
 // presentación y la primera técnica de un tema posterior rebotaba sin abrir).
 //
-// Dos progresiones con criterio DISTINTO, a propósito:
-//   - TÉCNICAS (gratis): atajos sueltos. Cada BLOQUE del currículo (razones,
-//     círculo, gráficas, leyes, identidades, ecuaciones) tiene su puntero
-//     "activo" independiente: la primera Técnica no dominada de CADA bloque
-//     está abierta a la vez; dentro de un bloque es estrictamente lineal (regla
-//     del usuario para todos los mundos).
-//   - CLASES (Pro): UN curso lineal único, en orden de currículo (bloque y
-//     después `orden`), con una sola Clase "activa" a la vez. DECISIÓN
-//     (recomendada por el diseño y documentada en PARIDAD_MUNDOS.md): el temario
-//     es ACUMULATIVO y cada Clase usa conceptos de las anteriores (las razones
-//     se generalizan en el círculo unitario, las gráficas usan los radianes y
-//     los valores exactos, las ecuaciones usan las identidades y las inversas);
-//     lecciones.test.ts verifica ese grafo de dependencias. Dejar abrir, por
-//     ejemplo, «Ecuaciones» antes de «Círculo unitario» produciría una Clase
-//     que usa conceptos aún no enseñados. La primera Clase es preview gratis;
-//     el resto exige plan Pro.
+// Las dos pestañas usan la MISMA regla de desbloqueo, por tema (pedido del
+// usuario para todos los mundos: poder hacer las Clases por tema, no solo
+// empezando por la primera):
+//   - Cada BLOQUE del currículo (razones, círculo, gráficas, leyes,
+//     identidades, ecuaciones) tiene su puntero "activo" independiente: la
+//     primera Técnica y la primera Clase no dominadas de CADA bloque están
+//     abiertas a la vez; dentro de un bloque el orden es lineal.
+//   - Entre bloques NO se bloquea nada: el orden de currículo (razones →
+//     círculo → gráficas → leyes → identidades → ecuaciones) es el recomendado
+//     y el del menú lateral, porque el temario es ACUMULATIVO (las gráficas
+//     usan los radianes y los valores exactos, las ecuaciones usan las
+//     identidades y las inversas; lecciones.test.ts verifica ese grafo de
+//     dependencias en orden de currículo).
+//   - CLASES (Pro): la primera del currículo es preview gratis; el resto exige
+//     plan Pro (bloqueadoPorPlan).
 
 // El mapeo slug -> bloque sale del contenido tipado (una sola fuente de verdad,
 // nunca una lista repetida a mano).
@@ -121,25 +120,27 @@ export function calcularNodosTecnicas(filas: FilaTechnique[], dominadas: Set<str
   });
 }
 
-// Clases (`filas` YA ordenadas en orden de curso): UNA sola progresión.
+// Clases (`filas` YA ordenadas por (bloque, orden)): un puntero "activo" por
+// bloque, igual que las Técnicas.
 // - completada: "completado".
 // - la primera del curso (preview gratis): "activo" siempre que no esté
 //   completada, sin importar el plan.
 // - el resto sin Pro: "bloqueado" con bloqueadoPorPlan (para mostrar el CTA
 //   "Desbloquea con Pro" en vez de un bloqueo mudo).
-// - el resto con Pro: la primera no completada del curso queda "activo" y las
-//   siguientes "bloqueado" (dependencia real entre clases).
+// - el resto con Pro: la primera no completada de CADA bloque queda "activo" y
+//   las siguientes de ese bloque "bloqueado" (orden lineal dentro del bloque).
 export function calcularNodosClases(filas: FilaTechnique[], dominadas: Set<string>, esPro: boolean): NodoCaminoTrigonometria[] {
-  let punteroAsignado = false;
+  const activoPorGrupo = new Set<GrupoTrigonometria>();
   return filas.map((t, i) => {
     if (dominadas.has(t.id)) return nodoDe(t, "completado", true, false);
+    const grupo = grupoDeSlug(t.slug);
     if (i === 0) {
-      punteroAsignado = true;
+      activoPorGrupo.add(grupo);
       return nodoDe(t, "activo", true, false);
     }
     if (!esPro) return nodoDe(t, "bloqueado", true, true);
-    if (!punteroAsignado) {
-      punteroAsignado = true;
+    if (!activoPorGrupo.has(grupo)) {
+      activoPorGrupo.add(grupo);
       return nodoDe(t, "activo", true, false);
     }
     return nodoDe(t, "bloqueado", true, false);

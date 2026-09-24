@@ -748,6 +748,8 @@ Verificado sin errores: número atómico, período y grupo de los 118 elementos 
 
 ## Quimia: Técnicas | Clases (tanda 2) (2026-09-23)
 
+> **Corrección transversal (2026-09-24) — las Clases se desbloquean POR TEMA, en todos los mundos.** En la tanda 1 de Quimia las Clases quedaron como un curso lineal único (solo se abría la primera y el resto en orden) y el usuario, al probarlo, pidió poder hacerlas por tema. Ahora Quimia y Trigonometría usan la misma regla que Anatomía, Melodía y Geografía: la primera Clase de CADA grupo o bloque queda abierta a la vez (para un usuario Pro), el orden es lineal solo dentro del grupo y el orden entre grupos es únicamente el recomendado del menú lateral. La primera Clase del mundo sigue siendo la preview gratis. Los cambios están en `calcularNodosClases` de `src/lib/quimia/path.ts` y `src/lib/trigonometria/path.ts`, con sus tests. Toda mención de más abajo a un «curso lineal único» de Quimia o de Trigonometría describe la decisión anterior. Consecuencia conocida: como las lecciones ya no se garantizan en orden, cada Clase debería repasar brevemente lo que usa de otros temas (pendiente de revisión de contenido en esos dos mundos).
+
 Segunda y última tanda del retrofit de Quimia (ver "Quimia: Técnicas | Clases (tanda 1)"): los grupos `redox` y `organica`, que la tanda 1 dejó definidos y vacíos. Reutiliza la infraestructura sin rediseñarla (`path.ts`, `unidades.ts`, el motor genérico de visuales); solo se llenaron `tecnicas-redox.ts`, `clases-redox.ts`, `tecnicas-organica.ts` y `clases-organica.ts`, y los dos grupos aparecen solos en el sidebar (test de `path.test.ts` y captura en el navegador).
 
 ### Qué quedó (conteos finales)
