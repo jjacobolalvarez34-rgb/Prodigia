@@ -1,4 +1,20 @@
 import type { LeccionCodia } from "./tipos";
+import {
+  COMPARAR_DIVISION_CERO,
+  COMPARAR_DIV_MOD_NEGATIVOS,
+  COMPARAR_DIV_MOD_POSITIVOS,
+  COMPARAR_INDICE_FUERA,
+  COMPARAR_TEXTO_MAS_NUMERO,
+  SERIES_TECNICA_COMPLEJIDAD,
+  SERIES_UNO_Y_ANIDADOS,
+  TRAZA_BUCLE_ACUMULADOR,
+  TRAZA_COMPLEJIDAD_ANIDADA,
+  TRAZA_FOR_RANGO,
+  TRAZA_INTERCAMBIO_ROTO,
+  TRAZA_RESTO_CICLO,
+  TRAZA_TABLA_SEGUIMIENTO,
+  TRAZA_WHILE_MITAD,
+} from "./programas";
 
 // 5 Técnicas GRATIS de Codia (orden 1-5): atajos para leer código sin
 // ejecutarlo. Cada fragmento se ejecuta de verdad en lecciones.test.ts.
@@ -6,7 +22,7 @@ export const TECNICAS: LeccionCodia[] = [
   {
     slug: "codia-tecnica-tabla-seguimiento",
     nombre: "Trazar variables a mano con una tabla de seguimiento",
-    descripcion: "Antes de adivinar qué imprime un fragmento, anotá cómo cambia cada variable línea por línea.",
+    descripcion: "Antes de adivinar qué imprime un fragmento, anota cómo cambia cada variable línea por línea.",
     orden: 1,
     requierePro: false,
     pasos: [
@@ -62,7 +78,12 @@ Línea 3: a pasa a valer 2 y el 1 original se pierde. Línea 4: b = a copia ese 
 2 2
 ~~~
 Para intercambiar necesitas una variable temporal: t = a, luego a = b y por último b = t.`,
-      "Consejo de examen: tachá el valor viejo cada vez que una variable cambia y escribe el nuevo al lado. Si el fragmento tiene un bucle, agrega una fila por vuelta. Tardas un minuto y evitas casi todos los errores de lectura.",
+      "Consejo de examen: tacha el valor viejo cada vez que una variable cambia y escribe el nuevo al lado. Si el fragmento tiene un bucle, agrega una fila por vuelta. Tardas un minuto y evitas casi todos los errores de lectura.",
+    ],
+    visuales: [
+      { tipo: "codia.traza", despuesDePaso: 1, titulo: "Sigue el programa línea por línea", programa: TRAZA_TABLA_SEGUIMIENTO, lenguaje: "python" },
+      { tipo: "codia.comparar", despuesDePaso: 3, titulo: "El mismo programa en los cuatro lenguajes", programa: TRAZA_TABLA_SEGUIMIENTO },
+      { tipo: "codia.traza", despuesDePaso: 4, titulo: "La trampa: intercambiar sin una variable temporal", programa: TRAZA_INTERCAMBIO_ROTO, lenguaje: "python" },
     ],
     quiz: [
       {
@@ -146,8 +167,14 @@ Vuelta 1: n pasa de 20 a 10. Vuelta 2: a 5. Vuelta 3: a 2. Vuelta 4: a 1, y como
 ~~~salida
 4 1
 ~~~`,
-      "Con un acumulador (total = total + algo) anotá el valor de total al final de cada vuelta. Si el bucle es de 4 vueltas, son 4 filas en tu tabla. No calcules todo de golpe.",
+      "Con un acumulador (total = total + algo) anota el valor de total al final de cada vuelta. Si el bucle es de 4 vueltas, son 4 filas en tu tabla. No calcules todo de golpe.",
       "Cuidado con dos errores muy comunes: contar una vuelta de más o de menos por el límite (off-by-one) y olvidarte de que en Java, JavaScript y TypeScript con i <= 5 SÍ se incluye el 5 mientras que range(5) de Python llega hasta 4.",
+    ],
+    visuales: [
+      { tipo: "codia.traza", despuesDePaso: 1, titulo: "El límite superior no se incluye: range(2, 6)", programa: TRAZA_FOR_RANGO, lenguaje: "python" },
+      { tipo: "codia.flujo", despuesDePaso: 2, titulo: "El while: cuándo se repite y cuándo se corta", programa: TRAZA_WHILE_MITAD, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 2, titulo: "El mismo while, vuelta por vuelta", programa: TRAZA_WHILE_MITAD, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 3, titulo: "Un acumulador: el total al final de cada vuelta", programa: TRAZA_BUCLE_ACUMULADOR, lenguaje: "python" },
     ],
     quiz: [
       {
@@ -253,6 +280,11 @@ let edad: number = "treinta";
 error de compilación
 ~~~`,
     ],
+    visuales: [
+      { tipo: "codia.comparar", despuesDePaso: 3, titulo: "Índice fuera de rango, según el lenguaje", programa: COMPARAR_INDICE_FUERA },
+      { tipo: "codia.comparar", despuesDePaso: 4, titulo: "Dividir por cero, según el lenguaje", programa: COMPARAR_DIVISION_CERO },
+      { tipo: "codia.comparar", despuesDePaso: 5, titulo: "Mezclar texto y número con +", programa: COMPARAR_TEXTO_MAS_NUMERO },
+    ],
     quiz: [
       {
         pregunta: `¿Qué error produce este código?
@@ -338,6 +370,11 @@ for i in range(6):
 2
 ~~~`,
     ],
+    visuales: [
+      { tipo: "codia.comparar", despuesDePaso: 0, titulo: "Con positivos los cuatro coinciden", programa: COMPARAR_DIV_MOD_POSITIVOS },
+      { tipo: "codia.comparar", despuesDePaso: 1, titulo: "Con negativos Python se separa de los demás", programa: COMPARAR_DIV_MOD_NEGATIVOS },
+      { tipo: "codia.traza", despuesDePaso: 3, titulo: "El resto como ciclo: 0, 1, 2, 0, 1, 2", programa: TRAZA_RESTO_CICLO, lenguaje: "python" },
+    ],
     quiz: [
       {
         pregunta: `¿Qué imprime este código en Python?
@@ -379,7 +416,7 @@ print(-7 // 2)
     requierePro: false,
     pasos: [
       "La complejidad temporal dice cómo crece el trabajo cuando crece n (por ejemplo, el largo de una lista). No mide segundos: mide cuántas veces se repite la operación principal.",
-      `Regla de un vistazo: sin bucles sobre n es O(1); un bucle sobre n es O(n); dos bucles anidados sobre n son O(n²). Probalo contando cuántas veces corre total = total + 1 cuando n se duplica:
+      `Regla de un vistazo: sin bucles sobre n es O(1); un bucle sobre n es O(n); dos bucles anidados sobre n son O(n²). Pruébalo contando cuántas veces corre total = total + 1 cuando n se duplica:
 ~~~python
 def contar(n):
     total = 0
@@ -436,6 +473,11 @@ print(contar(4), contar(8))
 ~~~salida
 12 24
 ~~~`,
+    ],
+    visuales: [
+      { tipo: "codia.traza", despuesDePaso: 1, titulo: "Dos bucles anidados sobre n = 3: nueve vueltas del cuerpo", programa: TRAZA_COMPLEJIDAD_ANIDADA, lenguaje: "python" },
+      { tipo: "codia.crecimiento", despuesDePaso: 1, titulo: "Al duplicar n: el trabajo se duplica o se cuadruplica", series: SERIES_UNO_Y_ANIDADOS, ns: [4, 8, 16] },
+      { tipo: "codia.crecimiento", despuesDePaso: 3, titulo: "Las cuatro formas del paso a paso, con el mismo n", series: SERIES_TECNICA_COMPLEJIDAD, ns: [4, 8, 16] },
     ],
     quiz: [
       {

@@ -9,6 +9,9 @@ interface Props {
   // "¿en qué línea?" lo necesitan).
   numeros?: boolean;
   className?: string;
+  // Línea (1-based) resaltada — la usa el visual "codia.traza" para
+  // marcar la sentencia que se está ejecutando en el paso actual.
+  resaltarLinea?: number;
 }
 
 const COLOR: Record<TipoToken, string | undefined> = {
@@ -23,18 +26,18 @@ const COLOR: Record<TipoToken, string | undefined> = {
 // de pantalla lo lee como código, con saltos de línea), foco por teclado
 // para poder desplazarlo, contraste de tokens sobre la superficie del
 // tema, y números de línea que no se copian ni se leen (aria-hidden).
-export default function BloqueCodigo({ codigo, lenguaje, numeros = true, className = "" }: Props) {
+export default function BloqueCodigo({ codigo, lenguaje, numeros = true, className = "", resaltarLinea }: Props) {
   const lineas = tokensPorLinea(codigo, lenguaje);
   const ancho = String(lineas.length).length;
   return (
     <pre
       tabIndex={0}
       aria-label={`Código en ${NOMBRE_LENGUAJE[lenguaje]}`}
-      className={`w-full overflow-x-auto rounded-xl border border-border bg-surface-2 px-3 py-3 text-left font-mono text-[13px] leading-relaxed text-foreground outline-none focus-visible:ring-2 focus-visible:ring-primario ${className}`}
+      className={`w-full overflow-x-auto rounded-xl border border-border bg-surface-2 px-3 py-3 text-left font-mono text-[13px] leading-relaxed text-foreground [font-variant-ligatures:none] outline-none focus-visible:ring-2 focus-visible:ring-primario ${className}`}
     >
       <code className="block min-w-max">
         {lineas.map((toks, i) => (
-          <span key={i} className="flex">
+          <span key={i} className={`flex ${resaltarLinea === i + 1 ? "-mx-1 rounded bg-logro/15 px-1" : ""}`}>
             {numeros && (
               <span aria-hidden className="mr-3 inline-block select-none text-right text-texto-secundario" style={{ minWidth: `${ancho}ch` }}>
                 {i + 1}

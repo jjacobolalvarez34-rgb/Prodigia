@@ -1,3 +1,5 @@
+import type { VisualCuadros } from "@/lib/aprender/visuales";
+import type { VisualCodia } from "../visuales";
 import type { Lenguaje } from "../tipos";
 
 // Contenido de Aprender de Codia (5 Técnicas gratis + 8 Clases Pro).
@@ -34,6 +36,10 @@ export interface PreguntaLeccion {
   verifica?: VerificaPregunta;
 }
 
+// Visuales permitidos en una lección de Codia: los propios ("codia.*") y
+// el primitivo genérico de cuadros animados.
+export type VisualLeccionCodia = VisualCodia | VisualCuadros;
+
 export interface LeccionCodia {
   slug: string;
   nombre: string;
@@ -41,6 +47,12 @@ export interface LeccionCodia {
   orden: number;
   requierePro: boolean;
   pasos: string[];
+  // Explicación visual/animada (además de los pasos de texto, sin
+  // reemplazarlos): cada visual se ubica debajo de `despuesDePaso` (ver
+  // src/lib/aprender/visuales.ts). Opcional por retrocompatibilidad;
+  // lecciones.test.ts exige que TODAS las Técnicas y Clases tengan al
+  // menos un visual.
+  visuales?: VisualLeccionCodia[];
   quiz: PreguntaLeccion[];
 }
 

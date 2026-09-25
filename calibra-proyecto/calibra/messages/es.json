@@ -4380,6 +4380,71 @@
       "enviando": "Enviando...",
       "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
     },
+    "visuales": {
+      "error": "Error: {detalle}",
+      "fallos": {
+        "DivCero": "división por cero",
+        "IndiceFuera": "índice fuera de rango",
+        "Tipo": "tipos incompatibles",
+        "ColeccionVacia": "colección vacía",
+        "ClaveFaltante": "clave inexistente",
+        "Limite": "el programa no termina"
+      },
+      "traza": {
+        "etiqueta": "Ejecución paso a paso en {lenguaje}",
+        "variablesDespues": "Variables después de la línea {linea}",
+        "sinVariables": "Todavía no hay variables.",
+        "salida": "Salida del programa",
+        "sinSalida": "(no imprime nada)",
+        "pasoAlt": "Paso {n}, línea {linea}: {variables}.",
+        "salidaAlt": "Salida del programa: {salida}"
+      },
+      "comparar": {
+        "etiqueta": "El mismo programa en Python, Java, JavaScript y TypeScript",
+        "sinSalida": "(no imprime nada)",
+        "salidaAlt": "imprime {salida}"
+      },
+      "flujo": {
+        "etiqueta": "Diagrama de flujo de un condicional",
+        "etiquetaBucle": "Diagrama de flujo de un bucle",
+        "valoresAntes": "Valores antes de decidir",
+        "sinVariables": "Todavía no hay variables.",
+        "pregunta": "¿{condicion}?",
+        "sino": "En cualquier otro caso (else)",
+        "si": "Sí",
+        "no": "No",
+        "verdadera": "Verdadera",
+        "falsa": "Falsa",
+        "hayMas": "Hay otro valor",
+        "sinMas": "No quedan valores",
+        "noSeEvalua": "No se llega a evaluar",
+        "bucleMientras": "Bucle while:",
+        "buclePara": "Bucle for:",
+        "vuelve": "vuelve a preguntar",
+        "salirDelBucle": "Sale del bucle y sigue con lo que viene después",
+        "vuelta": "Vuelta {n} de {total}",
+        "alSalir": "Valores al salir del bucle",
+        "salida": "Salida del programa",
+        "sinSalida": "(no imprime nada)",
+        "errorAlt": "El programa termina con un error.",
+        "verdaderaAlt": "Se pregunta {condicion}: es verdadera y se ejecuta {accion}.",
+        "falsaAlt": "Se pregunta {condicion}: es falsa.",
+        "noEvaluadaAlt": "{condicion}: no se llega a evaluar porque una condición anterior ya fue verdadera.",
+        "sinoTomadaAlt": "En cualquier otro caso: se ejecuta {accion}.",
+        "sinoNoAlt": "En cualquier otro caso: no se ejecuta.",
+        "mientrasAlt": "Bucle while con la condición {condicion}; en cada vuelta ejecuta: {cuerpo}.",
+        "paraAlt": "Bucle for con {condicion}; en cada vuelta ejecuta: {cuerpo}.",
+        "vueltaAlt": "Vuelta {n}: {variables}.",
+        "salirAlt": "Al salir del bucle: {variables}.",
+        "salidaAlt": "Salida del programa: {salida}"
+      },
+      "crecimiento": {
+        "etiqueta": "Cuánto crece el trabajo cuando crece n",
+        "leyenda": "Cada barra cuenta las veces que corre la operación principal; ×2 o ×4 dice cuántas veces creció el trabajo respecto de la fila anterior.",
+        "serieAlt": "{nombre} ({etiqueta}): {valores}.",
+        "valorAlt": "con n = {n} son {cuenta} operaciones"
+      }
+    },
     "practica": {
       "sintaxis": {
         "metadata": {

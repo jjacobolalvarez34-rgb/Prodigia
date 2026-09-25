@@ -1,4 +1,48 @@
 import type { LeccionCodia } from "./tipos";
+import {
+  COMPARAR_COLA,
+  COMPARAR_COMENTARIOS,
+  COMPARAR_CONDICION_Y,
+  COMPARAR_DOBLE,
+  COMPARAR_ERRORES_EJECUCION,
+  COMPARAR_FOR_TRES,
+  COMPARAR_LISTAS,
+  COMPARAR_LISTA_DINAMICA,
+  COMPARAR_LISTA_FUERA,
+  COMPARAR_MAPA_EDADES,
+  COMPARAR_ORDEN_SUMA_TEXTO,
+  COMPARAR_PILA,
+  COMPARAR_VARIABLES_TIPOS,
+  FLUJO_IF_ELSE,
+  FLUJO_MIENTRAS_CUENTA,
+  FLUJO_NOTA,
+  FLUJO_TEMPERATURA,
+  SERIES_CLASE_COMPLEJIDAD,
+  SERIES_CLASE_CUBICA,
+  SERIES_CLASE_N_LOG_N,
+  SERIES_UNO_Y_ANIDADOS,
+  TRAZA_AUMENTADAS,
+  TRAZA_BREAK,
+  TRAZA_COLA_TURNOS,
+  TRAZA_COMPRA,
+  TRAZA_CONJUNTO,
+  TRAZA_DEPURAR_PRINT,
+  TRAZA_ERROR_LOGICO,
+  TRAZA_FACTORIAL,
+  TRAZA_LISTA_DINAMICA,
+  TRAZA_LISTA_SUMA,
+  TRAZA_LLAMADAS_ANIDADAS,
+  TRAZA_LOGARITMICO,
+  TRAZA_MAPA_EDADES,
+  TRAZA_MAXIMO,
+  TRAZA_MAYOR,
+  TRAZA_PILA_INVERTIR,
+  TRAZA_PUNTOS,
+  TRAZA_REPETIR_TEXTO,
+  TRAZA_SUMA_1_A_5,
+  TRAZA_SUMA_CUADRADOS,
+  TRAZA_UNA_VUELTA_MENOS,
+} from "./programas";
 
 // 8 Clases PRO de Codia (orden 6-13). La primera es preview gratis
 // (la primera fila requiere_pro=true). Progresivas y dependientes:
@@ -49,6 +93,43 @@ console.log(nombre, edad, mayor);
 Ana 15 false
 ~~~
 Detalle: Python escribe True y False con mayúscula; los otros tres, true y false.`,
+      `Un comentario es texto para las personas: el lenguaje lo ignora por completo. Python usa # y Java, JavaScript y TypeScript usan //. Sirve para explicar por qué hay una línea, y también para desactivarla sin borrarla. Los cuatro programas imprimen lo mismo:
+~~~python
+# Guarda la edad de Ana
+edad = 15
+# Muestra la edad
+print(edad)
+~~~
+~~~java
+// Guarda la edad de Ana
+int edad = 15;
+// Muestra la edad
+System.out.println(edad);
+~~~
+~~~javascript
+// Guarda la edad de Ana
+const edad = 15;
+// Muestra la edad
+console.log(edad);
+~~~
+~~~typescript
+// Guarda la edad de Ana
+const edad: number = 15;
+// Muestra la edad
+console.log(edad);
+~~~
+~~~salida
+15
+~~~
+Los comentarios no aparecen en la salida. Si pones el símbolo del comentario delante de una instrucción, esa línea deja de ejecutarse:
+~~~python
+edad = 15
+# print(edad)
+print("Listo")
+~~~
+~~~salida
+Listo
+~~~`,
       `Java y TypeScript no dejan cambiar el tipo de una variable: asignar un texto a un entero es un error de compilación. Python y JavaScript sí lo permiten.
 ~~~java!
 int x = "hola";
@@ -70,7 +151,7 @@ print(x)
 ~~~salida
 hola
 ~~~`,
-      `Asignar es guardar, no comparar: cada línea usa el valor actual y guarda el resultado. Trazá este programa con una tabla (puntos: 10, luego 15, luego 30):
+      `Asignar es guardar, no comparar: cada línea usa el valor actual y guarda el resultado. Traza este programa con una tabla (puntos: 10, luego 15, luego 30):
 ~~~python
 puntos = 10
 puntos = puntos + 5
@@ -125,6 +206,78 @@ print("Edad: " + 15)
 ~~~salida
 TypeError
 ~~~`,
+      `El orden importa cuando se mezclan números y texto con +. Java, JavaScript y TypeScript evalúan de izquierda a derecha: en 1 + 2 + "5" primero suman los números (3) y después se concatena ("35"); en "1" + 2 + 3 ya hay un texto desde el principio, así que todo se concatena ("123").
+~~~java
+System.out.println(1 + 2 + "5");
+System.out.println("1" + 2 + 3);
+~~~
+~~~javascript
+console.log(1 + 2 + "5");
+console.log("1" + 2 + 3);
+~~~
+~~~typescript
+console.log(1 + 2 + "5");
+console.log("1" + 2 + 3);
+~~~
+~~~salida
+35
+123
+~~~
+Python no mezcla números con texto: esas dos líneas dan TypeError. Para obtener el mismo resultado se convierte con str():
+~~~python
+print(str(1 + 2) + "5")
+print("1" + str(2) + str(3))
+~~~
+~~~salida
+35
+123
+~~~`,
+      `Dos operaciones más con textos. El largo de un texto (cuántos caracteres tiene, contando los espacios) se pide con len() en Python, con .length() en Java y con .length en JavaScript y TypeScript:
+~~~python
+nombre = "Ana Paz"
+print(len("Hola"), len(nombre))
+~~~
+~~~java
+String nombre = "Ana Paz";
+System.out.println("Hola".length() + " " + nombre.length());
+~~~
+~~~javascript
+const nombre = "Ana Paz";
+console.log("Hola".length, nombre.length);
+~~~
+~~~typescript
+const nombre: string = "Ana Paz";
+console.log("Hola".length, nombre.length);
+~~~
+~~~salida
+4 7
+~~~
+Solo Python permite repetir un texto multiplicándolo por un número: "ab" * 3 da "ababab". En JavaScript y TypeScript se usa .repeat(3) y en Java esa multiplicación ni compila.
+~~~python
+r = "ab" * 3
+print(r)
+print(len(r))
+~~~
+~~~javascript
+const r = "ab".repeat(3);
+console.log(r);
+console.log(r.length);
+~~~
+~~~typescript
+const r: string = "ab".repeat(3);
+console.log(r);
+console.log(r.length);
+~~~
+~~~salida
+ababab
+6
+~~~
+~~~java!
+String r = "ab" * 3;
+~~~
+~~~salida
+error de compilación
+~~~`,
       `Ejemplo resuelto: precio de una compra.
 ~~~python
 precio = 8
@@ -139,6 +292,14 @@ Tabla: precio=8; cantidad=3; total=24 (8 * 3); descuento=4; total=20 (24 - 4). E
 20
 ~~~
 En los otros tres lenguajes solo cambia la declaración (int, let, let ... : number): la lógica y el resultado son idénticos.`,
+    ],
+    visuales: [
+      { tipo: "codia.comparar", despuesDePaso: 1, titulo: "Variables y tipos en los cuatro lenguajes", programa: COMPARAR_VARIABLES_TIPOS },
+      { tipo: "codia.comparar", despuesDePaso: 2, titulo: "Comentarios: # en Python, // en los demás", programa: COMPARAR_COMENTARIOS },
+      { tipo: "codia.traza", despuesDePaso: 4, titulo: "Asignar es guardar, no comparar", programa: TRAZA_PUNTOS, lenguaje: "python" },
+      { tipo: "codia.comparar", despuesDePaso: 6, titulo: "El orden de la suma cuando hay texto", programa: COMPARAR_ORDEN_SUMA_TEXTO },
+      { tipo: "codia.traza", despuesDePaso: 7, titulo: "Repetir un texto con * (solo Python)", programa: TRAZA_REPETIR_TEXTO, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 8, titulo: "Ejemplo resuelto: el precio de una compra", programa: TRAZA_COMPRA, lenguaje: "python" },
     ],
     quiz: [
       {
@@ -326,10 +487,17 @@ else:
     estado = "frio"
 print(estado)
 ~~~
-Trazá: 24 > 30 es falso, se salta esa rama; 24 > 20 es verdadero, estado = "templado" y no se mira el else.
+Traza: 24 > 30 es falso, se salta esa rama; 24 > 20 es verdadero, estado = "templado" y no se mira el else.
 ~~~salida
 templado
 ~~~`,
+    ],
+    visuales: [
+      { tipo: "codia.flujo", despuesDePaso: 1, titulo: "if / else con x = 7", programa: FLUJO_IF_ELSE, lenguaje: "python" },
+      { tipo: "codia.flujo", despuesDePaso: 2, titulo: "Varias ramas: gana la primera condición verdadera", programa: FLUJO_NOTA, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 2, titulo: "Las ramas de abajo ni se miran", programa: FLUJO_NOTA, lenguaje: "python" },
+      { tipo: "codia.comparar", despuesDePaso: 3, titulo: "Condiciones combinadas: and o &&", programa: COMPARAR_CONDICION_Y },
+      { tipo: "codia.flujo", despuesDePaso: 5, titulo: "Ejemplo resuelto: qué estado imprime", programa: FLUJO_TEMPERATURA, lenguaje: "python" },
     ],
     quiz: [
       {
@@ -436,6 +604,46 @@ console.log(total);
 15
 ~~~
 Fíjate que range(1, 6) equivale a i <= 5: las dos formas llegan hasta 5.`,
+      `Cuando una variable se actualiza usando su propio valor (total = total + i) existe una forma corta: total += i. También hay -= y *=. Es solo una abreviatura: hace exactamente lo mismo. Suma y producto de los números de 1 a 4:
+~~~python
+suma = 0
+producto = 1
+for i in range(1, 5):
+    suma += i
+    producto *= i
+print(suma, producto)
+~~~
+~~~java
+int suma = 0;
+int producto = 1;
+for (int i = 1; i < 5; i++) {
+    suma += i;
+    producto *= i;
+}
+System.out.println(suma + " " + producto);
+~~~
+~~~javascript
+let suma = 0;
+let producto = 1;
+for (let i = 1; i < 5; i++) {
+    suma += i;
+    producto *= i;
+}
+console.log(suma, producto);
+~~~
+~~~typescript
+let suma: number = 0;
+let producto: number = 1;
+for (let i = 1; i < 5; i++) {
+    suma += i;
+    producto *= i;
+}
+console.log(suma, producto);
+~~~
+~~~salida
+10 24
+~~~
+Vuelta a vuelta: suma va 1, 3, 6, 10 y producto va 1, 2, 6, 24.`,
       `while: cuenta regresiva. La condición se revisa ANTES de cada vuelta y algo adentro tiene que acercarla a falsa; si no, el bucle no termina nunca.
 ~~~python
 n = 3
@@ -515,6 +723,53 @@ Vuelta 1: i=1, total = 0 + 1 = 1. Vuelta 2: i=2, total = 1 + 4 = 5. Vuelta 3: i=
 ~~~salida
 14
 ~~~`,
+      `Otro ejemplo clásico: el factorial de n es 1 * 2 * ... * n (el de 5 es 120). Un for con un acumulador que se multiplica lo calcula, dentro de una función:
+~~~python
+def factorial(n):
+    r = 1
+    for i in range(2, n + 1):
+        r *= i
+    return r
+
+print(factorial(5))
+~~~
+~~~java
+static int factorial(int n) {
+    int r = 1;
+    for (int i = 2; i < n + 1; i++) {
+        r *= i;
+    }
+    return r;
+}
+
+System.out.println(factorial(5));
+~~~
+~~~javascript
+function factorial(n) {
+    let r = 1;
+    for (let i = 2; i < n + 1; i++) {
+        r *= i;
+    }
+    return r;
+}
+
+console.log(factorial(5));
+~~~
+~~~typescript
+function factorial(n: number): number {
+    let r: number = 1;
+    for (let i = 2; i < n + 1; i++) {
+        r *= i;
+    }
+    return r;
+}
+
+console.log(factorial(5));
+~~~
+~~~salida
+120
+~~~
+Tabla: r empieza en 1 y con i = 2, 3, 4, 5 pasa a 2, 6, 24, 120. El for arranca en 2 porque multiplicar por 1 no cambia nada, y el límite es n + 1 porque el límite superior no se incluye.`,
       `El error más común: una vuelta de más o de menos. range(1, 5) llega hasta 4, no hasta 5:
 ~~~python
 total = 0
@@ -526,6 +781,16 @@ print(total)
 10
 ~~~
 Si querías sumar de 1 a 5 (15) tenías que escribir range(1, 6). En Java, JavaScript y TypeScript el equivalente es escribir i < 5 cuando necesitabas i <= 5.`,
+    ],
+    visuales: [
+      { tipo: "codia.comparar", despuesDePaso: 1, titulo: "El mismo for en los cuatro lenguajes", programa: COMPARAR_FOR_TRES },
+      { tipo: "codia.traza", despuesDePaso: 2, titulo: "Un acumulador que suma de 1 a 5", programa: TRAZA_SUMA_1_A_5, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 3, titulo: "Suma y producto con += y *=", programa: TRAZA_AUMENTADAS, lenguaje: "python" },
+      { tipo: "codia.flujo", despuesDePaso: 4, titulo: "El while: la condición se revisa antes de cada vuelta", programa: FLUJO_MIENTRAS_CUENTA, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 5, titulo: "break corta el bucle apenas se cumple algo", programa: TRAZA_BREAK, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 6, titulo: "Ejemplo resuelto: suma de cuadrados", programa: TRAZA_SUMA_CUADRADOS, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 7, titulo: "Factorial de 5 con un for", programa: TRAZA_FACTORIAL, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 8, titulo: "Una vuelta de menos: range(1, 5) llega hasta 4", programa: TRAZA_UNA_VUELTA_MENOS, lenguaje: "python" },
     ],
     quiz: [
       {
@@ -743,6 +1008,11 @@ Paso 1: doble(2) devuelve 4. Paso 2: triple(4) devuelve 12. Recién entonces pri
 ~~~
 En los otros tres lenguajes la lectura es exactamente la misma: primero el paréntesis de más adentro.`,
     ],
+    visuales: [
+      { tipo: "codia.comparar", despuesDePaso: 1, titulo: "Una función que duplica, en los cuatro lenguajes", programa: COMPARAR_DOBLE },
+      { tipo: "codia.traza", despuesDePaso: 4, titulo: "Una función con un return en cada camino", programa: TRAZA_MAYOR, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 5, titulo: "Llamadas anidadas: de adentro hacia afuera", programa: TRAZA_LLAMADAS_ANIDADAS, lenguaje: "python" },
+    ],
     quiz: [
       {
         pregunta: `¿Qué imprime este código?
@@ -818,6 +1088,41 @@ console.log(nums[0], nums.length);
 ~~~salida
 4 3
 ~~~`,
+      `Un arreglo fijo (int[] en Java) no crece. Cuando no sabes cuántos datos habrá, usa una lista dinámica: se agrega al final con append en Python, con add en Java (ArrayList) y con push en JavaScript y TypeScript. Leer por posición y pedir el tamaño funciona igual que antes:
+~~~python
+lista = []
+lista.append(4)
+lista.append(8)
+lista.append(15)
+print(lista[1], len(lista), lista[len(lista) - 1])
+~~~
+~~~java
+import java.util.*;
+
+List<Integer> lista = new ArrayList<>();
+lista.add(4);
+lista.add(8);
+lista.add(15);
+System.out.println(lista.get(1) + " " + lista.size() + " " + lista.get(lista.size() - 1));
+~~~
+~~~javascript
+const lista = [];
+lista.push(4);
+lista.push(8);
+lista.push(15);
+console.log(lista[1], lista.length, lista[lista.length - 1]);
+~~~
+~~~typescript
+const lista: number[] = [];
+lista.push(4);
+lista.push(8);
+lista.push(15);
+console.log(lista[1], lista.length, lista[lista.length - 1]);
+~~~
+~~~salida
+8 3 15
+~~~
+La lista quedó [4, 8, 15]: la posición 1 es el 8, el tamaño es 3 y el último elemento está en la posición tamaño - 1 (la 2), porque las posiciones empiezan en 0.`,
       `Recorrer y acumular: suma de todos los elementos.
 ~~~python
 nums = [4, 8, 15]
@@ -853,6 +1158,49 @@ console.log(suma);
 ~~~salida
 27
 ~~~`,
+      `Máximo de una lista: guarda el primer elemento como el mayor visto hasta ahora y recorre comparando; si aparece uno más grande, lo reemplaza.
+~~~python
+datos = [7, 3, 9, 4]
+mayor = datos[0]
+for x in datos:
+    if x > mayor:
+        mayor = x
+print(mayor)
+~~~
+~~~java
+int[] datos = {7, 3, 9, 4};
+int mayor = datos[0];
+for (int x : datos) {
+    if (x > mayor) {
+        mayor = x;
+    }
+}
+System.out.println(mayor);
+~~~
+~~~javascript
+const datos = [7, 3, 9, 4];
+let mayor = datos[0];
+for (const x of datos) {
+    if (x > mayor) {
+        mayor = x;
+    }
+}
+console.log(mayor);
+~~~
+~~~typescript
+const datos: number[] = [7, 3, 9, 4];
+let mayor: number = datos[0];
+for (const x of datos) {
+    if (x > mayor) {
+        mayor = x;
+    }
+}
+console.log(mayor);
+~~~
+~~~salida
+9
+~~~
+Tabla: mayor empieza en 7; con x = 3 no cambia; con x = 9 pasa a 9; con x = 4 no cambia. Empezar con el primer elemento (y no con 0) hace que también funcione con números negativos.`,
       `Índice fuera de rango: con 3 elementos las posiciones son 0, 1 y 2. Pedir la 3 rompe Python y Java...
 ~~~python!
 nums = [4, 8, 15]
@@ -909,7 +1257,7 @@ console.log(edades.get("ana"), edades.size);
 16 2
 ~~~
 Hay dos claves (ana y luis): la segunda asignación a ana no agregó una entrada, cambió su valor.`,
-      `Ejemplo resuelto: contar cuántas veces aparece cada número con un diccionario. Trazá con datos = 1, 2, 1, 3, 1: el conteo va {1:1}, {1:1, 2:1}, {1:2, 2:1}, {1:2, 2:1, 3:1}, {1:3, 2:1, 3:1}.
+      `Ejemplo resuelto: contar cuántas veces aparece cada número con un diccionario. Traza con datos = 1, 2, 1, 3, 1: el conteo va {1:1}, {1:1, 2:1}, {1:2, 2:1}, {1:2, 2:1, 3:1}, {1:3, 2:1, 3:1}.
 ~~~python
 datos = [1, 2, 1, 3, 1]
 conteo = {}
@@ -961,6 +1309,16 @@ console.log(conteo.get(1), conteo.size);
 ~~~salida
 3 3
 ~~~`,
+    ],
+    visuales: [
+      { tipo: "codia.comparar", despuesDePaso: 1, titulo: "Leer un elemento y ver cuántos hay", programa: COMPARAR_LISTAS },
+      { tipo: "codia.traza", despuesDePaso: 2, titulo: "Una lista que crece con append", programa: TRAZA_LISTA_DINAMICA, lenguaje: "python" },
+      { tipo: "codia.comparar", despuesDePaso: 2, titulo: "Agregar al final: append, add o push", programa: COMPARAR_LISTA_DINAMICA },
+      { tipo: "codia.traza", despuesDePaso: 3, titulo: "Recorrer una lista y acumular", programa: TRAZA_LISTA_SUMA, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 4, titulo: "El máximo: reemplazar cuando aparece uno mayor", programa: TRAZA_MAXIMO, lenguaje: "python" },
+      { tipo: "codia.comparar", despuesDePaso: 5, titulo: "Índice fuera de rango, según el lenguaje", programa: COMPARAR_LISTA_FUERA },
+      { tipo: "codia.traza", despuesDePaso: 6, titulo: "Un diccionario: la clave ana se sobrescribe", programa: TRAZA_MAPA_EDADES, lenguaje: "python" },
+      { tipo: "codia.comparar", despuesDePaso: 6, titulo: "El diccionario en los cuatro lenguajes", programa: COMPARAR_MAPA_EDADES },
     ],
     quiz: [
       {
@@ -1208,6 +1566,39 @@ console.log(contar(8), contar(16));
 3 4
 ~~~
 Duplicar n suma UNA vuelta: es O(log n).`,
+      `Un bucle sobre n que por dentro tiene un contador que se duplica (log n vueltas) hace n * log n operaciones: O(n log n). Crece un poco más que O(n) y bastante menos que O(n²).
+~~~python
+def contar(n):
+    total = 0
+    for i in range(n):
+        j = 1
+        while j < n:
+            total = total + 1
+            j = j * 2
+    return total
+
+print(contar(8), contar(16))
+~~~
+~~~salida
+24 64
+~~~
+Con n = 8 son 8 vueltas por 3 (log n) = 24; con n = 16 son 16 por 4 = 64. Al duplicar n el trabajo se multiplica por un poco más de 2 (2,7 en este caso), no por 2 como en O(n) ni por 4 como en O(n²).`,
+      `Tres bucles anidados sobre n hacen n * n * n operaciones: O(n³). Al duplicar n el trabajo se multiplica por 8.
+~~~python
+def contar(n):
+    total = 0
+    for i in range(n):
+        for j in range(n):
+            for k in range(n):
+                total = total + 1
+    return total
+
+print(contar(4), contar(8))
+~~~
+~~~salida
+64 512
+~~~
+Pasar de n = 4 a n = 8 llevó el trabajo de 64 a 512, ocho veces más. Cada bucle anidado sobre n agrega un factor n: uno es O(n), dos son O(n²), tres son O(n³).`,
       `Ejemplo resuelto: la estructura importa. Preguntar si un nombre está en una lista recorre los elementos (O(n) en el peor caso); en un conjunto (set en Python, HashSet en Java, Set en JavaScript) la búsqueda es O(1) en promedio.
 ~~~python
 nombres = ["ana", "luis", "marta"]
@@ -1220,6 +1611,13 @@ True
 True
 ~~~
 El resultado es el mismo; lo que cambia es cuánto trabajo hace la computadora cuando hay millones de elementos.`,
+    ],
+    visuales: [
+      { tipo: "codia.crecimiento", despuesDePaso: 1, titulo: "De n = 8 a n = 16: uno se duplica y el otro se cuadruplica", series: SERIES_UNO_Y_ANIDADOS, ns: [8, 16] },
+      { tipo: "codia.crecimiento", despuesDePaso: 4, titulo: "Cómo crece el trabajo según la forma del bucle", series: SERIES_CLASE_COMPLEJIDAD, ns: [4, 8, 16, 32] },
+      { tipo: "codia.traza", despuesDePaso: 4, titulo: "Un contador que se duplica: log n vueltas", programa: TRAZA_LOGARITMICO, lenguaje: "python" },
+      { tipo: "codia.crecimiento", despuesDePaso: 5, titulo: "O(n log n): entre O(n) y O(n²)", series: SERIES_CLASE_N_LOG_N, ns: [4, 8, 16, 32] },
+      { tipo: "codia.crecimiento", despuesDePaso: 6, titulo: "Tres bucles anidados: al duplicar n el trabajo se multiplica por 8", series: SERIES_CLASE_CUBICA, ns: [4, 8, 16] },
     ],
     quiz: [
       {
@@ -1379,8 +1777,8 @@ print(total)
 ~~~salida
 6
 ~~~
-Diagnóstico: range(1, 4) llega hasta 3. Para incluir el 4 hay que escribir range(1, 5). Cuando el resultado no es el esperado, no busques en todo el código: compará contra lo que hiciste a mano.`,
-      `Depurar con print: mostrá el valor de las variables en cada vuelta y compará contra tu tabla de seguimiento.
+Diagnóstico: range(1, 4) llega hasta 3. Para incluir el 4 hay que escribir range(1, 5). Cuando el resultado no es el esperado, no busques en todo el código: compara contra lo que hiciste a mano.`,
+      `Depurar con print: muestra el valor de las variables en cada vuelta y compara contra tu tabla de seguimiento.
 ~~~python
 total = 0
 for i in range(1, 4):
@@ -1394,7 +1792,12 @@ i = 2 total = 3
 i = 3 total = 6
 6
 ~~~
-Método: 1) lee el nombre del error y la línea; 2) reproducí el problema con el fragmento más chico posible; 3) trazá con una tabla o con print; 4) cambiá UNA cosa por vez y vuelve a probar.`,
+Método: 1) lee el nombre del error y la línea; 2) reproduce el problema con el fragmento más chico posible; 3) traza con una tabla o con print; 4) cambia UNA cosa por vez y vuelve a probar.`,
+    ],
+    visuales: [
+      { tipo: "codia.comparar", despuesDePaso: 3, titulo: "Errores de ejecución, según el lenguaje", programa: COMPARAR_ERRORES_EJECUCION },
+      { tipo: "codia.traza", despuesDePaso: 4, titulo: "Un error de lógica: corre sin quejarse y da 6", programa: TRAZA_ERROR_LOGICO, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 5, titulo: "Depurar con print: i y total en cada vuelta", programa: TRAZA_DEPURAR_PRINT, lenguaje: "python" },
     ],
     quiz: [
       {
@@ -1623,12 +2026,19 @@ while len(cola) > 0:
     else:
         cola.append(x + 1)
 ~~~
-Trazá: sale 3 (impar), vuelve 4 y la cola es 4, 5, 4. Sale 4 (par): imprime 4. Sale 5 (impar), vuelve 6: cola 4, 6. Sale 4: imprime 4. Sale 6: imprime 6. La cola queda vacía.
+Traza: sale 3 (impar), vuelve 4 y la cola es 4, 5, 4. Sale 4 (par): imprime 4. Sale 5 (impar), vuelve 6: cola 4, 6. Sale 4: imprime 4. Sale 6: imprime 6. La cola queda vacía.
 ~~~salida
 4
 4
 6
 ~~~`,
+    ],
+    visuales: [
+      { tipo: "codia.comparar", despuesDePaso: 1, titulo: "Pila (LIFO): sale primero el último que entró", programa: COMPARAR_PILA },
+      { tipo: "codia.comparar", despuesDePaso: 2, titulo: "Cola (FIFO): sale primero el primero que entró", programa: COMPARAR_COLA },
+      { tipo: "codia.traza", despuesDePaso: 3, titulo: "Un conjunto no guarda repetidos", programa: TRAZA_CONJUNTO, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 4, titulo: "Invertir con una pila", programa: TRAZA_PILA_INVERTIR, lenguaje: "python" },
+      { tipo: "codia.traza", despuesDePaso: 5, titulo: "Ejemplo resuelto: una cola de turnos", programa: TRAZA_COLA_TURNOS, lenguaje: "python" },
     ],
     quiz: [
       {

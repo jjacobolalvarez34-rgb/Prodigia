@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { LECCIONES_CODIA, CLASES, TECNICAS } from "./index";
 import { fences, type LeccionCodia, type PreguntaLeccion } from "./tipos";
-import { generarSqlCodia } from "./sql";
+import { contenidoJson, generarSqlCodia, generarSqlVisualesCodia } from "./sql";
 import { ejecutar, hayJava, hayPython, type ResultadoReal } from "../ejecutores";
 import type { Lenguaje } from "../tipos";
 
@@ -255,5 +255,60 @@ describe("Codia: migración 0193", () => {
       expect(Array.isArray(o.pasos)).toBe(true);
       expect(Array.isArray(o.quiz)).toBe(true);
     }
+  });
+});
+
+// ---------- visuales ----------
+describe("Codia: visuales de Aprender (estructura)", () => {
+  it("TODA Técnica y Clase tiene al menos un visual, con despuesDePaso dentro de sus pasos", () => {
+    for (const l of LECCIONES_CODIA) {
+      expect(l.visuales?.length ?? 0, `${l.slug}: sin visuales`).toBeGreaterThanOrEqual(1);
+      for (const v of l.visuales ?? []) {
+        expect(v.tipo.startsWith("codia."), `${l.slug}: tipo ${v.tipo}`).toBe(true);
+        expect(Number.isInteger(v.despuesDePaso), `${l.slug}: despuesDePaso`).toBe(true);
+        expect(v.despuesDePaso!, `${l.slug}: despuesDePaso fuera de los pasos`).toBeLessThan(l.pasos.length);
+        expect(v.despuesDePaso!).toBeGreaterThanOrEqual(0);
+      }
+    }
+  });
+
+  it("los cuatro tipos de visual se usan en alguna lección", () => {
+    const usados = new Set(LECCIONES_CODIA.flatMap((l) => (l.visuales ?? []).map((v) => v.tipo)));
+    expect([...usados].sort()).toEqual(["codia.comparar", "codia.crecimiento", "codia.flujo", "codia.traza"]);
+  });
+
+  it("no usa el signo de dólar en los títulos (MathText lo trataría como LaTeX)", () => {
+    for (const l of LECCIONES_CODIA) for (const v of l.visuales ?? []) expect(v.titulo ?? "", l.slug).not.toContain("$");
+  });
+});
+
+describe("Codia: migración 0219 (visuales)", () => {
+  const ruta = path.resolve(__dirname, "../../../../supabase/migrations/0219_codia_visuales.sql");
+  const esperado = generarSqlVisualesCodia(LECCIONES_CODIA);
+
+  it("el archivo de la migración es exactamente lo generado del contenido verificado", () => {
+    if (process.env.CODIA_ESCRIBIR_SQL === "1") fs.writeFileSync(ruta, esperado, "utf8");
+    expect(fs.existsSync(ruta), "falta 0219_codia_visuales.sql: CODIA_ESCRIBIR_SQL=1 npx vitest run ...").toBe(true);
+    expect(fs.readFileSync(ruta, "utf8").replace(/\r\n/g, "\n")).toBe(esperado);
+  });
+
+  it("solo hace update por slug sobre problem_type codia: pone pasos y visuales, nunca el quiz", () => {
+    const updates = [
+      ...esperado.matchAll(
+        /^update public\.techniques set contenido = contenido \|\| jsonb_build_object\(\n  'pasos', \$codia\$([\s\S]*?)\$codia\$::jsonb,\n  'visuales', \$codia\$([\s\S]*?)\$codia\$::jsonb\)\nwhere slug = '([^']+)' and problem_type = 'codia';$/gm
+      ),
+    ];
+    expect(updates).toHaveLength(LECCIONES_CODIA.length);
+    expect(updates.map((u) => u[3])).toEqual(LECCIONES_CODIA.map((l) => l.slug));
+    for (const u of updates) {
+      const pasos = JSON.parse(u[1]) as string[];
+      const visuales = JSON.parse(u[2]) as { tipo: string }[];
+      expect(Array.isArray(visuales) && visuales.length > 0).toBe(true);
+      // Los pasos de la migración son EXACTAMENTE los de 0193 (misma fuente).
+      const leccion = LECCIONES_CODIA.find((x) => x.slug === u[3])!;
+      expect(pasos).toEqual(JSON.parse(contenidoJson(leccion)).pasos);
+    }
+    expect(esperado).not.toMatch(/'quiz'/);
+    expect(esperado).not.toMatch(/insert into|delete from|drop /i);
   });
 });

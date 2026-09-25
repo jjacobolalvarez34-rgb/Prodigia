@@ -4380,6 +4380,71 @@
       "enviando": "Submitting...",
       "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want."
     },
+    "visuales": {
+      "error": "Error: {detalle}",
+      "fallos": {
+        "DivCero": "division by zero",
+        "IndiceFuera": "index out of range",
+        "Tipo": "incompatible types",
+        "ColeccionVacia": "empty collection",
+        "ClaveFaltante": "missing key",
+        "Limite": "the program never ends"
+      },
+      "traza": {
+        "etiqueta": "Step-by-step execution in {lenguaje}",
+        "variablesDespues": "Variables after line {linea}",
+        "sinVariables": "There are no variables yet.",
+        "salida": "Program output",
+        "sinSalida": "(prints nothing)",
+        "pasoAlt": "Step {n}, line {linea}: {variables}.",
+        "salidaAlt": "Program output: {salida}"
+      },
+      "comparar": {
+        "etiqueta": "The same program in Python, Java, JavaScript and TypeScript",
+        "sinSalida": "(prints nothing)",
+        "salidaAlt": "prints {salida}"
+      },
+      "flujo": {
+        "etiqueta": "Flowchart of a conditional",
+        "etiquetaBucle": "Flowchart of a loop",
+        "valoresAntes": "Values before deciding",
+        "sinVariables": "There are no variables yet.",
+        "pregunta": "{condicion}?",
+        "sino": "Otherwise (else)",
+        "si": "Yes",
+        "no": "No",
+        "verdadera": "True",
+        "falsa": "False",
+        "hayMas": "Another value",
+        "sinMas": "No values left",
+        "noSeEvalua": "Never checked",
+        "bucleMientras": "while loop:",
+        "buclePara": "for loop:",
+        "vuelve": "asks again",
+        "salirDelBucle": "Leaves the loop and continues with what comes next",
+        "vuelta": "Round {n} of {total}",
+        "alSalir": "Values when leaving the loop",
+        "salida": "Program output",
+        "sinSalida": "(prints nothing)",
+        "errorAlt": "The program ends with an error.",
+        "verdaderaAlt": "It asks {condicion}: true, so it runs {accion}.",
+        "falsaAlt": "It asks {condicion}: false.",
+        "noEvaluadaAlt": "{condicion}: never checked because an earlier condition was already true.",
+        "sinoTomadaAlt": "Otherwise: it runs {accion}.",
+        "sinoNoAlt": "Otherwise: it does not run.",
+        "mientrasAlt": "while loop with the condition {condicion}; each round runs: {cuerpo}.",
+        "paraAlt": "for loop with {condicion}; each round runs: {cuerpo}.",
+        "vueltaAlt": "Round {n}: {variables}.",
+        "salirAlt": "When leaving the loop: {variables}.",
+        "salidaAlt": "Program output: {salida}"
+      },
+      "crecimiento": {
+        "etiqueta": "How much the work grows as n grows",
+        "leyenda": "Each bar counts how many times the main operation runs; ×2 or ×4 says how many times the work grew compared with the previous row.",
+        "serieAlt": "{nombre} ({etiqueta}): {valores}.",
+        "valorAlt": "with n = {n} it is {cuenta} operations"
+      }
+    },
     "practica": {
       "sintaxis": {
         "metadata": {

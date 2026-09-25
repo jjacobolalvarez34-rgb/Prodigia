@@ -11,6 +11,9 @@ import type { Achievement } from "@/types/database";
 import LogroBanner from "@/components/LogroBanner";
 import MathText from "@/components/MathText";
 import TextoConCodigo from "@/components/codia/TextoConCodigo";
+import CuerpoLeccionCodia from "@/components/codia/CuerpoLeccionCodia";
+import { visualesDeContenido } from "@/lib/aprender/visuales";
+import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
 import { COLOR_CODIA } from "../../colores";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
@@ -38,7 +41,19 @@ export default function LeccionCodiaClient({ nodo }: Props) {
   const [pasoIdx, setPasoIdx] = useState(0);
   const [logrosNuevos, setLogrosNuevos] = useState<Achievement[]>([]);
 
+  // Pedido 2026-09-24: salir por el Header a mitad de una lección (ya viste
+  // el ejemplo o estás en el quiz) pide confirmación — en "explicacion"
+  // (recién abriste, nada que perder todavía) y en "celebracion" (ya
+  // terminaste) no hace falta.
+  useRegistrarGuardiaSalida({ activo: fase !== "explicacion" && fase !== "celebracion" });
+
   const pasos = nodo.contenido.pasos;
+  // Formato visual (contenido.visuales): los pasos siguen siendo el texto
+  // con su código y, debajo de cada uno, van los visuales animados (trazas,
+  // comparaciones en los 4 lenguajes, diagramas de flujo...). Sin visuales
+  // la lección se ve exactamente como siempre (paso a paso).
+  const visuales = useMemo(() => visualesDeContenido(nodo.contenido.visuales), [nodo.contenido.visuales]);
+  const esVisual = visuales.length > 0;
   const quiz = useMemo(() => nodo.contenido.quiz ?? [], [nodo.contenido.quiz]);
   const tieneQuiz = quiz.length > 0;
 
@@ -115,6 +130,20 @@ export default function LeccionCodiaClient({ nodo }: Props) {
 
         {fase === "ejemplo" && (
           <motion.div key="ejemplo" {...transicion} className="flex flex-col gap-6">
+            {esVisual ? (
+              <>
+                <h1 className="text-center font-display text-xl font-bold tracking-tight text-foreground">{nodo.nombre}</h1>
+                <CuerpoLeccionCodia pasos={pasos} visuales={visuales} />
+                <button
+                  onClick={() => (tieneQuiz ? setFase("quiz") : completarLeccion())}
+                  className="rounded-xl px-4 py-3 font-display font-semibold text-white"
+                  style={{ background: COLOR_CODIA }}
+                >
+                  {tieneQuiz ? t("continuarAlQuiz") : t("marcarAprendida")}
+                </button>
+              </>
+            ) : (
+              <>
             <div className="flex flex-col gap-3">
               {pasos.map((paso, i) => (
                 <div
@@ -170,6 +199,8 @@ export default function LeccionCodiaClient({ nodo }: Props) {
                 </button>
               )}
             </div>
+              </>
+            )}
           </motion.div>
         )}
 

@@ -62,12 +62,49 @@ class Retorno {
 }
 class Corte {}
 
-export function interpretar(prog: Prog, sem: Semantica): ResultadoInterp {
+// Descripción corta de una variable para la tabla de la traza (visual
+// "codia.traza"): números y booleanos tal cual se imprimirían, textos
+// entre comillas, arreglos como "[1, 2, 3]" y las colecciones dinámicas
+// como su contenido: lista "[1, 2]", pila "[1, 2] (tope: 2)", cola
+// "[1, 2] (frente: 1)", conjunto "{1, 2}" y mapa "{ana: 15}".
+function describirValor(x: Valor, lang: Lenguaje): string {
+  if (Array.isArray(x)) return `[${x.join(", ")}]`;
+  if (typeof x === "string") return JSON.stringify(x);
+  if (x !== null && typeof x === "object") {
+    const d = x as Ds;
+    if (d.ty === "conj") return `{${[...d.set].join(", ")}}`;
+    if (d.ty === "mapa") return `{${[...d.map].map(([k, val]) => `${k}: ${val}`).join(", ")}}`;
+    const lista = `[${d.arr.join(", ")}]`;
+    if (d.arr.length === 0) return lista;
+    if (d.ty === "pila") return `${lista} (tope: ${d.arr[d.arr.length - 1]})`;
+    if (d.ty === "cola") return `${lista} (frente: ${d.arr[0]})`;
+    return lista;
+  }
+  return formatoValor(x, lang);
+}
+
+// Se llama después de ejecutar una sentencia CON id (decl/asig/print/...),
+// al entrar a cada vuelta de un si/para/mientras/paraCada CON id y, con
+// `finDeBucle` en true, una vez cuando un para/mientras/paraCada termina
+// normalmente (sin break), con una foto de las variables en ese momento.
+// Lo usan SOLO los visuales "codia.traza" y "codia.flujo"
+// (src/lib/codia/visualesDatos.ts). Con `alPaso` sin pasar, `interpretar`
+// se comporta exactamente igual que antes (la práctica no lo usa).
+export type AlPaso = (id: string, variables: Record<string, string>, finDeBucle?: boolean) => void;
+
+export function interpretar(prog: Prog, sem: Semantica, alPaso?: AlPaso): ResultadoInterp {
   const salida: string[] = [];
   const funcs = new Map<string, Func>(prog.funcs.map((f) => [f.nombre, f]));
   let pasos = 0;
   const lang = sem.lang;
   const vacioJs = lang === "javascript" || lang === "typescript";
+
+  function marcar(id: string | undefined, env: Map<string, Valor>, finDeBucle = false) {
+    if (!alPaso || !id) return;
+    const variables: Record<string, string> = {};
+    for (const [k, val] of env) variables[k] = describirValor(val, lang);
+    alPaso(id, variables, finDeBucle);
+  }
 
   function tick() {
     if (++pasos > (sem.limitePasos ?? LIMITE_PASOS)) throw new FalloEjecucion("Limite");
@@ -294,13 +331,16 @@ export function interpretar(prog: Prog, sem: Semantica): ResultadoInterp {
         return;
       case "decl":
         env.set(st.n, evalE(st.e, env));
+        marcar(st.id, env);
         return;
       case "dsDecl":
         env.set(st.n, { ty: st.ty, arr: [], set: new Set(), map: new Map() });
+        marcar(st.id, env);
         return;
       case "asig": {
         const nuevo = evalE(st.e, env);
         env.set(st.n, st.aug ? aplicarOp(st.aug, env.get(st.n), nuevo) : nuevo);
+        marcar(st.id, env);
         return;
       }
       case "asigIx": {
@@ -309,12 +349,15 @@ export function interpretar(prog: Prog, sem: Semantica): ResultadoInterp {
         if (!Array.isArray(a)) throw new FalloEjecucion("Tipo");
         if (i < 0 || i >= a.length) throw new FalloEjecucion("IndiceFuera");
         a[i] = num(evalE(st.e, env));
+        marcar(st.id, env);
         return;
       }
       case "print":
         salida.push(st.args.map((a) => formatoValor(evalE(a, env), lang)).join(" "));
+        marcar(st.id, env);
         return;
       case "si": {
+        marcar(st.id, env);
         if (evalE(st.cond, env)) ejecutarBloque(st.entonces, env);
         else if (st.sino) ejecutarBloque(st.sino, env);
         return;
@@ -325,8 +368,10 @@ export function interpretar(prog: Prog, sem: Semantica): ResultadoInterp {
         try {
           for (let i = desde; i < hasta; i++) {
             env.set(st.v, i);
+            marcar(st.id, env);
             ejecutarBloque(st.cuerpo, env);
           }
+          marcar(st.id, env, true);
         } catch (c) {
           if (!(c instanceof Corte)) throw c;
         }
@@ -338,8 +383,10 @@ export function interpretar(prog: Prog, sem: Semantica): ResultadoInterp {
         try {
           for (const x of [...a]) {
             env.set(st.v, x);
+            marcar(st.id, env);
             ejecutarBloque(st.cuerpo, env);
           }
+          marcar(st.id, env, true);
         } catch (c) {
           if (!(c instanceof Corte)) throw c;
         }
@@ -347,18 +394,27 @@ export function interpretar(prog: Prog, sem: Semantica): ResultadoInterp {
       }
       case "mientras": {
         try {
-          while (evalE(st.cond, env)) ejecutarBloque(st.cuerpo, env);
+          while (evalE(st.cond, env)) {
+            marcar(st.id, env);
+            ejecutarBloque(st.cuerpo, env);
+          }
+          marcar(st.id, env, true);
         } catch (c) {
           if (!(c instanceof Corte)) throw c;
         }
         return;
       }
-      case "retorna":
-        throw new Retorno(evalE(st.e, env));
+      case "retorna": {
+        const valor = evalE(st.e, env);
+        marcar(st.id, env);
+        throw new Retorno(valor);
+      }
       case "romper":
+        marcar(st.id, env);
         throw new Corte();
       case "exec":
         evalE(st.e, env);
+        marcar(st.id, env);
         return;
     }
   }

@@ -60,3 +60,55 @@ on conflict (slug) do update set
   requiere_pro = excluded.requiere_pro;
 `;
 }
+
+// Migración de los visuales (0219_codia_visuales.sql): NO reescribe el quiz
+// ni ninguna otra clave del contenido ya aplicado por 0193; con un update por
+// slug (merge con `||`, idempotente) AGREGA `visuales` y pone `pasos` al día
+// (los pasos nuevos que cubren los huecos de la práctica: comentarios, +=,
+// largo y repetición de textos, orden de la suma con textos, lista dinámica,
+// máximo, factorial, O(n log n) y O(n³)). Los programas del IR viajan como
+// JSON puro; los componentes los renderizan y ejecutan de verdad al mostrarse
+// (src/lib/codia/visualesDatos.ts).
+export function visualesJson(l: LeccionCodia): string {
+  return JSON.stringify(l.visuales ?? [], null, 2);
+}
+
+export function pasosJson(l: LeccionCodia): string {
+  return JSON.stringify(l.pasos.map(fences), null, 2);
+}
+
+export function generarSqlVisualesCodia(lecciones: LeccionCodia[]): string {
+  const filas = lecciones.map(
+    (l) =>
+      `update public.techniques set contenido = contenido || jsonb_build_object(
+  'pasos', $codia$${pasosJson(l)}$codia$::jsonb,
+  'visuales', $codia$${visualesJson(l)}$codia$::jsonb)
+where slug = '${esc(l.slug)}' and problem_type = 'codia';`
+  );
+  return `-- ============================================================
+-- Prodigia — Codia (mundo 13): explicación visual/animada en Aprender.
+--
+-- Agrega \`contenido.visuales\` a las 5 Técnicas y las 8 Clases de
+-- 0193_codia_contenido.sql y deja \`contenido.pasos\` al día (pasos nuevos
+-- que cubren lo que evalúa la práctica: comentarios, += y *=, largo y
+-- repetición de textos, orden de la suma con textos, lista dinámica, máximo,
+-- factorial, O(n log n) y O(n³)). NO toca el quiz: un update por slug que
+-- mezcla las claves 'pasos' y 'visuales' en el jsonb existente.
+--
+-- Los visuales son "codia.traza" (ejecución paso a paso con
+-- línea resaltada y tabla de variables), "codia.comparar" (el mismo
+-- programa en Python, Java, JavaScript y TypeScript con su salida real),
+-- "codia.flujo" (diagrama de flujo de un condicional o un bucle) y
+-- "codia.crecimiento" (cuánto trabajo hace un bucle cuando crece n). Cada
+-- uno lleva el programa en el IR de la práctica (src/lib/codia/tipos.ts);
+-- el código, la salida y las variables se calculan al mostrarlo, nunca
+-- viajan tipeados a mano.
+--
+-- Este archivo se GENERA desde src/lib/codia/lecciones/ (fuente única) y
+-- lecciones.test.ts lo compara byte a byte con lo generado. No editar a
+-- mano. Requiere 0193 (las filas existen). Idempotente.
+-- ============================================================
+
+${filas.join("\n\n")}
+`;
+}
