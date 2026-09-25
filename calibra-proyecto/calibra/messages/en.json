@@ -1784,7 +1784,7 @@
     "vs": "vs",
     "misionTitulo": "Mission of the week",
     "misionRecompensa": "+{n} Sparks for everyone",
-    "misionDescripcion": "Solve {objetivo} problems as a clan — {progreso}/{objetivo}",
+    "misionDescripcion": "Earn {objetivo} Exp together as a clan — {progreso}/{objetivo}",
     "misionCumplida": "Mission complete! Sparks have been shared out.",
     "miembrosTitulo": "Members",
     "jugadorDefault": "Player",

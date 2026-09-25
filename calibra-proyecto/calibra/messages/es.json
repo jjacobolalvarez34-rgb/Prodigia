@@ -1784,7 +1784,7 @@
     "vs": "vs",
     "misionTitulo": "Misión de la semana",
     "misionRecompensa": "+{n} Chispas para todos",
-    "misionDescripcion": "Resolver {objetivo} problemas entre todo el clan — {progreso}/{objetivo}",
+    "misionDescripcion": "Sumar {objetivo} de Exp entre todo el clan — {progreso}/{objetivo}",
     "misionCumplida": "¡Misión cumplida! Chispas repartidas.",
     "miembrosTitulo": "Miembros",
     "jugadorDefault": "Jugador",
