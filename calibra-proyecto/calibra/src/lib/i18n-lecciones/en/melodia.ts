@@ -1,0 +1,1701 @@
+import type { TraduccionLeccion } from "../traducir";
+
+// Melodía (música) — 18 Técnicas y 18 Clases en inglés. Se conservan los nombres de nota latinos que muestra la
+// app (Do, Re, Mi, Fa, Sol, La, Si) y se explica su equivalencia con las letras (C, D, E, F, G, A, B).
+// Términos: tono = tone, semitono = semitone (T-T-S), grado = scale degree, tónica = tonic, fundamental = root,
+// pentagrama = staff, línea adicional = ledger line, plica = stem, corchete = flag, redonda/blanca/negra/corchea =
+// whole/half/quarter/eighth note, compás = measure (time signature 4/4), sostenido/bemol/becuadro = sharp/flat/natural,
+// enarmónico = enharmonic, justa = perfect, tríada = triad, séptima = seventh chord.
+export const MELODIA_EN: Record<string, TraduccionLeccion> = {
+  "melodia-cifrado-americano": {
+    nombre: "American letter names: Do is C and the letters follow the alphabet",
+    descripcion:
+      "The American system names the seven notes with letters: Do = C, Re = D, Mi = E, Fa = F, Sol = G, La = A, Si = B. Trick: the letters follow the alphabet, but the series starts on C (Do), not on A.",
+    pasos: [
+      "The seven natural notes are Do, Re, Mi, Fa, Sol, La, Si. The American system writes them with letters: Do = C, Re = D, Mi = E, Fa = F, Sol = G, La = A, Si = B.",
+      "Memory trick: La is A, the first letter of the alphabet. From there everything follows in order: La = A, Si = B, Do = C, Re = D, Mi = E, Fa = F, Sol = G.",
+      "That is why the series Do-Re-Mi-Fa-Sol-La-Si reads C-D-E-F-G-A-B: it starts on C, not on A. If you get lost, find La (A) first and count from there.",
+      "The symbols ♯ and ♭ are written the same way after the letter: Fa♯ = F♯ and Si♭ = B♭. Simplification: in some countries the Latin names (Do, Re, Mi...) are used and in others the American letters (C, D, E...); they are just two ways of naming the same notes.",
+    ],
+    quiz: [
+      {
+        pregunta: "What is the American letter name of the note Sol?",
+        opciones: ["G", "F", "A", "S"],
+        respuesta: 0,
+        explicacion: "Do = C, Re = D, Mi = E, Fa = F, Sol = G, La = A, Si = B.",
+      },
+      {
+        pregunta: "Which note matches the letter A?",
+        opciones: ["Do", "Si", "Fa", "La"],
+        respuesta: 3,
+        explicacion: "La is A: it is the first letter of the alphabet, and the series continues with B = Si, C = Do.",
+      },
+      {
+        pregunta: "Which letter does the series Do-Re-Mi-Fa-Sol-La-Si start with in American letter names?",
+        opciones: ["A", "B", "D", "C"],
+        respuesta: 3,
+        explicacion: "Do is C, so the series reads C-D-E-F-G-A-B (it does not start on A).",
+      },
+      {
+        pregunta: "How is Si♭ written with American letter names?",
+        opciones: ["B♭", "S♭", "A♭", "C♭"],
+        respuesta: 0,
+        explicacion: "Si = B; the flat is written the same way after the letter: B♭.",
+      },
+    ],
+    visuales: ["Each note with its letter"],
+  },
+  "melodia-figuras-por-fraccion": {
+    nombre: "Note values: each one lasts half as long as the previous one",
+    descripcion:
+      "The whole note, half note, quarter note and eighth note are told apart by three details: hollow or filled notehead, stem (the little stick) and flag (the little banner). And each one lasts half as long as the previous one: 4, 2, 1 and ½ beats.",
+    pasos: [
+      "Look at the notehead: hollow (empty) is a whole note or a half note; filled is a quarter note or an eighth note. The whole note has no stem (stick); the others do.",
+      "Whole note: hollow head and no stem. Half note: hollow with a stem. Quarter note: filled with a stem. Eighth note: filled with a stem and a flag (a little banner).",
+      "Each note lasts half as long as the previous one: whole note 4 beats, half note 2, quarter note 1 and eighth note ½. A 4/4 measure fits 1 whole note, 2 half notes, 4 quarter notes or 8 eighth notes.",
+      "Simplification: here the beat is the quarter note (the usual case in 4/4); in other time signatures the beat can be a different note. The real duration in seconds depends on the tempo (the speed).",
+    ],
+    quiz: [
+      {
+        pregunta: "What is the note with a hollow head and no stem called?",
+        opciones: ["Whole note", "Half note", "Quarter note", "Eighth note"],
+        respuesta: 0,
+        explicacion: "The whole note is the only one without a stem, and it lasts 4 beats.",
+      },
+      {
+        pregunta: "How many beats does a half note last?",
+        opciones: ["2", "1", "4", "½"],
+        respuesta: 0,
+        explicacion: "The half note lasts half as long as the whole note: 2 beats.",
+      },
+      {
+        pregunta: "How many quarter notes fit in a whole note?",
+        opciones: ["2", "8", "1", "4"],
+        respuesta: 3,
+        explicacion: "Whole note = 4 beats and quarter note = 1 beat, so 4 fit.",
+      },
+      {
+        pregunta: "Which note is filled, with a stem and a flag?",
+        opciones: ["Quarter note", "Half note", "Eighth note", "Whole note"],
+        respuesta: 2,
+        explicacion: "The eighth note carries the flag and lasts half a beat.",
+      },
+    ],
+    visuales: ["Each note, half of the previous one"],
+  },
+  "melodia-teclas-negras-para-ubicarse": {
+    nombre: "Black keys: the groups of 2 and 3 tell you where you are",
+    descripcion:
+      "On a piano the black keys come in groups of 2 and 3. With that you can find the seven white notes without counting: Do sits just to the left of the group of 2 and Fa just to the left of the group of 3.",
+    pasos: [
+      "The black keys are arranged in groups of 2 and 3, and that pattern repeats. It is the map that tells you where you are on the keyboard.",
+      "Do is the white key just to the left of the group of 2. Re sits between the two black keys of that group and Mi, to the right of the second one.",
+      "Fa is the white key just to the left of the group of 3. Then come Sol (between the first and the second black key), La (between the second and the third) and Si (to the right of the third).",
+      "Between Mi and Fa, and between Si and Do, there is no black key: they are side by side. Between all the other white keys there is a black key in the middle.",
+    ],
+    quiz: [
+      {
+        pregunta: "Which white key is just to the left of the group of two black keys?",
+        opciones: ["Do", "Re", "Mi", "Fa"],
+        respuesta: 0,
+        explicacion: "Do is right next to the left of the group of 2.",
+      },
+      {
+        pregunta: "Which white key is between the two black keys of the group of two?",
+        opciones: ["Do", "Re", "Mi", "Sol"],
+        respuesta: 1,
+        explicacion: "Re sits in the middle of the two black keys of the group of 2.",
+      },
+      {
+        pregunta: "Which white key is just to the left of the group of three black keys?",
+        opciones: ["Mi", "Fa", "Sol", "Si"],
+        respuesta: 1,
+        explicacion: "Fa is right next to the left of the group of 3.",
+      },
+      {
+        pregunta: "Which white key is between the second and the third black key of the group of three?",
+        opciones: ["Sol", "La", "Si", "Fa"],
+        respuesta: 1,
+        explicacion: "Fa, Sol and La surround the black keys of the group of 3: La goes between the second and the third.",
+      },
+    ],
+    visuales: ["Groups of 2 and 3 black keys"],
+  },
+  "melodia-lineas-y-espacios": {
+    nombre: "Read the staff by position, not note by note",
+    descripcion:
+      "The staff has 5 lines and 4 spaces (counted from the bottom up). In treble clef, each line and each space is always the same note: memorize the position, not each separate note.",
+    pasos: [
+      "The 5 lines, from the bottom up, are: Mi, Sol, Si, Re, Fa.",
+      "The 4 spaces, from the bottom up, are: Fa, La, Do, Mi.",
+      "Once you know those 9 fixed positions, any note inside the staff is one of them: there is no need to guess again every time.",
+      "Notes above or below the 5 lines use short extra lines (ledger lines): they follow the same logic, just outside the staff.",
+    ],
+    quiz: [
+      {
+        pregunta: "In treble clef, which note is the 3rd line of the staff (the middle one), counting from the bottom?",
+        opciones: ["Sol", "Re", "Si", "Fa"],
+        respuesta: 2,
+        explicacion: "The 5 lines from the bottom up are Mi-Sol-Si-Re-Fa: the middle one is the 3rd, Si.",
+      },
+      {
+        pregunta: "Which is the note in the lowest space of the staff, in treble clef?",
+        opciones: ["Fa", "Mi", "La", "Do"],
+        respuesta: 0,
+        explicacion: "The 4 spaces from the bottom up are Fa-La-Do-Mi: the lowest one is Fa.",
+      },
+      {
+        pregunta: "What are “ledger lines”?",
+        opciones: [
+          "A type of musical accidental",
+          "The lines that separate the measures",
+          "Lines that only exist in bass clef",
+          "Short lines that extend the staff for higher or lower notes",
+        ],
+        respuesta: 3,
+        explicacion: "They follow the same line-and-space logic, just outside the five lines.",
+      },
+      {
+        pregunta: "Which note is on the 5th line, the top one, in treble clef?",
+        opciones: ["Mi", "Re", "Fa", "Sol"],
+        respuesta: 2,
+        explicacion: "The fifth line of Mi-Sol-Si-Re-Fa is Fa.",
+      },
+    ],
+    visuales: ["The 5 lines, from the bottom up", "The 4 spaces, from the bottom up"],
+  },
+  "melodia-truco-lineas-espacios": {
+    nombre: "A trick to remember the 9 positions",
+    descripcion:
+      "Make up a short phrase with those 9 letters in order: any phrase that is easy for you to remember works, it does not have to be an “official” one. What matters is the order of the letters, not the phrase itself.",
+    pasos: [
+      "Lines (Mi-Sol-Si-Re-Fa): try something like “My Sister Sings Really Fast”, whose initials follow the notes.",
+      "Spaces (Fa-La-Do-Mi): try something like “Fred Likes Dry Muffins”.",
+      "These are not standard phrases and you will not find them in a book: make your own, the one that sticks best.",
+      "The goal is to recognize the position at a glance, without counting line by line every time.",
+    ],
+    quiz: [
+      {
+        pregunta: "According to this technique, what is the most important thing about the phrase you make up?",
+        opciones: [
+          "That it is an official phrase from a book",
+          "The order of the letters, not the exact phrase",
+          "That it rhymes perfectly",
+          "That it uses only musical words",
+        ],
+        respuesta: 1,
+        explicacion: "Any easy-to-remember phrase works; what matters is the order of the 9 letters.",
+      },
+      {
+        pregunta: "What is the point of making up a phrase with the letters of the lines and spaces?",
+        opciones: [
+          "To recognize the position at a glance, without counting one by one",
+          "To memorize the lyrics of a song",
+          "To tune an instrument",
+          "To write scores faster",
+        ],
+        respuesta: 0,
+        explicacion: "It is the central goal: immediate recognition, not counting line by line.",
+      },
+      {
+        pregunta: "In the example “My Sister Sings Really Fast”, what does each word stand for?",
+        opciones: [
+          "The 5 lines: Mi-Sol-Si-Re-Fa",
+          "The 4 spaces: Fa-La-Do-Mi",
+          "A C major scale",
+          "The notes of a chord",
+        ],
+        respuesta: 0,
+        explicacion: "It is the example phrase for the lines: the initials follow Mi-Sol-Si-Re-Fa.",
+      },
+    ],
+    visuales: ["Mi · Sol · Si · Re · Fa", "Fa · La · Do · Mi"],
+  },
+  "melodia-notas-fuera-del-pentagrama": {
+    nombre: "Outside the staff: keep following the line, space, line pattern",
+    descripcion:
+      "Notes above and below the staff follow the same alternation of line and space. Lean on three fixed points: Do4 on the first ledger line below, Fa5 on the top line and Do6 on the second ledger line above.",
+    pasos: [
+      "Ledger lines continue the staff: line, space, line, space... Each step up is the next note name (Fa5, Sol5, La5...) and each step down, the previous one.",
+      "Going down: Mi4 is the bottom line; the space below is Re4; on the first ledger line is Do4 (middle C). Then Si3 (space), La3 (2nd ledger line), Sol3 (space) and Fa3 (3rd ledger line).",
+      "Going up: Fa5 is the top line; the space above is Sol5; on the first ledger line is La5, then Si5 (space) and Do6 (2nd ledger line).",
+      "The octave number goes up when you reach Do: Si3 is just below Do4, and Si5 just below Do6. Always check which octave you are in besides the name.",
+    ],
+    quiz: [
+      {
+        pregunta: "Which note is on the first ledger line below the staff, in treble clef?",
+        opciones: ["Re4", "Si3", "La3", "Do4"],
+        respuesta: 3,
+        explicacion: "Do4, middle C, is written on a ledger line just below the Mi4 line.",
+      },
+      {
+        pregunta: "Which note is in the space immediately above the top line (Fa5)?",
+        opciones: ["La5", "Mi5", "Sol5", "Fa6"],
+        respuesta: 2,
+        explicacion: "After Fa5 comes Sol5, in the space above.",
+      },
+      {
+        pregunta: "Which note is on the first ledger line above the staff?",
+        opciones: ["La5", "Sol5", "Si5", "Do6"],
+        respuesta: 0,
+        explicacion: "Fa5 (line), Sol5 (space), La5 (first ledger line).",
+      },
+      {
+        pregunta: "Which note is just below Do4 (in the space under the ledger line)?",
+        opciones: ["Si4", "Si3", "Re4", "La3"],
+        respuesta: 1,
+        explicacion: "The number drops to 3 because we go from Do to Si, the previous note in the octave below.",
+      },
+    ],
+    visuales: ["Going down from Do4", "Going up from Fa5"],
+  },
+  "melodia-sostenidos-bemoles": {
+    nombre: "Sharps and flats: the same key, two names",
+    descripcion:
+      "A sharp (♯) raises the note by a semitone and a flat (♭) lowers it by a semitone. Do♯ and Re♭ are the same key: they are named differently depending on which note you come from, not because they sound different (on a piano).",
+    pasos: [
+      "♯ (sharp) = a semitone higher than the natural note. ♭ (flat) = a semitone lower.",
+      "Do♯ and Re♭ sound the same on a piano: it is the same black key. It is an “enharmonic” pair: two names for the same pitch.",
+      "The accidental does not move the position on the staff: the note stays on the same line or space, and the symbol is just added to its left.",
+      "Simplification: this lesson uses piano tuning (equal temperament), where Do♯ and Re♭ are identical. On instruments that can adjust the tuning, such as a violin or the voice, they can differ very slightly.",
+    ],
+    quiz: [
+      {
+        pregunta: "What does a sharp (♯) do to a note?",
+        opciones: [
+          "It lowers it by a semitone",
+          "It raises it by a whole tone",
+          "It raises it by a semitone",
+          "It changes nothing, it is decorative",
+        ],
+        respuesta: 2,
+        explicacion: "♯ raises by a semitone; ♭ lowers by a semitone: they are opposite operations of the same size.",
+      },
+      {
+        pregunta: "Do♯ and Re♭ are...",
+        opciones: [
+          "Two different pitches, a semitone apart",
+          "The same pitch, with two different names",
+          "Notes that do not exist on the same instrument",
+          "The same note with the same name",
+        ],
+        respuesta: 1,
+        explicacion: "It is an enharmonic pair: the same sound on the piano, a different name depending on which natural note you come from.",
+      },
+      {
+        pregunta: "What happens to the position of a note on the staff when an accidental (♯ or ♭) is added to it?",
+        opciones: [
+          "Nothing changes: it stays on the same line or space",
+          "It moves up one line",
+          "It moves down one space",
+          "It changes clef",
+        ],
+        respuesta: 0,
+        explicacion: "The accidental only adds the symbol beside the note: the position stays the same.",
+      },
+    ],
+    visuales: ["The position does not change: only the symbol"],
+  },
+  "melodia-semitonos-mi-fa-si-do": {
+    nombre: "Mi-Fa and Si-Do: the two semitones with no black key",
+    descripcion:
+      "On the keyboard, between Mi and Fa and between Si and Do there is no black key: they are a semitone apart. That is why Mi♯ sounds the same as Fa, Si♯ the same as Do, Fa♭ the same as Mi and Do♭ the same as Si.",
+    pasos: [
+      "Between two neighboring white keys there is almost always a black one in the middle (that is two semitones, one tone). Only between Mi-Fa and Si-Do is there none: those pairs are just one semitone apart.",
+      "Consequence: if you raise Mi by a semitone you reach Fa, so Mi♯ sounds the same as Fa. And Si♯ sounds the same as Do (the Do of the next octave).",
+      "The same going down: Fa♭ sounds the same as Mi, and Do♭ sounds the same as Si (the Si of the previous octave).",
+      "By contrast, Do♯, Re♯, Fa♯, Sol♯ and La♯ (and their flats Re♭, Mi♭, Sol♭, La♭ and Si♭) are the five black keys: there you do move to a different key.",
+    ],
+    quiz: [
+      {
+        pregunta: "Which note does Mi♯ sound the same as?",
+        opciones: ["Re", "Fa♯", "Mi♭", "Fa"],
+        respuesta: 3,
+        explicacion: "There is no black key between Mi and Fa: raising Mi by a semitone gives Fa.",
+      },
+      {
+        pregunta: "Which note does Do♭ sound the same as?",
+        opciones: ["Re♭", "Do♯", "Si (of the previous octave)", "La"],
+        respuesta: 2,
+        explicacion: "There is no black key between Si and Do: lowering Do by a semitone gives Si.",
+      },
+      {
+        pregunta: "Between which neighboring white keys is there NO black key?",
+        opciones: ["Mi and Fa, and Si and Do", "Do and Re, and Fa and Sol", "Re and Mi, and La and Si", "Sol and La, and Do and Re"],
+        respuesta: 0,
+        explicacion: "Mi-Fa and Si-Do are the two natural semitones of the scale.",
+      },
+      {
+        pregunta: "Which note does Si♯ sound the same as?",
+        opciones: ["La♯", "Si", "Re", "Do (of the next octave)"],
+        respuesta: 3,
+        explicacion: "Raising Si by a semitone gives Do, already in the next octave.",
+      },
+    ],
+    visuales: ["Mi-Fa and Si-Do: just one semitone"],
+  },
+  "melodia-enarmonia-lee-la-posicion": {
+    nombre: "Enharmonics: first the position, then the symbol",
+    descripcion:
+      "When a question offers you two names with the same sound (like Do♯ and Re♭), the correct name is given by the note's position on the staff: read the letter first and only then apply the ♯ or the ♭.",
+    pasos: [
+      "On a staff, the position gives you the letter. A note on the Sol line is Sol, with or without an accidental; the accidental only modifies it.",
+      "That is why the reading order is always the same: 1) find the position and say the letter; 2) look at the symbol; 3) put them together. A note in the Do position with a ♯ in front is Do♯, never Re♭, even though they sound the same.",
+      "In Practice, some answer options are the enharmonic of the correct one: the same sound with another letter. They are a trap for anyone who looks at the sound and not the position; rule them out.",
+      "The natural note (without the symbol) and the opposite accidental on the same letter also appear: always check that the symbol in the option is the one you see drawn.",
+    ],
+    quiz: [
+      {
+        pregunta: "A note in the Do position with a sharp in front is...",
+        opciones: ["Do", "Re♯", "Do♭", "Do♯"],
+        respuesta: 3,
+        explicacion: "The position gives the letter (Do); the symbol modifies it: Do♯. Re♭ sounds the same, but it would be written in the Re position.",
+      },
+      {
+        pregunta: "What should you look at first to name an altered note on the staff?",
+        opciones: [
+          "The symbol, to know the accidental",
+          "The position, to know the letter",
+          "The color of the note",
+          "Whether it has a stem",
+        ],
+        respuesta: 1,
+        explicacion: "First the letter given by the position and then the symbol.",
+      },
+      {
+        pregunta: "Why is an option with the same sound but another letter not the correct answer?",
+        opciones: [
+          "Because it sounds different",
+          "Because it does not exist on the piano",
+          "Because it is always written wrong",
+          "Because the name is given by the drawn position, not only the sound",
+        ],
+        respuesta: 3,
+        explicacion: "Do♯ and Re♭ sound the same, but only one of them is written in that position.",
+      },
+    ],
+    visuales: ["They sound the same, but they are written in different positions", "The same black key"],
+  },
+  "melodia-formula-escala-mayor": {
+    nombre: "The major scale: T-T-S-T-T-T-S from any note",
+    descripcion:
+      "Every major scale follows the same recipe of steps: tone, tone, semitone, tone, tone, tone, semitone. Apply that formula from any note you like and you get its major scale.",
+    pasos: [
+      "The major scale formula is T-T-S-T-T-T-S (T = tone, 2 semitones; S = semitone, 1). It adds up to 12 semitones: it reaches the octave.",
+      "In Do major the formula falls right on the white keys: Do-Re-Mi-Fa-Sol-La-Si-Do. The semitones are where there is no black key: between Mi-Fa (3rd-4th degree) and Si-Do (7th-8th).",
+      "From another note, the same formula uses black keys. Sol major: Sol, La, Si, Do, Re, Mi, Fa♯, Sol. The Fa♯ appears because the 7th degree has to sit a semitone from the octave.",
+      "Simplification: in Practice, altered notes are always written with sharps or always with flats depending on the exercise. In real sheet music each degree uses a different letter (Fa major has Si♭, not La♯); the sound is the same.",
+    ],
+    quiz: [
+      {
+        pregunta: "What is the formula of the major scale?",
+        opciones: ["T-S-T-T-S-T-T", "T-T-T-S-T-T-S", "T-T-S-T-T-T-S", "S-T-T-S-T-T-T"],
+        respuesta: 2,
+        explicacion: "Tone, tone, semitone, tone, tone, tone, semitone.",
+      },
+      {
+        pregunta: "In the major scale, between which degrees is there a semitone?",
+        opciones: [
+          "Between the 1st and 2nd, and between the 5th and 6th",
+          "Between the 2nd and 3rd, and between the 6th and 7th",
+          "Between the 4th and 5th only",
+          "Between the 3rd and 4th, and between the 7th and 8th",
+        ],
+        respuesta: 3,
+        explicacion: "The formula T-T-S-T-T-T-S puts the semitones at the 3rd-4th and the 7th-8th.",
+      },
+      {
+        pregunta: "What is the 7th note of the Sol major scale?",
+        opciones: ["Fa", "Sol", "Fa♯", "Mi♯"],
+        respuesta: 2,
+        explicacion: "Sol-La-Si-Do-Re-Mi and the 7th degree a semitone below Sol: Fa♯.",
+      },
+      {
+        pregunta: "How many semitones does the whole major scale add up to, from the starting note to its octave?",
+        opciones: ["12", "7", "10", "14"],
+        respuesta: 0,
+        explicacion: "5 tones and 2 semitones: 10 + 2 = 12.",
+      },
+    ],
+    visuales: ["Do major: T-T-S-T-T-T-S", "Sol major: the 7th degree is Fa♯"],
+  },
+  "melodia-menor-natural-desde-la-mayor": {
+    nombre: "Natural minor: the major scale starting on its 6th degree",
+    descripcion:
+      "The natural minor scale uses the same notes as a major one, but starting on the 6th degree: La minor is the notes of Do major played from La. Its formula is T-S-T-T-S-T-T.",
+    pasos: [
+      "The natural minor scale follows the formula T-S-T-T-S-T-T (2, 1, 2, 2, 1, 2, 2 semitones).",
+      "Shortcut: every major scale has a “relative” minor with the same notes, which starts on its 6th degree. In Do major the 6th degree is La: La minor is the notes of Do major played from La to La.",
+      "Examples: La minor = La-Si-Do-Re-Mi-Fa-Sol; Mi minor = Mi-Fa♯-Sol-La-Si-Do-Re, which are those of Sol major starting on its 6th degree (Mi).",
+      "Compared with the major scale on the same starting note, natural minor has the 3rd, 6th and 7th degrees lowered (by a semitone). Simplification: there are other minor scales (harmonic and melodic) that are not covered here.",
+    ],
+    quiz: [
+      {
+        pregunta: "What is the formula of the natural minor scale?",
+        opciones: ["T-T-S-T-T-T-S", "T-T-S-T-T-S-T", "S-T-T-S-T-T-T", "T-S-T-T-S-T-T"],
+        respuesta: 3,
+        explicacion: "Tone, semitone, tone, tone, semitone, tone, tone.",
+      },
+      {
+        pregunta: "Which major scale does La minor share its notes with?",
+        opciones: ["Sol major", "La major", "Fa major", "Do major"],
+        respuesta: 3,
+        explicacion: "La is the 6th degree of Do major: La minor uses the same notes.",
+      },
+      {
+        pregunta: "On which degree of a major scale does its relative minor start?",
+        opciones: ["On the 2nd degree", "On the 4th degree", "On the 6th degree", "On the 7th degree"],
+        respuesta: 2,
+        explicacion: "Natural minor is the major scale played from its 6th degree (La in Do major).",
+      },
+      {
+        pregunta: "What is the 2nd note of La natural minor?",
+        opciones: ["Si", "Do", "Si♭", "La♯"],
+        respuesta: 0,
+        explicacion: "La natural minor: La-Si-Do-Re-Mi-Fa-Sol.",
+      },
+    ],
+    visuales: ["La natural minor: the notes of Do major from La"],
+  },
+  "melodia-reconocer-escala-por-el-primer-salto": {
+    nombre: "Recognize the scale: count the notes and look at the first step",
+    descripcion:
+      "To recognize a scale written in Practice, count the notes (8 means major or natural minor; 6 means pentatonic) and measure one step: the 3rd note 4 semitones from the first is major; 3 semitones, minor.",
+    pasos: [
+      "Count the notes drawn (the last one repeats the first, an octave higher). With 8 it is a seven-note scale: major or natural minor. With 6 it is a pentatonic (five notes).",
+      "If there are 8: measure from the 1st to the 3rd note. 4 semitones (a major 3rd) is a major scale; 3 semitones (a minor 3rd) is a natural minor.",
+      "If there are 6: look at the first step. If it is a tone (2 semitones) it is a major pentatonic; if it is a tone and a half (3 semitones) it is a minor pentatonic.",
+      "Measure by counting piano keys: from Do to Mi is 4 semitones (Do, Do♯, Re, Re♯, Mi); from Do to Mi♭ it is 3. The starting note always comes in the question.",
+    ],
+    quiz: [
+      {
+        pregunta: "A drawn scale has 6 notes (the last one repeats the first). What type is it?",
+        opciones: ["Pentatonic", "Major", "Natural minor", "Chromatic"],
+        respuesta: 0,
+        explicacion: "5 sounds plus the octave make 6 drawn notes: pentatonic.",
+      },
+      {
+        pregunta: "A sequence of 8 notes starts on Do and the 3rd note is 4 semitones from Do. Which scale is it?",
+        opciones: ["Major", "Natural minor", "Major pentatonic", "Minor pentatonic"],
+        respuesta: 0,
+        explicacion: "With 8 notes and a major 3rd (4 semitones), it is a major scale.",
+      },
+      {
+        pregunta: "A sequence of 8 notes starts on La and the 3rd note is 3 semitones from La. Which scale is it?",
+        opciones: ["Major", "Minor pentatonic", "Major pentatonic", "Natural minor"],
+        respuesta: 3,
+        explicacion: "A minor 3rd (3 semitones) with 8 notes: natural minor.",
+      },
+      {
+        pregunta: "In a pentatonic scale, the first step is a tone and a half (3 semitones). Which one is it?",
+        opciones: ["Major pentatonic", "Minor pentatonic", "Major", "Natural minor"],
+        respuesta: 1,
+        explicacion: "The minor pentatonic starts with a step of 3 semitones.",
+      },
+    ],
+    visuales: ["8 notes, 3rd at 4 semitones: major", "6 notes, first step of 3 semitones: minor pentatonic"],
+  },
+  "melodia-triada-fundamental-3-5": {
+    nombre: "How any triad is built: root, 3rd and 5th",
+    descripcion:
+      "A triad is 3 notes stacked in thirds: the root, the 3rd (4 semitones above if major, 3 if minor) and the 5th (7 semitones above the root in most cases). Changing those numbers changes the type of triad.",
+    pasos: [
+      "Root: the base note, at 0 semitones.",
+      "3rd: 4 semitones up (major) or 3 semitones up (minor). That difference alone decides whether the chord sounds major or minor.",
+      "5th: 7 semitones above the root in most cases (6 if it is diminished and 8 if it is augmented).",
+      "With this formula you can build any triad from any root: there is no need to memorize 12 separate major triads, it is the same recipe 12 times.",
+    ],
+    quiz: [
+      {
+        pregunta: "How many semitones are there between the root and the 3rd of a MAJOR triad?",
+        opciones: ["3", "7", "6", "4"],
+        respuesta: 3,
+        explicacion: "4 semitones gives a major 3rd; 3 semitones would give a minor 3rd.",
+      },
+      {
+        pregunta: "How many semitones are there between the root and the 5th of a DIMINISHED triad?",
+        opciones: ["7", "8", "6", "4"],
+        respuesta: 2,
+        explicacion: "7 semitones is the “normal” (perfect) 5th; 6 is the diminished 5th and 8, the augmented one.",
+      },
+      {
+        pregunta: "What decides whether a triad sounds major or minor?",
+        opciones: [
+          "The distance of the 5th only",
+          "The instrument it is played on",
+          "The volume it is played at",
+          "The distance of the 3rd from the root (4 or 3 semitones)",
+        ],
+        respuesta: 3,
+        explicacion: "It is the only number that changes between the major and the minor formula (with the same 5th).",
+      },
+    ],
+    visuales: ["Do major: 0, 4 and 7 semitones", "Do minor: 0, 3 and 7 semitones"],
+  },
+  "melodia-de-triada-a-septima": {
+    nombre: "From triad to seventh chord: one more note on top",
+    descripcion:
+      "A seventh chord is a triad (root, 3rd, 5th) with a 4th note on top, 10 or 11 semitones from the root depending on the type. It is not a brand-new chord from scratch, it is the usual triad with an addition.",
+    pasos: [
+      "You start with the usual triad (root, 3rd and 5th).",
+      "You add one more note, the 7th. On a major triad: at 11 semitones from the root it gives the major seventh (maj7) and at 10 semitones, the dominant seventh (7).",
+      "On a minor triad, the 7th at 10 semitones gives the minor seventh (m7).",
+      "Think of it as “triad + one note”, not as a new shape you have to learn from scratch.",
+    ],
+    quiz: [
+      {
+        pregunta: "How many semitones are there between the root and the 7th in a MAJOR seventh chord (maj7)?",
+        opciones: ["10", "7", "9", "11"],
+        respuesta: 3,
+        explicacion: "11 semitones above the root gives the major seventh.",
+      },
+      {
+        pregunta: "How many semitones are there between the root and the 7th in a dominant seventh (7)?",
+        opciones: ["10", "11", "9", "12"],
+        respuesta: 0,
+        explicacion: "10 semitones: the same distance as the minor seventh, but on a major triad.",
+      },
+      {
+        pregunta: "According to this technique, how is it best to think of a seventh chord?",
+        opciones: [
+          "As a totally new chord, unrelated to the triad",
+          "As two stacked triads",
+          "As the usual triad with one more note on top",
+          "As a complete scale",
+        ],
+        respuesta: 2,
+        explicacion: "It is the central idea: “triad + one note”, not a new shape.",
+      },
+    ],
+    visuales: ["Do maj7: the 7th at 11 semitones", "Do 7: the 7th at 10 semitones"],
+  },
+  "melodia-cuatro-triadas-por-terceras": {
+    nombre: "The four triads: stack thirds of 4 and 3 semitones",
+    descripcion:
+      "Each triad is a stack of two thirds: major = 4 + 3, minor = 3 + 4, diminished = 3 + 3, augmented = 4 + 4. Measure the two steps between the notes and you know which one it is.",
+    pasos: [
+      "Measure two steps in semitones: from the root to the 2nd note and from the 2nd to the 3rd. The steps can only be 3 (minor third) or 4 (major third).",
+      "Major = 4 + 3 (0-4-7). Minor = 3 + 4 (0-3-7). Diminished = 3 + 3 (0-3-6). Augmented = 4 + 4 (0-4-8).",
+      "If the first step is 4, it is major or augmented; if it is 3, it is minor or diminished. The second step separates the pair: major 3 (major) or 4 (augmented); minor 4 (minor) or 3 (diminished).",
+      "Count the semitones on the keyboard, in your head (Do to Mi: Do♯, Re, Re♯, Mi = 4), without counting the starting note.",
+    ],
+    quiz: [
+      {
+        pregunta: "Which steps, in semitones, make up a minor triad?",
+        opciones: ["3 + 4", "4 + 3", "3 + 3", "4 + 4"],
+        respuesta: 0,
+        explicacion: "Minor: a minor 3rd below and a major 3rd above (0-3-7).",
+      },
+      {
+        pregunta: "Which triad has steps of 3 + 3 semitones?",
+        opciones: ["Minor", "Major", "Augmented", "Diminished"],
+        respuesta: 3,
+        explicacion: "Two minor thirds in a row: 0-3-6.",
+      },
+      {
+        pregunta: "Which steps make up an augmented triad?",
+        opciones: ["4 + 3", "3 + 4", "4 + 4", "3 + 3"],
+        respuesta: 2,
+        explicacion: "Two major thirds in a row: 0-4-8.",
+      },
+      {
+        pregunta: "A triad has its notes at 0, 4 and 7 semitones from the root. Which one is it?",
+        opciones: ["Minor", "Augmented", "Major", "Diminished"],
+        respuesta: 2,
+        explicacion: "4 + 3: it is the major triad.",
+      },
+    ],
+    visuales: ["Do diminished: 3 + 3", "Do augmented: 4 + 4"],
+  },
+  "melodia-suspendidos-y-extendidos": {
+    nombre: "Sus, add9 and the 9, 11 and 13 chords: which note changes or is added",
+    descripcion:
+      "Sus2 and sus4 replace the 3rd with a 2nd or a 4th; add9 adds a 9th to the major triad; and the 9, 11 and 13 chords are a dominant seventh plus one, two or three more thirds on top.",
+    pasos: [
+      "Suspended chords: they have no 3rd. Sus2 replaces the 3rd with the 2nd (0-2-7) and sus4 with the 4th (0-5-7). Without a 3rd they sound neither major nor minor.",
+      "Add9: a major triad plus the 9th, without the seventh (0-4-7-14). 14 semitones is the 2nd but an octave higher.",
+      "The 9, 11 and 13 chords are built on the dominant seventh (0-4-7-10) and add one more third each time: ninth (9th, at 14 semitones), eleventh (plus the 11th, at 17) and thirteenth (plus the 13th, at 21).",
+      "To recognize them in Practice, count the notes and measure from the root: 3 notes with the 2nd note at 2 or 5 semitones = sus2 or sus4; 4 notes with one note at 14 semitones (and no 7th) = add9; 5, 6 or 7 notes = ninth, eleventh or thirteenth.",
+    ],
+    quiz: [
+      {
+        pregunta: "Which note does a sus2 chord change compared with the major triad?",
+        opciones: [
+          "The 5th for the 6th",
+          "The root for the 2nd",
+          "The 3rd for the 4th",
+          "The 3rd for the 2nd",
+        ],
+        respuesta: 3,
+        explicacion: "Sus2 = 0-2-7: the 3rd (4 semitones) becomes the 2nd (2 semitones).",
+      },
+      {
+        pregunta: "How many semitones from the root is the 9th?",
+        opciones: ["9", "14", "12", "10"],
+        respuesta: 1,
+        explicacion: "The 9th is the 2nd plus an octave: 2 + 12 = 14.",
+      },
+      {
+        pregunta: "Which chord are the 9, 11 and 13 chords built on?",
+        opciones: ["The minor triad", "The dominant seventh", "The diminished triad", "The sus4 chord"],
+        respuesta: 1,
+        explicacion: "0-4-7-10 plus thirds on top: 14, 17 and 21.",
+      },
+      {
+        pregunta: "A chord of 4 notes: root, major 3rd, perfect 5th and 9th (no seventh). Which one is it?",
+        opciones: ["Ninth (9)", "Add9", "Sus2", "Major seventh (maj7)"],
+        respuesta: 1,
+        explicacion: "Add9 is the major triad with the 9th added and no 7th.",
+      },
+    ],
+    visuales: ["Do sus4: 0, 5 and 7 semitones", "Do 9: the dominant seventh plus the 9th"],
+  },
+  "melodia-oido-ancla-la-440": {
+    nombre: "Anchor your ear to a reference: the 440 Hz La",
+    descripcion:
+      "Without a reference it is very hard to name a note by ear. Anchor your ear to a note you know well, like the 440 Hz La4 (the tuning note), and compare: lower or higher? By how much?",
+    pasos: [
+      "In this mode you hear a synthesized note (an electronic tone, not a piano) and pick which one it is. You are given no reference: you build it yourself.",
+      "A useful anchor is La4, at 440 Hz, the note instruments are tuned to. If you remember how it sounds, compare: is the note you hear lower or higher than that La? Far away or close?",
+      "Start with the register: is it low or high? That tells you which octave it is in. Then decide the name among the options.",
+      "The same name in different octaves (La3, La4, La5) sounds like “the same note” lower or higher: when you go up an octave, the frequency doubles.",
+    ],
+    quiz: [
+      {
+        pregunta: "How many hertz is La4, the tuning note?",
+        opciones: ["440", "220", "261", "880"],
+        respuesta: 0,
+        explicacion: "La4 = 440 Hz is the most widely used tuning reference.",
+      },
+      {
+        pregunta: "What happens to the frequency when you go up an octave?",
+        opciones: ["It increases by 12 Hz", "It doubles", "It is cut in half", "It stays the same"],
+        respuesta: 1,
+        explicacion: "La5 = 880 Hz, double La4 (440 Hz).",
+      },
+      {
+        pregunta: "Where is it best to start when identifying a note by ear?",
+        opciones: [
+          "Guess at random the first time",
+          "Decide whether it is low or high and compare it with a reference",
+          "Look at the volume of the note",
+          "Count how many seconds it lasts",
+        ],
+        respuesta: 1,
+        explicacion: "First the register and the comparison with a reference; then the name.",
+      },
+    ],
+    visuales: ["The La in three octaves"],
+  },
+  "melodia-oido-ordena-las-opciones": {
+    nombre: "Sort the options from low to high and compare",
+    descripcion:
+      "In the first levels the options are far apart. Sort them mentally from lowest to highest before listening, and in the high levels compare the note with its neighbors a semitone away.",
+    pasos: [
+      "In the lowest levels the four options are Do4, Fa4, Sol4 and Do5: far apart from each other (a 4th, a 5th and an octave from Do4). Sort them before listening, from lowest to highest.",
+      "When the note plays, decide whether it is one of the low, middle or high ones. With options this far apart, that is usually enough.",
+      "In the high levels sharps appear: a sharp is one semitone above its natural note (Do♯ sits just above Do). Compare the note you hear with the two closest neighbors and decide whether it is higher or lower.",
+      "You can repeat the note as many times as you want with the listen button. If you get tired, stop and come back later: the ear performs better in short sessions.",
+    ],
+    quiz: [
+      {
+        pregunta: "What do you do first with the options in the low levels?",
+        opciones: [
+          "Sort them from lowest to highest",
+          "Always pick the middle one",
+          "Ignore them and guess",
+          "Look for the longest one",
+        ],
+        respuesta: 0,
+        explicacion: "By sorting them you know what to compare the sounding note with.",
+      },
+      {
+        pregunta: "What is a sharp relative to its natural note?",
+        opciones: ["A semitone lower", "An octave higher", "The same note", "A semitone higher"],
+        respuesta: 3,
+        explicacion: "Do♯ sounds just above Do, a semitone away.",
+      },
+      {
+        pregunta: "How many semitones is Do4 from Sol4?",
+        opciones: ["5", "4", "12", "7"],
+        respuesta: 3,
+        explicacion: "Do4 to Sol4 is a perfect 5th: 7 semitones.",
+      },
+    ],
+    visuales: ["The options furthest apart: Do4, Fa4, Sol4 and Do5"],
+  },
+  "melodia-clase-sonido-y-nota": {
+    nombre: "Sound and note: pitch, octave and name",
+    descripcion:
+      "What the pitch of a sound is, how it becomes a named note, why notes repeat every octave and what the number in Do4 or La4 means.",
+    pasos: [
+      "A sound has four qualities: pitch (how low or high it is), duration, intensity (how loud it sounds) and timbre (what tells a flute from a piano playing the same note). Music made of notes works mostly with pitch.",
+      "Pitch depends on frequency: how many vibrations per second (hertz, Hz) the sound has. More frequency, higher; less frequency, lower. A note is the name we give to a specific pitch.",
+      "The natural notes have seven names: Do, Re, Mi, Fa, Sol, La, Si. After Si the series starts again with another, higher Do: that distance from one Do to the next is an octave. Between one Do and the next there are 12 semitones (the 12 keys, white and black, of that octave).",
+      "To tell one Do from another, the octave number is added: Do4, Do5... The scientific convention is used: Do4 is the middle C of the piano and La4 (the La right above it) is the tuning note, at 440 Hz. The number goes up when you reach Do, not La: Si3 and Do4 are neighbors.",
+      "When two notes have the same name and a different octave, like Do4 and Do5, they sound like “the same note” in different registers. That is what makes the scale repeat.",
+      "Common mistakes: thinking the octave number changes at La (it changes at Do); believing Do4 and Do5 are different notes by name (they are the same note in another octave); and mixing up pitch with volume: a note can sound soft and high, or loud and low.",
+    ],
+    quiz: [
+      {
+        pregunta: "What determines whether a sound is low or high?",
+        opciones: ["Its volume", "Its frequency", "Its timbre", "Its duration"],
+        respuesta: 1,
+        explicacion: "Pitch is given by frequency: more vibrations per second, higher.",
+      },
+      {
+        pregunta: "How many semitones are there from one Do to the next Do (an octave)?",
+        opciones: ["12", "7", "8", "10"],
+        respuesta: 0,
+        explicacion: "An octave spans 12 semitones: the 12 keys, white and black, between one Do and the next.",
+      },
+      {
+        pregunta: "In the scientific convention, which note is Do4?",
+        opciones: [
+          "The lowest Do on the piano",
+          "The tuning La",
+          "The middle Do of the piano",
+          "The highest Do on the piano",
+        ],
+        respuesta: 2,
+        explicacion: "Do4 is middle C; La4, a bit higher, is the 440 Hz one.",
+      },
+      {
+        pregunta: "Where does the octave number change?",
+        opciones: ["When you reach La", "When you reach Do", "When you reach Mi", "When you reach Si"],
+        respuesta: 1,
+        explicacion: "Si3 is the note just below Do4: the number goes up at Do.",
+      },
+      {
+        pregunta: "Do4 and Do5 are...",
+        opciones: [
+          "Two notes with different names",
+          "Notes that sound equally high",
+          "Exactly the same pitch",
+          "The same note in different octaves",
+        ],
+        respuesta: 3,
+        explicacion: "They have the same name; Do5 is an octave higher than Do4.",
+      },
+    ],
+    visuales: ["Do4 and Do5: the same note, an octave apart", "The octave number goes up when you reach Do"],
+  },
+  "melodia-clase-teclado-y-cifrado": {
+    nombre: "The seven notes on the keyboard and the American letter names",
+    descripcion:
+      "How to find Do, Re, Mi, Fa, Sol, La and Si using the groups of black keys, and how to translate between the Latin names and the American letter names (C, D, E, F, G, A, B).",
+    pasos: [
+      "The seven natural notes are the white keys of the piano: Do, Re, Mi, Fa, Sol, La, Si. The black keys are the altered notes (sharps and flats), which are studied later.",
+      "To find your place, use the groups of black keys. Do is the white key to the left of the group of 2; Re sits between those two black keys; Mi is the next one. Fa is the white key to the left of the group of 3; then come Sol, La and Si.",
+      "The American system gives a letter to each note: Do = C, Re = D, Mi = E, Fa = F, Sol = G, La = A, Si = B. The letters follow the alphabet, but the series starts on C (Do) and not on A, because A corresponds to La.",
+      "In Practice you are asked in both directions: “what is the letter name of Sol?” (G) and “which note is the letter B?” (Si). It pays to master both: half of the time you have to go from the letter to the name.",
+      "A trick: memorize the endpoints. Do = C (the first of the series) and La = A (the one at the start of the alphabet). The rest is counted from one of the two.",
+      "Common mistakes: believing A is Do (it is La); confusing B with Si♭ (B is natural Si; Si♭ is written B♭); and forgetting that the Latin names (Do, Re, Mi...) and the American ones (C, D, E...) are two ways of naming exactly the same notes.",
+    ],
+    quiz: [
+      {
+        pregunta: "Which note is the letter E in American letter names?",
+        opciones: ["Mi", "Re", "Fa", "Si"],
+        respuesta: 0,
+        explicacion: "C = Do, D = Re, E = Mi.",
+      },
+      {
+        pregunta: "What is the American letter name of La?",
+        opciones: ["A", "C", "G", "B"],
+        respuesta: 0,
+        explicacion: "La is A, the first letter of the alphabet.",
+      },
+      {
+        pregunta: "Where is the note Do on the keyboard?",
+        opciones: [
+          "Between the two black keys of the group of 2",
+          "To the left of the group of 3 black keys",
+          "On the white key to the left of the group of 2 black keys",
+          "To the right of the group of 3 black keys",
+        ],
+        respuesta: 2,
+        explicacion: "Do is the white key right next to the left of the group of two black keys.",
+      },
+      {
+        pregunta: "Which letter does Si correspond to?",
+        opciones: ["B", "A", "C", "S"],
+        respuesta: 0,
+        explicacion: "La = A, Si = B, Do = C.",
+      },
+      {
+        pregunta: "The Latin names (Do, Re, Mi...) and the American ones (C, D, E...) are...",
+        opciones: [
+          "Different notes",
+          "Two ways of naming the same notes",
+          "Pitches a semitone apart",
+          "Different scales",
+        ],
+        respuesta: 1,
+        explicacion: "Do = C, Re = D, etc.: the name changes, not the sound.",
+      },
+    ],
+    visuales: ["The seven natural notes", "Latin name and letter name"],
+  },
+  "melodia-clase-figuras-y-compas": {
+    nombre: "Note values, beat and time signature",
+    descripcion:
+      "How the whole note, half note, quarter note and eighth note are written and how long they last, what the beat is and what a time signature like 4/4 indicates.",
+    pasos: [
+      "Rhythm organizes sound in time. A note value indicates how long a sound lasts. The four basic ones are the whole note, half note, quarter note and eighth note.",
+      "How they are drawn: the whole note is a hollow head without a stem; the half note, a hollow head with a stem; the quarter note, a filled head with a stem; the eighth note, a filled head with a stem and a flag. Each note value also has a rest of the same duration.",
+      "Their durations are relative: each note value is worth half of the previous one. Taking the quarter note as one beat, the whole note lasts 4, the half note 2, the quarter note 1 and the eighth note ½. That is why 2 half notes = 1 whole note, 2 quarter notes = 1 half note and 2 eighth notes = 1 quarter note.",
+      "The beat is the regular pulse of the music, the one you tap with your foot. The time signature groups the beats into equal blocks, separated by vertical lines (bar lines). In 4/4, the top 4 says there are 4 beats per measure and the bottom 4, that each beat is worth a quarter note.",
+      "A 4/4 measure fits, for example, 1 whole note, or 2 half notes, or 4 quarter notes, or 8 eighth notes, or any mix that adds up to 4 beats: 1 half note + 2 quarter notes, 2 eighth notes + 1 quarter note + 1 half note...",
+      "Common mistakes: thinking a note value always lasts the same number of seconds (it depends on the tempo); believing the half note lasts less than the quarter note because of the word “half” (it lasts twice as long); and confusing the name with the number of beats. Simplification: there are time signatures with other beats (3/4, 6/8...) that are not studied here.",
+    ],
+    quiz: [
+      {
+        pregunta: "If the quarter note lasts 1 beat, how long does the half note last?",
+        opciones: ["1 beat", "4 beats", "2 beats", "half a beat"],
+        respuesta: 2,
+        explicacion: "The half note lasts twice as long as the quarter note.",
+      },
+      {
+        pregunta: "How many eighth notes add up to the same as one quarter note?",
+        opciones: ["1", "2", "4", "8"],
+        respuesta: 1,
+        explicacion: "The eighth note is worth half a beat: 2 eighth notes = 1 quarter note.",
+      },
+      {
+        pregunta: "In a 4/4 measure, how many beats are there in each measure?",
+        opciones: ["4", "2", "3", "8"],
+        respuesta: 0,
+        explicacion: "The top number indicates the beats per measure.",
+      },
+      {
+        pregunta: "Which of these combinations fills a 4/4 measure?",
+        opciones: ["1 half note + 1 quarter note", "3 half notes", "2 quarter notes + 1 whole note", "1 half note + 2 quarter notes"],
+        respuesta: 3,
+        explicacion: "2 + 1 + 1 = 4 beats.",
+      },
+      {
+        pregunta: "Which note has a hollow head and a stem?",
+        opciones: ["Whole note", "Quarter note", "Half note", "Eighth note"],
+        respuesta: 2,
+        explicacion: "Hollow without a stem is the whole note; hollow with a stem, the half note.",
+      },
+    ],
+    visuales: ["Duration of each note in a 4/4 measure"],
+  },
+  "melodia-clase-pentagrama-y-clave-de-sol": {
+    nombre: "The staff and the treble clef",
+    descripcion:
+      "How the staff is built, what the treble clef tells each line and space, and how to read the five lines and the four spaces without counting.",
+    pasos: [
+      "The staff is a set of five horizontal lines and four spaces between them. Lines and spaces are numbered from the bottom up: the first line is the bottom one. Each position represents a different pitch.",
+      "To know which note each position is, you need a clef. The treble clef has its spiral around the second line and that line is Sol (Sol4). From there, the whole staff is fixed.",
+      "Lines, from the bottom up: Mi4, Sol4, Si4, Re5, Fa5. Spaces: Fa4, La4, Do5, Mi5. Notice that the order alternates: line, space, line... and each position is the next note in the series Do-Re-Mi-Fa-Sol-La-Si.",
+      "The notehead decides the pitch: all that matters is where it sits on the lines. If it touches a line it is a line note; if it sits between two, a space note. The shape (hollow, filled, with a stem) tells you the duration, not the pitch.",
+      "In Practice you are asked for the name and octave of a written note: for example “Sol4”. Always start by finding the position (line or space and which one), then its name and lastly its octave.",
+      "Common mistakes: counting the lines from the top (they are counted from the bottom up); confusing the Sol line with the Fa line (the treble clef wraps the second line from the bottom); and believing the stem changes the name of the note (it does not). Simplification: there are other clefs (bass, alto) that assign other notes; only the treble clef is used here.",
+    ],
+    quiz: [
+      {
+        pregunta: "On which line does the spiral of the treble clef start and which note is it?",
+        opciones: [
+          "On the second line, Sol",
+          "On the first line, Mi",
+          "On the third line, Si",
+          "On the fifth line, Fa",
+        ],
+        respuesta: 0,
+        explicacion: "The treble clef wraps the second line from the bottom: that line is Sol.",
+      },
+      {
+        pregunta: "How are the lines and spaces of the staff counted?",
+        opciones: ["From the top down", "From left to right", "It depends on the note value", "From the bottom up"],
+        respuesta: 3,
+        explicacion: "The first line is the bottom one, and you continue upward.",
+      },
+      {
+        pregunta: "In treble clef, which note is the space between the 3rd and the 4th line?",
+        opciones: ["Re5", "La4", "Mi5", "Do5"],
+        respuesta: 3,
+        explicacion: "The spaces are Fa4, La4, Do5, Mi5: the third one (between the 3rd and 4th line) is Do5.",
+      },
+      {
+        pregunta: "What determines the pitch of a note on the staff?",
+        opciones: [
+          "Whether it has a stem or not",
+          "Whether its head is filled",
+          "Its position on the lines and spaces",
+          "The size of the head",
+        ],
+        respuesta: 2,
+        explicacion: "The position gives the pitch; the shape indicates the duration.",
+      },
+      {
+        pregunta: "Which note is the 4th line of the staff in treble clef?",
+        opciones: ["Si4", "Re5", "Fa5", "Do5"],
+        respuesta: 1,
+        explicacion: "Lines: Mi4, Sol4, Si4, Re5, Fa5: the fourth one is Re5.",
+      },
+    ],
+    visuales: ["The 5 lines", "The 4 spaces"],
+  },
+  "melodia-clase-lineas-adicionales": {
+    nombre: "Ledger lines: reading beyond the five lines",
+    descripcion:
+      "How the lowest and highest notes are written with ledger lines, how to work out their name from a known note and what the practiced range is (from Fa3 to Do6).",
+    pasos: [
+      "The staff only reaches from Mi4 to Fa5 (and its spaces). For lower or higher notes, ledger lines are added: short strokes, as wide as the note, that extend the staff with the same spacing between lines.",
+      "The logic does not change: keep following the alternation of line and space. Each position going up is the next note name and each position going down, the previous one.",
+      "Going down: from the Mi4 line the Re4 space goes down; then the first ledger line is Do4 (middle C). Next come Si3 (space), La3 (second ledger line), Sol3 (space) and Fa3 (third ledger line).",
+      "Going up: from the Fa5 line the Sol5 space goes up; the first ledger line is La5. Next come Si5 (space) and Do6 (second ledger line).",
+      "Strategy: lean on reference points and count from them. Do4 (lower ledger line), Mi4 (first line), Sol4 (second line), Fa5 (top line) and La5 and Do6 (the upper ones) are good anchors; the rest is counted one step at a time.",
+      "In Practice the range goes from Fa3 to Do6 in the high levels: the first levels use only the lines and Do4; then Si3 and Sol5 are added, then La3 and La5, and so on up to Fa3 and Do6. Common mistakes: forgetting to count the ledger line as one more position (a ledger line is a note); and confusing Do4 with Do5 (Do4 is below the staff, on a ledger line; Do5 is the third space, between the 3rd and 4th line).",
+    ],
+    quiz: [
+      {
+        pregunta: "In which position is Do4 (middle C) written in treble clef?",
+        opciones: [
+          "On the first line of the staff",
+          "On the first ledger line below the staff",
+          "In the first space",
+          "On the second ledger line below",
+        ],
+        respuesta: 1,
+        explicacion: "Do4 rests on a short ledger line just below the staff.",
+      },
+      {
+        pregunta: "Counting down from Do4, which is the next note?",
+        opciones: ["Re4", "Si4", "Si3", "La4"],
+        respuesta: 2,
+        explicacion: "The note before Do is Si, and since it moves to the octave below, it is Si3.",
+      },
+      {
+        pregunta: "Which note is written on the first ledger line above the staff?",
+        opciones: ["Sol5", "Si5", "La5", "Do6"],
+        respuesta: 2,
+        explicacion: "Fa5 (line), Sol5 (space), La5 (first ledger line).",
+      },
+      {
+        pregunta: "Which note is on the second ledger line above the staff?",
+        opciones: ["Si5", "La5", "Re6", "Do6"],
+        respuesta: 3,
+        explicacion: "La5 (1st ledger line), Si5 (space), Do6 (2nd ledger line).",
+      },
+      {
+        pregunta: "Which note is on the third ledger line below the staff?",
+        opciones: ["Sol3", "La3", "Fa3", "Mi3"],
+        respuesta: 2,
+        explicacion: "Do4 (1st), La3 (2nd) and Fa3 (3rd ledger line), with Si3 and Sol3 in the spaces.",
+      },
+    ],
+    visuales: ["Below the staff", "Above the staff"],
+  },
+  "melodia-clase-nombre-y-octava": {
+    nombre: "The full name of a note: letter and octave",
+    descripcion:
+      "How to go from a position on the staff to a name with an octave (Sol4, Re5, Si3...), what role Do plays and how it relates to the piano keys.",
+    pasos: [
+      "The full name of a note has two parts: the letter (Do, Re, Mi...) and the octave number. The position on the staff gives you both at once: it is not enough to know it is a Sol, you have to know which Sol.",
+      "How to know the octave: the number goes up every time you go from Si to Do. With the staff's reference notes: from Do4 to Si4 is octave 4 (Do4, Re4, Mi4, Fa4, Sol4, La4, Si4); from Do5 to Si5, octave 5; going down, Si3 is the last one of octave 3.",
+      "Examples: the second line is Sol4; the top line, Fa5; the space between the 3rd and 4th line, Do5; a note just below Do4 is called Si3, not Si4.",
+      "To answer quickly: first find the position (line or space), then the letter (with the phrase for the 9 positions) and finally the octave (is it above or below Do4? did it cross a Do?).",
+      "Common mistakes: giving the octave as “the closest one” without paying attention to Do (Si3 and Si4 are an octave apart, and Si3 is below Do4); changing octave at La instead of at Do; and confusing the name of a note with its position on the keyboard (a staff position is a natural note; black keys are written with accidentals).",
+    ],
+    quiz: [
+      {
+        pregunta: "In treble clef, which note is the second line from the bottom?",
+        opciones: ["Sol5", "Sol4", "Si4", "Mi4"],
+        respuesta: 1,
+        explicacion: "The second line is Sol and it is in octave 4.",
+      },
+      {
+        pregunta: "Which note written just below Do4 has the correct octave number?",
+        opciones: ["Si4", "Si5", "Si3", "La4"],
+        respuesta: 2,
+        explicacion: "The octave number goes up at Do: the note before Do4 is Si3.",
+      },
+      {
+        pregunta: "Which note is the top line of the staff in treble clef?",
+        opciones: ["Fa5", "Fa4", "Mi5", "Sol5"],
+        respuesta: 0,
+        explicacion: "The fifth line is Fa and it is in octave 5.",
+      },
+      {
+        pregunta: "What is the most useful order to read a note on the staff?",
+        opciones: [
+          "Octave, then color, then letter",
+          "Position, then letter, then octave",
+          "Letter, then shape, then stem",
+          "Duration, then letter, then octave",
+        ],
+        respuesta: 1,
+        explicacion: "First you find where it is, then its letter and lastly the octave.",
+      },
+      {
+        pregunta: "A note written just below Do4 is a Si. Why is it called Si3 and not Si4?",
+        opciones: [
+          "Because Si is always in octave 3",
+          "Because it is on a ledger line",
+          "Because it is an altered note",
+          "Because the octave number goes up at Do: Si3 is the note before Do4",
+        ],
+        respuesta: 3,
+        explicacion: "Si3 and Si4 are an octave apart; the one right below Do4 is Si3.",
+      },
+    ],
+    visuales: ["Sol4, Do5 and Fa5", "Si3, just below Do4", "On the keyboard: Si3 and Do4 are neighbors"],
+  },
+  "melodia-clase-tonos-y-semitonos": {
+    nombre: "Semitones and tones: the unit of measure of music",
+    descripcion:
+      "What a semitone is and what a tone is, how they are counted on the keyboard, what the steps between the natural notes are and why an octave adds up to 12 semitones.",
+    pasos: [
+      "The semitone is the smallest distance in Western music: from one piano key to the neighboring key, white or black. A tone is two semitones: from one key to the second neighbor.",
+      "An octave, from one Do to the next, has 12 semitones: the 12 keys (7 white and 5 black) that go from one Do up to just before the next. That is why all musical distances can be measured by counting keys.",
+      "Among the natural notes, almost all are a tone apart: Do-Re, Re-Mi, Fa-Sol, Sol-La and La-Si. Only two pairs are a semitone apart, because they have no black key in between: Mi-Fa and Si-Do.",
+      "Going through Do-Re-Mi-Fa-Sol-La-Si-Do: T, T, S, T, T, T, S (T = tone, S = semitone). It adds up to 5 tones and 2 semitones: 5 × 2 + 2 = 12 semitones, a complete octave.",
+      "This sequence of steps, T-T-S-T-T-T-S, is the one that defines the major scale. In the scales lesson it is applied to any starting note.",
+      "Common mistakes: counting the starting note as a semitone (you count the steps, not the key you start on); thinking a tone is the distance between neighboring white keys (Mi-Fa is a semitone, even though they are neighboring white keys); and believing the semitone is “half an octave” (it is a twelfth).",
+    ],
+    quiz: [
+      {
+        pregunta: "How many semitones are in a tone?",
+        opciones: ["1", "3", "4", "2"],
+        respuesta: 3,
+        explicacion: "A tone equals two semitones.",
+      },
+      {
+        pregunta: "How many semitones are in an octave?",
+        opciones: ["7", "12", "8", "10"],
+        respuesta: 1,
+        explicacion: "The 12 keys (7 white and 5 black) from one Do to the next.",
+      },
+      {
+        pregunta: "Between which natural notes is there only one semitone?",
+        opciones: ["Do-Re and Fa-Sol", "Mi-Fa and Si-Do", "Re-Mi and La-Si", "Sol-La and Do-Re"],
+        respuesta: 1,
+        explicacion: "There is no black key between Mi and Fa, nor between Si and Do.",
+      },
+      {
+        pregunta: "How many tones and semitones do the natural notes from Do to Do, one octave, add up to?",
+        opciones: ["4 tones and 3 semitones", "5 tones and 2 semitones", "6 tones and 1 semitone", "7 tones"],
+        respuesta: 1,
+        explicacion: "T, T, S, T, T, T, S: 5 tones and 2 semitones add up to 12 semitones.",
+      },
+      {
+        pregunta: "How many semitones are there from Mi to Sol?",
+        opciones: ["2", "3", "4", "1"],
+        respuesta: 1,
+        explicacion: "Mi-Fa is 1 semitone and Fa-Sol is 2 (a tone): 1 + 2 = 3.",
+      },
+    ],
+    visuales: ["Tones (T) and semitones (S) between the natural notes"],
+  },
+  "melodia-clase-sostenido-bemol-becuadro": {
+    nombre: "Sharp, flat and natural",
+    descripcion:
+      "What the three basic accidentals do, how they are drawn next to the note, and how an altered note is read on the staff.",
+    pasos: [
+      "Accidentals change the pitch of a note without changing its letter name. The sharp (♯) raises it a semitone; the flat (♭) lowers it a semitone; the natural (♮) cancels a previous accidental and returns the note to its natural form.",
+      "On the staff, the symbol is written to the left of the notehead, at the same height. The note does not move: Fa♯ is written in the same position as Fa, and so is Fa♭.",
+      "On the keyboard, sharps and flats usually land on black keys: Do♯ is the black key between Do and Re, and Re♭ is that same key seen from Re. The cases that do not use a black key (Mi♯, Si♯, Fa♭, Do♭) are covered in the enharmonics lesson.",
+      "All seven notes can take a sharp or a flat: Do♯, Re♯, Mi♯, Fa♯, Sol♯, La♯, Si♯ and Do♭, Re♭, Mi♭, Fa♭, Sol♭, La♭, Si♭. In Practice you are shown one of them and must name it with its octave (for example, Sol♯4).",
+      "Sheet music rule: an accidental written during a measure applies to that note (in that position) until the bar line, unless a natural cancels it earlier. The accidentals of a key signature (the ones written at the start) apply to the whole piece. This lesson only covers the ones written next to the note.",
+      "Common mistakes: reading the accidental as if it changed the letter (Fa♯ is still a modified Fa note); confusing ♯ with ♭ (♯ raises, ♭ lowers); and forgetting that there are also the double sharp and the double flat, which are not studied here.",
+    ],
+    quiz: [
+      {
+        pregunta: "What does a flat (♭) do to a note?",
+        opciones: ["It lowers it by a semitone", "It raises it by a semitone", "It lowers it by a tone", "It cancels it"],
+        respuesta: 0,
+        explicacion: "A flat lowers the note by a half step (a semitone).",
+      },
+      {
+        pregunta: "What is the function of the natural (♮)?",
+        opciones: [
+          "It raises the note by a tone",
+          "It cancels a previous accidental and returns the note to its natural form",
+          "It lowers the note by a tone",
+          "It repeats the note",
+        ],
+        respuesta: 1,
+        explicacion: "The natural leaves the note natural, with no sharp or flat.",
+      },
+      {
+        pregunta: "Where is the accidental symbol written relative to the note?",
+        opciones: [
+          "To the right of the note",
+          "Above the stem",
+          "To the left of the notehead",
+          "Below the staff",
+        ],
+        respuesta: 2,
+        explicacion: "The accidental goes in front of the note, at the same height.",
+      },
+      {
+        pregunta: "Is the position of Fa♯ on the staff different from that of Fa?",
+        opciones: [
+          "Yes: it is one space higher",
+          "Yes: it is one line lower",
+          "No: it is the same position, with the symbol in front",
+          "Yes: it changes clef",
+        ],
+        respuesta: 2,
+        explicacion: "The accidental does not move the note: it only changes its actual pitch.",
+      },
+      {
+        pregunta: "Which of these altered notes is valid (exists and can be written)?",
+        opciones: ["None: Mi does not accept accidentals", "Mi♯", "Only Do♯ and Fa♯ exist", "Only flats exist"],
+        respuesta: 1,
+        explicacion: "All seven notes can take ♯ or ♭; Mi♯ sounds the same as Fa.",
+      },
+    ],
+    visuales: ["The same position: natural, sharp and flat", "Sol, Sol♯ and Sol♭ on the keyboard"],
+  },
+  "melodia-clase-enarmonia": {
+    nombre: "Enharmonics: one sound, two names",
+    descripcion:
+      "Why each black key has two names, what the four cases are in which an altered note sounds like a white key (Mi♯, Si♯, Fa♭, Do♭) and how to avoid the enharmonic trap in Practice.",
+    pasos: [
+      "Two notes are enharmonic if they sound the same (on the piano, it is the same key) but are written with different names. Each black key has two names: Do♯ or Re♭, Re♯ or Mi♭, Fa♯ or Sol♭, Sol♯ or La♭, La♯ or Si♭.",
+      "Which of the two to use depends on the scale and on the letter the notation needs: in Sol major Fa♯ appears (not Sol♭) because the scale uses one letter per degree. For a single note you can choose, which is why in Practice you see both sharps and flats.",
+      "There are also enharmonics with white keys, because Mi-Fa and Si-Do are a semitone apart: Mi♯ = Fa, Si♯ = Do (of the next octave), Fa♭ = Mi and Do♭ = Si (of the previous octave). They are rare in musical practice, but they are valid and Practice uses them.",
+      "How to avoid the trap: when a question offers you two names that sound the same, the correct one is the one that matches the drawn position. A note drawn in the Mi position with a ♯ in front is Mi♯, not Fa. Read the letter from the position first.",
+      "Simplification: perfect equivalence holds in piano tuning (equal temperament). In music theory, enharmonic notes are told apart by their function within the key, and some instruments tune them with slightly different nuances.",
+      "Common mistakes: believing Do♯ and Re♭ are different keys (on the piano they are the same); answering by the sound instead of by the position; and forgetting that Si♯ falls in the next octave and Do♭ in the previous one (the octave number changes).",
+    ],
+    quiz: [
+      {
+        pregunta: "What are the two ways of naming the black key between La and Si?",
+        opciones: ["La♭ and Si♯", "La♯ and Si♭", "Sol♯ and La♭", "La♯ and Si♯"],
+        respuesta: 1,
+        explicacion: "La♯ and Si♭ are enharmonic.",
+      },
+      {
+        pregunta: "Which note does Fa♭ sound the same as?",
+        opciones: ["Fa♯", "Sol♭", "Mi", "Re♯"],
+        respuesta: 2,
+        explicacion: "Fa♭ lowers Fa by a semitone: it is Mi.",
+      },
+      {
+        pregunta: "A note drawn in the Mi position with a ♯ in front is...",
+        opciones: ["Fa", "Fa♯", "Re♯", "Mi♯"],
+        respuesta: 3,
+        explicacion: "The position gives the letter: Mi♯ (it sounds the same as Fa, but it is named by the position).",
+      },
+      {
+        pregunta: "In which octave does Si♯3 fall?",
+        opciones: [
+          "It sounds like Do4, in the next octave",
+          "It sounds like Do3, in the same octave",
+          "It sounds like La♯3",
+          "It sounds like Si4",
+        ],
+        respuesta: 0,
+        explicacion: "Raising Si3 by a semitone gives Do4.",
+      },
+      {
+        pregunta: "Why are Do♯ and Re♭ the same piano key?",
+        opciones: [
+          "Because Do and Re are the same note",
+          "Because the two are an octave apart",
+          "Because the flat and the sharp do not change the pitch",
+          "Because between Do and Re there is only one black key, a semitone above Do and one below Re",
+        ],
+        respuesta: 3,
+        explicacion: "Do♯ raises Do a semitone and Re♭ lowers Re a semitone: they reach the same key.",
+      },
+    ],
+    visuales: ["Each black key, two names", "Mi♯ = Fa · Si♯ = Do"],
+  },
+  "melodia-clase-escala-mayor": {
+    nombre: "The major scale",
+    descripcion:
+      "What a scale is, its degrees and its formula of tones and semitones, and how to build the major scale from Do, Sol or Fa.",
+    pasos: [
+      "A scale is a series of notes ordered by pitch within an octave, with a fixed distribution of tones and semitones. The first note (the tonic) gives it its name, and each note has a degree: 1st, 2nd... 7th and the 8th, which repeats the tonic an octave higher.",
+      "Remember: a tone is 2 semitones and a semitone is the distance between neighboring keys (white or black). The major scale always follows the formula T-T-S-T-T-T-S, that is, 2-2-1-2-2-2-1 semitones, which adds up to 12 (an octave).",
+      "Do major falls on the white keys: Do-Re-Mi-Fa-Sol-La-Si-Do. The semitones are at Mi-Fa and Si-Do.",
+      "Sol major: Sol-La-Si-Do-Re-Mi-Fa♯-Sol. The Fa♯ (a black key) is needed so that there is a tone between the 6th and the 7th, and a semitone from the 7th to the octave.",
+      "Fa major: Fa-Sol-La-Si♭-Do-Re-Mi-Fa. Here the Si♭ is needed so that there is a semitone between the 3rd and the 4th (La-Si♭).",
+      "Common mistakes: miscounting the semitones (you count the steps, not the keys); forgetting the black keys; and believing there is only one possible spelling. Simplification: in Practice, Fa major may appear written with La♯ instead of Si♭ because altered notes are always written with sharps or always with flats; it sounds the same. In sheet music one letter per degree is used.",
+    ],
+    quiz: [
+      {
+        pregunta: "How many semitones are there in total in the major scale, from the tonic to its octave?",
+        opciones: ["12", "7", "10", "14"],
+        respuesta: 0,
+        explicacion: "2+2+1+2+2+2+1 = 12.",
+      },
+      {
+        pregunta: "What semitone formula does the major scale have?",
+        opciones: ["2-2-1-2-2-2-1", "2-1-2-2-1-2-2", "2-2-3-2-3", "1-2-2-1-2-2-2"],
+        respuesta: 0,
+        explicacion: "It is the formula T-T-S-T-T-T-S.",
+      },
+      {
+        pregunta: "Which is the Sol major scale?",
+        opciones: [
+          "Sol-La-Si-Do-Re-Mi-Fa♯-Sol",
+          "Sol-La-Si-Do-Re-Mi-Fa-Sol",
+          "Sol-La♭-Si♭-Do-Re-Mi♭-Fa-Sol",
+          "Sol-La-Si♭-Do-Re-Mi-Fa♯-Sol",
+        ],
+        respuesta: 0,
+        explicacion: "It needs Fa♯ so that the 7th degree is a semitone from the octave.",
+      },
+      {
+        pregunta: "What is the 4th degree of Fa major?",
+        opciones: ["Si", "Si♭", "La", "Do"],
+        respuesta: 1,
+        explicacion: "Fa-Sol-La-Si♭: between La and Si♭ there is a semitone, as the formula demands.",
+      },
+      {
+        pregunta: "Where are the semitones of Do major?",
+        opciones: [
+          "Between Do-Re and Re-Mi",
+          "Between Fa-Sol and Sol-La",
+          "Between Mi-Fa and between Si-Do",
+          "Between La-Si and Si-Do only",
+        ],
+        respuesta: 2,
+        explicacion: "There is no black key between Mi and Fa, nor between Si and Do.",
+      },
+    ],
+    visuales: ["Do major", "Sol major", "Fa major", "Sol major on the staff"],
+  },
+  "melodia-clase-escala-menor-natural": {
+    nombre: "The natural minor scale and relative scales",
+    descripcion:
+      "The formula of the natural minor scale, its relationship with the major (relative scales) and how to build it from La, Mi or Re.",
+    pasos: [
+      "The natural minor scale has the formula T-S-T-T-S-T-T, that is, 2-1-2-2-1-2-2 semitones (it adds up to 12). Its two semitones fall between the 2nd and 3rd degree, and between the 5th and 6th.",
+      "Compared with the major scale on the same tonic, natural minor has three lower notes: the 3rd, 6th and 7th degrees. That lowered 3rd degree (3 semitones above the tonic, instead of 4) is what gives the “minor” character.",
+      "Relatives: every major has a minor with the same notes, which starts on the 6th degree of the major. Natural minor is the notes of that major started on its 6th degree; La minor and Do major share all their notes.",
+      "La minor: La-Si-Do-Re-Mi-Fa-Sol-La (white keys only). Mi minor: Mi-Fa♯-Sol-La-Si-Do-Re-Mi (same notes as Sol major). Re minor: Re-Mi-Fa-Sol-La-Si♭-Do-Re (same as Fa major).",
+      "Common mistakes: believing minor is simply “major with flats on everything” (only the 3rd, 6th and 7th are lowered); confusing a scale with its relative (they share notes, but have a different tonic); and forgetting there are other minor variants. Simplification: only natural minor is studied here, not harmonic or melodic.",
+    ],
+    quiz: [
+      {
+        pregunta: "What semitone formula does the natural minor scale have?",
+        opciones: ["2-2-1-2-2-2-1", "3-2-2-3-2", "2-2-3-2-3", "2-1-2-2-1-2-2"],
+        respuesta: 3,
+        explicacion: "T-S-T-T-S-T-T.",
+      },
+      {
+        pregunta: "Which degrees are lower in a natural minor than in the major on the same tonic?",
+        opciones: ["The 2nd, 4th and 5th", "Only the 3rd", "The 3rd, 6th and 7th", "The 1st and 8th"],
+        respuesta: 2,
+        explicacion: "They are the three notes that drop by a semitone.",
+      },
+      {
+        pregunta: "Which major scale does Mi minor share notes with?",
+        opciones: ["Mi major", "Sol major", "Re major", "Do major"],
+        respuesta: 1,
+        explicacion: "Mi is the 6th degree of Sol major.",
+      },
+      {
+        pregunta: "What is the 3rd note of La natural minor?",
+        opciones: ["Do♯", "Do", "Si", "Re"],
+        respuesta: 1,
+        explicacion: "La-Si-Do: from La to Do there are 3 semitones (a minor 3rd).",
+      },
+      {
+        pregunta: "What is the relative scale of a major scale?",
+        opciones: [
+          "The minor that starts on its 6th degree and uses the same notes",
+          "A major scale an octave away",
+          "The same scale played backwards",
+          "A scale with all its notes altered",
+        ],
+        respuesta: 0,
+        explicacion: "Example: La minor is the relative of Do major.",
+      },
+    ],
+    visuales: ["La natural minor", "Mi natural minor", "Re natural minor"],
+  },
+  "melodia-clase-pentatonicas": {
+    nombre: "The major and minor pentatonic scales",
+    descripcion:
+      "Five-note scales: their formulas, how they come from the major and the natural minor by removing two degrees, and how to recognize them.",
+    pasos: [
+      "“Pentatonic” means “five sounds”. They are scales of five notes per octave, without the degrees that create semitones within the scale, which is why they sound very “open” and are used in many kinds of music around the world.",
+      "Major pentatonic: formula 2-2-3-2-3 semitones (T-T-1½-T-1½). It comes from the major scale by removing the 4th and 7th degrees. Do major pentatonic: Do-Re-Mi-Sol-La (Fa and Si are removed).",
+      "Minor pentatonic: formula 3-2-2-3-2 semitones. It comes from natural minor by removing the 2nd and 6th degrees. La minor pentatonic: La-Do-Re-Mi-Sol (Si and Fa are removed).",
+      "The two are relatives, like the major and the minor: La minor pentatonic has the same five notes as Do major pentatonic.",
+      "How to recognize them in Practice: drawn, they are 6 notes (with the octave). If the first step is a tone, it is major pentatonic; if it is a tone and a half (3 semitones), minor pentatonic. The steps of 3 semitones are what tell it apart from the major and the natural minor.",
+      "Common mistakes: counting the octave as if it were a distinct sixth note (it repeats the first); confusing the minor pentatonic with natural minor (the pentatonic has only five notes); and assuming its formula adds up to less than an octave (2+2+3+2+3 = 12 and 3+2+2+3+2 = 12).",
+    ],
+    quiz: [
+      {
+        pregunta: "How many different notes does a pentatonic scale have within one octave?",
+        opciones: ["4", "5", "6", "7"],
+        respuesta: 1,
+        explicacion: "“Penta” means five.",
+      },
+      {
+        pregunta: "What semitone formula does the major pentatonic have?",
+        opciones: ["3-2-2-3-2", "2-2-1-2-2-2-1", "2-1-2-2-1-2-2", "2-2-3-2-3"],
+        respuesta: 3,
+        explicacion: "Tone, tone, tone and a half, tone, tone and a half.",
+      },
+      {
+        pregunta: "Which degrees are removed from the major scale to get the major pentatonic?",
+        opciones: ["The 2nd and 6th", "The 3rd and 7th", "The 1st and 5th", "The 4th and 7th"],
+        respuesta: 3,
+        explicacion: "In Do major, Fa and Si are removed: Do-Re-Mi-Sol-La remain.",
+      },
+      {
+        pregunta: "Which is the La minor pentatonic?",
+        opciones: ["La-Si-Do♯-Mi-Fa♯", "La-Do-Re-Mi-Sol", "La-Si-Do-Re-Mi", "La-Do-Re♯-Mi-Sol"],
+        respuesta: 1,
+        explicacion: "It comes from La natural minor by removing the 2nd (Si) and the 6th (Fa).",
+      },
+      {
+        pregunta: "A sequence starts on Do, has 6 notes and its first step is 3 semitones. Which scale is it?",
+        opciones: ["Major pentatonic", "Natural minor", "Minor pentatonic", "Major"],
+        respuesta: 2,
+        explicacion: "The initial step of a tone and a half is the signature of the minor pentatonic.",
+      },
+    ],
+    visuales: ["Do major pentatonic", "La minor pentatonic"],
+  },
+  "melodia-clase-intervalos-y-terceras": {
+    nombre: "Intervals: measuring the distance between two notes",
+    descripcion:
+      "What an interval is, how it is counted in semitones, what the thirds and fifths that make up chords are and why a chord is a stack of thirds.",
+    pasos: [
+      "An interval is the distance between two notes. It can be measured in semitones, counting piano keys from one to the other without counting the starting one: from Do to Mi is 4 semitones (Do♯, Re, Re♯, Mi).",
+      "It is also named by the number of letters: from Do to Mi (Do, Re, Mi) is a 3rd; from Do to Sol, a 5th; from Do to Si, a 7th. The full name adds the quality: major, minor, perfect, augmented or diminished.",
+      "The thirds: minor 3rd = 3 semitones (Do-Mi♭); major 3rd = 4 semitones (Do-Mi). The fifths: perfect 5th = 7 semitones (Do-Sol); diminished 5th = 6 (Do-Sol♭); augmented 5th = 8 (Do-Sol♯).",
+      "The sevenths: minor 7th = 10 semitones (Do-Si♭); major 7th = 11 (Do-Si); diminished 7th = 9 (written with a double flat on Si and sounds like La). Other distances that appear in chords: major 2nd = 2, perfect 4th = 5, and an octave higher, the 9th = 14, the 11th = 17 and the 13th = 21.",
+      "A chord is built by stacking thirds on a root note: root, 3rd, 5th and, if it continues, 7th, 9th, 11th, 13th. On the staff it looks like notes on consecutive lines or spaces (one yes, one no).",
+      "Common mistakes: counting the starting note as a semitone (Do to Mi is 4, not 5); confusing the number with the semitones (a 3rd is 3 or 4 semitones, not always 3); and believing that all intervals with the same name measure the same (a 3rd can be major or minor). Simplification: only the intervals that chords use are studied.",
+    ],
+    quiz: [
+      {
+        pregunta: "How many semitones are there between Do and Mi?",
+        opciones: ["3", "5", "4", "2"],
+        respuesta: 2,
+        explicacion: "Do♯, Re, Re♯, Mi: 4 semitones (a major 3rd).",
+      },
+      {
+        pregunta: "How many semitones does a perfect 5th measure?",
+        opciones: ["6", "7", "8", "5"],
+        respuesta: 1,
+        explicacion: "Example: from Do to Sol there are 7 semitones.",
+      },
+      {
+        pregunta: "How many semitones does a minor 3rd measure?",
+        opciones: ["4", "2", "3", "5"],
+        respuesta: 2,
+        explicacion: "Example: from Do to Mi♭ there are 3 semitones.",
+      },
+      {
+        pregunta: "How is a chord built according to this lesson?",
+        opciones: [
+          "By adding notes at random",
+          "By playing a complete scale",
+          "By stacking thirds on a root",
+          "By repeating the same note in different octaves",
+        ],
+        respuesta: 2,
+        explicacion: "Root, 3rd, 5th, 7th..., each one a third above the previous one.",
+      },
+      {
+        pregunta: "How many semitones does a major 7th measure?",
+        opciones: ["10", "9", "11", "12"],
+        respuesta: 2,
+        explicacion: "From Do to Si is 11 semitones; to Si♭ it would be 10 (a minor 7th).",
+      },
+    ],
+    visuales: [
+      "Major 3rd: from Do to Mi, 4 semitones",
+      "Minor 3rd: from Do to Mi♭, 3 semitones",
+      "Perfect 5th: from Do to Sol, 7 semitones",
+    ],
+  },
+  "melodia-clase-triadas": {
+    nombre: "The four triads: major, minor, diminished and augmented",
+    descripcion:
+      "How each triad is formed with its semitones (0-4-7, 0-3-7, 0-3-6, 0-4-8), how to recognize it on the staff and how they differ.",
+    pasos: [
+      "A triad is a three-note chord: root, 3rd and 5th. There are four types depending on the size of those two thirds.",
+      "Major: 0-4-7 semitones (major 3rd + minor 3rd). Minor: 0-3-7 (minor 3rd + major 3rd). Diminished: 0-3-6 (two minor thirds). Augmented: 0-4-8 (two major thirds).",
+      "Do major: Do-Mi-Sol. Do minor: Do-Mi♭-Sol. Do diminished: Do-Mi♭-Sol♭. Do augmented: Do-Mi-Sol♯. Compare with the major: the minor lowers the 3rd; the diminished also lowers the 5th; the augmented raises the 5th.",
+      "On the staff, a triad written in normal form is three notes on consecutive lines or consecutive spaces (one yes, one no). Pay attention to the accidentals: they are what tells one triad from another, because the letters are the same.",
+      "How they sound: the major is usually described as stable and bright, the minor as darker, the diminished as tense and unstable and the augmented as suspended and ambiguous. These are general descriptions, not exact rules.",
+      "Common mistakes: confusing the augmented with the major because they have the same 3rd (the one that changes is the 5th); miscounting the semitones of the 5th (7 is perfect, 6 diminished, 8 augmented); and believing the minor triad has a different 5th (it is the same as the major, 7 semitones). Simplification: in Practice, altered notes are written with sharps or flats depending on the exercise; here the usual spelling is used.",
+    ],
+    quiz: [
+      {
+        pregunta: "What semitones does a minor triad have?",
+        opciones: ["0-4-7", "0-3-7", "0-3-6", "0-4-8"],
+        respuesta: 1,
+        explicacion: "Root, minor 3rd and perfect 5th.",
+      },
+      {
+        pregunta: "Which triad has a major 3rd and an augmented 5th?",
+        opciones: ["Major", "Augmented", "Minor", "Diminished"],
+        respuesta: 1,
+        explicacion: "0-4-8: two major thirds.",
+      },
+      {
+        pregunta: "Which notes make up Do diminished?",
+        opciones: ["Do-Mi-Sol♭", "Do-Mi♭-Sol", "Do-Mi♭-Sol♭", "Do-Mi-Sol♯"],
+        respuesta: 2,
+        explicacion: "Minor 3rd (Mi♭) and diminished 5th (Sol♭): 0-3-6.",
+      },
+      {
+        pregunta: "What is the difference between Do minor and Do major?",
+        opciones: [
+          "The 5th is a semitone lower",
+          "The root is different",
+          "It has one more note",
+          "The 3rd is a semitone lower",
+        ],
+        respuesta: 3,
+        explicacion: "Do-Mi-Sol becomes Do-Mi♭-Sol: only the 3rd goes down.",
+      },
+      {
+        pregunta: "On the staff, what does a normal triad look like?",
+        opciones: [
+          "Three notes on the same line",
+          "Three notes on consecutive lines or on consecutive spaces",
+          "Three notes in neighboring positions",
+          "One note with three accidentals",
+        ],
+        respuesta: 1,
+        explicacion: "The notes are a third apart: one position yes, another no.",
+      },
+    ],
+    visuales: ["Do major", "Do minor", "Do diminished", "Do augmented", "Do minor on the staff"],
+  },
+  "melodia-clase-septimas": {
+    nombre: "Seventh chords: maj7, 7, m7 and dim7",
+    descripcion:
+      "How the four seventh chords assessed in Practice are formed, by adding a 7th to a triad: maj7, dominant (7), m7 and diminished (dim7).",
+    pasos: [
+      "A seventh chord is a triad with a fourth note, the 7th, stacked one more third above. It has four notes: root, 3rd, 5th and 7th.",
+      "Major seventh (maj7): major triad + major 7th: 0-4-7-11 (Do-Mi-Sol-Si). Dominant seventh (7): major triad + minor 7th: 0-4-7-10 (Do-Mi-Sol-Si♭). Minor seventh (m7): minor triad + minor 7th: 0-3-7-10 (Do-Mi♭-Sol-Si♭).",
+      "Diminished seventh (dim7): diminished triad + diminished 7th: 0-3-6-9 (Do-Mi♭-Sol♭ and a fourth note at 9 semitones, which sounds like La). It is made of three minor thirds in a row: 3 + 3 + 3.",
+      "The major 7th is at 11 semitones (a semitone below the octave) and the minor at 10 (a tone below). The diminished, at 9. Notice that the dominant 7 and the m7 share the same 7th (10); what tells them apart is the 3rd (4 or 3).",
+      "To recognize the chord in Practice, measure the 3rd (4 = major, 3 = minor) and the 7th (11 = major, 10 = minor, 9 = diminished): major 3rd and 7th at 11 = maj7; major 3rd and 7th at 10 = 7; minor 3rd and 7th at 10 = m7; minor 3rd, 5th at 6 and 7th at 9 = dim7.",
+      "Common mistakes: confusing maj7 (11 semitones) with the dominant 7 (10); counting the 7th as 7 semitones (it is the letter number, not the number of semitones); and believing that a plain 7 is the major one (7 is the dominant). Simplification: the 7th of dim7 is written in theory as Si double flat, which sounds like La; Practice and this lesson show it as La.",
+    ],
+    quiz: [
+      {
+        pregunta: "What semitones does a dominant seventh chord (7) have?",
+        opciones: ["0-4-7-11", "0-4-7-10", "0-3-7-10", "0-3-6-9"],
+        respuesta: 1,
+        explicacion: "Major triad with a minor 7th.",
+      },
+      {
+        pregunta: "What semitones does a major seventh chord (maj7) have?",
+        opciones: ["0-4-7-10", "0-3-7-11", "0-3-7-10", "0-4-7-11"],
+        respuesta: 3,
+        explicacion: "Major triad with a major 7th (11 semitones).",
+      },
+      {
+        pregunta: "Which chord has a minor 3rd, a perfect 5th and a 7th at 10 semitones?",
+        opciones: ["Dominant seventh (7)", "Minor seventh (m7)", "Major seventh (maj7)", "Diminished seventh (dim7)"],
+        respuesta: 1,
+        explicacion: "0-3-7-10: m7.",
+      },
+      {
+        pregunta: "What shape does a dim7 chord have in semitones?",
+        opciones: ["0-3-7-10", "0-3-6-9", "0-4-7-10", "0-4-8-11"],
+        respuesta: 1,
+        explicacion: "Three minor thirds in a row: 3 + 3 + 3.",
+      },
+      {
+        pregunta: "What is the difference between Do maj7 and Do 7?",
+        opciones: [
+          "The 3rd: 3 versus 4",
+          "The 7th: 11 semitones versus 10",
+          "The 5th: 6 versus 7",
+          "The root",
+        ],
+        respuesta: 1,
+        explicacion: "Both have a major 3rd and a perfect 5th; the seventh changes.",
+      },
+    ],
+    visuales: ["Do maj7", "Do 7 (dominant)", "Do m7", "Do dim7: three minor thirds"],
+  },
+  "melodia-clase-suspendidos-y-extendidos": {
+    nombre: "Suspended chords, add9 and extended chords (9, 11 and 13)",
+    descripcion:
+      "The chords that appear in the high levels of Practice: sus2, sus4, add9 and the extended ninth, eleventh and thirteenth, with their semitones and how to recognize them.",
+    pasos: [
+      "Suspended chords: they replace the 3rd with another note, so they sound neither major nor minor. Sus2: 0-2-7 (Do-Re-Sol), with the 2nd instead of the 3rd. Sus4: 0-5-7 (Do-Fa-Sol), with the 4th instead of the 3rd.",
+      "Add9: the major triad plus the 9th, without a seventh: 0-4-7-14 (Do-Mi-Sol-Re, with the Re an octave higher). The 9th is the 2nd raised an octave: 2 + 12 = 14 semitones.",
+      "Extended chords: thirds are stacked on the dominant seventh (0-4-7-10). Ninth (9): plus the 9th, at 14 semitones: 0-4-7-10-14 (5 notes). Eleventh (11): plus the 11th, at 17: 0-4-7-10-14-17 (6 notes). Thirteenth (13): plus the 13th, at 21: 0-4-7-10-14-17-21 (7 notes).",
+      "Numbers of the added notes: 9th = 2nd plus an octave; 11th = 4th plus an octave (5 + 12 = 17); 13th = 6th plus an octave (9 + 12 = 21). That is why they are the “upper” notes of the chord.",
+      "How to recognize them: first count the notes (3: triad or suspended; 4: seventh or add9; 5, 6 or 7: ninth, eleventh or thirteenth). With 3 notes, measure the 2nd note from the root: at 2 semitones it is sus2, at 5 it is sus4 and at 3 or 4 it is a triad with a 3rd. With 4 notes, the add9 is the one with a note at 14 semitones and none at 9, 10 or 11.",
+      "Common mistakes: confusing add9 with the ninth (the ninth includes the 7th, at 10 semitones; add9 does not); believing sus2 and sus4 are minor or major (they have no 3rd); and not telling the eleventh from the thirteenth (count the notes: 6 and 7). Simplification: in real music, 11 and 13 chords often omit some note (for example the 3rd or the 5th); here they are shown complete, stacked in thirds, as Practice uses them.",
+    ],
+    quiz: [
+      {
+        pregunta: "What semitones does a sus4 chord have?",
+        opciones: ["0-2-7", "0-4-7", "0-5-7", "0-3-7"],
+        respuesta: 2,
+        explicacion: "The 4th (5 semitones) replaces the 3rd.",
+      },
+      {
+        pregunta: "How does a ninth (9) differ from an add9?",
+        opciones: [
+          "The ninth includes the minor 7th; the add9 does not",
+          "The add9 has a minor 3rd",
+          "The ninth has no 5th",
+          "They do not differ",
+        ],
+        respuesta: 0,
+        explicacion: "Ninth: 0-4-7-10-14. Add9: 0-4-7-14.",
+      },
+      {
+        pregunta: "How many semitones from the root is the 13th?",
+        opciones: ["14", "17", "13", "21"],
+        respuesta: 3,
+        explicacion: "9 (the 6th) + 12 = 21.",
+      },
+      {
+        pregunta: "A chord has 6 notes stacked in thirds on the dominant seventh. Which one is it?",
+        opciones: ["Ninth (9)", "Thirteenth (13)", "Eleventh (11)", "Add9"],
+        respuesta: 2,
+        explicacion: "The ninth has 5 notes, the eleventh 6 and the thirteenth 7.",
+      },
+      {
+        pregunta: "Why do sus2 and sus4 sound neither major nor minor?",
+        opciones: [
+          "Because they have no 5th",
+          "Because they have a 7th",
+          "Because they have no 3rd",
+          "Because they are in another octave",
+        ],
+        respuesta: 2,
+        explicacion: "The 3rd defines major or minor; in suspended chords another note replaces it.",
+      },
+    ],
+    visuales: ["Do sus2", "Do sus4", "Do add9", "Do 9", "Do 11", "Do 13", "Do 9 on the staff"],
+  },
+  "melodia-clase-frecuencia-y-octava": {
+    nombre: "Frequency, La = 440 Hz and the octave ratio",
+    descripcion:
+      "What the frequency of a note is, why La4 is 440 Hz, how octaves relate to each other (2:1) and what a semitone is worth in piano tuning.",
+    pasos: [
+      "The frequency of a sound is the number of vibrations per second and is measured in hertz (Hz). The higher the frequency, the higher the sound. Each note corresponds to a specific frequency.",
+      "By international convention, La4 is tuned to 440 Hz: it is the reference used to tune tuning forks, orchestras and pianos. Some baroque orchestras tune lower (for example, around 415 Hz); 440 is the most widespread standard, not a law of nature.",
+      "Octave: going up an octave doubles the frequency, and going down halves it. La3 = 220 Hz, La4 = 440 Hz, La5 = 880 Hz. That 2:1 relationship is the reason two notes with the same name sound like “the same note” in different registers.",
+      "The tuning of modern pianos, equal temperament, divides the octave into 12 equal semitones. Each semitone multiplies the frequency by 2^(1/12), approximately 1.0595. Twelve semitones in a row multiply by 2: an octave.",
+      "Example: Do4 (middle C) ≈ 261.63 Hz and Do5 ≈ 523.25 Hz (double). From Do4 to Do♯4 the frequency goes up by a factor of 1.0595, about 277.18 Hz. That is why semitones “feel” equally big anywhere on the keyboard, even though in Hz they are not.",
+      "Common mistakes: believing that adding 12 Hz gives an octave (you multiply by 2, you do not add); believing each note is the same number of Hz from the previous one (the distance in Hz grows with pitch; what stays the same is the ratio); and thinking 440 Hz is universal. Simplification: school-level equal temperament is used; there are other tuning systems with slightly different values.",
+    ],
+    quiz: [
+      {
+        pregunta: "What frequency does the La one octave above La4 (440 Hz) have?",
+        opciones: ["450 Hz", "660 Hz", "880 Hz", "452 Hz"],
+        respuesta: 2,
+        explicacion: "One octave up doubles the frequency: 2 × 440 = 880 Hz.",
+      },
+      {
+        pregunta: "By how much is the frequency multiplied when going up a semitone in equal temperament?",
+        opciones: ["By 2", "By 2^(1/12), approximately 1.0595", "By 1.5", "12 Hz is added"],
+        respuesta: 1,
+        explicacion: "12 semitones in a row must give double: 2^(1/12) multiplied 12 times is 2.",
+      },
+      {
+        pregunta: "To how many hertz is La4 normally tuned?",
+        opciones: ["262 Hz", "220 Hz", "1,000 Hz", "440 Hz"],
+        respuesta: 3,
+        explicacion: "The most widespread tuning standard is La4 = 440 Hz.",
+      },
+      {
+        pregunta: "What relationship do the frequencies of two notes with the same name, an octave apart, have?",
+        opciones: ["They differ by 12 Hz", "One is double the other", "They are equal", "One is triple the other"],
+        respuesta: 1,
+        explicacion: "A 2:1 ratio: that is why they sound like the same note.",
+      },
+      {
+        pregunta: "Approximately how many hertz is middle Do (Do4)?",
+        opciones: ["440 Hz", "329.63 Hz", "523.25 Hz", "261.63 Hz"],
+        respuesta: 3,
+        explicacion: "Do4 ≈ 261.63 Hz; its octave, Do5, ≈ 523.25 Hz.",
+      },
+    ],
+    visuales: [
+      "Each octave doubles the frequency",
+      "One semitone: the frequency is multiplied by 1.0595",
+      "Twelve semitones: an octave, double",
+    ],
+  },
+  "melodia-clase-oido-absoluto-y-relativo": {
+    nombre: "Absolute pitch and relative pitch: what they are and how to train",
+    descripcion:
+      "The difference between recognizing a note without a reference (absolute pitch) and recognizing it by comparing it with another (relative pitch), and honest strategies for the Practice mode.",
+    pasos: [
+      "Absolute pitch is the ability to identify or sing a specific note without any reference. It is rare, and there is scientific debate about how far it can be developed in adulthood. Nothing in Prodigia promises to achieve it.",
+      "Relative pitch is recognizing a pitch by its relationship to another: a distance between two notes (an interval), or a note relative to a reference. It is what almost all musicians use and it does improve with practice.",
+      "In the Absolute pitch mode of Practice you hear a synthesized note and choose its name among four options. In the low levels the options are far apart (Do4, Fa4, Sol4, Do5); later the seven naturals, two octaves and, at the end, sharps are added: neighboring semitones, which are the hard part.",
+      "Strategies: (1) fix a reference you know, like the 440 Hz La4; (2) decide the register first (low or high) and then the name; (3) sort the options from low to high; (4) in the high levels compare with the neighboring notes a semitone away.",
+      "Practicing improves your recognition within this exercise (closed options, same timbre), and strengthens relative pitch, without guaranteeing that you will develop absolute pitch. The most useful thing is usually short, repeated sessions, with breaks.",
+      "Common mistakes: confusing the octave (a note an octave higher “sounds” very similar: pay attention to the register); associating each note with its timbre instead of its pitch (here the same synthesized timbre always plays); and expecting immediate results. Simplification: the sound is an electronic tone tuned to equal temperament; with a real instrument the timbre and the tuning may vary.",
+    ],
+    quiz: [
+      {
+        pregunta: "What is relative pitch?",
+        opciones: [
+          "Naming any note without a reference",
+          "Recognizing a pitch by its relationship to another or to a reference",
+          "Having an ear more sensitive to volume",
+          "Hearing very high sounds",
+        ],
+        respuesta: 1,
+        explicacion: "It compares distances between notes or against a reference.",
+      },
+      {
+        pregunta: "What can be said with certainty about absolute pitch?",
+        opciones: [
+          "It is rare and there is no consensus on how far it can be developed as an adult",
+          "It is achieved with 10 minutes a day",
+          "All musicians have it",
+          "It does not exist",
+        ],
+        respuesta: 0,
+        explicacion: "It is a real but uncommon ability; its development in adulthood is under debate.",
+      },
+      {
+        pregunta: "In the Absolute pitch mode of Practice, what do you hear?",
+        opciones: [
+          "A different instrument each time",
+          "A complete melody",
+          "The name of the note spoken aloud",
+          "A synthesized note, always with the same timbre",
+        ],
+        respuesta: 3,
+        explicacion: "It is an electronic tone tuned by formula (La4 = 440 Hz).",
+      },
+      {
+        pregunta: "Which strategy helps when identifying a note by ear?",
+        opciones: [
+          "Counting the volume",
+          "Deciding first whether it is low or high and comparing with a reference",
+          "Always choosing the first option",
+          "Ignoring the octave",
+        ],
+        respuesta: 1,
+        explicacion: "Register first, then the name; a reference like the 440 Hz La helps.",
+      },
+      {
+        pregunta: "What is the hardest part in the high levels of this mode?",
+        opciones: [
+          "Telling Do4 from Do5",
+          "Telling neighboring semitones apart, like Do and Do♯",
+          "Telling a piano from a guitar",
+          "Counting the notes",
+        ],
+        respuesta: 1,
+        explicacion: "Sharps are notes a semitone from their neighbors: the difference is minimal.",
+      },
+    ],
+    visuales: ["Low level: the options furthest apart", "High level: notes a semitone apart"],
+  },
+};
