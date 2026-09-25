@@ -13,6 +13,7 @@ import LogroBanner from "@/components/LogroBanner";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 import type { Achievement } from "@/types/database";
 import TextType from "@/components/reactbits/TextType";
+import BotonEnlace from "@/components/BotonEnlace";
 
 export interface FilaRondaSerie {
   duel_id: string;
@@ -348,20 +349,13 @@ export default function SerieDueloClient({
           ))}
         </div>
 
-        <div className="flex w-full max-w-md gap-3">
-          <Link
-            href="/rankeds?tab=buscar"
-            className="flex-1 rounded-2xl px-4 py-4 text-center font-display font-semibold text-white shadow-lg"
-            style={{ background: "linear-gradient(120deg, var(--primario), var(--logro))" }}
-          >
+        <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
+          <BotonEnlace href="/rankeds?tab=buscar" destacado className="flex-1 py-4">
             {t("serieDuelo.otraPartida")}
-          </Link>
-          <Link
-            href="/rankeds"
-            className="flex items-center justify-center rounded-2xl border-2 border-border px-6 py-4 font-display font-semibold text-foreground transition-colors hover:border-primario/40"
-          >
+          </BotonEnlace>
+          <BotonEnlace href="/rankeds" variante="secundario" atras className="py-4">
             {t("serieDuelo.volver")}
-          </Link>
+          </BotonEnlace>
         </div>
       </div>
     );

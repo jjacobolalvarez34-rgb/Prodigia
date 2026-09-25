@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Link, useRouter } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import type { NodoCaminoNumeria } from "@/lib/aprender/pathClases";
 import { hrefVolverAAprender } from "@/lib/aprender/clases";
@@ -15,6 +15,7 @@ import CuerpoVisual from "@/components/aprender/CuerpoVisual";
 import { REGISTRO_VISUALES_NUMERIA } from "@/components/numeria/visuales/registro";
 import { visualesDeContenido } from "@/lib/aprender/visuales";
 import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
+import BotonEnlace from "@/components/BotonEnlace";
 
 type Fase = "explicacion" | "ejemplo" | "practica" | "quiz" | "celebracion";
 
@@ -381,12 +382,11 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
               <Boton atras onClick={() => router.push(hrefVolverAAprender("/aprender", nodo.requierePro))}>{t("volverAAprender")}</Boton>
-              <Link
-                href={esFraccion ? "/practica/fracciones" : SLUGS_ALGEBRA.has(nodo.slug) ? "/practica/algebra" : "/practica"}
-                className="text-sm font-medium text-primario hover:underline"
-              >
+              {/* Primero se elige la habilidad (tema) y recién ahí el sub-tema:
+                  /practica/temas, no directo al selector de operaciones. */}
+              <BotonEnlace href="/practica/temas" variante="secundario">
                 {t("irAPracticar")}
-              </Link>
+              </BotonEnlace>
             </div>
           </motion.div>
         )}

@@ -1,6 +1,7 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
+import Boton from "@/components/Boton";
+import BotonEnlace from "@/components/BotonEnlace";
 import { useTranslations } from "next-intl";
 
 interface Props {
@@ -15,24 +16,13 @@ interface Props {
 export default function BotonesFinPartida({ onOtraVez, volverHref, colorHex }: Props) {
   const t = useTranslations("Componentes");
   return (
-    <div className="flex w-full max-w-md gap-3">
-      <button
-        onClick={onOtraVez}
-        className="flex-1 rounded-2xl px-4 py-4 font-display font-semibold text-white shadow-[0_12px_30px_-8px_color-mix(in_oklab,var(--primario)_55%,transparent)] transition-all duration-200 hover:-translate-y-0.5"
-        style={{
-          background: colorHex
-            ? `linear-gradient(120deg, ${colorHex}, var(--correcto))`
-            : "linear-gradient(120deg, var(--primario), var(--logro))",
-        }}
-      >
+    <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
+      <Boton destacado colorHex={colorHex} className="flex-1 py-4" onClick={onOtraVez}>
         {t("botonesFinPartida.otraPartida")}
-      </button>
-      <Link
-        href={volverHref}
-        className="flex items-center justify-center rounded-2xl border-2 border-border px-6 py-4 font-display font-semibold text-foreground transition-colors hover:border-primario/40"
-      >
+      </Boton>
+      <BotonEnlace href={volverHref} variante="secundario" atras colorHex={colorHex} className="py-4">
         {t("botonesFinPartida.volver")}
-      </Link>
+      </BotonEnlace>
     </div>
   );
 }

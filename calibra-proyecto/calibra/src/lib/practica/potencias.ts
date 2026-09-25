@@ -16,11 +16,31 @@ function banda(nivel: number): number {
   return Math.min(4, Math.floor((nivel - 1) / 2));
 }
 
+// Base máxima por exponente y por banda de nivel (0..4). 0 = ese exponente
+// todavía no aparece. Antes los niveles bajos solo daban 2² y 3² (la base
+// máxima de la banda era 2 o 3 y el exponente fijo en 2): dos problemas
+// distintos en total. Ahora cada banda tiene un conjunto de pares (base,
+// exponente) más amplio y cada banda incluye los de las anteriores.
+export const BASE_MAXIMA_POTENCIA: Record<number, [number, number, number, number, number]> = {
+  2: [6, 9, 12, 15, 20],
+  3: [2, 4, 6, 8, 10],
+  4: [0, 0, 3, 4, 5],
+  5: [0, 0, 0, 3, 4],
+};
+
+// Todos los pares (base, exponente) que puede pedir una banda.
+export function paresPotencia(nivel: number): { base: number; exp: number }[] {
+  const b = banda(nivel);
+  const pares: { base: number; exp: number }[] = [];
+  for (const [exp, maximos] of Object.entries(BASE_MAXIMA_POTENCIA)) {
+    for (let base = 2; base <= maximos[b]; base++) pares.push({ base, exp: Number(exp) });
+  }
+  return pares;
+}
+
 function generarPotencia(nivel: number): ProblemaPotencia {
-  const bases = [2, 3, 4, 5, 6];
-  const exponentes = [2, 2, 3, 3, 4];
-  const base = randomInt(2, bases[banda(nivel)]);
-  const exp = exponentes[banda(nivel)];
+  const pares = paresPotencia(nivel);
+  const { base, exp } = pares[Math.floor(Math.random() * pares.length)];
   return {
     problemType: "potencias",
     tipo: "potencia",
