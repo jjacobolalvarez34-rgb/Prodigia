@@ -1,7 +1,25 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useReducedMotion } from "framer-motion";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+
+// "Reducir movimiento" del sistema, leído de forma segura para la hidratación.
+// framer-motion `useReducedMotion()` devuelve null en el servidor y el valor
+// real en el primer render del cliente, así que el HTML hidratado no coincidía
+// (server: con animación; cliente: estático) y React tiraba "Hydration failed"
+// cuando un visual se renderizaba en el servidor con la preferencia activada.
+// useSyncExternalStore usa `false` SOLO mientras hidrata y el valor real en
+// cualquier otro render del cliente (un visual que aparece tras un clic sigue
+// leyendo la preferencia real desde su primer render, como antes).
+const CONSULTA_MENOS_MOVIMIENTO = "(prefers-reduced-motion: reduce)";
+const haySoporteMatchMedia = () => typeof window !== "undefined" && typeof window.matchMedia === "function";
+function suscribirMenosMovimiento(avisar: () => void) {
+  if (!haySoporteMatchMedia()) return () => {};
+  const mq = window.matchMedia(CONSULTA_MENOS_MOVIMIENTO);
+  mq.addEventListener("change", avisar);
+  return () => mq.removeEventListener("change", avisar);
+}
+const leerMenosMovimiento = () => haySoporteMatchMedia() && window.matchMedia(CONSULTA_MENOS_MOVIMIENTO).matches;
+const menosMovimientoEnServidor = () => false;
 
 interface Opciones {
   // Cantidad de pasos; `paso` va de 0 (nada mostrado) a `total` (todo).
@@ -45,8 +63,8 @@ export function useReproductor({ total, ms, estatico = false, autoplay = true, i
     io.observe(el);
     return () => io.disconnect();
   }, []);
-  const reducirSistema = useReducedMotion();
-  const reducir = estatico || reducirSistema === true;
+  const reducirSistema = useSyncExternalStore(suscribirMenosMovimiento, leerMenosMovimiento, menosMovimientoEnServidor);
+  const reducir = estatico || reducirSistema;
   // null = el usuario todavía no tocó nada.
   const [manual, setManual] = useState<number | null>(null);
   const [pausado, setPausado] = useState(false);
