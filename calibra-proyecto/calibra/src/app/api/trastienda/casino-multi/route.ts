@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const apuestas = Array.isArray(body.apuestas) ? body.apuestas : null;
 
   if (!apuestas || apuestas.length < 1 || apuestas.length > MAX_ZONAS_CASINO) {
-    return NextResponse.json({ error: `Elegí entre 1 y ${MAX_ZONAS_CASINO} zonas` }, { status: 400 });
+    return NextResponse.json({ error: `Elige entre 1 y ${MAX_ZONAS_CASINO} zonas` }, { status: 400 });
   }
 
   const zonas: string[] = [];

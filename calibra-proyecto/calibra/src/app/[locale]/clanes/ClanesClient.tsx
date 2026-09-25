@@ -198,7 +198,7 @@ export default function ClanesClient({
           arriba, dentro de MiClanView) — pero mostrarla a alguien sin
           clan, bajo el título "Guerra de clanes", daba a entender que
           está participando de algo de lo que no es parte. Ahora solo se
-          muestra si tenés clan. */}
+          muestra si tienes clan. */}
       {miClan && (
         <section className="flex flex-col gap-3">
           <div>

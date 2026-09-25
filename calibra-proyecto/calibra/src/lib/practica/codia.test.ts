@@ -212,7 +212,7 @@ describe("Codia: forma general", () => {
     expect(NOMBRE_MODO_CODIA).toEqual({
       sintaxis: "Sintaxis",
       salida: "Salida del código",
-      error: "Encontrá el error",
+      error: "Encuentra el error",
       estructuras: "Estructuras y complejidad",
     });
   });

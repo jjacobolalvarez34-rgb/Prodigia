@@ -17,7 +17,7 @@ interface FinishBody {
   // casual, puede caer en un mundo que el jugador no tiene comprado —
   // eso ya se permite jugar (ver guard.ts, parámetro enDuelo). Lo que
   // NO debe pasar es que un duelo CASUAL en un mundo no comprado sume
-  // nivel de mundo gratis, esquivando la economía de "pagá Chispas
+  // nivel de mundo gratis, esquivando la economía de "paga Chispas
   // para desbloquearlo" — un ranked sí suma igual, sin excepción,
   // porque Rankeds necesita ser jugable sin huecos. duel_id es opcional
   // y, cuando viene, se vuelve a resolver contra la fila REAL de

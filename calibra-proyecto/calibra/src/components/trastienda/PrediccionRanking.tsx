@@ -25,7 +25,7 @@ const MULT: Record<string, number> = {
 };
 const PUESTOS = ["1", "2", "3", "4-5", "6-10", "11-20", "21+"] as const;
 
-// Mecánica 2: predecí tu propio puesto final del ranking semanal (0123).
+// Mecánica 2: predice tu propio puesto final del ranking semanal (0123).
 export default function PrediccionRanking({ puntos, onPuntos, onMovimiento }: Props) {
   const t = useTranslations("Tienda.trastienda.prediccionRanking");
   const terrores = useTranslations("Tienda.trastienda.errores");

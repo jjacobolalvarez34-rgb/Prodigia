@@ -4,7 +4,7 @@ import { ensamblar, renderizar, textoCodigo, type Render } from "./render";
 import { armarOpciones, elegir, mezclar, nombresVar, randomInt } from "./util";
 import type { MutacionError, ProblemaCodia } from "./problema";
 
-// Modo "Encontrá el error". Cada problema parte de un programa CORRECTO
+// Modo "Encuentra el error". Cada problema parte de un programa CORRECTO
 // del IR y le inyecta UN defecto conocido (por construcción sabemos qué
 // falla, dónde y con qué consecuencia). codia.test.ts EJECUTA el
 // programa con defecto y el corregido en los 4 lenguajes y comprueba:

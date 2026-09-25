@@ -183,7 +183,7 @@
   "Social": {
     "amigos": "Amigos",
     "subtitulo": "Busca gente, acepta solicitudes y rétalos a duelo.",
-    "invitarSinCuenta": "✨ Invitá a alguien a Prodigia",
+    "invitarSinCuenta": "✨ Invita a alguien a Prodigia",
     "invitarSinCuentaDescripcion": "Para quien todavía no usa la app: quien se registre por este link queda agregado como tu amigo automáticamente, sin pedir ni aceptar solicitud.",
     "invitarPorLink": "⚔️ Invitar a jugar ahora",
     "invitarPorLinkDescripcion": "Para un duelo puntual, ya mismo: no hace falta que ya sean amigos en la app, alcanza con que abran el link.",
@@ -894,7 +894,7 @@
       "titulo": "Ya casi",
       "subtitulo": "Por seguridad, algunos correos revisan los links automáticamente antes de que los abras — por eso pedimos un click extra acá para confirmar que eres tú.",
       "boton": "Confirmar mi cuenta",
-      "invalido": "Este link no es válido o ya se usó. Pedí uno nuevo desde /recuperar o volviendo a intentar el registro."
+      "invalido": "Este link no es válido o ya se usó. Pide uno nuevo desde /recuperar o volviendo a intentar el registro."
     },
     "deteccionConexion": {
       "mensaje": "Notamos que tu conexión anda lenta — ¿quieres desactivar los efectos visuales extra? Puedes cambiarlo cuando quieras en Ajustes.",
@@ -1198,7 +1198,7 @@
       "geometria": "Geometría básica"
     },
     "aprenderClases": {
-      "desbloqueaConPro": "Desbloqueá con Pro"
+      "desbloqueaConPro": "Desbloquea con Pro"
     },
     "visuales": {
       "columnas": {
@@ -3644,7 +3644,7 @@
       "clases": {
         "titulo": "Clases",
         "descripcion": "Lecciones progresivas que se apoyan una en otra, con ejemplos resueltos paso a paso y un quiz entre lecciones. La primera es gratis.",
-        "desbloqueaConPro": "Desbloqueá con Pro"
+        "desbloqueaConPro": "Desbloquea con Pro"
       }
     },
     "leccion": {
@@ -3785,7 +3785,7 @@
       "clases": {
         "titulo": "Clases",
         "descripcion": "Lecciones progresivas que se apoyan una en otra, con ejemplos resueltos paso a paso y un quiz entre lecciones. La primera es gratis.",
-        "desbloqueaConPro": "Desbloqueá con Pro"
+        "desbloqueaConPro": "Desbloquea con Pro"
       }
     },
     "leccion": {
@@ -3930,7 +3930,7 @@
       "clases": {
         "titulo": "Clases",
         "descripcion": "Lecciones progresivas que se apoyan una en otra, con ejemplos resueltos paso a paso y un quiz entre lecciones. La primera es gratis.",
-        "desbloqueaConPro": "Desbloqueá con Pro"
+        "desbloqueaConPro": "Desbloquea con Pro"
       }
     },
     "leccion": {
@@ -4083,7 +4083,7 @@
       "clases": {
         "titulo": "Clases",
         "descripcion": "Lecciones progresivas que se apoyan una en otra, con ejemplos resueltos paso a paso y un quiz entre lecciones. La primera es gratis.",
-        "desbloqueaConPro": "Desbloqueá con Pro"
+        "desbloqueaConPro": "Desbloquea con Pro"
       }
     },
     "leccion": {
@@ -4239,7 +4239,7 @@
     "modos": {
       "sintaxis": "Sintaxis",
       "salida": "Salida del código",
-      "error": "Encontrá el error",
+      "error": "Encuentra el error",
       "estructuras": "Estructuras y complejidad"
     },
     "elegir": {
@@ -4319,7 +4319,7 @@
       "clases": {
         "titulo": "Clases",
         "descripcion": "Lecciones progresivas que se apoyan una en otra, con el mismo ejemplo en Python, Java, JavaScript y TypeScript, ejemplos resueltos paso a paso y un quiz entre lecciones. La primera es gratis.",
-        "desbloqueaConPro": "Desbloqueá con Pro"
+        "desbloqueaConPro": "Desbloquea con Pro"
       }
     },
     "leccion": {
@@ -4355,7 +4355,7 @@
       },
       "error": {
         "metadata": {
-          "title": "Practicar Encontrá el error",
+          "title": "Practicar Encuentra el error",
           "description": "Encuentra el bug o la causa del fallo en fragmentos de código."
         }
       },

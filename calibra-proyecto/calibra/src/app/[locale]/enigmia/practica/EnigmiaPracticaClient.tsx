@@ -278,9 +278,9 @@ export default function EnigmiaPracticaClient({
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 py-16 text-center">
         <p className="text-error">{t("noPudimosCerrar", { error })}</p>
-        <button onClick={() => setFase("inicio")} className="rounded-2xl bg-[#0E9F6E] px-4 py-3 font-medium text-white">
+        <Boton atras colorHex="#0E9F6E" onClick={() => setFase("inicio")}>
           {t("volver")}
-        </button>
+        </Boton>
       </div>
     );
   }

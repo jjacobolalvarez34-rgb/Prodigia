@@ -34,7 +34,7 @@ export interface NodoCaminoConClases {
   requierePro: boolean;
   // true SOLO para clases bloqueadas porque el usuario no es Pro (no por
   // progresión normal). La clase 1 nunca lo tiene en true (preview
-  // gratis). Lo usa la página para mostrar el CTA "Desbloqueá con Pro" en
+  // gratis). Lo usa la página para mostrar el CTA "Desbloquea con Pro" en
   // vez del bloqueo mudo de progresión secuencial.
   bloqueadoPorPlan: boolean;
 }

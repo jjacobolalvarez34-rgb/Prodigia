@@ -202,7 +202,7 @@ export default function TrastiendaClient({ puntosIniciales, apuestaActivaInicial
 
         <HistorialTrastienda refreshKey={historialVersion} />
 
-        {/* "Salí por donde entraste" */}
+        {/* "Sal por donde entraste" */}
         <div className="flex justify-center pb-2 pt-1">
           <Link
             href="/tienda"

@@ -201,7 +201,7 @@ export function generarPreguntaAnatomia(modo: ModoAnatomia, nivel: number, usado
     if (huesoClave) {
       return {
         tipo: "click",
-        // Español neutro (sin voseo): "Clickeá" era voseo.
+        // Español neutro (sin voseo): "Haz clic" era voseo.
         enunciado: `Haz clic donde está: ${correcta}`,
         objetivoHueso: huesoClave,
         respuesta: correcta,

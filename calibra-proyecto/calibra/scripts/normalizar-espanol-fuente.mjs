@@ -188,6 +188,30 @@ const TOKENS = [
   ["contás", "cuentas"],
   ["mostrás", "muestras"],
   ["seleccionás", "seleccionas"],
+  // --- barrido 2026-09-25 (voseo en lecciones de Calculia/Circuitia/Codia y textos de UI) ---
+  ["desbloqueá", "desbloquea"], ["encontrá", "encuentra"], ["pedí", "pide"],
+  ["trazá", "traza"], ["tachá", "tacha"], ["reproducí", "reproduce"],
+  ["cambiá", "cambia"], ["tapá", "tapa"], ["destapá", "destapa"],
+  ["derivá", "deriva"], ["integrá", "integra"], ["compará", "compara"],
+  ["llamá", "llama"], ["aplicá", "aplica"], ["agrupá", "agrupa"],
+  ["bajá", "baja"], ["partí", "parte"], ["cancelá", "cancela"],
+  ["reemplazá", "reemplaza"], ["recorré", "recorre"], ["corré", "corre"],
+  ["aprendé", "aprende"], ["activá", "activa"], ["salí", "sal"],
+  ["separá", "separa"], ["memorizá", "memoriza"], ["ajustá", "ajusta"],
+  ["deshacé", "deshaz"], ["invitá", "invita"], ["hallá", "halla"],
+  ["extendé", "extiende"], ["suponé", "supón"], ["razoná", "razona"],
+  ["predecí", "predice"], ["pagá", "paga"], ["dominá", "domina"],
+  ["decidí", "decide"], ["clickeá", "haz clic"], ["caminá", "camina"],
+  ["duplicá", "duplica"], ["desconfiá", "desconfía"], ["editá", "edita"],
+  ["renombrá", "renombra"], ["seleccioná", "selecciona"], ["regulá", "regula"],
+  ["reintentá", "reintenta"], ["reiniciá", "reinicia"], ["realizá", "realiza"],
+  ["optimizá", "optimiza"], ["navegá", "navega"], ["mové", "mueve"],
+  ["meté", "mete"], ["liberá", "libera"], ["leé", "lee"], ["ingresá", "ingresa"],
+  ["golpeá", "golpea"], ["enviá", "envía"], ["entrá", "entra"], ["empujá", "empuja"],
+  ["echá", "echa"], ["descargá", "descarga"], ["borrá", "borra"], ["avisá", "avisa"],
+  ["aumentá", "aumenta"], ["aflojá", "afloja"], ["disminuí", "disminuye"],
+  ["validá", "valida"], ["tirá", "tira"], ["preferí", "prefiere"], ["escogé", "escoge"],
+  ["acarreá", "acarrea"], ["cerrá", "cierra"], ["decí", "di"],
   // Frases con "vos" como objeto de preposición: el pronombre tónico cambia de
   // forma según la preposición (a/de/por/para/sin -> "ti"; "con" -> "contigo"),
   // no es un simple vos->tú. Estas frases van ANTES del reemplazo suelto de
@@ -227,12 +251,12 @@ function transformar(texto) {
 
 function* archivos(dir) {
   for (const nombre of readdirSync(dir)) {
-    if (nombre === "node_modules" || nombre === ".next") continue;
+    if (nombre === "node_modules" || nombre === ".next" || nombre.startsWith("espanolNeutro")) continue;
     const ruta = join(dir, nombre);
     const info = statSync(ruta);
     if (info.isDirectory()) {
       yield* archivos(ruta);
-    } else if ([".ts", ".tsx"].includes(extname(nombre))) {
+    } else if ([".ts", ".tsx"].includes(extname(nombre)) && !/.test.tsx?$/.test(nombre)) {
       yield ruta;
     }
   }

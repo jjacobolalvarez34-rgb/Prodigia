@@ -14,7 +14,7 @@ import ReportarBoton from "@/app/[locale]/perfil/[userId]/ReportarBoton";
 interface Props {
   amigo: Amigo;
   // La lista de mundo (retandoA en AmigosClient/FeedSidebar) sigue
-  // afuera, tal como ya funcionaba: PlacaAmigo solo avisa "elegí retar
+  // afuera, tal como ya funcionaba: PlacaAmigo solo avisa "elige retar
   // a este amigo" — quien lo llama decide si mostrar SelectorMundoDuelo
   // debajo de la placa (mismo patrón de siempre, ahora disparado desde
   // el menú en vez de un botón suelto).

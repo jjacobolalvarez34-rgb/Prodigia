@@ -3,7 +3,7 @@ import type { TecnicaGeneralGeografia } from "./tipos";
 // Las 3 Técnicas genéricas históricas de Geografía (grupo "general"),
 // reescritas: antes eran solo texto + quiz (0027 y 0172), sin ninguna
 // animación —a diferencia de las 20 Técnicas por continente— y con voseo
-// rioplatense ("agrupalos", "Aprendé", "Fijate"), contra la convención de
+// rioplatense ("agrupalos", "Aprende", "Fíjate"), contra la convención de
 // español neutro de docs/ESPECIFICACION.md. Mismos slugs y misma idea de
 // cada técnica; ahora cada una trae mapas animados (geografia.mapa) con
 // países reales y curados (src/lib/geografia/visualesDatos.ts). Los ejemplos

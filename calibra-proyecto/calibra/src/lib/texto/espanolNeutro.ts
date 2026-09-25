@@ -31,6 +31,18 @@ const IMPERATIVOS_VOSEO = [
   "leé", "abrí", "cerrá", "girá", "apretá", "soltá", "mové", "escogé",
   "empujá", "tirá", "aflojá", "aumentá", "disminuí", "multiplicá", "dividí",
   "restá", "sumale", "fijáte", "asegurate", "acordate", "avisá",
+  // Barrido 2026-09-25: imperativos que el detector no listaba y que se colaron
+  // en Codia/Calculia/Circuitia y en textos de UI ("Desbloqueá con Pro",
+  // "Encontrá el error", "anotá", "tachá", "trazá"...).
+  "desbloqueá", "encontrá", "pedí", "trazá", "tachá", "reproducí", "cambiá",
+  "tapá", "destapá", "derivá", "integrá", "compará", "llamá", "aplicá", "agrupá",
+  "partí", "cancelá", "reemplazá", "recorré", "corré", "aprendé", "salí",
+  "separá", "memorizá", "ajustá", "deshacé", "invitá", "hallá", "extendé",
+  "suponé", "razoná", "predecí", "pagá", "dominá", "decidí", "clickeá", "caminá",
+  "duplicá", "desconfiá", "renombrá", "reintentá", "mové", "escogé", "acarreá",
+  "mostrá", "ordená", "identificá", "revisá", "calculá", "redondeá", "ubicá",
+  "convertí", "resolvé", "probalo", "elegilo", "hacelo", "usalo", "pensalo",
+  "agrupalos", "dividilos", "leelo", "separalos", "dejalos", "ubicalos",
 ];
 
 // Palabras reales del español (no voseo) que terminan igual que un

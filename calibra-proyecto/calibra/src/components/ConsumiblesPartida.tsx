@@ -18,7 +18,7 @@ export type TipoUso = "hielo" | "tiempo_extra" | null;
 // punto de uso: cada *SprintRunner solo renderiza esto cuando NO hay un
 // duelo activo (mismo criterio que ya usan para fantasma/duelId en
 // otros lados) — nunca se importa este componente dentro de la rama de
-// duelo. Si no tenés ninguno de los dos comprados, no se renderiza nada
+// duelo. Si no tienes ninguno de los dos comprados, no se renderiza nada
 // (nada que ofrecer).
 export default function ConsumiblesPartida({ hielos, tiemposExtra, usando, onUsarHielo, onUsarTiempoExtra }: Props) {
   const t = useTranslations("Practica.consumibles");

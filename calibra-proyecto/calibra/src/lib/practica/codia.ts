@@ -37,7 +37,7 @@ export const MODOS_CODIA: ModoCodia[] = ["sintaxis", "salida", "error", "estruct
 export const NOMBRE_MODO_CODIA: Record<ModoCodia, string> = {
   sintaxis: "Sintaxis",
   salida: "Salida del código",
-  error: "Encontrá el error",
+  error: "Encuentra el error",
   estructuras: "Estructuras y complejidad",
 };
 
@@ -61,7 +61,7 @@ export function bandaEstructurasNivel(nivel: number): number {
 // ---------- Modo 1: sintaxis ----------
 // Dos formas, ambas verificadas por ejecución: (a) "¿cuál de estas
 // opciones hace X?" — la correcta corre, cada distractor falla al
-// compilar/interpretar; (b) "completá el hueco" — solo el token correcto
+// compilar/interpretar; (b) "completa el hueco" — solo el token correcto
 // hace que el programa corra e imprima lo esperado.
 function generarSintaxis(lang: Lenguaje, nivel: number): ProblemaCodia {
   const nombre = NOMBRE_LENGUAJE[lang];

@@ -37,7 +37,7 @@ export function mensajeErrorAuth(error: AuthError, mensajeGenerico: string): str
     case "same_password":
       return "Esa ya es tu contraseña actual — elige una distinta.";
     case "otp_expired":
-      return "El enlace venció — pedí uno nuevo.";
+      return "El enlace venció — pide uno nuevo.";
     case "weak_password":
       return "Esa contraseña es muy débil — prueba con una más larga o menos común.";
     case "captcha_failed":

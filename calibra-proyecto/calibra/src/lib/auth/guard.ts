@@ -45,8 +45,8 @@ export async function requireUsuario(supabase: SupabaseClient, pathActual: strin
 // ciudades" sin importar qué mundos compraste — pedido explícito del
 // usuario 2026-09-18): un duelo real (ranked O casual, viene de
 // matchmaking, de un reto a un amigo, o de una invitación) nunca debe
-// poder trabarte a mitad de partida contra una pantalla de "comprá
-// este mundo" o "hacé el diagnóstico primero" — eso rompería la serie
+// poder trabarte a mitad de partida contra una pantalla de "compra
+// este mundo" o "haz el diagnóstico primero" — eso rompería la serie
 // (mejor de 3) o dejaría a tu rival esperando sin salida. Con
 // enDuelo=true se saltea el chequeo de compra Y el de diagnóstico
 // completo; sin él (el 99% de los casos, práctica normal) el

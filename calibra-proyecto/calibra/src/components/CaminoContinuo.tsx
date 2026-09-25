@@ -18,7 +18,7 @@ export interface NodoCaminoGenerico {
   // (ver AprenderTabs y src/app/[locale]/calculia/aprender/page.tsx):
   // cuando un nodo "bloqueado" tiene esto, en vez del bloqueo mudo de
   // siempre se muestra como link a `href` con un pill `label` debajo
-  // ("Desbloqueá con Pro"). El resto de los mundos nunca lo setea, así
+  // ("Desbloquea con Pro"). El resto de los mundos nunca lo setea, así
   // que su comportamiento queda idéntico al de antes.
   ctaPro?: { label: string; href: string };
 }
