@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "@/i18n/navigation";
 import Boton from "@/components/Boton";
 import Avatar from "@/components/Avatar";
 import EstandarteClan from "@/components/clanes/EstandarteClan";
@@ -70,6 +71,7 @@ export interface Mision {
   recompensa_chispas: number;
   completada: boolean;
   semana_inicio: string;
+  reclamada: boolean;
 }
 
 export interface RivalClan {
@@ -103,6 +105,8 @@ export default function ClanesClient({
   misChispas,
 }: Props) {
   const t = useTranslations("Clanes");
+  const router = useRouter();
+  const [reclamando, setReclamando] = useState(false);
   const [miClan, setMiClan] = useState(miClanInicial);
   const [miembros, setMiembros] = useState(miembrosIniciales);
   const [mision, setMision] = useState(misionInicial);
@@ -154,6 +158,22 @@ export default function ClanesClient({
     setMiClan((prev) => (prev ? { ...prev, imagen_url: url } : prev));
   }
 
+  async function reclamarMision() {
+    setError(null);
+    setReclamando(true);
+    const supabase = createClient();
+    const { data, error: err } = await supabase.rpc("reclamar_mision_clan");
+    setReclamando(false);
+    if (err) {
+      setError(err.message);
+      return;
+    }
+    const fila = (data as { out_chispas: number; out_puntos_total: number }[] | null)?.[0];
+    if (fila) setChispas(fila.out_puntos_total);
+    setMision((prev) => (prev ? { ...prev, completada: true, reclamada: true } : prev));
+    router.refresh();
+  }
+
   async function cambiarRol(userId: string, nuevoRol: "guia" | "miembro") {
     setError(null);
     const supabase = createClient();
@@ -186,6 +206,8 @@ export default function ClanesClient({
           miUserId={miUserId}
           onSalir={salirDelClan}
           onCambiarRol={cambiarRol}
+          onReclamarMision={reclamarMision}
+          reclamando={reclamando}
           onImagenSubida={onImagenSubida}
           cargando={cargando}
         />
@@ -240,6 +262,8 @@ function MiClanView({
   miUserId,
   onSalir,
   onCambiarRol,
+  onReclamarMision,
+  reclamando,
   onImagenSubida,
   cargando,
 }: {
@@ -250,10 +274,13 @@ function MiClanView({
   miUserId: string;
   onSalir: () => void;
   onCambiarRol: (userId: string, nuevoRol: "guia" | "miembro") => void;
+  onReclamarMision: () => void;
+  reclamando: boolean;
   onImagenSubida: (url: string) => void;
   cargando: boolean;
 }) {
   const t = useTranslations("Clanes");
+  const misionCumplida = !!mision && (mision.completada || mision.progreso_actual >= mision.objetivo_cantidad);
   const progresoPct = mision ? Math.min(100, Math.round((mision.progreso_actual / mision.objetivo_cantidad) * 100)) : 0;
   const soyFundador = clan.rol === "fundador";
   const puedoInvitar = clan.rol === "fundador" || clan.rol === "guia";
@@ -365,10 +392,18 @@ function MiClanView({
           <div className="h-2.5 w-full overflow-hidden rounded-full bg-foreground/10">
             <div
               className="h-full rounded-full transition-all"
-              style={{ width: `${progresoPct}%`, background: mision.completada ? "var(--correcto)" : clan.color_estandarte }}
+              style={{ width: `${progresoPct}%`, background: misionCumplida ? "var(--correcto)" : clan.color_estandarte }}
             />
           </div>
-          {mision.completada && <p className="text-xs font-semibold text-correcto">{t("misionCumplida")}</p>}
+          {misionCumplida && <p className="text-xs font-semibold text-correcto">{t("misionCumplida")}</p>}
+          {misionCumplida && !mision.reclamada && (
+            <Boton onClick={onReclamarMision} cargando={reclamando} className="w-fit">
+              {t("misionReclamar", { n: mision.recompensa_chispas.toLocaleString() })}
+            </Boton>
+          )}
+          {misionCumplida && mision.reclamada && (
+            <p className="text-xs text-texto-secundario">{t("misionReclamada")}</p>
+          )}
         </div>
       )}
 
