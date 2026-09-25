@@ -15,6 +15,7 @@ import MathText from "@/components/MathText";
 import CuerpoVisual from "@/components/aprender/CuerpoVisual";
 import { REGISTRO_VISUALES_TRIGONOMETRIA } from "@/components/trigonometria/visuales/registro";
 import { COLOR_TRIGONOMETRIA } from "../../colores";
+import Boton from "@/components/Boton";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
 
@@ -263,13 +264,9 @@ export default function LeccionTrigonometriaClient({ nodo }: Props) {
             <h1 className="font-display text-2xl font-black tracking-tight text-foreground">{t("completaste", { nombre: nodo.nombre })}</h1>
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
-              <button
-                onClick={() => router.push(hrefVolverAAprender("/trigonometria/aprender", nodo.requierePro))}
-                className="rounded-xl px-4 py-3 font-display font-semibold text-white"
-                style={{ background: COLOR_TRIGONOMETRIA }}
-              >
+              <Boton atras colorHex={COLOR_TRIGONOMETRIA} onClick={() => router.push(hrefVolverAAprender("/trigonometria/aprender", nodo.requierePro))}>
                 {t("volverAAprender")}
-              </button>
+              </Boton>
               <Link href="/trigonometria/practica" className="text-sm font-medium hover:underline" style={{ color: COLOR_TRIGONOMETRIA }}>
                 {t("irAPracticar")}
               </Link>

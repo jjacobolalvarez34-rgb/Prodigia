@@ -15,6 +15,7 @@ import MathText from "@/components/MathText";
 import CuerpoVisual from "@/components/aprender/CuerpoVisual";
 import { REGISTRO_VISUALES_GEOGRAFIA } from "@/components/geografia/visuales/registro";
 import { COLOR_GEOGRAFIA } from "../../GeografiaMapa";
+import Boton from "@/components/Boton";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
 
@@ -267,13 +268,9 @@ export default function LeccionGeografiaClient({ nodo }: Props) {
             </h1>
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
-              <button
-                onClick={() => router.push(hrefVolverAAprender("/geografia/aprender", nodo.requierePro))}
-                className="rounded-xl px-4 py-3 font-display font-semibold text-white"
-                style={{ background: COLOR_GEOGRAFIA }}
-              >
+              <Boton atras colorHex={COLOR_GEOGRAFIA} onClick={() => router.push(hrefVolverAAprender("/geografia/aprender", nodo.requierePro))}>
                 {t("leccion.volverAAprender")}
-              </button>
+              </Boton>
               <Link href="/geografia/practica" className="text-sm font-medium hover:underline" style={{ color: COLOR_GEOGRAFIA }}>
                 {t("leccion.irAPracticar")}
               </Link>

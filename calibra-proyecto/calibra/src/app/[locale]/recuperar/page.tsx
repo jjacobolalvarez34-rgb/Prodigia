@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import Header from "@/components/Header";
+import BotonEnlace from "@/components/BotonEnlace";
 import RecuperarForm from "./RecuperarForm";
 
 export default async function RecuperarPage() {
@@ -20,11 +20,11 @@ export default async function RecuperarPage() {
 
           <RecuperarForm />
 
-          <p className="mt-6 text-sm text-texto-secundario">
-            <Link href="/login" className="font-medium text-primario hover:underline">
+          <div className="mt-6 flex justify-center">
+            <BotonEnlace href="/login" variante="secundario" atras tamano="sm">
               {t("volverIniciarSesion")}
-            </Link>
-          </p>
+            </BotonEnlace>
+          </div>
         </div>
       </div>
     </>

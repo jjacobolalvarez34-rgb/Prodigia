@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
-import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
+import BotonEnlace from "@/components/BotonEnlace";
 import ConvertirCuenta from "@/components/ConvertirCuenta";
 import { IconCandado } from "@/components/icons";
 
@@ -57,9 +57,9 @@ export default async function InvitadoBloqueadoPage({ searchParams }: Props) {
           <ConvertirCuenta />
         </div>
 
-        <Link href="/" className="text-sm font-medium text-texto-secundario hover:text-foreground">
+        <BotonEnlace href="/" variante="secundario" atras>
           {t("volverInvitado")}
-        </Link>
+        </BotonEnlace>
       </div>
     </>
   );

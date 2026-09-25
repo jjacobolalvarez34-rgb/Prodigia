@@ -13,6 +13,7 @@ import LogroBanner from "@/components/LogroBanner";
 import MathText from "@/components/MathText";
 import CuerpoVisual from "@/components/aprender/CuerpoVisual";
 import { REGISTRO_VISUALES_ENIGMIA } from "@/components/enigmia/visuales/registro";
+import Boton from "@/components/Boton";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
 
@@ -266,13 +267,9 @@ export default function LeccionEnigmiaClient({ nodo }: Props) {
               {t("completaste", { nombre: nodo.nombre })}
             </h1>
             <LogroBanner logros={logrosNuevos} />
-            <button
-              onClick={() => router.push(hrefVolverAAprender("/enigmia/aprender", nodo.requierePro))}
-              className="mt-2 w-full rounded-xl px-4 py-3 font-display font-semibold text-white"
-              style={{ background: COLOR }}
-            >
+            <Boton atras colorHex={COLOR} className="mt-2 w-full" onClick={() => router.push(hrefVolverAAprender("/enigmia/aprender", nodo.requierePro))}>
               {t("volverAAprender")}
-            </button>
+            </Boton>
           </motion.div>
         )}
       </AnimatePresence>

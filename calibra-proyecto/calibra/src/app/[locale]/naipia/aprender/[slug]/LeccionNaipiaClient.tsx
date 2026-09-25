@@ -15,6 +15,7 @@ import { REGISTRO_VISUALES_NAIPIA } from "@/components/naipia/visuales/registro"
 import { visualesDeContenido } from "@/lib/aprender/visuales";
 import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
 import { COLOR_NAIPIA } from "../../colores";
+import Boton from "@/components/Boton";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
 
@@ -276,13 +277,9 @@ export default function LeccionNaipiaClient({ nodo }: Props) {
             </h1>
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
-              <button
-                onClick={() => router.push(hrefVolverAAprender("/naipia/aprender", nodo.requierePro))}
-                className="rounded-xl px-4 py-3 font-display font-semibold text-white"
-                style={{ background: COLOR_NAIPIA }}
-              >
+              <Boton atras colorHex={COLOR_NAIPIA} onClick={() => router.push(hrefVolverAAprender("/naipia/aprender", nodo.requierePro))}>
                 {t("volverAAprender")}
-              </button>
+              </Boton>
               <Link href="/naipia/practica" className="text-sm font-medium hover:underline" style={{ color: COLOR_NAIPIA }}>
                 {t("irAPracticar")}
               </Link>

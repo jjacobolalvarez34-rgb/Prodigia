@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -6,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import type { PerfilPublico } from "@/types/database";
 import Header from "@/components/Header";
+import BotonEnlace from "@/components/BotonEnlace";
 import MensajeDirectoClient, { type MensajeDirecto } from "./MensajeDirectoClient";
 
 interface Props {
@@ -79,9 +79,9 @@ export default async function MensajeDirectoPage({ params }: Props) {
     <>
       <Header autenticado invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-8 sm:px-6">
-        <Link href="/social" className="text-xs font-medium text-primario hover:underline">
-          ← {t("volver")}
-        </Link>
+        <BotonEnlace href="/social" variante="secundario" atras tamano="sm" className="self-start">
+          {t("volver")}
+        </BotonEnlace>
         <MensajeDirectoClient
           amigoId={amigoId}
           miUserId={user.id}

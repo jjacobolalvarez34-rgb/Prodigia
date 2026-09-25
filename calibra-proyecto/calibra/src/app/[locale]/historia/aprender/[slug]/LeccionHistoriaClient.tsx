@@ -15,6 +15,7 @@ import MathText from "@/components/MathText";
 import CuerpoVisual from "@/components/aprender/CuerpoVisual";
 import { REGISTRO_VISUALES_HISTORIA } from "@/components/historia/visuales/registro";
 import { COLOR_HISTORIA } from "../../colores";
+import Boton from "@/components/Boton";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
 
@@ -263,13 +264,9 @@ export default function LeccionHistoriaClient({ nodo }: Props) {
             <h1 className="font-display text-2xl font-black tracking-tight text-foreground">{t("completaste", { nombre: nodo.nombre })}</h1>
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
-              <button
-                onClick={() => router.push(hrefVolverAAprender("/historia/aprender", nodo.requierePro))}
-                className="rounded-xl px-4 py-3 font-display font-semibold text-white"
-                style={{ background: COLOR_HISTORIA }}
-              >
+              <Boton atras colorHex={COLOR_HISTORIA} onClick={() => router.push(hrefVolverAAprender("/historia/aprender", nodo.requierePro))}>
                 {t("volverAAprender")}
-              </button>
+              </Boton>
               <Link href="/historia/practica" className="text-sm font-medium hover:underline" style={{ color: COLOR_HISTORIA }}>
                 {t("irAPracticar")}
               </Link>

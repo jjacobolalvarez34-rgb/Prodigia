@@ -140,6 +140,56 @@ describe("Boton — rediseño de pastilla con placa de ícono (2026-09-24)", () 
     expect(sinMundo).toContain("--boton-acento:#6C4CF1");
   });
 
+  it("`tamano=\"sm\"` achica el padding y la placa (24 px) para un volver al tope de una página", () => {
+    const sm = renderToStaticMarkup(
+      <Boton variante="secundario" atras tamano="sm">
+        Volver
+      </Boton>
+    );
+    const md = renderToStaticMarkup(
+      <Boton variante="secundario" atras>
+        Volver
+      </Boton>
+    );
+    expect(sm).toContain("px-3 py-1.5 text-sm");
+    expect(sm).toContain("h-6 w-6");
+    expect(md).toContain("px-5 py-3");
+    expect(md).toContain("h-8 w-8");
+  });
+
+  it("`renderComo` dibuja la MISMA pastilla como otro elemento (un enlace), con placa y estilos", () => {
+    const html = renderToStaticMarkup(
+      <Boton
+        variante="secundario"
+        atras
+        colorHex="#0E9F6E"
+        renderComo={({ className, style, children }) => (
+          <a href="/perfil" className={className} style={style}>
+            {children}
+          </a>
+        )}
+      >
+        Volver
+      </Boton>
+    );
+    expect(html).toContain('<a href="/perfil"');
+    expect(html).not.toContain("<button");
+    expect(html).toContain("rounded-full");
+    expect(html).toContain("M19 12H5");
+    expect(html).toContain("--boton-acento:#0E9F6E");
+  });
+
+  it("`renderComo` deshabilitado o cargando vuelve a ser un <button> deshabilitado (un enlace no se puede deshabilitar)", () => {
+    const html = renderToStaticMarkup(
+      <Boton variante="secundario" disabled renderComo={({ className, style, children }) => <a className={className} style={style}>{children}</a>}>
+        Volver
+      </Boton>
+    );
+    expect(html).toContain("<button");
+    expect(html).toContain("disabled");
+    expect(html).not.toContain("<a ");
+  });
+
   it("cargando reemplaza cualquier ícono por el spinner (nunca los dos a la vez)", () => {
     const html = renderToStaticMarkup(
       <Boton variante="primario" destacado cargando>

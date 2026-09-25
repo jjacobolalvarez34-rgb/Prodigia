@@ -15,6 +15,7 @@ import MathText from "@/components/MathText";
 import CuerpoVisual from "@/components/aprender/CuerpoVisual";
 import { REGISTRO_VISUALES_QUIMIA } from "@/components/quimia/visuales/registro";
 import { COLOR_QUIMIA } from "../../colores";
+import Boton from "@/components/Boton";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
 
@@ -270,13 +271,9 @@ export default function LeccionQuimiaClient({ nodo }: Props) {
             </h1>
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
-              <button
-                onClick={() => router.push(hrefVolverAAprender("/quimia/aprender", nodo.requierePro))}
-                className="rounded-xl px-4 py-3 font-display font-semibold text-white"
-                style={{ background: COLOR_QUIMIA }}
-              >
+              <Boton atras colorHex={COLOR_QUIMIA} onClick={() => router.push(hrefVolverAAprender("/quimia/aprender", nodo.requierePro))}>
                 {t("volverAprender")}
-              </button>
+              </Boton>
               <Link href="/quimia/practica" className="text-sm font-medium hover:underline" style={{ color: COLOR_QUIMIA }}>
                 {t("irPracticar")}
               </Link>

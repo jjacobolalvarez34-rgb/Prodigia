@@ -1,6 +1,6 @@
 "use client";
 
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, CSSProperties, ReactElement, ReactNode } from "react";
 import BorderGlow from "@/components/reactbits/BorderGlow";
 import { colorSolidoPrimario, paradasPrimario } from "@/lib/degradeBoton";
 import { IconFlechaAtras, IconJugar } from "@/components/icons";
@@ -26,6 +26,17 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   atras?: boolean;
   icono?: ReactNode;
   iconoLado?: LadoIcono;
+  // Barrido de "volver" (2026-09-24): varios eran <Link> sueltos en páginas de
+  // servidor (perfil/estadísticas, mensajes, clanes...), sin el diseño nuevo.
+  // `renderComo` deja dibujar la MISMA pastilla como otro elemento (un
+  // enlace) — lo usa BotonEnlace.tsx, que sí importa la navegación de
+  // next-intl. Vive afuera de este archivo a propósito: importar
+  // "@/i18n/navigation" acá rompería los tests de todo componente que
+  // renderice un Boton (necesitan un mock especial en Vitest).
+  renderComo?: (props: { className: string; style: CSSProperties; children: ReactNode }) => ReactElement;
+  // "sm": para un "volver" al tope de una página (menos padding, texto chico y
+  // placa de 24 px) en vez del tamaño de un botón de acción.
+  tamano?: "md" | "sm";
 }
 
 const BASE =
@@ -61,14 +72,15 @@ function clasesDeAncho(className: string): string {
 // `tono="clara"` es para fondos sólidos de color (primario): un círculo
 // translúcido blanco, como en la referencia. `tono="acento"` es para fondos
 // neutros (secundario): el círculo toma el color del botón (mundo o marca).
-function PlacaIcono({ children, tono }: { children: ReactNode; tono: "clara" | "acento" }) {
+function PlacaIcono({ children, tono, pequena = false }: { children: ReactNode; tono: "clara" | "acento"; pequena?: boolean }) {
+  const medida = pequena ? "h-6 w-6" : "h-8 w-8";
   return (
     <span
       aria-hidden="true"
       className={
         tono === "clara"
-          ? "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/25 text-white"
-          : "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--boton-acento)_20%,transparent)] text-[color-mix(in_oklab,var(--boton-acento)_85%,var(--foreground))]"
+          ? `flex ${medida} shrink-0 items-center justify-center rounded-full bg-white/25 text-white`
+          : `flex ${medida} shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--boton-acento)_20%,transparent)] text-[color-mix(in_oklab,var(--boton-acento)_85%,var(--foreground))]`
       }
     >
       {children}
@@ -93,6 +105,8 @@ export default function Boton({
   atras = false,
   icono,
   iconoLado,
+  renderComo,
+  tamano = "md",
   style,
   ...rest
 }: Props) {
@@ -105,7 +119,7 @@ export default function Boton({
   let iconoFinal: ReactNode | null = icono ?? null;
   let lado: LadoIcono = iconoLado ?? "izquierda";
   if (!iconoFinal && atras) {
-    iconoFinal = <IconFlechaAtras className="h-4 w-4" />;
+    iconoFinal = <IconFlechaAtras className={tamano === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"} />;
     lado = iconoLado ?? "izquierda";
   } else if (!iconoFinal && esDestacadoPrimario) {
     iconoFinal = <IconJugar className="h-4 w-4 translate-x-px" />;
@@ -128,22 +142,31 @@ export default function Boton({
     ["--boton-acento" as string]: acento,
   };
 
-  const boton = (
-    <button
-      className={`${BASE} ${esDestacadoPrimario ? ESTILO_PRIMARIO_DESTACADO : ESTILOS[variante]} ${className}`}
-      style={estiloFinal}
-      disabled={disabled || cargando}
-      {...rest}
-    >
+  const pequena = tamano === "sm";
+  const baseEstilo = esDestacadoPrimario ? ESTILO_PRIMARIO_DESTACADO : ESTILOS[variante];
+  const clasesFinales = `${BASE} ${pequena ? baseEstilo.replace("px-5 py-3", "px-3 py-1.5 text-sm") : baseEstilo} ${className}`;
+  const contenido = (
+    <>
       {cargando ? (
         <span className="h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-current/30 border-t-current" />
       ) : (
-        iconoFinal && lado === "izquierda" && <PlacaIcono tono={tonoPlaca}>{iconoFinal}</PlacaIcono>
+        iconoFinal && lado === "izquierda" && <PlacaIcono tono={tonoPlaca} pequena={pequena}>{iconoFinal}</PlacaIcono>
       )}
       {children}
-      {!cargando && iconoFinal && lado === "derecha" && <PlacaIcono tono={tonoPlaca}>{iconoFinal}</PlacaIcono>}
-    </button>
+      {!cargando && iconoFinal && lado === "derecha" && <PlacaIcono tono={tonoPlaca} pequena={pequena}>{iconoFinal}</PlacaIcono>}
+    </>
   );
+
+  // Con `renderComo` (y habilitado) el botón es otro elemento —un enlace—:
+  // mismos estilos y contenido.
+  const boton =
+    renderComo && !disabled && !cargando ? (
+      renderComo({ className: clasesFinales, style: estiloFinal, children: contenido })
+    ) : (
+      <button className={clasesFinales} style={estiloFinal} disabled={disabled || cargando} {...rest}>
+        {contenido}
+      </button>
+    );
 
   if (esDestacadoPrimario && !disabled && !cargando) {
     // El halo solo se ve con el botón habilitado (deshabilitado ya queda

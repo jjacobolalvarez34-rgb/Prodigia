@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, requirePro, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
-import { Link } from "@/i18n/navigation";
+import BotonEnlace from "@/components/BotonEnlace";
 import { MUNDOS_LANDING } from "@/lib/mundos";
 import { calcularRachaMaxima } from "@/lib/perfil/records";
 
@@ -137,9 +137,9 @@ export default async function EstadisticasPage() {
       <Header autenticado invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
         <div>
-          <Link href="/perfil" className="text-xs font-medium text-primario hover:underline">
-            ← {t("volverAlPerfil")}
-          </Link>
+          <BotonEnlace href="/perfil" variante="secundario" atras tamano="sm">
+            {t("volverAlPerfil")}
+          </BotonEnlace>
           <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
           <p className="text-sm text-texto-secundario">{t("subtitulo")}</p>
         </div>

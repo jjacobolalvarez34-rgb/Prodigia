@@ -15,6 +15,7 @@ import MathText from "@/components/MathText";
 import CuerpoVisual from "@/components/aprender/CuerpoVisual";
 import { REGISTRO_VISUALES_MELODIA } from "@/components/melodia/visuales/registro";
 import { COLOR_MELODIA } from "../../colores";
+import Boton from "@/components/Boton";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
 
@@ -266,13 +267,9 @@ export default function LeccionMelodiaClient({ nodo }: Props) {
             </h1>
             <LogroBanner logros={logrosNuevos} />
             <div className="mt-2 flex w-full flex-col gap-3">
-              <button
-                onClick={() => router.push(hrefVolverAAprender("/melodia/aprender", nodo.requierePro))}
-                className="rounded-xl px-4 py-3 font-display font-semibold text-white"
-                style={{ background: COLOR_MELODIA }}
-              >
+              <Boton atras colorHex={COLOR_MELODIA} onClick={() => router.push(hrefVolverAAprender("/melodia/aprender", nodo.requierePro))}>
                 {t("leccion.volverAprender")}
-              </button>
+              </Boton>
               <Link href="/melodia/practica" className="text-sm font-medium hover:underline" style={{ color: COLOR_MELODIA }}>
                 {t("leccion.irPracticar")}
               </Link>
