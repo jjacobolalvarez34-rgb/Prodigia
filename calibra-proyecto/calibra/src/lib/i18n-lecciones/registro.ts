@@ -13,6 +13,7 @@ import { CODIA_EN } from "./en/codia";
 import { GEOGRAFIA_EN } from "./en/geografia";
 import { HISTORIA_EN } from "./en/historia";
 import { MELODIA_EN } from "./en/melodia";
+import { ANATOMIA_EN } from "./en/anatomia";
 
 export interface EntradaTraduccion {
   // Traducciones por slug.
@@ -33,6 +34,7 @@ export const REGISTRO_TRADUCCIONES: Partial<Record<MundoTraducible, EntradaTradu
   geografia: { traducciones: GEOGRAFIA_EN, migracion: "0233_geografia_lecciones_en.sql", completo: true },
   historia: { traducciones: HISTORIA_EN, migracion: "0234_historia_lecciones_en.sql", completo: true },
   melodia: { traducciones: MELODIA_EN, migracion: "0235_melodia_lecciones_en.sql", completo: true },
+  anatomia: { traducciones: ANATOMIA_EN, migracion: "0236_anatomia_lecciones_en.sql", completo: true },
   naipia: { traducciones: NAIPIA_EN, migracion: "0226_naipia_lecciones_en.sql", completo: true },
 };
 
