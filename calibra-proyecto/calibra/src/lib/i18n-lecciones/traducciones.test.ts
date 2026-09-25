@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { leccionesFuente, TABLA_DE, type MundoTraducible } from "./fuentes";
 import { encabezadoMigracion, REGISTRO_TRADUCCIONES } from "./registro";
-import { generarSqlTraducciones, textosTraducibles, validarTraduccion } from "./traducir";
+import { generarSqlTraducciones, resolverBloques, textosTraducibles, validarTraduccion } from "./traducir";
 
 const DIR_MIGRACIONES = path.resolve(__dirname, "../../../supabase/migrations");
 
@@ -42,14 +42,16 @@ describe("traducciones de lecciones al inglés", () => {
         const errores: string[] = [];
         for (const [slug, tr] of Object.entries(entrada.traducciones)) {
           const f = porSlug.get(slug);
-          if (f) errores.push(...validarTraduccion(f, tr));
+          if (f) errores.push(...validarTraduccion(f, resolverBloques(f, tr)));
         }
         expect(errores).toEqual([]);
       });
 
       it("no quedan frases en español en los textos en inglés", () => {
         const sospechosos: string[] = [];
-        for (const [slug, tr] of Object.entries(entrada.traducciones)) {
+        for (const [slug, trCruda] of Object.entries(entrada.traducciones)) {
+          const f0 = porSlug.get(slug);
+          const tr = f0 ? resolverBloques(f0, trCruda) : trCruda;
           const textos = [tr.nombre, tr.descripcion ?? "", ...tr.pasos, ...(tr.visuales ?? [])];
           for (const q of tr.quiz ?? []) textos.push(q.pregunta, q.explicacion ?? "", ...q.opciones);
           for (const t of textos) {
@@ -71,7 +73,7 @@ describe("traducciones de lecciones al inglés", () => {
       it(`la migración ${entrada.migracion} es exactamente lo generado`, () => {
         const filas = fuentes
           .filter((f) => entrada.traducciones[f.slug])
-          .map((f) => ({ fuente: f, traduccion: entrada.traducciones[f.slug] }));
+          .map((f) => ({ fuente: f, traduccion: resolverBloques(f, entrada.traducciones[f.slug]) }));
         const numero = entrada.migracion.slice(0, 4);
         const esperado = generarSqlTraducciones(encabezadoMigracion(mundo, filas.length, numero), TABLA_DE(mundo), null, filas, "leccion_en");
         const ruta = path.join(DIR_MIGRACIONES, entrada.migracion);

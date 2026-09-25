@@ -9,6 +9,7 @@ import { CALCULIA_EN } from "./en/calculia";
 import { ESTADISTICA_EN } from "./en/estadistica";
 import { CIRCUITIA_EN } from "./en/circuitia";
 import { ENIGMIA_EN } from "./en/enigmia";
+import { CODIA_EN } from "./en/codia";
 
 export interface EntradaTraduccion {
   // Traducciones por slug.
@@ -25,6 +26,7 @@ export const REGISTRO_TRADUCCIONES: Partial<Record<MundoTraducible, EntradaTradu
   estadistica: { traducciones: ESTADISTICA_EN, migracion: "0229_estadistica_lecciones_en.sql", completo: true },
   circuitia: { traducciones: CIRCUITIA_EN, migracion: "0230_circuitia_lecciones_en.sql", completo: true },
   enigmia: { traducciones: ENIGMIA_EN, migracion: "0231_enigmia_lecciones_en.sql", completo: false },
+  codia: { traducciones: CODIA_EN, migracion: "0232_codia_lecciones_en.sql", completo: true },
   naipia: { traducciones: NAIPIA_EN, migracion: "0226_naipia_lecciones_en.sql", completo: true },
 };
 

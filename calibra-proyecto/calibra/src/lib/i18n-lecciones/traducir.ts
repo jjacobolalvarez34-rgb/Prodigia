@@ -136,8 +136,35 @@ function formulasSinTexto(s: string): string[] {
   );
 }
 
+// En los .ts de Codia los bloques se escriben con ~~~ (para no chocar con los template literals) y
+// el generador de SQL los pasa a ```: se tratan igual acá.
+export function normalizarFences(s: string): string {
+  return s.replace(/~~~/g, "```");
+}
+
+// Compara los bloques de código salvo dos cosas que sí se traducen: los comentarios (# en Python,
+// // en Java, JavaScript y TypeScript, según el lenguaje del bloque) y el texto "error de
+// compilación" de las salidas de ejemplo. El código, los identificadores, los textos entre comillas y
+// el resto de la salida deben ser idénticos.
 function bloquesDeCodigo(s: string): string[] {
-  return s.match(RE_BLOQUE_CODIGO) ?? [];
+  const bloques = normalizarFences(s).match(RE_BLOQUE_CODIGO) ?? [];
+  return bloques.map((b) => {
+    const lenguaje = /^```([a-z]+)/.exec(b)?.[1] ?? "";
+    let limpio = b.replace(/error de compilación|compilation error/g, "<error de compilación>");
+    if (lenguaje === "python") limpio = limpio.replace(/#[^\n]*/g, "#");
+    else if (lenguaje === "java" || lenguaje === "javascript" || lenguaje === "typescript") limpio = limpio.replace(/\/\/[^\n]*/g, "//");
+    return limpio;
+  });
+}
+
+// Convierte ~~~ en ``` en todas las cadenas de un valor (para el SQL de Codia).
+function conFencesNormalizados<T>(v: T): T {
+  if (typeof v === "string") return normalizarFences(v) as T;
+  if (Array.isArray(v)) return v.map((x) => conFencesNormalizados(x)) as T;
+  if (v && typeof v === "object") {
+    return Object.fromEntries(Object.entries(v as Record<string, unknown>).map(([k, x]) => [k, conFencesNormalizados(x)])) as T;
+  }
+  return v;
 }
 
 function distintos(a: string[], b: string[]): boolean {
@@ -149,7 +176,8 @@ function chequearTexto(etiqueta: string, es: string, en: string, errores: string
   if (distintos(formulasSinTexto(es), formulasSinTexto(en))) errores.push(`${etiqueta}: las fórmulas $…$ no coinciden`);
   if (distintos(bloquesDeCodigo(es), bloquesDeCodigo(en))) errores.push(`${etiqueta}: los bloques de código no coinciden`);
   if ((en.match(/\$/g) ?? []).length % 2 !== 0) errores.push(`${etiqueta}: $ desparejado`);
-  if (/undefined|NaN|\[object/.test(en)) errores.push(`${etiqueta}: contiene undefined/NaN`);
+  // Es válido que aparezcan si la lección en español también los menciona (p. ej. Codia enseña qué es undefined).
+  if (/undefined|NaN|\[object/.test(en) && !/undefined|NaN|\[object/.test(es)) errores.push(`${etiqueta}: contiene undefined/NaN`);
 }
 
 // Lista de problemas (vacía = válida) de la traducción de UNA lección.
@@ -201,6 +229,29 @@ export function validarTraduccion(fuente: LeccionFuente, tr: TraduccionLeccion):
   return e;
 }
 
+// Bloques de código de un texto (con su ~~~ o ```), en orden. Sirven de fuente para los marcadores.
+function bloquesLiterales(s: string): string[] {
+  return s.match(/~~~[\s\S]*?~~~|```[\s\S]*?```/g) ?? [];
+}
+
+// Un texto traducido puede referirse al N-ésimo bloque de código del texto en español con el marcador
+// ⟦N⟧ (base 1) en vez de copiarlo: el bloque se inserta TAL CUAL. Así una lección con decenas de
+// programas no obliga a reescribirlos (ni a arriesgar un error de tipeo). Un bloque cuyos comentarios
+// sí se traducen se escribe completo, sin marcador.
+function conBloques(fuente: string, traducido: string): string {
+  const bloques = bloquesLiterales(fuente);
+  return traducido.replace(/⟦(\d+)⟧/g, (m, n) => bloques[Number(n) - 1] ?? m);
+}
+
+// Devuelve la traducción con los marcadores ⟦N⟧ de pasos y enunciados ya reemplazados por el código.
+export function resolverBloques(fuente: LeccionFuente, tr: TraduccionLeccion): TraduccionLeccion {
+  return {
+    ...tr,
+    pasos: tr.pasos.map((p, i) => conBloques(fuente.pasos[i] ?? "", p)),
+    quiz: tr.quiz?.map((q, i) => ({ ...q, pregunta: conBloques(fuente.quiz?.[i]?.pregunta ?? "", q.pregunta) })),
+  };
+}
+
 // `quiz` traducido en el formato del contenido (respuesta = texto de la opción).
 export function quizEnContenido(tr: TraduccionLeccion): PreguntaFuente[] | undefined {
   if (!tr.quiz) return undefined;
@@ -232,12 +283,12 @@ export function generarSqlTraducciones(
 ): string {
   const tag = `$${etiqueta}$`;
   const bloques = filas.map(({ fuente, traduccion }) => {
-    const piezas: string[] = [`'pasos', ${tag}${JSON.stringify(traduccion.pasos)}${tag}::jsonb`];
+    const piezas: string[] = [`'pasos', ${tag}${JSON.stringify(conFencesNormalizados(traduccion.pasos))}${tag}::jsonb`];
     const quiz = quizEnContenido(traduccion);
-    if (quiz) piezas.push(`'quiz', ${tag}${JSON.stringify(quiz)}${tag}::jsonb`);
+    if (quiz) piezas.push(`'quiz', ${tag}${JSON.stringify(conFencesNormalizados(quiz))}${tag}::jsonb`);
     if (fuente.visuales && fuente.visuales.length > 0) {
       const vis = aplicarTextos(fuente.visuales, traduccion.visuales ?? []);
-      piezas.push(`'visuales', ${tag}${JSON.stringify(vis)}${tag}::jsonb`);
+      piezas.push(`'visuales', ${tag}${JSON.stringify(conFencesNormalizados(vis))}${tag}::jsonb`);
     }
     const desc = traduccion.descripcion === undefined ? "null" : `'${escaparSql(traduccion.descripcion)}'`;
     const donde =
