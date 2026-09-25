@@ -64,8 +64,10 @@ confirmar en vivo · ❌ ausente.
 | 20 | Responsive en mobile real | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | 21 | Aparece en estadísticas Pro (/perfil/estadisticas) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅¹⁰ | ✅¹⁰ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
 | 22 | Aprender con pestañas Técnicas \| Clases (Pro, clase 1 gratis) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ✅²³ | ✅²⁴ | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² |
-| 23 | Aprender con explicación visual animada (no solo texto) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ✅²³ | ✅²⁴ | ⚠️¹³ | ⚠️¹³ | ⚠️¹³ | ✅¹³ | ⚠️¹³ |
-| 24 | Español neutro, sin voseo, en el contenido de lecciones | ⚠️¹⁵ | ✅¹⁷ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ⚠️¹⁵ | ✅¹⁵ | ✅¹⁵ | ✅¹⁵ |
+| 23 | Aprender con explicación visual animada (no solo texto) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ✅²³ | ✅²⁴ | ✅²⁸ | ✅²⁵ | ✅²⁶ | ✅¹³ | ✅²⁷ |
+| 24 | Español neutro, sin voseo, en el contenido de lecciones | ✅³⁰ | ✅¹⁷ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅¹⁵ | ✅¹⁵ | ✅¹⁵ |
+| 25 | Botones con el diseño de pastilla + placa de ícono (color de la ciudad) y flecha para volver a la página anterior | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ |
+| 26 | Confirmación al abandonar una partida o lección desde el menú (Ranked: avisa que se pierde ELO y cierra el duelo con resultado) | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ |
 
 ¹ = bug real encontrado en esta auditoría y **ya corregido en el código** esta sesión — ver "Changelog" abajo. La celda muestra el estado ACTUAL (post-fix), no el que se encontró.
 ² = /perfil de Numeria tenía un bug propio (ver changelog) que inflaba su propio contador con attempts de otros mundos — también corregido.
@@ -98,6 +100,18 @@ confirmar en vivo · ❌ ausente.
 ²³ = **Trigonometría, rediseño del mundo, fase 1 (2026-09-24)** — ver "Trigonometría: rediseño del mundo (fase 1)" más abajo. Práctica con escala de dificultad declarativa y cinco errores de datos corregidos; Aprender con 6 bloques en orden escolar, 25 Técnicas (gratis) + 27 Clases (Pro, desbloqueo independiente por bloque desde la corrección del 2026-09-24, la primera del mundo gratis), 9 visuales animados `trigonometria.*` y migración `0214`. Los bloques "Gráficas y periodo" y "Ecuaciones trigonométricas" solo existen en Aprender (sin modo de práctica todavía: fase 2).
 
 ²⁴ = **Historia, rediseño del mundo (2026-09-24)** — ver "Historia: rediseño del mundo" más abajo. Práctica derivada por construcción de una tabla canónica de 193 hechos y 110 personajes (`src/lib/historia/hechos.ts`/`personajes.ts`, listados en `docs/HISTORIA_HECHOS.md` para revisión humana), con escala de dificultad declarativa en los 4 modos existentes; Aprender con 5 bloques por época, 25 Técnicas (gratis, 5 históricas reescritas) + 31 Clases (Pro, desbloqueo independiente por época, la primera del mundo gratis), 6 visuales animados `historia.*` y migración `0215`.
+
+²⁵ = **Circuitia, visuales en Aprender (2026-09-24)** — ver "Circuitia: visuales en Aprender" más abajo. Las 12 lecciones (5 Técnicas + 7 Clases) tienen al menos un visual `circuitia.*`: esquema de circuito con símbolos estándar y corriente animada, resistencia equivalente armándose en serie/paralelo y triángulo V/I/R de la Ley de Ohm. Cada valor eléctrico mostrado lo calcula el código (`resolver.ts`). Sin tocar la escala de dificultad de la práctica ni el currículo.
+
+²⁶ = **Estadística, visuales en Aprender (2026-09-25)** — ver "Estadística: visuales en Aprender" más abajo. Las 13 lecciones (5 Técnicas + 8 Clases) tienen al menos un visual (50 en total): 7 propios `estadistica.*` (datos que se ordenan y marcan mediana/cuartiles/posición, barras de frecuencia con la moda, desviaciones con su signo y cuadrados, curva normal con la regla empírica, dispersión con la recta de mínimos cuadrados, árbol de probabilidad, gráficos que reutilizan los SVG de la práctica) más el primitivo `cuadros`. Cada número mostrado lo calcula el código y se contrasta en tests con aritmética hecha a mano. Desbloqueo por tema en Técnicas y Clases. **Cobertura de la práctica completa**: los dos huecos que tenía (`dato_faltante` y `rango_percentil`) y lo que la Clase 8 solo explicaba (5 tipos de barras, `grafico_tendencia` y 3 de histograma) ahora se enseñan con ejemplos resueltos y visuales, y un test rompe si aparece un tipo de práctica sin lección. Sin tocar la escala de dificultad de la práctica ni `skill_levels`.
+
+²⁷ = **Codia, visuales en Aprender (2026-09-25)** — ver "Codia: visuales en Aprender" más abajo. Las 13 lecciones (5 Técnicas + 8 Clases) tienen al menos un visual (59 en total, de 4 tipos propios `codia.*`: traza con línea resaltada y tabla de variables, el mismo programa en los 4 lenguajes, diagrama de flujo de un condicional o bucle, y crecimiento del trabajo al duplicar n). El código, la salida y las variables NO viajan tipeados: se calculan al mostrar con el renderizador y el intérprete de la práctica, y los tests los contrastan con la ejecución real (Python, Java, JavaScript, TypeScript). Desbloqueo por tema en Técnicas y Clases. Sin tocar la práctica, la escala de dificultad ni `skill_levels`.
+
+²⁸ = **Calculia, visuales en Aprender (2026-09-25)** — ver "Calculia: visuales en Aprender" más abajo. Las 12 lecciones (5 Técnicas + 7 Clases) tienen al menos un visual: 19 propios `calculia.*` (recta tangente, área bajo la curva, sumas parciales de una serie geométrica y familia de soluciones de una EDO separable) y 29 cuadros paso a paso; cuatro Clases ganan pasos nuevos al final para cubrir todo lo que pide la práctica. Cada derivada, integral, suma y pendiente mostrada la calcula el código y un test la contrasta con un cálculo independiente. Desbloqueo por tema en Técnicas y Clases (`path.ts`). Sin tocar la práctica ni la calibración.
+
+²⁹ = **Diseño transversal de botones, guardia de salida y tarjetas de amigos (2026-09-24/25)** — ver "Transversal: botones, confirmación al abandonar y Social" más abajo. Rige para los 13 mundos y para cualquier mundo nuevo: todo botón usa `Boton`/`BotonEnlace` (nunca un `<button>` con estilos sueltos) y toda partida o lección registra la guardia con `useRegistrarGuardiaSalida`.
+
+³⁰ = **Español neutro, barrido 2026-09-25** — `0221_espanol_neutro_lecciones.sql` reemplaza el voseo que dejaron las migraciones viejas en `techniques` y `logic_techniques` (nombre, descripción, pasos, ejemplo y quiz); el detector `src/lib/texto/espanolNeutro.ts` ganó ~70 imperativos y un test escanea los literales de las lecciones, la práctica y la autenticación en el código. Lo que NO cubre: voseo dentro de los bancos de práctica guardados en la base (p. ej. acertijos de Enigmia) y formas que el detector no lista.
 
 **Resumen (al 2026-09-18, ANTES de los mundos 11-13 y la fila 22 — ver la actualización debajo)**: de 210 celdas (21 sistemas × 10 mundos), 186 ✅ (5 de ellas confirmadas jugando, no solo por código; 18 de Trigonometría/Historia, 18 de Calculia y 18 de Circuitia son ✅ solo por código+build, ver footnotes ⁶/⁷/⁸), 23 ⚠️ (17 de la matriz de 8 mundos + 3 de Calculia + 3 de Circuitia, mismo patrón que los mundos anteriores), 1 ❌ (Enigmia #1). Ningún mundo tiene un sistema completamente roto sin arreglo disponible; los ⚠️ restantes son gaps de UX/contenido reales (no bugs de wiring), cosas que no se pueden confirmar sin dispositivo real/browser, o (para los mundos nuevos) sistemas pendientes de la primera verificación en vivo post-migración.
 
@@ -1074,3 +1088,186 @@ Las 5 Técnicas históricas tenían voseo real; se reescriben por `UPDATE` en la
 ### Fase futura (no implementada)
 
 Un bloque de historia nacional (Colombia u otro país) se agregaría sumando filas a la tabla canónica y un bloque nuevo en `bloques.ts`, sin tocar los generadores.
+
+## Estadística: visuales en Aprender (2026-09-25)
+
+Fila 23 de Estadística pasa a ✅ (nota ²⁶). Trabajo hecho por dos agentes que la API cortó por el límite de uso; un tercero lo revisó, completó y verificó sin rehacerlo.
+
+### Qué quedó
+
+- **13/13 lecciones con visual** (5 Técnicas + 8 Clases), 50 visuales en total: 37 propios `estadistica.*` (`ordenar` 9, `desvios` 11, `frecuencias` 2, `dispersion` 2, `arbol` 2, `normal` 1, `grafico` 10, este último reusa los SVG de barras, líneas, histograma y caja de la práctica) y 13 del primitivo `cuadros` (combinatoria, tipos de variable, dato que falta y rango percentil). Un test falla si alguna lección queda sin visual.
+- Fuente única: `src/lib/estadistica/lecciones/` (tipada). La migración `0218_estadistica_visuales.sql` se GENERA desde ahí (`lecciones/sql.ts`) y un test la compara byte a byte. Solo `update ... where slug = ... and problem_type = 'estadistica'` de las 13 filas (5 Técnicas y luego 8 Clases): sin INSERT, ALTER ni DELETE, sin tocar `technique_progress` ni `skill_levels`. Validada con `pglast`.
+- Pasos y quiz conservan lo sembrado en `0191`, comparado en un test: las preguntas sembradas del quiz son IDÉNTICAS (mismo orden, opciones y respuesta correcta; el servidor valida cada respuesta contra el quiz guardado) y lo único distinto en el texto sembrado es el voseo, corregido a español neutro en 4 Técnicas y 2 Clases. Lo nuevo (pasos y preguntas de quiz para cubrir los huecos de la práctica) va SOLO AL FINAL: Clase 2 (+2 pasos, +1 pregunta), Clase 6 (+2 pasos, +1 pregunta) y Clase 8 (+4 pasos, +2 preguntas).
+- Componentes en `src/components/estadistica/visuales/` con `alternativa` sr-only (`figcaption`), `prefers-reduced-motion` (estado final ya dibujado, sin reproducción automática), mensajes `Estadistica.visuales` es/en con paridad de claves (137/137 en `Estadistica`), sin `x`/`y` de framer-motion sobre elementos SVG (solo opacidad en `circle`, `line`, `path`, `g`).
+
+### Desbloqueo por tema (`src/lib/estadistica/path.ts`, reescrito)
+
+Técnicas (3 temas) y Clases (4 temas: datos y tendencia central, dispersión, probabilidad y combinatoria, análisis de datos) tienen un puntero "activo" independiente por tema y orden lineal dentro del tema; nada se bloquea entre temas. La Clase 1 sigue siendo preview gratis y el resto exige Pro (`bloqueadoPorPlan`). El estado se arma en la fuente (`obtenerCaminoEstadistica`), que es lo que revalida `[slug]/page.tsx` (bug de Numeria, commit 648f2b7). Tests en `path.test.ts`.
+
+### Rigor estadístico
+
+Ningún número va suelto en el jsonb: los componentes recalculan con `visualesDatos.ts`, que reusa `util.ts` (las mismas funciones que la práctica). `visualesDatos.test.ts` y `lecciones.test.ts` los contrastan con aritmética independiente: medias, medianas, cuartiles por mitades, moda, suma de cuadrados y varianza/desvío, puntaje z, regresión (Sxy = 8, Sxx = 10, r = 0.8, recta 0.6 + 0.8x), árbol de probabilidad (los hijos suman 1, conjuntas 15/100 y 18/40), combinatoria contra el triángulo de Pascal y regla empírica 68-95-99.7 contra el área exacta de la normal (erf). KaTeX compila en todas las fórmulas.
+
+### Guardia de salida
+
+`LeccionEstadisticaClient.tsx` usa `useRegistrarGuardiaSalida` mientras la lección no esté recién abierta ni terminada; `EstadisticaPracticaClient.tsx` la usa durante el sprint, con `ranked` y `alConfirmar: rendirseDuelo` si hay duelo Ranked real (mismo patrón que `PracticaClient.tsx`).
+
+### Cobertura práctica ↔ lecciones (test; un hueco nuevo se reporta y rompe el test)
+
+- **Antes**: la práctica evaluaba dos cosas que ninguna lección enseñaba (`dato_faltante` y `rango_percentil`) y otras nueve solo se explicaban en parte (Clase 8: los 5 `grafico_*` de barras, `grafico_tendencia` y los 3 de histograma). Ahora **no queda ninguno**: `COBERTURA` en `lecciones.test.ts` tiene todos los tipos como «cubierto», y el informe de huecos exige listas vacías.
+- **Dónde se enseña ahora**: `dato_faltante` en la Clase 2 (suma total = media · n, menos los datos conocidos, y la comprobación por desviaciones que suman 0; cuadros + desviaciones); `rango_percentil` en la Clase 6 (contar los datos menores o iguales y dividir entre N, comprobado con el percentil correspondiente; posición marcada + cuadros); Clase 8, entrenamiento con barras (valor, mayor/menor como CATEGORÍA, diferencia y total), líneas (valor, máximo, mayor aumento y las cuatro tendencias con sus reglas: crece, decrece, sube y luego baja, casi constante) e histogramas (total, clase modal y datos menores que un límite), cada uno con un ejemplo resuelto y su visual `estadistica.grafico`.
+
+### Verificación
+
+`tsc --noEmit` limpio; `vitest run` de `src/lib/estadistica`, `src/components/estadistica`, `src/lib/texto`, `src/lib/aprender` y `src/lib/practica/estadistica` en verde (los tests de los ejemplos nuevos contrastan cada número con aritmética hecha a mano). La migración `0218` se regeneró con `ESTADISTICA_ESCRIBIR_SQL=1` y se validó con `pglast` (13 `update` por slug, sin INSERT/ALTER/DELETE). Capturas en Playwright a 360 px (movimiento reducido y animado) de las Clases 2, 6 y 8, y de la lección completa con el cliente real, sin desborde horizontal.
+
+**Advertencia de hidratación corregida**: `useReproductor` (compartido por todos los mundos) leía `useReducedMotion()` de framer-motion, que devuelve `null` en el servidor y el valor real en el primer render del cliente; con la preferencia activada y un visual renderizado en el servidor, React tiraba «Hydration failed». Ahora usa `useSyncExternalStore` con `false` solo mientras se hidrata y el valor real en cualquier otro render del cliente: el comportamiento para los demás mundos es el mismo salvo que desaparece la advertencia.
+
+**Sin verificar**: flujo end-to-end con Supabase y login reales (`0218` no corrió contra una base real), tema oscuro, lectores de pantalla reales, y el flujo del modal de salida en una partida real.
+
+## Codia: visuales en Aprender (2026-09-25)
+
+Fila 23 de Codia a ✅ (nota ²⁷). Las 13 lecciones (5 Técnicas + 8 Clases) llevan `contenido.visuales` además de los pasos de texto, con 59 visuales en total y 4 tipos propios (`src/components/codia/visuales/`, prefijo `codia.`).
+
+### Visuales
+
+- `codia.traza` (29): el programa en el IR de la práctica, con la línea que se ejecuta resaltada y la tabla de variables después de cada línea (pilas y colas con su tope/frente, mapas y conjuntos con su contenido).
+- `codia.comparar` (19): el mismo programa lado a lado en Python, Java, JavaScript y TypeScript con su salida real o su error real (`ZeroDivisionError`/`ArithmeticException`, `IndexError`/`ArrayIndexOutOfBoundsException`, `TypeError`; en JavaScript y TypeScript dividir por cero da `Infinity`).
+- `codia.flujo` (5): diagrama de flujo del primer condicional (cadena if / elif / else, con "no se llega a evaluar" en las ramas que no se miran) o bucle (una fila por vuelta y los valores al salir).
+- `codia.crecimiento` (6): cuánto trabajo hace `contar(n)` para varios n (barras y factor ×2 / ×4), para ver O(n) contra O(log n), O(n log n), O(n²) y O(n³).
+- Todos: alternativa textual `sr-only` con TODOS los pasos, controles del reproductor (Anterior / Siguiente / Reproducir / Repetir), `prefers-reduced-motion` y modo `estatico` (estado final), sin `x`/`y` de framer-motion sobre `<rect>`, código monoespaciado con `BloqueCodigo` (ganó `resaltarLinea` y sin ligaduras). Mensajes `Codia.visuales.*` en es y en (53 claves cada uno, paridad verificada).
+- `CuerpoLeccionCodia` arma la lección (cada paso con `TextoConCodigo` y debajo sus visuales según `despuesDePaso`); sin `visuales` la lección se ve como siempre.
+
+### Código y salidas reales, nunca tipeados
+
+Los visuales llevan solo el `programa` (JSON puro, viaja en el jsonb). Al mostrarlos, `src/lib/codia/visualesDatos.ts` lo renderiza con `render.ts` (sintaxis real de cada lenguaje) y lo ejecuta con `interprete.ts` (el de la práctica). `interpretar` ganó un tercer parámetro opcional `alPaso` (callback por sentencia con id): sin pasarlo se comporta exactamente igual que antes (la práctica no lo usa; `src/lib/practica/codia.test.ts` sigue verde). `visualesDatos.test.ts` contrasta todo con la EJECUCIÓN REAL: comparaciones y conteos de crecimiento en Python, Java, JavaScript y TypeScript (con chequeo de tipos), y la tabla de variables, las líneas, los veredictos de cada rama y las vueltas de los bucles contra un trazador independiente de Python (`sys.settrace`). `visuales.test.ts` RENDERIZA de verdad con `react-dom/server` cada visual de cada lección (es y en, animado y estático) y la lección completa (regla nacida del crash de Codia del 2026-09-21).
+
+### Desbloqueo por tema
+
+`src/lib/codia/path.ts` se reescribió: los temas son los grupos de `GRUPOS_APRENDER.codia`. La primera Técnica y la primera Clase no dominadas de CADA tema están abiertas a la vez; el orden es lineal solo dentro del tema (Clases: la Clase 1 es preview gratis y el resto exige Pro). `path.test.ts` (patrón de Quimia) cubre las funciones puras, una propiedad de 400 combinaciones y que el estado de `obtenerCaminoCodia` sea el mismo que ve el sidebar (bug de Numeria 648f2b7).
+
+### Guardia de salida
+
+`LeccionCodiaClient` registra `useRegistrarGuardiaSalida` activo salvo en la fase recién abierta y en la celebración; `CodiaPracticaClient` lo registra durante el sprint, con `ranked` y `alConfirmar: rendirseDuelo` si el duelo es Ranked real (patrón de `PracticaClient` y del commit a3ee0f7).
+
+### Cobertura práctica <-> lecciones (`src/lib/codia/lecciones/cobertura.test.ts`)
+
+Los temas de la práctica salen del código (plantillas de salida y de estructuras, tipos de `problema.ts` y `catalogoSintaxis.ts`); si la práctica suma uno, el test lo pide. Cuenta como enseñado solo lo que aparece en los pasos (el quiz no). **Ya no queda ningún hueco** (`HUECOS_CONOCIDOS` está vacío y el test exige que siga así). Los 10 que se reportaron primero se cerraron el mismo día con pasos nuevos y visuales, sin tocar el quiz (el test `lecciones.test.ts` y el `quiz` de cada lección quedaron idénticos):
+
+- Clase 1 (Variables y tipos): comentarios `#` y `//` (visual `comparar`), el orden de la suma con textos (`1 + 2 + "5"` da `35`, `"1" + 2 + 3` da `123` en Java, JavaScript y TypeScript; en Python es `TypeError`; visual `comparar` con la salida y el error reales), y largo de un texto (`len` / `.length()` / `.length`) y repetición de un texto (`"ab" * 3` solo en Python, `.repeat(3)` en JavaScript y TypeScript, error de compilación en Java; visual `traza` en Python).
+- Clase 3 (Bucles): asignación aumentada `+=` y `*=` (suma y producto de 1 a 4; `traza`) y factorial con un for (`traza` de `factorial(5)` = 120).
+- Clase 5 (Listas y diccionarios): lista dinámica (append en Python, add en Java con ArrayList, push en JavaScript y TypeScript, con get y size; `traza` y `comparar`) y máximo de un arreglo (`traza`).
+- Clase 6 (Recorridos y complejidad): O(n log n) (un bucle con un contador que se duplica adentro: 24 y 64 para n = 8 y 16) y O(n³) (tres bucles anidados: 64 y 512 para n = 4 y 8), cada uno con su gráfica de crecimiento.
+
+`cobertura.test.ts` además comprueba que cada uno de esos temas se enseña en los pasos de la lección prevista. Los pasos nuevos se insertaron en su lugar (los `despuesDePaso` de los visuales ya existentes se recorrieron); ninguna descripción, quiz ni orden de lecciones cambió.
+
+### Migración
+
+`supabase/migrations/0219_codia_visuales.sql`, generada desde `src/lib/codia/lecciones/` (`CODIA_ESCRIBIR_SQL=1 npx vitest run src/lib/codia/lecciones` regenera `0193` y `0219` a la vez), comparada byte a byte por test y validada con pglast (también `0193`). 13 sentencias, todas `update public.techniques set contenido = contenido || jsonb_build_object('pasos', ..., 'visuales', ...) where slug = '...' and problem_type = 'codia'` en el orden del curso (5 Técnicas, 8 Clases); sin `insert`/`delete`/`drop` y sin la clave `quiz`. `0193` se regeneró con los pasos nuevos (para una base nueva) y `0219` vuelve a poner `pasos` (para una base donde `0193` ya corrió): un test exige que los pasos de `0219` sean idénticos a los de `0193`. El texto ya está en español neutro, así que `0221` (que corre después) no lo modifica. Idempotente; requiere `0193`.
+
+### Verificación
+
+`tsc --noEmit` limpio (proyecto completo). `vitest` de `src/lib/codia`, `src/components/codia`, `src/lib/texto`, `src/lib/aprender` y `src/lib/practica/codia`: 12 archivos, 307 tests verdes (con Python, Java y Node reales; un test de `espanolNeutro` sobre `0195` agotó su plazo de 5 s una vez por carga de la máquina y pasa al correrlo solo). Capturas en Playwright a 360 px (tema claro las 49 figuras del primer cierre y luego las de las Clases 1, 3, 5 y 6 con los visuales nuevos, tema oscuro dos lecciones): sin desborde horizontal, sin errores de consola, código y salidas legibles. El diagrama de crecimiento muestra el factor como `×2.7` (punto decimal) mientras el texto de la lección dice `2,7`.
+
+**Sin verificar**: `0219` no corrió contra una base real; flujo end-to-end con Supabase y login reales; lectores de pantalla reales; la guardia de salida en una partida o duelo real.
+
+## Circuitia: visuales en Aprender (2026-09-25)
+
+Fila 23 de Circuitia pasa a ✅ (nota ²⁵). Trabajo hecho por dos agentes que la API cortó por el límite de uso; un tercero lo revisó, completó y verificó sin rehacerlo.
+
+### Qué quedó
+
+- **12/12 lecciones con visual** (5 Técnicas + 7 Clases), 37 visuales `circuitia.*` (28 `circuito`, más `resistenciaEquivalente` y `leyOhm`) de 3 tipos: `circuito` (esquema con batería, resistores en zigzag, cables y uniones, y corriente convencional animada; serie, paralelo y serie con un bloque en paralelo), `resistenciaEquivalente` (los resistores se arman en su arreglo, se muestra la fórmula y se funden en uno) y `leyOhm` (triángulo V/I/R con la incógnita revelada al final). Un test falla si alguna lección queda sin visual.
+- Fuente única: `src/lib/circuitia/lecciones/` (tipada). La migración `0217_circuitia_visuales.sql` se GENERA desde ahí (`lecciones/sql.ts`) y un test la compara byte a byte. Solo `update public.techniques set contenido = contenido || {visuales} where slug = ... and problem_type = 'circuitia'` de las 12 filas (5 Técnicas y luego 7 Clases): un merge que escribe `pasos` y `visuales` (los pasos cambian porque tres Clases ganaron pasos al final, ver abajo, y el texto ya es neutro) y NO toca `quiz`, nombre, orden ni `requiere_pro`; sin INSERT, ALTER ni DELETE. Validada con `pglast`.
+- Pasos y quiz son los que dejó `0195` (que reescribe el `contenido` de las 12, sobre lo sembrado en 0167/0171/0179): un test compara el quiz (IDÉNTICO: el servidor valida por igualdad exacta) y los pasos sembrados (mismo orden y texto, en español neutro) con el SQL; lo único nuevo son pasos AGREGADOS AL FINAL de tres Clases (Fundamentos, Razonamiento cualitativo 1 y 2), de modo que ningún `despuesDePaso` existente se mueve.
+- El esquema de las lecciones (`src/lib/circuitia/esquema.ts`) es propio; `CircuitoSVG.tsx` (Práctica y Diagnóstico) no se modificó. Símbolos: batería (placa larga = +, corta y gruesa = −) y resistor en zigzag (convención norteamericana), sin componentes dudosos.
+- Cada visual tiene alternativa sr-only (`figcaption`), `prefers-reduced-motion` (sin pulsos ni reproducción automática, estado final dibujado), mensajes `Circuitia.visuales` es/en con paridad, solo opacidad de framer-motion sobre `g` (nada de `x`/`y` sobre elementos SVG) y no desborda a 360 px.
+
+### Desbloqueo por tema (`src/lib/circuitia/path.ts`, reescrito; temas en `grupos.ts`)
+
+Antes, el camino real era el genérico de `obtenerCaminoConClases` (un puntero lineal global en las dos pestañas) mientras el sidebar recalculaba las Técnicas por grupo: la primera Técnica de «Circuitos mixtos» o de «Razonamiento cualitativo» se veía activa y `[slug]/page.tsx` la rebotaba (mismo bug de Numeria, commit 648f2b7). Ahora las dos pestañas tienen un puntero «activo» por tema (Serie y paralelo / Fundamentos, Circuitos mixtos, Razonamiento cualitativo) y orden lineal dentro del tema; la Clase 1 sigue siendo preview gratis y el resto exige Pro (`bloqueadoPorPlan`). El sidebar se arma con `construirUnidadesCircuitia` leyendo el estado de la fuente. Tests en `path.test.ts` (incluido que `GRUPOS_APRENDER.circuitia` no se desincronice de `grupos.ts`).
+
+### Exactitud eléctrica
+
+Ningún valor eléctrico va suelto en el jsonb (solo topología, ohmios y voltaje de la fuente): los componentes recalculan con `visualesDatos.ts`, que delega en `resolver.ts`. `visualesDatos.test.ts` contrasta contra aritmética independiente (0.4 A / 4 V / 8 V en serie 10+20 con 12 V; 1.2 A y 0.6 A en paralelo; 3, 2 y 1 A; mixto 0.3 A por rama; 5+10+5 V; R_eq 16 y 4 Ω; 1/R = 0.15 → 6.67 Ω), y propiedades físicas sobre muchos circuitos (V = I·R, mallas, nodos, potencia entregada = disipada). `lecciones.test.ts` verifica que cada cifra que muestra un visual de una Clase aparece en sus pasos, y que todo el KaTeX (pasos, quiz, títulos y fórmulas generadas) compila con `throwOnError`.
+
+### Guardia de salida
+
+`LeccionCircuitiaClient.tsx` usa `useRegistrarGuardiaSalida` mientras la lección no esté recién abierta ni terminada; `CircuitiaPracticaClient.tsx` la usa durante el sprint, con `ranked` y `alConfirmar: rendirseDuelo` si hay duelo Ranked real (mismo patrón que `PracticaClient.tsx`).
+
+### Cobertura práctica ↔ lecciones (`cobertura.test.ts`, sin huecos)
+
+- Se cerraron los dos huecos que se habían reportado. La forma `serie3` (3 resistores en serie) se dibuja en Fundamentos (10 + 20 + 30 Ω con 12 V: 0.2 A; 2, 4 y 6 V). Las 12 combinaciones forma/acción/magnitud del modo cualitativo tienen su par antes/después: serie (Clase «sube o baja»: 10 Ω + 10 Ω con 20 V, R1 se duplica o se reduce, corriente y voltaje de R2), paralelo (Clase «cuándo no cambia»: 4/6/12 Ω con 12 V, R2 se duplica a 12 Ω o se reduce a 3 Ω, R3 no cambia) y mixto (misma Clase: 10 Ω + (20 Ω || Rp2) con 12 V; con Rp2 = 40 Ω la hermana Rp1 AUMENTA, 0.30 → 0.34 A y 6 → 6.86 V, y con Rp2 = 10 Ω DISMINUYE, a 0.24 A y 4.8 V). Los números están calculados por `resolver.ts` y contrastados a mano en `visualesDatos.test.ts`.
+- `HUECOS_FORMAS` y `HUECOS_CUALITATIVO` quedan vacías: si la práctica agrega una forma o combinación nueva sin lección, el test falla.
+- No se agregaron preguntas al quiz (el quiz no cambió).
+- Cubierto además: Ley de Ohm, R_eq en serie y paralelo (incluido R/2), corriente en serie, voltaje en paralelo, colapsar el bloque de un mixto y «no cambia» en una rama hermana.
+
+### Verificación
+
+`tsc --noEmit` limpio; `eslint` limpio sobre los archivos de Circuitia; `vitest run` de `src/lib/circuitia`, `src/components/circuitia`, `src/lib/texto`, `src/lib/aprender` y `src/lib/practica/circuitia`. Capturas con Playwright a 360 px de las 12 lecciones (HTML del servidor de desarrollo con su CSS, en estado final): sin desborde horizontal, sin `katex-error`, esquemas y valores legibles. Esas capturas son ANTERIORES a los 10 visuales que cerraron los huecos de cobertura: esos solo se comprobaron por render del servidor en vitest (`visuales.test.ts`) y por el test de geometría de `esquema.test.ts` (ningún texto se cruza), no en navegador.
+
+**Sin verificar**: las animaciones en vivo (el dev server compartido se recompilaba por las ediciones de los otros mundos, así que solo se fotografió el estado final), flujo end-to-end con Supabase y login reales (`0217` no corrió contra una base real), tema oscuro, lectores de pantalla reales, y el modal de salida en una partida real. El voseo sembrado por 0195 en los pasos (p. ej. «Calculá») lo corrige la migración `0221_espanol_neutro_lecciones.sql` y `lecciones.test.ts` compara contra el contenido ya neutralizado (`neutroSembrado.ts`).
+
+## Calculia: visuales en Aprender (2026-09-25)
+
+Fila 23 de Calculia pasa a ✅ (nota ²⁸). Trabajo hecho por dos agentes que la API cortó por el límite de uso; un tercero lo revisó, completó y verificó sin rehacerlo.
+
+### Qué quedó
+
+- **12/12 lecciones con visual** (5 Técnicas + 7 Clases), 48 visuales: 19 propios (`calculia.tangente` 5, `calculia.serie` 7, `calculia.area` 2, `calculia.edo` 5) y 29 `cuadros` (primitivo genérico, para las reglas paso a paso). Un test falla si alguna lección no tiene visual.
+- Fuente única: `src/lib/calculia/lecciones/` (tipada). La migración `0216_calculia_visuales.sql` se GENERA desde ahí (`lecciones/sql.ts`; regenerar con `CALCULIA_ESCRIBIR_SQL=1 npx vitest run src/lib/calculia/lecciones`) y un test la compara byte a byte. Son 12 `update public.techniques set contenido = jsonb_set(contenido, '{visuales}', ...) where slug = ... and problem_type = 'calculia'`, sin `alter`/`insert`/`delete`; valida con `pglast`.
+- Pasos y quiz: el quiz es IDÉNTICO a lo sembrado (0165, 0170, 0178, 0181 y 0195, neutralizado por 0221) y `pasos` son los sembrados (neutralizados por 0221) más pasos NUEVOS AL FINAL de cuatro Clases, sin reordenar ni tocar los existentes (los `despuesDePaso` de antes siguen apuntando al mismo paso). Por eso `0216` es un merge `contenido || {"pasos": [...], "visuales": [...]}` (como `0217` de Circuitia y `0218` de Estadística) y no solo `visuales`; nombre, descripción, orden y `requiere_pro` no cambian y `0221` corre después sin encontrar voseo. `lecciones.test.ts` exige "sembrado + 0221 + pasos nuevos al final" y que, aplicada la migración sobre lo sembrado, el estado final coincida con el TypeScript.
+- Componentes en `src/components/calculia/visuales/`: `alternativa` sr-only (`figcaption`), `prefers-reduced-motion` (estado final ya dibujado, sin botón Reproducir), mensajes `Calculia.visuales.*` con paridad es/en, coordenadas del SVG redondeadas a 2 decimales como máximo (estables entre Node y Chromium), animación por transiciones CSS (nada de `x`/`y` de framer-motion sobre `<rect>`).
+- Guardia de salida (`useRegistrarGuardiaSalida`): en la lección, activa mientras no esté recién abierta ni terminada; en la práctica, mientras la partida está en curso, con `ranked` y `alConfirmar: rendirseDuelo` si hay duelo Ranked real.
+
+### Desbloqueo por tema (`src/lib/calculia/path.ts`, reescrito)
+
+Técnicas y Clases tienen un puntero "activo" independiente por tema (derivadas, integrales, series, multivariable y EDOs) y orden lineal dentro del tema; ninguna Clase depende de otro tema. La primera Clase del currículo es preview gratis y el resto exige Pro (`bloqueadoPorPlan`). El sidebar y `[slug]/page.tsx` leen el MISMO estado (`puedeAbrirNodoCalculia`), para no repetir el bug de Numeria (commit 648f2b7). Tests en `src/lib/calculia/path.test.ts`.
+
+### Rigor matemático
+
+`visualesDatos.ts` solo acepta funciones que son suma de términos `c·x^n` y `c·(a·x+b)^n` y deriva/antiderivada por fórmula, sin parsear expresiones libres. `visualesDatos.test.ts` y `lecciones/lecciones.test.ts` contrastan la derivada contra diferencia finita centrada, el área contra Simpson, las sumas parciales contra suma directa y la fórmula `a/(1−r)`, la EDO `dy/dx = k·xⁿ·y` contra diferencia finita, y evalúan numéricamente cada igualdad de los cuadros y de los pasos/quiz (con un test que comprueba que el evaluador detecta una igualdad falsa). La respuesta marcada de cada pregunta de cálculo coincide con el cálculo independiente y ninguna otra opción lo hace. KaTeX sin errores en todas las fórmulas.
+
+### Huecos de cobertura práctica-lecciones: cubiertos
+
+La primera tanda los reportó sin rellenarlos; una segunda los cubrió con pasos y visuales nuevos en las Clases (los nuevos pasos van al final de cada lección: `PASOS_NUEVOS` en `lecciones.test.ts`):
+
+- **`∫k/x dx = k·ln|x| + C`** (la práctica pide k de 2 a 8): fórmula general y ejemplo `∫4/x dx = 4·ln|x| + C` con verificación por derivada, en *integrales desde cero*.
+- **`∫k·cos x` y `∫k·sen x`** (k hasta 7): fórmulas generales y ejemplos `∫5cos x` y `∫7sen x = −7cos x + C` (el signo va solo en el seno, el coeficiente no se pierde), en *integrales avanzadas*.
+- **Integral definida**: `∫ₐᵇ f = F(b) − F(a)` con el ejemplo `∫₀² 6x² dx = 16` y el visual de área que ya existía, ahora tras el paso que la explica, en *integrales desde cero*.
+- **Criterio de la razón**: regla (L<1, L>1, L=1), ejemplo resuelto `aₙ = 3·(2/3)ⁿ` (converge, L = 2/3) y `aₙ = 5·(−3/2)ⁿ` (diverge, L = 1,5), y dos visuales `calculia.serie` (suma 6 y divergente), en *series geométricas*.
+- **EDO `dy/dx = k·xⁿ·y` con n hasta 4**: fórmula general `y = A·e^((k/(n+1))·x^(n+1))`, ejemplos n = 3 (`4x³y → e^(x⁴)`) y n = 4 (`5x⁴y → e^(x⁵)`), y k distinto de n+1 (`8x³y → e^(2x⁴)`), con tres visuales `calculia.edo`, en *EDOs separables*.
+
+Cada número se contrasta por código: `∫k/x`, `∫k·cos`, `∫k·sen` derivando la respuesta (y comprobando que los errores comunes no son antiderivadas), la integral definida con Simpson, las sumas de las series contra suma directa y `a/(1−r)`, y la EDO con diferencia finita para los casos escritos y una malla n = 1..4, k = ±m·(n+1). Un test compara lo que genera la práctica (rangos de k, n) con lo que enseñan las lecciones. **Límites**: no son un hueco, ni la práctica ni las lecciones los tratan como tema; solo aparece la notación `lim` en el paso del criterio de la razón.
+
+### Verificado y sin verificar
+
+Verificado: `tsc --noEmit` limpio (todo el proyecto), `vitest run src/lib/calculia src/components/calculia src/lib/texto src/lib/aprender` verde, y en Chromium a 360 px las 12 lecciones (primera tanda: 36 figuras; segunda tanda, las 4 Clases con pasos nuevos: 28 figuras) sin desborde horizontal, sin errores de KaTeX ni de hidratación, con y sin movimiento reducido en una lección). En esa pasada se corrigió el eje de las sumas parciales (dejaba media altura vacía cuando todas las sumas son positivas). **Sin verificar**: flujo end-to-end con Supabase y login reales (`0216` no corrió contra una base real), tema oscuro, lectores de pantalla reales y dispositivo real.
+
+
+## Transversal: botones, confirmación al abandonar y Social (2026-09-24/25)
+
+Regla vinculante para los 13 mundos y los futuros (filas 25 y 26 de la matriz, nota ²⁹).
+
+### Botones (fila 25)
+- `src/components/Boton.tsx`: pastilla redondeada con placa circular de ícono (referencia visual: `docs/ChatGPT Image 24 sept 2026, 08_58_14.png`). El color sigue a la ciudad (`colorHex` → variable `--boton-acento`); sin ciudad es el violeta de marca `#6C4CF1`. Variantes primario, secundario, fantasma y peligro; `destacado` agrega el halo y la placa de "jugar"; `atras` agrega la flecha de volver; `tamano="sm"` para volver en cabeceras de página.
+- `src/components/BotonEnlace.tsx`: el mismo botón como enlace (`href`, con idioma) para páginas de servidor. Ya lo usan `clanes/mundo`, `invitado-bloqueado`, `recuperar`, `perfil/estadisticas` y `social/mensajes`.
+- Barrido hecho: "Iniciar partida", "Volver a Aprender" de las lecciones de los 13 mundos, "Volver" de las pantallas de error de práctica, "Volver a inicio" del reto diario/semanal.
+- Flecha pequeña de volver en la cabecera (`Header.tsx`, `BotonVolverAtras`, `router.back()`), oculta en la página de inicio.
+- Regla para mundos nuevos: usa `Boton`/`BotonEnlace` y su `colorHex`; no dejes un `<button>` con `rounded-xl … text-white`. Test: `Boton.test.tsx` y `BotonEnlace.test.tsx`.
+
+### Confirmación al abandonar (fila 26)
+- Proveedor `GuardiaSalidaProvider` (`src/lib/navegacion/guardiaSalida.tsx`, montado en `src/app/layout.tsx`); cada pantalla activa lo registra con `useRegistrarGuardiaSalida({ activo, ranked?, alConfirmar? })`.
+- Intercepta el logo, la casita y los enlaces del `Header`; muestra "¿Seguro que quieres abandonar?" con "Sí, abandonar" / "Seguir aquí".
+- Lecciones (Técnicas y Clases): activa mientras la fase no sea la recién abierta ni la celebración.
+- Práctica: activa durante el sprint. En un duelo Ranked real (`!!duelo && !duelo.rivalEsBot`) el texto avisa que se pierde ELO y, al confirmar, `rendirseDuelo` cierra el duelo y lleva al resultado en Rankeds (`/rankeds` o `/rankeds/serie/:id`). Contra un bot solo pide confirmación.
+- Reto diario/semanal: activa con `fase === "jugando"`; tras completar llama `router.refresh()` para que volver atrás no permita repetirlo.
+- Decisión de diseño: el botón "atrás" del navegador y escribir una URL no se interceptan.
+- Mundos cubiertos: Numeria, Enigmia, Geografía, Quimia, Anatomía, Melodía, Trigonometría, Historia, Naipia (commit a3ee0f7) y Calculia, Circuitia, Estadística y Codia (en los commits de sus visuales).
+
+### Social: tarjetas de amigos
+- `PlacaAmigo` con `variante="tarjeta"`: retrato más alto que ancho (`aspect-[4/5]`) con avatar, nombre, rango, título, nivel y chispas; `AmigosClient` las muestra en una cuadrícula de 2 columnas. El panel de retar ocupa las 2 columnas bajo la fila del amigo elegido.
+- `mis_amigos()` devuelve `nivel_cuenta` y `puntos_total` (migración `0220`); sin ella la tarjeta muestra nivel 1 y 0 chispas.
+
+### Español neutro (nota ³⁰)
+- Migración `0221` (datos, idempotente), detector ampliado, test de escaneo del código y helper de test `src/lib/texto/neutroSembrado.ts` para comparar lo sembrado con lo tipado.
