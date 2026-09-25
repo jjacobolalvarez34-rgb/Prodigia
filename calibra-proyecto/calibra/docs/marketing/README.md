@@ -33,6 +33,9 @@
 | `SOCIAL-CONTENT.md` | Contenido para TikTok/IG/Shorts/Reels |
 | `VIDEO-CONCEPTS.md` | Conceptos y prompts de video |
 | `VISUAL-ASSETS.md` | Dirección visual publicitaria y assets |
+| `LOGO-CIUDADES.md` | Sistema de logos/insignias de las 13 ciudades (SVG + PNG doble eje + paletas WCAG, verificado) |
+| `PERFIL-PERSONALIZACION.md` | Personalización del perfil (marcos, fuentes, animaciones, fondos): inventario verificado, precios, qué decir y qué no, piezas sugeridas |
+| `TECNICAS-Y-CLASES-POR-MUNDO.md` | Técnicas y Clases de las 13 ciudades: números reales, fichas por ciudad, qué capturar, piezas sugeridas (guía para el agente de diseño) |
 | `SCREENSHOTS.md` | Capturas de pantalla con intención publicitaria |
 | `PROMPTS-IMAGES.md` | Prompts de generación de imágenes |
 | `PROMPTS-VIDEO.md` | Prompts de generación de video |
