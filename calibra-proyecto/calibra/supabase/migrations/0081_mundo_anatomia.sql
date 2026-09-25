@@ -85,7 +85,7 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
   'anatomia',
   '{"pasos": [
     "Grupo 1 (grande, cotidiano): bíceps, tríceps, cuádriceps, pectoral, trapecio, glúteos...",
-    "Dominá ese grupo primero — son los que más se repiten en cualquier contexto",
+    "Domina ese grupo primero — son los que más se repiten en cualquier contexto",
     "Grupo 2 (cara, más fino): frontal, temporal, masetero, buccinador...",
     "Mismo truco que con países en Geografía: lo grande y conocido primero, lo específico después"
   ]}',

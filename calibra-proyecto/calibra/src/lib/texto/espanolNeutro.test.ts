@@ -79,7 +79,6 @@ const DEUDA_HISTORICA_VOSEO = new Set([
   // "calculá"...) y estas migraciones ya aplicadas los traen. El contenido de
   // \`techniques\`/\`logic_techniques\` lo corrige 0221_espanol_neutro_lecciones.sql.
   "0043_rankeds_rangos_titulos_multimundo.sql",
-  "0081_mundo_anatomia.sql",
   "0191_estadistica_contenido.sql",
   "0195_latex_clases_calculia_circuitia.sql",
 ]);
