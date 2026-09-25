@@ -125,8 +125,15 @@ const RE_FORMULA = /\$[^$]*\$/g;
 const RE_BLOQUE_CODIGO = /```[\s\S]*?```/g;
 
 // Las fórmulas `$…$` deben ser idénticas salvo el contenido de \text{…} (palabras).
+// En inglés el seno y la cosecante se escriben \sin y \csc (en español \operatorname{sen} y
+// \operatorname{cosec}): se comparan normalizados, así la traducción puede usar la notación inglesa.
 function formulasSinTexto(s: string): string[] {
-  return (s.match(RE_FORMULA) ?? []).map((f) => f.replace(/\\text\{[^}]*\}/g, "\\text{}"));
+  return (s.match(RE_FORMULA) ?? []).map((f) =>
+    f
+      .replace(/\\text\{[^}]*\}/g, "\\text{}")
+      .replace(/\\operatorname\{sen\}|\\sen\b/g, "\\sin")
+      .replace(/\\operatorname\{cosec\}/g, "\\csc")
+  );
 }
 
 function bloquesDeCodigo(s: string): string[] {

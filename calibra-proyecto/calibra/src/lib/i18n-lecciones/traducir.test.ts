@@ -88,3 +88,11 @@ describe("traducir lecciones", () => {
     for (const b of bloques) expect(() => JSON.parse(b)).not.toThrow();
   });
 });
+
+describe("notación trigonométrica en inglés", () => {
+  it("acepta \\sin y \\csc en lugar de \\operatorname{sen} y \\operatorname{cosec}", () => {
+    const f: LeccionFuente = { slug: "s", nombre: "S", pasos: ["$\\operatorname{sen}(x) + \\operatorname{cosec}(x)$"] };
+    expect(validarTraduccion(f, { nombre: "S", pasos: ["$\\sin(x) + \\csc(x)$"] })).toEqual([]);
+    expect(validarTraduccion(f, { nombre: "S", pasos: ["$\\cos(x) + \\csc(x)$"] }).join("\n")).toMatch(/fórmulas/);
+  });
+});
