@@ -79,7 +79,7 @@ describe("traducciones de lecciones al inglés", () => {
         expect(fs.existsSync(ruta), `falta ${entrada.migracion}: I18N_LECCIONES_ESCRIBIR_SQL=1 npx vitest run src/lib/i18n-lecciones`).toBe(true);
         expect(fs.readFileSync(ruta, "utf8").replace(/\r\n/g, "\n")).toBe(esperado);
         // Solo hace update de las columnas nuevas.
-        expect(esperado).not.toMatch(/insert into|delete from|drop |alter /i);
+        expect(esperado).not.toMatch(/^\s*(insert|delete|drop|alter|create|truncate)\b/im);
         expect((esperado.match(/^update public\./gm) ?? []).length).toBe(filas.length);
       });
     });
