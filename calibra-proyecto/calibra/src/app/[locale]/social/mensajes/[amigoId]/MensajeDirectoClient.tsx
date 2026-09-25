@@ -5,6 +5,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Avatar from "@/components/Avatar";
 import ReportarBoton from "@/app/[locale]/perfil/[userId]/ReportarBoton";
+import { IconResponder } from "@/components/icons";
+import { useMensajesNoLeidos } from "@/lib/mensajes/MensajesNoLeidos";
+import { recortar } from "@/lib/mensajes/util";
 
 export interface MensajeDirecto {
   id: string;
@@ -13,6 +16,11 @@ export interface MensajeDirecto {
   texto: string;
   leido: boolean;
   created_at: string;
+  // Respuesta a otro mensaje de la conversación (migración 0224): el servidor
+  // devuelve la cita ya resuelta; los mensajes que llegan en vivo la traen igual.
+  responde_a?: string | null;
+  responde_a_texto?: string | null;
+  responde_a_remitente_id?: string | null;
 }
 
 interface Props {
@@ -36,6 +44,11 @@ interface Props {
 // "remitente:destinatario" tal cual) para que los dos participantes se
 // suscriban SIEMPRE al mismo canal sin importar quién abrió el chat
 // primero o quién le escribe a quién.
+//
+// Nuevo (2026-09-25): se puede RESPONDER a un mensaje concreto (botón de
+// respuesta en cada burbuja; aparece la cita sobre el cuadro de texto y dentro
+// de la respuesta enviada, y al tocar la cita se salta al mensaje original), y
+// quien recibe sin tener el chat abierto recibe un aviso (MensajesNoLeidos).
 function canalConversacion(a: string, b: string): string {
   return `dm:${[a, b].sort().join(":")}`;
 }
@@ -44,12 +57,21 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
   const t = useTranslations("Social.mensajes");
   const tSocial = useTranslations("Social");
   const locale = useLocale();
+  const { marcarLeidoDirecto, avisarDirecto } = useMensajesNoLeidos();
   const [mensajes, setMensajes] = useState<MensajeDirecto[]>(mensajesIniciales);
   const [texto, setTexto] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [respondiendoA, setRespondiendoA] = useState<MensajeDirecto | null>(null);
+  const [resaltado, setResaltado] = useState<string | null>(null);
   const finRef = useRef<HTMLDivElement>(null);
+  const cajaRef = useRef<HTMLTextAreaElement>(null);
   const channelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
+
+  // Abrir la conversación ya la marcó como leída en el servidor (mi_conversacion).
+  useEffect(() => {
+    marcarLeidoDirecto(amigoId);
+  }, [amigoId, marcarLeidoDirecto]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -71,15 +93,35 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
     finRef.current?.scrollIntoView({ block: "end" });
   }, [mensajes.length]);
 
+  function nombreDe(remitenteId: string | null | undefined): string {
+    if (remitenteId === miUserId) return t("tu");
+    return amigoNombre ?? tSocial("jugador");
+  }
+
+  function irAlOriginal(id: string) {
+    const el = document.getElementById(`msg-${id}`);
+    if (!el) return;
+    el.scrollIntoView({ block: "center", behavior: "smooth" });
+    setResaltado(id);
+    setTimeout(() => setResaltado((actual) => (actual === id ? null : actual)), 1600);
+  }
+
+  function responder(m: MensajeDirecto) {
+    setRespondiendoA(m);
+    cajaRef.current?.focus();
+  }
+
   async function enviar() {
     const limpio = texto.trim();
     if (!limpio || enviando) return;
     setEnviando(true);
     setError(null);
     const supabase = createClient();
+    const cita = respondiendoA;
     const { data, error: err } = await supabase.rpc("enviar_mensaje_directo", {
       p_destinatario_id: amigoId,
       p_texto: limpio,
+      p_responde_a: cita?.id ?? null,
     });
     setEnviando(false);
     if (err) {
@@ -98,6 +140,7 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
       return;
     }
     setTexto("");
+    setRespondiendoA(null);
     const fila = (data as { id: string; created_at: string }[] | null)?.[0];
     if (!fila) return;
 
@@ -108,9 +151,14 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
       texto: limpio,
       leido: false,
       created_at: fila.created_at,
+      responde_a: cita?.id ?? null,
+      responde_a_texto: cita ? cita.texto.slice(0, 140) : null,
+      responde_a_remitente_id: cita?.remitente_id ?? null,
     };
     setMensajes((prev) => [...prev, nuevo]);
     channelRef.current?.send({ type: "broadcast", event: "mensaje", payload: nuevo });
+    // Aviso para quien no tiene este chat abierto (toast + contador de no leídos).
+    avisarDirecto(amigoId, fila.id, limpio);
   }
 
   return (
@@ -126,9 +174,43 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
         ) : (
           mensajes.map((m) => {
             const esMio = m.remitente_id === miUserId;
+            const acciones = (
+              <span className="flex shrink-0 items-center gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+                <button
+                  type="button"
+                  onClick={() => responder(m)}
+                  aria-label={t("responder")}
+                  title={t("responder")}
+                  className="flex h-6 w-6 items-center justify-center rounded-full text-texto-secundario hover:bg-surface-2 hover:text-foreground"
+                >
+                  <IconResponder className="h-3.5 w-3.5" />
+                </button>
+                {!esMio && <ReportarBoton mensajeDirectoId={m.id} />}
+              </span>
+            );
             return (
-              <div key={m.id} className={`group flex items-end gap-2 ${esMio ? "flex-row-reverse" : ""}`}>
+              <div
+                key={m.id}
+                id={`msg-${m.id}`}
+                className={`group flex items-end gap-2 rounded-2xl transition-colors ${esMio ? "flex-row-reverse" : ""} ${
+                  resaltado === m.id ? "bg-primario/10" : ""
+                }`}
+              >
                 <div className={`max-w-[75%] rounded-2xl px-3 py-2 ${esMio ? "bg-primario text-white" : "border border-border bg-background text-foreground"}`}>
+                  {m.responde_a && (
+                    <button
+                      type="button"
+                      onClick={() => irAlOriginal(m.responde_a as string)}
+                      className={`mb-1.5 block w-full rounded-lg border-l-4 px-2 py-1 text-left text-xs ${
+                        esMio ? "border-white/70 bg-white/15 text-white/90" : "border-primario bg-primario/10 text-texto-secundario"
+                      }`}
+                    >
+                      <span className="block truncate font-semibold">{nombreDe(m.responde_a_remitente_id)}</span>
+                      <span className="line-clamp-2 break-words">
+                        {m.responde_a_texto ? recortar(m.responde_a_texto, 90) : t("mensajeNoDisponible")}
+                      </span>
+                    </button>
+                  )}
                   <p className="break-words text-sm">{m.texto}</p>
                   <span className={`mt-0.5 block text-right font-mono text-[10px] ${esMio ? "text-white/70" : "text-texto-secundario"}`}>
                     {new Date(m.created_at).toLocaleTimeString(locale === "es" ? "es-AR" : "en-US", {
@@ -137,17 +219,30 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
                     })}
                   </span>
                 </div>
-                {!esMio && (
-                  <span className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
-                    <ReportarBoton mensajeDirectoId={m.id} />
-                  </span>
-                )}
+                {acciones}
               </div>
             );
           })
         )}
         <div ref={finRef} />
       </div>
+
+      {respondiendoA && (
+        <div className="flex items-start gap-2 rounded-xl border-l-4 border-primario bg-primario/10 px-3 py-2 text-xs">
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-semibold text-foreground">{t("respondiendoA", { nombre: nombreDe(respondiendoA.remitente_id) })}</p>
+            <p className="line-clamp-2 break-words text-texto-secundario">{recortar(respondiendoA.texto, 120)}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setRespondiendoA(null)}
+            aria-label={t("cancelarRespuesta")}
+            className="shrink-0 text-base leading-none text-texto-secundario hover:text-foreground"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       <form
         onSubmit={(e) => {
@@ -157,6 +252,7 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
         className="flex items-end gap-2"
       >
         <textarea
+          ref={cajaRef}
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           onKeyDown={(e) => {
@@ -164,6 +260,7 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
               e.preventDefault();
               enviar();
             }
+            if (e.key === "Escape") setRespondiendoA(null);
           }}
           maxLength={500}
           rows={1}

@@ -306,6 +306,16 @@ export function IconFlechaAtras({ className }: IconProps) {
   );
 }
 
+// Flecha curva de "responder" (a un mensaje), como en los chats: sale hacia atrás.
+export function IconResponder({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M9 14L4 9l5-5" />
+      <path d="M4 9h10a6 6 0 0 1 6 6v3" />
+    </svg>
+  );
+}
+
 // Triángulo de "reproducir/iniciar" — relleno, no de trazo (mismo criterio
 // visual que la referencia: un ícono sólido dentro del badge, no una línea).
 export function IconJugar({ className }: IconProps) {

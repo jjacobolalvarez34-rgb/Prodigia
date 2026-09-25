@@ -5,6 +5,8 @@ import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { IconCasa, IconFlechaAtras } from "@/components/icons";
 import { useTrackearPresenciaGlobal } from "@/lib/presencia/useTrackearPresenciaGlobal";
 import { usePedirConfirmacionSalida } from "@/lib/navegacion/guardiaSalida";
+import { useMensajesNoLeidos } from "@/lib/mensajes/MensajesNoLeidos";
+import { textoInsignia } from "@/lib/mensajes/util";
 import RecordatorioInvitado from "./RecordatorioInvitado";
 import PedirEdadModal from "./PedirEdadModal";
 import Logo from "./Logo";
@@ -102,6 +104,9 @@ export default function Header({ autenticado = false, invitado = false }: Props)
   // en ese momento. El hook mismo no hace nada si no hay sesión real
   // (landing pública con autenticado=false igual la llama, sin efecto).
   useTrackearPresenciaGlobal();
+  // Avisos de mensajes nuevos: insignia en Social (directos) y en Clanes (chat del clan).
+  const { noLeidosDirectos, noLeidosClan } = useMensajesNoLeidos();
+  const sinLeerPorLink: Record<string, number> = { "/social": noLeidosDirectos, "/clanes": noLeidosClan };
 
   // Fase 3 del rediseño de Social: Feed pasó a vivir DENTRO de /social
   // (pestaña por default, con Amigos al lado) — ya no es un link
@@ -164,6 +169,15 @@ export default function Header({ autenticado = false, invitado = false }: Props)
                 style={activo ? { color: colorMundo } : undefined}
               >
                 {link.label}
+                {autenticado && (sinLeerPorLink[link.href] ?? 0) > 0 && (
+                  <span
+                    role="status"
+                    aria-label={t("mensajesSinLeer", { n: sinLeerPorLink[link.href] })}
+                    className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primario px-1 align-middle text-[10px] font-bold leading-none text-white"
+                  >
+                    {textoInsignia(sinLeerPorLink[link.href])}
+                  </span>
+                )}
               </Link>
             );
           })}

@@ -15,6 +15,8 @@ import type { UseAmigosReturn } from "@/app/[locale]/social/useAmigos";
 import { useRetosPendientes, type RetoPendienteBase } from "@/app/[locale]/social/useRetosPendientes";
 import { useInvitacionesClan, type InvitacionClan } from "@/app/[locale]/social/useInvitacionesClan";
 import { reproducirTono } from "@/lib/sonido";
+import { useMensajesNoLeidos } from "@/lib/mensajes/MensajesNoLeidos";
+import { recortar } from "@/lib/mensajes/util";
 
 interface Props {
   amigosState: UseAmigosReturn;
@@ -35,7 +37,9 @@ export default function CampanaNotificaciones({ amigosState, retosIniciales, inv
     invitacionesClanIniciales
   );
 
-  const total = solicitudes.length + retos.length + invitacionesClan.length;
+  // Mensajes nuevos (directos y del clan): salen del proveedor global de avisos.
+  const { conversaciones, noLeidosClan, clanNombre } = useMensajesNoLeidos();
+  const total = solicitudes.length + retos.length + invitacionesClan.length + conversaciones.length + (noLeidosClan > 0 ? 1 : 0);
 
   useEffect(() => {
     if (!abierta) return;
@@ -75,6 +79,36 @@ export default function CampanaNotificaciones({ amigosState, retosIniciales, inv
             <p className="px-4 py-6 text-center text-sm text-texto-secundario">{t("sinNotificaciones")}</p>
           ) : (
             <div className="flex flex-col divide-y divide-border">
+              {(conversaciones.length > 0 || noLeidosClan > 0) && (
+                <div className="flex flex-col gap-2 px-4 py-3">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-texto-secundario">{t("mensajes")}</p>
+                  {conversaciones.map((c) => (
+                    <Link
+                      key={c.amigoId}
+                      href={`/social/mensajes/${c.amigoId}`}
+                      onClick={() => setAbierta(false)}
+                      className="flex flex-col gap-0.5 rounded-lg border border-border/60 px-2.5 py-2 text-xs hover:border-primario/40"
+                    >
+                      <span className="flex items-center justify-between gap-2">
+                        <span className="truncate font-medium text-foreground">{c.nombre ?? tSocial("jugador")}</span>
+                        <span className="shrink-0 rounded-full bg-primario px-1.5 py-0.5 text-[10px] font-bold text-white">{c.noLeidos}</span>
+                      </span>
+                      <span className="line-clamp-1 break-words text-texto-secundario">{recortar(c.ultimoTexto, 60)}</span>
+                    </Link>
+                  ))}
+                  {noLeidosClan > 0 && (
+                    <Link
+                      href="/clanes"
+                      onClick={() => setAbierta(false)}
+                      className="flex items-center justify-between gap-2 rounded-lg border border-border/60 px-2.5 py-2 text-xs hover:border-primario/40"
+                    >
+                      <span className="truncate font-medium text-foreground">{t("chatDelClan", { clan: clanNombre ?? "" })}</span>
+                      <span className="shrink-0 rounded-full bg-primario px-1.5 py-0.5 text-[10px] font-bold text-white">{noLeidosClan}</span>
+                    </Link>
+                  )}
+                </div>
+              )}
+
               {solicitudes.length > 0 && (
                 <div className="flex flex-col gap-2 px-4 py-3">
                   <p className="text-[11px] font-bold uppercase tracking-wide text-texto-secundario">

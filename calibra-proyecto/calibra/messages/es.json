@@ -311,6 +311,11 @@
       "enviar": "Enviar",
       "errorRateLimit": "Estás mandando mensajes muy rápido — espera un momento.",
       "errorFiltro": "Ese mensaje no se pudo enviar.",
+      "responder": "Responder",
+      "respondiendoA": "Respondiendo a {nombre}",
+      "cancelarRespuesta": "Cancelar respuesta",
+      "mensajeNoDisponible": "Mensaje no disponible",
+      "tu": "Tú",
       "errorGenerico": "No se pudo enviar. Prueba de nuevo.",
       "metadata": {
         "title": "Mensajes con {nombre}",
@@ -872,7 +877,17 @@
     "algoSalioMal": "Algo salió mal. Prueba de nuevo.",
     "campana": {
       "abrir": "Notificaciones",
-      "sinNotificaciones": "No tienes notificaciones nuevas."
+      "sinNotificaciones": "No tienes notificaciones nuevas.",
+      "mensajes": "Mensajes nuevos",
+      "mensajesCantidad": "{n} {n, plural, one {mensaje nuevo} other {mensajes nuevos}}",
+      "chatDelClan": "Chat de {clan}"
+    },
+    "avisoMensaje": {
+      "directo": "{nombre} te escribió",
+      "clan": "{nombre} escribió en {clan}",
+      "alguien": "Alguien",
+      "ver": "Ver mensaje",
+      "cerrar": "Cerrar aviso"
     },
     "recordatorioInvitado": {
       "banner": "Estás jugando como invitado — tu progreso se puede perder si cambias de dispositivo.",
@@ -1057,6 +1072,7 @@
     "rankeds": "Rankeds",
     "social": "Social",
     "clanes": "Clanes",
+    "mensajesSinLeer": "{n} {n, plural, one {mensaje sin leer} other {mensajes sin leer}}",
     "tienda": "Tienda",
     "pro": "Pro",
     "mundoSelector": {
@@ -1833,7 +1849,11 @@
       "tu": "Tú",
       "jugador": "Jugador",
       "placeholder": "Escribe algo para tu clan...",
-      "enviar": "Enviar"
+      "enviar": "Enviar",
+      "responder": "Responder",
+      "respondiendoA": "Respondiendo a {nombre}",
+      "cancelarRespuesta": "Cancelar respuesta",
+      "mensajeNoDisponible": "Mensaje no disponible"
     },
     "escenaCiudad": {
       "alt": "Ciudad del clan — {tier}"

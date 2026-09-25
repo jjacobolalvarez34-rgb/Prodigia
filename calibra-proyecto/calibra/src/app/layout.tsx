@@ -12,6 +12,7 @@ import RegistrarServiceWorker from "@/components/RegistrarServiceWorker";
 import NativePush from "@/components/NativePush";
 import NativeBackButton from "@/components/NativeBackButton";
 import { GuardiaSalidaProvider } from "@/lib/navegacion/guardiaSalida";
+import { MensajesNoLeidosProvider } from "@/lib/mensajes/MensajesNoLeidos";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -174,9 +175,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <GuardiaSalidaProvider>
-            <ChispaClick>
-              <PageFade>{children}</PageFade>
-            </ChispaClick>
+            <MensajesNoLeidosProvider>
+              <ChispaClick>
+                <PageFade>{children}</PageFade>
+              </ChispaClick>
+            </MensajesNoLeidosProvider>
             <DeteccionConexion />
             <NotificacionesDuelo />
             <AnunciosModal />

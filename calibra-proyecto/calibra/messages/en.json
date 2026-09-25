@@ -311,6 +311,11 @@
       "enviar": "Send",
       "errorRateLimit": "You're sending messages too fast — wait a moment.",
       "errorFiltro": "That message couldn't be sent.",
+      "responder": "Reply",
+      "respondiendoA": "Replying to {nombre}",
+      "cancelarRespuesta": "Cancel reply",
+      "mensajeNoDisponible": "Message not available",
+      "tu": "You",
       "errorGenerico": "Couldn't send. Try again.",
       "metadata": {
         "title": "Messages with {nombre}",
@@ -872,7 +877,17 @@
     "algoSalioMal": "Something went wrong. Try again.",
     "campana": {
       "abrir": "Notifications",
-      "sinNotificaciones": "You don't have any new notifications."
+      "sinNotificaciones": "You don't have any new notifications.",
+      "mensajes": "New messages",
+      "mensajesCantidad": "{n} {n, plural, one {new message} other {new messages}}",
+      "chatDelClan": "{clan} chat"
+    },
+    "avisoMensaje": {
+      "directo": "{nombre} sent you a message",
+      "clan": "{nombre} wrote in {clan}",
+      "alguien": "Someone",
+      "ver": "View message",
+      "cerrar": "Dismiss"
     },
     "recordatorioInvitado": {
       "banner": "You're playing as a guest — your progress can be lost if you switch devices.",
@@ -1057,6 +1072,7 @@
     "rankeds": "Rankeds",
     "social": "Social",
     "clanes": "Clans",
+    "mensajesSinLeer": "{n} {n, plural, one {unread message} other {unread messages}}",
     "tienda": "Shop",
     "pro": "Pro",
     "mundoSelector": {
@@ -1833,7 +1849,11 @@
       "tu": "You",
       "jugador": "Player",
       "placeholder": "Write something to your clan...",
-      "enviar": "Send"
+      "enviar": "Send",
+      "responder": "Reply",
+      "respondiendoA": "Replying to {nombre}",
+      "cancelarRespuesta": "Cancel reply",
+      "mensajeNoDisponible": "Message not available"
     },
     "escenaCiudad": {
       "alt": "Clan city — {tier}"
