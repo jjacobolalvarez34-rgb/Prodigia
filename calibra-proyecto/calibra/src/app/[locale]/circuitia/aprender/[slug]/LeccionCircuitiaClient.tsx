@@ -10,6 +10,10 @@ import { hrefVolverAAprender } from "@/lib/aprender/clases";
 import type { Achievement } from "@/types/database";
 import LogroBanner from "@/components/LogroBanner";
 import MathText from "@/components/MathText";
+import CuerpoVisual from "@/components/aprender/CuerpoVisual";
+import { REGISTRO_VISUALES_CIRCUITIA } from "@/components/circuitia/visuales/registro";
+import { visualesDeContenido } from "@/lib/aprender/visuales";
+import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
 import { COLOR_CIRCUITIA } from "../../colores";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
@@ -37,7 +41,15 @@ export default function LeccionCircuitiaClient({ nodo }: Props) {
   const [pasoIdx, setPasoIdx] = useState(0);
   const [logrosNuevos, setLogrosNuevos] = useState<Achievement[]>([]);
 
+  // Confirmación al abandonar a mitad de lección: solo con la lección en
+  // curso (ejemplo o quiz), no recién abierta ni ya terminada.
+  useRegistrarGuardiaSalida({ activo: fase !== "explicacion" && fase !== "celebracion" });
+
   const pasos = nodo.contenido.pasos;
+  // Formato visual (contenido.visuales): cada paso lleva debajo sus
+  // visuales animados. Sin visuales, la lección se ve como siempre.
+  const visuales = useMemo(() => visualesDeContenido(nodo.contenido.visuales), [nodo.contenido.visuales]);
+  const esVisual = visuales.length > 0;
   const quiz = useMemo(() => nodo.contenido.quiz ?? [], [nodo.contenido.quiz]);
   const tieneQuiz = quiz.length > 0;
 
@@ -114,6 +126,13 @@ export default function LeccionCircuitiaClient({ nodo }: Props) {
 
         {fase === "ejemplo" && (
           <motion.div key="ejemplo" {...transicion} className="flex flex-col gap-6">
+            {esVisual ? (
+              <div className="flex flex-col gap-5">
+                <h1 className="text-center font-display text-xl font-bold tracking-tight text-foreground">{nodo.nombre}</h1>
+                <CuerpoVisual pasos={pasos} visuales={visuales} registro={REGISTRO_VISUALES_CIRCUITIA} />
+              </div>
+            ) : (
+              <>
             <div className="flex flex-col gap-3">
               {pasos.map((paso, i) => (
                 <div
@@ -165,6 +184,17 @@ export default function LeccionCircuitiaClient({ nodo }: Props) {
                 </button>
               )}
             </div>
+              </>
+            )}
+            {esVisual && (
+              <button
+                onClick={() => (tieneQuiz ? setFase("quiz") : completarLeccion())}
+                className="rounded-xl px-4 py-3 font-display font-semibold text-white"
+                style={{ background: COLOR_CIRCUITIA }}
+              >
+                {tieneQuiz ? t("continuarAlQuiz") : t("marcarAprendida")}
+              </button>
+            )}
           </motion.div>
         )}
 

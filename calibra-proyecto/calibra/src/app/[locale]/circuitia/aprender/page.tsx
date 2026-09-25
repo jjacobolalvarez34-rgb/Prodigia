@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
-import { obtenerCaminoCircuitia } from "@/lib/circuitia/path";
+import { construirUnidadesCircuitia, obtenerCaminoCircuitia } from "@/lib/circuitia/path";
 import { partirCaminoPorClases, resolverPestanaInicial } from "@/lib/aprender/clases";
-import { agruparNodos } from "@/lib/aprender/grupos";
 import Header from "@/components/Header";
-import type { UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import AprenderTabs from "@/components/AprenderTabs";
 import { COLOR_CIRCUITIA } from "../colores";
 
@@ -36,29 +34,18 @@ export default async function CircuitiaAprenderPage({ searchParams }: Props) {
   // sobre el layout compartido de Aprender (fila 3: panel de temas a la
   // izquierda + camino a la derecha, como Melodía). Cada pestaña es un camino
   // con sus propios temas (ver src/lib/aprender/grupos.ts). Misma lógica de
-  // obtenerCaminoCircuitia: la clase 1 (orden más bajo de requiere_pro=true) viene
-  // "activo" (preview gratis) y las 2+ para quien no es Pro vienen "bloqueado"
-  // con bloqueadoPorPlan=true, así que acá se les agrega el CTA a /pro en vez
-  // del bloqueo mudo normal.
+  // obtenerCaminoCircuitia: un "activo" por tema en las dos pestañas; la clase 1
+  // (preview gratis) viene "activo" y las 2+ para quien no es Pro vienen
+  // "bloqueado" con bloqueadoPorPlan=true, así que se les agrega el CTA a /pro
+  // en vez del bloqueo mudo normal.
   const { tecnicas, clases, hayClases } = partirCaminoPorClases(nodos);
   const proHref = "/pro?next=%2Fcircuitia%2Faprender%3Ftab%3Dclases";
 
-  const unidadesTecnicas: UnidadCaminoGenerico[] = agruparNodos(tecnicas, "circuitia", "tecnicas", locale).map((g) => ({
-    id: g.id,
-    nombre: g.nombre,
-    nodos: g.nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
-  }));
-  const unidadesClases: UnidadCaminoGenerico[] = agruparNodos(clases, "circuitia", "clases", locale).map((g) => ({
-    id: g.id,
-    nombre: g.nombre,
-    nodos: g.nodos.map((n) => ({
-      id: n.id,
-      slug: n.slug,
-      nombre: n.nombre,
-      estado: n.estado,
-      ctaPro: n.bloqueadoPorPlan ? { label: t("aprender.clases.desbloqueaConPro"), href: proHref } : undefined,
-    })),
-  }));
+  // Unidades del sidebar: salen del `grupo` y el `estado` de la FUENTE (path.ts,
+  // desbloqueo por tema en las dos pestañas), no se recalculan acá.
+  const cta = { label: t("aprender.clases.desbloqueaConPro"), href: proHref };
+  const unidadesTecnicas = construirUnidadesCircuitia(tecnicas, "tecnicas", locale, cta);
+  const unidadesClases = construirUnidadesCircuitia(clases, "clases", locale, cta);
 
   return (
     <>

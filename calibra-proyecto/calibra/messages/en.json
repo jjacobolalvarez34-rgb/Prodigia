@@ -3697,6 +3697,46 @@
       "description": "Series, parallel, mixed circuits, and qualitative analysis, with real interactive diagrams and adaptive difficulty."
     },
     "nombreMundo": "Circuitia",
+    "visuales": {
+      "etiqueta": {
+        "circuito": "Circuit diagram",
+        "leyOhm": "Ohm's law triangle",
+        "resistenciaEquivalente": {
+          "serie": "Equivalent resistance in series",
+          "paralelo": "Equivalent resistance in parallel"
+        }
+      },
+      "alternativa": {
+        "circuito": {
+          "serie": "Diagram of a series circuit with a {v} V source. The current leaves the positive terminal, passes through the resistors one after another and returns to the negative terminal. Resistors:",
+          "paralelo": "Diagram of a parallel circuit with a {v} V source. Every resistor is connected to the same two nodes of the source and the current splits among them. Resistors:",
+          "mixto": "Diagram of a mixed circuit with a {v} V source: a series that includes a block of {n} resistors in parallel. Resistors:"
+        },
+        "leyOhm": "Ohm's law triangle with V = {v}, I = {i} and R = {r}. Two of the three values are given and {incognita} is calculated with V = I · R.",
+        "resistenciaEquivalenteSerie": "Equivalent resistance in series: {valores} = {total} Ω.",
+        "resistenciaEquivalenteParalelo": "Equivalent resistance in parallel of {valores}: {total} Ω."
+      },
+      "circuito": {
+        "leyenda": "The dots show the direction of conventional current (from the + terminal to the −) and move faster where the current is larger.",
+        "pausarCorriente": "Pause the current",
+        "mostrarCorriente": "Show the current"
+      },
+      "leyOhm": {
+        "pregunta": "Two values are known. What is {letra}?",
+        "resultado": "{letra} is calculated with Ohm's law from the other two values."
+      },
+      "resistenciaEquivalente": {
+        "resistores": "{n, plural, one {# resistor} other {# resistors}}",
+        "formula": {
+          "serie": "In series, resistances add directly.",
+          "paralelo": "In parallel, you add the reciprocals and then invert the result."
+        },
+        "resultado": {
+          "serie": "The resistors in series are replaced by a single one of {total} Ω.",
+          "paralelo": "The resistors in parallel are replaced by a single one of {total} Ω, smaller than the smallest of them."
+        }
+      }
+    },
     "aviso": "Electric circuits with real diagrams — with difficulty that adapts to you, just like in the other worlds.",
     "titulo": "Resistors, current, and voltage",
     "metaCumplida": "You already hit today's goal.",

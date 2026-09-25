@@ -3697,6 +3697,46 @@
       "description": "Circuitos en serie, en paralelo, mixtos y análisis cualitativo, con diagramas interactivos y dificultad adaptativa."
     },
     "nombreMundo": "Circuitia",
+    "visuales": {
+      "etiqueta": {
+        "circuito": "Esquema de un circuito",
+        "leyOhm": "Triángulo de la Ley de Ohm",
+        "resistenciaEquivalente": {
+          "serie": "Resistencia equivalente en serie",
+          "paralelo": "Resistencia equivalente en paralelo"
+        }
+      },
+      "alternativa": {
+        "circuito": {
+          "serie": "Esquema de un circuito en serie con una fuente de {v} V. La corriente sale del terminal positivo, pasa por los resistores uno tras otro y vuelve al terminal negativo. Resistores:",
+          "paralelo": "Esquema de un circuito en paralelo con una fuente de {v} V. Todos los resistores están conectados a los mismos dos nodos de la fuente y la corriente se reparte entre ellos. Resistores:",
+          "mixto": "Esquema de un circuito mixto con una fuente de {v} V: una serie que incluye un bloque de {n} resistores en paralelo. Resistores:"
+        },
+        "leyOhm": "Triángulo de la Ley de Ohm con V = {v}, I = {i} y R = {r}. Se dan dos de los tres valores y {incognita} se calcula con V = I · R.",
+        "resistenciaEquivalenteSerie": "Resistencia equivalente en serie: {valores} = {total} Ω.",
+        "resistenciaEquivalenteParalelo": "Resistencia equivalente en paralelo de {valores}: {total} Ω."
+      },
+      "circuito": {
+        "leyenda": "Los puntos muestran el sentido de la corriente convencional (del terminal + al −) y avanzan más rápido donde la corriente es mayor.",
+        "pausarCorriente": "Pausar la corriente",
+        "mostrarCorriente": "Mostrar la corriente"
+      },
+      "leyOhm": {
+        "pregunta": "Se conocen dos valores. ¿Cuánto vale {letra}?",
+        "resultado": "{letra} se calcula con la Ley de Ohm a partir de los otros dos valores."
+      },
+      "resistenciaEquivalente": {
+        "resistores": "{n, plural, one {# resistor} other {# resistores}}",
+        "formula": {
+          "serie": "En serie, las resistencias se suman directamente.",
+          "paralelo": "En paralelo se suman los recíprocos y luego se invierte el resultado."
+        },
+        "resultado": {
+          "serie": "Los resistores en serie se reemplazan por uno solo de {total} Ω.",
+          "paralelo": "Los resistores en paralelo se reemplazan por uno solo de {total} Ω, menor que el más pequeño de ellos."
+        }
+      }
+    },
     "aviso": "Circuitos eléctricos con diagramas reales — con dificultad que se adapta a ti, igual que en los demás mundos.",
     "titulo": "Resistores, corriente y voltaje",
     "metaCumplida": "Ya cumpliste tu meta de hoy.",
