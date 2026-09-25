@@ -121,6 +121,8 @@ const m4Por10 = m4a * 10; // 470
 const m4Resultado = m4Por10 - m4a; // 423
 
 const m5 = numerosCercanosA100(98, 97); // 9506
+const m5b = numerosCercanosA100(96, 94); // 9024
+const m5c = numerosCercanosA100(88, 87); // 7656 (el producto de complementos pasa de 99)
 
 const m6a = 37;
 const m6Primero = m6a * 2; // 74
@@ -455,19 +457,73 @@ export const TECNICAS_NUMERIA: TecnicaVisualNumeria[] = [
   },
   {
     slug: "numeros-cercanos-a-100",
+    // Reescrita 2026-09-25 (el usuario no entendía el método hasta contestar la
+    // última pregunta del cuestionario): cada paso del método es un paso de la
+    // lección, con su animación, y se explica POR QUÉ funciona y qué hacer si
+    // el producto de los complementos se pasa de dos cifras.
     pasos: [
-      "Método de bases: usa cuánto le falta a cada número para llegar a 100.",
-      `Con $${m5.a} \\times ${m5.b}$: los complementos son $${m5.complementoA}$ y $${m5.complementoB}$.`,
+      "Método de bases: sirve para multiplicar dos números que están cerca de $100$ (como $98 \times 97$). En vez de multiplicar en columna, trabajas con lo que le FALTA a cada número para llegar a $100$: su complemento.",
+      `Paso 1, los complementos: $100 - ${m5.a} = ${m5.complementoA}$ y $100 - ${m5.b} = ${m5.complementoB}$.`,
+      `Paso 2, las primeras cifras: resta en cruz. A un número réstale el complemento del OTRO: $${m5.a} - ${m5.complementoB} = ${m5.primeraParte}$. Si lo haces al revés, $${m5.b} - ${m5.complementoA} = ${m5.b - m5.complementoA}$: siempre da lo mismo.`,
+      `Paso 3, las últimas dos cifras: multiplica los complementos, $${m5.complementoA} \times ${m5.complementoB} = ${m5.segundaParte}$. Como el resultado ocupa DOS cifras, se escribe con un cero delante: $${String(m5.segundaParte).padStart(2, "0")}$.`,
+      `Paso 4, juntar: $${m5.primeraParte}$ adelante y $${String(m5.segundaParte).padStart(2, "0")}$ atrás. Entonces $${m5.a} \times ${m5.b} = ${m5.resultado}$.`,
+      `¿Por qué funciona? $${m5.a} = 100 - ${m5.complementoA}$ y $${m5.b} = 100 - ${m5.complementoB}$. Al multiplicar: $(100 - ${m5.complementoA})(100 - ${m5.complementoB}) = 10000 - ${100 * m5.complementoB} - ${100 * m5.complementoA} + ${m5.segundaParte} = ${m5.primeraParte * 100} + ${m5.segundaParte}$. Los $${m5.primeraParte * 100}$ son las primeras cifras ($${m5.primeraParte}$ por cien) y el $${m5.segundaParte}$ son las últimas.`,
+      `Otro ejemplo, $${m5b.a} \times ${m5b.b}$: complementos $${m5b.complementoA}$ y $${m5b.complementoB}$; primeras cifras $${m5b.a} - ${m5b.complementoB} = ${m5b.primeraParte}$; últimas $${m5b.complementoA} \times ${m5b.complementoB} = ${m5b.segundaParte}$. Resultado: $${m5b.resultado}$. Si los complementos dan más de dos cifras, como en $${m5c.a} \times ${m5c.b}$ ($${m5c.complementoA} \times ${m5c.complementoB} = ${m5c.segundaParte}$), suma ese número: $${m5c.primeraParte * 100} + ${m5c.segundaParte} = ${m5c.resultado}$.`,
     ],
     visuales: [
       {
         tipo: "cuadros",
         despuesDePaso: 1,
         cuadros: [
-          { texto: `Complemento a 100: $${m5.a} \\to ${m5.complementoA}$, $${m5.b} \\to ${m5.complementoB}$` },
+          { texto: `Lo que le falta a cada número para llegar a 100` },
+          { formula: `100 - ${m5.a} = ${m5.complementoA}` },
+          { resaltar: `100 - ${m5.b} = ${m5.complementoB}` },
+        ],
+      },
+      {
+        tipo: "cuadros",
+        despuesDePaso: 2,
+        cuadros: [
+          { texto: `Resta en cruz: un número menos el complemento del otro` },
           { formula: `${m5.a} - ${m5.complementoB} = ${m5.primeraParte}` },
-          { formula: `${m5.complementoA} \\times ${m5.complementoB} = ${m5.segundaParte}` },
+          { resaltar: `${m5.b} - ${m5.complementoA} = ${m5.b - m5.complementoA}` },
+        ],
+      },
+      {
+        tipo: "cuadros",
+        despuesDePaso: 3,
+        cuadros: [
+          { texto: `Complemento por complemento (dos cifras)` },
+          { formula: `${m5.complementoA} \times ${m5.complementoB} = ${m5.segundaParte}` },
+          { resaltar: `${m5.segundaParte} \to ${String(m5.segundaParte).padStart(2, "0")}` },
+        ],
+      },
+      {
+        tipo: "cuadros",
+        despuesDePaso: 4,
+        cuadros: [
+          { texto: `Complemento a 100: $${m5.a} \to ${m5.complementoA}$, $${m5.b} \to ${m5.complementoB}$` },
+          { formula: `${m5.a} - ${m5.complementoB} = ${m5.primeraParte}` },
+          { formula: `${m5.complementoA} \times ${m5.complementoB} = ${m5.segundaParte}` },
           { resaltar: `${m5.a} × ${m5.b} = ${m5.primeraParte}${String(m5.segundaParte).padStart(2, "0")} = ${m5.resultado}` },
+        ],
+      },
+      {
+        tipo: "cuadros",
+        despuesDePaso: 5,
+        cuadros: [
+          { formula: `(100 - ${m5.complementoA})(100 - ${m5.complementoB}) = 10000 - ${100 * m5.complementoB} - ${100 * m5.complementoA} + ${m5.segundaParte}` },
+          { resaltar: `= ${m5.primeraParte * 100} + ${m5.segundaParte} = ${m5.resultado}` },
+        ],
+      },
+      {
+        tipo: "cuadros",
+        despuesDePaso: 6,
+        cuadros: [
+          { texto: `${m5b.a} × ${m5b.b}: complementos ${m5b.complementoA} y ${m5b.complementoB}` },
+          { formula: `${m5b.a} - ${m5b.complementoB} = ${m5b.primeraParte}` },
+          { formula: `${m5b.complementoA} \times ${m5b.complementoB} = ${m5b.segundaParte}` },
+          { resaltar: `${m5b.a} × ${m5b.b} = ${m5b.primeraParte}${String(m5b.segundaParte).padStart(2, "0")} = ${m5b.resultado}` },
         ],
       },
     ],

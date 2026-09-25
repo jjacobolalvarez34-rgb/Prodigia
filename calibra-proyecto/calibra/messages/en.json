@@ -333,7 +333,7 @@
     "chispasTotales": "Total Chispas",
     "nivel": "Level {n}",
     "xpHistoricaAcumulada": "{xp} lifetime XP earned — never goes down",
-    "puestoDe": "Rank <destacado>#{posicion}</destacado> of {total} on the overall Chispas leaderboard",
+    "puestoDe": "Rank <destacado>#{posicion}</destacado> of {total} on the all-time experience leaderboard",
     "todaviaNoEstasEnClan": "You're not in a clan yet — find one →",
     "verEstadisticasAvanzadas": "View advanced stats",
     "hazteProLink": "Go Pro",

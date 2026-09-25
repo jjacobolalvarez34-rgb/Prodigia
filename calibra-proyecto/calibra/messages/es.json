@@ -333,7 +333,7 @@
     "chispasTotales": "Chispas totales",
     "nivel": "Nivel {n}",
     "xpHistoricaAcumulada": "{xp} XP histórica acumulada — nunca baja",
-    "puestoDe": "Puesto <destacado>#{posicion}</destacado> de {total} en el ranking general de Chispas",
+    "puestoDe": "Puesto <destacado>#{posicion}</destacado> de {total} en el ranking histórico de experiencia",
     "todaviaNoEstasEnClan": "Todavía no estás en ningún clan — busca uno →",
     "verEstadisticasAvanzadas": "Ver estadísticas avanzadas",
     "hazteProLink": "Hazte Pro",

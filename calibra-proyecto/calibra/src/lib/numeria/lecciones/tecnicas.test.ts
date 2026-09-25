@@ -48,6 +48,9 @@ const TIPOS_CONOCIDOS = new Set(["cuadros", ...Object.keys(REGISTRO_VISUALES_NUM
 
 const SLUGS_ESPERADOS = GRUPOS_APRENDER.numeria.tecnicas.flatMap((g) => g.slugs);
 
+// Técnicas con el método completo (un paso de la lección por cada paso del método).
+const EXPLICADAS_PASO_A_PASO = new Set(["numeros-cercanos-a-100"]);
+
 describe("Numeria: 39 Técnicas con apartado visual (estructura)", () => {
   it("son exactamente los 39 slugs de GRUPOS_APRENDER.numeria.tecnicas, sin repetidos, en el mismo orden", () => {
     expect(TECNICAS_NUMERIA.map((t) => t.slug)).toEqual(SLUGS_ESPERADOS);
@@ -55,10 +58,10 @@ describe("Numeria: 39 Técnicas con apartado visual (estructura)", () => {
     expect(new Set(SLUGS_ESPERADOS).size).toBe(39);
   });
 
-  it("los pasos son una introducción corta (1-3 pasos, cada uno breve, sin $ desparejados)", () => {
+  it("los pasos son una introducción corta (1-3 pasos; hasta 7 en las Técnicas explicadas paso a paso, cada uno breve, sin $ desparejados)", () => {
     for (const tec of TECNICAS_NUMERIA) {
       expect(tec.pasos.length, tec.slug).toBeGreaterThanOrEqual(1);
-      expect(tec.pasos.length, tec.slug).toBeLessThanOrEqual(3);
+      expect(tec.pasos.length, tec.slug).toBeLessThanOrEqual(EXPLICADAS_PASO_A_PASO.has(tec.slug) ? 7 : 3);
       for (const p of tec.pasos) {
         expect(p.length, `${tec.slug}: paso demasiado largo`).toBeLessThanOrEqual(430);
         expect((p.match(/\$/g) ?? []).length % 2, `${tec.slug}: $ desparejado en «${p}»`).toBe(0);
@@ -213,6 +216,23 @@ describe("Numeria: los números de las Técnicas salen de un cálculo independie
     expect(d.resultado).toBe(9506);
     const json = JSON.stringify(tec("numeros-cercanos-a-100").visuales);
     expect(json).toContain("9506");
+  });
+
+  it("numeros-cercanos-a-100 (método explicado paso a paso): los otros ejemplos también son exactos", () => {
+    const b = numerosCercanosA100(96, 94);
+    expect(b.resultado).toBe(96 * 94); // 9024
+    const c = numerosCercanosA100(88, 87);
+    expect(c.resultado).toBe(88 * 87); // 7656: el producto de complementos (156) pasa de 2 cifras
+    expect(c.segundaParte).toBe(156);
+    // la comprobación algebraica de la lección: (100-a)(100-b) = 10000 - 100·cb - 100·ca + ca·cb
+    const a = numerosCercanosA100(98, 97);
+    expect(10000 - 100 * a.complementoB - 100 * a.complementoA + a.segundaParte).toBe(98 * 97);
+    // ambas restas en cruz dan lo mismo
+    expect(a.a - a.complementoB).toBe(a.b - a.complementoA);
+    const t = tec("numeros-cercanos-a-100");
+    const texto = t.pasos.join(" ");
+    for (const n of ["9506", "9024", "7656", "156"]) expect(texto, n).toContain(n);
+    expect(t.visuales.map((v) => v.despuesDePaso)).toEqual([1, 2, 3, 4, 5, 6]);
   });
 
   it("x4-duplicar-dos-veces: 37×4=148", () => {

@@ -108,7 +108,7 @@ export default async function PerfilPage() {
     supabase.from("attempts").select("created_at, correct").eq("user_id", user.id).limit(3000),
     supabase.from("achievements").select("id, slug, nombre, descripcion, categoria, criterio"),
     supabase.from("user_achievements").select("achievement_id, desbloqueado_at").eq("user_id", user.id),
-    supabase.rpc("posicion_ranking_puntos"),
+    supabase.rpc("posicion_ranking_experiencia_historica"),
     // Bug de paridad (auditoría Fase 1, 2026-08-27): antes solo excluía
     // "geografia" — como "attempts" es una tabla compartida por varios
     // mundos con problem_type con prefijo (quimia_*, anatomia_*,
