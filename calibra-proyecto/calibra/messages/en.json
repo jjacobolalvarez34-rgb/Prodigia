@@ -1778,7 +1778,7 @@
     "miembrosCantidad": "{n} {n, plural, one {member} other {members}}",
     "esRol": "You are {rol}",
     "guerraGanada": "{n} {n, plural, one {war won} other {wars won}}",
-    "chispasParaNivel": "{n} Sparks to level {siguiente}",
+    "expParaNivel": "{n} Exp to level {siguiente}",
     "verMundo": "🗺️ View the World of Clans",
     "tuClan": "Your clan",
     "vs": "vs",

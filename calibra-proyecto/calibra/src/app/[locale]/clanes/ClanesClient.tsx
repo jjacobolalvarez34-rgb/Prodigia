@@ -318,7 +318,7 @@ function MiClanView({
                 />
               </div>
               <span className="text-[10px] text-texto-secundario">
-                {t("chispasParaNivel", {
+                {t("expParaNivel", {
                   n: Math.max(0, umbralesNivelClan.siguiente - clan.xp_acumulado_historico).toLocaleString(),
                   siguiente: clan.nivel_clan + 1,
                 })}
