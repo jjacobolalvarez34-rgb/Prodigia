@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { NodoCaminoConClases, NodoEstado } from "@/lib/aprender/clases";
 import { GRUPOS_APRENDER } from "@/lib/aprender/grupos";
+import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
 
 export type { NodoEstado };
 
@@ -126,15 +127,16 @@ export function calcularCaminoEstadistica(filas: FilaTechnique[], dominadas: Set
 }
 
 export async function obtenerCaminoEstadistica(supabase: SupabaseClient, userId: string, esPro: boolean): Promise<NodoCaminoEstadistica[]> {
+  const locale = await localeServidor();
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("techniques")
-      .select("id, slug, nombre, descripcion, contenido, orden, requiere_pro")
+      .select("id, slug, nombre, descripcion, contenido, nombre_en, descripcion_en, contenido_en, orden, requiere_pro")
       .eq("problem_type", "estadistica")
       .order("orden", { ascending: true }),
     supabase.from("technique_progress").select("technique_id, dominado").eq("user_id", userId),
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
-  return calcularCaminoEstadistica((tecnicas ?? []) as FilaTechnique[], dominadas, esPro);
+  return calcularCaminoEstadistica(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro);
 }

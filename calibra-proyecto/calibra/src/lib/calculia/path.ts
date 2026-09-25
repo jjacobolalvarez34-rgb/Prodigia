@@ -5,6 +5,7 @@ import type { NodoEstado } from "@/lib/aprender/clases";
 import type { UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import { TECNICAS_CALCULIA, CLASES_CALCULIA } from "@/lib/calculia/lecciones";
 import { ORDEN_GRUPOS_CALCULIA, type GrupoCalculia } from "@/lib/calculia/bloques";
+import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
 
 export type { NodoEstado, GrupoCalculia };
 export { ORDEN_GRUPOS_CALCULIA };
@@ -158,17 +159,18 @@ export function calcularCaminoCalculia(filas: FilaTechnique[], dominadas: Set<st
 }
 
 export async function obtenerCaminoCalculia(supabase: SupabaseClient, userId: string, esPro: boolean): Promise<NodoCaminoCalculia[]> {
+  const locale = await localeServidor();
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("techniques")
-      .select("id, slug, nombre, descripcion, contenido, orden, requiere_pro")
+      .select("id, slug, nombre, descripcion, contenido, nombre_en, descripcion_en, contenido_en, orden, requiere_pro")
       .eq("problem_type", "calculia")
       .order("orden", { ascending: true }),
     supabase.from("technique_progress").select("technique_id, dominado").eq("user_id", userId),
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
-  return calcularCaminoCalculia((tecnicas ?? []) as FilaTechnique[], dominadas, esPro);
+  return calcularCaminoCalculia(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro);
 }
 
 // Arma las "unidades" del sidebar y del camino de Aprender (una por tema con

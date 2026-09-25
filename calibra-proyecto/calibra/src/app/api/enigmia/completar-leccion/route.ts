@@ -4,6 +4,7 @@ import type { TechniqueQuizPregunta } from "@/types/database";
 import { verificarLogros } from "@/lib/logros/verificar";
 import { verificarTitulos } from "@/lib/titulos/verificar";
 import { respuestaError } from "@/lib/api/respuestaError";
+import { respuestaCorrecta } from "@/lib/i18n-lecciones/localizar";
 
 interface Body {
   technique_id: string;
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
 
   const { data: tecnica, error: tecnicaError } = await supabase
     .from("logic_techniques")
-    .select("id, requiere_pro, contenido")
+    .select("id, requiere_pro, contenido, contenido_en")
     .eq("id", body.technique_id)
     .maybeSingle();
 
@@ -57,6 +58,9 @@ export async function POST(request: Request) {
   }
 
   const quiz = ((tecnica.contenido as { quiz?: TechniqueQuizPregunta[] } | null)?.quiz ?? []) as TechniqueQuizPregunta[];
+  // Quiz en inglés (migración 0225): la persona responde con el texto que vio, en su idioma;
+  // se acepta la respuesta correcta de la misma posición en cualquiera de los dos.
+  const quizEn = (tecnica.contenido_en as { quiz?: TechniqueQuizPregunta[] } | null)?.quiz ?? null;
 
   if (quiz.length > 0) {
     if (tecnica.requiere_pro) {
@@ -71,11 +75,11 @@ export async function POST(request: Request) {
     const todasCorrectas =
       Array.isArray(respuestas) &&
       respuestas.length === quiz.length &&
-      quiz.every((pregunta, i) => respuestas[i] === pregunta.respuesta);
+      quiz.every((_pregunta, i) => respuestaCorrecta(respuestas[i], quiz, quizEn, i));
 
     if (!todasCorrectas) {
       const incorrectas = quiz
-        .map((pregunta, i) => (Array.isArray(respuestas) && respuestas[i] === pregunta.respuesta ? -1 : i))
+        .map((_pregunta, i) => (Array.isArray(respuestas) && respuestaCorrecta(respuestas[i], quiz, quizEn, i) ? -1 : i))
         .filter((i) => i >= 0);
       return NextResponse.json({ ok: false, aprobado: false, incorrectas });
     }

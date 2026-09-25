@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { NodoCaminoConClases, NodoEstado } from "@/lib/aprender/clases";
 import type { UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import { GRUPOS_CIRCUITIA, grupoDeSlug, posicionDeGrupo, type PestanaCircuitia } from "./grupos";
+import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
 
 export type { NodoEstado };
 
@@ -119,17 +120,18 @@ export function calcularCaminoCircuitia(filas: FilaTechnique[], dominadas: Set<s
 }
 
 export async function obtenerCaminoCircuitia(supabase: SupabaseClient, userId: string, esPro: boolean): Promise<NodoCaminoCircuitia[]> {
+  const locale = await localeServidor();
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("techniques")
-      .select("id, slug, nombre, descripcion, contenido, orden, requiere_pro")
+      .select("id, slug, nombre, descripcion, contenido, nombre_en, descripcion_en, contenido_en, orden, requiere_pro")
       .eq("problem_type", "circuitia")
       .order("orden", { ascending: true }),
     supabase.from("technique_progress").select("technique_id, dominado").eq("user_id", userId),
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
-  return calcularCaminoCircuitia((tecnicas ?? []) as FilaTechnique[], dominadas, esPro);
+  return calcularCaminoCircuitia(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro);
 }
 
 // Arma las «unidades» del sidebar y del camino de una pestaña (una por tema con

@@ -408,13 +408,13 @@ where slug = 'x9-es-x10-menos-el-numero';
 update public.techniques
 set contenido = jsonb_set(
   jsonb_set(contenido, '{pasos}', $numeria$[
-  "Método de bases: sirve para multiplicar dos números que están cerca de $100$ (como $98 \times 97$). En vez de multiplicar en columna, trabajas con lo que le FALTA a cada número para llegar a $100$: su complemento.",
+  "Método de bases: sirve para multiplicar dos números que están cerca de $100$ (como $98 \\times 97$). En vez de multiplicar en columna, trabajas con lo que le FALTA a cada número para llegar a $100$: su complemento.",
   "Paso 1, los complementos: $100 - 98 = 2$ y $100 - 97 = 3$.",
   "Paso 2, las primeras cifras: resta en cruz. A un número réstale el complemento del OTRO: $98 - 3 = 95$. Si lo haces al revés, $97 - 2 = 95$: siempre da lo mismo.",
-  "Paso 3, las últimas dos cifras: multiplica los complementos, $2 \times 3 = 6$. Como el resultado ocupa DOS cifras, se escribe con un cero delante: $06$.",
-  "Paso 4, juntar: $95$ adelante y $06$ atrás. Entonces $98 \times 97 = 9506$.",
+  "Paso 3, las últimas dos cifras: multiplica los complementos, $2 \\times 3 = 6$. Como el resultado ocupa DOS cifras, se escribe con un cero delante: $06$.",
+  "Paso 4, juntar: $95$ adelante y $06$ atrás. Entonces $98 \\times 97 = 9506$.",
   "¿Por qué funciona? $98 = 100 - 2$ y $97 = 100 - 3$. Al multiplicar: $(100 - 2)(100 - 3) = 10000 - 300 - 200 + 6 = 9500 + 6$. Los $9500$ son las primeras cifras ($95$ por cien) y el $6$ son las últimas.",
-  "Otro ejemplo, $96 \times 94$: complementos $4$ y $6$; primeras cifras $96 - 6 = 90$; últimas $4 \times 6 = 24$. Resultado: $9024$. Si los complementos dan más de dos cifras, como en $88 \times 87$ ($12 \times 13 = 156$), suma ese número: $7500 + 156 = 7656$."
+  "Otro ejemplo, $96 \\times 94$: complementos $4$ y $6$; primeras cifras $96 - 6 = 90$; últimas $4 \\times 6 = 24$. Resultado: $9024$. Si los complementos dan más de dos cifras, como en $88 \\times 87$ ($12 \\times 13 = 156$), suma ese número: $7500 + 156 = 7656$."
 ]$numeria$::jsonb),
   '{visuales}', $numeria$[
   {
@@ -455,10 +455,10 @@ set contenido = jsonb_set(
         "texto": "Complemento por complemento (dos cifras)"
       },
       {
-        "formula": "2 \times 3 = 6"
+        "formula": "2 \\times 3 = 6"
       },
       {
-        "resaltar": "6 \to 06"
+        "resaltar": "6 \\to 06"
       }
     ]
   },
@@ -467,13 +467,13 @@ set contenido = jsonb_set(
     "despuesDePaso": 4,
     "cuadros": [
       {
-        "texto": "Complemento a 100: $98 \to 2$, $97 \to 3$"
+        "texto": "Complemento a 100: $98 \\to 2$, $97 \\to 3$"
       },
       {
         "formula": "98 - 3 = 95"
       },
       {
-        "formula": "2 \times 3 = 6"
+        "formula": "2 \\times 3 = 6"
       },
       {
         "resaltar": "98 × 97 = 9506 = 9506"
@@ -503,7 +503,7 @@ set contenido = jsonb_set(
         "formula": "96 - 6 = 90"
       },
       {
-        "formula": "4 \times 6 = 24"
+        "formula": "4 \\times 6 = 24"
       },
       {
         "resaltar": "96 × 94 = 9024 = 9024"

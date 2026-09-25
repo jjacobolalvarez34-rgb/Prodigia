@@ -3,6 +3,7 @@ import type { TechniqueQuizPregunta } from "@/types/database";
 import type { VisualLeccion } from "@/lib/aprender/visuales";
 import type { NodoEstado } from "@/lib/aprender/clases";
 import type { TemaAprendible } from "@/lib/aprender/path";
+import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
 
 // Numeria es el único mundo con VARIOS problem_type en un solo camino (los
 // 9 temas de src/lib/aprender/path.ts), así que no calza en
@@ -112,10 +113,11 @@ export async function obtenerCaminoConClasesNumeria(
   userId: string,
   esPro: boolean
 ): Promise<NodoCaminoNumeria[]> {
+  const locale = await localeServidor();
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("techniques")
-      .select("id, slug, nombre, descripcion, contenido, orden, problem_type, requiere_pro")
+      .select("id, slug, nombre, descripcion, contenido, nombre_en, descripcion_en, contenido_en, orden, problem_type, requiere_pro")
       .in("problem_type", TEMAS_ORDEN)
       .order("orden", { ascending: true }),
     supabase.from("technique_progress").select("technique_id, dominado").eq("user_id", userId),
@@ -123,7 +125,7 @@ export async function obtenerCaminoConClasesNumeria(
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id));
 
-  const todas = (tecnicas ?? []) as FilaTechnique[];
+  const todas = localizarFilas(tecnicas, locale) as FilaTechnique[];
   const rapidas = ordenarPorTemaYOrden(todas.filter((t) => !t.requiere_pro));
   const clases = ordenarPorTemaYOrden(todas.filter((t) => t.requiere_pro));
 

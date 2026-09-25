@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { ARITHMETIC_PROBLEM_TYPES, type ArithmeticProblemType } from "@/types/database";
 import type { TechniqueQuizPregunta } from "@/types/database";
+import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
 
 export type NodoEstado = "completado" | "activo" | "bloqueado";
 
@@ -62,10 +63,11 @@ export async function obtenerCamino(
   // completara suficientes técnicas de otros mundos como para que el
   // puntero global de "activo" derivara hacia una de Numeria. Filtrar
   // acá mismo, en el origen, es la fuente de verdad correcta.
+  const locale = await localeServidor();
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("techniques")
-      .select("id, slug, nombre, descripcion, contenido, orden, problem_type")
+      .select("id, slug, nombre, descripcion, contenido, nombre_en, descripcion_en, contenido_en, orden, problem_type")
       .in("problem_type", TEMAS_ORDEN)
       .order("orden", { ascending: true }),
     supabase.from("technique_progress").select("technique_id, dominado").eq("user_id", userId),
@@ -73,7 +75,7 @@ export async function obtenerCamino(
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id));
 
-  const ordenadas = (tecnicas ?? []).slice().sort((a, b) => {
+  const ordenadas = localizarFilas(tecnicas, locale).slice().sort((a, b) => {
     const pa = TEMAS_ORDEN.indexOf(a.problem_type as TemaAprendible);
     const pb = TEMAS_ORDEN.indexOf(b.problem_type as TemaAprendible);
     if (pa !== pb) return pa - pb;

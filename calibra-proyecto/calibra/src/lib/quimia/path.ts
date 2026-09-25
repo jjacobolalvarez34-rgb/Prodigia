@@ -4,6 +4,7 @@ import type { VisualLeccion } from "@/lib/aprender/visuales";
 import type { NodoEstado } from "@/lib/aprender/clases";
 import { TECNICAS_QUIMIA, CLASES_QUIMIA } from "@/lib/quimia/lecciones";
 import { ORDEN_GRUPOS_QUIMIA, type GrupoQuimia } from "@/lib/quimia/grupos";
+import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
 
 export type { NodoEstado, GrupoQuimia };
 export { ORDEN_GRUPOS_QUIMIA };
@@ -153,15 +154,16 @@ export function calcularCaminoQuimia(filas: FilaTechnique[], dominadas: Set<stri
 }
 
 export async function obtenerCaminoQuimia(supabase: SupabaseClient, userId: string, esPro: boolean): Promise<NodoCaminoQuimia[]> {
+  const locale = await localeServidor();
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("techniques")
-      .select("id, slug, nombre, descripcion, contenido, orden, requiere_pro")
+      .select("id, slug, nombre, descripcion, contenido, nombre_en, descripcion_en, contenido_en, orden, requiere_pro")
       .eq("problem_type", "quimia")
       .order("orden", { ascending: true }),
     supabase.from("technique_progress").select("technique_id, dominado").eq("user_id", userId),
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
-  return calcularCaminoQuimia((tecnicas ?? []) as FilaTechnique[], dominadas, esPro);
+  return calcularCaminoQuimia(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro);
 }

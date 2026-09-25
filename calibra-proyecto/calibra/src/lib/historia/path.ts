@@ -5,6 +5,7 @@ import type { NodoEstado } from "@/lib/aprender/clases";
 import type { UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import { TECNICAS_HISTORIA, CLASES_HISTORIA } from "@/lib/historia/lecciones";
 import { ORDEN_GRUPOS_HISTORIA, type GrupoHistoria } from "@/lib/historia/bloques";
+import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
 
 export type { NodoEstado, GrupoHistoria };
 export { ORDEN_GRUPOS_HISTORIA };
@@ -157,17 +158,18 @@ export function calcularCaminoHistoria(filas: FilaTechnique[], dominadas: Set<st
 }
 
 export async function obtenerCaminoHistoria(supabase: SupabaseClient, userId: string, esPro: boolean): Promise<NodoCaminoHistoria[]> {
+  const locale = await localeServidor();
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("techniques")
-      .select("id, slug, nombre, descripcion, contenido, orden, requiere_pro")
+      .select("id, slug, nombre, descripcion, contenido, nombre_en, descripcion_en, contenido_en, orden, requiere_pro")
       .eq("problem_type", "historia")
       .order("orden", { ascending: true }),
     supabase.from("technique_progress").select("technique_id, dominado").eq("user_id", userId),
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
-  return calcularCaminoHistoria((tecnicas ?? []) as FilaTechnique[], dominadas, esPro);
+  return calcularCaminoHistoria(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro);
 }
 
 // Arma las «unidades» del sidebar y del camino de Aprender (una por época con

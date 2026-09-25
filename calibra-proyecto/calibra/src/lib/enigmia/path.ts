@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { NOMBRE_CATEGORIA_ENIGMIA, type CategoriaEnigmia } from "@/types/database";
 import type { TechniqueQuizPregunta } from "@/types/database";
+import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
 
 export type NodoEstado = "completado" | "activo" | "bloqueado";
 
@@ -29,17 +30,18 @@ export async function obtenerCaminoEnigmia(
   supabase: SupabaseClient,
   userId: string
 ): Promise<UnidadCaminoEnigmia[]> {
+  const locale = await localeServidor();
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("logic_techniques")
-      .select("id, slug, nombre, descripcion, contenido, orden, categoria")
+      .select("id, slug, nombre, descripcion, contenido, nombre_en, descripcion_en, contenido_en, orden, categoria")
       .order("orden", { ascending: true }),
     supabase.from("logic_technique_progress").select("technique_id, dominado").eq("user_id", userId),
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id));
 
-  const ordenadas = (tecnicas ?? []).slice().sort((a, b) => {
+  const ordenadas = localizarFilas(tecnicas, locale).slice().sort((a, b) => {
     const pa = ORDEN_CATEGORIAS.indexOf(a.categoria as CategoriaEnigmia);
     const pb = ORDEN_CATEGORIAS.indexOf(b.categoria as CategoriaEnigmia);
     if (pa !== pb) return pa - pb;

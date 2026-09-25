@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TechniqueQuizPregunta } from "@/types/database";
 import type { VisualLeccion } from "@/lib/aprender/visuales";
+import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
 
 // Infraestructura compartida de la pestaña "Clases" de Aprender (fila 22
 // de docs/PARIDAD_MUNDOS.md). Cada mundo tiene, dentro de la misma tabla
@@ -68,10 +69,11 @@ export async function obtenerCaminoConClases(
   problemType: string,
   esPro: boolean
 ): Promise<NodoCaminoConClases[]> {
+  const locale = await localeServidor();
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("techniques")
-      .select("id, slug, nombre, descripcion, contenido, orden, requiere_pro")
+      .select("id, slug, nombre, descripcion, contenido, nombre_en, descripcion_en, contenido_en, orden, requiere_pro")
       .eq("problem_type", problemType)
       .order("orden", { ascending: true }),
     supabase.from("technique_progress").select("technique_id, dominado").eq("user_id", userId),
@@ -79,7 +81,7 @@ export async function obtenerCaminoConClases(
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id));
 
-  const todas = tecnicas ?? [];
+  const todas = localizarFilas(tecnicas, locale);
   const rapidas = todas.filter((t) => !t.requiere_pro);
   const clases = todas.filter((t) => t.requiere_pro);
 

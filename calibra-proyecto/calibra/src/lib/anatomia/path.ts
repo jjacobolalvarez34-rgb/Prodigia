@@ -4,6 +4,7 @@ import type { VisualLeccion } from "@/lib/aprender/visuales";
 import type { NodoEstado } from "@/lib/aprender/clases";
 import { ORDEN_GRUPOS_ANATOMIA, type GrupoAnatomia } from "@/lib/anatomia/grupos";
 import { TECNICAS_ANATOMIA, CLASES_ANATOMIA } from "@/lib/anatomia/lecciones";
+import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
 
 export type { NodoEstado, GrupoAnatomia };
 export { ORDEN_GRUPOS_ANATOMIA };
@@ -146,10 +147,11 @@ export function calcularNodos(
 // dos pestañas. `esPro` viene del PLAN (profiles.plan), nunca del nivel de
 // calibración por modo (skill_levels `anatomia_*`), que este archivo no toca.
 export async function obtenerCaminoAnatomia(supabase: SupabaseClient, userId: string, esPro: boolean): Promise<NodoCaminoAnatomia[]> {
+  const locale = await localeServidor();
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("techniques")
-      .select("id, slug, nombre, descripcion, contenido, orden, requiere_pro")
+      .select("id, slug, nombre, descripcion, contenido, nombre_en, descripcion_en, contenido_en, orden, requiere_pro")
       .eq("problem_type", "anatomia")
       .order("orden", { ascending: true }),
     supabase.from("technique_progress").select("technique_id, dominado").eq("user_id", userId),
@@ -157,7 +159,7 @@ export async function obtenerCaminoAnatomia(supabase: SupabaseClient, userId: st
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id));
 
-  const todas = (tecnicas ?? []) as FilaTechnique[];
+  const todas = localizarFilas(tecnicas, locale) as FilaTechnique[];
   const rapidas = ordenarPorGrupoYOrden(todas.filter((t) => !t.requiere_pro));
   const clases = ordenarPorGrupoYOrden(todas.filter((t) => t.requiere_pro));
 

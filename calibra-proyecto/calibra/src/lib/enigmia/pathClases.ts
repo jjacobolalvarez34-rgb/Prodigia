@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TechniqueQuizPregunta, CategoriaEnigmia } from "@/types/database";
 import type { VisualLeccion } from "@/lib/aprender/visuales";
 import type { NodoEstado } from "@/lib/aprender/clases";
+import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
 
 // Enigmia tiene 4 categorías en un solo camino (como los 9 temas de
 // Numeria) — no calza en obtenerCaminoConClases (src/lib/aprender/clases.ts,
@@ -114,17 +115,18 @@ export async function obtenerCaminoConClasesEnigmia(
   userId: string,
   esPro: boolean
 ): Promise<NodoCaminoEnigmiaClases[]> {
+  const locale = await localeServidor();
   const [{ data: tecnicas }, { data: progreso }] = await Promise.all([
     supabase
       .from("logic_techniques")
-      .select("id, slug, nombre, descripcion, contenido, orden, categoria, requiere_pro")
+      .select("id, slug, nombre, descripcion, contenido, nombre_en, descripcion_en, contenido_en, orden, categoria, requiere_pro")
       .order("orden", { ascending: true }),
     supabase.from("logic_technique_progress").select("technique_id, dominado").eq("user_id", userId),
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id));
 
-  const todas = (tecnicas ?? []) as FilaLogicTechnique[];
+  const todas = localizarFilas(tecnicas, locale) as FilaLogicTechnique[];
   const rapidas = ordenarPorCategoriaYOrden(todas.filter((t) => !t.requiere_pro));
   const clases = ordenarPorCategoriaYOrden(todas.filter((t) => t.requiere_pro));
 
