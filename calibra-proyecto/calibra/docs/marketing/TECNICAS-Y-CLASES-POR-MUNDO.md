@@ -19,7 +19,7 @@ Lo que se puede afirmar de TODAS (verificado):
 - Técnicas y Clases se desbloquean **por tema**: no hay que terminar todo un curso lineal para empezar por lo que te interesa (dentro de cada tema el orden sí es de la primera a la última).
 - Al terminar una lección hay un botón para ir a practicar ese tema.
 - Las animaciones respetan la opción de "reducir movimiento" del sistema (accesibilidad) y tienen alternativa de texto para lectores de pantalla.
-- Todo el contenido está en español neutro. *(La versión en inglés de las lecciones está pendiente: ver punto 5.)*
+- Todo el contenido está en español neutro. *(La versión en inglés de las lecciones está lista, con las salvedades del punto 5.)*
 
 ## 2. Cuidado con lo que se promete
 
@@ -643,9 +643,15 @@ Cómo usar cada ficha: **Qué enseña** (para el copy), **Ganchos** (ideas de ti
 - Clase 7: Errores comunes y depuración
 - Clase 8: Pilas, colas y conjuntos
 
-## 5. Traducción (en curso)
+## 5. Traducción
 
-Las lecciones viven hoy solo en español (`techniques.nombre`, `descripcion` y `contenido`). Los nombres de los grupos/temas del panel lateral de Aprender sí existen en español e inglés (`src/lib/aprender/grupos.ts`). Mientras las lecciones no estén traducidas, **no anunciar Aprender en inglés**: la interfaz cambia de idioma, pero el contenido de las lecciones no.
+Las lecciones de los 13 mundos tienen versión en inglés (`nombre_en`, `descripcion_en` y `contenido_en` en `techniques`; migraciones 0225–0238, generadas desde `src/lib/i18n-lecciones/en/`). Los nombres de los grupos/temas del panel lateral de Aprender también existen en español e inglés (`src/lib/aprender/grupos.ts`).
+
+Salvedades antes de anunciar Aprender en inglés:
+
+- El texto lo tradujo un modelo y **no lo revisó una persona**: conviene una lectura rápida.
+- **Enigmia:** 6 técnicas históricas de lógica siguen solo en español.
+- Algunos textos que las animaciones sacan de tablas del código o de claves de la interfaz pueden seguir en español.
 
 ## 6. Piezas sugeridas (para `assets/piezas/`, estilo `cNN-…-square/story`)
 

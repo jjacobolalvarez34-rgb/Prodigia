@@ -14,6 +14,8 @@ import { GEOGRAFIA_EN } from "./en/geografia";
 import { HISTORIA_EN } from "./en/historia";
 import { MELODIA_EN } from "./en/melodia";
 import { ANATOMIA_EN } from "./en/anatomia";
+import { QUIMIA_EN } from "./en/quimia";
+import { TRIGONOMETRIA_EN } from "./en/trigonometria";
 
 export interface EntradaTraduccion {
   // Traducciones por slug.
@@ -35,6 +37,8 @@ export const REGISTRO_TRADUCCIONES: Partial<Record<MundoTraducible, EntradaTradu
   historia: { traducciones: HISTORIA_EN, migracion: "0234_historia_lecciones_en.sql", completo: true },
   melodia: { traducciones: MELODIA_EN, migracion: "0235_melodia_lecciones_en.sql", completo: true },
   anatomia: { traducciones: ANATOMIA_EN, migracion: "0236_anatomia_lecciones_en.sql", completo: true },
+  quimia: { traducciones: QUIMIA_EN, migracion: "0237_quimia_lecciones_en.sql", completo: true },
+  trigonometria: { traducciones: TRIGONOMETRIA_EN, migracion: "0238_trigonometria_lecciones_en.sql", completo: true },
   naipia: { traducciones: NAIPIA_EN, migracion: "0226_naipia_lecciones_en.sql", completo: true },
 };
 
