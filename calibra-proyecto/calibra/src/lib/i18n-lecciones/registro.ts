@@ -6,6 +6,7 @@ import type { TraduccionLeccion } from "./traducir";
 import { NAIPIA_EN } from "./en/naipia";
 import { NUMERIA_EN } from "./en/numeria";
 import { CALCULIA_EN } from "./en/calculia";
+import { ESTADISTICA_EN } from "./en/estadistica";
 
 export interface EntradaTraduccion {
   // Traducciones por slug.
@@ -19,6 +20,7 @@ export interface EntradaTraduccion {
 export const REGISTRO_TRADUCCIONES: Partial<Record<MundoTraducible, EntradaTraduccion>> = {
   numeria: { traducciones: NUMERIA_EN, migracion: "0227_numeria_lecciones_en.sql", completo: true },
   calculia: { traducciones: CALCULIA_EN, migracion: "0228_calculia_lecciones_en.sql", completo: true },
+  estadistica: { traducciones: ESTADISTICA_EN, migracion: "0229_estadistica_lecciones_en.sql", completo: true },
   naipia: { traducciones: NAIPIA_EN, migracion: "0226_naipia_lecciones_en.sql", completo: true },
 };
 
