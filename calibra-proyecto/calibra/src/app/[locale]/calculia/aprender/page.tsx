@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import { getTranslations, getLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
-import { obtenerCaminoCalculia } from "@/lib/calculia/path";
+import { obtenerCaminoCalculia, construirUnidadesCalculia, ORDEN_GRUPOS_CALCULIA, type GrupoCalculia } from "@/lib/calculia/path";
 import { partirCaminoPorClases, resolverPestanaInicial } from "@/lib/aprender/clases";
-import { agruparNodos } from "@/lib/aprender/grupos";
 import Header from "@/components/Header";
-import type { UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import AprenderTabs from "@/components/AprenderTabs";
 import { COLOR_CALCULIA } from "../colores";
 
@@ -22,7 +20,6 @@ interface Props {
 export default async function CalculiaAprenderPage({ searchParams }: Props) {
   const { tab } = await searchParams;
   const t = await getTranslations("Calculia");
-  const locale = await getLocale();
   const supabase = await createClient();
   const { user, profile } = await requireUsuario(supabase, "/calculia/aprender");
   const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
@@ -34,31 +31,18 @@ export default async function CalculiaAprenderPage({ searchParams }: Props) {
 
   // Aprender con pestañas "Técnicas | Clases" (fila 22 de PARIDAD_MUNDOS.md)
   // sobre el layout compartido de Aprender (fila 3: panel de temas a la
-  // izquierda + camino a la derecha, como Melodía). Cada pestaña es un camino
-  // con sus propios temas (ver src/lib/aprender/grupos.ts). Misma lógica de
-  // obtenerCaminoCalculia: la clase 1 (orden más bajo de requiere_pro=true) viene
-  // "activo" (preview gratis) y las 2+ para quien no es Pro vienen "bloqueado"
-  // con bloqueadoPorPlan=true, así que acá se les agrega el CTA a /pro en vez
-  // del bloqueo mudo normal.
+  // izquierda + camino a la derecha, como Melodía). El tema (`grupo`) y el
+  // estado de cada nodo ya vienen calculados desde src/lib/calculia/path.ts
+  // (un puntero "activo" por tema en las dos pestañas, con el Pro-gating de
+  // Clases incluido), así que esta página solo arma las unidades leyendo esos
+  // campos: lo que muestra el sidebar es exactamente lo que valida [slug]/page.tsx.
   const { tecnicas, clases, hayClases } = partirCaminoPorClases(nodos);
   const proHref = "/pro?next=%2Fcalculia%2Faprender%3Ftab%3Dclases";
+  const nombreGrupo = Object.fromEntries(ORDEN_GRUPOS_CALCULIA.map((g) => [g, t(`aprender.grupos.${g}`)])) as Record<GrupoCalculia, string>;
+  const cta = { label: t("aprender.clases.desbloqueaConPro"), href: proHref };
 
-  const unidadesTecnicas: UnidadCaminoGenerico[] = agruparNodos(tecnicas, "calculia", "tecnicas", locale).map((g) => ({
-    id: g.id,
-    nombre: g.nombre,
-    nodos: g.nodos.map((n) => ({ id: n.id, slug: n.slug, nombre: n.nombre, estado: n.estado })),
-  }));
-  const unidadesClases: UnidadCaminoGenerico[] = agruparNodos(clases, "calculia", "clases", locale).map((g) => ({
-    id: g.id,
-    nombre: g.nombre,
-    nodos: g.nodos.map((n) => ({
-      id: n.id,
-      slug: n.slug,
-      nombre: n.nombre,
-      estado: n.estado,
-      ctaPro: n.bloqueadoPorPlan ? { label: t("aprender.clases.desbloqueaConPro"), href: proHref } : undefined,
-    })),
-  }));
+  const unidadesTecnicas = construirUnidadesCalculia(tecnicas, nombreGrupo, cta);
+  const unidadesClases = construirUnidadesCalculia(clases, nombreGrupo, cta);
 
   return (
     <>

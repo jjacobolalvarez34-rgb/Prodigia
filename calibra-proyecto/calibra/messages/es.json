@@ -3628,12 +3628,52 @@
       "continuar": "Continuar",
       "reintentar": "Reintentar"
     },
+    "visuales": {
+      "etiqueta": {
+        "tangente": "Recta tangente a una curva",
+        "area": "Área bajo una curva",
+        "serie": "Sumas parciales de una serie geométrica",
+        "edo": "Soluciones de una ecuación diferencial separable"
+      },
+      "tangente": {
+        "alt": "Gráfica de $f(x) = {formula}$. En el punto con x = {x0} e y = {y0}, la recta tangente tiene pendiente {pendiente}, que es el valor de la derivada en ese punto.",
+        "pasoCurva": "Esta es la curva $f(x) = {formula}$. ¿Cuánto sube o baja en el punto marcado?",
+        "pasoSecante1": "Una recta secante une el punto con otro más lejano: su pendiente es una primera aproximación.",
+        "pasoSecante2": "Con el segundo punto más cerca, la secante se parece cada vez más a una recta que solo toca la curva.",
+        "pasoTangente": "Cuando el segundo punto llega al primero, la secante se convierte en la recta tangente. Su pendiente es la derivada: {pendiente}."
+      },
+      "area": {
+        "alt": "Gráfica de $f(x) = {formula}$ entre x = {desde} y x = {hasta}. El área bajo la curva en ese tramo vale {area}: es la antiderivada evaluada en el extremo derecho menos la evaluada en el izquierdo.",
+        "pasoCurva": "Curva de $f(x) = {formula}$ entre x = {desde} y x = {hasta}. Queremos el área que queda debajo.",
+        "pasoRectangulos1": "Primera aproximación: 4 rectángulos cuya altura es el valor de $f$ en el centro de cada base.",
+        "pasoRectangulos2": "Con 12 rectángulos más delgados la aproximación mejora: sobra y falta menos área.",
+        "pasoArea": "Con rectángulos cada vez más delgados se llega al área exacta: {area} (la antiderivada en el extremo derecho menos la del izquierdo)."
+      },
+      "serie": {
+        "alt": "Sumas parciales de una serie geométrica con primer término $a = {a}$ y razón $r = {r}$.",
+        "altConverge": "Como $|r| \\lt 1$, converge: las sumas se acercan a {total}.",
+        "altDiverge": "Como $|r| \\geq 1$, diverge: las sumas no se estabilizan en ningún valor.",
+        "sumaParcial": "Suma de los primeros {n} términos: {valor}."
+      },
+      "edo": {
+        "alt": "Familia de soluciones ${sol}$ de la ecuación ${eq}$, dibujada para tres valores de $A$. En el punto con x = {x0} e y = {y0} la pendiente de la curva es {pendiente}, igual al valor que pide la ecuación.",
+        "pasoFamilia": "La ecuación ${eq}$ se resuelve separando variables: ${sol}$. Cada valor de $A$ da una curva distinta.",
+        "pasoPunto": "Se toma la curva con $A = 1$ y el punto con x = {x0} e y = {y0}.",
+        "pasoPendiente": "La recta tangente en ese punto tiene pendiente {pendiente}: coincide con el valor que da la ecuación diferencial en ese punto."
+      }
+    },
     "aprender": {
       "metadata": {
         "title": "Aprender Calculia",
         "description": "Trucos mentales para reconocer reglas de derivación, integrales comunes y series."
       },
       "descripcionUnidad": "Reconocimiento de patrones para derivadas, integrales, series y EDOs.",
+      "grupos": {
+        "derivadas": "Derivadas",
+        "integrales": "Integrales",
+        "series": "Series",
+        "multivariable": "Multivariable y EDOs"
+      },
       "progreso": "Progreso",
       "tecnicas": "{n}/{total} técnicas",
       "titulo": "Aprender",

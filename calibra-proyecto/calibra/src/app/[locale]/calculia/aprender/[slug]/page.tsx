@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
-import { obtenerCaminoCalculia } from "@/lib/calculia/path";
+import { obtenerCaminoCalculia, puedeAbrirNodoCalculia } from "@/lib/calculia/path";
 import { hrefVolverAAprender } from "@/lib/aprender/clases";
 import Header from "@/components/Header";
 import LeccionCalculiaClient from "./LeccionCalculiaClient";
@@ -24,7 +24,10 @@ export default async function LeccionCalculiaPage({ params }: Props) {
   if (!nodo) {
     notFound();
   }
-  if (nodo.estado === "bloqueado") {
+  // Acceso directo por URL a un nodo bloqueado (progresión normal dentro de un
+  // tema, o Clase sin Pro): no lo dejamos entrar, pero tampoco es un error: lo
+  // mandamos de vuelta a la pestaña de la que viene.
+  if (!puedeAbrirNodoCalculia(nodo)) {
     redirect(hrefVolverAAprender("/calculia/aprender", nodo.requierePro));
   }
 

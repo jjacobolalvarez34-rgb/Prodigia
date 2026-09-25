@@ -3628,12 +3628,52 @@
       "continuar": "Continue",
       "reintentar": "Retry"
     },
+    "visuales": {
+      "etiqueta": {
+        "tangente": "Tangent line to a curve",
+        "area": "Area under a curve",
+        "serie": "Partial sums of a geometric series",
+        "edo": "Solutions of a separable differential equation"
+      },
+      "tangente": {
+        "alt": "Graph of $f(x) = {formula}$. At the point with x = {x0} and y = {y0}, the tangent line has slope {pendiente}, which is the value of the derivative at that point.",
+        "pasoCurva": "This is the curve $f(x) = {formula}$. How fast does it rise or fall at the marked point?",
+        "pasoSecante1": "A secant line joins the point to a farther one: its slope is a first approximation.",
+        "pasoSecante2": "With the second point closer, the secant looks more and more like a line that only touches the curve.",
+        "pasoTangente": "When the second point reaches the first, the secant becomes the tangent line. Its slope is the derivative: {pendiente}."
+      },
+      "area": {
+        "alt": "Graph of $f(x) = {formula}$ between x = {desde} and x = {hasta}. The area under the curve on that stretch is {area}: the antiderivative at the right end minus the antiderivative at the left end.",
+        "pasoCurva": "Curve of $f(x) = {formula}$ between x = {desde} and x = {hasta}. We want the area underneath.",
+        "pasoRectangulos1": "First approximation: 4 rectangles whose height is the value of $f$ at the middle of each base.",
+        "pasoRectangulos2": "With 12 thinner rectangles the approximation improves: less area is left over or missing.",
+        "pasoArea": "With ever thinner rectangles you reach the exact area: {area} (the antiderivative at the right end minus the one at the left end)."
+      },
+      "serie": {
+        "alt": "Partial sums of a geometric series with first term $a = {a}$ and ratio $r = {r}$.",
+        "altConverge": "Since $|r| \\lt 1$, it converges: the sums approach {total}.",
+        "altDiverge": "Since $|r| \\geq 1$, it diverges: the sums never settle on a value.",
+        "sumaParcial": "Sum of the first {n} terms: {valor}."
+      },
+      "edo": {
+        "alt": "Family of solutions ${sol}$ of the equation ${eq}$, drawn for three values of $A$. At the point with x = {x0} and y = {y0} the slope of the curve is {pendiente}, the same value the equation asks for.",
+        "pasoFamilia": "The equation ${eq}$ is solved by separating variables: ${sol}$. Each value of $A$ gives a different curve.",
+        "pasoPunto": "Take the curve with $A = 1$ and the point with x = {x0}, y = {y0}.",
+        "pasoPendiente": "The tangent line at that point has slope {pendiente}: it matches the value the differential equation gives at that point."
+      }
+    },
     "aprender": {
       "metadata": {
         "title": "Learn Calculia",
         "description": "Mental tricks for spotting derivative rules, common integrals, and series."
       },
       "descripcionUnidad": "Pattern recognition for derivatives, integrals, series, and ODEs.",
+      "grupos": {
+        "derivadas": "Derivatives",
+        "integrales": "Integrals",
+        "series": "Series",
+        "multivariable": "Multivariable and ODEs"
+      },
       "progreso": "Progress",
       "tecnicas": "{n}/{total} techniques",
       "titulo": "Learn",

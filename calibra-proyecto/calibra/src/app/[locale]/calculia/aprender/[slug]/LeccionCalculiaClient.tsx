@@ -10,6 +10,10 @@ import { hrefVolverAAprender } from "@/lib/aprender/clases";
 import type { Achievement } from "@/types/database";
 import LogroBanner from "@/components/LogroBanner";
 import MathText from "@/components/MathText";
+import CuerpoVisual from "@/components/aprender/CuerpoVisual";
+import { REGISTRO_VISUALES_CALCULIA } from "@/components/calculia/visuales/registro";
+import { visualesDeContenido } from "@/lib/aprender/visuales";
+import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
 import { COLOR_CALCULIA } from "../../colores";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
@@ -37,7 +41,18 @@ export default function LeccionCalculiaClient({ nodo }: Props) {
   const [pasoIdx, setPasoIdx] = useState(0);
   const [logrosNuevos, setLogrosNuevos] = useState<Achievement[]>([]);
 
+  // Pedido 2026-09-24: salir por el Header a mitad de una lección (ya viste el
+  // ejemplo, estás en el quiz) pide confirmación — en "explicacion" (recién
+  // abierta, nada que perder todavía) y en "celebracion" (ya terminada) no hace
+  // falta. Mismo criterio que LeccionClient.tsx de Numeria.
+  useRegistrarGuardiaSalida({ activo: fase !== "explicacion" && fase !== "celebracion" });
+
   const pasos = nodo.contenido.pasos;
+  // Formato visual (contenido.visuales): cada paso es una introducción corta y
+  // la explicación real son los visuales animados debajo de él. Sin visuales, la
+  // lección se ve exactamente como siempre (paso a paso).
+  const visuales = useMemo(() => visualesDeContenido(nodo.contenido.visuales), [nodo.contenido.visuales]);
+  const esVisual = visuales.length > 0;
   const quiz = useMemo(() => nodo.contenido.quiz ?? [], [nodo.contenido.quiz]);
   const tieneQuiz = quiz.length > 0;
 
@@ -114,6 +129,13 @@ export default function LeccionCalculiaClient({ nodo }: Props) {
 
         {fase === "ejemplo" && (
           <motion.div key="ejemplo" {...transicion} className="flex flex-col gap-6">
+            {esVisual ? (
+              <div className="flex flex-col gap-5">
+                <h1 className="text-center font-display text-xl font-bold tracking-tight text-foreground">{nodo.nombre}</h1>
+                <CuerpoVisual pasos={pasos} visuales={visuales} registro={REGISTRO_VISUALES_CALCULIA} />
+              </div>
+            ) : (
+              <>
             <div className="flex flex-col gap-3">
               {pasos.map((paso, i) => (
                 <div
@@ -165,6 +187,17 @@ export default function LeccionCalculiaClient({ nodo }: Props) {
                 </button>
               )}
             </div>
+              </>
+            )}
+            {esVisual && (
+              <button
+                onClick={() => (tieneQuiz ? setFase("quiz") : completarLeccion())}
+                className="rounded-xl px-4 py-3 font-display font-semibold text-white"
+                style={{ background: COLOR_CALCULIA }}
+              >
+                {tieneQuiz ? t("continuarAlQuiz") : t("marcarAprendida")}
+              </button>
+            )}
           </motion.div>
         )}
 

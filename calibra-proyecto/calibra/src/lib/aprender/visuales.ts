@@ -7,6 +7,7 @@ import type { VisualAnatomia } from "@/lib/anatomia/visuales";
 import type { VisualMelodia } from "@/lib/melodia/visuales";
 import type { VisualTrigonometria } from "@/lib/trigonometria/visuales";
 import type { VisualHistoria } from "@/lib/historia/visuales";
+import type { VisualCalculia } from "@/lib/calculia/visuales";
 import type { VisualCodia } from "@/lib/codia/visuales";
 import type { VisualCircuitia } from "@/lib/circuitia/visuales";
 import type { VisualEstadistica } from "@/lib/estadistica/visuales";
@@ -60,7 +61,7 @@ export interface VisualCuadros extends VisualBase {
 
 // ---------- Unión de todos los visuales conocidos ----------
 
-export type VisualLeccion = VisualCuadros | VisualNaipia | VisualNumeria | VisualEnigmia | VisualGeografia | VisualQuimia | VisualAnatomia | VisualMelodia | VisualTrigonometria | VisualHistoria | VisualCircuitia | VisualEstadistica | VisualCodia;
+export type VisualLeccion = VisualCuadros | VisualNaipia | VisualNumeria | VisualEnigmia | VisualGeografia | VisualQuimia | VisualAnatomia | VisualMelodia | VisualTrigonometria | VisualHistoria | VisualCalculia | VisualCircuitia | VisualEstadistica | VisualCodia;
 
 // Validador tolerante: solo exige la forma mínima ({ tipo: string no vacío }
 // y `despuesDePaso` entero >= 0 si está). NO valida el tipo (un tipo que
