@@ -49,3 +49,16 @@
 - **DIFERIDO (registrado en TECH-DEBT):** Mecánica 1 (apostar a partida de otro), Mecánica 2 (predicciones de ranking), Mecánica 3 (títulos Trastienda), minijuegos La Calcu/Acertijos/El Reloj; ruleta horizontal circular en vez de la tómbola vertical P4 del spec visual.
 - **Consecuencias:** la Trastienda pública vs privada — el cliente solo consulta historial; resultados/secretos de azar nunca viajan al cliente. Client i18n espejado es/en (47 keys cada uno). La `trastienda_minijuegos` reemplaza el `apuesta_doble_o_nada` como fuente del volado sin romper la apuesta activa existente (usuario con apuesta pendiente la sigue resolviendo en próxima partida).
 - **Estado:** VERIFICADO POR CÓDIGO (tsc 0 · eslint tocados 0 · vitest 132/132 con 6 tests nuevos de ruleta · build limpio con las 4 rutas nuevas). SQL sin verificar contra DB: **el usuario debe aplicar `0121_trastienda_economia.sql` a prod y retestear el doble o nada + módulos.**
+## 2026-09-26 — App Android nativa con Expo (React Native) y `packages/core` compartido (PROPUESTA)
+
+- **Contexto:** la app Android actual es Capacitor con `server.url` a Vercel (WebView del sitio, no abre sin red, riesgo de rechazo en Play por funcionalidad mínima). El PO pidió una app que se descargue y funcione como app, con apariencia de juego.
+- **Decisión propuesta:** Expo + expo-router, en un monorepo con `apps/web`, `apps/mobile` y `packages/{core,api,i18n,tokens}`. La lógica pura de `src/lib` (~350 módulos, 92 tests) se mueve a `packages/core` y la usan web y app. Se descartan Kotlin/Compose y Flutter porque duplicarían los generadores de los 13 mundos en otro lenguaje.
+- **Consecuencias:** mudanza de la web a `apps/web`; adaptador de sesión Bearer en rutas API; Play Billing además de Paddle; Trastienda fuera de la app v1 (PROD-01). Detalle en `docs/app-nativa/`.
+- **Estado:** PROPUESTA — pendiente de aprobación del PO.
+
+## 2026-09-26 — La Placa de jugador es identidad y no se recorta (DECIDIDO por PO)
+
+- **Contexto:** al planear la app Android, el PO aclaró algo que no estaba escrito como principio: la tarjeta de perfil personalizable es parte de la esencia de Prodigia.
+- **Decisión:** la Placa (fondo propio/galería con GIF animado, avatar GIF, marcos, 8 fuentes, color y 10 animaciones del nombre, título y datos de progreso) se conserva completa en web y app, con el mismo contrato de datos. Se permiten mejoras que no quiten nada: velo de legibilidad, separar ver de editar, encuadre del fondo, compartir la Placa.
+- **Consecuencias:** la app nativa porta el catálogo cosmético entero (Fase 2, tarea 2.6b); moderación de imágenes subidas (PROD-05). Detalle en `docs/app-nativa/02-SISTEMA-VISUAL.md` §10.
+- **Estado:** DECIDIDO (PO, 2026-09-26).

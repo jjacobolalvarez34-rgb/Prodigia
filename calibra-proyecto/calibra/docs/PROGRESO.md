@@ -4023,3 +4023,20 @@ Tres mundos nuevos, normales en todo (catálogo, Practicar, Rankeds, duelos, log
 - **Fila 23 nueva (PARIDAD_MUNDOS.md)**: "Aprender con explicación visual animada", probada primero en Naipia (pedido explícito del usuario) — motor genérico `visuales` + 6 visuales propios de Naipia, verificado en navegador. Pendiente de rollout en los otros 12 mundos.
 - **Modo memoria de Naipia**: cartas que se dan vuelta y hay que contar de memoria, activo en niveles altos (6-8 según sistema). Reloj pausado durante el reparto; tiempo de respuesta medido desde que termina.
 - Verificado en conjunto: `tsc` limpio, `eslint` sin errores nuevos, `vitest` 448/448, i18n 2603 claves paridad exacta.
+
+## 2026-09-26 — Revisión general + plan de la app Android nativa (solo documentación)
+
+### Construí
+- **`docs/audits/REVISION-GENERAL-2026-09-26.md`** (nuevo): hallazgos priorizados de seguridad (SEG-01..09), producto/políticas (PROD-01..04), UX (UX-01..08), docs (DOC-01..05) y repo (REPO-01..05), con orden sugerido.
+- **`docs/app-nativa/`** (nuevo, PROPUESTA): `README.md`, `01-STACK-Y-ARQUITECTURA.md` (Expo/React Native + monorepo con `packages/core` compartido; se descarta Capacitor-WebView y Kotlin), `02-SISTEMA-VISUAL.md` ("Noche de Prodigia": tokens, neón por mundo, Boton3D, movimiento, háptica, sonido), `03-PANTALLAS-Y-NAVEGACION.md` (5 pestañas + HUD, wireframes de cada pantalla, mapa web→app), `04-BUCLE-DE-ENGANCHE.md` (bucles sesión/diario/semanal/largo, notificaciones, límites éticos, métricas), `05-PUBLICACION-GOOGLE-PLAY.md` (Familias, Data safety, Billing, borrado de cuenta, ficha), `06-ROADMAP.md` (fases 0-7 con criterios de terminado), `maquetas-android.html` (6 pantallas + paleta).
+
+### Verifiqué
+- Contra código: key de fal.ai versionada en `calibra-proyecto/opencode.json` (CONFIRMADO con `git ls-files`); S5 sin `revoke` en 0137→0240; gate de edad de Trastienda solo en `trastienda/page.tsx:31`; Edge Functions sin secreto; Chispas comprables (`src/lib/pagos/paddle.ts:29-32`); 13 mundos en `src/lib/mundos.ts`; rutas API con sesión solo por cookies (`src/lib/supabase/server.ts`); ~350 módulos en `src/lib` con 92 tests.
+- Maquetas renderizadas con Edge headless (Playwright no corre con Node 18 de este equipo).
+- tsc/eslint/vitest/build: no aplican (cero cambios de código).
+
+### Resultado
+- Sesión CERRADA, solo documentación. **Acción inmediata para el usuario: revocar la key de fal.ai (SEG-01).**
+- PENDIENTE PO: aprobar stack (DECISIONS 2026-09-26), decidir Trastienda en Android/umbral de edad/chat de menores (PROD-01/02), ligas semanales y congelamiento gratis semanal (`04-BUCLE-DE-ENGANCHE.md`).
+
+- **Ampliación (mismo día, pedido del PO)**: (1) **la Placa de jugador es identidad y no se recorta** — decisión registrada en `DECISIONS.md`; especificación en `docs/app-nativa/02-SISTEMA-VISUAL.md` §10 (contenido verificado en código, 5 variantes, mejoras de legibilidad y ver≠editar, implementación GIF/WebP, moderación → PROD-05 y UX-09 en la revisión); Perfil y Editor de placa en `03-PANTALLAS-Y-NAVEGACION.md` §4.11. (2) Maquetas nuevas: Perfil = Placa, Placa en variantes, Competir, Social (Inicio), Clan (ciudad por tier, guerra, misión) y Mundo de clanes (mapa con parcelas y hoja de resumen); documentadas en §4.9-4.10. Verificado: render con Edge headless. Sin cambios de código.

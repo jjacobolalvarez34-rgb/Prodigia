@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prodigia Android — Maquetas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;600;700&family=Audiowide&family=Pacifico&family=Bebas+Neue&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  /* Maquetas de referencia — PROPUESTA (docs/app-nativa/). No es código de producción. */
+  :root {
+    --bg: #090C14; --hondo: #05070D; --s1: #12172A; --s2: #171D34; --s3: #1E2542;
+    --border: #232B47; --tx: #F4F6FB; --tx2: #8892B0;
+    --primario: #7C5CFF; --logro: #FFB627; --correcto: #3DDC97; --error: #FF5D5D; --racha: #FF8A3D;
+    --a: #9B85FF; --abase: #6C4CF1; --lip: #4A31B8;
+    --display: "Space Grotesk", system-ui, sans-serif;
+    --body: "Inter", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #03040a; color: var(--tx); font-family: var(--body); padding: 32px 16px 64px; }
+  header.doc { max-width: 1200px; margin: 0 auto 28px; }
+  header.doc h1 { font-family: var(--display); font-size: 28px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  header.doc p { color: var(--tx2); margin: 0; max-width: 760px; line-height: 1.5; font-size: 14px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 36px 28px; justify-content: center; max-width: 1400px; margin: 0 auto; }
+  figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  figcaption { font-family: var(--display); font-weight: 600; font-size: 14px; color: var(--tx2); text-align: center; max-width: 320px; }
+  figcaption small { display: block; font-family: var(--body); font-weight: 400; font-size: 12px; margin-top: 4px; line-height: 1.4; }
+
+  .phone { width: 340px; height: 720px; border-radius: 40px; background: var(--bg); border: 8px solid #1a1d29;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6), inset 0 0 0 1px #2a2f45; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+  .status { height: 26px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 11px; color: var(--tx2); font-family: var(--mono); flex: none; }
+  .content { flex: 1; overflow: hidden; padding: 0 16px; display: flex; flex-direction: column; gap: 12px; position: relative; }
+
+  /* HUD */
+  .hud { display: flex; align-items: center; gap: 8px; padding: 6px 16px 10px; flex: none; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; padding: 2px; background: conic-gradient(from 200deg, var(--primario), var(--logro), var(--primario)); flex: none; }
+  .avatar span { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: var(--s2); font-family: var(--display); font-weight: 700; font-size: 13px; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; background: var(--s1); border: 1px solid var(--border); border-radius: 999px; padding: 5px 10px 5px 7px; font-family: var(--mono); font-weight: 700; font-size: 13px; }
+  .pill svg { width: 16px; height: 16px; }
+  .spacer { flex: 1; }
+  .bell { width: 34px; height: 34px; border-radius: 50%; background: var(--s1); border: 1px solid var(--border); display: grid; place-items: center; position: relative; }
+  .bell::after { content: ""; position: absolute; top: 6px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--error); box-shadow: 0 0 0 2px var(--s1); }
+
+  /* barra inferior */
+  .tabs { flex: none; display: grid; grid-template-columns: repeat(5, 1fr); padding: 8px 6px 14px; border-top: 1px solid var(--border); background: rgba(9,12,20,.92); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; color: var(--tx2); font-weight: 600; }
+  .tab .ic { width: 44px; height: 28px; border-radius: 999px; display: grid; place-items: center; }
+  .tab svg { width: 20px; height: 20px; }
+  .tab.on { color: var(--tx); }
+  .tab.on .ic { background: color-mix(in srgb, var(--primario) 22%, transparent); color: #b9a8ff; }
+
+  /* tarjetas y texto */
+  .card { background: var(--s1); border: 1px solid var(--border); border-radius: 20px; padding: 14px; position: relative; overflow: hidden;
+    background-image: linear-gradient(to bottom, rgba(255,255,255,.05), transparent 28px); }
+  .h1 { font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: -0.02em; margin: 2px 0 0; }
+  .h3 { font-family: var(--display); font-weight: 600; font-size: 15px; margin: 0; }
+  .nota { font-size: 12px; color: var(--tx2); margin: 2px 0 0; }
+  .micro { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--tx2); }
+  .mono { font-family: var(--mono); font-weight: 700; }
+  .row { display: flex; align-items: center; gap: 10px; }
+  .bar { height: 8px; border-radius: 999px; background: var(--s3); overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--abase), var(--a)); }
+
+  /* botón con volumen */
+  .b3d { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border: 0; cursor: pointer;
+    font-family: var(--display); font-weight: 700; font-size: 16px; letter-spacing: .04em; text-transform: uppercase; color: #fff;
+    background: var(--btn, var(--abase)); border-radius: 16px; height: 52px; box-shadow: 0 5px 0 var(--lip); transform: translateY(0);
+    transition: transform 60ms ease-out, box-shadow 60ms ease-out; margin-bottom: 5px; }
+  .b3d:active { transform: translateY(5px); box-shadow: 0 0 0 var(--lip); }
+  .b3d.oro { --btn: var(--logro); --lip: #B87800; color: #1f1400; }
+  .b3d.sec { --btn: var(--s2); --lip: #0b0f1f; color: var(--tx); border: 1px solid var(--border); }
+  .b3d.sm { height: 38px; font-size: 12px; border-radius: 12px; box-shadow: 0 4px 0 var(--lip); }
+  .b3d.sm:active { transform: translateY(4px); }
+
+  /* ciudad nocturna (placeholder de la ilustración de cada mundo) */
+  .city { position: relative; height: 96px; border-radius: 14px; overflow: hidden;
+    background: radial-gradient(120% 90% at 70% 0%, color-mix(in srgb, var(--a) 35%, transparent), transparent 60%), linear-gradient(#0c1024, #070913); }
+  .city .moon { position: absolute; top: 12px; right: 22px; width: 16px; height: 16px; border-radius: 50%; background: #f7f2e0; box-shadow: 0 0 18px rgba(247,242,224,.5); }
+  .city b { position: absolute; bottom: 0; background-color: #0a0e1d; border-top-left-radius: 2px; border-top-right-radius: 2px;
+    background-image: radial-gradient(color-mix(in srgb, var(--a) 90%, white) 1.1px, transparent 1.6px); background-size: 7px 9px; background-position: 2px 4px; }
+  .city.off { filter: grayscale(1) brightness(.55); }
+  .city.off b { background-image: radial-gradient(#39405a 1.1px, transparent 1.6px); }
+
+  /* glifos de fondo */
+  .glyphs { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .glyphs span { position: absolute; font-family: var(--mono); font-weight: 700; color: var(--a); opacity: .08; animation: flotar 9s ease-in-out infinite alternate; }
+  @keyframes flotar { to { transform: translateY(-14px) rotate(8deg); } }
+
+  /* anillo */
+  .ring { --p: 65; width: 64px; height: 64px; border-radius: 50%; flex: none; display: grid; place-items: center;
+    background: conic-gradient(var(--logro) calc(var(--p) * 1%), var(--s3) 0); }
+  .ring span { width: 52px; height: 52px; border-radius: 50%; background: var(--s1); display: grid; place-items: center; font-family: var(--mono); font-weight: 700; font-size: 13px; }
+
+  /* sprint */
+  .sprint { background: var(--hondo); }
+  .sprint .content { gap: 10px; }
+  .tope { display: flex; align-items: center; justify-content: space-between; padding: 4px 16px 0; flex: none; }
+  .x { width: 36px; height: 36px; border-radius: 50%; background: var(--s1); border: 1px solid var(--border); display: grid; place-items: center; color: var(--tx2); font-size: 16px; }
+  .timer { --p: 72; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--a) calc(var(--p) * 1%), var(--s3) 0); }
+  .timer span { width: 42px; height: 42px; border-radius: 50%; background: var(--hondo); display: grid; place-items: center; font-family: var(--mono); font-weight: 700; font-size: 12px; }
+  .combo { font-family: var(--mono); font-weight: 700; font-size: 16px; color: var(--racha); padding: 6px 10px; border-radius: 999px; background: color-mix(in srgb, var(--racha) 14%, transparent); animation: latido 1s ease-in-out infinite; }
+  @keyframes latido { 50% { transform: scale(1.08); } }
+  .dots { display: flex; gap: 6px; } .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--s3); } .dots i.ok { background: var(--correcto); } .dots i.now { background: var(--a); box-shadow: 0 0 0 3px color-mix(in srgb, var(--a) 30%, transparent); }
+  .problema { border-radius: 28px; padding: 28px 12px 20px; text-align: center; position: relative; border: 2px solid transparent;
+    background: linear-gradient(var(--s1), var(--s1)) padding-box, conic-gradient(from var(--ang), var(--a), var(--logro), var(--abase), var(--a)) border-box;
+    animation: girar 3s linear infinite; box-shadow: 0 0 34px color-mix(in srgb, var(--a) 22%, transparent); }
+  @property --ang { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+  @keyframes girar { to { --ang: 360deg; } }
+  .numero { font-family: var(--mono); font-weight: 700; font-size: 50px; letter-spacing: -0.02em; }
+  .numero em { font-style: normal; color: var(--a); }
+  .resp { margin-top: 12px; font-family: var(--mono); font-weight: 700; font-size: 26px; letter-spacing: .12em; color: var(--tx); }
+  .resp .cur { display: inline-block; width: 2px; height: 26px; background: var(--a); vertical-align: -4px; animation: parpadeo 1s steps(2) infinite; }
+  @keyframes parpadeo { 50% { opacity: 0; } }
+  .flota { position: absolute; top: 10px; right: 18px; font-family: var(--mono); font-weight: 700; color: var(--correcto); animation: subir 1.6s ease-out infinite; }
+  @keyframes subir { from { transform: translateY(10px); opacity: 0; } 30% { opacity: 1; } to { transform: translateY(-26px); opacity: 0; } }
+  .teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: auto; }
+  .tecla { height: 54px; border-radius: 14px; background: var(--s2); border: 1px solid var(--border); box-shadow: 0 4px 0 #080b17;
+    display: grid; place-items: center; font-family: var(--mono); font-weight: 700; font-size: 22px; cursor: pointer; transition: transform 50ms, box-shadow 50ms; user-select: none; }
+  .tecla:active { transform: translateY(4px); box-shadow: 0 0 0 #080b17; background: var(--s3); }
+  .tecla.fn { color: var(--tx2); font-size: 18px; }
+
+  /* resultado */
+  .confeti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .confeti i { position: absolute; top: -10px; width: 6px; height: 10px; border-radius: 2px; animation: caer 3.2s linear infinite; }
+  @keyframes caer { to { transform: translateY(740px) rotate(540deg); } }
+  .stat3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat3 .card { padding: 10px; text-align: center; }
+  .big { font-family: var(--mono); font-weight: 700; font-size: 20px; }
+  .moneda { position: absolute; width: 14px; height: 14px; animation: volar 1.8s cubic-bezier(.5,-0.4,.7,1) infinite; }
+  @keyframes volar { from { transform: translate(0,0) scale(1); opacity: 1; } 85% { opacity: 1; } to { transform: translate(110px,-360px) scale(.6); opacity: 0; } }
+
+  /* duelo */
+  .vs { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 18px; position: relative; }
+  .placa { border-radius: 20px; padding: 14px; display: flex; align-items: center; gap: 12px; background: var(--s1); border: 1px solid var(--border); }
+  .placa.yo { animation: entraIzq .9s cubic-bezier(.2,1.4,.4,1) both; border-color: color-mix(in srgb, var(--a) 60%, transparent); box-shadow: 0 0 28px color-mix(in srgb, var(--a) 25%, transparent); }
+  .placa.rival { animation: entraDer .9s cubic-bezier(.2,1.4,.4,1) both; flex-direction: row-reverse; text-align: right; border-color: rgba(255,93,93,.5); box-shadow: 0 0 28px rgba(255,93,93,.18); }
+  @keyframes entraIzq { from { transform: translateX(-120%); } } @keyframes entraDer { from { transform: translateX(120%); } }
+  .vsmark { align-self: center; font-family: var(--display); font-weight: 700; font-size: 48px; font-style: italic;
+    background: linear-gradient(120deg, var(--primario), var(--logro)); -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 18px rgba(255,182,39,.35)); animation: golpe 1.2s .7s ease-out both; }
+  @keyframes golpe { from { transform: scale(2.4); opacity: 0; } 60% { transform: scale(.92); opacity: 1; } }
+  .insignia { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-family: var(--display); font-weight: 700; font-size: 11px; flex: none; }
+
+  /* perfil */
+  .marco { width: 104px; height: 104px; border-radius: 50%; padding: 5px; margin: 6px auto 0;
+    background: conic-gradient(from 0deg, #FFB627, #fff3c4, #FFB627, #b87800, #FFB627); box-shadow: 0 0 30px rgba(255,182,39,.35); }
+  .marco span { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #2a2150, #12172A); font-family: var(--display); font-weight: 700; font-size: 34px; }
+  .nombre { text-align: center; font-family: var(--display); font-weight: 700; font-size: 22px; margin: 8px 0 0;
+    background: linear-gradient(90deg, #9B85FF, #FFB627, #9B85FF); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: brillo 3s linear infinite; }
+  @keyframes brillo { to { background-position: -200% 0; } }
+  .lista .it { display: flex; justify-content: space-between; align-items: center; padding: 12px 2px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; }
+  .lista .it:last-child { border-bottom: 0; }
+  .tag-pro { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: linear-gradient(120deg, var(--primario), var(--logro)); color: #fff; }
+
+  /* paleta */
+
+  /* Placa de jugador (docs/app-nativa/02-SISTEMA-VISUAL.md §10) */
+  .placa { position: relative; border-radius: 22px; overflow: hidden; border: 2px solid var(--marco, #FFB627); box-shadow: 0 0 26px color-mix(in srgb, var(--marco, #FFB627) 30%, transparent); }
+  .escena { position: absolute; inset: 0; background:
+      radial-gradient(circle at 28% 42%, rgba(255,140,40,.6), transparent 32%),
+      radial-gradient(circle at 78% 22%, rgba(130,190,100,.35), transparent 40%),
+      radial-gradient(circle at 60% 80%, rgba(255,90,20,.35), transparent 36%),
+      linear-gradient(160deg, #45432f, #1c1e19 48%, #6b4414);
+    background-size: 220% 220%; animation: escena 5s ease-in-out infinite alternate; }
+  .escena::after { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(0,0,0,.2) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.2) 1px, transparent 1px); background-size: 5px 5px; }
+  .escena i { position: absolute; width: 6px; height: 6px; background: #ffb050; box-shadow: 0 0 8px #ff9a2e; animation: chispazo 2.4s ease-in-out infinite; }
+  @keyframes escena { to { background-position: 100% 60%; } }
+  @keyframes chispazo { 0%,100% { opacity: .2; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-8px); } }
+  .escena.aurora { background: linear-gradient(120deg, #0b3d3a, #1d6b5f, #4b2a7a, #0b3d3a); background-size: 300% 300%; }
+  .escena.neonbg { background: radial-gradient(circle at 50% 120%, #ff2bd6 0, transparent 55%), linear-gradient(#1a0730, #07040f); background-size: 100% 200%; }
+  .escena.dorado { background: linear-gradient(135deg, #3a2600, #b87800, #ffe39a, #b87800, #3a2600); background-size: 300% 300%; }
+  .escena.aurora::after, .escena.neonbg::after, .escena.dorado::after { display: none; }
+  .velo { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(5,7,13,0) 22%, rgba(5,7,13,.55) 48%, rgba(5,7,13,.86) 100%); }
+  .gif { position: absolute; top: 10px; left: 10px; font-family: var(--mono); font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 6px; background: rgba(0,0,0,.55); color: #fff; letter-spacing: .08em; }
+  .placa-in { position: relative; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .av-gif { width: 72px; height: 72px; border-radius: 50%; padding: 3px; background: conic-gradient(#FFB627, #fff0bf, #FFB627, #a86a00, #FFB627); }
+  .av-gif span { display: block; width: 100%; height: 100%; border-radius: 50%;
+    background: radial-gradient(circle at 50% 38%, #ff3b5c 0 10%, transparent 11%), radial-gradient(circle at 35% 70%, #ff2b4a55, transparent 40%), radial-gradient(circle at 50% 50%, #3a1a3f, #0d0710 70%);
+    animation: latidoAv 1.4s ease-in-out infinite; }
+  @keyframes latidoAv { 50% { filter: brightness(1.35) saturate(1.3); } }
+  .nombre-glitch { font-family: "Audiowide", var(--display); font-size: 28px; color: #8f7bff; position: relative; line-height: 1.1; animation: glitch 2.2s steps(1) infinite; }
+  @keyframes glitch { 0%,86%,100% { text-shadow: 0 0 10px rgba(143,123,255,.6); transform: none; }
+    88% { text-shadow: -2px 0 #ff2bd6, 2px 0 #2de2ff; transform: translateX(1px); } 92% { text-shadow: 2px 0 #ff2bd6, -2px 0 #2de2ff; transform: translateX(-1px) skewX(-6deg); } }
+  .chip-t { align-self: flex-start; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,.12); backdrop-filter: blur(4px); }
+  .vidrio { background: rgba(18,23,42,.55); border: 1px solid rgba(255,255,255,.18); border-radius: 14px; padding: 10px 12px; backdrop-filter: blur(6px); }
+  .estandarte { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,.2); background: rgba(0,0,0,.35); font-size: 12px; font-weight: 700; align-self: flex-start; }
+  .estandarte b { width: 10px; height: 18px; background: linear-gradient(#ff8a3d, #c2410c); clip-path: polygon(0 0,100% 0,100% 100%,50% 78%,0 100%); }
+  .iconbtn { width: 34px; height: 34px; border-radius: 50%; background: var(--s1); border: 1px solid var(--border); display: grid; place-items: center; font-size: 14px; color: var(--tx2); }
+  .tarjetas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .placa.t { border-radius: 16px; border-width: 1.5px; box-shadow: none; }
+  .placa.t .placa-in { padding: 10px; gap: 4px; align-items: center; text-align: center; min-height: 132px; justify-content: flex-end; }
+  .av-sm { width: 44px; height: 44px; border-radius: 50%; padding: 2px; background: var(--marco); margin-bottom: 2px; flex: none; }
+  .av-sm span { display: block; width: 100%; height: 100%; border-radius: 50%; }
+  .fila { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: var(--s1); border: 1px solid var(--border); }
+  .fila .av-sm { width: 30px; height: 30px; margin: 0; }
+
+  /* Competir / Social / Clan / Mundo de clanes */
+  .segs { display: flex; gap: 6px; background: var(--s1); border: 1px solid var(--border); border-radius: 999px; padding: 4px; }
+  .segs span { flex: 1; text-align: center; font-size: 12px; font-weight: 600; color: var(--tx2); padding: 6px 0; border-radius: 999px; }
+  .segs span.on { background: var(--s3); color: var(--tx); }
+  .rango-hero { text-align: center; padding: 16px 14px 14px; border-color: rgba(110,231,200,.45); box-shadow: 0 0 34px rgba(110,231,200,.12); }
+  .insignia-xl { width: 86px; height: 86px; margin: 0 auto 6px; clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+    background: linear-gradient(160deg, #e6fff7, #6ee7c8 45%, #1f8f75); display: grid; place-items: center; animation: brilloInsignia 3s ease-in-out infinite; }
+  .insignia-xl span { font-family: var(--display); font-weight: 700; font-size: 13px; color: #06372c; letter-spacing: .06em; }
+  @keyframes brilloInsignia { 50% { filter: brightness(1.25) drop-shadow(0 0 10px #6ee7c8); } }
+  .chipm { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid var(--border); background: var(--s1); }
+  .chipm i { width: 8px; height: 8px; border-radius: 50%; }
+  .duelo-it { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .duelo-it:last-child { border-bottom: 0; }
+  .activos { display: flex; gap: 12px; overflow: hidden; }
+  .activo { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; width: 50px; flex: none; }
+  .activo .av-sm { width: 46px; height: 46px; position: relative; }
+  .activo .av-sm::after { content: ""; position: absolute; right: 0; bottom: 2px; width: 11px; height: 11px; border-radius: 50%; background: var(--correcto); box-shadow: 0 0 0 2px var(--bg); }
+  .conv { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .conv:last-child { border-bottom: 0; }
+  .conv .av-sm { width: 38px; height: 38px; margin: 0; }
+  .badge-n { min-width: 20px; height: 20px; border-radius: 999px; background: var(--primario); color: #fff; font-family: var(--mono); font-size: 11px; font-weight: 700; display: grid; place-items: center; padding: 0 6px; }
+  .solicitud { display: flex; align-items: center; gap: 10px; }
+  .mini-btn { font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 10px; box-shadow: 0 3px 0 var(--lip); background: var(--abase); color: #fff; }
+  .clan-hero { position: relative; height: 150px; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,138,61,.45);
+    background: radial-gradient(120% 80% at 50% 0%, rgba(255,138,61,.35), transparent 60%), linear-gradient(#141a33, #080a14); }
+  .clan-hero b { position: absolute; bottom: 0; background-color: #0b0f1f; border-top-left-radius: 3px; border-top-right-radius: 3px;
+    background-image: radial-gradient(#ffb070 1.1px, transparent 1.6px); background-size: 7px 9px; }
+  .clan-hero .casa { position: absolute; bottom: 6px; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ff8a3d; background: #2a2150; box-shadow: 0 0 10px rgba(255,138,61,.5); }
+  .flag { width: 22px; height: 34px; clip-path: polygon(0 0,100% 0,100% 100%,50% 80%,0 100%); animation: ondear 2.4s ease-in-out infinite; transform-origin: top center; }
+  @keyframes ondear { 50% { transform: skewY(4deg) scaleX(.94); } }
+  .guerra { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
+  .guerra .lado { font-size: 12px; font-weight: 700; }
+  .barra-guerra { display: flex; height: 10px; border-radius: 999px; overflow: hidden; margin-top: 8px; }
+  .rol { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 999px; letter-spacing: .04em; }
+  /* mapa de clanes */
+  .mapa { position: absolute; inset: 0; overflow: hidden;
+    background: radial-gradient(60% 40% at 30% 30%, rgba(46,120,90,.25), transparent 70%), radial-gradient(50% 40% at 75% 70%, rgba(40,70,140,.3), transparent 70%), #070a14; }
+  .mapa::before { content: ""; position: absolute; inset: -40px; background-image: linear-gradient(rgba(124,92,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(124,92,255,.07) 1px, transparent 1px); background-size: 34px 34px; animation: panear 12s ease-in-out infinite alternate; }
+  @keyframes panear { to { transform: translate(-22px, -14px); } }
+  .rio { position: absolute; left: -20px; right: -20px; top: 57%; height: 26px; background: linear-gradient(90deg, #0f2a4a, #16406b, #0f2a4a); transform: rotate(-8deg); opacity: .8; border-radius: 30px; }
+  .parcelas { position: absolute; inset: 70px 10px 150px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 10px; align-content: center; animation: panear 12s ease-in-out infinite alternate; }
+  .parcela { position: relative; height: 92px; border-radius: 14px; background: rgba(18,23,42,.85); border: 1px solid var(--border); overflow: hidden; }
+  .parcela .sky { position: absolute; left: 0; right: 0; bottom: 18px; height: 60px; }
+  .parcela .sky b { position: absolute; bottom: 0; background: #0b0f1f; background-image: radial-gradient(var(--c) 1px, transparent 1.4px); background-size: 6px 8px; border-top-left-radius: 2px; border-top-right-radius: 2px; }
+  .parcela .pie { position: absolute; left: 0; right: 0; bottom: 0; height: 18px; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; padding: 0 6px; background: rgba(0,0,0,.45); }
+  .parcela .banderin { position: absolute; top: 6px; left: 6px; width: 10px; height: 16px; background: var(--c); clip-path: polygon(0 0,100% 0,100% 100%,50% 78%,0 100%); }
+  .parcela.mio { border: 2px solid #ff8a3d; box-shadow: 0 0 18px rgba(255,138,61,.45); }
+  .parcela.sel { outline: 2px solid #fff; outline-offset: 2px; }
+  .zoom { position: absolute; right: 12px; top: 138px; display: flex; flex-direction: column; gap: 6px; }
+  .zoom span { width: 34px; height: 34px; border-radius: 10px; background: rgba(18,23,42,.9); border: 1px solid var(--border); display: grid; place-items: center; font-weight: 700; }
+  .hoja { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 22px 22px 0 0; background: rgba(18,23,42,.97); border-top: 1px solid var(--border); padding: 10px 16px 16px; box-shadow: 0 -20px 40px rgba(0,0,0,.5); }
+  .hoja .asa { width: 40px; height: 4px; border-radius: 4px; background: #39405a; margin: 0 auto 10px; }
+  section.paleta { max-width: 1200px; margin: 56px auto 0; }
+  section.paleta h2 { font-family: var(--display); font-size: 20px; margin: 0 0 4px; }
+  section.paleta p { color: var(--tx2); font-size: 13px; margin: 0 0 16px; }
+  .sw { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .sw div { background: var(--s1); border: 1px solid var(--border); border-radius: 14px; padding: 10px; font-size: 12px; }
+  .sw .c { display: flex; height: 38px; border-radius: 9px; overflow: hidden; margin-bottom: 8px; }
+  .sw .c i { flex: 1; }
+  .sw b { font-family: var(--display); font-size: 13px; display: block; }
+  .sw code { font-family: var(--mono); color: var(--tx2); font-size: 11px; }
+
+  @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="gChispa" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A794FF"/><stop offset=".5" stop-color="#E4CBA0"/><stop offset="1" stop-color="#FFC53D"/></linearGradient>
+    <symbol id="chispa" viewBox="0 0 24 24"><path d="M12 1.5c.6 5 2.4 7.6 9.5 10.5-7.1 2.9-8.9 5.5-9.5 10.5-.6-5-2.4-7.6-9.5-10.5C9.6 9.1 11.4 6.5 12 1.5z" fill="url(#gChispa)"/></symbol>
+    <symbol id="llama" viewBox="0 0 24 24"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.4 1.1-3.9 2.3-5 .2 1.8 1 2.9 2.2 3.3C11 8.6 10.6 5 12 2z" fill="#FF8A3D"/><path d="M12 12.5c.5 1.6 2.3 2.2 2.3 4.3a2.3 2.3 0 0 1-4.6 0c0-1.2.9-2 1.4-2.6.1.6.4 1 .9 1.1-.2-1-.3-1.9 0-2.8z" fill="#FFD36B"/></symbol>
+    <symbol id="i-hoy" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-mundos" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-competir" viewBox="0 0 24 24"><path d="M4 20l7-7M4 4l9 9 3-3-9-9H4zM20 20l-7-7M20 4v3l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-social" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.8c1.8.8 3 2.6 3.5 5.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-perfil" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c1-4.2 4.2-6.5 8-6.5s7 2.3 8 6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0" fill="none" stroke="#8892B0" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-candado" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  </defs>
+</svg>
+
+<header class="doc">
+  <h1>Prodigia para Android — maquetas de referencia</h1>
+  <p>Dirección "Noche de Prodigia": oscuro por defecto, el color de cada mundo es la luz. Son referencias de distribución y tono visual para <code>docs/app-nativa/02-SISTEMA-VISUAL.md</code> y <code>03-PANTALLAS-Y-NAVEGACION.md</code>; los datos son de ejemplo. Los botones grandes y las teclas se pueden presionar para sentir el volumen.</p>
+</header>
+
+<div class="grid">
+
+<!-- 1. HOY -->
+<figure>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>5G ▮▮▮ 82%</span></div>
+  <div class="hud">
+    <div class="avatar"><span>A</span></div>
+    <span class="pill"><svg><use href="#llama"/></svg>12</span>
+    <span class="pill"><svg><use href="#chispa"/></svg>2.340</span>
+    <span class="spacer"></span>
+    <span class="bell"><svg width="18" height="18"><use href="#i-bell"/></svg></span>
+  </div>
+  <div class="content">
+    <div><p class="micro">Sábado</p><p class="h1">Hola, Ana</p></div>
+    <div class="card row">
+      <div class="ring" style="--p:65"><span>65%</span></div>
+      <div><p class="h3">Meta diaria</p><p class="nota"><span class="mono" style="color:var(--tx)">260</span> / 400 Exp · 2 partidas más</p></div>
+    </div>
+    <div class="card" style="--a:#9B85FF;--abase:#6C4CF1;--lip:#4A31B8;padding:0">
+      <div class="city" style="border-radius:0;height:78px">
+        <span class="moon"></span>
+        <b style="left:8px;width:34px;height:44px"></b><b style="left:46px;width:22px;height:62px"></b><b style="left:72px;width:40px;height:36px"></b>
+        <b style="left:118px;width:26px;height:70px"></b><b style="left:150px;width:44px;height:50px"></b><b style="left:200px;width:30px;height:40px"></b><b style="left:236px;width:24px;height:58px"></b><b style="left:264px;width:46px;height:30px"></b>
+      </div>
+      <div style="padding:12px 14px 14px">
+        <div class="row" style="justify-content:space-between"><div><p class="micro" style="color:#b9a8ff">Continuar</p><p class="h3">Numeria · Fracciones</p></div><span class="mono" style="font-size:13px">Nv 4</span></div>
+        <div class="bar" style="margin:10px 0 12px"><i style="width:62%"></i></div>
+        <button class="b3d sm">▶ Jugar</button>
+      </div>
+    </div>
+    <div class="row" style="gap:10px">
+      <div class="card" style="flex:1;border-color:rgba(255,182,39,.35)"><p class="h3">Reto diario</p><p class="nota">5 preguntas</p><p class="mono" style="color:var(--logro);margin:8px 0 0;font-size:13px">JUGAR →</p></div>
+      <div class="card" style="flex:1"><p class="h3">Reto semanal</p><p class="nota"><span class="mono" style="color:var(--tx)">12</span>/45</p><div class="bar" style="margin-top:10px"><i style="width:27%"></i></div></div>
+    </div>
+    <div class="card"><div class="row" style="justify-content:space-between"><p class="h3">Misión del clan</p><span class="mono nota">2.180/3.000</span></div><div class="bar" style="margin-top:9px"><i style="width:73%;background:linear-gradient(90deg,#b87800,#FFB627)"></i></div></div>
+  </div>
+  <nav class="tabs">
+    <span class="tab on"><span class="ic"><svg><use href="#i-hoy"/></svg></span>Hoy</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-mundos"/></svg></span>Mundos</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-competir"/></svg></span>Competir</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-social"/></svg></span>Social</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-perfil"/></svg></span>Perfil</span>
+  </nav>
+</div>
+<figcaption>1 · Hoy<small>"¿Qué hago ahora?" en un toque. Máximo 5 tarjetas, ordenadas por urgencia.</small></figcaption>
+</figure>
+
+<!-- 2. MUNDOS -->
+<figure>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>5G ▮▮▮ 82%</span></div>
+  <div class="hud">
+    <div class="avatar"><span>A</span></div>
+    <span class="pill"><svg><use href="#llama"/></svg>12</span>
+    <span class="pill"><svg><use href="#chispa"/></svg>2.340</span>
+    <span class="spacer"></span>
+    <span class="bell"><svg width="18" height="18"><use href="#i-bell"/></svg></span>
+  </div>
+  <div class="content">
+    <div class="row" style="justify-content:space-between;align-items:flex-end"><p class="h1">Tus mundos</p><span class="nota"><span class="mono" style="color:var(--tx)">4</span> de 13 encendidos</span></div>
+    <div class="card" style="--a:#2FD89B;--abase:#0E9F6E;padding:10px;border-color:rgba(47,216,155,.45);box-shadow:0 0 30px rgba(47,216,155,.15)">
+      <div class="city" style="height:130px"><span class="moon"></span>
+        <b style="left:10px;width:30px;height:60px"></b><b style="left:44px;width:40px;height:90px"></b><b style="left:90px;width:26px;height:50px"></b><b style="left:120px;width:48px;height:104px"></b><b style="left:172px;width:30px;height:70px"></b><b style="left:206px;width:42px;height:56px"></b><b style="left:252px;width:30px;height:84px"></b>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:10px"><div><p class="h3" style="font-size:18px">ENIGMIA</p><p class="nota">Lógica · 16 técnicas</p></div><span class="mono" style="color:#2FD89B;font-size:18px">Nv 23</span></div>
+      <div class="bar" style="margin-top:8px"><i style="width:48%"></i></div>
+    </div>
+    <div class="card" style="--a:#E36BF2;padding:10px">
+      <div class="city off" style="height:92px"><span class="moon"></span>
+        <b style="left:14px;width:36px;height:50px"></b><b style="left:56px;width:28px;height:72px"></b><b style="left:90px;width:46px;height:40px"></b><b style="left:142px;width:30px;height:64px"></b><b style="left:178px;width:44px;height:46px"></b><b style="left:228px;width:30px;height:58px"></b>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:10px">
+        <div class="row" style="gap:8px"><svg width="18" height="18" style="color:var(--tx2)"><use href="#i-candado"/></svg><div><p class="h3">QUIMIA</p><p class="nota">o incluido en Pro</p></div></div>
+        <span class="pill"><svg><use href="#chispa"/></svg>3.000</span>
+      </div>
+    </div>
+    <div class="row" style="gap:8px;margin-top:auto;margin-bottom:6px">
+      <span class="pill" style="background:var(--s3)">Todos</span><span class="pill" style="font-family:var(--body);font-weight:600;color:var(--tx2)">Míos</span><span class="pill" style="font-family:var(--body);font-weight:600;color:var(--tx2)">Bloqueados</span>
+    </div>
+  </div>
+  <nav class="tabs">
+    <span class="tab"><span class="ic"><svg><use href="#i-hoy"/></svg></span>Hoy</span>
+    <span class="tab on"><span class="ic"><svg><use href="#i-mundos"/></svg></span>Mundos</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-competir"/></svg></span>Competir</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-social"/></svg></span>Social</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-perfil"/></svg></span>Perfil</span>
+  </nav>
+</div>
+<figcaption>2 · Mundos<small>13 ciudades de noche. Encendida = tuya; apagada = invitación con precio en Chispas o Pro.</small></figcaption>
+</figure>
+
+<!-- 3. SPRINT -->
+<figure>
+<div class="phone sprint" style="--a:#9B85FF;--abase:#6C4CF1;--lip:#4A31B8">
+  <div class="status"><span>9:41</span><span>5G ▮▮▮ 82%</span></div>
+  <div class="glyphs">
+    <span style="top:14%;left:8%;font-size:40px">×</span><span style="top:30%;right:10%;font-size:34px;animation-delay:-3s">+</span>
+    <span style="top:58%;left:14%;font-size:28px;animation-delay:-5s">÷</span><span style="top:8%;right:30%;font-size:26px;animation-delay:-1s">−</span>
+  </div>
+  <div class="tope">
+    <span class="x">✕</span>
+    <div class="timer" style="--p:72"><span>0:24</span></div>
+    <span class="combo">×4 🔥</span>
+  </div>
+  <div class="content" style="padding-top:10px">
+    <div class="row" style="justify-content:space-between"><div class="dots"><i class="ok"></i><i class="ok"></i><i class="ok"></i><i class="now"></i><i></i></div><span class="nota">🛡 🛡</span></div>
+    <div class="problema">
+      <span class="flota">+12</span>
+      <div class="numero">37 <em>×</em> 8</div>
+      <div class="resp">29<span class="cur"></span></div>
+    </div>
+    <div class="teclado">
+      <span class="tecla">1</span><span class="tecla">2</span><span class="tecla">3</span>
+      <span class="tecla">4</span><span class="tecla">5</span><span class="tecla">6</span>
+      <span class="tecla">7</span><span class="tecla">8</span><span class="tecla">9</span>
+      <span class="tecla fn">,</span><span class="tecla">0</span><span class="tecla fn">⌫</span>
+    </div>
+    <button class="b3d" style="margin-bottom:18px">Listo</button>
+  </div>
+</div>
+<figcaption>3 · Sprint<small>Pantalla completa. Borde que gira con combo ≥ 5, teclado propio de 54-64 dp con háptica, "+12" que vuela al HUD.</small></figcaption>
+</figure>
+
+<!-- 4. RESULTADO -->
+<figure>
+<div class="phone" style="--a:#9B85FF;--abase:#6C4CF1;--lip:#4A31B8">
+  <div class="status"><span>9:41</span><span>5G ▮▮▮ 82%</span></div>
+  <div class="confeti">
+    <i style="left:8%;background:#9B85FF;animation-delay:-.2s"></i><i style="left:22%;background:#FFB627;animation-delay:-1.4s"></i><i style="left:37%;background:#3DDC97;animation-delay:-2.1s"></i>
+    <i style="left:52%;background:#FF8A3D;animation-delay:-.7s"></i><i style="left:66%;background:#9B85FF;animation-delay:-2.7s"></i><i style="left:80%;background:#FFB627;animation-delay:-1s"></i><i style="left:92%;background:#E36BF2;animation-delay:-1.9s"></i>
+  </div>
+  <div class="content" style="padding-top:18px;text-align:center">
+    <p class="micro" style="color:#b9a8ff">Numeria · Multiplicación</p>
+    <p class="h1" style="font-size:30px">¡Buen sprint!</p>
+    <div class="stat3">
+      <div class="card"><div class="big">9/10</div><p class="nota">aciertos</p></div>
+      <div class="card"><div class="big">90%</div><p class="nota">precisión</p></div>
+      <div class="card"><div class="big">0:41</div><p class="nota">tiempo</p></div>
+    </div>
+    <div class="card" style="text-align:left">
+      <div class="row" style="justify-content:space-between"><span class="mono" style="font-size:18px;color:#b9a8ff">+128 Exp</span><span class="nota">Numeria <span class="mono" style="color:var(--tx)">Nv 23</span></span></div>
+      <div class="bar" style="margin-top:9px;height:10px"><i style="width:71%"></i></div>
+    </div>
+    <div class="row" style="gap:10px">
+      <div class="card row" style="flex:1;justify-content:center;position:relative"><svg width="22" height="22"><use href="#chispa"/></svg><span class="mono" style="font-size:18px;color:var(--logro)">+45</span>
+        <svg class="moneda" style="left:30px;top:10px"><use href="#chispa"/></svg><svg class="moneda" style="left:44px;top:16px;animation-delay:.25s"><use href="#chispa"/></svg></div>
+      <div class="card row" style="flex:1;justify-content:center"><svg width="22" height="22"><use href="#llama"/></svg><span class="mono" style="font-size:18px;color:var(--racha)">13 días</span></div>
+    </div>
+    <div class="card row" style="text-align:left;border-color:rgba(255,182,39,.45);box-shadow:0 0 26px rgba(255,182,39,.14)">
+      <div style="width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3c4,#FFB627 55%,#b87800);display:grid;place-items:center;font-weight:700;color:#3a2600">✓</div>
+      <div><p class="micro" style="color:var(--logro)">Logro desbloqueado</p><p class="h3">Sin fallas por 3 sprints</p></div>
+    </div>
+    <div style="margin-top:auto;padding-bottom:16px">
+      <button class="b3d">Otra partida</button>
+      <p class="nota" style="margin-top:12px">Volver al mundo</p>
+    </div>
+  </div>
+</div>
+<figcaption>4 · Resultado (cascada)<small>Resultado → Exp → Chispas vuelan al HUD → racha → logro. Siempre termina en "Otra partida".</small></figcaption>
+</figure>
+
+<!-- 5. DUELO VS -->
+<figure>
+<div class="phone" style="--a:#9B85FF;background:radial-gradient(90% 60% at 50% 50%,#1a1540,#090C14)">
+  <div class="status"><span>9:41</span><span>5G ▮▮▮ 82%</span></div>
+  <div class="content">
+    <div style="text-align:center;padding-top:8px"><p class="micro">Rankeds · Numeria · Mejor de 3</p></div>
+    <div class="vs">
+      <div class="placa yo">
+        <div class="avatar" style="width:52px;height:52px"><span style="font-size:18px">A</span></div>
+        <div style="flex:1"><p class="h3">Ana</p><p class="nota">Oro II · <span class="mono" style="color:var(--tx)">1284</span></p></div>
+        <div class="insignia" style="background:linear-gradient(135deg,#fff3c4,#FFB627 60%,#b87800);color:#3a2600">ORO</div>
+      </div>
+      <div class="vsmark">VS</div>
+      <div class="placa rival">
+        <div class="avatar" style="width:52px;height:52px;background:conic-gradient(#FF5D5D,#FF8A3D,#FF5D5D)"><span style="font-size:18px">T</span></div>
+        <div style="flex:1"><p class="h3">Tomi 👻</p><p class="nota">Oro I · <span class="mono" style="color:var(--tx)">1301</span></p></div>
+        <div class="insignia" style="background:linear-gradient(135deg,#fff3c4,#FFB627 60%,#b87800);color:#3a2600">ORO</div>
+      </div>
+      <p class="nota" style="text-align:center">Corres contra el registro exacto de Tomi</p>
+    </div>
+    <div style="text-align:center;padding-bottom:22px">
+      <p class="mono" style="font-size:56px;margin:0;background:linear-gradient(120deg,var(--primario),var(--logro));-webkit-background-clip:text;background-clip:text;color:transparent">3</p>
+    </div>
+  </div>
+</div>
+<figcaption>5 · Duelo VS<small>Las placas chocan en el centro, destello, cuenta regresiva. El fantasma asegura rival siempre.</small></figcaption>
+</figure>
+
+<!-- 6. PERFIL: LA PLACA -->
+<figure>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>5G ▮▮▮ 82%</span></div>
+  <div class="hud">
+    <span class="pill"><svg><use href="#chispa"/></svg>5.564</span>
+    <span class="spacer"></span>
+    <span class="iconbtn" title="Editar placa">✎</span>
+    <span class="iconbtn" title="Compartir placa">⤴</span>
+  </div>
+  <div class="content">
+    <div class="placa" style="--marco:#FFB627">
+      <div class="escena"><i style="left:22%;top:30%"></i><i style="left:64%;top:18%;animation-delay:-.8s"></i><i style="left:44%;top:52%;animation-delay:-1.6s"></i></div>
+      <div class="velo"></div>
+      <span class="gif">GIF</span>
+      <div class="placa-in">
+        <div class="av-gif" style="margin-top:6px"><span></span></div>
+        <div style="margin-top:38px" class="nombre-glitch">Neutron</div>
+        <span class="chip-t">«Mano Firme»</span>
+        <div class="row" style="gap:12px;font-size:13px;font-weight:600">
+          <span style="color:#6ee7c8">☆ Platino</span><span class="mono" style="font-size:12px">1304 ELO</span><span class="row" style="gap:4px"><svg width="14" height="14"><use href="#chispa"/></svg><span class="mono">5.564</span></span>
+        </div>
+        <div class="vidrio">
+          <div class="row" style="justify-content:space-between"><span class="h3">Nivel 27</span><span class="mono" style="font-size:11px">10/1900 XP</span></div>
+          <div class="bar" style="margin:7px 0 5px;height:6px;background:rgba(255,255,255,.15)"><i style="width:4%;background:#fff"></i></div>
+          <span class="nota" style="color:#cfd5e6">28.660 XP histórica · #1 de 15</span>
+        </div>
+        <span class="estandarte"><b></b>FamiliaAtomica <span style="color:var(--tx2)">[FA]</span></span>
+      </div>
+    </div>
+    <div class="card lista" style="padding:2px 14px">
+      <div class="it"><span>Ciudades favoritas</span><span class="nota">›</span></div>
+      <div class="it"><span>Logros y títulos</span><span class="nota">›</span></div>
+      <div class="it"><span>Estadísticas <span class="tag-pro">PRO</span></span><span class="nota">›</span></div>
+    </div>
+  </div>
+  <nav class="tabs">
+    <span class="tab"><span class="ic"><svg><use href="#i-hoy"/></svg></span>Hoy</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-mundos"/></svg></span>Mundos</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-competir"/></svg></span>Competir</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-social"/></svg></span>Social</span>
+    <span class="tab on"><span class="ic"><svg><use href="#i-perfil"/></svg></span>Perfil</span>
+  </nav>
+</div>
+<figcaption>6 · Perfil = tu Placa<small>Se conserva toda la personalización actual (fondo y avatar GIF, fuente, color y efecto del nombre, marco, título, datos). Nuevo: velo para leer sobre cualquier GIF y edición fuera de la Placa (✎).</small></figcaption>
+</figure>
+
+<!-- 7. VARIANTES DE LA PLACA -->
+<figure>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>5G ▮▮▮ 82%</span></div>
+  <div class="hud">
+    <div class="avatar"><span>N</span></div>
+    <span class="pill"><svg><use href="#llama"/></svg>12</span>
+    <span class="pill"><svg><use href="#chispa"/></svg>5.564</span>
+    <span class="spacer"></span>
+    <span class="bell"><svg width="18" height="18"><use href="#i-bell"/></svg></span>
+  </div>
+  <div class="content">
+    <div class="segs"><span>Inicio</span><span class="on">Amigos</span><span>Mensajes</span><span>Clan</span></div>
+    <div class="tarjetas">
+      <div class="placa t" style="--marco:#FFB627"><div class="escena"><i style="left:30%;top:30%"></i></div><div class="velo"></div>
+        <div class="placa-in"><div class="av-sm"><span style="background:radial-gradient(circle at 50% 38%,#ff3b5c 0 12%,#3a1a3f 13%,#0d0710)"></span></div><span style="font-family:Audiowide;color:#8f7bff;font-size:15px">Neutron</span><span class="nota" style="color:#d6dbea">Platino · Nv 27</span></div></div>
+      <div class="placa t" style="--marco:#2DD4BF"><div class="escena aurora"></div><div class="velo"></div>
+        <div class="placa-in"><div class="av-sm"><span style="background:linear-gradient(135deg,#2DD4BF,#4338CA)"></span></div><span style="font-family:Pacifico;color:#fff;font-size:15px">Lu</span><span class="nota" style="color:#d6dbea">Oro · Nv 19</span></div></div>
+      <div class="placa t" style="--marco:#ff2bd6"><div class="escena neonbg"></div><div class="velo"></div>
+        <div class="placa-in"><div class="av-sm"><span style="background:linear-gradient(135deg,#ff2bd6,#2de2ff)"></span></div><span style="font-family:'Bebas Neue';color:#ff7be6;font-size:19px;letter-spacing:.06em;text-shadow:0 0 10px #ff2bd6">TOMI</span><span class="nota" style="color:#d6dbea">Diamante · Nv 33</span></div></div>
+      <div class="placa t" style="--marco:#FFD36B"><div class="escena dorado"></div><div class="velo"></div>
+        <div class="placa-in"><div class="av-sm"><span style="background:linear-gradient(135deg,#fff3c4,#b87800)"></span></div><span style="font-family:'Playfair Display';color:#fff3c4;font-size:15px">Valen</span><span class="nota" style="color:#d6dbea">Plata · Nv 12</span></div></div>
+    </div>
+    <p class="micro" style="margin:4px 0 0">Liga semanal · variante Fila</p>
+    <div class="fila" style="--marco:#FFB627"><span class="mono" style="color:var(--logro);width:16px">1</span><div class="av-sm"><span style="background:radial-gradient(circle at 50% 38%,#ff3b5c 0 12%,#3a1a3f 13%,#0d0710)"></span></div><div style="flex:1"><span style="font-family:Audiowide;color:#8f7bff">Neutron</span> <span class="nota">«Mano Firme»</span></div><span class="mono" style="font-size:12px">2.410</span></div>
+    <div class="fila" style="--marco:#ff2bd6"><span class="mono" style="color:var(--tx2);width:16px">2</span><div class="av-sm"><span style="background:linear-gradient(135deg,#ff2bd6,#2de2ff)"></span></div><div style="flex:1"><span style="font-family:'Bebas Neue';color:#ff7be6;font-size:16px;letter-spacing:.06em">TOMI</span> <span class="nota">«Relámpago»</span></div><span class="mono" style="font-size:12px">2.180</span></div>
+  </div>
+  <nav class="tabs">
+    <span class="tab"><span class="ic"><svg><use href="#i-hoy"/></svg></span>Hoy</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-mundos"/></svg></span>Mundos</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-competir"/></svg></span>Competir</span>
+    <span class="tab on"><span class="ic"><svg><use href="#i-social"/></svg></span>Social</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-perfil"/></svg></span>Perfil</span>
+  </nav>
+</div>
+<figcaption>7 · La Placa en todas partes<small>La misma identidad en 5 tamaños: Tarjeta (amigos, clan, podio), Fila (liga, ranking), VS (duelo), Mini (HUD, chat) y Completa (perfil).</small></figcaption>
+</figure>
+
+
+<!-- 8. COMPETIR -->
+<figure>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>5G ▮▮▮ 82%</span></div>
+  <div class="hud">
+    <div class="avatar"><span>N</span></div>
+    <span class="pill"><svg><use href="#llama"/></svg>12</span>
+    <span class="pill"><svg><use href="#chispa"/></svg>5.564</span>
+    <span class="spacer"></span>
+    <span class="bell"><svg width="18" height="18"><use href="#i-bell"/></svg></span>
+  </div>
+  <div class="content">
+    <div class="segs"><span class="on">Rankeds</span><span>Casual</span><span>Liga</span><span>Semanal</span></div>
+    <div class="card rango-hero">
+      <div class="insignia-xl"><span>PLATINO</span></div>
+      <p class="h3" style="font-size:18px">Platino III</p>
+      <p class="nota"><span class="mono" style="color:var(--tx);font-size:15px">1304</span> ELO · 3 victorias seguidas 🔥</p>
+      <div class="bar" style="margin:10px 0 4px;height:8px"><i style="width:68%;background:linear-gradient(90deg,#1f8f75,#6ee7c8)"></i></div>
+      <p class="nota" style="font-size:11px">46 ELO para Platino II</p>
+    </div>
+    <div class="row" style="gap:6px;flex-wrap:wrap">
+      <span class="chipm" style="border-color:#9B85FF"><i style="background:#9B85FF"></i>Numeria</span>
+      <span class="chipm"><i style="background:#2FD89B"></i>Enigmia</span>
+      <span class="chipm"><i style="background:#4FE0F5"></i>Codia</span>
+      <span class="chipm" style="color:var(--tx2)">Todas las ciudades</span>
+    </div>
+    <button class="b3d">⚔ Buscar duelo</button>
+    <div class="card" style="padding:4px 14px">
+      <div class="duelo-it"><span style="color:var(--correcto);font-weight:700">✓</span><div class="av-sm" style="--marco:#ff2bd6;width:26px;height:26px;margin:0"><span style="background:linear-gradient(135deg,#ff2bd6,#2de2ff)"></span></div><span style="flex:1;font-family:'Bebas Neue';color:#ff7be6;font-size:15px;letter-spacing:.05em">TOMI</span><span class="mono" style="color:var(--correcto)">+18</span></div>
+      <div class="duelo-it"><span style="color:var(--error);font-weight:700">✗</span><div class="av-sm" style="--marco:#2DD4BF;width:26px;height:26px;margin:0"><span style="background:linear-gradient(135deg,#2DD4BF,#4338CA)"></span></div><span style="flex:1;font-family:Pacifico">Lu</span><span class="mono" style="color:var(--error)">−12</span></div>
+      <div class="duelo-it"><span style="color:var(--tx2)">👻</span><span style="flex:1;color:var(--tx2)">Revancha disponible vs Lu</span><span class="nota">›</span></div>
+    </div>
+  </div>
+  <nav class="tabs">
+    <span class="tab"><span class="ic"><svg><use href="#i-hoy"/></svg></span>Hoy</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-mundos"/></svg></span>Mundos</span>
+    <span class="tab on"><span class="ic"><svg><use href="#i-competir"/></svg></span>Competir</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-social"/></svg></span>Social</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-perfil"/></svg></span>Perfil</span>
+  </nav>
+</div>
+<figcaption>8 · Competir<small>Todo lo que tiene ELO o ranking en un lugar: Rankeds, Casual, Liga semanal y Reto semanal. Insignia de rango como protagonista y un solo botón para buscar duelo.</small></figcaption>
+</figure>
+
+<!-- 9. SOCIAL -->
+<figure>
+<div class="phone" style="--abase:#6C4CF1;--lip:#4A31B8">
+  <div class="status"><span>9:41</span><span>5G ▮▮▮ 82%</span></div>
+  <div class="hud">
+    <div class="avatar"><span>N</span></div>
+    <span class="pill"><svg><use href="#llama"/></svg>12</span>
+    <span class="pill"><svg><use href="#chispa"/></svg>5.564</span>
+    <span class="spacer"></span>
+    <span class="bell"><svg width="18" height="18"><use href="#i-bell"/></svg></span>
+  </div>
+  <div class="content">
+    <div class="segs"><span class="on">Inicio</span><span>Amigos</span><span>Mensajes</span><span>Clan</span></div>
+    <p class="micro" style="margin:0">En línea ahora</p>
+    <div class="activos">
+      <div class="activo"><div class="av-sm" style="--marco:#ff2bd6"><span style="background:linear-gradient(135deg,#ff2bd6,#2de2ff)"></span></div>Tomi</div>
+      <div class="activo"><div class="av-sm" style="--marco:#2DD4BF"><span style="background:linear-gradient(135deg,#2DD4BF,#4338CA)"></span></div>Lu</div>
+      <div class="activo"><div class="av-sm" style="--marco:#FFD36B"><span style="background:linear-gradient(135deg,#fff3c4,#b87800)"></span></div>Valen</div>
+      <div class="activo"><div class="av-sm" style="--marco:#9B85FF"><span style="background:linear-gradient(135deg,#9B85FF,#1a1540)"></span></div>Sofi</div>
+      <div class="activo"><div class="av-sm" style="--marco:#E0607E"><span style="background:linear-gradient(135deg,#E0607E,#3a1020)"></span></div>Juan</div>
+    </div>
+    <div class="card solicitud">
+      <div class="av-sm" style="--marco:#3FC1D6;width:38px;height:38px;margin:0"><span style="background:linear-gradient(135deg,#3FC1D6,#0d2a33)"></span></div>
+      <div style="flex:1"><p class="h3" style="font-size:14px">Mati quiere ser tu amigo</p><p class="nota">Oro · Nv 15</p></div>
+      <span class="mini-btn">Aceptar</span>
+    </div>
+    <div class="card" style="padding:2px 14px">
+      <div class="conv"><div class="av-sm" style="--marco:#ff2bd6"><span style="background:linear-gradient(135deg,#ff2bd6,#2de2ff)"></span></div><div style="flex:1"><p class="h3" style="font-size:14px">Tomi</p><p class="nota">¿Revancha en Codia? 😤</p></div><span class="badge-n">2</span></div>
+      <div class="conv"><div class="av-sm" style="--marco:#FF8A3D;border-radius:10px"><span style="border-radius:8px;background:linear-gradient(#ff8a3d,#c2410c)"></span></div><div style="flex:1"><p class="h3" style="font-size:14px">FamiliaAtomica [FA]</p><p class="nota">Valen: faltan 820 Exp para la misión</p></div><span class="badge-n">5</span></div>
+      <div class="conv"><div class="av-sm" style="--marco:#2DD4BF"><span style="background:linear-gradient(135deg,#2DD4BF,#4338CA)"></span></div><div style="flex:1"><p class="h3" style="font-size:14px">Lu</p><p class="nota">Tú: te gané el reto diario jaja</p></div></div>
+    </div>
+    <button class="b3d sec sm">+ Invitar amigos</button>
+  </div>
+  <nav class="tabs">
+    <span class="tab"><span class="ic"><svg><use href="#i-hoy"/></svg></span>Hoy</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-mundos"/></svg></span>Mundos</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-competir"/></svg></span>Competir</span>
+    <span class="tab on"><span class="ic"><svg><use href="#i-social"/></svg></span>Social</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-perfil"/></svg></span>Perfil</span>
+  </nav>
+</div>
+<figcaption>9 · Social<small>Quién está en línea (placas mini con presencia), solicitudes, conversaciones directas y del clan con no leídos. Un toque en cualquier avatar abre su Placa.</small></figcaption>
+</figure>
+
+<!-- 10. CLAN -->
+<figure>
+<div class="phone">
+  <div class="status"><span>9:41</span><span>5G ▮▮▮ 82%</span></div>
+  <div class="hud">
+    <div class="avatar"><span>N</span></div>
+    <span class="pill"><svg><use href="#llama"/></svg>12</span>
+    <span class="pill"><svg><use href="#chispa"/></svg>5.564</span>
+    <span class="spacer"></span>
+    <span class="bell"><svg width="18" height="18"><use href="#i-bell"/></svg></span>
+  </div>
+  <div class="content" style="gap:10px">
+    <div class="segs"><span>Inicio</span><span>Amigos</span><span>Mensajes</span><span class="on">Clan</span></div>
+    <div class="clan-hero">
+      <b style="left:10px;width:26px;height:56px"></b><b style="left:40px;width:34px;height:84px"></b><b style="left:78px;width:22px;height:46px"></b>
+      <b style="left:104px;width:40px;height:104px"></b><b style="left:148px;width:28px;height:70px"></b><b style="left:180px;width:36px;height:92px"></b><b style="left:220px;width:24px;height:58px"></b><b style="left:248px;width:44px;height:76px"></b>
+      <span class="casa" style="left:30px"></span><span class="casa" style="left:96px;border-color:#9B85FF"></span><span class="casa" style="left:170px"></span><span class="casa" style="left:238px;border-color:#2DD4BF"></span>
+      <div class="row" style="position:absolute;left:12px;top:10px;gap:8px"><div class="flag" style="background:linear-gradient(#ff8a3d,#c2410c)"></div><div><p class="h3" style="font-size:16px">FamiliaAtomica <span style="color:var(--tx2)">[FA]</span></p><p class="nota" style="color:#ffcfa8">Metrópolis · Nivel 12 · 14/20</p></div></div>
+      <span class="chipm" style="position:absolute;right:10px;top:12px;background:rgba(0,0,0,.45)">🗺 Mundo</span>
+    </div>
+    <div class="card" style="padding:10px 14px"><div class="row" style="justify-content:space-between"><span class="micro">Nivel del clan</span><span class="mono nota">8.420 / 12.000 Exp</span></div><div class="bar" style="margin-top:7px"><i style="width:70%;background:linear-gradient(90deg,#c2410c,#ff8a3d)"></i></div></div>
+    <div class="card" style="padding:10px 14px">
+      <p class="micro" style="margin:0 0 6px">Guerra de la semana · termina en 2d</p>
+      <div class="guerra"><span class="lado" style="color:#ff8a3d">[FA] 18.240</span><span class="nota">vs</span><span class="lado" style="text-align:right;color:#2DD4BF">15.900 [PIX]</span></div>
+      <div class="barra-guerra"><i style="width:53%;background:#ff8a3d"></i><i style="width:47%;background:#2DD4BF"></i></div>
+    </div>
+    <div class="card" style="padding:10px 14px;border-color:rgba(255,182,39,.5);box-shadow:0 0 22px rgba(255,182,39,.14)">
+      <div class="row" style="justify-content:space-between"><span class="h3" style="font-size:14px">Misión semanal · 3.000 Exp</span><span class="row" style="gap:4px"><svg width="14" height="14"><use href="#chispa"/></svg><span class="mono" style="color:var(--logro)">2.000</span></span></div>
+      <div class="bar" style="margin:8px 0 10px"><i style="width:100%;background:linear-gradient(90deg,#b87800,#FFB627)"></i></div>
+      <button class="b3d oro sm">Reclamar recompensa</button>
+    </div>
+    <div class="card" style="padding:4px 14px">
+      <div class="conv" style="padding:7px 0"><div class="av-sm" style="--marco:#FFB627;width:30px;height:30px"><span style="background:radial-gradient(circle at 50% 38%,#ff3b5c 0 12%,#3a1a3f 13%,#0d0710)"></span></div><span style="flex:1;font-family:Audiowide;color:#8f7bff;font-size:13px">Neutron</span><span class="rol" style="background:rgba(255,182,39,.18);color:var(--logro)">FUNDADOR</span><span class="mono nota" style="width:44px;text-align:right">6.1k</span></div>
+      <div class="conv" style="padding:7px 0"><div class="av-sm" style="--marco:#FFD36B;width:30px;height:30px"><span style="background:linear-gradient(135deg,#fff3c4,#b87800)"></span></div><span style="flex:1;font-family:'Playfair Display';font-size:13px">Valen</span><span class="rol" style="background:rgba(124,92,255,.2);color:#b9a8ff">GUÍA</span><span class="mono nota" style="width:44px;text-align:right">3.4k</span></div>
+    </div>
+  </div>
+  <nav class="tabs">
+    <span class="tab"><span class="ic"><svg><use href="#i-hoy"/></svg></span>Hoy</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-mundos"/></svg></span>Mundos</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-competir"/></svg></span>Competir</span>
+    <span class="tab on"><span class="ic"><svg><use href="#i-social"/></svg></span>Social</span>
+    <span class="tab"><span class="ic"><svg><use href="#i-perfil"/></svg></span>Perfil</span>
+  </nav>
+</div>
+<figcaption>10 · Clan<small>La ciudad del clan crece con su nivel (Asentamiento → Prodigio) y cada miembro tiene su casa. Guerra semanal, misión con botón dorado para reclamar, miembros con rol y aporte, y acceso al Mundo de clanes.</small></figcaption>
+</figure>
+
+<!-- 11. MUNDO DE CLANES -->
+<figure>
+<div class="phone" style="background:#070a14">
+  <div class="mapa"><div class="rio"></div></div>
+  <div class="parcelas"><div class="parcela " style="--c:#FFB627"><span class="banderin"></span><div class="sky" style="--c:#FFB627"><b style="left:4px;width:7px;height:40px"></b><b style="left:14px;width:10px;height:58px"></b><b style="left:27px;width:8px;height:34px"></b><b style="left:38px;width:11px;height:60px"></b><b style="left:52px;width:8px;height:44px"></b><b style="left:63px;width:10px;height:52px"></b><b style="left:76px;width:7px;height:30px"></b></div><div class="pie"><span>[LOG]</span><span class="mono" style="color:#FFB627">Nv 23</span></div></div><div class="parcela mio" style="--c:#FF8A3D"><span class="banderin"></span><div class="sky" style="--c:#FF8A3D"><b style="left:4px;width:8px;height:32px"></b><b style="left:15px;width:12px;height:48px"></b><b style="left:30px;width:9px;height:30px"></b><b style="left:42px;width:12px;height:54px"></b><b style="left:57px;width:9px;height:36px"></b><b style="left:69px;width:10px;height:28px"></b></div><div class="pie"><span>[FA]</span><span class="mono" style="color:#FF8A3D">Nv 12</span></div></div><div class="parcela sel" style="--c:#2DD4BF"><span class="banderin"></span><div class="sky" style="--c:#2DD4BF"><b style="left:4px;width:9px;height:26px"></b><b style="left:16px;width:12px;height:38px"></b><b style="left:31px;width:10px;height:24px"></b><b style="left:44px;width:12px;height:32px"></b><b style="left:59px;width:8px;height:20px"></b></div><div class="pie"><span>[PIX]</span><span class="mono" style="color:#2DD4BF">Nv 7</span></div></div><div class="parcela " style="--c:#9B85FF"><span class="banderin"></span><div class="sky" style="--c:#9B85FF"><b style="left:4px;width:10px;height:20px"></b><b style="left:17px;width:12px;height:28px"></b><b style="left:32px;width:8px;height:16px"></b><b style="left:43px;width:10px;height:22px"></b></div><div class="pie"><span>[ΣΣ]</span><span class="mono" style="color:#9B85FF">Nv 4</span></div></div><div class="parcela " style="--c:#E36BF2"><span class="banderin"></span><div class="sky" style="--c:#E36BF2"><b style="left:4px;width:9px;height:26px"></b><b style="left:16px;width:12px;height:38px"></b><b style="left:31px;width:10px;height:24px"></b><b style="left:44px;width:12px;height:32px"></b><b style="left:59px;width:8px;height:20px"></b></div><div class="pie"><span>[NEO]</span><span class="mono" style="color:#E36BF2">Nv 9</span></div></div><div class="parcela " style="--c:#3FC1D6"><span class="banderin"></span><div class="sky" style="--c:#3FC1D6"><b style="left:4px;width:10px;height:14px"></b><b style="left:17px;width:8px;height:18px"></b><b style="left:28px;width:12px;height:10px"></b></div><div class="pie"><span>[GEO]</span><span class="mono" style="color:#3FC1D6">Nv 2</span></div></div><div class="parcela " style="--c:#FFC247"><span class="banderin"></span><div class="sky" style="--c:#FFC247"><b style="left:4px;width:10px;height:20px"></b><b style="left:17px;width:12px;height:28px"></b><b style="left:32px;width:8px;height:16px"></b><b style="left:43px;width:10px;height:22px"></b></div><div class="pie"><span>[OHM]</span><span class="mono" style="color:#FFC247">Nv 5</span></div></div><div class="parcela " style="--c:#E0607E"><span class="banderin"></span><div class="sky" style="--c:#E0607E"><b style="left:4px;width:10px;height:14px"></b><b style="left:17px;width:8px;height:18px"></b><b style="left:28px;width:12px;height:10px"></b></div><div class="pie"><span>[BIO]</span><span class="mono" style="color:#E0607E">Nv 1</span></div></div><div class="parcela " style="--c:#4FE0F5"><span class="banderin"></span><div class="sky" style="--c:#4FE0F5"><b style="left:4px;width:8px;height:32px"></b><b style="left:15px;width:12px;height:48px"></b><b style="left:30px;width:9px;height:30px"></b><b style="left:42px;width:12px;height:54px"></b><b style="left:57px;width:9px;height:36px"></b><b style="left:69px;width:10px;height:28px"></b></div><div class="pie"><span>[COD]</span><span class="mono" style="color:#4FE0F5">Nv 14</span></div></div></div>
+  <div class="status" style="position:relative"><span>9:41</span><span>5G ▮▮▮ 82%</span></div>
+  <div class="hud" style="position:relative">
+    <span class="iconbtn">←</span>
+    <div><p class="h3" style="font-size:16px">Mundo de clanes</p><p class="nota" style="font-size:11px">128 clanes · pellizca para acercar</p></div>
+  </div>
+  <div class="row" style="position:relative;gap:6px;padding:0 16px"><span class="chipm" style="background:var(--s3)">Todos</span><span class="chipm">Con lugar</span><span class="chipm">Top guerra</span><span class="chipm">Mi clan</span></div>
+  <div class="zoom"><span>+</span><span>−</span><span style="font-size:12px">◎</span></div>
+  <div class="hoja">
+    <div class="asa"></div>
+    <div class="row" style="gap:10px">
+      <div class="flag" style="background:linear-gradient(#2DD4BF,#0d6f63);height:30px;width:20px"></div>
+      <div style="flex:1"><p class="h3">Pixelados <span style="color:var(--tx2)">[PIX]</span></p><p class="nota">Ciudad · Nivel 7 · 17/20 · 🏆 3 guerras</p></div>
+    </div>
+    <p class="nota" style="margin:8px 0 10px">"Clan de Codia y Enigmia. Buscamos gente activa."</p>
+    <div class="row" style="gap:8px"><button class="b3d sec sm" style="margin:0">Ver ciudad</button><button class="b3d sm" style="margin:0">Pedir unirme</button></div>
+  </div>
+</div>
+<figcaption>11 · Mundo de clanes<small>Mapa nocturno con una parcela por clan; el tamaño de la ciudad muestra su nivel y el banderín su color. Tu clan brilla. Arrastrar y pellizcar para moverse; tocar una parcela abre una hoja con el resumen y "Ver ciudad".</small></figcaption>
+</figure>
+</div>
+
+<section class="paleta">
+  <h2>Color por mundo: base (existe) + neón (propuesta)</h2>
+  <p>El neón es el acento dentro de cada mundo sobre fondo oscuro. Validar contraste AA antes de fijar los valores.</p>
+  <div class="sw" id="sw"></div>
+</section>
+
+<script>
+  const mundos = [
+    ["Numeria","#6C4CF1","#9B85FF"],["Enigmia","#0E9F6E","#2FD89B"],["Geografía","#1E7A8C","#3FC1D6"],
+    ["Quimia","#C026D3","#E36BF2"],["Anatomía","#8B2942","#E0607E"],["Melodía","#B8860B","#F2C14E"],
+    ["Trigonometría","#84CC16","#A8E84A"],["Historia","#A0522D","#E08A5C"],["Calculia","#4338CA","#8A83FF"],
+    ["Circuitia","#F59E0B","#FFC247"],["Estadística","#0D9488","#2DD4BF"],["Naipia","#B91C1C","#F25C5C"],["Codia","#06B6D4","#4FE0F5"]
+  ];
+  const sw = document.getElementById("sw");
+  for (const [n, base, neon] of mundos) {
+    const d = document.createElement("div");
+    d.innerHTML = `<div class="c"><i style="background:${base}"></i><i style="background:${neon}"></i></div><b>${n}</b><code>${base} · ${neon}</code>`;
+    sw.appendChild(d);
+  }
+</script>
+</body>
+</html>
