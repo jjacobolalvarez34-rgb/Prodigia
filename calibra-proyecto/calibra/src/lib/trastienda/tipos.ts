@@ -1,11 +1,13 @@
 // Tipos de las respuestas RPC de la Trastienda (0121_trastienda_economia.sql).
+// Desde 0241_trastienda_monedas_y_seguridad.sql estos juegos cobran y pagan en
+// monedas_trastienda (moneda propia, no comprable — ver esa migración), no en Chispas.
 
 export interface ResultadoRuleta {
   segmento: string;
   premio_tipo: string | null;
   premio_detalle: Record<string, unknown> | null;
-  chispas_ganadas: number;
-  puntos_total: number;
+  monedas_ganadas: number;
+  monedas_trastienda: number;
   giros_hoy: number;
   pity_activo: boolean;
   costo_aplicado: number;
@@ -19,11 +21,11 @@ export interface ResultadoCasino {
   elegido_nombre: string;
   ganaste: boolean;
   multiplier: number;
-  chispas_ganadas: number;
+  monedas_ganadas: number;
   premio_tipo: string | null;
   premio_detalle: Record<string, unknown> | null;
   apuestas_hoy: number;
-  puntos_total: number;
+  monedas_trastienda: number;
 }
 
 // Ruleta Elemental, apuesta a varias zonas en el mismo giro (0137
@@ -34,7 +36,7 @@ export interface ApuestaCasinoMulti {
   monto: number;
   ganaste: boolean;
   multiplier: number;
-  chispas_ganadas: number;
+  monedas_ganadas: number;
 }
 
 export interface ResultadoCasinoMulti {
@@ -44,22 +46,22 @@ export interface ResultadoCasinoMulti {
   premio_tipo: string | null;
   premio_detalle: Record<string, unknown> | null;
   apuestas_hoy: number;
-  puntos_total: number;
+  monedas_trastienda: number;
 }
 
 export interface ResultadoVolado {
   cara: boolean;
   ganaste: boolean;
   entrada: number;
-  chispas_ganadas: number;
-  puntos_total: number;
+  monedas_ganadas: number;
+  monedas_trastienda: number;
 }
 
 export interface InicioPizarra {
   pizarra_id: string;
   entrada: number;
   partidas_hoy: number;
-  puntos_total: number;
+  monedas_trastienda: number;
 }
 
 export interface AdivinanzaPizarra {
@@ -67,8 +69,8 @@ export interface AdivinanzaPizarra {
   terminado: boolean;
   intentos: number;
   pista: string | null;
-  chispas_ganadas: number;
-  puntos_total: number;
+  monedas_ganadas: number;
+  monedas_trastienda: number;
 }
 
 export interface ItemHistorial {
@@ -116,14 +118,14 @@ export interface LimitesApuestas {
 export interface PreviewApuesta {
   multiplier: number;
   ganancia_potencial: number;
-  puntos_total: number;
+  monedas_trastienda: number;
 }
 
 export interface ResultadoApostar {
   apuesta_id: string;
   multiplier: number;
   ganancia_potencial: number;
-  puntos_total: number;
+  monedas_trastienda: number;
   apuestas_hoy: number;
   monto_hoy: number;
 }
@@ -148,7 +150,7 @@ export interface ResultadoPrediccion {
   semana: string;
   multiplier: number;
   ganancia_potencial: number;
-  puntos_total: number;
+  monedas_trastienda: number;
 }
 
 // Minijuegos corte 2 (0124). Los RPC devuelven `id` (no *_id) y el
@@ -157,11 +159,11 @@ export interface InicioLaCalcu {
   id: string;
   numeros: number[];
   target: number;
-  puntos_total: number;
+  monedas_trastienda: number;
 }
 
 export interface ResultadoLaCalcu {
   resolvio: boolean;
   payout: number;
-  puntos_total: number;
+  monedas_trastienda: number;
 }

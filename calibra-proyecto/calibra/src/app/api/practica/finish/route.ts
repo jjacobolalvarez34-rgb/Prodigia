@@ -255,14 +255,14 @@ export async function POST(request: Request) {
   await verificarTitulos(supabase, user.id);
 
   const sprintPrecision = precision(sprintTotal, sprintCorrectos);
+  // SEG-02 (migración 0241): resolver_apuesta_si_activa ya NO recibe la
+  // precisión del cliente — la calcula ella misma con los attempts reales
+  // desde que se hizo la apuesta, así que se llama siempre, sin condicionar
+  // a si este sprint puntual tuvo intentos.
   let apuesta = null;
-  if (sprintPrecision !== null) {
-    const { data: apuestaRows } = await supabase.rpc("resolver_apuesta_si_activa", {
-      p_precision: sprintPrecision,
-    });
-    const filaApuesta = (apuestaRows as Array<Record<string, unknown>> | null)?.[0];
-    if (filaApuesta?.resuelta) apuesta = filaApuesta;
-  }
+  const { data: apuestaRows } = await supabase.rpc("resolver_apuesta_si_activa");
+  const filaApuesta = (apuestaRows as Array<Record<string, unknown>> | null)?.[0];
+  if (filaApuesta?.resuelta) apuesta = filaApuesta;
 
   return NextResponse.json({
     sprint: {

@@ -150,14 +150,13 @@ const { data: registroRows, error: registroError } = await supabase.rpc("registr
   await verificarTitulos(supabase, user.id);
 
   const partidaPrecision = precision(total, correctos);
+  // SEG-02 (migración 0241): resolver_apuesta_si_activa ya NO recibe la
+  // precisión del cliente — la calcula ella misma con los attempts/
+  // logic_attempts reales desde que se hizo la apuesta.
   let apuesta = null;
-  if (partidaPrecision !== null) {
-    const { data: apuestaRows } = await supabase.rpc("resolver_apuesta_si_activa", {
-      p_precision: partidaPrecision,
-    });
-    const filaApuesta = (apuestaRows as Array<Record<string, unknown>> | null)?.[0];
-    if (filaApuesta?.resuelta) apuesta = filaApuesta;
-  }
+  const { data: apuestaRows } = await supabase.rpc("resolver_apuesta_si_activa");
+  const filaApuesta = (apuestaRows as Array<Record<string, unknown>> | null)?.[0];
+  if (filaApuesta?.resuelta) apuesta = filaApuesta;
 
   return NextResponse.json({
     partida: {

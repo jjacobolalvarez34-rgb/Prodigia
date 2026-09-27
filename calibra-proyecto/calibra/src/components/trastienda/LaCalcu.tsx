@@ -191,7 +191,7 @@ export default function LaCalcu({ puntos, onPuntos, onMovimiento }: Props) {
       setSecuencia([]);
       setResultado(null);
       setEstado("jugando");
-      onPuntos((data as InicioLaCalcu).puntos_total);
+      onPuntos((data as InicioLaCalcu).monedas_trastienda);
     } catch {
       setError(terrores("apuestas"));
     } finally {
@@ -217,7 +217,7 @@ export default function LaCalcu({ puntos, onPuntos, onMovimiento }: Props) {
       const r = data as ResultadoLaCalcu;
       setResultado(r);
       setEstado("fin");
-      onPuntos(r.puntos_total);
+      onPuntos(r.monedas_trastienda);
       onMovimiento();
     } catch {
       setError(terrores("laCalcu"));
@@ -243,7 +243,7 @@ export default function LaCalcu({ puntos, onPuntos, onMovimiento }: Props) {
           <Boton onClick={iniciar} cargando={cargando} disabled={puntos < 50} className="w-full">
             {cargando ? t("iniciando") : t("jugar", { costo: "50" })}
           </Boton>
-          {puntos < 50 && <p className="text-sm font-medium text-tt-danger">{t("sinChispas")}</p>}
+          {puntos < 50 && <p className="text-sm font-medium text-tt-danger">{t("sinMonedas")}</p>}
         </>
       )}
 

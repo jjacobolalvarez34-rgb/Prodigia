@@ -42,7 +42,7 @@ export default function Volado({ puntos, onPuntos, onMovimiento }: Props) {
         return;
       }
       setResultado(data as ResultadoVolado);
-      onPuntos((data as ResultadoVolado).puntos_total);
+      onPuntos((data as ResultadoVolado).monedas_trastienda);
       onMovimiento();
     } catch {
       setError(terrores("tirar"));
@@ -128,12 +128,12 @@ export default function Volado({ puntos, onPuntos, onMovimiento }: Props) {
                     {t("seguir", { n: ronda + 1 })}
                   </Boton>
                   <Boton onClick={resetear} variante="fantasma" className="flex-1 px-3 py-2 text-sm">
-                    {t("parar", { n: resultado.puntos_total })}
+                    {t("parar", { n: resultado.monedas_trastienda })}
                   </Boton>
                 </div>
               ) : (
                 <Boton onClick={resetear} className="w-full">
-                  {t("parar", { n: resultado.puntos_total })}
+                  {t("parar", { n: resultado.monedas_trastienda })}
                 </Boton>
               )}
             </>

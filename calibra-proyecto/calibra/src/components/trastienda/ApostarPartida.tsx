@@ -115,7 +115,7 @@ export default function ApostarPartida({ puntos, onPuntos, onMovimiento }: Props
       }
       const r = data as ResultadoApostar;
       setConfirmada(true);
-      onPuntos(r.puntos_total);
+      onPuntos(r.monedas_trastienda);
       onMovimiento();
       void cargar();
     } catch {
@@ -310,7 +310,7 @@ export default function ApostarPartida({ puntos, onPuntos, onMovimiento }: Props
               >
                 {apostando ? t("apostando") : t("confirmar")}
               </Boton>
-              {puntos < (monto ?? 0) && <p className="mt-2 text-sm font-medium text-tt-danger">{t("sinChispas")}</p>}
+              {puntos < (monto ?? 0) && <p className="mt-2 text-sm font-medium text-tt-danger">{t("sinMonedas")}</p>}
             </>
           ) : (
             <p className="mt-3 text-sm font-semibold text-tt-success">

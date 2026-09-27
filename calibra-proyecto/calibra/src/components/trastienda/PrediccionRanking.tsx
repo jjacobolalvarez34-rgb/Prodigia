@@ -90,7 +90,7 @@ export default function PrediccionRanking({ puntos, onPuntos, onMovimiento }: Pr
       }
       const r = data as ResultadoPrediccion;
       setConfirmada(true);
-      onPuntos(r.puntos_total);
+      onPuntos(r.monedas_trastienda);
       onMovimiento();
       void cargar();
     } catch {

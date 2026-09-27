@@ -48,7 +48,7 @@ export default function Pizarra({ puntos, onPuntos, onMovimiento }: Props) {
       setGanado(false);
       setPayout(0);
       setNumero("");
-      onPuntos(inicio.puntos_total);
+      onPuntos(inicio.monedas_trastienda);
       onMovimiento();
     } catch {
       setError(terrores("pizarra"));
@@ -79,8 +79,8 @@ export default function Pizarra({ puntos, onPuntos, onMovimiento }: Props) {
       setNumero("");
       setTerminado(adiv.terminado);
       setGanado(adiv.ganaste);
-      setPayout(adiv.chispas_ganadas);
-      onPuntos(adiv.puntos_total);
+      setPayout(adiv.monedas_ganadas);
+      onPuntos(adiv.monedas_trastienda);
       if (adiv.terminado) onMovimiento();
     } catch {
       setError(terrores("pizarra"));

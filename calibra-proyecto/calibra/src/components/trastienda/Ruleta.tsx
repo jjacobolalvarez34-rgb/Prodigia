@@ -163,7 +163,7 @@ export default function Ruleta({ puntos, onPuntos, onMovimiento }: Props) {
         setResultado(r);
         setGirando(false);
         setApuestas(new Map());
-        onPuntos(r.puntos_total);
+        onPuntos(r.monedas_trastienda);
         onMovimiento();
       }, DURACION_GIRO_MS);
     } catch {
@@ -411,12 +411,12 @@ export default function Ruleta({ puntos, onPuntos, onMovimiento }: Props) {
                   {etiquetaZona(a.zona)} — {a.ganaste ? t("ganasteEsta") : t("perdisteEsta")}
                 </span>
                 <span className={`font-mono font-bold ${a.ganaste ? "text-tt-accent" : "text-tt-text-muted"}`}>
-                  {a.ganaste ? t("ganoChispas", { n: a.chispas_ganadas }) : `-${a.monto}`}
+                  {a.ganaste ? t("ganoMonedas", { n: a.monedas_ganadas }) : `-${a.monto}`}
                 </span>
               </li>
             ))}
           </ul>
-          {resultado.premio_tipo && resultado.premio_tipo !== "chispas" && (
+          {resultado.premio_tipo && resultado.premio_tipo !== "monedas" && (
             <p className="mt-2 text-sm font-semibold text-tt-accent">
               {t("premioItem", { item: premioNombre(resultado) })}
             </p>

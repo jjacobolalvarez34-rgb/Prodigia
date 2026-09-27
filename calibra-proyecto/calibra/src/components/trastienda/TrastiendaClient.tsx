@@ -46,7 +46,7 @@ export default function TrastiendaClient({ puntosIniciales, apuestaActivaInicial
         setErrorApuesta(data.error ?? t("noSePudoApostar"));
         return;
       }
-      setPuntos(data.puntos_total);
+      setPuntos(data.monedas_trastienda);
       setApuestaActiva(true);
     } catch {
       setErrorApuesta(t("noSePudoApostarConexion"));
@@ -89,7 +89,7 @@ export default function TrastiendaClient({ puntosIniciales, apuestaActivaInicial
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-tt-accent/50 bg-tt-surface-2 px-4 py-1.5">
               <span className="text-sm leading-none text-tt-accent" aria-hidden>
-                ⚡
+                🪙
               </span>
               <span
                 className="font-mono text-xl font-bold tabular-nums leading-none text-tt-accent"
