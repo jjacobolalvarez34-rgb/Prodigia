@@ -34,7 +34,22 @@ export interface MensajePush {
   // dio (PushNotifications de Capacitor lo pide), priority high hace
   // que el sistema muestre el heads-up.
   prioridad?: "normal" | "high";
+  // Canal de Android (la app nativa crea "mensajes", "duelos", "racha" y
+  // "novedades"; cada uno con su sonido/importancia y se puede apagar desde los
+  // ajustes del sistema). Un canal que el dispositivo no tiene cae al de defecto.
+  canal?: "mensajes" | "duelos" | "racha" | "novedades";
+  // Misma etiqueta = la notificación nueva reemplaza a la anterior en vez de
+  // apilarse (ej. varios mensajes de la misma conversación).
+  etiqueta?: string;
 }
+
+// Color de acento de cada canal (tokens de docs/app-nativa/02-SISTEMA-VISUAL.md).
+const COLOR_CANAL: Record<NonNullable<MensajePush["canal"]>, string> = {
+  mensajes: "#7C5CFF",
+  duelos: "#FF5D5D",
+  racha: "#FF8A3D",
+  novedades: "#FFB627",
+};
 
 // Firma RS256 del JWT de la service account vía WebCrypto (estándar en
 // Deno, sin dependencias).
@@ -119,6 +134,14 @@ export async function enviarPush(
         data: msg.data ?? {},
         android: {
           priority: msg.prioridad ?? "high",
+          ...(msg.canal || msg.etiqueta
+            ? {
+                notification: {
+                  ...(msg.canal ? { channel_id: msg.canal, color: COLOR_CANAL[msg.canal] } : {}),
+                  ...(msg.etiqueta ? { tag: msg.etiqueta } : {}),
+                },
+              }
+            : {}),
         },
       },
     }),

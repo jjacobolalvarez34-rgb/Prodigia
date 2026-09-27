@@ -14,12 +14,14 @@
     },
     "android": {
       "package": "com.prodigia.app",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#090C14",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
+      "permissions": ["android.permission.POST_NOTIFICATIONS", "android.permission.VIBRATE"],
       "predictiveBackGestureEnabled": false
     },
     "web": {
@@ -34,6 +36,45 @@
           "backgroundColor": "#090C14",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 140
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#7C5CFF",
+          "defaultChannel": "novedades"
+        }
+      ],
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "Racha",
+              "label": "Prodigia · Racha",
+              "description": "Tu racha y tus Chispas. Tócalo para jugar.",
+              "minWidth": "110dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "previewImage": "./assets/widgets/racha.png",
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "Progreso",
+              "label": "Prodigia · Progreso",
+              "description": "Racha, Chispas, nivel, meta del día y avisos.",
+              "minWidth": "250dp",
+              "minHeight": "180dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 3,
+              "previewImage": "./assets/widgets/progreso.png",
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
+            }
+          ]
         }
       ]
     ],

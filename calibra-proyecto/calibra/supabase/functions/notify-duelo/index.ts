@@ -9,6 +9,7 @@
 // (resultados, series, etc.).
 
 import { createSupabaseAdmin, enviarPushATokens } from "../_shared/fcm.ts";
+import { tokensDe, webhookAutorizado } from "../_shared/avisos.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -28,6 +29,10 @@ interface WebhookDuel {
 export default async function handler(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
+  }
+
+  if (!webhookAutorizado(req)) {
+    return new Response(JSON.stringify({ ok: false, error: "no autorizado" }), { status: 401, headers: corsHeaders });
   }
 
   const event = req.headers.get("x-supabase-event");
@@ -68,12 +73,12 @@ export default async function handler(req: Request): Promise<Response> {
 
   const supabase = createSupabaseAdmin();
 
-  const [{ data: rival }, { data: tokens }] = await Promise.all([
+  const [{ data: rival }, tokens] = await Promise.all([
     supabase.from("profiles").select("display_name").eq("id", duelo.retador_id).maybeSingle(),
-    supabase.from("device_push_tokens").select("token").eq("user_id", duelo.retado_id),
+    tokensDe(supabase, [duelo.retado_id], "duelos"),
   ]);
 
-  if (!tokens || tokens.length === 0) {
+  if (tokens.length === 0) {
     return new Response(JSON.stringify({ ok: true, ignorado: "sin dispositivos" }), {
       headers: corsHeaders,
     });
@@ -81,10 +86,12 @@ export default async function handler(req: Request): Promise<Response> {
 
   const nombreRival = (rival as { display_name?: string } | undefined)?.display_name ?? "Un rival";
 
-  const enviados = await enviarPushATokens(supabase, tokens as { token: string }[], {
+  const enviados = await enviarPushATokens(supabase, tokens, {
     titulo: "⚔️ Te retaron a un duelo",
-    cuerpo: `${nombreRival} te desafió. ¿Aceptás?`,
+    cuerpo: `${nombreRival} te desafió. ¿Aceptas?`,
     prioridad: "high",
+    canal: "duelos",
+    etiqueta: `duelo-${duelo.id}`,
     data: {
       tipo: "duelo",
       duelId: duelo.id,

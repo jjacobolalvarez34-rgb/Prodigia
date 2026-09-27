@@ -10,11 +10,12 @@
 // exige un auth.uid() (que una Edge Function no tiene).
 
 import { createSupabaseAdmin, enviarPushATokens } from "../_shared/fcm.ts";
+import { reservarEnvio, tokensDe, webhookAutorizado } from "../_shared/avisos.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-event",
+    "authorization, x-client-info, apikey, content-type, x-supabase-event, x-webhook-secret",
 };
 
 interface WebhookMensaje {
@@ -26,6 +27,10 @@ interface WebhookMensaje {
 export default async function handler(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
+  }
+
+  if (!webhookAutorizado(req)) {
+    return new Response(JSON.stringify({ ok: false, error: "no autorizado" }), { status: 401, headers: corsHeaders });
   }
 
   const event = req.headers.get("x-supabase-event");
@@ -73,12 +78,16 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
 
-  const { data: tokens } = await supabase
-    .from("device_push_tokens")
-    .select("token")
-    .in("user_id", destinatarios);
+  // Categoría "mensajes" de cada dispositivo (0243) y agrupado: como máximo 1
+  // aviso cada 30 min por persona y clan (04-BUCLE-DE-ENGANCHE.md §5).
+  const candidatos = await tokensDe(supabase, destinatarios, "mensajes");
+  const habilitados = new Set<string>();
+  for (const userId of new Set(candidatos.map((t) => t.user_id))) {
+    if (await reservarEnvio(supabase, userId, `clan:${mensaje.clan_id}`, { minutos: 30 })) habilitados.add(userId);
+  }
+  const tokens = candidatos.filter((t) => habilitados.has(t.user_id));
 
-  if (!tokens || tokens.length === 0) {
+  if (tokens.length === 0) {
     return new Response(JSON.stringify({ ok: true, ignorado: "sin dispositivos" }), {
       headers: corsHeaders,
     });
@@ -87,10 +96,12 @@ export default async function handler(req: Request): Promise<Response> {
   const cuerpo = (mensaje.texto ?? "").trim();
   const preview = cuerpo.length > 80 ? `${cuerpo.slice(0, 80)}…` : cuerpo;
 
-  const enviados = await enviarPushATokens(supabase, tokens as { token: string }[], {
+  const enviados = await enviarPushATokens(supabase, tokens, {
     titulo: `${nombreAutor} en el clan`,
     cuerpo: preview || "Hay un mensaje nuevo en el chat del clan.",
     prioridad: "normal",
+    canal: "mensajes",
+    etiqueta: `clan-${mensaje.clan_id}`,
     data: {
       tipo: "clan_mensaje",
       clanId: mensaje.clan_id,

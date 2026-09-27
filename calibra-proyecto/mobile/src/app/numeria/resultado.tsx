@@ -1,9 +1,14 @@
 import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { activarAvisos, leerPreferencias, marcarPermisoPedido, permisoConcedido } from "~/lib/notificaciones";
 import type { ResultadoPartida } from "~/lib/numeria";
+import { cargarResumen } from "~/lib/resumen";
+import { useSesion } from "~/lib/sesion";
+import { actualizarWidgets } from "~/widgets/registro";
 import Boton3D from "~/ui/Boton3D";
 import { color, mono, NUMERIA, radio } from "~/tema";
 
@@ -25,9 +30,24 @@ export default function Resultado() {
   const precision = d.total > 0 ? Math.round((d.correctos / d.total) * 100) : 0;
   const subioMundo = d.nivelMundo != null && d.nivelMundoAnterior != null && d.nivelMundo > d.nivelMundoAnterior;
 
+  const { sesion } = useSesion();
+  const [ofrecerAvisos, setOfrecerAvisos] = useState(false);
+
   useEffect(() => {
     if (d.nivelCuentaSubio || subioMundo) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }, [d.nivelCuentaSubio, subioMundo]);
+
+  // Los widgets muestran la racha y las Chispas nuevas apenas termina la partida.
+  useEffect(() => {
+    cargarResumen().then(actualizarWidgets);
+  }, []);
+
+  // El permiso de avisos se pide DESPUÉS del primer sprint, explicando para qué
+  // (04-BUCLE-DE-ENGANCHE.md §5), y una sola vez.
+  useEffect(() => {
+    if (sesion?.user.is_anonymous) return;
+    Promise.all([leerPreferencias(), permisoConcedido()]).then(([prefs, concedido]) => setOfrecerAvisos(!prefs.permisoPedido && !concedido));
+  }, [sesion?.user.is_anonymous]);
 
   return (
     <SafeAreaView style={styles.pantalla}>
@@ -74,6 +94,34 @@ export default function Resultado() {
           {d.metaAlcanzada && <Text style={[styles.metaTexto, { color: color.correcto }]}>¡Meta cumplida!</Text>}
         </View>
 
+        {ofrecerAvisos && (
+          <LinearGradient colors={["#2A1F5C", "#12172A"]} style={styles.avisos}>
+            <Text style={styles.avisosTitulo}>🔔 ¿Te avisamos?</Text>
+            <Text style={styles.avisosTexto}>
+              Cuando un amigo te escribe, cuando te retan a un duelo o cuando tu racha está por cortarse. Nunca de noche, y eliges qué recibir.
+            </Text>
+            <View style={styles.avisosBotones}>
+              <Boton3D
+                titulo="Ahora no"
+                variante="contorno"
+                estilo={{ flex: 1 }}
+                onPress={() => {
+                  marcarPermisoPedido();
+                  setOfrecerAvisos(false);
+                }}
+              />
+              <Boton3D
+                titulo="Activar"
+                estilo={{ flex: 1 }}
+                onPress={async () => {
+                  await activarAvisos();
+                  setOfrecerAvisos(false);
+                }}
+              />
+            </View>
+          </LinearGradient>
+        )}
+
         <Text style={styles.total}>Tienes {d.chispasTotal.toLocaleString("es")} Chispas en total.</Text>
 
         <Boton3D titulo="Jugar otra" acento={NUMERIA.base} onPress={() => router.back()} />
@@ -102,4 +150,8 @@ const styles = StyleSheet.create({
   barraFondo: { height: 10, borderRadius: 5, backgroundColor: color.surface3, overflow: "hidden" },
   barra: { height: "100%", borderRadius: 5 },
   total: { color: color.texto2, textAlign: "center", fontSize: 14 },
+  avisos: { borderRadius: radio.tarjeta, padding: 18, gap: 10, borderWidth: 1, borderColor: "#3B2C8F" },
+  avisosTitulo: { color: color.texto, fontSize: 18, fontWeight: "800" },
+  avisosTexto: { color: color.texto2, fontSize: 14, lineHeight: 20 },
+  avisosBotones: { flexDirection: "row", gap: 10 },
 });

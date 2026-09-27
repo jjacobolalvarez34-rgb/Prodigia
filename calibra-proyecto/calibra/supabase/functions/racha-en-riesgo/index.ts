@@ -11,6 +11,7 @@
 // termine el día.
 
 import { createSupabaseAdmin, enviarPushATokens } from "../_shared/fcm.ts";
+import { MAX_RETENCION_POR_DIA, reservarEnvio, tokensDe } from "../_shared/avisos.ts";
 
 interface RachaEnRiesgo {
   user_id: string;
@@ -44,28 +45,29 @@ export default async function handler(_req: Request): Promise<Response> {
   }
 
   const ids = filas.map((f) => f.user_id);
-  const { data: tokens } = await supabase
-    .from("device_push_tokens")
-    .select("user_id, token")
-    .in("user_id", ids);
+  // Solo dispositivos con la categoría "racha" encendida (0243).
+  const tokens = await tokensDe(supabase, ids, "racha");
 
   let enviados = 0;
   let totalDestinatarios = 0;
 
   for (const fila of filas) {
-    const deUsuario = (tokens as { user_id: string; token: string }[] | null ?? []).filter(
-      (t) => t.user_id === fila.user_id
-    );
+    const deUsuario = tokens.filter((t) => t.user_id === fila.user_id);
     if (deUsuario.length === 0) continue;
+    // Cuenta para el tope de 2 avisos de retención por día (04-BUCLE-DE-ENGANCHE.md §5).
+    if (!(await reservarEnvio(supabase, fila.user_id, "retencion", { maxPorDia: MAX_RETENCION_POR_DIA }))) continue;
     totalDestinatarios += 1;
 
     const n = await enviarPushATokens(supabase, deUsuario, {
-      titulo: "🔥 Tu racha está en riesgo",
+      // Texto concreto y útil, sin culpa (04-BUCLE-DE-ENGANCHE.md §5).
+      titulo: "🔥 Tu racha sigue viva",
       cuerpo:
         fila.racha_actual > 0
-          ? `Llevás ${fila.racha_actual} día${fila.racha_actual === 1 ? "" : "s"} seguidos. ¡Jugá hoy para no perderla!`
-          : "Todavía no cumpliste tu meta de hoy. ¡No dejes que tu racha se corte!",
+          ? `Llevas ${fila.racha_actual} día${fila.racha_actual === 1 ? "" : "s"} seguidos. Un sprint de 60 segundos hoy y suma otro.`
+          : "Un sprint de 60 segundos hoy y arrancas tu racha.",
       prioridad: "high",
+      canal: "racha",
+      etiqueta: "racha",
       data: {
         tipo: "racha_riesgo",
         url: "/",

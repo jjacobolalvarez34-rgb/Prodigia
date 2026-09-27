@@ -1,10 +1,14 @@
-import { Redirect, useRouter } from "expo-router";
+import { Redirect, useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { usePerfil } from "~/lib/perfil";
+import { borrarResumen, cargarResumen, type Resumen } from "~/lib/resumen";
 import { useSesion } from "~/lib/sesion";
 import { supabase } from "~/lib/supabase";
 import Boton3D from "~/ui/Boton3D";
+import Destacados, { type NovedadDestacada } from "~/ui/Destacados";
+import { actualizarWidgets } from "~/widgets/registro";
 import { color, mono, MUNDOS, radio, type Mundo } from "~/tema";
 
 function Contador({ icono, valor, tono }: { icono: string; valor: number | string; tono: string }) {
@@ -46,12 +50,30 @@ export default function Hoy() {
   const { sesion } = useSesion();
   const { perfil, error } = usePerfil(sesion?.user.id);
   const esInvitado = !!sesion?.user.is_anonymous;
+  const [resumen, setResumen] = useState<Resumen | null>(null);
+  const [novedades, setNovedades] = useState<NovedadDestacada[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      cargarResumen().then((r) => {
+        setResumen(r);
+        actualizarWidgets(r);
+      });
+      supabase.rpc("anuncios_pendientes").then(({ data }) => setNovedades(((data ?? []) as NovedadDestacada[]).slice().reverse()));
+    }, [])
+  );
+
+  async function salir() {
+    await borrarResumen();
+    await actualizarWidgets(null);
+    await supabase.auth.signOut();
+  }
 
   if (error) {
     return (
       <SafeAreaView style={[styles.pantalla, styles.centro]}>
         <Text style={styles.error}>{error}</Text>
-        <Boton3D titulo="Salir" variante="contorno" onPress={() => supabase.auth.signOut()} />
+        <Boton3D titulo="Salir" variante="contorno" onPress={salir} />
       </SafeAreaView>
     );
   }
@@ -66,6 +88,8 @@ export default function Hoy() {
   if ((perfil.mundos_desbloqueados ?? []).length < 2) return <Redirect href="/elegir-mundos" />;
 
   const nombre = esInvitado ? "Invitado" : perfil.display_name ?? "Jugador";
+  const avisos = (resumen?.mensajesSinLeer ?? 0) + (resumen?.novedadesSinLeer ?? 0);
+  const pctMeta = resumen ? Math.min(100, Math.round((resumen.xpHoy / Math.max(1, resumen.metaDiaria)) * 100)) : 0;
 
   return (
     <SafeAreaView style={styles.pantalla} edges={["top"]}>
@@ -77,16 +101,34 @@ export default function Hoy() {
               {nombre}
             </Text>
           </View>
-          <View style={styles.contadores}>
-            <Contador icono="🔥" valor={perfil.streak_dias} tono={color.racha} />
-            <Contador icono="⚡" valor={perfil.puntos_total.toLocaleString("es")} tono={color.logro} />
+          <Pressable onPress={() => router.push("/avisos")} hitSlop={10} style={styles.campana} accessibilityLabel={`Avisos: ${avisos} sin leer`}>
+            <Text style={{ fontSize: 20 }}>🔔</Text>
+            {avisos > 0 && (
+              <View style={styles.insignia}>
+                <Text style={styles.insigniaTexto}>{avisos > 9 ? "9+" : avisos}</Text>
+              </View>
+            )}
+          </Pressable>
+        </View>
+
+        <View style={styles.contadores}>
+          <Contador icono="🔥" valor={perfil.streak_dias} tono={color.racha} />
+          <Contador icono="⚡" valor={perfil.puntos_total.toLocaleString("es")} tono={color.logro} />
+          <Contador icono="★" valor={`Nivel ${perfil.nivel_cuenta}`} tono={color.primario} />
+        </View>
+
+        <View style={styles.meta}>
+          <View style={styles.metaCabecera}>
+            <Text style={styles.micro}>{pctMeta >= 100 ? "META DEL DÍA CUMPLIDA ✓" : "META DEL DÍA"}</Text>
+            <Text style={styles.metaValor}>{resumen ? `${resumen.xpHoy}/${resumen.metaDiaria}` : "…"}</Text>
+          </View>
+          <View style={styles.barraFondo}>
+            <View style={[styles.barra, { width: `${pctMeta}%`, backgroundColor: pctMeta >= 100 ? color.correcto : color.primario }]} />
           </View>
         </View>
 
-        <View style={styles.nivelCuenta}>
-          <Text style={styles.micro}>NIVEL DE CUENTA</Text>
-          <Text style={styles.nivelValor}>{perfil.nivel_cuenta}</Text>
-        </View>
+        <Text style={styles.seccion}>Destacados</Text>
+        <Destacados novedades={novedades} />
 
         <Text style={styles.seccion}>Tus mundos</Text>
         <View style={styles.grilla}>
@@ -103,7 +145,7 @@ export default function Hoy() {
         <Text style={styles.nota}>
           Versión de prueba de la app: por ahora se juega Numeria (sprint de las 4 operaciones). Tu progreso es el mismo que en la web.
         </Text>
-        <Boton3D titulo="Cerrar sesión" variante="contorno" onPress={() => supabase.auth.signOut()} />
+        <Boton3D titulo="Cerrar sesión" variante="contorno" onPress={salir} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -116,7 +158,32 @@ const styles = StyleSheet.create({
   hud: { flexDirection: "row", alignItems: "center", gap: 12 },
   saludo: { color: color.texto2, fontSize: 14 },
   nombre: { color: color.texto, fontSize: 26, fontWeight: "800" },
-  contadores: { flexDirection: "row", gap: 8 },
+  campana: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: color.surface1,
+    borderWidth: 1,
+    borderColor: color.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  insignia: {
+    position: "absolute",
+    top: -3,
+    right: -3,
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: color.error,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 5,
+    borderWidth: 2,
+    borderColor: color.bg,
+  },
+  insigniaTexto: { color: "#FFFFFF", fontSize: 11, fontWeight: "800" },
+  contadores: { flexDirection: "row", gap: 8, flexWrap: "wrap" },
   contador: {
     flexDirection: "row",
     alignItems: "center",
@@ -129,19 +196,13 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
   },
   contadorValor: { fontFamily: mono, fontWeight: "700", fontSize: 15 },
-  nivelCuenta: {
-    backgroundColor: color.surface1,
-    borderRadius: radio.tarjeta,
-    borderWidth: 1,
-    borderColor: color.border,
-    padding: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
+  meta: { backgroundColor: color.surface1, borderRadius: radio.tarjeta, borderWidth: 1, borderColor: color.border, padding: 16, gap: 10 },
+  metaCabecera: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   micro: { color: color.texto2, fontSize: 11, fontWeight: "700", letterSpacing: 1 },
-  nivelValor: { color: color.primario, fontFamily: mono, fontSize: 28, fontWeight: "800" },
-  seccion: { color: color.texto, fontSize: 20, fontWeight: "700", marginTop: 8 },
+  metaValor: { color: color.texto, fontFamily: mono, fontWeight: "700" },
+  barraFondo: { height: 10, borderRadius: 5, backgroundColor: color.surface3, overflow: "hidden" },
+  barra: { height: "100%", borderRadius: 5 },
+  seccion: { color: color.texto, fontSize: 20, fontWeight: "700", marginTop: 4 },
   grilla: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
   mundo: {
     width: "47.5%",
