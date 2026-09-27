@@ -1,0 +1,19 @@
+# Higiene de repo (docs/audits/REVISION-GENERAL-2026-09-26.md, REPO-01/02/03):
+# node_modules, cachés de Python, logs de desarrollo y configuración local
+# de Claude Code no deben versionarse. Cada carpeta de proyecto conserva
+# además su propio .gitignore (p. ej. calibra-proyecto/calibra/.gitignore).
+
+node_modules/
+__pycache__/
+*.pyc
+
+*.log
+dev-server.log
+dev.log
+dev-err.log
+page.html
+
+.claude/settings.local.json
+
+.DS_Store
+Thumbs.db
