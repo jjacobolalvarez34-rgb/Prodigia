@@ -645,12 +645,11 @@ Cómo usar cada ficha: **Qué enseña** (para el copy), **Ganchos** (ideas de ti
 
 ## 5. Traducción
 
-Las lecciones de los 13 mundos tienen versión en inglés (`nombre_en`, `descripcion_en` y `contenido_en` en `techniques`; migraciones 0225–0238, generadas desde `src/lib/i18n-lecciones/en/`). Los nombres de los grupos/temas del panel lateral de Aprender también existen en español e inglés (`src/lib/aprender/grupos.ts`).
+Las lecciones de los 13 mundos, incluidas las 6 técnicas históricas de Enigmia, tienen versión en inglés (`nombre_en`, `descripcion_en` y `contenido_en` en `techniques`/`logic_techniques`; migraciones 0225–0238 y 0242, generadas desde `src/lib/i18n-lecciones/en/` salvo esas 6, escritas a mano por vivir solo en la base). Los nombres de los grupos/temas del panel lateral de Aprender también existen en español e inglés (`src/lib/aprender/grupos.ts`).
 
 Salvedades antes de anunciar Aprender en inglés:
 
 - El texto lo tradujo un modelo y **no lo revisó una persona**: conviene una lectura rápida.
-- **Enigmia:** 6 técnicas históricas de lógica siguen solo en español.
 - Algunos textos que las animaciones sacan de tablas del código o de claves de la interfaz pueden seguir en español.
 
 ## 6. Piezas sugeridas (para `assets/piezas/`, estilo `cNN-…-square/story`)

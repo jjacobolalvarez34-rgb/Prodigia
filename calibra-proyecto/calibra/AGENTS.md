@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Prodigia — Reglas para agentes
 
-Proyecto: **Prodigia**, app de práctica de cálculo mental con dificultad adaptativa, multijugador (duelos, clanes, rankeds, retos) y gamificación (Chispas, logros, títulos). Español rioplatense ("vos"). Next.js (App Router) + Supabase (+ RLS) + Capacitor (Android).
+Proyecto: **Prodigia**, app de práctica con 13 mundos (Numeria, Calculia, Estadística, Circuitia, Enigmia, Codia, Naipia, Geografía, Historia, Melodía, Anatomía, Química, Trigonometría), dificultad adaptativa, multijugador (duelos, clanes, rankeds, retos) y gamificación (Chispas, logros, títulos, Trastienda). **Español neutro, con "tú" — nunca voseo** (ver `docs/marketing/TERMINOLOGY.md`; si ves "vos"/"tenés"/"podés" en código o docs viejos, es un residuo a corregir, no el estilo a seguir). Next.js (App Router, next-intl es/en) + Supabase (+ RLS). La app Android hoy es un WebView de Capacitor; hay una propuesta de app nativa (Expo) sin aprobar en `docs/app-nativa/`, ver `docs/audits/REVISION-GENERAL-2026-09-26.md`.
 
 La documentación viva vive en `docs/`. Leéla en este orden antes de tocar código:
 
@@ -31,9 +31,9 @@ La documentación viva vive en `docs/`. Leéla en este orden antes de tocar cód
 ## Reglas duras
 
 - **No asumas ni inventes**: si no lo verificaste, decilo con el estado `NO PUDE VERIFICAR` / `PENDIENTE`. Nunca escribas "andá a la doc" sin citar la ruta.
-- **El código manda sobre docs**: `docs/` está parcialmente desactualizado (ej. `ESPECIFICACION.md` dice 5 mundos, el código maneja 8). Toda afirmación de un `.md` debe validarse contra el código real antes de usarla.
+- **El código manda sobre docs**: varios `.md` de `docs/` quedaron desactualizados en cantidad de mundos o número de migración (ver `docs/audits/REVISION-GENERAL-2026-09-26.md`, DOC-01). Toda afirmación de un `.md` debe validarse contra el código real antes de usarla — corré `ls supabase/migrations | tail -1` para saber el número real de la última migración.
 - **No rompas nada**: cambios acotados, verificables. Antes de refactorizar, entendé el problema. La prioridad es 0 daño.
-- **Migraciones**: nunca destructivas sin revisar. Las migraciones nuevas se crean como `supabase/migrations/NNNN_descripcion.sql` (next number tras 0114). El código de la app no puede depender de migraciones no aplicadas a producción.
+- **Migraciones**: nunca destructivas sin revisar. Las migraciones nuevas se crean como `supabase/migrations/NNNN_descripcion.sql` (el siguiente número tras la última que exista en el repo — no asumas un número fijo, verificalo). El usuario las aplica a mano; el código de la app no puede depender de migraciones no aplicadas a producción. **Todo `security definer` con salida (`RETURNS TABLE`/OUT) que cambie el NOMBRE de una columna de salida necesita `DROP FUNCTION` antes: `CREATE OR REPLACE` lo rechaza si hay más de una columna de salida.**
 - **Seguridad**: el servidor/RLS es la fuente de verdad. El cliente jamás decide precios, desbloqueos ni xp. No guardes secretos en el repo.
 - **Antes de instalar una librería** (npm): justificá por qué no alcanza lo existente y anotá en `docs/EXTERNAL-RESOURCES.md`.
 - **No agregues comentarios al código salvo que el código existente ya use esa convención**; el repo ya tiene comentarios explicativos en español — respetá el estilo del archivo que toques.

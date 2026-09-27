@@ -55,7 +55,7 @@
 
 ## Voz
 
-- Rioplatense, "vos", motivacional realista: "Elegí", "Probá", "Ahí quedó.", "Ninguna fallada — así se hace 🎯", "Superaste tu techo".
-- Metáfora propia: **Chispas** (moneda), mundos = **ciudades**, **Rankeds**, **Clan de Bots**, **fantasma del rival**, **racha**.
+- Español neutro, "tú" (nunca voseo — ver `docs/marketing/TERMINOLOGY.md` y `docs/AGENT-RULES.md`), motivacional realista: "Elige", "Prueba", "Ahí quedó.", "Ninguna fallada — así se hace 🎯", "Superaste tu techo".
+- Metáfora propia: **Chispas** (moneda comprable, tienda y economía general), **Monedas** (moneda propia de la Trastienda, no comprable, se gana practicando — ver migración `0241_trastienda_monedas_y_seguridad.sql`), mundos = **ciudades**, **Rankeds**, **Clan de Bots**, **fantasma del rival**, **racha**.
 - Emojis funcionales: 🔥 racha, 🛡️ escudo, 👻 fantasma, ⚡ boost, 🎯.
 - NUNCA copy vacío tipo "La nueva forma de aprender". Todo nace de una funcionalidad real.

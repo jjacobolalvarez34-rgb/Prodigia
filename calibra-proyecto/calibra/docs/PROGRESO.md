@@ -4040,3 +4040,22 @@ Tres mundos nuevos, normales en todo (catálogo, Practicar, Rankeds, duelos, log
 - PENDIENTE PO: aprobar stack (DECISIONS 2026-09-26), decidir Trastienda en Android/umbral de edad/chat de menores (PROD-01/02), ligas semanales y congelamiento gratis semanal (`04-BUCLE-DE-ENGANCHE.md`).
 
 - **Ampliación (mismo día, pedido del PO)**: (1) **la Placa de jugador es identidad y no se recorta** — decisión registrada en `DECISIONS.md`; especificación en `docs/app-nativa/02-SISTEMA-VISUAL.md` §10 (contenido verificado en código, 5 variantes, mejoras de legibilidad y ver≠editar, implementación GIF/WebP, moderación → PROD-05 y UX-09 en la revisión); Perfil y Editor de placa en `03-PANTALLAS-Y-NAVEGACION.md` §4.11. (2) Maquetas nuevas: Perfil = Placa, Placa en variantes, Competir, Social (Inicio), Clan (ciudad por tier, guerra, misión) y Mundo de clanes (mapa con parcelas y hoja de resumen); documentadas en §4.9-4.10. Verificado: render con Edge headless. Sin cambios de código.
+
+## 2026-09-27 — Aprender en inglés completo (13/13 mundos), higiene de repo + SEG-01, misión de clan por Experiencia, Trastienda con Monedas propias (SEG-02/03/PROD-01), Quimia orgánica sin repetición, docs reescritas
+
+### Construí
+- **Traducciones al inglés** (migraciones 0232-0238, 0242): Codia, Geografía, Historia, Melodía, Anatomía, Quimia, Trigonometría y, a mano (viven solo en la base, sin fuente TS), las 6 técnicas históricas de Enigmia. Los 13 mundos quedan con su Aprender completo en inglés.
+- **Higiene de repo + SEG-01** (`docs/audits/REVISION-GENERAL-2026-09-26.md`): `.gitignore` en la raíz (no existía), `node_modules`/`__pycache__`/logs/`.claude/settings.local.json` destraqueados; key de fal.ai sacada de `opencode.json` (sustitución `{env:FAL_KEY}`) — sigue en el historial de git, falta que el usuario la rote.
+- **Clanes**: el progreso al siguiente nivel se muestra en Exp (no Chispas); misión semanal pasa de "500 problemas" a "3000 Exp conjunta" con recompensa de 2000 Chispas **reclamada con un botón** (0239/0240) en vez de repartirse sola.
+- **Trastienda — migración 0241**: SEG-02 (`resolver_apuesta_si_activa` ya no recibe `p_precision` del cliente, la calcula ella misma con attempts reales desde que se apostó; tope de 10 apuestas/día), SEG-03 (`puede_usar_trastienda`, gate de edad server-side en cada RPC; antes `edad_ingresada = null` pasaba como adulto), y PROD-01 (moneda propia `monedas_trastienda`, no comprable, ganada 1:1 con la Experiencia real de práctica — los 9 juegos de la Trastienda cobran y pagan en Monedas, nunca más en Chispas).
+- **Quimia orgánica**: reporte en vivo "en nivel 10 me salieron las mismas preguntas" — el banco de práctica tenía 10 compuestos y la ventana ±3 dejaba nivel 10 con 2 candidatos. Se agregan 7 compuestos ya enseñados en una lección (exigido por `cobertura.test.ts`) y se ensancha la ventana a ±4 (17 compuestos, nivel 10 pasa a 5 candidatos). De paso, la fórmula condensada de un éter que se veía rara (`CH2OCH3-CH3`) resultó ser un bug real del motor (`organica.ts`), corregido (0211/0237 regeneradas).
+- **Docs**: `PROJECT-STATE.md` y `TECH-DEBT.md` reescritos completos (estaban congelados en 2026-09-08); `AGENTS.md` y `BRAND.md` corregidos de "rioplatense/vos" a español neutro (contradecía `TERMINOLOGY.md` y el pedido explícito del usuario de esta sesión); `docs/marketing/TECNICAS-Y-CLASES-POR-MUNDO.md` §5 actualizado (traducción completa).
+
+### Verifiqué
+- `tsc --noEmit` limpio, `eslint` sin errores nuevos, `vitest` 2373/2373 (incluye los tests de auditoría de Quimia que cruzan práctica ↔ catálogo ↔ lecciones).
+- Las migraciones nuevas (0232-0242) validadas con `pglast` (parse SQL + parse de cada cuerpo plpgsql) — **no probadas contra una base real**.
+
+### Resultado
+- PENDIENTE del usuario: rotar la key de fal.ai; correr 0222-0242 en orden (0225 antes de las de inglés, 0239 antes de 0240).
+- **Hallazgo nuevo, sin resolver**: `resolver_apuesta_partida`/`resolver_prediccion_ranking` (pagan apuestas a duelos ajenos y a predicciones de ranking) no las llama ningún código — esas apuestas quedan pendientes para siempre. Anotado en `TECH-DEBT.md`.
+- Pendiente de decisión de PO: PROD-01 completo (Trastienda en Android sí/no, umbral de edad real), y el resto de la auditoría general (SEG-04..09, stack de la app nativa).
