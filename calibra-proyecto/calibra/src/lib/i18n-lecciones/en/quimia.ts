@@ -1571,9 +1571,9 @@ export const QUIMIA_EN: Record<string, TraduccionLeccion> = {
         explicacion: "The C=O is at the end, bonded to a hydrogen: it is an aldehyde.",
       },
       {
-        pregunta: "Which family does $\\mathrm{CH_{2}OCH_{3}{-}CH_{3}}$ belong to?",
-        opciones: ["Alcohol", "Ester", "Ether", "Ketone"],
-        respuesta: 2,
+        pregunta: "Which family does $\\mathrm{CH_{2}{-}OCH_{3}{-}CH_{3}}$ belong to?",
+        opciones: ["Alcohol", "Ester", "Ketone", "Ether"],
+        respuesta: 3,
         explicacion: "There is an oxygen between two carbons (C–O–C) and no C=O: it is an ether.",
       },
       {
@@ -5033,9 +5033,9 @@ export const QUIMIA_EN: Record<string, TraduccionLeccion> = {
         explicacion: "The –OH of ethanol forms hydrogen bonds; the ether does not. Ethanol boils at 78 °C and the ether at −25 °C.",
       },
       {
-        pregunta: "What is $\\mathrm{CH_{2}OCH_{3}{-}CH_{3}}$ called?",
-        opciones: ["ethoxymethane", "diethyl ether", "ethylated methanol", "methoxyethane"],
-        respuesta: 3,
+        pregunta: "What is $\\mathrm{CH_{2}{-}OCH_{3}{-}CH_{3}}$ called?",
+        opciones: ["methoxyethane", "ethoxymethane", "diethyl ether", "ethylated methanol"],
+        respuesta: 0,
         explicacion: "It is named as an alkane (the one with the longest chain, ethane) with an alkoxy substituent (methoxy).",
       },
       {

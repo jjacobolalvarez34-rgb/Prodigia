@@ -38,10 +38,43 @@ export const COMPUESTOS_ORGANICOS: CompuestoOrganico[] = [
     // la cadena abierta es la representación "simple" estándar.
     grupos: ["CHO", "CHOH", "CHOH", "CHOH", "CHOH", "CH₂OH"],
   },
+  // Ampliación (pedido en vivo, 2026-09-27: "en química orgánica ya
+  // llegué a nivel 10 y en todos los niveles me salieron las mismas
+  // preguntas"). Causa: con 10 compuestos y la ventana ±3 de
+  // elegirAlAzar, nivel 10 (dificultad 7-13) solo tenía 2 candidatos
+  // (benceno y glucosa) — de ahí la repetición. Se agregan estos 7,
+  // elegidos porque YA están dibujados y nombrados en una lección de
+  // Aprender (cobertura.test.ts los exige) — su fórmula, nombre y
+  // fórmula condensada están calculados por el mismo motor que usan las
+  // lecciones (src/lib/quimia/organica.ts vía fichaDe), no tipeados a
+  // mano — y con el ensanche de la ventana (ver elegirAlAzar) nivel 10
+  // pasa a tener 5 candidatos.
+  { id: "etanal", formula: "C2H4O", nombre: "Etanal", dificultad: 4, grupos: ["CH₃", "CHO"] },
+  { id: "propan-1-ol", formula: "C3H8O", nombre: "Propan-1-ol", dificultad: 4, grupos: ["CH₃", "CH₂", "CH₂OH"] },
+  { id: "propanal", formula: "C3H6O", nombre: "Propanal", dificultad: 5, grupos: ["CH₃", "CH₂", "CHO"] },
+  { id: "butano", formula: "C4H10", nombre: "Butano", dificultad: 5, grupos: ["CH₃", "CH₂", "CH₂", "CH₃"] },
+  { id: "pentano", formula: "C5H12", nombre: "Pentano", dificultad: 6, grupos: ["CH₃", "CH₂", "CH₂", "CH₂", "CH₃"] },
+  {
+    id: "acido-propanoico",
+    formula: "C3H6O2",
+    nombre: "Ácido propanoico",
+    dificultad: 6,
+    grupos: ["CH₃", "CH₂", "COOH"],
+  },
+  {
+    id: "etano-1,2-diol",
+    formula: "C2H6O2",
+    nombre: "Etilenglicol",
+    dificultad: 7,
+    grupos: ["CH₂OH", "CH₂OH"],
+  },
 ];
 
+// La ventana era ±3 (misma que la copia genérica en quimia.ts); acá se
+// ensancha a ±4 porque el banco es chico y curado (17 compuestos, no
+// cientos): con ±3 los niveles 9-10 quedaban con 2-3 candidatos nada más.
 function elegirAlAzar<T extends { dificultad: number }>(banco: T[], nivel: number, usados: Set<string>, clave: (t: T) => string, rng: Rng): T {
-  const candidatos = banco.filter((x) => Math.abs(x.dificultad - nivel) <= 3 && !usados.has(clave(x)));
+  const candidatos = banco.filter((x) => Math.abs(x.dificultad - nivel) <= 4 && !usados.has(clave(x)));
   const pool = candidatos.length > 0 ? candidatos : banco.filter((x) => !usados.has(clave(x)));
   const poolFinal = pool.length > 0 ? pool : banco;
   return poolFinal[Math.floor(rng() * poolFinal.length)];

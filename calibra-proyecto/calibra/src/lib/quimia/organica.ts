@@ -697,7 +697,16 @@ function textoCarbonoCadena(m: Molecula, i: number, cadena: number[], k: number)
   const hh = h > 0 ? `H${h > 1 ? h : ""}` : "";
   const partes = otros.map((x) => textoRama(m, x.v, i));
   if (partes.length === 0) return `C${hh}`;
-  if (terminal && partes.length === 1) return `C${hh}${partes[0]}`;
+  if (terminal && partes.length === 1) {
+    // Un éter (-O-alquilo, ej. "OCH3") pegado sin separador quedaba
+    // "CH2OCH3-CH3": el guion de la cadena principal, justo después,
+    // se lee como si separara el alquilo del oxígeno de otra cosa, no
+    // como el enlace C1-C2 que en realidad es. Un -OH sí se deja
+    // pegado ("CH2OH"): es la forma estándar y no genera esa ambigüedad
+    // porque no hay más átomos después del O.
+    const esEter = partes[0].startsWith("O") && partes[0].length > 2;
+    return `C${hh}${esEter ? "-" : ""}${partes[0]}`;
+  }
   return `C${hh}${agrupar(partes)}`;
 }
 

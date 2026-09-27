@@ -31,7 +31,10 @@ export const REGISTRO_TRADUCCIONES: Partial<Record<MundoTraducible, EntradaTradu
   calculia: { traducciones: CALCULIA_EN, migracion: "0228_calculia_lecciones_en.sql", completo: true },
   estadistica: { traducciones: ESTADISTICA_EN, migracion: "0229_estadistica_lecciones_en.sql", completo: true },
   circuitia: { traducciones: CIRCUITIA_EN, migracion: "0230_circuitia_lecciones_en.sql", completo: true },
-  enigmia: { traducciones: ENIGMIA_EN, migracion: "0231_enigmia_lecciones_en.sql", completo: false },
+  // Las 21 lecciones del sistema TS (leccionesFuente) están completas acá;
+  // las 6 técnicas históricas que viven solo en la base (sin fuente TS) se
+  // traducen aparte, a mano, en la migración 0242_enigmia_tecnicas_historicas_en.sql.
+  enigmia: { traducciones: ENIGMIA_EN, migracion: "0231_enigmia_lecciones_en.sql", completo: true },
   codia: { traducciones: CODIA_EN, migracion: "0232_codia_lecciones_en.sql", completo: true },
   geografia: { traducciones: GEOGRAFIA_EN, migracion: "0233_geografia_lecciones_en.sql", completo: true },
   historia: { traducciones: HISTORIA_EN, migracion: "0234_historia_lecciones_en.sql", completo: true },

@@ -1167,12 +1167,12 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
       "explicacion": "El C=O está en el extremo, unido a un hidrógeno: es un aldehído."
     },
     {
-      "pregunta": "¿A qué familia pertenece $\\mathrm{CH_{2}OCH_{3}{-}CH_{3}}$?",
+      "pregunta": "¿A qué familia pertenece $\\mathrm{CH_{2}{-}OCH_{3}{-}CH_{3}}$?",
       "opciones": [
         "Alcohol",
         "Éster",
-        "Éter",
-        "Cetona"
+        "Cetona",
+        "Éter"
       ],
       "respuesta": "Éter",
       "explicacion": "Hay un oxígeno entre dos carbonos (C–O–C) y ningún C=O: es un éter."
@@ -3621,12 +3621,12 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
       "explicacion": "El –OH del etanol forma puentes de hidrógeno; el éter no. El etanol hierve a 78 °C y el éter a −25 °C."
     },
     {
-      "pregunta": "¿Cómo se llama $\\mathrm{CH_{2}OCH_{3}{-}CH_{3}}$?",
+      "pregunta": "¿Cómo se llama $\\mathrm{CH_{2}{-}OCH_{3}{-}CH_{3}}$?",
       "opciones": [
+        "metoxietano",
         "etoximetano",
         "dietil éter",
-        "metanol etilado",
-        "metoxietano"
+        "metanol etilado"
       ],
       "respuesta": "metoxietano",
       "explicacion": "Se nombra como un alcano (el de la cadena más larga, etano) con un sustituyente alcoxi (metoxi)."

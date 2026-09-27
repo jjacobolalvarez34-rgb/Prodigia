@@ -284,8 +284,8 @@ describe("hibridación del carbono (calculada de los enlaces)", () => {
 });
 
 describe("banco de práctica (quimicaOrganica.ts): cada compuesto está en el catálogo y coincide", () => {
-  it("las 10 moléculas de la práctica figuran en el catálogo con la misma fórmula molecular", () => {
-    expect(COMPUESTOS_ORGANICOS).toHaveLength(10);
+  it("las moléculas de la práctica figuran en el catálogo con la misma fórmula molecular", () => {
+    expect(COMPUESTOS_ORGANICOS).toHaveLength(17);
     for (const c of COMPUESTOS_ORGANICOS) {
       const e = CATALOGO_MOLECULAS.find((x) => x.practica === c.id);
       expect(e, `${c.id} falta en el catálogo`).toBeDefined();

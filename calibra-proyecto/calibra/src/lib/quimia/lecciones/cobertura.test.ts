@@ -132,8 +132,8 @@ describe("cobertura de ORGÁNICA: lo que evalúa la práctica está enseñado", 
   const visuales = ORGANICA.flatMap((l) => l.visuales);
   const enVisuales = new Set(visuales.flatMap(moleculasDe));
 
-  it("cada uno de los 10 compuestos de la práctica aparece dibujado en un visual de una lección de orgánica y su nombre (IUPAC y común) está en el texto", () => {
-    expect(COMPUESTOS_ORGANICOS).toHaveLength(10);
+  it("cada uno de los compuestos de la práctica aparece dibujado en un visual de una lección de orgánica y su nombre (IUPAC y común) está en el texto", () => {
+    expect(COMPUESTOS_ORGANICOS).toHaveLength(17);
     for (const c of COMPUESTOS_ORGANICOS) {
       const e = CATALOGO_MOLECULAS.find((x) => x.practica === c.id);
       expect(e, `${c.id} sin entrada en el catálogo`).toBeDefined();
