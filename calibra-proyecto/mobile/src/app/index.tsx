@@ -143,7 +143,7 @@ export default function Hoy() {
         </View>
 
         <Text style={styles.nota}>
-          Versión de prueba de la app: por ahora se juega Numeria (sprint de las 4 operaciones). Tu progreso es el mismo que en la web.
+          Versión de prueba de la app: por ahora se juegan Numeria y Geografía. Tu progreso es el mismo que en la web.
         </Text>
         <Boton3D titulo="Cerrar sesión" variante="contorno" onPress={salir} />
       </ScrollView>

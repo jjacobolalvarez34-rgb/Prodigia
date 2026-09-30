@@ -5,7 +5,6 @@ import { ActivityIndicator, Alert, BackHandler, Pressable, StyleSheet, Text, Vie
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   cargarNiveles,
-  cerrarPartida,
   DURACION_SPRINT_MS,
   guardarIntento,
   nuevoProblema,
@@ -13,6 +12,7 @@ import {
   type Operacion,
   type Problem,
 } from "~/lib/numeria";
+import { cerrarPartida } from "~/lib/partida";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError } from "~/lib/supabase";
 import Teclado from "~/ui/Teclado";
@@ -121,8 +121,8 @@ export default function Sprint() {
     try {
       const r = await cerrarPartida(xpRef.current);
       router.replace({
-        pathname: "/numeria/resultado",
-        params: { datos: JSON.stringify({ ...r, xp: xpRef.current, ...totalesRef.current }) },
+        pathname: "/resultado",
+        params: { mundo: "numeria", datos: JSON.stringify({ ...r, xp: xpRef.current, ...totalesRef.current }) },
       });
     } catch (e) {
       setCerrando(false);

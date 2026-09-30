@@ -955,6 +955,12 @@
     }
   },
   "Geografia": {
+    "mapa": {
+      "acercar": "Acercar",
+      "alejar": "Alejar",
+      "reiniciar": "Volver al mapa completo",
+      "ayuda": "Arrastra para mover · rueda o pellizca para acercar"
+    },
     "continentes": {
       "america": "América",
       "europa": "Europa",

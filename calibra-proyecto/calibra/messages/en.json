@@ -955,6 +955,12 @@
     }
   },
   "Geografia": {
+    "mapa": {
+      "acercar": "Zoom in",
+      "alejar": "Zoom out",
+      "reiniciar": "Back to the full map",
+      "ayuda": "Drag to move · scroll or pinch to zoom"
+    },
     "continentes": {
       "america": "America",
       "europa": "Europe",

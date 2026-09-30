@@ -52,7 +52,7 @@ export interface Mundo {
 export const MUNDOS: Mundo[] = [
   { slug: "numeria", nombre: "Numeria", base: "#6C4CF1", neon: "#9B85FF", glifo: "÷", enApp: true },
   { slug: "enigmia", nombre: "Enigmia", base: "#0E9F6E", neon: "#2FD89B", glifo: "?", enApp: false },
-  { slug: "geografia", nombre: "Geografía", base: "#1E7A8C", neon: "#3FC1D6", glifo: "◎", enApp: false },
+  { slug: "geografia", nombre: "Geografía", base: "#1E7A8C", neon: "#3FC1D6", glifo: "◎", enApp: true },
   { slug: "quimia", nombre: "Quimia", base: "#C026D3", neon: "#E36BF2", glifo: "⚛", enApp: false },
   { slug: "anatomia", nombre: "Anatomía", base: "#8B2942", neon: "#E0607E", glifo: "♥", enApp: false },
   { slug: "melodia", nombre: "Melodía", base: "#B8860B", neon: "#F2C14E", glifo: "♪", enApp: false },

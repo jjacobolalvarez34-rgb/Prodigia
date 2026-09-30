@@ -10,7 +10,9 @@ const { getDefaultConfig } = require("expo/metro-config");
 const config = getDefaultConfig(__dirname);
 
 const webSrc = path.resolve(__dirname, "../calibra/src");
-config.watchFolders = [...(config.watchFolders ?? []), webSrc];
+// El topojson de países (world-atlas) que usa el mapa de Geografía en la web.
+const webDatos = path.resolve(__dirname, "../calibra/public/data");
+config.watchFolders = [...(config.watchFolders ?? []), webSrc, webDatos];
 // Los archivos compartidos no importan paquetes en tiempo de ejecución, pero si
 // alguno lo hiciera, que se resuelvan con los node_modules de la app (una sola
 // copia de React Native), nunca con los de la web.

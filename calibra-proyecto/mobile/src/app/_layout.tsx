@@ -3,6 +3,7 @@ import { DarkTheme, Stack, ThemeProvider, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { rutaDeAviso, sincronizarAvisos } from "~/lib/notificaciones";
 import { cargarResumen } from "~/lib/resumen";
 import { ProveedorSesion, useSesion } from "~/lib/sesion";
@@ -113,7 +114,9 @@ function Navegacion() {
           <Stack.Screen name="ajustes-avisos" />
           <Stack.Screen name="numeria/index" />
           <Stack.Screen name="numeria/sprint" options={{ gestureEnabled: false, animation: "fade" }} />
-          <Stack.Screen name="numeria/resultado" options={{ gestureEnabled: false, animation: "fade" }} />
+          <Stack.Screen name="geografia/index" />
+          <Stack.Screen name="geografia/sprint" options={{ gestureEnabled: false, animation: "fade" }} />
+          <Stack.Screen name="resultado" options={{ gestureEnabled: false, animation: "fade" }} />
         </Stack.Protected>
         <Stack.Protected guard={!sesion}>
           <Stack.Screen name="login" />
@@ -126,11 +129,13 @@ function Navegacion() {
 
 export default function RootLayout() {
   return (
-    <ThemeProvider value={tema}>
-      <ProveedorSesion>
-        <StatusBar style="light" />
-        <Navegacion />
-      </ProveedorSesion>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: color.bg }}>
+      <ThemeProvider value={tema}>
+        <ProveedorSesion>
+          <StatusBar style="light" />
+          <Navegacion />
+        </ProveedorSesion>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }

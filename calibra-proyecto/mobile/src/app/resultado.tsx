@@ -5,14 +5,17 @@ import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { activarAvisos, leerPreferencias, marcarPermisoPedido, permisoConcedido } from "~/lib/notificaciones";
-import type { ResultadoPartida } from "~/lib/numeria";
+import type { ResultadoPartida } from "~/lib/partida";
 import { cargarResumen } from "~/lib/resumen";
 import { useSesion } from "~/lib/sesion";
 import { actualizarWidgets } from "~/widgets/registro";
 import Boton3D from "~/ui/Boton3D";
-import { color, mono, NUMERIA, radio } from "~/tema";
+import { color, mono, MUNDOS, radio } from "~/tema";
 
 type Datos = ResultadoPartida & { xp: number; correctos: number; total: number };
+
+// Resultado de una partida de cualquier mundo: la pantalla del sprint la reemplaza
+// por esta con `mundo` y `datos` (JSON). "Jugar otra" vuelve al hub del mundo.
 
 function Metrica({ etiqueta, valor, tono = color.texto }: { etiqueta: string; valor: string; tono?: string }) {
   return (
@@ -25,8 +28,9 @@ function Metrica({ etiqueta, valor, tono = color.texto }: { etiqueta: string; va
 
 export default function Resultado() {
   const router = useRouter();
-  const { datos } = useLocalSearchParams<{ datos: string }>();
+  const { datos, mundo: slug } = useLocalSearchParams<{ datos: string; mundo?: string }>();
   const d = JSON.parse(datos ?? "{}") as Datos;
+  const MUNDO = MUNDOS.find((m) => m.slug === slug) ?? MUNDOS[0];
   const precision = d.total > 0 ? Math.round((d.correctos / d.total) * 100) : 0;
   const subioMundo = d.nivelMundo != null && d.nivelMundoAnterior != null && d.nivelMundo > d.nivelMundoAnterior;
 
@@ -54,7 +58,7 @@ export default function Resultado() {
       <ScrollView contentContainerStyle={styles.contenido}>
         <Text style={styles.titulo}>¡Partida terminada!</Text>
 
-        <View style={[styles.hero, { borderColor: NUMERIA.neon }]}>
+        <View style={[styles.hero, { borderColor: MUNDO.neon }]}>
           <Text style={styles.micro}>CHISPAS GANADAS</Text>
           <Text style={[styles.heroValor, { color: color.logro }]}>+{d.xp} ⚡</Text>
         </View>
@@ -71,8 +75,8 @@ export default function Resultado() {
           </View>
         )}
         {subioMundo && (
-          <View style={[styles.celebracion, { borderColor: NUMERIA.neon }]}>
-            <Text style={styles.celebracionTitulo}>Numeria subió a nivel {d.nivelMundo}</Text>
+          <View style={[styles.celebracion, { borderColor: MUNDO.neon }]}>
+            <Text style={styles.celebracionTitulo}>{MUNDO.nombre} subió a nivel {d.nivelMundo}</Text>
           </View>
         )}
 
@@ -87,7 +91,7 @@ export default function Resultado() {
             <View
               style={[
                 styles.barra,
-                { width: `${Math.min(100, (d.xpHoy / Math.max(1, d.metaDiaria)) * 100)}%`, backgroundColor: d.metaAlcanzada ? color.correcto : NUMERIA.neon },
+                { width: `${Math.min(100, (d.xpHoy / Math.max(1, d.metaDiaria)) * 100)}%`, backgroundColor: d.metaAlcanzada ? color.correcto : MUNDO.neon },
               ]}
             />
           </View>
@@ -124,7 +128,7 @@ export default function Resultado() {
 
         <Text style={styles.total}>Tienes {d.chispasTotal.toLocaleString("es")} Chispas en total.</Text>
 
-        <Boton3D titulo="Jugar otra" acento={NUMERIA.base} onPress={() => router.back()} />
+        <Boton3D titulo="Jugar otra" acento={MUNDO.base} onPress={() => router.back()} />
         <Boton3D titulo="Volver al inicio" variante="contorno" onPress={() => router.dismissTo("/")} />
       </ScrollView>
     </SafeAreaView>

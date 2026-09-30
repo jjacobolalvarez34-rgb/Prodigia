@@ -7,7 +7,7 @@ import Boton3D from "~/ui/Boton3D";
 import { color, MUNDOS, radio, type MundoSlug } from "~/tema";
 
 // Primer ingreso: igual que la web, se eligen los 2 mundos gratis (RPC
-// elegir_mundos_iniciales, 0190). Numeria sugerido porque es el que ya se juega acá.
+// elegir_mundos_iniciales, 0190). Numeria sugerido porque es uno de los que ya se juegan acá.
 export default function ElegirMundos() {
   const router = useRouter();
   const [elegidos, setElegidos] = useState<MundoSlug[]>(["numeria"]);
