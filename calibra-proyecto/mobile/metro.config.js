@@ -13,10 +13,10 @@ const webSrc = path.resolve(__dirname, "../calibra/src");
 // El topojson de países (world-atlas) que usa el mapa de Geografía en la web.
 const webDatos = path.resolve(__dirname, "../calibra/public/data");
 config.watchFolders = [...(config.watchFolders ?? []), webSrc, webDatos];
-// Los archivos compartidos no importan paquetes en tiempo de ejecución, pero si
-// alguno lo hiciera, que se resuelvan con los node_modules de la app (una sola
-// copia de React Native), nunca con los de la web.
+// Los archivos compartidos no importan paquetes en tiempo de ejecución; si alguno
+// lo hiciera, se busca primero en los node_modules de la app (una sola copia de
+// React Native). La búsqueda jerárquica queda activa porque algunos paquetes traen
+// dependencias anidadas (p. ej. react-native-reanimated → semver).
 config.resolver.nodeModulesPaths = [path.resolve(__dirname, "node_modules")];
-config.resolver.disableHierarchicalLookup = true;
 
 module.exports = config;
