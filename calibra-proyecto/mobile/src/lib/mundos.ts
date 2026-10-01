@@ -3,6 +3,7 @@
 // (src/lib/mundos/progresoNivel.ts): volumen, dominio y lecciones.
 import { faltanteParaSubir, nivelDesdeFracciones } from "@/lib/mundos/progresoNivel";
 import { MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
+import { SECCIONES, TODOS_LOS_TIPOS } from "./numeria";
 import { supabase } from "./supabase";
 
 export interface ProgresoMundo {
@@ -33,7 +34,6 @@ export async function nivelesDeMundos(userId: string): Promise<Record<string, nu
   return Object.fromEntries(((data as { world: string; nivel_mundo: number }[] | null) ?? []).map((w) => [w.world, w.nivel_mundo]));
 }
 
-const OPERACIONES_NUMERIA: Record<string, string> = { suma: "Suma", resta: "Resta", multiplicacion: "Multiplicación", division: "División" };
 const CONTINENTES: Record<string, string> = { america: "América", europa: "Europa", africa: "África", asia_oceania: "Asia y Oceanía" };
 
 export interface Continuar {
@@ -48,14 +48,16 @@ export async function ultimoJugado(userId: string): Promise<Continuar> {
     .from("attempts")
     .select("problem_type")
     .eq("user_id", userId)
-    .or("problem_type.in.(suma,resta,multiplicacion,division),problem_type.like.geografia_%")
+    .or(`problem_type.in.(${TODOS_LOS_TIPOS.join(",")}),problem_type.like.geografia_%`)
     .order("created_at", { ascending: false })
     .limit(1);
   const tipo = (data as { problem_type: string }[] | null)?.[0]?.problem_type ?? "suma";
   if (tipo.startsWith("geografia_")) {
     return { mundo: "geografia", tema: CONTINENTES[tipo.replace("geografia_", "")] ?? "Mapas", ruta: "/geografia" };
   }
-  return { mundo: "numeria", tema: OPERACIONES_NUMERIA[tipo] ?? "Cálculo mental", ruta: "/numeria" };
+  const seccion = SECCIONES.find((sec) => sec.temas.some((t) => t.problemType === tipo));
+  const tema = seccion?.temas.find((t) => t.problemType === tipo);
+  return { mundo: "numeria", tema: seccion && tema ? (seccion.id === "aritmetica" ? tema.nombre : `${seccion.nombre}: ${tema.nombre}`) : "Cálculo mental", ruta: "/numeria" };
 }
 
 export function nombreMundo(slug: string): string {
