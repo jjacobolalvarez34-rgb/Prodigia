@@ -1,6 +1,7 @@
 # App Android nativa de Prodigia — plan y diseño
 
-> Estado: **PROPUESTA** (sesión de planeación 2026-09-26). Nada de esto está implementado.
+> Estado: **EN CONSTRUCCIÓN** (plan del 2026-09-26). La app vive en `calibra-proyecto/mobile/`
+> (Expo SDK 57, importa la lógica de `calibra/src` con el alias `@/`). Ver "Estado actual" abajo.
 > Reemplaza al contenedor Capacitor actual (`capacitor.config.ts` + `android/`), que solo carga
 > `prodigia-sandy.vercel.app` dentro de un WebView.
 > Prerrequisito: leer `docs/audits/REVISION-GENERAL-2026-09-26.md` (hay bloqueantes de seguridad y de
@@ -26,6 +27,30 @@ WebView), y los ~350 módulos de lógica pura de `src/lib` (generadores de los 1
 curvas de nivel, validadores) se reutilizan tal cual, con sus 92 archivos de test. Reescribir todo
 en Kotlin duplicaría la lógica y multiplicaría el problema de paridad que ya documenta
 `PARIDAD_MUNDOS.md`. Justificación completa en `01-STACK-Y-ARQUITECTURA.md`.
+
+## Estado actual (2026-10-01)
+
+Hecho en `mobile/` (comparte cuenta, progreso y economía con la web; todo pasa por las mismas
+RPC security definer):
+
+- **Sistema visual** de las maquetas: tokens, fuentes empaquetadas (marca + las 8 de nombre),
+  `Boton3D` con resorte y destello, tarjetas con brillo, ciudades nocturnas por mundo, glifos
+  flotantes, confeti, sonidos propios (`assets/sonidos`, síntesis sin licencias) y háptica, con
+  interruptores en Ajustes.
+- **Navegación**: 5 pestañas + HUD (racha, Chispas → tienda, campana).
+- **Placa** en sus 5 variantes con fondos (degradés, GIF, galería), marcos de rango/neón/ciudad
+  y las 10 animaciones de nombre; editor de placa (fondo, avatar, marco, nombre, título).
+- **Mundos en la app**: Numeria y Geografía (sprint con combo, borde que gira, +XP flotante y
+  cascada de recompensas). Los otros 11 se ven en Mundos y abren la web.
+- **Competir**: Rankeds y casual (matchmaking, VS, sala sincronizada y progreso en vivo con los
+  mismos canales que la web, fantasma, series mejor de 3), liga semanal, retos diario y semanal.
+- **Social y clanes**: presencia, solicitudes, amigos, retar, mensajes y chat del clan en vivo,
+  misión con reclamar, guerra, roles, crear/buscar/unirse, invitaciones y Mundo de clanes.
+- **Tienda** (sin Trastienda, PROD-01), logros y títulos, Pro (informativo), avisos push,
+  widgets y ajustes.
+
+Pendiente: los otros 11 mundos y Aprender dentro de la app, Play Billing (Pro y Chispas),
+borrado de cuenta dentro de la app (hoy abre la web) y lo de `05-PUBLICACION-GOOGLE-PLAY.md`.
 
 ## Índice
 
