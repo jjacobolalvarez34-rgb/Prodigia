@@ -2,7 +2,8 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState, type ReactNode } from "react";
 import { StyleSheet, View, type LayoutChangeEvent } from "react-native";
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import { useAnimacionActiva } from "~/lib/rendimiento";
 import { coloresFondo } from "~/lib/placa";
 import { conAlfa } from "~/tema";
 
@@ -22,10 +23,15 @@ interface Props {
 function DegradeVivo({ colores, animar }: { colores: string[]; animar: boolean }) {
   const [tam, setTam] = useState({ w: 0, h: 0 });
   const t = useSharedValue(0);
+  const activa = useAnimacionActiva();
   useEffect(() => {
-    if (!animar) return;
+    if (!animar || !activa) {
+      cancelAnimation(t);
+      return;
+    }
     t.set(withRepeat(withTiming(1, { duration: 6000, easing: Easing.inOut(Easing.sin) }), -1, true));
-  }, [animar, t]);
+    return () => cancelAnimation(t);
+  }, [animar, activa, t]);
   const estilo = useAnimatedStyle(() => ({ transform: [{ translateX: -t.value * tam.w * 1.2 }, { translateY: -t.value * tam.h * 0.4 }] }));
   const lista = colores.length >= 2 ? colores : [colores[0], colores[0]];
   return (
@@ -39,10 +45,16 @@ function DegradeVivo({ colores, animar }: { colores: string[]; animar: boolean }
   );
 }
 
+// Un GIF de fondo solo se reproduce si su pantalla está a la vista.
+function ImagenFondo({ url, animar }: { url: string; animar: boolean }) {
+  const activa = useAnimacionActiva();
+  return <Image source={{ uri: url }} style={StyleSheet.absoluteFill} contentFit="cover" autoplay={animar && activa} transition={200} />;
+}
+
 export default function FondoPlaca({ fondo, url, acento = "#7C5CFF", animar = true, velo = true }: Props) {
   let capa: ReactNode;
   if (fondo === "personalizado" && url) {
-    capa = <Image source={{ uri: url }} style={StyleSheet.absoluteFill} contentFit="cover" autoplay={animar} transition={200} />;
+    capa = <ImagenFondo url={url} animar={animar} />;
   } else {
     const colores = coloresFondo(fondo);
     capa = colores ? (

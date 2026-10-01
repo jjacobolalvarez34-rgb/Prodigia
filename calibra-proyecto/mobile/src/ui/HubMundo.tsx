@@ -33,7 +33,7 @@ export interface Tema {
 
 export function TarjetaTema({ tema, mundo, activo, onPress, indice }: { tema: Tema; mundo: Mundo; activo?: boolean; onPress: () => void; indice: number }) {
   return (
-    <Animated.View entering={FadeInDown.delay(indice * 60).springify().damping(16)} style={{ flex: 1 }}>
+    <Animated.View entering={FadeInDown.delay(indice * 60).duration(300)} style={{ flex: 1 }}>
       <Pressable
         disabled={tema.bloqueado}
         onPress={() => {

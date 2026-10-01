@@ -105,7 +105,7 @@ function TarjetaItem({ it, e, placa, indice, onPress }: { it: ItemTienda; e: Est
   const cantidad = cantidadUtilidad(it, e);
   const oferta = precio < it.costoBase;
   return (
-    <Animated.View entering={FadeInRight.delay(indice * 45).springify().damping(16)}>
+    <Animated.View entering={FadeInRight.delay(indice * 45).duration(300)}>
       <Pressable
         onPress={() => {
           vibrar.seleccion();
@@ -269,7 +269,7 @@ export default function Tienda() {
       <PantallaApilada
         titulo="Tienda"
         subtitulo="El bazar de Prodigia"
-        onRefrescar={cargar}
+       
         derecha={
           <View style={styles.saldo}>
             <IconoChispa tam={18} />
@@ -280,7 +280,7 @@ export default function Tienda() {
         {itemOferta && (
           <Tarjeta acento={color.correcto} brillo={0.22} onPress={() => { setElegido(itemOferta); setConfirmar(false); }}>
             <View style={styles.fila}>
-              <Animated.View entering={ZoomIn.delay(200).springify()} style={styles.etiquetaOferta}>
+              <Animated.View entering={ZoomIn.delay(200).duration(320)} style={styles.etiquetaOferta}>
                 <Texto style={{ fontFamily: fuente.display, fontSize: 18, color: "#062B1C" }}>−{descuento.porcentaje}%</Texto>
               </Animated.View>
               <View style={{ flex: 1 }}>

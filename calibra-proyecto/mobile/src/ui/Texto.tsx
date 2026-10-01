@@ -1,4 +1,4 @@
-import { StyleSheet, Text, type TextProps } from "react-native";
+import { StyleSheet, Text, type TextProps, type TextStyle } from "react-native";
 import { color, fuente } from "~/tema";
 
 // Escala tipográfica de 02-SISTEMA-VISUAL.md §3.
@@ -12,10 +12,14 @@ interface Props extends TextProps {
 }
 
 export default function Texto({ v = "cuerpo", c, centro, tam, style, ...resto }: Props) {
+  // Si el estilo agranda la letra sin decir el interlineado, se calcula: con el
+  // interlineado fijo de la variante el texto grande se encimaba con lo de abajo.
+  const plano = StyleSheet.flatten(style) as TextStyle | undefined;
+  const interlineado = plano?.fontSize && !plano.lineHeight ? { lineHeight: Math.round(plano.fontSize * 1.22) } : null;
   return (
     <Text
       {...resto}
-      style={[estilos[v], c ? { color: c } : null, centro ? { textAlign: "center" } : null, tam ? { fontSize: tam, lineHeight: Math.round(tam * 1.2) } : null, style]}
+      style={[estilos[v], c ? { color: c } : null, centro ? { textAlign: "center" } : null, tam ? { fontSize: tam, lineHeight: Math.round(tam * 1.22) } : null, style, interlineado]}
     />
   );
 }

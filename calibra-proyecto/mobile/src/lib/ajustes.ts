@@ -7,10 +7,12 @@ export interface Ajustes {
   sonido: boolean;
   haptica: boolean;
   envioAutomatico: boolean;
+  // "auto": livianas en teléfonos de poca memoria (ver rendimiento.ts).
+  animaciones: "auto" | "completas" | "livianas";
 }
 
 const CLAVE = "prodigia:ajustes";
-let estado: Ajustes = { sonido: true, haptica: true, envioAutomatico: false };
+let estado: Ajustes = { sonido: true, haptica: true, envioAutomatico: false, animaciones: "auto" };
 const oyentes = new Set<() => void>();
 
 export function leerAjustes(): Ajustes {

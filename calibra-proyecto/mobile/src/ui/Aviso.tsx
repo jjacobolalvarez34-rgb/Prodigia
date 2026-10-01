@@ -52,7 +52,7 @@ export default function AvisoGlobal() {
     <View pointerEvents="none" style={[styles.capa, { top: insets.top + 8 }]}>
       <Animated.View
         key={aviso.id}
-        entering={SlideInUp.springify().damping(16)}
+        entering={SlideInUp.duration(300)}
         exiting={FadeOutUp.duration(200)}
         style={[styles.aviso, { borderColor: conAlfa(c, 0.6), boxShadow: `0px 8px 30px ${conAlfa(c, 0.25)}` }]}
       >

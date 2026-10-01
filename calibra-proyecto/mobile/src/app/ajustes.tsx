@@ -6,6 +6,7 @@ import { Alert, Pressable, StyleSheet, Switch, View } from "react-native";
 import { cambiarAjuste, useAjustes } from "~/lib/ajustes";
 import { vibrar } from "~/lib/efectos";
 import { URL_WEB } from "~/lib/entorno";
+import { EQUIPO_LIVIANO } from "~/lib/rendimiento";
 import { limpiarJugador } from "~/lib/jugador";
 import { borrarResumen } from "~/lib/resumen";
 import { useSesion } from "~/lib/sesion";
@@ -77,6 +78,16 @@ export default function Ajustes() {
           titulo="Vibración"
           nota="Al tocar teclas y botones"
           derecha={<Switch value={ajustes.haptica} onValueChange={(v) => cambiarAjuste("haptica", v)} trackColor={{ true: color.primario, false: color.surface3 }} thumbColor="#fff" />}
+        />
+        <Fila
+          titulo="Animaciones"
+          nota={ajustes.animaciones === "auto" ? `Automático (${EQUIPO_LIVIANO ? "livianas en este teléfono" : "completas"})` : ajustes.animaciones === "livianas" ? "Livianas: menos efectos, más fluidez" : "Completas: todos los efectos"}
+          onPress={() => cambiarAjuste("animaciones", ajustes.animaciones === "auto" ? "livianas" : ajustes.animaciones === "livianas" ? "completas" : "auto")}
+          derecha={
+            <Texto v="fuerte" tam={13} c={color.primarioClaro}>
+              {ajustes.animaciones === "auto" ? "Auto" : ajustes.animaciones === "livianas" ? "Livianas" : "Completas"}
+            </Texto>
+          }
         />
       </Tarjeta>
 

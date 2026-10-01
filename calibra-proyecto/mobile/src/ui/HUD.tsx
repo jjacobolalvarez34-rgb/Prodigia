@@ -1,7 +1,8 @@
 import { useRouter } from "expo-router";
 import { useEffect, useRef, type ReactNode } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from "react-native-reanimated";
+import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from "react-native-reanimated";
+import { useAnimacionActiva } from "~/lib/rendimiento";
 import { sonar, vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
 import { color } from "~/tema";
@@ -52,10 +53,15 @@ export default function HUD({ derecha }: { derecha?: ReactNode }) {
   const estiloSalto = useAnimatedStyle(() => ({ transform: [{ scale: salto.value }] }));
 
   const punto = useSharedValue(1);
+  const activa = useAnimacionActiva();
   useEffect(() => {
-    if (avisos === 0) return;
+    if (avisos === 0 || !activa) {
+      cancelAnimation(punto);
+      return;
+    }
     punto.set(withRepeat(withSequence(withTiming(1.35, { duration: 600, easing: Easing.out(Easing.quad) }), withTiming(1, { duration: 600 })), -1));
-  }, [avisos, punto]);
+    return () => cancelAnimation(punto);
+  }, [avisos, activa, punto]);
   const estiloPunto = useAnimatedStyle(() => ({ transform: [{ scale: punto.value }] }));
 
   return (

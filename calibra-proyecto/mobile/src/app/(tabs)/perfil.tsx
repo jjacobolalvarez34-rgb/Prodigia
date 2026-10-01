@@ -96,7 +96,7 @@ export default function Perfil() {
 
   return (
     <PantallaPestana
-      onRefrescar={cargar}
+     
       hudDerecha={
         <View style={styles.fila}>
           <BotonIcono etiqueta="Editar placa" onPress={() => router.push("/editar-placa")}>

@@ -50,7 +50,7 @@ export default function ClanPublico() {
   const lleno = clan.cantidad_miembros >= clan.capacidad;
 
   return (
-    <PantallaApilada titulo={clan.nombre} subtitulo={`${tier.nombre} · Nivel ${clan.nivel_clan}`} onRefrescar={cargar}>
+    <PantallaApilada titulo={clan.nombre} subtitulo={`${tier.nombre} · Nivel ${clan.nivel_clan}`}>
       <View style={[styles.heroe, { borderColor: conAlfa(clan.color_estandarte, 0.5) }]}>
         <Ciudad semilla={`clan-${clan.clan_id}`} acento={clan.color_estandarte} alto={160} radio={0} densidad={0.7 + tier.tier * 0.12} />
         <View style={styles.heroeTexto}>

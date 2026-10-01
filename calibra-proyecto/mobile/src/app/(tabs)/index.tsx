@@ -99,7 +99,7 @@ export default function Hoy() {
 
   let indice = 0;
   return (
-    <PantallaPestana onRefrescar={cargar}>
+    <PantallaPestana>
       <View>
         <Texto v="micro">{DIAS[ahora.getDay()]}</Texto>
         <Texto v="h1">Hola, {nombre}</Texto>
@@ -184,7 +184,7 @@ export default function Hoy() {
               </Texto>
             </View>
             <Barra valor={progreso?.avance ?? 0} acento={mundoContinuar.base} />
-            <Boton3D titulo="▶  Jugar" tamano="sm" acento={mundoContinuar.base} brillo onPress={() => router.push(continuar.ruta)} />
+            <Boton3D titulo="Jugar" tamano="sm" acento={mundoContinuar.base} brillo onPress={() => router.push(continuar.ruta)} />
           </View>
         </Tarjeta>
       )}

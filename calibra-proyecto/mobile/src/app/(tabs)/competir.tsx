@@ -152,7 +152,7 @@ function Podio({ filas, miId }: { filas: { placa: PlacaDatos; xp: number }[]; mi
       {orden.map((f) => {
         const puesto = filas.indexOf(f) + 1;
         return (
-          <Animated.View key={f.placa.id} entering={FadeInDown.delay(puesto * 120).springify().damping(13)} style={{ flex: 1, alignItems: "center", gap: 6 }}>
+          <Animated.View key={f.placa.id} entering={FadeInDown.delay(puesto * 120).duration(360)} style={{ flex: 1, alignItems: "center", gap: 6 }}>
             <AvatarMarco url={f.placa.avatarUrl} nombre={f.placa.nombre} marco={f.placa.marco} tam={puesto === 1 ? 58 : 46} />
             <NombreEstilizado texto={f.placa.nombre} fuente={f.placa.fuente} animacion={f.placa.animacion} tam={13} estilo={{ textAlign: "center", maxWidth: 100 }} />
             <Texto v="mono" tam={12} c={colores[puesto]}>
@@ -250,7 +250,7 @@ export default function Competir() {
 
   return (
     <PantallaPestana
-      onRefrescar={cargar}
+     
       hudDerecha={
         enLinea > 0 ? (
           <View style={styles.enLinea}>

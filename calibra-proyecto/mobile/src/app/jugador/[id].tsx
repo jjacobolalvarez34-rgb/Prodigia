@@ -87,7 +87,7 @@ export default function Jugador() {
 
   return (
     <View style={{ flex: 1 }}>
-      <PantallaApilada titulo={placa?.nombre ?? "Jugador"} onRefrescar={cargar}>
+      <PantallaApilada titulo={placa?.nombre ?? "Jugador"}>
         {placa && <PlacaCompleta placa={placa} />}
         {!esYo && placa && (
           <View style={styles.fila}>

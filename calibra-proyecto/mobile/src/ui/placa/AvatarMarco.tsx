@@ -2,7 +2,8 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
+import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
+import { useAnimacionActiva } from "~/lib/rendimiento";
 import { infoMarco } from "~/lib/placa";
 import { aclarar, brillo, color, fuente, oscurecer } from "~/tema";
 import Texto from "../Texto";
@@ -32,11 +33,16 @@ export default function AvatarMarco({ url, nombre, marco = "ninguno", tam = 40, 
   const info = infoMarco(marco);
   const grosor = tam >= 60 ? 3 : 2;
   const pulso = useSharedValue(0.5);
+  const activa = useAnimacionActiva();
 
   useEffect(() => {
-    if (info.tipo !== "neon" || !animar) return;
+    if (info.tipo !== "neon" || !animar || !activa) {
+      cancelAnimation(pulso);
+      return;
+    }
     pulso.set(withRepeat(withSequence(withTiming(1, { duration: 1100, easing: Easing.inOut(Easing.quad) }), withTiming(0.35, { duration: 1100 })), -1));
-  }, [info.tipo, animar, pulso]);
+    return () => cancelAnimation(pulso);
+  }, [info.tipo, animar, activa, pulso]);
   const estiloPulso = useAnimatedStyle(() => ({ opacity: pulso.value, transform: [{ scale: 1 + pulso.value * 0.06 }] }));
 
   const interior = tam - grosor * 2;

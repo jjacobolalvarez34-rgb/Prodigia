@@ -163,7 +163,7 @@ export default function Reto() {
           <BotonAtras />
         </View>
         <ScrollView contentContainerStyle={{ padding: 16, gap: 14 }}>
-          <Animated.View entering={ZoomIn.springify().damping(10)} style={{ alignItems: "center", gap: 6 }}>
+          <Animated.View entering={ZoomIn.duration(320)} style={{ alignItems: "center", gap: 6 }}>
             <Texto v="micro" c={color.logro}>
               {etiqueta}
             </Texto>
@@ -215,7 +215,7 @@ export default function Reto() {
           <BotonAtras />
         </View>
         <ScrollView contentContainerStyle={{ padding: 16, gap: 14 }}>
-          <Animated.View entering={ZoomIn.springify().damping(9)} style={{ alignItems: "center", gap: 4 }}>
+          <Animated.View entering={ZoomIn.duration(320)} style={{ alignItems: "center", gap: 4 }}>
             <Texto v="micro" c={color.logro}>
               {etiqueta} completado
             </Texto>
@@ -268,7 +268,7 @@ export default function Reto() {
         )}
       </View>
       <ScrollView contentContainerStyle={{ padding: 16, gap: 14, flexGrow: 1, justifyContent: "center" }}>
-        <Animated.View key={indice} entering={FadeInRight.springify().damping(16)}>
+        <Animated.View key={indice} entering={FadeInRight.duration(300)}>
           <TarjetaProblema acento={m?.neon ?? color.logro} combo={combo} feedback={!elegida ? "idle" : elegida === p.respuesta ? "correcto" : "incorrecto"} sello={sello} sacudida={sacudida}>
             <Texto v="micro" c={m?.neon}>
               {m?.nombre ?? p.mundo}
@@ -285,7 +285,7 @@ export default function Reto() {
             const correcta = !!elegida && op === p.respuesta;
             const mala = elegida === op && op !== p.respuesta;
             return (
-              <Animated.View key={`${indice}-${op}`} entering={FadeInDown.delay(80 + i * 60).springify().damping(15)}>
+              <Animated.View key={`${indice}-${op}`} entering={FadeInDown.delay(80 + i * 60).duration(300)}>
                 <Pressable
                   disabled={!!elegida}
                   onPress={() => {

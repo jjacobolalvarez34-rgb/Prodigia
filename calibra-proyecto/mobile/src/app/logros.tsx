@@ -65,7 +65,7 @@ export default function Logros() {
   const titulosGanados = titulos.filter((t) => t.ganado).length;
 
   return (
-    <PantallaApilada titulo="Logros y títulos" onRefrescar={cargar}>
+    <PantallaApilada titulo="Logros y títulos">
       <Tarjeta acento={color.logro} brillo={0.2}>
         <View style={styles.entre}>
           <Texto v="h3">{seccion === "logros" ? "Logros desbloqueados" : "Títulos ganados"}</Texto>

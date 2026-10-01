@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { View } from "react-native";
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
+import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
+import { useAnimacionActiva } from "~/lib/rendimiento";
 import Svg, { Defs, LinearGradient, Path, Stop } from "react-native-svg";
 import { rangoDeElo } from "~/lib/placa";
 import { aclarar, fuente, oscurecer } from "~/tema";
@@ -21,10 +22,15 @@ export default function InsigniaRango({ elo, tam = 46, animar = true, conTexto =
   const [c1, c2] = rango.degradado ?? [aclarar(rango.colorHex, 0.75), rango.colorHex];
   const c3 = oscurecer(rango.degradado ? rango.degradado[1] : rango.colorHex, 0.5);
   const pulso = useSharedValue(0);
+  const activa = useAnimacionActiva();
   useEffect(() => {
-    if (!animar) return;
+    if (!animar || !activa) {
+      cancelAnimation(pulso);
+      return;
+    }
     pulso.set(withRepeat(withSequence(withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.quad) }), withTiming(0, { duration: 1500 })), -1));
-  }, [animar, pulso]);
+    return () => cancelAnimation(pulso);
+  }, [animar, activa, pulso]);
   const halo = useAnimatedStyle(() => ({ opacity: 0.25 + pulso.value * 0.55, transform: [{ scale: 1 + pulso.value * 0.08 }] }));
   const id = `ins${rango.slug}${tam}`;
   return (

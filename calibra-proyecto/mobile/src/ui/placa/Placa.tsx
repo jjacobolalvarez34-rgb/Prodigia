@@ -49,7 +49,7 @@ export function PlacaCompleta({ placa, extra, estilo }: { placa: PlacaDatos; ext
   const div = divisionDeElo(placa.elo);
   const esGif = placa.fondo === "personalizado" && !!placa.fondoUrl && /\.(gif|webp)(\?|$)/i.test(placa.fondoUrl);
   return (
-    <Animated.View entering={FadeInDown.springify().damping(16)} style={[styles.completa, { borderColor: marco, boxShadow: brillo(marco, 28, 0.32) }, estilo]}>
+    <Animated.View entering={FadeInDown.duration(300)} style={[styles.completa, { borderColor: marco, boxShadow: brillo(marco, 28, 0.32) }, estilo]}>
       <FondoPlaca fondo={placa.fondo} url={placa.fondoUrl} acento={marco} />
       {esGif && (
         <View style={styles.gif}>
@@ -115,7 +115,7 @@ export function PlacaTarjeta({ placa, onPress, pie, indice = 0 }: { placa: Placa
   const marco = colorMarco(placa);
   const rango = rangoDeElo(placa.elo);
   return (
-    <Animated.View entering={FadeInDown.delay(indice * 60).springify().damping(16)} style={{ flex: 1 }}>
+    <Animated.View entering={FadeInDown.delay(indice * 60).duration(300)} style={{ flex: 1 }}>
       <Pressable
         onPress={() => {
           vibrar.seleccion();
@@ -157,7 +157,7 @@ export function PlacaFila({
   const router = useRouter();
   const colorPuesto = puesto === 1 ? color.logro : puesto === 2 ? "#C9D3E6" : puesto === 3 ? "#D4925A" : color.texto2;
   return (
-    <Animated.View entering={FadeInDown.delay(Math.min(indice, 12) * 40).springify().damping(17)}>
+    <Animated.View entering={FadeInDown.delay(Math.min(indice, 12) * 40).duration(300)}>
       <Pressable
         onPress={() => {
           vibrar.seleccion();

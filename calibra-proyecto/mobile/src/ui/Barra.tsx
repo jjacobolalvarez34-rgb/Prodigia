@@ -1,7 +1,8 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from "react-native";
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from "react-native-reanimated";
+import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from "react-native-reanimated";
+import { useAnimacionActiva } from "~/lib/rendimiento";
 import { aclarar, color, oscurecer } from "~/tema";
 
 // Barra de progreso que se llena con una curva suave (y vuelve a animarse cada vez
@@ -17,9 +18,13 @@ interface Props {
   fondo?: string;
   estilo?: StyleProp<ViewStyle>;
   sinDestello?: boolean;
+  // Destello que recorre la barra cada tanto (solo barras protagonistas).
+  destello?: boolean;
 }
 
-export default function Barra({ valor, acento = color.primarioBase, colores, alto = 8, demora = 0, duracion = 900, fondo = color.surface3, estilo, sinDestello }: Props) {
+export default function Barra({ valor, acento = color.primarioBase, colores, alto = 8, demora = 0, duracion = 900, fondo = color.surface3, estilo, destello: conDestello = false }: Props) {
+  const sinDestello = !conDestello;
+  const activa = useAnimacionActiva();
   const [ancho, setAncho] = useState(0);
   const progreso = useSharedValue(0);
   const destello = useSharedValue(-0.3);
@@ -30,11 +35,15 @@ export default function Barra({ valor, acento = color.primarioBase, colores, alt
   }, [objetivo, demora, duracion, progreso]);
 
   useEffect(() => {
-    if (sinDestello) return;
-    destello.set(withRepeat(withSequence(withTiming(-0.3, { duration: 0 }), withDelay(2200, withTiming(1.3, { duration: 1100 }))), -1));
-  }, [sinDestello, destello]);
+    if (sinDestello || !activa) {
+      cancelAnimation(destello);
+      return;
+    }
+    destello.set(withRepeat(withSequence(withTiming(-0.3, { duration: 0 }), withDelay(2600, withTiming(1.3, { duration: 1100 }))), -1));
+    return () => cancelAnimation(destello);
+  }, [sinDestello, activa, destello]);
 
-  const estiloRelleno = useAnimatedStyle(() => ({ width: progreso.value * ancho }));
+  const estiloRelleno = useAnimatedStyle(() => ({ transform: [{ translateX: -(1 - progreso.value) * ancho }] }));
   const estiloDestello = useAnimatedStyle(() => ({ transform: [{ translateX: destello.value * ancho }] }));
   const [c1, c2] = colores ?? [oscurecer(acento, 0.95), aclarar(acento, 0.3)];
 
@@ -43,7 +52,7 @@ export default function Barra({ valor, acento = color.primarioBase, colores, alt
       onLayout={(e: LayoutChangeEvent) => setAncho(e.nativeEvent.layout.width)}
       style={[{ height: alto, borderRadius: alto, backgroundColor: fondo, overflow: "hidden" }, estilo]}
     >
-      <Animated.View style={[{ height: "100%", borderRadius: alto, overflow: "hidden" }, estiloRelleno]}>
+      <Animated.View style={[{ height: "100%", width: ancho, borderRadius: alto, overflow: "hidden" }, estiloRelleno]}>
         <LinearGradient colors={[c1, c2]} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={StyleSheet.absoluteFill} />
         {!sinDestello && (
           <Animated.View style={[styles.destello, estiloDestello]}>

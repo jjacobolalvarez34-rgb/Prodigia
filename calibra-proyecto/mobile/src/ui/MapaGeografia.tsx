@@ -27,6 +27,8 @@ interface Props {
   objetivoId: string | null;
   seleccionId: string | null;
   respondido: boolean;
+  // Sin tocar (antes de la cuenta 3-2-1 o al terminar), sin revelar la respuesta.
+  bloqueado?: boolean;
   onElegir: (id: string) => void;
 }
 
@@ -35,7 +37,7 @@ function clamp(v: number, min: number, max: number) {
   return Math.min(max, Math.max(min, v));
 }
 
-export default function MapaGeografia({ continente, acento, objetivoId, seleccionId, respondido, onElegir }: Props) {
+export default function MapaGeografia({ continente, acento, objetivoId, seleccionId, respondido, bloqueado, onElegir }: Props) {
   const [ancho, setAncho] = useState(0);
   const alto = (ancho * ALTO_MAPA) / ANCHO_MAPA;
   const [escalaJs, setEscalaJs] = useState(1);
@@ -87,7 +89,7 @@ export default function MapaGeografia({ continente, acento, objetivoId, seleccio
     });
 
   function tocar(x: number, y: number) {
-    if (respondido || ancho === 0) return;
+    if (respondido || bloqueado || ancho === 0) return;
     const s = escala.get();
     // De la pantalla (con zoom y desplazamiento) al lienzo 480 × 420 del mapa.
     const px = ((x - ancho / 2 - tx.get()) / s + ancho / 2) * (ANCHO_MAPA / ancho);

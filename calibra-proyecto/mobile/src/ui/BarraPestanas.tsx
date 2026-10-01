@@ -1,15 +1,15 @@
-import type { BottomTabBarProps } from "expo-router/tabs";
 import { useEffect, useState, type ComponentType } from "react";
-import { Pressable, StyleSheet, View, type LayoutChangeEvent } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from "react-native-reanimated";
+import { Animated, Pressable, StyleSheet, View, type LayoutChangeEvent } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
 import { color, conAlfa, fuente } from "~/tema";
 import { IconoCompetir, IconoHoy, IconoMundos, IconoPerfil, IconoSocial } from "./Iconos";
 import Texto from "./Texto";
 
-// Barra inferior de 5 pestañas (maquetas-android.html): la píldora violeta se
-// desliza con resorte hasta la pestaña elegida y el ícono da un saltito.
+// Barra inferior de 5 pestañas (maquetas-android.html). La píldora violeta sigue el
+// dedo mientras se desliza entre pestañas (`position` del paginador, en el hilo
+// nativo) y el ícono elegido da un saltito.
 
 const PESTANAS: Record<string, { titulo: string; Icono: ComponentType<{ tam?: number; c?: string }> }> = {
   index: { titulo: "Hoy", Icono: IconoHoy },
@@ -19,17 +19,30 @@ const PESTANAS: Record<string, { titulo: string; Icono: ComponentType<{ tam?: nu
   perfil: { titulo: "Perfil", Icono: IconoPerfil },
 };
 
+interface Ruta {
+  key: string;
+  name: string;
+  params?: object;
+}
+
+interface Props {
+  state: { index: number; routes: Ruta[] };
+  navigation: { emit: (e: { type: "tabPress"; target: string; canPreventDefault: true }) => { defaultPrevented: boolean }; navigate: (nombre: string, params?: object) => void };
+  position: Animated.AnimatedInterpolation<number>;
+}
+
 function Pestana({ nombre, activa, onPress, insignia }: { nombre: string; activa: boolean; onPress: () => void; insignia: number }) {
   const { titulo, Icono } = PESTANAS[nombre] ?? PESTANAS.index;
-  const salto = useSharedValue(1);
+  const [salto] = useState(() => new Animated.Value(1));
   useEffect(() => {
-    if (activa) salto.set(withSequence(withTiming(0.82, { duration: 70 }), withSpring(1, { damping: 7, stiffness: 320 })));
+    if (!activa) return;
+    salto.setValue(0.82);
+    Animated.spring(salto, { toValue: 1, friction: 4, tension: 220, useNativeDriver: true }).start();
   }, [activa, salto]);
-  const estiloIcono = useAnimatedStyle(() => ({ transform: [{ scale: salto.value }, { translateY: (1 - salto.value) * 6 }] }));
   return (
     <Pressable onPress={onPress} style={styles.pestana} accessibilityRole="tab" accessibilityState={{ selected: activa }} accessibilityLabel={titulo}>
       <View style={styles.zonaIcono}>
-        <Animated.View style={estiloIcono}>
+        <Animated.View style={{ transform: [{ scale: salto }] }}>
           <Icono tam={21} c={activa ? color.primarioClaro : color.texto2} />
         </Animated.View>
         {insignia > 0 && (
@@ -43,22 +56,21 @@ function Pestana({ nombre, activa, onPress, insignia }: { nombre: string; activa
   );
 }
 
-export default function BarraPestanas({ state, navigation, insets }: BottomTabBarProps) {
+export default function BarraPestanas({ state, navigation, position }: Props) {
+  const insets = useSafeAreaInsets();
   const [ancho, setAncho] = useState(0);
   const { resumen } = useJugador();
-  const x = useSharedValue(0);
-  const anchoPestana = ancho / state.routes.length;
-
-  useEffect(() => {
-    if (anchoPestana > 0) x.set(withSpring(state.index * anchoPestana, { damping: 17, stiffness: 190, mass: 0.8 }));
-  }, [state.index, anchoPestana, x]);
-
-  const estiloPildora = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
+  const n = state.routes.length;
+  const anchoPestana = ancho / n;
+  const x =
+    anchoPestana > 0
+      ? position.interpolate({ inputRange: state.routes.map((_, i) => i), outputRange: state.routes.map((_, i) => i * anchoPestana), extrapolate: "clamp" })
+      : 0;
 
   return (
     <View style={[styles.barra, { paddingBottom: Math.max(insets.bottom, 10) }]} onLayout={(e: LayoutChangeEvent) => setAncho(e.nativeEvent.layout.width - 12)}>
       {anchoPestana > 0 && (
-        <Animated.View style={[styles.pildoraCarril, { width: anchoPestana }, estiloPildora]} pointerEvents="none">
+        <Animated.View style={[styles.pildoraCarril, { width: anchoPestana, transform: [{ translateX: x }] }]} pointerEvents="none">
           <View style={styles.pildora} />
         </Animated.View>
       )}
@@ -88,10 +100,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     borderTopWidth: 1,
     borderTopColor: color.border,
-    backgroundColor: "rgba(9,12,20,0.97)",
+    backgroundColor: color.bg,
   },
   pildoraCarril: { position: "absolute", top: 8, left: 6, height: 30, alignItems: "center" },
-  pildora: { width: 52, height: 30, borderRadius: 999, backgroundColor: conAlfa(color.primario, 0.24), boxShadow: `0px 0px 14px ${conAlfa(color.primario, 0.35)}` },
+  pildora: { width: 52, height: 30, borderRadius: 999, backgroundColor: conAlfa(color.primario, 0.26) },
   pestana: { flex: 1, alignItems: "center", gap: 3 },
   zonaIcono: { height: 30, width: 52, alignItems: "center", justifyContent: "center" },
   titulo: { fontFamily: fuente.cuerpoFuerte, fontSize: 10.5 },

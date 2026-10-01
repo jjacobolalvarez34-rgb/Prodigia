@@ -1,20 +1,22 @@
-import { Tabs } from "expo-router/tabs";
+import TopTabs from "expo-router/js-top-tabs";
 import BarraPestanas from "~/ui/BarraPestanas";
 import { color } from "~/tema";
 
-// Las 5 pestañas de la app (03-PANTALLAS-Y-NAVEGACION.md §1). Cada pestaña
-// conserva su estado al cambiar de una a otra.
+// Las 5 pestañas de la app (03-PANTALLAS-Y-NAVEGACION.md §1). Se puede deslizar el
+// dedo entre una y otra (paginador nativo), y la barra de abajo sigue el gesto.
+// Cada pestaña conserva su estado; las que nunca se abrieron se cargan al llegar.
 export default function LayoutPestanas() {
   return (
-    <Tabs
-      tabBar={(props) => <BarraPestanas {...props} />}
-      screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: color.bg }, animation: "shift" }}
+    <TopTabs
+      tabBarPosition="bottom"
+      tabBar={(props: Parameters<typeof BarraPestanas>[0]) => <BarraPestanas {...props} />}
+      screenOptions={{ lazy: true, lazyPreloadDistance: 1, swipeEnabled: true, animationEnabled: true, sceneStyle: { backgroundColor: color.bg } }}
     >
-      <Tabs.Screen name="index" />
-      <Tabs.Screen name="mundos" />
-      <Tabs.Screen name="competir" />
-      <Tabs.Screen name="social" />
-      <Tabs.Screen name="perfil" />
-    </Tabs>
+      <TopTabs.Screen name="index" />
+      <TopTabs.Screen name="mundos" />
+      <TopTabs.Screen name="competir" />
+      <TopTabs.Screen name="social" />
+      <TopTabs.Screen name="perfil" />
+    </TopTabs>
   );
 }

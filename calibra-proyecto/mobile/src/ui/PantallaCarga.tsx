@@ -1,8 +1,8 @@
-import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, Easing, StyleSheet, Text, View } from "react-native";
 import { color, mono, MUNDOS, fuente } from "~/tema";
+import Logo from "./Logo";
 
 // Pantalla de carga al abrir la app: el logo late, los símbolos de los 13 mundos
 // suben flotando con su neón, la barra muestra cuánto falta (el progreso es real:
@@ -140,7 +140,7 @@ export default function PantallaCarga({ progreso, etapa, onTerminada }: Props) {
             <View style={styles.orbitaPunto} />
           </Animated.View>
           <Animated.View style={{ transform: [{ scale: escalaLogo }] }}>
-            <Image source={require("../../assets/images/android-icon-foreground.png")} style={styles.logo} contentFit="contain" />
+            <Logo tam={120} />
           </Animated.View>
         </View>
         <Text style={styles.marca}>Prodigia</Text>
@@ -177,7 +177,6 @@ const styles = StyleSheet.create({
   halo: { position: "absolute", width: 170, height: 170, borderRadius: 85, backgroundColor: color.primario, shadowColor: color.primario, shadowRadius: 40, shadowOpacity: 1, elevation: 20 },
   orbita: { position: "absolute", width: 176, height: 176, borderRadius: 88, borderWidth: 1.5, borderColor: "#9B85FF55" },
   orbitaPunto: { position: "absolute", top: -5, left: 83, width: 10, height: 10, borderRadius: 5, backgroundColor: color.logro, shadowColor: color.logro, shadowRadius: 8, shadowOpacity: 1 },
-  logo: { width: 190, height: 190 },
   marca: { color: color.texto, fontSize: 38, fontFamily: fuente.display, letterSpacing: -0.5 },
   lema: { color: color.texto2, fontSize: 15 },
   abajo: { paddingHorizontal: 28, paddingBottom: 56, gap: 12 },

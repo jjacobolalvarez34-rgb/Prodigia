@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, BackHandler, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,7 +23,7 @@ import { useSesion } from "~/lib/sesion";
 import { mensajeError } from "~/lib/supabase";
 import Glifos from "~/ui/Glifos";
 import MapaGeografia from "~/ui/MapaGeografia";
-import { animarAcierto, animarError, BarraRival, Cabecera, Flotante, Progreso, TarjetaProblema } from "~/ui/Sprint";
+import { animarAcierto, animarError, BarraRival, Cabecera, CartelFinal, CuentaInicio, Flotante, Progreso, TarjetaProblema, useReloj, useSalida } from "~/ui/Sprint";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente, MUNDO_POR_SLUG } from "~/tema";
 
@@ -44,18 +44,18 @@ export default function SprintGeografia() {
   const [pregunta, setPregunta] = useState<Pregunta | null>(null);
   const [seleccionId, setSeleccionId] = useState<string | null>(null);
   const [respondido, setRespondido] = useState(false);
-  const [restanteMs, setRestanteMs] = useState(DURACION_SPRINT_GEO_MS);
+  const [inicio, setInicio] = useState<number | null>(null);
+  const [final, setFinal] = useState<"tiempo" | "listo" | null>(null);
   const [resultados, setResultados] = useState<boolean[]>([]);
   const [combo, setCombo] = useState(0);
   const [escudos, setEscudos] = useState(ESCUDOS_POR_PARTIDA);
   const [aviso, setAviso] = useState<string | null>(null);
-  const [cerrando, setCerrando] = useState(false);
   const [flotantes, setFlotantes] = useState<{ id: number; texto: string }[]>([]);
-  const [fantasmaRespondidos, setFantasmaRespondidos] = useState(0);
 
   const sello = useSharedValue(1);
   const sacudida = useSharedValue(0);
   const pulso = useSharedValue(0);
+  const { estiloJuego, estiloTeclado: estiloMapa, salir } = useSalida();
 
   const continenteRef = useRef(continente);
   const nivelRef = useRef(1);
@@ -100,9 +100,9 @@ export default function SprintGeografia() {
       const niveles = await cargarNivelesGeografia(miId);
       if (cancelado) return;
       nivelRef.current = niveles[continenteRef.current];
-      inicioRef.current = Date.now();
-      sonar("ya");
       nuevaPregunta();
+      // En duelo la cuenta ya pasó en la pantalla VS.
+      if (dueloId) arrancar();
     })();
     return () => {
       cancelado = true;
@@ -110,22 +110,18 @@ export default function SprintGeografia() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [miId]);
 
-  useEffect(() => {
-    if (!pregunta || terminadoRef.current) return;
-    const acumulado = (duelo?.rivalRespuestas ?? []).reduce<number[]>((acc, r) => [...acc, (acc[acc.length - 1] ?? 0) + r.timeMs], []);
-    const id = setInterval(() => {
-      const pasado = Date.now() - inicioRef.current;
-      const restante = Math.max(0, DURACION_SPRINT_GEO_MS - pasado);
-      setRestanteMs(restante);
-      if (acumulado.length) setFantasmaRespondidos(acumulado.filter((t) => t <= pasado).length);
-      if (restante === 0 && !ocupadoRef.current) {
-        clearInterval(id);
-        terminar();
-      }
-    }, 100);
-    return () => clearInterval(id);
+  function arrancar() {
+    const ahora = Date.now();
+    inicioRef.current = ahora;
+    mostradaEnRef.current = ahora;
+    setInicio(ahora);
+  }
+
+  const alAcabarElTiempo = useCallback(() => {
+    if (!ocupadoRef.current) terminar("tiempo");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pregunta !== null]);
+  }, []);
+  const progresoReloj = useReloj(inicio, DURACION_SPRINT_GEO_MS, alAcabarElTiempo, final !== null);
 
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -151,11 +147,14 @@ export default function SprintGeografia() {
     ]);
   }
 
-  async function terminar() {
+  async function terminar(motivo: "tiempo" | "listo") {
     if (terminadoRef.current) return;
     terminadoRef.current = true;
-    setCerrando(true);
+    setFinal(motivo);
+    sonar(motivo === "tiempo" ? "cuenta" : "ya");
     vibrar.exito();
+    salir();
+    const minimo = new Promise((r) => setTimeout(r, 1100));
     await Promise.allSettled(pendientesRef.current);
     try {
       const r = await cerrarPartida(xpRef.current, "geografia", dueloId ?? undefined);
@@ -165,10 +164,11 @@ export default function SprintGeografia() {
       if (dueloId && duelo) {
         const tiempos = respuestasRef.current.map((x) => x.timeMs);
         resultadoDuelo = await registrarResultadoDuelo(dueloId, correctos / total, tiempos.length ? tiempos.reduce((a, b) => a + b, 0) / tiempos.length : 0, xpRef.current, respuestasRef.current);
-        if (duelo.serieId) {
-          router.replace({ pathname: "/duelo/serie/[id]", params: { id: duelo.serieId } });
-          return;
-        }
+      }
+      await minimo;
+      if (dueloId && duelo?.serieId) {
+        router.replace({ pathname: "/duelo/serie/[id]", params: { id: duelo.serieId } });
+        return;
       }
       router.replace({
         pathname: "/resultado",
@@ -176,17 +176,16 @@ export default function SprintGeografia() {
           mundo: "geografia",
           tema: continenteRef.current,
           repetir: dueloId ? "" : JSON.stringify({ pathname: "/geografia/sprint", params: { continente: continenteRef.current } }),
-          datos: JSON.stringify({ ...r, xp: xpRef.current, correctos, total, tiempoMs: Date.now() - inicioRef.current, duelo: resultadoDuelo, rival: duelo?.rivalNombre ?? null }),
+          datos: JSON.stringify({ ...r, xp: xpRef.current, correctos, total, tiempoMs: Math.min(DURACION_SPRINT_GEO_MS, Date.now() - inicioRef.current), duelo: resultadoDuelo, rival: duelo?.rivalNombre ?? null }),
         },
       });
     } catch (e) {
-      setCerrando(false);
       Alert.alert("No se pudo cerrar la partida", mensajeError(e), [{ text: "Volver", onPress: () => router.back() }]);
     }
   }
 
   function responder(id: string) {
-    if (!pregunta || respondido || ocupadoRef.current || terminadoRef.current) return;
+    if (!pregunta || respondido || ocupadoRef.current || terminadoRef.current || inicioRef.current === 0) return;
     ocupadoRef.current = true;
     const timeMs = Date.now() - mostradaEnRef.current;
     const correcto = id === pregunta.id;
@@ -244,19 +243,20 @@ export default function SprintGeografia() {
       () => {
         ocupadoRef.current = false;
         if (terminadoRef.current) return;
-        if (respuestasRef.current.length >= PREGUNTAS_POR_PARTIDA || Date.now() - inicioRef.current >= DURACION_SPRINT_GEO_MS) terminar();
+        if (respuestasRef.current.length >= PREGUNTAS_POR_PARTIDA) terminar("listo");
+        else if (Date.now() - inicioRef.current >= DURACION_SPRINT_GEO_MS) terminar("tiempo");
         else nuevaPregunta();
       },
       correcto ? FEEDBACK_OK_MS : FEEDBACK_ERROR_MS
     );
   }
 
-  if (!pregunta || cerrando) {
+  if (!pregunta) {
     return (
       <SafeAreaView style={[styles.pantalla, styles.centro]}>
         <Glifos glifos={GEOGRAFIA.glifos} acento={GEOGRAFIA.neon} />
         <ActivityIndicator color={GEOGRAFIA.neon} size="large" />
-        <Texto v="nota">{cerrando ? (dueloId ? "Comparando con tu rival…" : "Guardando tu partida…") : "Desplegando el mapa…"}</Texto>
+        <Texto v="nota">Desplegando el mapa…</Texto>
       </SafeAreaView>
     );
   }
@@ -264,16 +264,16 @@ export default function SprintGeografia() {
   const avanzada = esPreguntaAvanzada(pregunta);
   const acerto = respondido && seleccionId === pregunta.id;
   const nombreElegido = respondido && seleccionId && !avanzada ? nombrePais(continente, seleccionId) : null;
-  const rivalRespondidos = duelo?.rivalYaJugo ? fantasmaRespondidos : rivalVivo?.respondidos ?? null;
   const feedback = !respondido ? "idle" : acerto ? "correcto" : "incorrecto";
 
   return (
     <SafeAreaView style={styles.pantalla}>
       <Glifos glifos={GEOGRAFIA.glifos} acento={GEOGRAFIA.neon} cantidad={7} pulso={pulso} />
-      <Cabecera onSalir={confirmarSalida} restanteMs={restanteMs} totalMs={DURACION_SPRINT_GEO_MS} combo={combo} acento={GEOGRAFIA.neon} />
+      <Animated.View style={[{ flex: 1 }, estiloJuego]}>
+      <Cabecera onSalir={confirmarSalida} inicio={inicio} totalMs={DURACION_SPRINT_GEO_MS} combo={combo} acento={GEOGRAFIA.neon} progreso={progresoReloj} detenido={final !== null} />
       <Progreso resultados={resultados} total={PREGUNTAS_POR_PARTIDA} acento={GEOGRAFIA.neon} escudos={escudos} />
-      {duelo && rivalRespondidos != null && (
-        <BarraRival nombre={duelo.rivalNombre} respondidos={rivalRespondidos} total={PREGUNTAS_POR_PARTIDA} yo={resultados.length} fantasma={duelo.rivalYaJugo} />
+      {duelo && (
+        <BarraRival nombre={duelo.rivalNombre} total={PREGUNTAS_POR_PARTIDA} yo={resultados.length} inicio={inicio} respuestasFantasma={duelo.rivalYaJugo ? duelo.rivalRespuestas : null} enVivo={rivalVivo?.respondidos ?? null} />
       )}
 
       <ScrollView contentContainerStyle={styles.zona} scrollEnabled={avanzada}>
@@ -301,7 +301,7 @@ export default function SprintGeografia() {
               const esCorrecta = respondido && o.id === pregunta.id;
               const esIncorrecta = respondido && o.id === seleccionId && o.id !== pregunta.id;
               return (
-                <Animated.View key={o.id} entering={FadeInDown.delay(i * 60).springify()}>
+                <Animated.View key={o.id} entering={FadeInDown.delay(i * 60).duration(300)}>
                   <Pressable
                     disabled={respondido}
                     onPress={() => {
@@ -324,7 +324,9 @@ export default function SprintGeografia() {
             })}
           </View>
         ) : (
-          <MapaGeografia continente={continente} acento={GEOGRAFIA.neon} objetivoId={pregunta.id} seleccionId={seleccionId} respondido={respondido} onElegir={responder} />
+          <Animated.View style={estiloMapa}>
+            <MapaGeografia continente={continente} acento={GEOGRAFIA.neon} objetivoId={pregunta.id} seleccionId={seleccionId} respondido={respondido} bloqueado={inicio == null || final !== null} onElegir={responder} />
+          </Animated.View>
         )}
 
         <View style={styles.feedback}>
@@ -340,6 +342,9 @@ export default function SprintGeografia() {
           )}
         </View>
       </ScrollView>
+      </Animated.View>
+      {!dueloId && inicio == null && <CuentaInicio acento={GEOGRAFIA.neon} onListo={arrancar} />}
+      {final && <CartelFinal texto={final === "tiempo" ? "¡Tiempo!" : "¡Listo!"} nota={dueloId ? "Comparando con tu rival…" : "Contando tus recompensas…"} />}
     </SafeAreaView>
   );
 }

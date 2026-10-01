@@ -2,7 +2,8 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type TextStyle } from "react-native";
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming, type SharedValue } from "react-native-reanimated";
+import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming, type SharedValue } from "react-native-reanimated";
+import { useAnimacionActiva } from "~/lib/rendimiento";
 import { FUENTE_FAMILIA } from "~/lib/placa";
 import { color as colores, fuente as fuentes } from "~/tema";
 
@@ -30,10 +31,15 @@ const GRADIENTES: Record<string, string[]> = {
 function NombreDegradado({ texto, estiloTexto, colores: lista, duracion }: { texto: string; estiloTexto: StyleProp<TextStyle>; colores: string[]; duracion: number }) {
   const [ancho, setAncho] = useState(0);
   const x = useSharedValue(0);
+  const activa = useAnimacionActiva();
   useEffect(() => {
-    if (ancho === 0) return;
+    if (ancho === 0 || !activa) {
+      cancelAnimation(x);
+      return;
+    }
     x.set(withRepeat(withTiming(1, { duration: duracion, easing: Easing.linear }), -1, false));
-  }, [ancho, duracion, x]);
+    return () => cancelAnimation(x);
+  }, [ancho, duracion, x, activa]);
   const estilo = useAnimatedStyle(() => ({ transform: [{ translateX: -x.value * ancho }] }));
   // El degradé se repite dos veces para que el bucle no tenga salto.
   const dobles = [...lista, ...lista.slice(1)];
@@ -54,10 +60,15 @@ function NombreDegradado({ texto, estiloTexto, colores: lista, duracion }: { tex
 function NombreBrillo({ texto, estiloTexto, base }: { texto: string; estiloTexto: StyleProp<TextStyle>; base: string }) {
   const [ancho, setAncho] = useState(0);
   const x = useSharedValue(-0.4);
+  const activa = useAnimacionActiva();
   useEffect(() => {
-    if (ancho === 0) return;
+    if (ancho === 0 || !activa) {
+      cancelAnimation(x);
+      return;
+    }
     x.set(withRepeat(withSequence(withTiming(-0.4, { duration: 0 }), withDelay(900, withTiming(1.2, { duration: 1300, easing: Easing.inOut(Easing.quad) }))), -1));
-  }, [ancho, x]);
+    return () => cancelAnimation(x);
+  }, [ancho, x, activa]);
   const estilo = useAnimatedStyle(() => ({ transform: [{ translateX: x.value * ancho }] }));
   return (
     <MaskedView maskElement={<Text style={estiloTexto}>{texto}</Text>}>
@@ -75,9 +86,15 @@ function NombreBrillo({ texto, estiloTexto, base }: { texto: string; estiloTexto
 
 function NombreNeon({ texto, estiloTexto, base }: { texto: string; estiloTexto: StyleProp<TextStyle>; base: string }) {
   const o = useSharedValue(0.4);
+  const activa = useAnimacionActiva();
   useEffect(() => {
+    if (!activa) {
+      cancelAnimation(o);
+      return;
+    }
     o.set(withRepeat(withSequence(withTiming(1, { duration: 900 }), withTiming(0.35, { duration: 900 }), withTiming(0.9, { duration: 120 }), withTiming(0.5, { duration: 160 })), -1));
-  }, [o]);
+    return () => cancelAnimation(o);
+  }, [o, activa]);
   const estilo = useAnimatedStyle(() => ({ opacity: o.value }));
   return (
     <View>
@@ -105,10 +122,16 @@ function Letra({ letra, i, t, estiloTexto, modo, total }: { letra: string; i: nu
 
 function NombrePorLetras({ texto, estiloTexto, modo }: { texto: string; estiloTexto: StyleProp<TextStyle>; modo: "ondulante" | "deconstruccion" }) {
   const t = useSharedValue(0);
+  const activa = useAnimacionActiva();
   useEffect(() => {
+    if (!activa) {
+      cancelAnimation(t);
+      return;
+    }
     if (modo === "ondulante") t.set(withRepeat(withTiming(1, { duration: 1600, easing: Easing.linear }), -1, false));
     else t.set(withRepeat(withSequence(withDelay(1600, withTiming(1, { duration: 1400, easing: Easing.inOut(Easing.quad) })), withTiming(0, { duration: 0 })), -1));
-  }, [modo, t]);
+    return () => cancelAnimation(t);
+  }, [modo, t, activa]);
   const letras = Array.from(texto);
   return (
     <View style={{ flexDirection: "row", flexWrap: "nowrap" }}>
@@ -121,11 +144,17 @@ function NombrePorLetras({ texto, estiloTexto, modo }: { texto: string; estiloTe
 
 function NombreGlitch({ texto, estiloTexto, base, intenso }: { texto: string; estiloTexto: StyleProp<TextStyle>; base: string; intenso: boolean }) {
   const g = useSharedValue(0);
+  const activa = useAnimacionActiva();
   useEffect(() => {
+    if (!activa) {
+      cancelAnimation(g);
+      return;
+    }
     const quieto = withTiming(0, { duration: intenso ? 900 : 1900 });
     const salto = (v: number, d: number) => withTiming(v, { duration: d, easing: Easing.steps(1) });
     g.set(withRepeat(withSequence(quieto, salto(1, 70), salto(-1, 70), salto(0.6, 60), salto(-0.8, 50), salto(0, 40)), -1));
-  }, [g, intenso]);
+    return () => cancelAnimation(g);
+  }, [g, intenso, activa]);
   const fuerza = intenso ? 4 : 2;
   const rojo = useAnimatedStyle(() => ({ opacity: Math.abs(g.value) > 0.01 ? 0.9 : 0, transform: [{ translateX: -fuerza * g.value }] }));
   const cian = useAnimatedStyle(() => ({ opacity: Math.abs(g.value) > 0.01 ? 0.9 : 0, transform: [{ translateX: fuerza * g.value }] }));
@@ -144,7 +173,9 @@ const SIMBOLOS = "!<>-_\\/[]{}—=+*^?#01ABCDEFXYZ";
 // Shuffle / decrypted: las letras se revuelven y se acomodan una por una, cada 2,6 s.
 function NombreRevuelto({ texto, estiloTexto, base, modo }: { texto: string; estiloTexto: StyleProp<TextStyle>; base: string; modo: "shuffle" | "decrypted" }) {
   const [mostrado, setMostrado] = useState(texto);
+  const activa = useAnimacionActiva();
   useEffect(() => {
+    if (!activa) return;
     let paso = 0;
     let intervalo: ReturnType<typeof setInterval> | null = null;
     const letras = Array.from(texto);
@@ -174,7 +205,7 @@ function NombreRevuelto({ texto, estiloTexto, base, modo }: { texto: string; est
       clearInterval(repetir);
       if (intervalo) clearInterval(intervalo);
     };
-  }, [texto, modo]);
+  }, [texto, modo, activa]);
   return <Text style={[estiloTexto, { color: base }, modo === "decrypted" ? { fontFamily: fuentes.mono } : null]}>{mostrado}</Text>;
 }
 

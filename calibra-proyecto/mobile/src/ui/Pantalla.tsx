@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
-import { useState, type ReactNode } from "react";
-import { Pressable, RefreshControl, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
+import type { ReactNode } from "react";
+import { Pressable, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { vibrar } from "~/lib/efectos";
 import { color } from "~/tema";
@@ -8,21 +8,19 @@ import HUD from "./HUD";
 import { IconoFlecha } from "./Iconos";
 import Texto from "./Texto";
 
-// Pantalla de pestaña: HUD arriba y contenido con "tirar para refrescar".
+// Pantalla de pestaña: HUD arriba y el contenido. Los datos se refrescan solos
+// cada vez que la pantalla vuelve a verse (no hay "jalar para recargar").
 export function PantallaPestana({
   children,
-  onRefrescar,
   sinScroll,
   hudDerecha,
   contenido,
 }: {
   children: ReactNode;
-  onRefrescar?: () => Promise<unknown>;
   sinScroll?: boolean;
   hudDerecha?: ReactNode;
   contenido?: StyleProp<ViewStyle>;
 }) {
-  const [refrescando, setRefrescando] = useState(false);
   return (
     <SafeAreaView style={styles.pantalla} edges={["top"]}>
       <HUD derecha={hudDerecha} />
@@ -32,21 +30,6 @@ export function PantallaPestana({
         <ScrollView
           contentContainerStyle={[styles.contenido, contenido]}
           showsVerticalScrollIndicator={false}
-          refreshControl={
-            onRefrescar ? (
-              <RefreshControl
-                refreshing={refrescando}
-                tintColor={color.primario}
-                colors={[color.primario]}
-                progressBackgroundColor={color.surface2}
-                onRefresh={async () => {
-                  setRefrescando(true);
-                  await onRefrescar().catch(() => {});
-                  setRefrescando(false);
-                }}
-              />
-            ) : undefined
-          }
         >
           {children}
         </ScrollView>
@@ -83,7 +66,6 @@ export function PantallaApilada({
   sinScroll,
   fondo = color.bg,
   contenido,
-  onRefrescar,
 }: {
   titulo: string;
   subtitulo?: string;
@@ -92,9 +74,7 @@ export function PantallaApilada({
   sinScroll?: boolean;
   fondo?: string;
   contenido?: StyleProp<ViewStyle>;
-  onRefrescar?: () => Promise<unknown>;
 }) {
-  const [refrescando, setRefrescando] = useState(false);
   return (
     <SafeAreaView style={[styles.pantalla, { backgroundColor: fondo }]} edges={["top"]}>
       <View style={styles.cabecera}>
@@ -118,21 +98,6 @@ export function PantallaApilada({
           contentContainerStyle={[styles.contenido, contenido]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
-          refreshControl={
-            onRefrescar ? (
-              <RefreshControl
-                refreshing={refrescando}
-                tintColor={color.primario}
-                colors={[color.primario]}
-                progressBackgroundColor={color.surface2}
-                onRefresh={async () => {
-                  setRefrescando(true);
-                  await onRefrescar().catch(() => {});
-                  setRefrescando(false);
-                }}
-              />
-            ) : undefined
-          }
         >
           {children}
         </ScrollView>

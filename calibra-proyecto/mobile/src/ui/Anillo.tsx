@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from "react";
 import { View } from "react-native";
-import Animated, { Easing, useAnimatedProps, useSharedValue, withDelay, withTiming } from "react-native-reanimated";
+import Animated, { Easing, useAnimatedProps, useSharedValue, withDelay, withTiming, type SharedValue } from "react-native-reanimated";
 import Svg, { Circle, Defs, LinearGradient, Stop } from "react-native-svg";
 import { aclarar, color } from "~/tema";
 
@@ -17,19 +17,22 @@ interface Props {
   demora?: number;
   duracion?: number;
   children?: ReactNode;
+  // Progreso que maneja otro (p. ej. el reloj del sprint, en el hilo nativo).
+  externo?: SharedValue<number>;
 }
 
-export default function Anillo({ valor, tam = 64, grosor = 6, acento = color.logro, fondo = color.surface3, demora = 0, duracion = 1000, children }: Props) {
+export default function Anillo({ valor, tam = 64, grosor = 6, acento = color.logro, fondo = color.surface3, demora = 0, duracion = 1000, children, externo }: Props) {
   const r = (tam - grosor) / 2;
   const circ = 2 * Math.PI * r;
   const progreso = useSharedValue(0);
   const objetivo = Math.max(0, Math.min(1, Number.isFinite(valor) ? valor : 0));
 
   useEffect(() => {
+    if (externo) return;
     progreso.set(withDelay(demora, withTiming(objetivo, { duration: duracion, easing: Easing.out(Easing.cubic) })));
-  }, [objetivo, demora, duracion, progreso]);
+  }, [objetivo, demora, duracion, progreso, externo]);
 
-  const props = useAnimatedProps(() => ({ strokeDashoffset: circ * (1 - progreso.value) }));
+  const props = useAnimatedProps(() => ({ strokeDashoffset: circ * (1 - (externo ? externo.value : progreso.value)) }));
   const idGrad = `anillo${acento.replace("#", "")}`;
 
   return (

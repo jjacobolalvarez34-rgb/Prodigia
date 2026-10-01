@@ -79,7 +79,7 @@ export default function Chat({ mensajes, miId, mostrarAutor, enviar, vacio }: Pr
           const anterior = invertidos[index + 1];
           const agrupado = anterior && anterior.autorId === m.autorId;
           return (
-            <Animated.View entering={index < 2 ? FadeInUp.springify().damping(15) : undefined} style={[styles.filaMsg, mio ? { justifyContent: "flex-end" } : null]}>
+            <Animated.View entering={index < 2 ? FadeInUp.duration(300) : undefined} style={[styles.filaMsg, mio ? { justifyContent: "flex-end" } : null]}>
               {!mio && mostrarAutor && (
                 <View style={{ width: 30 }}>{!agrupado && <AvatarMarco url={m.autorAvatar} nombre={m.autorNombre ?? "?"} tam={28} animar={false} />}</View>
               )}

@@ -168,7 +168,7 @@ export default function VistaClan({ datos, miId, noLeidosClan, invitaciones, onC
   return (
     <>
       {/* Ciudad del clan: crece con el nivel y cada miembro tiene su casa encendida. */}
-      <Animated.View entering={FadeInDown.springify().damping(16)} style={[styles.heroe, { borderColor: conAlfa(clan.color_estandarte, 0.5), boxShadow: `0px 0px 30px ${conAlfa(clan.color_estandarte, 0.2)}` }]}>
+      <Animated.View entering={FadeInDown.duration(300)} style={[styles.heroe, { borderColor: conAlfa(clan.color_estandarte, 0.5), boxShadow: `0px 0px 30px ${conAlfa(clan.color_estandarte, 0.2)}` }]}>
         <Ciudad semilla={`clan-${clan.clan_id}`} acento={clan.color_estandarte} alto={164} radio={0} densidad={0.7 + tier.tier * 0.12} sinLuna />
         <View style={styles.casas}>
           {miembros.slice(0, 8).map((m) => (

@@ -1,7 +1,8 @@
 import { LinearGradient } from "expo-linear-gradient";
 import type { ReactNode } from "react";
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
-import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import Animated, { FadeIn, FadeInDown, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import { useLiviano } from "~/lib/rendimiento";
 import { vibrar } from "~/lib/efectos";
 import { brillo as sombraBrillo, color, conAlfa, radio } from "~/tema";
 
@@ -24,6 +25,7 @@ interface Props {
 
 export default function Tarjeta({ children, acento, brillo = 0, onPress, estilo, indice = 0, sinEntrada, relleno = 14 }: Props) {
   const escala = useSharedValue(1);
+  const liviano = useLiviano();
   const estiloEscala = useAnimatedStyle(() => ({ transform: [{ scale: escala.value }] }));
 
   const contenido = (
@@ -41,7 +43,7 @@ export default function Tarjeta({ children, acento, brillo = 0, onPress, estilo,
     </View>
   );
 
-  const entrada = sinEntrada ? undefined : FadeInDown.delay(Math.min(indice, 10) * 70).springify().damping(17).stiffness(170);
+  const entrada = sinEntrada ? undefined : liviano ? FadeIn.duration(180) : FadeInDown.delay(Math.min(indice, 8) * 45).duration(280);
 
   if (!onPress) {
     return <Animated.View entering={entrada}>{contenido}</Animated.View>;

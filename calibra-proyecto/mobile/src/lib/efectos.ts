@@ -1,6 +1,7 @@
-// Sonido y háptica de la app (02-SISTEMA-VISUAL.md §8). Los sonidos son síntesis
-// propia (assets/sonidos, ~440 KB en total), sin samples con licencia. Respetan los
-// interruptores de Ajustes y el modo silencio del teléfono.
+// Sonido y háptica de la app (02-SISTEMA-VISUAL.md §8). Los sonidos son los mismos
+// tonos que la web (src/lib/sonido.ts) sintetizados a archivo (assets/sonidos), sin
+// samples con licencia. Suenan por el volumen MULTIMEDIA, como un juego: con el
+// teléfono en silencio igual se oyen (pedido 2026-10-01); se apagan desde Ajustes.
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from "expo-audio";
 import * as Haptics from "expo-haptics";
 import { leerAjustes } from "./ajustes";
@@ -26,12 +27,15 @@ const FUENTES = {
   cuenta: require("../../assets/sonidos/cuenta.wav"),
   ya: require("../../assets/sonidos/ya.wav"),
   recompensa: require("../../assets/sonidos/recompensa.wav"),
+  logro: require("../../assets/sonidos/logro.wav"),
+  notificacion: require("../../assets/sonidos/notificacion.wav"),
+  nivel_cuenta: require("../../assets/sonidos/nivel_cuenta.wav"),
   swoosh: require("../../assets/sonidos/swoosh.wav"),
 } as const;
 
 export type Sonido = keyof typeof FUENTES;
 
-const VOLUMEN: Partial<Record<Sonido, number>> = { tecla: 0.35, boton: 0.5, moneda: 0.55, swoosh: 0.6 };
+const VOLUMEN: Partial<Record<Sonido, number>> = { tecla: 0.5, boton: 0.6, moneda: 0.6, swoosh: 0.6 };
 
 const reproductores = new Map<Sonido, AudioPlayer>();
 let modoListo = false;
@@ -54,20 +58,31 @@ function reproductor(nombre: Sonido): AudioPlayer | null {
 export function prepararSonidos() {
   if (!modoListo) {
     modoListo = true;
-    setAudioModeAsync({ playsInSilentMode: false, interruptionMode: "mixWithOthers" }).catch(() => {});
+    setAudioModeAsync({ playsInSilentMode: true, interruptionMode: "mixWithOthers", shouldPlayInBackground: false }).catch(() => {});
   }
-  (["acierto0", "acierto1", "acierto2", "error", "moneda", "tecla", "boton"] as Sonido[]).forEach(reproductor);
+  (["acierto0", "acierto1", "acierto2", "acierto3", "error", "moneda", "tecla", "boton", "cuenta", "ya"] as Sonido[]).forEach(reproductor);
 }
+
+const ultimoSonido = new Map<Sonido, number>();
 
 export function sonar(nombre: Sonido) {
   if (!leerAjustes().sonido) return;
+  // El mismo sonido no se repite en menos de 70 ms (monedas que llegan en ráfaga).
+  const ahora = Date.now();
+  if (ahora - (ultimoSonido.get(nombre) ?? 0) < 70) return;
+  ultimoSonido.set(nombre, ahora);
   const p = reproductor(nombre);
   if (!p) return;
-  p.seekTo(0).catch(() => {});
-  p.play();
+  // Volver al inicio y recién ahí reproducir: si se llama play() mientras el
+  // seek no terminó, Android corta el principio y suena "sucio".
+  p.pause();
+  p.seekTo(0)
+    .then(() => p.play())
+    .catch(() => p.play());
 }
 
-// "Ding" con tono según el combo: 8 alturas de una escala pentatónica.
+// El "tick" de acierto de la web (seno de 880 Hz) que sube por la escala mayor con
+// el combo: 8 alturas, de ×1 a ×8 o más.
 export function sonarAcierto(combo: number) {
   sonar(`acierto${Math.min(7, Math.max(0, combo - 1))}` as Sonido);
 }

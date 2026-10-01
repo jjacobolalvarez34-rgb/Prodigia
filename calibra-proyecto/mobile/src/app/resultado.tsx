@@ -69,7 +69,7 @@ function Rayos({ c }: { c: string }) {
 
 function Paso({ visible, children, indice }: { visible: boolean; children: ReactNode; indice: number }) {
   if (!visible) return null;
-  return <Animated.View entering={FadeInDown.delay(indice === 0 ? 0 : 60).springify().damping(14)}>{children}</Animated.View>;
+  return <Animated.View entering={FadeInDown.delay(indice === 0 ? 0 : 60).duration(300)}>{children}</Animated.View>;
 }
 
 export default function Resultado() {
@@ -107,7 +107,7 @@ export default function Resultado() {
       vibrar.exito();
     }
     if (paso === 5 && (d.logros?.length || d.nivelCuentaSubio)) {
-      sonar("nivel");
+      sonar(d.nivelCuentaSubio ? "nivel_cuenta" : "logro");
       vibrar.fuerte();
     }
   }, [paso]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -141,7 +141,7 @@ export default function Resultado() {
                 {mundo.nombre} · {TEMAS[params.tema ?? ""] ?? ""}
                 {d.rival ? ` · vs ${d.rival}` : ""}
               </Texto>
-              <Animated.View entering={ZoomIn.springify().damping(9)}>
+              <Animated.View entering={ZoomIn.duration(320)}>
                 <Texto v="display" tam={32} centro>
                   {titulo}
                 </Texto>
@@ -180,7 +180,7 @@ export default function Resultado() {
                 </Texto>
               </View>
               {subioMundo && (
-                <Animated.View entering={ZoomIn.delay(200).springify()}>
+                <Animated.View entering={ZoomIn.delay(200).duration(320)}>
                   <Texto v="h3" c={mundo.neon} style={{ marginTop: 6 }}>
                     ¡{mundo.nombre} subió al nivel {d.nivelMundo}!
                   </Texto>
@@ -207,7 +207,7 @@ export default function Resultado() {
               <View style={{ flex: 1 }}>
                 {paso >= 3 && (
                   <Tarjeta sinEntrada acento={subioRacha ? color.racha : undefined} brillo={subioRacha ? 0.3 : 0} estilo={{ alignItems: "center" }}>
-                    <Animated.View entering={subioRacha ? ZoomIn.springify().damping(6) : FadeIn} style={styles.filaCentro}>
+                    <Animated.View entering={subioRacha ? ZoomIn.duration(320) : FadeIn} style={styles.filaCentro}>
                       <IconoLlama tam={24} estado={d.rachaDespues >= 7 ? "llamas" : d.rachaDespues > 0 ? "encendida" : "apagada"} />
                       <Texto v="mono" tam={18} c={color.racha}>
                         {d.rachaDespues} {d.rachaDespues === 1 ? "día" : "días"}
@@ -243,7 +243,7 @@ export default function Resultado() {
               {d.nivelCuentaSubio && (
                 <Tarjeta sinEntrada acento={color.primario} brillo={0.35}>
                   <View style={styles.fila}>
-                    <Animated.View entering={ZoomIn.springify().damping(7)} style={[styles.hex, { boxShadow: brillo(color.primario, 20, 0.5) }]}>
+                    <Animated.View entering={ZoomIn.duration(320)} style={[styles.hex, { boxShadow: brillo(color.primario, 20, 0.5) }]}>
                       <Texto v="mono" tam={18} c="#fff">
                         {d.nivelCuentaNuevo}
                       </Texto>
@@ -261,7 +261,7 @@ export default function Resultado() {
               {(d.logros ?? []).map((l) => (
                 <Tarjeta key={l.nombre} sinEntrada acento={color.logro} brillo={0.3}>
                   <View style={styles.fila}>
-                    <Animated.View entering={ZoomIn.springify().damping(7)} style={styles.medalla}>
+                    <Animated.View entering={ZoomIn.duration(320)} style={styles.medalla}>
                       <IconoCheck tam={20} c="#3A2600" />
                     </Animated.View>
                     <View style={{ flex: 1 }}>
@@ -313,7 +313,7 @@ export default function Resultado() {
 
       <View style={styles.pie}>
         {paso >= ultimoPaso ? (
-          <Animated.View entering={FadeInDown.springify()} style={{ gap: 10 }}>
+          <Animated.View entering={FadeInDown.duration(300)} style={{ gap: 10 }}>
             {d.duelo ? (
               <Boton3D titulo="Otro duelo" acento={mundo.base} brillo onPress={() => router.replace({ pathname: "/competir", params: { seccion: "rankeds" } })} />
             ) : (

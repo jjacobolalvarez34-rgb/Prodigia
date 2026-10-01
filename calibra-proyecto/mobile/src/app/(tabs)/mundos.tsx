@@ -135,7 +135,7 @@ export default function Mundos() {
 
   return (
     <View style={{ flex: 1 }}>
-      <PantallaPestana onRefrescar={cargar}>
+      <PantallaPestana>
         <View style={[styles.entre, { alignItems: "flex-end" }]}>
           <Texto v="h1">Tus mundos</Texto>
           <Texto v="nota">
@@ -151,7 +151,7 @@ export default function Mundos() {
           <Chip texto="Bloqueados" activo={filtro === "bloqueados"} onPress={() => setFiltro("bloqueados")} />
         </View>
         {lista.map((m, i) => (
-          <Animated.View key={m.slug} layout={LinearTransition.springify().damping(18)}>
+          <Animated.View key={m.slug} layout={LinearTransition.duration(300)}>
             <TarjetaMundo
               mundo={m}
               tuyo={esTuyo(m)}

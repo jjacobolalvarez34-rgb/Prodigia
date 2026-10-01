@@ -167,7 +167,7 @@ export default function Social() {
 
   return (
     <View style={{ flex: 1 }}>
-      <PantallaPestana onRefrescar={cargar}>
+      <PantallaPestana>
         <Segmentos<Seccion>
           opciones={[
             { id: "inicio", titulo: "Inicio", insignia: solicitudes.length },
@@ -187,7 +187,7 @@ export default function Social() {
             ) : (
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 14 }}>
                 {amigosEnLinea.map((a, i) => (
-                  <Animated.View key={a.id} entering={FadeInRight.delay(i * 60).springify()}>
+                  <Animated.View key={a.id} entering={FadeInRight.delay(i * 60).duration(300)}>
                     <Pressable onPress={() => router.push({ pathname: "/jugador/[id]", params: { id: a.id } })} style={styles.activo}>
                       <AvatarMarco url={a.avatarUrl} nombre={a.nombre} marco={a.marco} tam={50} presencia />
                       <Texto v="fuerte" tam={11} numberOfLines={1}>

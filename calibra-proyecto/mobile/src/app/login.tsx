@@ -5,7 +5,7 @@ import { mensajeError, supabase } from "~/lib/supabase";
 import Boton3D from "~/ui/Boton3D";
 import Ciudad from "~/ui/Ciudad";
 import Glifos from "~/ui/Glifos";
-import { IconoChispa } from "~/ui/Iconos";
+import Logo from "~/ui/Logo";
 import { color, fuente, MUNDOS, radio } from "~/tema";
 
 // Mismo login que la web (LoginForm.tsx): correo O nombre de usuario + contraseña,
@@ -55,7 +55,7 @@ export default function Login() {
         <ScrollView contentContainerStyle={styles.contenido} keyboardShouldPersistTaps="handled">
           <View style={styles.marca}>
             <Ciudad semilla="prodigia-entrada" acento={color.primarioNeon} alto={150} radio={24} estilo={{ alignSelf: "stretch", borderWidth: 1, borderColor: color.border }} />
-            <IconoChispa tam={46} />
+            <Logo tam={64} />
             <Text style={styles.titulo}>Prodigia</Text>
             <Text style={styles.subtitulo}>Tu cabeza, en modo juego. 13 mundos para encender.</Text>
           </View>

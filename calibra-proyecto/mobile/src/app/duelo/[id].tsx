@@ -34,7 +34,7 @@ const CONTINENTE: Record<string, string> = { america: "América", europa: "Europ
 
 function NumeroCuenta({ n }: { n: number }) {
   return (
-    <Animated.View key={n} entering={ZoomIn.springify().damping(9)} style={{ alignItems: "center" }}>
+    <Animated.View key={n} entering={ZoomIn.duration(320)} style={{ alignItems: "center" }}>
       <Texto style={{ fontFamily: fuente.mono, fontSize: 84, lineHeight: 96, color: n === 0 ? color.logro : color.texto, textShadowColor: color.primario, textShadowRadius: 24 }}>
         {n === 0 ? "¡YA!" : n}
       </Texto>

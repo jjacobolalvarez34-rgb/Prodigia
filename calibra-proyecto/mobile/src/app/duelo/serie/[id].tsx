@@ -51,9 +51,9 @@ export default function Serie() {
 
   return (
     <View style={{ flex: 1 }}>
-      <PantallaApilada titulo="Mejor de 3" subtitulo={`vs ${oponente}`} onRefrescar={cargar}>
+      <PantallaApilada titulo="Mejor de 3" subtitulo={`vs ${oponente}`}>
         {final?.finalizada ? (
-          <Animated.View entering={ZoomIn.springify().damping(12)}>
+          <Animated.View entering={ZoomIn.duration(320)}>
             <Tarjeta acento={final.gane ? color.logro : final.empate ? color.primario : color.error} brillo={0.35} estilo={{ alignItems: "center", gap: 6, paddingVertical: 22 }}>
               <Texto v="display">{final.gane ? "¡Ganaste la serie!" : final.empate ? "Empate" : "Perdiste la serie"}</Texto>
               <Texto style={{ fontFamily: fuente.mono, fontSize: 40, color: color.texto }}>
@@ -82,7 +82,7 @@ export default function Serie() {
           const m = MUNDO_POR_SLUG[r.mundo];
           const jugada = r.yo_jugue && r.rival_jugo;
           return (
-            <Animated.View key={r.duel_id} entering={FadeInDown.delay(i * 90).springify()}>
+            <Animated.View key={r.duel_id} entering={FadeInDown.delay(i * 90).duration(300)}>
               <Tarjeta acento={jugada ? (r.gane_ronda ? color.correcto : r.empate_ronda ? undefined : color.error) : m?.neon}>
                 <View style={styles.entre}>
                   <View>
