@@ -30,6 +30,9 @@ en Kotlin duplicaría la lógica y multiplicaría el problema de paridad que ya 
 
 ## Estado actual (2026-10-01)
 
+Guía técnica de la app (estructura, datos, sistema visual, reglas de rendimiento y cómo compilar):
+`../../../mobile/README.md`.
+
 Hecho en `mobile/` (comparte cuenta, progreso y economía con la web; todo pasa por las mismas
 RPC security definer):
 
@@ -40,8 +43,11 @@ RPC security definer):
 - **Navegación**: 5 pestañas + HUD (racha, Chispas → tienda, campana).
 - **Placa** en sus 5 variantes con fondos (degradés, GIF, galería), marcos de rango/neón/ciudad
   y las 10 animaciones de nombre; editor de placa (fondo, avatar, marco, nombre, título).
-- **Mundos en la app**: Numeria y Geografía (sprint con combo, borde que gira, +XP flotante y
-  cascada de recompensas). Los otros 11 se ven en Mundos y abren la web.
+- **Mundos en la app**: Numeria completa (sus 6 secciones y 20 temas) y Geografía, con cuenta
+  "3, 2, 1", llama de racha, borde que gira con combo, +XP flotante, salida suave y cascada de
+  recompensas. Los otros 11 se ven en Mundos y abren la web.
+- **Rendimiento**: animaciones en bucle pausadas fuera de pantalla y modo liviano automático en
+  teléfonos de menos de 6 GB; pestañas que se deslizan con el dedo.
 - **Competir**: Rankeds y casual (matchmaking, VS, sala sincronizada y progreso en vivo con los
   mismos canales que la web, fantasma, series mejor de 3), liga semanal, retos diario y semanal.
 - **Social y clanes**: presencia, solicitudes, amigos, retar, mensajes y chat del clan en vivo,

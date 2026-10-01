@@ -5,6 +5,13 @@ textos de la UI, comentarios y docs. Leer `README.md` de esta carpeta y
 `../calibra/docs/app-nativa/` antes de tocar código. `@/` apunta a la lógica pura de la web
 (`../calibra/src`): nunca copiar un generador a la app, importarlo. No guardar secretos en el repo.
 
+Reglas propias de esta app (detalle en `README.md`):
+- Toda animación en bucle se pausa fuera de pantalla con `useAnimacionActiva()` y se aligera con
+  `useLiviano()` (`src/lib/rendimiento.ts`). Nada que redibuje una pantalla entera por cuadro.
+- Botones: `ui/Boton3D` (estilo de `components/Boton.tsx` de la web). Texto: `ui/Texto`.
+- La app nunca decide XP, ELO, precios ni recompensas: todo sale de las RPC de la base.
+- Verificar con `npx tsc --noEmit`, `npx eslint src` y `npx expo export --platform android`.
+
 ---
 
 This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
