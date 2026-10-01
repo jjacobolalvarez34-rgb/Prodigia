@@ -14,6 +14,7 @@ import Animated, {
   ZoomIn,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { mundoJugable } from "~/lib/mundosJugables";
 import { MUNDOS_DUELO_APP, obtenerDuelo, rendirseDuelo, type InfoDuelo } from "~/lib/competir";
 import { useArranqueSincronizado } from "~/lib/duelos";
 import { sonar, vibrar } from "~/lib/efectos";
@@ -76,7 +77,8 @@ export default function Duelo() {
     if (!info) return;
     sonar("ya");
     vibrar.fuerte();
-    router.replace({ pathname: info.mundo === "geografia" ? "/geografia/sprint" : "/numeria/sprint", params: { duelo: info.duelId } });
+    if (info.mundo === "numeria" || info.mundo === "geografia") router.replace({ pathname: info.mundo === "geografia" ? "/geografia/sprint" : "/numeria/sprint", params: { duelo: info.duelId } });
+    else router.replace({ pathname: "/[mundo]/sprint", params: { mundo: info.mundo, duelo: info.duelId } });
   }, [info, router]);
 
   const { estado, segundos, rivalPresente, empezarAhora } = useArranqueSincronizado({
@@ -147,7 +149,13 @@ export default function Duelo() {
   }, [estado]);
 
   const m = info ? MUNDO_POR_SLUG[info.mundo] : null;
-  const tema = info ? (info.mundo === "numeria" ? OPERACION[info.operacion ?? ""] ?? "Cálculo" : info.mundo === "geografia" ? CONTINENTE[info.subTipo ?? "america"] : m?.nombre) : "";
+  const tema = info
+    ? info.mundo === "numeria"
+      ? OPERACION[info.operacion ?? ""] ?? "Cálculo"
+      : info.mundo === "geografia"
+        ? CONTINENTE[info.subTipo ?? "america"]
+        : mundoJugable(info.mundo)?.modos.find((x) => x.id === info.subTipo)?.nombre ?? m?.nombre
+    : "";
 
   if (error || (info && info.estado !== "pendiente")) {
     return (

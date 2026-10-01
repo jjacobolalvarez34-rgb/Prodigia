@@ -32,7 +32,8 @@ def guardar(nombre,s,pico=0.7):
     with wave.open(os.path.join(OUT,nombre+".wav"),"wb") as w:
         w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
         w.writeframes((np.clip(s,-1,1)*32767).astype(np.int16).tobytes())
-for f in os.listdir(OUT): os.remove(os.path.join(OUT,f))
+for f in os.listdir(OUT):
+    if f.endswith(".wav"): os.remove(os.path.join(OUT,f))
 # Acierto: el "tick" de la web (seno 880 Hz, 0,22 s) que sube por la escala mayor con el combo.
 escala=[0,2,4,5,7,9,11,12]
 for i,st in enumerate(escala):
@@ -55,3 +56,16 @@ guardar("combo",secuencia([(659.25,0,.35,.1,"triangle"),(830.6,.03,.35,.08,"tria
 guardar("racha",secuencia([(392,0,.14,.08,"triangle"),(523.25,.1,.14,.09,"triangle"),(784,.2,.32,.1,"triangle")]),0.6)
 guardar("swoosh",secuencia([(520,0,.12,.05),(780,.05,.12,.05)]),0.3)
 print(sorted(os.listdir(OUT)))
+
+# Notas para el oído absoluto de Melodía: reproducirNotaMusical de la web
+# (triangular 0,14 + segundo armónico seno 0,03, 1,1 s), de Do3 (36) a Do5 (60).
+NOTAS=os.path.join(OUT,"notas")
+os.makedirs(NOTAS,exist_ok=True)
+for semitono in range(36,61):
+    f=440*2**((semitono-57)/12)
+    s=secuencia([(f,0,1.1,.14,"triangle"),(f*2,0,.9,.03,"sine")])
+    m=np.max(np.abs(s)); s=s/m*0.6
+    k=min(256,len(s)); s[-k:]*=np.linspace(1,0,k)
+    with wave.open(os.path.join(NOTAS,f"nota{semitono}.wav"),"wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
+        w.writeframes((np.clip(s,-1,1)*32767).astype(np.int16).tobytes())

@@ -6,7 +6,8 @@ import { vibrar } from "~/lib/efectos";
 import type { PlacaDatos } from "~/lib/placa";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError } from "~/lib/supabase";
-import { color, conAlfa, fuente, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
+import { mundoJugable } from "~/lib/mundosJugables";
+import { color, conAlfa, fuente, MUNDO_POR_SLUG, MUNDOS, type MundoSlug } from "~/tema";
 import { mostrarAviso } from "./Aviso";
 import Boton3D from "./Boton3D";
 import Hoja from "./Hoja";
@@ -16,7 +17,7 @@ import Texto from "./Texto";
 // Retar a un amigo (mismo duelo que /api/amigos/retar de la web): eliges ciudad y
 // tema, se crea el duelo y juegas tu lado; tu amigo recibe el aviso y juega contra
 // tu registro exacto.
-const OPCIONES: Record<"numeria" | "geografia", { id: string; nombre: string }[]> = {
+const OPCIONES_FIJAS: Record<"numeria" | "geografia", { id: string; nombre: string }[]> = {
   numeria: [
     { id: "suma", nombre: "Suma" },
     { id: "resta", nombre: "Resta" },
@@ -30,6 +31,15 @@ const OPCIONES: Record<"numeria" | "geografia", { id: string; nombre: string }[]
     { id: "asia_oceania", nombre: "Asia y Oceanía" },
   ],
 };
+
+// Temas de cada ciudad jugable en la app: Numeria y Geografía tienen los suyos; el
+// resto sale del registro de mundos (sus modos).
+function opcionesDe(slug: MundoSlug): { id: string; nombre: string }[] {
+  if (slug === "numeria" || slug === "geografia") return OPCIONES_FIJAS[slug];
+  return mundoJugable(slug)?.modos.map((m) => ({ id: m.id, nombre: m.nombre })) ?? [];
+}
+
+const CIUDADES = MUNDOS.filter((m) => m.enApp).map((m) => m.slug);
 
 function Opcion({ texto, activo, c, onPress }: { texto: string; activo: boolean; c: string; onPress: () => void }) {
   return (
@@ -48,10 +58,10 @@ function Opcion({ texto, activo, c, onPress }: { texto: string; activo: boolean;
 export default function RetarAmigo({ amigo, visible, onCerrar }: { amigo: PlacaDatos; visible: boolean; onCerrar: () => void }) {
   const router = useRouter();
   const { sesion } = useSesion();
-  const [mundo, setMundo] = useState<"numeria" | "geografia">("numeria");
+  const [mundo, setMundo] = useState<MundoSlug>("numeria");
   const [opcion, setOpcion] = useState("suma");
   const [creando, setCreando] = useState(false);
-  const m = MUNDO_POR_SLUG[mundo as MundoSlug];
+  const m = MUNDO_POR_SLUG[mundo];
 
   async function retar() {
     if (!sesion) return;
@@ -77,8 +87,8 @@ export default function RetarAmigo({ amigo, visible, onCerrar }: { amigo: PlacaD
         </View>
       </View>
       <Texto v="micro">Ciudad</Texto>
-      <View style={styles.fila}>
-        {(["numeria", "geografia"] as const).map((id) => (
+      <View style={[styles.fila, { flexWrap: "wrap" }]}>
+        {CIUDADES.map((id) => (
           <Opcion
             key={id}
             texto={MUNDO_POR_SLUG[id].nombre}
@@ -86,14 +96,14 @@ export default function RetarAmigo({ amigo, visible, onCerrar }: { amigo: PlacaD
             c={MUNDO_POR_SLUG[id].neon}
             onPress={() => {
               setMundo(id);
-              setOpcion(OPCIONES[id][0].id);
+              setOpcion(opcionesDe(id)[0]?.id ?? "");
             }}
           />
         ))}
       </View>
       <Texto v="micro">Tema</Texto>
       <View style={[styles.fila, { flexWrap: "wrap" }]}>
-        {OPCIONES[mundo].map((o) => (
+        {opcionesDe(mundo).map((o) => (
           <Opcion key={o.id} texto={o.nombre} activo={opcion === o.id} c={m.neon} onPress={() => setOpcion(o.id)} />
         ))}
       </View>

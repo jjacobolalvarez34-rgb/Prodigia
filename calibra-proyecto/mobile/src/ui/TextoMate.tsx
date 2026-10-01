@@ -12,6 +12,7 @@ const COMANDOS: Record<string, string> = {
   pi: "π", theta: "θ", alpha: "α", beta: "β", gamma: "γ", delta: "δ", Delta: "Δ", lambda: "λ", mu: "μ", sigma: "σ", Sigma: "Σ", omega: "ω", Omega: "Ω", phi: "φ", rho: "ρ", tau: "τ", epsilon: "ε", varepsilon: "ε",
   int: "∫", sum: "∑", partial: "∂", nabla: "∇", to: "→", rightarrow: "→", Rightarrow: "⇒", leftarrow: "←", cdots: "⋯", ldots: "…", dots: "…", circ: "°", degree: "°",
   sin: "sin", cos: "cos", tan: "tan", ln: "ln", log: "log", lim: "lim", sec: "sec", csc: "csc", cot: "cot", arcsin: "arcsin", arccos: "arccos", arctan: "arctan",
+  lceil: "⌈", rceil: "⌉", lfloor: "⌊", rfloor: "⌋",
   quad: " ", qquad: "  ", ",": " ", ";": " ", "!": "", left: "", right: "", displaystyle: "", mathrm: "", text: "", operatorname: "",
 };
 

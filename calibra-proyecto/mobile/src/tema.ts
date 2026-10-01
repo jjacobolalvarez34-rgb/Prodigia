@@ -96,18 +96,18 @@ export interface Mundo {
 // Mismo orden y colores base que src/lib/mundos.ts de la web; neón y glifos de §2.2.
 export const MUNDOS: Mundo[] = [
   { slug: "numeria", nombre: "Numeria", tema: "Cálculo mental", base: "#6C4CF1", neon: "#9B85FF", glifo: "÷", glifos: ["+", "−", "×", "÷"], enApp: true },
-  { slug: "enigmia", nombre: "Enigmia", tema: "Lógica", base: "#0E9F6E", neon: "#2FD89B", glifo: "?", glifos: ["?", "◆", "▲"], enApp: false },
+  { slug: "enigmia", nombre: "Enigmia", tema: "Lógica", base: "#0E9F6E", neon: "#2FD89B", glifo: "?", glifos: ["?", "◆", "▲"], enApp: true },
   { slug: "geografia", nombre: "Geografía", tema: "Países y mapas", base: "#1E7A8C", neon: "#3FC1D6", glifo: "◎", glifos: ["◎", "⌖", "✈"], enApp: true },
-  { slug: "quimia", nombre: "Quimia", tema: "Química", base: "#C026D3", neon: "#E36BF2", glifo: "⚛", glifos: ["⚛", "⬡", "H₂O"], enApp: false },
-  { slug: "anatomia", nombre: "Anatomía", tema: "Cuerpo humano", base: "#8B2942", neon: "#E0607E", glifo: "♥", glifos: ["♥", "✚"], enApp: false },
-  { slug: "melodia", nombre: "Melodía", tema: "Música", base: "#B8860B", neon: "#F2C14E", glifo: "♪", glifos: ["♪", "♫", "♬"], enApp: false },
-  { slug: "trigonometria", nombre: "Trigonometría", tema: "Ángulos", base: "#84CC16", neon: "#A8E84A", glifo: "θ", glifos: ["△", "θ", "π"], enApp: false },
-  { slug: "historia", nombre: "Historia", tema: "El pasado", base: "#A0522D", neon: "#E08A5C", glifo: "⌛", glifos: ["⌛", "⚔", "♜"], enApp: false },
-  { slug: "calculia", nombre: "Calculia", tema: "Cálculo", base: "#4338CA", neon: "#8A83FF", glifo: "∫", glifos: ["∫", "∂", "Σ"], enApp: false },
-  { slug: "circuitia", nombre: "Circuitia", tema: "Electricidad", base: "#F59E0B", neon: "#FFC247", glifo: "Ω", glifos: ["Ω", "⏚", "⚡"], enApp: false },
-  { slug: "estadistica", nombre: "Estadística", tema: "Datos", base: "#0D9488", neon: "#2DD4BF", glifo: "σ", glifos: ["σ", "x̄", "%"], enApp: false },
-  { slug: "naipia", nombre: "Naipia", tema: "Memoria de cartas", base: "#B91C1C", neon: "#F25C5C", glifo: "♠", glifos: ["♠", "♥", "♦", "♣"], enApp: false },
-  { slug: "codia", nombre: "Codia", tema: "Programación", base: "#06B6D4", neon: "#4FE0F5", glifo: "</>", glifos: ["{", "}", "<", "/>"], enApp: false },
+  { slug: "quimia", nombre: "Quimia", tema: "Química", base: "#C026D3", neon: "#E36BF2", glifo: "⚛", glifos: ["⚛", "⬡", "H₂O"], enApp: true },
+  { slug: "anatomia", nombre: "Anatomía", tema: "Cuerpo humano", base: "#8B2942", neon: "#E0607E", glifo: "♥", glifos: ["♥", "✚"], enApp: true },
+  { slug: "melodia", nombre: "Melodía", tema: "Música", base: "#B8860B", neon: "#F2C14E", glifo: "♪", glifos: ["♪", "♫", "♬"], enApp: true },
+  { slug: "trigonometria", nombre: "Trigonometría", tema: "Ángulos", base: "#84CC16", neon: "#A8E84A", glifo: "θ", glifos: ["△", "θ", "π"], enApp: true },
+  { slug: "historia", nombre: "Historia", tema: "El pasado", base: "#A0522D", neon: "#E08A5C", glifo: "⌛", glifos: ["⌛", "⚔", "♜"], enApp: true },
+  { slug: "calculia", nombre: "Calculia", tema: "Cálculo", base: "#4338CA", neon: "#8A83FF", glifo: "∫", glifos: ["∫", "∂", "Σ"], enApp: true },
+  { slug: "circuitia", nombre: "Circuitia", tema: "Electricidad", base: "#F59E0B", neon: "#FFC247", glifo: "Ω", glifos: ["Ω", "⏚", "⚡"], enApp: true },
+  { slug: "estadistica", nombre: "Estadística", tema: "Datos", base: "#0D9488", neon: "#2DD4BF", glifo: "σ", glifos: ["σ", "x̄", "%"], enApp: true },
+  { slug: "naipia", nombre: "Naipia", tema: "Memoria de cartas", base: "#B91C1C", neon: "#F25C5C", glifo: "♠", glifos: ["♠", "♥", "♦", "♣"], enApp: true },
+  { slug: "codia", nombre: "Codia", tema: "Programación", base: "#06B6D4", neon: "#4FE0F5", glifo: "</>", glifos: ["{", "}", "<", "/>"], enApp: true },
 ];
 
 export const MUNDO_POR_SLUG = Object.fromEntries(MUNDOS.map((m) => [m.slug, m])) as Record<MundoSlug, Mundo>;

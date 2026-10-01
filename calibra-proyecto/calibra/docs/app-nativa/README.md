@@ -43,9 +43,12 @@ RPC security definer):
 - **Navegación**: 5 pestañas + HUD (racha, Chispas → tienda, campana).
 - **Placa** en sus 5 variantes con fondos (degradés, GIF, galería), marcos de rango/neón/ciudad
   y las 10 animaciones de nombre; editor de placa (fondo, avatar, marco, nombre, título).
-- **Mundos en la app**: Numeria completa (sus 6 secciones y 20 temas) y Geografía, con cuenta
-  "3, 2, 1", llama de racha, borde que gira con combo, +XP flotante, salida suave y cascada de
-  recompensas. Los otros 11 se ven en Mundos y abren la web.
+- **Mundos en la app**: los 13 con todos sus modos. Numeria (6 secciones, 20 temas) y Geografía
+  (mapa) con pantallas propias; los otros 11 con un sprint genérico que usa los mismos
+  generadores de la web y dibuja lo que cada uno necesita (pentagrama y notas que suenan,
+  moléculas, esqueleto tocable, triángulos, circuitos, gráficos, código, cartas con modo memoria).
+  Cuenta "3, 2, 1", llama de racha, borde que gira con combo, +XP flotante, salida suave y
+  cascada de recompensas en todos.
 - **Rendimiento**: animaciones en bucle pausadas fuera de pantalla y modo liviano automático en
   teléfonos de menos de 6 GB; pestañas que se deslizan con el dedo.
 - **Competir**: Rankeds y casual (matchmaking, VS, sala sincronizada y progreso en vivo con los
@@ -55,7 +58,7 @@ RPC security definer):
 - **Tienda** (sin Trastienda, PROD-01), logros y títulos, Pro (informativo), avisos push,
   widgets y ajustes.
 
-Pendiente: los otros 11 mundos y Aprender dentro de la app, Play Billing (Pro y Chispas),
+Pendiente: Aprender dentro de la app, Play Billing (Pro y Chispas),
 borrado de cuenta dentro de la app (hoy abre la web) y lo de `05-PUBLICACION-GOOGLE-PLAY.md`.
 
 ## Índice

@@ -3,7 +3,9 @@
 // (src/lib/mundos/progresoNivel.ts): volumen, dominio y lecciones.
 import { faltanteParaSubir, nivelDesdeFracciones } from "@/lib/mundos/progresoNivel";
 import { MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
-import { SECCIONES, TODOS_LOS_TIPOS } from "./numeria";
+import type { Href } from "expo-router";
+import { MUNDOS_JUGABLES, problemTypeDe } from "./mundosJugables";
+import { SECCIONES } from "./numeria";
 import { supabase } from "./supabase";
 
 export interface ProgresoMundo {
@@ -39,21 +41,28 @@ const CONTINENTES: Record<string, string> = { america: "América", europa: "Euro
 export interface Continuar {
   mundo: MundoSlug;
   tema: string;
-  ruta: "/numeria" | "/geografia";
+  ruta: Href;
 }
 
-// Última partida jugada en un mundo que ya está en la app.
+// Última partida jugada en cualquier mundo de la app (Enigmia guarda en
+// logic_attempts; el resto en attempts con problem_type "<mundo>_<modo>").
 export async function ultimoJugado(userId: string): Promise<Continuar> {
-  const { data } = await supabase
-    .from("attempts")
-    .select("problem_type")
-    .eq("user_id", userId)
-    .or(`problem_type.in.(${TODOS_LOS_TIPOS.join(",")}),problem_type.like.geografia_%`)
-    .order("created_at", { ascending: false })
-    .limit(1);
-  const tipo = (data as { problem_type: string }[] | null)?.[0]?.problem_type ?? "suma";
+  const [{ data }, { data: logica }] = await Promise.all([
+    supabase.from("attempts").select("problem_type, created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(1),
+    supabase.from("logic_attempts").select("created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(1),
+  ]);
+  const ultimo = (data as { problem_type: string; created_at: string }[] | null)?.[0];
+  const ultimaLogica = (logica as { created_at: string }[] | null)?.[0];
+  if (ultimaLogica && (!ultimo || ultimaLogica.created_at > ultimo.created_at)) {
+    return { mundo: "enigmia", tema: "Lógica", ruta: { pathname: "/[mundo]", params: { mundo: "enigmia" } } };
+  }
+  const tipo = ultimo?.problem_type ?? "suma";
   if (tipo.startsWith("geografia_")) {
     return { mundo: "geografia", tema: CONTINENTES[tipo.replace("geografia_", "")] ?? "Mapas", ruta: "/geografia" };
+  }
+  for (const def of Object.values(MUNDOS_JUGABLES)) {
+    const modo = def.modos.find((m) => problemTypeDe(def, m.id) === tipo);
+    if (modo) return { mundo: def.slug, tema: modo.nombre, ruta: { pathname: "/[mundo]", params: { mundo: def.slug } } };
   }
   const seccion = SECCIONES.find((sec) => sec.temas.some((t) => t.problemType === tipo));
   const tema = seccion?.temas.find((t) => t.problemType === tipo);

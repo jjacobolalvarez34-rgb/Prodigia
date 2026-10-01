@@ -4,8 +4,9 @@ La app nativa de Prodigia para Android (diseño y plan en `../calibra/docs/app-n
 cuenta, mismo progreso y mismas Chispas que la web: habla directo con el mismo Supabase, y la lógica
 de los problemas, los retos, los logros y los títulos es **el mismo código de la web**, importado.
 
-Estado al 2026-10-01: todo lo social y competitivo está en la app; de los 13 mundos se juegan
-**Numeria** (sus 6 secciones) y **Geografía**. Los otros 11 aparecen en Mundos y abren la web.
+Estado al 2026-10-01: todo lo social y competitivo está en la app y se juegan **los 13 mundos**
+con todos sus modos: Numeria y Geografía con pantallas propias y los otros 11 con el sprint
+genérico de `[mundo]/` (mismos generadores, niveles, guardado y duelos que la web).
 
 ## Qué tiene
 
@@ -16,6 +17,7 @@ Estado al 2026-10-01: todo lo social y competitivo está en la app; de los 13 mu
 | **Mundos** | 13 ciudades nocturnas: encendidas las tuyas, apagadas con precio las demás; encender un mundo con Chispas | `(tabs)/mundos` |
 | **Numeria** | 6 secciones y 20 temas: Aritmética (4), Geometría (4), Fracciones (3), Decimales (3), Potencias (3), Álgebra (3). Cada tema calibra su nivel | `numeria/index`, `numeria/sprint` |
 | **Geografía** | 4 continentes en el mapa real con zoom y arrastre, preguntas avanzadas desde el nivel 8 | `geografia/index`, `geografia/sprint` |
+| **Los otros 11** | Enigmia (mezcla + 4 categorías, 90 s, banco de deducción), Quimia (5, con moléculas), Anatomía (4, el óseo se toca en el esqueleto), Melodía (6: pentagrama, figuras, oído absoluto), Trigonometría (4, con triángulo), Historia (4), Calculia (4), Circuitia (4, con circuito), Estadística (5, con gráficos), Naipia (5 sistemas: cartas, tabla de valores y modo memoria) y Codia (4, elegir lenguaje) | `[mundo]/index`, `[mundo]/sprint`, `lib/mundosJugables/`, `ui/visuales/` |
 | Partida | "¿Preparado? 3, 2, 1, ¡Ya!", anillo de tiempo, llama de racha, borde que gira con combo ≥ 5, +XP flotante, sacudida al fallar, salida suave y cascada de recompensas | `ui/Sprint`, `resultado` |
 | **Competir** | Rankeds (insignia, divisiones, buscar rival, VS, sala sincronizada con la web, fantasma, series mejor de 3), casual (rival al azar), liga semanal con podio, reto semanal | `(tabs)/competir`, `duelo/*`, `reto/[tipo]` |
 | **Social** | En línea, solicitudes, amigos (Placas), retar, mensajes directos y chat del clan en vivo | `(tabs)/social`, `chat/[id]`, `amigos/buscar` |
@@ -58,7 +60,8 @@ retos entre amigos no muevan el ELO y el casual sea contra cualquiera).
 src/
   app/                 pantallas (Expo Router, una por archivo)
     (tabs)/            las 5 pestañas (paginador deslizable con la barra abajo)
-    numeria/ geografia/ los mundos jugables (hub + sprint)
+    numeria/ geografia/ mundos con pantallas propias (hub + sprint)
+    [mundo]/           hub y sprint genéricos de los otros 11 mundos
     duelo/ reto/ clan/ chat/ jugador/ amigos/   pantallas apiladas
   lib/                 datos y lógica (sin React salvo hooks chicos)
   ui/                  componentes visuales
@@ -88,7 +91,8 @@ decide XP, ELO, precios ni recompensas.
 | `jugador.ts` | Estado global del HUD: Placa, racha, Chispas, avisos, plan, mundos | `profiles`, `mi_clan`, `resumen.ts` |
 | `partida.ts` | Guardar intentos y cerrar partida (XP del día, nivel de mundo, hito en el feed, logros, títulos) | `insertar_intento`, `registrar_xp_diario`, `registrar_progreso_mundo` |
 | `numeria.ts`, `geografia.ts` | Secciones, temas, niveles y problemas unificados | `skill_levels` |
-| `mundos.ts` | Nivel de mundo con avance y "Continuar" | `detalle_nivel_mundo`, `world_progress` |
+| `mundos.ts` | Nivel de mundo con avance y "Continuar" (último mundo jugado, cualquiera de los 13) | `detalle_nivel_mundo`, `world_progress`, `attempts`, `logic_attempts` |
+| `mundosJugables/` | Un adaptador por mundo (ver abajo) | `skill_levels`, `insertar_intento`; Enigmia: `logic_puzzles`, `logic_skill_levels`, `insertar_intento_logica` |
 | `competir.ts` | Historial, matchmaking, duelos, series, rankings, retar | `buscar_rival_duelo`, `obtener_duelo`, `registrar_resultado_duelo`, `estado_serie_duelo`, `ranking_*` |
 | `duelos.ts` | Sala sincronizada y progreso en vivo | canales `duelo:<id>:sala`, `duelo:<id>:vivo` |
 | `social.ts` | Amigos, solicitudes, mensajes, presencia | `mis_amigos`, `mi_conversacion`, `enviar_mensaje_directo`, canales `dm:<a>:<b>`, `presencia:global` |
@@ -96,6 +100,27 @@ decide XP, ELO, precios ni recompensas.
 | `tienda.ts` | Catálogo, comprar, equipar, subir imágenes | `comprar_item_tienda`, `elegir_*`, buckets `avatares` y `fondos-perfil` |
 | `retos.ts`, `logros.ts`, `placa.ts` | Retos, logros/títulos y la Placa | `completar_reto_*`, `mis_titulos`, `obtener_perfil_publico` |
 | `efectos.ts`, `ajustes.ts`, `rendimiento.ts` | Sonido, vibración, preferencias del teléfono y reglas de rendimiento | — |
+
+### Mundos con el sprint genérico (`src/lib/mundosJugables/`)
+
+Cada mundo es un `MundoJugable` (`tipos.ts`) registrado en `index.ts`: sus modos y un `generar`
+que llama al **mismo generador de la web** y traduce la pregunta a una forma común:
+
+- `entrada`: `opciones`, `numero` (con tolerancia; `decimales` agrega la coma y `negativos` la
+  tecla ±) o `esqueleto` (tocar el hueso).
+- `visuales`: lo que se dibuja arriba del enunciado (`ui/visuales/VisualPregunta`): pentagrama,
+  figura rítmica, nota que suena (`assets/sonidos/notas`), molécula, triángulo, circuito,
+  gráfico, código, cartas o tabla.
+- `memoria`: fase de memorizar con el reloj en pausa (lista de Enigmia o cartas de a una de Naipia).
+- `formato`: `formulas` pasa el LaTeX `$…$` a Unicode (`ui/TextoMate`); `quimica` pone subíndices.
+- Opcionales: `duracionMs` (Enigmia 90 s), `preparar` (datos de la base antes de jugar),
+  `cargarNiveles`/`guardar`/`modoDePregunta` (Enigmia, que calibra por categoría en sus propias
+  tablas) y `filtro` (Codia: el lenguaje, elegido en el hub).
+
+En duelos el sprint fuerza el modo del duelo (`sub_tipo`) y el nivel acordado, y pasa un `rng`
+sembrado con la semilla del duelo (los mundos que lo usan, como Quimia, dan la misma serie a los
+dos). Un mundo nuevo se agrega con su adaptador + `enApp: true` en `tema.ts`: hub, sprint,
+duelos, retar y Continuar ya lo toman.
 
 ### Sistema visual (`src/ui/`)
 

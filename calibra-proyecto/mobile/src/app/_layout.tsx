@@ -165,6 +165,8 @@ function Navegacion() {
             <Stack.Screen name="geografia/index" />
             <Stack.Screen name="geografia/sprint" options={{ gestureEnabled: false, animation: "fade" }} />
             <Stack.Screen name="resultado" options={{ gestureEnabled: false, animation: "fade" }} />
+            <Stack.Screen name="[mundo]/index" />
+            <Stack.Screen name="[mundo]/sprint" options={{ gestureEnabled: false, animation: "fade" }} />
           </Stack.Protected>
           <Stack.Protected guard={!sesion}>
             <Stack.Screen name="login" />

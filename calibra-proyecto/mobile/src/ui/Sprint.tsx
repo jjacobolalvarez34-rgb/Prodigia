@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Pressable, StyleSheet, View, type LayoutChangeEvent } from "react-native";
 import Animated, {
   cancelAnimation,
@@ -31,37 +31,56 @@ import Texto from "./Texto";
 // ---------- Reloj ----------
 
 // Reloj del sprint: arranca cuando `inicio` deja de ser null y avisa `onFin` al
-// llegar a 0. `detenido` lo congela (al terminar la partida).
-export function useReloj(inicio: number | null, totalMs: number, onFin: () => void, detenido = false) {
+// llegar a 0. `detenido` lo congela para siempre (al terminar la partida) y
+// `pausado` lo frena un rato (fase de memorizar, hielo) sin perder el tiempo que
+// quedaba. Devuelve el progreso (para el anillo, en el hilo nativo) y una función
+// para leer los milisegundos que quedan.
+export function useReloj(inicio: number | null, totalMs: number, onFin: () => void, detenido = false, pausado = false) {
   const progreso = useSharedValue(1);
   const onFinRef = useRef(onFin);
+  const restanteRef = useRef(totalMs);
+  const desdeRef = useRef<number | null>(null);
   useEffect(() => {
     onFinRef.current = onFin;
   }, [onFin]);
   useEffect(() => {
     if (inicio == null) return;
-    if (detenido) {
+    restanteRef.current = Math.max(0, totalMs - (Date.now() - inicio));
+  }, [inicio, totalMs]);
+  useEffect(() => {
+    if (inicio == null) return;
+    if (detenido || pausado) {
       cancelAnimation(progreso);
       return;
     }
-    const restante = Math.max(0, totalMs - (Date.now() - inicio));
+    desdeRef.current = Date.now();
+    const restante = restanteRef.current;
     progreso.set(restante / totalMs);
     progreso.set(withTiming(0, { duration: restante, easing: Easing.linear }));
     const t = setTimeout(() => onFinRef.current(), restante);
-    return () => clearTimeout(t);
-  }, [inicio, totalMs, detenido, progreso]);
-  return progreso;
+    return () => {
+      clearTimeout(t);
+      if (desdeRef.current != null) restanteRef.current = Math.max(0, restanteRef.current - (Date.now() - desdeRef.current));
+      desdeRef.current = null;
+    };
+  }, [inicio, totalMs, detenido, pausado, progreso]);
+  const restante = useCallback(() => {
+    if (inicio == null) return totalMs;
+    if (desdeRef.current == null) return restanteRef.current;
+    return Math.max(0, restanteRef.current - (Date.now() - desdeRef.current));
+  }, [inicio, totalMs]);
+  return { progreso, restante };
 }
 
-function Segundos({ inicio, totalMs, detenido }: { inicio: number | null; totalMs: number; detenido: boolean }) {
-  const [s, setS] = useState(Math.ceil(totalMs / 1000));
+function Segundos({ restante, corriendo }: { restante: () => number; corriendo: boolean }) {
+  const [s, setS] = useState(() => Math.ceil(restante() / 1000));
   useEffect(() => {
-    if (inicio == null || detenido) return;
-    const tic = () => setS(Math.max(0, Math.ceil((totalMs - (Date.now() - inicio)) / 1000)));
+    const tic = () => setS(Math.max(0, Math.ceil(restante() / 1000)));
     tic();
+    if (!corriendo) return;
     const id = setInterval(tic, 250);
     return () => clearInterval(id);
-  }, [inicio, totalMs, detenido]);
+  }, [restante, corriendo]);
   return (
     <Texto v="mono" tam={13} c={s <= 10 ? color.error : color.texto}>
       0:{String(s).padStart(2, "0")}
@@ -126,28 +145,24 @@ export function RachaFuego({ racha }: { racha: number }) {
 
 export function Cabecera({
   onSalir,
-  inicio,
-  totalMs,
+  reloj,
   combo,
   acento,
-  progreso,
-  detenido = false,
+  corriendo,
 }: {
   onSalir: () => void;
-  inicio: number | null;
-  totalMs: number;
+  reloj: { progreso: SharedValue<number>; restante: () => number };
   combo: number;
   acento: string;
-  progreso: SharedValue<number>;
-  detenido?: boolean;
+  corriendo: boolean;
 }) {
   return (
     <View style={styles.cabecera}>
       <Pressable onPress={onSalir} hitSlop={12} style={styles.x} accessibilityLabel="Salir de la partida">
         <IconoCerrar tam={16} c={color.texto2} />
       </Pressable>
-      <Anillo valor={1} externo={progreso} tam={58} grosor={5} acento={acento}>
-        <Segundos inicio={inicio} totalMs={totalMs} detenido={detenido} />
+      <Anillo valor={1} externo={reloj.progreso} tam={58} grosor={5} acento={acento}>
+        <Segundos restante={reloj.restante} corriendo={corriendo} />
       </Anillo>
       <View style={{ width: 92, alignItems: "flex-end" }}>
         <RachaFuego racha={combo} />

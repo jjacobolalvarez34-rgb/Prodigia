@@ -152,7 +152,7 @@ export default function Sprint() {
     if (!ocupadoRef.current) terminar("tiempo");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const progresoReloj = useReloj(inicio, DURACION_SPRINT_MS, alAcabarElTiempo, final !== null);
+  const reloj = useReloj(inicio, DURACION_SPRINT_MS, alAcabarElTiempo, final !== null);
 
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -339,7 +339,7 @@ export default function Sprint() {
     <SafeAreaView style={styles.pantalla}>
       <Glifos glifos={NUMERIA.glifos} acento={NUMERIA.neon} cantidad={8} pulso={pulso} />
       <Animated.View style={[{ flex: 1 }, estiloJuego]}>
-        <Cabecera onSalir={confirmarSalida} inicio={inicio} totalMs={DURACION_SPRINT_MS} combo={combo} acento={NUMERIA.neon} progreso={progresoReloj} detenido={final !== null} />
+        <Cabecera onSalir={confirmarSalida} reloj={reloj} combo={combo} acento={NUMERIA.neon} corriendo={inicio != null && final === null} />
         <Progreso resultados={resultados} total={TOTAL} acento={NUMERIA.neon} escudos={escudos} />
         {duelo && (
           <BarraRival nombre={duelo.rivalNombre} total={TOTAL} yo={resultados.length} inicio={inicio} respuestasFantasma={duelo.rivalYaJugo ? duelo.rivalRespuestas : null} enVivo={rivalVivo?.respondidos ?? null} />

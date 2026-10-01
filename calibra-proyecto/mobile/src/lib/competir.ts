@@ -1,7 +1,7 @@
 // Competir: Rankeds, duelos casuales, liga semanal y duelos de amigos. Las mismas
 // RPC que RankedsClient.tsx, /practica?duelo= y /api/duelos/resultado de la web: el
 // ELO, el matchmaking y quién ganó se deciden en la base, nunca en el teléfono.
-import type { MundoSlug } from "~/tema";
+import { MUNDOS, type MundoSlug } from "~/tema";
 import { placaBasica, placaDesdeFila, type PlacaDatos } from "./placa";
 import { supabase } from "./supabase";
 
@@ -40,7 +40,7 @@ export interface StatsCasual {
 
 // Mundos que se pueden jugar en un duelo DENTRO de la app. El resto de las ciudades
 // se juega en la web hasta que lleguen a la app.
-export const MUNDOS_DUELO_APP: MundoSlug[] = ["numeria", "geografia"];
+export const MUNDOS_DUELO_APP: MundoSlug[] = MUNDOS.filter((m) => m.enApp).map((m) => m.slug);
 export const ELO_SOLO_TODAS = 1300; // Platino+: solo "todas las ciudades" (buscar_rival_duelo, 0078)
 export const NIVEL_MINIMO_RANKEDS = 5;
 

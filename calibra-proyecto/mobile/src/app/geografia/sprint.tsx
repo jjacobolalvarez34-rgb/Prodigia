@@ -121,7 +121,7 @@ export default function SprintGeografia() {
     if (!ocupadoRef.current) terminar("tiempo");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const progresoReloj = useReloj(inicio, DURACION_SPRINT_GEO_MS, alAcabarElTiempo, final !== null);
+  const reloj = useReloj(inicio, DURACION_SPRINT_GEO_MS, alAcabarElTiempo, final !== null);
 
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -270,7 +270,7 @@ export default function SprintGeografia() {
     <SafeAreaView style={styles.pantalla}>
       <Glifos glifos={GEOGRAFIA.glifos} acento={GEOGRAFIA.neon} cantidad={7} pulso={pulso} />
       <Animated.View style={[{ flex: 1 }, estiloJuego]}>
-      <Cabecera onSalir={confirmarSalida} inicio={inicio} totalMs={DURACION_SPRINT_GEO_MS} combo={combo} acento={GEOGRAFIA.neon} progreso={progresoReloj} detenido={final !== null} />
+      <Cabecera onSalir={confirmarSalida} reloj={reloj} combo={combo} acento={GEOGRAFIA.neon} corriendo={inicio != null && final === null} />
       <Progreso resultados={resultados} total={PREGUNTAS_POR_PARTIDA} acento={GEOGRAFIA.neon} escudos={escudos} />
       {duelo && (
         <BarraRival nombre={duelo.rivalNombre} total={PREGUNTAS_POR_PARTIDA} yo={resultados.length} inicio={inicio} respuestasFantasma={duelo.rivalYaJugo ? duelo.rivalRespuestas : null} enVivo={rivalVivo?.respondidos ?? null} />
