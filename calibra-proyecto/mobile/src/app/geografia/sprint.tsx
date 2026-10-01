@@ -1,8 +1,11 @@
-import * as Haptics from "expo-haptics";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Alert, BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, BackHandler, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import Animated, { FadeInDown, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { obtenerDuelo, registrarResultadoDuelo, type InfoDuelo } from "~/lib/competir";
+import { useProgresoEnVivo } from "~/lib/duelos";
+import { sonar, sonarAcierto, vibrar } from "~/lib/efectos";
 import {
   cargarNivelesGeografia,
   CONTINENTES,
@@ -18,31 +21,43 @@ import {
 import { cerrarPartida, guardarIntentoTipo } from "~/lib/partida";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError } from "~/lib/supabase";
+import Glifos from "~/ui/Glifos";
 import MapaGeografia from "~/ui/MapaGeografia";
-import { color, mono, MUNDOS, radio } from "~/tema";
+import { animarAcierto, animarError, BarraRival, Cabecera, Flotante, Progreso, TarjetaProblema } from "~/ui/Sprint";
+import Texto from "~/ui/Texto";
+import { brillo, color, conAlfa, fuente, MUNDO_POR_SLUG } from "~/tema";
 
-const GEOGRAFIA = MUNDOS.find((m) => m.slug === "geografia")!;
+const GEOGRAFIA = MUNDO_POR_SLUG.geografia;
 const FEEDBACK_OK_MS = 650;
 const FEEDBACK_ERROR_MS = 1300;
 
 export default function SprintGeografia() {
   const router = useRouter();
   const { sesion } = useSesion();
-  const params = useLocalSearchParams<{ continente?: string }>();
-  const continente = (CONTINENTES.some((c) => c.id === params.continente) ? params.continente : "america") as Continente;
+  const miId = sesion?.user.id ?? null;
+  const params = useLocalSearchParams<{ continente?: string; duelo?: string }>();
+  const dueloId = params.duelo ?? null;
+  const [continente, setContinente] = useState<Continente>((CONTINENTES.some((c) => c.id === params.continente) ? params.continente : "america") as Continente);
   const nombreContinente = CONTINENTES.find((c) => c.id === continente)!.nombre;
 
+  const [duelo, setDuelo] = useState<InfoDuelo | null>(null);
   const [pregunta, setPregunta] = useState<Pregunta | null>(null);
   const [seleccionId, setSeleccionId] = useState<string | null>(null);
   const [respondido, setRespondido] = useState(false);
   const [restanteMs, setRestanteMs] = useState(DURACION_SPRINT_GEO_MS);
-  const [respondidas, setRespondidas] = useState(0);
-  const [xp, setXp] = useState(0);
+  const [resultados, setResultados] = useState<boolean[]>([]);
+  const [combo, setCombo] = useState(0);
   const [escudos, setEscudos] = useState(ESCUDOS_POR_PARTIDA);
-  const [nivel, setNivel] = useState(1);
   const [aviso, setAviso] = useState<string | null>(null);
   const [cerrando, setCerrando] = useState(false);
+  const [flotantes, setFlotantes] = useState<{ id: number; texto: string }[]>([]);
+  const [fantasmaRespondidos, setFantasmaRespondidos] = useState(0);
 
+  const sello = useSharedValue(1);
+  const sacudida = useSharedValue(0);
+  const pulso = useSharedValue(0);
+
+  const continenteRef = useRef(continente);
   const nivelRef = useRef(1);
   const escudosRef = useRef(ESCUDOS_POR_PARTIDA);
   const usadosRef = useRef(new Set<string>());
@@ -52,10 +67,14 @@ export default function SprintGeografia() {
   const ocupadoRef = useRef(false);
   const pendientesRef = useRef<Promise<unknown>[]>([]);
   const xpRef = useRef(0);
-  const totalesRef = useRef({ correctos: 0, total: 0 });
+  const respuestasRef = useRef<{ correct: boolean; timeMs: number }[]>([]);
+  const comboRef = useRef(0);
+  const flotanteId = useRef(0);
+
+  const { rival: rivalVivo, emitir } = useProgresoEnVivo(dueloId && duelo && !duelo.rivalYaJugo ? dueloId : null, miId);
 
   function nuevaPregunta() {
-    const p = siguientePregunta(continente, nivelRef.current, usadosRef.current);
+    const p = siguientePregunta(continenteRef.current, nivelRef.current, usadosRef.current);
     if (p) usadosRef.current.add(p.id);
     setPregunta(p);
     setSeleccionId(null);
@@ -64,26 +83,41 @@ export default function SprintGeografia() {
   }
 
   useEffect(() => {
-    if (!sesion?.user.id) return;
+    if (!miId) return;
     let cancelado = false;
-    cargarNivelesGeografia(sesion.user.id).then((niveles) => {
+    (async () => {
+      if (dueloId) {
+        const d = await obtenerDuelo(dueloId, miId);
+        if (!d || d.estado !== "pendiente") {
+          Alert.alert("Duelo no disponible", "Este duelo ya terminó.", [{ text: "Volver", onPress: () => router.back() }]);
+          return;
+        }
+        setDuelo(d);
+        const c = (d.subTipo as Continente | null) ?? "america";
+        continenteRef.current = c;
+        setContinente(c);
+      }
+      const niveles = await cargarNivelesGeografia(miId);
       if (cancelado) return;
-      nivelRef.current = niveles[continente];
-      setNivel(niveles[continente]);
+      nivelRef.current = niveles[continenteRef.current];
       inicioRef.current = Date.now();
+      sonar("ya");
       nuevaPregunta();
-    });
+    })();
     return () => {
       cancelado = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sesion?.user.id]);
+  }, [miId]);
 
   useEffect(() => {
     if (!pregunta || terminadoRef.current) return;
+    const acumulado = (duelo?.rivalRespuestas ?? []).reduce<number[]>((acc, r) => [...acc, (acc[acc.length - 1] ?? 0) + r.timeMs], []);
     const id = setInterval(() => {
-      const restante = Math.max(0, DURACION_SPRINT_GEO_MS - (Date.now() - inicioRef.current));
+      const pasado = Date.now() - inicioRef.current;
+      const restante = Math.max(0, DURACION_SPRINT_GEO_MS - pasado);
       setRestanteMs(restante);
+      if (acumulado.length) setFantasmaRespondidos(acumulado.filter((t) => t <= pasado).length);
       if (restante === 0 && !ocupadoRef.current) {
         clearInterval(id);
         terminar();
@@ -104,7 +138,7 @@ export default function SprintGeografia() {
 
   function confirmarSalida() {
     if (terminadoRef.current) return;
-    Alert.alert("¿Salir de la partida?", "Lo que ya respondiste queda guardado, pero la partida no se cierra ni suma al día.", [
+    Alert.alert("¿Salir de la partida?", dueloId ? "Si sales, el duelo queda sin tu resultado." : "Lo que ya respondiste queda guardado, pero la partida no se cierra ni suma al día.", [
       { text: "Seguir jugando", style: "cancel" },
       {
         text: "Salir",
@@ -121,11 +155,30 @@ export default function SprintGeografia() {
     if (terminadoRef.current) return;
     terminadoRef.current = true;
     setCerrando(true);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    vibrar.exito();
     await Promise.allSettled(pendientesRef.current);
     try {
-      const r = await cerrarPartida(xpRef.current, "geografia");
-      router.replace({ pathname: "/resultado", params: { mundo: "geografia", datos: JSON.stringify({ ...r, xp: xpRef.current, ...totalesRef.current }) } });
+      const r = await cerrarPartida(xpRef.current, "geografia", dueloId ?? undefined);
+      const correctos = respuestasRef.current.filter((x) => x.correct).length;
+      const total = Math.max(PREGUNTAS_POR_PARTIDA, respuestasRef.current.length);
+      let resultadoDuelo = null;
+      if (dueloId && duelo) {
+        const tiempos = respuestasRef.current.map((x) => x.timeMs);
+        resultadoDuelo = await registrarResultadoDuelo(dueloId, correctos / total, tiempos.length ? tiempos.reduce((a, b) => a + b, 0) / tiempos.length : 0, xpRef.current, respuestasRef.current);
+        if (duelo.serieId) {
+          router.replace({ pathname: "/duelo/serie/[id]", params: { id: duelo.serieId } });
+          return;
+        }
+      }
+      router.replace({
+        pathname: "/resultado",
+        params: {
+          mundo: "geografia",
+          tema: continenteRef.current,
+          repetir: dueloId ? "" : JSON.stringify({ pathname: "/geografia/sprint", params: { continente: continenteRef.current } }),
+          datos: JSON.stringify({ ...r, xp: xpRef.current, correctos, total, tiempoMs: Date.now() - inicioRef.current, duelo: resultadoDuelo, rival: duelo?.rivalNombre ?? null }),
+        },
+      });
     } catch (e) {
       setCerrando(false);
       Alert.alert("No se pudo cerrar la partida", mensajeError(e), [{ text: "Volver", onPress: () => router.back() }]);
@@ -137,9 +190,26 @@ export default function SprintGeografia() {
     ocupadoRef.current = true;
     const timeMs = Date.now() - mostradaEnRef.current;
     const correcto = id === pregunta.id;
+    respuestasRef.current.push({ correct: correcto, timeMs });
     setSeleccionId(id);
     setRespondido(true);
-    Haptics.notificationAsync(correcto ? Haptics.NotificationFeedbackType.Success : Haptics.NotificationFeedbackType.Error);
+    setResultados((r) => [...r, correcto]);
+    comboRef.current = correcto ? comboRef.current + 1 : 0;
+    setCombo(comboRef.current);
+    if (correcto) {
+      sonarAcierto(comboRef.current);
+      if (comboRef.current === 5 || comboRef.current === 10) {
+        sonar("combo");
+        vibrar.fuerte();
+      } else vibrar.medio();
+      animarAcierto(sello);
+      pulso.set(withSequence(withTiming(1, { duration: 120 }), withTiming(0, { duration: 500 })));
+    } else {
+      sonar("error");
+      vibrar.error();
+      animarError(sacudida);
+    }
+    emitir({ respondidos: respuestasRef.current.length, correctos: respuestasRef.current.filter((x) => x.correct).length, racha: comboRef.current });
 
     // Igual que la web: los primeros 2 errores de la partida no bajan el nivel.
     let protegido = false;
@@ -148,23 +218,23 @@ export default function SprintGeografia() {
       escudosRef.current -= 1;
       setEscudos(escudosRef.current);
     }
-    totalesRef.current = { correctos: totalesRef.current.correctos + (correcto ? 1 : 0), total: totalesRef.current.total + 1 };
-    setRespondidas(totalesRef.current.total);
 
-    const guardado = guardarIntentoTipo(`geografia_${continente}`, pregunta.dificultad, correcto, timeMs, protegido)
+    const guardado = guardarIntentoTipo(`geografia_${continenteRef.current}`, pregunta.dificultad, correcto, timeMs, protegido)
       .then((res) => {
         if (res.xp > 0) {
           xpRef.current += res.xp;
-          setXp(xpRef.current);
+          const fid = ++flotanteId.current;
+          setFlotantes((f) => [...f, { id: fid, texto: `+${res.xp}` }]);
+          setTimeout(() => setFlotantes((f) => f.filter((x) => x.id !== fid)), 1200);
         }
         if (res.nivel != null) {
           if (res.nivel > nivelRef.current) {
             setAviso(`¡Subiste a nivel ${res.nivel} en ${nombreContinente}!`);
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            sonar("nivel");
+            vibrar.fuerte();
             setTimeout(() => setAviso(null), 1500);
           }
           nivelRef.current = res.nivel;
-          setNivel(res.nivel);
         }
       })
       .catch(() => undefined);
@@ -174,7 +244,7 @@ export default function SprintGeografia() {
       () => {
         ocupadoRef.current = false;
         if (terminadoRef.current) return;
-        if (totalesRef.current.total >= PREGUNTAS_POR_PARTIDA || Date.now() - inicioRef.current >= DURACION_SPRINT_GEO_MS) terminar();
+        if (respuestasRef.current.length >= PREGUNTAS_POR_PARTIDA || Date.now() - inicioRef.current >= DURACION_SPRINT_GEO_MS) terminar();
         else nuevaPregunta();
       },
       correcto ? FEEDBACK_OK_MS : FEEDBACK_ERROR_MS
@@ -184,89 +254,90 @@ export default function SprintGeografia() {
   if (!pregunta || cerrando) {
     return (
       <SafeAreaView style={[styles.pantalla, styles.centro]}>
+        <Glifos glifos={GEOGRAFIA.glifos} acento={GEOGRAFIA.neon} />
         <ActivityIndicator color={GEOGRAFIA.neon} size="large" />
-        <Text style={styles.cargando}>{cerrando ? "Guardando tu partida…" : "Desplegando el mapa…"}</Text>
+        <Texto v="nota">{cerrando ? (dueloId ? "Comparando con tu rival…" : "Guardando tu partida…") : "Desplegando el mapa…"}</Texto>
       </SafeAreaView>
     );
   }
 
-  const segundos = Math.ceil(restanteMs / 1000);
   const avanzada = esPreguntaAvanzada(pregunta);
   const acerto = respondido && seleccionId === pregunta.id;
   const nombreElegido = respondido && seleccionId && !avanzada ? nombrePais(continente, seleccionId) : null;
+  const rivalRespondidos = duelo?.rivalYaJugo ? fantasmaRespondidos : rivalVivo?.respondidos ?? null;
+  const feedback = !respondido ? "idle" : acerto ? "correcto" : "incorrecto";
 
   return (
     <SafeAreaView style={styles.pantalla}>
-      <View style={styles.hud}>
-        <Pressable onPress={confirmarSalida} hitSlop={12}>
-          <Text style={styles.cerrar}>✕</Text>
-        </Pressable>
-        <View style={styles.hudCentro}>
-          <Text style={[styles.reloj, segundos <= 10 && { color: color.error }]}>{segundos}s</Text>
-        </View>
-        <Text style={styles.xp}>+{xp} ⚡</Text>
-      </View>
-      <View style={styles.barraFondo}>
-        <View style={[styles.barra, { width: `${(restanteMs / DURACION_SPRINT_GEO_MS) * 100}%`, backgroundColor: segundos <= 10 ? color.error : GEOGRAFIA.neon }]} />
-      </View>
-
-      <View style={styles.estado}>
-        <View style={styles.puntos}>
-          {Array.from({ length: PREGUNTAS_POR_PARTIDA }).map((_, i) => (
-            <View key={i} style={[styles.punto, i < respondidas && { backgroundColor: GEOGRAFIA.neon }]} />
-          ))}
-        </View>
-        <Text style={styles.estadoTexto}>
-          🛡️ {escudos} · Nivel {nivel}
-        </Text>
-      </View>
+      <Glifos glifos={GEOGRAFIA.glifos} acento={GEOGRAFIA.neon} cantidad={7} pulso={pulso} />
+      <Cabecera onSalir={confirmarSalida} restanteMs={restanteMs} totalMs={DURACION_SPRINT_GEO_MS} combo={combo} acento={GEOGRAFIA.neon} />
+      <Progreso resultados={resultados} total={PREGUNTAS_POR_PARTIDA} acento={GEOGRAFIA.neon} escudos={escudos} />
+      {duelo && rivalRespondidos != null && (
+        <BarraRival nombre={duelo.rivalNombre} respondidos={rivalRespondidos} total={PREGUNTAS_POR_PARTIDA} yo={resultados.length} fantasma={duelo.rivalYaJugo} />
+      )}
 
       <ScrollView contentContainerStyle={styles.zona} scrollEnabled={avanzada}>
-        <Text style={styles.pregunta}>
-          {avanzada ? (
-            pregunta.pregunta
-          ) : (
-            <>
-              ¿Dónde está <Text style={{ color: GEOGRAFIA.neon }}>{pregunta.nombre}</Text>?
-            </>
-          )}
-        </Text>
+        <TarjetaProblema acento={GEOGRAFIA.neon} combo={combo} feedback={feedback} sello={sello} sacudida={sacudida}>
+          <Texto v="micro" c={GEOGRAFIA.neon}>
+            {nombreContinente}
+          </Texto>
+          <Texto style={{ fontFamily: fuente.display, fontSize: 23, lineHeight: 29, color: color.texto, textAlign: "center" }}>
+            {avanzada ? (
+              pregunta.pregunta
+            ) : (
+              <>
+                ¿Dónde está <Texto style={{ fontFamily: fuente.display, fontSize: 23, color: GEOGRAFIA.neon }}>{pregunta.nombre}</Texto>?
+              </>
+            )}
+          </Texto>
+          {flotantes.map((f) => (
+            <Flotante key={f.id} texto={f.texto} />
+          ))}
+        </TarjetaProblema>
 
         {avanzada ? (
           <View style={{ gap: 10 }}>
-            {pregunta.opciones.map((o) => {
+            {pregunta.opciones.map((o, i) => {
               const esCorrecta = respondido && o.id === pregunta.id;
               const esIncorrecta = respondido && o.id === seleccionId && o.id !== pregunta.id;
               return (
-                <Pressable
-                  key={o.id}
-                  disabled={respondido}
-                  onPress={() => responder(o.id)}
-                  style={[styles.opcion, esCorrecta && { borderColor: color.correcto, backgroundColor: color.correcto + "22" }, esIncorrecta && { borderColor: color.error, backgroundColor: color.error + "22" }]}
-                >
-                  <Text style={styles.opcionTexto}>{o.texto}</Text>
-                </Pressable>
+                <Animated.View key={o.id} entering={FadeInDown.delay(i * 60).springify()}>
+                  <Pressable
+                    disabled={respondido}
+                    onPress={() => {
+                      vibrar.seleccion();
+                      responder(o.id);
+                    }}
+                    style={({ pressed }) => [
+                      styles.opcion,
+                      pressed && { transform: [{ scale: 0.97 }] },
+                      esCorrecta && { borderColor: color.correcto, backgroundColor: conAlfa(color.correcto, 0.15), boxShadow: brillo(color.correcto, 16, 0.4) },
+                      esIncorrecta && { borderColor: color.error, backgroundColor: conAlfa(color.error, 0.15) },
+                    ]}
+                  >
+                    <Texto v="fuerte" centro>
+                      {o.texto}
+                    </Texto>
+                  </Pressable>
+                </Animated.View>
               );
             })}
           </View>
         ) : (
-          <MapaGeografia
-            continente={continente}
-            acento={GEOGRAFIA.neon}
-            objetivoId={pregunta.id}
-            seleccionId={seleccionId}
-            respondido={respondido}
-            onElegir={responder}
-          />
+          <MapaGeografia continente={continente} acento={GEOGRAFIA.neon} objetivoId={pregunta.id} seleccionId={seleccionId} respondido={respondido} onElegir={responder} />
         )}
 
         <View style={styles.feedback}>
           {respondido && (
-            <Text style={[styles.feedbackTexto, { color: acerto ? color.correcto : color.error }]}>
+            <Texto v="h3" c={acerto ? color.correcto : color.error} centro>
               {acerto ? "¡Correcto!" : nombreElegido ? `Tocaste ${nombreElegido}. Era ${pregunta.nombre}.` : `Era ${pregunta.nombre}.`}
-            </Text>
+            </Texto>
           )}
-          {aviso && <Text style={[styles.feedbackTexto, { color: color.logro }]}>{aviso}</Text>}
+          {aviso && (
+            <Texto v="h3" c={color.logro} centro>
+              {aviso}
+            </Texto>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -276,22 +347,7 @@ export default function SprintGeografia() {
 const styles = StyleSheet.create({
   pantalla: { flex: 1, backgroundColor: color.bgHondo },
   centro: { alignItems: "center", justifyContent: "center", gap: 14 },
-  cargando: { color: color.texto2, fontSize: 15 },
-  hud: { flexDirection: "row", alignItems: "center", paddingHorizontal: 20, paddingTop: 8, paddingBottom: 10 },
-  cerrar: { color: color.texto2, fontSize: 22, width: 60 },
-  hudCentro: { flex: 1, alignItems: "center" },
-  reloj: { color: color.texto, fontFamily: mono, fontSize: 24, fontWeight: "800" },
-  xp: { color: color.logro, fontFamily: mono, fontSize: 16, fontWeight: "700", width: 60, textAlign: "right" },
-  barraFondo: { height: 6, marginHorizontal: 20, borderRadius: 3, backgroundColor: color.surface2, overflow: "hidden" },
-  barra: { height: "100%", borderRadius: 3 },
-  estado: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, marginTop: 12 },
-  puntos: { flexDirection: "row", gap: 5 },
-  punto: { width: 8, height: 8, borderRadius: 4, backgroundColor: color.surface3 },
-  estadoTexto: { color: color.texto2, fontSize: 13, fontWeight: "600" },
-  zona: { padding: 16, gap: 14, flexGrow: 1, justifyContent: "center" },
-  pregunta: { color: color.texto, fontSize: 22, fontWeight: "800", textAlign: "center" },
-  opcion: { borderWidth: 2, borderColor: color.border, backgroundColor: color.surface1, borderRadius: radio.boton, padding: 16 },
-  opcionTexto: { color: color.texto, fontSize: 16, fontWeight: "700", textAlign: "center" },
+  zona: { padding: 16, gap: 12, flexGrow: 1, justifyContent: "center" },
+  opcion: { borderWidth: 2, borderColor: color.border, backgroundColor: color.surface1, borderRadius: 16, padding: 16 },
   feedback: { minHeight: 48, gap: 4 },
-  feedbackTexto: { textAlign: "center", fontSize: 16, fontWeight: "800" },
 });

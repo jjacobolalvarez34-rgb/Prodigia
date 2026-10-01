@@ -10,7 +10,7 @@ import { useSesion } from "~/lib/sesion";
 import { supabase } from "~/lib/supabase";
 import { actualizarWidgets } from "~/widgets/registro";
 import Boton3D from "~/ui/Boton3D";
-import { color, radio } from "~/tema";
+import { color, radio, fuente } from "~/tema";
 
 type TipoAnuncio = "evento" | "actualizacion" | "arreglo";
 
@@ -201,28 +201,28 @@ const styles = StyleSheet.create({
   pantalla: { flex: 1, backgroundColor: color.bg },
   barra: { flexDirection: "row", alignItems: "center", paddingHorizontal: 20, paddingVertical: 8, gap: 12 },
   atras: { color: color.texto, fontSize: 32, lineHeight: 34, width: 28 },
-  titulo: { flex: 1, color: color.texto, fontSize: 24, fontWeight: "800" },
+  titulo: { flex: 1, color: color.texto, fontSize: 24, fontFamily: fuente.display },
   engranaje: { color: color.texto2, fontSize: 24 },
   contenido: { padding: 20, paddingTop: 8, gap: 14, paddingBottom: 40 },
   permiso: { borderRadius: radio.tarjeta, padding: 18, gap: 10, borderWidth: 1, borderColor: "#3B2C8F" },
-  permisoTitulo: { color: color.texto, fontSize: 18, fontWeight: "800" },
-  permisoTexto: { color: color.texto2, fontSize: 14, lineHeight: 20 },
-  seccion: { color: color.texto, fontSize: 18, fontWeight: "700" },
+  permisoTitulo: { color: color.texto, fontSize: 18, fontFamily: fuente.display },
+  permisoTexto: { fontFamily: fuente.cuerpo, color: color.texto2, fontSize: 14, lineHeight: 20 },
+  seccion: { color: color.texto, fontSize: 18, fontFamily: fuente.cuerpoBold },
   filaSeccion: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 6 },
-  marcarTodo: { color: color.primario, fontSize: 13, fontWeight: "700" },
+  marcarTodo: { color: color.primario, fontSize: 13, fontFamily: fuente.cuerpoBold },
   mensajes: { flexDirection: "row", alignItems: "center", gap: 14, borderRadius: radio.tarjeta, padding: 16, borderWidth: 1, borderColor: color.border },
   mensajesIcono: { fontSize: 30 },
-  mensajesTitulo: { color: color.texto, fontSize: 17, fontWeight: "800" },
-  mensajesTexto: { color: color.texto2, fontSize: 13, lineHeight: 18, marginTop: 2 },
+  mensajesTitulo: { color: color.texto, fontSize: 17, fontFamily: fuente.display },
+  mensajesTexto: { fontFamily: fuente.cuerpo, color: color.texto2, fontSize: 13, lineHeight: 18, marginTop: 2 },
   flecha: { color: color.texto2, fontSize: 20 },
   anuncio: { borderRadius: radio.tarjeta, padding: 16, gap: 8, borderWidth: 1.5 },
   anuncioCabecera: { flexDirection: "row", alignItems: "center", gap: 8 },
   chip: { borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },
-  chipTexto: { fontSize: 12, fontWeight: "800" },
-  fecha: { flex: 1, color: color.texto2, fontSize: 12 },
+  chipTexto: { fontSize: 12, fontFamily: fuente.display },
+  fecha: { fontFamily: fuente.cuerpo, flex: 1, color: color.texto2, fontSize: 12 },
   punto: { width: 9, height: 9, borderRadius: 5 },
-  anuncioTitulo: { color: color.texto, fontSize: 17, fontWeight: "800" },
-  anuncioTexto: { color: color.texto2, fontSize: 14, lineHeight: 20 },
-  leerMas: { fontSize: 13, fontWeight: "700" },
-  vacio: { color: color.texto2, fontSize: 14, lineHeight: 20 },
+  anuncioTitulo: { color: color.texto, fontSize: 17, fontFamily: fuente.display },
+  anuncioTexto: { fontFamily: fuente.cuerpo, color: color.texto2, fontSize: 14, lineHeight: 20 },
+  leerMas: { fontSize: 13, fontFamily: fuente.cuerpoBold },
+  vacio: { fontFamily: fuente.cuerpo, color: color.texto2, fontSize: 14, lineHeight: 20 },
 });

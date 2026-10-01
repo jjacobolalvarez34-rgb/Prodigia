@@ -1,0 +1,278 @@
+import { Redirect, useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { cargarMiClan, reclamarMision, type Mision } from "~/lib/clanes";
+import { cargarCompetitivo, finDeSemanaUtc, rankingSemanal, rechazarDuelo, textoFaltan, type DueloPendiente } from "~/lib/competir";
+import { sonar, vibrar } from "~/lib/efectos";
+import { fijarChispas, recargarJugador, useJugador } from "~/lib/jugador";
+import { progresoMundo, ultimoJugado, type Continuar, type ProgresoMundo } from "~/lib/mundos";
+import { estadoRetosHoy } from "~/lib/retos";
+import { useSesion } from "~/lib/sesion";
+import { mensajeError, supabase } from "~/lib/supabase";
+import Anillo from "~/ui/Anillo";
+import { mostrarAviso } from "~/ui/Aviso";
+import Barra from "~/ui/Barra";
+import Boton3D from "~/ui/Boton3D";
+import Ciudad from "~/ui/Ciudad";
+import Destacados, { type NovedadDestacada } from "~/ui/Destacados";
+import { IconoChispa, IconoCompetir, IconoLlama } from "~/ui/Iconos";
+import NumeroAnimado from "~/ui/NumeroAnimado";
+import { PantallaPestana, TituloSeccion } from "~/ui/Pantalla";
+import Tarjeta from "~/ui/Tarjeta";
+import Texto from "~/ui/Texto";
+import { color, MUNDO_POR_SLUG, mundoDe } from "~/tema";
+
+const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+export default function Hoy() {
+  const router = useRouter();
+  const { sesion } = useSesion();
+  const userId = sesion?.user.id;
+  const { placa, resumen, mundos, esInvitado } = useJugador();
+  const [continuar, setContinuar] = useState<Continuar | null>(null);
+  const [progreso, setProgreso] = useState<ProgresoMundo | null>(null);
+  const [retos, setRetos] = useState<{ diario: number | null; semanal: number | null } | null>(null);
+  const [mision, setMision] = useState<{ clanId: string; tag: string | null; m: Mision } | null>(null);
+  const [liga, setLiga] = useState<{ puesto: number; total: number } | null>(null);
+  const [pendientes, setPendientes] = useState<DueloPendiente[]>([]);
+  const [novedades, setNovedades] = useState<NovedadDestacada[]>([]);
+  const [reclamando, setReclamando] = useState(false);
+  const [ahora, setAhora] = useState(() => new Date());
+
+  const cargar = useCallback(async () => {
+    if (!userId) return;
+    setAhora(new Date());
+    const tareas: Promise<unknown>[] = [
+      recargarJugador(),
+      ultimoJugado(userId).then(async (c) => {
+        setContinuar(c);
+        setProgreso(await progresoMundo(userId, c.mundo));
+      }),
+      Promise.resolve(supabase.rpc("anuncios_pendientes")).then(({ data }) => setNovedades(((data ?? []) as NovedadDestacada[]).slice().reverse())),
+    ];
+    if (!esInvitado) {
+      tareas.push(
+        estadoRetosHoy(userId).then(setRetos),
+        cargarMiClan().then((d) => setMision(d.clan && d.mision ? { clanId: d.clan.clan_id, tag: d.clan.tag, m: d.mision } : null)),
+        rankingSemanal(null, false).then((r) => {
+          const i = r.findIndex((f) => f.placa.id === userId);
+          setLiga(i >= 0 ? { puesto: i + 1, total: r.length } : { puesto: 0, total: r.length });
+        }),
+        cargarCompetitivo().then((c) => setPendientes(c.pendientes))
+      );
+    }
+    await Promise.allSettled(tareas);
+  }, [userId, esInvitado]);
+
+  useFocusEffect(
+    useCallback(() => {
+      cargar();
+    }, [cargar])
+  );
+
+  async function reclamar() {
+    setReclamando(true);
+    try {
+      const r = await reclamarMision();
+      sonar("recompensa");
+      vibrar.exito();
+      fijarChispas(r.total);
+      mostrarAviso(`¡+${r.chispas.toLocaleString("es")} Chispas para ti!`, "logro");
+      await cargar();
+    } catch (e) {
+      mostrarAviso(mensajeError(e), "error");
+    } finally {
+      setReclamando(false);
+    }
+  }
+
+  if (placa && mundos.length < 2) return <Redirect href="/elegir-mundos" />;
+
+  const nombre = esInvitado ? "Invitado" : placa?.nombre ?? "…";
+  const xpHoy = resumen?.xpHoy ?? 0;
+  const meta = Math.max(1, resumen?.metaDiaria ?? 100);
+  const fraccionMeta = Math.min(1, xpHoy / meta);
+  const partidasFaltan = Math.max(0, Math.ceil((meta - xpHoy) / 120));
+  const rachaEnRiesgo = (resumen?.racha ?? 0) > 0 && xpHoy === 0 && ahora.getHours() >= 18;
+  const mundoContinuar = continuar ? MUNDO_POR_SLUG[continuar.mundo] : null;
+  const finLiga = finDeSemanaUtc(ahora);
+
+  let indice = 0;
+  return (
+    <PantallaPestana onRefrescar={cargar}>
+      <View>
+        <Texto v="micro">{DIAS[ahora.getDay()]}</Texto>
+        <Texto v="h1">Hola, {nombre}</Texto>
+      </View>
+
+      {rachaEnRiesgo && (
+        <Tarjeta indice={indice++} acento={color.racha} brillo={0.3} onPress={() => router.push(continuar?.ruta ?? "/numeria")}>
+          <View style={styles.fila}>
+            <IconoLlama tam={34} estado="llamas" />
+            <View style={{ flex: 1 }}>
+              <Texto v="h3">¡Tu racha de {resumen?.racha} días está en riesgo!</Texto>
+              <Texto v="nota">Juega una partida antes de medianoche para mantenerla.</Texto>
+            </View>
+          </View>
+        </Tarjeta>
+      )}
+
+      {pendientes.slice(0, 2).map((p) => {
+        const m = mundoDe(p.mundo);
+        return (
+          <Tarjeta key={p.duel_id} indice={indice++} acento={m?.neon ?? color.primario} brillo={0.3}>
+            <View style={styles.fila}>
+              <View style={[styles.iconoCirculo, { backgroundColor: (m?.base ?? color.primario) + "44" }]}>
+                <IconoCompetir tam={20} c={m?.neon ?? color.primarioClaro} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Texto v="h3">{p.retador_nombre ?? "Alguien"} te retó</Texto>
+                <Texto v="nota">
+                  {m?.nombre ?? p.mundo} · {p.retador_elo} ELO
+                </Texto>
+              </View>
+            </View>
+            <View style={[styles.fila, { marginTop: 10 }]}>
+              <Boton3D
+                titulo="Rechazar"
+                variante="secundario"
+                tamano="sm"
+                estilo={{ flex: 1 }}
+                onPress={async () => {
+                  await rechazarDuelo(p.duel_id);
+                  setPendientes((l) => l.filter((x) => x.duel_id !== p.duel_id));
+                }}
+              />
+              <Boton3D titulo="Aceptar" tamano="sm" acento={m?.base} estilo={{ flex: 1 }} onPress={() => router.push({ pathname: "/duelo/[id]", params: { id: p.duel_id } })} />
+            </View>
+          </Tarjeta>
+        );
+      })}
+
+      <Tarjeta indice={indice++}>
+        <View style={styles.fila}>
+          <Anillo valor={fraccionMeta} tam={66} grosor={7} acento={fraccionMeta >= 1 ? color.correcto : color.logro}>
+            <Texto v="mono" tam={13}>
+              {Math.round(fraccionMeta * 100)}%
+            </Texto>
+          </Anillo>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Texto v="h3">{fraccionMeta >= 1 ? "¡Meta del día cumplida!" : "Meta diaria"}</Texto>
+            <Texto v="nota">
+              <NumeroAnimado valor={xpHoy} v="mono" c={color.texto} estilo={{ fontSize: 13 }} /> / {meta} Exp
+              {fraccionMeta < 1 ? ` · ${partidasFaltan} ${partidasFaltan === 1 ? "partida" : "partidas"} más` : " · racha a salvo"}
+            </Texto>
+          </View>
+        </View>
+      </Tarjeta>
+
+      {continuar && mundoContinuar && (
+        <Tarjeta indice={indice++} relleno={0} acento={mundoContinuar.neon} brillo={0.18}>
+          <Ciudad semilla={mundoContinuar.slug} acento={mundoContinuar.neon} alto={84} radio={0} />
+          <View style={{ padding: 14, gap: 10 }}>
+            <View style={styles.entre}>
+              <View>
+                <Texto v="micro" c={mundoContinuar.neon}>
+                  Continuar
+                </Texto>
+                <Texto v="h3">
+                  {mundoContinuar.nombre} · {continuar.tema}
+                </Texto>
+              </View>
+              <Texto v="mono" tam={13}>
+                Nv {progreso?.nivel ?? 1}
+              </Texto>
+            </View>
+            <Barra valor={progreso?.avance ?? 0} acento={mundoContinuar.base} />
+            <Boton3D titulo="▶  Jugar" tamano="sm" acento={mundoContinuar.base} brillo onPress={() => router.push(continuar.ruta)} />
+          </View>
+        </Tarjeta>
+      )}
+
+      {!esInvitado && (
+        <View style={styles.fila}>
+          <View style={{ flex: 1 }}>
+            <Tarjeta indice={indice++} acento={color.logro} brillo={retos?.diario == null ? 0.18 : 0} onPress={() => router.push({ pathname: "/reto/[tipo]", params: { tipo: "diario" } })}>
+              <Texto v="h3">Reto diario</Texto>
+              <Texto v="nota">5 preguntas</Texto>
+              <Texto v="mono" tam={13} c={retos?.diario != null ? color.correcto : color.logro} style={{ marginTop: 8 }}>
+                {retos?.diario != null ? `HECHO ${retos.diario}/5 ✓` : "JUGAR →"}
+              </Texto>
+            </Tarjeta>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Tarjeta indice={indice++} onPress={() => router.push({ pathname: "/reto/[tipo]", params: { tipo: "semanal" } })}>
+              <Texto v="h3">Reto semanal</Texto>
+              <Texto v="nota">
+                <Texto v="mono" tam={13}>
+                  {retos?.semanal ?? 0}
+                </Texto>
+                /45
+              </Texto>
+              <Barra valor={(retos?.semanal ?? 0) / 45} estilo={{ marginTop: 10 }} />
+            </Tarjeta>
+          </View>
+        </View>
+      )}
+
+      {mision && (
+        <Tarjeta
+          indice={indice++}
+          acento={mision.m.completada && !mision.m.reclamada ? color.logro : undefined}
+          brillo={mision.m.completada && !mision.m.reclamada ? 0.3 : 0}
+          onPress={() => router.push({ pathname: "/social", params: { seccion: "clan" } })}
+        >
+          <View style={styles.entre}>
+            <Texto v="h3">Misión del clan</Texto>
+            <Texto v="mono" tam={12} c={color.texto2}>
+              {Math.min(mision.m.progreso_actual, mision.m.objetivo_cantidad).toLocaleString("es")}/{mision.m.objetivo_cantidad.toLocaleString("es")} Exp
+            </Texto>
+          </View>
+          <Barra valor={mision.m.progreso_actual / Math.max(1, mision.m.objetivo_cantidad)} colores={["#B87800", "#FFB627"]} estilo={{ marginTop: 9 }} />
+          {mision.m.completada && !mision.m.reclamada ? (
+            <Boton3D
+              titulo={`Reclamar ${mision.m.recompensa_chispas.toLocaleString("es")}`}
+              icono={<IconoChispa tam={16} />}
+              variante="logro"
+              tamano="sm"
+              cargando={reclamando}
+              estilo={{ marginTop: 12 }}
+              onPress={reclamar}
+            />
+          ) : mision.m.reclamada ? (
+            <Texto v="nota" c={color.correcto} style={{ marginTop: 6 }}>
+              Recompensa reclamada ✓
+            </Texto>
+          ) : null}
+        </Tarjeta>
+      )}
+
+      {liga && liga.total > 0 && (
+        <Tarjeta indice={indice++} onPress={() => router.push({ pathname: "/competir", params: { seccion: "liga" } })}>
+          <View style={styles.entre}>
+            <View>
+              <Texto v="h3">Liga semanal {liga.puesto > 0 ? `· #${liga.puesto} de ${liga.total}` : ""}</Texto>
+              <Texto v="nota">Termina en {textoFaltan(finLiga, ahora)}</Texto>
+            </View>
+            <Texto v="mono" c={color.primarioClaro}>
+              →
+            </Texto>
+          </View>
+        </Tarjeta>
+      )}
+
+      {novedades.length > 0 && (
+        <>
+          <TituloSeccion>Destacados</TituloSeccion>
+          <Destacados novedades={novedades} />
+        </>
+      )}
+    </PantallaPestana>
+  );
+}
+
+const styles = StyleSheet.create({
+  fila: { flexDirection: "row", alignItems: "center", gap: 12 },
+  entre: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 },
+  iconoCirculo: { width: 42, height: 42, borderRadius: 21, alignItems: "center", justifyContent: "center" },
+});

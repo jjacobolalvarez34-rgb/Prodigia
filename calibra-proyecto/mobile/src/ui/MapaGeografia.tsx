@@ -5,7 +5,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
 import { ALTO_MAPA, ANCHO_MAPA, mapaDe, paisEnPunto, type Continente } from "~/lib/geografia";
-import { color } from "~/tema";
+import { color, fuente } from "~/tema";
 
 // Mapa de Geografía de la app. Mismo mapa real que la web, con:
 // - pellizco para acercar/alejar (centrado donde están los dedos) y botones + / − / ⟲;
@@ -177,6 +177,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  botonTexto: { color: color.texto, fontSize: 20, fontWeight: "800", lineHeight: 22 },
+  botonTexto: { color: color.texto, fontSize: 20, fontFamily: fuente.display, lineHeight: 22 },
   ayuda: { position: "absolute", bottom: 6, left: 0, right: 0, textAlign: "center", color: color.texto2, fontSize: 11 },
 });

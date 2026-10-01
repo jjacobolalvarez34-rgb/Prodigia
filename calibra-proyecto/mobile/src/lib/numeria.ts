@@ -56,6 +56,6 @@ export async function cargarNiveles(userId: string): Promise<Record<Operacion, n
 }
 
 // Guardar un intento y cerrar la partida son iguales en todos los mundos: ver partida.ts.
-export function guardarIntento(p: Problem, correcto: boolean, timeMs: number) {
-  return guardarIntentoTipo(p.problemType, p.nivel, correcto, timeMs);
+export function guardarIntento(p: Problem, correcto: boolean, timeMs: number, protegido = false) {
+  return guardarIntentoTipo(p.problemType, p.nivel, correcto, timeMs, protegido);
 }

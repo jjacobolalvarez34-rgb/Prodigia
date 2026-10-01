@@ -21,7 +21,10 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "permissions": ["android.permission.POST_NOTIFICATIONS", "android.permission.VIBRATE"],
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.VIBRATE"
+      ],
       "predictiveBackGestureEnabled": false
     },
     "web": {
@@ -75,6 +78,21 @@
               "updatePeriodMillis": 1800000
             }
           ]
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Prodigia usa tus fotos solo si eliges una imagen para tu avatar o el fondo de tu Placa.",
+          "cameraPermission": false,
+          "microphonePermission": false
         }
       ]
     ],

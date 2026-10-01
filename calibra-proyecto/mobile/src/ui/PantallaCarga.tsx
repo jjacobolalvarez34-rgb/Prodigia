@@ -2,7 +2,7 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, Easing, StyleSheet, Text, View } from "react-native";
-import { color, mono, MUNDOS } from "~/tema";
+import { color, mono, MUNDOS, fuente } from "~/tema";
 
 // Pantalla de carga al abrir la app: el logo late, los símbolos de los 13 mundos
 // suben flotando con su neón, la barra muestra cuánto falta (el progreso es real:
@@ -171,22 +171,22 @@ export default function PantallaCarga({ progreso, etapa, onTerminada }: Props) {
 
 const styles = StyleSheet.create({
   pantalla: { backgroundColor: color.bg, zIndex: 100, elevation: 100 },
-  glifo: { position: "absolute", top: 0, fontWeight: "800" },
+  glifo: { position: "absolute", top: 0, fontFamily: fuente.display },
   centro: { flex: 1, alignItems: "center", justifyContent: "center", gap: 6 },
   logoCaja: { width: 180, height: 180, alignItems: "center", justifyContent: "center", marginBottom: 12 },
   halo: { position: "absolute", width: 170, height: 170, borderRadius: 85, backgroundColor: color.primario, shadowColor: color.primario, shadowRadius: 40, shadowOpacity: 1, elevation: 20 },
   orbita: { position: "absolute", width: 176, height: 176, borderRadius: 88, borderWidth: 1.5, borderColor: "#9B85FF55" },
   orbitaPunto: { position: "absolute", top: -5, left: 83, width: 10, height: 10, borderRadius: 5, backgroundColor: color.logro, shadowColor: color.logro, shadowRadius: 8, shadowOpacity: 1 },
   logo: { width: 190, height: 190 },
-  marca: { color: color.texto, fontSize: 38, fontWeight: "800", letterSpacing: -0.5 },
+  marca: { color: color.texto, fontSize: 38, fontFamily: fuente.display, letterSpacing: -0.5 },
   lema: { color: color.texto2, fontSize: 15 },
   abajo: { paddingHorizontal: 28, paddingBottom: 56, gap: 12 },
   filaProgreso: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", gap: 12 },
-  etapa: { flex: 1, color: color.texto2, fontSize: 14, fontWeight: "600" },
-  porcentaje: { color: color.texto, fontFamily: mono, fontSize: 22, fontWeight: "800" },
+  etapa: { flex: 1, color: color.texto2, fontSize: 14, fontFamily: fuente.cuerpoFuerte },
+  porcentaje: { color: color.texto, fontFamily: mono, fontSize: 22,  },
   barraFondo: { height: 12, borderRadius: 6, backgroundColor: color.surface2, overflow: "hidden", borderWidth: 1, borderColor: color.border },
   barraRelleno: { height: "100%", borderRadius: 6, overflow: "hidden" },
   tip: { marginTop: 10, backgroundColor: "#12172ACC", borderRadius: 18, borderWidth: 1, borderColor: color.border, padding: 14, gap: 6, minHeight: 92 },
-  tipEtiqueta: { color: color.logro, fontSize: 11, fontWeight: "800", letterSpacing: 1.2 },
+  tipEtiqueta: { color: color.logro, fontSize: 11, fontFamily: fuente.display, letterSpacing: 1.2 },
   tipTexto: { color: color.texto, fontSize: 14, lineHeight: 20 },
 });

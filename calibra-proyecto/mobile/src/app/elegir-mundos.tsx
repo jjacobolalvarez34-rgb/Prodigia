@@ -2,9 +2,11 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { recargarJugador } from "~/lib/jugador";
 import { mensajeError, supabase } from "~/lib/supabase";
 import Boton3D from "~/ui/Boton3D";
-import { color, MUNDOS, radio, type MundoSlug } from "~/tema";
+import Ciudad from "~/ui/Ciudad";
+import { color, MUNDOS, radio, type MundoSlug, fuente } from "~/tema";
 
 // Primer ingreso: igual que la web, se eligen los 2 mundos gratis (RPC
 // elegir_mundos_iniciales, 0190). Numeria sugerido porque es uno de los que ya se juegan acá.
@@ -27,6 +29,7 @@ export default function ElegirMundos() {
       setError(mensajeError(e));
       return;
     }
+    await recargarJugador();
     router.replace("/");
   }
 
@@ -42,8 +45,9 @@ export default function ElegirMundos() {
               <Pressable
                 key={m.slug}
                 onPress={() => alternar(m.slug)}
-                style={[styles.mundo, { borderColor: activo ? m.neon : color.border, backgroundColor: activo ? m.base + "26" : color.surface1 }]}
+                style={[styles.mundo, { borderColor: activo ? m.neon : color.border, backgroundColor: activo ? m.base + "26" : color.surface1 }, activo && { boxShadow: `0px 0px 18px ${m.neon}66` }]}
               >
+                <Ciudad semilla={m.slug} acento={m.neon} alto={44} radio={10} apagada={!activo} quieta sinLuna estilo={{ alignSelf: "stretch" }} />
                 <Text style={[styles.glifo, { color: m.neon }]}>{m.glifo}</Text>
                 <Text style={styles.nombre}>{m.nombre}</Text>
                 {!m.enApp && <Text style={styles.nota}>Por ahora en la web</Text>}
@@ -61,12 +65,12 @@ export default function ElegirMundos() {
 const styles = StyleSheet.create({
   pantalla: { flex: 1, backgroundColor: color.bg },
   contenido: { padding: 20, gap: 16 },
-  titulo: { color: color.texto, fontSize: 26, fontWeight: "800" },
-  subtitulo: { color: color.texto2, fontSize: 15 },
+  titulo: { color: color.texto, fontSize: 26, fontFamily: fuente.display },
+  subtitulo: { fontFamily: fuente.cuerpo, color: color.texto2, fontSize: 15 },
   grilla: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
   mundo: { width: "31%", borderWidth: 1.5, borderRadius: radio.tarjeta, padding: 12, alignItems: "center", gap: 4 },
-  glifo: { fontSize: 22, fontWeight: "800" },
-  nombre: { color: color.texto, fontSize: 13, fontWeight: "700", textAlign: "center" },
-  nota: { color: color.texto2, fontSize: 10, textAlign: "center" },
-  error: { color: color.error },
+  glifo: { fontSize: 22, fontFamily: fuente.display },
+  nombre: { color: color.texto, fontSize: 13, fontFamily: fuente.cuerpoBold, textAlign: "center" },
+  nota: { fontFamily: fuente.cuerpo, color: color.texto2, fontSize: 10, textAlign: "center" },
+  error: { fontFamily: fuente.cuerpo, color: color.error },
 });

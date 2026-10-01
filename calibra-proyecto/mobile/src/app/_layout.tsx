@@ -1,14 +1,33 @@
+import { Anton_400Regular } from "@expo-google-fonts/anton/400Regular";
+import { BebasNeue_400Regular } from "@expo-google-fonts/bebas-neue/400Regular";
+import { Caveat_700Bold } from "@expo-google-fonts/caveat/700Bold";
+import { DancingScript_700Bold } from "@expo-google-fonts/dancing-script/700Bold";
+import { Inter_400Regular } from "@expo-google-fonts/inter/400Regular";
+import { Inter_500Medium } from "@expo-google-fonts/inter/500Medium";
+import { Inter_600SemiBold } from "@expo-google-fonts/inter/600SemiBold";
+import { Inter_700Bold } from "@expo-google-fonts/inter/700Bold";
+import { JetBrainsMono_500Medium } from "@expo-google-fonts/jetbrains-mono/500Medium";
+import { JetBrainsMono_700Bold } from "@expo-google-fonts/jetbrains-mono/700Bold";
+import { Orbitron_700Bold } from "@expo-google-fonts/orbitron/700Bold";
+import { Pacifico_400Regular } from "@expo-google-fonts/pacifico/400Regular";
+import { PlayfairDisplay_700Bold } from "@expo-google-fonts/playfair-display/700Bold";
+import { SpaceGrotesk_600SemiBold } from "@expo-google-fonts/space-grotesk/600SemiBold";
+import { SpaceGrotesk_700Bold } from "@expo-google-fonts/space-grotesk/700Bold";
+import { useFonts } from "expo-font";
 import * as Notifications from "expo-notifications";
-import { DarkTheme, Stack, ThemeProvider, useRouter } from "expo-router";
+import { DarkTheme, Stack, ThemeProvider, useRouter, type Href } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { cargarAjustes } from "~/lib/ajustes";
+import { prepararSonidos } from "~/lib/efectos";
+import { limpiarJugador, recargarJugador } from "~/lib/jugador";
 import { rutaDeAviso, sincronizarAvisos } from "~/lib/notificaciones";
-import { cargarResumen } from "~/lib/resumen";
 import { ProveedorSesion, useSesion } from "~/lib/sesion";
+import { conectarPresencia, desconectarPresencia } from "~/lib/social";
+import AvisoGlobal from "~/ui/Aviso";
 import PantallaCarga from "~/ui/PantallaCarga";
-import { actualizarWidgets } from "~/widgets/registro";
 import { color } from "~/tema";
 
 SplashScreen.preventAutoHideAsync();
@@ -32,7 +51,7 @@ function AbrirDesdeAviso() {
     if (atendidaRef.current === id) return;
     atendidaRef.current = id;
     const ruta = rutaDeAviso(respuesta.notification.request.content.data as Record<string, unknown>);
-    if (ruta !== "/") router.push(ruta);
+    if (ruta !== "/") router.push(ruta as Href);
   }, [respuesta, sesion, router]);
 
   return null;
@@ -66,25 +85,28 @@ function Navegacion() {
     SplashScreen.hideAsync();
   }, []);
 
-  // Arranque con progreso real: sesión → racha y Chispas (también alimenta los
-  // widgets) → avisos → listo.
+  // Arranque con progreso real: ajustes y sonidos → sesión → tu Placa, racha y
+  // Chispas (también alimenta los widgets) → avisos → listo.
   useEffect(() => {
     if (cargando || arrancoRef.current) return;
     arrancoRef.current = true;
     (async () => {
-      setProgreso(0.3);
+      setProgreso(0.22);
+      await conTiempoLimite(cargarAjustes(), 1500);
+      prepararSonidos();
+      setProgreso(0.32);
       if (userId) {
         sincronizadoRef.current = userId;
-        setEtapa("Trayendo tu racha y tus Chispas…");
-        const resumen = await conTiempoLimite(cargarResumen(), 6000);
-        setProgreso(0.65);
+        setEtapa("Trayendo tu Placa, tu racha y tus Chispas…");
+        await conTiempoLimite(recargarJugador(), 7000);
+        conectarPresencia(userId);
+        setProgreso(0.68);
         setEtapa("Revisando tus avisos…");
-        actualizarWidgets(resumen);
         await conTiempoLimite(sincronizarAvisos(), 4000);
       } else {
         setEtapa("Preparando la entrada…");
       }
-      setProgreso(0.88);
+      setProgreso(0.9);
       setEtapa("Preparando los 13 mundos…");
       await esperar(Math.max(0, CARGA_MINIMA_MS - (Date.now() - inicioRef.current)));
       setProgreso(1);
@@ -93,12 +115,21 @@ function Navegacion() {
   }, [cargando, userId]);
 
   // Después de iniciar sesión (o si cambia la cuenta): registrar este teléfono para
-  // los avisos y refrescar los widgets.
+  // los avisos, cargar la Placa y entrar a la presencia en línea.
   useEffect(() => {
-    if (!userId || sincronizadoRef.current === userId) return;
+    if (!userId) {
+      if (sincronizadoRef.current) {
+        sincronizadoRef.current = null;
+        desconectarPresencia();
+        limpiarJugador();
+      }
+      return;
+    }
+    if (sincronizadoRef.current === userId) return;
     sincronizadoRef.current = userId;
     sincronizarAvisos();
-    cargarResumen().then(actualizarWidgets);
+    recargarJugador();
+    conectarPresencia(userId);
   }, [userId]);
 
   const ocultarCarga = useCallback(() => setCargaVisible(false), []);
@@ -106,34 +137,73 @@ function Navegacion() {
   return (
     <>
       {!cargando && <AbrirDesdeAviso />}
-      {!cargando && <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.bg }, animation: "slide_from_right" }}>
-        <Stack.Protected guard={!!sesion}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="elegir-mundos" />
-          <Stack.Screen name="avisos" />
-          <Stack.Screen name="ajustes-avisos" />
-          <Stack.Screen name="numeria/index" />
-          <Stack.Screen name="numeria/sprint" options={{ gestureEnabled: false, animation: "fade" }} />
-          <Stack.Screen name="geografia/index" />
-          <Stack.Screen name="geografia/sprint" options={{ gestureEnabled: false, animation: "fade" }} />
-          <Stack.Screen name="resultado" options={{ gestureEnabled: false, animation: "fade" }} />
-        </Stack.Protected>
-        <Stack.Protected guard={!sesion}>
-          <Stack.Screen name="login" />
-        </Stack.Protected>
-      </Stack>}
+      {!cargando && (
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.bg }, animation: "slide_from_right" }}>
+          <Stack.Protected guard={!!sesion}>
+            <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
+            <Stack.Screen name="elegir-mundos" />
+            <Stack.Screen name="avisos" />
+            <Stack.Screen name="ajustes-avisos" />
+            <Stack.Screen name="ajustes" />
+            <Stack.Screen name="tienda" options={{ animation: "slide_from_bottom" }} />
+            <Stack.Screen name="logros" />
+            <Stack.Screen name="editar-placa" options={{ animation: "slide_from_bottom" }} />
+            <Stack.Screen name="pro" options={{ animation: "slide_from_bottom" }} />
+            <Stack.Screen name="jugador/[id]" />
+            <Stack.Screen name="chat/[id]" />
+            <Stack.Screen name="amigos/buscar" />
+            <Stack.Screen name="clan/chat" />
+            <Stack.Screen name="clan/mundo" options={{ animation: "fade" }} />
+            <Stack.Screen name="clan/[id]" />
+            <Stack.Screen name="clan/crear" options={{ animation: "slide_from_bottom" }} />
+            <Stack.Screen name="duelo/buscar" options={{ gestureEnabled: false, animation: "fade" }} />
+            <Stack.Screen name="duelo/[id]" options={{ gestureEnabled: false, animation: "fade" }} />
+            <Stack.Screen name="duelo/serie/[id]" />
+            <Stack.Screen name="reto/[tipo]" options={{ gestureEnabled: false, animation: "fade" }} />
+            <Stack.Screen name="numeria/index" />
+            <Stack.Screen name="numeria/sprint" options={{ gestureEnabled: false, animation: "fade" }} />
+            <Stack.Screen name="geografia/index" />
+            <Stack.Screen name="geografia/sprint" options={{ gestureEnabled: false, animation: "fade" }} />
+            <Stack.Screen name="resultado" options={{ gestureEnabled: false, animation: "fade" }} />
+          </Stack.Protected>
+          <Stack.Protected guard={!sesion}>
+            <Stack.Screen name="login" />
+          </Stack.Protected>
+        </Stack>
+      )}
+      <AvisoGlobal />
       {cargaVisible && <PantallaCarga progreso={progreso} etapa={etapa} onTerminada={ocultarCarga} />}
     </>
   );
 }
 
 export default function RootLayout() {
+  // Fuentes de la marca + las 8 fuentes de nombre de la tienda (empaquetadas: la
+  // Placa de cualquier jugador se ve igual que en la web, sin descargar nada).
+  const [fuentesListas, errorFuentes] = useFonts({
+    SpaceGrotesk_600SemiBold,
+    SpaceGrotesk_700Bold,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    JetBrainsMono_500Medium,
+    JetBrainsMono_700Bold,
+    PlayfairDisplay_700Bold,
+    Caveat_700Bold,
+    BebasNeue_400Regular,
+    Pacifico_400Regular,
+    Orbitron_700Bold,
+    Anton_400Regular,
+    DancingScript_700Bold,
+  });
+
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: color.bg }}>
       <ThemeProvider value={tema}>
         <ProveedorSesion>
           <StatusBar style="light" />
-          <Navegacion />
+          {(fuentesListas || errorFuentes) && <Navegacion />}
         </ProveedorSesion>
       </ThemeProvider>
     </GestureHandlerRootView>

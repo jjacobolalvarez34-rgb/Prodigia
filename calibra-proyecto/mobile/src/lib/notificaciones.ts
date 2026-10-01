@@ -200,9 +200,14 @@ export async function cambiarRecordatorio(activo: boolean, hora: number): Promis
 
 // A qué pantalla de la app lleva tocar un aviso. Lo que todavía no está en la app
 // (chat, clanes, duelos) abre el centro de avisos, que ofrece seguir en la web.
-export function rutaDeAviso(data: Record<string, unknown> | undefined): "/avisos" | "/numeria" | "/" {
+// A dónde lleva tocar un aviso: el chat con quien te escribió, el chat del clan, el
+// duelo que te mandaron, o a jugar si la racha está en riesgo.
+export function rutaDeAviso(data: Record<string, unknown> | undefined): string {
   const tipo = typeof data?.tipo === "string" ? data.tipo : "";
   if (tipo === "recordatorio" || tipo === "racha_riesgo") return "/numeria";
-  if (tipo === "mensaje_directo" || tipo === "clan_mensaje" || tipo === "anuncio" || tipo === "duelo") return "/avisos";
+  if (tipo === "mensaje_directo" && typeof data?.remitenteId === "string") return `/chat/${data.remitenteId}`;
+  if (tipo === "clan_mensaje") return "/clan/chat";
+  if (tipo === "duelo" && typeof data?.duelId === "string") return `/duelo/${data.duelId}`;
+  if (tipo === "anuncio") return "/avisos";
   return "/";
 }

@@ -1,19 +1,21 @@
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View } from "react-native";
 import { cargarNiveles, OPERACIONES, operacionDisponible, type Operacion } from "~/lib/numeria";
-import { usePerfil } from "~/lib/perfil";
+import { useJugador } from "~/lib/jugador";
 import { useSesion } from "~/lib/sesion";
 import Boton3D from "~/ui/Boton3D";
-import { color, mono, NUMERIA, radio } from "~/tema";
+import HubMundo, { TarjetaTema } from "~/ui/HubMundo";
+import { IconoRayo } from "~/ui/Iconos";
+import { NUMERIA } from "~/tema";
 
+// Hub de Numeria: eliges una o varias operaciones (o la práctica rápida, que las
+// mezcla todas) y arranca el sprint de 10 problemas en 60 segundos.
 export default function HubNumeria() {
   const router = useRouter();
   const { sesion } = useSesion();
-  const { perfil } = usePerfil(sesion?.user.id);
-  const esInvitado = !!sesion?.user.is_anonymous;
   const userId = sesion?.user.id;
+  const { esInvitado } = useJugador();
   const [niveles, setNiveles] = useState<Record<Operacion, number> | null>(null);
   const [elegidas, setElegidas] = useState<Operacion[]>(["suma"]);
 
@@ -27,84 +29,50 @@ export default function HubNumeria() {
     setElegidas((prev) => (prev.includes(tipo) ? (prev.length > 1 ? prev.filter((t) => t !== tipo) : prev) : [...prev, tipo]));
   }
 
-  const bloqueado = perfil !== null && !perfil.mundos_desbloqueados.includes("numeria");
+  const disponibles = OPERACIONES.filter((o) => operacionDisponible(o.tipo, esInvitado)).map((o) => o.tipo);
 
   return (
-    <SafeAreaView style={styles.pantalla}>
-      <ScrollView contentContainerStyle={styles.contenido}>
-        <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={styles.atras}>‹ Volver</Text>
-        </Pressable>
-
-        <View style={styles.cabecera}>
-          <Text style={[styles.glifo, { color: NUMERIA.neon }]}>{NUMERIA.glifo}</Text>
-          <View>
-            <Text style={styles.titulo}>Numeria</Text>
-            <Text style={styles.subtitulo}>Sprint de 60 segundos. La dificultad se ajusta sola.</Text>
-          </View>
+    <HubMundo
+      mundo={NUMERIA}
+      descripcion="Toca uno o varios temas. 10 problemas en 60 segundos: la dificultad se ajusta sola."
+      pie={
+        <View style={{ flexDirection: "row", gap: 10 }}>
+          <Boton3D
+            titulo="Rápida"
+            variante="secundario"
+            icono={<IconoRayo tam={16} c="#FFB627" />}
+            estilo={{ flex: 1 }}
+            deshabilitado={!niveles}
+            onPress={() => router.push({ pathname: "/numeria/sprint", params: { ops: disponibles.join(",") } })}
+          />
+          <Boton3D
+            titulo="Jugar"
+            acento={NUMERIA.base}
+            brillo
+            estilo={{ flex: 1.6 }}
+            deshabilitado={!niveles}
+            onPress={() => router.push({ pathname: "/numeria/sprint", params: { ops: elegidas.join(",") } })}
+          />
         </View>
-
-        {bloqueado ? (
-          <Text style={styles.aviso}>Numeria no está entre tus mundos. Desbloquéala en la web para jugarla acá.</Text>
-        ) : (
-          <>
-            <Text style={styles.seccion}>¿Qué quieres practicar?</Text>
-            <View style={{ gap: 10 }}>
-              {OPERACIONES.map((op) => {
-                const disponible = operacionDisponible(op.tipo, esInvitado);
-                const activa = elegidas.includes(op.tipo);
-                return (
-                  <Pressable
-                    key={op.tipo}
-                    disabled={!disponible}
-                    onPress={() => alternar(op.tipo)}
-                    style={[
-                      styles.operacion,
-                      { borderColor: activa ? NUMERIA.neon : color.border, backgroundColor: activa ? NUMERIA.base + "26" : color.surface1, opacity: disponible ? 1 : 0.45 },
-                    ]}
-                  >
-                    <Text style={[styles.simbolo, { color: NUMERIA.neon }]}>{op.simbolo}</Text>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.opNombre}>{op.nombre}</Text>
-                      <Text style={styles.opNota}>{disponible ? "Toca para sumar o quitar" : "Crea una cuenta para desbloquearla"}</Text>
-                    </View>
-                    <View style={styles.nivel}>
-                      <Text style={styles.nivelMicro}>NIVEL</Text>
-                      <Text style={[styles.nivelValor, { color: NUMERIA.neon }]}>{niveles ? niveles[op.tipo] : "…"}</Text>
-                    </View>
-                  </Pressable>
-                );
-              })}
-            </View>
-            <Boton3D
-              titulo="Jugar"
-              acento={NUMERIA.base}
-              deshabilitado={!niveles}
-              onPress={() => router.push({ pathname: "/numeria/sprint", params: { ops: elegidas.join(",") } })}
-              estilo={{ marginTop: 8 }}
-            />
-          </>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+      }
+    >
+      {[0, 2].map((fila) => (
+        <View key={fila} style={{ flexDirection: "row", gap: 10 }}>
+          {OPERACIONES.slice(fila, fila + 2).map((op, i) => {
+            const disponible = operacionDisponible(op.tipo, esInvitado);
+            return (
+              <TarjetaTema
+                key={op.tipo}
+                indice={fila + i}
+                mundo={NUMERIA}
+                activo={elegidas.includes(op.tipo)}
+                tema={{ id: op.tipo, nombre: op.nombre, simbolo: op.simbolo, nivel: niveles?.[op.tipo] ?? null, bloqueado: !disponible, nota: disponible ? undefined : "Crea una cuenta" }}
+                onPress={() => alternar(op.tipo)}
+              />
+            );
+          })}
+        </View>
+      ))}
+    </HubMundo>
   );
 }
-
-const styles = StyleSheet.create({
-  pantalla: { flex: 1, backgroundColor: color.bg },
-  contenido: { padding: 20, gap: 16 },
-  atras: { color: color.texto2, fontSize: 16 },
-  cabecera: { flexDirection: "row", alignItems: "center", gap: 14 },
-  glifo: { fontSize: 44, fontWeight: "800" },
-  titulo: { color: color.texto, fontSize: 28, fontWeight: "800" },
-  subtitulo: { color: color.texto2, fontSize: 14, maxWidth: 260 },
-  seccion: { color: color.texto, fontSize: 18, fontWeight: "700" },
-  operacion: { flexDirection: "row", alignItems: "center", gap: 14, borderWidth: 1.5, borderRadius: radio.tarjeta, padding: 14 },
-  simbolo: { fontSize: 30, fontWeight: "800", width: 30, textAlign: "center" },
-  opNombre: { color: color.texto, fontSize: 17, fontWeight: "700" },
-  opNota: { color: color.texto2, fontSize: 12 },
-  nivel: { alignItems: "center" },
-  nivelMicro: { color: color.texto2, fontSize: 10, fontWeight: "700", letterSpacing: 1 },
-  nivelValor: { fontFamily: mono, fontSize: 22, fontWeight: "800" },
-  aviso: { color: color.texto2, fontSize: 15, lineHeight: 22 },
-});

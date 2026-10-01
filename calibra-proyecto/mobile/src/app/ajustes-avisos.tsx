@@ -17,7 +17,7 @@ import {
 import { useSesion } from "~/lib/sesion";
 import { anclarWidget } from "~/widgets/registro";
 import Boton3D from "~/ui/Boton3D";
-import { color, radio } from "~/tema";
+import { color, radio, fuente } from "~/tema";
 
 const WIDGETS: { nombre: "Racha" | "Progreso"; titulo: string; texto: string; imagen: number }[] = [
   { nombre: "Racha", titulo: "Racha", texto: "Chico (2×2): tu racha y tus Chispas.", imagen: require("../../assets/widgets/racha.png") },
@@ -130,7 +130,7 @@ export default function AjustesAvisos() {
                   <Text style={styles.nombre}>{w.titulo}</Text>
                   <Text style={styles.descripcion}>{w.texto}</Text>
                   {hayWidgets ? (
-                    <Boton3D titulo="Agregar a mi inicio" variante="contorno" onPress={() => anclar(w.nombre)} />
+                    <Boton3D titulo="Agregar a mi inicio" variante="secundario" onPress={() => anclar(w.nombre)} />
                   ) : (
                     <Text style={styles.nota}>Aparecen en la versión instalable de la app (no en Expo Go).</Text>
                   )}
@@ -148,20 +148,20 @@ const styles = StyleSheet.create({
   pantalla: { flex: 1, backgroundColor: color.bg },
   barra: { flexDirection: "row", alignItems: "center", paddingHorizontal: 20, paddingVertical: 8, gap: 12 },
   atras: { color: color.texto, fontSize: 32, lineHeight: 34, width: 28 },
-  titulo: { flex: 1, color: color.texto, fontSize: 24, fontWeight: "800" },
+  titulo: { flex: 1, color: color.texto, fontSize: 24, fontFamily: fuente.display },
   contenido: { padding: 20, paddingTop: 8, gap: 12, paddingBottom: 40 },
-  seccion: { color: color.texto, fontSize: 18, fontWeight: "700", marginTop: 8 },
+  seccion: { color: color.texto, fontSize: 18, fontFamily: fuente.cuerpoBold, marginTop: 8 },
   tarjeta: { backgroundColor: color.surface1, borderRadius: radio.tarjeta, borderWidth: 1, borderColor: color.border, padding: 14, gap: 10 },
   fila: { flexDirection: "row", alignItems: "center", gap: 12 },
   separador: { borderTopWidth: 1, borderTopColor: color.border, paddingTop: 12 },
   icono: { fontSize: 24, width: 30, textAlign: "center" },
-  nombre: { color: color.texto, fontSize: 16, fontWeight: "700" },
-  descripcion: { color: color.texto2, fontSize: 13, lineHeight: 18 },
-  texto: { color: color.texto, fontSize: 15 },
-  nota: { color: color.texto2, fontSize: 13, lineHeight: 19 },
+  nombre: { color: color.texto, fontSize: 16, fontFamily: fuente.cuerpoBold },
+  descripcion: { fontFamily: fuente.cuerpo, color: color.texto2, fontSize: 13, lineHeight: 18 },
+  texto: { fontFamily: fuente.cuerpo, color: color.texto, fontSize: 15 },
+  nota: { fontFamily: fuente.cuerpo, color: color.texto2, fontSize: 13, lineHeight: 19 },
   horas: { flexDirection: "row", flexWrap: "wrap", gap: 8, paddingLeft: 42 },
   hora: { borderWidth: 1, borderColor: color.border, borderRadius: radio.chip, paddingHorizontal: 12, paddingVertical: 7, backgroundColor: color.surface2 },
-  horaTexto: { color: color.texto2, fontWeight: "700" },
+  horaTexto: { color: color.texto2, fontFamily: fuente.cuerpoBold },
   tarjetaWidget: { backgroundColor: color.surface1, borderRadius: radio.tarjeta, borderWidth: 1, borderColor: color.border, padding: 14, gap: 12 },
   previewChica: { width: 130, height: 130, alignSelf: "center" },
   previewGrande: { width: "100%", aspectRatio: 720 / 420 },

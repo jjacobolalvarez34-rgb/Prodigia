@@ -3,7 +3,10 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput
 import { SafeAreaView } from "react-native-safe-area-context";
 import { mensajeError, supabase } from "~/lib/supabase";
 import Boton3D from "~/ui/Boton3D";
-import { color, radio } from "~/tema";
+import Ciudad from "~/ui/Ciudad";
+import Glifos from "~/ui/Glifos";
+import { IconoChispa } from "~/ui/Iconos";
+import { color, fuente, MUNDOS, radio } from "~/tema";
 
 // Mismo login que la web (LoginForm.tsx): correo O nombre de usuario + contraseña,
 // o entrar como invitado. La cuenta es la misma en la web y en la app.
@@ -47,12 +50,14 @@ export default function Login() {
 
   return (
     <SafeAreaView style={styles.pantalla}>
+      <Glifos glifos={MUNDOS.map((m) => m.glifo)} acento={color.primarioNeon} cantidad={13} opacidad={0.07} />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.contenido} keyboardShouldPersistTaps="handled">
           <View style={styles.marca}>
-            <Text style={styles.chispa}>✦</Text>
+            <Ciudad semilla="prodigia-entrada" acento={color.primarioNeon} alto={150} radio={24} estilo={{ alignSelf: "stretch", borderWidth: 1, borderColor: color.border }} />
+            <IconoChispa tam={46} />
             <Text style={styles.titulo}>Prodigia</Text>
-            <Text style={styles.subtitulo}>Tu cabeza, en modo juego.</Text>
+            <Text style={styles.subtitulo}>Tu cabeza, en modo juego. 13 mundos para encender.</Text>
           </View>
 
           <View style={styles.formulario}>
@@ -82,7 +87,7 @@ export default function Login() {
               <Text style={styles.o}>o</Text>
               <View style={styles.linea} />
             </View>
-            <Boton3D titulo="Entrar como invitado" variante="contorno" onPress={entrarInvitado} cargando={entrandoInvitado} />
+            <Boton3D titulo="Entrar como invitado" variante="secundario" onPress={entrarInvitado} cargando={entrandoInvitado} />
             <Text style={styles.nota}>¿Todavía no tienes cuenta? Créala en la web de Prodigia y entra acá con los mismos datos.</Text>
           </View>
         </ScrollView>
@@ -94,10 +99,9 @@ export default function Login() {
 const styles = StyleSheet.create({
   pantalla: { flex: 1, backgroundColor: color.bg },
   contenido: { flexGrow: 1, justifyContent: "center", padding: 24, gap: 40 },
-  marca: { alignItems: "center", gap: 6 },
-  chispa: { fontSize: 48, color: color.logro },
-  titulo: { fontSize: 38, fontWeight: "800", color: color.texto, letterSpacing: -0.5 },
-  subtitulo: { fontSize: 15, color: color.texto2 },
+  marca: { alignItems: "center", gap: 8 },
+  titulo: { fontSize: 38, fontFamily: fuente.display, color: color.texto, letterSpacing: -0.5 },
+  subtitulo: { fontFamily: fuente.cuerpo, fontSize: 15, color: color.texto2 },
   formulario: { gap: 12 },
   input: {
     backgroundColor: color.surface1,
@@ -109,9 +113,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
   },
-  error: { color: color.error, fontSize: 14 },
+  error: { fontFamily: fuente.cuerpo, color: color.error, fontSize: 14 },
   separador: { flexDirection: "row", alignItems: "center", gap: 10, marginVertical: 4 },
   linea: { flex: 1, height: 1, backgroundColor: color.border },
-  o: { color: color.texto2 },
-  nota: { color: color.texto2, fontSize: 13, textAlign: "center", marginTop: 8, lineHeight: 18 },
+  o: { fontFamily: fuente.cuerpo, color: color.texto2 },
+  nota: { fontFamily: fuente.cuerpo, color: color.texto2, fontSize: 13, textAlign: "center", marginTop: 8, lineHeight: 18 },
 });
