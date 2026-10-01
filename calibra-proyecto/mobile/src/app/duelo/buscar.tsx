@@ -125,7 +125,7 @@ export default function BuscarDuelo() {
               0:{String(segundos).padStart(2, "0")}
             </Texto>
             <Texto v="nota" centro>
-              Buscando entre {elo - rango} y {elo + rango} de ELO. Si no aparece nadie, juegas contra el registro de un rival: siempre hay contra quién.
+              {esRanked ? `Buscando entre ${elo - rango} y ${elo + rango} de ELO.` : "Buscando a cualquier jugador, de cualquier rango."} Si no aparece nadie, juegas contra el registro de un rival: siempre hay contra quién.
             </Texto>
           </>
         )}

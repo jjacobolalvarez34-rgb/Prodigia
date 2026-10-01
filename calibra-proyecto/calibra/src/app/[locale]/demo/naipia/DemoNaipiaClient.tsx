@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import type { ProblemaNaipia } from "@/lib/practica/naipia";
 import NaipiaSprintRunner from "@/app/[locale]/naipia/NaipiaSprintRunner";
@@ -45,14 +46,16 @@ export default function DemoNaipiaClient() {
   }
 
   return (
-    <NaipiaSprintRunner
-      modo="hilo"
-      startedAt={startedAt}
-      nivelInicial={1}
-      escudosExtra={0}
-      totalPreguntas={TOTAL_DEMO}
-      duracionMs={DURACION_DEMO_MS}
-      onFinish={handleFinish}
-    />
+    <ConCuentaRegresiva>
+      <NaipiaSprintRunner
+        modo="hilo"
+        startedAt={startedAt}
+        nivelInicial={1}
+        escudosExtra={0}
+        totalPreguntas={TOTAL_DEMO}
+        duracionMs={DURACION_DEMO_MS}
+        onFinish={handleFinish}
+      />
+    </ConCuentaRegresiva>
   );
 }

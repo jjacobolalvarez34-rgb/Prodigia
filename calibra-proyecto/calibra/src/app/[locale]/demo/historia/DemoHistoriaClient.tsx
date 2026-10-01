@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import type { PreguntaHistoria } from "@/lib/practica/historia";
 import HistoriaSprintRunner from "@/app/[locale]/historia/HistoriaSprintRunner";
@@ -40,14 +41,16 @@ export default function DemoHistoriaClient() {
   }
 
   return (
-    <HistoriaSprintRunner
-      modo="personajes"
-      startedAt={startedAt}
-      nivelInicial={1}
-      escudosExtra={0}
-      totalPreguntas={TOTAL_DEMO}
-      duracionMs={DURACION_DEMO_MS}
-      onFinish={handleFinish}
-    />
+    <ConCuentaRegresiva>
+      <HistoriaSprintRunner
+        modo="personajes"
+        startedAt={startedAt}
+        nivelInicial={1}
+        escudosExtra={0}
+        totalPreguntas={TOTAL_DEMO}
+        duracionMs={DURACION_DEMO_MS}
+        onFinish={handleFinish}
+      />
+    </ConCuentaRegresiva>
   );
 }

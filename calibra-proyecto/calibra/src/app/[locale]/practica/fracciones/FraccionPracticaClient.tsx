@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
@@ -122,16 +123,18 @@ export default function FraccionPracticaClient({
 
   if (fase === "sprint") {
     return (
-      <FraccionSprintRunner
-        startedAt={startedAtPerf}
-        nivelPorTipo={nivelPorTipo}
-        seleccion={seleccion}
-        escudosExtra={escudosExtra}
-        hielosIniciales={hielosDisponibles}
-        tiemposExtraIniciales={tiemposExtraDisponibles}
-        colorDial={colorDial}
-        onFinish={handleFinish}
-      />
+      <ConCuentaRegresiva>
+        <FraccionSprintRunner
+          startedAt={startedAtPerf}
+          nivelPorTipo={nivelPorTipo}
+          seleccion={seleccion}
+          escudosExtra={escudosExtra}
+          hielosIniciales={hielosDisponibles}
+          tiemposExtraIniciales={tiemposExtraDisponibles}
+          colorDial={colorDial}
+          onFinish={handleFinish}
+        />
+      </ConCuentaRegresiva>
     );
   }
 

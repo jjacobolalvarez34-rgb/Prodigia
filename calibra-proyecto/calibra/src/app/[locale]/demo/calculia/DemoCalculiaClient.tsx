@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import type { ProblemaCalculia } from "@/lib/practica/calculia";
 import CalculiaSprintRunner from "@/app/[locale]/calculia/CalculiaSprintRunner";
@@ -45,14 +46,16 @@ export default function DemoCalculiaClient() {
   }
 
   return (
-    <CalculiaSprintRunner
-      modo="derivadas"
-      startedAt={startedAt}
-      nivelInicial={1}
-      escudosExtra={0}
-      totalPreguntas={TOTAL_DEMO}
-      duracionMs={DURACION_DEMO_MS}
-      onFinish={handleFinish}
-    />
+    <ConCuentaRegresiva>
+      <CalculiaSprintRunner
+        modo="derivadas"
+        startedAt={startedAt}
+        nivelInicial={1}
+        escudosExtra={0}
+        totalPreguntas={TOTAL_DEMO}
+        duracionMs={DURACION_DEMO_MS}
+        onFinish={handleFinish}
+      />
+    </ConCuentaRegresiva>
   );
 }

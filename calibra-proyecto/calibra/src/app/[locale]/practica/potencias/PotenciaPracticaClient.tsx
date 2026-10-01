@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import MathText from "@/components/MathText";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -102,18 +103,20 @@ export default function PotenciaPracticaClient({ nivelPorTipo, escudosExtra, hie
 
   if (fase === "sprint") {
     return (
-      <EnunciadoSprintRunner
-        generar={generarProblemaPotencia}
-        startedAt={startedAtPerf}
-        nivelPorTipoInicial={nivelPorTipo}
-        seleccion={seleccion}
-        escudosExtra={escudosExtra}
-        hielosIniciales={hielosDisponibles}
-        tiemposExtraIniciales={tiemposExtraDisponibles}
-        apiPath="/api/attempts"
-        problemTypeDe={(tipo) => `potencias_${tipo}`}
-        onFinish={handleFinish}
-      />
+      <ConCuentaRegresiva>
+        <EnunciadoSprintRunner
+          generar={generarProblemaPotencia}
+          startedAt={startedAtPerf}
+          nivelPorTipoInicial={nivelPorTipo}
+          seleccion={seleccion}
+          escudosExtra={escudosExtra}
+          hielosIniciales={hielosDisponibles}
+          tiemposExtraIniciales={tiemposExtraDisponibles}
+          apiPath="/api/attempts"
+          problemTypeDe={(tipo) => `potencias_${tipo}`}
+          onFinish={handleFinish}
+        />
+      </ConCuentaRegresiva>
     );
   }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import MathText from "@/components/MathText";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -102,18 +103,20 @@ export default function DecimalPracticaClient({ nivelPorTipo, escudosExtra, hiel
 
   if (fase === "sprint") {
     return (
-      <EnunciadoSprintRunner
-        generar={generarProblemaDecimal}
-        startedAt={startedAtPerf}
-        nivelPorTipoInicial={nivelPorTipo}
-        seleccion={seleccion}
-        escudosExtra={escudosExtra}
-        hielosIniciales={hielosDisponibles}
-        tiemposExtraIniciales={tiemposExtraDisponibles}
-        apiPath="/api/attempts"
-        problemTypeDe={(tipo) => `decimales_${tipo}`}
-        onFinish={handleFinish}
-      />
+      <ConCuentaRegresiva>
+        <EnunciadoSprintRunner
+          generar={generarProblemaDecimal}
+          startedAt={startedAtPerf}
+          nivelPorTipoInicial={nivelPorTipo}
+          seleccion={seleccion}
+          escudosExtra={escudosExtra}
+          hielosIniciales={hielosDisponibles}
+          tiemposExtraIniciales={tiemposExtraDisponibles}
+          apiPath="/api/attempts"
+          problemTypeDe={(tipo) => `decimales_${tipo}`}
+          onFinish={handleFinish}
+        />
+      </ConCuentaRegresiva>
     );
   }
 

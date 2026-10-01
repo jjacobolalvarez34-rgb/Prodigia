@@ -68,6 +68,8 @@ export async function POST(request: Request) {
       operation_type: mundo === "numeria" ? body.operation_type : null,
       sub_tipo: mundo === "numeria" ? null : body.sub_tipo,
       estado: "pendiente",
+      // Retos entre amigos: siempre amistosos, nunca mueven el ELO (ver 0244).
+      clasificatorio: false,
     })
     .select("id")
     .single();

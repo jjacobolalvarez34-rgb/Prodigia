@@ -46,6 +46,8 @@ export async function POST(request: Request) {
       semilla_problemas: semilla,
       operation_type: post.operation_type,
       estado: "pendiente",
+      // Retos entre amigos: siempre amistosos, nunca mueven el ELO (ver 0244).
+      clasificatorio: false,
     })
     .select("id")
     .single();

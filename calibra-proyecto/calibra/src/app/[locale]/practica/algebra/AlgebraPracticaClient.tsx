@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import MathText from "@/components/MathText";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -102,18 +103,20 @@ export default function AlgebraPracticaClient({ nivelPorTipo, escudosExtra, hiel
 
   if (fase === "sprint") {
     return (
-      <EnunciadoSprintRunner
-        generar={generarProblemaAlgebra}
-        startedAt={startedAtPerf}
-        nivelPorTipoInicial={nivelPorTipo}
-        seleccion={seleccion}
-        escudosExtra={escudosExtra}
-        hielosIniciales={hielosDisponibles}
-        tiemposExtraIniciales={tiemposExtraDisponibles}
-        apiPath="/api/attempts"
-        problemTypeDe={(tipo) => `algebra_${tipo}`}
-        onFinish={handleFinish}
-      />
+      <ConCuentaRegresiva>
+        <EnunciadoSprintRunner
+          generar={generarProblemaAlgebra}
+          startedAt={startedAtPerf}
+          nivelPorTipoInicial={nivelPorTipo}
+          seleccion={seleccion}
+          escudosExtra={escudosExtra}
+          hielosIniciales={hielosDisponibles}
+          tiemposExtraIniciales={tiemposExtraDisponibles}
+          apiPath="/api/attempts"
+          problemTypeDe={(tipo) => `algebra_${tipo}`}
+          onFinish={handleFinish}
+        />
+      </ConCuentaRegresiva>
     );
   }
 

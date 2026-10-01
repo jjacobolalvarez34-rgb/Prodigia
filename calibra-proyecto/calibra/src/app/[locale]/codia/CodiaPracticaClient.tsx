@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -205,20 +206,22 @@ export default function CodiaPracticaClient({ modo, lenguaje, nivelInicial, escu
             />
           </div>
         )}
-        <CodiaSprintRunner
-          modo={modo}
-          lenguaje={lenguaje}
-          startedAt={startedAtPerf}
-          nivelInicial={nivelInicial}
-          escudosExtra={escudosExtra}
-          hielosIniciales={hielosDisponibles}
-          tiemposExtraIniciales={tiemposExtraDisponibles}
-          nivelForzado={duelo?.nivel}
-          duelId={duelo?.duelId}
-          miUserId={miUserId}
-          rivalNombre={duelo?.rivalNombre}
-          onFinish={handleFinish}
-        />
+        <ConCuentaRegresiva omitir={!!duelo}>
+          <CodiaSprintRunner
+            modo={modo}
+            lenguaje={lenguaje}
+            startedAt={startedAtPerf}
+            nivelInicial={nivelInicial}
+            escudosExtra={escudosExtra}
+            hielosIniciales={hielosDisponibles}
+            tiemposExtraIniciales={tiemposExtraDisponibles}
+            nivelForzado={duelo?.nivel}
+            duelId={duelo?.duelId}
+            miUserId={miUserId}
+            rivalNombre={duelo?.rivalNombre}
+            onFinish={handleFinish}
+          />
+        </ConCuentaRegresiva>
       </>
     );
   }

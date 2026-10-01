@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import type { PreguntaQuimia } from "@/lib/practica/quimia";
 import QuimiaSprintRunner from "@/app/[locale]/quimia/QuimiaSprintRunner";
@@ -40,14 +41,16 @@ export default function DemoQuimiaClient() {
   }
 
   return (
-    <QuimiaSprintRunner
-      modo="simbolos"
-      startedAt={startedAt}
-      nivelInicial={1}
-      escudosExtra={0}
-      totalPreguntas={TOTAL_DEMO}
-      duracionMs={DURACION_DEMO_MS}
-      onFinish={handleFinish}
-    />
+    <ConCuentaRegresiva>
+      <QuimiaSprintRunner
+        modo="simbolos"
+        startedAt={startedAt}
+        nivelInicial={1}
+        escudosExtra={0}
+        totalPreguntas={TOTAL_DEMO}
+        duracionMs={DURACION_DEMO_MS}
+        onFinish={handleFinish}
+      />
+    </ConCuentaRegresiva>
   );
 }

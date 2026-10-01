@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import type { ProblemaEstadistica } from "@/lib/practica/estadistica";
 import EstadisticaSprintRunner from "@/app/[locale]/estadistica/EstadisticaSprintRunner";
@@ -45,14 +46,16 @@ export default function DemoEstadisticaClient() {
   }
 
   return (
-    <EstadisticaSprintRunner
-      modo="central"
-      startedAt={startedAt}
-      nivelInicial={1}
-      escudosExtra={0}
-      totalPreguntas={TOTAL_DEMO}
-      duracionMs={DURACION_DEMO_MS}
-      onFinish={handleFinish}
-    />
+    <ConCuentaRegresiva>
+      <EstadisticaSprintRunner
+        modo="central"
+        startedAt={startedAt}
+        nivelInicial={1}
+        escudosExtra={0}
+        totalPreguntas={TOTAL_DEMO}
+        duracionMs={DURACION_DEMO_MS}
+        onFinish={handleFinish}
+      />
+    </ConCuentaRegresiva>
   );
 }

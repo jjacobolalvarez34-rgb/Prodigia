@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import type { PreguntaMelodia } from "@/lib/practica/melodia";
 import MelodiaSprintRunner from "@/app/[locale]/melodia/MelodiaSprintRunner";
@@ -40,14 +41,16 @@ export default function DemoMelodiaClient() {
   }
 
   return (
-    <MelodiaSprintRunner
-      modo="fundamentos"
-      startedAt={startedAt}
-      nivelInicial={1}
-      escudosExtra={0}
-      totalPreguntas={TOTAL_DEMO}
-      duracionMs={DURACION_DEMO_MS}
-      onFinish={handleFinish}
-    />
+    <ConCuentaRegresiva>
+      <MelodiaSprintRunner
+        modo="fundamentos"
+        startedAt={startedAt}
+        nivelInicial={1}
+        escudosExtra={0}
+        totalPreguntas={TOTAL_DEMO}
+        duracionMs={DURACION_DEMO_MS}
+        onFinish={handleFinish}
+      />
+    </ConCuentaRegresiva>
   );
 }

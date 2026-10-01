@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import type { PaisAmerica } from "@/lib/practica/geografia";
 import type { PreguntaAvanzada } from "@/lib/practica/geografiaAvanzada";
@@ -41,14 +42,16 @@ export default function DemoGeografiaClient() {
   }
 
   return (
-    <GeografiaSprintRunner
-      continente="america"
-      startedAt={startedAt}
-      nivelInicial={1}
-      escudosExtra={0}
-      totalPreguntas={TOTAL_DEMO}
-      duracionMs={DURACION_DEMO_MS}
-      onFinish={handleFinish}
-    />
+    <ConCuentaRegresiva>
+      <GeografiaSprintRunner
+        continente="america"
+        startedAt={startedAt}
+        nivelInicial={1}
+        escudosExtra={0}
+        totalPreguntas={TOTAL_DEMO}
+        duracionMs={DURACION_DEMO_MS}
+        onFinish={handleFinish}
+      />
+    </ConCuentaRegresiva>
   );
 }

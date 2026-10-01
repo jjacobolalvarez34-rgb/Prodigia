@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import type { ProblemaCircuitia } from "@/lib/practica/circuitia";
 import CircuitiaSprintRunner from "@/app/[locale]/circuitia/CircuitiaSprintRunner";
@@ -45,14 +46,16 @@ export default function DemoCircuitiaClient() {
   }
 
   return (
-    <CircuitiaSprintRunner
-      modo="serie"
-      startedAt={startedAt}
-      nivelInicial={1}
-      escudosExtra={0}
-      totalPreguntas={TOTAL_DEMO}
-      duracionMs={DURACION_DEMO_MS}
-      onFinish={handleFinish}
-    />
+    <ConCuentaRegresiva>
+      <CircuitiaSprintRunner
+        modo="serie"
+        startedAt={startedAt}
+        nivelInicial={1}
+        escudosExtra={0}
+        totalPreguntas={TOTAL_DEMO}
+        duracionMs={DURACION_DEMO_MS}
+        onFinish={handleFinish}
+      />
+    </ConCuentaRegresiva>
   );
 }

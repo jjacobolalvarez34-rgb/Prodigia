@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import MathText from "@/components/MathText";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
@@ -206,19 +207,21 @@ export default function CalculiaPracticaClient({ modo, nivelInicial, escudosExtr
             />
           </div>
         )}
-        <CalculiaSprintRunner
-          modo={modo}
-          startedAt={startedAtPerf}
-          nivelInicial={nivelInicial}
-          escudosExtra={escudosExtra}
-          hielosIniciales={hielosDisponibles}
-          tiemposExtraIniciales={tiemposExtraDisponibles}
-          nivelForzado={duelo?.nivel}
-          duelId={duelo?.duelId}
-          miUserId={miUserId}
-          rivalNombre={duelo?.rivalNombre}
-          onFinish={handleFinish}
-        />
+        <ConCuentaRegresiva omitir={!!duelo}>
+          <CalculiaSprintRunner
+            modo={modo}
+            startedAt={startedAtPerf}
+            nivelInicial={nivelInicial}
+            escudosExtra={escudosExtra}
+            hielosIniciales={hielosDisponibles}
+            tiemposExtraIniciales={tiemposExtraDisponibles}
+            nivelForzado={duelo?.nivel}
+            duelId={duelo?.duelId}
+            miUserId={miUserId}
+            rivalNombre={duelo?.rivalNombre}
+            onFinish={handleFinish}
+          />
+        </ConCuentaRegresiva>
       </>
     );
   }

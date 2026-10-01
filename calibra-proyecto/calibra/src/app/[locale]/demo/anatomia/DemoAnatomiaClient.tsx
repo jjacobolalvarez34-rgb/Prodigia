@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import type { PreguntaAnatomia } from "@/lib/practica/anatomia";
 import AnatomiaSprintRunner from "@/app/[locale]/anatomia/AnatomiaSprintRunner";
@@ -40,14 +41,16 @@ export default function DemoAnatomiaClient() {
   }
 
   return (
-    <AnatomiaSprintRunner
-      modo="oseo"
-      startedAt={startedAt}
-      nivelInicial={1}
-      escudosExtra={0}
-      totalPreguntas={TOTAL_DEMO}
-      duracionMs={DURACION_DEMO_MS}
-      onFinish={handleFinish}
-    />
+    <ConCuentaRegresiva>
+      <AnatomiaSprintRunner
+        modo="oseo"
+        startedAt={startedAt}
+        nivelInicial={1}
+        escudosExtra={0}
+        totalPreguntas={TOTAL_DEMO}
+        duracionMs={DURACION_DEMO_MS}
+        onFinish={handleFinish}
+      />
+    </ConCuentaRegresiva>
   );
 }

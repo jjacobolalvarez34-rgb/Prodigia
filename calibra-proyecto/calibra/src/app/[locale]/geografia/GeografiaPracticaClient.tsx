@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
@@ -242,18 +243,20 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
             />
           </div>
         )}
-        <GeografiaSprintRunner
-          continente={continente}
-          startedAt={startedAtPerf}
-          nivelInicial={nivelInicial}
-          escudosExtra={escudosExtra}
-          hielosIniciales={hielosDisponibles}
-          tiemposExtraIniciales={tiemposExtraDisponibles}
-          duelId={duelo?.duelId}
-          miUserId={miUserId}
-          rivalNombre={duelo?.rivalNombre}
-          onFinish={handleFinish}
-        />
+        <ConCuentaRegresiva omitir={!!duelo}>
+          <GeografiaSprintRunner
+            continente={continente}
+            startedAt={startedAtPerf}
+            nivelInicial={nivelInicial}
+            escudosExtra={escudosExtra}
+            hielosIniciales={hielosDisponibles}
+            tiemposExtraIniciales={tiemposExtraDisponibles}
+            duelId={duelo?.duelId}
+            miUserId={miUserId}
+            rivalNombre={duelo?.rivalNombre}
+            onFinish={handleFinish}
+          />
+        </ConCuentaRegresiva>
       </>
     );
   }

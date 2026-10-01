@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -203,19 +204,21 @@ export default function NaipiaPracticaClient({ modo, nivelInicial, escudosExtra,
             />
           </div>
         )}
-        <NaipiaSprintRunner
-          modo={modo}
-          startedAt={startedAtPerf}
-          nivelInicial={nivelInicial}
-          escudosExtra={escudosExtra}
-          hielosIniciales={hielosDisponibles}
-          tiemposExtraIniciales={tiemposExtraDisponibles}
-          nivelForzado={duelo?.nivel}
-          duelId={duelo?.duelId}
-          miUserId={miUserId}
-          rivalNombre={duelo?.rivalNombre}
-          onFinish={handleFinish}
-        />
+        <ConCuentaRegresiva omitir={!!duelo}>
+          <NaipiaSprintRunner
+            modo={modo}
+            startedAt={startedAtPerf}
+            nivelInicial={nivelInicial}
+            escudosExtra={escudosExtra}
+            hielosIniciales={hielosDisponibles}
+            tiemposExtraIniciales={tiemposExtraDisponibles}
+            nivelForzado={duelo?.nivel}
+            duelId={duelo?.duelId}
+            miUserId={miUserId}
+            rivalNombre={duelo?.rivalNombre}
+            onFinish={handleFinish}
+          />
+        </ConCuentaRegresiva>
       </>
     );
   }

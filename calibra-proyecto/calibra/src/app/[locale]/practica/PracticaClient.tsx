@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
@@ -237,23 +238,25 @@ export default function PracticaClient({
             />
           </div>
         )}
-        <SprintRunner
-          seleccion={seleccionSprint}
-          startedAt={startedAtPerf}
-          nivelPorOperacion={nivelPorOperacion}
-          modificadoresPorOperacion={duelo ? { ...modificadoresPorOperacion, [duelo.operacion]: [] } : modificadoresPorOperacion}
-          escudosExtra={escudosExtra}
-          hielosIniciales={hielosDisponibles}
-          tiemposExtraIniciales={tiemposExtraDisponibles}
-          colorDial={colorDial}
-          fantasma={duelo?.rivalRespuestas ? { rivalNombre: duelo.rivalNombre, respuestas: duelo.rivalRespuestas } : null}
-          semillaDuelo={duelo?.semilla}
-          duelId={duelo?.duelId}
-          miUserId={miUserId}
-          rivalNombreEnVivo={duelo?.rivalNombre}
-          onNivelChange={handleNivelChange}
-          onFinish={handleFinishSprint}
-        />
+        <ConCuentaRegresiva omitir={!!duelo}>
+          <SprintRunner
+            seleccion={seleccionSprint}
+            startedAt={startedAtPerf}
+            nivelPorOperacion={nivelPorOperacion}
+            modificadoresPorOperacion={duelo ? { ...modificadoresPorOperacion, [duelo.operacion]: [] } : modificadoresPorOperacion}
+            escudosExtra={escudosExtra}
+            hielosIniciales={hielosDisponibles}
+            tiemposExtraIniciales={tiemposExtraDisponibles}
+            colorDial={colorDial}
+            fantasma={duelo?.rivalRespuestas ? { rivalNombre: duelo.rivalNombre, respuestas: duelo.rivalRespuestas } : null}
+            semillaDuelo={duelo?.semilla}
+            duelId={duelo?.duelId}
+            miUserId={miUserId}
+            rivalNombreEnVivo={duelo?.rivalNombre}
+            onNivelChange={handleNivelChange}
+            onFinish={handleFinishSprint}
+          />
+        </ConCuentaRegresiva>
       </>
     );
   }

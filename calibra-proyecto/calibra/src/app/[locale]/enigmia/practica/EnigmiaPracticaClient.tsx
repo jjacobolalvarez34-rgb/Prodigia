@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -252,20 +253,22 @@ export default function EnigmiaPracticaClient({
             />
           </div>
         )}
-        <EnigmiaSprintRunner
-          puzzles={puzzles}
-          startedAt={startedAtPerf}
-          nivelesIniciales={nivelesIniciales}
-          escudosExtra={escudosExtra}
-          hielosIniciales={hielosDisponibles}
-          tiemposExtraIniciales={tiemposExtraDisponibles}
-          categoriaForzada={duelo?.categoria ?? categoriaInicial ?? undefined}
-          nivelForzado={duelo?.nivel}
-          duelId={duelo?.duelId}
-          miUserId={miUserId}
-          rivalNombre={duelo?.rivalNombre}
-          onFinish={handleFinish}
-        />
+        <ConCuentaRegresiva omitir={!!duelo}>
+          <EnigmiaSprintRunner
+            puzzles={puzzles}
+            startedAt={startedAtPerf}
+            nivelesIniciales={nivelesIniciales}
+            escudosExtra={escudosExtra}
+            hielosIniciales={hielosDisponibles}
+            tiemposExtraIniciales={tiemposExtraDisponibles}
+            categoriaForzada={duelo?.categoria ?? categoriaInicial ?? undefined}
+            nivelForzado={duelo?.nivel}
+            duelId={duelo?.duelId}
+            miUserId={miUserId}
+            rivalNombre={duelo?.rivalNombre}
+            onFinish={handleFinish}
+          />
+        </ConCuentaRegresiva>
       </>
     );
   }

@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import type { ProblemaTrigonometria } from "@/lib/practica/trigonometria";
 import TrigonometriaSprintRunner from "@/app/[locale]/trigonometria/TrigonometriaSprintRunner";
@@ -45,14 +46,16 @@ export default function DemoTrigonometriaClient() {
   }
 
   return (
-    <TrigonometriaSprintRunner
-      modo="razones"
-      startedAt={startedAt}
-      nivelInicial={1}
-      escudosExtra={0}
-      totalPreguntas={TOTAL_DEMO}
-      duracionMs={DURACION_DEMO_MS}
-      onFinish={handleFinish}
-    />
+    <ConCuentaRegresiva>
+      <TrigonometriaSprintRunner
+        modo="razones"
+        startedAt={startedAt}
+        nivelInicial={1}
+        escudosExtra={0}
+        totalPreguntas={TOTAL_DEMO}
+        duracionMs={DURACION_DEMO_MS}
+        onFinish={handleFinish}
+      />
+    </ConCuentaRegresiva>
   );
 }

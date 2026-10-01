@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -226,20 +227,22 @@ export default function QuimiaPracticaClient({ modo, nivelInicial, escudosExtra,
             />
           </div>
         )}
-        <QuimiaSprintRunner
-          modo={modo}
-          startedAt={startedAtPerf}
-          nivelInicial={nivelInicial}
-          escudosExtra={escudosExtra}
-          hielosIniciales={hielosDisponibles}
-          tiemposExtraIniciales={tiemposExtraDisponibles}
-          nivelForzado={duelo?.nivelForzado}
-          semillaDuelo={duelo?.semilla}
-          duelId={duelo?.duelId}
-          miUserId={miUserId}
-          rivalNombre={duelo?.rivalNombre}
-          onFinish={handleFinish}
-        />
+        <ConCuentaRegresiva omitir={!!duelo}>
+          <QuimiaSprintRunner
+            modo={modo}
+            startedAt={startedAtPerf}
+            nivelInicial={nivelInicial}
+            escudosExtra={escudosExtra}
+            hielosIniciales={hielosDisponibles}
+            tiemposExtraIniciales={tiemposExtraDisponibles}
+            nivelForzado={duelo?.nivelForzado}
+            semillaDuelo={duelo?.semilla}
+            duelId={duelo?.duelId}
+            miUserId={miUserId}
+            rivalNombre={duelo?.rivalNombre}
+            onFinish={handleFinish}
+          />
+        </ConCuentaRegresiva>
       </>
     );
   }

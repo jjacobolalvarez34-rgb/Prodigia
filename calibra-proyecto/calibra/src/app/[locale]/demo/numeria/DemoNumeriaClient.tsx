@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import type { ArithmeticProblemType, ModifierSlug } from "@/types/database";
 import type { Problem } from "@/lib/practica/problems";
@@ -51,17 +52,19 @@ export default function DemoNumeriaClient({ nivelPorOperacion, modificadoresPorO
   }
 
   return (
-    <SprintRunner
-      seleccion={["suma"]}
-      startedAt={startedAt}
-      nivelPorOperacion={nivelPorOperacion}
-      modificadoresPorOperacion={modificadoresPorOperacion}
-      escudosExtra={0}
-      colorDial={COLOR_NUMERIA}
-      totalPreguntas={TOTAL_DEMO}
-      duracionMs={DURACION_DEMO_MS}
-      onNivelChange={() => {}}
-      onFinish={handleFinish}
-    />
+    <ConCuentaRegresiva>
+      <SprintRunner
+        seleccion={["suma"]}
+        startedAt={startedAt}
+        nivelPorOperacion={nivelPorOperacion}
+        modificadoresPorOperacion={modificadoresPorOperacion}
+        escudosExtra={0}
+        colorDial={COLOR_NUMERIA}
+        totalPreguntas={TOTAL_DEMO}
+        duracionMs={DURACION_DEMO_MS}
+        onNivelChange={() => {}}
+        onFinish={handleFinish}
+      />
+    </ConCuentaRegresiva>
   );
 }

@@ -230,6 +230,8 @@ export async function retarAmigo(userId: string, amigoId: string, mundo: MundoSl
       operation_type: mundo === "numeria" ? opcion : null,
       sub_tipo: mundo === "numeria" ? null : opcion,
       estado: "pendiente",
+      // Retos entre amigos: siempre amistosos, nunca mueven el ELO (0244).
+      clasificatorio: false,
     })
     .select("id")
     .single();

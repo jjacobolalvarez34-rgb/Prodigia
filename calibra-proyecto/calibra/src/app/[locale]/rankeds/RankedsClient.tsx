@@ -571,7 +571,9 @@ function BuscarPartida({
           <div>
             <p className="font-display text-lg font-bold text-foreground">{t("buscandoRival")}</p>
             <p className="mt-1 text-xs text-texto-secundario">
-              {t("buscandoDetalle", { etiqueta: etiquetaBusqueda ?? "", segundos, min: miElo - rango, max: miElo + rango })}
+              {modoClasificacion === "casual"
+                ? t("buscandoDetalleCasual", { etiqueta: etiquetaBusqueda ?? "", segundos })
+                : t("buscandoDetalle", { etiqueta: etiquetaBusqueda ?? "", segundos, min: miElo - rango, max: miElo + rango })}
             </p>
           </div>
           <button

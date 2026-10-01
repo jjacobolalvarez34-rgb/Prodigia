@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import type { ProblemaCodia } from "@/lib/practica/codia";
 import CodiaSprintRunner from "@/app/[locale]/codia/CodiaSprintRunner";
@@ -45,14 +46,16 @@ export default function DemoCodiaClient() {
   }
 
   return (
-    <CodiaSprintRunner
-      modo="sintaxis"
-      startedAt={startedAt}
-      nivelInicial={1}
-      escudosExtra={0}
-      totalPreguntas={TOTAL_DEMO}
-      duracionMs={DURACION_DEMO_MS}
-      onFinish={handleFinish}
-    />
+    <ConCuentaRegresiva>
+      <CodiaSprintRunner
+        modo="sintaxis"
+        startedAt={startedAt}
+        nivelInicial={1}
+        escudosExtra={0}
+        totalPreguntas={TOTAL_DEMO}
+        duracionMs={DURACION_DEMO_MS}
+        onFinish={handleFinish}
+      />
+    </ConCuentaRegresiva>
   );
 }

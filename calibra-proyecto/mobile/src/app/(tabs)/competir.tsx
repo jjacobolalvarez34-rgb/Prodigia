@@ -369,7 +369,7 @@ export default function Competir() {
             <IconoFantasma tam={30} c={color.primarioClaro} />
             <Texto v="h3">Duelo casual</Texto>
             <Texto v="nota" centro>
-              Mismo matchmaking, sin ELO en juego. Si no hay nadie, corres contra el registro exacto de un rival: siempre hay contra quién jugar.
+              Un rival al azar, de cualquier rango, sin ELO en juego. Si no hay nadie, corres contra el registro exacto de un rival: siempre hay contra quién jugar.
             </Texto>
             <Texto v="mono" tam={14} style={{ marginTop: 6 }}>
               {casual.victorias}V · {casual.derrotas}D · {casual.empates}E

@@ -1,5 +1,6 @@
 "use client";
 
+import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import { useState } from "react";
 import type { CategoriaEnigmia, LogicPuzzle } from "@/types/database";
 import EnigmiaSprintRunner from "@/app/[locale]/enigmia/practica/EnigmiaSprintRunner";
@@ -48,14 +49,16 @@ export default function DemoEnigmiaClient({ puzzles }: Props) {
   }
 
   return (
-    <EnigmiaSprintRunner
-      puzzles={puzzles}
-      startedAt={startedAt}
-      nivelesIniciales={NIVELES_DEMO}
-      escudosExtra={0}
-      totalPreguntas={TOTAL_DEMO}
-      duracionMs={DURACION_DEMO_MS}
-      onFinish={handleFinish}
-    />
+    <ConCuentaRegresiva>
+      <EnigmiaSprintRunner
+        puzzles={puzzles}
+        startedAt={startedAt}
+        nivelesIniciales={NIVELES_DEMO}
+        escudosExtra={0}
+        totalPreguntas={TOTAL_DEMO}
+        duracionMs={DURACION_DEMO_MS}
+        onFinish={handleFinish}
+      />
+    </ConCuentaRegresiva>
   );
 }

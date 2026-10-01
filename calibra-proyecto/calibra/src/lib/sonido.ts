@@ -49,9 +49,17 @@ function prefiereMenosEstimulo(): boolean {
 function obtenerContexto(): AudioContext | null {
   try {
     if (!ctx) {
+      // Pedido 2026-10-01: los efectos tienen que sonar por el volumen
+      // multimedia aunque el teléfono esté en silencio (como un juego), no
+      // como un tono de llamada. La Audio Session API (Safari 16.4+, y en
+      // camino en Chrome) lo declara explícito; donde no existe no hace nada.
+      const sesion = (navigator as unknown as { audioSession?: { type: string } }).audioSession;
+      if (sesion) sesion.type = "playback";
       const AudioCtx = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       ctx = new AudioCtx();
     }
+    // Algunos navegadores dejan el contexto suspendido hasta un gesto: se reanuda.
+    if (ctx.state === "suspended") ctx.resume().catch(() => {});
     return ctx;
   } catch {
     return null;
@@ -105,7 +113,7 @@ export function reproducirNotaMusical(freq: number) {
   }
 }
 
-export type TipoTono = "correcto" | "error" | "nivel" | "nivel_cuenta" | "logro" | "duelo_gano" | "duelo_perdio" | "compra" | "notificacion";
+export type TipoTono = "correcto" | "error" | "nivel" | "nivel_cuenta" | "logro" | "duelo_gano" | "duelo_perdio" | "compra" | "notificacion" | "cuenta" | "ya";
 
 // Tonos generados con Web Audio (sin archivos de audio con licencia):
 // tick agudo al acertar, uno grave al fallar, chime ascendente al subir
@@ -170,6 +178,14 @@ export function reproducirTono(tipo: TipoTono) {
       reproducirSecuencia([
         { freq: 1318.5, inicio: 0, duracion: 0.09, tipoOnda: "square", volumen: 0.07 },
         { freq: 1760.0, inicio: 0.07, duracion: 0.16, tipoOnda: "square", volumen: 0.09 },
+      ]);
+    } else if (tipo === "cuenta") {
+      // Cuenta regresiva antes de la partida (3, 2, 1) y el "¡Ya!" final.
+      reproducirSecuencia([{ freq: 660, inicio: 0, duracion: 0.16, volumen: 0.1 }]);
+    } else if (tipo === "ya") {
+      reproducirSecuencia([
+        { freq: 990, inicio: 0, duracion: 0.32, volumen: 0.1 },
+        { freq: 1320, inicio: 0, duracion: 0.32, volumen: 0.07 },
       ]);
     } else if (tipo === "notificacion") {
       reproducirSecuencia([
