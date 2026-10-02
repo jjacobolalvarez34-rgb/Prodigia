@@ -7,6 +7,8 @@ import { generarAcertijoProcedural, type CategoriaGenerada } from "@/lib/enigmia
 import { elegirDelBanco } from "@/lib/enigmia/seleccionDificultad";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { CATEGORIA_DE_TIPO, NOMBRE_CATEGORIA_ENIGMIA, type CategoriaEnigmia, type LogicPuzzle } from "@/types/database";
+import { guardarIntentoLogica } from "../partida";
+import { conCopia } from "../sinConexion";
 import { supabase } from "../supabase";
 import type { MundoJugable } from "./tipos";
 
@@ -44,13 +46,18 @@ export const ENIGMIA: MundoJugable = {
     { id: "computacional", nombre: NOMBRE_CATEGORIA_ENIGMIA.computacional, simbolo: "⌘", descripcion: "Seguir instrucciones paso a paso." },
   ],
   duracionMs: 90_000,
-  preparar: async () => {
-    const { data } = await supabase.from("logic_puzzles").select("id, tipo, dificultad, contenido, respuesta");
-    return (data ?? []) as LogicPuzzle[];
-  },
+  // Con copia en el teléfono: sin conexión se juega con el último banco y niveles.
+  preparar: async () =>
+    (await conCopia("enigmia:banco", async () => {
+      const { data, error } = await supabase.from("logic_puzzles").select("id, tipo, dificultad, contenido, respuesta");
+      return error ? null : ((data ?? []) as LogicPuzzle[]);
+    })) ?? [],
   cargarNiveles: async (userId) => {
-    const { data } = await supabase.from("logic_skill_levels").select("categoria, nivel").eq("user_id", userId);
-    const filas = (data ?? []) as { categoria: string; nivel: number }[];
+    const filas =
+      (await conCopia(`niveles:enigmia:${userId}`, async () => {
+        const { data, error } = await supabase.from("logic_skill_levels").select("categoria, nivel").eq("user_id", userId);
+        return error ? null : ((data ?? []) as { categoria: string; nivel: number }[]);
+      })) ?? [];
     const r: Record<string, number> = {};
     for (const c of CATEGORIAS) r[c] = filas.find((f) => f.categoria === c)?.nivel ?? 1;
     r.mezcla = r.patrones;
@@ -73,17 +80,6 @@ export const ENIGMIA: MundoJugable = {
     };
   },
   modoDePregunta: (p) => String(p.datos?.categoria ?? "patrones"),
-  guardar: async (p, _modo, nivel, correcto, timeMs, protegido) => {
-    const { data, error } = await supabase.rpc("insertar_intento_logica", {
-      p_puzzle_id: String(p.datos?.puzzle_id ?? ""),
-      p_dificultad: nivel,
-      p_correct: correcto,
-      p_time_ms: timeMs,
-      p_categoria: String(p.datos?.categoria ?? "patrones"),
-      p_protegido: protegido,
-    });
-    if (error) throw error;
-    const fila = (data as { xp: number; nivel: number | null; sospechoso: boolean }[] | null)?.[0];
-    return { xp: fila?.xp ?? 0, nivel: fila?.nivel ?? null, sospechoso: fila?.sospechoso ?? false };
-  },
+  guardar: (p, _modo, nivel, correcto, timeMs, protegido) =>
+    guardarIntentoLogica(String(p.datos?.puzzle_id ?? ""), nivel, String(p.datos?.categoria ?? "patrones"), correcto, timeMs, protegido),
 };

@@ -1,10 +1,10 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
+import { faltaDiagnostico } from "~/lib/diagnostico";
 import { vibrar } from "~/lib/efectos";
-import { mundoJugable, problemTypeDe } from "~/lib/mundosJugables";
+import { cargarNivelesMundo, mundoJugable } from "~/lib/mundosJugables";
 import { useSesion } from "~/lib/sesion";
-import { supabase } from "~/lib/supabase";
 import HubMundo, { TarjetaTema } from "~/ui/HubMundo";
 import { Vacio } from "~/ui/Pantalla";
 import Texto from "~/ui/Texto";
@@ -25,16 +25,9 @@ export default function HubCiudad() {
   useFocusEffect(
     useCallback(() => {
       if (!userId || !def) return;
-      if (def.cargarNiveles) {
-        def.cargarNiveles(userId).then(setNiveles);
-        return;
-      }
-      Promise.resolve(supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).like("problem_type", `${def.slug}_%`)).then(({ data }) => {
-        const r: Record<string, number> = {};
-        for (const m of def.modos) r[m.id] = ((data ?? []) as { problem_type: string; nivel: number }[]).find((f) => f.problem_type === problemTypeDe(def, m.id))?.nivel ?? 1;
-        setNiveles(r);
-      });
-    }, [userId, def])
+      cargarNivelesMundo(def, userId).then(setNiveles);
+      faltaDiagnostico(def.slug, userId).then((falta) => falta && router.replace({ pathname: "/diagnostico/[mundo]", params: { mundo: def.slug } }));
+    }, [userId, def, router])
   );
 
   if (!def || !mundo) {

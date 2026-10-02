@@ -21,7 +21,9 @@ import { sonar, vibrar } from "~/lib/efectos";
 import { useLiviano } from "~/lib/rendimiento";
 import { brillo, color, conAlfa, fuente, radio } from "~/tema";
 import Anillo from "./Anillo";
-import { IconoCerrar, IconoEscudo, IconoLlama } from "./Iconos";
+import { tiempoEsperadoMs } from "@/lib/practica/formulas";
+import { supabase } from "~/lib/supabase";
+import { IconoCerrar, IconoCopo, IconoEscudo, IconoLlama, IconoReloj } from "./Iconos";
 import Texto from "./Texto";
 
 // Piezas del sprint (02-SISTEMA-VISUAL.md §7.2 y §9). Reglas de rendimiento: el
@@ -32,30 +34,61 @@ import Texto from "./Texto";
 
 // Reloj del sprint: arranca cuando `inicio` deja de ser null y avisa `onFin` al
 // llegar a 0. `detenido` lo congela para siempre (al terminar la partida) y
-// `pausado` lo frena un rato (fase de memorizar, hielo) sin perder el tiempo que
-// quedaba. Devuelve el progreso (para el anillo, en el hilo nativo) y una función
-// para leer los milisegundos que quedan.
-export function useReloj(inicio: number | null, totalMs: number, onFin: () => void, detenido = false, pausado = false) {
+// `pausado` lo frena un rato (fase de memorizar) sin perder el tiempo que quedaba.
+// Igual que useBonusTiempo.ts de la web:
+// - `bonus(nivel, ms)`: desde el nivel 5, responder en menos de la mitad del tiempo
+//   esperado suma de 1 a 3 s (tope de 20 s por partida).
+// - `agregar(ms)`: suma tiempo sin tope (consumible "+3 segundos").
+// - `congelar(ms)`: detiene el reloj (consumible "hielo", 10 s).
+// Devuelve el progreso (para el anillo, en el hilo nativo), una función para leer
+// los milisegundos que quedan y el último aviso de tiempo ganado.
+const NIVEL_MIN_BONUS = 5;
+const BONUS_MAX_MS = 20_000;
+
+export interface Reloj {
+  progreso: SharedValue<number>;
+  restante: () => number;
+  bonus: (nivel: number, timeMs: number) => number;
+  agregar: (ms: number) => void;
+  congelar: (ms: number) => void;
+  congelado: boolean;
+  ganado: { id: number; segundos: number } | null;
+}
+
+export function useReloj(inicio: number | null, totalMs: number, onFin: () => void, detenido = false, pausado = false): Reloj {
   const progreso = useSharedValue(1);
   const onFinRef = useRef(onFin);
   const restanteRef = useRef(totalMs);
   const desdeRef = useRef<number | null>(null);
+  const bonusRef = useRef(0);
+  const hieloRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [extra, setExtra] = useState(0);
+  const [congelado, setCongelado] = useState(false);
+  const [ganado, setGanado] = useState<{ id: number; segundos: number } | null>(null);
   useEffect(() => {
     onFinRef.current = onFin;
   }, [onFin]);
   useEffect(() => {
     if (inicio == null) return;
     restanteRef.current = Math.max(0, totalMs - (Date.now() - inicio));
+    bonusRef.current = 0;
   }, [inicio, totalMs]);
+  useEffect(
+    () => () => {
+      if (hieloRef.current) clearTimeout(hieloRef.current);
+    },
+    []
+  );
+  const frenado = detenido || pausado || congelado;
   useEffect(() => {
     if (inicio == null) return;
-    if (detenido || pausado) {
+    if (frenado) {
       cancelAnimation(progreso);
       return;
     }
     desdeRef.current = Date.now();
     const restante = restanteRef.current;
-    progreso.set(restante / totalMs);
+    progreso.set(Math.min(1, restante / totalMs));
     progreso.set(withTiming(0, { duration: restante, easing: Easing.linear }));
     const t = setTimeout(() => onFinRef.current(), restante);
     return () => {
@@ -63,13 +96,133 @@ export function useReloj(inicio: number | null, totalMs: number, onFin: () => vo
       if (desdeRef.current != null) restanteRef.current = Math.max(0, restanteRef.current - (Date.now() - desdeRef.current));
       desdeRef.current = null;
     };
-  }, [inicio, totalMs, detenido, pausado, progreso]);
+  }, [inicio, totalMs, frenado, extra, progreso]);
   const restante = useCallback(() => {
     if (inicio == null) return totalMs;
     if (desdeRef.current == null) return restanteRef.current;
     return Math.max(0, restanteRef.current - (Date.now() - desdeRef.current));
   }, [inicio, totalMs]);
-  return { progreso, restante };
+  const agregar = useCallback((ms: number) => {
+    if (desdeRef.current != null) {
+      restanteRef.current = Math.max(0, restanteRef.current - (Date.now() - desdeRef.current));
+      desdeRef.current = Date.now();
+    }
+    restanteRef.current += ms;
+    setExtra((e) => e + ms);
+    setGanado((g) => ({ id: (g?.id ?? 0) + 1, segundos: Math.round(ms / 1000) }));
+  }, []);
+  const bonus = useCallback(
+    (nivel: number, timeMs: number) => {
+      if (nivel < NIVEL_MIN_BONUS || bonusRef.current >= BONUS_MAX_MS) return 0;
+      const esperado = tiempoEsperadoMs(nivel);
+      if (timeMs >= esperado * 0.5) return 0;
+      const segundos = Math.min(3, Math.max(1, Math.round(1 + (1 - timeMs / esperado) * 2)));
+      const ms = Math.min(segundos * 1000, BONUS_MAX_MS - bonusRef.current);
+      if (ms <= 0) return 0;
+      bonusRef.current += ms;
+      agregar(ms);
+      return Math.round(ms / 1000);
+    },
+    [agregar]
+  );
+  const congelar = useCallback((ms: number) => {
+    if (hieloRef.current) clearTimeout(hieloRef.current);
+    setCongelado(true);
+    hieloRef.current = setTimeout(() => setCongelado(false), ms);
+  }, []);
+  return { progreso, restante, bonus, agregar, congelar, congelado, ganado };
+}
+
+// ---------- Consumibles de partida (ConsumiblesPartida.tsx de la web) ----------
+
+export const PAUSA_HIELO_MS = 10_000;
+export const TIEMPO_EXTRA_MS = 3_000;
+
+// Hielos y "+3 segundos" comprados en la tienda. Prohibidos en duelos (igual que
+// la web): con `activo` en false no se cargan ni se muestran.
+export function useConsumibles(activo: boolean) {
+  const [disp, setDisp] = useState<{ hielos: number; tiempos: number } | null>(null);
+  const [usando, setUsando] = useState(false);
+  useEffect(() => {
+    if (!activo) return;
+    let vivo = true;
+    (async () => {
+      const { data: s } = await supabase.auth.getSession();
+      const uid = s.session?.user.id;
+      if (!uid) return;
+      const { data } = await supabase.from("profiles").select("hielos_disponibles, tiempos_extra_disponibles").eq("id", uid).maybeSingle();
+      const f = data as { hielos_disponibles: number; tiempos_extra_disponibles: number } | null;
+      if (vivo && f) setDisp({ hielos: f.hielos_disponibles ?? 0, tiempos: f.tiempos_extra_disponibles ?? 0 });
+    })().catch(() => undefined);
+    return () => {
+      vivo = false;
+    };
+  }, [activo]);
+  const usar = useCallback(
+    async (item: "hielo" | "tiempo_extra") => {
+      if (usando) return false;
+      setUsando(true);
+      try {
+        const { data, error } = await supabase.rpc("usar_consumible_partida", { p_item: item });
+        if (error) return false;
+        const f = (data as { hielos_disponibles: number; tiempos_extra_disponibles: number }[] | null)?.[0];
+        if (f) setDisp({ hielos: f.hielos_disponibles ?? 0, tiempos: f.tiempos_extra_disponibles ?? 0 });
+        return true;
+      } catch {
+        return false;
+      } finally {
+        setUsando(false);
+      }
+    },
+    [usando]
+  );
+  return { disp: activo ? disp : null, usando, usar };
+}
+
+// Botones de hielo y +3 s debajo del progreso. Solo aparecen si tienes alguno.
+export function Consumibles({ reloj, consumibles, deshabilitado }: { reloj: Reloj; consumibles: ReturnType<typeof useConsumibles>; deshabilitado: boolean }) {
+  const { disp, usando, usar } = consumibles;
+  if (!disp || (disp.hielos <= 0 && disp.tiempos <= 0)) return null;
+  return (
+    <View style={styles.consumibles}>
+      {disp.hielos > 0 && (
+        <Pressable
+          disabled={deshabilitado || usando || reloj.congelado}
+          onPress={async () => {
+            vibrar.medio();
+            if (await usar("hielo")) {
+              sonar("swoosh");
+              reloj.congelar(PAUSA_HIELO_MS);
+            }
+          }}
+          style={({ pressed }) => [styles.consumible, { borderColor: "#7FD8FF", opacity: deshabilitado || reloj.congelado ? 0.45 : 1 }, pressed && { transform: [{ scale: 0.95 }] }]}
+        >
+          <IconoCopo tam={16} c="#BDEBFF" />
+          <Texto v="fuerte" tam={12} c="#BDEBFF">
+            Hielo ×{disp.hielos}
+          </Texto>
+        </Pressable>
+      )}
+      {disp.tiempos > 0 && (
+        <Pressable
+          disabled={deshabilitado || usando}
+          onPress={async () => {
+            vibrar.medio();
+            if (await usar("tiempo_extra")) {
+              sonar("swoosh");
+              reloj.agregar(TIEMPO_EXTRA_MS);
+            }
+          }}
+          style={({ pressed }) => [styles.consumible, { borderColor: color.logro, opacity: deshabilitado ? 0.45 : 1 }, pressed && { transform: [{ scale: 0.95 }] }]}
+        >
+          <IconoReloj tam={16} c={color.logro} />
+          <Texto v="fuerte" tam={12} c={color.logro}>
+            +3 s ×{disp.tiempos}
+          </Texto>
+        </Pressable>
+      )}
+    </View>
+  );
 }
 
 function Segundos({ restante, corriendo }: { restante: () => number; corriendo: boolean }) {
@@ -85,6 +238,22 @@ function Segundos({ restante, corriendo }: { restante: () => number; corriendo: 
     <Texto v="mono" tam={13} c={s <= 10 ? color.error : color.texto}>
       0:{String(s).padStart(2, "0")}
     </Texto>
+  );
+}
+
+// "+2 s" que sube y se desvanece al lado del anillo.
+function TiempoGanado({ segundos }: { segundos: number }) {
+  const t = useSharedValue(0);
+  useEffect(() => {
+    t.set(withTiming(1, { duration: 1100, easing: Easing.out(Easing.quad) }));
+  }, [t]);
+  const estilo = useAnimatedStyle(() => ({ opacity: 1 - t.value * t.value, transform: [{ translateY: -t.value * 18 }] }));
+  return (
+    <Animated.View style={estilo}>
+      <Texto v="mono" tam={14} c={color.logro}>
+        +{segundos} s
+      </Texto>
+    </Animated.View>
   );
 }
 
@@ -151,7 +320,7 @@ export function Cabecera({
   corriendo,
 }: {
   onSalir: () => void;
-  reloj: { progreso: SharedValue<number>; restante: () => number };
+  reloj: Reloj;
   combo: number;
   acento: string;
   corriendo: boolean;
@@ -161,9 +330,16 @@ export function Cabecera({
       <Pressable onPress={onSalir} hitSlop={12} style={styles.x} accessibilityLabel="Salir de la partida">
         <IconoCerrar tam={16} c={color.texto2} />
       </Pressable>
-      <Anillo valor={1} externo={reloj.progreso} tam={58} grosor={5} acento={acento}>
-        <Segundos restante={reloj.restante} corriendo={corriendo} />
-      </Anillo>
+      <View>
+        <Anillo valor={1} externo={reloj.progreso} tam={58} grosor={5} acento={reloj.congelado ? "#7FD8FF" : acento}>
+          {reloj.congelado ? <IconoCopo tam={22} c="#BDEBFF" /> : <Segundos restante={reloj.restante} corriendo={corriendo} />}
+        </Anillo>
+        {reloj.ganado && (
+          <Animated.View key={reloj.ganado.id} entering={FadeIn.duration(160)} exiting={FadeOut.duration(300)} style={styles.tiempoGanado} pointerEvents="none">
+            <TiempoGanado segundos={reloj.ganado.segundos} />
+          </Animated.View>
+        )}
+      </View>
       <View style={{ width: 92, alignItems: "flex-end" }}>
         <RachaFuego racha={combo} />
       </View>
@@ -440,6 +616,9 @@ export function BarraRival({
 
 const styles = StyleSheet.create({
   cabecera: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingTop: 4, minHeight: 66 },
+  tiempoGanado: { position: "absolute", left: 60, top: 18 },
+  consumibles: { flexDirection: "row", justifyContent: "center", gap: 10, paddingHorizontal: 16, paddingTop: 6 },
+  consumible: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, borderWidth: 1, backgroundColor: color.surface1 },
   x: { width: 38, height: 38, borderRadius: 19, backgroundColor: color.surface1, borderWidth: 1, borderColor: color.border, alignItems: "center", justifyContent: "center" },
   racha: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: conAlfa(color.racha, 0.16) },
   brasa: { position: "absolute", bottom: 14, width: 5, height: 5, borderRadius: 3, backgroundColor: "#FFD36B" },

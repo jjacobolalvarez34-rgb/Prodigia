@@ -14,6 +14,7 @@ import { generarProblema, type Problem } from "@/lib/practica/problems";
 import { operacionPermitidaInvitado, temaAvanzadoBloqueadoParaInvitado } from "@/lib/auth/accesoInvitado";
 import { textoConFormulas } from "~/ui/TextoMate";
 import { guardarIntentoTipo } from "./partida";
+import { conCopia } from "./sinConexion";
 import { supabase } from "./supabase";
 
 export type Operacion = "suma" | "resta" | "multiplicacion" | "division";
@@ -106,8 +107,11 @@ export function operacionDisponible(tipo: Operacion, esInvitado: boolean): boole
 
 export async function cargarNivelesNumeria(userId: string): Promise<Record<string, number>> {
   const niveles: Record<string, number> = Object.fromEntries(TODOS_LOS_TIPOS.map((t) => [t, 1]));
-  const { data } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TODOS_LOS_TIPOS);
-  for (const fila of data ?? []) niveles[fila.problem_type as string] = fila.nivel as number;
+  const filas = await conCopia(`niveles:numeria:${userId}`, async () => {
+    const { data, error } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TODOS_LOS_TIPOS);
+    return error ? null : ((data ?? []) as { problem_type: string; nivel: number }[]);
+  });
+  for (const fila of filas ?? []) niveles[fila.problem_type] = fila.nivel;
   return niveles;
 }
 

@@ -8,6 +8,7 @@ import { fijarChispas, recargarJugador, useJugador } from "~/lib/jugador";
 import { progresoMundo, ultimoJugado, type Continuar, type ProgresoMundo } from "~/lib/mundos";
 import { estadoRetosHoy } from "~/lib/retos";
 import { useSesion } from "~/lib/sesion";
+import { sincronizar, useSinConexion } from "~/lib/sinConexion";
 import { mensajeError, supabase } from "~/lib/supabase";
 import Anillo from "~/ui/Anillo";
 import { mostrarAviso } from "~/ui/Aviso";
@@ -29,6 +30,7 @@ export default function Hoy() {
   const { sesion } = useSesion();
   const userId = sesion?.user.id;
   const { placa, resumen, mundos, esInvitado } = useJugador();
+  const red = useSinConexion();
   const [continuar, setContinuar] = useState<Continuar | null>(null);
   const [progreso, setProgreso] = useState<ProgresoMundo | null>(null);
   const [retos, setRetos] = useState<{ diario: number | null; semanal: number | null } | null>(null);
@@ -104,6 +106,17 @@ export default function Hoy() {
         <Texto v="micro">{DIAS[ahora.getDay()]}</Texto>
         <Texto v="h1">Hola, {nombre}</Texto>
       </View>
+
+      {(red.sinRed || red.pendientes > 0) && (
+        <Tarjeta indice={indice++} acento={color.racha} onPress={() => sincronizar()}>
+          <Texto v="h3">{red.sinRed ? "Sin conexión" : "Subiendo tu progreso…"}</Texto>
+          <Texto v="nota">
+            {red.pendientes > 0
+              ? `Tienes ${red.pendientes} ${red.pendientes === 1 ? "respuesta guardada" : "respuestas guardadas"} en el teléfono. Se suben solas cuando vuelva internet (toca para intentar ahora).`
+              : "Puedes seguir practicando: tus partidas se guardan en el teléfono. Duelos, tienda y chat necesitan internet."}
+          </Texto>
+        </Tarjeta>
+      )}
 
       {rachaEnRiesgo && (
         <Tarjeta indice={indice++} acento={color.racha} brillo={0.3} onPress={() => router.push(continuar?.ruta ?? "/numeria")}>

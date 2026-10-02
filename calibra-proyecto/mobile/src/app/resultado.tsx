@@ -222,7 +222,14 @@ export default function Resultado() {
             </View>
           </Paso>
 
-          <Paso visible={paso >= 4} indice={4}>
+          {d.sinConexion && (
+            <Tarjeta sinEntrada acento={color.racha}>
+              <Texto v="h3">Jugaste sin conexión</Texto>
+              <Texto v="nota">Tu partida quedó guardada en el teléfono. Tu Exp, tu racha y tus niveles se suben solos cuando vuelva internet.</Texto>
+            </Tarjeta>
+          )}
+
+          <Paso visible={paso >= 4 && !d.sinConexion} indice={4}>
             <Tarjeta sinEntrada>
               <View style={styles.fila}>
                 <Anillo valor={(d.xpHoy ?? 0) / Math.max(1, d.metaDiaria ?? 100)} tam={56} grosor={6} acento={d.metaAlcanzada ? color.correcto : color.logro}>

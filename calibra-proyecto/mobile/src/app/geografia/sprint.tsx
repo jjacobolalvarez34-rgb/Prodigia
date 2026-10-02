@@ -23,7 +23,7 @@ import { useSesion } from "~/lib/sesion";
 import { mensajeError } from "~/lib/supabase";
 import Glifos from "~/ui/Glifos";
 import MapaGeografia from "~/ui/MapaGeografia";
-import { animarAcierto, animarError, BarraRival, Cabecera, CartelFinal, CuentaInicio, Flotante, Progreso, TarjetaProblema, useReloj, useSalida } from "~/ui/Sprint";
+import { animarAcierto, animarError, BarraRival, Cabecera, CartelFinal, Consumibles, CuentaInicio, Flotante, Progreso, TarjetaProblema, useConsumibles, useReloj, useSalida } from "~/ui/Sprint";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente, MUNDO_POR_SLUG } from "~/tema";
 
@@ -122,6 +122,7 @@ export default function SprintGeografia() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const reloj = useReloj(inicio, DURACION_SPRINT_GEO_MS, alAcabarElTiempo, final !== null);
+  const consumibles = useConsumibles(!dueloId && inicio != null);
 
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -196,6 +197,7 @@ export default function SprintGeografia() {
     comboRef.current = correcto ? comboRef.current + 1 : 0;
     setCombo(comboRef.current);
     if (correcto) {
+      reloj.bonus(pregunta.dificultad, timeMs);
       sonarAcierto(comboRef.current);
       if (comboRef.current === 5 || comboRef.current === 10) {
         sonar("combo");
@@ -272,6 +274,7 @@ export default function SprintGeografia() {
       <Animated.View style={[{ flex: 1 }, estiloJuego]}>
       <Cabecera onSalir={confirmarSalida} reloj={reloj} combo={combo} acento={GEOGRAFIA.neon} corriendo={inicio != null && final === null} />
       <Progreso resultados={resultados} total={PREGUNTAS_POR_PARTIDA} acento={GEOGRAFIA.neon} escudos={escudos} />
+      <Consumibles reloj={reloj} consumibles={consumibles} deshabilitado={final !== null} />
       {duelo && (
         <BarraRival nombre={duelo.rivalNombre} total={PREGUNTAS_POR_PARTIDA} yo={resultados.length} inicio={inicio} respuestasFantasma={duelo.rivalYaJugo ? duelo.rivalRespuestas : null} enVivo={rivalVivo?.respondidos ?? null} />
       )}

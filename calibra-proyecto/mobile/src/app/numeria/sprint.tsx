@@ -28,11 +28,13 @@ import {
   BarraRival,
   Cabecera,
   CartelFinal,
+  Consumibles,
   CuentaInicio,
   Flotante,
   Progreso,
   TarjetaProblema,
   Teclado,
+  useConsumibles,
   useReloj,
   useSalida,
 } from "~/ui/Sprint";
@@ -153,6 +155,7 @@ export default function Sprint() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const reloj = useReloj(inicio, DURACION_SPRINT_MS, alAcabarElTiempo, final !== null);
+  const consumibles = useConsumibles(!dueloId && inicio != null);
 
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -236,6 +239,7 @@ export default function Sprint() {
     setCombo(comboRef.current);
 
     if (correcto) {
+      reloj.bonus(problema.nivel, timeMs);
       sonarAcierto(comboRef.current);
       if (comboRef.current === 5 || comboRef.current === 10) {
         sonar("combo");
@@ -341,6 +345,7 @@ export default function Sprint() {
       <Animated.View style={[{ flex: 1 }, estiloJuego]}>
         <Cabecera onSalir={confirmarSalida} reloj={reloj} combo={combo} acento={NUMERIA.neon} corriendo={inicio != null && final === null} />
         <Progreso resultados={resultados} total={TOTAL} acento={NUMERIA.neon} escudos={escudos} />
+        <Consumibles reloj={reloj} consumibles={consumibles} deshabilitado={final !== null} />
         {duelo && (
           <BarraRival nombre={duelo.rivalNombre} total={TOTAL} yo={resultados.length} inicio={inicio} respuestasFantasma={duelo.rivalYaJugo ? duelo.rivalRespuestas : null} enVivo={rivalVivo?.respondidos ?? null} />
         )}

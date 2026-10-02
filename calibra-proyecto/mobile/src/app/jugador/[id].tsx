@@ -1,6 +1,7 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
+import { bloquearJugador, desbloquearJugador, estaBloqueado } from "~/lib/edad";
 import { sonar } from "~/lib/efectos";
 import { cargarPlacaPublica, type PlacaDatos } from "~/lib/placa";
 import { useSesion } from "~/lib/sesion";
@@ -31,9 +32,11 @@ export default function Jugador() {
   const [logros, setLogros] = useState(0);
   const [retando, setRetando] = useState(false);
   const [ocupado, setOcupado] = useState(false);
+  const [bloqueado, setBloqueado] = useState(false);
 
   const cargar = useCallback(async () => {
     if (!id) return;
+    if (miId && id !== miId) estaBloqueado(miId, id).then(setBloqueado);
     const [p, a, { data: m }, { data: d }, { data: l }] = await Promise.all([
       cargarPlacaPublica(id),
       miId ? estadoAmistad(miId, id) : Promise.resolve("ninguna" as Amistad),
@@ -82,6 +85,33 @@ export default function Jugador() {
     }
   }
 
+  function accionBloqueo() {
+    if (bloqueado) {
+      desbloquearJugador(id)
+        .then(() => {
+          setBloqueado(false);
+          mostrarAviso("Desbloqueado", "ok");
+        })
+        .catch((e) => mostrarAviso(mensajeError(e), "error"));
+      return;
+    }
+    Alert.alert(`¿Bloquear a ${placa?.nombre ?? "este jugador"}?`, "Deja de ser tu amigo, no puede mandarte mensajes ni solicitudes y tú tampoco a él. Puedes desbloquearlo después desde Ajustes.", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Bloquear",
+        style: "destructive",
+        onPress: () =>
+          bloquearJugador(id)
+            .then(async () => {
+              setBloqueado(true);
+              mostrarAviso("Jugador bloqueado", "ok");
+              await cargar();
+            })
+            .catch((e) => mostrarAviso(mensajeError(e), "error")),
+      },
+    ]);
+  }
+
   const esYo = id === miId;
   const textoAmistad = { ninguna: "Agregar amigo", amigos: "Amigos ✓", enviada: "Solicitud enviada", recibida: "Aceptar solicitud" }[amistad];
 
@@ -89,7 +119,7 @@ export default function Jugador() {
     <View style={{ flex: 1 }}>
       <PantallaApilada titulo={placa?.nombre ?? "Jugador"}>
         {placa && <PlacaCompleta placa={placa} />}
-        {!esYo && placa && (
+        {!esYo && placa && !bloqueado && (
           <View style={styles.fila}>
             <Boton3D
               titulo={textoAmistad}
@@ -157,6 +187,7 @@ export default function Jugador() {
             </Tarjeta>
           </>
         )}
+        {!esYo && placa && <Boton3D titulo={bloqueado ? "Desbloquear" : "Bloquear jugador"} variante={bloqueado ? "secundario" : "peligro"} tamano="sm" onPress={accionBloqueo} />}
       </PantallaApilada>
       {placa && <RetarAmigo amigo={placa} visible={retando} onCerrar={() => setRetando(false)} />}
     </View>

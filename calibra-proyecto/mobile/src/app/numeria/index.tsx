@@ -2,6 +2,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { vibrar } from "~/lib/efectos";
+import { faltaDiagnostico } from "~/lib/diagnostico";
 import { useJugador } from "~/lib/jugador";
 import { cargarNivelesNumeria, SECCION_POR_ID, SECCIONES, temaDisponible, type SeccionId } from "~/lib/numeria";
 import { useSesion } from "~/lib/sesion";
@@ -32,8 +33,10 @@ export default function HubNumeria() {
 
   useFocusEffect(
     useCallback(() => {
-      if (userId) cargarNivelesNumeria(userId).then(setNiveles);
-    }, [userId])
+      if (!userId) return;
+      cargarNivelesNumeria(userId).then(setNiveles);
+      faltaDiagnostico("numeria", userId).then((falta) => falta && router.replace("/diagnostico/numeria"));
+    }, [userId, router])
   );
 
   const s = SECCION_POR_ID[seccion];

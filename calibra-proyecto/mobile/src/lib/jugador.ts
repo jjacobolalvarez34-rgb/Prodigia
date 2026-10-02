@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSyncExternalStore } from "react";
 import { cargarMiPlaca, type PlacaDatos } from "./placa";
 import { cargarResumen, type Resumen } from "./resumen";
@@ -27,6 +28,19 @@ export function leerJugador() {
   return estado;
 }
 
+// Al abrir la app: lo último que se supo del jugador (sirve para jugar sin conexión).
+export async function cargarJugadorGuardado(userId: string): Promise<void> {
+  try {
+    const crudo = await AsyncStorage.getItem(`prodigia:copia:jugador:${userId}`);
+    if (crudo && !estado.placa) {
+      estado = JSON.parse(crudo) as EstadoJugador;
+      emitir();
+    }
+  } catch {
+    // Sin copia: se espera la carga normal.
+  }
+}
+
 export async function recargarJugador(): Promise<void> {
   if (enCurso) return enCurso;
   enCurso = (async () => {
@@ -42,14 +56,17 @@ export async function recargarJugador(): Promise<void> {
       cargarMiPlaca(user.id),
       supabase.from("profiles").select("plan, mundos_desbloqueados").eq("id", user.id).single(),
     ]);
+    const p = perfil as { plan: string; mundos_desbloqueados: string[] } | null;
     estado = {
       placa: placa ?? estado.placa,
       resumen: resumen ?? estado.resumen,
-      plan: (perfil as { plan: string } | null)?.plan ?? "free",
-      mundos: (perfil as { mundos_desbloqueados: string[] } | null)?.mundos_desbloqueados ?? [],
+      // Sin conexión no llega el perfil: se conserva lo último (o la copia guardada).
+      plan: p?.plan ?? estado.plan,
+      mundos: p?.mundos_desbloqueados ?? estado.mundos,
       esInvitado: !!user.is_anonymous,
     };
     emitir();
+    if (p) AsyncStorage.setItem(`prodigia:copia:jugador:${user.id}`, JSON.stringify(estado)).catch(() => undefined);
     actualizarWidgets(estado.resumen);
   })().finally(() => {
     enCurso = null;

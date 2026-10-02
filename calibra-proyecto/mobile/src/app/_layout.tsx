@@ -22,9 +22,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { cargarAjustes } from "~/lib/ajustes";
 import { prepararSonidos } from "~/lib/efectos";
-import { limpiarJugador, recargarJugador } from "~/lib/jugador";
+import { cargarJugadorGuardado, limpiarJugador, recargarJugador } from "~/lib/jugador";
 import { rutaDeAviso, sincronizarAvisos } from "~/lib/notificaciones";
 import { ProveedorSesion, useSesion } from "~/lib/sesion";
+import { iniciarSincronizacion } from "~/lib/sinConexion";
 import { conectarPresencia, desconectarPresencia } from "~/lib/social";
 import AvisoGlobal from "~/ui/Aviso";
 import PantallaCarga from "~/ui/PantallaCarga";
@@ -96,6 +97,8 @@ function Navegacion() {
       prepararSonidos();
       setProgreso(0.32);
       if (userId) {
+        await cargarJugadorGuardado(userId);
+        iniciarSincronizacion();
         sincronizadoRef.current = userId;
         setEtapa("Trayendo tu Placa, tu racha y tus Chispas…");
         await conTiempoLimite(recargarJugador(), 7000);
@@ -165,6 +168,7 @@ function Navegacion() {
             <Stack.Screen name="geografia/index" />
             <Stack.Screen name="geografia/sprint" options={{ gestureEnabled: false, animation: "fade" }} />
             <Stack.Screen name="resultado" options={{ gestureEnabled: false, animation: "fade" }} />
+            <Stack.Screen name="diagnostico/[mundo]" options={{ gestureEnabled: false, animation: "fade" }} />
             <Stack.Screen name="[mundo]/index" />
             <Stack.Screen name="[mundo]/sprint" options={{ gestureEnabled: false, animation: "fade" }} />
           </Stack.Protected>

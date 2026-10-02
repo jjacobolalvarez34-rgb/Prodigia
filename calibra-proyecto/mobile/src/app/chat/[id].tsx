@@ -2,6 +2,7 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { sonar } from "~/lib/efectos";
+import { cargarEstadoEdad, errorDeChat, useEdad } from "~/lib/edad";
 import { recargarJugador, useJugador } from "~/lib/jugador";
 import { useSesion } from "~/lib/sesion";
 import { avisarEnVivo, canalConversacion, cargarConversacion, enviarMensajeDirecto, marcarConversacionLeida, type MensajeDirecto } from "~/lib/social";
@@ -9,6 +10,7 @@ import { mensajeError, supabase } from "~/lib/supabase";
 import { mostrarAviso } from "~/ui/Aviso";
 import Chat, { type MensajeChat } from "~/ui/Chat";
 import { PantallaApilada } from "~/ui/Pantalla";
+import PreguntaEdad from "~/ui/PreguntaEdad";
 
 // Mensajes directos: mismo canal en vivo que la web (dm:<ids ordenados>), así la
 // conversación se ve igual en los dos lados al instante.
@@ -18,6 +20,14 @@ export default function ChatDirecto() {
   const miId = sesion?.user.id ?? "";
   const { placa } = useJugador();
   const [mensajes, setMensajes] = useState<MensajeDirecto[]>([]);
+  const edad = useEdad();
+  const [pidiendoEdad, setPidiendoEdad] = useState(false);
+  // La base avisa si el amigo es menor de 13: desde ahí, solo frases en esta charla.
+  const [frasesPorAmigo, setFrasesPorAmigo] = useState(false);
+
+  useEffect(() => {
+    cargarEstadoEdad();
+  }, []);
   const canal = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
@@ -74,14 +84,26 @@ export default function ChatDirecto() {
       canal.current?.send({ type: "broadcast", event: "mensaje", payload: nuevo });
       avisarEnVivo(`avisos-dm:${id}`, "dm", { mensajeId: fila.id, deId: miId, deNombre: placa?.nombre ?? null, deAvatarUrl: placa?.avatarUrl ?? null, texto });
     } catch (e) {
-      mostrarAviso(mensajeError(e), "error");
+      const amigable = errorDeChat(e);
+      if (amigable?.includes("frases")) setFrasesPorAmigo(true);
+      mostrarAviso(amigable ?? mensajeError(e), "error");
       throw e;
     }
   }
 
   return (
     <PantallaApilada titulo={nombre || "Mensajes"} subtitulo="Mantén apretado un mensaje para responderlo" sinScroll>
-      <Chat mensajes={lista} miId={miId} mostrarAutor={false} enviar={enviar} vacio="Todavía no hay mensajes. ¡Saluda!" />
+      <Chat
+        mensajes={lista}
+        miId={miId}
+        mostrarAutor={false}
+        enviar={enviar}
+        vacio="Todavía no hay mensajes. ¡Saluda!"
+        soloFrases={!!edad?.esMenor || frasesPorAmigo}
+        ocultarLibres={!!edad?.esMenor}
+        pedirEdad={edad && !edad.tieneFecha ? () => setPidiendoEdad(true) : undefined}
+      />
+      <PreguntaEdad visible={pidiendoEdad} onCerrar={() => setPidiendoEdad(false)} />
     </PantallaApilada>
   );
 }

@@ -2,6 +2,7 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
 import { enviarMensajeClan, mensajesDeClan, type MensajeClan } from "~/lib/clanes";
 import { sonar } from "~/lib/efectos";
+import { cargarEstadoEdad, errorDeChat, useEdad } from "~/lib/edad";
 import { recargarJugador, useJugador } from "~/lib/jugador";
 import { useSesion } from "~/lib/sesion";
 import { avisarEnVivo } from "~/lib/social";
@@ -9,6 +10,7 @@ import { mensajeError, supabase } from "~/lib/supabase";
 import { mostrarAviso } from "~/ui/Aviso";
 import Chat, { type MensajeChat } from "~/ui/Chat";
 import { PantallaApilada, Vacio } from "~/ui/Pantalla";
+import PreguntaEdad from "~/ui/PreguntaEdad";
 
 // Chat del clan: canal en vivo clan-chat:<id>, el mismo que ChatDeClan.tsx de la web.
 export default function ChatClan() {
@@ -17,6 +19,12 @@ export default function ChatClan() {
   const { placa } = useJugador();
   const [clan, setClan] = useState<{ id: string; nombre: string } | null | undefined>(undefined);
   const [mensajes, setMensajes] = useState<MensajeClan[]>([]);
+  const edad = useEdad();
+  const [pidiendoEdad, setPidiendoEdad] = useState(false);
+
+  useEffect(() => {
+    cargarEstadoEdad();
+  }, []);
   const canal = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
@@ -88,14 +96,24 @@ export default function ChatClan() {
       canal.current?.send({ type: "broadcast", event: "mensaje", payload: nuevo });
       avisarEnVivo(`avisos-clan:${clan.id}`, "clan", { mensajeId: fila.id, autorId: miId, autorNombre: placa?.nombre ?? null, texto });
     } catch (e) {
-      mostrarAviso(mensajeError(e), "error");
+      mostrarAviso(errorDeChat(e) ?? mensajeError(e), "error");
       throw e;
     }
   }
 
   return (
     <PantallaApilada titulo={clan?.nombre ?? "Chat del clan"} subtitulo="Chat del clan" sinScroll>
-      <Chat mensajes={lista} miId={miId} mostrarAutor enviar={enviar} vacio="Nadie escribió todavía. ¡Rompe el hielo!" />
+      <Chat
+        mensajes={lista}
+        miId={miId}
+        mostrarAutor
+        enviar={enviar}
+        vacio="Nadie escribió todavía. ¡Rompe el hielo!"
+        soloFrases={!!edad?.esMenor}
+        ocultarLibres={!!edad?.esMenor}
+        pedirEdad={edad && !edad.tieneFecha ? () => setPidiendoEdad(true) : undefined}
+      />
+      <PreguntaEdad visible={pidiendoEdad} onCerrar={() => setPidiendoEdad(false)} />
     </PantallaApilada>
   );
 }

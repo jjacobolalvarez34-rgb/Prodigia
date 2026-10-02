@@ -16,6 +16,7 @@ import {
   PROBABILIDAD_AVANZADO,
   type PreguntaAvanzada,
 } from "@/lib/practica/geografiaAvanzada";
+import { conCopia } from "./sinConexion";
 import { supabase } from "./supabase";
 
 export type { Continente, PaisAmerica, PreguntaAvanzada };
@@ -58,12 +59,15 @@ export function nombrePais(continente: Continente, id: string): string | null {
 
 export async function cargarNivelesGeografia(userId: string): Promise<Record<Continente, number>> {
   const niveles: Record<Continente, number> = { america: 1, europa: 1, africa: 1, asia_oceania: 1 };
-  const { data } = await supabase
-    .from("skill_levels")
-    .select("problem_type, nivel")
-    .eq("user_id", userId)
-    .in("problem_type", CONTINENTES.map((c) => `geografia_${c.id}`));
-  for (const fila of data ?? []) niveles[(fila.problem_type as string).replace("geografia_", "") as Continente] = fila.nivel as number;
+  const filas = await conCopia(`niveles:geografia:${userId}`, async () => {
+    const { data, error } = await supabase
+      .from("skill_levels")
+      .select("problem_type, nivel")
+      .eq("user_id", userId)
+      .in("problem_type", CONTINENTES.map((c) => `geografia_${c.id}`));
+    return error ? null : ((data ?? []) as { problem_type: string; nivel: number }[]);
+  });
+  for (const fila of filas ?? []) niveles[fila.problem_type.replace("geografia_", "") as Continente] = fila.nivel;
   return niveles;
 }
 

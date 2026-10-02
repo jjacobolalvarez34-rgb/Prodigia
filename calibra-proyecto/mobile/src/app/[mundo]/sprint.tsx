@@ -1,92 +1,24 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Alert, BackHandler, Pressable, ScrollView, StyleSheet, View } from "react-native";
-import Animated, { FadeIn, FadeInDown, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
+import { ActivityIndicator, Alert, BackHandler, ScrollView, StyleSheet } from "react-native";
+import Animated, { useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { mulberry32 } from "@/lib/rng";
 import { obtenerDuelo, registrarResultadoDuelo, type InfoDuelo } from "~/lib/competir";
 import { useProgresoEnVivo } from "~/lib/duelos";
 import { sonar, sonarAcierto, vibrar } from "~/lib/efectos";
-import { mundoJugable, problemTypeDe, type PreguntaMundo } from "~/lib/mundosJugables";
-import type { Memoria } from "~/lib/mundosJugables/tipos";
+import { cargarNivelesMundo, mundoJugable, problemTypeDe, type PreguntaMundo } from "~/lib/mundosJugables";
 import { cerrarPartida, guardarIntentoTipo } from "~/lib/partida";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError, supabase } from "~/lib/supabase";
-import Barra from "~/ui/Barra";
-import Boton3D from "~/ui/Boton3D";
 import Glifos from "~/ui/Glifos";
-import { animarAcierto, animarError, BarraRival, Cabecera, CartelFinal, CuentaInicio, Flotante, Progreso, TarjetaProblema, Teclado, useReloj, useSalida } from "~/ui/Sprint";
+import { animarAcierto, animarError, BarraRival, Cabecera, CartelFinal, Consumibles, CuentaInicio, Flotante, Progreso, TarjetaProblema, useConsumibles, useReloj, useSalida } from "~/ui/Sprint";
+import { CuerpoPregunta, esRespuestaCorrecta, OpcionesPregunta, TecladoPregunta, type Feedback } from "~/ui/PreguntaVista";
 import Texto from "~/ui/Texto";
-import { textoConFormulas } from "~/ui/TextoMate";
-import Carta, { Dorso } from "~/ui/visuales/Carta";
-import Esqueleto from "~/ui/visuales/Esqueleto";
-import { subindices } from "~/ui/visuales/Molecula";
-import VisualPregunta from "~/ui/visuales/VisualPregunta";
-import { brillo, color, conAlfa, fuente, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
+import { color, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
 
 const FEEDBACK_OK_MS = 550;
 const FEEDBACK_ERROR_MS = 1100;
-
-type Feedback = "idle" | "correcto" | "incorrecto";
-
-function mostrar(texto: string, formato: PreguntaMundo["formato"]): string {
-  if (formato === "formulas") return textoConFormulas(texto);
-  if (formato === "quimica") return subindices(texto);
-  return texto;
-}
-
-// Fase de memorizar: la lista entera (Enigmia) o las cartas de a una (Naipia).
-function FaseMemoria({ memoria, acento, onListo }: { memoria: Memoria; acento: string; onListo: () => void }) {
-  const [visible, setVisible] = useState<number | null>(null);
-  const onListoRef = useRef(onListo);
-  useEffect(() => {
-    onListoRef.current = onListo;
-  }, [onListo]);
-  useEffect(() => {
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    if (memoria.tipo === "lista") {
-      timers.push(setTimeout(() => onListoRef.current(), memoria.ms));
-    } else {
-      const inicio = 900;
-      memoria.cartas.forEach((_, i) => timers.push(setTimeout(() => setVisible(i), inicio + i * memoria.msPorCarta)));
-      timers.push(setTimeout(() => onListoRef.current(), inicio + memoria.cartas.length * memoria.msPorCarta));
-    }
-    return () => timers.forEach(clearTimeout);
-  }, [memoria]);
-  const duracion = memoria.tipo === "lista" ? memoria.ms : 900 + memoria.cartas.length * memoria.msPorCarta;
-  return (
-    <View style={{ alignItems: "center", gap: 14, alignSelf: "stretch" }}>
-      <Texto v="micro" c={acento}>
-        Memoriza
-      </Texto>
-      {memoria.tipo === "lista" ? (
-        <View style={styles.lista}>
-          {memoria.items.map((it, i) => (
-            <Animated.View key={i} entering={FadeInDown.delay(i * 110).duration(260)} style={[styles.itemMemoria, { borderColor: acento }]}>
-              <Texto style={{ fontFamily: fuente.display, fontSize: 18, color: acento }}>{it}</Texto>
-            </Animated.View>
-          ))}
-        </View>
-      ) : (
-        <View style={{ alignItems: "center", gap: 10 }}>
-          <View style={{ height: 118, justifyContent: "center" }}>
-            {visible == null ? (
-              <Dorso tam={78} acento={acento} />
-            ) : (
-              <Animated.View key={visible} entering={FadeIn.duration(120)}>
-                <Carta valor={memoria.cartas[visible].valor} palo={memoria.cartas[visible].palo} tam={78} />
-              </Animated.View>
-            )}
-          </View>
-          <Texto v="nota">
-            Carta {visible == null ? 0 : visible + 1} de {memoria.cartas.length}
-          </Texto>
-        </View>
-      )}
-      <Barra valor={0} duracion={duracion} acento={acento} estilo={{ alignSelf: "stretch" }} />
-    </View>
-  );
-}
 
 export default function SprintMundo() {
   const router = useRouter();
@@ -167,13 +99,7 @@ export default function SprintMundo() {
     let cancelado = false;
     (async () => {
       const [niveles, contexto] = await Promise.all([
-        def.cargarNiveles
-          ? def.cargarNiveles(miId)
-          : Promise.resolve(supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", miId).like("problem_type", `${def.slug}_%`)).then(({ data }) => {
-              const r: Record<string, number> = {};
-              for (const m of def.modos) r[m.id] = ((data ?? []) as { problem_type: string; nivel: number }[]).find((f) => f.problem_type === problemTypeDe(def, m.id))?.nivel ?? 1;
-              return r;
-            }),
+        cargarNivelesMundo(def, miId),
         def.preparar ? def.preparar() : Promise.resolve(null),
       ]);
       nivelesRef.current = niveles;
@@ -221,6 +147,7 @@ export default function SprintMundo() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const reloj = useReloj(inicio, duracion, alAcabarElTiempo, final !== null, memorizando);
+  const consumibles = useConsumibles(!dueloId && inicio != null);
 
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -286,15 +213,12 @@ export default function SprintMundo() {
   function responder(valor: string) {
     if (!pregunta || !def || ocupadoRef.current || terminadoRef.current || inicio == null || memorizando) return;
     ocupadoRef.current = true;
-    const e = pregunta.entrada;
     const timeMs = Date.now() - mostradoEnRef.current;
-    let correcto: boolean;
-    if (e.tipo === "numero") {
-      const n = Number(valor.replace(",", "."));
-      correcto = Number.isFinite(n) && Math.abs(n - e.respuesta) <= e.tolerancia + 1e-9;
-    } else if (e.tipo === "esqueleto") correcto = valor === e.objetivo;
-    else correcto = valor === e.respuesta;
+    const correcto = esRespuestaCorrecta(pregunta, valor);
     setSeleccion(valor);
+    const modoP = def.modoDePregunta ? def.modoDePregunta(pregunta, modoRef.current) : modoRef.current;
+    const nivel = pregunta.nivel ?? nivelPara(modoP);
+    if (correcto) reloj.bonus(nivel, timeMs);
     respuestasRef.current.push({ correct: correcto, timeMs });
     setFeedback(correcto ? "correcto" : "incorrecto");
     setResultados((r) => [...r, correcto]);
@@ -321,8 +245,6 @@ export default function SprintMundo() {
     }
     emitir({ respondidos: respuestasRef.current.length, correctos: respuestasRef.current.filter((x) => x.correct).length, racha: comboRef.current });
 
-    const modoP = def.modoDePregunta ? def.modoDePregunta(pregunta, modoRef.current) : modoRef.current;
-    const nivel = pregunta.nivel ?? nivelPara(modoP);
     const guardado = (def.guardar ? def.guardar(pregunta, modoP, nivel, correcto, timeMs, protegido) : guardarIntentoTipo(problemTypeDe(def, modoP), nivel, correcto, timeMs, protegido))
       .then((res) => {
         if (res.xp > 0) {
@@ -373,11 +295,7 @@ export default function SprintMundo() {
     );
   }
 
-  const e = pregunta.entrada;
   const bloqueado = feedback !== "idle" || inicio == null || final !== null || memorizando;
-  const colorEstado = feedback === "correcto" ? color.correcto : feedback === "incorrecto" ? color.error : mundo.neon;
-  const opcionesLargas = e.tipo === "opciones" && e.opciones.some((o) => o.length > 16);
-  const solucion = pregunta.solucion ?? (e.tipo === "numero" ? String(e.respuesta).replace(".", ",") : e.respuesta);
 
   return (
     <SafeAreaView style={styles.pantalla}>
@@ -385,6 +303,7 @@ export default function SprintMundo() {
       <Animated.View style={[{ flex: 1 }, estiloJuego]}>
         <Cabecera onSalir={confirmarSalida} reloj={reloj} combo={combo} acento={mundo.neon} corriendo={inicio != null && final === null && !memorizando} />
         <Progreso resultados={resultados} total={total} acento={mundo.neon} escudos={escudos} />
+        <Consumibles reloj={reloj} consumibles={consumibles} deshabilitado={final !== null || memorizando} />
         {duelo && (
           <BarraRival nombre={duelo.rivalNombre} total={total} yo={resultados.length} inicio={inicio} respuestasFantasma={duelo.rivalYaJugo ? duelo.rivalRespuestas : null} enVivo={rivalVivo?.respondidos ?? null} />
         )}
@@ -394,36 +313,17 @@ export default function SprintMundo() {
             <Texto v="micro" c={mundo.neon}>
               {def.modos.find((m) => m.id === modo)?.nombre ?? mundo.nombre} · Nv {nivelVisible}
             </Texto>
-            {memorizando && pregunta.memoria ? (
-              <FaseMemoria
-                key={pregunta.clave}
-                memoria={pregunta.memoria}
-                acento={mundo.neon}
-                onListo={() => {
-                  setMemorizando(false);
-                  mostradoEnRef.current = Date.now();
-                }}
-              />
-            ) : (
-              <>
-                {(pregunta.visuales ?? []).map((v, i) => (
-                  <VisualPregunta key={i} visual={v} acento={mundo.neon} />
-                ))}
-                <Texto style={{ fontFamily: fuente.display, fontSize: pregunta.enunciado.length > 90 ? 17 : 20, color: color.texto, textAlign: "center" }}>
-                  {mostrar(pregunta.enunciado, pregunta.formato)}
-                </Texto>
-                {e.tipo === "numero" && (
-                  <Texto style={{ fontFamily: fuente.mono, fontSize: 30, letterSpacing: 3, color: colorEstado, textDecorationLine: feedback === "incorrecto" ? "line-through" : "none" }}>
-                    {respuesta === "" ? "_" : respuesta}
-                  </Texto>
-                )}
-                {feedback === "incorrecto" && (
-                  <Texto v="fuerte" c={color.correcto} centro>
-                    Era {mostrar(solucion, pregunta.formato)}
-                  </Texto>
-                )}
-              </>
-            )}
+            <CuerpoPregunta
+              pregunta={pregunta}
+              acento={mundo.neon}
+              memorizando={memorizando}
+              onMemoriaLista={() => {
+                setMemorizando(false);
+                mostradoEnRef.current = Date.now();
+              }}
+              feedback={feedback}
+              respuesta={respuesta}
+            />
             {flotantes.map((f) => (
               <Flotante key={f.id} texto={f.texto} />
             ))}
@@ -434,60 +334,13 @@ export default function SprintMundo() {
             </Texto>
           )}
 
-          {!memorizando && e.tipo === "esqueleto" && (
-            <Animated.View style={estiloTeclado}>
-              <Esqueleto objetivo={e.objetivo} respondido={feedback !== "idle"} seleccion={seleccion} onElegir={(h) => responder(h)} />
-            </Animated.View>
-          )}
-
-          {!memorizando && e.tipo === "opciones" && (
-            <Animated.View style={[opcionesLargas ? styles.listaOpciones : styles.grilla, estiloTeclado]}>
-              {e.opciones.map((op, i) => {
-                const esCorrecta = feedback !== "idle" && op === e.respuesta;
-                const esMala = feedback !== "idle" && op === seleccion && op !== e.respuesta;
-                return (
-                  <Animated.View key={`${pregunta.clave}-${op}`} entering={FadeInDown.delay(60 + i * 50).duration(260)} style={opcionesLargas ? null : styles.celdaGrilla}>
-                    <Pressable
-                      disabled={bloqueado}
-                      onPress={() => {
-                        vibrar.seleccion();
-                        responder(op);
-                      }}
-                      style={({ pressed }) => [
-                        styles.opcion,
-                        pressed && { transform: [{ scale: 0.97 }], backgroundColor: conAlfa(mundo.base, 0.25) },
-                        esCorrecta && { borderColor: color.correcto, backgroundColor: conAlfa(color.correcto, 0.15), boxShadow: brillo(color.correcto, 16, 0.35) },
-                        esMala && { borderColor: color.error, backgroundColor: conAlfa(color.error, 0.15) },
-                      ]}
-                    >
-                      <Texto style={{ fontFamily: fuente.cuerpoFuerte, fontSize: op.length > 30 ? 13 : 15, color: color.texto, textAlign: "center" }}>{mostrar(op, pregunta.formato)}</Texto>
-                    </Pressable>
-                  </Animated.View>
-                );
-              })}
-            </Animated.View>
+          {!memorizando && (
+            <OpcionesPregunta pregunta={pregunta} feedback={feedback} seleccion={seleccion} bloqueado={bloqueado} base={mundo.base} onResponder={responder} estilo={estiloTeclado} />
           )}
         </ScrollView>
 
-        {!memorizando && e.tipo === "numero" && (
-          <Animated.View style={[styles.teclado, estiloTeclado]}>
-            <Teclado
-              deshabilitado={bloqueado}
-              teclaIzquierda={e.decimales ? "," : "−"}
-              onDigito={(d) => setRespuesta((x) => (x.replace(/[-,]/g, "").length >= 8 ? x : x + d))}
-              onBorrar={() => setRespuesta((x) => x.slice(0, -1))}
-              onMenos={() => {
-                if (e.decimales) setRespuesta((x) => (x.includes(",") ? x : (x === "" || x === "-" ? x + "0" : x) + ","));
-                else setRespuesta((x) => (x.startsWith("-") ? x.slice(1) : "-" + x));
-              }}
-            />
-            <View style={{ flexDirection: "row", gap: 8 }}>
-              {e.decimales && e.negativos && (
-                <Boton3D titulo="±" variante="secundario" silencioso estilo={{ width: 70 }} deshabilitado={bloqueado} onPress={() => setRespuesta((x) => (x.startsWith("-") ? x.slice(1) : "-" + x))} />
-              )}
-              <Boton3D titulo="Listo" acento={mundo.base} silencioso estilo={{ flex: 1 }} deshabilitado={bloqueado || respuesta === "" || respuesta === "-"} onPress={() => responder(respuesta)} />
-            </View>
-          </Animated.View>
+        {!memorizando && (
+          <TecladoPregunta pregunta={pregunta} bloqueado={bloqueado} respuesta={respuesta} setRespuesta={setRespuesta} base={mundo.base} onListo={() => responder(respuesta)} estilo={estiloTeclado} />
         )}
       </Animated.View>
 
@@ -501,11 +354,4 @@ const styles = StyleSheet.create({
   pantalla: { flex: 1, backgroundColor: color.bgHondo },
   centro: { alignItems: "center", justifyContent: "center", gap: 14 },
   zona: { padding: 16, gap: 12, flexGrow: 1, justifyContent: "center" },
-  grilla: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
-  celdaGrilla: { width: "48%" },
-  listaOpciones: { gap: 9 },
-  opcion: { minHeight: 58, borderWidth: 2, borderColor: color.border, backgroundColor: color.surface1, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 12, alignItems: "center", justifyContent: "center" },
-  teclado: { paddingHorizontal: 16, paddingBottom: 10, gap: 6 },
-  lista: { flexDirection: "row", flexWrap: "wrap", gap: 8, justifyContent: "center" },
-  itemMemoria: { borderWidth: 2, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 8 },
 });

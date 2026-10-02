@@ -18,7 +18,10 @@ genérico de `[mundo]/` (mismos generadores, niveles, guardado y duelos que la w
 | **Numeria** | 6 secciones y 20 temas: Aritmética (4), Geometría (4), Fracciones (3), Decimales (3), Potencias (3), Álgebra (3). Cada tema calibra su nivel | `numeria/index`, `numeria/sprint` |
 | **Geografía** | 4 continentes en el mapa real con zoom y arrastre, preguntas avanzadas desde el nivel 8 | `geografia/index`, `geografia/sprint` |
 | **Los otros 11** | Enigmia (mezcla + 4 categorías, 90 s, banco de deducción), Quimia (5, con moléculas), Anatomía (4, el óseo se toca en el esqueleto), Melodía (6: pentagrama, figuras, oído absoluto), Trigonometría (4, con triángulo), Historia (4), Calculia (4), Circuitia (4, con circuito), Estadística (5, con gráficos), Naipia (5 sistemas: cartas, tabla de valores y modo memoria) y Codia (4, elegir lenguaje) | `[mundo]/index`, `[mundo]/sprint`, `lib/mundosJugables/`, `ui/visuales/` |
-| Partida | "¿Preparado? 3, 2, 1, ¡Ya!", anillo de tiempo, llama de racha, borde que gira con combo ≥ 5, +XP flotante, sacudida al fallar, salida suave y cascada de recompensas | `ui/Sprint`, `resultado` |
+| Partida | "¿Preparado? 3, 2, 1, ¡Ya!", anillo de tiempo, llama de racha, borde que gira con combo ≥ 5, +XP flotante, sacudida al fallar, salida suave y cascada de recompensas. Bonus de tiempo por responder rápido (nivel ≥ 5, +1 a +3 s, tope 20 s) y consumibles de la tienda: hielo (reloj quieto 10 s) y +3 s, fuera de duelos | `ui/Sprint`, `resultado` |
+| Diagnóstico inicial | La primera vez que entras a un mundo: 8 preguntas sin reloj (Numeria: 12, 3 por operación) desde nivel 3, que suben o bajan según aciertes rápido o falles. Se puede saltar (nivel 3). Geografía no tiene | `diagnostico/[mundo]`, `lib/diagnostico.ts` |
+| Sin conexión | Se juega igual (los generadores están en el teléfono); las respuestas quedan en una cola y se suben solas al volver internet, sin duplicarse. Niveles, banco de Enigmia y estado del jugador con copia en el teléfono | `lib/sinConexion.ts` |
+| Edad y bloqueos | Mes y año de nacimiento (una vez). Menores de 13: chat y mensajes solo con frases rápidas y sin ver texto libre de otros. Bloquear jugadores desde su perfil; lista en Ajustes | `lib/edad.ts`, `ui/PreguntaEdad`, `ui/Chat` |
 | **Competir** | Rankeds (insignia, divisiones, buscar rival, VS, sala sincronizada con la web, fantasma, series mejor de 3), casual (rival al azar), liga semanal con podio, reto semanal | `(tabs)/competir`, `duelo/*`, `reto/[tipo]` |
 | **Social** | En línea, solicitudes, amigos (Placas), retar, mensajes directos y chat del clan en vivo | `(tabs)/social`, `chat/[id]`, `amigos/buscar` |
 | Clanes | Ciudad del clan, nivel, guerra semanal, misión de 3000 Exp con Reclamar, miembros y roles, buscar/crear/unirse, invitaciones, Mundo de clanes (mapa con zoom) | `ui/clan/VistaClan`, `clan/*` |
@@ -28,7 +31,7 @@ genérico de `[mundo]/` (mismos generadores, niveles, guardado y duelos que la w
 
 No están en la app: la Trastienda y las apuestas (PROD-01, política de Google Play para apps con
 menores), comprar Pro o Chispas con dinero (llega con Google Play Billing), Aprender (abre la web) y
-borrar la cuenta (abre la web).
+borrar la cuenta (abre la web). Sin conexión no funcionan duelos, tienda, chat ni clanes.
 
 ## Cómo probarla
 
@@ -51,8 +54,10 @@ El APK se firma con la clave de depuración y usa el paquete `com.prodigia.app` 
 Capacitor vieja: hay que desinstalar esa antes).
 
 Para que todo funcione en la base, tienen que estar aplicadas las migraciones hasta la
-**0244** (`0243_app_notificaciones` para los avisos, `0244_duelos_amistosos_sin_elo` para que los
-retos entre amigos no muevan el ELO y el casual sea contra cualquiera).
+**0245** (`0243_app_notificaciones` para los avisos, `0244_duelos_amistosos_sin_elo` para que los
+retos entre amigos no muevan el ELO y el casual sea contra cualquiera, `0245_app_sin_conexion_edad_y_bloqueos`
+para subir lo jugado sin conexión, la edad y los bloqueos). Sin la 0245, lo jugado sin conexión
+espera en el teléfono hasta que se aplique.
 
 ## Cómo está armada
 
@@ -121,6 +126,27 @@ En duelos el sprint fuerza el modo del duelo (`sub_tipo`) y el nivel acordado, y
 sembrado con la semilla del duelo (los mundos que lo usan, como Quimia, dan la misma serie a los
 dos). Un mundo nuevo se agrega con su adaptador + `enApp: true` en `tema.ts`: hub, sprint,
 duelos, retar y Continuar ya lo toman.
+
+### Sin conexión (`src/lib/sinConexion.ts`)
+
+- `guardarIntentoTipo` / `guardarIntentoLogica` (`lib/partida.ts`) prueban la base; si falla la
+  red (no un error de la base), el intento va a la cola (AsyncStorage) con un `client_id` propio.
+- La cola se sube en orden con `insertar_intento_sincronizado` / `insertar_intento_logica_sincronizado`
+  (0245), que reclaman el `client_id` y llaman a la función de siempre en la misma transacción: un
+  reintento nunca duplica. El XP cuenta para el día en que se sube.
+- `cerrarPartida` primero vacía la cola; si sigue sin red, encola la partida y el resultado lo dice.
+  Al subirla se llama a `registrar_xp_diario` y `registrar_progreso_mundo`, que ya son idempotentes.
+- Se reintenta al abrir la app, cada 30 s mientras quede algo y después de cada guardado exitoso.
+  `conCopia()` guarda la última lectura (niveles, banco de Enigmia) para usarla sin red, y
+  `jugador.ts` conserva el último estado del jugador.
+
+### Edad y bloqueos (`src/lib/edad.ts`, PROD-02)
+
+La edad se pide una vez al entrar (se puede posponer; el chat la exige) con `registrar_fecha_nacimiento`
+y no se puede cambiar. La base hace cumplir las reglas: menores de 13 solo mandan frases rápidas
+(`es_frase_rapida`, misma lista que `FRASES_RAPIDAS`), un mensaje directo con un menor también, y
+`mensajes_de_clan` les oculta el texto libre; la app además oculta lo que llega en vivo. Bloquear
+rompe la amistad e impide solicitudes y mensajes en los dos sentidos.
 
 ### Sistema visual (`src/ui/`)
 

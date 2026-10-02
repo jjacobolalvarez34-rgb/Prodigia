@@ -5,6 +5,7 @@ import { verificarLogros } from "@/lib/logros/verificar";
 import { tiempoEsperadoMs } from "@/lib/practica/formulas";
 import { verificarTitulos } from "@/lib/titulos/verificar";
 import type { MundoSlug } from "~/tema";
+import { encolar, esErrorDeRed, hayPendientes, marcarSinRed, sincronizar } from "./sinConexion";
 import { supabase } from "./supabase";
 
 // La lógica compartida con la web tipa el cliente con su propia copia de
@@ -15,6 +16,8 @@ export interface ResultadoIntento {
   xp: number;
   nivel: number | null;
   sospechoso: boolean;
+  // Sin conexión: quedó en el teléfono y se sube después (sin XP por ahora).
+  sinConexion?: boolean;
 }
 
 // Mismo piso de tiempo que /api/attempts: un intento absurdamente rápido se guarda
@@ -27,17 +30,42 @@ function esTiempoSospechoso(nivel: number, timeMs: number): boolean {
 // `protegido`: el intento fallado no baja el nivel (escudo de calibración, como en la web).
 export async function guardarIntentoTipo(problemType: string, nivel: number, correcto: boolean, timeMs: number, protegido = false): Promise<ResultadoIntento> {
   const sospechoso = esTiempoSospechoso(nivel, timeMs);
-  const { data, error } = await supabase.rpc("insertar_intento", {
-    p_problem_type: problemType,
-    p_level: nivel,
-    p_correct: correcto,
-    p_time_ms: timeMs,
-    p_protegido: protegido,
-    p_calibrar: !sospechoso,
-  });
-  if (error) throw error;
-  const fila = (data as { xp: number; nivel: number | null; sospechoso: boolean }[] | null)?.[0];
+  const args = { p_problem_type: problemType, p_level: nivel, p_correct: correcto, p_time_ms: timeMs, p_protegido: protegido, p_calibrar: !sospechoso };
+  const r = await supabase.rpc("insertar_intento", args).then(
+    (x) => x,
+    (e: unknown) => ({ data: null, error: e as { message: string; code?: string } })
+  );
+  if (r.error && esErrorDeRed(r.error)) {
+    await encolar({ tipo: "intento", problemType, nivel, correcto, timeMs, protegido, calibrar: !sospechoso });
+    return { xp: 0, nivel: null, sospechoso, sinConexion: true };
+  }
+  if (r.error) throw r.error;
+  alVolverLaRed();
+  const fila = (r.data as { xp: number; nivel: number | null; sospechoso: boolean }[] | null)?.[0];
   return { xp: fila?.xp ?? 0, nivel: fila?.nivel ?? null, sospechoso: fila?.sospechoso ?? sospechoso };
+}
+
+// Enigmia (insertar_intento_logica): calibra por categoría en logic_skill_levels.
+export async function guardarIntentoLogica(puzzleId: string, dificultad: number, categoria: string, correcto: boolean, timeMs: number, protegido = false): Promise<ResultadoIntento> {
+  const args = { p_puzzle_id: puzzleId, p_dificultad: dificultad, p_correct: correcto, p_time_ms: timeMs, p_categoria: categoria, p_protegido: protegido };
+  const r = await supabase.rpc("insertar_intento_logica", args).then(
+    (x) => x,
+    (e: unknown) => ({ data: null, error: e as { message: string; code?: string } })
+  );
+  if (r.error && esErrorDeRed(r.error)) {
+    await encolar({ tipo: "logica", puzzleId, dificultad, correcto, timeMs, categoria, protegido });
+    return { xp: 0, nivel: null, sospechoso: false, sinConexion: true };
+  }
+  if (r.error) throw r.error;
+  alVolverLaRed();
+  const fila = (r.data as { xp: number; nivel: number | null; sospechoso: boolean }[] | null)?.[0];
+  return { xp: fila?.xp ?? 0, nivel: fila?.nivel ?? null, sospechoso: fila?.sospechoso ?? false };
+}
+
+// Hay red otra vez: si quedó algo de una partida sin conexión, se sube.
+function alVolverLaRed() {
+  marcarSinRed(false);
+  if (hayPendientes()) sincronizar();
 }
 
 export interface ResultadoPartida {
@@ -53,6 +81,8 @@ export interface ResultadoPartida {
   rachaAntes: number;
   rachaDespues: number;
   logros: { nombre: string; descripcion: string }[];
+  // La partida se jugó (o se cerró) sin conexión: queda guardada en el teléfono.
+  sinConexion?: boolean;
 }
 
 // Cierre de partida: lo mismo que hace /api/practica/finish (registrar el XP del
@@ -61,12 +91,16 @@ export interface ResultadoPartida {
 // así que mandar el total del sprint es solo informativo. En un duelo casual en un
 // mundo que el jugador no compró no se suma nivel de mundo (misma regla que la web).
 export async function cerrarPartida(xpSprint: number, mundo: MundoSlug = "numeria", duelId?: string): Promise<ResultadoPartida> {
+  // Primero lo que haya quedado sin subir (si no, no contaría para el día).
+  if (hayPendientes()) await sincronizar();
+  if (hayPendientes()) return partidaSinConexion(mundo);
   const { data: sesion } = await supabase.auth.getSession();
   const userId = sesion.session?.user.id;
   const { data: antes } = userId ? await supabase.from("profiles").select("streak_dias, mundos_desbloqueados").eq("id", userId).single() : { data: null };
   const perfilAntes = antes as { streak_dias: number; mundos_desbloqueados: string[] } | null;
 
   const { data: registro, error } = await supabase.rpc("registrar_xp_diario", { p_xp: xpSprint });
+  if (error && esErrorDeRed(error)) return partidaSinConexion(mundo);
   if (error) throw error;
   await supabase.rpc("consumir_boost_pendiente");
 
@@ -121,5 +155,29 @@ export async function cerrarPartida(xpSprint: number, mundo: MundoSlug = "numeri
     rachaAntes: perfilAntes?.streak_dias ?? 0,
     rachaDespues: (despues as { streak_dias: number } | null)?.streak_dias ?? perfilAntes?.streak_dias ?? 0,
     logros,
+  };
+}
+
+// Cierre sin conexión: la partida queda en la cola y su XP del día y nivel de mundo
+// se registran al subirla.
+async function partidaSinConexion(mundo: MundoSlug): Promise<ResultadoPartida> {
+  await encolar({ tipo: "partida", mundo });
+  const { leerJugador } = await import("./jugador");
+  const j = leerJugador();
+  const racha = j.resumen?.racha ?? 0;
+  return {
+    chispasTotal: j.resumen?.chispas ?? 0,
+    xpHoy: 0,
+    metaDiaria: 100,
+    metaAlcanzada: false,
+    nivelCuentaSubio: false,
+    nivelCuentaNuevo: 0,
+    bonusNivel: 0,
+    nivelMundo: null,
+    nivelMundoAnterior: null,
+    rachaAntes: racha,
+    rachaDespues: racha,
+    logros: [],
+    sinConexion: true,
   };
 }

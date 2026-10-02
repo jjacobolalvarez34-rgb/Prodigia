@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { FlatList, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import Animated, { FadeInUp, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { esFraseRapida, FRASES_RAPIDAS, TEXTO_OCULTO } from "~/lib/edad";
 import { sonar, vibrar } from "~/lib/efectos";
 import { color, conAlfa, fuente } from "~/tema";
 import { IconoCerrar, IconoEnviar } from "./Iconos";
@@ -28,6 +29,11 @@ interface Props {
   mostrarAutor: boolean;
   enviar: (texto: string, respondeA: MensajeChat | null) => Promise<void>;
   vacio: string;
+  // Controles por edad (lib/edad.ts): solo frases rápidas, mensajes de texto libre
+  // de los demás ocultos, o pedir la edad antes de escribir.
+  soloFrases?: boolean;
+  ocultarLibres?: boolean;
+  pedirEdad?: () => void;
 }
 
 function hora(iso: string) {
@@ -35,7 +41,7 @@ function hora(iso: string) {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-export default function Chat({ mensajes, miId, mostrarAutor, enviar, vacio }: Props) {
+export default function Chat({ mensajes, miId, mostrarAutor, enviar, vacio, soloFrases, ocultarLibres, pedirEdad }: Props) {
   const insets = useSafeAreaInsets();
   const [texto, setTexto] = useState("");
   const [cita, setCita] = useState<MensajeChat | null>(null);
@@ -47,8 +53,8 @@ export default function Chat({ mensajes, miId, mostrarAutor, enviar, vacio }: Pr
     lista.current?.scrollToOffset({ offset: 0, animated: true });
   }, [mensajes.length]);
 
-  async function mandar() {
-    const limpio = texto.trim();
+  async function mandar(frase?: string) {
+    const limpio = (frase ?? texto).trim();
     if (!limpio || enviando) return;
     setEnviando(true);
     try {
@@ -102,13 +108,19 @@ export default function Chat({ mensajes, miId, mostrarAutor, enviar, vacio }: Pr
                       {m.citaAutor ?? ""}
                     </Texto>
                     <Texto v="nota" tam={12} numberOfLines={2} c={mio ? "#E5DEFF" : color.texto2}>
-                      {m.citaTexto}
+                      {ocultarLibres && !esFraseRapida(m.citaTexto) ? TEXTO_OCULTO : m.citaTexto}
                     </Texto>
                   </View>
                 ) : null}
-                <Texto v="cuerpo" c={mio ? "#FFFFFF" : color.texto}>
-                  {m.texto}
-                </Texto>
+                {ocultarLibres && !mio && !esFraseRapida(m.texto) ? (
+                  <Texto v="nota" c={color.texto2} style={{ fontStyle: "italic" }}>
+                    {TEXTO_OCULTO}
+                  </Texto>
+                ) : (
+                  <Texto v="cuerpo" c={mio ? "#FFFFFF" : color.texto}>
+                    {m.texto}
+                  </Texto>
+                )}
                 <Texto v="nota" tam={10} c={mio ? "rgba(255,255,255,0.7)" : color.texto2} style={{ alignSelf: "flex-end" }}>
                   {hora(m.creado)}
                 </Texto>
@@ -132,6 +144,35 @@ export default function Chat({ mensajes, miId, mostrarAutor, enviar, vacio }: Pr
           </Pressable>
         </Animated.View>
       )}
+      {pedirEdad ? (
+        <View style={[styles.caja, { paddingBottom: Math.max(insets.bottom, 10) }]}>
+          <Pressable onPress={pedirEdad} style={[styles.input, { justifyContent: "center" }]}>
+            <Texto v="fuerte" tam={14} c={color.primarioClaro}>
+              Confirma tu edad para escribir
+            </Texto>
+          </Pressable>
+        </View>
+      ) : soloFrases ? (
+        <View style={[styles.cajaFrases, { paddingBottom: Math.max(insets.bottom, 10) }]}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 8, paddingHorizontal: 12 }}>
+            {FRASES_RAPIDAS.map((f) => (
+              <Pressable
+                key={f}
+                disabled={enviando}
+                onPress={() => {
+                  vibrar.seleccion();
+                  mandar(f);
+                }}
+                style={({ pressed }) => [styles.frase, pressed && { transform: [{ scale: 0.95 }] }]}
+              >
+                <Texto v="fuerte" tam={f.length <= 2 ? 20 : 14}>
+                  {f}
+                </Texto>
+              </Pressable>
+            ))}
+          </ScrollView>
+        </View>
+      ) : (
       <View style={[styles.caja, { paddingBottom: Math.max(insets.bottom, 10) }]}>
         <TextInput
           value={texto}
@@ -142,10 +183,11 @@ export default function Chat({ mensajes, miId, mostrarAutor, enviar, vacio }: Pr
           maxLength={500}
           style={styles.input}
         />
-        <Pressable onPress={mandar} disabled={!texto.trim() || enviando} style={[styles.enviar, { opacity: texto.trim() ? 1 : 0.4 }]}>
+        <Pressable onPress={() => mandar()} disabled={!texto.trim() || enviando} style={[styles.enviar, { opacity: texto.trim() ? 1 : 0.4 }]}>
           <IconoEnviar tam={20} c="#fff" />
         </Pressable>
       </View>
+      )}
     </KeyboardAvoidingView>
   );
 }
@@ -159,5 +201,7 @@ const styles = StyleSheet.create({
   respondiendo: { flexDirection: "row", alignItems: "center", gap: 10, marginHorizontal: 12, padding: 10, borderRadius: 12, backgroundColor: color.surface2, borderLeftWidth: 3, borderLeftColor: color.primario },
   caja: { flexDirection: "row", alignItems: "flex-end", gap: 8, paddingHorizontal: 12, paddingTop: 8, borderTopWidth: 1, borderTopColor: color.border, backgroundColor: color.bg },
   input: { flex: 1, maxHeight: 120, backgroundColor: color.surface1, borderWidth: 1, borderColor: color.border, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10, color: color.texto, fontFamily: fuente.cuerpo, fontSize: 15 },
+  cajaFrases: { paddingTop: 8, borderTopWidth: 1, borderTopColor: color.border, backgroundColor: color.bg },
+  frase: { paddingHorizontal: 14, paddingVertical: 9, borderRadius: 999, borderWidth: 1, borderColor: color.primario, backgroundColor: conAlfa(color.primario, 0.15) },
   enviar: { width: 44, height: 44, borderRadius: 22, backgroundColor: color.primario, alignItems: "center", justifyContent: "center" },
 });

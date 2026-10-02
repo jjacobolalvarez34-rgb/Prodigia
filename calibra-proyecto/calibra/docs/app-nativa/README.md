@@ -49,6 +49,10 @@ RPC security definer):
   moléculas, esqueleto tocable, triángulos, circuitos, gráficos, código, cartas con modo memoria).
   Cuenta "3, 2, 1", llama de racha, borde que gira con combo, +XP flotante, salida suave y
   cascada de recompensas en todos.
+- **Partida**: bonus de tiempo por rapidez, hielo y +3 s; diagnóstico inicial por mundo.
+- **Sin conexión**: se practica sin internet y lo jugado se sube solo al volver (0245).
+- **Edad y bloqueos** (PROD-02): edad una vez; menores de 13 con frases rápidas en el chat;
+  bloquear jugadores.
 - **Rendimiento**: animaciones en bucle pausadas fuera de pantalla y modo liviano automático en
   teléfonos de menos de 6 GB; pestañas que se deslizan con el dedo.
 - **Competir**: Rankeds y casual (matchmaking, VS, sala sincronizada y progreso en vivo con los
