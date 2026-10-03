@@ -72,7 +72,10 @@ src/
   ui/                  componentes visuales
     placa/             la Placa del jugador en sus variantes
     clan/              vista del clan y estandarte
-  widgets/             widgets de Android
+  widgets/             puente con los widgets de Android
+modules/widgets-prodigia/  widgets nativos (Kotlin + layouts XML): Android los dibuja solo con los
+                     últimos datos que guardó la app, sin arrancar JavaScript en segundo plano
+                     (con la librería anterior quedaban invisibles en Xiaomi)
   tema.ts              tokens de color, fuentes y los 13 mundos (base + neón + glifos)
 ```
 

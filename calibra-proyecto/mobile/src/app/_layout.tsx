@@ -71,6 +71,10 @@ function conTiempoLimite<T>(promesa: Promise<T>, ms: number): Promise<T | null> 
 // Tiempo mínimo en pantalla: lo justo para leer un pro tip sin que se sienta lento.
 const CARGA_MINIMA_MS = 2600;
 
+// Se resuelve cuando termina la intro de Mamut (una vez por arranque de la app).
+let finIntro: () => void = () => {};
+const introTerminada = INTRO_ACTIVA ? new Promise<void>((resolver) => (finIntro = resolver)) : Promise.resolve();
+
 function Navegacion() {
   const { sesion, cargando } = useSesion();
   const userId = sesion?.user.id;
@@ -78,6 +82,14 @@ function Navegacion() {
   const [etapa, setEtapa] = useState("Encendiendo las luces de la ciudad…");
   const [cargaVisible, setCargaVisible] = useState(true);
   const inicioRef = useRef(0);
+  // Intro de Mamut: la pantalla de carga se ve DESPUÉS de la intro, con su tiempo
+  // mínimo contado desde ahí (si no, terminaba debajo del video y no se veía).
+  const [introVisible, setIntroVisible] = useState(INTRO_ACTIVA);
+  const ocultarIntro = useCallback(() => {
+    setIntroVisible(false);
+    inicioRef.current = Date.now();
+    finIntro();
+  }, []);
   const arrancoRef = useRef(false);
   const sincronizadoRef = useRef<string | null>(null);
 
@@ -112,6 +124,7 @@ function Navegacion() {
       }
       setProgreso(0.9);
       setEtapa("Preparando los 13 mundos…");
+      await introTerminada;
       await esperar(Math.max(0, CARGA_MINIMA_MS - (Date.now() - inicioRef.current)));
       setProgreso(1);
       setEtapa("¡Listo!");
@@ -137,8 +150,7 @@ function Navegacion() {
   }, [userId]);
 
   const ocultarCarga = useCallback(() => setCargaVisible(false), []);
-  const [introVisible, setIntroVisible] = useState(INTRO_ACTIVA);
-  const ocultarIntro = useCallback(() => setIntroVisible(false), []);
+
 
   return (
     <>

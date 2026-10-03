@@ -36,11 +36,11 @@
     "expo-status-bar": "~57.0.1",
     "expo-symbols": "~57.0.3",
     "expo-system-ui": "~57.0.4",
+    "expo-video": "~57.0.5",
     "expo-web-browser": "~57.0.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
-    "react-native-android-widget": "^0.22.1",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-pager-view": "8.0.2",
     "react-native-reanimated": "4.5.1",
@@ -51,7 +51,8 @@
     "react-native-url-polyfill": "^4.0.0",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.10.1",
-    "topojson-client": "^3.1.0"
+    "topojson-client": "^3.1.0",
+    "widgets-prodigia": "file:./modules/widgets-prodigia"
   },
   "devDependencies": {
     "@types/d3-geo": "^3.1.1",

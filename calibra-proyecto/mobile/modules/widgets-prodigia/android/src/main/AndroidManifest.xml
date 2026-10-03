@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application>
+    <!-- exported="true": algunos launchers (MIUI/HyperOS de Xiaomi) no dejan poner
+         widgets cuyo receptor no está exportado. -->
+    <receiver android:name="com.prodigia.widgets.WidgetRacha" android:exported="true" android:label="Prodigia · Racha">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_racha_info" />
+    </receiver>
+    <receiver android:name="com.prodigia.widgets.WidgetProgreso" android:exported="true" android:label="Prodigia · Progreso">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_progreso_info" />
+    </receiver>
+  </application>
+</manifest>

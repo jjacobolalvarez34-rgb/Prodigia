@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="widget_racha_descripcion">Tu racha y tus Chispas. Tócalo para jugar.</string>
+  <string name="widget_progreso_descripcion">Racha, Chispas, nivel, meta del día y avisos.</string>
+  <color name="wp_texto">#F4F6FB</color>
+  <color name="wp_texto2">#8892B0</color>
+  <color name="wp_racha">#FF8A3D</color>
+  <color name="wp_logro">#FFB627</color>
+  <color name="wp_neon">#9B85FF</color>
+  <color name="wp_correcto">#3DDC97</color>
+</resources>

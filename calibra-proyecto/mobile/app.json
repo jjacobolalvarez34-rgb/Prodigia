@@ -50,37 +50,6 @@
         }
       ],
       [
-        "react-native-android-widget",
-        {
-          "widgets": [
-            {
-              "name": "Racha",
-              "label": "Prodigia · Racha",
-              "description": "Tu racha y tus Chispas. Tócalo para jugar.",
-              "minWidth": "110dp",
-              "minHeight": "110dp",
-              "targetCellWidth": 2,
-              "targetCellHeight": 2,
-              "previewImage": "./assets/widgets/racha.png",
-              "resizeMode": "horizontal|vertical",
-              "updatePeriodMillis": 1800000
-            },
-            {
-              "name": "Progreso",
-              "label": "Prodigia · Progreso",
-              "description": "Racha, Chispas, nivel, meta del día y avisos.",
-              "minWidth": "250dp",
-              "minHeight": "180dp",
-              "targetCellWidth": 4,
-              "targetCellHeight": 3,
-              "previewImage": "./assets/widgets/progreso.png",
-              "resizeMode": "horizontal|vertical",
-              "updatePeriodMillis": 1800000
-            }
-          ]
-        }
-      ],
-      [
         "expo-audio",
         {
           "microphonePermission": false,
@@ -94,7 +63,8 @@
           "cameraPermission": false,
           "microphonePermission": false
         }
-      ]
+      ],
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,
