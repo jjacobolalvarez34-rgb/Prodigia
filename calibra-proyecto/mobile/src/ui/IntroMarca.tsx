@@ -1,46 +1,48 @@
-import { useEffect, useState } from "react";
-import { Animated, Easing, StyleSheet, Text } from "react-native";
-import { color, fuente } from "~/tema";
-import Logo from "./Logo";
+import { Image } from "expo-image";
+import { useEffect, useRef, useState } from "react";
+import { Animated, Dimensions, Easing, StyleSheet } from "react-native";
 
-// Intro de marca al abrir la app (estilo "Made with Unity"): va ANTES de la
-// pantalla de carga y tapa todo. Mientras se ve, la app ya carga por detrás.
-//
-// PROVISORIA: el diseño final lo define el dueño del producto. Hoy: fondo negro, el
-// logo aparece, debajo el nombre, y todo se desvanece. Para cambiarla basta con
-// reemplazar lo de adentro manteniendo la misma firma (`onTerminada` al final).
+// Intro de marca al abrir la app (como "Made with Unity"): la animación de Mamut
+// S.A.S. (docs/mamut-intro-*, el mamut aparece, se dibuja el colmillo y sale el
+// nombre). Va ANTES de la pantalla de carga y la tapa; mientras se ve, la app ya
+// carga por detrás. El GIF dura 4 s: se cuenta desde que termina de cargar (para no
+// cortarlo en un teléfono lento) y después se desvanece.
 // Para apagarla, INTRO_ACTIVA = false.
 export const INTRO_ACTIVA = true;
-const DURACION_MS = 2200;
+
+const INTRO = require("../../assets/intro/mamut-intro.gif");
+const FONDO = "#0F1E2E"; // el mismo azul noche del GIF, a pantalla completa
+const DURACION_GIF_MS = 4000;
+const TOPE_MS = 7000; // si el GIF no carga, no queda trabada
+const LADO = Math.min(Dimensions.get("window").width * 0.9, 460);
 
 export default function IntroMarca({ onTerminada }: { onTerminada: () => void }) {
-  const [t] = useState(() => new Animated.Value(0));
   const [salida] = useState(() => new Animated.Value(1));
+  const terminadaRef = useRef(false);
+  const onTerminadaRef = useRef(onTerminada);
+  useEffect(() => {
+    onTerminadaRef.current = onTerminada;
+  }, [onTerminada]);
+
+  function cerrar(demora: number) {
+    if (terminadaRef.current) return;
+    terminadaRef.current = true;
+    Animated.timing(salida, { toValue: 0, duration: 450, delay: demora, easing: Easing.in(Easing.quad), useNativeDriver: true }).start(() => onTerminadaRef.current());
+  }
 
   useEffect(() => {
-    Animated.sequence([
-      Animated.timing(t, { toValue: 1, duration: 900, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-      Animated.delay(DURACION_MS - 900 - 400),
-      Animated.timing(salida, { toValue: 0, duration: 400, easing: Easing.in(Easing.quad), useNativeDriver: true }),
-    ]).start(() => onTerminada());
-  }, [t, salida, onTerminada]);
-
-  const escala = t.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] });
-  const textoOpacidad = t.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
+    const t = setTimeout(() => cerrar(0), TOPE_MS);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Animated.View style={[StyleSheet.absoluteFill, styles.pantalla, { opacity: salida }]} pointerEvents="none">
-      <Animated.View style={{ opacity: t, transform: [{ scale: escala }] }}>
-        <Logo tam={110} />
-      </Animated.View>
-      <Animated.View style={{ opacity: textoOpacidad }}>
-        <Text style={styles.marca}>Prodigia</Text>
-      </Animated.View>
+      <Image source={INTRO} style={{ width: LADO, height: LADO }} contentFit="contain" autoplay onLoad={() => cerrar(DURACION_GIF_MS - 300)} />
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  pantalla: { backgroundColor: "#000", alignItems: "center", justifyContent: "center", gap: 14, zIndex: 200, elevation: 200 },
-  marca: { color: color.texto, fontSize: 30, fontFamily: fuente.display, letterSpacing: 2 },
+  pantalla: { backgroundColor: FONDO, alignItems: "center", justifyContent: "center", zIndex: 200, elevation: 200 },
 });
