@@ -55,8 +55,10 @@ function armarSkyline(semilla: string, ancho: number, alto: number, densidad: nu
   return edificios;
 }
 
-// Una ventana que se prende y se apaga a su ritmo (cada una con otro período).
-function VentanaViva({ x, y, c, periodo, demora, activa }: { x: number; y: number; c: string; periodo: number; demora: number; activa: boolean }) {
+// Un grupo de ventanas que se prenden y se apagan juntas. Antes cada ventana era
+// una animación aparte (10 por ciudad × 13 ciudades): en teléfonos de gama baja eso
+// trababa la pantalla. Ahora son 3 grupos por ciudad, cada uno con su ritmo.
+function GrupoVentanas({ ventanas, periodo, demora, activa }: { ventanas: { x: number; y: number; c: string }[]; periodo: number; demora: number; activa: boolean }) {
   const op = useSharedValue(1);
   useEffect(() => {
     if (!activa) {
@@ -66,13 +68,19 @@ function VentanaViva({ x, y, c, periodo, demora, activa }: { x: number; y: numbe
     op.set(
       withDelay(
         demora,
-        withRepeat(withSequence(withTiming(1, { duration: periodo }), withTiming(0.05, { duration: 140 }), withTiming(0.05, { duration: periodo * 0.6 }), withTiming(1, { duration: 160 })), -1)
+        withRepeat(withSequence(withTiming(1, { duration: periodo }), withTiming(0.05, { duration: 160 }), withTiming(0.05, { duration: periodo * 0.5 }), withTiming(1, { duration: 200 })), -1)
       )
     );
     return () => cancelAnimation(op);
   }, [activa, op, periodo, demora]);
   const estilo = useAnimatedStyle(() => ({ opacity: op.value }));
-  return <Animated.View style={[styles.ventana, { left: x, top: y, backgroundColor: c }, estilo]} />;
+  return (
+    <Animated.View style={[StyleSheet.absoluteFill, estilo]} pointerEvents="none">
+      {ventanas.map((v, i) => (
+        <View key={i} style={[styles.ventana, { left: v.x, top: v.y, backgroundColor: v.c }]} />
+      ))}
+    </Animated.View>
+  );
 }
 
 // Un avión chiquito que cruza el cielo con su luz roja que titila.
@@ -118,31 +126,35 @@ interface Props {
   sinLuna?: boolean;
   // Lista larga: menos cosas moviéndose.
   quieta?: boolean;
+  sinAvion?: boolean;
 }
 
-export default function Ciudad({ semilla, acento, alto = 96, apagada, radio = 14, densidad = 1, estilo, sinLuna, quieta }: Props) {
+export default function Ciudad({ semilla, acento, alto = 96, apagada, radio = 14, densidad = 1, estilo, sinLuna, quieta, sinAvion }: Props) {
   const [ancho, setAncho] = useState(0);
   const activa = useAnimacionActiva();
   const liviano = useLiviano();
   const edificios = useMemo(() => (ancho > 0 ? armarSkyline(semilla, ancho, alto, densidad) : []), [semilla, ancho, alto, densidad]);
   const luz = apagada ? "#39405A" : aclarar(acento, 0.15);
 
-  // Ventanas que parpadean: unas pocas de las encendidas, cada una con su ritmo.
-  const vivas = useMemo(() => {
+  // Ventanas que parpadean: unas pocas de las encendidas, repartidas en 3 grupos.
+  const grupos = useMemo(() => {
     if (apagada) return [];
     const r = rng(semilla + "v");
     const encendidas = edificios.flatMap((e) => e.ventanas.filter((v) => v.on));
-    const cuantas = Math.min(quieta ? 3 : liviano ? 5 : 10, encendidas.length);
-    return Array.from({ length: cuantas }, () => {
+    const cuantas = Math.min(quieta ? 3 : liviano ? 6 : 12, encendidas.length);
+    const n = quieta ? 1 : 3;
+    const lista = Array.from({ length: n }, (_, g) => ({ periodo: 2200 + Math.round(r() * 3800), demora: g * 900 + Math.round(r() * 1500), ventanas: [] as { x: number; y: number; c: string }[] }));
+    for (let k = 0; k < cuantas; k++) {
       const v = encendidas[Math.floor(r() * encendidas.length)];
-      return { ...v, periodo: 1800 + Math.round(r() * 4200), demora: Math.round(r() * 3000) };
-    });
-  }, [edificios, apagada, quieta, liviano, semilla]);
-  const conAvion = !apagada && !quieta && alto >= 80;
+      lista[k % n].ventanas.push({ x: v.x, y: v.y, c: v.blanca ? "#FFF3D6" : luz });
+    }
+    return lista.filter((g) => g.ventanas.length > 0);
+  }, [edificios, apagada, quieta, liviano, semilla, luz]);
+  const conAvion = !apagada && !quieta && !sinAvion && alto >= 80;
   const id = `c${semilla.replace(/[^a-z0-9]/gi, "")}${apagada ? "o" : ""}`;
 
   return (
-    <View onLayout={(e: LayoutChangeEvent) => setAncho(e.nativeEvent.layout.width)} style={[{ height: alto, borderRadius: radio, overflow: "hidden", backgroundColor: "#070913" }, estilo]}>
+    <View onLayout={(e: LayoutChangeEvent) => { const w = Math.round(e.nativeEvent.layout.width); if (w > 0 && w !== ancho) setAncho(w); }} style={[{ height: alto, borderRadius: radio, overflow: "hidden", backgroundColor: "#070913" }, estilo]}>
       {ancho > 0 && (
         <>
           <Svg width={ancho} height={alto}>
@@ -178,8 +190,8 @@ export default function Ciudad({ semilla, acento, alto = 96, apagada, radio = 14
             ))}
             {!apagada && <Rect x={0} y={alto - 1.5} width={ancho} height={1.5} fill={conAlfa(acento, 0.5)} />}
           </Svg>
-          {vivas.map((v, i) => (
-            <VentanaViva key={i} x={v.x} y={v.y} c={v.blanca ? "#FFF3D6" : luz} periodo={v.periodo} demora={v.demora} activa={activa} />
+          {grupos.map((g, i) => (
+            <GrupoVentanas key={i} ventanas={g.ventanas} periodo={g.periodo} demora={g.demora} activa={activa} />
           ))}
           {conAvion && <Avion ancho={ancho} altura={Math.max(8, alto * 0.18)} demora={1500 + (semilla.length % 5) * 1700} duracion={liviano ? 9000 : 7500} activa={activa} />}
         </>

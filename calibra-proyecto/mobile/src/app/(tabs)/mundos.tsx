@@ -2,7 +2,7 @@ import * as WebBrowser from "expo-web-browser";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import Animated, { FadeIn, LinearTransition } from "react-native-reanimated";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { PRECIO_MUNDO_CHISPAS } from "@/lib/mundos/precios";
 import { sonar, vibrar } from "~/lib/efectos";
 import { URL_WEB } from "~/lib/entorno";
@@ -66,14 +66,14 @@ function TarjetaMundo({ mundo, tuyo, nivel, indice, recien, onPress }: { mundo: 
   return (
     <Tarjeta indice={indice} onPress={onPress} relleno={10} acento={mundo.neon} brillo={0.16}>
       <Animated.View entering={recien ? FadeIn.duration(1200) : undefined}>
-        <Ciudad semilla={mundo.slug} acento={mundo.neon} alto={128} densidad={Math.min(1.25, 0.8 + nivel / 100)} />
+        <Ciudad semilla={mundo.slug} acento={mundo.neon} alto={128} densidad={Math.min(1.25, 0.8 + nivel / 100)} sinAvion={indice > 1} />
       </Animated.View>
       <View style={[styles.entre, { marginTop: 10 }]}>
         <View style={{ flex: 1 }}>
           <Texto v="h3" tam={18} style={{ letterSpacing: 1 }}>
             {mundo.nombre.toUpperCase()}
           </Texto>
-          <Texto v="nota">{mundo.enApp ? mundo.tema : `${mundo.tema} · pronto en la app`}</Texto>
+          <Texto v="nota">{mundo.tema}</Texto>
         </View>
         <Texto v="mono" tam={18} c={mundo.neon}>
           Nv {nivel}
@@ -151,7 +151,7 @@ export default function Mundos() {
           <Chip texto="Bloqueados" activo={filtro === "bloqueados"} onPress={() => setFiltro("bloqueados")} />
         </View>
         {lista.map((m, i) => (
-          <Animated.View key={m.slug} layout={LinearTransition.duration(300)}>
+          <View key={m.slug}>
             <TarjetaMundo
               mundo={m}
               tuyo={esTuyo(m)}
@@ -163,7 +163,7 @@ export default function Mundos() {
                 else setElegido(m);
               }}
             />
-          </Animated.View>
+          </View>
         ))}
       </PantallaPestana>
 

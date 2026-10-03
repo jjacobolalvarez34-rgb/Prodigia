@@ -30,10 +30,21 @@ export function registrarWidgets() {
     if (widgetAction === "WIDGET_DELETED" || widgetAction === "WIDGET_CLICK") return;
     const Componente = m.ui.WIDGETS[widgetInfo.widgetName as keyof Ui["WIDGETS"]];
     if (!Componente) return;
-    const guardado = await leerResumenGuardado();
+    // Siempre se dibuja algo, aunque falle la lectura o la red (si el handler
+    // termina sin dibujar, Android muestra "No se pudo cargar el widget").
+    let guardado: Resumen | null = null;
+    try {
+      guardado = await leerResumenGuardado();
+    } catch {
+      guardado = null;
+    }
     renderWidget(<Componente resumen={guardado} />);
-    const fresco = await conTiempoLimite(cargarResumen().catch(() => null), 8000);
-    if (fresco) renderWidget(<Componente resumen={fresco} />);
+    try {
+      const fresco = await conTiempoLimite(cargarResumen().catch(() => null), 8000);
+      if (fresco) renderWidget(<Componente resumen={fresco} />);
+    } catch {
+      // Queda dibujado lo guardado.
+    }
   });
 }
 

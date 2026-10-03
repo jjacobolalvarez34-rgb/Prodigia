@@ -5,8 +5,9 @@ import BarraPestanas from "~/ui/BarraPestanas";
 import PreguntaEdad from "~/ui/PreguntaEdad";
 import { color } from "~/tema";
 
-// Las 5 pestañas de la app (03-PANTALLAS-Y-NAVEGACION.md §1). Se puede deslizar el
-// dedo entre una y otra (paginador nativo), y la barra de abajo sigue el gesto.
+// Las 5 pestañas de la app (03-PANTALLAS-Y-NAVEGACION.md §1). El contenido NO se
+// desliza (chocaba con los carruseles y opciones de cada pestaña): para pasar de
+// una a otra se toca o se desliza el dedo sobre la barra de abajo.
 // Cada pestaña conserva su estado; las que nunca se abrieron se cargan al llegar.
 export default function LayoutPestanas() {
   const edad = useEdad();
@@ -19,7 +20,7 @@ export default function LayoutPestanas() {
     <TopTabs
       tabBarPosition="bottom"
       tabBar={(props: Parameters<typeof BarraPestanas>[0]) => <BarraPestanas {...props} />}
-      screenOptions={{ lazy: true, lazyPreloadDistance: 1, swipeEnabled: true, animationEnabled: true, sceneStyle: { backgroundColor: color.bg } }}
+      screenOptions={{ lazy: true, lazyPreloadDistance: 1, swipeEnabled: false, animationEnabled: true, sceneStyle: { backgroundColor: color.bg } }}
     >
       <TopTabs.Screen name="index" />
       <TopTabs.Screen name="mundos" />

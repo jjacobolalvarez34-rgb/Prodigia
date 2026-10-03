@@ -345,7 +345,7 @@ export default function SprintMundo() {
       </Animated.View>
 
       {!dueloId && inicio == null && <CuentaInicio acento={mundo.neon} onListo={arrancar} />}
-      {final && <CartelFinal texto={final === "tiempo" ? "¡Tiempo!" : "¡Listo!"} nota={dueloId ? "Comparando con tu rival…" : "Contando tus recompensas…"} />}
+      {final && <CartelFinal texto={final === "tiempo" ? "¡Tiempo!" : "¡Listo!"} nota={dueloId ? "Comparando con tu rival…" : "Contando tus recompensas…"} acento={mundo.neon} />}
     </SafeAreaView>
   );
 }

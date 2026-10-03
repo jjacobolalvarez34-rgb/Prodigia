@@ -3,6 +3,7 @@ import { Modal, Pressable, StyleSheet, View } from "react-native";
 import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { color } from "~/tema";
+import AvisoGlobal from "./Aviso";
 
 // Hoja inferior (confirmar una compra, ver un clan del mapa, retar a un amigo): el
 // fondo se oscurece y la hoja sube con resorte. Tocar afuera la cierra.
@@ -41,6 +42,7 @@ export default function Hoja({ visible, onCerrar, children }: { visible: boolean
         <View style={styles.asa} />
         {children}
       </Animated.View>
+      <AvisoGlobal />
     </Modal>
   );
 }

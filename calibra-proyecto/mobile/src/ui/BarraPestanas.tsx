@@ -1,5 +1,6 @@
-import { useEffect, useState, type ComponentType } from "react";
+import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { Animated, Pressable, StyleSheet, View, type LayoutChangeEvent } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
@@ -7,9 +8,9 @@ import { color, conAlfa, fuente } from "~/tema";
 import { IconoCompetir, IconoHoy, IconoMundos, IconoPerfil, IconoSocial } from "./Iconos";
 import Texto from "./Texto";
 
-// Barra inferior de 5 pestañas (maquetas-android.html). La píldora violeta sigue el
-// dedo mientras se desliza entre pestañas (`position` del paginador, en el hilo
-// nativo) y el ícono elegido da un saltito.
+// Barra inferior de 5 pestañas (maquetas-android.html). Deslizar el dedo sobre la
+// barra pasa a la pestaña que queda bajo el dedo (la píldora violeta lo sigue); un
+// deslizamiento rápido pasa a la de al lado. El ícono elegido da un saltito.
 
 const PESTANAS: Record<string, { titulo: string; Icono: ComponentType<{ tam?: number; c?: string }> }> = {
   index: { titulo: "Hoy", Icono: IconoHoy },
@@ -67,7 +68,31 @@ export default function BarraPestanas({ state, navigation, position }: Props) {
       ? position.interpolate({ inputRange: state.routes.map((_, i) => i), outputRange: state.routes.map((_, i) => i * anchoPestana), extrapolate: "clamp" })
       : 0;
 
+  // Deslizar sobre la barra: la pestaña sigue al dedo; un tirón rápido salta a la de al lado.
+  const gesto = useMemo(() => {
+    const marca = { actual: state.index };
+    const ir = (i: number) => {
+      const destino = Math.max(0, Math.min(n - 1, i));
+      const ruta = state.routes[destino];
+      if (!ruta || destino === marca.actual) return;
+      marca.actual = destino;
+      vibrar.seleccion();
+      navigation.navigate(ruta.name, ruta.params);
+    };
+    return Gesture.Pan()
+      .runOnJS(true)
+      .activeOffsetX([-12, 12])
+      .failOffsetY([-20, 20])
+      .onUpdate((e) => {
+        if (anchoPestana > 0) ir(Math.floor((e.x - 6) / anchoPestana));
+      })
+      .onEnd((e) => {
+        if (Math.abs(e.velocityX) > 900 && Math.abs(e.translationX) < anchoPestana) ir(state.index + (e.velocityX < 0 ? 1 : -1));
+      });
+  }, [state, navigation, n, anchoPestana]);
+
   return (
+    <GestureDetector gesture={gesto}>
     <View style={[styles.barra, { paddingBottom: Math.max(insets.bottom, 10) }]} onLayout={(e: LayoutChangeEvent) => setAncho(e.nativeEvent.layout.width - 12)}>
       {anchoPestana > 0 && (
         <Animated.View style={[styles.pildoraCarril, { width: anchoPestana, transform: [{ translateX: x }] }]} pointerEvents="none">
@@ -90,6 +115,7 @@ export default function BarraPestanas({ state, navigation, position }: Props) {
         />
       ))}
     </View>
+    </GestureDetector>
   );
 }
 

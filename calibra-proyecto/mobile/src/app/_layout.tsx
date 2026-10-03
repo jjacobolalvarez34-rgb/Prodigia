@@ -28,6 +28,7 @@ import { ProveedorSesion, useSesion } from "~/lib/sesion";
 import { iniciarSincronizacion } from "~/lib/sinConexion";
 import { conectarPresencia, desconectarPresencia } from "~/lib/social";
 import AvisoGlobal from "~/ui/Aviso";
+import IntroMarca, { INTRO_ACTIVA } from "~/ui/IntroMarca";
 import PantallaCarga from "~/ui/PantallaCarga";
 import { color } from "~/tema";
 
@@ -136,6 +137,8 @@ function Navegacion() {
   }, [userId]);
 
   const ocultarCarga = useCallback(() => setCargaVisible(false), []);
+  const [introVisible, setIntroVisible] = useState(INTRO_ACTIVA);
+  const ocultarIntro = useCallback(() => setIntroVisible(false), []);
 
   return (
     <>
@@ -179,6 +182,7 @@ function Navegacion() {
       )}
       <AvisoGlobal />
       {cargaVisible && <PantallaCarga progreso={progreso} etapa={etapa} onTerminada={ocultarCarga} />}
+      {introVisible && <IntroMarca onTerminada={ocultarIntro} />}
     </>
   );
 }

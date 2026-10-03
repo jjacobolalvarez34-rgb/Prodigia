@@ -4,9 +4,10 @@ import { Animated, Dimensions, Easing, StyleSheet, Text, View } from "react-nati
 import { color, mono, MUNDOS, fuente } from "~/tema";
 import Logo from "./Logo";
 
-// Pantalla de carga al abrir la app: el logo late, los símbolos de los 13 mundos
-// suben flotando con su neón, la barra muestra cuánto falta (el progreso es real:
-// lo mueve el layout a medida que termina cada paso) y abajo rotan "pro tips".
+// Pantalla de carga al abrir la app: el logo quieto con un resplandor suave que
+// respira detrás, los símbolos de los 13 mundos suben flotando con su neón, la barra
+// muestra cuánto falta (el progreso es real: lo mueve el layout a medida que termina
+// cada paso) y abajo rotan "pro tips".
 
 const TIPS = [
   "Por 11 con dos cifras: suma las cifras y ponla en el medio. 43 × 11 → 4 (4+3) 3 = 473.",
@@ -70,29 +71,25 @@ interface Props {
 export default function PantallaCarga({ progreso, etapa, onTerminada }: Props) {
   const barra = useState(() => new Animated.Value(0))[0];
   const pulso = useState(() => new Animated.Value(0))[0];
-  const giro = useState(() => new Animated.Value(0))[0];
+  const entrada = useState(() => new Animated.Value(0))[0];
   const salida = useState(() => new Animated.Value(1))[0];
   const tipOpacidad = useState(() => new Animated.Value(1))[0];
   const [porcentaje, setPorcentaje] = useState(0);
   const [tip, setTip] = useState(() => Math.floor(Math.random() * TIPS.length));
   const terminadaRef = useRef(false);
 
-  // Logo que late y aro que gira.
+  // Solo el resplandor de atrás respira; el logo queda quieto.
   useEffect(() => {
     const latido = Animated.loop(
       Animated.sequence([
-        Animated.timing(pulso, { toValue: 1, duration: 900, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-        Animated.timing(pulso, { toValue: 0, duration: 900, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+        Animated.timing(pulso, { toValue: 1, duration: 1400, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+        Animated.timing(pulso, { toValue: 0, duration: 1400, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
       ])
     );
-    const vuelta = Animated.loop(Animated.timing(giro, { toValue: 1, duration: 4000, easing: Easing.linear, useNativeDriver: true }));
     latido.start();
-    vuelta.start();
-    return () => {
-      latido.stop();
-      vuelta.stop();
-    };
-  }, [pulso, giro]);
+    Animated.timing(entrada, { toValue: 1, duration: 600, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+    return () => latido.stop();
+  }, [pulso, entrada]);
 
   // Número del porcentaje, siempre en sincronía con la barra.
   useEffect(() => {
@@ -121,9 +118,8 @@ export default function PantallaCarga({ progreso, etapa, onTerminada }: Props) {
     return () => clearInterval(id);
   }, [tipOpacidad]);
 
-  const escalaLogo = pulso.interpolate({ inputRange: [0, 1], outputRange: [1, 1.07] });
-  const brillo = pulso.interpolate({ inputRange: [0, 1], outputRange: [0.35, 0.8] });
-  const rotacion = giro.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "360deg"] });
+  const brillo = pulso.interpolate({ inputRange: [0, 1], outputRange: [0.12, 0.28] });
+  const escalaEntrada = entrada.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] });
   const anchoBarra = barra.interpolate({ inputRange: [0, 1], outputRange: ["0%", "100%"] });
 
   return (
@@ -135,11 +131,8 @@ export default function PantallaCarga({ progreso, etapa, onTerminada }: Props) {
 
       <View style={styles.centro}>
         <View style={styles.logoCaja}>
-          <Animated.View style={[styles.halo, { opacity: brillo, transform: [{ scale: escalaLogo }] }]} />
-          <Animated.View style={[styles.orbita, { transform: [{ rotate: rotacion }] }]}>
-            <View style={styles.orbitaPunto} />
-          </Animated.View>
-          <Animated.View style={{ transform: [{ scale: escalaLogo }] }}>
+          <Animated.View style={[styles.halo, { opacity: brillo }]} />
+          <Animated.View style={{ opacity: entrada, transform: [{ scale: escalaEntrada }] }}>
             <Logo tam={120} />
           </Animated.View>
         </View>
@@ -174,9 +167,7 @@ const styles = StyleSheet.create({
   glifo: { position: "absolute", top: 0, fontFamily: fuente.display },
   centro: { flex: 1, alignItems: "center", justifyContent: "center", gap: 6 },
   logoCaja: { width: 180, height: 180, alignItems: "center", justifyContent: "center", marginBottom: 12 },
-  halo: { position: "absolute", width: 170, height: 170, borderRadius: 85, backgroundColor: color.primario, shadowColor: color.primario, shadowRadius: 40, shadowOpacity: 1, elevation: 20 },
-  orbita: { position: "absolute", width: 176, height: 176, borderRadius: 88, borderWidth: 1.5, borderColor: "#9B85FF55" },
-  orbitaPunto: { position: "absolute", top: -5, left: 83, width: 10, height: 10, borderRadius: 5, backgroundColor: color.logro, shadowColor: color.logro, shadowRadius: 8, shadowOpacity: 1 },
+  halo: { position: "absolute", width: 150, height: 150, borderRadius: 75, backgroundColor: color.primario, boxShadow: `0px 0px 60px ${color.primario}` },
   marca: { color: color.texto, fontSize: 38, fontFamily: fuente.display, letterSpacing: -0.5 },
   lema: { color: color.texto2, fontSize: 15 },
   abajo: { paddingHorizontal: 28, paddingBottom: 56, gap: 12 },
