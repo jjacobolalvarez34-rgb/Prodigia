@@ -2,7 +2,7 @@ import { Image } from "expo-image";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
-import Animated, { FadeIn, FadeInRight, ZoomIn } from "react-native-reanimated";
+import Animated, { FadeInRight, ZoomIn } from "react-native-reanimated";
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, recargarJugador, useJugador } from "~/lib/jugador";
 import type { PlacaDatos } from "~/lib/placa";
@@ -340,7 +340,7 @@ export default function Tienda() {
         {elegido && (
           <>
             {elegido.categoria !== "utilidad" ? (
-              <Animated.View key={elegido.item} entering={FadeIn.duration(250)} style={{ flexDirection: "row", gap: 10 }}>
+              <View key={elegido.item} style={{ flexDirection: "row", gap: 10 }}>
                 <PlacaTarjeta placa={previa} onPress={() => {}} />
                 <View style={{ flex: 1.1, justifyContent: "center", gap: 6 }}>
                   <View style={[styles.rareza, { borderColor: COLOR_RAREZA[rarezaDe(elegido.costoBase)] }]}>
@@ -351,7 +351,7 @@ export default function Tienda() {
                   <Texto v="h2">{elegido.nombre}</Texto>
                   {elegido.descripcion ? <Texto v="nota">{elegido.descripcion}</Texto> : <Texto v="nota">Así se ve en tu Placa.</Texto>}
                 </View>
-              </Animated.View>
+              </View>
             ) : (
               <View style={[styles.fila, { gap: 14 }]}>
                 <View style={styles.iconoGrande}>

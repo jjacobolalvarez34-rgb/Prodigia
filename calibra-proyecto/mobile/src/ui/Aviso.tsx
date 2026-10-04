@@ -30,7 +30,9 @@ function suscribir(o: () => void) {
 const COLORES: Record<Tipo, string> = { ok: color.correcto, error: color.error, info: color.primario, logro: color.logro };
 const ICONOS: Record<Tipo, string> = { ok: "✓", error: "!", info: "i", logro: "★" };
 
-export default function AvisoGlobal() {
+// `simple`: sin animación de entrada (dentro de un Modal de Android las animaciones
+// de Reanimated no corren y el aviso quedaría invisible).
+export default function AvisoGlobal({ simple = false }: { simple?: boolean }) {
   const insets = useSafeAreaInsets();
   const aviso = useSyncExternalStore(suscribir, () => actual, () => actual);
 
@@ -52,8 +54,8 @@ export default function AvisoGlobal() {
     <View pointerEvents="none" style={[styles.capa, { top: insets.top + 8 }]}>
       <Animated.View
         key={aviso.id}
-        entering={SlideInUp.duration(300)}
-        exiting={FadeOutUp.duration(200)}
+        entering={simple ? undefined : SlideInUp.duration(300)}
+        exiting={simple ? undefined : FadeOutUp.duration(200)}
         style={[styles.aviso, { borderColor: conAlfa(c, 0.6), boxShadow: `0px 8px 30px ${conAlfa(c, 0.25)}` }]}
       >
         <View style={[styles.icono, { backgroundColor: c }]}>

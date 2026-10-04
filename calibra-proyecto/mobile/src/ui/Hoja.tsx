@@ -1,48 +1,51 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Modal, Pressable, StyleSheet, View } from "react-native";
-import Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
+import { Animated, Easing, Modal, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { color } from "~/tema";
 import AvisoGlobal from "./Aviso";
 
 // Hoja inferior (confirmar una compra, ver un clan del mapa, retar a un amigo): el
 // fondo se oscurece y la hoja sube con resorte. Tocar afuera la cierra.
+//
+// Usa el Animated de React Native (con el driver nativo) y NO Reanimated: dentro de
+// un Modal de Android las animaciones de Reanimated no avanzaban, la hoja quedaba
+// invisible (opacidad 0, fuera de pantalla) y el toque caía en el fondo invisible y
+// la cerraba: "toco y no pasa nada".
 export default function Hoja({ visible, onCerrar, children }: { visible: boolean; onCerrar: () => void; children: ReactNode }) {
   const insets = useSafeAreaInsets();
   const [montada, setMontada] = useState(visible);
-  const y = useSharedValue(600);
-  const fondo = useSharedValue(0);
+  const [y] = useState(() => new Animated.Value(600));
+  const [fondo] = useState(() => new Animated.Value(0));
   // Se monta apenas se pide mostrarla (estado derivado, sin efecto).
   if (visible && !montada) setMontada(true);
 
   useEffect(() => {
     if (visible) {
-      fondo.set(withTiming(1, { duration: 200 }));
-      y.set(withSpring(0, { damping: 20, stiffness: 210 }));
+      Animated.parallel([
+        Animated.timing(fondo, { toValue: 1, duration: 200, useNativeDriver: true }),
+        Animated.spring(y, { toValue: 0, damping: 20, stiffness: 210, mass: 1, useNativeDriver: true }),
+      ]).start();
     } else if (montada) {
-      fondo.set(withTiming(0, { duration: 180 }));
-      y.set(
-        withTiming(600, { duration: 220, easing: Easing.in(Easing.quad) }, (fin) => {
-          if (fin) runOnJS(setMontada)(false);
-        })
-      );
+      Animated.parallel([
+        Animated.timing(fondo, { toValue: 0, duration: 180, useNativeDriver: true }),
+        Animated.timing(y, { toValue: 600, duration: 220, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+      ]).start(({ finished }) => {
+        if (finished) setMontada(false);
+      });
     }
   }, [visible, montada, fondo, y]);
-
-  const estiloFondo = useAnimatedStyle(() => ({ opacity: fondo.value }));
-  const estiloHoja = useAnimatedStyle(() => ({ transform: [{ translateY: y.value }] }));
 
   if (!montada) return null;
   return (
     <Modal transparent visible animationType="none" onRequestClose={onCerrar} statusBarTranslucent>
-      <Animated.View style={[StyleSheet.absoluteFill, styles.fondo, estiloFondo]}>
+      <Animated.View style={[StyleSheet.absoluteFill, styles.fondo, { opacity: fondo }]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onCerrar} />
       </Animated.View>
-      <Animated.View style={[styles.hoja, { paddingBottom: Math.max(insets.bottom, 16) + 8 }, estiloHoja]}>
+      <Animated.View style={[styles.hoja, { paddingBottom: Math.max(insets.bottom, 16) + 8, transform: [{ translateY: y }] }]}>
         <View style={styles.asa} />
         {children}
       </Animated.View>
-      <AvisoGlobal />
+      <AvisoGlobal simple />
     </Modal>
   );
 }
