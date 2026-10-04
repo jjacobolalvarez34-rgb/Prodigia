@@ -10,6 +10,7 @@ import type { ResultadoPartida } from "~/lib/partida";
 import Anillo from "~/ui/Anillo";
 import Barra from "~/ui/Barra";
 import Boton3D from "~/ui/Boton3D";
+import CapsulaNivel from "~/ui/CapsulaNivel";
 import Confeti from "~/ui/Confeti";
 import { IconoCheck, IconoChispa, IconoLlama } from "~/ui/Iconos";
 import NumeroAnimado from "~/ui/NumeroAnimado";
@@ -78,6 +79,9 @@ export default function Resultado() {
   const mundo = MUNDO_POR_SLUG[(params.mundo ?? "numeria") as MundoSlug] ?? MUNDO_POR_SLUG.numeria;
   const d = JSON.parse(params.datos ?? "{}") as Datos;
   const [paso, setPaso] = useState(0);
+  // Cápsula de Chispas al subir de nivel de cuenta: aparece una vez, al llegar a
+  // ese paso de la cascada (o al saltar al final).
+  const [capsulaCerrada, setCapsulaCerrada] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const precision = d.total > 0 ? d.correctos / d.total : 0;
   const subioMundo = d.nivelMundo != null && d.nivelMundoAnterior != null && d.nivelMundo > d.nivelMundoAnterior;
@@ -106,8 +110,8 @@ export default function Resultado() {
       sonar("racha");
       vibrar.exito();
     }
-    if (paso === 5 && (d.logros?.length || d.nivelCuentaSubio)) {
-      sonar(d.nivelCuentaSubio ? "nivel_cuenta" : "logro");
+    if (paso === 5 && d.logros?.length && !d.nivelCuentaSubio) {
+      sonar("logro");
       vibrar.fuerte();
     }
   }, [paso]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -338,6 +342,16 @@ export default function Resultado() {
           </Texto>
         )}
       </View>
+      {d.nivelCuentaSubio && paso >= 5 && !capsulaCerrada && (
+        <CapsulaNivel
+          nivel={d.nivelCuentaNuevo}
+          bonus={d.bonusNivel ?? 0}
+          onCerrar={() => {
+            setCapsulaCerrada(true);
+            recargarJugador();
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 }
