@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ComponentType } from "react";
-import { Animated, Pressable, StyleSheet, View, type LayoutChangeEvent } from "react-native";
+import { Animated, Easing, Pressable, StyleSheet, View, type LayoutChangeEvent } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { vibrar } from "~/lib/efectos";
@@ -29,7 +29,6 @@ interface Ruta {
 interface Props {
   state: { index: number; routes: Ruta[] };
   navigation: { emit: (e: { type: "tabPress"; target: string; canPreventDefault: true }) => { defaultPrevented: boolean }; navigate: (nombre: string, params?: object) => void };
-  position: Animated.AnimatedInterpolation<number>;
 }
 
 function Pestana({ nombre, activa, onPress, insignia }: { nombre: string; activa: boolean; onPress: () => void; insignia: number }) {
@@ -57,15 +56,21 @@ function Pestana({ nombre, activa, onPress, insignia }: { nombre: string; activa
   );
 }
 
-export default function BarraPestanas({ state, navigation, position }: Props) {
+export default function BarraPestanas({ state, navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [ancho, setAncho] = useState(0);
   const { resumen } = useJugador();
   const n = state.routes.length;
   const anchoPestana = ancho / n;
+  // La píldora viaja hasta la pestaña elegida (en el hilo nativo), al mismo ritmo que
+  // el deslizamiento de la pantalla.
+  const [indice] = useState(() => new Animated.Value(state.index));
+  useEffect(() => {
+    Animated.timing(indice, { toValue: state.index, duration: 300, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+  }, [state.index, indice]);
   const x =
     anchoPestana > 0
-      ? position.interpolate({ inputRange: state.routes.map((_, i) => i), outputRange: state.routes.map((_, i) => i * anchoPestana), extrapolate: "clamp" })
+      ? indice.interpolate({ inputRange: state.routes.map((_, i) => i), outputRange: state.routes.map((_, i) => i * anchoPestana), extrapolate: "clamp" })
       : 0;
 
   // Deslizar sobre la barra: la pestaña sigue al dedo; un tirón rápido salta a la de al lado.

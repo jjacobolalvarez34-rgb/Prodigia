@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from "react-native";
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from "react-native-reanimated";
-import Svg, { Circle, Defs, G, LinearGradient, RadialGradient, Rect, Stop } from "react-native-svg";
+import Svg, { Circle, Defs, G, LinearGradient, Path, RadialGradient, Rect, Stop } from "react-native-svg";
 import { useAnimacionActiva, useLiviano } from "~/lib/rendimiento";
 import { aclarar, conAlfa } from "~/tema";
 
@@ -129,12 +129,25 @@ interface Props {
   sinAvion?: boolean;
 }
 
-export default function Ciudad({ semilla, acento, alto = 96, apagada, radio = 14, densidad = 1, estilo, sinLuna, quieta, sinAvion }: Props) {
+function CiudadBase({ semilla, acento, alto = 96, apagada, radio = 14, densidad = 1, estilo, sinLuna, quieta, sinAvion }: Props) {
   const [ancho, setAncho] = useState(0);
   const activa = useAnimacionActiva();
   const liviano = useLiviano();
   const edificios = useMemo(() => (ancho > 0 ? armarSkyline(semilla, ancho, alto, densidad) : []), [semilla, ancho, alto, densidad]);
   const luz = apagada ? "#39405A" : aclarar(acento, 0.15);
+  const ventanasDelDibujo = useMemo(() => {
+    let comunes = "";
+    let blancas = "";
+    for (const e of edificios) {
+      for (const v of e.ventanas) {
+        if (!v.on) continue;
+        const r = `M${v.x} ${v.y}h2.4v3h-2.4z`;
+        if (v.blanca && !apagada) blancas += r;
+        else comunes += r;
+      }
+    }
+    return { comunes, blancas };
+  }, [edificios, apagada]);
 
   // Ventanas que parpadean: unas pocas de las encendidas, repartidas en 3 grupos.
   const grupos = useMemo(() => {
@@ -181,13 +194,12 @@ export default function Ciudad({ semilla, acento, alto = 96, apagada, radio = 14
               </G>
             )}
             {edificios.map((e, i) => (
-              <G key={i}>
-                <Rect x={e.x} y={alto - e.h} width={e.w} height={e.h + 2} rx={2} fill={apagada ? "#0A0C14" : "#0A0E1D"} />
-                {e.ventanas.map((v, j) =>
-                  v.on ? <Rect key={j} x={v.x} y={v.y} width={2.4} height={3} rx={0.6} fill={apagada ? "#2A2F42" : v.blanca ? "#FFF3D6" : luz} opacity={apagada ? 0.8 : 0.9} /> : null
-                )}
-              </G>
+              <Rect key={i} x={e.x} y={alto - e.h} width={e.w} height={e.h + 2} rx={2} fill={apagada ? "#0A0C14" : "#0A0E1D"} />
             ))}
+            {/* Todas las ventanas de un mismo color en UN solo trazo (antes eran cientos de
+                rectángulos sueltos por ciudad, cada uno una vista nativa). */}
+            {ventanasDelDibujo.comunes ? <Path d={ventanasDelDibujo.comunes} fill={apagada ? "#2A2F42" : luz} opacity={apagada ? 0.8 : 0.9} /> : null}
+            {ventanasDelDibujo.blancas ? <Path d={ventanasDelDibujo.blancas} fill="#FFF3D6" opacity={0.9} /> : null}
             {!apagada && <Rect x={0} y={alto - 1.5} width={ancho} height={1.5} fill={conAlfa(acento, 0.5)} />}
           </Svg>
           {grupos.map((g, i) => (
@@ -208,3 +220,8 @@ const styles = StyleSheet.create({
   luzAvion: { position: "absolute", left: 15, top: 2, width: 3, height: 3, borderRadius: 2, backgroundColor: "#FF5D5D" },
   luzBlanca: { position: "absolute", left: 0, top: 3, width: 2, height: 2, borderRadius: 1, backgroundColor: "#FFFFFF" },
 });
+
+// Sin volver a calcular ni redibujar el skyline si no cambió nada (la lista de Mundos
+// y los hubs vuelven a pintarse seguido).
+const Ciudad = memo(CiudadBase);
+export default Ciudad;
