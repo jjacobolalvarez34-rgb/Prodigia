@@ -4,6 +4,7 @@ import * as Anatomia from "./anatomia/visuales";
 import * as Calculia from "./calculia/visuales";
 import * as Circuitia from "./circuitia/visuales";
 import * as Codia from "./codia/visuales";
+import * as Enigmia from "./enigmia/visuales";
 import * as Geografia from "./geografia/visuales";
 import * as Historia from "./historia/visuales";
 
@@ -16,6 +17,12 @@ const c = (x: unknown) => x as ComponenteVisual;
 export const REGISTRO_VISUALES: Record<string, ComponenteVisual> = {
   cuadros: c(CuadrosAnimados),
   "geografia.mapa": c(Geografia.Mapa),
+  "enigmia.secuencia": c(Enigmia.Secuencia),
+  "enigmia.agrupacion": c(Enigmia.Agrupacion),
+  "enigmia.cadena": c(Enigmia.Cadena),
+  "enigmia.eliminacion": c(Enigmia.Eliminacion),
+  "enigmia.loci": c(Enigmia.Loci),
+  "enigmia.algoritmo": c(Enigmia.Algoritmo),
   "calculia.tangente": c(Calculia.Tangente),
   "calculia.area": c(Calculia.Area),
   "calculia.serie": c(Calculia.Serie),
