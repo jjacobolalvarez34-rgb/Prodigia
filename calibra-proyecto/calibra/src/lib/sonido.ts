@@ -1,3 +1,5 @@
+import { SONIDOS } from "@/lib/recompensas/catalogo";
+
 const CLAVE = "prodigia-sonido";
 
 type Listener = () => void;
@@ -113,6 +115,34 @@ export function reproducirNotaMusical(freq: number) {
   }
 }
 
+// Tienda ampliada (0248): paquete de sonido de acierto equipado y aviso de cada
+// tono (el estallido del efecto de acierto escucha el "correcto" aunque el sonido
+// esté apagado).
+let paqueteAcierto = "clasico";
+export function fijarPaqueteAcierto(paquete: string) {
+  paqueteAcierto = paquete;
+}
+
+type OyenteTono = (tipo: TipoTono) => void;
+const oyentesTono = new Set<OyenteTono>();
+export function alReproducirTono(o: OyenteTono) {
+  oyentesTono.add(o);
+  return () => {
+    oyentesTono.delete(o);
+  };
+}
+
+// Muestra de un paquete de sonido (en la tienda).
+export function probarPaqueteAcierto(paquete: string) {
+  if (typeof window === "undefined") return;
+  const p = SONIDOS[paquete] ?? SONIDOS.clasico;
+  try {
+    reproducirSecuencia(p.notas.map((n) => ({ freq: 880 * n.rel, inicio: n.inicio, duracion: n.duracion, tipoOnda: n.onda, volumen: n.volumen })));
+  } catch {
+    // audio no disponible
+  }
+}
+
 export type TipoTono = "correcto" | "error" | "nivel" | "nivel_cuenta" | "logro" | "duelo_gano" | "duelo_perdio" | "compra" | "notificacion" | "cuenta" | "ya";
 
 // Tonos generados con Web Audio (sin archivos de audio con licencia):
@@ -124,12 +154,18 @@ export type TipoTono = "correcto" | "error" | "nivel" | "nivel_cuenta" | "logro"
 // "notificacion" (un ping breve de 2 notas, para la campanita de
 // Social). Respeta el mute de /ajustes y prefers-reduced-motion.
 export function reproducirTono(tipo: TipoTono) {
+  oyentesTono.forEach((o) => o(tipo));
   if (!sonidoHabilitado() || prefiereMenosEstimulo()) return;
   if (typeof window === "undefined") return;
 
   try {
     if (tipo === "correcto") {
-      reproducirSecuencia([{ freq: 880, inicio: 0, duracion: 0.22 }]);
+      const p = SONIDOS[paqueteAcierto];
+      if (p && paqueteAcierto !== "clasico") {
+        reproducirSecuencia(p.notas.map((n) => ({ freq: 880 * n.rel, inicio: n.inicio, duracion: n.duracion, tipoOnda: n.onda, volumen: n.volumen })));
+      } else {
+        reproducirSecuencia([{ freq: 880, inicio: 0, duracion: 0.22 }]);
+      }
     } else if (tipo === "error") {
       reproducirSecuencia([{ freq: 220, inicio: 0, duracion: 0.22 }]);
     } else if (tipo === "nivel") {

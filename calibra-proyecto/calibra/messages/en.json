@@ -1105,7 +1105,8 @@
       "modoOscuro": "Dark mode",
       "idioma": "Language",
       "salir": "Log out"
-    }
+    },
+    "recompensas": "Rewards"
   },
   "Landing": {
     "metadata": {
@@ -4593,6 +4594,171 @@
           "description": "Stacks, queues, sets, maps and O(n) vs O(n²) complexity — the hardest mode."
         }
       }
+    }
+  },
+  "Recompensas": {
+    "metadata": {
+      "title": "Rewards · Prodigia",
+      "description": "Capsules, daily missions, calendar and city collections."
+    },
+    "titulo": "Rewards",
+    "subtitulo": "Everything is earned by playing: none of this can be bought.",
+    "sinBase": "Rewards turn on as soon as the server is updated. Keep playing: what you do today counts.",
+    "capsulas": {
+      "titulo": "Capsules to open",
+      "vacio": "No capsules right now. Play your first game of the day, finish your missions or level up to earn one.",
+      "abrir": "Open",
+      "queSale": "What can come out?",
+      "probabilidades": "What can come out and the odds. If you get something you already own, it turns into Sparks. After 10 capsules with nothing rare, the next one has one for sure.",
+      "tocaParaAbrir": "Tap it to open it!",
+      "abriendo": "Opening…",
+      "genial": "Awesome!",
+      "yaTenias": "You already had {nombre}: it turned into Sparks.",
+      "esTuyo": "It's yours. Equip it from the shop.",
+      "error": "Couldn't open it right now. Try again.",
+      "cerrar": "Close"
+    },
+    "calendario": {
+      "titulo": "7-day calendar",
+      "dia": "Day {n}",
+      "reclamar": "Claim day {n}",
+      "juegaPrimero": "Play a game today to claim day {n}.",
+      "vuelveManana": "Come back tomorrow for day {n}. If you miss a day, it starts over (a streak freeze covers it).",
+      "reclamado": "Today's prize claimed!",
+      "capsula": "Streak capsule! Open it above.",
+      "premio": {
+        "chispas": "{n} Sparks",
+        "hielo": "1 ice",
+        "tiempo_extra": "+3 s",
+        "capsula": "Streak capsule"
+      }
+    },
+    "misiones": {
+      "titulo": "Today's missions",
+      "nota": "Finish all 3 and get an extra capsule.",
+      "reclamar": "Claim",
+      "tresCompletas": "All 3 missions! You earned a capsule.",
+      "chispas": "+{n} Sparks",
+      "tipos": {
+        "aciertos": "Get {n} answers right",
+        "aciertos_mundo": "Get {n} right in {mundo}",
+        "experiencia": "Earn {n} Experience",
+        "duelo": "Win a duel",
+        "leccion": "Complete a lesson",
+        "mundos": "Practice in {n} different worlds",
+        "rapidas": "Answer right {n} times in under 3 s",
+        "reto_diario": "Complete the daily challenge"
+      }
+    },
+    "regalos": {
+      "titulo": "Gifts from your friends",
+      "recibio": "{nombre} gave you {regalo}",
+      "unHielo": "an ice",
+      "unEscudo": "a shield",
+      "recibir": "Receive",
+      "delDia": "Gift of the day",
+      "puedes": "You can send 1 ice or 1 shield per day to a friend.",
+      "yaAEste": "You already sent them your gift today.",
+      "yaAOtro": "You already sent today's gift to another friend.",
+      "hielo": "Gift an ice",
+      "escudo": "Gift a shield",
+      "enviado": "You sent {regalo} to {nombre}"
+    },
+    "colecciones": {
+      "titulo": "City collections",
+      "nota": "6 pieces per city: frame, background, trail, effect, emote and title. Complete it to win its animated frame.",
+      "de": "{ciudad} collection",
+      "enTienda": "in the shop",
+      "enCapsulas": "in city or league capsules",
+      "irTienda": "Go to the shop",
+      "categorias": {
+        "marco": "Frame",
+        "fondo": "Background",
+        "estela": "Trail",
+        "efecto": "Effect",
+        "emote": "Emote",
+        "titulo": "Title"
+      }
+    },
+    "inicio": {
+      "titulo": "Rewards",
+      "nada": "Missions, calendar and capsules",
+      "notaNada": "Play to earn capsules and finish your daily missions",
+      "pendientes": "You have {n, plural, one {# reward} other {# rewards}} to claim",
+      "toca": "Tap to claim"
+    },
+    "emotes": {
+      "titulo": "Emotes for your rival"
+    },
+    "ayudas": {
+      "pista": "💡 Hint ×{n}",
+      "segunda": "🔁 2nd chance ×{n}",
+      "segundaLista": "🛡️ 2nd chance ready",
+      "otraVez": "Second chance! Try again."
+    },
+    "tienda": {
+      "titulo": "More in the Bazaar",
+      "subtitulo": "Trails, effects and sounds for your games, your city on your Badge, emotes, the frame of the month and bundles.",
+      "pestanas": {
+        "paquetes": "Bundles",
+        "partida": "In game",
+        "placa": "Badge",
+        "duelos": "Duels",
+        "temporada": "Frame of the month",
+        "utilidades": "Boosts"
+      },
+      "comprar": "Buy for {n}",
+      "confirmar": "Sure? Confirm purchase",
+      "usar": "Use",
+      "quitar": "Remove",
+      "enUso": "In use",
+      "tuyo": "Yours",
+      "teFaltan": "You need {n} more Sparks",
+      "escuchar": "▶ Listen",
+      "tienes": "You have {n}",
+      "comprado": "{nombre} is yours!",
+      "quedanDias": "This month only · {n, plural, one {# day} other {# days}} left",
+      "paqueteContiene": "Includes:",
+      "yaTodo": "You already own everything in this bundle.",
+      "emoteTuyo": "You own it: it shows up in your duels.",
+      "descripciones": {
+        "estela": "Your streak flame during games.",
+        "efecto": "What bursts every time you get it right.",
+        "sonido": "The sound of your correct answers.",
+        "emote": "To send to your rival in duels.",
+        "ciudad_placa": "A city skyline behind your avatar, on your Badge.",
+        "titulo": "Cosmetic title for your Badge.",
+        "paquete": "Everything together, 25% cheaper than separately.",
+        "temporada": "Seasonal frame: only on sale this month."
+      },
+      "rareza": {
+        "comun": "Common",
+        "raro": "Rare",
+        "epico": "Epic",
+        "legendario": "Legendary"
+      }
+    },
+    "invitado": "Capsules, missions and the calendar are for registered accounts. Create your account to start earning them.",
+    "detalle": {
+      "nivel": "Level {n}",
+      "racha": "{n}-day streak",
+      "calendario": "Calendar day 7",
+      "dominio": "{ciudad} techniques",
+      "ciudad": "{ciudad} level {n}",
+      "liga": "League place {n}",
+      "coleccion": "{ciudad} collection",
+      "misiones": "Today's 3 missions",
+      "diaria": "For playing today"
+    },
+    "premios": {
+      "chispas": "{min}–{max} Sparks",
+      "chispasFijo": "{n} Sparks",
+      "hielo": "1 ice",
+      "tiempo_extra": "1 × +3 seconds",
+      "escudo": "1 shield",
+      "cosmetico": "A {rareza} cosmetic",
+      "coleccion": "A {ciudad} collection piece you don't have",
+      "marcoColeccion": "The {ciudad} collection frame"
     }
   }
 }

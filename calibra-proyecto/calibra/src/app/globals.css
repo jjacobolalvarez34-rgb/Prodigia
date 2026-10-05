@@ -608,6 +608,111 @@ select:disabled {
   --mn-glow: rgba(244, 114, 182, 0.55);
   --mn-glow-suave: rgba(244, 114, 182, 0.25);
 }
+
+/* Tienda ampliada (0248): marcos de temporada (uno por mes) y de colección
+   (al completar las 6 piezas de una ciudad). Mismo pulso que los neón; el de
+   colección además hace girar un brillo alrededor del anillo del mundo
+   (AvatarConMarco). */
+.marco-temporada-aurora {
+  --mn-color: #22d3ee;
+  --mn-glow: rgba(168, 85, 247, 0.55);
+  --mn-glow-suave: rgba(34, 211, 238, 0.3);
+}
+.marco-temporada-brasas {
+  --mn-color: #f97316;
+  --mn-glow: rgba(220, 38, 38, 0.55);
+  --mn-glow-suave: rgba(249, 115, 22, 0.3);
+}
+.marco-temporada-escarcha {
+  --mn-color: #e0f2fe;
+  --mn-glow: rgba(56, 189, 248, 0.55);
+  --mn-glow-suave: rgba(224, 242, 254, 0.3);
+}
+.marco-temporada-cosmos {
+  --mn-color: #6366f1;
+  --mn-glow: rgba(244, 114, 182, 0.55);
+  --mn-glow-suave: rgba(99, 102, 241, 0.3);
+}
+.marco-coleccion-numeria {
+  --mn-color: #6c4cf1;
+  --mn-glow: rgba(108, 76, 241, 0.6);
+  --mn-glow-suave: rgba(108, 76, 241, 0.3);
+}
+.marco-coleccion-enigmia {
+  --mn-color: #0e9f6e;
+  --mn-glow: rgba(14, 159, 110, 0.6);
+  --mn-glow-suave: rgba(14, 159, 110, 0.3);
+}
+.marco-coleccion-geografia {
+  --mn-color: #1e7a8c;
+  --mn-glow: rgba(30, 122, 140, 0.6);
+  --mn-glow-suave: rgba(30, 122, 140, 0.3);
+}
+.marco-coleccion-quimia {
+  --mn-color: #c026d3;
+  --mn-glow: rgba(192, 38, 211, 0.6);
+  --mn-glow-suave: rgba(192, 38, 211, 0.3);
+}
+.marco-coleccion-anatomia {
+  --mn-color: #8b2942;
+  --mn-glow: rgba(139, 41, 66, 0.6);
+  --mn-glow-suave: rgba(139, 41, 66, 0.3);
+}
+.marco-coleccion-melodia {
+  --mn-color: #b8860b;
+  --mn-glow: rgba(184, 134, 11, 0.6);
+  --mn-glow-suave: rgba(184, 134, 11, 0.3);
+}
+.marco-coleccion-trigonometria {
+  --mn-color: #84cc16;
+  --mn-glow: rgba(132, 204, 22, 0.6);
+  --mn-glow-suave: rgba(132, 204, 22, 0.3);
+}
+.marco-coleccion-historia {
+  --mn-color: #a0522d;
+  --mn-glow: rgba(160, 82, 45, 0.6);
+  --mn-glow-suave: rgba(160, 82, 45, 0.3);
+}
+.marco-coleccion-calculia {
+  --mn-color: #4338ca;
+  --mn-glow: rgba(67, 56, 202, 0.6);
+  --mn-glow-suave: rgba(67, 56, 202, 0.3);
+}
+.marco-coleccion-circuitia {
+  --mn-color: #f59e0b;
+  --mn-glow: rgba(245, 158, 11, 0.6);
+  --mn-glow-suave: rgba(245, 158, 11, 0.3);
+}
+.marco-coleccion-estadistica {
+  --mn-color: #0d9488;
+  --mn-glow: rgba(13, 148, 136, 0.6);
+  --mn-glow-suave: rgba(13, 148, 136, 0.3);
+}
+.marco-coleccion-naipia {
+  --mn-color: #b91c1c;
+  --mn-glow: rgba(185, 28, 28, 0.6);
+  --mn-glow-suave: rgba(185, 28, 28, 0.3);
+}
+.marco-coleccion-codia {
+  --mn-color: #06b6d4;
+  --mn-glow: rgba(6, 182, 212, 0.6);
+  --mn-glow-suave: rgba(6, 182, 212, 0.3);
+}
+@keyframes marco-coleccion-giro {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.marco-coleccion-brillo {
+  background: conic-gradient(from 0deg, transparent 0deg, var(--mc-color) 60deg, transparent 120deg, transparent 360deg);
+  animation: marco-coleccion-giro 3.2s linear infinite;
+  filter: blur(4px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .marco-coleccion-brillo {
+    animation: none;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .marco-neon-perfil {
     animation: none;

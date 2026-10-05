@@ -15,6 +15,7 @@ import LevelDial from "../LevelDial";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
 import { usarConsumible } from "@/lib/practica/consumibles";
+import { useAyudasPartida } from "@/lib/practica/useAyudasPartida";
 
 const TOTAL_PROBLEMAS = 10;
 const DURACION_MS = 60_000;
@@ -91,11 +92,14 @@ export default function FraccionSprintRunner({
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<ProblemaFraccion[]>([]);
   const shownAtRef = useRef(0);
+  // Pista y segunda oportunidad de la tienda (0248).
+  const ayudas = useAyudasPartida(true);
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
   const respondidosRef = useRef(0);
 
   function siguiente() {
+    ayudas.nuevaPregunta();
     const nuevo = generarSinRepetir(() => generarProblemaFraccion(nivelPorTipoRef.current, seleccion), claveFraccion, usadosRef.current);
     setProblema(nuevo);
     setNivel(nivelPorTipoRef.current[nuevo.tipo] ?? 1);
@@ -235,6 +239,13 @@ export default function FraccionSprintRunner({
     submittingRef.current = true;
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const correct = opcion === problema.respuestaComparacion;
+    if (!correct && ayudas.consumirSegunda(opcion)) {
+      reproducirTono("error");
+      setNum("");
+      setDen("");
+      submittingRef.current = false;
+      return;
+    }
     setFeedback(correct ? "correcto" : "incorrecto");
     if (!correct) {
       setMiRespuesta(opcion);
@@ -251,6 +262,13 @@ export default function FraccionSprintRunner({
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const [respNum, respDen] = problema.respuestaFraccion ?? [0, 0];
     const correct = Number(num) === respNum && Number(den) === respDen;
+    if (!correct && ayudas.consumirSegunda()) {
+      reproducirTono("error");
+      setNum("");
+      setDen("");
+      submittingRef.current = false;
+      return;
+    }
     if (!correct) {
       setMiRespuesta(`${num}/${den}`);
       setRespuestaCorrecta(`${respNum}/${respDen}`);
@@ -280,6 +298,7 @@ export default function FraccionSprintRunner({
           <div className="flex items-center gap-3">
             <ConsumiblesPartida
               hielos={hielosDisp}
+              ayudas={ayudas}
               tiemposExtra={tiemposExtraDisp}
               usando={usandoConsumible}
               onUsarHielo={usarHielo}

@@ -21,6 +21,7 @@ import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
 import { usarConsumible } from "@/lib/practica/consumibles";
 import { COLOR_CODIA } from "./colores";
+import { useAyudasPartida } from "@/lib/practica/useAyudasPartida";
 
 const TOTAL_PREGUNTAS = 10;
 const DURACION_MS = 60_000;
@@ -77,6 +78,8 @@ export default function CodiaSprintRunner({
   const [hielosDisp, setHielosDisp] = useState(hielosIniciales);
   const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
   const [usandoConsumible, setUsandoConsumible] = useState<TipoUso>(null);
+  // Pista y segunda oportunidad de la tienda (0248).
+  const ayudas = useAyudasPartida(!duelId);
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const correctosRef = useRef(0);
   const [problema, setProblema] = useState<ProblemaCodia | null>(null);
@@ -105,6 +108,7 @@ export default function CodiaSprintRunner({
   const finishedRef = useRef(false);
 
   function siguiente() {
+    ayudas.nuevaPregunta();
     const p = generarSinRepetir(() => generarProblemaCodia(modo, nivelRef.current, lenguaje), claveCodia, usadosRef.current);
     setProblema(p);
     setCardKey((k) => k + 1);
@@ -238,6 +242,13 @@ export default function CodiaSprintRunner({
     // eslint-disable-next-line react-hooks/purity
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const correct = opcion === problema.respuesta;
+    if (!correct && ayudas.consumirSegunda(opcion)) {
+      reproducirTono("error");
+      setSeleccion(null);
+      setRespondido(false);
+      submittingRef.current = false;
+      return;
+    }
     registrar(correct, timeMs, opcion.split("\n").join(" ↵ "));
   }
 
@@ -265,6 +276,8 @@ export default function CodiaSprintRunner({
             {!duelId && (
               <ConsumiblesPartida
                 hielos={hielosDisp}
+                ayudas={ayudas}
+                onPista={() => ayudas.usarPista(problema.opciones, problema.respuesta)}
                 tiemposExtra={tiemposExtraDisp}
                 usando={usandoConsumible}
                 onUsarHielo={usarHielo}
@@ -311,6 +324,7 @@ export default function CodiaSprintRunner({
 
         <div className="grid w-full grid-cols-1 gap-2" role="group" aria-label={t("opciones")}>
           {problema.opciones.map((op) => {
+              if (ayudas.ocultas.has(op)) return null;
             const esElegida = seleccion === op;
             const esCorrecta = respondido && op === problema.respuesta;
             return (

@@ -1105,7 +1105,8 @@
       "modoOscuro": "Modo oscuro",
       "idioma": "Idioma",
       "salir": "Salir"
-    }
+    },
+    "recompensas": "Recompensas"
   },
   "Landing": {
     "metadata": {
@@ -4593,6 +4594,171 @@
           "description": "Pilas, colas, conjuntos, mapas y complejidad O(n) frente a O(n²) — el modo más difícil."
         }
       }
+    }
+  },
+  "Recompensas": {
+    "metadata": {
+      "title": "Recompensas · Prodigia",
+      "description": "Cápsulas, misiones del día, calendario y colecciones por ciudad."
+    },
+    "titulo": "Recompensas",
+    "subtitulo": "Todo se gana jugando: nada de esto se compra.",
+    "sinBase": "Las recompensas se activan apenas el servidor se actualice. Mientras tanto, sigue jugando: lo que hagas hoy cuenta.",
+    "capsulas": {
+      "titulo": "Cápsulas por abrir",
+      "vacio": "No tienes cápsulas ahora. Juega tu primera partida del día, completa las misiones o sube de nivel para ganar una.",
+      "abrir": "Abrir",
+      "queSale": "¿Qué puede salir?",
+      "probabilidades": "Qué puede salir y con qué probabilidad. Si sale algo que ya tienes, se convierte en Chispas. Cada 10 cápsulas sin nada raro, la siguiente trae uno seguro.",
+      "tocaParaAbrir": "¡Tócala para abrirla!",
+      "abriendo": "Abriendo…",
+      "genial": "¡Genial!",
+      "yaTenias": "Ya tenías {nombre}: se convirtió en Chispas.",
+      "esTuyo": "Ya es tuyo. Póntelo desde la tienda.",
+      "error": "No se pudo abrir ahora. Inténtalo de nuevo.",
+      "cerrar": "Cerrar"
+    },
+    "calendario": {
+      "titulo": "Calendario de 7 días",
+      "dia": "Día {n}",
+      "reclamar": "Reclamar el día {n}",
+      "juegaPrimero": "Juega una partida hoy para reclamar el día {n}.",
+      "vuelveManana": "Vuelve mañana por el día {n}. Si faltas un día, vuelve a empezar (un congelamiento de racha lo cubre).",
+      "reclamado": "¡Premio del día reclamado!",
+      "capsula": "¡Cápsula de racha! Ábrela arriba.",
+      "premio": {
+        "chispas": "{n} Chispas",
+        "hielo": "1 hielo",
+        "tiempo_extra": "+3 s",
+        "capsula": "Cápsula de racha"
+      }
+    },
+    "misiones": {
+      "titulo": "Misiones de hoy",
+      "nota": "Completa las 3 y te llevas una cápsula extra.",
+      "reclamar": "Reclamar",
+      "tresCompletas": "¡Las 3 misiones! Ganaste una cápsula.",
+      "chispas": "+{n} Chispas",
+      "tipos": {
+        "aciertos": "Acierta {n} respuestas",
+        "aciertos_mundo": "Acierta {n} en {mundo}",
+        "experiencia": "Gana {n} de Experiencia",
+        "duelo": "Gana un duelo",
+        "leccion": "Completa una lección",
+        "mundos": "Practica en {n} mundos distintos",
+        "rapidas": "Responde bien {n} veces en menos de 3 s",
+        "reto_diario": "Completa el reto diario"
+      }
+    },
+    "regalos": {
+      "titulo": "Regalos de tus amigos",
+      "recibio": "{nombre} te regaló {regalo}",
+      "unHielo": "un hielo",
+      "unEscudo": "un escudo",
+      "recibir": "Recibir",
+      "delDia": "Regalo del día",
+      "puedes": "Puedes mandar 1 hielo o 1 escudo por día a un amigo.",
+      "yaAEste": "Hoy ya le mandaste tu regalo.",
+      "yaAOtro": "Hoy ya mandaste tu regalo a otro amigo.",
+      "hielo": "Regalar hielo",
+      "escudo": "Regalar escudo",
+      "enviado": "Le mandaste {regalo} a {nombre}"
+    },
+    "colecciones": {
+      "titulo": "Colecciones por ciudad",
+      "nota": "6 piezas por ciudad: marco, fondo, estela, efecto, emote y título. Complétala y ganas su marco animado.",
+      "de": "Colección de {ciudad}",
+      "enTienda": "en la tienda",
+      "enCapsulas": "en cápsulas de ciudad o de liga",
+      "irTienda": "Ir a la tienda",
+      "categorias": {
+        "marco": "Marco",
+        "fondo": "Fondo",
+        "estela": "Estela",
+        "efecto": "Efecto",
+        "emote": "Emote",
+        "titulo": "Título"
+      }
+    },
+    "inicio": {
+      "titulo": "Recompensas",
+      "nada": "Misiones, calendario y cápsulas",
+      "notaNada": "Juega para ganar cápsulas y completar tus misiones del día",
+      "pendientes": "Tienes {n, plural, one {# recompensa} other {# recompensas}} por reclamar",
+      "toca": "Toca para reclamar"
+    },
+    "emotes": {
+      "titulo": "Emotes para tu rival"
+    },
+    "ayudas": {
+      "pista": "💡 Pista ×{n}",
+      "segunda": "🔁 2ª oportunidad ×{n}",
+      "segundaLista": "🛡️ 2ª oportunidad lista",
+      "otraVez": "¡Segunda oportunidad! Inténtalo otra vez."
+    },
+    "tienda": {
+      "titulo": "Más en el Bazar",
+      "subtitulo": "Estelas, efectos y sonidos para tus partidas, tu ciudad en la Placa, emotes, el marco del mes y paquetes.",
+      "pestanas": {
+        "paquetes": "Paquetes",
+        "partida": "Partida",
+        "placa": "Placa",
+        "duelos": "Duelos",
+        "temporada": "Marco del mes",
+        "utilidades": "Ayudas"
+      },
+      "comprar": "Comprar por {n}",
+      "confirmar": "¿Seguro? Confirmar compra",
+      "usar": "Usar",
+      "quitar": "Quitar",
+      "enUso": "En uso",
+      "tuyo": "Tuyo",
+      "teFaltan": "Te faltan {n} Chispas",
+      "escuchar": "▶ Escuchar",
+      "tienes": "Tienes {n}",
+      "comprado": "¡{nombre} es tuyo!",
+      "quedanDias": "Solo este mes · quedan {n, plural, one {# día} other {# días}}",
+      "paqueteContiene": "Incluye:",
+      "yaTodo": "Ya tienes todo lo de este paquete.",
+      "emoteTuyo": "Ya lo tienes: aparece en tus duelos.",
+      "descripciones": {
+        "estela": "La llama de tu racha en las partidas.",
+        "efecto": "Lo que estalla cada vez que aciertas.",
+        "sonido": "El sonido de tus aciertos.",
+        "emote": "Para mandarle a tu rival en los duelos.",
+        "ciudad_placa": "Un skyline de la ciudad detrás de tu avatar, en tu Placa.",
+        "titulo": "Título cosmético para tu Placa.",
+        "paquete": "Todo junto, 25 % más barato que por separado.",
+        "temporada": "Marco de temporada: solo se vende este mes."
+      },
+      "rareza": {
+        "comun": "Común",
+        "raro": "Raro",
+        "epico": "Épico",
+        "legendario": "Legendario"
+      }
+    },
+    "invitado": "Las cápsulas, misiones y el calendario son para cuentas registradas. Crea tu cuenta para empezar a ganarlas.",
+    "detalle": {
+      "nivel": "Nivel {n}",
+      "racha": "{n} días de racha",
+      "calendario": "Día 7 del calendario",
+      "dominio": "Técnicas de {ciudad}",
+      "ciudad": "{ciudad} nivel {n}",
+      "liga": "Puesto {n} de la liga",
+      "coleccion": "Colección de {ciudad}",
+      "misiones": "Las 3 misiones de hoy",
+      "diaria": "Por jugar hoy"
+    },
+    "premios": {
+      "chispas": "{min}–{max} Chispas",
+      "chispasFijo": "{n} Chispas",
+      "hielo": "1 hielo",
+      "tiempo_extra": "1 × +3 segundos",
+      "escudo": "1 escudo",
+      "cosmetico": "Un cosmético {rareza}",
+      "coleccion": "Una pieza de la colección de {ciudad} que te falte",
+      "marcoColeccion": "El marco de colección de {ciudad}"
     }
   }
 }

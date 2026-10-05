@@ -122,8 +122,9 @@ export default function Header({ autenticado = false, invitado = false }: Props)
     { href: "/social", label: t("social") },
     { href: "/clanes", label: t("clanes") },
     { href: "/tienda", label: t("tienda") },
+    { href: "/recompensas", label: t("recompensas") },
     { href: "/pro", label: t("pro") },
-  ].filter((link) => !invitado || (link.href !== "/rankeds" && link.href !== "/social" && link.href !== "/clanes"));
+  ].filter((link) => !invitado || (link.href !== "/rankeds" && link.href !== "/social" && link.href !== "/clanes" && link.href !== "/recompensas"));
 
   return (
     <header className="border-b border-border">

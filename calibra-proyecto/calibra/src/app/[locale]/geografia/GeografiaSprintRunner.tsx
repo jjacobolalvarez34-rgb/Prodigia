@@ -23,6 +23,7 @@ import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
 import { usarConsumible } from "@/lib/practica/consumibles";
 import GeografiaMapa, { COLOR_GEOGRAFIA } from "./GeografiaMapa";
+import { useAyudasPartida } from "@/lib/practica/useAyudasPartida";
 
 // Extraído a un helper de módulo (mismo criterio que elegirPaisAleatorio/
 // elegirPreguntaAvanzada, ninguno de los dos vive dentro del componente)
@@ -90,6 +91,8 @@ export default function GeografiaSprintRunner({
   const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
   const [usandoConsumible, setUsandoConsumible] = useState<TipoUso>(null);
   const paises = PAISES_POR_CONTINENTE[continente];
+  // Pista y segunda oportunidad de la tienda (0248).
+  const ayudas = useAyudasPartida(!duelId);
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const correctosRef = useRef(0);
   const [pais, setPais] = useState<PaisAmerica | PreguntaAvanzada | null>(null);
@@ -116,6 +119,7 @@ export default function GeografiaSprintRunner({
   const finishedRef = useRef(false);
 
   function siguiente() {
+    ayudas.nuevaPregunta();
     // Sección 4: calibración alta (8-10) mezcla, con probabilidad,
     // ciudades/ríos/puntos de referencia reales (texto, ver
     // geografiaAvanzada.ts) junto al mapa de países de siempre — en
@@ -189,6 +193,13 @@ export default function GeografiaSprintRunner({
 
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const correct = id === pais.id;
+    if (!correct && ayudas.consumirSegunda(id)) {
+      reproducirTono("error");
+      setSeleccionId(null);
+      setRespondido(false);
+      submittingRef.current = false;
+      return;
+    }
     reproducirTono(correct ? "correcto" : "error");
     const rachaActual = registrarResultado(correct);
 
@@ -290,6 +301,8 @@ export default function GeografiaSprintRunner({
             {!duelId && (
               <ConsumiblesPartida
                 hielos={hielosDisp}
+                ayudas={ayudas}
+                onPista={esPreguntaAvanzada(pais) ? () => ayudas.usarPista(pais.opciones.map((o) => o.id), pais.id) : undefined}
                 tiemposExtra={tiemposExtraDisp}
                 usando={usandoConsumible}
                 onUsarHielo={usarHielo}
@@ -338,6 +351,7 @@ export default function GeografiaSprintRunner({
             <p className="text-center font-display text-lg font-bold text-foreground">{pais.pregunta}</p>
             <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
               {pais.opciones.map((o) => {
+              if (ayudas.ocultas.has(o.id)) return null;
                 const esCorrecta = respondido && o.id === pais.id;
                 const esIncorrectaElegida = respondido && seleccionId === o.id && o.id !== pais.id;
                 return (

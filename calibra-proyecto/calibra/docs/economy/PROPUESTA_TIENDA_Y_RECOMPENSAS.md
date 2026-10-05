@@ -1,9 +1,21 @@
 # Propuesta: más cosas en la tienda y recompensas que enganchen (sin pase de batalla)
 
-Estado: **propuesta para decidir**. Nada de esto está implementado todavía. Cuando se apruebe,
-cada punto se hace en la web y en la app a la vez (`docs/PARIDAD_APP_WEB.md`) y con su
-migración: los precios, las probabilidades y lo que toca cada recompensa los decide la base, nunca
-el cliente.
+Estado: **aprobada e implementada (2026-10-05)** en la web y en la app (`docs/PARIDAD_APP_WEB.md`).
+Los precios, las probabilidades y lo que toca cada recompensa los decide la base, nunca el cliente.
+
+| Pieza | Base | Lógica compartida | Web | App |
+|---|---|---|---|---|
+| Catálogo de cosméticos, compra, paquetes, temporada, utilidades | `0248_catalogo_cosmeticos_y_tienda.sql` | `src/lib/recompensas/catalogo.ts` (+ test de precios) | `tienda/TiendaAmpliada.tsx` | `app/tienda.tsx` (pestañas nuevas) |
+| Cápsulas, misiones, calendario, colecciones, regalos | `0249_capsulas_misiones_calendario.sql` | `src/lib/recompensas/api.ts` | `/recompensas`, `TarjetaRecompensas` | `app/recompensas.tsx`, tarjeta en Hoy |
+| Estela, efecto y sonido de acierto | columnas de `profiles` (0248) | `ESTELAS`, `EFECTOS`, `particulasDe`, `SONIDOS` | `RachaFuego`, `EfectoAciertoGlobal`, `lib/sonido.ts` | `Sprint.tsx`, `EfectoAcierto`, `efectos.ts` + `.wav` |
+| Pista y segunda oportunidad | `usar_ayuda_partida` (0248) | — | `useAyudasPartida` + `ConsumiblesPartida` en los 15 modos | `useConsumibles` en los 3 sprints |
+| Emotes de duelo | — (canal en vivo `duelo:<id>:vivo`, evento `emote`) | `EMOTES` | `EmotesDuelo` | `EmotesDuelo` |
+| Ciudad de la Placa | `ciudad_placa_de` (0248) | `CIUDADES` | `CiudadSkyline` en el perfil | `Placa.tsx` |
+| Anuncio | `0250_anuncio_recompensas.sql` | | | |
+
+Ajustes respecto del texto de abajo: el "título" de cada colección es «Habitante de <ciudad>»; los
+marcos de temporada son 4 (Aurora, Brasas, Escarcha, Cosmos) y rotan mes a mes; la cápsula de nivel
+es aparte de las Chispas de regalo que ya da subir de nivel.
 
 ## La idea en una frase
 

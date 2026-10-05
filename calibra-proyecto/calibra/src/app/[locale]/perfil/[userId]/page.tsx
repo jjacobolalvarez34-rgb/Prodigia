@@ -12,6 +12,8 @@ import ReportarBoton from "./ReportarBoton";
 import AmistadBoton, { type EstadoAmistad } from "./AmistadBoton";
 import EstandarteClan from "@/components/clanes/EstandarteClan";
 import FondoPerfilCapa, { tieneFondoPerfil } from "@/components/FondoPerfilCapa";
+import CiudadSkyline from "@/components/recompensas/CiudadSkyline";
+import RegalarAmigo from "@/components/recompensas/RegalarAmigo";
 
 interface Props {
   params: Promise<{ userId: string }>;
@@ -113,6 +115,9 @@ export default async function PerfilPublicoPage({ params }: Props) {
   if (amistad?.estado === "aceptada") estadoAmistad = "amigos";
   else if (amistad?.estado === "pendiente") estadoAmistad = amistad.user_id === user.id ? "enviada" : "recibida";
 
+  // Ciudad de la Placa (tienda ampliada, 0248): skyline detrás del contenido.
+  const { data: ciudadPlaca } = await supabase.rpc("ciudad_placa_de", { p_user_id: userId });
+
   return (
     <>
       <Header autenticado invitado={user.is_anonymous} />
@@ -121,6 +126,11 @@ export default async function PerfilPublicoPage({ params }: Props) {
           className={`relative overflow-hidden rounded-2xl border-2 text-center shadow-sm ${claro ? "" : "bg-surface"} ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}
         >
           <FondoPerfilCapa fondoPerfil={fondoPerfil} fondoPerfilUrl={fondoPerfilUrl} />
+          {typeof ciudadPlaca === "string" && (
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 opacity-80">
+              <CiudadSkyline ciudad={ciudadPlaca} alto={110} ancho={720} />
+            </div>
+          )}
           <div className="relative flex flex-col items-center gap-3 px-6 py-8">
           <AvatarConMarco url={perfil.avatar_url} nombre={perfil.display_name} marco={marcoPerfil} size={88} />
           <h1 className={`font-display text-2xl font-bold tracking-tight ${claseTexto}`}>
@@ -249,6 +259,7 @@ export default async function PerfilPublicoPage({ params }: Props) {
 
         <div className="flex flex-col items-center gap-3">
           <AmistadBoton userId={perfil.id} estadoInicial={estadoAmistad} />
+          {estadoAmistad === "amigos" && <RegalarAmigo amigoId={perfil.id} nombre={perfil.display_name ?? ""} />}
           <ReportarBoton userId={perfil.id} />
         </div>
       </div>

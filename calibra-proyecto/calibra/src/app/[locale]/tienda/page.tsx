@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import TiendaClient from "./TiendaClient";
+import TiendaAmpliada from "./TiendaAmpliada";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Tienda.metadata");
@@ -57,6 +58,7 @@ export default async function TiendaPage() {
         nivelesMundo={nivelesMundo}
         fechaHoy={hoyIso}
       />
+      <TiendaAmpliada />
     </>
   );
 }

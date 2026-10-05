@@ -20,6 +20,7 @@ import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartid
 import { usarConsumible } from "@/lib/practica/consumibles";
 import CircuitoSVG from "@/components/circuitia/CircuitoSVG";
 import { COLOR_CIRCUITIA } from "./colores";
+import { useAyudasPartida } from "@/lib/practica/useAyudasPartida";
 
 const TOTAL_PREGUNTAS = 10;
 const DURACION_MS = 60_000;
@@ -73,6 +74,8 @@ export default function CircuitiaSprintRunner({
   const [hielosDisp, setHielosDisp] = useState(hielosIniciales);
   const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
   const [usandoConsumible, setUsandoConsumible] = useState<TipoUso>(null);
+  // Pista y segunda oportunidad de la tienda (0248).
+  const ayudas = useAyudasPartida(!duelId);
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const correctosRef = useRef(0);
   const [problema, setProblema] = useState<ProblemaCircuitia | null>(null);
@@ -102,6 +105,7 @@ export default function CircuitiaSprintRunner({
   const finishedRef = useRef(false);
 
   function siguiente() {
+    ayudas.nuevaPregunta();
     const p = generarSinRepetir(() => generarProblemaCircuitia(modo, nivelRef.current), claveCircuitia, usadosRef.current);
     setProblema(p);
     setCardKey((k) => k + 1);
@@ -236,6 +240,14 @@ export default function CircuitiaSprintRunner({
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const valor = Number(respuestaTexto);
     const correct = Math.abs(valor - problema.respuesta) <= problema.tolerancia + 1e-9;
+    if (!correct && ayudas.consumirSegunda()) {
+      reproducirTono("error");
+      setSeleccion(null);
+      setRespondido(false);
+      setRespuestaTexto("");
+      submittingRef.current = false;
+      return;
+    }
     registrar(correct, timeMs, respuestaTexto);
   }
 
@@ -247,6 +259,14 @@ export default function CircuitiaSprintRunner({
     // eslint-disable-next-line react-hooks/purity
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const correct = opcion === problema.respuesta;
+    if (!correct && ayudas.consumirSegunda(opcion)) {
+      reproducirTono("error");
+      setSeleccion(null);
+      setRespondido(false);
+      setRespuestaTexto("");
+      submittingRef.current = false;
+      return;
+    }
     registrar(correct, timeMs, opcion);
   }
 
@@ -273,6 +293,8 @@ export default function CircuitiaSprintRunner({
             {!duelId && (
               <ConsumiblesPartida
                 hielos={hielosDisp}
+                ayudas={ayudas}
+                onPista={problema.entrada === "opciones" ? () => ayudas.usarPista(problema.opciones, String(problema.respuesta)) : undefined}
                 tiemposExtra={tiemposExtraDisp}
                 usando={usandoConsumible}
                 onUsarHielo={usarHielo}
@@ -341,6 +363,7 @@ export default function CircuitiaSprintRunner({
         ) : (
           <div className="grid w-full max-w-sm grid-cols-1 gap-2">
             {problema.opciones.map((op) => {
+              if (ayudas.ocultas.has(op)) return null;
               const esElegida = seleccion === op;
               const esCorrecta = respondido && op === problema.respuesta;
               return (

@@ -1,4 +1,5 @@
 import Avatar from "@/components/Avatar";
+import { ciudadDeMarcoColeccion } from "@/lib/recompensas/catalogo";
 import { MARCOS_MUNDO } from "@/types/database";
 
 interface Props {
@@ -16,7 +17,9 @@ interface Props {
 // vía ESTILO_MARCO_PERFIL y no pasan por acá. El anillo mide ~1.3x el
 // avatar (banda hacia afuera, no hacia adentro) para no tapar la foto.
 export default function AvatarConMarco({ url, nombre, marco, size = 64, className = "" }: Props) {
-  const marcoMundo = MARCOS_MUNDO[marco];
+  // Marco de colección (0248): el anillo del mundo con un brillo que gira.
+  const coleccion = ciudadDeMarcoColeccion(marco);
+  const marcoMundo = MARCOS_MUNDO[coleccion ? coleccion.slug : marco];
   if (!marcoMundo) {
     return <Avatar url={url} nombre={nombre} size={size} className={className} />;
   }
@@ -26,6 +29,13 @@ export default function AvatarConMarco({ url, nombre, marco, size = 64, classNam
 
   return (
     <div className={`relative shrink-0 ${className}`} style={{ width: tamanoAnillo, height: tamanoAnillo }}>
+      {coleccion && (
+        <div
+          aria-hidden="true"
+          className="marco-coleccion-brillo pointer-events-none absolute inset-0 rounded-full"
+          style={{ "--mc-color": coleccion.color } as React.CSSProperties}
+        />
+      )}
       <div className="absolute" style={{ top: offset, left: offset }}>
         <Avatar url={url} nombre={nombre} size={size} />
       </div>

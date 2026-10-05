@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+import { recibirEmote, registrarCanalEmotes } from "./emotes";
 
 export interface ProgresoDuelo {
   respondidos: number;
@@ -42,9 +43,14 @@ export function useProgresoEnVivo({ duelId, miUserId }: Params) {
       setRival({ respondidos: data.respondidos, correctos: data.correctos, racha: data.racha });
     });
 
+    // Emotes de duelo (0248) por el mismo canal.
+    channel.on("broadcast", { event: "emote" }, ({ payload }) => recibirEmote(payload));
+    registrarCanalEmotes(channel, miUserId);
+
     channel.subscribe();
 
     return () => {
+      registrarCanalEmotes(null, null);
       channelRef.current = null;
       supabase.removeChannel(channel);
     };

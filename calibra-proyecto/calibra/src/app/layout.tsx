@@ -6,6 +6,7 @@ import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import DeteccionConexion from "@/components/DeteccionConexion";
 import PageFade from "@/components/PageFade";
 import ChispaClick from "@/components/ChispaClick";
+import EfectoAciertoGlobal from "@/components/recompensas/EfectoAciertoGlobal";
 import NotificacionesDuelo from "@/components/NotificacionesDuelo";
 import AnunciosModal from "@/components/AnunciosModal";
 import RegistrarServiceWorker from "@/components/RegistrarServiceWorker";
@@ -182,6 +183,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </MensajesNoLeidosProvider>
             <DeteccionConexion />
             <NotificacionesDuelo />
+            <EfectoAciertoGlobal />
             <AnunciosModal />
             <RegistrarServiceWorker />
             {/* Solo actúan adentro de la app nativa (Capacitor); 100% inertes en web/PWA */}

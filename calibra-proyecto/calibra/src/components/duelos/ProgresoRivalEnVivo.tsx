@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { IconLlama } from "@/components/icons";
+import EmotesDuelo from "@/components/recompensas/EmotesDuelo";
 
 interface Props {
   total: number;
@@ -26,6 +27,7 @@ export default function ProgresoRivalEnVivo({
   const t = useTranslations("Duelos.progresoRival");
   const color = colorHex ?? "var(--primario)";
   return (
+    <div className="flex flex-col gap-2">
     <div className="flex items-center justify-between text-xs text-texto-secundario">
       <div className="flex items-center gap-1.5">
         <span className="relative flex h-2 w-2">
@@ -58,6 +60,8 @@ export default function ProgresoRivalEnVivo({
             ? t("teLlevaVentaja", { rival: rivalNombre })
             : t("vanParejo", { rival: rivalNombre })}
       </span>
+    </div>
+    <EmotesDuelo />
     </div>
   );
 }

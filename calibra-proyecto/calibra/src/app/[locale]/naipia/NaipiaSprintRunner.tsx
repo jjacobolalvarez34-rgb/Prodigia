@@ -30,6 +30,7 @@ import MemoriaCartas from "@/components/naipia/MemoriaCartas";
 import { crearCronometroRespuesta } from "@/lib/practica/memoriaNaipia";
 import TablaSistema from "@/components/naipia/TablaSistema";
 import { COLOR_NAIPIA } from "./colores";
+import { useAyudasPartida } from "@/lib/practica/useAyudasPartida";
 
 const TOTAL_PREGUNTAS = 10;
 const DURACION_MS = 60_000;
@@ -97,6 +98,8 @@ export default function NaipiaSprintRunner({
   const [hielosDisp, setHielosDisp] = useState(hielosIniciales);
   const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
   const [usandoConsumible, setUsandoConsumible] = useState<TipoUso>(null);
+  // Pista y segunda oportunidad de la tienda (0248).
+  const ayudas = useAyudasPartida(!duelId);
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const correctosRef = useRef(0);
   const [problema, setProblema] = useState<ProblemaNaipia | null>(null);
@@ -126,6 +129,7 @@ export default function NaipiaSprintRunner({
   const finishedRef = useRef(false);
 
   function siguiente() {
+    ayudas.nuevaPregunta();
     const p = generarSinRepetir(() => generarProblemaNaipia(modo, nivelRef.current), claveNaipia, usadosRef.current);
     setProblema(p);
     setCardKey((k) => k + 1);
@@ -271,6 +275,12 @@ export default function NaipiaSprintRunner({
     const timeMs = cronoRef.current.transcurrido();
     const valor = Number(respuestaTexto);
     const correct = Number.isFinite(valor) && Math.abs(valor - problema.respuesta) <= problema.tolerancia + 1e-9;
+    if (!correct && ayudas.consumirSegunda()) {
+      reproducirTono("error");
+      setRespuestaTexto("");
+      submittingRef.current = false;
+      return;
+    }
     registrar(correct, timeMs, respuestaTexto);
   }
 
@@ -306,6 +316,7 @@ export default function NaipiaSprintRunner({
             {!duelId && (
               <ConsumiblesPartida
                 hielos={hielosDisp}
+                ayudas={ayudas}
                 tiemposExtra={tiemposExtraDisp}
                 usando={faseMemoria === "viendo" ? "hielo" : usandoConsumible}
                 onUsarHielo={usarHielo}

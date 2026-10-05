@@ -20,6 +20,7 @@ import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
 import { usarConsumible } from "@/lib/practica/consumibles";
+import { useAyudasPartida } from "@/lib/practica/useAyudasPartida";
 
 const TOTAL_PREGUNTAS = 10;
 // Fase V2: 60s se sentía corto para acertijos de lógica (no es lo mismo
@@ -126,6 +127,8 @@ export default function EnigmiaSprintRunner({
 }: Props) {
   const t = useTranslations("Enigmia.sprintRunner");
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
+  // Pista y segunda oportunidad de la tienda (0248).
+  const ayudas = useAyudasPartida(!duelId);
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const correctosRef = useRef(0);
   const [puzzle, setPuzzle] = useState<LogicPuzzle | null>(null);
@@ -180,6 +183,7 @@ export default function EnigmiaSprintRunner({
   const finishedRef = useRef(false);
 
   function siguiente() {
+    ayudas.nuevaPregunta();
     const p = elegirSiguiente(puzzles, nivelesRef.current, usadosRef.current, categoriaForzada);
     usadosRef.current.add(p.id);
     if (usadosRef.current.size > 200) usadosRef.current = new Set();
@@ -270,6 +274,12 @@ export default function EnigmiaSprintRunner({
 
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const correct = opcion === puzzle.respuesta;
+    if (!correct && ayudas.consumirSegunda(opcion)) {
+      reproducirTono("error");
+      setSeleccion(null);
+      submittingRef.current = false;
+      return;
+    }
     setFeedback(correct ? "correcto" : "incorrecto");
     reproducirTono(correct ? "correcto" : "error");
     const rachaActual = registrarResultado(correct);
@@ -375,6 +385,8 @@ export default function EnigmiaSprintRunner({
             {!duelId && (
               <ConsumiblesPartida
                 hielos={hielosDisp}
+                ayudas={ayudas}
+                onPista={() => ayudas.usarPista(puzzle.contenido.opciones, puzzle.respuesta)}
                 tiemposExtra={tiemposExtraDisp}
                 usando={usandoConsumible}
                 onUsarHielo={usarHielo}
@@ -439,6 +451,7 @@ export default function EnigmiaSprintRunner({
 
             <div className="grid w-full grid-cols-2 gap-2.5">
               {puzzle.contenido.opciones.map((op) => {
+              if (ayudas.ocultas.has(op)) return null;
                 const esElegida = seleccion === op;
                 const esCorrecta = feedback !== "idle" && op === puzzle.respuesta;
                 return (

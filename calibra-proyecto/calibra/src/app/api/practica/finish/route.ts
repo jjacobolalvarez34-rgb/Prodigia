@@ -254,6 +254,11 @@ export async function POST(request: Request) {
   const logrosNuevos = await verificarLogros(supabase, user.id);
   await verificarTitulos(supabase, user.id);
 
+  // Cápsulas (diaria, de nivel, de ciudad…): las otorga la base (0249); si todavía
+  // no está aplicada, no pasa nada.
+  const { data: recompensasRows } = await supabase.rpc("revisar_recompensas");
+  const recompensas = (recompensasRows as { nuevas: number; pendientes: number }[] | null)?.[0] ?? null;
+
   const sprintPrecision = precision(sprintTotal, sprintCorrectos);
   // SEG-02 (migración 0241): resolver_apuesta_si_activa ya NO recibe la
   // precisión del cliente — la calcula ella misma con los attempts reales
@@ -285,6 +290,7 @@ export async function POST(request: Request) {
     metaXpDiaria: registro.meta_xp_diaria,
     logrosNuevos,
     apuesta,
+    recompensas,
     nivelMundo: nivelMundo && {
       world: mundo,
       nivel_mundo: nivelMundo.nivel_mundo_out,

@@ -15,6 +15,7 @@ import BarraTiempo from "@/components/practica/BarraTiempo";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
 import { usarConsumible } from "@/lib/practica/consumibles";
+import { useAyudasPartida } from "@/lib/practica/useAyudasPartida";
 
 const TOTAL_PROBLEMAS = 10;
 const DURACION_MS = 60_000;
@@ -89,10 +90,13 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico, TTipo 
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<T[]>([]);
   const shownAtRef = useRef(0);
+  // Pista y segunda oportunidad de la tienda (0248).
+  const ayudas = useAyudasPartida(true);
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
 
   function siguiente() {
+    ayudas.nuevaPregunta();
     // El enunciado ya es texto único por combinación de números al azar
     // — sirve como clave canónica sin necesitar una función de clave
     // por tipo.
@@ -164,6 +168,12 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico, TTipo 
 
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const correct = Math.abs(Number(respuesta) - problema.respuesta) <= problema.tolerancia + 1e-9;
+    if (!correct && ayudas.consumirSegunda()) {
+      reproducirTono("error");
+      setRespuesta("");
+      submittingRef.current = false;
+      return;
+    }
     setFeedback(correct ? "correcto" : "incorrecto");
     if (!correct) {
       setMiRespuesta(respuesta);
@@ -248,6 +258,7 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico, TTipo 
           <div className="flex items-center gap-3">
             <ConsumiblesPartida
               hielos={hielosDisp}
+              ayudas={ayudas}
               tiemposExtra={tiemposExtraDisp}
               usando={usandoConsumible}
               onUsarHielo={usarHielo}

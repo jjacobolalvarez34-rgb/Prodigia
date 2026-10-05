@@ -70,3 +70,12 @@ lecciones o visuales, junto con `tsc` y `eslint` de los dos proyectos.
 | Widgets de la pantalla de inicio, intro de Mamut | Solo app | Son del sistema Android |
 | Práctica sin conexión | Solo app | La web no funciona sin conexión |
 | Borrar la cuenta | Web (la app abre la web) | Pendiente dentro de la app |
+
+## Recompensas y tienda ampliada (2026-10-05)
+
+Cápsulas, misiones, calendario, colecciones, regalos, estelas, efectos y sonidos de acierto, emotes,
+ciudad de la Placa, marcos de temporada y de colección, paquetes, pista y segunda oportunidad: las
+reglas viven en la base (0248, 0249) y lo visual sale de `src/lib/recompensas/catalogo.ts`, que usan
+las dos. Si se agrega un cosmético, va en la migración (`catalogo_cosmeticos`) **y** en
+`catalogo.ts`; `catalogo.test.ts` falla si el precio o la rareza no coinciden.
+

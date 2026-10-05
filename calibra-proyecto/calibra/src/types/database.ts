@@ -447,6 +447,24 @@ export const ESTILO_MARCO_PERFIL: Record<string, string> = {
   neon_violeta: "border-[#A855F7] marco-neon-perfil marco-neon-violeta",
   neon_cian: "border-[#22D3EE] marco-neon-perfil marco-neon-cian",
   neon_magenta: "border-[#F472B6] marco-neon-perfil marco-neon-magenta",
+  // Tienda ampliada (0248): de temporada y de colección (clases literales, ver arriba).
+  temporada_aurora: "marco-neon-perfil marco-temporada-aurora",
+  temporada_brasas: "marco-neon-perfil marco-temporada-brasas",
+  temporada_escarcha: "marco-neon-perfil marco-temporada-escarcha",
+  temporada_cosmos: "marco-neon-perfil marco-temporada-cosmos",
+  coleccion_numeria: "marco-neon-perfil marco-coleccion-numeria",
+  coleccion_enigmia: "marco-neon-perfil marco-coleccion-enigmia",
+  coleccion_geografia: "marco-neon-perfil marco-coleccion-geografia",
+  coleccion_quimia: "marco-neon-perfil marco-coleccion-quimia",
+  coleccion_anatomia: "marco-neon-perfil marco-coleccion-anatomia",
+  coleccion_melodia: "marco-neon-perfil marco-coleccion-melodia",
+  coleccion_trigonometria: "marco-neon-perfil marco-coleccion-trigonometria",
+  coleccion_historia: "marco-neon-perfil marco-coleccion-historia",
+  coleccion_calculia: "marco-neon-perfil marco-coleccion-calculia",
+  coleccion_circuitia: "marco-neon-perfil marco-coleccion-circuitia",
+  coleccion_estadistica: "marco-neon-perfil marco-coleccion-estadistica",
+  coleccion_naipia: "marco-neon-perfil marco-coleccion-naipia",
+  coleccion_codia: "marco-neon-perfil marco-coleccion-codia",
 };
 
 // Los 3 marcos neón de arriba, con su color para la vidriera de la

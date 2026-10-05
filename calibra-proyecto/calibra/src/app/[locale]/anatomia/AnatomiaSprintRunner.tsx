@@ -18,6 +18,7 @@ import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
 import { usarConsumible } from "@/lib/practica/consumibles";
 import { COLOR_ANATOMIA } from "./colores";
+import { useAyudasPartida } from "@/lib/practica/useAyudasPartida";
 
 const TOTAL_PREGUNTAS = 10;
 const DURACION_MS = 60_000;
@@ -64,6 +65,8 @@ export default function AnatomiaSprintRunner({
   const [hielosDisp, setHielosDisp] = useState(hielosIniciales);
   const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
   const [usandoConsumible, setUsandoConsumible] = useState<TipoUso>(null);
+  // Pista y segunda oportunidad de la tienda (0248).
+  const ayudas = useAyudasPartida(!duelId);
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const [pregunta, setPregunta] = useState<PreguntaAnatomia | null>(null);
   const [cardKey, setCardKey] = useState(0);
@@ -90,6 +93,7 @@ export default function AnatomiaSprintRunner({
   const finishedRef = useRef(false);
 
   function siguiente() {
+    ayudas.nuevaPregunta();
     const p = generarPreguntaAnatomia(modo, nivelRef.current, usadosRef.current);
     usadosRef.current.add(p.clave);
     setPregunta(p);
@@ -160,6 +164,13 @@ export default function AnatomiaSprintRunner({
     // eslint-disable-next-line react-hooks/purity
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const correct = pregunta.tipo === "click" ? opcion === pregunta.objetivoHueso : opcion === pregunta.respuesta;
+    if (!correct && ayudas.consumirSegunda(opcion)) {
+      reproducirTono("error");
+      setSeleccion(null);
+      setRespondido(false);
+      submittingRef.current = false;
+      return;
+    }
     reproducirTono(correct ? "correcto" : "error");
     const rachaActual = registrarResultado(correct);
 
@@ -255,6 +266,8 @@ export default function AnatomiaSprintRunner({
             {!duelId && (
               <ConsumiblesPartida
                 hielos={hielosDisp}
+                ayudas={ayudas}
+                onPista={pregunta.tipo !== "click" ? () => ayudas.usarPista(pregunta.opciones, pregunta.respuesta) : undefined}
                 tiemposExtra={tiemposExtraDisp}
                 usando={usandoConsumible}
                 onUsarHielo={usarHielo}
@@ -309,6 +322,7 @@ export default function AnatomiaSprintRunner({
         ) : (
           <div className="grid w-full max-w-sm grid-cols-2 gap-2">
             {pregunta.opciones.map((op) => {
+              if (ayudas.ocultas.has(op)) return null;
               const esElegida = seleccion === op;
               const esCorrecta = respondido && op === pregunta.respuesta;
               return (

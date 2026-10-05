@@ -21,6 +21,7 @@ import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
 import { usarConsumible } from "@/lib/practica/consumibles";
 import { COLOR_QUIMIA } from "./colores";
+import { useAyudasPartida } from "@/lib/practica/useAyudasPartida";
 
 const TOTAL_PREGUNTAS = 10;
 const DURACION_MS = 60_000;
@@ -70,6 +71,8 @@ export default function QuimiaSprintRunner({
   const [hielosDisp, setHielosDisp] = useState(hielosIniciales);
   const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
   const [usandoConsumible, setUsandoConsumible] = useState<TipoUso>(null);
+  // Pista y segunda oportunidad de la tienda (0248).
+  const ayudas = useAyudasPartida(!duelId);
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const correctosRef = useRef(0);
   const [pregunta, setPregunta] = useState<PreguntaQuimia | null>(null);
@@ -100,6 +103,7 @@ export default function QuimiaSprintRunner({
   const rngRef = useRef(semillaDuelo != null ? mulberry32(semillaDuelo) : Math.random);
 
   function siguiente() {
+    ayudas.nuevaPregunta();
     // "organica" (Sección 5, ítem 3) tiene su propio generador —
     // vive en un módulo aparte para que quimia.ts no tenga que
     // importar de vuelta el banco de compuestos orgánicos.
@@ -179,6 +183,13 @@ export default function QuimiaSprintRunner({
     // eslint-disable-next-line react-hooks/purity
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const correct = opcion === pregunta.respuesta;
+    if (!correct && ayudas.consumirSegunda(opcion)) {
+      reproducirTono("error");
+      setSeleccion(null);
+      setRespondido(false);
+      submittingRef.current = false;
+      return;
+    }
     reproducirTono(correct ? "correcto" : "error");
     const rachaActual = registrarResultado(correct);
 
@@ -266,6 +277,8 @@ export default function QuimiaSprintRunner({
             {!duelId && (
               <ConsumiblesPartida
                 hielos={hielosDisp}
+                ayudas={ayudas}
+                onPista={() => ayudas.usarPista(pregunta.opciones, pregunta.respuesta)}
                 tiemposExtra={tiemposExtraDisp}
                 usando={usandoConsumible}
                 onUsarHielo={usarHielo}
@@ -314,6 +327,7 @@ export default function QuimiaSprintRunner({
         <p className="text-center font-display text-lg font-bold text-foreground"><TextoQuimica texto={pregunta.enunciado} /></p>
         <div className="grid w-full max-w-sm grid-cols-2 gap-2">
           {pregunta.opciones.map((op) => {
+              if (ayudas.ocultas.has(op)) return null;
             const esElegida = seleccion === op;
             const esCorrecta = respondido && op === pregunta.respuesta;
             return (

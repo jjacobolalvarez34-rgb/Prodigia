@@ -23,6 +23,7 @@ import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
 import { usarConsumible } from "@/lib/practica/consumibles";
+import { useAyudasPartida } from "@/lib/practica/useAyudasPartida";
 
 const PAUSA_HIELO_MS = 10_000;
 const BONUS_TIEMPO_EXTRA_MS = 3_000;
@@ -126,6 +127,8 @@ export default function SprintRunner({
 }: Props) {
   const t = useTranslations("Practica.sprint");
   const escudosIniciales = ESCUDOS_BASE + escudosExtra;
+  // Pista y segunda oportunidad de la tienda (0248).
+  const ayudas = useAyudasPartida(!duelId && !fantasma);
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({
     duelId: fantasma ? null : duelId,
     miUserId,
@@ -243,6 +246,7 @@ export default function SprintRunner({
   // esperar a generar nada, cero percepción de carga entre problemas
   // (Fase VV, crítico para el ritmo).
   function activarProblema(p: Problem) {
+    ayudas.nuevaPregunta();
     setProblema(p);
     setCardKey((k) => k + 1);
     setRespuesta("");
@@ -348,6 +352,12 @@ export default function SprintRunner({
 
     const timeMs = Math.round(performance.now() - problemShownAtRef.current);
     const correct = Number(respuesta) === problema.answer;
+    if (!correct && ayudas.consumirSegunda()) {
+      reproducirTono("error");
+      setRespuesta("");
+      submittingRef.current = false;
+      return;
+    }
     setFeedback(correct ? "correcto" : "incorrecto");
     reproducirTono(correct ? "correcto" : "error");
     respuestasRef.current.push({ correct, timeMs });
@@ -500,6 +510,7 @@ export default function SprintRunner({
             {!duelId && !fantasma && (
               <ConsumiblesPartida
                 hielos={hielosDisp}
+                ayudas={ayudas}
                 tiemposExtra={tiemposExtraDisp}
                 usando={usandoConsumible}
                 onUsarHielo={usarHielo}

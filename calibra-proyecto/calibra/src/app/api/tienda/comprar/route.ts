@@ -3,9 +3,21 @@ import { NextResponse } from "next/server";
 import { precioConDescuento } from "@/lib/descuentoDiario";
 import { respuestaError } from "@/lib/api/respuestaError";
 import { COSTOS, type ItemComprable as Item } from "@/lib/tienda/costos";
+import { CATALOGO_NUEVO, PAQUETES, UTILIDADES_NUEVAS } from "@/lib/recompensas/catalogo";
 
 interface Body {
-  item: Item;
+  item: Item | string;
+}
+
+// Tienda ampliada (0248): precio de lo nuevo (catálogo, paquetes y utilidades). La
+// base vuelve a validar el precio, la temporada y si ya lo tienes.
+function precioNuevo(item: string): number | null {
+  return (
+    CATALOGO_NUEVO.find((x) => x.vendible && x.item === item)?.precio ??
+    PAQUETES.find((x) => x.item === item)?.precio ??
+    UTILIDADES_NUEVAS.find((x) => x.item === item)?.precio ??
+    null
+  );
 }
 
 export async function POST(request: Request) {
@@ -20,14 +32,15 @@ export async function POST(request: Request) {
   }
 
   const body = (await request.json()) as Body;
-  if (!(body.item in COSTOS)) {
+  const nuevo = body.item in COSTOS ? null : precioNuevo(body.item);
+  if (!(body.item in COSTOS) && nuevo == null) {
     return NextResponse.json({ error: "Item inválido" }, { status: 400 });
   }
 
   // El descuento del día se recalcula acá, server-side, con la fecha de
   // hoy — nunca se confía en un precio que mande el cliente.
   const hoyIso = new Date().toISOString().slice(0, 10);
-  const costoFinal = precioConDescuento(COSTOS[body.item], body.item, hoyIso);
+  const costoFinal = nuevo ?? precioConDescuento(COSTOS[body.item as Item], body.item as Item, hoyIso);
 
   const { data, error } = await supabase.rpc("comprar_item_tienda", {
     p_item: body.item,

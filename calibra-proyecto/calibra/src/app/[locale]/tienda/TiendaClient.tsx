@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -202,6 +202,15 @@ export default function TiendaClient({
     { fondo: "prodigio", item: "fondo_prodigio", nombre: t("fondos.prodigio"), requierePro: true },
   ];
   const [puntos, setPuntos] = useState(puntosIniciales);
+  // Compras de la tienda ampliada (TiendaAmpliada.tsx) también mueven el saldo de acá.
+  useEffect(() => {
+    const alComprar = (ev: Event) => {
+      const total = (ev as CustomEvent<number>).detail;
+      if (typeof total === "number") setPuntos(total);
+    };
+    window.addEventListener("prodigia:chispas", alComprar);
+    return () => window.removeEventListener("prodigia:chispas", alComprar);
+  }, []);
   const [escudos, setEscudos] = useState(escudosIniciales);
   const [congelamientos, setCongelamientos] = useState(congelamientosIniciales);
   const [boost, setBoost] = useState(boostIniciales);

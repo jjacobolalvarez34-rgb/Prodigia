@@ -18,6 +18,7 @@ import LogroMedalla from "@/components/LogroMedalla";
 import TitulosSection from "./TitulosSection";
 import EstandarteClan from "@/components/clanes/EstandarteClan";
 import { Link } from "@/i18n/navigation";
+import CiudadSkyline from "@/components/recompensas/CiudadSkyline";
 
 interface FilaAfinidad {
   mundo: string;
@@ -234,6 +235,9 @@ export default async function PerfilPage() {
 
   const idsDesbloqueados = new Map((userAchievements ?? []).map((u) => [u.achievement_id, u.desbloqueado_at]));
 
+  // Ciudad de la Placa (tienda ampliada, 0248): skyline detrás del contenido.
+  const { data: ciudadPlaca } = await supabase.rpc("ciudad_placa_de", { p_user_id: user.id });
+
   return (
     <>
       <Header autenticado invitado={user.is_anonymous} />
@@ -242,6 +246,11 @@ export default async function PerfilPage() {
           className={`relative overflow-hidden rounded-2xl border-2 shadow-sm transition-colors ${claro ? "" : "bg-surface"} ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}
         >
           <FondoPerfilCapa fondoPerfil={fondoPerfil} fondoPerfilUrl={fondoPerfilUrl} />
+          {typeof ciudadPlaca === "string" && (
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 opacity-80">
+              <CiudadSkyline ciudad={ciudadPlaca} alto={110} ancho={720} />
+            </div>
+          )}
           {fondoPerfil === "personalizado" && !fondoPerfilUrl && (
             <div className="h-20 w-full border-b border-dashed border-border bg-surface-2" />
           )}

@@ -20,6 +20,7 @@ import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
 import { usarConsumible } from "@/lib/practica/consumibles";
 import { COLOR_TRIGONOMETRIA } from "./colores";
+import { useAyudasPartida } from "@/lib/practica/useAyudasPartida";
 
 const TOTAL_PREGUNTAS = 10;
 const DURACION_MS = 60_000;
@@ -72,6 +73,8 @@ export default function TrigonometriaSprintRunner({
   const [hielosDisp, setHielosDisp] = useState(hielosIniciales);
   const [tiemposExtraDisp, setTiemposExtraDisp] = useState(tiemposExtraIniciales);
   const [usandoConsumible, setUsandoConsumible] = useState<TipoUso>(null);
+  // Pista y segunda oportunidad de la tienda (0248).
+  const ayudas = useAyudasPartida(!duelId);
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
   const correctosRef = useRef(0);
   const [problema, setProblema] = useState<ProblemaTrigonometria | null>(null);
@@ -101,6 +104,7 @@ export default function TrigonometriaSprintRunner({
   const finishedRef = useRef(false);
 
   function siguiente() {
+    ayudas.nuevaPregunta();
     const p = generarSinRepetir(() => generarProblemaTrigonometria(modo, nivelRef.current), claveTrigonometria, usadosRef.current);
     setProblema(p);
     setCardKey((k) => k + 1);
@@ -239,6 +243,14 @@ export default function TrigonometriaSprintRunner({
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const valor = Number(respuestaTexto);
     const correct = Math.abs(valor - problema.respuesta) <= problema.tolerancia + 1e-9;
+    if (!correct && ayudas.consumirSegunda()) {
+      reproducirTono("error");
+      setSeleccion(null);
+      setRespondido(false);
+      setRespuestaTexto("");
+      submittingRef.current = false;
+      return;
+    }
     registrar(correct, timeMs, respuestaTexto);
   }
 
@@ -250,6 +262,14 @@ export default function TrigonometriaSprintRunner({
     // eslint-disable-next-line react-hooks/purity
     const timeMs = Math.round(performance.now() - shownAtRef.current);
     const correct = opcion === problema.respuesta;
+    if (!correct && ayudas.consumirSegunda(opcion)) {
+      reproducirTono("error");
+      setSeleccion(null);
+      setRespondido(false);
+      setRespuestaTexto("");
+      submittingRef.current = false;
+      return;
+    }
     registrar(correct, timeMs, opcion);
   }
 
@@ -276,6 +296,8 @@ export default function TrigonometriaSprintRunner({
             {!duelId && (
               <ConsumiblesPartida
                 hielos={hielosDisp}
+                ayudas={ayudas}
+                onPista={problema.entrada === "opciones" ? () => ayudas.usarPista(problema.opciones, String(problema.respuesta)) : undefined}
                 tiemposExtra={tiemposExtraDisp}
                 usando={usandoConsumible}
                 onUsarHielo={usarHielo}
@@ -346,6 +368,7 @@ export default function TrigonometriaSprintRunner({
         ) : (
           <div className="grid w-full max-w-sm grid-cols-2 gap-2">
             {problema.opciones.map((op) => {
+              if (ayudas.ocultas.has(op)) return null;
               const esElegida = seleccion === op;
               const esCorrecta = respondido && op === problema.respuesta;
               return (
