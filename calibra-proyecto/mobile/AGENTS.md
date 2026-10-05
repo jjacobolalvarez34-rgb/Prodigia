@@ -10,7 +10,11 @@ Reglas propias de esta app (detalle en `README.md`):
   `useLiviano()` (`src/lib/rendimiento.ts`). Nada que redibuje una pantalla entera por cuadro.
 - Botones: `ui/Boton3D` (estilo de `components/Boton.tsx` de la web). Texto: `ui/Texto`.
 - La app nunca decide XP, ELO, precios ni recompensas: todo sale de las RPC de la base.
-- Verificar con `npx tsc --noEmit`, `npx eslint src` y `npx expo export --platform android`.
+- **Paridad web ↔ app (vinculante)**: lo que se agrega o cambia en la web (modos, lecciones,
+  visuales de lecciones, pantallas) se hace también acá en el mismo trabajo, y al revés. Ver
+  `../calibra/docs/PARIDAD_APP_WEB.md`. `npm run paridad` falla si un modo o un visual de lección
+  existe en un lado y no en el otro.
+- Verificar con `npx tsc --noEmit`, `npx eslint src`, `npm run paridad` y `npx expo export --platform android`.
 
 ---
 

@@ -19,4 +19,13 @@ config.watchFolders = [...(config.watchFolders ?? []), webSrc, webDatos];
 // dependencias anidadas (p. ej. react-native-reanimated → semver).
 config.resolver.nodeModulesPaths = [path.resolve(__dirname, "node_modules")];
 
+// Lo único de Next que alcanza la lógica compartida: el idioma del servidor en las
+// lecciones de Aprender. En la app se responde siempre español (src/compat).
+const REEMPLAZOS = { "next-intl/server": path.resolve(__dirname, "src/compat/next-intl-server.ts") };
+const resolverOriginal = config.resolver.resolveRequest;
+config.resolver.resolveRequest = (contexto, nombre, plataforma) => {
+  if (REEMPLAZOS[nombre]) return { type: "sourceFile", filePath: REEMPLAZOS[nombre] };
+  return resolverOriginal ? resolverOriginal(contexto, nombre, plataforma) : contexto.resolveRequest(contexto, nombre, plataforma);
+};
+
 module.exports = config;

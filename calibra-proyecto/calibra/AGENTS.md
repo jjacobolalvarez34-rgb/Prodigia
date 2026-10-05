@@ -37,6 +37,7 @@ La documentación viva vive en `docs/`. Leéla en este orden antes de tocar cód
 - **Seguridad**: el servidor/RLS es la fuente de verdad. El cliente jamás decide precios, desbloqueos ni xp. No guardes secretos en el repo.
 - **Antes de instalar una librería** (npm): justificá por qué no alcanza lo existente y anotá en `docs/EXTERNAL-RESOURCES.md`.
 - **No agregues comentarios al código salvo que el código existente ya use esa convención**; el repo ya tiene comentarios explicativos en español — respetá el estilo del archivo que toques.
+- **Paridad web ↔ app Android (vinculante)**: todo cambio que el jugador vea (mundos, modos, lecciones, visuales de lecciones, tienda, retos, logros, social…) se hace en la web (`calibra/`) **y** en la app (`mobile/`) en el mismo trabajo, o queda incompleto. La lógica pura se comparte (la app la importa con `@/`), las pantallas y los visuales se hacen dos veces. Checklist, excepciones y verificación (`cd mobile && npm run paridad`): `docs/PARIDAD_APP_WEB.md`.
 
 ## Claims (para no pisarse cuando hay varios agentes)
 
