@@ -24,10 +24,27 @@ function adicionales(p: number): number[] {
   return r;
 }
 
-export default function Pentagrama({ notas, disposicion = "secuencial", acento = "#F2C14E" }: { notas: NotaMusical[]; disposicion?: "secuencial" | "simultanea"; acento?: string }) {
+// `visibles`, `etiquetas` y `destacada` los usan los visuales de Aprender (las notas
+// van apareciendo de a una, con su nombre debajo); en el sprint no se pasan.
+export default function Pentagrama({
+  notas,
+  disposicion = "secuencial",
+  acento = "#F2C14E",
+  visibles,
+  etiquetas,
+  destacada,
+}: {
+  notas: NotaMusical[];
+  disposicion?: "secuencial" | "simultanea";
+  acento?: string;
+  visibles?: number;
+  etiquetas?: string[];
+  destacada?: number;
+}) {
   const x0 = 56;
   const paso = 34;
-  const ancho = Math.max(150, disposicion === "secuencial" ? x0 + paso * Math.max(0, notas.length - 1) + 28 : x0 + 44);
+  const conEtiquetas = !!etiquetas && etiquetas.some((e) => e !== "");
+  const ancho = Math.max(150, disposicion === "secuencial" ? x0 + paso * Math.max(0, notas.length - 1) + 28 : x0 + 44 + (conEtiquetas ? 44 : 0));
   let minY = 0;
   let maxY = 140;
   for (const n of notas) {
@@ -35,6 +52,7 @@ export default function Pentagrama({ notas, disposicion = "secuencial", acento =
     minY = Math.min(minY, y - RADIO - 4);
     maxY = Math.max(maxY, y + RADIO + 4);
   }
+  if (conEtiquetas && disposicion === "secuencial") maxY = Math.max(maxY, Y_INF + 40);
   const trazo = "rgba(244,246,251,0.75)";
   return (
     <Svg width="100%" height={150} viewBox={`0 ${minY} ${ancho} ${maxY - minY}`}>
@@ -59,8 +77,11 @@ export default function Pentagrama({ notas, disposicion = "secuencial", acento =
         const y = yDe(p);
         const simbolo = n.alteracion === "sostenido" ? "♯" : n.alteracion === "bemol" ? "♭" : null;
         const arriba = p < 4;
+        const visible = visibles === undefined || i < visibles;
+        const esDestacada = destacada === i;
+        const etiqueta = etiquetas?.[i];
         return (
-          <G key={i}>
+          <G key={i} opacity={visible ? 1 : 0}>
             {adicionales(p).map((k) => (
               <Line key={k} x1={x - RADIO - 5} y1={yDe(k)} x2={x + RADIO + 5} y2={yDe(k)} stroke={trazo} strokeWidth={1.2} />
             ))}
@@ -69,7 +90,19 @@ export default function Pentagrama({ notas, disposicion = "secuencial", acento =
                 {simbolo}
               </SvgText>
             )}
-            <Ellipse cx={x} cy={y} rx={RADIO} ry={RADIO - 1.3} fill={acento} transform={`rotate(-18 ${x} ${y})`} />
+            <Ellipse cx={x} cy={y} rx={RADIO} ry={RADIO - 1.3} fill={acento} stroke={esDestacada ? color.texto : "none"} strokeWidth={esDestacada ? 1.6 : 0} transform={`rotate(-18 ${x} ${y})`} />
+            {conEtiquetas && etiqueta ? (
+              <SvgText
+                x={disposicion === "secuencial" ? x : x + RADIO + 8}
+                y={disposicion === "secuencial" ? maxY - 5 : y + 3.5}
+                fontSize={10.5}
+                fontWeight={esDestacada ? "700" : "500"}
+                textAnchor={disposicion === "secuencial" ? "middle" : "start"}
+                fill={color.texto}
+              >
+                {etiqueta}
+              </SvgText>
+            ) : null}
             {disposicion === "secuencial" && <Line x1={arriba ? x + RADIO - 0.8 : x - RADIO + 0.8} y1={y} x2={arriba ? x + RADIO - 0.8 : x - RADIO + 0.8} y2={arriba ? y - 34 : y + 34} stroke={acento} strokeWidth={1.6} />}
           </G>
         );

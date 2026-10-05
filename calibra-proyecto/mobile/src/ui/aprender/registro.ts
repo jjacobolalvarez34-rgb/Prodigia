@@ -7,6 +7,7 @@ import * as Codia from "./codia/visuales";
 import * as Enigmia from "./enigmia/visuales";
 import * as Geografia from "./geografia/visuales";
 import * as Historia from "./historia/visuales";
+import * as Melodia from "./melodia/visuales";
 
 // Registro de visuales de lecciones de la app: los MISMOS `tipo` que registran los
 // `components/<mundo>/visuales/registro.ts` de la web (npm run paridad lo revisa).
@@ -23,6 +24,12 @@ export const REGISTRO_VISUALES: Record<string, ComponenteVisual> = {
   "enigmia.eliminacion": c(Enigmia.Eliminacion),
   "enigmia.loci": c(Enigmia.Loci),
   "enigmia.algoritmo": c(Enigmia.Algoritmo),
+  "melodia.pentagrama": c(Melodia.PentagramaVisual),
+  "melodia.teclado": c(Melodia.Teclado),
+  "melodia.escala": c(Melodia.Escala),
+  "melodia.acorde": c(Melodia.Acorde),
+  "melodia.ritmo": c(Melodia.Ritmo),
+  "melodia.frecuencia": c(Melodia.Frecuencia),
   "calculia.tangente": c(Calculia.Tangente),
   "calculia.area": c(Calculia.Area),
   "calculia.serie": c(Calculia.Serie),
