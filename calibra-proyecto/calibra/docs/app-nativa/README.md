@@ -28,7 +28,7 @@ curvas de nivel, validadores) se reutilizan tal cual, con sus 92 archivos de tes
 en Kotlin duplicaría la lógica y multiplicaría el problema de paridad que ya documenta
 `PARIDAD_MUNDOS.md`. Justificación completa en `01-STACK-Y-ARQUITECTURA.md`.
 
-## Estado actual (2026-10-01)
+## Estado actual (2026-10-05)
 
 Guía técnica de la app (estructura, datos, sistema visual, reglas de rendimiento y cómo compilar):
 `../../../mobile/README.md`.
@@ -49,7 +49,14 @@ RPC security definer):
   moléculas, esqueleto tocable, triángulos, circuitos, gráficos, código, cartas con modo memoria).
   Cuenta "3, 2, 1", llama de racha, borde que gira con combo, +XP flotante, salida suave y
   cascada de recompensas en todos.
-- **Partida**: bonus de tiempo por rapidez, hielo y +3 s; diagnóstico inicial por mundo.
+- **Aprender**: Técnicas y Clases (Pro) de los 13 mundos dentro de la app, con los mismos caminos
+  y los 80 visuales animados de la web (`npm run paridad` lo controla), quiz validado en la base
+  (0246) y sin conexión.
+- **Doble experiencia**: un mundo por día da ×2 Exp (0247, igual en la web); en la app lo anuncia
+  un paquete en paracaídas sobre su ciudad.
+- **Partida**: bonus de tiempo por rapidez, hielo y +3 s; diagnóstico inicial por mundo; al
+  terminar el tiempo, "¡Listo!" con el logo girando y el porcentaje; resumen con la ciudad de
+  fondo y cápsula de Chispas al subir de nivel.
 - **Sin conexión**: se practica sin internet y lo jugado se sube solo al volver (0245).
 - **Edad y bloqueos** (PROD-02): edad una vez; menores de 13 con frases rápidas en el chat;
   bloquear jugadores.
@@ -62,7 +69,7 @@ RPC security definer):
 - **Tienda** (sin Trastienda, PROD-01), logros y títulos, Pro (informativo), avisos push,
   widgets y ajustes.
 
-Pendiente: Aprender dentro de la app, Play Billing (Pro y Chispas),
+Pendiente: Play Billing (Pro y Chispas),
 borrado de cuenta dentro de la app (hoy abre la web) y lo de `05-PUBLICACION-GOOGLE-PLAY.md`.
 
 ## Índice

@@ -18,6 +18,8 @@ genérico de `[mundo]/` (mismos generadores, niveles, guardado y duelos que la w
 | **Numeria** | 6 secciones y 20 temas: Aritmética (4), Geometría (4), Fracciones (3), Decimales (3), Potencias (3), Álgebra (3). Cada tema calibra su nivel | `numeria/index`, `numeria/sprint` |
 | **Geografía** | 4 continentes en el mapa real con zoom y arrastre, preguntas avanzadas desde el nivel 8 | `geografia/index`, `geografia/sprint` |
 | **Los otros 11** | Enigmia (mezcla + 4 categorías, 90 s, banco de deducción), Quimia (5, con moléculas), Anatomía (4, el óseo se toca en el esqueleto), Melodía (6: pentagrama, figuras, oído absoluto), Trigonometría (4, con triángulo), Historia (4), Calculia (4), Circuitia (4, con circuito), Estadística (5, con gráficos), Naipia (5 sistemas: cartas, tabla de valores y modo memoria) y Codia (4, elegir lenguaje) | `[mundo]/index`, `[mundo]/sprint`, `lib/mundosJugables/`, `ui/visuales/` |
+| **Aprender** | Pestaña "Aprender" dentro de cada mundo: Técnicas (gratis) y Clases (Pro, la primera gratis), los mismos caminos de la web sobre una carretera con faroles, árboles y carteles. Cada lección con sus pasos, los 80 visuales animados de la web y el quiz; funciona sin conexión | `ui/aprender/PestanaAprender`, `aprender/[mundo]/[slug]`, `lib/aprender.ts` |
+| Doble experiencia | Cada día un mundo da ×2 Exp (lo cuenta la base, 0247); en su ciudad cae un paquete en paracaídas y la tarjeta lo dice. En el cielo de las ciudades pasan aviones desde lugares distintos, bandadas y algún ovni | `ui/Cielo`, `ui/Ciudad`, `@/lib/eventos/dobleExperiencia` |
 | Partida | "¿Preparado? 3, 2, 1, ¡Ya!", anillo de tiempo, llama de racha, borde que gira con combo ≥ 5, +XP flotante, sacudida al fallar, salida suave y cascada de recompensas. Bonus de tiempo por responder rápido (nivel ≥ 5, +1 a +3 s, tope 20 s) y consumibles de la tienda: hielo (reloj quieto 10 s) y +3 s, fuera de duelos | `ui/Sprint`, `resultado` |
 | Diagnóstico inicial | La primera vez que entras a un mundo: 8 preguntas sin reloj (Numeria: 12, 3 por operación) desde nivel 3, que suben o bajan según aciertes rápido o falles. Se puede saltar (nivel 3). Geografía no tiene | `diagnostico/[mundo]`, `lib/diagnostico.ts` |
 | Sin conexión | Se juega igual (los generadores están en el teléfono); las respuestas quedan en una cola y se suben solas al volver internet, sin duplicarse. Niveles, banco de Enigmia y estado del jugador con copia en el teléfono | `lib/sinConexion.ts` |
@@ -26,12 +28,13 @@ genérico de `[mundo]/` (mismos generadores, niveles, guardado y duelos que la w
 | **Social** | En línea, solicitudes, amigos (Placas), retar, mensajes directos y chat del clan en vivo | `(tabs)/social`, `chat/[id]`, `amigos/buscar` |
 | Clanes | Ciudad del clan, nivel, guerra semanal, misión de 3000 Exp con Reclamar, miembros y roles, buscar/crear/unirse, invitaciones, Mundo de clanes (mapa con zoom) | `ui/clan/VistaClan`, `clan/*` |
 | **Perfil** | La Placa completa (fondo, avatar con marco, nombre con fuente y animación, título, rango, nivel, clan), editor de placa, logros y títulos, Pro, ajustes | `(tabs)/perfil`, `editar-placa`, `logros`, `pro`, `ajustes` |
-| Tienda | Mismo catálogo y precios que la web, oferta del día, vista previa sobre tu Placa, rarezas, compra en 2 pasos, subir avatar y fondo propios | `tienda` |
-| Avisos | Push por categoría (mensajes, duelos, racha, novedades), centro de avisos, recordatorio diario, widgets de Android | `avisos`, `ajustes-avisos`, `widgets/` |
+| Tienda | Mismo catálogo y precios que la web, oferta del día, vista previa sobre tu Placa, rarezas, compra en 2 pasos, subir avatar y fondo propios. Al subir de nivel cae una cápsula que se abre tocándola y suelta las Chispas | `tienda`, `ui/CapsulaNivel` |
+| Avisos | Push por categoría (mensajes, duelos, racha, novedades), centro de avisos, recordatorio diario, widgets de Android nativos | `avisos`, `ajustes-avisos`, `widgets/`, `modules/widgets-prodigia` |
+| Intro | Video del mamut (marca) a pantalla completa, un segundo en negro con fundido y recién ahí la pantalla de carga | `ui/IntroMarca`, `app/_layout` |
 
 No están en la app: la Trastienda y las apuestas (PROD-01, política de Google Play para apps con
-menores), comprar Pro o Chispas con dinero (llega con Google Play Billing), Aprender (abre la web) y
-borrar la cuenta (abre la web). Sin conexión no funcionan duelos, tienda, chat ni clanes.
+menores), comprar Pro o Chispas con dinero (llega con Google Play Billing) y borrar la cuenta (abre
+la web). Sin conexión no funcionan duelos, tienda, chat ni clanes.
 
 ## Cómo probarla
 
@@ -143,6 +146,22 @@ duelos, retar y Continuar ya lo toman.
   `conCopia()` guarda la última lectura (niveles, banco de Enigmia) para usarla sin red, y
   `jugador.ts` conserva el último estado del jugador.
 
+### Aprender (`src/lib/aprender.ts`, `src/ui/aprender/`)
+
+- Los caminos son los de la web: `CAMINOS` llama a las `obtenerCamino*` de cada mundo (vía `@/`,
+  con `next-intl/server` resuelto a `src/compat/next-intl-server.ts`), así el orden, los requisitos
+  y qué es Pro no se pueden desalinear. `precargarAprender` los deja en el teléfono a los 15 s de
+  abrir la app; sin red se usa esa copia.
+- Completar una lección llama a `completar_leccion` (0246), que valida Pro y el quiz en la base. Sin
+  red se marca hecha en el teléfono y va a la cola de `sinConexion` (tipo `leccion`).
+- Visuales: `registro.ts` mapea cada `tipo` de la web ("quimia.redox", "trigonometria.circulo"…) a
+  su componente en `ui/aprender/<mundo>/`. Usan las mismas funciones de datos de la web
+  (`@/lib/<mundo>/visualesDatos`…) y sus textos (`lib/textosWeb.ts` lee `calibra/messages/es.json`);
+  `comun.tsx` y `reproductor.tsx` dan el marco, los fundidos, los trazos que se dibujan y los
+  controles de paso. Las fórmulas `$…$` pasan a Unicode con `ui/TextoMate` (también `\overset` y
+  `	extcolor` de química).
+- `npm run paridad` falla si un visual de la web no tiene su par en la app.
+
 ### Edad y bloqueos (`src/lib/edad.ts`, PROD-02)
 
 La edad se pide una vez al entrar (se puede posponer; el chat la exige) con `registrar_fecha_nacimiento`
@@ -163,7 +182,9 @@ Dirección "Noche de Prodigia" (`../calibra/docs/app-nativa/02-SISTEMA-VISUAL.md
   plaquita ▶. Variantes `primario`, `logro`, `secundario`, `peligro`, `pro`.
 - `Tarjeta`, `Barra`, `Anillo`, `NumeroAnimado`, `Segmentos`, `Hoja` (hoja inferior), `Aviso`
   (avisos emergentes), `Pantalla` (pantalla de pestaña con HUD o apilada con flecha atrás).
-- `Ciudad` — skyline nocturno por mundo: SVG estático + ventanas que parpadean y aviones encima.
+- `Ciudad` — skyline nocturno por mundo: SVG estático + ventanas que parpadean; `Cielo` pone
+  encima aviones (desde lugares distintos según el mundo), bandadas, ovnis y, en el mundo con
+  doble experiencia, el paquete en paracaídas. También es el fondo del resumen de la partida.
 - `Glifos`, `Confeti`, `Iconos`, `Logo` (el mismo logo vectorial de la web).
 - `Sprint` — reloj nativo (`useReloj`), cabecera, llama de racha, cuenta 3-2-1, tarjeta del
   problema, teclado, barra del rival y salida suave (`useSalida`).
