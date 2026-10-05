@@ -85,11 +85,14 @@ function Navegacion() {
   // Intro de Mamut: la pantalla de carga se ve DESPUÉS de la intro, con su tiempo
   // mínimo contado desde ahí (si no, terminaba debajo del video y no se veía).
   const [introVisible, setIntroVisible] = useState(INTRO_ACTIVA);
-  const ocultarIntro = useCallback(() => {
-    setIntroVisible(false);
+  // La pantalla de carga se monta recién cuando la intro ya quedó en negro.
+  const [introEnNegro, setIntroEnNegro] = useState(!INTRO_ACTIVA);
+  const introNegra = useCallback(() => {
+    setIntroEnNegro(true);
     inicioRef.current = Date.now();
     finIntro();
   }, []);
+  const ocultarIntro = useCallback(() => setIntroVisible(false), []);
   const arrancoRef = useRef(false);
   const sincronizadoRef = useRef<string | null>(null);
 
@@ -193,8 +196,8 @@ function Navegacion() {
         </Stack>
       )}
       <AvisoGlobal />
-      {cargaVisible && <PantallaCarga progreso={progreso} etapa={etapa} onTerminada={ocultarCarga} />}
-      {introVisible && <IntroMarca onTerminada={ocultarIntro} />}
+      {cargaVisible && introEnNegro && <PantallaCarga progreso={progreso} etapa={etapa} onTerminada={ocultarCarga} />}
+      {introVisible && <IntroMarca onNegro={introNegra} onTerminada={ocultarIntro} />}
     </>
   );
 }
