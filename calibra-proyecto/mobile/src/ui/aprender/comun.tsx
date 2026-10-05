@@ -81,3 +81,12 @@ const styles = StyleSheet.create({
   marco: { gap: 10, padding: 12, borderRadius: 18, borderWidth: 1, borderTopWidth: 3, borderColor: color.border, backgroundColor: color.surface1, overflow: "hidden" },
   leyenda: { minHeight: 52, gap: 3, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, borderWidth: 1 },
 });
+
+// Fórmula centrada (LaTeX sin "$" de la web → Unicode).
+export function Formula({ tex, tam = 16 }: { tex: string; tam?: number }) {
+  return (
+    <Texto v="fuerte" tam={tam} centro>
+      {textoConFormulas(`$${tex.replace(/\$/g, "")}$`)}
+    </Texto>
+  );
+}
