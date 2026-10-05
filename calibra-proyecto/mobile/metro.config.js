@@ -12,7 +12,9 @@ const config = getDefaultConfig(__dirname);
 const webSrc = path.resolve(__dirname, "../calibra/src");
 // El topojson de países (world-atlas) que usa el mapa de Geografía en la web.
 const webDatos = path.resolve(__dirname, "../calibra/public/data");
-config.watchFolders = [...(config.watchFolders ?? []), webSrc, webDatos];
+// Los textos de la web (messages/es.json) para lo que la app dibuja igual que la web.
+const webTextos = path.resolve(__dirname, "../calibra/messages");
+config.watchFolders = [...(config.watchFolders ?? []), webSrc, webDatos, webTextos];
 // Los archivos compartidos no importan paquetes en tiempo de ejecución; si alguno
 // lo hiciera, se busca primero en los node_modules de la app (una sola copia de
 // React Native). La búsqueda jerárquica queda activa porque algunos paquetes traen
