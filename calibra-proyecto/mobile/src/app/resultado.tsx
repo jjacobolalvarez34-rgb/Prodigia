@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { ResultadoDuelo } from "~/lib/competir";
 import { sonar, vibrar } from "~/lib/efectos";
 import { recargarJugador } from "~/lib/jugador";
+import { totalPendientes, usePendientes } from "~/lib/recompensas";
 import type { ResultadoPartida } from "~/lib/partida";
 import Anillo from "~/ui/Anillo";
 import Barra from "~/ui/Barra";
@@ -77,6 +78,7 @@ function Paso({ visible, children, indice }: { visible: boolean; children: React
 
 export default function Resultado() {
   const router = useRouter();
+  const pendientesRecompensas = usePendientes();
   const params = useLocalSearchParams<{ mundo?: string; tema?: string; datos?: string; repetir?: string }>();
   const mundo = MUNDO_POR_SLUG[(params.mundo ?? "numeria") as MundoSlug] ?? MUNDO_POR_SLUG.numeria;
   const d = JSON.parse(params.datos ?? "{}") as Datos;
@@ -258,6 +260,28 @@ export default function Resultado() {
 
           <Paso visible={paso >= 5} indice={5}>
             <View style={{ gap: 10 }}>
+              {totalPendientes(pendientesRecompensas) > 0 && (
+                <Pressable onPress={() => router.push("/recompensas")}>
+                  <Tarjeta sinEntrada acento={color.logro} brillo={0.3}>
+                    <View style={styles.fila}>
+                      <Texto style={{ fontSize: 30 }}>🎁</Texto>
+                      <View style={{ flex: 1 }}>
+                        <Texto v="micro" c={color.logro}>
+                          Recompensas
+                        </Texto>
+                        <Texto v="h3">
+                          {pendientesRecompensas.capsulas > 0
+                            ? `Tienes ${pendientesRecompensas.capsulas} ${pendientesRecompensas.capsulas === 1 ? "cápsula" : "cápsulas"} por abrir`
+                            : "Tienes recompensas por reclamar"}
+                        </Texto>
+                        <Texto v="nota" tam={12}>
+                          Toca para abrirlas
+                        </Texto>
+                      </View>
+                    </View>
+                  </Tarjeta>
+                </Pressable>
+              )}
               {d.nivelCuentaSubio && (
                 <Tarjeta sinEntrada acento={color.primario} brillo={0.35}>
                   <View style={styles.fila}>

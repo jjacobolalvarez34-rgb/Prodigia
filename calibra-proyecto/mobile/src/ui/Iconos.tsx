@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
+import { ARCOIRIS, ESTELAS, type Estela } from "@/lib/recompensas/catalogo";
 import { color } from "~/tema";
 
 // Set propio de íconos (02-SISTEMA-VISUAL.md §5), dibujados con el mismo trazo de 2
@@ -27,16 +28,31 @@ export function IconoChispa({ tam = 18 }: Props) {
 }
 
 // Llama de la racha: apagada (gris), encendida, o "en llamas" (≥ 7 días, más brillo).
-export function IconoLlama({ tam = 18, estado = "encendida" }: Props & { estado?: "apagada" | "encendida" | "llamas" }) {
-  const exterior = estado === "apagada" ? "#4A5270" : estado === "llamas" ? "#FF6A2B" : color.racha;
-  const interior = estado === "apagada" ? "#6B7391" : "#FFD36B";
+export function IconoLlama({ tam = 18, estado = "encendida", estela }: Props & { estado?: "apagada" | "encendida" | "llamas"; estela?: Estela }) {
+  // Estela de racha de la tienda (0248): cambia los colores de la llama encendida.
+  const conEstela = estela && estado !== "apagada" && estela.base !== ESTELAS.clasica.base;
+  const exterior = estado === "apagada" ? "#4A5270" : conEstela ? estela.base : estado === "llamas" ? "#FF6A2B" : color.racha;
+  const interior = estado === "apagada" ? "#6B7391" : conEstela ? estela.punta : "#FFD36B";
+  const arcoiris = conEstela && estela.arcoiris;
   return (
     <Svg width={tam} height={tam} viewBox="0 0 24 24">
-      <Path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.4 1.1-3.9 2.3-5 .2 1.8 1 2.9 2.2 3.3C11 8.6 10.6 5 12 2z" fill={exterior} />
-      <Path d="M12 12.5c.5 1.6 2.3 2.2 2.3 4.3a2.3 2.3 0 0 1-4.6 0c0-1.2.9-2 1.4-2.6.1.6.4 1 .9 1.1-.2-1-.3-1.9 0-2.8z" fill={interior} />
+      {arcoiris && (
+        <Defs>
+          <LinearGradient id="llamaArcoiris" x1="0" y1="1" x2="0" y2="0">
+            {ARCOIRIS.map((c, i) => (
+              <Stop key={c} offset={i / (ARCOIRIS.length - 1)} stopColor={c} />
+            ))}
+          </LinearGradient>
+        </Defs>
+      )}
+      <Path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.4 1.1-3.9 2.3-5 .2 1.8 1 2.9 2.2 3.3C11 8.6 10.6 5 12 2z" fill={arcoiris ? "url(#llamaArcoiris)" : exterior} />
+      <Path d="M12 12.5c.5 1.6 2.3 2.2 2.3 4.3a2.3 2.3 0 0 1-4.6 0c0-1.2.9-2 1.4-2.6.1.6.4 1 .9 1.1-.2-1-.3-1.9 0-2.8z" fill={arcoiris ? "#FFFFFF" : interior} />
     </Svg>
   );
 }
+
+export const IconoRegalo = (p: Props) => <Trazo {...p} d="M4 11h16v10H4zM3 7h18v4H3zM12 7v14M12 7C10 3 6.5 4 7.5 6.5 8.2 7.5 12 7 12 7zM12 7c2-4 5.5-3 4.5-.5-.7 1-4.5.5-4.5.5z" />;
+export const IconoCapsulaMini = (p: Props) => <Trazo {...p} d="M6 12V9a6 6 0 0 1 12 0v3M6 12v3a6 6 0 0 0 12 0v-3M4 12h16" />;
 
 function Trazo({ tam = 22, c = "currentColor", d, children }: Props & { d?: string; children?: ReactNode }) {
   return (

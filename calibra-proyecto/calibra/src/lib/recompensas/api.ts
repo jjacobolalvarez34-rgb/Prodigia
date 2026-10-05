@@ -2,8 +2,12 @@
 // Reciben el cliente de Supabase para servir igual en la web (cliente del
 // navegador) y en la app. Todas las reglas (azar, precios, garantía, misiones)
 // viven en la base: acá solo se piden y se devuelven los datos.
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TipoCapsula } from "./catalogo";
+
+// Lo mínimo del cliente de Supabase: la web y la app tienen cada una su copia del
+// paquete y sus tipos no son intercambiables.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SupabaseClient = { rpc: (fn: string, args?: Record<string, unknown>) => any; from: (tabla: string) => any };
 
 export interface Capsula {
   id: string;

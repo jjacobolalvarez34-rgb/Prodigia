@@ -17,7 +17,8 @@ import Animated, {
   ZoomIn,
   type SharedValue,
 } from "react-native-reanimated";
-import Svg, { Defs, Ellipse, LinearGradient, Path, RadialGradient, Stop } from "react-native-svg";
+import Svg, { Defs, Ellipse, RadialGradient, Stop } from "react-native-svg";
+import Capsula from "./recompensas/Capsula";
 import { sonar, vibrar } from "~/lib/efectos";
 import { useLiviano } from "~/lib/rendimiento";
 import { color, conAlfa, fuente } from "~/tema";
@@ -39,45 +40,6 @@ const PARTICULAS = 22;
 const CHISPAS_VOLANDO = 8;
 
 type Fase = "cae" | "espera" | "abre" | "premio";
-
-function Capsula({ abierta }: { abierta: SharedValue<number> }) {
-  const arriba = useAnimatedStyle(() => ({
-    opacity: 1 - abierta.value,
-    transform: [{ translateY: -60 * abierta.value }, { translateX: -18 * abierta.value }, { rotate: `${-28 * abierta.value}deg` }],
-  }));
-  const abajo = useAnimatedStyle(() => ({
-    opacity: 1 - abierta.value,
-    transform: [{ translateY: 60 * abierta.value }, { translateX: 18 * abierta.value }, { rotate: `${28 * abierta.value}deg` }],
-  }));
-  return (
-    <View style={{ width: 110, height: 150 }}>
-      <Animated.View style={[StyleSheet.absoluteFill, arriba]}>
-        <Svg width={110} height={150} viewBox="0 0 100 140">
-          <Defs>
-            <LinearGradient id="capArriba" x1="0" y1="1" x2="1" y2="0">
-              <Stop offset="0" stopColor="#7C5CFF" />
-              <Stop offset="1" stopColor="#A794FF" />
-            </LinearGradient>
-          </Defs>
-          <Path d="M20 70 V50 A30 30 0 0 1 80 50 V70 Z" fill="url(#capArriba)" />
-          <Path d="M30 44 A20 20 0 0 1 48 30" stroke="#FFFFFF" strokeOpacity={0.55} strokeWidth={5} strokeLinecap="round" fill="none" />
-        </Svg>
-      </Animated.View>
-      <Animated.View style={[StyleSheet.absoluteFill, abajo]}>
-        <Svg width={110} height={150} viewBox="0 0 100 140">
-          <Defs>
-            <LinearGradient id="capAbajo" x1="0" y1="0" x2="1" y2="1">
-              <Stop offset="0" stopColor="#FFC53D" />
-              <Stop offset="1" stopColor="#E4CBA0" />
-            </LinearGradient>
-          </Defs>
-          <Path d="M20 70 V90 A30 30 0 0 0 80 90 V70 Z" fill="url(#capAbajo)" />
-          <Path d="M17 69 H83 V73 H17 Z" fill="#2A1A00" fillOpacity={0.25} />
-        </Svg>
-      </Animated.View>
-    </View>
-  );
-}
 
 // Estrellita de 4 puntas que sale disparada desde el centro.
 function Particula({ i, estallido }: { i: number; estallido: SharedValue<number> }) {

@@ -12,10 +12,11 @@ import { cerrarPartida, guardarIntentoTipo } from "~/lib/partida";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError, supabase } from "~/lib/supabase";
 import Glifos from "~/ui/Glifos";
-import { animarAcierto, animarError, BarraRival, Cabecera, CartelFinal, Consumibles, CuentaInicio, Flotante, Progreso, TarjetaProblema, useConsumibles, useReloj, useSalida } from "~/ui/Sprint";
+import { animarAcierto, animarError, BarraRival, Cabecera, CartelFinal, Consumibles, CuentaInicio, Flotante, opcionesADescartar, Progreso, TarjetaProblema, useConsumibles, useReloj, useSalida } from "~/ui/Sprint";
 import { CuerpoPregunta, esRespuestaCorrecta, OpcionesPregunta, TecladoPregunta, type Feedback } from "~/ui/PreguntaVista";
 import Texto from "~/ui/Texto";
 import { color, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
+import EmotesDuelo from "~/ui/recompensas/EmotesDuelo";
 
 const FEEDBACK_OK_MS = 550;
 const FEEDBACK_ERROR_MS = 1100;
@@ -48,6 +49,10 @@ export default function SprintMundo() {
   const [aviso, setAviso] = useState<string | null>(null);
   const [progresoFinal, setProgresoFinal] = useState(0);
   const [final, setFinal] = useState<"tiempo" | "listo" | null>(null);
+  // Ayudas de la tienda: opciones descartadas por una pista y segunda oportunidad armada.
+  const [ocultas, setOcultas] = useState<Set<string>>(() => new Set());
+  const [segundaArmada, setSegundaArmada] = useState(false);
+  const segundaRef = useRef(false);
 
   const sello = useSharedValue(1);
   const sacudida = useSharedValue(0);
@@ -71,7 +76,7 @@ export default function SprintMundo() {
   const comboRef = useRef(0);
   const flotanteId = useRef(0);
 
-  const { rival: rivalVivo, emitir } = useProgresoEnVivo(dueloId && duelo && !duelo.rivalYaJugo ? dueloId : null, miId);
+  const { rival: rivalVivo, emitir, emote: emoteRival, enviarEmote } = useProgresoEnVivo(dueloId && duelo && !duelo.rivalYaJugo ? dueloId : null, miId);
 
   function nivelPara(m: string) {
     return nivelForzadoRef.current ?? nivelesRef.current[m] ?? 1;
@@ -88,6 +93,7 @@ export default function SprintMundo() {
     setSeleccion(null);
     setRespuesta("");
     setFeedback("idle");
+    setOcultas(new Set());
     if (p.memoria) setMemorizando(true);
     else {
       setMemorizando(false);
@@ -220,6 +226,22 @@ export default function SprintMundo() {
     ocupadoRef.current = true;
     const timeMs = Date.now() - mostradoEnRef.current;
     const correcto = esRespuestaCorrecta(pregunta, valor);
+    // Segunda oportunidad: el error no cuenta y se vuelve a responder la misma pregunta.
+    if (!correcto && segundaRef.current && !dueloId) {
+      segundaRef.current = false;
+      setSegundaArmada(false);
+      sonar("error");
+      vibrar.error();
+      animarError(sacudida);
+      setOcultas((o) => new Set(o).add(valor));
+      setRespuesta("");
+      setAviso("¡Segunda oportunidad! Inténtalo otra vez");
+      setTimeout(() => {
+        setAviso(null);
+        ocupadoRef.current = false;
+      }, 700);
+      return;
+    }
     setSeleccion(valor);
     const modoP = def.modoDePregunta ? def.modoDePregunta(pregunta, modoRef.current) : modoRef.current;
     const nivel = pregunta.nivel ?? nivelPara(modoP);
@@ -308,9 +330,29 @@ export default function SprintMundo() {
       <Animated.View style={[{ flex: 1 }, estiloJuego]}>
         <Cabecera onSalir={confirmarSalida} reloj={reloj} combo={combo} acento={mundo.neon} corriendo={inicio != null && final === null && !memorizando} />
         <Progreso resultados={resultados} total={total} acento={mundo.neon} escudos={escudos} />
-        <Consumibles reloj={reloj} consumibles={consumibles} deshabilitado={final !== null || memorizando} />
+        <Consumibles
+          reloj={reloj}
+          consumibles={consumibles}
+          deshabilitado={final !== null || memorizando || feedback !== "idle"}
+          onPista={
+            pregunta.entrada.tipo === "opciones" && ocultas.size === 0
+              ? () => {
+                  const e = pregunta.entrada;
+                  if (e.tipo === "opciones") setOcultas(opcionesADescartar(e.opciones, e.respuesta));
+                }
+              : undefined
+          }
+          segundaArmada={segundaArmada}
+          onSegunda={() => {
+            segundaRef.current = true;
+            setSegundaArmada(true);
+          }}
+        />
         {duelo && (
           <BarraRival nombre={duelo.rivalNombre} total={total} yo={resultados.length} inicio={inicio} respuestasFantasma={duelo.rivalYaJugo ? duelo.rivalRespuestas : null} enVivo={rivalVivo?.respondidos ?? null} />
+        )}
+        {duelo && !duelo.rivalYaJugo && (
+          <EmotesDuelo recibido={emoteRival} onEnviar={enviarEmote} />
         )}
 
         <ScrollView contentContainerStyle={styles.zona} showsVerticalScrollIndicator={false}>
@@ -340,7 +382,7 @@ export default function SprintMundo() {
           )}
 
           {!memorizando && (
-            <OpcionesPregunta pregunta={pregunta} feedback={feedback} seleccion={seleccion} bloqueado={bloqueado} base={mundo.base} onResponder={responder} estilo={estiloTeclado} />
+            <OpcionesPregunta pregunta={pregunta} feedback={feedback} seleccion={seleccion} bloqueado={bloqueado} base={mundo.base} onResponder={responder} estilo={estiloTeclado} ocultas={ocultas} />
           )}
         </ScrollView>
 

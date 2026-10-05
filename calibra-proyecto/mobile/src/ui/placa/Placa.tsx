@@ -5,13 +5,28 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { vibrar } from "~/lib/efectos";
 import { divisionDeElo, infoMarco, rangoDeElo, type PlacaDatos } from "~/lib/placa";
 import { brillo, color, conAlfa, fuente } from "~/tema";
+import { ciudadDe } from "@/lib/recompensas/catalogo";
+import { MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
 import Barra from "../Barra";
+import Ciudad from "../Ciudad";
 import { IconoChispa } from "../Iconos";
 import Texto from "../Texto";
 import AvatarMarco from "./AvatarMarco";
 import FondoPlaca from "./FondoPlaca";
 import InsigniaRango from "./InsigniaRango";
 import NombreEstilizado from "./NombreEstilizado";
+
+// Ciudad de la Placa: el skyline del mundo elegido, abajo y detrás del contenido.
+function CiudadPlaca({ ciudad, alto, quieta }: { ciudad: string | null | undefined; alto: number; quieta?: boolean }) {
+  const c = ciudadDe(ciudad);
+  if (!c) return null;
+  const m = MUNDO_POR_SLUG[c.slug as MundoSlug];
+  return (
+    <View pointerEvents="none" style={[StyleSheet.absoluteFill, { justifyContent: "flex-end", opacity: 0.9 }]}>
+      <Ciudad semilla={c.slug} acento={m?.neon ?? c.color} alto={alto} radio={0} quieta={quieta} sinAvion={quieta} sinLuna />
+    </View>
+  );
+}
 
 // La Placa en sus cinco tamaños (02-SISTEMA-VISUAL.md §10.2). Tocar la Placa de otro
 // jugador, en cualquier variante, abre su Placa Completa.
@@ -51,6 +66,7 @@ export function PlacaCompleta({ placa, extra, estilo }: { placa: PlacaDatos; ext
   return (
     <Animated.View entering={FadeInDown.duration(300)} style={[styles.completa, { borderColor: marco, boxShadow: brillo(marco, 28, 0.32) }, estilo]}>
       <FondoPlaca fondo={placa.fondo} url={placa.fondoUrl} acento={marco} />
+      <CiudadPlaca ciudad={placa.ciudad} alto={110} />
       {esGif && (
         <View style={styles.gif}>
           <Texto style={{ fontFamily: fuente.mono, fontSize: 9, color: "#fff", letterSpacing: 1 }}>GIF</Texto>
@@ -125,6 +141,7 @@ export function PlacaTarjeta({ placa, onPress, pie, indice = 0 }: { placa: Placa
         style={({ pressed }) => [styles.tarjeta, { borderColor: marco, transform: [{ scale: pressed ? 0.97 : 1 }] }]}
       >
         <FondoPlaca fondo={placa.fondo} url={placa.fondoUrl} acento={marco} animar={false} />
+        <CiudadPlaca ciudad={placa.ciudad} alto={56} quieta />
         <View style={styles.tarjetaIn}>
           <AvatarMarco url={placa.avatarUrl} nombre={placa.nombre} marco={placa.marco} tam={46} animar={false} />
           <NombreEstilizado texto={placa.nombre} fuente={placa.fuente} animacion={placa.animacion} color={placa.colorNombre} tam={15} estilo={{ textAlign: "center" }} />

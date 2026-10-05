@@ -15,6 +15,30 @@ const FUENTES = {
   acierto5: require("../../assets/sonidos/acierto5.wav"),
   acierto6: require("../../assets/sonidos/acierto6.wav"),
   acierto7: require("../../assets/sonidos/acierto7.wav"),
+  acierto_campanitas0: require("../../assets/sonidos/acierto_campanitas0.wav"),
+  acierto_campanitas1: require("../../assets/sonidos/acierto_campanitas1.wav"),
+  acierto_campanitas2: require("../../assets/sonidos/acierto_campanitas2.wav"),
+  acierto_campanitas3: require("../../assets/sonidos/acierto_campanitas3.wav"),
+  acierto_campanitas4: require("../../assets/sonidos/acierto_campanitas4.wav"),
+  acierto_campanitas5: require("../../assets/sonidos/acierto_campanitas5.wav"),
+  acierto_campanitas6: require("../../assets/sonidos/acierto_campanitas6.wav"),
+  acierto_campanitas7: require("../../assets/sonidos/acierto_campanitas7.wav"),
+  acierto_ochobits0: require("../../assets/sonidos/acierto_ochobits0.wav"),
+  acierto_ochobits1: require("../../assets/sonidos/acierto_ochobits1.wav"),
+  acierto_ochobits2: require("../../assets/sonidos/acierto_ochobits2.wav"),
+  acierto_ochobits3: require("../../assets/sonidos/acierto_ochobits3.wav"),
+  acierto_ochobits4: require("../../assets/sonidos/acierto_ochobits4.wav"),
+  acierto_ochobits5: require("../../assets/sonidos/acierto_ochobits5.wav"),
+  acierto_ochobits6: require("../../assets/sonidos/acierto_ochobits6.wav"),
+  acierto_ochobits7: require("../../assets/sonidos/acierto_ochobits7.wav"),
+  acierto_marimba0: require("../../assets/sonidos/acierto_marimba0.wav"),
+  acierto_marimba1: require("../../assets/sonidos/acierto_marimba1.wav"),
+  acierto_marimba2: require("../../assets/sonidos/acierto_marimba2.wav"),
+  acierto_marimba3: require("../../assets/sonidos/acierto_marimba3.wav"),
+  acierto_marimba4: require("../../assets/sonidos/acierto_marimba4.wav"),
+  acierto_marimba5: require("../../assets/sonidos/acierto_marimba5.wav"),
+  acierto_marimba6: require("../../assets/sonidos/acierto_marimba6.wav"),
+  acierto_marimba7: require("../../assets/sonidos/acierto_marimba7.wav"),
   error: require("../../assets/sonidos/error.wav"),
   moneda: require("../../assets/sonidos/moneda.wav"),
   tecla: require("../../assets/sonidos/tecla.wav"),
@@ -83,8 +107,22 @@ export function sonar(nombre: Sonido) {
 
 // El "tick" de acierto de la web (seno de 880 Hz) que sube por la escala mayor con
 // el combo: 8 alturas, de ×1 a ×8 o más.
+// Paquete de sonido de acierto equipado en la tienda ("clasico" = el de siempre).
+let paqueteAcierto = "clasico";
+export function fijarPaqueteAcierto(paquete: string) {
+  paqueteAcierto = paquete;
+}
+
 export function sonarAcierto(combo: number) {
-  sonar(`acierto${Math.min(7, Math.max(0, combo - 1))}` as Sonido);
+  const altura = Math.min(7, Math.max(0, combo - 1));
+  const conPaquete = `acierto_${paqueteAcierto}${altura}`;
+  sonar((paqueteAcierto !== "clasico" && conPaquete in FUENTES ? conPaquete : `acierto${altura}`) as Sonido);
+}
+
+// Muestra de un paquete (en la tienda).
+export function probarPaqueteAcierto(paquete: string) {
+  const nombre = `acierto_${paquete}2`;
+  sonar((paquete !== "clasico" && nombre in FUENTES ? nombre : "acierto2") as Sonido);
 }
 
 let ultimaSeleccion = 0;

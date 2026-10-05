@@ -1,3 +1,4 @@
+import { CIUDADES, degradeFondoCiudad, type MundoCiudad } from "@/lib/recompensas/catalogo";
 import type { VisualLeccion } from "@/lib/aprender/visuales";
 // Tipos que reflejan el esquema de supabase/migrations/*.sql.
 // Cuando el esquema crezca, lo ideal es generar esto automáticamente con:
@@ -160,7 +161,8 @@ export const ANIMACIONES_PESADAS: ReadonlySet<AnimacionNombre> = new Set(["shuff
 // usa la URL, no un background-image de CSS fijo.
 // "prodigio" (Fase 4, pagos): exclusivo de Prodigia Pro, mismo gate
 // que animacion "prisma" — ver 0146_prodigia_pro_gates_y_estadisticas.sql.
-export type FondoPerfil = "ninguno" | "aurora" | "nebulosa" | "dorado" | "oceano" | "bosque" | "personalizado" | "prodigio";
+// + los 13 fondos de ciudad de la tienda ampliada (0248): degradé del color del mundo.
+export type FondoPerfil = "ninguno" | "aurora" | "nebulosa" | "dorado" | "oceano" | "bosque" | "personalizado" | "prodigio" | `ciudad_${MundoCiudad}`;
 
 export const FONDO_PERFIL_ESTILO: Record<FondoPerfil, string> = {
   ninguno: "",
@@ -171,6 +173,7 @@ export const FONDO_PERFIL_ESTILO: Record<FondoPerfil, string> = {
   bosque: "linear-gradient(120deg, #0d2b1a, #2f7d4f, #7ee08a, #0d2b1a)",
   personalizado: "",
   prodigio: "linear-gradient(120deg, #3d1a5c, #ffc53d, #7c5cff, #3d1a5c)",
+  ...(Object.fromEntries(CIUDADES.map((c) => [`ciudad_${c.slug}`, degradeFondoCiudad(c.slug) ?? ""])) as Record<`ciudad_${MundoCiudad}`, string>),
 };
 
 export interface Profile {

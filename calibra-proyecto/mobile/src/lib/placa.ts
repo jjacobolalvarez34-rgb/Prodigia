@@ -2,6 +2,7 @@
 // todas las variantes (Completa, VS, Tarjeta, Fila, Mini). Las constantes de
 // cosméticos (rangos, marcos, fondos) salen del mismo código de la web.
 import { FONDO_PERFIL_ESTILO, MARCOS_MUNDO, MARCOS_NEON, RANGOS_ELO, rangoDeElo, type FondoPerfil, type RangoElo } from "@/types/database";
+import { ciudadDeMarcoColeccion, marcoTemporadaDe } from "@/lib/recompensas/catalogo";
 import { urlAbsoluta } from "./entorno";
 import { supabase } from "./supabase";
 
@@ -22,6 +23,8 @@ export interface PlacaDatos {
   nivel: number;
   chispas: number;
   clan?: { nombre: string; tag: string | null; color: string } | null;
+  // Ciudad de la Placa (tienda ampliada, 0248): skyline detrás del avatar.
+  ciudad?: string | null;
 }
 
 // Fuentes de nombre compradas en la tienda → familias empaquetadas en la app.
@@ -56,7 +59,11 @@ export type InfoMarco =
   | { tipo: "ninguno"; color: string }
   | { tipo: "rango"; color: string }
   | { tipo: "neon"; color: string }
-  | { tipo: "mundo"; color: string; imagen: string };
+  | { tipo: "mundo"; color: string; imagen: string }
+  // Tienda ampliada (0248): de temporada (aro con degradé que gira) y de colección
+  // (el anillo del mundo con un resplandor de su color que late).
+  | { tipo: "temporada"; color: string; colores: [string, string] }
+  | { tipo: "coleccion"; color: string; imagen: string };
 
 export function infoMarco(marco: string | null | undefined): InfoMarco {
   if (!marco || marco === "ninguno") return { tipo: "ninguno", color: "#7C5CFF" };
@@ -64,6 +71,10 @@ export function infoMarco(marco: string | null | undefined): InfoMarco {
   if (rango) return { tipo: "rango", color: rango.colorHex };
   const neon = MARCOS_NEON.find((m) => m.slug === marco);
   if (neon) return { tipo: "neon", color: neon.colorHex };
+  const temporada = marcoTemporadaDe(marco);
+  if (temporada) return { tipo: "temporada", color: temporada.colores[0], colores: temporada.colores };
+  const coleccion = ciudadDeMarcoColeccion(marco);
+  if (coleccion && MARCOS_MUNDO[coleccion.slug]) return { tipo: "coleccion", color: coleccion.color, imagen: urlAbsoluta(MARCOS_MUNDO[coleccion.slug].imagen) ?? "" };
   const mundo = MARCOS_MUNDO[marco];
   if (mundo) return { tipo: "mundo", color: "#FFB627", imagen: urlAbsoluta(mundo.imagen) ?? "" };
   return { tipo: "ninguno", color: "#7C5CFF" };
@@ -132,26 +143,30 @@ export function placaDesdeFila(f: FilaPerfil, titulo: string | null = f.titulo_n
 }
 
 export async function cargarMiPlaca(userId: string): Promise<PlacaDatos | null> {
-  const [{ data }, { data: titulo }, { data: clan }] = await Promise.all([
+  const [{ data }, { data: titulo }, { data: clan }, { data: ciudad }] = await Promise.all([
     supabase.from("profiles").select(COLUMNAS_PERFIL).eq("id", userId).single(),
     supabase.rpc("titulo_nombre_de", { p_user_id: userId }),
     supabase.rpc("mi_clan"),
+    supabase.rpc("ciudad_placa_de", { p_user_id: userId }),
   ]);
   if (!data) return null;
   const placa = placaDesdeFila(data as FilaPerfil, (titulo as string | null) ?? null);
   const c = (clan as { nombre: string; tag: string | null; color_estandarte: string }[] | null)?.[0];
   placa.clan = c ? { nombre: c.nombre, tag: c.tag, color: c.color_estandarte } : null;
+  placa.ciudad = (ciudad as string | null) ?? null;
   return placa;
 }
 
 export async function cargarPlacaPublica(userId: string): Promise<PlacaDatos | null> {
-  const [{ data }, { data: clan }] = await Promise.all([
+  const [{ data }, { data: clan }, { data: ciudad }] = await Promise.all([
     supabase.rpc("obtener_perfil_publico", { p_user_id: userId }),
     supabase.rpc("clan_de_usuario", { p_user_id: userId }),
+    supabase.rpc("ciudad_placa_de", { p_user_id: userId }),
   ]);
   const fila = (data as FilaPerfil[] | null)?.[0];
   if (!fila) return null;
   const placa = placaDesdeFila(fila);
+  placa.ciudad = (ciudad as string | null) ?? null;
   const c = (clan as { nombre: string; tag: string | null; color_estandarte: string }[] | null)?.[0];
   placa.clan = c ? { nombre: c.nombre, tag: c.tag, color: c.color_estandarte } : null;
   return placa;

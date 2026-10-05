@@ -6,12 +6,15 @@ import { memo, useCallback, useMemo, useState } from "react";
 import { Dimensions, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { FadeIn } from "react-native-reanimated";
-import { sonar, vibrar } from "~/lib/efectos";
+import { CATALOGO_NUEVO, diasHastaFinDeMes } from "@/lib/recompensas/catalogo";
+import { probarPaqueteAcierto, sonar, vibrar } from "~/lib/efectos";
+import { recargarCosmeticos } from "~/lib/recompensas";
 import { fijarChispas, recargarJugador, useJugador } from "~/lib/jugador";
 import type { PlacaDatos } from "~/lib/placa";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError } from "~/lib/supabase";
 import {
+  aLaVenta,
   CATALOGO,
   cantidadUtilidad,
   cargarTienda,
@@ -24,8 +27,9 @@ import {
   loUsa,
   NOMBRE_RAREZA,
   precioDe,
-  rarezaDe,
+  rarezaDeItem,
   subirFondo,
+  tieneSlug,
   type Categoria,
   type EstadoTienda,
   type ItemTienda,
@@ -41,25 +45,37 @@ import AvatarMarco from "~/ui/placa/AvatarMarco";
 import FondoPlaca from "~/ui/placa/FondoPlaca";
 import NombreEstilizado from "~/ui/placa/NombreEstilizado";
 import { PlacaTarjeta } from "~/ui/placa/Placa";
+import VistaCosmetico from "~/ui/recompensas/VistaCosmetico";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente } from "~/tema";
 import { FUENTE_FAMILIA } from "~/lib/placa";
 
 // Una categoría a la vez (antes la tienda dibujaba todo el catálogo junto y se
 // trababa): menos cosas en pantalla, y la grilla entra con un fundido.
-type Pestana = "utilidad" | "marcos" | "nombre" | "fondos";
+type Pestana = "utilidad" | "paquetes" | "marcos" | "nombre" | "fondos" | "partida" | "placa" | "duelos";
 const PESTANAS: { id: Pestana; titulo: string }[] = [
   { id: "utilidad", titulo: "Utilidades" },
+  { id: "paquetes", titulo: "Paquetes" },
   { id: "marcos", titulo: "Marcos" },
+  { id: "partida", titulo: "Partida" },
   { id: "nombre", titulo: "Nombre" },
   { id: "fondos", titulo: "Fondos" },
+  { id: "placa", titulo: "Placa" },
+  { id: "duelos", titulo: "Duelos" },
 ];
 const CATEGORIAS_DE: Record<Pestana, Categoria[]> = {
   utilidad: ["utilidad"],
+  paquetes: ["paquete"],
   marcos: ["marco", "marco_mundo"],
   nombre: ["fuente", "animacion", "color"],
   fondos: ["fondo", "galeria"],
+  partida: ["estela", "efecto", "sonido"],
+  placa: ["ciudad_placa", "titulo"],
+  duelos: ["emote"],
 };
+// Lo que se ve sobre tu Placa (vista previa con la Placa); el resto, con su muestra.
+const SOBRE_PLACA: Categoria[] = ["marco", "marco_mundo", "fuente", "animacion", "fondo", "galeria", "color", "ciudad_placa"];
+const NOMBRE_DE_SLUG = (slug: string) => CATALOGO.find((x) => x.item === slug)?.nombre ?? CATALOGO_NUEVO.find((x) => x.item === slug)?.nombre ?? slug;
 
 const COLORES_NOMBRE = ["#FFFFFF", "#FFB627", "#FF8A3D", "#FF5D5D", "#E36BF2", "#9B85FF", "#4FE0F5", "#3DDC97", "#A8E84A", "#F2C14E"];
 
@@ -68,6 +84,16 @@ function IconoUtilidad({ item }: { item: string }) {
   if (item === "congelamiento") return <IconoCopo tam={32} c="#7FD8FF" />;
   if (item === "boost") return <IconoRayo tam={32} c={color.logro} />;
   if (item === "hielo") return <IconoCopo tam={32} c="#BDEBFF" />;
+  if (item === "pista") return <Texto style={{ fontSize: 30 }}>💡</Texto>;
+  if (item === "segunda_oportunidad") return <Texto style={{ fontSize: 30 }}>🔁</Texto>;
+  if (item === "cofre_hielos")
+    return (
+      <View style={{ flexDirection: "row" }}>
+        <IconoCopo tam={22} c="#BDEBFF" />
+        <IconoCopo tam={22} c="#7FD8FF" />
+        <IconoCopo tam={22} c="#BDEBFF" />
+      </View>
+    );
   return <IconoReloj tam={32} c={color.correcto} />;
 }
 
@@ -92,6 +118,22 @@ function Muestra({ it, placa }: { it: ItemTienda; placa: PlacaDatos }) {
       );
     case "galeria":
       return <Image source={{ uri: it.imagen }} style={styles.mini} contentFit="cover" autoplay={false} />;
+    case "estela":
+    case "efecto":
+    case "sonido":
+    case "emote":
+    case "ciudad_placa":
+    case "titulo":
+      return <VistaCosmetico categoria={it.categoria} valor={it.valor} tam={50} />;
+    case "paquete":
+      return (
+        <View style={{ alignItems: "center", gap: 2 }}>
+          <Texto style={{ fontSize: 30 }}>🎁</Texto>
+          <Texto v="nota" tam={10}>
+            {it.items?.length ?? 0} cosas
+          </Texto>
+        </View>
+      );
     default:
       return (
         <View style={styles.fila}>
@@ -108,7 +150,7 @@ function Muestra({ it, placa }: { it: ItemTienda; placa: PlacaDatos }) {
 // memo: tocar una tarjeta no vuelve a dibujar las demás.
 const TarjetaItem = memo(function TarjetaItem({ it, e, placa, ancho, onPress }: { it: ItemTienda; e: EstadoTienda; placa: PlacaDatos; ancho: number; onPress: (it: ItemTienda) => void }) {
   const precio = precioDe(it);
-  const rareza = rarezaDe(it.costoBase);
+  const rareza = rarezaDeItem(it);
   const c = COLOR_RAREZA[rareza];
   const tiene = loTiene(it, e);
   const usa = loUsa(it, e);
@@ -225,6 +267,7 @@ export default function Tienda() {
         animacion: elegido.categoria === "animacion" ? elegido.valor : placa.animacion,
         fondo: elegido.categoria === "fondo" ? elegido.valor : elegido.categoria === "galeria" ? "personalizado" : placa.fondo,
         fondoUrl: elegido.categoria === "galeria" ? elegido.imagen ?? null : elegido.categoria === "fondo" && elegido.valor === "personalizado" ? e.fondoUrl : placa.fondoUrl,
+        ciudad: elegido.categoria === "ciudad_placa" ? elegido.valor : placa.ciudad,
       }
     : placa;
 
@@ -243,9 +286,10 @@ export default function Tienda() {
       vibrar.exito();
       setFestejo((n) => n + 1);
       mostrarAviso(`¡${elegido.nombre} es tuyo!`, "logro");
-      if (elegido.categoria !== "utilidad" && elegido.categoria !== "color" && !(elegido.categoria === "fondo" && elegido.valor === "personalizado")) {
+      if (!["utilidad", "color", "paquete", "emote"].includes(elegido.categoria) && !(elegido.categoria === "fondo" && elegido.valor === "personalizado")) {
         await equipar(elegido, elegido.categoria).catch(() => {});
       }
+      if (userId) recargarCosmeticos(userId);
       setConfirmar(false);
       await Promise.all([cargar(), recargarJugador()]);
       if (elegido.categoria === "utilidad") setElegido(null);
@@ -261,7 +305,7 @@ export default function Tienda() {
     try {
       await equipar(it, cat, ninguno);
       sonar("boton");
-      await Promise.all([cargar(), recargarJugador()]);
+      await Promise.all([cargar(), recargarJugador(), userId ? recargarCosmeticos(userId) : Promise.resolve()]);
       mostrarAviso(it ? `Ahora usas ${it.nombre}` : "Listo", "ok");
     } catch (err) {
       mostrarAviso(mensajeError(err), "error");
@@ -275,9 +319,9 @@ export default function Tienda() {
   const precio = elegido ? precioDe(elegido) : 0;
   const bloqueoNivel = elegido?.nivelMundo && (e.nivelesMundo[elegido.nivelMundo] ?? 0) < 40;
   const bloqueoPro = elegido?.soloPro && e.plan !== "pro";
-  const ninguno: Partial<Record<Categoria, string>> = { marco: "ninguno", marco_mundo: "ninguno", fuente: "default", animacion: "ninguna", fondo: "ninguno", galeria: "ninguno" };
+  const ninguno: Partial<Record<Categoria, string>> = { marco: "ninguno", marco_mundo: "ninguno", fuente: "default", animacion: "ninguna", fondo: "ninguno", galeria: "ninguno", estela: "clasica", efecto: "chispas", sonido: "clasico" };
 
-  const items = catalogo.filter((x) => CATEGORIAS_DE[pestana].includes(x.categoria));
+  const items = catalogo.filter((x) => CATEGORIAS_DE[pestana].includes(x.categoria) && aLaVenta(x));
   const horasOferta = Math.floor(msHastaFinDelEvento() / 3_600_000);
 
   return (
@@ -371,17 +415,51 @@ export default function Tienda() {
       <Hoja visible={!!elegido} onCerrar={() => setElegido(null)}>
         {elegido && (
           <>
-            {elegido.categoria !== "utilidad" ? (
+            {elegido.categoria !== "utilidad" && !SOBRE_PLACA.includes(elegido.categoria) ? (
+              <View key={elegido.item} style={[styles.fila, { gap: 14 }]}>
+                <View style={[styles.iconoGrande, { width: 96, height: 96 }]}>
+                  {elegido.categoria === "paquete" ? <Texto style={{ fontSize: 44 }}>🎁</Texto> : <VistaCosmetico categoria={elegido.categoria} valor={elegido.valor} tam={72} />}
+                </View>
+                <View style={{ flex: 1, gap: 4 }}>
+                  <View style={[styles.rareza, { borderColor: COLOR_RAREZA[rarezaDeItem(elegido)] }]}>
+                    <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 10, color: COLOR_RAREZA[rarezaDeItem(elegido)], letterSpacing: 1 }}>{NOMBRE_RAREZA[rarezaDeItem(elegido)].toUpperCase()}</Texto>
+                  </View>
+                  <Texto v="h2">{elegido.nombre}</Texto>
+                  {elegido.descripcion ? <Texto v="nota">{elegido.descripcion}</Texto> : null}
+                  {elegido.categoria === "estela" && <Texto v="nota">La llama de tu racha en las partidas.</Texto>}
+                  {elegido.categoria === "efecto" && <Texto v="nota">Lo que estalla cada vez que aciertas.</Texto>}
+                  {elegido.categoria === "sonido" && (
+                    <Pressable onPress={() => probarPaqueteAcierto(elegido.valor)} style={[styles.precio, { alignSelf: "flex-start" }]}>
+                      <Texto v="fuerte" tam={12}>
+                        ▶ Escuchar
+                      </Texto>
+                    </Pressable>
+                  )}
+                  {elegido.categoria === "paquete" &&
+                    (elegido.items ?? []).map((s) => (
+                      <Texto key={s} v="nota" c={tieneSlug(s, e) ? color.correcto : color.texto}>
+                        {tieneSlug(s, e) ? "✓ " : "• "}
+                        {NOMBRE_DE_SLUG(s)}
+                      </Texto>
+                    ))}
+                </View>
+              </View>
+            ) : elegido.categoria !== "utilidad" ? (
               <View key={elegido.item} style={{ flexDirection: "row", gap: 10 }}>
                 <PlacaTarjeta placa={previa} onPress={() => {}} />
                 <View style={{ flex: 1.1, justifyContent: "center", gap: 6 }}>
-                  <View style={[styles.rareza, { borderColor: COLOR_RAREZA[rarezaDe(elegido.costoBase)] }]}>
-                    <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 10, color: COLOR_RAREZA[rarezaDe(elegido.costoBase)], letterSpacing: 1 }}>
-                      {NOMBRE_RAREZA[rarezaDe(elegido.costoBase)].toUpperCase()}
+                  <View style={[styles.rareza, { borderColor: COLOR_RAREZA[rarezaDeItem(elegido)] }]}>
+                    <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 10, color: COLOR_RAREZA[rarezaDeItem(elegido)], letterSpacing: 1 }}>
+                      {NOMBRE_RAREZA[rarezaDeItem(elegido)].toUpperCase()}
                     </Texto>
                   </View>
                   <Texto v="h2">{elegido.nombre}</Texto>
                   {elegido.descripcion ? <Texto v="nota">{elegido.descripcion}</Texto> : <Texto v="nota">Así se ve en tu Placa.</Texto>}
+                  {elegido.temporada != null && (
+                    <Texto v="fuerte" tam={12} c={color.racha}>
+                      Quedan {diasHastaFinDeMes()} días para comprarlo
+                    </Texto>
+                  )}
                 </View>
               </View>
             ) : (
@@ -446,6 +524,14 @@ export default function Tienda() {
                   }
                 }}
               />
+            ) : tiene && (elegido.categoria === "emote" || elegido.categoria === "paquete") ? (
+              <Texto v="nota" centro>
+                {elegido.categoria === "emote" ? "Ya lo tienes: aparece en tus duelos." : "Ya tienes todo lo de este paquete."}
+              </Texto>
+            ) : tiene && elegido.categoria === "titulo" && usa ? (
+              <Texto v="nota" centro>
+                Lo estás usando en tu Placa.
+              </Texto>
             ) : tiene && elegido.categoria !== "utilidad" ? (
               usa ? (
                 <Boton3D titulo="Quitar" variante="secundario" cargando={ocupado} onPress={() => usar(null, elegido.categoria, ninguno[elegido.categoria])} />

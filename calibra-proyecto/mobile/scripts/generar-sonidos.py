@@ -55,6 +55,18 @@ guardar("boton",secuencia([(740,0,.07,.08)]),0.3)
 guardar("combo",secuencia([(659.25,0,.35,.1,"triangle"),(830.6,.03,.35,.08,"triangle"),(987.8,.06,.4,.08,"triangle")]),0.6)
 guardar("racha",secuencia([(392,0,.14,.08,"triangle"),(523.25,.1,.14,.09,"triangle"),(784,.2,.32,.1,"triangle")]),0.6)
 guardar("swoosh",secuencia([(520,0,.12,.05),(780,.05,.12,.05)]),0.3)
+# Paquetes de sonido de acierto de la tienda (SONIDOS de calibra/src/lib/recompensas/
+# catalogo.ts, mismos números): (frecuencia relativa, inicio, duración, onda, volumen),
+# en las mismas 8 alturas que el acierto clásico.
+PAQUETES={
+    "campanitas":[(2,0,.6,"sine",.1),(5.4,0,.35,"sine",.03),(3,.07,.5,"sine",.06)],
+    "ochobits":[(1,0,.07,"square",.06),(1.5,.06,.07,"square",.06),(2,.12,.1,"square",.06)],
+    "marimba":[(.5,0,.3,"sine",.16),(2,0,.08,"sine",.04)],
+}
+for nombre,notas in PAQUETES.items():
+    for i,st in enumerate(escala):
+        f=880*2**(st/12)
+        guardar(f"acierto_{nombre}{i}",secuencia([(f*r,ini,d,v,o) for r,ini,d,o,v in notas]),0.6)
 print(sorted(os.listdir(OUT)))
 
 # Notas para el oído absoluto de Melodía: reproducirNotaMusical de la web

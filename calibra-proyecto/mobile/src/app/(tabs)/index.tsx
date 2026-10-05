@@ -7,6 +7,7 @@ import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, recargarJugador, useJugador } from "~/lib/jugador";
 import { progresoMundo, ultimoJugado, type Continuar, type ProgresoMundo } from "~/lib/mundos";
 import { mundoDobleExperiencia, msHastaFinDelEvento } from "@/lib/eventos/dobleExperiencia";
+import { recargarPendientes, totalPendientes, usePendientes } from "~/lib/recompensas";
 import { estadoRetosHoy } from "~/lib/retos";
 import { useSesion } from "~/lib/sesion";
 import { sincronizar, useSinConexion } from "~/lib/sinConexion";
@@ -41,6 +42,7 @@ export default function Hoy() {
   const [novedades, setNovedades] = useState<NovedadDestacada[]>([]);
   const [reclamando, setReclamando] = useState(false);
   const [ahora, setAhora] = useState(() => new Date());
+  const recompensas = usePendientes();
 
   const cargar = useCallback(async () => {
     if (!userId) return;
@@ -61,7 +63,8 @@ export default function Hoy() {
           const i = r.findIndex((f) => f.placa.id === userId);
           setLiga(i >= 0 ? { puesto: i + 1, total: r.length } : { puesto: 0, total: r.length });
         }),
-        cargarCompetitivo().then((c) => setPendientes(c.pendientes))
+        cargarCompetitivo().then((c) => setPendientes(c.pendientes)),
+        recargarPendientes()
       );
     }
     await Promise.allSettled(tareas);
@@ -143,6 +146,41 @@ export default function Hoy() {
           </Tarjeta>
         );
       })()}
+
+      {!esInvitado && (
+        <Tarjeta indice={indice++} acento={totalPendientes(recompensas) > 0 ? color.logro : undefined} brillo={totalPendientes(recompensas) > 0 ? 0.3 : 0} onPress={() => router.push("/recompensas")}>
+          <View style={styles.fila}>
+            <Texto style={{ fontSize: 32 }}>🎁</Texto>
+            <View style={{ flex: 1 }}>
+              <Texto v="micro" c={color.logro}>
+                Recompensas
+              </Texto>
+              <Texto v="h3">
+                {totalPendientes(recompensas) > 0
+                  ? [
+                      recompensas.capsulas > 0 ? `${recompensas.capsulas} ${recompensas.capsulas === 1 ? "cápsula" : "cápsulas"}` : null,
+                      recompensas.misiones > 0 ? `${recompensas.misiones} ${recompensas.misiones === 1 ? "misión lista" : "misiones listas"}` : null,
+                      recompensas.calendario ? "premio del día" : null,
+                      recompensas.regalos > 0 ? `${recompensas.regalos} ${recompensas.regalos === 1 ? "regalo" : "regalos"}` : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")
+                  : "Misiones, calendario y cápsulas"}
+              </Texto>
+              <Texto v="nota" tam={12}>
+                {totalPendientes(recompensas) > 0 ? "Toca para reclamar" : "Juega para ganar cápsulas y completar tus misiones del día"}
+              </Texto>
+            </View>
+            {totalPendientes(recompensas) > 0 && (
+              <View style={styles.insignia}>
+                <Texto v="mono" tam={13} c="#2A1A00">
+                  {totalPendientes(recompensas)}
+                </Texto>
+              </View>
+            )}
+          </View>
+        </Tarjeta>
+      )}
 
       {rachaEnRiesgo && (
         <Tarjeta indice={indice++} acento={color.racha} brillo={0.3} onPress={() => router.push(continuar?.ruta ?? "/numeria")}>
@@ -311,6 +349,7 @@ export default function Hoy() {
 }
 
 const styles = StyleSheet.create({
+  insignia: { minWidth: 26, height: 26, borderRadius: 13, paddingHorizontal: 6, alignItems: "center", justifyContent: "center", backgroundColor: color.logro },
   fila: { flexDirection: "row", alignItems: "center", gap: 12 },
   entre: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 },
   iconoCirculo: { width: 42, height: 42, borderRadius: 21, alignItems: "center", justifyContent: "center" },

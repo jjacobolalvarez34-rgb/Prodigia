@@ -684,3 +684,18 @@ revoke execute on function public.usar_ayuda_partida(text) from public, anon;
 grant execute on function public.usar_ayuda_partida(text) to authenticated;
 
 notify pgrst, 'reload schema';
+
+-- Ciudad de la Placa de cualquier jugador (la Placa pública la muestra).
+create or replace function public.ciudad_placa_de(p_user_id uuid)
+returns text
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select pr.ciudad_placa from public.profiles pr where pr.id = p_user_id;
+$$;
+
+grant execute on function public.ciudad_placa_de(uuid) to anon, authenticated;
+
+notify pgrst, 'reload schema';

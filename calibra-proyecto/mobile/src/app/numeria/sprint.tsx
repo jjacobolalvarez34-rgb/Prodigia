@@ -40,6 +40,7 @@ import {
 } from "~/ui/Sprint";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente, NUMERIA } from "~/tema";
+import EmotesDuelo from "~/ui/recompensas/EmotesDuelo";
 
 const TOTAL = 10;
 const FEEDBACK_OK_MS = 420;
@@ -97,7 +98,7 @@ export default function Sprint() {
   const flotanteId = useRef(0);
   const inicioRef = useRef(0);
 
-  const { rival: rivalVivo, emitir } = useProgresoEnVivo(dueloId && duelo && !duelo.rivalYaJugo ? dueloId : null, miId);
+  const { rival: rivalVivo, emitir, emote: emoteRival, enviarEmote } = useProgresoEnVivo(dueloId && duelo && !duelo.rivalYaJugo ? dueloId : null, miId);
 
   function siguiente(): ProblemaNumeria {
     return nuevoProblemaNumeria(seccionRef.current, temasRef.current, nivelesRef.current, usadosRef.current, rngRef.current);
@@ -225,6 +226,9 @@ export default function Sprint() {
     }
   }
 
+  const [segundaArmada, setSegundaArmada] = useState(false);
+  const segundaRef = useRef(false);
+
   function limpiarEntrada() {
     setRespuesta("");
     setNum("");
@@ -237,6 +241,21 @@ export default function Sprint() {
     ocupadoRef.current = true;
     const timeMs = Date.now() - mostradoEnRef.current;
     const correcto = esCorrecta(problema, entrada);
+    // Segunda oportunidad: el error no cuenta y se vuelve a responder el mismo problema.
+    if (!correcto && segundaRef.current && !dueloId) {
+      segundaRef.current = false;
+      setSegundaArmada(false);
+      sonar("error");
+      vibrar.error();
+      animarError(sacudida);
+      limpiarEntrada();
+      setAviso("¡Segunda oportunidad! Inténtalo otra vez");
+      setTimeout(() => {
+        setAviso(null);
+        ocupadoRef.current = false;
+      }, 700);
+      return;
+    }
     respuestasRef.current.push({ correct: correcto, timeMs });
     setFeedback(correcto ? "correcto" : "incorrecto");
     setResultados((r) => [...r, correcto]);
@@ -350,9 +369,21 @@ export default function Sprint() {
       <Animated.View style={[{ flex: 1 }, estiloJuego]}>
         <Cabecera onSalir={confirmarSalida} reloj={reloj} combo={combo} acento={NUMERIA.neon} corriendo={inicio != null && final === null} />
         <Progreso resultados={resultados} total={TOTAL} acento={NUMERIA.neon} escudos={escudos} />
-        <Consumibles reloj={reloj} consumibles={consumibles} deshabilitado={final !== null} />
+        <Consumibles
+          reloj={reloj}
+          consumibles={consumibles}
+          deshabilitado={final !== null || feedback !== "idle"}
+          segundaArmada={segundaArmada}
+          onSegunda={() => {
+            segundaRef.current = true;
+            setSegundaArmada(true);
+          }}
+        />
         {duelo && (
           <BarraRival nombre={duelo.rivalNombre} total={TOTAL} yo={resultados.length} inicio={inicio} respuestasFantasma={duelo.rivalYaJugo ? duelo.rivalRespuestas : null} enVivo={rivalVivo?.respondidos ?? null} />
+        )}
+        {duelo && !duelo.rivalYaJugo && (
+          <EmotesDuelo recibido={emoteRival} onEnviar={enviarEmote} />
         )}
 
         <View style={styles.zona}>

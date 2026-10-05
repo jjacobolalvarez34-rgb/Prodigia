@@ -23,9 +23,10 @@ import { useSesion } from "~/lib/sesion";
 import { mensajeError } from "~/lib/supabase";
 import Glifos from "~/ui/Glifos";
 import MapaGeografia from "~/ui/MapaGeografia";
-import { animarAcierto, animarError, BarraRival, Cabecera, CartelFinal, Consumibles, CuentaInicio, Flotante, Progreso, TarjetaProblema, useConsumibles, useReloj, useSalida } from "~/ui/Sprint";
+import { animarAcierto, animarError, BarraRival, Cabecera, CartelFinal, Consumibles, CuentaInicio, Flotante, opcionesADescartar, Progreso, TarjetaProblema, useConsumibles, useReloj, useSalida } from "~/ui/Sprint";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente, MUNDO_POR_SLUG } from "~/tema";
+import EmotesDuelo from "~/ui/recompensas/EmotesDuelo";
 
 const GEOGRAFIA = MUNDO_POR_SLUG.geografia;
 const FEEDBACK_OK_MS = 650;
@@ -72,12 +73,17 @@ export default function SprintGeografia() {
   const comboRef = useRef(0);
   const flotanteId = useRef(0);
 
-  const { rival: rivalVivo, emitir } = useProgresoEnVivo(dueloId && duelo && !duelo.rivalYaJugo ? dueloId : null, miId);
+  const { rival: rivalVivo, emitir, emote: emoteRival, enviarEmote } = useProgresoEnVivo(dueloId && duelo && !duelo.rivalYaJugo ? dueloId : null, miId);
+
+  const [segundaArmada, setSegundaArmada] = useState(false);
+  const segundaRef = useRef(false);
+  const [ocultas, setOcultas] = useState<Set<string>>(() => new Set());
 
   function nuevaPregunta() {
     const p = siguientePregunta(continenteRef.current, nivelRef.current, usadosRef.current);
     if (p) usadosRef.current.add(p.id);
     setPregunta(p);
+    setOcultas(new Set());
     setSeleccionId(null);
     setRespondido(false);
     mostradaEnRef.current = Date.now();
@@ -195,6 +201,19 @@ export default function SprintGeografia() {
     ocupadoRef.current = true;
     const timeMs = Date.now() - mostradaEnRef.current;
     const correcto = id === pregunta.id;
+    // Segunda oportunidad: el error no cuenta y se vuelve a responder la misma pregunta.
+    if (!correcto && segundaRef.current && !dueloId) {
+      segundaRef.current = false;
+      setSegundaArmada(false);
+      sonar("error");
+      vibrar.error();
+      animarError(sacudida);
+      setOcultas((o) => new Set(o).add(id));
+      setTimeout(() => {
+        ocupadoRef.current = false;
+      }, 500);
+      return;
+    }
     respuestasRef.current.push({ correct: correcto, timeMs });
     setSeleccionId(id);
     setRespondido(true);
@@ -279,9 +298,22 @@ export default function SprintGeografia() {
       <Animated.View style={[{ flex: 1 }, estiloJuego]}>
       <Cabecera onSalir={confirmarSalida} reloj={reloj} combo={combo} acento={GEOGRAFIA.neon} corriendo={inicio != null && final === null} />
       <Progreso resultados={resultados} total={PREGUNTAS_POR_PARTIDA} acento={GEOGRAFIA.neon} escudos={escudos} />
-      <Consumibles reloj={reloj} consumibles={consumibles} deshabilitado={final !== null} />
+      <Consumibles
+        reloj={reloj}
+        consumibles={consumibles}
+        deshabilitado={final !== null || respondido}
+        onPista={avanzada && ocultas.size === 0 ? () => setOcultas(opcionesADescartar(pregunta.opciones.map((o) => o.id), pregunta.id)) : undefined}
+        segundaArmada={segundaArmada}
+        onSegunda={() => {
+          segundaRef.current = true;
+          setSegundaArmada(true);
+        }}
+      />
       {duelo && (
         <BarraRival nombre={duelo.rivalNombre} total={PREGUNTAS_POR_PARTIDA} yo={resultados.length} inicio={inicio} respuestasFantasma={duelo.rivalYaJugo ? duelo.rivalRespuestas : null} enVivo={rivalVivo?.respondidos ?? null} />
+        )}
+        {duelo && !duelo.rivalYaJugo && (
+          <EmotesDuelo recibido={emoteRival} onEnviar={enviarEmote} />
       )}
 
       <ScrollView contentContainerStyle={styles.zona} scrollEnabled={avanzada}>
@@ -308,10 +340,11 @@ export default function SprintGeografia() {
             {pregunta.opciones.map((o, i) => {
               const esCorrecta = respondido && o.id === pregunta.id;
               const esIncorrecta = respondido && o.id === seleccionId && o.id !== pregunta.id;
+              const descartada = ocultas.has(o.id);
               return (
-                <Animated.View key={o.id} entering={FadeInDown.delay(i * 60).duration(300)}>
+                <Animated.View key={o.id} entering={FadeInDown.delay(i * 60).duration(300)} style={descartada ? { opacity: 0.18 } : null}>
                   <Pressable
-                    disabled={respondido}
+                    disabled={respondido || descartada}
                     onPress={() => {
                       vibrar.seleccion();
                       responder(o.id);

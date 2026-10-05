@@ -23,7 +23,10 @@ import { brillo, color, conAlfa, fuente, radio } from "~/tema";
 import Anillo from "./Anillo";
 import { tiempoEsperadoMs } from "@/lib/practica/formulas";
 import { supabase } from "~/lib/supabase";
+import { efectoDe, estelaDe } from "@/lib/recompensas/catalogo";
+import { usarAyudaPartida, useCosmeticos } from "~/lib/recompensas";
 import { IconoCerrar, IconoCopo, IconoEscudo, IconoLlama, IconoReloj } from "./Iconos";
+import EfectoAcierto from "./recompensas/EfectoAcierto";
 import Logo from "./Logo";
 import Texto from "./Texto";
 
@@ -143,6 +146,9 @@ export const TIEMPO_EXTRA_MS = 3_000;
 // la web): con `activo` en false no se cargan ni se muestran.
 export function useConsumibles(activo: boolean) {
   const [disp, setDisp] = useState<{ hielos: number; tiempos: number } | null>(null);
+  // Pista y segunda oportunidad (tienda ampliada, 0248). Aparte: si la base todavía
+  // no tiene esas columnas, el hielo y el +3 s siguen funcionando.
+  const [ayudas, setAyudas] = useState<{ pistas: number; segundas: number }>({ pistas: 0, segundas: 0 });
   const [usando, setUsando] = useState(false);
   useEffect(() => {
     if (!activo) return;
@@ -154,6 +160,9 @@ export function useConsumibles(activo: boolean) {
       const { data } = await supabase.from("profiles").select("hielos_disponibles, tiempos_extra_disponibles").eq("id", uid).maybeSingle();
       const f = data as { hielos_disponibles: number; tiempos_extra_disponibles: number } | null;
       if (vivo && f) setDisp({ hielos: f.hielos_disponibles ?? 0, tiempos: f.tiempos_extra_disponibles ?? 0 });
+      const { data: a } = await supabase.from("profiles").select("pistas_disponibles, segundas_oportunidades_disponibles").eq("id", uid).maybeSingle();
+      const g = a as { pistas_disponibles: number; segundas_oportunidades_disponibles: number } | null;
+      if (vivo && g) setAyudas({ pistas: g.pistas_disponibles ?? 0, segundas: g.segundas_oportunidades_disponibles ?? 0 });
     })().catch(() => undefined);
     return () => {
       vivo = false;
@@ -177,16 +186,59 @@ export function useConsumibles(activo: boolean) {
     },
     [usando]
   );
-  return { disp: activo ? disp : null, usando, usar };
+  const usarAyuda = useCallback(
+    async (item: "pista" | "segunda_oportunidad") => {
+      if (usando) return false;
+      setUsando(true);
+      try {
+        const r = await usarAyudaPartida(supabase, item);
+        if (!r) return false;
+        setAyudas({ pistas: r.pistas_disponibles ?? 0, segundas: r.segundas_oportunidades_disponibles ?? 0 });
+        return true;
+      } finally {
+        setUsando(false);
+      }
+    },
+    [usando]
+  );
+  return { disp: activo ? disp : null, ayudas: activo ? ayudas : { pistas: 0, segundas: 0 }, usando, usar, usarAyuda };
 }
 
-// Botones de hielo y +3 s debajo del progreso. Solo aparecen si tienes alguno.
-export function Consumibles({ reloj, consumibles, deshabilitado }: { reloj: Reloj; consumibles: ReturnType<typeof useConsumibles>; deshabilitado: boolean }) {
-  const { disp, usando, usar } = consumibles;
-  if (!disp || (disp.hielos <= 0 && disp.tiempos <= 0)) return null;
+// Pista: dos opciones incorrectas al azar que se apagan (siempre queda al menos una mala).
+export function opcionesADescartar(opciones: string[], correcta: string): Set<string> {
+  const malas = opciones.filter((o) => o !== correcta);
+  for (let i = malas.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [malas[i], malas[j]] = [malas[j], malas[i]];
+  }
+  return new Set(malas.slice(0, Math.min(2, Math.max(0, malas.length - 1))));
+}
+
+// Botones de hielo, +3 s, pista y segunda oportunidad debajo del progreso. Solo
+// aparecen si tienes alguno. La pista solo donde hay opciones (`onPista`); la
+// segunda oportunidad queda "armada" hasta el próximo error.
+export function Consumibles({
+  reloj,
+  consumibles,
+  deshabilitado,
+  onPista,
+  segundaArmada,
+  onSegunda,
+}: {
+  reloj: Reloj;
+  consumibles: ReturnType<typeof useConsumibles>;
+  deshabilitado: boolean;
+  onPista?: () => void;
+  segundaArmada?: boolean;
+  onSegunda?: () => void;
+}) {
+  const { disp, ayudas, usando, usar, usarAyuda } = consumibles;
+  const hayPista = !!onPista && ayudas.pistas > 0;
+  const haySegunda = !!onSegunda && (ayudas.segundas > 0 || !!segundaArmada);
+  if ((!disp || (disp.hielos <= 0 && disp.tiempos <= 0)) && !hayPista && !haySegunda) return null;
   return (
     <View style={styles.consumibles}>
-      {disp.hielos > 0 && (
+      {disp && disp.hielos > 0 && (
         <Pressable
           disabled={deshabilitado || usando || reloj.congelado}
           onPress={async () => {
@@ -204,7 +256,7 @@ export function Consumibles({ reloj, consumibles, deshabilitado }: { reloj: Relo
           </Texto>
         </Pressable>
       )}
-      {disp.tiempos > 0 && (
+      {disp && disp.tiempos > 0 && (
         <Pressable
           disabled={deshabilitado || usando}
           onPress={async () => {
@@ -219,6 +271,45 @@ export function Consumibles({ reloj, consumibles, deshabilitado }: { reloj: Relo
           <IconoReloj tam={16} c={color.logro} />
           <Texto v="fuerte" tam={12} c={color.logro}>
             +3 s ×{disp.tiempos}
+          </Texto>
+        </Pressable>
+      )}
+      {hayPista && (
+        <Pressable
+          disabled={deshabilitado || usando}
+          onPress={async () => {
+            vibrar.medio();
+            if (await usarAyuda("pista")) {
+              sonar("swoosh");
+              onPista?.();
+            }
+          }}
+          style={({ pressed }) => [styles.consumible, { borderColor: "#A794FF", opacity: deshabilitado ? 0.45 : 1 }, pressed && { transform: [{ scale: 0.95 }] }]}
+        >
+          <Texto v="fuerte" tam={12} c="#C9BDFF">
+            💡 Pista ×{ayudas.pistas}
+          </Texto>
+        </Pressable>
+      )}
+      {haySegunda && (
+        <Pressable
+          disabled={deshabilitado || usando || segundaArmada}
+          onPress={async () => {
+            vibrar.medio();
+            if (await usarAyuda("segunda_oportunidad")) {
+              sonar("swoosh");
+              onSegunda?.();
+            }
+          }}
+          style={({ pressed }) => [
+            styles.consumible,
+            { borderColor: color.correcto, opacity: deshabilitado ? 0.45 : 1 },
+            segundaArmada && { backgroundColor: conAlfa(color.correcto, 0.2) },
+            pressed && { transform: [{ scale: 0.95 }] },
+          ]}
+        >
+          <Texto v="fuerte" tam={12} c={color.correcto}>
+            {segundaArmada ? "🛡️ 2ª oportunidad lista" : `🔁 2ª oportunidad ×${ayudas.segundas}`}
           </Texto>
         </Pressable>
       )}
@@ -284,6 +375,8 @@ function Brasa({ i, activa }: { i: number; activa: boolean }) {
 
 export function RachaFuego({ racha }: { racha: number }) {
   const liviano = useLiviano();
+  const estela = estelaDe(useCosmeticos().estela);
+  const colorRacha = estela.base === estelaDe("clasica").base ? color.racha : estela.arcoiris ? estela.punta : estela.base;
   const pop = useSharedValue(0.4);
   const vaiven = useSharedValue(0);
   const tier = TIERS.reduce((acc, t) => (racha >= t.desde ? t : acc), TIERS[0]);
@@ -301,12 +394,12 @@ export function RachaFuego({ racha }: { racha: number }) {
   const estiloLlama = useAnimatedStyle(() => ({ transform: [{ scaleY: 1 + vaiven.value * 0.07 }, { scaleX: 1 - vaiven.value * 0.04 }, { rotate: `${vaiven.value * 3}deg` }] }));
   if (racha < 2) return <View style={{ width: 76 }} />;
   return (
-    <Animated.View style={[styles.racha, racha >= 5 && { boxShadow: brillo(color.racha, 22, 0.55) }, estiloPop]}>
+    <Animated.View style={[styles.racha, { backgroundColor: conAlfa(colorRacha, 0.15) }, racha >= 5 && { boxShadow: brillo(colorRacha, 22, 0.55) }, estiloPop]}>
       {racha >= 5 && !liviano && [0, 1, 2, 3].map((i) => <Brasa key={i} i={i} activa />)}
       <Animated.View style={[{ transformOrigin: "bottom" }, estiloLlama]}>
-        <IconoLlama tam={tier.tam} estado={racha >= 6 ? "llamas" : "encendida"} />
+        <IconoLlama tam={tier.tam} estado={racha >= 6 ? "llamas" : "encendida"} estela={estela} />
       </Animated.View>
-      <Texto style={{ fontFamily: fuente.display, fontSize: tier.texto, color: color.racha }}>{racha}</Texto>
+      <Texto style={{ fontFamily: fuente.display, fontSize: tier.texto, color: colorRacha }}>{racha}</Texto>
     </Animated.View>
   );
 }
@@ -384,6 +477,15 @@ export function TarjetaProblema({
   sacudida: SharedValue<number>;
 }) {
   const [lado, setLado] = useState(0);
+  const [disparo, setDisparo] = useState(0);
+  const efecto = efectoDe(useCosmeticos().efecto);
+  const liviano = useLiviano();
+  // Cada acierto nuevo dispara un estallido (estado derivado del feedback, sin efecto).
+  const [feedbackAnterior, setFeedbackAnterior] = useState(feedback);
+  if (feedback !== feedbackAnterior) {
+    setFeedbackAnterior(feedback);
+    if (feedback === "correcto") setDisparo((d) => d + 1);
+  }
   const giro = useSharedValue(0);
   const enLlamas = combo >= 5;
   const rapido = combo >= 10;
@@ -409,6 +511,7 @@ export function TarjetaProblema({
         </Animated.View>
       )}
       <View style={styles.tarjeta}>{children}</View>
+      {disparo > 0 && <EfectoAcierto key={disparo} efecto={efecto} cantidad={liviano ? 7 : 12} />}
     </Animated.View>
   );
 }

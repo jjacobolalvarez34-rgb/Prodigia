@@ -33,17 +33,25 @@ export default function AvatarMarco({ url, nombre, marco = "ninguno", tam = 40, 
   const info = infoMarco(marco);
   const grosor = tam >= 60 ? 3 : 2;
   const pulso = useSharedValue(0.5);
+  const giro = useSharedValue(0);
   const activa = useAnimacionActiva();
+  const late = info.tipo === "neon" || info.tipo === "temporada" || info.tipo === "coleccion";
 
   useEffect(() => {
-    if (info.tipo !== "neon" || !animar || !activa) {
+    if (!late || !animar || !activa) {
       cancelAnimation(pulso);
+      cancelAnimation(giro);
       return;
     }
     pulso.set(withRepeat(withSequence(withTiming(1, { duration: 1100, easing: Easing.inOut(Easing.quad) }), withTiming(0.35, { duration: 1100 })), -1));
-    return () => cancelAnimation(pulso);
-  }, [info.tipo, animar, activa, pulso]);
+    if (info.tipo === "temporada") giro.set(withRepeat(withTiming(360, { duration: 5000, easing: Easing.linear }), -1, false));
+    return () => {
+      cancelAnimation(pulso);
+      cancelAnimation(giro);
+    };
+  }, [late, info.tipo, animar, activa, pulso, giro]);
   const estiloPulso = useAnimatedStyle(() => ({ opacity: pulso.value, transform: [{ scale: 1 + pulso.value * 0.06 }] }));
+  const estiloGiro = useAnimatedStyle(() => ({ transform: [{ rotate: `${giro.value}deg` }] }));
 
   const interior = tam - grosor * 2;
   const foto = (
@@ -70,6 +78,27 @@ export default function AvatarMarco({ url, nombre, marco = "ninguno", tam = 40, 
       <View style={{ width: tam, height: tam }}>
         <Animated.View style={[StyleSheet.absoluteFill, { borderRadius: tam / 2, boxShadow: `0px 0px ${tam * 0.35}px ${info.color}` }, estiloPulso]} />
         <View style={[styles.aro, { width: tam, height: tam, borderRadius: tam / 2, backgroundColor: info.color }]}>{foto}</View>
+      </View>
+    );
+  } else if (info.tipo === "temporada") {
+    aro = (
+      <View style={{ width: tam, height: tam, alignItems: "center", justifyContent: "center" }}>
+        <Animated.View style={[StyleSheet.absoluteFill, { borderRadius: tam / 2, boxShadow: `0px 0px ${tam * 0.3}px ${info.colores[1]}` }, estiloPulso]} />
+        <Animated.View style={[StyleSheet.absoluteFill, { borderRadius: tam / 2, overflow: "hidden" }, estiloGiro]}>
+          <LinearGradient colors={[info.colores[0], info.colores[1], info.colores[0]]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+        </Animated.View>
+        {foto}
+      </View>
+    );
+  } else if (info.tipo === "coleccion") {
+    const anillo = Math.round(tam * 1.36);
+    aro = (
+      <View style={{ width: tam, height: tam, alignItems: "center", justifyContent: "center" }}>
+        <Animated.View style={[StyleSheet.absoluteFill, { borderRadius: tam / 2, boxShadow: `0px 0px ${tam * 0.45}px ${info.color}` }, estiloPulso]} />
+        <View style={{ width: tam, height: tam, borderRadius: tam / 2, overflow: "hidden" }}>
+          {url ? <Image source={{ uri: url }} style={styles.relleno} contentFit="cover" autoplay={animar} /> : <Inicial nombre={nombre} tam={tam} />}
+        </View>
+        <Image source={{ uri: info.imagen }} style={{ position: "absolute", width: anillo, height: anillo }} contentFit="contain" />
       </View>
     );
   } else if (info.tipo === "mundo") {

@@ -4,13 +4,14 @@ import { Alert, StyleSheet, View } from "react-native";
 import { bloquearJugador, desbloquearJugador, estaBloqueado } from "~/lib/edad";
 import { sonar } from "~/lib/efectos";
 import { cargarPlacaPublica, type PlacaDatos } from "~/lib/placa";
+import { aQuienRegaleHoy, mensajeError as errorRecompensa, regalarAAmigo } from "~/lib/recompensas";
 import { useSesion } from "~/lib/sesion";
 import { estadoAmistad, pedirAmistad, quitarAmigo, responderSolicitud } from "~/lib/social";
 import { mensajeError, supabase } from "~/lib/supabase";
 import { mostrarAviso } from "~/ui/Aviso";
 import Barra from "~/ui/Barra";
 import Boton3D from "~/ui/Boton3D";
-import { IconoCompetir, IconoMensaje } from "~/ui/Iconos";
+import { IconoCompetir, IconoCopo, IconoEscudo, IconoMensaje, IconoRegalo } from "~/ui/Iconos";
 import { PantallaApilada, TituloSeccion } from "~/ui/Pantalla";
 import { PlacaCompleta } from "~/ui/placa/Placa";
 import RetarAmigo from "~/ui/RetarAmigo";
@@ -33,6 +34,9 @@ export default function Jugador() {
   const [retando, setRetando] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [bloqueado, setBloqueado] = useState(false);
+  // Regalo del día (0249): 1 hielo o 1 escudo a un amigo por día.
+  const [regaleHoyA, setRegaleHoyA] = useState<string | null | undefined>(undefined);
+  const [regalando, setRegalando] = useState(false);
 
   const cargar = useCallback(async () => {
     if (!id) return;
@@ -49,7 +53,23 @@ export default function Jugador() {
     setMundos(((m as { world: string; nivel_mundo: number }[] | null) ?? []).sort((x, y) => y.nivel_mundo - x.nivel_mundo));
     setDuelos((d as { jugados: number; victorias: number; derrotas: number }[] | null)?.[0] ?? null);
     setLogros(((l as { desbloqueado: boolean }[] | null) ?? []).filter((x) => x.desbloqueado).length);
+    if (miId && id !== miId) aQuienRegaleHoy(supabase).then(setRegaleHoyA).catch(() => setRegaleHoyA(undefined));
   }, [id, miId]);
+
+  async function regalar(tipo: "hielo" | "escudo") {
+    if (!id) return;
+    setRegalando(true);
+    try {
+      await regalarAAmigo(supabase, id, tipo);
+      sonar("recompensa");
+      mostrarAviso(`Le mandaste ${tipo === "hielo" ? "un hielo" : "un escudo"} a ${placa?.nombre ?? "tu amigo"}`, "logro");
+      setRegaleHoyA(id);
+    } catch (e) {
+      mostrarAviso(errorRecompensa(e), "error");
+    } finally {
+      setRegalando(false);
+    }
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -144,6 +164,26 @@ export default function Jugador() {
               </>
             )}
           </View>
+        )}
+
+        {amistad === "amigos" && regaleHoyA !== undefined && (
+          <Tarjeta acento={regaleHoyA ? undefined : color.logro} brillo={regaleHoyA ? 0 : 0.2}>
+            <View style={[styles.fila, { alignItems: "center" }]}>
+              <IconoRegalo tam={26} c={color.logro} />
+              <View style={{ flex: 1 }}>
+                <Texto v="fuerte">Regalo del día</Texto>
+                <Texto v="nota" tam={12}>
+                  {regaleHoyA === id ? "Hoy ya le mandaste tu regalo." : regaleHoyA ? "Hoy ya mandaste tu regalo a otro amigo." : "Puedes mandar 1 hielo o 1 escudo por día."}
+                </Texto>
+              </View>
+            </View>
+            {!regaleHoyA && (
+              <View style={[styles.fila, { marginTop: 10 }]}>
+                <Boton3D titulo="Hielo" tamano="sm" variante="secundario" icono={<IconoCopo tam={16} c="#BDEBFF" />} cargando={regalando} estilo={{ flex: 1 }} onPress={() => regalar("hielo")} />
+                <Boton3D titulo="Escudo" tamano="sm" variante="secundario" icono={<IconoEscudo tam={16} />} cargando={regalando} estilo={{ flex: 1 }} onPress={() => regalar("escudo")} />
+              </View>
+            )}
+          </Tarjeta>
         )}
 
         <View style={styles.fila}>

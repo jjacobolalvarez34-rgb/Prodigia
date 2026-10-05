@@ -7,6 +7,7 @@ import { verificarTitulos } from "@/lib/titulos/verificar";
 import type { MundoSlug } from "~/tema";
 import { encolar, esErrorDeRed, hayPendientes, marcarSinRed, sincronizar } from "./sinConexion";
 import { supabase } from "./supabase";
+import { revisarTrasPartida } from "./recompensas";
 
 // La lógica compartida con la web tipa el cliente con su propia copia de
 // supabase-js; en ejecución es el mismo cliente.
@@ -129,6 +130,8 @@ export async function cerrarPartida(xpSprint: number, mundo: MundoSlug = "numeri
     await verificarTitulos(supabase as unknown as ClienteWeb, userId).catch(() => []);
   }
   await supabase.rpc("resolver_apuesta_si_activa");
+  // Cápsulas (diaria, de nivel, de ciudad…): las otorga la base; acá solo se revisa.
+  await revisarTrasPartida();
 
   const r = (registro as {
     xp_total: number;

@@ -140,6 +140,7 @@ export function OpcionesPregunta({
   base,
   onResponder,
   estilo,
+  ocultas,
 }: {
   pregunta: PreguntaMundo;
   feedback: Feedback;
@@ -148,6 +149,8 @@ export function OpcionesPregunta({
   base: string;
   onResponder: (valor: string) => void;
   estilo?: EstiloAnimado;
+  // Opciones descartadas por una pista (se apagan y no se pueden tocar).
+  ocultas?: Set<string>;
 }) {
   const e = pregunta.entrada;
   if (e.tipo === "esqueleto") {
@@ -164,16 +167,18 @@ export function OpcionesPregunta({
       {e.opciones.map((op, i) => {
         const esCorrecta = feedback !== "idle" && op === e.respuesta;
         const esMala = feedback !== "idle" && op === seleccion && op !== e.respuesta;
+        const descartada = !!ocultas?.has(op);
         return (
           <Animated.View key={`${pregunta.clave}-${op}`} entering={FadeInDown.delay(60 + i * 50).duration(260)} style={largas ? null : styles.celdaGrilla}>
             <Pressable
-              disabled={bloqueado}
+              disabled={bloqueado || descartada}
               onPress={() => {
                 vibrar.seleccion();
                 onResponder(op);
               }}
               style={({ pressed }) => [
                 styles.opcion,
+                descartada && { opacity: 0.18 },
                 pressed && { transform: [{ scale: 0.97 }], backgroundColor: conAlfa(base, 0.25) },
                 esCorrecta && { borderColor: color.correcto, backgroundColor: conAlfa(color.correcto, 0.15), boxShadow: brillo(color.correcto, 16, 0.35) },
                 esMala && { borderColor: color.error, backgroundColor: conAlfa(color.error, 0.15) },

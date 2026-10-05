@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSyncExternalStore } from "react";
 import { cargarMiPlaca, type PlacaDatos } from "./placa";
+import { recargarCosmeticos, recargarPendientes } from "./recompensas";
 import { cargarResumen, type Resumen } from "./resumen";
 import { supabase } from "./supabase";
 import { actualizarWidgets } from "~/widgets/registro";
@@ -68,6 +69,10 @@ export async function recargarJugador(): Promise<void> {
     emitir();
     if (p) AsyncStorage.setItem(`prodigia:copia:jugador:${user.id}`, JSON.stringify(estado)).catch(() => undefined);
     actualizarWidgets(estado.resumen);
+    if (!user.is_anonymous) {
+      recargarCosmeticos(user.id);
+      recargarPendientes();
+    }
   })().finally(() => {
     enCurso = null;
   });

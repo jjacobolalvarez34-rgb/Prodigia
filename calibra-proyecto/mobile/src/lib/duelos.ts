@@ -111,6 +111,8 @@ export interface ProgresoDuelo {
 
 export function useProgresoEnVivo(duelId: string | null, miUserId: string | null) {
   const [rival, setRival] = useState<ProgresoDuelo | null>(null);
+  // Emote que mandó el rival (tienda ampliada, 0248), con un id para volver a animarlo.
+  const [emote, setEmote] = useState<{ valor: string; id: number } | null>(null);
   const canalRef = useRef<RealtimeChannel | null>(null);
   useEffect(() => {
     if (!duelId || !miUserId) return;
@@ -119,6 +121,14 @@ export function useProgresoEnVivo(duelId: string | null, miUserId: string | null
     canal.on("broadcast", { event: "progreso" }, ({ payload }) => {
       const d = payload as ProgresoDuelo & { userId: string };
       if (d.userId !== miUserId) setRival({ respondidos: d.respondidos, correctos: d.correctos, racha: d.racha });
+    });
+    canal.on("broadcast", { event: "emote" }, ({ payload }) => {
+      const d = payload as { userId: string; emote: string };
+      if (d.userId !== miUserId && typeof d.emote === "string") {
+        const id = Date.now();
+        setEmote({ valor: d.emote, id });
+        setTimeout(() => setEmote((x) => (x?.id === id ? null : x)), 2500);
+      }
     });
     canal.subscribe();
     return () => {
@@ -130,5 +140,8 @@ export function useProgresoEnVivo(duelId: string | null, miUserId: string | null
   function emitir(p: ProgresoDuelo) {
     if (miUserId) canalRef.current?.send({ type: "broadcast", event: "progreso", payload: { ...p, userId: miUserId } });
   }
-  return { rival, emitir };
+  function enviarEmote(valor: string) {
+    if (miUserId) canalRef.current?.send({ type: "broadcast", event: "emote", payload: { userId: miUserId, emote: valor } });
+  }
+  return { rival, emitir, emote, enviarEmote };
 }

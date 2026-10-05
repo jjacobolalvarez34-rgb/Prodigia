@@ -6,12 +6,30 @@ import { File } from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiario";
 import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
+import { COLUMNAS_COSMETICOS_NUEVOS, cosmeticosDesdeFila, equiparCosmetico, type CosmeticosNuevos } from "@/lib/recompensas/api";
+import { CATALOGO_NUEVO, PAQUETES, temporadaActual, UTILIDADES_NUEVAS, type Rareza as RarezaNueva } from "@/lib/recompensas/catalogo";
 import { MARCOS_MUNDO, MARCOS_NEON, RANGOS_ELO } from "@/types/database";
 import { supabase } from "./supabase";
 
 export { COSTOS, type ItemComprable };
 
-export type Categoria = "utilidad" | "marco" | "marco_mundo" | "fuente" | "animacion" | "fondo" | "galeria" | "color";
+export type Categoria =
+  | "utilidad"
+  | "marco"
+  | "marco_mundo"
+  | "fuente"
+  | "animacion"
+  | "fondo"
+  | "galeria"
+  | "color"
+  // Tienda ampliada (0248)
+  | "estela"
+  | "efecto"
+  | "sonido"
+  | "emote"
+  | "ciudad_placa"
+  | "titulo"
+  | "paquete";
 export type Rareza = "comun" | "raro" | "epico" | "legendario";
 
 export interface ItemTienda {
@@ -26,6 +44,15 @@ export interface ItemTienda {
   imagen?: string;
   soloPro?: boolean;
   nivelMundo?: string;
+  // Tienda ampliada: rareza fija del catálogo, mes del marco de temporada y
+  // contenido de un paquete.
+  rareza?: Rareza;
+  temporada?: number;
+  items?: string[];
+}
+
+export function rarezaDeItem(it: ItemTienda): Rareza {
+  return it.rareza ?? rarezaDe(it.costoBase);
 }
 
 export function rarezaDe(costo: number): Rareza {
@@ -126,7 +153,42 @@ export const CATALOGO: ItemTienda[] = [
     soloPro: f === "prodigio",
   })),
   { item: "color_nombre_personalizado", nombre: "Color de nombre", descripcion: "Elige el color de tu nombre.", categoria: "color", valor: "color", costoBase: COSTOS.color_nombre_personalizado },
+  // ---------- Tienda ampliada (0248, catálogo en @/lib/recompensas/catalogo) ----------
+  ...UTILIDADES_NUEVAS.map((u) => ({ item: u.item as ItemComprable, nombre: u.nombre, descripcion: u.descripcion, categoria: "utilidad" as const, valor: u.item, costoBase: u.precio })),
+  ...CATALOGO_NUEVO.filter((x) => x.vendible).map((x) => ({
+    item: x.item as ItemComprable,
+    nombre: x.nombre,
+    descripcion:
+      x.temporada != null
+        ? "Marco de temporada: solo se vende este mes."
+        : x.categoria === "ciudad_placa"
+          ? "Un skyline de la ciudad detrás de tu avatar, en tu Placa."
+          : x.categoria === "emote"
+            ? "Para mandarle a tu rival en los duelos."
+            : x.categoria === "titulo"
+              ? "Título cosmético para tu Placa."
+              : undefined,
+    categoria: (x.categoria === "marco" ? "marco" : x.categoria) as Categoria,
+    valor: x.valor,
+    costoBase: x.precio,
+    rareza: x.rareza as RarezaNueva,
+    temporada: x.temporada,
+  })),
+  ...PAQUETES.map((p) => ({
+    item: p.item as ItemComprable,
+    nombre: p.nombre,
+    descripcion: "Todo junto, 25 % más barato que por separado.",
+    categoria: "paquete" as const,
+    valor: p.item,
+    costoBase: p.precio,
+    items: p.items,
+  })),
 ];
+
+// El marco de temporada que se vende este mes (los otros 3 no aparecen).
+export function aLaVenta(it: ItemTienda): boolean {
+  return it.temporada == null || it.temporada === temporadaActual();
+}
 
 export interface EstadoTienda {
   chispas: number;
@@ -149,6 +211,10 @@ export interface EstadoTienda {
   nivelesMundo: Record<string, number>;
   galeria: { slug: string; nombre: string; url: string; costo: number }[];
   galeriaMia: string[];
+  // Tienda ampliada: lo equipado y desbloqueado de las categorías nuevas y los títulos.
+  cos: CosmeticosNuevos;
+  titulos: string[];
+  tituloActivo: string | null;
 }
 
 export async function cargarTienda(userId: string): Promise<EstadoTienda | null> {
@@ -166,6 +232,12 @@ export async function cargarTienda(userId: string): Promise<EstadoTienda | null>
   ]);
   if (!p) return null;
   const f = p as Record<string, unknown>;
+  // Aparte: si la base todavía no tiene 0248, el resto de la tienda sigue andando.
+  const [{ data: nuevos }, { data: titulos }, { data: activo }] = await Promise.all([
+    supabase.from("profiles").select(COLUMNAS_COSMETICOS_NUEVOS).eq("id", userId).maybeSingle(),
+    supabase.from("titulos_usuario").select("slug").eq("user_id", userId),
+    supabase.from("profiles").select("titulo_activo").eq("id", userId).maybeSingle(),
+  ]);
   return {
     chispas: (f.puntos_total as number) ?? 0,
     plan: (f.plan as string) ?? "free",
@@ -187,7 +259,16 @@ export async function cargarTienda(userId: string): Promise<EstadoTienda | null>
     nivelesMundo: Object.fromEntries(((mundos as { world: string; nivel_mundo: number }[] | null) ?? []).map((m) => [m.world, m.nivel_mundo])),
     galeria: (galeria as EstadoTienda["galeria"] | null) ?? [],
     galeriaMia: ((mia as { slug: string }[] | null) ?? []).map((g) => g.slug),
+    cos: cosmeticosDesdeFila(nuevos as Record<string, unknown> | null),
+    titulos: ((titulos as { slug: string }[] | null) ?? []).map((t) => t.slug),
+    tituloActivo: (activo as { titulo_activo: string | null } | null)?.titulo_activo ?? null,
   };
+}
+
+// ¿Tengo este ítem? (por su slug de la tienda; lo usan los paquetes).
+export function tieneSlug(slug: string, e: EstadoTienda): boolean {
+  const it = CATALOGO.find((x) => x.item === slug);
+  return it ? loTiene(it, e) : false;
 }
 
 export function hoyIso() {
@@ -218,6 +299,20 @@ export function loTiene(it: ItemTienda, e: EstadoTienda): boolean {
       return e.galeriaMia.includes(it.valor);
     case "color":
       return e.colorDesbloqueado;
+    case "estela":
+      return e.cos.estelas.includes(it.valor);
+    case "efecto":
+      return e.cos.efectos.includes(it.valor);
+    case "sonido":
+      return e.cos.sonidos.includes(it.valor);
+    case "emote":
+      return e.cos.emotes.includes(it.valor);
+    case "ciudad_placa":
+      return e.cos.ciudadesPlaca.includes(it.valor);
+    case "titulo":
+      return e.titulos.includes(it.valor);
+    case "paquete":
+      return (it.items ?? []).every((s) => tieneSlug(s, e));
     default:
       return false;
   }
@@ -236,13 +331,23 @@ export function loUsa(it: ItemTienda, e: EstadoTienda): boolean {
       return e.fondo === it.valor;
     case "galeria":
       return e.fondo === "personalizado" && !!e.fondoUrl && e.galeria.some((g) => g.slug === it.valor && g.url === e.fondoUrl);
+    case "estela":
+      return e.cos.estela === it.valor;
+    case "efecto":
+      return e.cos.efecto === it.valor;
+    case "sonido":
+      return e.cos.sonido === it.valor;
+    case "ciudad_placa":
+      return e.cos.ciudadPlaca === it.valor;
+    case "titulo":
+      return e.tituloActivo === it.valor;
     default:
       return false;
   }
 }
 
 export function cantidadUtilidad(it: ItemTienda, e: EstadoTienda): number | null {
-  switch (it.item) {
+  switch (it.item as string) {
     case "escudo":
       return e.escudos;
     case "congelamiento":
@@ -253,6 +358,12 @@ export function cantidadUtilidad(it: ItemTienda, e: EstadoTienda): number | null
       return e.hielos;
     case "tiempo_extra":
       return e.tiemposExtra;
+    case "pista":
+      return e.cos.pistas;
+    case "segunda_oportunidad":
+      return e.cos.segundas;
+    case "cofre_hielos":
+      return e.hielos;
     default:
       return null;
   }
@@ -288,6 +399,18 @@ export async function equipar(it: ItemTienda | null, categoria: Categoria, valor
       break;
     case "galeria":
       r = await supabase.rpc("elegir_fondo_galeria", { p_slug: valor });
+      break;
+    case "estela":
+    case "efecto":
+    case "sonido":
+      await equiparCosmetico(supabase, categoria, valor ?? (categoria === "estela" ? "clasica" : categoria === "efecto" ? "chispas" : "clasico"));
+      return;
+    case "ciudad_placa":
+      await equiparCosmetico(supabase, "ciudad_placa", it?.valor ?? null);
+      return;
+    case "titulo":
+      if (!valor) return;
+      r = await supabase.rpc("elegir_titulo_activo", { p_slug: valor });
       break;
     default:
       return;
