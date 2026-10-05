@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import CuadrosAnimados from "./CuadrosAnimados";
 import * as Anatomia from "./anatomia/visuales";
+import * as Calculia from "./calculia/visuales";
 import * as Circuitia from "./circuitia/visuales";
 import * as Codia from "./codia/visuales";
 import * as Geografia from "./geografia/visuales";
@@ -15,6 +16,10 @@ const c = (x: unknown) => x as ComponenteVisual;
 export const REGISTRO_VISUALES: Record<string, ComponenteVisual> = {
   cuadros: c(CuadrosAnimados),
   "geografia.mapa": c(Geografia.Mapa),
+  "calculia.tangente": c(Calculia.Tangente),
+  "calculia.area": c(Calculia.Area),
+  "calculia.serie": c(Calculia.Serie),
+  "calculia.edo": c(Calculia.Edo),
   "codia.traza": c(Codia.Traza),
   "codia.comparar": c(Codia.Comparar),
   "codia.flujo": c(Codia.Flujo),

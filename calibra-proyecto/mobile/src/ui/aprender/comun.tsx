@@ -1,7 +1,7 @@
 import { useEffect, type ReactNode } from "react";
 import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import Animated, { useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { G } from "react-native-svg";
+import { G, Path, type PathProps } from "react-native-svg";
 import { color, conAlfa } from "~/tema";
 import Texto from "../Texto";
 import { textoConFormulas } from "../TextoMate";
@@ -89,4 +89,23 @@ export function Formula({ tex, tam = 16 }: { tex: string; tam?: number }) {
       {textoConFormulas(`$${tex.replace(/\$/g, "")}$`)}
     </Texto>
   );
+}
+
+// Largo de una poligonal (para dibujar un trazo de a poco).
+export function largoPoligonal(puntos: { x: number; y: number }[]): number {
+  let l = 0;
+  for (let i = 1; i < puntos.length; i++) l += Math.hypot(puntos[i].x - puntos[i - 1].x, puntos[i].y - puntos[i - 1].y);
+  return Math.max(1, l);
+}
+
+const PathAnimado = Animated.createAnimatedComponent(Path);
+
+// Un trazo que se dibuja solo (en la web: pathLength=1 + stroke-dashoffset).
+export function TrazoDibujado({ d, largo, visible, ms = 900, ...resto }: { d: string; largo: number; visible: boolean; ms?: number } & Omit<PathProps, "d">) {
+  const off = useSharedValue(visible ? 0 : largo);
+  useEffect(() => {
+    off.set(withTiming(visible ? 0 : largo, { duration: ms }));
+  }, [visible, largo, ms, off]);
+  const props = useAnimatedProps(() => ({ strokeDashoffset: off.value }));
+  return <PathAnimado animatedProps={props} d={d} strokeDasharray={`${largo} ${largo}`} {...resto} />;
 }
