@@ -15,7 +15,10 @@ type Pendiente =
   | { id: string; tipo: "logica"; puzzleId: string; dificultad: number; correcto: boolean; timeMs: number; categoria: string; protegido: boolean }
   // Una partida cerrada sin conexión: al subirla se registra el XP del día y el
   // nivel de mundo (las dos funciones ya suman el XP real, son idempotentes).
-  | { id: string; tipo: "partida"; mundo: string };
+  | { id: string; tipo: "partida"; mundo: string }
+  // Una lección de Aprender completada sin conexión (el quiz ya se validó en el
+  // teléfono con las respuestas de la lección; la base lo vuelve a validar al subir).
+  | { id: string; tipo: "leccion"; tabla: string; leccionId: string; respuestas: string[] | null };
 
 type NuevoPendiente = Pendiente extends infer P ? (P extends Pendiente ? Omit<P, "id"> : never) : never;
 
@@ -106,6 +109,12 @@ async function subir(p: Pendiente): Promise<"ok" | "red" | "esperar"> {
         p_categoria: p.categoria,
         p_protegido: p.protegido,
       }));
+    } else if (p.tipo === "leccion") {
+      ({ error } = await supabase.rpc("completar_leccion", { p_tabla: p.tabla, p_technique_id: p.leccionId, p_respuestas: p.respuestas }));
+      if (!error) {
+        const { quitarLeccionLocal } = await import("./aprender");
+        quitarLeccionLocal(p.leccionId);
+      }
     } else {
       ({ error } = await supabase.rpc("registrar_xp_diario", { p_xp: 0 }));
       if (!error) ({ error } = await supabase.rpc("registrar_progreso_mundo", { p_world: p.mundo, p_puntos: 0 }));

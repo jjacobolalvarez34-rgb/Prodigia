@@ -1,11 +1,9 @@
 import { useFocusEffect } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
 import { useCallback, useState, type ReactNode } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { vibrar } from "~/lib/efectos";
-import { URL_WEB } from "~/lib/entorno";
 import { useJugador } from "~/lib/jugador";
 import { progresoMundo, type ProgresoMundo } from "~/lib/mundos";
 import { useSesion } from "~/lib/sesion";
@@ -19,6 +17,7 @@ import { BotonAtras } from "./Pantalla";
 import Segmentos from "./Segmentos";
 import Tarjeta from "./Tarjeta";
 import Texto from "./Texto";
+import PestanaAprender from "./aprender/PestanaAprender";
 
 // Hub de un mundo (03-PANTALLAS §4.5): la ciudad encendida arriba con el nivel del
 // mundo, y los temas con su nivel de calibración (1-10) en un anillo.
@@ -127,17 +126,7 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
               {children}
             </>
           ) : (
-            <Tarjeta acento={mundo.neon} brillo={0.15}>
-              <Texto v="h3">Técnicas y Clases</Texto>
-              <Texto v="nota">
-                Las lecciones de {mundo.nombre} (Técnicas gratis y Clases Pro) llegan pronto a la app. Mientras tanto están en la web, con tu mismo progreso.
-              </Texto>
-              <Pressable onPress={() => WebBrowser.openBrowserAsync(`${URL_WEB}/${mundo.slug}/aprender`)} style={{ marginTop: 10 }}>
-                <Texto v="fuerte" c={mundo.neon}>
-                  Abrir Aprender en la web →
-                </Texto>
-              </Pressable>
-            </Tarjeta>
+            <PestanaAprender mundo={mundo} />
           )}
         </View>
       </ScrollView>

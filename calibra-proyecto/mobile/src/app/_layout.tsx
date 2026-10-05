@@ -22,7 +22,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { cargarAjustes } from "~/lib/ajustes";
 import { prepararSonidos } from "~/lib/efectos";
-import { cargarJugadorGuardado, limpiarJugador, recargarJugador } from "~/lib/jugador";
+import { precargarAprender } from "~/lib/aprender";
+import { cargarJugadorGuardado, leerJugador, limpiarJugador, recargarJugador } from "~/lib/jugador";
 import { rutaDeAviso, sincronizarAvisos } from "~/lib/notificaciones";
 import { ProveedorSesion, useSesion } from "~/lib/sesion";
 import { iniciarSincronizacion } from "~/lib/sinConexion";
@@ -30,7 +31,7 @@ import { conectarPresencia, desconectarPresencia } from "~/lib/social";
 import AvisoGlobal from "~/ui/Aviso";
 import IntroMarca, { INTRO_ACTIVA } from "~/ui/IntroMarca";
 import PantallaCarga from "~/ui/PantallaCarga";
-import { color } from "~/tema";
+import { color, MUNDOS } from "~/tema";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -122,6 +123,8 @@ function Navegacion() {
         setProgreso(0.68);
         setEtapa("Revisando tus avisos…");
         await conTiempoLimite(sincronizarAvisos(), 4000);
+        // Lecciones de los 13 mundos al teléfono (para Aprender sin conexión).
+        setTimeout(() => precargarAprender(userId, leerJugador().plan === "pro", MUNDOS.map((m) => m.slug)), 15000);
       } else {
         setEtapa("Preparando la entrada…");
       }
@@ -187,6 +190,7 @@ function Navegacion() {
             <Stack.Screen name="geografia/sprint" options={{ gestureEnabled: false, animation: "fade" }} />
             <Stack.Screen name="resultado" options={{ gestureEnabled: false, animation: "fade" }} />
             <Stack.Screen name="diagnostico/[mundo]" options={{ gestureEnabled: false, animation: "fade" }} />
+            <Stack.Screen name="aprender/[mundo]/[slug]" options={{ gestureEnabled: false, animation: "slide_from_right" }} />
             <Stack.Screen name="[mundo]/index" />
             <Stack.Screen name="[mundo]/sprint" options={{ gestureEnabled: false, animation: "fade" }} />
           </Stack.Protected>
