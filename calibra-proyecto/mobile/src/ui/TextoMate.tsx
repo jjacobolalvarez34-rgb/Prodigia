@@ -12,6 +12,7 @@ const COMANDOS: Record<string, string> = {
   pi: "π", theta: "θ", alpha: "α", beta: "β", gamma: "γ", delta: "δ", Delta: "Δ", lambda: "λ", mu: "μ", sigma: "σ", Sigma: "Σ", omega: "ω", Omega: "Ω", phi: "φ", rho: "ρ", tau: "τ", epsilon: "ε", varepsilon: "ε",
   int: "∫", sum: "∑", partial: "∂", nabla: "∇", to: "→", rightarrow: "→", Rightarrow: "⇒", leftarrow: "←", cdots: "⋯", ldots: "…", dots: "…", circ: "°", degree: "°",
   sin: "sin", cos: "cos", tan: "tan", ln: "ln", log: "log", lim: "lim", sec: "sec", csc: "csc", cot: "cot", arcsin: "arcsin", arccos: "arccos", arctan: "arctan",
+  varnothing: "∅", emptyset: "∅", equiv: "≡", rightleftharpoons: "⇌", longrightarrow: "⟶", uparrow: "↑", downarrow: "↓",
   lceil: "⌈", rceil: "⌉", lfloor: "⌊", rfloor: "⌋",
   quad: " ", qquad: "  ", ",": " ", ";": " ", "!": "", left: "", right: "", displaystyle: "", mathrm: "", text: "", operatorname: "",
 };
@@ -72,6 +73,17 @@ export function latexAUnicode(entrada: string): string {
         const [g, j] = grupo(s, i);
         i = j;
         out += latexAUnicode(g) + (cmd === "bar" || cmd === "overline" ? "̄" : cmd === "vec" ? "⃗" : "̂");
+      } else if (cmd === "overset" || cmd === "stackrel") {
+        // Química: el número de oxidación encima del símbolo → "Fe⁺³".
+        const [arriba, j] = grupo(s, i);
+        const [base, k] = grupo(s, j);
+        i = k;
+        const sup = latexAUnicode(arriba);
+        out += latexAUnicode(base) + (mapear(sup, SUPER) ?? `(${sup})`);
+      } else if (cmd === "textcolor" || cmd === "color") {
+        // El color se pierde en texto plano (TexColor lo respeta donde importa).
+        const [, j] = grupo(s, i);
+        i = j;
       } else if (cmd === "text" || cmd === "mathrm" || cmd === "mathbf" || cmd === "operatorname" || cmd === "textbf") {
         const [g, j] = grupo(s, i);
         i = j;

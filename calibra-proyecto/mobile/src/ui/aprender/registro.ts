@@ -11,6 +11,8 @@ import * as Historia from "./historia/visuales";
 import * as Melodia from "./melodia/visuales";
 import * as Naipia from "./naipia/visuales";
 import * as Numeria from "./numeria/visuales";
+import * as QuimiaMol from "./quimia/moleculas";
+import * as Quimia from "./quimia/visuales";
 import * as Trigonometria from "./trigonometria/visuales";
 
 // Registro de visuales de lecciones de la app: los MISMOS `tipo` que registran los
@@ -49,6 +51,20 @@ export const REGISTRO_VISUALES: Record<string, ComponenteVisual> = {
   "trigonometria.ecuacion": c(Trigonometria.Ecuacion),
   "trigonometria.identidad": c(Trigonometria.Identidad),
   "trigonometria.mano": c(Trigonometria.Mano),
+  "quimia.tabla": c(Quimia.TablaPeriodica),
+  "quimia.elemento": c(Quimia.FichaElemento),
+  "quimia.enlace": c(QuimiaMol.Enlace),
+  "quimia.cruce": c(Quimia.Cruce),
+  "quimia.cuadro": c(Quimia.Cuadro),
+  "quimia.orbitales": c(Quimia.Orbitales),
+  "quimia.redox": c(Quimia.Redox),
+  "quimia.oxidacion": c(Quimia.Oxidacion),
+  "quimia.balanceo": c(Quimia.Balanceo),
+  "quimia.pila": c(Quimia.Pila),
+  "quimia.cadena": c(QuimiaMol.Cadena),
+  "quimia.grupos": c(QuimiaMol.Grupos),
+  "quimia.isomeria": c(QuimiaMol.Isomeria),
+  "quimia.hibridacion": c(QuimiaMol.Hibridacion),
   "numeria.columnas": c(Numeria.Columnas),
   "numeria.multiplicacion": c(Numeria.Multiplicacion),
   "numeria.division": c(Numeria.Division),
