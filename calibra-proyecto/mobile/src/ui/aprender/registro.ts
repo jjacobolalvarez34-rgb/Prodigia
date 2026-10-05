@@ -5,6 +5,7 @@ import * as Calculia from "./calculia/visuales";
 import * as Circuitia from "./circuitia/visuales";
 import * as Codia from "./codia/visuales";
 import * as Enigmia from "./enigmia/visuales";
+import * as Estadistica from "./estadistica/visuales";
 import * as Geografia from "./geografia/visuales";
 import * as Historia from "./historia/visuales";
 import * as Melodia from "./melodia/visuales";
@@ -37,6 +38,13 @@ export const REGISTRO_VISUALES: Record<string, ComponenteVisual> = {
   "naipia.verdadero": c(Naipia.Verdadero),
   "naipia.mazo": c(Naipia.MazoCompleto),
   "naipia.comparar": c(Naipia.Comparar),
+  "estadistica.ordenar": c(Estadistica.Ordenar),
+  "estadistica.frecuencias": c(Estadistica.Frecuencias),
+  "estadistica.desvios": c(Estadistica.Desvios),
+  "estadistica.grafico": c(Estadistica.GraficoLeccion),
+  "estadistica.dispersion": c(Estadistica.Dispersion),
+  "estadistica.arbol": c(Estadistica.ArbolProbabilidad),
+  "estadistica.normal": c(Estadistica.Normal),
   "calculia.tangente": c(Calculia.Tangente),
   "calculia.area": c(Calculia.Area),
   "calculia.serie": c(Calculia.Serie),
