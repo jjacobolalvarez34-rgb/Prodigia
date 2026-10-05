@@ -5,7 +5,6 @@ import Animated, {
   cancelAnimation,
   Easing,
   FadeIn,
-  FadeInDown,
   FadeOut,
   runOnJS,
   useAnimatedStyle,
@@ -25,6 +24,7 @@ import Anillo from "./Anillo";
 import { tiempoEsperadoMs } from "@/lib/practica/formulas";
 import { supabase } from "~/lib/supabase";
 import { IconoCerrar, IconoCopo, IconoEscudo, IconoLlama, IconoReloj } from "./Iconos";
+import Logo from "./Logo";
 import Texto from "./Texto";
 
 // Piezas del sprint (02-SISTEMA-VISUAL.md §7.2 y §9). Reglas de rendimiento: el
@@ -500,84 +500,56 @@ export function useSalida() {
   return { estiloJuego, estiloTeclado, salir };
 }
 
-// "¡Listo!" / "¡Tiempo!" al terminar: las letras caen una por una con rebote, un
-// anillo de luz se expande, salen chispas hacia afuera y el texto queda latiendo
-// mientras se cuentan las recompensas (los puntos de la nota van y vienen).
-function LetraCartel({ letra, i, acento }: { letra: string; i: number; acento: string }) {
-  const t = useSharedValue(0);
-  useEffect(() => {
-    t.set(withDelay(220 + i * 55, withSpring(1, { damping: 9, stiffness: 180 })));
-  }, [t, i]);
-  const estilo = useAnimatedStyle(() => ({
-    opacity: Math.min(1, t.value * 1.6),
-    transform: [{ translateY: (1 - t.value) * -46 }, { scale: 0.4 + t.value * 0.6 }, { rotate: `${(1 - t.value) * (i % 2 ? 18 : -18)}deg` }],
-  }));
-  return (
-    <Animated.View style={estilo}>
-      <Texto style={{ fontFamily: fuente.display, fontSize: 52, color: color.texto, textShadowColor: acento, textShadowRadius: 18 }}>{letra === " " ? "\u00A0" : letra}</Texto>
-    </Animated.View>
-  );
-}
-
-function ChispaCartel({ angulo, acento, i }: { angulo: number; acento: string; i: number }) {
-  const t = useSharedValue(0);
-  useEffect(() => {
-    t.set(withDelay(300 + (i % 3) * 40, withTiming(1, { duration: 900, easing: Easing.out(Easing.cubic) })));
-  }, [t, i]);
-  const distancia = 110 + (i % 4) * 22;
-  const estilo = useAnimatedStyle(() => ({
-    opacity: t.value < 0.15 ? t.value / 0.15 : 1 - (t.value - 0.15) / 0.85,
-    transform: [{ translateX: Math.cos(angulo) * distancia * t.value }, { translateY: Math.sin(angulo) * distancia * t.value }, { scale: 1 - t.value * 0.5 }],
-  }));
-  return <Animated.View style={[styles.chispaCartel, { backgroundColor: i % 3 === 0 ? color.logro : acento }, estilo]} />;
-}
-
-function PuntosNota({ nota }: { nota: string }) {
+// "¡Listo!" / "¡Tiempo!" al terminar: el texto entra de golpe, el logo de Prodigia
+// gira y debajo corre el porcentaje mientras se guardan las respuestas y se cuentan
+// las recompensas (`progreso` 0..1 lo van subiendo los pasos reales del cierre).
+function Porcentaje({ progreso, acento }: { progreso: number; acento: string }) {
   const [n, setN] = useState(0);
+  const objetivo = Math.round(Math.max(0, Math.min(1, progreso)) * 100);
   useEffect(() => {
-    const id = setInterval(() => setN((x) => (x + 1) % 4), 380);
+    // Avanza solo hacia el objetivo; entre pasos sigue subiendo despacio (hasta 95 %)
+    // para que nunca se vea trabado.
+    const id = setInterval(() => {
+      setN((x) => (x < objetivo ? Math.min(objetivo, x + Math.max(1, Math.round((objetivo - x) / 6))) : x < 95 && objetivo < 100 ? x + (x % 3 === 0 ? 1 : 0) : x));
+    }, 40);
     return () => clearInterval(id);
-  }, []);
-  const base = nota.replace(/…$/, "");
+  }, [objetivo]);
   return (
-    <Texto v="nota" centro style={{ marginTop: 10 }}>
-      {base}
-      {nota.endsWith("…") ? ".".repeat(n) : ""}
-    </Texto>
+    <View style={{ alignItems: "center", gap: 8, width: 200 }}>
+      <View style={styles.barraFinal}>
+        <View style={[styles.rellenoFinal, { width: `${n}%`, backgroundColor: acento }]} />
+      </View>
+      <Texto v="mono" tam={15} c={color.texto2}>
+        {n}%
+      </Texto>
+    </View>
   );
 }
 
-export function CartelFinal({ texto, nota, acento = color.primarioNeon }: { texto: string; nota: string; acento?: string }) {
-  const liviano = useLiviano();
-  const anillo = useSharedValue(0);
-  const latido = useSharedValue(0);
+export function CartelFinal({ texto, nota, acento = color.primarioNeon, progreso = 0 }: { texto: string; nota: string; acento?: string; progreso?: number }) {
+  const giro = useSharedValue(0);
+  const entrada = useSharedValue(0);
   useEffect(() => {
-    anillo.set(withDelay(200, withTiming(1, { duration: 750, easing: Easing.out(Easing.cubic) })));
-    latido.set(withDelay(900, withRepeat(withSequence(withTiming(1, { duration: 520, easing: Easing.inOut(Easing.quad) }), withTiming(0, { duration: 520, easing: Easing.inOut(Easing.quad) })), -1)));
-    return () => {
-      cancelAnimation(anillo);
-      cancelAnimation(latido);
-    };
-  }, [anillo, latido]);
-  const estiloAnillo = useAnimatedStyle(() => ({ opacity: 1 - anillo.value, transform: [{ scale: 0.3 + anillo.value * 2.2 }] }));
-  const estiloTexto = useAnimatedStyle(() => ({ transform: [{ scale: 1 + latido.value * 0.05 }] }));
-  const chispas = liviano ? 8 : 14;
+    entrada.set(withSpring(1, { damping: 11, stiffness: 160 }));
+    giro.set(withRepeat(withTiming(1, { duration: 1100, easing: Easing.linear }), -1));
+    return () => cancelAnimation(giro);
+  }, [giro, entrada]);
+  const estiloLogo = useAnimatedStyle(() => ({ transform: [{ rotate: `${giro.value * 360}deg` }] }));
+  const estiloTexto = useAnimatedStyle(() => ({ opacity: Math.min(1, entrada.value * 1.5), transform: [{ scale: 0.7 + entrada.value * 0.3 }] }));
   return (
     <Animated.View entering={FadeIn.delay(150).duration(260)} style={styles.cuenta} pointerEvents="none">
-      <View style={styles.centroCartel}>
-        <Animated.View style={[styles.anilloCartel, { borderColor: acento, boxShadow: brillo(acento, 30, 0.6) }, estiloAnillo]} />
-        {Array.from({ length: chispas }, (_, i) => (
-          <ChispaCartel key={i} i={i} angulo={(i / chispas) * Math.PI * 2} acento={acento} />
-        ))}
-        <Animated.View style={[{ flexDirection: "row" }, estiloTexto]}>
-          {Array.from(texto).map((l, i) => (
-            <LetraCartel key={i} letra={l} i={i} acento={acento} />
-          ))}
+      <View style={{ alignItems: "center", gap: 18 }}>
+        <Animated.View style={estiloTexto}>
+          <Texto style={{ fontFamily: fuente.display, fontSize: 50, color: color.texto, textShadowColor: acento, textShadowRadius: 18 }}>{texto}</Texto>
         </Animated.View>
+        <Animated.View style={[{ boxShadow: brillo(acento, 30, 0.35), borderRadius: 50 }, estiloLogo]}>
+          <Logo tam={78} />
+        </Animated.View>
+        <Porcentaje progreso={progreso} acento={acento} />
+        <Texto v="nota" centro>
+          {nota}
+        </Texto>
       </View>
-      <Animated.View entering={FadeInDown.delay(250 + texto.length * 55).duration(300)}>
-        <PuntosNota nota={nota} />
-      </Animated.View>
     </Animated.View>
   );
 }
@@ -700,9 +672,8 @@ const styles = StyleSheet.create({
   marco: { borderRadius: radio.sprint, borderWidth: 2, overflow: "hidden" },
   tarjeta: { backgroundColor: color.surface1, borderRadius: radio.sprint - 2, margin: 2, paddingVertical: 26, paddingHorizontal: 16, alignItems: "center", gap: 10 },
   flotante: { position: "absolute", top: 8, right: 18 },
-  centroCartel: { alignItems: "center", justifyContent: "center" },
-  anilloCartel: { position: "absolute", width: 150, height: 150, borderRadius: 75, borderWidth: 3 },
-  chispaCartel: { position: "absolute", width: 7, height: 7, borderRadius: 4 },
+  barraFinal: { width: 200, height: 8, borderRadius: 4, backgroundColor: color.surface3, overflow: "hidden" },
+  rellenoFinal: { height: 8, borderRadius: 4 },
   cuenta: { position: "absolute", left: 0, right: 0, top: 0, bottom: 0, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(5,7,13,0.78)", zIndex: 50 },
   filaTeclas: { flexDirection: "row", gap: 8 },
   teclaBase: { flex: 1, height: 60, borderRadius: 14, backgroundColor: "#080B17" },

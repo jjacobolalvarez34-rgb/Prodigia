@@ -3,6 +3,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
+import { mundoDobleExperiencia } from "@/lib/eventos/dobleExperiencia";
 import { PRECIO_MUNDO_CHISPAS } from "@/lib/mundos/precios";
 import { sonar, vibrar } from "~/lib/efectos";
 import { URL_WEB } from "~/lib/entorno";
@@ -63,10 +64,16 @@ function TarjetaMundo({ mundo, tuyo, nivel, indice, recien, onPress }: { mundo: 
       </Tarjeta>
     );
   }
+  const doble = mundoDobleExperiencia() === mundo.slug;
   return (
-    <Tarjeta indice={indice} onPress={onPress} relleno={10} acento={mundo.neon} brillo={0.16}>
+    <Tarjeta indice={indice} onPress={onPress} relleno={10} acento={doble ? color.logro : mundo.neon} brillo={doble ? 0.3 : 0.16}>
       <Animated.View entering={recien ? FadeIn.duration(1200) : undefined}>
-        <Ciudad semilla={mundo.slug} acento={mundo.neon} alto={128} densidad={Math.min(1.25, 0.8 + nivel / 100)} sinAvion={indice > 1} />
+        <Ciudad semilla={mundo.slug} acento={mundo.neon} alto={128} densidad={Math.min(1.25, 0.8 + nivel / 100)} sinAvion={indice > 1 && !doble} />
+        {doble && (
+          <View style={styles.doble}>
+            <Texto style={{ fontFamily: fuente.display, fontSize: 11, color: "#2A1A00" }}>🪂 ×2 EXP HOY</Texto>
+          </View>
+        )}
       </Animated.View>
       <View style={[styles.entre, { marginTop: 10 }]}>
         <View style={{ flex: 1 }}>
@@ -210,6 +217,7 @@ export default function Mundos() {
 }
 
 const styles = StyleSheet.create({
+  doble: { position: "absolute", top: 8, left: 8, paddingHorizontal: 9, paddingVertical: 4, borderRadius: 999, backgroundColor: color.logro },
   fila: { flexDirection: "row", alignItems: "center", gap: 8 },
   entre: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 },
   chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 999, borderWidth: 1, borderColor: color.border, backgroundColor: color.surface1 },

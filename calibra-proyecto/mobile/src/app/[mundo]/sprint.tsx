@@ -46,6 +46,7 @@ export default function SprintMundo() {
   const [nivelVisible, setNivelVisible] = useState(1);
   const [flotantes, setFlotantes] = useState<{ id: number; texto: string }[]>([]);
   const [aviso, setAviso] = useState<string | null>(null);
+  const [progresoFinal, setProgresoFinal] = useState(0);
   const [final, setFinal] = useState<"tiempo" | "listo" | null>(null);
 
   const sello = useSharedValue(1);
@@ -180,10 +181,13 @@ export default function SprintMundo() {
     sonar(motivo === "tiempo" ? "cuenta" : "ya");
     vibrar.exito();
     salir();
+    setProgresoFinal(0.25);
     const minimo = new Promise((r) => setTimeout(r, 1100));
     await Promise.allSettled(pendientesRef.current);
+    setProgresoFinal(0.55);
     try {
       const r = await cerrarPartida(xpRef.current, def.slug, dueloId ?? undefined);
+      setProgresoFinal(0.85);
       const correctos = respuestasRef.current.filter((x) => x.correct).length;
       const tot = Math.max(total, respuestasRef.current.length);
       let resultadoDuelo = null;
@@ -192,6 +196,7 @@ export default function SprintMundo() {
         resultadoDuelo = await registrarResultadoDuelo(dueloId, correctos / tot, tiempos.length ? tiempos.reduce((a, b) => a + b, 0) / tiempos.length : 0, xpRef.current, respuestasRef.current);
       }
       await minimo;
+      setProgresoFinal(1);
       if (dueloId && duelo?.serieId) {
         router.replace({ pathname: "/duelo/serie/[id]", params: { id: duelo.serieId } });
         return;
@@ -345,7 +350,7 @@ export default function SprintMundo() {
       </Animated.View>
 
       {!dueloId && inicio == null && <CuentaInicio acento={mundo.neon} onListo={arrancar} />}
-      {final && <CartelFinal texto={final === "tiempo" ? "¡Tiempo!" : "¡Listo!"} nota={dueloId ? "Comparando con tu rival…" : "Contando tus recompensas…"} acento={mundo.neon} />}
+      {final && <CartelFinal texto={final === "tiempo" ? "¡Tiempo!" : "¡Listo!"} nota={dueloId ? "Comparando con tu rival…" : "Contando tus recompensas…"} acento={mundo.neon} progreso={progresoFinal} />}
     </SafeAreaView>
   );
 }

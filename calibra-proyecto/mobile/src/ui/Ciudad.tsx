@@ -1,15 +1,17 @@
 import { memo, useEffect, useMemo, useState } from "react";
 import { StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from "react-native";
-import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from "react-native-reanimated";
+import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 import Svg, { Circle, Defs, G, LinearGradient, Path, RadialGradient, Rect, Stop } from "react-native-svg";
 import { useAnimacionActiva, useLiviano } from "~/lib/rendimiento";
 import { aclarar, conAlfa } from "~/tema";
+import Cielo from "./Cielo";
 
 // "Cada mundo es una ciudad que se enciende de noche" (02-SISTEMA-VISUAL.md §1): el
 // skyline se arma con una semilla (siempre el mismo para cada mundo), con ventanas
 // encendidas en el neón del mundo y luna con halo. El dibujo es ESTÁTICO (un solo
 // SVG que no se vuelve a pintar); lo que se mueve va encima en vistas aparte, en el
-// hilo nativo: ventanas que se prenden y apagan y, de vez en cuando, un avión.
+// hilo nativo: ventanas que se prenden y apagan y, de vez en cuando, algo que
+// cruza el cielo (Cielo.tsx: avión, pájaros, ovni o el paquete de doble experiencia).
 // Apagada = mundo bloqueado: en gris, sin luces ni movimiento.
 
 function rng(semilla: string) {
@@ -79,38 +81,6 @@ function GrupoVentanas({ ventanas, periodo, demora, activa }: { ventanas: { x: n
       {ventanas.map((v, i) => (
         <View key={i} style={[styles.ventana, { left: v.x, top: v.y, backgroundColor: v.c }]} />
       ))}
-    </Animated.View>
-  );
-}
-
-// Un avión chiquito que cruza el cielo con su luz roja que titila.
-function Avion({ ancho, altura, demora, duracion, activa }: { ancho: number; altura: number; demora: number; duracion: number; activa: boolean }) {
-  const t = useSharedValue(0);
-  const luz = useSharedValue(1);
-  useEffect(() => {
-    if (!activa) {
-      cancelAnimation(t);
-      cancelAnimation(luz);
-      return;
-    }
-    t.set(withDelay(demora, withRepeat(withSequence(withTiming(0, { duration: 0 }), withTiming(1, { duration: duracion, easing: Easing.linear }), withTiming(1, { duration: 9000 })), -1)));
-    luz.set(withRepeat(withSequence(withTiming(1, { duration: 120 }), withTiming(0.1, { duration: 120 }), withTiming(0.1, { duration: 700 })), -1));
-    return () => {
-      cancelAnimation(t);
-      cancelAnimation(luz);
-    };
-  }, [activa, t, luz, demora, duracion]);
-  const estilo = useAnimatedStyle(() => ({
-    opacity: t.value > 0 && t.value < 1 ? 1 : 0,
-    transform: [{ translateX: -24 + t.value * (ancho + 48) }, { translateY: -t.value * 6 }],
-  }));
-  const estiloLuz = useAnimatedStyle(() => ({ opacity: luz.value }));
-  return (
-    <Animated.View style={[styles.avion, { top: altura }, estilo]} pointerEvents="none">
-      <View style={styles.fuselaje} />
-      <View style={styles.ala} />
-      <Animated.View style={[styles.luzAvion, estiloLuz]} />
-      <View style={styles.luzBlanca} />
     </Animated.View>
   );
 }
@@ -205,7 +175,7 @@ function CiudadBase({ semilla, acento, alto = 96, apagada, radio = 14, densidad 
           {grupos.map((g, i) => (
             <GrupoVentanas key={i} ventanas={g.ventanas} periodo={g.periodo} demora={g.demora} activa={activa} />
           ))}
-          {conAvion && <Avion ancho={ancho} altura={Math.max(8, alto * 0.18)} demora={1500 + (semilla.length % 5) * 1700} duracion={liviano ? 9000 : 7500} activa={activa} />}
+          {conAvion && <Cielo semilla={semilla} ancho={ancho} alto={alto} activa={activa} liviano={liviano} />}
         </>
       )}
     </View>
@@ -214,11 +184,6 @@ function CiudadBase({ semilla, acento, alto = 96, apagada, radio = 14, densidad 
 
 const styles = StyleSheet.create({
   ventana: { position: "absolute", width: 2.4, height: 3, borderRadius: 0.6 },
-  avion: { position: "absolute", left: 0, width: 18, height: 8 },
-  fuselaje: { position: "absolute", left: 2, top: 3, width: 14, height: 2, borderRadius: 1, backgroundColor: "#C9D3E6" },
-  ala: { position: "absolute", left: 7, top: 0, width: 3, height: 8, borderRadius: 1, backgroundColor: "#8892B0" },
-  luzAvion: { position: "absolute", left: 15, top: 2, width: 3, height: 3, borderRadius: 2, backgroundColor: "#FF5D5D" },
-  luzBlanca: { position: "absolute", left: 0, top: 3, width: 2, height: 2, borderRadius: 1, backgroundColor: "#FFFFFF" },
 });
 
 // Sin volver a calcular ni redibujar el skyline si no cambió nada (la lista de Mundos

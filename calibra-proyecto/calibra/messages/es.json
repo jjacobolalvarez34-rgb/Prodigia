@@ -1972,7 +1972,13 @@
     },
     "worldCard": {
       "proximamente": "Próximamente",
-      "bloqueado": "Bloqueado"
+      "bloqueado": "Bloqueado",
+      "dobleExperiencia": "×2 Exp hoy"
+    },
+    "eventoDobleExperiencia": {
+      "titulo": "¡Doble experiencia en {mundo}!",
+      "descripcion": "Hoy cada acierto en {mundo} vale el doble de Exp. Termina a la medianoche (UTC).",
+      "ir": "Jugar"
     }
   },
   "Decimales": {

@@ -9,6 +9,7 @@ import HeaderFlujo from "@/components/landing/HeaderFlujo";
 import VisitanteLanding from "@/components/landing/VisitanteLanding";
 import Avatar from "@/components/Avatar";
 import WorldCard from "@/components/WorldCard";
+import EventoDobleExperiencia from "@/components/EventoDobleExperiencia";
 import PrimeraVezTip from "@/components/PrimeraVezTip";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { calcularRachaDiaria, lunesDeEstaSemanaIso } from "@/lib/practica/racha";
@@ -156,6 +157,8 @@ export default async function ProdigiaHomePage() {
             </span>
           </Link>
         </div>
+
+        <EventoDobleExperiencia />
 
         <section className="flex flex-col gap-4">
           <div>

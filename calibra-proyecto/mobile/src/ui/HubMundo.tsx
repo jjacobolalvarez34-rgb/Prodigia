@@ -3,6 +3,7 @@ import { useCallback, useState, type ReactNode } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { mundoDobleExperiencia } from "@/lib/eventos/dobleExperiencia";
 import { vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
 import { progresoMundo, type ProgresoMundo } from "~/lib/mundos";
@@ -107,6 +108,19 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
           <Texto v="nota" tam={12}>
             {progreso?.faltaTexto ?? descripcion}
           </Texto>
+          {mundoDobleExperiencia() === mundo.slug && (
+            <View style={styles.doble}>
+              <Texto style={{ fontSize: 22 }}>🪂</Texto>
+              <View style={{ flex: 1 }}>
+                <Texto v="fuerte" c={color.logro}>
+                  ¡Doble experiencia hoy!
+                </Texto>
+                <Texto v="nota" tam={12}>
+                  Cada acierto en {mundo.nombre} vale el doble de Exp hasta la medianoche.
+                </Texto>
+              </View>
+            </View>
+          )}
           <Segmentos<"practicar" | "aprender">
             opciones={[
               { id: "practicar", titulo: "Practicar" },
@@ -136,6 +150,7 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
 }
 
 const styles = StyleSheet.create({
+  doble: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderRadius: 16, borderWidth: 1, borderColor: conAlfa(color.logro, 0.5), backgroundColor: conAlfa(color.logro, 0.1) },
   pantalla: { flex: 1, backgroundColor: color.bg },
   atras: { position: "absolute", top: 8, left: 14 },
   titulo: { position: "absolute", left: 16, right: 16, bottom: 12, flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between" },

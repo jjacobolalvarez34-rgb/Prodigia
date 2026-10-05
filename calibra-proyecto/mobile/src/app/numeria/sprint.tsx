@@ -73,6 +73,7 @@ export default function Sprint() {
   const [flotantes, setFlotantes] = useState<{ id: number; texto: string }[]>([]);
   const [escudos, setEscudos] = useState(0);
   const [aviso, setAviso] = useState<string | null>(null);
+  const [progresoFinal, setProgresoFinal] = useState(0);
   const [final, setFinal] = useState<"tiempo" | "listo" | null>(null);
 
   const sello = useSharedValue(1);
@@ -188,10 +189,13 @@ export default function Sprint() {
     sonar(motivo === "tiempo" ? "cuenta" : "ya");
     vibrar.exito();
     salir();
+    setProgresoFinal(0.25);
     const minimo = new Promise((r) => setTimeout(r, 1100));
     await Promise.allSettled(pendientesRef.current);
+    setProgresoFinal(0.55);
     try {
       const r = await cerrarPartida(xpRef.current, "numeria", dueloId ?? undefined);
+      setProgresoFinal(0.85);
       const correctos = respuestasRef.current.filter((x) => x.correct).length;
       const total = Math.max(TOTAL, respuestasRef.current.length);
       let resultadoDuelo = null;
@@ -200,6 +204,7 @@ export default function Sprint() {
         resultadoDuelo = await registrarResultadoDuelo(dueloId, correctos / total, tiempos.length ? tiempos.reduce((a, b) => a + b, 0) / tiempos.length : 0, xpRef.current, respuestasRef.current);
       }
       await minimo;
+      setProgresoFinal(1);
       if (dueloId && duelo?.serieId) {
         router.replace({ pathname: "/duelo/serie/[id]", params: { id: duelo.serieId } });
         return;
@@ -436,7 +441,7 @@ export default function Sprint() {
       </Animated.View>
 
       {!dueloId && inicio == null && <CuentaInicio acento={NUMERIA.neon} onListo={arrancar} />}
-      {final && <CartelFinal texto={final === "tiempo" ? "¡Tiempo!" : "¡Listo!"} nota={dueloId ? "Comparando con tu rival…" : "Contando tus recompensas…"} acento={NUMERIA.neon} />}
+      {final && <CartelFinal texto={final === "tiempo" ? "¡Tiempo!" : "¡Listo!"} nota={dueloId ? "Comparando con tu rival…" : "Contando tus recompensas…"} acento={NUMERIA.neon} progreso={progresoFinal} />}
     </SafeAreaView>
   );
 }

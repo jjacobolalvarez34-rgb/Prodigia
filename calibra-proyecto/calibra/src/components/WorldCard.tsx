@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import type { ReactElement } from "react";
 import { getTranslations } from "next-intl/server";
+import { mundoDobleExperiencia } from "@/lib/eventos/dobleExperiencia";
 import { IconCandado } from "@/components/icons";
 
 interface Props {
@@ -58,10 +59,12 @@ export default async function WorldCard({ nombre, descripcion, Icono, href, colo
     );
   }
 
+  // Evento del día (src/lib/eventos/dobleExperiencia.ts): este mundo da el doble de Exp.
+  const dobleExperiencia = mundoDobleExperiencia() === href.replace("/", "");
   return (
     <Link
       href={href}
-      className="group flex flex-col gap-3 rounded-2xl px-6 py-7 text-white shadow-lg transition-all duration-200 hover:-translate-y-1 hover:-rotate-1 hover:shadow-xl"
+      className="group relative flex flex-col gap-3 rounded-2xl px-6 py-7 text-white shadow-lg transition-all duration-200 hover:-translate-y-1 hover:-rotate-1 hover:shadow-xl"
       style={{
         background: `linear-gradient(120deg, ${colorHex}, color-mix(in oklab, ${colorHex} 55%, white))`,
       }}
@@ -73,6 +76,11 @@ export default async function WorldCard({ nombre, descripcion, Icono, href, colo
         <p className="font-display text-lg font-bold">{nombre}</p>
         <p className="mt-0.5 text-sm text-white/80">{descripcion}</p>
       </div>
+      {dobleExperiencia && (
+        <span className="absolute right-4 top-4 animate-bounce rounded-full bg-logro px-2.5 py-1 font-display text-xs font-bold text-[#2A1A00] shadow-md">
+          🪂 {t("worldCard.dobleExperiencia")}
+        </span>
+      )}
     </Link>
   );
 }

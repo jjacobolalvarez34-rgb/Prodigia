@@ -1,3 +1,4 @@
+import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BackHandler, Pressable, ScrollView, StyleSheet, View } from "react-native";
@@ -11,6 +12,7 @@ import Anillo from "~/ui/Anillo";
 import Barra from "~/ui/Barra";
 import Boton3D from "~/ui/Boton3D";
 import CapsulaNivel from "~/ui/CapsulaNivel";
+import Ciudad from "~/ui/Ciudad";
 import Confeti from "~/ui/Confeti";
 import { IconoCheck, IconoChispa, IconoLlama } from "~/ui/Iconos";
 import NumeroAnimado from "~/ui/NumeroAnimado";
@@ -136,6 +138,11 @@ export default function Resultado() {
 
   return (
     <SafeAreaView style={styles.pantalla}>
+      {/* La ciudad del mundo de fondo, de noche, abajo de todo el resumen. */}
+      <View style={styles.fondoCiudad} pointerEvents="none">
+        <Ciudad semilla={mundo.slug} acento={mundo.neon} alto={260} radio={0} densidad={1.2} />
+        <LinearGradient colors={[color.bg, "rgba(9,12,20,0.3)", "rgba(9,12,20,0)"]} locations={[0, 0.45, 1]} style={StyleSheet.absoluteFill} />
+      </View>
       {(precision >= 0.7 || d.duelo?.gane) && <Confeti cantidad={40} />}
       <Pressable style={{ flex: 1 }} onPress={saltar}>
         <ScrollView contentContainerStyle={styles.contenido} showsVerticalScrollIndicator={false}>
@@ -357,6 +364,7 @@ export default function Resultado() {
 }
 
 const styles = StyleSheet.create({
+  fondoCiudad: { position: "absolute", left: 0, right: 0, bottom: 0, height: 260, opacity: 0.8 },
   pantalla: { flex: 1, backgroundColor: color.bg },
   contenido: { padding: 16, gap: 12, paddingBottom: 24 },
   fila: { flexDirection: "row", alignItems: "center", gap: 10 },

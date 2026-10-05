@@ -6,6 +6,7 @@ import { cargarCompetitivo, finDeSemanaUtc, rankingSemanal, rechazarDuelo, texto
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, recargarJugador, useJugador } from "~/lib/jugador";
 import { progresoMundo, ultimoJugado, type Continuar, type ProgresoMundo } from "~/lib/mundos";
+import { mundoDobleExperiencia, msHastaFinDelEvento } from "@/lib/eventos/dobleExperiencia";
 import { estadoRetosHoy } from "~/lib/retos";
 import { useSesion } from "~/lib/sesion";
 import { sincronizar, useSinConexion } from "~/lib/sinConexion";
@@ -117,6 +118,31 @@ export default function Hoy() {
           </Texto>
         </Tarjeta>
       )}
+
+      {(() => {
+        const slugDoble = mundoDobleExperiencia();
+        const m = MUNDO_POR_SLUG[slugDoble];
+        const horas = Math.floor(msHastaFinDelEvento(ahora) / 3_600_000);
+        return (
+          <Tarjeta
+            indice={indice++}
+            acento={color.logro}
+            brillo={0.25}
+            onPress={() => router.push(slugDoble === "numeria" || slugDoble === "geografia" ? `/${slugDoble}` : { pathname: "/[mundo]", params: { mundo: slugDoble } })}
+          >
+            <View style={styles.fila}>
+              <Texto style={{ fontSize: 34 }}>🪂</Texto>
+              <View style={{ flex: 1 }}>
+                <Texto v="micro" c={color.logro}>
+                  Evento de hoy · termina en {horas} h
+                </Texto>
+                <Texto v="h3">Doble experiencia en {m.nombre}</Texto>
+                <Texto v="nota">Cada acierto en {m.nombre} vale el doble de Exp hasta la medianoche.</Texto>
+              </View>
+            </View>
+          </Tarjeta>
+        );
+      })()}
 
       {rachaEnRiesgo && (
         <Tarjeta indice={indice++} acento={color.racha} brillo={0.3} onPress={() => router.push(continuar?.ruta ?? "/numeria")}>
