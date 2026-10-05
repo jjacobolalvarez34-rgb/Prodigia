@@ -11,6 +11,7 @@ import * as Historia from "./historia/visuales";
 import * as Melodia from "./melodia/visuales";
 import * as Naipia from "./naipia/visuales";
 import * as Numeria from "./numeria/visuales";
+import * as Trigonometria from "./trigonometria/visuales";
 
 // Registro de visuales de lecciones de la app: los MISMOS `tipo` que registran los
 // `components/<mundo>/visuales/registro.ts` de la web (npm run paridad lo revisa).
@@ -39,6 +40,15 @@ export const REGISTRO_VISUALES: Record<string, ComponenteVisual> = {
   "naipia.verdadero": c(Naipia.Verdadero),
   "naipia.mazo": c(Naipia.MazoCompleto),
   "naipia.comparar": c(Naipia.Comparar),
+  "trigonometria.triangulo": c(Trigonometria.Triangulo),
+  "trigonometria.resolver": c(Trigonometria.Resolver),
+  "trigonometria.circulo": c(Trigonometria.Circulo),
+  "trigonometria.cuadrantes": c(Trigonometria.Cuadrantes),
+  "trigonometria.onda": c(Trigonometria.Onda),
+  "trigonometria.ley": c(Trigonometria.Ley),
+  "trigonometria.ecuacion": c(Trigonometria.Ecuacion),
+  "trigonometria.identidad": c(Trigonometria.Identidad),
+  "trigonometria.mano": c(Trigonometria.Mano),
   "numeria.columnas": c(Numeria.Columnas),
   "numeria.multiplicacion": c(Numeria.Multiplicacion),
   "numeria.division": c(Numeria.Division),
