@@ -1,8 +1,11 @@
 import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
+import { msHastaFinDelEvento } from "@/lib/eventos/dobleExperiencia";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
-import Animated, { FadeInRight, ZoomIn } from "react-native-reanimated";
+import { memo, useCallback, useMemo, useState } from "react";
+import { Dimensions, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, recargarJugador, useJugador } from "~/lib/jugador";
 import type { PlacaDatos } from "~/lib/placa";
@@ -33,26 +36,30 @@ import Confeti from "~/ui/Confeti";
 import Hoja from "~/ui/Hoja";
 import { IconoChispa, IconoCopo, IconoEscudo, IconoRayo, IconoReloj } from "~/ui/Iconos";
 import NumeroAnimado from "~/ui/NumeroAnimado";
-import { PantallaApilada, TituloSeccion } from "~/ui/Pantalla";
+import { BotonAtras, PantallaApilada } from "~/ui/Pantalla";
 import AvatarMarco from "~/ui/placa/AvatarMarco";
 import FondoPlaca from "~/ui/placa/FondoPlaca";
 import NombreEstilizado from "~/ui/placa/NombreEstilizado";
 import { PlacaTarjeta } from "~/ui/placa/Placa";
-import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente } from "~/tema";
 import { FUENTE_FAMILIA } from "~/lib/placa";
 
-const SECCIONES: { cat: Categoria; titulo: string; nota?: string }[] = [
-  { cat: "utilidad", titulo: "Puesto de utilidades", nota: "Para tus partidas y tu racha" },
-  { cat: "marco", titulo: "Herrero de marcos" },
-  { cat: "marco_mundo", titulo: "Marcos de ciudad", nota: "Se ganan llegando al nivel 40 de cada ciudad" },
-  { cat: "fuente", titulo: "Tipografías para tu nombre" },
-  { cat: "animacion", titulo: "Animaciones de nombre" },
-  { cat: "fondo", titulo: "Fondos de Placa" },
-  { cat: "galeria", titulo: "Galería de fondos animados" },
-  { cat: "color", titulo: "Color de nombre" },
+// Una categoría a la vez (antes la tienda dibujaba todo el catálogo junto y se
+// trababa): menos cosas en pantalla, y la grilla entra con un fundido.
+type Pestana = "utilidad" | "marcos" | "nombre" | "fondos";
+const PESTANAS: { id: Pestana; titulo: string }[] = [
+  { id: "utilidad", titulo: "Utilidades" },
+  { id: "marcos", titulo: "Marcos" },
+  { id: "nombre", titulo: "Nombre" },
+  { id: "fondos", titulo: "Fondos" },
 ];
+const CATEGORIAS_DE: Record<Pestana, Categoria[]> = {
+  utilidad: ["utilidad"],
+  marcos: ["marco", "marco_mundo"],
+  nombre: ["fuente", "animacion", "color"],
+  fondos: ["fondo", "galeria"],
+};
 
 const COLORES_NOMBRE = ["#FFFFFF", "#FFB627", "#FF8A3D", "#FF5D5D", "#E36BF2", "#9B85FF", "#4FE0F5", "#3DDC97", "#A8E84A", "#F2C14E"];
 
@@ -79,7 +86,7 @@ function Muestra({ it, placa }: { it: ItemTienda; placa: PlacaDatos }) {
     case "fondo":
       return (
         <View style={styles.mini}>
-          <FondoPlaca fondo={it.valor === "personalizado" ? "ninguno" : it.valor} url={null} velo={false} />
+          <FondoPlaca fondo={it.valor === "personalizado" ? "ninguno" : it.valor} url={null} velo={false} animar={false} />
           {it.valor === "personalizado" && <Texto style={{ fontFamily: fuente.display, fontSize: 18, color: color.texto }}>GIF</Texto>}
         </View>
       );
@@ -96,7 +103,10 @@ function Muestra({ it, placa }: { it: ItemTienda; placa: PlacaDatos }) {
   }
 }
 
-function TarjetaItem({ it, e, placa, indice, onPress }: { it: ItemTienda; e: EstadoTienda; placa: PlacaDatos; indice: number; onPress: () => void }) {
+// Tarjeta de la grilla: muestra del cosmético sobre un degradé del color de su
+// rareza (los legendarios brillan), nombre, estado (tuyo / en uso) y precio.
+// memo: tocar una tarjeta no vuelve a dibujar las demás.
+const TarjetaItem = memo(function TarjetaItem({ it, e, placa, ancho, onPress }: { it: ItemTienda; e: EstadoTienda; placa: PlacaDatos; ancho: number; onPress: (it: ItemTienda) => void }) {
   const precio = precioDe(it);
   const rareza = rarezaDe(it.costoBase);
   const c = COLOR_RAREZA[rareza];
@@ -104,61 +114,58 @@ function TarjetaItem({ it, e, placa, indice, onPress }: { it: ItemTienda; e: Est
   const usa = loUsa(it, e);
   const cantidad = cantidadUtilidad(it, e);
   const oferta = precio < it.costoBase;
+  const alto = rareza === "legendario" || rareza === "epico";
   return (
-    <Animated.View entering={FadeInRight.delay(indice * 45).duration(300)}>
-      <Pressable
-        onPress={() => {
-          vibrar.seleccion();
-          onPress();
-        }}
-        style={({ pressed }) => [
-          styles.item,
-          { borderColor: usa ? color.correcto : conAlfa(c, rareza === "comun" ? 0.4 : 0.75) },
-          rareza === "legendario" && { boxShadow: brillo(c, 16, 0.3) },
-          { transform: [{ scale: pressed ? 0.95 : 1 }] },
-        ]}
-      >
-        <View style={[styles.franja, { backgroundColor: c }]} />
-        <View style={styles.muestra}>
-          <Muestra it={it} placa={placa} />
-        </View>
-        <Texto v="fuerte" tam={12} numberOfLines={2} centro style={{ minHeight: 32 }}>
-          {it.nombre}
+    <Pressable
+      onPress={() => {
+        vibrar.seleccion();
+        onPress(it);
+      }}
+      style={({ pressed }) => [
+        styles.item,
+        { width: ancho, borderColor: usa ? color.correcto : conAlfa(c, rareza === "comun" ? 0.35 : 0.8) },
+        alto && { boxShadow: brillo(c, rareza === "legendario" ? 18 : 10, rareza === "legendario" ? 0.4 : 0.25) },
+        { transform: [{ scale: pressed ? 0.95 : 1 }] },
+      ]}
+    >
+      <LinearGradient colors={[conAlfa(c, rareza === "comun" ? 0.12 : 0.28), "rgba(18,23,42,0)"]} style={StyleSheet.absoluteFill} />
+      <View style={styles.muestra}>
+        <Muestra it={it} placa={placa} />
+      </View>
+      <Texto v="fuerte" tam={11.5} numberOfLines={2} centro style={{ minHeight: 30 }}>
+        {it.nombre}
+      </Texto>
+      {it.categoria === "utilidad" ? (
+        <Texto v="nota" tam={10.5}>
+          Tienes {cantidad}
         </Texto>
-        {it.categoria === "utilidad" ? (
-          <Texto v="nota" tam={11}>
-            Tienes {cantidad}
+      ) : usa ? (
+        <Texto v="fuerte" tam={10.5} c={color.correcto}>
+          EN USO
+        </Texto>
+      ) : tiene ? (
+        <Texto v="fuerte" tam={10.5} c={color.primarioClaro}>
+          TUYO
+        </Texto>
+      ) : (
+        <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 9.5, letterSpacing: 0.8, color: c }}>{NOMBRE_RAREZA[rareza].toUpperCase()}</Texto>
+      )}
+      {(!tiene || it.categoria === "utilidad") && (
+        <View style={[styles.precio, oferta && { borderColor: color.correcto }]}>
+          <IconoChispa tam={12} />
+          <Texto v="mono" tam={11.5} c={oferta ? color.correcto : color.texto}>
+            {precio.toLocaleString("es")}
           </Texto>
-        ) : usa ? (
-          <Texto v="fuerte" tam={11} c={color.correcto}>
-            EN USO
-          </Texto>
-        ) : tiene ? (
-          <Texto v="fuerte" tam={11} c={color.primarioClaro}>
-            TUYO
-          </Texto>
-        ) : (
-          <Texto v="nota" tam={10} c={c}>
-            {NOMBRE_RAREZA[rareza].toUpperCase()}
-          </Texto>
-        )}
-        {(!tiene || it.categoria === "utilidad") && (
-          <View style={[styles.precio, oferta && { borderColor: color.correcto }]}>
-            <IconoChispa tam={13} />
-            <Texto v="mono" tam={12} c={oferta ? color.correcto : color.texto}>
-              {precio.toLocaleString("es")}
-            </Texto>
-          </View>
-        )}
-        {it.soloPro && (
-          <View style={styles.pro}>
-            <Texto style={{ fontFamily: fuente.display, fontSize: 9, color: "#fff" }}>PRO</Texto>
-          </View>
-        )}
-      </Pressable>
-    </Animated.View>
+        </View>
+      )}
+      {it.soloPro && (
+        <View style={styles.pro}>
+          <Texto style={{ fontFamily: fuente.display, fontSize: 9, color: "#fff" }}>PRO</Texto>
+        </View>
+      )}
+    </Pressable>
   );
-}
+});
 
 export default function Tienda() {
   const router = useRouter();
@@ -170,6 +177,12 @@ export default function Tienda() {
   const [confirmar, setConfirmar] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [festejo, setFestejo] = useState(0);
+  const [pestana, setPestana] = useState<Pestana>("utilidad");
+  const anchoTarjeta = Math.floor((Dimensions.get("window").width - 32 - 20) / 3);
+  const elegirItem = useCallback((it: ItemTienda) => {
+    setElegido(it);
+    setConfirmar(false);
+  }, []);
 
   const cargar = useCallback(async () => {
     if (!userId) return;
@@ -264,77 +277,96 @@ export default function Tienda() {
   const bloqueoPro = elegido?.soloPro && e.plan !== "pro";
   const ninguno: Partial<Record<Categoria, string>> = { marco: "ninguno", marco_mundo: "ninguno", fuente: "default", animacion: "ninguna", fondo: "ninguno", galeria: "ninguno" };
 
+  const items = catalogo.filter((x) => CATEGORIAS_DE[pestana].includes(x.categoria));
+  const horasOferta = Math.floor(msHastaFinDelEvento() / 3_600_000);
+
   return (
-    <View style={{ flex: 1 }}>
-      <PantallaApilada
-        titulo="Tienda"
-        subtitulo="El bazar de Prodigia"
-       
-        derecha={
+    <View style={{ flex: 1, backgroundColor: color.bg }}>
+      <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
+        <View style={styles.barra}>
+          <BotonAtras />
+          <View style={{ flex: 1 }}>
+            <Texto v="h2">Bazar</Texto>
+            <Texto v="nota" tam={12}>
+              Cosméticos y ayudas para tus partidas
+            </Texto>
+          </View>
           <View style={styles.saldo}>
             <IconoChispa tam={18} />
             <NumeroAnimado valor={e.chispas} v="mono" onTic={() => sonar("moneda")} />
           </View>
-        }
-      >
-        {itemOferta && (
-          <Tarjeta acento={color.correcto} brillo={0.22} onPress={() => { setElegido(itemOferta); setConfirmar(false); }}>
-            <View style={styles.fila}>
-              <Animated.View entering={ZoomIn.delay(200).duration(320)} style={styles.etiquetaOferta}>
-                <Texto style={{ fontFamily: fuente.display, fontSize: 18, color: "#062B1C" }}>−{descuento.porcentaje}%</Texto>
-              </Animated.View>
-              <View style={{ flex: 1 }}>
-                <Texto v="micro" c={color.correcto}>
-                  Oferta del vendedor · solo hoy
-                </Texto>
-                <Texto v="h3">{itemOferta.nombre}</Texto>
-                <Texto v="nota">
-                  <Texto v="mono" tam={13} c={color.texto2} style={{ textDecorationLine: "line-through" }}>
-                    {itemOferta.costoBase.toLocaleString("es")}
-                  </Texto>{" "}
-                  →{" "}
-                  <Texto v="mono" tam={13} c={color.correcto}>
-                    {precioDe(itemOferta).toLocaleString("es")}
+        </View>
+        <ScrollView stickyHeaderIndices={[1]} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
+          <View style={{ paddingHorizontal: 16, paddingTop: 6, paddingBottom: 12 }}>
+            {itemOferta && (
+              <Pressable
+                onPress={() => {
+                  vibrar.seleccion();
+                  setElegido(itemOferta);
+                  setConfirmar(false);
+                }}
+                style={({ pressed }) => [styles.oferta, pressed && { transform: [{ scale: 0.98 }] }]}
+              >
+                <LinearGradient colors={["#0E3B2C", "#123F3A", "#171D34"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+                <View style={styles.ofertaMuestra}>
+                  <Muestra it={itemOferta} placa={placa} />
+                </View>
+                <View style={{ flex: 1, gap: 3 }}>
+                  <Texto v="micro" c={color.correcto}>
+                    Oferta del día · termina en {horasOferta} h
                   </Texto>
-                </Texto>
-              </View>
-            </View>
-          </Tarjeta>
-        )}
+                  <Texto v="h3" numberOfLines={1}>
+                    {itemOferta.nombre}
+                  </Texto>
+                  <View style={styles.fila}>
+                    <Texto v="mono" tam={13} c={color.texto2} style={{ textDecorationLine: "line-through" }}>
+                      {itemOferta.costoBase.toLocaleString("es")}
+                    </Texto>
+                    <View style={[styles.precio, { borderColor: color.correcto, backgroundColor: conAlfa(color.correcto, 0.15) }]}>
+                      <IconoChispa tam={13} />
+                      <Texto v="mono" tam={13} c={color.correcto}>
+                        {precioDe(itemOferta).toLocaleString("es")}
+                      </Texto>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.etiquetaOferta}>
+                  <Texto style={{ fontFamily: fuente.display, fontSize: 17, color: "#062B1C" }}>−{descuento.porcentaje}%</Texto>
+                </View>
+              </Pressable>
+            )}
+          </View>
 
-        {SECCIONES.map((s) => {
-          const items = catalogo.filter((x) => x.categoria === s.cat);
-          if (items.length === 0) return null;
-          return (
-            <View key={s.cat} style={{ gap: 8 }}>
-              <TituloSeccion>{s.titulo}</TituloSeccion>
-              {s.nota ? (
-                <Texto v="nota" tam={12} style={{ marginTop: -4 }}>
-                  {s.nota}
-                </Texto>
-              ) : null}
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingRight: 8 }}>
-                {items.map((it, i) => (
-                  <TarjetaItem
-                    key={it.item}
-                    it={it}
-                    e={e}
-                    placa={placa}
-                    indice={i}
+          <View style={styles.chipsCaja}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 16 }}>
+              {PESTANAS.map((p) => {
+                const activa = p.id === pestana;
+                return (
+                  <Pressable
+                    key={p.id}
                     onPress={() => {
-                      setElegido(it);
-                      setConfirmar(false);
+                      vibrar.seleccion();
+                      setPestana(p.id);
                     }}
-                  />
-                ))}
-              </ScrollView>
-            </View>
-          );
-        })}
-        <Texto v="nota" tam={12} centro style={{ marginTop: 8 }}>
-          Las Chispas se ganan jugando. Muy pronto también se podrán conseguir paquetes desde la app.
-        </Texto>
-      </PantallaApilada>
+                    style={[styles.chip, activa && styles.chipActivo]}
+                  >
+                    <Texto style={{ fontFamily: fuente.cuerpoFuerte, fontSize: 13, color: activa ? color.texto : color.texto2 }}>{p.titulo}</Texto>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+
+          <Animated.View key={pestana} entering={FadeIn.duration(220)} style={styles.grilla}>
+            {items.map((it) => (
+              <TarjetaItem key={it.item} it={it} e={e} placa={placa} ancho={anchoTarjeta} onPress={elegirItem} />
+            ))}
+          </Animated.View>
+          <Texto v="nota" tam={12} centro style={{ marginTop: 14, paddingHorizontal: 24 }}>
+            Las Chispas se ganan jugando. Muy pronto también se podrán conseguir paquetes desde la app.
+          </Texto>
+        </ScrollView>
+      </SafeAreaView>
 
       <Hoja visible={!!elegido} onCerrar={() => setElegido(null)}>
         {elegido && (
@@ -455,9 +487,15 @@ export default function Tienda() {
 const styles = StyleSheet.create({
   fila: { flexDirection: "row", alignItems: "center", gap: 8 },
   saldo: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: color.surface1, borderWidth: 1, borderColor: conAlfa(color.logro, 0.5) },
-  etiquetaOferta: { width: 64, height: 64, borderRadius: 16, backgroundColor: color.correcto, alignItems: "center", justifyContent: "center", transform: [{ rotate: "-6deg" }] },
-  item: { width: 116, borderRadius: 16, borderWidth: 1.5, backgroundColor: color.surface1, padding: 10, paddingTop: 14, alignItems: "center", gap: 6, overflow: "hidden" },
-  franja: { position: "absolute", top: 0, left: 0, right: 0, height: 3 },
+  etiquetaOferta: { position: "absolute", top: 8, right: 8, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 10, backgroundColor: color.correcto, transform: [{ rotate: "6deg" }] },
+  item: { borderRadius: 18, borderWidth: 1.5, backgroundColor: color.surface1, padding: 8, paddingTop: 12, alignItems: "center", gap: 5, overflow: "hidden" },
+  barra: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 16, paddingTop: 6, paddingBottom: 10 },
+  oferta: { flexDirection: "row", alignItems: "center", gap: 12, padding: 12, borderRadius: 22, borderWidth: 1.5, borderColor: conAlfa(color.correcto, 0.6), overflow: "hidden", boxShadow: brillo(color.correcto, 22, 0.25) },
+  ofertaMuestra: { width: 74, height: 74, borderRadius: 18, backgroundColor: "rgba(0,0,0,0.25)", alignItems: "center", justifyContent: "center" },
+  chipsCaja: { paddingVertical: 10, backgroundColor: color.bg, borderBottomWidth: 1, borderBottomColor: color.border },
+  chip: { paddingHorizontal: 16, paddingVertical: 9, borderRadius: 999, borderWidth: 1, borderColor: color.border, backgroundColor: color.surface1 },
+  chipActivo: { borderColor: color.primarioNeon, backgroundColor: conAlfa(color.primario, 0.22) },
+  grilla: { flexDirection: "row", flexWrap: "wrap", gap: 10, paddingHorizontal: 16, paddingTop: 14 },
   muestra: { height: 62, alignItems: "center", justifyContent: "center" },
   mini: { width: 74, height: 54, borderRadius: 10, overflow: "hidden", alignItems: "center", justifyContent: "center" },
   precio: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999, backgroundColor: color.surface2, borderWidth: 1, borderColor: color.border },
