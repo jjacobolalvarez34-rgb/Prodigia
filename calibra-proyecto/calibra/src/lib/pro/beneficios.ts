@@ -13,7 +13,7 @@ export const BENEFICIOS_PRO = [
   {
     emoji: "⚡",
     titulo: "10.000 Chispas al mes",
-    descripcion: "Apenas te suscribís y en cada renovación — para gastar en la Tienda sin depender solo de jugar.",
+    descripcion: "Apenas te suscribes y en cada renovación — para gastar en la Tienda sin depender solo de jugar.",
   },
   {
     emoji: "🚫",
