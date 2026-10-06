@@ -1,5 +1,5 @@
 import * as Haptics from "expo-haptics";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View, type LayoutChangeEvent } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
@@ -12,6 +12,11 @@ import { color, fuente } from "~/tema";
 // - arrastre con un dedo para moverlo;
 // - toque para elegir país: si el dedo cae en el mar pero pegado a un país chico
 //   (islas, microestados), elige el más cercano. Un arrastre nunca elige.
+// Nitidez: react-native-svg dibuja en un bitmap del tamaño de la vista, así que
+// agrandarlo con `transform` lo pixela. Por eso hay dos capas: mientras dura el
+// gesto se ve la capa que se agranda (rápida); al soltar, la capa nítida se vuelve
+// a dibujar con un viewBox que muestra justo la zona visible, a resolución de
+// pantalla, y reemplaza a la otra sin moverse.
 
 const ESCALA_MIN = 1;
 const ESCALA_MAX = 8;
@@ -47,6 +52,20 @@ export default function MapaGeografia({ continente, acento, objetivoId, seleccio
   const tx = useSharedValue(0);
   const ty = useSharedValue(0);
   const inicio = useSharedValue({ escala: 1, tx: 0, ty: 0 });
+  // Vista "quieta" (la que dibuja la capa nítida) y si esa capa está al frente.
+  const [base, setBase] = useState({ s: 1, x: 0, y: 0 });
+  const quieto = useSharedValue(1);
+
+  function fijarVista(s: number, x: number, y: number) {
+    setEscalaJs(s);
+    setBase({ s, x, y });
+  }
+
+  // Cuando la capa nítida ya se dibujó con la vista nueva, vuelve al frente.
+  useEffect(() => {
+    const id = requestAnimationFrame(() => quieto.set(withTiming(1, { duration: 140 })));
+    return () => cancelAnimationFrame(id);
+  }, [base, quieto]);
 
   // El mapa no puede irse del recuadro: como mucho, un 10 % de margen.
   function limitar() {
@@ -59,6 +78,7 @@ export default function MapaGeografia({ continente, acento, objetivoId, seleccio
 
   const pellizco = Gesture.Pinch()
     .onStart(() => {
+      quieto.set(0);
       inicio.value = { escala: escala.value, tx: tx.value, ty: ty.value };
     })
     .onUpdate((e) => {
@@ -73,19 +93,23 @@ export default function MapaGeografia({ continente, acento, objetivoId, seleccio
       limitar();
     })
     .onEnd(() => {
-      runOnJS(setEscalaJs)(escala.value);
+      runOnJS(fijarVista)(escala.value, tx.value, ty.value);
     });
 
   const arrastre = Gesture.Pan()
     .minDistance(6)
     .averageTouches(true)
     .onStart(() => {
+      quieto.set(0);
       inicio.value = { escala: escala.value, tx: tx.value, ty: ty.value };
     })
     .onUpdate((e) => {
       tx.value = inicio.value.tx + e.translationX;
       ty.value = inicio.value.ty + e.translationY;
       limitar();
+    })
+    .onEnd(() => {
+      runOnJS(fijarVista)(escala.value, tx.value, ty.value);
     });
 
   function tocar(x: number, y: number) {
@@ -108,27 +132,43 @@ export default function MapaGeografia({ continente, acento, objetivoId, seleccio
   const gestos = Gesture.Race(Gesture.Simultaneous(pellizco, arrastre), toque);
 
   const estiloMapa = useAnimatedStyle(() => ({
+    opacity: 1 - quieto.value,
     transform: [{ translateX: tx.value }, { translateY: ty.value }, { scale: escala.value }],
   }));
+  const estiloNitido = useAnimatedStyle(() => ({ opacity: quieto.value }));
+
+  function animarA(s: number, x: number, y: number, ms: number) {
+    quieto.set(0);
+    escala.set(withTiming(s, { duration: ms }));
+    tx.set(withTiming(x, { duration: ms }));
+    ty.set(
+      withTiming(y, { duration: ms }, (fin) => {
+        if (fin) runOnJS(fijarVista)(s, x, y);
+      })
+    );
+  }
 
   function zoomBoton(factor: number) {
     const actual = escala.get();
     const nueva = Math.min(ESCALA_MAX, Math.max(ESCALA_MIN, actual * factor));
     const k = nueva / actual;
-    escala.set(withTiming(nueva, { duration: 220 }));
-    tx.set(withTiming(tx.get() * k, { duration: 220 }));
-    ty.set(withTiming(ty.get() * k, { duration: 220 }));
-    setEscalaJs(nueva);
+    animarA(nueva, tx.get() * k, ty.get() * k, 220);
   }
 
   function reiniciar() {
-    escala.set(withTiming(1, { duration: 260 }));
-    tx.set(withTiming(0, { duration: 260 }));
-    ty.set(withTiming(0, { duration: 260 }));
-    setEscalaJs(1);
+    animarA(1, 0, 0, 260);
   }
 
   const trazo = 0.8 / escalaJs;
+  // Zona del mapa que se ve con la vista quieta (en unidades del mapa 480 × 420).
+  const vbX = ancho > 0 ? ((-ancho / 2 - base.x) / base.s + ancho / 2) * (ANCHO_MAPA / ancho) : 0;
+  const vbY = alto > 0 ? ((-alto / 2 - base.y) / base.s + alto / 2) * (ALTO_MAPA / alto) : 0;
+  const formas = mapa.formas.map((f) => {
+    let relleno = RELLENO;
+    if (respondido && f.id === objetivoId) relleno = color.correcto;
+    else if (respondido && f.id === seleccionId) relleno = color.error;
+    return { ...f, relleno };
+  });
 
   return (
     <View style={styles.marco} onLayout={(e: LayoutChangeEvent) => setAncho(e.nativeEvent.layout.width)}>
@@ -137,12 +177,16 @@ export default function MapaGeografia({ continente, acento, objetivoId, seleccio
           <View style={{ width: ancho, height: alto, overflow: "hidden" }}>
             <Animated.View style={[{ width: ancho, height: alto }, estiloMapa]}>
               <Svg width={ancho} height={alto} viewBox={`0 0 ${ANCHO_MAPA} ${ALTO_MAPA}`}>
-                {mapa.formas.map((f) => {
-                  let relleno = RELLENO;
-                  if (respondido && f.id === objetivoId) relleno = color.correcto;
-                  else if (respondido && f.id === seleccionId) relleno = color.error;
-                  return <Path key={f.id} d={f.d} fill={relleno} stroke={BORDE} strokeWidth={trazo} />;
-                })}
+                {formas.map((f) => (
+                  <Path key={f.id} d={f.d} fill={f.relleno} stroke={BORDE} strokeWidth={trazo} />
+                ))}
+              </Svg>
+            </Animated.View>
+            <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, estiloNitido]}>
+              <Svg width={ancho} height={alto} viewBox={`${vbX} ${vbY} ${ANCHO_MAPA / base.s} ${ALTO_MAPA / base.s}`}>
+                {formas.map((f) => (
+                  <Path key={f.id} d={f.d} fill={f.relleno} stroke={BORDE} strokeWidth={trazo} />
+                ))}
               </Svg>
             </Animated.View>
           </View>
