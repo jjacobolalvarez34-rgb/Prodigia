@@ -175,6 +175,9 @@ describe("0221_espanol_neutro_lecciones.sql", () => {
     (archivo) => {
       const restante = detectarVoseo(corregir(readFileSync(path.join(RAIZ, "supabase/migrations", archivo), "utf8")));
       expect(restante.map((h) => `${h.termino} «${h.contexto}»`)).toEqual([]);
-    }
+    },
+    // Recorre migraciones de miles de líneas con más de 300 reemplazos: con la
+    // máquina cargada pasaba los 5 s por defecto y fallaba al azar.
+    60_000
   );
 });
