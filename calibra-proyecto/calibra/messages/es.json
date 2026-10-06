@@ -953,6 +953,12 @@
       "confirmar": "Sí, abandonar",
       "cancelar": "Seguir aquí",
       "error": "No se pudo abandonar la partida. Intenta de nuevo."
+    },
+    "noEncontrado": {
+      "titulo": "Esta calle no existe",
+      "descripcion": "Un ovni se llevó esta página. Pasa seguido por las ciudades de Prodigia: mejor vuelve al inicio y sigue practicando.",
+      "inicio": "Volver al inicio",
+      "aprender": "Ir a Aprender"
     }
   },
   "Geografia": {

@@ -953,6 +953,12 @@
       "confirmar": "Yes, leave",
       "cancelar": "Stay here",
       "error": "Couldn't leave the match. Try again."
+    },
+    "noEncontrado": {
+      "titulo": "This street doesn't exist",
+      "descripcion": "A UFO took this page. It happens a lot around Prodigia's cities: head back home and keep practicing.",
+      "inicio": "Back to home",
+      "aprender": "Go to Learn"
     }
   },
   "Geografia": {
