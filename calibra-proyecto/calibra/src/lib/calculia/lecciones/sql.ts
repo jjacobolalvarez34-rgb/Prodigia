@@ -68,7 +68,7 @@ export const CABECERA_CALCULIA: string[] = [
 
 // Migración del curso (2026-10-06): reubica las 12 lecciones sembradas
 // (UPDATE de `orden` por slug) e inserta las nuevas. No toca el contenido de las
-// sembradas ni la 0216. `on conflict do nothing` la deja correr dos veces.
+// sembradas ni la 0216. `on conflict do nothing` la deja correr dos veces (techniques tiene unique (slug)).
 export const ARCHIVO_MIGRACION_CURSO_CALCULIA = "0254_calculia_curso_dividido.sql";
 
 export function generarSqlCursoCalculia(nuevas: LeccionCalculia[], ordenNuevo: Record<string, number>): string {
@@ -102,6 +102,6 @@ ${reorden.join("\n")}
 insert into public.techniques (slug, nombre, descripcion, problem_type, contenido, orden, requiere_pro) values
 
 ${nuevas.map(fila).join(",\n\n")}
-on conflict (problem_type, slug) do nothing;
+on conflict (slug) do nothing;
 `;
 }

@@ -2362,4 +2362,4 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
 }$calculia$::jsonb,
   40,
   true)
-on conflict (problem_type, slug) do nothing;
+on conflict (slug) do nothing;

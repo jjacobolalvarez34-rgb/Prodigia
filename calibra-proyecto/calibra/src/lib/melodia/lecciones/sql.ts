@@ -127,6 +127,6 @@ export function generarSqlAmpliacionMelodia(tecnicas: TecnicaMelodia[], clases: 
 insert into public.techniques (slug, nombre, descripcion, problem_type, contenido, orden, requiere_pro) values
 
 ${[...tecnicas, ...clases].map(fila).join(",\n\n")}
-on conflict (problem_type, slug) do nothing;
+on conflict (slug) do nothing;
 `;
 }

@@ -901,4 +901,4 @@ insert into public.techniques (slug, nombre, descripcion, problem_type, contenid
 }$melodia$::jsonb,
   3,
   true)
-on conflict (problem_type, slug) do nothing;
+on conflict (slug) do nothing;
