@@ -8,7 +8,7 @@ import { TECNICAS_ANATOMIA, CLASES_ANATOMIA } from "@/lib/anatomia/lecciones";
 import { TECNICAS_MELODIA_0213, CLASES_MELODIA_0213 } from "@/lib/melodia/lecciones";
 import { TECNICAS_TRIGONOMETRIA, CLASES_TRIGONOMETRIA } from "@/lib/trigonometria/lecciones";
 import { TECNICAS_HISTORIA, CLASES_HISTORIA } from "@/lib/historia/lecciones";
-import { TECNICAS_CALCULIA, CLASES_CALCULIA } from "@/lib/calculia/lecciones";
+import { TECNICAS_CALCULIA_BASE, CLASES_CALCULIA_BASE } from "@/lib/calculia/lecciones";
 import { TECNICAS as TECNICAS_CIRCUITIA, CLASES as CLASES_CIRCUITIA } from "@/lib/circuitia/lecciones";
 import { TECNICAS_ESTADISTICA, CLASES_ESTADISTICA } from "@/lib/estadistica/lecciones";
 import { TECNICAS as TECNICAS_NAIPIA, CLASES as CLASES_NAIPIA } from "@/lib/naipia/lecciones";
@@ -100,7 +100,8 @@ export function leccionesFuente(mundo: MundoTraducible): LeccionFuente[] {
     case "historia":
       return lista(TECNICAS_HISTORIA as LeccionTipada[], CLASES_HISTORIA as LeccionTipada[]);
     case "calculia":
-      return lista(TECNICAS_CALCULIA as LeccionTipada[], CLASES_CALCULIA as LeccionTipada[]);
+      // Las 12 de 0228; el curso de 0254 todavía no tiene inglés (se ve en español).
+      return lista(TECNICAS_CALCULIA_BASE as LeccionTipada[], CLASES_CALCULIA_BASE as LeccionTipada[]);
     case "circuitia":
       return lista(TECNICAS_CIRCUITIA as LeccionTipada[], CLASES_CIRCUITIA as LeccionTipada[]);
     case "estadistica":

@@ -1260,6 +1260,20 @@ Cada número se contrasta por código: `∫k/x`, `∫k·cos`, `∫k·sen` deriva
 Verificado: `tsc --noEmit` limpio (todo el proyecto), `vitest run src/lib/calculia src/components/calculia src/lib/texto src/lib/aprender` verde, y en Chromium a 360 px las 12 lecciones (primera tanda: 36 figuras; segunda tanda, las 4 Clases con pasos nuevos: 28 figuras) sin desborde horizontal, sin errores de KaTeX ni de hidratación, con y sin movimiento reducido en una lección). En esa pasada se corrigió el eje de las sumas parciales (dejaba media altura vacía cuando todas las sumas son positivas). **Sin verificar**: flujo end-to-end con Supabase y login reales (`0216` no corrió contra una base real), tema oscuro, lectores de pantalla reales y dispositivo real.
 
 
+
+## Calculia: curso dividido por reglas (2026-10-06)
+
+Pedido del usuario: «le falta a Calculia mejor división para clases y técnicas». Cada tema tenía 1 o 2 lecciones que mezclaban varias reglas. Ahora cada regla tiene su Técnica (gratis, el atajo) y su Clase (Pro, desarrollada), en orden de dependencia dentro del tema:
+
+| Tema | Técnicas | Clases |
+|---|---|---|
+| Derivadas | reconocer la regla, potencia, producto, cociente, cadena | desde cero (potencia), producto, cociente, cadena, repaso de las tres |
+| Integrales | tabla, potencia, k/x, exponencial, seno y coseno, sustitución | desde cero, integral definida, exponencial y k/x, seno y coseno, sustitución, repaso |
+| Series | tipo de serie, geométrica converge, suma geométrica, serie p, criterio de la razón | sucesiones y sumas parciales, geométricas, serie p, criterio de la razón |
+| Multivariable y EDOs | parciales, parciales término a término, separar variables, EDO exponencial | parciales desde cero, parciales de polinomios, qué es una EDO, EDO separables, crecimiento exponencial |
+
+20 Técnicas (orden 1-20) y 20 Clases (21-40). Las 12 sembradas no cambian de contenido: solo se reubican (`ORDEN_CURSO_CALCULIA`). Contenido en `src/lib/calculia/lecciones/curso.ts`; `curso.test.ts` verifica KaTeX, voseo, visuales, que TODA igualdad evaluable sea cierta (evaluadorTex) y que cada respuesta de cálculo sea la única correcta. Migración generada `0254_calculia_curso_dividido.sql` (12 UPDATE de `orden` + INSERT). `GRUPOS_APRENDER.calculia` ahora deriva del contenido. La app usa el mismo camino (`obtenerCaminoCalculia`), así que no necesita cambios. Por ahora las lecciones nuevas no tienen inglés (se ven en español).
+
 ## Transversal: botones, confirmación al abandonar y Social (2026-09-24/25)
 
 Regla vinculante para los 13 mundos y los futuros (filas 25 y 26 de la matriz, nota ²⁹).

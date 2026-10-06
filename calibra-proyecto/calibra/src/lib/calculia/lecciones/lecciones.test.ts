@@ -2,7 +2,8 @@ import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import katex from "katex";
-import { TECNICAS_CALCULIA, CLASES_CALCULIA, LECCIONES_CALCULIA } from "./index";
+// Las 12 lecciones SEMBRADAS (antes del curso de 0254, que tiene su propio test, curso.test.ts).
+import { TECNICAS_CALCULIA_BASE as TECNICAS_CALCULIA, CLASES_CALCULIA_BASE as CLASES_CALCULIA, LECCIONES_CALCULIA_BASE as LECCIONES_CALCULIA } from "./index";
 import { CABECERA_CALCULIA, generarSqlCalculia } from "./sql";
 import { estadoSembradoCalculia } from "./sembrado";
 import { aNeutroProfundo } from "@/lib/texto/neutroSembrado";

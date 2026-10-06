@@ -65,3 +65,43 @@ export const CABECERA_CALCULIA: string[] = [
   "Requiere que existan las 12 filas (0165 y 0170). Idempotente: volver a correrla",
   "deja el mismo resultado.",
 ];
+
+// Migración del curso (2026-10-06): reubica las 12 lecciones sembradas
+// (UPDATE de `orden` por slug) e inserta las nuevas. No toca el contenido de las
+// sembradas ni la 0216. `on conflict do nothing` la deja correr dos veces.
+export const ARCHIVO_MIGRACION_CURSO_CALCULIA = "0254_calculia_curso_dividido.sql";
+
+export function generarSqlCursoCalculia(nuevas: LeccionCalculia[], ordenNuevo: Record<string, number>): string {
+  const reorden = Object.entries(ordenNuevo).map(
+    ([slug, orden]) => `update public.techniques set orden = ${orden} where problem_type = 'calculia' and slug = '${escaparSql(slug)}';`
+  );
+  const contenido = (l: LeccionCalculia) => JSON.stringify({ pasos: l.pasos, visuales: l.visuales, quiz: l.quiz }, null, 2);
+  const fila = (l: LeccionCalculia) =>
+    `('${escaparSql(l.slug)}', '${escaparSql(l.nombre)}',\n  '${escaparSql(l.descripcion)}',\n  'calculia',\n  $calculia$${contenido(l)}$calculia$::jsonb,\n  ${l.orden},\n  ${l.requierePro})`;
+  const tecnicas = nuevas.filter((l) => !l.requierePro).length;
+  return `-- ============================================================
+-- Prodigia — Calculia: curso dividido por reglas (pedido del usuario,
+-- 2026-10-06: «le falta a Calculia mejor división para clases y técnicas»).
+--
+-- Antes cada tema tenía una o dos lecciones que mezclaban varias reglas. Ahora
+-- cada regla tiene su Técnica (gratis) y su Clase (Pro), en orden de dependencia
+-- dentro de su tema (derivadas, integrales, series, multivariable y EDOs).
+--   - ${tecnicas} Técnicas nuevas y ${nuevas.length - tecnicas} Clases nuevas (INSERT).
+--   - Las 12 lecciones existentes se REUBICAN (solo cambia \`orden\`): Técnicas
+--     1-20 y Clases 21-40. No se toca su contenido, ni el progreso de nadie.
+--   - Las Clases viejas que juntaban varias reglas («producto, cociente y
+--     cadena», «integrales avanzadas») quedan al final de su tema, como repaso.
+--
+-- Requiere 0216. Este archivo se GENERA desde src/lib/calculia/lecciones/curso.ts
+-- y curso.test.ts comprueba que coincida. No editar a mano.
+-- Regenerar: CALCULIA_CURSO_ESCRIBIR_SQL=1 npx vitest run src/lib/calculia/lecciones/curso.test.ts
+-- ============================================================
+
+${reorden.join("\n")}
+
+insert into public.techniques (slug, nombre, descripcion, problem_type, contenido, orden, requiere_pro) values
+
+${nuevas.map(fila).join(",\n\n")}
+on conflict (problem_type, slug) do nothing;
+`;
+}

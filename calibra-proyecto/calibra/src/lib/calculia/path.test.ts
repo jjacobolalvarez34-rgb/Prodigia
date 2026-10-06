@@ -105,14 +105,28 @@ describe("Calculia Clases: un puntero activo por tema (por tema, nunca un curso 
 
   it("el cargador las ordena en orden de currículo (tema, orden), aunque la base las devuelva mezcladas", () => {
     expect(filas.map((f) => f.slug)).toEqual(CLASES_CALCULIA.map((c) => c.slug));
+    // Dentro de cada tema, las Clases del curso dividido (2026-10-06) en su orden de dependencia.
     expect(ordenarPorGrupoYOrden(FILAS.filter((f) => f.requiere_pro)).map((f) => f.slug)).toEqual([
       "calculia-pro-derivadas-fundamentos",
+      "calculia-clase-regla-producto",
+      "calculia-clase-regla-cociente",
+      "calculia-clase-regla-cadena",
       "calculia-pro-derivadas-producto-cociente-cadena",
       "calculia-pro-integrales-fundamentos",
+      "calculia-clase-integral-definida",
+      "calculia-clase-exponencial-y-logaritmo",
+      "calculia-clase-integrales-trigonometricas",
+      "calculia-clase-sustitucion",
       "calculia-pro-integrales-avanzadas",
+      "calculia-clase-sucesiones-y-series",
       "calculia-pro-series-geometricas",
+      "calculia-clase-serie-p",
+      "calculia-clase-criterio-de-la-razon",
       "calculia-pro-multivariable-parciales",
+      "calculia-clase-parciales-polinomios",
+      "calculia-clase-que-es-una-edo",
       "calculia-pro-edos-separables",
+      "calculia-clase-crecimiento-exponencial",
     ]);
   });
 
@@ -158,9 +172,9 @@ describe("Calculia Clases: un puntero activo por tema (por tema, nunca un curso 
 describe("Calculia: el sidebar y la página de la lección ven el MISMO estado (bug de Numeria 648f2b7)", () => {
   it("obtenerCaminoCalculia con un Supabase de mentira: el estado es el de la fuente, con [...Técnicas, ...Clases]", async () => {
     const nodos = await obtenerCaminoCalculia(supabaseFalso(new Set()), "u1", true);
-    expect(nodos).toHaveLength(12);
-    expect(nodos.slice(0, 5).every((n) => !n.requierePro)).toBe(true);
-    expect(nodos.slice(5).every((n) => n.requierePro)).toBe(true);
+    expect(nodos).toHaveLength(TECNICAS_CALCULIA.length + CLASES_CALCULIA.length);
+    expect(nodos.slice(0, TECNICAS_CALCULIA.length).every((n) => !n.requierePro)).toBe(true);
+    expect(nodos.slice(TECNICAS_CALCULIA.length).every((n) => n.requierePro)).toBe(true);
     expect(nodos.filter((n) => n.estado === "activo")).toHaveLength(8);
   });
 
@@ -194,7 +208,7 @@ describe("Calculia: el sidebar y la página de la lección ven el MISMO estado (
     const { tecnicas, clases } = partirCaminoPorClases(nodos);
     for (const u of construirUnidadesCalculia(tecnicas, NOMBRES, CTA)) for (const n of u.nodos) expect(n.ctaPro).toBeUndefined();
     const conCta = construirUnidadesCalculia(clases, NOMBRES, CTA).flatMap((u) => u.nodos.filter((n) => n.ctaPro));
-    expect(conCta).toHaveLength(6); // las 7 Clases menos la primera (preview gratis)
+    expect(conCta).toHaveLength(CLASES_CALCULIA.length - 1); // todas las Clases menos la primera (preview gratis)
     const pro = await obtenerCaminoCalculia(supabaseFalso(new Set()), "u1", true);
     const sinCta = construirUnidadesCalculia(partirCaminoPorClases(pro).clases, NOMBRES, CTA).flatMap((u) => u.nodos.filter((n) => n.ctaPro));
     expect(sinCta).toHaveLength(0);
@@ -205,7 +219,7 @@ describe("Calculia: el sidebar y la página de la lección ven el MISMO estado (
     const { tecnicas } = partirCaminoPorClases(nodos);
     const unidades = construirUnidadesCalculia(tecnicas, NOMBRES, CTA);
     expect(unidades.map((u) => u.nombre)).toEqual(["Derivadas", "Integrales", "Series", "Multivariable y EDOs"]);
-    expect(unidades.map((u) => u.nodos.length)).toEqual([1, 1, 1, 2]);
+    expect(unidades.map((u) => u.nodos.length)).toEqual(ORDEN_GRUPOS_CALCULIA.map((g) => TECNICAS_CALCULIA.filter((t) => t.grupo === g).length));
   });
 });
 

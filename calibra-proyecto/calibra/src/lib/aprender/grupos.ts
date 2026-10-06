@@ -28,6 +28,8 @@ import { ORDEN_GRUPOS_QUIMIA, type GrupoQuimia } from "@/lib/quimia/grupos";
 import { TECNICAS_ANATOMIA, CLASES_ANATOMIA } from "@/lib/anatomia/lecciones";
 import { ORDEN_GRUPOS_ANATOMIA, NOMBRES_GRUPOS_ANATOMIA } from "@/lib/anatomia/grupos";
 import { TECNICAS_MELODIA, CLASES_MELODIA } from "@/lib/melodia/lecciones";
+import { TECNICAS_CALCULIA, CLASES_CALCULIA } from "@/lib/calculia/lecciones";
+import { ORDEN_GRUPOS_CALCULIA, NOMBRES_GRUPOS_CALCULIA } from "@/lib/calculia/bloques";
 import { ORDEN_GRUPOS_MELODIA, NOMBRES_GRUPOS_MELODIA } from "@/lib/melodia/grupos";
 import { TECNICAS_TRIGONOMETRIA, CLASES_TRIGONOMETRIA } from "@/lib/trigonometria/lecciones";
 import { ORDEN_GRUPOS_TRIGONOMETRIA, NOMBRES_GRUPOS_TRIGONOMETRIA } from "@/lib/trigonometria/bloques";
@@ -306,19 +308,15 @@ export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
       g(id, NOMBRES_GRUPOS_HISTORIA[id].es, NOMBRES_GRUPOS_HISTORIA[id].en, CLASES_HISTORIA.filter((c) => c.grupo === id).map((c) => c.slug))
     ),
   },
+  // Calculia (curso dividido, 2026-10-06): derivado del contenido tipado, con el
+  // orden del curso (nunca slugs repetidos a mano).
   calculia: {
-    tecnicas: [
-      g("derivadas", "Derivadas", "Derivatives", ["calculia-reconocer-regla-derivacion"]),
-      g("integrales", "Integrales", "Integrals", ["calculia-tabla-integrales-comunes"]),
-      g("series", "Series", "Series", ["calculia-identificar-tipo-serie"]),
-      g("multivariable", "Multivariable y EDOs", "Multivariable and ODEs", ["calculia-derivar-parciales", "calculia-separar-variables-edo"]),
-    ],
-    clases: [
-      g("derivadas", "Derivadas", "Derivatives", ["calculia-pro-derivadas-fundamentos", "calculia-pro-derivadas-producto-cociente-cadena"]),
-      g("integrales", "Integrales", "Integrals", ["calculia-pro-integrales-fundamentos", "calculia-pro-integrales-avanzadas"]),
-      g("series", "Series", "Series", ["calculia-pro-series-geometricas"]),
-      g("multivariable", "Multivariable y EDOs", "Multivariable and ODEs", ["calculia-pro-multivariable-parciales", "calculia-pro-edos-separables"]),
-    ],
+    tecnicas: ORDEN_GRUPOS_CALCULIA.map((id) =>
+      g(id, NOMBRES_GRUPOS_CALCULIA[id].es, NOMBRES_GRUPOS_CALCULIA[id].en, TECNICAS_CALCULIA.filter((t) => t.grupo === id).map((t) => t.slug))
+    ),
+    clases: ORDEN_GRUPOS_CALCULIA.map((id) =>
+      g(id, NOMBRES_GRUPOS_CALCULIA[id].es, NOMBRES_GRUPOS_CALCULIA[id].en, CLASES_CALCULIA.filter((c) => c.grupo === id).map((c) => c.slug))
+    ),
   },
   circuitia: {
     tecnicas: [
