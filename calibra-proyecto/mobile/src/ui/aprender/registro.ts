@@ -9,6 +9,7 @@ import * as Estadistica from "./estadistica/visuales";
 import * as Geografia from "./geografia/visuales";
 import * as Historia from "./historia/visuales";
 import * as Melodia from "./melodia/visuales";
+import * as MelodiaMetronomo from "./melodia/metronomo";
 import * as Naipia from "./naipia/visuales";
 import * as NumeriaCurso from "./numeria/curso";
 import * as Numeria from "./numeria/visuales";
@@ -37,6 +38,7 @@ export const REGISTRO_VISUALES: Record<string, ComponenteVisual> = {
   "melodia.acorde": c(Melodia.Acorde),
   "melodia.ritmo": c(Melodia.Ritmo),
   "melodia.frecuencia": c(Melodia.Frecuencia),
+  "melodia.metronomo": c(MelodiaMetronomo.Metronomo),
   "naipia.valores": c(Naipia.Valores),
   "naipia.conteo": c(Naipia.Conteo),
   "naipia.cancelacion": c(Naipia.Cancelacion),

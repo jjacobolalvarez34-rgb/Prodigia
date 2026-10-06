@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { TECNICAS_MELODIA, CLASES_MELODIA, SLUGS_TECNICAS_HISTORICAS } from "./index";
-import { generarSqlMelodia, ARCHIVO_MIGRACION_MELODIA } from "./sql";
+import { TECNICAS_MELODIA, CLASES_MELODIA, TECNICAS_MELODIA_0213, CLASES_MELODIA_0213, TECNICAS_AMPLIACION_MELODIA, CLASES_AMPLIACION_MELODIA, SLUGS_TECNICAS_HISTORICAS } from "./index";
+import { generarSqlMelodia, generarSqlAmpliacionMelodia, ARCHIVO_MIGRACION_MELODIA, ARCHIVO_MIGRACION_AMPLIACION_MELODIA } from "./sql";
 import { esVisualLeccion } from "@/lib/aprender/visuales";
 import { REGISTRO_VISUALES_MELODIA } from "@/components/melodia/visuales/registro";
 import {
@@ -11,6 +11,8 @@ import {
   MAX_NOTAS_FRECUENCIA,
   MAX_NOTAS_PENTAGRAMA,
   MAX_NOTAS_TECLADO,
+  PULSOS_TEXTO,
+  resolverMetronomo,
   formatoHz,
   nombreSinOctava,
   parseNota,
@@ -38,6 +40,7 @@ import {
   NOMBRE_FIGURA,
   POOL_OIDO_POR_BANDA,
   RANGO_LECTURA_POR_BANDA,
+  TEMPOS_ITALIANOS,
   frecuenciaDeNota,
   generarPreguntaMelodia,
   indiceDiatonicoAbsoluto,
@@ -105,8 +108,19 @@ function notasDeVisuales(l: Leccion): string[] {
 const REF = {
   cifrado: { Do: "C", Re: "D", Mi: "E", Fa: "F", Sol: "G", La: "A", Si: "B" } as Record<string, string>,
   // Duración en pulsos de negra.
-  figuras: { redonda: 4, blanca: 2, negra: 1, corchea: 0.5 } as Record<string, number>,
-  nombresFigura: { redonda: "Redonda", blanca: "Blanca", negra: "Negra", corchea: "Corchea" } as Record<string, string>,
+  figuras: { redonda: 4, blanca: 2, negra: 1, corchea: 0.5, semicorchea: 0.25, fusa: 0.125, semifusa: 0.0625, blanca_puntillo: 3, negra_puntillo: 1.5, corcheas_unidas: 1 } as Record<string, number>,
+  nombresFigura: {
+    redonda: "Redonda",
+    blanca: "Blanca",
+    negra: "Negra",
+    corchea: "Corchea",
+    semicorchea: "Semicorchea",
+    fusa: "Fusa",
+    semifusa: "Semifusa",
+    blanca_puntillo: "Blanca con puntillo",
+    negra_puntillo: "Negra con puntillo",
+    corcheas_unidas: "Dos corcheas unidas",
+  } as Record<string, string>,
   // Pasos en semitonos entre grados consecutivos.
   escalas: {
     mayor: [2, 2, 1, 2, 2, 2, 1],
@@ -187,11 +201,21 @@ const nombresSinOctava = (notas: NotaMusical[]) => notas.map(nombreSinOctava).jo
 const claveEscala = (fund: string, tipo: string, bem?: boolean) => `${fund}|${tipo}|${bem === true}`;
 
 describe("Melodía: Técnicas (estructura)", () => {
-  it("son 18: fundamentos 3, lectura 3, alteraciones 3, escalas 3, acordes 4, oído 2; todas requierePro=false", () => {
-    expect(TECNICAS_MELODIA).toHaveLength(18);
+  it("son 18 en 0213 (fundamentos 3, lectura 3, alteraciones 3, escalas 3, acordes 4, oído 2) + 5 de la ampliación; todas requierePro=false", () => {
+    expect(TECNICAS_MELODIA_0213).toHaveLength(18);
     expect(TECNICAS_MELODIA.every((t) => t.requierePro === false)).toBe(true);
-    const por = Object.fromEntries(GRUPOS.map((g) => [g, TECNICAS_MELODIA.filter((t) => t.grupo === g).length]));
-    expect(por).toEqual({ fundamentos: 3, lectura: 3, alteraciones: 3, escalas: 3, acordes: 4, oido_absoluto: 2 });
+    const por = (ls: { grupo: string }[]) => Object.fromEntries(GRUPOS.map((g) => [g, ls.filter((t) => t.grupo === g).length]));
+    expect(por(TECNICAS_MELODIA_0213)).toEqual({ fundamentos: 3, lectura: 3, alteraciones: 3, escalas: 3, acordes: 4, oido_absoluto: 2, tempo: 0 });
+    expect(por(TECNICAS_MELODIA)).toEqual({ fundamentos: 4, lectura: 3, alteraciones: 3, escalas: 3, acordes: 4, oido_absoluto: 3, tempo: 3 });
+  });
+
+  it("el orden dentro de cada grupo es correlativo (1, 2, 3...) contando 0213 y la ampliación, en Técnicas y en Clases", () => {
+    for (const pool of [TECNICAS_MELODIA, CLASES_MELODIA] as { grupo: string; orden: number }[][]) {
+      for (const g of GRUPOS) {
+        const ordenes = pool.filter((l) => l.grupo === g).map((l) => l.orden).sort((a, b) => a - b);
+        expect(ordenes, g).toEqual(ordenes.map((_, i) => i + 1));
+      }
+    }
   });
 
   it("slugs únicos con prefijo melodia-, y las 5 históricas de 0089 siguen existiendo", () => {
@@ -214,10 +238,11 @@ describe("Melodía: Técnicas (estructura)", () => {
 
 describe("Melodía: Clases (estructura)", () => {
   it("son 18: fundamentos 3, lectura 3, alteraciones 3, escalas 3, acordes 4, oído 2; todas requierePro=true, slug melodia-clase-*", () => {
-    expect(CLASES_MELODIA).toHaveLength(18);
+    expect(CLASES_MELODIA_0213).toHaveLength(18);
     expect(CLASES_MELODIA.every((c) => c.requierePro === true)).toBe(true);
-    const por = Object.fromEntries(GRUPOS.map((g) => [g, CLASES_MELODIA.filter((c) => c.grupo === g).length]));
-    expect(por).toEqual({ fundamentos: 3, lectura: 3, alteraciones: 3, escalas: 3, acordes: 4, oido_absoluto: 2 });
+    const por = (ls: { grupo: string }[]) => Object.fromEntries(GRUPOS.map((g) => [g, ls.filter((c) => c.grupo === g).length]));
+    expect(por(CLASES_MELODIA_0213)).toEqual({ fundamentos: 3, lectura: 3, alteraciones: 3, escalas: 3, acordes: 4, oido_absoluto: 2, tempo: 0 });
+    expect(por(CLASES_MELODIA)).toEqual({ fundamentos: 4, lectura: 3, alteraciones: 3, escalas: 3, acordes: 4, oido_absoluto: 3, tempo: 3 });
     const slugs = CLASES_MELODIA.map((c) => c.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
     for (const s of slugs) expect(s.startsWith("melodia-clase-"), s).toBe(true);
@@ -396,7 +421,11 @@ describe("Melodía: datos musicales contra la tabla de referencia", () => {
     expect(LETRA_A_CIFRADO).toEqual(REF.cifrado);
     expect(DURACION_FIGURA).toEqual(REF.figuras);
     expect(NOMBRE_FIGURA).toEqual(REF.nombresFigura);
-    expect(FIGURAS).toEqual(["redonda", "blanca", "negra", "corchea"]);
+    expect(FIGURAS).toEqual(["redonda", "blanca", "negra", "corchea", "semicorchea", "corcheas_unidas", "negra_puntillo", "fusa", "blanca_puntillo", "semifusa"]);
+    // El puntillo suma la mitad y las corcheas unidas suman dos corcheas.
+    expect(DURACION_FIGURA.negra_puntillo).toBe(DURACION_FIGURA.negra * 1.5);
+    expect(DURACION_FIGURA.blanca_puntillo).toBe(DURACION_FIGURA.blanca * 1.5);
+    expect(DURACION_FIGURA.corcheas_unidas).toBe(DURACION_FIGURA.corchea * 2);
   });
 
   it("cada escala que muestra una lección (teclado o pentagrama) está en la tabla de escalas escritas y coincide letra por letra", () => {
@@ -578,12 +607,12 @@ describe("Melodía: cobertura de TODO lo que evalúa la práctica", () => {
   const clasesDe = (g: string) => CLASES_MELODIA.filter((c) => c.grupo === g);
   const leccionesDe = (g: string) => TODAS.filter((l) => l.grupo === g);
 
-  it("fundamentos: las 4 figuras (con su duración) y las 7 notas con su cifrado, en los dos sentidos, en una lección del grupo y en una Clase", () => {
+  it("fundamentos: las 10 figuras (con su duración) y las 7 notas con su cifrado, en los dos sentidos, en una lección del grupo y en una Clase", () => {
     for (const fuente of [leccionesDe("fundamentos"), clasesDe("fundamentos")]) {
       const t = fuente.map(corpus).join(" ");
       for (const f of FIGURAS) {
         expect(t, `figura ${f}`).toContain(norm(NOMBRE_FIGURA[f]));
-        expect(t, `duración de ${f}`).toContain(norm(f));
+        expect(t, `duración de ${f}`).toContain(norm(PULSOS_TEXTO[f].es));
       }
       for (const [nota, letra] of Object.entries(LETRA_A_CIFRADO)) expect(t, `${nota} = ${letra}`).toContain(norm(`${nota} = ${letra}`));
       // Ambos sentidos: Nota -> letra y letra -> Nota.
@@ -600,10 +629,10 @@ describe("Melodía: cobertura de TODO lo que evalúa la práctica", () => {
   it("fundamentos: toda figura y toda nota que los generadores pueden preguntar (barrido de preguntas reales) está enseñada", () => {
     const t = clasesDe("fundamentos").map(corpus).join(" ");
     for (let nivel = 1; nivel <= 10; nivel++) {
-      for (const f of FIGURAS_POR_BANDA[Math.min(4, Math.floor((nivel - 1) / 2))]) expect(t, `nivel ${nivel}: ${f}`).toContain(f);
+      for (const f of FIGURAS_POR_BANDA[Math.min(4, Math.floor((nivel - 1) / 2))]) expect(t, `nivel ${nivel}: ${f}`).toContain(norm(NOMBRE_FIGURA[f]));
     }
     const vistas = new Set<string>();
-    for (let nivel = 1; nivel <= 10; nivel++) for (let i = 0; i < 40; i++) vistas.add(generarPreguntaMelodia("fundamentos", nivel).respuesta);
+    for (let nivel = 1; nivel <= 10; nivel++) for (let i = 0; i < 120; i++) vistas.add(generarPreguntaMelodia("fundamentos", nivel).respuesta);
     for (const r of vistas) {
       if (r.length === 1) expect(t, `cifrado ${r}`).toContain(`= ${norm(r)}`);
       else expect(t, `respuesta ${r}`).toContain(norm(r));
@@ -708,6 +737,79 @@ describe("Melodía: cobertura de TODO lo que evalúa la práctica", () => {
     for (const n of pool) expect(enseñadas, nombreNota(n)).toContain(norm(nombreSinOctava(n)));
   });
 
+  it("oído de acordes: barrido de preguntas reales; los tipos de tríada y los acordes completos se enseñan en una Clase de oído, y lo que suena es el acorde de la respuesta", () => {
+    const t = clasesDe("oido_absoluto").map(corpus).join(" ");
+    const semis = (n: NotaMusical) => n.octava * 12 + [0, 2, 4, 5, 7, 9, 11][LETRAS.indexOf(n.letra)] + (n.alteracion === "sostenido" ? 1 : n.alteracion === "bemol" ? -1 : 0);
+    let acordes = 0;
+    for (let nivel = 7; nivel <= 10; nivel++) {
+      for (let i = 0; i < 120; i++) {
+        const p = generarPreguntaMelodia("oido_absoluto", nivel);
+        if (p.tipo !== "audio" || !p.acorde) continue;
+        acordes++;
+        expect(p.opciones, p.enunciado).toContain(p.respuesta);
+        expect(new Set(p.opciones).size).toBe(4);
+        const intervalos = p.acorde.map((n) => semis(n) - semis(p.acorde![0]));
+        const tipo = (Object.keys(REF.acordes) as TipoAcorde[]).find((k) => REF.acordes[k].join() === intervalos.join())!;
+        expect(tipo, intervalos.join()).toBeDefined();
+        if (nivel <= 8) {
+          expect(p.respuesta).toBe(NOMBRE_ACORDE[tipo]);
+          expect(t, p.respuesta).toContain(norm(p.respuesta));
+        } else {
+          expect(p.respuesta).toBe(`${p.acorde[0].letra} ${tipo}`);
+          expect(["mayor", "menor"]).toContain(tipo);
+        }
+      }
+    }
+    expect(acordes).toBeGreaterThan(100);
+    for (const c of ["fundamental", "mas grave", "3.ª mayor", "3.ª menor", "5.ª justa"]) expect(t, c).toContain(norm(c));
+  });
+
+  it("tempo: los 6 términos italianos con su significado, los 5 compases, la fórmula 60 ÷ BPM y las respuestas de texto del barrido se enseñan en una Clase de Tempo", () => {
+    const t = clasesDe("tempo").map(corpus).join(" ");
+    for (const tm of TEMPOS_ITALIANOS) {
+      expect(t, tm.nombre).toContain(norm(tm.nombre));
+      expect(t, tm.significa).toContain(norm(tm.significa));
+      expect(t, `${tm.nombre} ${tm.min}-${tm.max}`).toContain(`${tm.min}-${tm.max}`);
+    }
+    for (const c of ["2/4", "3/4", "4/4", "2/2", "6/8", "60 ÷ bpm", "pulsos por minuto", "metronomo"]) expect(t, c).toContain(c);
+    const vistas = new Set<string>();
+    for (let nivel = 1; nivel <= 10; nivel++) {
+      for (let i = 0; i < 80; i++) {
+        const p = generarPreguntaMelodia("tempo", nivel);
+        expect(p.opciones, p.enunciado).toContain(p.respuesta);
+        expect(new Set(p.opciones).size, p.enunciado).toBe(4);
+        if (p.tipo === "pulso") {
+          expect(p.respuesta).toBe(`${p.bpm} BPM`);
+          continue;
+        }
+        vistas.add(p.respuesta);
+      }
+    }
+    for (const r of vistas) if (!/^[\d,]+( s)?$/.test(r)) expect(t, r).toContain(norm(r));
+  });
+
+  it("tempo: cada metrónomo de las lecciones se resuelve y su término italiano es el del rango del BPM", () => {
+    let vistos = 0;
+    for (const l of TODAS) {
+      for (const v of l.visuales) {
+        if (v.tipo !== "melodia.metronomo") continue;
+        const r = resolverMetronomo(v);
+        expect(r, l.slug).not.toBeNull();
+        expect(r!.filas).toHaveLength(v.bpms.length);
+        for (const f of r!.filas) {
+          expect(f.segundos).toBeCloseTo(60 / f.bpm, 10);
+          if (f.termino) {
+            const tm = TEMPOS_ITALIANOS.find((x) => x.nombre === f.termino)!;
+            expect(f.bpm, `${l.slug}: ${f.bpm} ${f.termino}`).toBeGreaterThanOrEqual(tm.min);
+            expect(f.bpm).toBeLessThanOrEqual(tm.max);
+          }
+        }
+        vistos++;
+      }
+    }
+    expect(vistos).toBeGreaterThanOrEqual(8);
+  });
+
   it("los términos musicales que salen en los enunciados de la práctica se enseñan al menos una vez (cifrado americano, fundamental, escala, acorde, séptima...)", () => {
     const t = TODAS.map(corpus).join(" ");
     for (const c of ["cifrado americano", "fundamental", "escala", "acorde", "septima", "pentagrama", "figura ritmica", "alteracion", "semitono", "octava"]) expect(t, c).toContain(c);
@@ -715,7 +817,7 @@ describe("Melodía: cobertura de TODO lo que evalúa la práctica", () => {
 });
 
 describe("Melodía: migración generada", () => {
-  const esperado = () => generarSqlMelodia(TECNICAS_MELODIA, CLASES_MELODIA, SLUGS_TECNICAS_HISTORICAS);
+  const esperado = () => generarSqlMelodia(TECNICAS_MELODIA_0213, CLASES_MELODIA_0213, SLUGS_TECNICAS_HISTORICAS);
 
   it("es exactamente lo que se genera de src/lib/melodia/lecciones/", () => {
     if (process.env.MELODIA_ESCRIBIR_SQL === "1") fs.writeFileSync(rutaMigracion, esperado(), "utf8");
@@ -778,5 +880,40 @@ describe("Melodía: migración generada", () => {
 
   it("la migración no tiene voseo (español neutro)", () => {
     expect(detectarVoseo(fs.readFileSync(rutaMigracion, "utf8"))).toEqual([]);
+  });
+});
+
+describe("Melodía: migración de la ampliación (0253)", () => {
+  const ruta = path.join(raiz, "supabase", "migrations", ARCHIVO_MIGRACION_AMPLIACION_MELODIA);
+  const esperado = () => generarSqlAmpliacionMelodia(TECNICAS_AMPLIACION_MELODIA, CLASES_AMPLIACION_MELODIA);
+
+  it("es exactamente lo que se genera de ampliacion.ts", () => {
+    if (process.env.MELODIA_ESCRIBIR_SQL === "1") fs.writeFileSync(ruta, esperado(), "utf8");
+    expect(fs.existsSync(ruta), "falta la migración: MELODIA_ESCRIBIR_SQL=1 npx vitest run src/lib/melodia/lecciones").toBe(true);
+    expect(fs.readFileSync(ruta, "utf8").replace(/\r\n/g, "\n")).toBe(esperado());
+  });
+
+  it("el número no choca con otra migración y la ampliación no repite ningún slug de 0213 ni de otra migración", () => {
+    const dir = path.join(raiz, "supabase", "migrations");
+    expect(fs.readdirSync(dir).filter((f) => f.startsWith(ARCHIVO_MIGRACION_AMPLIACION_MELODIA.slice(0, 5)))).toEqual([ARCHIVO_MIGRACION_AMPLIACION_MELODIA]);
+    const nuevos = [...TECNICAS_AMPLIACION_MELODIA, ...CLASES_AMPLIACION_MELODIA].map((l) => l.slug);
+    expect(new Set(nuevos).size).toBe(nuevos.length);
+    for (const f of fs.readdirSync(dir).filter((n) => n.endsWith(".sql") && n !== ARCHIVO_MIGRACION_AMPLIACION_MELODIA)) {
+      const otro = fs.readFileSync(path.join(dir, f), "utf8");
+      for (const slug of nuevos) expect(otro.includes(`'${slug}'`), `${f} ya usa ${slug}`).toBe(false);
+    }
+  }, 30_000);
+
+  it("cada bloque jsonb es parseable y la migración no tiene voseo", () => {
+    const sql = fs.readFileSync(ruta, "utf8");
+    let total = 0;
+    for (const m of sql.matchAll(/\$melodia\$([\s\S]*?)\$melodia\$::jsonb/g)) {
+      const c = JSON.parse(m[1]) as { visuales: { tipo: string }[]; quiz: { respuesta: string; opciones: string[] }[] };
+      for (const v of c.visuales) expect(TIPOS_CONOCIDOS.has(v.tipo)).toBe(true);
+      for (const q of c.quiz) expect(q.opciones).toContain(q.respuesta);
+      total++;
+    }
+    expect(total).toBe(TECNICAS_AMPLIACION_MELODIA.length + CLASES_AMPLIACION_MELODIA.length);
+    expect(detectarVoseo(sql)).toEqual([]);
   });
 });

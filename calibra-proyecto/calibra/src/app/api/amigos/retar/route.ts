@@ -9,7 +9,7 @@ const SUB_TIPOS_VALIDOS: Record<string, string[]> = {
   enigmia: ["memoria", "patrones", "deduccion", "computacional"],
   quimia: ["simbolos", "formulas", "tabla", "nomenclatura", "organica"],
   anatomia: ["oseo", "muscular", "organos", "nervioso"],
-  melodia: ["fundamentos", "lectura", "alteraciones", "escalas", "acordes", "oido_absoluto"],
+  melodia: ["fundamentos", "lectura", "alteraciones", "escalas", "acordes", "oido_absoluto", "tempo"],
   trigonometria: ["razones", "circulo", "identidades", "leyes"],
   historia: ["cronologia", "personajes", "causaefecto", "fechas"],
   calculia: ["derivadas", "integrales", "series", "multivariable"],

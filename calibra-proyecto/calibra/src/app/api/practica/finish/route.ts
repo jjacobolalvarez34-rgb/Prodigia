@@ -77,7 +77,7 @@ const TIPOS_GEOGRAFIA = new Set(["geografia", "geografia_america", "geografia_eu
 const TIPOS_ANATOMIA = new Set(["anatomia_oseo", "anatomia_muscular", "anatomia_organos", "anatomia_nervioso"]);
 // Mundo Melodía (Fase 1, 2026-08-24) — mismos 5 problem_type que
 // ProblemTypeCalibrable/tiposCalibrables (skillLevels.ts, api/attempts).
-const TIPOS_MELODIA = new Set(["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"]);
+const TIPOS_MELODIA = new Set(["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto", "melodia_tempo"]);
 // Mundo Trigonometría — mismos 4 problem_type que ProblemTypeCalibrable/tiposCalibrables (skillLevels.ts, api/attempts).
 const TIPOS_TRIGONOMETRIA = new Set(["trigonometria_razones", "trigonometria_circulo", "trigonometria_identidades", "trigonometria_leyes"]);
 // Mundo Historia — mismos 4 problem_type que ProblemTypeCalibrable/tiposCalibrables (skillLevels.ts, api/attempts).

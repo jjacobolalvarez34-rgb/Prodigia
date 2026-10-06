@@ -10,19 +10,22 @@ import { NOTAS } from "./notas";
 // Oído absoluto (Melodía): suena la nota (mismo timbre que reproducirNotaMusical de
 // la web) apenas aparece la pregunta, y se puede volver a escuchar las veces que
 // haga falta. Suena aunque el sonido de efectos esté apagado: es la pregunta.
-export default function NotaAudio({ frecuencia, acento }: { frecuencia: number; acento: string }) {
-  const semitono = Math.round(57 + 12 * Math.log2(frecuencia / 440));
-  const reproductor = useRef<AudioPlayer | null>(null);
+export default function NotaAudio({ frecuencia, acorde, acento }: { frecuencia: number; acorde?: number[]; acento: string }) {
+  // Oído de acordes: un reproductor por nota, todos a la vez.
+  const semitonos = (acorde && acorde.length > 0 ? acorde : [frecuencia]).map((f) => Math.round(57 + 12 * Math.log2(f / 440)));
+  const claveSonido = semitonos.join(",");
+  const reproductores = useRef<AudioPlayer[]>([]);
   const onda = useSharedValue(0);
 
   function sonar() {
-    const fuente = NOTAS[semitono];
-    if (!fuente) return;
-    if (!reproductor.current) reproductor.current = createAudioPlayer(fuente);
-    const p = reproductor.current;
-    p.volume = 0.9;
-    p.pause();
-    p.seekTo(0).then(() => p.play()).catch(() => p.play());
+    if (reproductores.current.length === 0) {
+      reproductores.current = semitonos.flatMap((st) => (NOTAS[st] ? [createAudioPlayer(NOTAS[st])] : []));
+    }
+    for (const p of reproductores.current) {
+      p.volume = semitonos.length > 1 ? 0.55 : 0.9;
+      p.pause();
+      p.seekTo(0).then(() => p.play()).catch(() => p.play());
+    }
     onda.set(withSequence(withTiming(0, { duration: 0 }), withTiming(1, { duration: 1100, easing: Easing.out(Easing.quad) })));
   }
 
@@ -30,12 +33,12 @@ export default function NotaAudio({ frecuencia, acento }: { frecuencia: number; 
     const t = setTimeout(sonar, 250);
     return () => {
       clearTimeout(t);
-      reproductor.current?.remove();
-      reproductor.current = null;
+      for (const p of reproductores.current) p.remove();
+      reproductores.current = [];
       cancelAnimation(onda);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [semitono]);
+  }, [claveSonido]);
 
   const estiloOnda = useAnimatedStyle(() => ({ opacity: 0.6 * (1 - onda.value), transform: [{ scale: 1 + onda.value * 0.9 }] }));
   return (
@@ -47,7 +50,7 @@ export default function NotaAudio({ frecuencia, acento }: { frecuencia: number; 
           sonar();
         }}
         style={[styles.boton, { backgroundColor: conAlfa(acento, 0.25), borderColor: acento }]}
-        accessibilityLabel="Escuchar la nota otra vez"
+        accessibilityLabel={semitonos.length > 1 ? "Escuchar el acorde otra vez" : "Escuchar la nota otra vez"}
       >
         <Texto style={{ fontSize: 34, color: color.texto }}>♪</Texto>
       </Pressable>

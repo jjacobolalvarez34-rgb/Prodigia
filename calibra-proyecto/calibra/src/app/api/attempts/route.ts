@@ -104,6 +104,7 @@ export async function POST(request: Request) {
     "melodia_escalas",
     "melodia_acordes",
     "melodia_oido_absoluto",
+    "melodia_tempo",
     "trigonometria_razones",
     "trigonometria_circulo",
     "trigonometria_identidades",

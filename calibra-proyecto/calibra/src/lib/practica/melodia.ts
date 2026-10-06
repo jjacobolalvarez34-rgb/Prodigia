@@ -161,15 +161,65 @@ export function conRngSembrado<T>(rng: () => number, fn: () => T): T {
 
 // ─── Figuras rítmicas y equivalencia de cifrado (modo Fundamentos) ───
 
-export type FiguraRitmica = "redonda" | "blanca" | "negra" | "corchea";
-export const FIGURAS: FiguraRitmica[] = ["redonda", "blanca", "negra", "corchea"];
+// Pedido del usuario (2026-10-06): en niveles altos, figuras más cortas
+// (semicorchea, fusa, semifusa), con puntillo y corcheas unidas por la barra.
+export type FiguraRitmica = "redonda" | "blanca" | "negra" | "corchea" | "semicorchea" | "fusa" | "semifusa" | "blanca_puntillo" | "negra_puntillo" | "corcheas_unidas";
+export const FIGURAS: FiguraRitmica[] = ["redonda", "blanca", "negra", "corchea", "semicorchea", "corcheas_unidas", "negra_puntillo", "fusa", "blanca_puntillo", "semifusa"];
 export const NOMBRE_FIGURA: Record<FiguraRitmica, string> = {
-  redonda: "Redonda", blanca: "Blanca", negra: "Negra", corchea: "Corchea",
+  redonda: "Redonda",
+  blanca: "Blanca",
+  negra: "Negra",
+  corchea: "Corchea",
+  semicorchea: "Semicorchea",
+  fusa: "Fusa",
+  semifusa: "Semifusa",
+  blanca_puntillo: "Blanca con puntillo",
+  negra_puntillo: "Negra con puntillo",
+  corcheas_unidas: "Dos corcheas unidas",
+};
+// Cómo se dibuja cada figura (lo comparten el ícono de la web y el de la app):
+// cabeza hueca o rellena, plica, cuántos corchetes, puntillo, y si son dos
+// cabezas unidas por una barra (las corcheas unidas).
+export interface FormaFigura {
+  hueca: boolean;
+  plica: boolean;
+  corchetes: number;
+  puntillo: boolean;
+  unidas: boolean;
+}
+export function formaFigura(f: FiguraRitmica): FormaFigura {
+  const base = f.replace("_puntillo", "") as FiguraRitmica;
+  return {
+    hueca: base === "redonda" || base === "blanca",
+    plica: base !== "redonda",
+    corchetes: { corchea: 1, semicorchea: 2, fusa: 3, semifusa: 4 }[base as string] ?? 0,
+    puntillo: f.endsWith("_puntillo"),
+    unidas: f === "corcheas_unidas",
+  };
+}
+
+// Plural para las preguntas de equivalencias ("¿cuántas corcheas caben…?").
+const PLURAL_FIGURA: Partial<Record<FiguraRitmica, string>> = {
+  blanca: "blancas",
+  negra: "negras",
+  corchea: "corcheas",
+  semicorchea: "semicorcheas",
+  fusa: "fusas",
+  semifusa: "semifusas",
 };
 // Duración relativa (en "pulsos de negra") — no se pregunta como
 // número, pero ordena las figuras de forma consistente.
 export const DURACION_FIGURA: Record<FiguraRitmica, number> = {
-  redonda: 4, blanca: 2, negra: 1, corchea: 0.5,
+  redonda: 4,
+  blanca: 2,
+  negra: 1,
+  corchea: 0.5,
+  semicorchea: 0.25,
+  fusa: 0.125,
+  semifusa: 0.0625,
+  blanca_puntillo: 3,
+  negra_puntillo: 1.5,
+  corcheas_unidas: 1,
 };
 
 // ─── Escalas (modo Escalas) — fórmulas reales en semitonos ───
@@ -252,7 +302,7 @@ export function banda(nivel: number): number {
 
 // ─── Preguntas: unión discriminada por modo ───
 
-export type ModoMelodia = "fundamentos" | "lectura" | "alteraciones" | "escalas" | "acordes" | "oido_absoluto";
+export type ModoMelodia = "fundamentos" | "lectura" | "alteraciones" | "escalas" | "acordes" | "oido_absoluto" | "tempo";
 
 interface PreguntaBase {
   id: string;
@@ -288,9 +338,20 @@ export interface PreguntaMelodiaPentagrama extends PreguntaBase {
 export interface PreguntaMelodiaAudio extends PreguntaBase {
   tipo: "audio";
   nota: NotaMusical;
+  // Oído absoluto de acordes (niveles 7-10): suenan todas juntas.
+  acorde?: NotaMusical[];
 }
 
-export type PreguntaMelodia = PreguntaMelodiaTexto | PreguntaMelodiaPentagrama | PreguntaMelodiaAudio;
+// Tempo (2026-10-06): suena un pulso de metrónomo a `bpm`, con acento cada
+// `acentoCada` pulsos, y hay que reconocer qué tan rápido va.
+export interface PreguntaMelodiaPulso extends PreguntaBase {
+  tipo: "pulso";
+  bpm: number;
+  pulsos: number;
+  acentoCada: number;
+}
+
+export type PreguntaMelodia = PreguntaMelodiaTexto | PreguntaMelodiaPentagrama | PreguntaMelodiaAudio | PreguntaMelodiaPulso;
 
 function fundamentalAlAzar(rangoOctava: [number, number] = [3, 5]): NotaMusical {
   const letra = elegir(LETRAS);
@@ -309,10 +370,40 @@ function fundamentalAlAzar(rangoOctava: [number, number] = [3, 5]): NotaMusical 
 export const FIGURAS_POR_BANDA: FiguraRitmica[][] = [
   ["redonda", "negra"],
   ["redonda", "blanca", "negra"],
-  ["redonda", "blanca", "negra", "corchea"],
-  ["redonda", "blanca", "negra", "corchea"],
-  ["redonda", "blanca", "negra", "corchea"],
+  ["redonda", "blanca", "negra", "corchea", "semicorchea"],
+  ["redonda", "blanca", "negra", "corchea", "semicorchea", "corcheas_unidas", "negra_puntillo", "fusa"],
+  ["redonda", "blanca", "negra", "corchea", "semicorchea", "corcheas_unidas", "negra_puntillo", "fusa", "blanca_puntillo", "semifusa"],
 ];
+
+// Banda 2+: "¿cuántas corcheas caben en una blanca?". Solo pares que dan un
+// número entero (con puntillo también: una negra con puntillo son 3 corcheas).
+function generarEquivalencia(nivel: number, pool: FiguraRitmica[]): PreguntaMelodiaTexto | null {
+  const pares: [FiguraRitmica, FiguraRitmica][] = [];
+  for (const a of pool) {
+    for (const b of pool) {
+      const plural = PLURAL_FIGURA[b];
+      if (!plural || a === b) continue;
+      const r = DURACION_FIGURA[a] / DURACION_FIGURA[b];
+      if (Number.isInteger(r) && r >= 2 && r <= 16) pares.push([a, b]);
+    }
+  }
+  if (pares.length === 0) return null;
+  const [a, b] = elegir(pares);
+  const r = DURACION_FIGURA[a] / DURACION_FIGURA[b];
+  const candidatos = [r * 2, r / 2, r + 1, r - 1, r + 2, 3, 4, 8, 16].filter((x) => Number.isInteger(x) && x > 0 && x !== r);
+  const distractores: number[] = [];
+  for (const x of mezclar(candidatos)) if (!distractores.includes(x) && distractores.length < 3) distractores.push(x);
+  return {
+    id: idFalso("melodia-fund"),
+    modo: "fundamentos",
+    tipo: "texto",
+    dificultad: nivel,
+    enunciado: `¿Cuántas ${PLURAL_FIGURA[b]} caben en una ${NOMBRE_FIGURA[a].toLowerCase()}?`,
+    opciones: mezclar([r, ...distractores]).map(String),
+    respuesta: String(r),
+    figuraId: a,
+  };
+}
 export const NOTAS_POR_BANDA: NotaLetra[][] = [
   ["Do", "Re", "Mi"],
   ["Do", "Re", "Mi", "Fa", "Sol"],
@@ -323,7 +414,12 @@ export const NOTAS_POR_BANDA: NotaLetra[][] = [
 
 function generarFundamentos(nivel: number): PreguntaMelodiaTexto {
   const b = banda(nivel);
-  const esFigura = rngActual() < 0.5;
+  const tirada = rngActual();
+  if (b >= 2 && tirada < 0.34) {
+    const eq = generarEquivalencia(nivel, FIGURAS_POR_BANDA[b]);
+    if (eq) return eq;
+  }
+  const esFigura = b >= 2 ? tirada < 0.67 : tirada < 0.5;
 
   if (esFigura) {
     const pool = FIGURAS_POR_BANDA[b];
@@ -333,7 +429,8 @@ function generarFundamentos(nivel: number): PreguntaMelodiaTexto {
     // completo de figuras en ese caso, la CORRECTA siempre sale del
     // pool restringido de la banda.
     const distractores = mezclar(pool.filter((f) => f !== figura));
-    for (const relleno of mezclar(FIGURAS.filter((f) => f !== figura))) {
+    // Relleno en orden (de las figuras básicas a las raras), no al azar.
+    for (const relleno of FIGURAS.filter((f) => f !== figura)) {
       if (distractores.length >= 3) break;
       if (!distractores.includes(relleno)) distractores.push(relleno);
     }
@@ -630,7 +727,57 @@ export const POOL_OIDO_POR_BANDA: NotaMusical[][] = [
   ],
 ];
 
+// Oído absoluto de acordes (pedido del usuario, 2026-10-06): en los niveles
+// 7-8 hay que reconocer el tipo de tríada que suena; en 9-10, el acorde
+// completo (fundamental y si es mayor o menor).
+const CALIDADES_OIDO: TipoAcorde[] = ["mayor", "menor", "disminuido", "aumentado"];
+const NOMBRE_CALIDAD: Record<string, string> = { mayor: "mayor", menor: "menor", disminuido: "disminuido", aumentado: "aumentado" };
+
+function generarOidoAcorde(nivel: number): PreguntaMelodiaAudio {
+  const b = banda(nivel);
+  if (b === 3) {
+    const tipo = elegir(CALIDADES_OIDO);
+    const fundamental: NotaMusical = { letra: elegir(["Do", "Re", "Fa", "Sol", "La"] as NotaLetra[]), octava: 4, alteracion: null };
+    const acorde = construirAcorde(fundamental, tipo, false);
+    return {
+      id: idFalso("melodia-oido-acorde"),
+      modo: "oido_absoluto",
+      tipo: "audio",
+      dificultad: nivel,
+      enunciado: "Escucha el acorde — ¿de qué tipo es?",
+      opciones: mezclar(CALIDADES_OIDO).map((t) => NOMBRE_ACORDE[t]),
+      respuesta: NOMBRE_ACORDE[tipo],
+      nota: fundamental,
+      acorde,
+    };
+  }
+  const tipo = elegir(["mayor", "menor"] as TipoAcorde[]);
+  const letra = elegir(LETRAS);
+  const fundamental: NotaMusical = { letra, octava: 4, alteracion: null };
+  const acorde = construirAcorde(fundamental, tipo, false);
+  const nombre = (l: NotaLetra, t: TipoAcorde) => `${l} ${NOMBRE_CALIDAD[t]}`;
+  const respuesta = nombre(letra, tipo);
+  const otro: TipoAcorde = tipo === "mayor" ? "menor" : "mayor";
+  const distractores = new Set<string>([nombre(letra, otro)]);
+  for (const l of mezclar(LETRAS.filter((x) => x !== letra))) {
+    if (distractores.size >= 3) break;
+    distractores.add(nombre(l, rngActual() < 0.5 ? tipo : otro));
+  }
+  return {
+    id: idFalso("melodia-oido-acorde"),
+    modo: "oido_absoluto",
+    tipo: "audio",
+    dificultad: nivel,
+    enunciado: "Escucha el acorde — ¿cuál es?",
+    opciones: mezclar([respuesta, ...distractores]),
+    respuesta,
+    nota: fundamental,
+    acorde,
+  };
+}
+
 function generarOidoAbsoluto(nivel: number): PreguntaMelodiaAudio {
+  if (banda(nivel) >= 3 && rngActual() < 0.5) return generarOidoAcorde(nivel);
   const pool = POOL_OIDO_POR_BANDA[banda(nivel)];
   const nota = elegir(pool);
   const respuesta = nombreNota(nota);
@@ -650,6 +797,103 @@ function generarOidoAbsoluto(nivel: number): PreguntaMelodiaAudio {
   };
 }
 
+// ─── Modo 7: Tempo y compás (pedido del usuario, 2026-10-06: "se está
+// descuidando mucho el tempo") ───
+//
+// Cuatro tipos de pregunta: los términos italianos de tempo, qué es un BPM y
+// cuánto dura cada figura a cierto tempo, cómo se lee un compás (2/4, 3/4,
+// 4/4, 6/8, 2/2) y, la de oído, un pulso de metrónomo que suena y hay que
+// reconocer a qué velocidad va. Las opciones de BPM se acercan entre sí al
+// subir de nivel (de 40 en 40 a de 10 en 10).
+
+export const TEMPOS_ITALIANOS: { nombre: string; min: number; max: number; significa: string }[] = [
+  { nombre: "Largo", min: 40, max: 60, significa: "Muy lento" },
+  { nombre: "Adagio", min: 66, max: 76, significa: "Lento" },
+  { nombre: "Andante", min: 76, max: 108, significa: "Al paso de caminar" },
+  { nombre: "Moderato", min: 108, max: 120, significa: "Moderado" },
+  { nombre: "Allegro", min: 120, max: 156, significa: "Rápido y alegre" },
+  { nombre: "Presto", min: 168, max: 200, significa: "Muy rápido" },
+];
+
+export const BPM_POR_BANDA: number[][] = [
+  [60, 100, 140, 180],
+  [60, 90, 120, 150],
+  [70, 90, 110, 130],
+  [80, 95, 110, 125],
+  [90, 100, 110, 120],
+];
+
+const COMPASES: { cifra: string; tiempos: number; unidad: FiguraRitmica; corcheas: number }[] = [
+  { cifra: "2/4", tiempos: 2, unidad: "negra", corcheas: 4 },
+  { cifra: "3/4", tiempos: 3, unidad: "negra", corcheas: 6 },
+  { cifra: "4/4", tiempos: 4, unidad: "negra", corcheas: 8 },
+  { cifra: "2/2", tiempos: 2, unidad: "blanca", corcheas: 8 },
+];
+
+const segundos = (x: number) => `${String(Math.round(x * 1000) / 1000).replace(".", ",")} s`;
+
+function preguntaTexto(nivel: number, enunciado: string, respuesta: string, distractores: string[]): PreguntaMelodiaTexto {
+  const unicos = [...new Set(distractores.filter((d) => d !== respuesta))].slice(0, 3);
+  return { id: idFalso("melodia-tempo"), modo: "tempo", tipo: "texto", dificultad: nivel, enunciado, opciones: mezclar([respuesta, ...unicos]), respuesta };
+}
+
+function generarTempo(nivel: number): PreguntaMelodia {
+  const b = banda(nivel);
+  const tipos = b === 0 ? ["pulso", "termino", "bpm"] : b === 1 ? ["pulso", "termino", "bpm", "compas"] : ["pulso", "pulso", "termino", "bpm", "compas", "compas"];
+  const tipo = elegir(tipos);
+
+  if (tipo === "pulso") {
+    const opciones = BPM_POR_BANDA[b];
+    const bpm = elegir(opciones);
+    return {
+      id: idFalso("melodia-pulso"),
+      modo: "tempo",
+      tipo: "pulso",
+      dificultad: nivel,
+      enunciado: "Escucha el pulso — ¿a cuántos BPM va?",
+      opciones: mezclar(opciones).map((x) => `${x} BPM`),
+      respuesta: `${bpm} BPM`,
+      bpm,
+      pulsos: 8,
+      acentoCada: 4,
+    };
+  }
+
+  if (tipo === "termino") {
+    const t = elegir(TEMPOS_ITALIANOS);
+    if (rngActual() < 0.5) {
+      return preguntaTexto(nivel, `¿Qué indica «${t.nombre}» en una partitura?`, t.significa, mezclar(TEMPOS_ITALIANOS.filter((x) => x !== t)).map((x) => x.significa));
+    }
+    const otros = mezclar(TEMPOS_ITALIANOS.filter((x) => x !== t)).slice(0, 3);
+    const todos = [t, ...otros];
+    const masRapido = todos.reduce((a, x) => (x.min > a.min ? x : a));
+    return preguntaTexto(nivel, `¿Cuál de estos tempos es el más rápido?`, masRapido.nombre, todos.filter((x) => x !== masRapido).map((x) => x.nombre));
+  }
+
+  if (tipo === "bpm") {
+    if (b === 0 && rngActual() < 0.5) {
+      return preguntaTexto(nivel, "¿Qué quiere decir 60 BPM?", "60 pulsos por minuto", ["60 notas por segundo", "60 compases por minuto", "60 segundos por pulso"]);
+    }
+    const bpm = elegir(b <= 1 ? [60, 120] : [60, 120, 30, 240]);
+    const figuras: FiguraRitmica[] = b <= 1 ? ["negra", "blanca"] : ["negra", "blanca", "redonda", "corchea", "negra_puntillo"];
+    const f = elegir(figuras);
+    const dur = (DURACION_FIGURA[f] * 60) / bpm;
+    const distractores = [dur * 2, dur / 2, dur + 1, dur * 4, dur / 4].filter((x) => x > 0 && x !== dur).map(segundos);
+    return preguntaTexto(nivel, `A ${bpm} BPM (la negra es el pulso), ¿cuánto dura una ${NOMBRE_FIGURA[f].toLowerCase()}?`, segundos(dur), distractores);
+  }
+
+  const c = elegir(b <= 1 ? COMPASES.slice(0, 3) : COMPASES);
+  if (b >= 2 && rngActual() < 0.4) {
+    const seisOcho = rngActual() < 0.5;
+    if (seisOcho) return preguntaTexto(nivel, "En un compás de 6/8, ¿cuántas corcheas hay en cada compás?", "6", ["8", "3", "12"]);
+    return preguntaTexto(nivel, `En un compás de ${c.cifra}, ¿cuántas corcheas caben?`, String(c.corcheas), [String(c.corcheas * 2), String(c.corcheas / 2), String(c.corcheas + 2)]);
+  }
+  if (rngActual() < 0.5) {
+    return preguntaTexto(nivel, `En un compás de ${c.cifra}, ¿cuántos tiempos tiene cada compás?`, String(c.tiempos), ["2", "3", "4", "6", "8"]);
+  }
+  return preguntaTexto(nivel, `En un compás de ${c.cifra}, ¿qué figura vale un tiempo?`, NOMBRE_FIGURA[c.unidad], [NOMBRE_FIGURA.negra, NOMBRE_FIGURA.blanca, NOMBRE_FIGURA.corchea, NOMBRE_FIGURA.redonda]);
+}
+
 const GENERADORES: Record<ModoMelodia, (nivel: number) => PreguntaMelodia> = {
   fundamentos: generarFundamentos,
   lectura: generarLectura,
@@ -657,13 +901,14 @@ const GENERADORES: Record<ModoMelodia, (nivel: number) => PreguntaMelodia> = {
   escalas: generarEscalas,
   acordes: generarAcordes,
   oido_absoluto: generarOidoAbsoluto,
+  tempo: generarTempo,
 };
 
 export function generarPreguntaMelodia(modo: ModoMelodia, nivel: number): PreguntaMelodia {
   return GENERADORES[modo](Math.max(1, Math.min(10, Math.round(nivel))));
 }
 
-export const MODOS_MELODIA: ModoMelodia[] = ["fundamentos", "lectura", "alteraciones", "escalas", "acordes", "oido_absoluto"];
+export const MODOS_MELODIA: ModoMelodia[] = ["fundamentos", "lectura", "alteraciones", "escalas", "acordes", "oido_absoluto", "tempo"];
 export const NOMBRE_MODO_MELODIA: Record<ModoMelodia, string> = {
   fundamentos: "Fundamentos",
   lectura: "Lectura en pentagrama",
@@ -671,4 +916,5 @@ export const NOMBRE_MODO_MELODIA: Record<ModoMelodia, string> = {
   escalas: "Escalas",
   acordes: "Acordes",
   oido_absoluto: "Oído absoluto",
+  tempo: "Tempo y compás",
 };

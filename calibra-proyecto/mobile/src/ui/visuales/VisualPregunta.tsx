@@ -8,6 +8,7 @@ import Circuito from "./Circuito";
 import GraficoEstadistica from "./GraficoEstadistica";
 import Molecula from "./Molecula";
 import NotaAudio from "./NotaAudio";
+import PulsoAudio from "./PulsoAudio";
 import Triangulo from "./Triangulo";
 
 // Lo que se dibuja arriba del enunciado en el sprint genérico, según el mundo:
@@ -20,7 +21,9 @@ export default function VisualPregunta({ visual, acento }: { visual: Visual; ace
     case "figura":
       return <FiguraRitmicaIcono figura={visual.figura} acento={acento} />;
     case "nota-audio":
-      return <NotaAudio frecuencia={visual.frecuencia} acento={acento} />;
+      return <NotaAudio frecuencia={visual.frecuencia} acorde={visual.acorde} acento={acento} />;
+    case "pulso":
+      return <PulsoAudio bpm={visual.bpm} pulsos={visual.pulsos} acentoCada={visual.acentoCada} acento={acento} />;
     case "molecula":
       return <Molecula id={visual.id} acento={acento} />;
     case "triangulo":

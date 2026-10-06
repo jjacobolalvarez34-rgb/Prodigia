@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import type { VisualMelodiaRitmo } from "@/lib/melodia/visuales";
-import { NOMBRE_FIGURA_EN, resolverRitmo, textoDeVisual } from "@/lib/melodia/visualesDatos";
+import { NOMBRE_FIGURA_EN, PULSOS_TEXTO, resolverRitmo, textoDeVisual } from "@/lib/melodia/visualesDatos";
 import { NOMBRE_FIGURA } from "@/lib/practica/melodia";
 import FiguraRitmicaIcono from "@/components/melodia/FiguraRitmicaIcono";
 import ControlesReproductor from "@/components/aprender/ControlesReproductor";
@@ -20,7 +20,6 @@ export default function Ritmo({ visual }: { visual: VisualMelodiaRitmo }) {
   if (figuras.length === 0) return null;
 
   const alternativa = <p>{textoDeVisual(visual as unknown as { tipo: string } & Record<string, unknown>, idioma)}</p>;
-  const pulsos = (n: number) => (n === 0.5 ? t("mediaPulso") : t("pulsos", { count: n }));
 
   return (
     <MarcoVisual
@@ -46,7 +45,7 @@ export default function Ritmo({ visual }: { visual: VisualMelodiaRitmo }) {
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-bold">{idioma === "en" ? NOMBRE_FIGURA_EN[f.figura] : NOMBRE_FIGURA[f.figura]}</span>
-                <span className="block text-xs text-texto-secundario">{pulsos(f.pulsos)}</span>
+                <span className="block text-xs text-texto-secundario">{PULSOS_TEXTO[f.figura][idioma]}</span>
                 <span className="mt-1 block h-2.5 w-full rounded-full bg-border/60" aria-hidden="true">
                   <span
                     className="block h-full rounded-full transition-[width] duration-500 motion-reduce:transition-none"

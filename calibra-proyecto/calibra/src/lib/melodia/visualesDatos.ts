@@ -16,13 +16,16 @@ import {
   type NotaLetra,
   type NotaMusical,
   type TipoAcorde,
+  TEMPOS_ITALIANOS,
 } from "@/lib/practica/melodia";
 import type {
   AcordeParametros,
+  CompasMetronomo,
   EscalaParametros,
   VisualMelodiaAcorde,
   VisualMelodiaEscala,
   VisualMelodiaFrecuencia,
+  VisualMelodiaMetronomo,
   VisualMelodiaPentagrama,
   VisualMelodiaRitmo,
   VisualMelodiaTeclado,
@@ -276,6 +279,56 @@ export function resolverRitmo(v: Partial<VisualMelodiaRitmo>): FiguraResuelta[] 
   return salida;
 }
 
+// ---------------------------------------------------------------------------
+// Metrónomo
+// ---------------------------------------------------------------------------
+
+export const MAX_BPMS = 3;
+export type Acento = "fuerte" | "medio" | "debil";
+// Tiempo fuerte, semifuerte y débiles de cada compás (lo estándar: en 4/4 el 3
+// es semifuerte; en 6/8 son dos grupos de tres corcheas).
+export const ACENTOS_COMPAS: Record<CompasMetronomo, Acento[]> = {
+  "2/4": ["fuerte", "debil"],
+  "3/4": ["fuerte", "debil", "debil"],
+  "4/4": ["fuerte", "debil", "medio", "debil"],
+  "2/2": ["fuerte", "debil"],
+  "6/8": ["fuerte", "debil", "debil", "medio", "debil", "debil"],
+};
+
+export interface FilaMetronomo {
+  bpm: number;
+  // Duración de un pulso en segundos (60 / BPM).
+  segundos: number;
+  // Término italiano cuyo rango contiene el BPM (el primero, si cae en dos;
+  // ninguno en 6/8).
+  termino: string | null;
+}
+
+export interface MetronomoResuelto {
+  filas: FilaMetronomo[];
+  compas: CompasMetronomo;
+  acentos: Acento[];
+}
+
+export function resolverMetronomo(v: Partial<VisualMelodiaMetronomo>): MetronomoResuelto | null {
+  const bpms = Array.isArray(v.bpms) ? v.bpms.filter((b) => typeof b === "number" && Number.isFinite(b) && b >= 30 && b <= 240).slice(0, MAX_BPMS) : [];
+  if (bpms.length === 0) return null;
+  const compas: CompasMetronomo = v.compas && v.compas in ACENTOS_COMPAS ? v.compas : "4/4";
+  // En 6/8 cada luz es una corchea: los BPM no son de negra y no se nombra un término.
+  const terminoDe = (bpm: number) => (compas === "6/8" ? null : (TEMPOS_ITALIANOS.find((t) => bpm >= t.min && bpm <= t.max)?.nombre ?? null));
+  return {
+    filas: bpms.map((bpm) => ({ bpm, segundos: 60 / bpm, termino: terminoDe(bpm) })),
+    compas,
+    acentos: ACENTOS_COMPAS[compas],
+  };
+}
+
+// 0,5 -> "0,5 s"; 0,4286 -> "0,43 s".
+export function formatoSegundos(s: number, idioma: "es" | "en" = "es"): string {
+  const r = String(Math.round(s * 100) / 100);
+  return `${idioma === "es" ? r.replace(".", ",") : r} s`;
+}
+
 export interface NotaConFrecuencia {
   nota: NotaMusical;
   hz: number;
@@ -313,13 +366,30 @@ export function formatoHz(hz: number, idioma: "es" | "en" = "es"): string {
 // Texto plano de un visual (alternativa accesible y corpus de los tests)
 // ---------------------------------------------------------------------------
 
-const PULSOS_TEXTO: Record<FiguraRitmica, { es: string; en: string }> = {
+export const PULSOS_TEXTO: Record<FiguraRitmica, { es: string; en: string }> = {
   redonda: { es: "4 pulsos", en: "4 beats" },
   blanca: { es: "2 pulsos", en: "2 beats" },
   negra: { es: "1 pulso", en: "1 beat" },
   corchea: { es: "medio pulso", en: "half a beat" },
+  semicorchea: { es: "un cuarto de pulso", en: "a quarter of a beat" },
+  fusa: { es: "un octavo de pulso", en: "an eighth of a beat" },
+  semifusa: { es: "un dieciseisavo de pulso", en: "a sixteenth of a beat" },
+  blanca_puntillo: { es: "3 pulsos", en: "3 beats" },
+  negra_puntillo: { es: "1 pulso y medio", en: "1 and a half beats" },
+  corcheas_unidas: { es: "1 pulso", en: "1 beat" },
 };
-export const NOMBRE_FIGURA_EN: Record<FiguraRitmica, string> = { redonda: "Whole note", blanca: "Half note", negra: "Quarter note", corchea: "Eighth note" };
+export const NOMBRE_FIGURA_EN: Record<FiguraRitmica, string> = {
+  redonda: "Whole note",
+  blanca: "Half note",
+  negra: "Quarter note",
+  corchea: "Eighth note",
+  semicorchea: "Sixteenth note",
+  fusa: "Thirty-second note",
+  semifusa: "Sixty-fourth note",
+  blanca_puntillo: "Dotted half note",
+  negra_puntillo: "Dotted quarter note",
+  corcheas_unidas: "Two beamed eighth notes",
+};
 
 export function textoDeVisual(visual: { tipo: string } & Record<string, unknown>, idioma: "es" | "en" = "es"): string {
   const es = idioma === "es";
@@ -360,6 +430,12 @@ export function textoDeVisual(visual: { tipo: string } & Record<string, unknown>
       const r = resolverFrecuencia(visual as Partial<VisualMelodiaFrecuencia>);
       if (r.length === 0) return "";
       return r.map((n) => `${nombreNota(n.nota)}: ${formatoHz(n.hz, idioma)}${n.razon !== null ? ` (${formatoRazon(n.razon, idioma)})` : ""}`).join("; ") + ".";
+    }
+    case "melodia.metronomo": {
+      const r = resolverMetronomo(visual as Partial<VisualMelodiaMetronomo>);
+      if (!r) return "";
+      const filas = r.filas.map((f) => `${f.bpm} BPM${f.termino ? ` (${f.termino})` : ""}: ${es ? "un pulso cada" : "one beat every"} ${formatoSegundos(f.segundos, idioma)}`);
+      return `${es ? "Metrónomo en" : "Metronome in"} ${r.compas}: ${filas.join("; ")}.`;
     }
     default:
       return "";

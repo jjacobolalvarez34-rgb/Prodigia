@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: tMundos("melodia"), description: t("description") };
 }
 
-const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"];
+const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto", "melodia_tempo"];
 
 export default async function MelodiaHomePage() {
   const t = await getTranslations("Melodia.home");
@@ -123,6 +123,7 @@ export default async function MelodiaHomePage() {
             <TopicCard nombre={t("modos.escalas")} Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_escalas") }} colorHex={COLOR_MELODIA} />
             <TopicCard nombre={t("modos.acordes")} Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_acordes") }} colorHex={COLOR_MELODIA} />
             <TopicCard nombre={t("modos.oidoAbsoluto")} Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_oido_absoluto") }} colorHex={COLOR_MELODIA} />
+            <TopicCard nombre={t("modos.tempo")} Icono={IconMelodia} badge={{ tipo: "nivel", nivel: nivelDe("melodia_tempo") }} colorHex={COLOR_MELODIA} />
           </div>
         </section>
       </div>

@@ -44,9 +44,9 @@ function camino(dominadas: string[], esPro: boolean): NodoCaminoMelodia[] {
 }
 
 describe("Melodía: grupos y contenido tipado", () => {
-  it("ORDEN_GRUPOS_MELODIA: los 6 modos de la práctica (MODOS_MELODIA), en el mismo orden, sin duplicados", () => {
+  it("ORDEN_GRUPOS_MELODIA: los 7 modos de la práctica (MODOS_MELODIA), en el mismo orden, sin duplicados", () => {
     expect([...ORDEN_GRUPOS_MELODIA]).toEqual([...MODOS_MELODIA]);
-    expect(ORDEN_GRUPOS_MELODIA).toEqual(["fundamentos", "lectura", "alteraciones", "escalas", "acordes", "oido_absoluto"]);
+    expect(ORDEN_GRUPOS_MELODIA).toEqual(["fundamentos", "lectura", "alteraciones", "escalas", "acordes", "oido_absoluto", "tempo"]);
   });
 
   it("cada lección mapea al grupo que declara (una sola fuente de verdad: el contenido tipado)", () => {
@@ -72,8 +72,8 @@ describe("Melodía: grupos y contenido tipado", () => {
 
   it("GRUPOS_APRENDER.melodia deriva del contenido tipado (mismos slugs, mismo orden)", () => {
     const e = GRUPOS_APRENDER.melodia;
-    expect(e.tecnicas.flatMap((g) => g.slugs)).toEqual(TECNICAS_MELODIA.map((t) => t.slug));
-    expect(e.clases.flatMap((g) => g.slugs)).toEqual(CLASES_MELODIA.map((c) => c.slug));
+    expect(e.tecnicas.flatMap((g) => g.slugs)).toEqual(ORDEN_GRUPOS_MELODIA.flatMap((g) => TECNICAS_MELODIA.filter((t) => t.grupo === g).map((t) => t.slug)));
+    expect(e.clases.flatMap((g) => g.slugs)).toEqual(ORDEN_GRUPOS_MELODIA.flatMap((g) => CLASES_MELODIA.filter((c) => c.grupo === g).map((c) => c.slug)));
   });
 });
 
@@ -245,6 +245,6 @@ describe("Melodía: obtenerCaminoMelodia (con Supabase simulado)", () => {
     expect(deOido[1].estado).toBe("activo");
     // Y con 0 progreso sigue habiendo un activo por grupo (sin `primera` dominada).
     const sin = await obtenerCaminoMelodia(cliente as never, "u1", false);
-    expect(sin.filter((n) => !n.requierePro && n.estado === "activo")).toHaveLength(6);
+    expect(sin.filter((n) => !n.requierePro && n.estado === "activo")).toHaveLength(ORDEN_GRUPOS_MELODIA.length);
   });
 });

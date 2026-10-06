@@ -51,6 +51,7 @@ export function hrefDuelo(mundo: MundoDuelo, operationType: ArithmeticProblemTyp
     if (subTipo === "escalas") return `/melodia/practica/escalas?duelo=${duelId}`;
     if (subTipo === "acordes") return `/melodia/practica/acordes?duelo=${duelId}`;
     if (subTipo === "oido_absoluto") return `/melodia/practica/oido-absoluto?duelo=${duelId}`;
+    if (subTipo === "tempo") return `/melodia/practica/tempo?duelo=${duelId}`;
     return `/melodia/practica?duelo=${duelId}`;
   }
   if (mundo === "trigonometria") {

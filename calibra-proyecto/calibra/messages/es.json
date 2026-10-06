@@ -2556,7 +2556,8 @@
         "alteraciones": "Alteraciones",
         "escalas": "Escalas",
         "acordes": "Acordes",
-        "oidoAbsoluto": "Oído absoluto"
+        "oidoAbsoluto": "Oído absoluto",
+        "tempo": "Tempo y compás"
       }
     },
     "elegir": {
@@ -2590,6 +2591,10 @@
         "oidoAbsoluto": {
           "nombre": "Oído absoluto",
           "descripcion": "Escucha la nota e identifícala — el más difícil"
+        },
+        "tempo": {
+          "nombre": "Tempo y compás",
+          "descripcion": "Escucha el pulso, BPM, tempos y compases"
         }
       }
     },
@@ -2696,10 +2701,21 @@
           "title": "Practicar Oído absoluto",
           "description": "Escucha la nota e identifícala — el modo más difícil de Melodía."
         }
+      },
+      "tempo": {
+        "metadata": {
+          "title": "Practicar Tempo y compás",
+          "description": "Pulso de metrónomo, BPM, términos de tempo y compases, con dificultad adaptativa."
+        }
       }
     },
     "botonEscuchar": {
-      "ariaLabel": "Escuchar la nota otra vez"
+      "ariaLabel": "Escuchar la nota otra vez",
+      "ariaLabelAcorde": "Escuchar el acorde otra vez"
+    },
+    "botonPulso": {
+      "ariaLabel": "Escuchar el pulso otra vez",
+      "ayuda": "Toca para escuchar el pulso otra vez"
     },
     "figuraRitmica": {
       "ariaLabel": "Figura rítmica: {figura}"
@@ -2737,6 +2753,12 @@
       "frecuencia": {
         "etiqueta": "Notas y frecuencias",
         "nota": "Temperamento igual, La4 = 440 Hz. Cada flecha muestra por cuánto se multiplica la frecuencia."
+      },
+      "metronomo": {
+        "etiqueta": "Metrónomo: pulso y tempo",
+        "nota": "Compás de {compas}: la luz grande es el tiempo fuerte. La velocidad real del pulso es la del BPM indicado.",
+        "cadaPulso": "Un pulso cada {segundos}",
+        "escuchar": "Escuchar"
       }
     }
   },

@@ -39,7 +39,7 @@ const SUBTIPOS: Record<string, string[]> = {
   ],
   melodia: [
     "melodia_fundamentos", "melodia_lectura", "melodia_alteraciones",
-    "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto",
+    "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto", "melodia_tempo",
   ],
   trigonometria: [
     "trigonometria_razones", "trigonometria_circulo",

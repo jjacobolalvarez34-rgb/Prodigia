@@ -896,6 +896,21 @@ Melodía tenía 5 Técnicas (0089, con quiz en 0174) y 0 Clases, sin visuales: A
 
 Cada Técnica: 3-5 pasos + al menos un visual + quiz de 3-5 preguntas. Cada Clase: 5-6 pasos desarrollados (definiciones, ejemplos, "errores comunes"/simplificaciones), 1-7 visuales y quiz de 5 preguntas con `explicacion`. Código en `src/lib/melodia/lecciones/` (un archivo por grupo con sus Técnicas y sus Clases, `tecnicas.ts`, `clases.ts`, `sql.ts`, `index.ts`), grupos en `src/lib/melodia/grupos.ts`. Fuente única: la migración se GENERA de ahí. Se dejaron fuera a propósito los temas que la práctica no evalúa (armaduras, compases compuestos, silencios más allá de mencionarlos, escalas menores armónica y melódica, inversiones de acordes).
 
+### Ampliación 2026-10-06: figuras cortas, oído de acordes y Tempo y compás
+
+Pedido del usuario: Fundamentos solo mostraba redonda, blanca, negra y corchea; faltaba el tempo; el oído absoluto necesitaba acordes.
+
+- **Fundamentos**: en niveles altos entran semicorchea, fusa y semifusa (1 a 4 corchetes), negra y blanca con puntillo y dos corcheas unidas, más preguntas de equivalencias ("¿cuántas X caben en una Y?", solo resultados enteros). Íconos con `formaFigura` (compartida por la web y la app).
+- **Oído absoluto**: en los niveles 7-8, la mitad de las preguntas son de acorde (tipo de tríada); en los 9-10, el acorde completo ("Sol menor"). `PreguntaMelodiaAudio.acorde`; la web usa `reproducirAcorde` y la app, un reproductor por nota (notas sintetizadas ampliadas hasta la 67).
+- **Tempo y compás** (`melodia_tempo`, 7.º modo): pulso de metrónomo (`tipo: "pulso"`, opciones de BPM que se acercan con el nivel), términos italianos, duración de figuras a un BPM y cifras de compás. Web `BotonPulso`/`reproducirPulso`; app `PulsoAudio` (clics `pulso*.wav`). Migración `0252_melodia_tempo.sql` (checks, xp/progreso/ranking/dominio con 7 temas, retar, matchmaking desde 1300).
+- **Aprender**: 5 Técnicas y 5 Clases nuevas (`lecciones/ampliacion.ts`, migración generada `0253`, que no toca 0213). Visual nuevo `melodia.metronomo` (web y app). Por ahora sin inglés (se muestra en español).
+
+| Grupo | Técnicas | Clases |
+|---|---|---|
+| Fundamentos | 4 | 4 |
+| Oído absoluto | 3 | 3 |
+| Tempo y compás | 3 | 3 |
+
 ### Decisión de desbloqueo (src/lib/melodia/path.ts, reescrito)
 
 - **Técnicas**: puntero "activo" independiente POR GRUPO, lineal dentro de cada uno (pedido explícito del usuario para todos los mundos).

@@ -5,6 +5,7 @@ import Escala from "./Escala";
 import Acorde from "./Acorde";
 import Ritmo from "./Ritmo";
 import Frecuencia from "./Frecuencia";
+import Metronomo from "./Metronomo";
 
 // Registro de los visuales de Melodía para el dispatcher genérico
 // (src/components/aprender/VisualLeccion.tsx): registro[tipo] = Componente.
@@ -16,4 +17,5 @@ export const REGISTRO_VISUALES_MELODIA: RegistroVisuales = {
   "melodia.acorde": Acorde as unknown as ComponenteVisual,
   "melodia.ritmo": Ritmo as unknown as ComponenteVisual,
   "melodia.frecuencia": Frecuencia as unknown as ComponenteVisual,
+  "melodia.metronomo": Metronomo as unknown as ComponenteVisual,
 };

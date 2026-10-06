@@ -5,7 +5,7 @@
 import { TECNICAS_GEOGRAFIA, TECNICAS_GENERALES_GEOGRAFIA, CLASES_GEOGRAFIA } from "@/lib/geografia/lecciones";
 import { TECNICAS_QUIMIA, CLASES_QUIMIA } from "@/lib/quimia/lecciones";
 import { TECNICAS_ANATOMIA, CLASES_ANATOMIA } from "@/lib/anatomia/lecciones";
-import { TECNICAS_MELODIA, CLASES_MELODIA } from "@/lib/melodia/lecciones";
+import { TECNICAS_MELODIA_0213, CLASES_MELODIA_0213 } from "@/lib/melodia/lecciones";
 import { TECNICAS_TRIGONOMETRIA, CLASES_TRIGONOMETRIA } from "@/lib/trigonometria/lecciones";
 import { TECNICAS_HISTORIA, CLASES_HISTORIA } from "@/lib/historia/lecciones";
 import { TECNICAS_CALCULIA, CLASES_CALCULIA } from "@/lib/calculia/lecciones";
@@ -93,7 +93,8 @@ export function leccionesFuente(mundo: MundoTraducible): LeccionFuente[] {
     case "anatomia":
       return lista(TECNICAS_ANATOMIA as LeccionTipada[], CLASES_ANATOMIA as LeccionTipada[]);
     case "melodia":
-      return lista(TECNICAS_MELODIA as LeccionTipada[], CLASES_MELODIA as LeccionTipada[]);
+      // Las 36 de 0213; la ampliación de 0253 todavía no tiene inglés (se ve en español).
+      return lista(TECNICAS_MELODIA_0213 as LeccionTipada[], CLASES_MELODIA_0213 as LeccionTipada[]);
     case "trigonometria":
       return lista(TECNICAS_TRIGONOMETRIA as LeccionTipada[], CLASES_TRIGONOMETRIA as LeccionTipada[]);
     case "historia":

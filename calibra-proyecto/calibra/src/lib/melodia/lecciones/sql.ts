@@ -5,6 +5,8 @@ import type { TecnicaMelodia, ClaseMelodia, PreguntaLeccionMelodia, VisualLeccio
 // desincronizada del contenido tipado (fuente única). Mismo patrón que
 // src/lib/anatomia/lecciones/sql.ts.
 export const ARCHIVO_MIGRACION_MELODIA = "0213_melodia_tecnicas_clases.sql";
+// Ampliación del 2026-10-06 (figuras cortas, oído de acordes, Tempo y compás).
+export const ARCHIVO_MIGRACION_AMPLIACION_MELODIA = "0253_melodia_lecciones_figuras_acordes_tempo.sql";
 
 function escaparSql(s: string): string {
   return s.replace(/'/g, "''");
@@ -89,5 +91,42 @@ ${nuevas.map(filaTecnica).join(",\n\n")};
 insert into public.techniques (slug, nombre, descripcion, problem_type, contenido, orden, requiere_pro) values
 
 ${clases.map(filaClase).join(",\n\n")};
+`;
+}
+
+// Migración de la ampliación: solo INSERT de lecciones nuevas (0213 ya está
+// aplicada y no se regenera). Cada slug es nuevo; `on conflict do nothing`
+// la deja correr dos veces sin error.
+export function generarSqlAmpliacionMelodia(tecnicas: TecnicaMelodia[], clases: ClaseMelodia[]): string {
+  const fila = (l: TecnicaMelodia | ClaseMelodia) =>
+    `('${escaparSql(l.slug)}', '${escaparSql(l.nombre)}',\n  '${escaparSql(l.descripcion)}',\n  'melodia',\n  $melodia$${contenidoJson(l)}$melodia$::jsonb,\n  ${l.orden},\n  ${l.requierePro})`;
+  const porGrupo = (ls: { grupo: string }[]) => {
+    const conteo = new Map<string, number>();
+    for (const l of ls) conteo.set(l.grupo, (conteo.get(l.grupo) ?? 0) + 1);
+    return [...conteo].map(([g, n]) => `${g} ${n}`).join(", ");
+  };
+  return `-- ============================================================
+-- Prodigia — Melodía: lecciones de la ampliación (pedido del usuario,
+-- 2026-10-06). Acompañan lo que la Práctica empezó a evaluar ese día:
+--   - Fundamentos: semicorchea, fusa, semifusa, puntillo y corcheas unidas.
+--   - Oído absoluto: oído de acordes (tipo de tríada y acorde completo).
+--   - Tempo y compás (grupo y modo nuevo, ver 0252_melodia_tempo.sql):
+--     pulso, BPM, términos italianos y cifras de compás. Usa el visual
+--     nuevo "melodia.metronomo".
+--
+-- ${tecnicas.length} Técnicas (requiere_pro=false): ${porGrupo(tecnicas)}.
+-- ${clases.length} Clases (requiere_pro=true): ${porGrupo(clases)}.
+-- Cada una continúa el \`orden\` de su grupo (0213 no se toca).
+--
+-- Requiere 0252. Este archivo se GENERA desde
+-- src/lib/melodia/lecciones/ampliacion.ts y lecciones.test.ts comprueba que
+-- coincida. No editar a mano.
+-- Regenerar: MELODIA_ESCRIBIR_SQL=1 npx vitest run src/lib/melodia/lecciones
+-- ============================================================
+
+insert into public.techniques (slug, nombre, descripcion, problem_type, contenido, orden, requiere_pro) values
+
+${[...tecnicas, ...clases].map(fila).join(",\n\n")}
+on conflict (problem_type, slug) do nothing;
 `;
 }

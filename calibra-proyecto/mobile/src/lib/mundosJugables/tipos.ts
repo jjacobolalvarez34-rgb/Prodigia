@@ -17,7 +17,8 @@ export interface CartaVisual {
 export type Visual =
   | { tipo: "pentagrama"; notas: NotaMusical[]; disposicion: "secuencial" | "simultanea" }
   | { tipo: "figura"; figura: FiguraRitmica }
-  | { tipo: "nota-audio"; frecuencia: number }
+  | { tipo: "nota-audio"; frecuencia: number; acorde?: number[] }
+  | { tipo: "pulso"; bpm: number; pulsos: number; acentoCada: number }
   | { tipo: "molecula"; id: string }
   | { tipo: "triangulo"; triangulo: TrianguloDiagrama }
   | { tipo: "circuito"; topologia: unknown; vFuente: number; resaltarId?: string }

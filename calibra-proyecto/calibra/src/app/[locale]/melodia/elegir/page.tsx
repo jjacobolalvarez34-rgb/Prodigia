@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("title"), description: t("description") };
 }
 
-const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto"];
+const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto", "melodia_tempo"];
 
 export default async function MelodiaElegirPage() {
   const t = await getTranslations("Melodia.elegir");
@@ -34,6 +34,7 @@ export default async function MelodiaElegirPage() {
     { id: "escalas", nombre: t("modos.escalas.nombre"), desc: t("modos.escalas.descripcion"), href: "/melodia/practica/escalas", nivel: nivelDe("melodia_escalas") },
     { id: "acordes", nombre: t("modos.acordes.nombre"), desc: t("modos.acordes.descripcion"), href: "/melodia/practica/acordes", nivel: nivelDe("melodia_acordes") },
     { id: "oidoAbsoluto", nombre: t("modos.oidoAbsoluto.nombre"), desc: t("modos.oidoAbsoluto.descripcion"), href: "/melodia/practica/oido-absoluto", nivel: nivelDe("melodia_oido_absoluto") },
+    { id: "tempo", nombre: t("modos.tempo.nombre"), desc: t("modos.tempo.descripcion"), href: "/melodia/practica/tempo", nivel: nivelDe("melodia_tempo") },
   ];
 
   return (

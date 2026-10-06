@@ -2556,7 +2556,8 @@
         "alteraciones": "Accidentals",
         "escalas": "Scales",
         "acordes": "Chords",
-        "oidoAbsoluto": "Absolute pitch"
+        "oidoAbsoluto": "Absolute pitch",
+        "tempo": "Tempo and meter"
       }
     },
     "elegir": {
@@ -2590,6 +2591,10 @@
         "oidoAbsoluto": {
           "nombre": "Absolute pitch",
           "descripcion": "Listen to the note and identify it — the hardest one"
+        },
+        "tempo": {
+          "nombre": "Tempo and meter",
+          "descripcion": "Hear the beat, BPM, tempo marks and time signatures"
         }
       }
     },
@@ -2696,10 +2701,21 @@
           "title": "Practice Absolute Pitch",
           "description": "Listen to the note and identify it — Melodía's hardest mode."
         }
+      },
+      "tempo": {
+        "metadata": {
+          "title": "Practice Tempo and meter",
+          "description": "Metronome beat, BPM, tempo marks and time signatures, with adaptive difficulty."
+        }
       }
     },
     "botonEscuchar": {
-      "ariaLabel": "Listen to the note again"
+      "ariaLabel": "Listen to the note again",
+      "ariaLabelAcorde": "Listen to the chord again"
+    },
+    "botonPulso": {
+      "ariaLabel": "Listen to the beat again",
+      "ayuda": "Tap to hear the beat again"
     },
     "figuraRitmica": {
       "ariaLabel": "Rhythmic figure: {figura}"
@@ -2737,6 +2753,12 @@
       "frecuencia": {
         "etiqueta": "Notes and frequencies",
         "nota": "Equal temperament, A4 = 440 Hz. Each arrow shows what the frequency is multiplied by."
+      },
+      "metronomo": {
+        "etiqueta": "Metronome: beat and tempo",
+        "nota": "{compas} time: the big light is the strong beat. The beat runs at the real speed of the BPM shown.",
+        "cadaPulso": "One beat every {segundos}",
+        "escuchar": "Listen"
       }
     }
   },

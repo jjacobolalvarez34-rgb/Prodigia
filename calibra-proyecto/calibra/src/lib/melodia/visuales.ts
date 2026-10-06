@@ -109,10 +109,26 @@ export interface VisualMelodiaFrecuencia extends VisualBase {
   escuchar?: boolean;
 }
 
+// Metrónomo (Tempo y compás, 2026-10-06): de 1 a 3 tempos, uno por fila,
+// cada uno con una luz por tiempo del compás que late a ese BPM (el primero,
+// el tiempo fuerte, más grande). Sirve para ver y comparar velocidades y para
+// sentir cómo se agrupan los pulsos en 2/4, 3/4, 4/4, 2/2 o 6/8 (en 6/8 cada
+// luz es una corchea, agrupadas de a 3).
+export type CompasMetronomo = "2/4" | "3/4" | "4/4" | "2/2" | "6/8";
+export interface VisualMelodiaMetronomo extends VisualBase {
+  tipo: "melodia.metronomo";
+  bpms: number[];
+  // Por defecto, 4/4.
+  compas?: CompasMetronomo;
+  // Botón "Escuchar" por fila (solo suena al tocarlo).
+  escuchar?: boolean;
+}
+
 export type VisualMelodia =
   | VisualMelodiaPentagrama
   | VisualMelodiaTeclado
   | VisualMelodiaEscala
   | VisualMelodiaAcorde
   | VisualMelodiaRitmo
-  | VisualMelodiaFrecuencia;
+  | VisualMelodiaFrecuencia
+  | VisualMelodiaMetronomo;

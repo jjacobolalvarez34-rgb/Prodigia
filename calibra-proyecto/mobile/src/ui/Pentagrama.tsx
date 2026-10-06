@@ -1,5 +1,5 @@
 import Svg, { Circle, Ellipse, G, Line, Path, Text as SvgText } from "react-native-svg";
-import { indiceDiatonicoAbsoluto, type FiguraRitmica, type NotaMusical } from "@/lib/practica/melodia";
+import { formaFigura, indiceDiatonicoAbsoluto, type FiguraRitmica, type NotaMusical } from "@/lib/practica/melodia";
 import { color } from "~/tema";
 
 // Pentagrama de Melodía (port compacto de components/melodia/Pentagrama.tsx): clave
@@ -112,12 +112,32 @@ export default function Pentagrama({
 }
 
 export function FiguraRitmicaIcono({ figura, acento = "#F2C14E" }: { figura: FiguraRitmica; acento?: string }) {
-  const hueca = figura === "redonda" || figura === "blanca";
+  // Misma forma que el ícono de la web (formaFigura): corchetes 1-4, puntillo y
+  // corcheas unidas por la barra.
+  const forma = formaFigura(figura);
+  const relleno = forma.hueca ? "none" : acento;
+  if (forma.unidas) {
+    return (
+      <Svg width={70} height={90} viewBox="0 0 70 90">
+        <Line x1={26} y1={66} x2={26} y2={14} stroke={acento} strokeWidth={3} />
+        <Line x1={58} y1={66} x2={58} y2={14} stroke={acento} strokeWidth={3} />
+        <Path d="M24.5 12 L59.5 12 L59.5 19 L24.5 19 Z" fill={acento} />
+        <Ellipse cx={17} cy={68} rx={10} ry={7} fill={relleno} stroke={acento} strokeWidth={3} transform="rotate(-18 17 68)" />
+        <Ellipse cx={49} cy={68} rx={10} ry={7} fill={relleno} stroke={acento} strokeWidth={3} transform="rotate(-18 49 68)" />
+      </Svg>
+    );
+  }
+  const cx = forma.puntillo ? 24 : 30;
+  const xPlica = cx + 10;
   return (
     <Svg width={70} height={90} viewBox="0 0 70 90">
-      <Ellipse cx={30} cy={68} rx={11} ry={8} fill={hueca ? "none" : acento} stroke={acento} strokeWidth={3} transform="rotate(-18 30 68)" />
-      {figura !== "redonda" && <Line x1={40} y1={66} x2={40} y2={12} stroke={acento} strokeWidth={3} />}
-      {figura === "corchea" && <Path d="M40 12 C50 22 58 28 52 44" stroke={acento} strokeWidth={3} fill="none" />}
+      <Ellipse cx={cx} cy={68} rx={11} ry={8} fill={relleno} stroke={acento} strokeWidth={3} transform={`rotate(-18 ${cx} 68)`} />
+      {forma.plica && <Line x1={xPlica} y1={66} x2={xPlica} y2={12} stroke={acento} strokeWidth={3} />}
+      {Array.from({ length: forma.corchetes }, (_, i) => {
+        const y = 12 + i * 9;
+        return <Path key={i} d={`M${xPlica} ${y} C${xPlica + 10} ${y + 8} ${xPlica + 16} ${y + 13} ${xPlica + 11} ${y + 25}`} stroke={acento} strokeWidth={3} fill="none" />;
+      })}
+      {forma.puntillo && <Circle cx={cx + 21} cy={64} r={3.2} fill={acento} />}
     </Svg>
   );
 }

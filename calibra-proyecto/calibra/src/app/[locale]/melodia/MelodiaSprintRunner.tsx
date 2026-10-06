@@ -15,6 +15,7 @@ import BarraTiempo from "@/components/practica/BarraTiempo";
 import Pentagrama from "@/components/melodia/Pentagrama";
 import FiguraRitmicaIcono from "@/components/melodia/FiguraRitmicaIcono";
 import BotonEscucharNota from "@/components/melodia/BotonEscucharNota";
+import BotonPulso from "@/components/melodia/BotonPulso";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
@@ -315,7 +316,8 @@ export default function MelodiaSprintRunner({
         {pregunta.tipo === "texto" && pregunta.figuraId && (
           <FiguraRitmicaIcono figura={pregunta.figuraId} colorHex={COLOR_MELODIA} />
         )}
-        {pregunta.tipo === "audio" && <BotonEscucharNota nota={pregunta.nota} colorHex={COLOR_MELODIA} />}
+        {pregunta.tipo === "audio" && <BotonEscucharNota nota={pregunta.nota} acorde={pregunta.acorde} colorHex={COLOR_MELODIA} />}
+        {pregunta.tipo === "pulso" && <BotonPulso bpm={pregunta.bpm} pulsos={pregunta.pulsos} acentoCada={pregunta.acentoCada} colorHex={COLOR_MELODIA} />}
         <p className="text-center font-display text-lg font-bold text-foreground">{pregunta.enunciado}</p>
         <div className="grid w-full max-w-sm grid-cols-2 gap-2">
           {pregunta.opciones.map((op) => {

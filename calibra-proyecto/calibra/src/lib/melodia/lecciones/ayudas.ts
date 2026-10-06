@@ -1,10 +1,12 @@
 import type { PreguntaLeccionMelodia } from "./tipos";
 import type {
   AcordeParametros,
+  CompasMetronomo,
   EscalaParametros,
   VisualMelodiaAcorde,
   VisualMelodiaEscala,
   VisualMelodiaFrecuencia,
+  VisualMelodiaMetronomo,
   VisualMelodiaPentagrama,
   VisualMelodiaRitmo,
   VisualMelodiaTeclado,
@@ -33,4 +35,5 @@ export const vTeclado = (notas: string[], e: Extra & Partial<Omit<VisualMelodiaT
 export const vEscala = (escala: EscalaParametros, e: Extra & { escuchar?: boolean }): VisualMelodiaEscala => ({ tipo: "melodia.escala", ...e, escala });
 export const vAcorde = (acorde: AcordeParametros, e: Extra & { escuchar?: boolean }): VisualMelodiaAcorde => ({ tipo: "melodia.acorde", ...e, acorde });
 export const vRitmo = (figuras: FiguraRitmica[], e: Extra): VisualMelodiaRitmo => ({ tipo: "melodia.ritmo", ...e, figuras });
-export const vFrecuencia = (notas: string[], e: Extra & { escuchar?: boolean }): VisualMelodiaFrecuencia => ({ tipo: "melodia.frecuencia", ...e, notas });
+export const vMetronomo = (bpms: number[], e: Extra & { compas?: CompasMetronomo; escuchar?: boolean }): VisualMelodiaMetronomo => ({ tipo: "melodia.metronomo", ...e, bpms });
+export const vFrecuencia =(notas: string[], e: Extra & { escuchar?: boolean }): VisualMelodiaFrecuencia => ({ tipo: "melodia.frecuencia", ...e, notas });

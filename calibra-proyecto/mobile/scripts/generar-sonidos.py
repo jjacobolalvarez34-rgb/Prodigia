@@ -55,6 +55,10 @@ guardar("boton",secuencia([(740,0,.07,.08)]),0.3)
 guardar("combo",secuencia([(659.25,0,.35,.1,"triangle"),(830.6,.03,.35,.08,"triangle"),(987.8,.06,.4,.08,"triangle")]),0.6)
 guardar("racha",secuencia([(392,0,.14,.08,"triangle"),(523.25,.1,.14,.09,"triangle"),(784,.2,.32,.1,"triangle")]),0.6)
 guardar("swoosh",secuencia([(520,0,.12,.05),(780,.05,.12,.05)]),0.3)
+# Metrónomo del modo Tempo de Melodía: el mismo clic que reproducirPulso de la web
+# (seno de 1568 Hz en el tiempo fuerte y de 1046,5 Hz en los demás, 0,06 s).
+guardar("pulso_fuerte",secuencia([(1568,0,.06,.16)]),0.7)
+guardar("pulso",secuencia([(1046.5,0,.06,.12)]),0.55)
 # Paquetes de sonido de acierto de la tienda (SONIDOS de calibra/src/lib/recompensas/
 # catalogo.ts, mismos números): (frecuencia relativa, inicio, duración, onda, volumen),
 # en las mismas 8 alturas que el acierto clásico.
@@ -70,10 +74,12 @@ for nombre,notas in PAQUETES.items():
 print(sorted(os.listdir(OUT)))
 
 # Notas para el oído absoluto de Melodía: reproducirNotaMusical de la web
-# (triangular 0,14 + segundo armónico seno 0,03, 1,1 s), de Do3 (36) a Do5 (60).
+# (triangular 0,14 + segundo armónico seno 0,03, 1,1 s), de Do3 (36) a Sol5 (67):
+# hasta 67 para que los acordes del oído de acordes (fundamental en la octava 4,
+# hasta Si4 + 5.ª aumentada) tengan todas sus notas.
 NOTAS=os.path.join(OUT,"notas")
 os.makedirs(NOTAS,exist_ok=True)
-for semitono in range(36,61):
+for semitono in range(36,68):
     f=440*2**((semitono-57)/12)
     s=secuencia([(f,0,1.1,.14,"triangle"),(f*2,0,.9,.03,"sine")])
     m=np.max(np.abs(s)); s=s/m*0.6

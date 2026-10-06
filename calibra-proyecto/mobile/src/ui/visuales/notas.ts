@@ -26,4 +26,11 @@ export const NOTAS: Record<number, number> = {
   58: require("../../../assets/sonidos/notas/nota58.wav"),
   59: require("../../../assets/sonidos/notas/nota59.wav"),
   60: require("../../../assets/sonidos/notas/nota60.wav"),
+  61: require("../../../assets/sonidos/notas/nota61.wav"),
+  62: require("../../../assets/sonidos/notas/nota62.wav"),
+  63: require("../../../assets/sonidos/notas/nota63.wav"),
+  64: require("../../../assets/sonidos/notas/nota64.wav"),
+  65: require("../../../assets/sonidos/notas/nota65.wav"),
+  66: require("../../../assets/sonidos/notas/nota66.wav"),
+  67: require("../../../assets/sonidos/notas/nota67.wav"),
 };

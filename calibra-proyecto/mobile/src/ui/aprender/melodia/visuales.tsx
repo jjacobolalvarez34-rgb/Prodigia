@@ -10,6 +10,7 @@ import {
   formatoRazon,
   nombreDeTecla,
   nombreSinOctava,
+  PULSOS_TEXTO,
   resolverFrecuencia,
   resolverPentagrama,
   resolverRitmo,
@@ -384,7 +385,6 @@ export function Ritmo({ visual }: { visual: VisualMelodiaRitmo }) {
   const figuras = resolverRitmo(visual);
   const r = useReproductor({ total: figuras.length, ms: 1200, estatico: visual.estatico, inicio: figuras.length > 0 ? 1 : 0 });
   if (figuras.length === 0) return null;
-  const pulsos = (n: number) => (n === 0.5 ? t("mediaPulso") : t("pulsos", { count: n }));
   return (
     <Marco acento={COLOR_MELODIA} titulo={visual.titulo} r={r}>
       <View style={{ gap: 6 }}>
@@ -401,7 +401,7 @@ export function Ritmo({ visual }: { visual: VisualMelodiaRitmo }) {
                   {NOMBRE_FIGURA[f.figura]}
                 </Texto>
                 <Texto v="nota" tam={12}>
-                  {pulsos(f.pulsos)}
+                  {PULSOS_TEXTO[f.figura].es}
                 </Texto>
                 <View style={styles.compas}>
                   <View style={{ height: "100%", borderRadius: 5, width: `${(visible ? f.fraccionCompas : 0) * 100}%`, backgroundColor: ACENTO }} />

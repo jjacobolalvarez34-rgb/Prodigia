@@ -115,6 +115,66 @@ export function reproducirNotaMusical(freq: number) {
   }
 }
 
+// Oído absoluto de acordes (Melodía, niveles 7-10): las notas del acorde a la
+// vez, con el mismo timbre que reproducirNotaMusical y el volumen repartido
+// para que el acorde no sature.
+export function reproducirAcorde(freqs: number[]) {
+  if (!sonidoHabilitado() || typeof window === "undefined" || freqs.length === 0) return;
+  const vol = 0.3 / freqs.length;
+  try {
+    reproducirSecuencia(
+      freqs.flatMap((freq) => [
+        { freq, inicio: 0, duracion: 1.4, tipoOnda: "triangle" as OscillatorType, volumen: vol },
+        { freq: freq * 2, inicio: 0, duracion: 1.1, tipoOnda: "sine" as OscillatorType, volumen: vol / 5 },
+      ])
+    );
+  } catch {
+    // audio no disponible
+  }
+}
+
+// Modo Tempo de Melodía: un metrónomo de `pulsos` clics a `bpm`, con el tiempo
+// fuerte (más agudo) cada `acentoCada`. Los clics se programan en el reloj del
+// AudioContext (exactos, sin el temblor de setTimeout) y `alPulso` avisa a la UI
+// en cada clic para que lo marque. Devuelve una función que lo detiene.
+export function reproducirPulso(bpm: number, pulsos: number, acentoCada: number, alPulso?: (i: number) => void): () => void {
+  const temporizadores: ReturnType<typeof setTimeout>[] = [];
+  const osciladores: OscillatorNode[] = [];
+  const parar = () => {
+    for (const t of temporizadores) clearTimeout(t);
+    for (const o of osciladores) {
+      try {
+        o.stop();
+      } catch {
+        // ya terminó
+      }
+    }
+  };
+  if (!sonidoHabilitado() || typeof window === "undefined") return parar;
+  const audioCtx = obtenerContexto();
+  if (!audioCtx) return parar;
+  const intervalo = 60 / bpm;
+  const ahora = audioCtx.currentTime + 0.08;
+  for (let i = 0; i < pulsos; i++) {
+    const fuerte = i % acentoCada === 0;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = "sine";
+    osc.frequency.value = fuerte ? 1568 : 1046.5;
+    const t0 = ahora + i * intervalo;
+    gain.gain.setValueAtTime(fuerte ? 0.16 : 0.12, t0);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.06);
+    osc.start(t0);
+    osc.stop(t0 + 0.07);
+    osciladores.push(osc);
+    if (alPulso) temporizadores.push(setTimeout(() => alPulso(i), (t0 - audioCtx.currentTime) * 1000));
+  }
+  if (alPulso) temporizadores.push(setTimeout(() => alPulso(-1), (ahora + pulsos * intervalo - audioCtx.currentTime) * 1000));
+  return parar;
+}
+
 // Tienda ampliada (0248): paquete de sonido de acierto equipado y aviso de cada
 // tono (el estallido del efecto de acierto escucha el "correcto" aunque el sonido
 // esté apagado).

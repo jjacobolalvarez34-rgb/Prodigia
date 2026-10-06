@@ -132,7 +132,8 @@ describe("dispatcher: datos malos se omiten sin romper", () => {
     expect(html({ tipo: "melodia.teclado", notas: ["Do4"], desde: "Mi9", hasta: "Do4" })).toBe(html({ tipo: "melodia.teclado", notas: ["Do4"], desde: "Mi9", hasta: "Do4" }));
     expect(html({ tipo: "melodia.escala", escala: { fundamental: "Do4", tipo: "marciana" } })).toBe("");
     expect(html({ tipo: "melodia.acorde", acorde: { fundamental: "Zz4", tipo: "mayor" } })).toBe("");
-    expect(html({ tipo: "melodia.ritmo", figuras: ["semifusa"] })).toBe("");
+    expect(html({ tipo: "melodia.ritmo", figuras: ["garrapatea"] })).toBe("");
+    expect(html({ tipo: "melodia.metronomo", bpms: [5, 900] })).toBe("");
     expect(html({ tipo: "melodia.frecuencia", notas: ["La4"] })).toBe("");
   });
 });
@@ -275,7 +276,7 @@ describe("melodia.acorde, escala, ritmo y frecuencia: datos", () => {
   });
 
   it("ritmo: sin repetidas ni figuras inválidas, con la duración y la fracción del compás de 4/4", () => {
-    const r = resolverRitmo({ figuras: ["redonda", "redonda", "semifusa" as never, "corchea"] });
+    const r = resolverRitmo({ figuras: ["redonda", "redonda", "garrapatea" as never, "corchea"] });
     expect(r.map((f) => [f.figura, f.pulsos, f.fraccionCompas])).toEqual([
       ["redonda", 4, 1],
       ["corchea", 0.5, 0.125],
@@ -286,6 +287,31 @@ describe("melodia.acorde, escala, ritmo y frecuencia: datos", () => {
     expect(salida).toContain("1 pulso<");
     expect(salida).toContain("medio pulso");
     expect(html({ tipo: "melodia.ritmo", figuras: ["negra"], estatico: true }, "en")).toContain("Quarter note");
+  });
+
+  it("ritmo: las figuras de los niveles altos (semicorchea, fusa, semifusa, puntillo, corcheas unidas) con su duración", () => {
+    const r = resolverRitmo({ figuras: ["semifusa", "negra_puntillo", "blanca_puntillo", "corcheas_unidas"] });
+    expect(r.map((f) => [f.figura, f.pulsos])).toEqual([
+      ["semifusa", 0.0625],
+      ["negra_puntillo", 1.5],
+      ["blanca_puntillo", 3],
+      ["corcheas_unidas", 1],
+    ]);
+    const salida = html({ tipo: "melodia.ritmo", figuras: ["semicorchea", "fusa", "negra_puntillo", "corcheas_unidas"], estatico: true });
+    for (const t of ["Semicorchea", "un cuarto de pulso", "Fusa", "un octavo de pulso", "Negra con puntillo", "1 pulso y medio", "Dos corcheas unidas"]) expect(salida).toContain(t);
+  });
+
+  it("metrónomo: una fila por BPM con su término italiano y lo que dura un pulso; en 6/8 sin término", () => {
+    const salida = html({ tipo: "melodia.metronomo", bpms: [60, 92, 300], estatico: true });
+    expect(salida).toContain("60 BPM");
+    expect(salida).toContain("Largo");
+    expect(salida).toContain("Andante");
+    expect(salida).not.toContain("300 BPM");
+    expect(salida).toContain("Un pulso cada 1 s");
+    expect(salida).toContain("Metrónomo en 4/4: 60 BPM (Largo): un pulso cada 1 s; 92 BPM (Andante): un pulso cada 0,65 s.");
+    const seis = html({ tipo: "melodia.metronomo", bpms: [180], compas: "6/8", estatico: true });
+    expect(seis).toContain("Metrónomo en 6/8: 180 BPM: un pulso cada 0,33 s.");
+    expect(html({ tipo: "melodia.metronomo", bpms: [140], estatico: true }, "en")).toContain("Metronome in 4/4: 140 BPM (Allegro): one beat every 0.43 s.");
   });
 
   it("frecuencia: la octava duplica, el semitono multiplica por 2^(1/12), con coma decimal en español y punto en inglés", () => {
