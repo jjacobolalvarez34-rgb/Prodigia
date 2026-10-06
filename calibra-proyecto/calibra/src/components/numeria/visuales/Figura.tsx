@@ -6,6 +6,7 @@ import { ternaPitagorica, areaCompuesta, areaCirculo, anguloComplementario } fro
 import ControlesReproductor from "@/components/aprender/ControlesReproductor";
 import { useReproductor } from "@/components/aprender/useReproductor";
 import { MarcoVisual, Resaltado, COLOR_NUMERIA, motion } from "./comun";
+import { FiguraCurso } from "./FiguraCurso";
 
 interface Props {
   visual: VisualNumeriaFigura;
@@ -241,5 +242,6 @@ export default function Figura({ visual }: Props) {
   if (visual.modo === "areaCompuesta") return <AreaCompuestaFig visual={visual} t={t} />;
   if (visual.modo === "circulo") return <Circulo visual={visual} t={t} />;
   if (visual.modo === "angulos") return <Angulos visual={visual} t={t} />;
+  if (visual.modo === "rectangulo" || visual.modo === "areaTriangulo" || visual.modo === "sumaAngulos" || visual.modo === "volumen" || visual.modo === "pitagoras") return <FiguraCurso visual={visual} />;
   return null;
 }

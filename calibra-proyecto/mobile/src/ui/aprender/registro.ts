@@ -10,6 +10,7 @@ import * as Geografia from "./geografia/visuales";
 import * as Historia from "./historia/visuales";
 import * as Melodia from "./melodia/visuales";
 import * as Naipia from "./naipia/visuales";
+import * as NumeriaCurso from "./numeria/curso";
 import * as Numeria from "./numeria/visuales";
 import * as QuimiaMol from "./quimia/moleculas";
 import * as Quimia from "./quimia/visuales";
@@ -74,6 +75,14 @@ export const REGISTRO_VISUALES: Record<string, ComponenteVisual> = {
   "numeria.potencia": c(Numeria.Potencia),
   "numeria.balanza": c(Numeria.Balanza),
   "numeria.figura": c(Numeria.Figura),
+  "numeria.metodoFraccion": c(NumeriaCurso.MetodoFraccion),
+  "numeria.decimal": c(NumeriaCurso.Decimal),
+  "numeria.porcentaje": c(NumeriaCurso.Porcentaje),
+  "numeria.exponentes": c(NumeriaCurso.Exponentes),
+  "numeria.raiz": c(NumeriaCurso.Raiz),
+  "numeria.terminos": c(NumeriaCurso.Terminos),
+  "numeria.distributiva": c(NumeriaCurso.Distributiva),
+  "numeria.ecuacion": c(NumeriaCurso.Ecuacion),
   "estadistica.ordenar": c(Estadistica.Ordenar),
   "estadistica.frecuencias": c(Estadistica.Frecuencias),
   "estadistica.desvios": c(Estadistica.Desvios),

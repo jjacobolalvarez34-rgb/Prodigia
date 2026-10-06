@@ -107,3 +107,44 @@ where slug = '${escaparSql(tec.slug)}';`;
 ${filas.join("\n\n")}
 `;
 }
+
+// Genera la migración 0251_numeria_curso_completo.sql: las Clases del curso
+// completo (src/lib/numeria/lecciones/curso.ts) como INSERT idempotentes (por
+// slug) y el nuevo orden de las 2 Clases de fracciones que ya existían.
+export function generarSqlCurso(clases: ClaseNumeria[], reorden: { slug: string; orden: number }[]): string {
+  const filas = clases.map(
+    (c) =>
+      `('${escaparSql(c.slug)}', '${escaparSql(c.nombre)}',\n  '${escaparSql(c.descripcion)}',\n  '${c.problemType}',\n  $numeria$${contenidoJson(c)}$numeria$::jsonb,\n  ${c.orden}, true)`
+  );
+  const updates = reorden.map((r) => `update public.techniques set orden = ${r.orden} where slug = '${escaparSql(r.slug)}';`);
+  return `-- ============================================================
+-- Prodigia — Numeria: curso completo de matemáticas (pedido del usuario,
+-- 2026-10-06): fracciones con todos sus métodos (qué es, simplificar, mixtos,
+-- mismo denominador, carita feliz, MCM de varias, multiplicar simplificando en
+-- cruz, división en cruz y regla de la oreja), decimales y porcentajes,
+-- potencias y raíces, álgebra básica y geometría básica. ${clases.length} Clases
+-- (requiere_pro = true; la primera del camino sigue siendo la preview gratis).
+--
+-- Visuales nuevos (web y app): numeria.metodoFraccion, numeria.decimal,
+-- numeria.porcentaje, numeria.exponentes, numeria.raiz, numeria.terminos,
+-- numeria.distributiva, numeria.ecuacion y 5 modos nuevos de numeria.figura.
+--
+-- Este archivo se GENERA desde src/lib/numeria/lecciones/curso.ts y
+-- curso.test.ts comprueba que coincida. No editar a mano. Regenerar:
+-- NUMERIA_CURSO_ESCRIBIR_SQL=1 npx vitest run src/lib/numeria/lecciones/curso.test.ts
+-- ============================================================
+
+${updates.join("\n")}
+
+insert into public.techniques (slug, nombre, descripcion, problem_type, contenido, orden, requiere_pro) values
+
+${filas.join(",\n\n")}
+on conflict (slug) do update set
+  nombre = excluded.nombre,
+  descripcion = excluded.descripcion,
+  problem_type = excluded.problem_type,
+  contenido = excluded.contenido,
+  orden = excluded.orden,
+  requiere_pro = excluded.requiere_pro;
+`;
+}

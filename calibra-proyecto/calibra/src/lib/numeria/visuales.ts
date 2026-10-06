@@ -1,5 +1,6 @@
 import type { VisualBase } from "@/lib/aprender/visuales";
 import type { OperacionFraccion } from "./visualesDatos";
+import type { LeyExponente, ModoDecimal, ModoFraccion, ModoPorcentaje, Termino } from "./cursoDatos";
 
 // Visuales propios de Numeria (prefijo "numeria."): tablero/pizarra en
 // columna, animado paso a paso, mostrando de dónde sale cada número — el
@@ -92,7 +93,77 @@ export type VisualNumeriaFigura =
   | ({ tipo: "numeria.figura"; modo: "triangulo"; cateto1: number; cateto2: number } & VisualBase)
   | ({ tipo: "numeria.figura"; modo: "areaCompuesta"; anchoGrande: number; altoGrande: number; anchoRecorte: number; altoRecorte: number } & VisualBase)
   | ({ tipo: "numeria.figura"; modo: "circulo"; radio: number } & VisualBase)
-  | ({ tipo: "numeria.figura"; modo: "angulos"; tipoAngulo: "complementario" | "suplementario"; conocido: number } & VisualBase);
+  | ({ tipo: "numeria.figura"; modo: "angulos"; tipoAngulo: "complementario" | "suplementario"; conocido: number } & VisualBase)
+  // Curso completo (2026-10-06): perímetro y área, área del triángulo, suma de
+  // ángulos, volumen y Pitágoras con sus cuadrados.
+  | ({ tipo: "numeria.figura"; modo: "rectangulo"; ancho: number; alto: number } & VisualBase)
+  | ({ tipo: "numeria.figura"; modo: "areaTriangulo"; base: number; altura: number } & VisualBase)
+  | ({ tipo: "numeria.figura"; modo: "sumaAngulos"; a: number; b: number } & VisualBase)
+  | ({ tipo: "numeria.figura"; modo: "volumen"; largo: number; ancho: number; alto: number } & VisualBase)
+  | ({ tipo: "numeria.figura"; modo: "pitagoras"; cateto1: number; cateto2: number } & VisualBase);
+
+// ---------- Curso completo de Numeria (2026-10-06, src/lib/numeria/cursoDatos.ts) ----------
+
+// Todos los métodos con fracciones: carita feliz, en cruz, regla de la oreja,
+// MCM de varias, amplificar, simplificar, mixtos, mismo denominador, multiplicar.
+export interface VisualNumeriaMetodoFraccion extends VisualBase {
+  tipo: "numeria.metodoFraccion";
+  modo: ModoFraccion;
+  fracciones: [number, number][];
+  operacion?: "suma" | "resta";
+  factor?: number;
+}
+
+export interface VisualNumeriaDecimal extends VisualBase {
+  tipo: "numeria.decimal";
+  modo: ModoDecimal;
+  a?: string;
+  b?: string;
+  operacion?: "suma" | "resta";
+  num?: number;
+  den?: number;
+}
+
+export interface VisualNumeriaPorcentaje extends VisualBase {
+  tipo: "numeria.porcentaje";
+  modo: ModoPorcentaje;
+  porcentaje: number;
+  base?: number;
+  tipoCambio?: "aumento" | "descuento";
+}
+
+export interface VisualNumeriaExponentes extends VisualBase {
+  tipo: "numeria.exponentes";
+  ley: LeyExponente;
+  base: number;
+  m: number;
+  n: number;
+}
+
+export interface VisualNumeriaRaiz extends VisualBase {
+  tipo: "numeria.raiz";
+  n: number;
+}
+
+export interface VisualNumeriaTerminos extends VisualBase {
+  tipo: "numeria.terminos";
+  terminos: Termino[];
+}
+
+export interface VisualNumeriaDistributiva extends VisualBase {
+  tipo: "numeria.distributiva";
+  factor: number;
+  sumandos: Termino[];
+}
+
+// a·x + b = c·x + d, resuelta en una balanza.
+export interface VisualNumeriaEcuacion extends VisualBase {
+  tipo: "numeria.ecuacion";
+  a: number;
+  b: number;
+  c: number;
+  d: number;
+}
 
 export type VisualNumeria =
   | VisualNumeriaColumnas
@@ -103,4 +174,12 @@ export type VisualNumeria =
   | VisualNumeriaRecta
   | VisualNumeriaPotencia
   | VisualNumeriaBalanza
-  | VisualNumeriaFigura;
+  | VisualNumeriaFigura
+  | VisualNumeriaMetodoFraccion
+  | VisualNumeriaDecimal
+  | VisualNumeriaPorcentaje
+  | VisualNumeriaExponentes
+  | VisualNumeriaRaiz
+  | VisualNumeriaTerminos
+  | VisualNumeriaDistributiva
+  | VisualNumeriaEcuacion;

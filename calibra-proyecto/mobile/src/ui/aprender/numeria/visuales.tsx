@@ -26,6 +26,7 @@ import { color, fuente } from "~/tema";
 import Texto from "../../Texto";
 import { Aparece, BORDE, FG, FONDO, GAparece, Marco, mezcla, SECUNDARIO, SUPERFICIE, T } from "../comun";
 import { useReproductor } from "../reproductor";
+import { FiguraCurso } from "./curso";
 
 // Visuales de las lecciones de Numeria (components/numeria/visuales de la web),
 // con los mismos cálculos (lib/numeria/visualesDatos).
@@ -658,7 +659,7 @@ export function Figura({ visual }: { visual: VisualNumeriaFigura }) {
   if (visual.modo === "areaCompuesta") return <AreaCompuesta visual={visual} />;
   if (visual.modo === "circulo") return <CirculoFig visual={visual} />;
   if (visual.modo === "angulos") return <Angulos visual={visual} />;
-  return null;
+  return <FiguraCurso visual={visual} />;
 }
 
 const styles = StyleSheet.create({
