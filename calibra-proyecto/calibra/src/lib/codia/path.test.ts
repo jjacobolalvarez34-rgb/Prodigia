@@ -11,7 +11,11 @@ import {
   type FilaTechnique,
   type NodoCaminoCodia,
 } from "./path";
-import { TECNICAS, CLASES } from "./lecciones";
+import { TECNICAS as TECNICAS_BASE, CLASES as CLASES_BASE, TECNICAS_LENGUAJES, CLASES_LENGUAJES } from "./lecciones";
+
+// Todas las lecciones de la base: Lo básico (0193) y Codia por lenguaje (0255).
+const TECNICAS = [...TECNICAS_BASE, ...TECNICAS_LENGUAJES];
+const CLASES = [...CLASES_BASE, ...CLASES_LENGUAJES];
 import { GRUPOS_APRENDER, agruparNodos } from "@/lib/aprender/grupos";
 import { partirCaminoPorClases } from "@/lib/aprender/clases";
 

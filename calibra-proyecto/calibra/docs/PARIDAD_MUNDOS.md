@@ -1300,3 +1300,13 @@ Regla vinculante para los 13 mundos y los futuros (filas 25 y 26 de la matriz, n
 
 ### Español neutro (nota ³⁰)
 - Migración `0221` (datos, idempotente), detector ampliado, test de escaneo del código y helper de test `src/lib/texto/neutroSembrado.ts` para comparar lo sembrado con lo tipado.
+
+## Codia por lenguaje (2026-10-06)
+
+Pedido del usuario: primero enseñar la lógica («Lo básico», como ya estaba) y después dividir por lenguaje, con sus diferentes usos. Las 8 Clases y 5 Técnicas de 0193 quedan igual (Lo básico, Estructuras, Complejidad) y se suman:
+
+- **Clases (Pro):** «Los cuatro lenguajes» (interpretado o compilado, tipado dinámico o estático, para qué sirve cada uno) y 3 Clases por lenguaje: **Python** (sintaxis con sangría, diccionarios y funciones, usos en datos e IA), **Java** (tipos y estructura, clases y objetos, usos en Android y empresas), **JavaScript** (la web, objetos y JSON, usos en navegador, servidores y apps) y **TypeScript** (tipos, interfaces y uniones, usos en proyectos grandes).
+- **Técnicas (gratis):** una «chuleta» por lenguaje.
+
+13 Clases (orden 18-30) y 4 Técnicas (14-17). Contenido en `src/lib/codia/lecciones/lenguajes.ts`; `lecciones.test.ts` EJECUTA cada fragmento (Python, javac + JVM 8, Node, TypeScript estricto) y exige que cada Clase de un lenguaje tenga código de ese lenguaje en al menos 3 pasos. Grupos del sidebar en `GRUPOS_APRENDER.codia` (derivados de `GRUPOS_LENGUAJES`). Migración generada `0255_codia_lenguajes.sql`. La app usa el mismo camino (`obtenerCaminoCodia`). Por ahora sin inglés.
+

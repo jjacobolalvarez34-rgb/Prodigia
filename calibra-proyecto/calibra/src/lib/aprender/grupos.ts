@@ -28,6 +28,7 @@ import { ORDEN_GRUPOS_QUIMIA, type GrupoQuimia } from "@/lib/quimia/grupos";
 import { TECNICAS_ANATOMIA, CLASES_ANATOMIA } from "@/lib/anatomia/lecciones";
 import { ORDEN_GRUPOS_ANATOMIA, NOMBRES_GRUPOS_ANATOMIA } from "@/lib/anatomia/grupos";
 import { TECNICAS_MELODIA, CLASES_MELODIA } from "@/lib/melodia/lecciones";
+import { CLASES_LENGUAJES, GRUPOS_LENGUAJES, GRUPO_DE_LECCION_LENGUAJE, TECNICAS_LENGUAJES } from "@/lib/codia/lecciones/lenguajes";
 import { TECNICAS_CALCULIA, CLASES_CALCULIA } from "@/lib/calculia/lecciones";
 import { ORDEN_GRUPOS_CALCULIA, NOMBRES_GRUPOS_CALCULIA } from "@/lib/calculia/bloques";
 import { ORDEN_GRUPOS_MELODIA, NOMBRES_GRUPOS_MELODIA } from "@/lib/melodia/grupos";
@@ -380,6 +381,8 @@ export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
       g("trazado", "Trazado y lectura", "Tracing and reading", ["codia-tecnica-tabla-seguimiento", "codia-tecnica-leer-bucles"]),
       g("errores", "Errores y operadores", "Errors and operators", ["codia-tecnica-errores-tipicos", "codia-tecnica-division-entera-modulo"]),
       g("complejidad", "Complejidad", "Complexity", ["codia-tecnica-complejidad-vistazo"]),
+      // Una «chuleta» por lenguaje (0255).
+      g("lenguajes", "Por lenguaje", "By language", TECNICAS_LENGUAJES.map((t) => t.slug)),
     ],
     clases: [
       g("basicos", "Lo básico", "The basics", [
@@ -393,6 +396,10 @@ export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
         "codia-clase-06-recorridos-y-complejidad",
         "codia-clase-07-errores-y-depuracion",
       ]),
+      // Después de Lo básico, cada lenguaje por separado (0255).
+      ...GRUPOS_LENGUAJES.map((gr) =>
+        g(gr.id, gr.es, gr.en, CLASES_LENGUAJES.filter((c) => GRUPO_DE_LECCION_LENGUAJE[c.slug] === gr.id).map((c) => c.slug))
+      ),
     ],
   },
 };

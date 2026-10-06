@@ -112,3 +112,47 @@ where slug = '${esc(l.slug)}' and problem_type = 'codia';`
 ${filas.join("\n\n")}
 `;
 }
+
+// Migración 0255 (Codia por lenguaje, 2026-10-06): INSERT de las lecciones de
+// lenguajes.ts con pasos, quiz y visuales. No toca 0193 ni 0219.
+export const ARCHIVO_MIGRACION_LENGUAJES_CODIA = "0255_codia_lenguajes.sql";
+
+export function contenidoJsonConVisuales(l: LeccionCodia): string {
+  const base = JSON.parse(contenidoJson(l)) as Record<string, unknown>;
+  return JSON.stringify({ ...base, visuales: l.visuales ?? [] }, null, 2);
+}
+
+export function generarSqlLenguajesCodia(lecciones: LeccionCodia[]): string {
+  const filas = lecciones.map(
+    (l) =>
+      `('${esc(l.slug)}', '${esc(l.nombre)}',\n  '${esc(l.descripcion)}',\n  'codia',\n  $codia$${contenidoJsonConVisuales(l)}$codia$::jsonb,\n  ${l.orden}, ${l.requierePro ? "true" : "false"})`
+  );
+  const tecnicas = lecciones.filter((l) => !l.requierePro).length;
+  return `-- ============================================================
+-- Prodigia — Codia por lenguaje (pedido del usuario, 2026-10-06).
+--
+-- Primero «Lo básico» (la lógica, igual en los cuatro lenguajes: 0193) y
+-- después cada lenguaje por separado, con su forma de escribirse y sus usos:
+-- «Los cuatro lenguajes» (compilado o interpretado, tipado, para qué sirve
+-- cada uno) y tres Clases de Python, Java, JavaScript y TypeScript, más una
+-- Técnica de «chuleta» por lenguaje.
+-- ${tecnicas} Técnicas (orden 14-17) y ${lecciones.length - tecnicas} Clases (orden 18-30). Los grupos del
+-- sidebar salen de src/lib/aprender/grupos.ts.
+--
+-- Este archivo se GENERA desde src/lib/codia/lecciones/lenguajes.ts y
+-- lecciones.test.ts EJECUTA cada fragmento (python, javac + JVM, node,
+-- typescript). No editar a mano. Idempotente (on conflict por slug).
+-- Requiere 0193.
+-- ============================================================
+
+insert into public.techniques (slug, nombre, descripcion, problem_type, contenido, orden, requiere_pro) values
+${filas.join(",\n")}
+on conflict (slug) do update set
+  nombre = excluded.nombre,
+  descripcion = excluded.descripcion,
+  problem_type = excluded.problem_type,
+  contenido = excluded.contenido,
+  orden = excluded.orden,
+  requiere_pro = excluded.requiere_pro;
+`;
+}

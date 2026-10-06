@@ -1,9 +1,10 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { LECCIONES_CODIA, CLASES, TECNICAS } from "./index";
+import { LECCIONES_CODIA, CLASES, TECNICAS, LECCIONES_LENGUAJES, TECNICAS_LENGUAJES, CLASES_LENGUAJES, GRUPOS_LENGUAJES, GRUPO_DE_LECCION_LENGUAJE } from "./index";
+import { GRUPOS_APRENDER } from "@/lib/aprender/grupos";
 import { fences, type LeccionCodia, type PreguntaLeccion } from "./tipos";
-import { contenidoJson, generarSqlCodia, generarSqlVisualesCodia } from "./sql";
+import { ARCHIVO_MIGRACION_LENGUAJES_CODIA, contenidoJson, generarSqlCodia, generarSqlLenguajesCodia, generarSqlVisualesCodia } from "./sql";
 import { ejecutar, hayJava, hayPython, type ResultadoReal } from "../ejecutores";
 import type { Lenguaje } from "../tipos";
 
@@ -213,7 +214,8 @@ describe.each(LANGS)("Codia: contenido de Aprender — ejecución real de los fr
     () => {
       const trabajos: Trabajo[] = [];
       let bloquesTotales = 0;
-      for (const l of LECCIONES_CODIA) {
+      // Lo básico (0193) y Codia por lenguaje (0255): todo se ejecuta de verdad.
+      for (const l of [...LECCIONES_CODIA, ...LECCIONES_LENGUAJES]) {
         l.pasos.forEach((p, i) => {
           const bs = extraer(p, `${l.slug} paso #${i + 1}`).filter((b) => b.lang === lang);
           bloquesTotales += bs.length;
@@ -311,4 +313,92 @@ describe("Codia: migración 0219 (visuales)", () => {
     expect(esperado).not.toMatch(/'quiz'/);
     expect(esperado).not.toMatch(/insert into|delete from|drop /i);
   });
+});
+
+// ---------- Codia por lenguaje (0255) ----------
+describe("Codia por lenguaje: estructura", () => {
+  const TODAS = [...LECCIONES_CODIA, ...LECCIONES_LENGUAJES];
+
+  it("orden continuo después de Lo básico (Técnicas 14-17, Clases 18-30), slugs únicos y Pro solo en las Clases", () => {
+    expect(TECNICAS_LENGUAJES.map((l) => l.orden)).toEqual([14, 15, 16, 17]);
+    expect(CLASES_LENGUAJES.map((l) => l.orden)).toEqual(CLASES_LENGUAJES.map((_, i) => 18 + i));
+    expect(new Set(TODAS.map((l) => l.slug)).size).toBe(TODAS.length);
+    expect(TECNICAS_LENGUAJES.every((l) => !l.requierePro)).toBe(true);
+    expect(CLASES_LENGUAJES.every((l) => l.requierePro)).toBe(true);
+  });
+
+  it("cada lenguaje tiene su Técnica y 3 Clases, más la Clase panorama, y cada lección figura en el sidebar con su grupo", () => {
+    for (const lang of ["python", "java", "javascript", "typescript"] as const) {
+      expect(TECNICAS_LENGUAJES.filter((l) => GRUPO_DE_LECCION_LENGUAJE[l.slug] === lang), lang).toHaveLength(1);
+      expect(CLASES_LENGUAJES.filter((l) => GRUPO_DE_LECCION_LENGUAJE[l.slug] === lang), lang).toHaveLength(3);
+    }
+    expect(CLASES_LENGUAJES.filter((l) => GRUPO_DE_LECCION_LENGUAJE[l.slug] === "lenguajes")).toHaveLength(1);
+    const enGrupos = (pestana: "tecnicas" | "clases", slug: string) => GRUPOS_APRENDER.codia![pestana].find((g) => g.slugs.includes(slug))?.id;
+    for (const t of TECNICAS_LENGUAJES) expect(enGrupos("tecnicas", t.slug), t.slug).toBe("lenguajes");
+    for (const c of CLASES_LENGUAJES) expect(enGrupos("clases", c.slug), c.slug).toBe(GRUPO_DE_LECCION_LENGUAJE[c.slug]);
+    // Lo básico va primero: la Clase gratis de muestra sigue siendo la 1.
+    expect(GRUPOS_APRENDER.codia!.clases[0].slugs[0]).toBe("codia-clase-01-variables-y-tipos");
+    expect(GRUPOS_APRENDER.codia!.clases.map((g) => g.id)).toEqual(["basicos", "estructuras", "complejidad", ...GRUPOS_LENGUAJES.map((g) => g.id)]);
+  });
+
+  it("pasos, quiz y visuales válidos; sin signo de dólar ni bloques sin cerrar", () => {
+    for (const l of LECCIONES_LENGUAJES) {
+      expect(l.pasos.length, l.slug).toBeGreaterThanOrEqual(l.requierePro ? 5 : 4);
+      expect(l.quiz.length, l.slug).toBeGreaterThanOrEqual(2);
+      expect(l.quiz.length, l.slug).toBeLessThanOrEqual(3);
+      for (const q of l.quiz) {
+        expect(q.opciones, `${l.slug}: ${q.pregunta}`).toContain(q.respuesta);
+        expect(new Set(q.opciones).size).toBe(q.opciones.length);
+        expect(q.opciones.length).toBeGreaterThanOrEqual(3);
+        expect(q.explicacion.trim().length).toBeGreaterThan(10);
+      }
+      const todo = [l.nombre, l.descripcion, ...l.pasos, ...l.quiz.flatMap((q) => [q.pregunta, ...q.opciones, q.explicacion]), ...(l.visuales ?? []).map((v) => JSON.stringify(v))].map(fences).join("\n");
+      expect(todo.includes("$"), l.slug).toBe(false);
+      for (const p of l.pasos) expect(fences(p).split("```").length % 2, `${l.slug}: bloques sin cerrar`).toBe(1);
+      expect(l.visuales?.length ?? 0, l.slug).toBeGreaterThanOrEqual(1);
+      for (const v of l.visuales ?? []) expect(v.despuesDePaso!, l.slug).toBeLessThan(l.pasos.length);
+    }
+  });
+
+  it("cada Clase de un lenguaje muestra código de ESE lenguaje en al menos 3 pasos (y la panorama, los 4 lenguajes juntos)", () => {
+    for (const c of CLASES_LENGUAJES) {
+      const grupo = GRUPO_DE_LECCION_LENGUAJE[c.slug];
+      if (grupo === "lenguajes") {
+        const conLos4 = c.pasos.filter((p) => LANGS.every((lang) => extraer(p, c.slug).some((b) => b.lang === lang)));
+        expect(conLos4.length, c.slug).toBeGreaterThanOrEqual(2);
+        continue;
+      }
+      const conCodigo = c.pasos.filter((p) => extraer(p, c.slug).some((b) => b.lang === grupo));
+      expect(conCodigo.length, c.slug).toBeGreaterThanOrEqual(3);
+      // Y nada de otro lenguaje: cada sección es de un solo lenguaje.
+      for (const p of c.pasos) for (const b of extraer(p, c.slug)) expect(b.lang, c.slug).toBe(grupo);
+    }
+  });
+});
+
+describe(`Codia por lenguaje: migración ${ARCHIVO_MIGRACION_LENGUAJES_CODIA}`, () => {
+  const ruta = path.resolve(__dirname, `../../../../supabase/migrations/${ARCHIVO_MIGRACION_LENGUAJES_CODIA}`);
+  const esperado = generarSqlLenguajesCodia(LECCIONES_LENGUAJES);
+
+  it("el archivo es exactamente lo generado del contenido verificado", () => {
+    if (process.env.CODIA_ESCRIBIR_SQL === "1") fs.writeFileSync(ruta, esperado, "utf8");
+    expect(fs.existsSync(ruta), `falta ${ARCHIVO_MIGRACION_LENGUAJES_CODIA}`).toBe(true);
+    expect(fs.readFileSync(ruta, "utf8").replace(/\r\n/g, "\n")).toBe(esperado);
+  });
+
+  it("cada fila tiene JSON válido con pasos, quiz y visuales, y ningún slug está en otra migración", () => {
+    const filas = [...esperado.matchAll(/\$codia\$([\s\S]*?)\$codia\$::jsonb/g)];
+    expect(filas).toHaveLength(LECCIONES_LENGUAJES.length);
+    for (const f of filas) {
+      const o = JSON.parse(f[1]) as { pasos: string[]; quiz: unknown[]; visuales: unknown[] };
+      expect(o.pasos.length).toBeGreaterThan(0);
+      expect(o.quiz.length).toBeGreaterThan(0);
+      expect(o.visuales.length).toBeGreaterThan(0);
+    }
+    const dir = path.dirname(ruta);
+    for (const archivo of fs.readdirSync(dir).filter((n) => n.endsWith(".sql") && n !== ARCHIVO_MIGRACION_LENGUAJES_CODIA)) {
+      const otro = fs.readFileSync(path.join(dir, archivo), "utf8");
+      for (const l of LECCIONES_LENGUAJES) expect(otro.includes(`'${l.slug}'`), `${archivo} ya usa ${l.slug}`).toBe(false);
+    }
+  }, 30_000);
 });
