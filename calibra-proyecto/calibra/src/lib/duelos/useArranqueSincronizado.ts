@@ -19,7 +19,11 @@ interface Params {
 }
 
 const MARGEN_ARRANQUE_MS_DEFAULT = 10_000;
-const TIMEOUT_ESPERA_MS_DEFAULT = 45_000;
+// Duelo en vivo (pedido del usuario, 2026-10-06): si el rival no entra a la sala
+// en 2 minutos, el reto se cancela solo (no se juega a solas contra su registro).
+// A los 30 s, SalaEsperaDuelo pregunta si quieres seguir esperando.
+const TIMEOUT_ESPERA_MS_DEFAULT = 120_000;
+export const PREGUNTAR_SEGUIR_MS = 30_000;
 
 // Extraído de SalaDuelo.tsx (Numeria, tanda "Rediseño de Rankeds") para
 // reusarlo en los 4 mundos (Fase 2 de la tanda "Duelos: llevar el
@@ -112,8 +116,14 @@ export function useArranqueSincronizado({
       await channel.track({ user_id: miUserId, en: Date.now() });
     });
 
+    // "agotado" = el rival no llegó y el reto se canceló (se borra el duelo pendiente).
     const timeoutAgotado = setTimeout(() => {
-      if (!cancelado && !empezoRef.current) setEstado((actual) => (actual === "cuenta-regresiva" ? actual : "agotado"));
+      if (cancelado || empezoRef.current) return;
+      setEstado((actual) => (actual === "cuenta-regresiva" ? actual : "agotado"));
+      supabase.rpc("rechazar_duelo", { p_duel_id: duelId }).then(
+        () => undefined,
+        () => undefined
+      );
     }, timeoutEsperaMs);
 
     return () => {

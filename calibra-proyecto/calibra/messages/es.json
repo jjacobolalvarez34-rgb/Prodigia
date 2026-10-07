@@ -2048,12 +2048,15 @@
     },
     "salaEspera": {
       "tu": "Tú",
-      "rivalNoConectado": "{rival} todavía no se conectó a la sala — puedes seguir esperando o arrancar tu parte ahora (se resuelve el duelo apenas juegue la suya, como antes).",
-      "jugarAhora": "Jugar mi parte ahora",
       "tuListo": "Tú, listo",
       "rivalListo": "{rival}, listo",
       "esperandoA": "Esperando a {rival}…",
-      "arrancaSolo": "Arranca solo apenas estén los dos — no hace falta que aprietes nada."
+      "arrancaSolo": "Arranca solo apenas estén los dos — no hace falta que aprietes nada.",
+      "retoCancelado": "{rival} no entró a la sala en 2 minutos y el reto se canceló. Los duelos son en vivo: pueden volver a intentarlo cuando estén los dos.",
+      "volver": "Volver",
+      "seguirEsperandoPregunta": "{rival} todavía no entra. ¿Quieres seguir esperando? (a los 2 minutos el reto se cancela solo)",
+      "seguirEsperando": "Seguir esperando",
+      "cancelarReto": "Cancelar reto"
     },
     "transicionFinalizando": {
       "mensaje": "Cerrando la partida…"

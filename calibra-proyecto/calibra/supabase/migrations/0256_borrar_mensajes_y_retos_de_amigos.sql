@@ -1,6 +1,6 @@
 -- ============================================================
--- Prodigia — Borrar mensajes y retos a amigos que se pueden aceptar
--- (pedido del usuario, 2026-10-06).
+-- Prodigia — Borrar mensajes y retos de duelo que se pueden aceptar
+-- en vivo (pedido del usuario, 2026-10-06).
 --
 -- 1) Borrar mensajes (directos y del clan) SIN perderlos: cada quien puede
 --    borrar sus propios mensajes; la fila NO se elimina, solo se marca
@@ -8,11 +8,12 @@
 --    «Mensaje eliminado» en su lugar, también cuando aparece citado en una
 --    respuesta. El texto original queda en la base como respaldo ante una
 --    denuncia (reportes_usuario sigue apuntando a la fila).
--- 2) Retos de duelo entre amigos: antes toda invitación pendiente se borraba
---    a los 60 segundos (0051), así que el retado casi nunca llegaba a verla.
---    Ahora un reto entre amigos dura 24 horas; las demás invitaciones siguen
---    durando 60 segundos. mis_duelos_pendientes devuelve también sub_tipo y
---    expira_at para que la web y la app muestren cuánto falta.
+-- 2) Retos de duelo: los duelos son en vivo. Quien reta espera en la sala hasta
+--    2 minutos (a los 30 s se le pregunta si sigue esperando); si nadie llega,
+--    el reto se cancela. Antes la invitación se borraba a los 60 segundos
+--    (0051), menos de lo que dura la espera; ahora dura 2 minutos.
+--    mis_duelos_pendientes devuelve también sub_tipo y expira_at para que la
+--    web y la app muestren cuánto falta.
 -- Requiere 0245. Solo agrega columnas y redefine funciones; no borra datos.
 -- ============================================================
 
@@ -273,15 +274,15 @@ end;
 $$;
 grant execute on function public.clan_chat_resumen() to authenticated;
 
--- ---------- Retos entre amigos: 24 horas para aceptarlos ----------
+-- ---------- Retos: 2 minutos para aceptarlos (duelo en vivo) ----------
+-- Recibe los dos jugadores para poder distinguir casos en el futuro; hoy todo
+-- reto dura lo mismo que la espera en la sala.
 create or replace function public.vigencia_invitacion_duelo(p_retador uuid, p_retado uuid)
 returns interval
 language sql
-stable
-security definer
-set search_path = public
+immutable
 as $$
-  select case when public.son_amigos(p_retador, p_retado) then interval '24 hours' else interval '60 seconds' end;
+  select interval '2 minutes';
 $$;
 grant execute on function public.vigencia_invitacion_duelo(uuid, uuid) to authenticated;
 
@@ -303,8 +304,8 @@ begin
     raise exception 'no autenticado';
   end if;
 
-  -- Invitaciones vencidas: los retos entre amigos duran 24 horas (se pueden
-  -- aceptar cuando llega el aviso); las demás invitaciones, 60 segundos.
+  -- Invitaciones vencidas: un reto dura 2 minutos (los duelos son en vivo;
+  -- quien reta espera en la sala y, si nadie llega, se cancela).
   delete from public.duels d
   where d.estado = 'pendiente'
     and d.modo = 'simple'

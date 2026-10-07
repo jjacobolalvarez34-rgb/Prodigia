@@ -69,10 +69,10 @@ export default function AvisoDuelo({ userId }: { userId: string }) {
     };
   }, [userId]);
 
-  // Se cierra solo al minuto (el reto sigue en Inicio y en Competir).
+  // Se cierra a los 2 minutos, cuando el reto ya se canceló solo.
   useEffect(() => {
     if (!reto) return;
-    const t = setTimeout(() => setReto(null), 60_000);
+    const t = setTimeout(() => setReto(null), 120_000);
     return () => clearTimeout(t);
   }, [reto]);
 
@@ -89,7 +89,7 @@ export default function AvisoDuelo({ userId }: { userId: string }) {
               ⚔️ {reto.retadorNombre} te retó
             </Texto>
             <Texto v="nota" tam={12} c={acento}>
-              {m?.nombre ?? "Duelo"} · tienes 24 horas para aceptarlo
+              {m?.nombre ?? "Duelo"} · en vivo: acéptalo en menos de 2 minutos
             </Texto>
           </View>
         </View>

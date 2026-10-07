@@ -2048,12 +2048,15 @@
     },
     "salaEspera": {
       "tu": "You",
-      "rivalNoConectado": "{rival} hasn't connected to the room yet — you can keep waiting or start your part now (the duel resolves as soon as they play theirs, like before).",
-      "jugarAhora": "Play my part now",
       "tuListo": "You, ready",
       "rivalListo": "{rival}, ready",
       "esperandoA": "Waiting for {rival}…",
-      "arrancaSolo": "It starts automatically once you're both ready — no need to press anything."
+      "arrancaSolo": "It starts automatically once you're both ready — no need to press anything.",
+      "retoCancelado": "{rival} didn't join the room within 2 minutes, so the challenge was cancelled. Duels are live: try again when you're both around.",
+      "volver": "Back",
+      "seguirEsperandoPregunta": "{rival} hasn't joined yet. Do you want to keep waiting? (the challenge cancels itself after 2 minutes)",
+      "seguirEsperando": "Keep waiting",
+      "cancelarReto": "Cancel challenge"
     },
     "transicionFinalizando": {
       "mensaje": "Closing the match…"

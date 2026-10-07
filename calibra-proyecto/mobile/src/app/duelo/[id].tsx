@@ -15,7 +15,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { mundoJugable } from "~/lib/mundosJugables";
-import { MUNDOS_DUELO_APP, obtenerDuelo, rendirseDuelo, type InfoDuelo } from "~/lib/competir";
+import { MUNDOS_DUELO_APP, obtenerDuelo, rechazarDuelo, rendirseDuelo, type InfoDuelo } from "~/lib/competir";
 import { useArranqueSincronizado } from "~/lib/duelos";
 import { sonar, vibrar } from "~/lib/efectos";
 import { URL_WEB } from "~/lib/entorno";
@@ -61,7 +61,7 @@ export default function Duelo() {
     if (!id || !miId) return;
     obtenerDuelo(id, miId).then(async (d) => {
       if (!d) {
-        setError("No encontramos este duelo.");
+        setError("Este reto ya no está disponible. Los duelos son en vivo: se cancelan si nadie los acepta en 2 minutos.");
         return;
       }
       setInfo(d);
@@ -81,7 +81,7 @@ export default function Duelo() {
     else router.replace({ pathname: "/[mundo]/sprint", params: { mundo: info.mundo, duelo: info.duelId } });
   }, [info, router]);
 
-  const { estado, segundos, rivalPresente, empezarAhora } = useArranqueSincronizado({
+  const { estado, segundos, rivalPresente, preguntar, seguirEsperando } = useArranqueSincronizado({
     duelId: listo ? info!.duelId : null,
     miUserId: miId,
     rivalId: info?.rivalId ?? null,
@@ -138,6 +138,11 @@ export default function Duelo() {
         },
       },
     ]);
+  }
+
+  async function cancelarReto() {
+    if (info) await rechazarDuelo(info.duelId).catch(() => undefined);
+    router.back();
   }
 
   useEffect(() => {
@@ -231,10 +236,22 @@ export default function Duelo() {
           ) : estado === "agotado" ? (
             <>
               <Texto v="nota" centro>
-                {info?.rivalNombre} no llegó a la sala. Juega tu lado ahora: cuando juegue, correrá contra tu registro.
+                {info?.rivalNombre} no entró a la sala en 2 minutos y el reto se canceló. Los duelos son en vivo: pueden intentarlo de nuevo cuando estén los dos.
               </Texto>
-              <Boton3D titulo="Empezar ahora" acento={m?.base} brillo onPress={empezarAhora} />
-              <Boton3D titulo="Rendirme" variante="secundario" tamano="sm" onPress={rendirse} />
+              <Boton3D titulo="Volver" acento={m?.base} onPress={() => router.back()} />
+            </>
+          ) : preguntar ? (
+            <>
+              <Texto v="h3" centro>
+                {info?.rivalNombre} todavía no entra
+              </Texto>
+              <Texto v="nota" centro>
+                ¿Quieres seguir esperando? A los 2 minutos el reto se cancela solo.
+              </Texto>
+              <View style={[styles.fila, { alignSelf: "stretch" }]}>
+                <Boton3D titulo="Cancelar reto" variante="secundario" tamano="sm" estilo={{ flex: 1 }} onPress={cancelarReto} />
+                <Boton3D titulo="Seguir esperando" tamano="sm" acento={m?.base} estilo={{ flex: 1 }} onPress={seguirEsperando} />
+              </View>
             </>
           ) : (
             <>

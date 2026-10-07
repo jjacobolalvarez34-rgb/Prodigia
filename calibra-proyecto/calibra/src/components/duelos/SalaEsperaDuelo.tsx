@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { useTranslations } from "next-intl";
 import Boton from "@/components/Boton";
 import PantallaVS from "@/components/duelos/PantallaVS";
 import BotonRendirse from "@/components/duelos/BotonRendirse";
-import type { EstadoArranque } from "@/lib/duelos/useArranqueSincronizado";
+import { PREGUNTAR_SEGUIR_MS, type EstadoArranque } from "@/lib/duelos/useArranqueSincronizado";
 
 interface Props {
   estado: EstadoArranque;
@@ -15,7 +17,9 @@ interface Props {
   rivalEsBot?: boolean;
   modo?: "simple" | "mejor_de_3";
   subtitulo?: string;
-  onEmpezarAhora: () => void;
+  // Ya no se usa (el duelo es en vivo: si el rival no llega, se cancela); se
+  // deja para no tocar a los que todavía lo pasan.
+  onEmpezarAhora?: () => void;
   // Fase 3 ("Rankeds: Rendirse en vez de cancelar por click afuera"):
   // opcional para no romper algún punto de uso viejo que no lo pase
   // todavía, pero todo caller nuevo debería mandarlo — sin duelId no
@@ -37,7 +41,6 @@ export default function SalaEsperaDuelo({
   rivalEsBot = false,
   modo = "simple",
   subtitulo,
-  onEmpezarAhora,
   duelId,
   volverA = "/rankeds",
 }: Props) {
@@ -45,6 +48,20 @@ export default function SalaEsperaDuelo({
   const router = useRouter();
 
   function handleRendido() {
+    router.push(volverA);
+  }
+
+  // A los 30 s sin rival: «¿Quieres seguir esperando?». A los 2 min el hook
+  // cancela el reto solo (estado "agotado").
+  const [preguntar, setPreguntar] = useState(false);
+  useEffect(() => {
+    if (estado !== "esperando" || rivalEsBot) return;
+    const t = setTimeout(() => setPreguntar(true), PREGUNTAR_SEGUIR_MS);
+    return () => clearTimeout(t);
+  }, [estado, rivalEsBot]);
+
+  async function cancelarReto() {
+    if (duelId) await createClient().rpc("rechazar_duelo", { p_duel_id: duelId });
     router.push(volverA);
   }
 
@@ -74,13 +91,10 @@ export default function SalaEsperaDuelo({
       <div className="flex flex-1 flex-col">
         <PantallaVS miNombre={t("tu")} miElo={miElo} rivalNombre={rivalNombre} rivalElo={rivalElo} rivalEsBot={rivalEsBot} modo={modo} subtitulo={subtitulo} segundos={null} />
         <div className="mx-auto -mt-10 flex w-full max-w-md flex-col items-center gap-4 px-4 pb-16 text-center">
-          <p className="text-sm text-texto-secundario">
-            {t("rivalNoConectado", { rival: rivalNombre })}
-          </p>
-          <Boton onClick={onEmpezarAhora} className="w-full py-4">
-            {t("jugarAhora")}
+          <p className="text-sm text-texto-secundario">{t("retoCancelado", { rival: rivalNombre })}</p>
+          <Boton onClick={() => router.push(volverA)} className="w-full py-4">
+            {t("volver")}
           </Boton>
-          {duelId && !rivalEsBot && <BotonRendirse duelId={duelId} onRendido={handleRendido} />}
         </div>
       </div>
     );
@@ -99,6 +113,19 @@ export default function SalaEsperaDuelo({
           <span>{rivalPresente ? t("rivalListo", { rival: rivalNombre }) : t("esperandoA", { rival: rivalNombre })}</span>
         </div>
         <p className="text-xs text-texto-secundario">{t("arrancaSolo")}</p>
+        {preguntar && estado === "esperando" && !rivalPresente && (
+          <div className="mt-2 flex w-full flex-col gap-2 rounded-2xl border border-border bg-surface px-4 py-3">
+            <p className="text-sm font-semibold text-foreground">{t("seguirEsperandoPregunta", { rival: rivalNombre })}</p>
+            <div className="flex gap-2">
+              <Boton variante="secundario" onClick={cancelarReto} className="flex-1 py-2">
+                {t("cancelarReto")}
+              </Boton>
+              <Boton onClick={() => setPreguntar(false)} className="flex-1 py-2">
+                {t("seguirEsperando")}
+              </Boton>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

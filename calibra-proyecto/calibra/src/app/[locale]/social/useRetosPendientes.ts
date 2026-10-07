@@ -13,7 +13,7 @@ export interface RetoPendienteBase {
   retador_nombre: string | null;
   retador_elo: number;
   retador_titulo_nombre: string | null;
-  // 0256: cuándo vence (los retos entre amigos duran 24 h; el resto, 60 s).
+  // 0256: cuándo vence (todo reto dura 2 minutos: los duelos son en vivo).
   expira_at?: string | null;
 }
 
@@ -21,7 +21,7 @@ export interface RetoPendiente extends RetoPendienteBase {
   segundosRestantes: number | null;
 }
 
-const DURACION_INVITACION_S = 60;
+const DURACION_INVITACION_S = 120;
 
 function segundosRestantesDe(r: RetoPendienteBase): number {
   if (r.expira_at) return Math.max(0, Math.round((new Date(r.expira_at).getTime() - Date.now()) / 1000));

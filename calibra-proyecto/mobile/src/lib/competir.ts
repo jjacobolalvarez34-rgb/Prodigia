@@ -30,7 +30,7 @@ export interface DueloPendiente {
   retador_nombre: string | null;
   retador_elo: number;
   retador_titulo_nombre: string | null;
-  // 0256: los retos entre amigos duran 24 horas; el resto de las invitaciones, 60 s.
+  // 0256: todo reto dura 2 minutos (los duelos son en vivo).
   sub_tipo?: string | null;
   expira_at?: string | null;
 }

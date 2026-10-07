@@ -9,7 +9,10 @@ import { supabase } from "./supabase";
 export type EstadoArranque = "conectando" | "esperando" | "cuenta-regresiva" | "agotado";
 
 const MARGEN_MS = 4_000;
-const TIMEOUT_MS = 45_000;
+// Duelo en vivo: a los 30 s sin rival se pregunta si seguir esperando; a los 2 min
+// el reto se cancela solo (no se juega a solas contra su registro).
+const PREGUNTAR_MS = 30_000;
+const CANCELAR_MS = 120_000;
 
 export function useArranqueSincronizado({
   duelId,
@@ -28,6 +31,7 @@ export function useArranqueSincronizado({
   const [estado, setEstado] = useState<EstadoArranque>("conectando");
   const [rivalPresente, setRivalPresente] = useState(false);
   const [segundos, setSegundos] = useState<number | null>(null);
+  const [preguntar, setPreguntar] = useState(false);
   const canalRef = useRef<RealtimeChannel | null>(null);
   const empezoRef = useRef(false);
   const onEmpezarRef = useRef(onEmpezar);
@@ -81,11 +85,22 @@ export function useArranqueSincronizado({
       setEstado("esperando");
       await canal.track({ user_id: miUserId, en: Date.now() });
     });
+    const pregunta = setTimeout(() => {
+      if (!cancelado && !empezoRef.current) setPreguntar(true);
+    }, PREGUNTAR_MS);
+    // "agotado" = el rival no llegó: el reto se cancela (se borra el duelo pendiente).
     const agotado = setTimeout(() => {
-      if (!cancelado && !empezoRef.current) setEstado((e) => (e === "cuenta-regresiva" ? e : "agotado"));
-    }, TIMEOUT_MS);
+      if (cancelado || empezoRef.current) return;
+      setPreguntar(false);
+      setEstado((e) => (e === "cuenta-regresiva" ? e : "agotado"));
+      supabase.rpc("rechazar_duelo", { p_duel_id: duelId }).then(
+        () => undefined,
+        () => undefined
+      );
+    }, CANCELAR_MS);
     return () => {
       cancelado = true;
+      clearTimeout(pregunta);
       clearTimeout(agotado);
       supabase.removeChannel(canal);
     };
@@ -100,7 +115,7 @@ export function useArranqueSincronizado({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estado, rivalPresente, soyHost]);
 
-  return { estado, segundos, rivalPresente, empezarAhora: empezarUnaVez };
+  return { estado, segundos, rivalPresente, preguntar: preguntar && estado === "esperando" && !rivalPresente, seguirEsperando: () => setPreguntar(false) };
 }
 
 export interface ProgresoDuelo {
