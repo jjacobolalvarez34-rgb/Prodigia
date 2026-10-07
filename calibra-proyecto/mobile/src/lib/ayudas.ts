@@ -48,7 +48,7 @@ export async function olvidarAyudas() {
 export type EventoSprint = "inicio" | "acierto" | "tres_seguidas" | "error";
 
 const PISTAS_SPRINT: Record<EventoSprint, string> = {
-  inicio: "⏱️ Tienes 60 segundos. Responde lo más rápido que puedas.",
+  inicio: "⏱️ Responde lo más rápido que puedas: cada acierto en racha te suma segundos.",
   acierto: "¡Bien! Cada acierto rápido te suma segundos al reloj.",
   tres_seguidas: "🔥 ¡3 seguidas! Subiste de nivel en este tema.",
   error: "Fallar no te quita nada: bajas un poquito para afianzar.",
