@@ -183,6 +183,7 @@ function Navegacion() {
           <Stack.Protected guard={!!sesion}>
             <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
             <Stack.Screen name="elegir-mundos" />
+            <Stack.Screen name="bienvenida" options={{ animation: "fade", gestureEnabled: false }} />
             <Stack.Screen name="avisos" />
             <Stack.Screen name="ajustes-avisos" />
             <Stack.Screen name="ajustes" />
@@ -263,3 +264,5 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+export { default as ErrorBoundary } from "~/ui/PantallaError";

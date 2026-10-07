@@ -19,6 +19,7 @@ import {
   type Pregunta,
 } from "~/lib/geografia";
 import { cerrarPartida, guardarIntentoTipo } from "~/lib/partida";
+import { DEMO_MS, DEMO_TOTAL, rutaFinDemo } from "~/lib/bienvenida";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError } from "~/lib/supabase";
 import Glifos from "~/ui/Glifos";
@@ -36,8 +37,11 @@ export default function SprintGeografia() {
   const router = useRouter();
   const { sesion } = useSesion();
   const miId = sesion?.user.id ?? null;
-  const params = useLocalSearchParams<{ continente?: string; duelo?: string }>();
+  const params = useLocalSearchParams<{ continente?: string; duelo?: string; demo?: string }>();
   const dueloId = params.duelo ?? null;
+  const demo = params.demo === "1";
+  const totalPartida = demo ? DEMO_TOTAL : PREGUNTAS_POR_PARTIDA;
+  const duracionPartida = demo ? DEMO_MS : DURACION_SPRINT_GEO_MS;
   const [continente, setContinente] = useState<Continente>((CONTINENTES.some((c) => c.id === params.continente) ? params.continente : "america") as Continente);
   const nombreContinente = CONTINENTES.find((c) => c.id === continente)!.nombre;
 
@@ -128,7 +132,7 @@ export default function SprintGeografia() {
     if (!ocupadoRef.current) terminar("tiempo");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const reloj = useReloj(inicio, DURACION_SPRINT_GEO_MS, alAcabarElTiempo, final !== null);
+  const reloj = useReloj(inicio, duracionPartida, alAcabarElTiempo, final !== null);
   const consumibles = useConsumibles(!dueloId && inicio != null);
 
   useEffect(() => {
@@ -166,6 +170,13 @@ export default function SprintGeografia() {
     const minimo = new Promise((r) => setTimeout(r, 1100));
     await Promise.allSettled(pendientesRef.current);
     setProgresoFinal(0.55);
+    if (demo) {
+      cerrarPartida(xpRef.current, "geografia").catch(() => undefined);
+      await minimo;
+      setProgresoFinal(1);
+      router.replace(rutaFinDemo("geografia", respuestasRef.current.filter((x) => x.correct).length, totalPartida));
+      return;
+    }
     try {
       const r = await cerrarPartida(xpRef.current, "geografia", dueloId ?? undefined);
       setProgresoFinal(0.85);
@@ -269,8 +280,8 @@ export default function SprintGeografia() {
       () => {
         ocupadoRef.current = false;
         if (terminadoRef.current) return;
-        if (respuestasRef.current.length >= PREGUNTAS_POR_PARTIDA) terminar("listo");
-        else if (Date.now() - inicioRef.current >= DURACION_SPRINT_GEO_MS) terminar("tiempo");
+        if (respuestasRef.current.length >= totalPartida) terminar("listo");
+        else if (Date.now() - inicioRef.current >= duracionPartida) terminar("tiempo");
         else nuevaPregunta();
       },
       correcto ? FEEDBACK_OK_MS : FEEDBACK_ERROR_MS
@@ -297,7 +308,7 @@ export default function SprintGeografia() {
       <Glifos glifos={GEOGRAFIA.glifos} acento={GEOGRAFIA.neon} cantidad={7} pulso={pulso} />
       <Animated.View style={[{ flex: 1 }, estiloJuego]}>
       <Cabecera onSalir={confirmarSalida} reloj={reloj} combo={combo} acento={GEOGRAFIA.neon} corriendo={inicio != null && final === null} />
-      <Progreso resultados={resultados} total={PREGUNTAS_POR_PARTIDA} acento={GEOGRAFIA.neon} escudos={escudos} />
+      <Progreso resultados={resultados} total={totalPartida} acento={GEOGRAFIA.neon} escudos={escudos} />
       <Consumibles
         reloj={reloj}
         consumibles={consumibles}

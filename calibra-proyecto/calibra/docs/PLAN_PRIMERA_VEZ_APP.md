@@ -2,6 +2,7 @@
 
 > **Estado: APROBADO (las 8 decisiones, 2026-10-07) e IMPLEMENTADO.** Migraciones 0258 (Kit del Pionero), 0259 (Constelaciones y Gran Alineación) y 0260 (Primeros pasos).
 > Diferencias con lo propuesto: el premio final de «Primeros pasos» es 500 Chispas y el título «Bien encaminado» (el marco «Pionero» ya lo da el Kit); las cápsulas diaria y de ciudad también pasaron a estrellas (la de colección se queda); justo después de cada Gran Alineación hay unas horas en que ninguna ciudad está de noche (todas acaban de amanecer). Google necesita que se active el proveedor en Supabase y `prodigia://auth` en Redirect URLs.
+> **Cambio del 7 de octubre de 2026 (tras probar el APK):** la entrada ya no exige cuenta antes de jugar; copia la web. «¿Ya conoces Prodigia?» → presentación animada de 4 escenas → elegir una ciudad misteriosa → cómo funciona → partida de prueba como invitado (5 preguntas, 30 s) → resultado → Prodigia Pro → elegir los 2 mundos → crear la cuenta (la cuenta de invitado pasa a ser real; los mundos se guardan recién ahí) → Kit del Pionero → recorrido (ahora empieza por las Chispas, que abren la tienda, y la racha). En el Inicio, «Jugar» va arriba y «Primeros pasos» y Recompensas son botones chicos.
 > Fecha: 6 de octubre de 2026.
 > Incluye: (1) el paso a paso desde que se abre la app por primera vez, con el tutorial; (2) cuenta obligatoria (sin modo invitado); (3) recompensa por usar la app; (4) rediseño de las cápsulas; (5) la Gran Alineación como evento.
 > Al final hay una lista de **decisiones** con mi recomendación en cada una.

@@ -20,6 +20,10 @@ interface Props {
   animar?: boolean;
   estilo?: StyleProp<TextStyle>;
   lineas?: number;
+  // En listas (rankings, amigos): sin máscaras ni letras animadas. La máscara nativa
+  // (MaskedView) recicla su imagen en cada cambio de tamaño y con varias filas
+  // entrando animadas a la vez Android cerraba la app.
+  ligero?: boolean;
 }
 
 const GRADIENTES: Record<string, string[]> = {
@@ -209,13 +213,23 @@ function NombreRevuelto({ texto, estiloTexto, base, modo }: { texto: string; est
   return <Text style={[estiloTexto, { color: base }, modo === "decrypted" ? { fontFamily: fuentes.mono } : null]}>{mostrado}</Text>;
 }
 
-export default function NombreEstilizado({ texto, fuente = "default", animacion = "ninguna", color, tam = 18, animar = false, estilo, lineas = 1 }: Props) {
+export default function NombreEstilizado({ texto, fuente = "default", animacion = "ninguna", color, tam = 18, animar = false, estilo, lineas = 1, ligero = false }: Props) {
   const familia = FUENTE_FAMILIA[fuente] ?? fuentes.display;
   const base = color ?? colores.texto;
   const estiloTexto = useMemo<StyleProp<TextStyle>>(
     () => [{ fontFamily: familia, fontSize: tam, lineHeight: Math.round(tam * 1.25), color: base, includeFontPadding: false }, fuente === "impacto" || fuente === "urbana" ? { letterSpacing: 0.8 } : null, estilo],
     [familia, tam, base, fuente, estilo]
   );
+
+  if (ligero && animacion !== "neon") {
+    const lista = GRADIENTES[animacion];
+    const tono = lista ? lista[Math.floor(lista.length / 2)] : animacion.startsWith("glitch") ? color ?? "#8F7BFF" : null;
+    return (
+      <Text style={[estiloTexto, tono ? { color: tono, textShadowColor: tono, textShadowRadius: 8 } : null]} numberOfLines={lineas}>
+        {texto}
+      </Text>
+    );
+  }
 
   switch (animacion) {
     case "arcoiris":

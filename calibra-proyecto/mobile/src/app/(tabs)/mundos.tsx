@@ -247,3 +247,5 @@ const styles = StyleSheet.create({
   chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 999, borderWidth: 1, borderColor: color.border, backgroundColor: color.surface1 },
   precio: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: color.surface2, borderWidth: 1, borderColor: color.border, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 },
 });
+
+export { default as ErrorBoundary } from "~/ui/PantallaError";

@@ -5,6 +5,7 @@ import Animated, { useSharedValue, withSequence, withTiming } from "react-native
 import { SafeAreaView } from "react-native-safe-area-context";
 import { mulberry32 } from "@/lib/rng";
 import { pistaSprint } from "~/lib/ayudas";
+import { DEMO_MS, DEMO_TOTAL, rutaFinDemo } from "~/lib/bienvenida";
 import { obtenerDuelo, registrarResultadoDuelo, type InfoDuelo } from "~/lib/competir";
 import { useProgresoEnVivo } from "~/lib/duelos";
 import { sonar, sonarAcierto, vibrar } from "~/lib/efectos";
@@ -24,14 +25,15 @@ const FEEDBACK_ERROR_MS = 1100;
 
 export default function SprintMundo() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ mundo: string; modo?: string; duelo?: string; filtro?: string }>();
+  const params = useLocalSearchParams<{ mundo: string; modo?: string; duelo?: string; filtro?: string; demo?: string }>();
+  const demo = params.demo === "1";
   const def = mundoJugable(params.mundo);
   const mundo = MUNDO_POR_SLUG[(params.mundo ?? "historia") as MundoSlug];
   const { sesion } = useSesion();
   const miId = sesion?.user.id ?? null;
   const dueloId = params.duelo ?? null;
-  const total = def?.total ?? 10;
-  const duracion = def?.duracionMs ?? 60_000;
+  const total = demo ? DEMO_TOTAL : def?.total ?? 10;
+  const duracion = demo ? DEMO_MS : def?.duracionMs ?? 60_000;
 
   const [modo, setModo] = useState(params.modo ?? def?.modos[0]?.id ?? "");
   const [duelo, setDuelo] = useState<InfoDuelo | null>(null);
@@ -193,6 +195,13 @@ export default function SprintMundo() {
     const minimo = new Promise((r) => setTimeout(r, 1100));
     await Promise.allSettled(pendientesRef.current);
     setProgresoFinal(0.55);
+    if (demo) {
+      cerrarPartida(xpRef.current, def.slug).catch(() => undefined);
+      await minimo;
+      setProgresoFinal(1);
+      router.replace(rutaFinDemo(def.slug, respuestasRef.current.filter((x) => x.correct).length, total));
+      return;
+    }
     try {
       const r = await cerrarPartida(xpRef.current, def.slug, dueloId ?? undefined);
       setProgresoFinal(0.85);

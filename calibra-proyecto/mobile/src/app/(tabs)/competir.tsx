@@ -181,7 +181,7 @@ function Podio({ filas, miId }: { filas: { placa: PlacaDatos; xp: number }[]; mi
         return (
           <Animated.View key={f.placa.id} entering={FadeInDown.delay(puesto * 120).duration(360)} style={{ flex: 1, alignItems: "center", gap: 6 }}>
             <AvatarMarco url={f.placa.avatarUrl} nombre={f.placa.nombre} marco={f.placa.marco} tam={puesto === 1 ? 58 : 46} />
-            <NombreEstilizado texto={f.placa.nombre} fuente={f.placa.fuente} animacion={f.placa.animacion} tam={13} estilo={{ textAlign: "center", maxWidth: 100 }} />
+            <NombreEstilizado texto={f.placa.nombre} fuente={f.placa.fuente} animacion={f.placa.animacion} tam={13} estilo={{ textAlign: "center", maxWidth: 100 }} ligero />
             <Texto v="mono" tam={12} c={colores[puesto]}>
               {f.xp.toLocaleString("es")}
             </Texto>
@@ -504,3 +504,5 @@ const styles = StyleSheet.create({
   podio: { flexDirection: "row", alignItems: "flex-end", gap: 8, paddingTop: 8 },
   escalon: { alignSelf: "stretch", borderTopLeftRadius: 14, borderTopRightRadius: 14, borderWidth: 1, borderBottomWidth: 0, backgroundColor: color.surface1, alignItems: "center", justifyContent: "center" },
 });
+
+export { default as ErrorBoundary } from "~/ui/PantallaError";

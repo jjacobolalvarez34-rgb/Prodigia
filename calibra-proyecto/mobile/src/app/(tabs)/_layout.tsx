@@ -82,3 +82,5 @@ export default function LayoutPestanas() {
     </>
   );
 }
+
+export { default as ErrorBoundary } from "~/ui/PantallaError";

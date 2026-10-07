@@ -185,3 +185,5 @@ const styles = StyleSheet.create({
   ciudad: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: color.border },
   glifo: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center" },
 });
+
+export { default as ErrorBoundary } from "~/ui/PantallaError";

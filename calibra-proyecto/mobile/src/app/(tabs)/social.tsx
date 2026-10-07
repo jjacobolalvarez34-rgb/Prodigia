@@ -291,3 +291,5 @@ const styles = StyleSheet.create({
   botonRedondo: { width: 38, height: 38, borderRadius: 19, backgroundColor: color.surface1, borderWidth: 1, borderColor: color.border, alignItems: "center", justifyContent: "center" },
   titulo: { fontFamily: fuente.display },
 });
+
+export { default as ErrorBoundary } from "~/ui/PantallaError";

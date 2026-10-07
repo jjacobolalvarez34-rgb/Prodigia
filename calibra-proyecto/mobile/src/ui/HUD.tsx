@@ -3,6 +3,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from "react-native-reanimated";
 import { useAnimacionActiva } from "~/lib/rendimiento";
+import { registrarMedidorHud, type Rect } from "~/lib/ayudas";
 import { sonar, vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
 import { color } from "~/tema";
@@ -64,6 +65,22 @@ export default function HUD({ derecha }: { derecha?: ReactNode }) {
   }, [avisos, activa, punto]);
   const estiloPunto = useAnimatedStyle(() => ({ transform: [{ scale: punto.value }] }));
 
+  const refRacha = useRef<View>(null);
+  const refChispas = useRef<View>(null);
+  useEffect(() => {
+    const medir = (ref: { current: View | null }) => () =>
+      new Promise<Rect | null>((resolver) => {
+        if (!ref.current) resolver(null);
+        else ref.current.measureInWindow((x, y, w, h) => resolver({ x, y, w, h }));
+      });
+    const a = registrarMedidorHud("racha", medir(refRacha));
+    const b = registrarMedidorHud("chispas", medir(refChispas));
+    return () => {
+      a();
+      b();
+    };
+  }, []);
+
   return (
     <View style={styles.hud}>
       <Pressable onPress={() => router.push("/perfil")} hitSlop={6}>
@@ -73,11 +90,13 @@ export default function HUD({ derecha }: { derecha?: ReactNode }) {
           <View style={styles.avatarVacio} />
         )}
       </Pressable>
-      <Pildora>
-        <IconoLlama tam={16} estado={racha === 0 ? "apagada" : racha >= 7 ? "llamas" : "encendida"} />
-        <NumeroAnimado valor={racha} v="contador" formato={(n) => String(Math.round(n))} />
-      </Pildora>
-      <Animated.View style={estiloSalto}>
+      <View ref={refRacha} collapsable={false}>
+        <Pildora>
+          <IconoLlama tam={16} estado={racha === 0 ? "apagada" : racha >= 7 ? "llamas" : "encendida"} />
+          <NumeroAnimado valor={racha} v="contador" formato={(n) => String(Math.round(n))} />
+        </Pildora>
+      </View>
+      <Animated.View ref={refChispas} collapsable={false} style={estiloSalto}>
         <Pildora onPress={() => router.push("/tienda")}>
           <IconoChispa tam={16} />
           <NumeroAnimado valor={chispas} v="contador" onTic={() => sonar("moneda")} />

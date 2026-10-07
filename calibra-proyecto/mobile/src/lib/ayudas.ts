@@ -75,3 +75,25 @@ export const GLOBOS = {
 } as const;
 
 export type IdGlobo = keyof typeof GLOBOS;
+
+// ---------- Dónde están la racha y las Chispas (para el recorrido) ----------
+export type Rect = { x: number; y: number; w: number; h: number };
+export type IdHud = "racha" | "chispas";
+const medidores = new Map<IdHud, Set<() => Promise<Rect | null>>>();
+
+// Cada barra de arriba (una por pestaña) se anota; vale la que está en pantalla.
+export function registrarMedidorHud(id: IdHud, medir: () => Promise<Rect | null>) {
+  if (!medidores.has(id)) medidores.set(id, new Set());
+  medidores.get(id)!.add(medir);
+  return () => {
+    medidores.get(id)?.delete(medir);
+  };
+}
+
+export async function medirHud(id: IdHud, anchoPantalla: number): Promise<Rect | null> {
+  for (const medir of medidores.get(id) ?? []) {
+    const r = await medir();
+    if (r && r.w > 0 && r.x >= 0 && r.x + r.w <= anchoPantalla + 1) return r;
+  }
+  return null;
+}

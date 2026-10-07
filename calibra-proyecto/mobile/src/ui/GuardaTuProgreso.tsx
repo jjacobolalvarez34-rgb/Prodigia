@@ -7,6 +7,7 @@ import { recargarJugador } from "~/lib/jugador";
 import { supabase } from "~/lib/supabase";
 import { color, conAlfa, fuente, radio } from "~/tema";
 import Boton3D from "./Boton3D";
+import CampoContrasena from "./CampoContrasena";
 import Logo from "./Logo";
 import Texto from "./Texto";
 
@@ -87,7 +88,7 @@ export default function GuardaTuProgreso() {
           </View>
           <TextInput style={styles.input} placeholder="Tu nombre" placeholderTextColor={color.texto2} autoCapitalize="words" maxLength={40} value={nombre} onChangeText={setNombre} />
           <TextInput style={styles.input} placeholder="Correo" placeholderTextColor={color.texto2} autoCapitalize="none" autoCorrect={false} keyboardType="email-address" value={email} onChangeText={setEmail} />
-          <TextInput style={styles.input} placeholder="Contraseña (mínimo 6 caracteres)" placeholderTextColor={color.texto2} secureTextEntry value={password} onChangeText={setPassword} onSubmitEditing={guardar} />
+          <CampoContrasena estilo={styles.input} placeholder="Contraseña (mínimo 6 caracteres)" valor={password} onCambio={setPassword} onEnviar={guardar} />
           {error && <Texto c={color.error}>{error}</Texto>}
           <Boton3D titulo="Guardar mi cuenta" brillo cargando={guardando} deshabilitado={!email || password.length < 6} onPress={guardar} />
           <Pressable onPress={salir} disabled={saliendo} style={{ alignSelf: "center", padding: 8 }}>

@@ -1,6 +1,7 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { cargarMiClan, reclamarMision, type Mision } from "~/lib/clanes";
 import { textoVence, cargarCompetitivo, finDeSemanaUtc, rankingSemanal, rechazarDuelo, textoFaltan, type DueloPendiente } from "~/lib/competir";
 import { sonar, vibrar } from "~/lib/efectos";
@@ -24,9 +25,7 @@ import { PantallaPestana, TituloSeccion } from "~/ui/Pantalla";
 import PrimerosPasos from "~/ui/PrimerosPasos";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
-import { color, MUNDO_POR_SLUG, mundoDe } from "~/tema";
-
-const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+import { color, conAlfa, MUNDO_POR_SLUG, mundoDe } from "~/tema";
 
 export default function Hoy() {
   const router = useRouter();
@@ -93,7 +92,9 @@ export default function Hoy() {
     }
   }
 
-  if (placa && mundos.length < 2) return <Redirect href="/elegir-mundos" />;
+  // Invitado recién llegado: sigue la bienvenida (partida de prueba → 2 mundos → cuenta).
+  if (esInvitado && !placa) return <View style={{ flex: 1, backgroundColor: color.bg }} />;
+  if (placa && mundos.length < 2) return <Redirect href={esInvitado ? "/bienvenida" : "/elegir-mundos"} />;
 
   const nombre = esInvitado ? "Invitado" : placa?.nombre ?? "…";
   const xpHoy = resumen?.xpHoy ?? 0;
@@ -107,10 +108,7 @@ export default function Hoy() {
   let indice = 0;
   return (
     <PantallaPestana>
-      <View>
-        <Texto v="micro">{DIAS[ahora.getDay()]}</Texto>
-        <Texto v="h1">Hola, {nombre}</Texto>
-      </View>
+      <Texto v="h1">Hola, {nombre}</Texto>
 
       {(red.sinRed || red.pendientes > 0) && (
         <Tarjeta indice={indice++} acento={color.racha} onPress={() => sincronizar()}>
@@ -123,66 +121,53 @@ export default function Hoy() {
         </Tarjeta>
       )}
 
-      {(() => {
-        const slugDoble = mundoDobleExperiencia();
-        const m = MUNDO_POR_SLUG[slugDoble];
-        const horas = Math.floor(msHastaFinDelEvento(ahora) / 3_600_000);
-        return (
-          <Tarjeta
-            indice={indice++}
-            acento={color.logro}
-            brillo={0.25}
-            onPress={() => router.push(slugDoble === "numeria" || slugDoble === "geografia" ? `/${slugDoble}` : { pathname: "/[mundo]", params: { mundo: slugDoble } })}
-          >
-            <View style={styles.fila}>
-              <Texto style={{ fontSize: 34 }}>🪂</Texto>
-              <View style={{ flex: 1 }}>
-                <Texto v="micro" c={color.logro}>
-                  Evento de hoy · termina en {horas} h
+      {continuar && mundoContinuar && (
+        <Tarjeta indice={indice++} relleno={0} acento={mundoContinuar.neon} brillo={0.18}>
+          <Ciudad semilla={mundoContinuar.slug} acento={mundoContinuar.neon} alto={84} radio={0} />
+          <View style={{ padding: 14, gap: 10 }}>
+            <View style={styles.entre}>
+              <View>
+                <Texto v="micro" c={mundoContinuar.neon}>
+                  Continuar
                 </Texto>
-                <Texto v="h3">Doble experiencia en {m.nombre}</Texto>
-                <Texto v="nota">Cada acierto en {m.nombre} vale el doble de Exp hasta la medianoche.</Texto>
+                <Texto v="h3">
+                  {mundoContinuar.nombre} · {continuar.tema}
+                </Texto>
               </View>
+              <Texto v="mono" tam={13}>
+                Nv {progreso?.nivel ?? 1}
+              </Texto>
             </View>
-          </Tarjeta>
-        );
-      })()}
-
-      {!esInvitado && <PrimerosPasos indice={indice++} />}
+            <Barra valor={progreso?.avance ?? 0} acento={mundoContinuar.base} />
+            <Boton3D titulo="Jugar" acento={mundoContinuar.base} brillo onPress={() => router.push(continuar.ruta)} />
+          </View>
+        </Tarjeta>
+      )}
 
       {!esInvitado && (
-        <Tarjeta indice={indice++} acento={totalPendientes(recompensas) > 0 ? color.logro : undefined} brillo={totalPendientes(recompensas) > 0 ? 0.3 : 0} onPress={() => router.push("/recompensas")}>
-          <View style={styles.fila}>
-            <Texto style={{ fontSize: 32 }}>🎁</Texto>
-            <View style={{ flex: 1 }}>
+        <Animated.View entering={FadeInDown.delay(120).duration(300)} style={[styles.fila, { alignItems: "stretch" }]}>
+          <PrimerosPasos />
+          <Pressable onPress={() => router.push("/recompensas")} style={({ pressed }) => [styles.chico, totalPendientes(recompensas) > 0 && { borderColor: color.logro, boxShadow: `0px 0px 14px ${conAlfa(color.logro, 0.35)}` }, pressed && { transform: [{ scale: 0.97 }] }]}>
+            <View style={styles.entre}>
               <Texto v="micro" c={color.logro}>
                 Recompensas
               </Texto>
-              <Texto v="h3">
-                {totalPendientes(recompensas) > 0
-                  ? [
-                      recompensas.capsulas > 0 ? `${recompensas.capsulas} ${recompensas.capsulas === 1 ? "cápsula" : "cápsulas"}` : null,
-                      recompensas.misiones > 0 ? `${recompensas.misiones} ${recompensas.misiones === 1 ? "misión lista" : "misiones listas"}` : null,
-                      recompensas.calendario ? "premio del día" : null,
-                      recompensas.regalos > 0 ? `${recompensas.regalos} ${recompensas.regalos === 1 ? "regalo" : "regalos"}` : null,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")
-                  : "Constelaciones, misiones y calendario"}
-              </Texto>
-              <Texto v="nota" tam={12}>
-                {totalPendientes(recompensas) > 0 ? "Toca para reclamar" : "Cada partida enciende estrellas en tus constelaciones"}
-              </Texto>
+              {totalPendientes(recompensas) > 0 && (
+                <View style={styles.insignia}>
+                  <Texto v="mono" tam={11} c="#2A1A00">
+                    {totalPendientes(recompensas)}
+                  </Texto>
+                </View>
+              )}
             </View>
-            {totalPendientes(recompensas) > 0 && (
-              <View style={styles.insignia}>
-                <Texto v="mono" tam={13} c="#2A1A00">
-                  {totalPendientes(recompensas)}
-                </Texto>
-              </View>
-            )}
-          </View>
-        </Tarjeta>
+            <Texto v="fuerte" tam={13.5}>
+              {totalPendientes(recompensas) > 0 ? "Para reclamar 🎁" : "Constelaciones 🎁"}
+            </Texto>
+            <Texto v="nota" tam={11}>
+              Misiones y calendario
+            </Texto>
+          </Pressable>
+        </Animated.View>
       )}
 
       {rachaEnRiesgo && (
@@ -246,28 +231,29 @@ export default function Hoy() {
         </View>
       </Tarjeta>
 
-      {continuar && mundoContinuar && (
-        <Tarjeta indice={indice++} relleno={0} acento={mundoContinuar.neon} brillo={0.18}>
-          <Ciudad semilla={mundoContinuar.slug} acento={mundoContinuar.neon} alto={84} radio={0} />
-          <View style={{ padding: 14, gap: 10 }}>
-            <View style={styles.entre}>
-              <View>
-                <Texto v="micro" c={mundoContinuar.neon}>
-                  Continuar
+      {(() => {
+        const slugDoble = mundoDobleExperiencia();
+        const m = MUNDO_POR_SLUG[slugDoble];
+        const horas = Math.floor(msHastaFinDelEvento(ahora) / 3_600_000);
+        return (
+          <Tarjeta
+            indice={indice++}
+            acento={color.logro}
+            brillo={0.12}
+            onPress={() => router.push(slugDoble === "numeria" || slugDoble === "geografia" ? `/${slugDoble}` : { pathname: "/[mundo]", params: { mundo: slugDoble } })}
+          >
+            <View style={styles.fila}>
+              <Texto style={{ fontSize: 26 }}>🪂</Texto>
+              <View style={{ flex: 1 }}>
+                <Texto v="micro" c={color.logro}>
+                  Evento de hoy · termina en {horas} h
                 </Texto>
-                <Texto v="h3">
-                  {mundoContinuar.nombre} · {continuar.tema}
-                </Texto>
+                <Texto v="h3">Doble Exp en {m.nombre}</Texto>
               </View>
-              <Texto v="mono" tam={13}>
-                Nv {progreso?.nivel ?? 1}
-              </Texto>
             </View>
-            <Barra valor={progreso?.avance ?? 0} acento={mundoContinuar.base} />
-            <Boton3D titulo="Jugar" tamano="sm" acento={mundoContinuar.base} brillo onPress={() => router.push(continuar.ruta)} />
-          </View>
-        </Tarjeta>
-      )}
+          </Tarjeta>
+        );
+      })()}
 
       {!esInvitado && (
         <View style={styles.fila}>
@@ -352,8 +338,11 @@ export default function Hoy() {
 }
 
 const styles = StyleSheet.create({
-  insignia: { minWidth: 26, height: 26, borderRadius: 13, paddingHorizontal: 6, alignItems: "center", justifyContent: "center", backgroundColor: color.logro },
+  insignia: { minWidth: 20, height: 20, borderRadius: 10, paddingHorizontal: 5, alignItems: "center", justifyContent: "center", backgroundColor: color.logro },
+  chico: { flex: 1, gap: 4, padding: 12, borderRadius: 16, backgroundColor: color.surface1, borderWidth: 1, borderColor: color.border },
   fila: { flexDirection: "row", alignItems: "center", gap: 12 },
   entre: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 },
   iconoCirculo: { width: 42, height: 42, borderRadius: 21, alignItems: "center", justifyContent: "center" },
 });
+
+export { default as ErrorBoundary } from "~/ui/PantallaError";

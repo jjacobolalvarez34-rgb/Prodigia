@@ -1,16 +1,19 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import type { Href } from "expo-router";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import { VERSION_TERMINOS } from "@/lib/legal/terminos";
 import { urlAbsoluta } from "./entorno";
 import { mensajeError, supabase } from "./supabase";
 
-// La primera vez en la app (docs/PLAN_PRIMERA_VEZ_APP.md, aprobado el 2026-10-07):
-// bienvenida → una pregunta de prueba → crear cuenta (sin modo invitado) → Kit del
-// Pionero → recorrido por las pestañas. Lo que ya se vio queda marcado en el teléfono.
+// La primera vez en la app, igual que la web: presentación → elegir una ciudad →
+// partida de prueba como invitado → resultado → Pro → 2 mundos → crear la cuenta →
+// Kit del Pionero → recorrido por las pestañas. Lo ya visto queda marcado en el teléfono.
 const CLAVE_BIENVENIDA = "prodigia:bienvenida-vista";
 const CLAVE_RECORRIDO = "prodigia:recorrido-pestanas";
 const CLAVE_NOMBRE = "prodigia:nombre-pendiente";
+const CLAVE_CIUDAD_DEMO = "prodigia:ciudad-demo";
+const CLAVE_MUNDOS = "prodigia:mundos-pendientes";
 const claveKit = (userId: string) => `prodigia:kit-pionero:${userId}`;
 
 async function leer(clave: string): Promise<string | null> {
@@ -87,11 +90,24 @@ export async function convertirInvitado(nombre: string, email: string, password:
 // Google: se abre el navegador del sistema y Supabase vuelve a prodigia://auth con
 // la sesión. Requiere el proveedor Google activo en Supabase y esa URL en
 // "Redirect URLs" (Authentication → URL Configuration).
+// Si quien toca Google es un invitado (jugó la partida de prueba), primero se intenta
+// vincular Google a esa misma cuenta para no perder nada; si Supabase no lo permite
+// (vinculación manual apagada), se entra con Google como cuenta aparte.
 export async function entrarConGoogle(): Promise<{ ok: boolean; error?: string }> {
   const vuelta = Linking.createURL("auth");
-  const { data, error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: vuelta, skipBrowserRedirect: true } });
-  if (error || !data?.url) return { ok: false, error: error ? errorAuth(error) : "No se pudo abrir Google." };
-  const r = await WebBrowser.openAuthSessionAsync(data.url, vuelta);
+  const opciones = { redirectTo: vuelta, skipBrowserRedirect: true };
+  const { data: s } = await supabase.auth.getSession();
+  let enlace: string | null = null;
+  if (s.session?.user.is_anonymous) {
+    const v = await supabase.auth.linkIdentity({ provider: "google", options: opciones });
+    if (!v.error && v.data?.url) enlace = v.data.url;
+  }
+  if (!enlace) {
+    const { data, error } = await supabase.auth.signInWithOAuth({ provider: "google", options: opciones });
+    if (error || !data?.url) return { ok: false, error: error ? errorAuth(error) : "No se pudo abrir Google." };
+    enlace = data.url;
+  }
+  const r = await WebBrowser.openAuthSessionAsync(enlace, vuelta);
   if (r.type !== "success") return { ok: false };
   const url = r.url;
   const params = new URLSearchParams(url.includes("#") ? url.split("#")[1] : url.split("?")[1] ?? "");
@@ -151,4 +167,37 @@ export async function verTutorialOtraVez() {
   const { olvidarAyudas } = await import("./ayudas");
   await olvidarAyudas();
   oyentesRecorrido.forEach((o) => o());
+}
+
+// ---------- Partida de prueba (como /demo/[mundo] de la web) ----------
+// La ciudad elegida antes de entrar como invitado; la partida es más corta que una
+// normal y al terminar sigue la bienvenida (resultado → Pro → 2 mundos → cuenta).
+export const DEMO_TOTAL = 5;
+export const DEMO_MS = 30_000;
+
+export const guardarCiudadDemo = (slug: string) => guardar(CLAVE_CIUDAD_DEMO, slug);
+export const leerCiudadDemo = () => leer(CLAVE_CIUDAD_DEMO);
+
+export function rutaDemo(slug: string): Href {
+  if (slug === "numeria") return { pathname: "/numeria/sprint", params: { demo: "1" } };
+  if (slug === "geografia") return { pathname: "/geografia/sprint", params: { demo: "1" } };
+  return { pathname: "/[mundo]/sprint", params: { mundo: slug, demo: "1" } };
+}
+
+export function rutaFinDemo(mundo: string, correctos: number, total: number): Href {
+  guardar(CLAVE_CIUDAD_DEMO, null);
+  return { pathname: "/bienvenida", params: { fase: "resultado", mundo, correctos: String(correctos), total: String(total) } };
+}
+
+// Los 2 mundos se eligen antes de crear la cuenta y se guardan recién con la cuenta
+// hecha (si no, el invitado quedaría a medias con mundos y sin cuenta).
+export const guardarMundosPendientes = (mundos: string[]) => guardar(CLAVE_MUNDOS, mundos.join(","));
+export async function leerMundosPendientes(): Promise<string[]> {
+  return ((await leer(CLAVE_MUNDOS)) ?? "").split(",").filter(Boolean);
+}
+export async function aplicarMundosPendientes() {
+  const mundos = await leerMundosPendientes();
+  if (mundos.length !== 2) return;
+  const { error } = await supabase.rpc("elegir_mundos_iniciales", { p_mundos: mundos });
+  if (!error || error.message?.includes("ya elegiste")) await guardar(CLAVE_MUNDOS, null);
 }

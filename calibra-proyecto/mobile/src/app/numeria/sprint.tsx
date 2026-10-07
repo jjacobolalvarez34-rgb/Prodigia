@@ -19,6 +19,7 @@ import {
   type SeccionId,
 } from "~/lib/numeria";
 import { cerrarPartida } from "~/lib/partida";
+import { DEMO_MS, DEMO_TOTAL, rutaFinDemo } from "~/lib/bienvenida";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError, supabase } from "~/lib/supabase";
 import Boton3D from "~/ui/Boton3D";
@@ -56,8 +57,11 @@ export default function Sprint() {
   const router = useRouter();
   const { sesion } = useSesion();
   const miId = sesion?.user.id ?? null;
-  const params = useLocalSearchParams<{ seccion?: string; temas?: string; ops?: string; duelo?: string }>();
+  const params = useLocalSearchParams<{ seccion?: string; temas?: string; ops?: string; duelo?: string; demo?: string }>();
   const dueloId = params.duelo ?? null;
+  const demo = params.demo === "1";
+  const totalPartida = demo ? DEMO_TOTAL : TOTAL;
+  const duracionPartida = demo ? DEMO_MS : DURACION_SPRINT_MS;
   const [seccion, setSeccion] = useState<SeccionId>((params.seccion as SeccionId) in SECCION_POR_ID ? (params.seccion as SeccionId) : "aritmetica");
   const [temas, setTemas] = useState<string[]>((params.temas ?? params.ops ?? "suma").split(",").filter(Boolean));
 
@@ -158,7 +162,7 @@ export default function Sprint() {
     if (!ocupadoRef.current) terminar("tiempo");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const reloj = useReloj(inicio, DURACION_SPRINT_MS, alAcabarElTiempo, final !== null);
+  const reloj = useReloj(inicio, duracionPartida, alAcabarElTiempo, final !== null);
   const consumibles = useConsumibles(!dueloId && inicio != null);
 
   useEffect(() => {
@@ -196,6 +200,13 @@ export default function Sprint() {
     const minimo = new Promise((r) => setTimeout(r, 1100));
     await Promise.allSettled(pendientesRef.current);
     setProgresoFinal(0.55);
+    if (demo) {
+      cerrarPartida(xpRef.current, "numeria").catch(() => undefined);
+      await minimo;
+      setProgresoFinal(1);
+      router.replace(rutaFinDemo("numeria", respuestasRef.current.filter((x) => x.correct).length, totalPartida));
+      return;
+    }
     try {
       const r = await cerrarPartida(xpRef.current, "numeria", dueloId ?? undefined);
       setProgresoFinal(0.85);
@@ -314,11 +325,11 @@ export default function Sprint() {
       () => {
         ocupadoRef.current = false;
         if (terminadoRef.current) return;
-        if (respuestasRef.current.length >= TOTAL) {
+        if (respuestasRef.current.length >= totalPartida) {
           terminar("listo");
           return;
         }
-        if (Date.now() - inicioRef.current >= DURACION_SPRINT_MS) {
+        if (Date.now() - inicioRef.current >= duracionPartida) {
           terminar("tiempo");
           return;
         }
@@ -371,7 +382,7 @@ export default function Sprint() {
       <Glifos glifos={NUMERIA.glifos} acento={NUMERIA.neon} cantidad={8} pulso={pulso} />
       <Animated.View style={[{ flex: 1 }, estiloJuego]}>
         <Cabecera onSalir={confirmarSalida} reloj={reloj} combo={combo} acento={NUMERIA.neon} corriendo={inicio != null && final === null} />
-        <Progreso resultados={resultados} total={TOTAL} acento={NUMERIA.neon} escudos={escudos} />
+        <Progreso resultados={resultados} total={totalPartida} acento={NUMERIA.neon} escudos={escudos} />
         <Consumibles
           reloj={reloj}
           consumibles={consumibles}

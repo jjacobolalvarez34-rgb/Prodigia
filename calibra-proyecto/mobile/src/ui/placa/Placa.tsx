@@ -144,7 +144,7 @@ export function PlacaTarjeta({ placa, onPress, pie, indice = 0 }: { placa: Placa
         <CiudadPlaca ciudad={placa.ciudad} alto={56} quieta />
         <View style={styles.tarjetaIn}>
           <AvatarMarco url={placa.avatarUrl} nombre={placa.nombre} marco={placa.marco} tam={46} animar={false} />
-          <NombreEstilizado texto={placa.nombre} fuente={placa.fuente} animacion={placa.animacion} color={placa.colorNombre} tam={15} estilo={{ textAlign: "center" }} />
+          <NombreEstilizado texto={placa.nombre} fuente={placa.fuente} animacion={placa.animacion} color={placa.colorNombre} tam={15} estilo={{ textAlign: "center" }} ligero />
           <Texto v="nota" tam={11} c="#D6DBEA" numberOfLines={1}>
             {rango.nombre} · Nv {placa.nivel}
           </Texto>
@@ -193,7 +193,7 @@ export function PlacaFila({
         )}
         <AvatarMarco url={placa.avatarUrl} nombre={placa.nombre} marco={placa.marco} tam={32} animar={false} />
         <View style={{ flex: 1, minWidth: 0 }}>
-          <NombreEstilizado texto={placa.nombre} fuente={placa.fuente} animacion={placa.animacion} color={placa.colorNombre} tam={15} />
+          <NombreEstilizado texto={placa.nombre} fuente={placa.fuente} animacion={placa.animacion} color={placa.colorNombre} tam={15} ligero />
           {placa.titulo ? (
             <Texto v="nota" tam={11} numberOfLines={1}>
               «{placa.titulo}»
