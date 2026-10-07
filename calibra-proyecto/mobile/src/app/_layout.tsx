@@ -33,6 +33,7 @@ import AvisoDuelo from "~/ui/AvisoDuelo";
 import AceptarTerminos, { registrarAceptacionEnLaCuenta, terminosAceptadosEnEsteTelefono } from "~/ui/AceptarTerminos";
 import IntroMarca, { INTRO_ACTIVA } from "~/ui/IntroMarca";
 import PantallaCarga from "~/ui/PantallaCarga";
+import PrimeraVez from "~/ui/PrimeraVez";
 import { color, MUNDOS } from "~/tema";
 
 SplashScreen.preventAutoHideAsync();
@@ -212,10 +213,12 @@ function Navegacion() {
           <Stack.Protected guard={!sesion}>
             <Stack.Screen name="login" />
           </Stack.Protected>
+          <Stack.Screen name="auth" options={{ animation: "none" }} />
         </Stack>
       )}
       {!cargando && userId && !sesion?.user.is_anonymous && <AvisoDuelo userId={userId} />}
       <AvisoGlobal />
+      {!cargando && userId && terminos && !cargaVisible && <PrimeraVez key={userId} userId={userId} anonimo={!!sesion?.user.is_anonymous} />}
       {terminos === false && !cargaVisible && <AceptarTerminos onAceptar={() => setTerminos(true)} />}
       {cargaVisible && introEnNegro && <PantallaCarga progreso={progreso} etapa={etapa} onTerminada={ocultarCarga} />}
       {introVisible && <IntroMarca onNegro={introNegra} onTerminada={ocultarIntro} />}

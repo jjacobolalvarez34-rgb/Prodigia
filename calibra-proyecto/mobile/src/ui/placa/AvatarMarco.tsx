@@ -83,9 +83,9 @@ export default function AvatarMarco({ url, nombre, marco = "ninguno", tam = 40, 
   } else if (info.tipo === "temporada") {
     aro = (
       <View style={{ width: tam, height: tam, alignItems: "center", justifyContent: "center" }}>
-        <Animated.View style={[StyleSheet.absoluteFill, { borderRadius: tam / 2, boxShadow: `0px 0px ${tam * 0.3}px ${info.colores[1]}` }, estiloPulso]} />
+        <Animated.View style={[StyleSheet.absoluteFill, { borderRadius: tam / 2, boxShadow: `0px 0px ${tam * 0.3}px ${info.colores[1] ?? info.color}` }, estiloPulso]} />
         <Animated.View style={[StyleSheet.absoluteFill, { borderRadius: tam / 2, overflow: "hidden" }, estiloGiro]}>
-          <LinearGradient colors={[info.colores[0], info.colores[1], info.colores[0]]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+          <LinearGradient colors={[info.colores[0], info.colores[1] ?? info.color, ...info.colores.slice(2), info.colores[0]]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
         </Animated.View>
         {foto}
       </View>

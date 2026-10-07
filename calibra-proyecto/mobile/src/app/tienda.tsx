@@ -321,7 +321,7 @@ export default function Tienda() {
   const bloqueoPro = elegido?.soloPro && e.plan !== "pro";
   const ninguno: Partial<Record<Categoria, string>> = { marco: "ninguno", marco_mundo: "ninguno", fuente: "default", animacion: "ninguna", fondo: "ninguno", galeria: "ninguno", estela: "clasica", efecto: "chispas", sonido: "clasico" };
 
-  const items = catalogo.filter((x) => CATEGORIAS_DE[pestana].includes(x.categoria) && aLaVenta(x));
+  const items = catalogo.filter((x) => CATEGORIAS_DE[pestana].includes(x.categoria) && aLaVenta(x) && (!x.especial || loTiene(x, e)));
   const horasOferta = Math.floor(msHastaFinDelEvento() / 3_600_000);
 
   return (

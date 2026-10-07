@@ -633,6 +633,11 @@ select:disabled {
   --mn-glow: rgba(244, 114, 182, 0.55);
   --mn-glow-suave: rgba(99, 102, 241, 0.3);
 }
+.marco-pionero {
+  --mn-color: #ffc53d;
+  --mn-glow: rgba(108, 76, 241, 0.6);
+  --mn-glow-suave: rgba(255, 197, 61, 0.3);
+}
 .marco-coleccion-numeria {
   --mn-color: #6c4cf1;
   --mn-glow: rgba(108, 76, 241, 0.6);

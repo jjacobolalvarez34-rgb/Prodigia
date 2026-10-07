@@ -62,7 +62,7 @@ export type InfoMarco =
   | { tipo: "mundo"; color: string; imagen: string }
   // Tienda ampliada (0248): de temporada (aro con degradé que gira) y de colección
   // (el anillo del mundo con un resplandor de su color que late).
-  | { tipo: "temporada"; color: string; colores: [string, string] }
+  | { tipo: "temporada"; color: string; colores: string[] }
   | { tipo: "coleccion"; color: string; imagen: string };
 
 export function infoMarco(marco: string | null | undefined): InfoMarco {

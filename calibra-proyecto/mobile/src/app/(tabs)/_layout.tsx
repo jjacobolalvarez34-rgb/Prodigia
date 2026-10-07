@@ -1,6 +1,7 @@
 import { Tabs, useNavigation } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { Dimensions, Easing, InteractionManager } from "react-native";
+import { leerPrimeraVezActiva, suscribirPrimeraVez } from "~/lib/bienvenida";
 import { cargarEstadoEdad, useEdad } from "~/lib/edad";
 import BarraPestanas from "~/ui/BarraPestanas";
 import PreguntaEdad from "~/ui/PreguntaEdad";
@@ -33,6 +34,8 @@ export default function LayoutPestanas() {
   const edad = useEdad();
   const navegacion = useNavigation();
   const [cerrada, setCerrada] = useState(false);
+  // Espera a que termine lo de la primera vez (kit, recorrido).
+  const primeraVez = useSyncExternalStore(suscribirPrimeraVez, leerPrimeraVezActiva);
   useEffect(() => {
     cargarEstadoEdad();
   }, []);
@@ -75,7 +78,7 @@ export default function LayoutPestanas() {
         <Tabs.Screen name="perfil" />
       </Tabs>
       {/* Una vez por cuenta: la edad para los controles del chat (se puede posponer). */}
-      <PreguntaEdad visible={!!edad && !edad.tieneFecha && !cerrada} onCerrar={() => setCerrada(true)} />
+      <PreguntaEdad visible={!!edad && !edad.tieneFecha && !cerrada && !primeraVez} onCerrar={() => setCerrada(true)} />
     </>
   );
 }

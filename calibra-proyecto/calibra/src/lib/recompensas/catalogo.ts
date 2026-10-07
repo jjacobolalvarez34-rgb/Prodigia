@@ -198,8 +198,15 @@ export function temporadaActual(fecha = new Date()): number {
   return ((fecha.getUTCMonth()) % 4) + 1;
 }
 
-export function marcoTemporadaDe(slug: string | null | undefined) {
-  return MARCOS_TEMPORADA.find((m) => m.slug === slug) ?? null;
+// Marcos que no se venden ni salen en cápsulas: «Pionero» es el del Kit del
+// Pionero (0258), con los colores de las 13 ciudades girando.
+export const MARCOS_ESPECIALES: { slug: string; nombre: string; colores: string[] }[] = [
+  { slug: "pionero", nombre: "Pionero", colores: CIUDADES.map((c) => c.color) },
+];
+
+// Marcos con aro de colores que gira: los de temporada y los especiales.
+export function marcoTemporadaDe(slug: string | null | undefined): { slug: string; nombre: string; colores: string[] } | null {
+  return MARCOS_TEMPORADA.find((m) => m.slug === slug) ?? MARCOS_ESPECIALES.find((m) => m.slug === slug) ?? null;
 }
 
 // "coleccion_quimia" → la ciudad del marco animado de colección.

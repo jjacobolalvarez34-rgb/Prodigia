@@ -465,6 +465,8 @@ export const ESTILO_MARCO_PERFIL: Record<string, string> = {
   coleccion_estadistica: "marco-neon-perfil marco-coleccion-estadistica",
   coleccion_naipia: "marco-neon-perfil marco-coleccion-naipia",
   coleccion_codia: "marco-neon-perfil marco-coleccion-codia",
+  // Kit del Pionero (0258): exclusivo de quien entra a la app.
+  pionero: "marco-neon-perfil marco-pionero",
 };
 
 // Los 3 marcos neón de arriba, con su color para la vidriera de la

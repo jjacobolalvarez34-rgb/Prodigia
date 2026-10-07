@@ -10,7 +10,7 @@ import { mostrarAviso } from "~/ui/Aviso";
 import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiario";
 import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
 import { COLUMNAS_COSMETICOS_NUEVOS, cosmeticosDesdeFila, equiparCosmetico, type CosmeticosNuevos } from "@/lib/recompensas/api";
-import { CATALOGO_NUEVO, PAQUETES, temporadaActual, UTILIDADES_NUEVAS, type Rareza as RarezaNueva } from "@/lib/recompensas/catalogo";
+import { CATALOGO_NUEVO, MARCOS_ESPECIALES, PAQUETES, temporadaActual, UTILIDADES_NUEVAS, type Rareza as RarezaNueva } from "@/lib/recompensas/catalogo";
 import { MARCOS_MUNDO, MARCOS_NEON, RANGOS_ELO } from "@/types/database";
 import { supabase } from "./supabase";
 
@@ -52,6 +52,8 @@ export interface ItemTienda {
   rareza?: Rareza;
   temporada?: number;
   items?: string[];
+  // No se vende: solo aparece si ya lo tienes (el marco «Pionero» del Kit del Pionero).
+  especial?: boolean;
 }
 
 export function rarezaDeItem(it: ItemTienda): Rareza {
@@ -92,6 +94,16 @@ export const CATALOGO: ItemTienda[] = [
     valor: m.slug,
     costoBase: COSTOS[`marco_${m.slug}` as ItemComprable],
     colorHex: m.colorHex,
+  })),
+  ...MARCOS_ESPECIALES.map((m) => ({
+    item: `marco_${m.slug}` as ItemComprable,
+    nombre: `Marco ${m.nombre}`,
+    descripcion: "Exclusivo del Kit del Pionero: solo se consigue entrando a la app.",
+    categoria: "marco" as const,
+    valor: m.slug,
+    costoBase: 0,
+    rareza: "legendario" as const,
+    especial: true,
   })),
   ...Object.keys(MARCOS_MUNDO).map((mundo) => ({
     item: `marco_${mundo}` as ItemComprable,
