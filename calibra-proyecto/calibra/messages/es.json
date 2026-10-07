@@ -82,7 +82,7 @@
     "teRetaronAVarios": "Te retaron a {n} duelos",
     "alguien": "Alguien",
     "teRetoA": "{nombre} te retó a {que}",
-    "expiraEn": "expira en {n}s",
+    "expiraEn": "expira en {n}",
     "rechazar": "Rechazar",
     "jugar": "Jugar",
     "rangosIntro": "Tu rango sube o baja según tu ELO en duelos clasificatorios — de Bronce a Prodigio. Ganar suma, perder resta; los casuales no cuentan.",
@@ -321,7 +321,10 @@
       "metadata": {
         "title": "Mensajes con {nombre}",
         "description": "Conversación privada con {nombre} en Prodigia."
-      }
+      },
+      "borrar": "Borrar mensaje",
+      "confirmarBorrar": "¿Borrar este mensaje? Se borra para todos en el chat.",
+      "eliminado": "Mensaje eliminado"
     }
   },
   "mundoProgreso": {
@@ -394,7 +397,7 @@
     },
     "subirAvatar": {
       "tipoInvalido": "Tiene que ser una imagen (PNG, JPG, WEBP o GIF).",
-      "tamanoExcedido": "La imagen no puede pesar más de 2MB.",
+      "tamanoExcedido": "No pudimos achicar la imagen hasta 2 MB. Prueba con otra.",
       "errorSubida": "No pudimos subir la imagen. Prueba de nuevo.",
       "errorGuardarPerfil": "La imagen se subió pero no pudimos guardarla en tu perfil. Prueba de nuevo.",
       "subiendo": "Subiendo...",
@@ -403,7 +406,7 @@
     },
     "subirFondoPerfil": {
       "tipoInvalido": "Tiene que ser una imagen (PNG, JPG, WEBP o GIF).",
-      "tamanoExcedido": "La imagen no puede pesar más de 3MB.",
+      "tamanoExcedido": "No pudimos achicar la imagen hasta 3 MB. Prueba con otra.",
       "errorSubida": "No pudimos subir la imagen. Prueba de nuevo.",
       "errorGuardarPerfil": "La imagen se subió pero no pudimos guardarla en tu perfil. Prueba de nuevo.",
       "subiendo": "Subiendo...",
@@ -1875,7 +1878,10 @@
       "responder": "Responder",
       "respondiendoA": "Respondiendo a {nombre}",
       "cancelarRespuesta": "Cancelar respuesta",
-      "mensajeNoDisponible": "Mensaje no disponible"
+      "mensajeNoDisponible": "Mensaje no disponible",
+      "borrar": "Borrar mensaje",
+      "confirmarBorrar": "¿Borrar este mensaje? Se borra para todos en el chat.",
+      "eliminado": "Mensaje eliminado"
     },
     "escenaCiudad": {
       "alt": "Ciudad del clan — {tier}"

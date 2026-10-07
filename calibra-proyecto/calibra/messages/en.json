@@ -82,7 +82,7 @@
     "teRetaronAVarios": "You've been challenged to {n} duels",
     "alguien": "Someone",
     "teRetoA": "{nombre} challenged you to {que}",
-    "expiraEn": "expires in {n}s",
+    "expiraEn": "expires in {n}",
     "rechazar": "Decline",
     "jugar": "Play",
     "rangosIntro": "Your rank rises or falls with your ELO in ranked duels — from Bronze to Prodigy. Wins add, losses subtract; casuals don't count.",
@@ -321,7 +321,10 @@
       "metadata": {
         "title": "Messages with {nombre}",
         "description": "Private conversation with {nombre} on Prodigia."
-      }
+      },
+      "borrar": "Delete message",
+      "confirmarBorrar": "Delete this message? It will be deleted for everyone in the chat.",
+      "eliminado": "Message deleted"
     }
   },
   "mundoProgreso": {
@@ -394,7 +397,7 @@
     },
     "subirAvatar": {
       "tipoInvalido": "It has to be an image (PNG, JPG, WEBP, or GIF).",
-      "tamanoExcedido": "The image can't be larger than 2MB.",
+      "tamanoExcedido": "We couldn't shrink the image down to 2 MB. Try another one.",
       "errorSubida": "We couldn't upload the image. Try again.",
       "errorGuardarPerfil": "The image uploaded but we couldn't save it to your profile. Try again.",
       "subiendo": "Uploading...",
@@ -403,7 +406,7 @@
     },
     "subirFondoPerfil": {
       "tipoInvalido": "It has to be an image (PNG, JPG, WEBP, or GIF).",
-      "tamanoExcedido": "The image can't be larger than 3MB.",
+      "tamanoExcedido": "We couldn't shrink the image down to 3 MB. Try another one.",
       "errorSubida": "We couldn't upload the image. Try again.",
       "errorGuardarPerfil": "The image uploaded but we couldn't save it to your profile. Try again.",
       "subiendo": "Uploading...",
@@ -1875,7 +1878,10 @@
       "responder": "Reply",
       "respondiendoA": "Replying to {nombre}",
       "cancelarRespuesta": "Cancel reply",
-      "mensajeNoDisponible": "Message not available"
+      "mensajeNoDisponible": "Message not available",
+      "borrar": "Delete message",
+      "confirmarBorrar": "Delete this message? It will be deleted for everyone in the chat.",
+      "eliminado": "Message deleted"
     },
     "escenaCiudad": {
       "alt": "Clan city — {tier}"

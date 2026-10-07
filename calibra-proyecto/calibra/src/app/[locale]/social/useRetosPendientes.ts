@@ -13,6 +13,8 @@ export interface RetoPendienteBase {
   retador_nombre: string | null;
   retador_elo: number;
   retador_titulo_nombre: string | null;
+  // 0256: cuándo vence (los retos entre amigos duran 24 h; el resto, 60 s).
+  expira_at?: string | null;
 }
 
 export interface RetoPendiente extends RetoPendienteBase {
@@ -21,9 +23,17 @@ export interface RetoPendiente extends RetoPendienteBase {
 
 const DURACION_INVITACION_S = 60;
 
-function segundosRestantesDe(creadoAt: string): number {
-  const transcurrido = (Date.now() - new Date(creadoAt).getTime()) / 1000;
+function segundosRestantesDe(r: RetoPendienteBase): number {
+  if (r.expira_at) return Math.max(0, Math.round((new Date(r.expira_at).getTime() - Date.now()) / 1000));
+  const transcurrido = (Date.now() - new Date(r.creado_at).getTime()) / 1000;
   return Math.max(0, Math.round(DURACION_INVITACION_S - transcurrido));
+}
+
+// 45 → «45s», 720 → «12 min», 10800 → «3 h».
+export function formatoRestante(seg: number): string {
+  if (seg >= 3600) return `${Math.floor(seg / 3600)} h`;
+  if (seg >= 60) return `${Math.floor(seg / 60)} min`;
+  return `${seg}s`;
 }
 
 // Fase 4: cualquier invitación a duelo expira sola al minuto si nadie la
@@ -36,7 +46,7 @@ function segundosRestantesDe(creadoAt: string): number {
 // de estar jugable pasado el minuto.
 export function useRetosPendientes(iniciales: RetoPendienteBase[]) {
   const [retos, setRetos] = useState<RetoPendiente[]>(() =>
-    iniciales.map((r) => ({ ...r, segundosRestantes: segundosRestantesDe(r.creado_at) }))
+    iniciales.map((r) => ({ ...r, segundosRestantes: segundosRestantesDe(r) }))
   );
   const rechazandoRef = useRef<Set<string>>(new Set());
 
@@ -53,7 +63,7 @@ export function useRetosPendientes(iniciales: RetoPendienteBase[]) {
       setRetos((prev) => {
         let huboVencido = false;
         const siguiente = prev.map((r) => {
-          const seg = segundosRestantesDe(r.creado_at);
+          const seg = segundosRestantesDe(r);
           if (seg <= 0) huboVencido = true;
           return { ...r, segundosRestantes: seg };
         });

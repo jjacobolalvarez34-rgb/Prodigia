@@ -12,7 +12,7 @@ import Link from "next/link";
 import { hrefDuelo } from "@/lib/duelos/rutas";
 import { IconCampana } from "@/components/icons";
 import type { UseAmigosReturn } from "@/app/[locale]/social/useAmigos";
-import { useRetosPendientes, type RetoPendienteBase } from "@/app/[locale]/social/useRetosPendientes";
+import { formatoRestante, useRetosPendientes, type RetoPendienteBase } from "@/app/[locale]/social/useRetosPendientes";
 import { useInvitacionesClan, type InvitacionClan } from "@/app/[locale]/social/useInvitacionesClan";
 import { reproducirTono } from "@/lib/sonido";
 import { useMensajesNoLeidos } from "@/lib/mensajes/MensajesNoLeidos";
@@ -151,7 +151,7 @@ export default function CampanaNotificaciones({ amigosState, retosIniciales, inv
                             : tSocial(`mundos.${r.mundo}`)}
                         </span>
                         {r.segundosRestantes !== null && (
-                          <span className="shrink-0 font-mono text-[10px] text-texto-secundario">{r.segundosRestantes}s</span>
+                          <span className="shrink-0 font-mono text-[10px] text-texto-secundario">{formatoRestante(r.segundosRestantes)}</span>
                         )}
                       </div>
                       <div className="flex gap-2">

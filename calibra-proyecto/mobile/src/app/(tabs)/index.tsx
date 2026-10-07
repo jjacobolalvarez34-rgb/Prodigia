@@ -2,7 +2,7 @@ import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { cargarMiClan, reclamarMision, type Mision } from "~/lib/clanes";
-import { cargarCompetitivo, finDeSemanaUtc, rankingSemanal, rechazarDuelo, textoFaltan, type DueloPendiente } from "~/lib/competir";
+import { textoVence, cargarCompetitivo, finDeSemanaUtc, rankingSemanal, rechazarDuelo, textoFaltan, type DueloPendiente } from "~/lib/competir";
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, recargarJugador, useJugador } from "~/lib/jugador";
 import { progresoMundo, ultimoJugado, type Continuar, type ProgresoMundo } from "~/lib/mundos";
@@ -205,7 +205,7 @@ export default function Hoy() {
               <View style={{ flex: 1 }}>
                 <Texto v="h3">{p.retador_nombre ?? "Alguien"} te retó</Texto>
                 <Texto v="nota">
-                  {m?.nombre ?? p.mundo} · {p.retador_elo} ELO
+                  {m?.nombre ?? p.mundo} · {p.retador_elo} ELO{textoVence(p.expira_at) ? ` · ${textoVence(p.expira_at)}` : ""}
                 </Texto>
               </View>
             </View>

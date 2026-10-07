@@ -1,9 +1,8 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Linking, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { URL_WEB } from "~/lib/entorno";
 import { activarAvisos, permisoConcedido } from "~/lib/notificaciones";
 import { cargarResumen, type Resumen } from "~/lib/resumen";
 import { useSesion } from "~/lib/sesion";
@@ -154,7 +153,7 @@ export default function Avisos() {
         {!esInvitado && (
           <>
             <Text style={styles.seccion}>Mensajes</Text>
-            <Pressable onPress={() => Linking.openURL(`${URL_WEB}/social`)}>
+            <Pressable onPress={() => router.push({ pathname: "/social", params: { seccion: "amigos" } })}>
               <LinearGradient
                 colors={resumen && resumen.mensajesSinLeer > 0 ? ["#3B2C8F", "#1B1440"] : ["#171D34", "#12172A"]}
                 start={{ x: 0, y: 0 }}
@@ -168,9 +167,9 @@ export default function Avisos() {
                       ? `${resumen.mensajesSinLeer} ${resumen.mensajesSinLeer === 1 ? "mensaje sin leer" : "mensajes sin leer"}`
                       : "Estás al día"}
                   </Text>
-                  <Text style={styles.mensajesTexto}>De tus amigos y del chat de tu clan. El chat llega pronto a la app; por ahora se abre en la web.</Text>
+                  <Text style={styles.mensajesTexto}>De tus amigos y del chat de tu clan. Toca para abrir tus chats.</Text>
                 </View>
-                <Text style={styles.flecha}>↗</Text>
+                <Text style={styles.flecha}>›</Text>
               </LinearGradient>
             </Pressable>
           </>

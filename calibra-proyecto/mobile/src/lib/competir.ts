@@ -30,6 +30,18 @@ export interface DueloPendiente {
   retador_nombre: string | null;
   retador_elo: number;
   retador_titulo_nombre: string | null;
+  // 0256: los retos entre amigos duran 24 horas; el resto de las invitaciones, 60 s.
+  sub_tipo?: string | null;
+  expira_at?: string | null;
+}
+
+// «vence en 3 h», «vence en 12 min» (null si la base todavía no manda expira_at).
+export function textoVence(expiraAt: string | null | undefined, ahora = Date.now()): string | null {
+  if (!expiraAt) return null;
+  const min = Math.max(0, Math.round((new Date(expiraAt).getTime() - ahora) / 60_000));
+  if (min >= 60) return `vence en ${Math.floor(min / 60)} h`;
+  if (min >= 1) return `vence en ${min} min`;
+  return "vence en menos de 1 min";
 }
 
 export interface StatsCasual {

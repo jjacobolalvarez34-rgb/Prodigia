@@ -81,10 +81,12 @@ async function guardarPreferencias(p: PreferenciasAvisos) {
   }
 }
 
-// Con la app abierta, el aviso se muestra igual como banner.
+// Con la app abierta, el aviso se muestra igual como banner. El del reto a duelo que
+// genera la propia app (AvisoDuelo.tsx, `local`) ya se ve como tarjeta dentro de la
+// app: ese solo queda en la barra de notificaciones, sin banner repetido.
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowBanner: true,
+  handleNotification: async (n) => ({
+    shouldShowBanner: n.request.content.data?.local !== true,
     shouldShowList: true,
     shouldPlaySound: true,
     shouldSetBadge: true,

@@ -8,7 +8,7 @@ import PlacaAmigo from "@/components/PlacaAmigo";
 import { hrefDuelo } from "@/lib/duelos/rutas";
 import SelectorMundoDuelo, { useMundosDuelo } from "@/components/duelos/SelectorMundoDuelo";
 import type { UseAmigosReturn } from "./useAmigos";
-import { useRetosPendientes, type RetoPendienteBase } from "./useRetosPendientes";
+import { formatoRestante, useRetosPendientes, type RetoPendienteBase } from "./useRetosPendientes";
 
 type Panel = "ninguno" | "agregar" | "solicitudes" | "retos";
 
@@ -156,7 +156,7 @@ export default function FeedSidebar({ amigosState, retosIniciales }: Props) {
                     {r.mundo === "numeria" && r.operation_type ? t(`operaciones.${r.operation_type}`) : t(`mundos.${r.mundo}`)}
                   </span>
                   {r.segundosRestantes !== null && (
-                    <span className="shrink-0 font-mono text-[10px] text-texto-secundario">{r.segundosRestantes}s</span>
+                    <span className="shrink-0 font-mono text-[10px] text-texto-secundario">{formatoRestante(r.segundosRestantes)}</span>
                   )}
                 </div>
                 <div className="flex gap-2">

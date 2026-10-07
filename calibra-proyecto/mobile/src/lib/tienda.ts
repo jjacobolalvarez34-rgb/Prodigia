@@ -3,7 +3,10 @@
 // (comprar_item_tienda revalida precio, nivel y Pro en el servidor). Sin Trastienda
 // ni apuestas (PROD-01) y sin compra de Chispas con dinero (llega con Play Billing).
 import { File } from "expo-file-system";
+import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import * as ImagePicker from "expo-image-picker";
+import { comprimirGif } from "@/lib/imagenes/comprimirGif";
+import { mostrarAviso } from "~/ui/Aviso";
 import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiario";
 import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
 import { COLUMNAS_COSMETICOS_NUEVOS, cosmeticosDesdeFila, equiparCosmetico, type CosmeticosNuevos } from "@/lib/recompensas/api";
@@ -427,21 +430,52 @@ export async function guardarColorNombre(colorHex: string | null) {
 
 const TIPOS: Record<string, string> = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp", gif: "image/gif" };
 
-async function elegirImagen(maxBytes: number): Promise<{ bytes: ArrayBuffer; ext: string; tipo: string } | null> {
+// Si la imagen pesa más que el límite del bucket, se achica en el teléfono antes de
+// subirla (pedido del usuario, 2026-10-06) en vez de rechazarla: los GIF con
+// comprimirGif (siguen animados, mismo código que la web) y las fotos con
+// expo-image-manipulator (más chicas y en WEBP). Lo que ya cumple se sube tal cual.
+async function achicarFoto(uri: string, ancho: number, alto: number, maxBytes: number, maxLado: number): Promise<ArrayBuffer | null> {
+  const escala0 = Math.min(1, maxLado / Math.max(ancho || maxLado, alto || maxLado));
+  for (const factor of [1, 0.8, 0.62, 0.48, 0.36]) {
+    const w = Math.max(1, Math.round((ancho || maxLado) * escala0 * factor));
+    for (const calidad of [0.85, 0.72, 0.6]) {
+      const ctx = ImageManipulator.manipulate(uri);
+      ctx.resize({ width: w });
+      const imagen = await ctx.renderAsync();
+      const r = await imagen.saveAsync({ compress: calidad, format: SaveFormat.WEBP });
+      const bytes = await new File(r.uri).arrayBuffer();
+      if (bytes.byteLength <= maxBytes) return bytes;
+    }
+  }
+  return null;
+}
+
+async function elegirImagen(maxBytes: number, maxLado: number): Promise<{ bytes: ArrayBuffer; ext: string; tipo: string } | null> {
   const r = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["images"], allowsEditing: false, quality: 0.9 });
   if (r.canceled || !r.assets[0]) return null;
   const a = r.assets[0];
   const ext = (a.fileName?.split(".").pop() ?? a.uri.split(".").pop() ?? "jpg").toLowerCase().split("?")[0];
   const tipo = a.mimeType ?? TIPOS[ext] ?? "image/jpeg";
   if (!Object.values(TIPOS).includes(tipo)) throw new Error("Usa una imagen PNG, JPG, WEBP o GIF.");
-  if (a.fileSize && a.fileSize > maxBytes) throw new Error(`La imagen pesa más de ${Math.round(maxBytes / 1_000_000)} MB.`);
   const bytes = await new File(a.uri).arrayBuffer();
-  if (bytes.byteLength > maxBytes) throw new Error(`La imagen pesa más de ${Math.round(maxBytes / 1_000_000)} MB.`);
-  return { bytes, ext: ext === "jpeg" ? "jpg" : ext, tipo };
+  if (bytes.byteLength <= maxBytes) return { bytes, ext: ext === "jpeg" ? "jpg" : ext, tipo };
+
+  const limite = `${Math.round(maxBytes / 1_000_000)} MB`;
+  mostrarAviso("Tu imagen pesa mucho: la estamos achicando…", "info");
+  // Un respiro para que el aviso se dibuje antes del trabajo pesado.
+  await new Promise((ok) => setTimeout(ok, 50));
+  if (tipo === "image/gif") {
+    const g = comprimirGif(bytes, maxBytes, maxLado);
+    if (!g) throw new Error(`No pudimos achicar el GIF hasta ${limite}. Prueba con otro.`);
+    return { bytes: g.bytes.buffer.slice(g.bytes.byteOffset, g.bytes.byteOffset + g.bytes.byteLength) as ArrayBuffer, ext: "gif", tipo: "image/gif" };
+  }
+  const chica = await achicarFoto(a.uri, a.width, a.height, maxBytes, maxLado);
+  if (!chica) throw new Error(`No pudimos achicar la imagen hasta ${limite}. Prueba con otra.`);
+  return { bytes: chica, ext: "webp", tipo: "image/webp" };
 }
 
 export async function subirAvatar(userId: string): Promise<string | null> {
-  const img = await elegirImagen(2_000_000);
+  const img = await elegirImagen(2_000_000, 512);
   if (!img) return null;
   const ruta = `${userId}/foto.${img.ext}`;
   const { error } = await supabase.storage.from("avatares").upload(ruta, img.bytes, { upsert: true, cacheControl: "3600", contentType: img.tipo });
@@ -453,7 +487,7 @@ export async function subirAvatar(userId: string): Promise<string | null> {
 }
 
 export async function subirFondo(userId: string): Promise<string | null> {
-  const img = await elegirImagen(3_000_000);
+  const img = await elegirImagen(3_000_000, 1600);
   if (!img) return null;
   const ruta = `${userId}/fondo.${img.ext}`;
   const { error } = await supabase.storage.from("fondos-perfil").upload(ruta, img.bytes, { upsert: true, cacheControl: "3600", contentType: img.tipo });

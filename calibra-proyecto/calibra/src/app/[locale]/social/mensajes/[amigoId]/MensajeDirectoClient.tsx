@@ -21,6 +21,9 @@ export interface MensajeDirecto {
   responde_a?: string | null;
   responde_a_texto?: string | null;
   responde_a_remitente_id?: string | null;
+  // 0256: borrado por quien lo mandó (el texto llega como «Mensaje eliminado»;
+  // el original queda guardado en la base).
+  borrado?: boolean;
 }
 
 interface Props {
@@ -49,6 +52,11 @@ interface Props {
 // respuesta en cada burbuja; aparece la cita sobre el cuadro de texto y dentro
 // de la respuesta enviada, y al tocar la cita se salta al mensaje original), y
 // quien recibe sin tener el chat abierto recibe un aviso (MensajesNoLeidos).
+// Marca un mensaje como borrado (y su cita en las respuestas) sin sacarlo del chat.
+function marcarBorrado(lista: MensajeDirecto[], id: string, texto: string): MensajeDirecto[] {
+  return lista.map((x) => (x.id === id ? { ...x, borrado: true, texto } : x.responde_a === id ? { ...x, responde_a_texto: texto } : x));
+}
+
 function canalConversacion(a: string, b: string): string {
   return `dm:${[a, b].sort().join(":")}`;
 }
@@ -81,12 +89,16 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
       const m = payload as MensajeDirecto;
       setMensajes((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
     });
+    channel.on("broadcast", { event: "borrado" }, ({ payload }) => {
+      setMensajes((prev) => marcarBorrado(prev, (payload as { id: string }).id, t("eliminado")));
+    });
     channel.subscribe();
 
     return () => {
       channelRef.current = null;
       supabase.removeChannel(channel);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amigoId, miUserId]);
 
   useEffect(() => {
@@ -104,6 +116,18 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
     el.scrollIntoView({ block: "center", behavior: "smooth" });
     setResaltado(id);
     setTimeout(() => setResaltado((actual) => (actual === id ? null : actual)), 1600);
+  }
+
+  async function borrar(m: MensajeDirecto) {
+    if (!window.confirm(t("confirmarBorrar"))) return;
+    const supabase = createClient();
+    const { error: err } = await supabase.rpc("borrar_mensaje_directo", { p_mensaje_id: m.id });
+    if (err) {
+      setError(err.message || t("errorGenerico"));
+      return;
+    }
+    setMensajes((prev) => marcarBorrado(prev, m.id, t("eliminado")));
+    channelRef.current?.send({ type: "broadcast", event: "borrado", payload: { id: m.id } });
   }
 
   function responder(m: MensajeDirecto) {
@@ -185,6 +209,17 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
                 >
                   <IconResponder className="h-3.5 w-3.5" />
                 </button>
+                {esMio && !m.borrado && (
+                  <button
+                    type="button"
+                    onClick={() => borrar(m)}
+                    aria-label={t("borrar")}
+                    title={t("borrar")}
+                    className="flex h-6 w-6 items-center justify-center rounded-full text-xs text-texto-secundario hover:bg-error/10 hover:text-error"
+                  >
+                    🗑
+                  </button>
+                )}
                 {!esMio && <ReportarBoton mensajeDirectoId={m.id} />}
               </span>
             );
@@ -211,7 +246,11 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
                       </span>
                     </button>
                   )}
-                  <p className="break-words text-sm">{m.texto}</p>
+                  {m.borrado ? (
+                    <p className={`text-sm italic ${esMio ? "text-white/75" : "text-texto-secundario"}`}>🚫 {t("eliminado")}</p>
+                  ) : (
+                    <p className="break-words text-sm">{m.texto}</p>
+                  )}
                   <span className={`mt-0.5 block text-right font-mono text-[10px] ${esMio ? "text-white/70" : "text-texto-secundario"}`}>
                     {new Date(m.created_at).toLocaleTimeString(locale === "es" ? "es-AR" : "en-US", {
                       hour: "2-digit",

@@ -25,6 +25,8 @@ interface Mensaje {
   responde_a_texto?: string | null;
   responde_a_autor_id?: string | null;
   responde_a_autor_nombre?: string | null;
+  // 0256: borrado por su autor (el original queda guardado en la base).
+  borrado?: boolean;
 }
 
 interface Props {
@@ -47,6 +49,10 @@ interface Props {
 // apenas el server confirma que pasó las 3 redes de seguridad. Quien
 // no tiene el chat abierto en ese momento simplemente lo ve la
 // próxima vez que entra (carga inicial, sin pérdida de datos).
+function marcarBorrado(lista: Mensaje[], id: string, texto: string): Mensaje[] {
+  return lista.map((x) => (x.id === id ? { ...x, borrado: true, texto } : x.responde_a === id ? { ...x, responde_a_texto: texto } : x));
+}
+
 export default function ChatDeClan({ clanId, miUserId }: Props) {
   const t = useTranslations("Clanes.chat");
   const locale = useLocale();
@@ -86,6 +92,9 @@ export default function ChatDeClan({ clanId, miUserId }: Props) {
       // Está a la vista: no cuenta como no leído.
       marcarLeidoClan();
     });
+    channel.on("broadcast", { event: "borrado" }, ({ payload }) => {
+      setMensajes((prev) => marcarBorrado(prev, (payload as { id: string }).id, t("eliminado")));
+    });
     channel.subscribe();
 
     return () => {
@@ -93,11 +102,24 @@ export default function ChatDeClan({ clanId, miUserId }: Props) {
       channelRef.current = null;
       supabase.removeChannel(channel);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clanId, marcarLeidoClan]);
 
   useEffect(() => {
     finRef.current?.scrollIntoView({ block: "end" });
   }, [mensajes.length]);
+
+  async function borrar(m: Mensaje) {
+    if (!window.confirm(t("confirmarBorrar"))) return;
+    const supabase = createClient();
+    const { error: err } = await supabase.rpc("borrar_mensaje_clan", { p_mensaje_id: m.id });
+    if (err) {
+      setError(err.message);
+      return;
+    }
+    setMensajes((prev) => marcarBorrado(prev, m.id, t("eliminado")));
+    channelRef.current?.send({ type: "broadcast", event: "borrado", payload: { id: m.id } });
+  }
 
   async function enviar() {
     const limpio = texto.trim();
@@ -198,7 +220,11 @@ export default function ChatDeClan({ clanId, miUserId }: Props) {
                     </span>
                   </button>
                 )}
-                <p className="break-words text-sm text-foreground">{m.texto}</p>
+                {m.borrado ? (
+                  <p className="text-sm italic text-texto-secundario">🚫 {t("eliminado")}</p>
+                ) : (
+                  <p className="break-words text-sm text-foreground">{m.texto}</p>
+                )}
               </div>
               <span className="flex shrink-0 items-center gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
                 <button
@@ -213,6 +239,17 @@ export default function ChatDeClan({ clanId, miUserId }: Props) {
                 >
                   <IconResponder className="h-3.5 w-3.5" />
                 </button>
+                {m.autor_id === miUserId && !m.borrado && (
+                  <button
+                    type="button"
+                    onClick={() => borrar(m)}
+                    aria-label={t("borrar")}
+                    title={t("borrar")}
+                    className="flex h-6 w-6 items-center justify-center rounded-full text-xs text-texto-secundario hover:bg-error/10 hover:text-error"
+                  >
+                    🗑
+                  </button>
+                )}
                 {m.autor_id !== miUserId && <ReportarBoton mensajeId={m.id} />}
               </span>
             </div>

@@ -29,6 +29,7 @@ import { ProveedorSesion, useSesion } from "~/lib/sesion";
 import { iniciarSincronizacion } from "~/lib/sinConexion";
 import { conectarPresencia, desconectarPresencia } from "~/lib/social";
 import AvisoGlobal from "~/ui/Aviso";
+import AvisoDuelo from "~/ui/AvisoDuelo";
 import IntroMarca, { INTRO_ACTIVA } from "~/ui/IntroMarca";
 import PantallaCarga from "~/ui/PantallaCarga";
 import { color, MUNDOS } from "~/tema";
@@ -200,6 +201,7 @@ function Navegacion() {
           </Stack.Protected>
         </Stack>
       )}
+      {!cargando && userId && !sesion?.user.is_anonymous && <AvisoDuelo userId={userId} />}
       <AvisoGlobal />
       {cargaVisible && introEnNegro && <PantallaCarga progreso={progreso} etapa={etapa} onTerminada={ocultarCarga} />}
       {introVisible && <IntroMarca onNegro={introNegra} onTerminada={ocultarIntro} />}

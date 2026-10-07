@@ -5,12 +5,19 @@ import { sonar } from "~/lib/efectos";
 import { cargarEstadoEdad, errorDeChat, useEdad } from "~/lib/edad";
 import { recargarJugador, useJugador } from "~/lib/jugador";
 import { useSesion } from "~/lib/sesion";
-import { avisarEnVivo, canalConversacion, cargarConversacion, enviarMensajeDirecto, marcarConversacionLeida, type MensajeDirecto } from "~/lib/social";
+import { avisarEnVivo, borrarMensajeDirecto, canalConversacion, cargarConversacion, enviarMensajeDirecto, marcarConversacionLeida, TEXTO_ELIMINADO, type MensajeDirecto } from "~/lib/social";
 import { mensajeError, supabase } from "~/lib/supabase";
 import { mostrarAviso } from "~/ui/Aviso";
 import Chat, { type MensajeChat } from "~/ui/Chat";
 import { PantallaApilada } from "~/ui/Pantalla";
 import PreguntaEdad from "~/ui/PreguntaEdad";
+
+// Marca un mensaje como borrado (y su cita en las respuestas) sin sacarlo de la lista.
+function marcarBorrado(lista: MensajeDirecto[], id: string): MensajeDirecto[] {
+  return lista.map((x) =>
+    x.id === id ? { ...x, borrado: true, texto: TEXTO_ELIMINADO } : x.responde_a === id ? { ...x, responde_a_texto: TEXTO_ELIMINADO } : x
+  );
+}
 
 // Mensajes directos: mismo canal en vivo que la web (dm:<ids ordenados>), así la
 // conversación se ve igual en los dos lados al instante.
@@ -48,6 +55,9 @@ export default function ChatDirecto() {
         marcarConversacionLeida(id);
       }
     });
+    c.on("broadcast", { event: "borrado" }, ({ payload }) => {
+      setMensajes((prev) => marcarBorrado(prev, (payload as { id: string }).id));
+    });
     c.subscribe();
     return () => {
       canal.current = null;
@@ -64,7 +74,18 @@ export default function ChatDirecto() {
     creado: m.created_at,
     citaTexto: m.responde_a_texto,
     citaAutor: m.responde_a_remitente_id ? (m.responde_a_remitente_id === miId ? "Tú" : nombre ?? "") : null,
+    borrado: !!m.borrado,
   }));
+
+  async function borrar(m: MensajeChat) {
+    try {
+      await borrarMensajeDirecto(m.id);
+      setMensajes((prev) => marcarBorrado(prev, m.id));
+      canal.current?.send({ type: "broadcast", event: "borrado", payload: { id: m.id } });
+    } catch (e) {
+      mostrarAviso(mensajeError(e), "error");
+    }
+  }
 
   async function enviar(texto: string, cita: MensajeChat | null) {
     try {
@@ -92,12 +113,13 @@ export default function ChatDirecto() {
   }
 
   return (
-    <PantallaApilada titulo={nombre || "Mensajes"} subtitulo="Mantén apretado un mensaje para responderlo" sinScroll>
+    <PantallaApilada titulo={nombre || "Mensajes"} subtitulo="Mantén apretado un mensaje para responderlo o borrarlo" sinScroll>
       <Chat
         mensajes={lista}
         miId={miId}
         mostrarAutor={false}
         enviar={enviar}
+        borrar={borrar}
         vacio="Todavía no hay mensajes. ¡Saluda!"
         soloFrases={!!edad?.esMenor || frasesPorAmigo}
         ocultarLibres={!!edad?.esMenor}

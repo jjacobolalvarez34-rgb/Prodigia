@@ -11,7 +11,7 @@ import GlareHover from "@/components/reactbits/GlareHover";
 import BorderGlow from "@/components/reactbits/BorderGlow";
 import Boton from "@/components/Boton";
 import { COLOR_MUNDO, hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
-import { useRetosPendientes, type RetoPendienteBase } from "@/app/[locale]/social/useRetosPendientes";
+import { formatoRestante, useRetosPendientes, type RetoPendienteBase } from "@/app/[locale]/social/useRetosPendientes";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { useConteoUsuariosEnLinea } from "@/lib/presencia/useConteoUsuariosEnLinea";
 import SelectorMundoDuelo, { type SeleccionMundoDuelo } from "@/components/duelos/SelectorMundoDuelo";
@@ -225,7 +225,7 @@ function DuelosPendientes({ pendientes: pendientesIniciales }: { pendientes: Fil
               <div className="flex items-center gap-1.5">
                 <RangoBadge elo={p.retador_elo} tituloNombre={p.retador_titulo_nombre} size="sm" mostrarElo className="text-xs" />
                 {p.segundosRestantes !== null && (
-                  <span className="font-mono text-[10px] text-texto-secundario">· {t("expiraEn", { n: p.segundosRestantes })}</span>
+                  <span className="font-mono text-[10px] text-texto-secundario">· {t("expiraEn", { n: formatoRestante(p.segundosRestantes) })}</span>
                 )}
               </div>
             </Link>

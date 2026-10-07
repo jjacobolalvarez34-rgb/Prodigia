@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { ajustarImagenAlLimite } from "@/lib/imagenes/ajustarImagenWeb";
 import AvatarConMarco from "@/components/AvatarConMarco";
 import GlareHover from "@/components/reactbits/GlareHover";
 import { MARCOS_MUNDO } from "@/types/database";
@@ -32,28 +33,35 @@ export default function SubirAvatar({ userId, nombre, avatarUrlInicial, marco = 
   const [error, setError] = useState<string | null>(null);
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
+    const elegido = e.target.files?.[0];
     e.target.value = "";
-    if (!file) return;
+    if (!elegido) return;
     setError(null);
 
-    if (!TIPOS_PERMITIDOS.has(file.type)) {
+    if (!TIPOS_PERMITIDOS.has(elegido.type)) {
       setError(t("subirAvatar.tipoInvalido"));
       return;
     }
-    if (file.size > MAX_BYTES) {
+    // Si pesa más que el límite, se achica en el navegador (también los GIF).
+    setSubiendo(true);
+    let file: File | null = elegido;
+    try {
+      file = await ajustarImagenAlLimite(elegido, MAX_BYTES, 512);
+    } catch {
+      file = null;
+    }
+    if (!file) {
       setError(t("subirAvatar.tamanoExcedido"));
+      setSubiendo(false);
       return;
     }
-
-    setSubiendo(true);
     const supabase = createClient();
     const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const ruta = `${userId}/foto.${extension}`;
 
     const { error: subidaError } = await supabase.storage
       .from("avatares")
-      .upload(ruta, file, { upsert: true, cacheControl: "3600" });
+      .upload(ruta, file, { upsert: true, cacheControl: "3600", contentType: file.type });
 
     if (subidaError) {
       console.error("[avatar] upload error", subidaError);

@@ -1,9 +1,9 @@
 import { Image } from "expo-image";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { Easing, FadeInDown, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
-import {
+import { textoVence,
   cargarCompetitivo,
   ELO_SOLO_TODAS,
   finDeSemanaUtc,
@@ -53,6 +53,33 @@ function ChipMundo({ id, activo, onPress }: { id: Eleccion; activo: boolean; onP
       <View style={[styles.punto, { backgroundColor: c }]} />
       <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 12, color: activo ? color.texto : color.texto2 }}>{m?.nombre ?? "Todas las ciudades"}</Texto>
     </Pressable>
+  );
+}
+
+// Fila de ciudades que se desliza con el dedo (13 ciudades no entran en una
+// pantalla). Al entrar, se corre sola hasta la ciudad elegida.
+function FilaCiudades({ opciones, valor, onElegir }: { opciones: Eleccion[]; valor: Eleccion; onElegir: (id: Eleccion) => void }) {
+  const [posiciones, setPosiciones] = useState<Record<string, number>>({});
+  const [lista, setLista] = useState<ScrollView | null>(null);
+  const x = posiciones[valor];
+  useEffect(() => {
+    if (lista && x != null) lista.scrollTo({ x: Math.max(0, x - 24), animated: true });
+  }, [lista, x]);
+  return (
+    <ScrollView
+      ref={setLista}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      nestedScrollEnabled
+      style={{ marginHorizontal: -16 }}
+      contentContainerStyle={{ gap: 8, paddingHorizontal: 16 }}
+    >
+      {opciones.map((id) => (
+        <View key={id} onLayout={(e) => setPosiciones((p) => ({ ...p, [id]: e.nativeEvent.layout.x }))}>
+          <ChipMundo id={id} activo={valor === id} onPress={() => onElegir(id)} />
+        </View>
+      ))}
+    </ScrollView>
   );
 }
 
@@ -115,7 +142,7 @@ function Pendientes({ lista, onCambio }: { lista: DueloPendiente[]; onCambio: ()
                 {p.retador_nombre ?? "Alguien"}
               </Texto>
               <Texto v="nota" tam={11}>
-                {m?.nombre ?? p.mundo} · {p.retador_elo} ELO
+                {m?.nombre ?? p.mundo} · {p.retador_elo} ELO{textoVence(p.expira_at) ? ` · ${textoVence(p.expira_at)}` : ""}
               </Texto>
             </View>
             <Pressable
@@ -324,11 +351,7 @@ export default function Competir() {
             </Tarjeta>
           ) : (
             <>
-              <View style={[styles.fila, { flexWrap: "wrap" }]}>
-                {opcionesRankeds.map((id) => (
-                  <ChipMundo key={id} id={id} activo={mundo === id} onPress={() => setMundo(id)} />
-                ))}
-              </View>
+              <FilaCiudades opciones={opcionesRankeds} valor={mundo} onElegir={setMundo} />
               {(rangoAlto || mundo === "aleatorio") && (
                 <Texto v="nota" tam={12}>
                   {rangoAlto ? "Desde Platino, las Rankeds son en todas las ciudades (mejor de 3). " : "Mejor de 3 en ciudades al azar. "}
@@ -375,11 +398,7 @@ export default function Competir() {
               {casual.victorias}V · {casual.derrotas}D · {casual.empates}E
             </Texto>
           </Tarjeta>
-          <View style={styles.fila}>
-            {MUNDOS_DUELO_APP.map((id) => (
-              <ChipMundo key={id} id={id} activo={mundo === id} onPress={() => setMundo(id)} />
-            ))}
-          </View>
+          <FilaCiudades opciones={MUNDOS_DUELO_APP} valor={mundo} onElegir={setMundo} />
           <Boton3D
             titulo="Buscar duelo casual"
             brillo

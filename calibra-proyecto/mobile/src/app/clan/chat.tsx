@@ -1,16 +1,22 @@
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
-import { enviarMensajeClan, mensajesDeClan, type MensajeClan } from "~/lib/clanes";
+import { borrarMensajeClan, enviarMensajeClan, mensajesDeClan, type MensajeClan } from "~/lib/clanes";
 import { sonar } from "~/lib/efectos";
 import { cargarEstadoEdad, errorDeChat, useEdad } from "~/lib/edad";
 import { recargarJugador, useJugador } from "~/lib/jugador";
 import { useSesion } from "~/lib/sesion";
-import { avisarEnVivo } from "~/lib/social";
+import { avisarEnVivo, TEXTO_ELIMINADO } from "~/lib/social";
 import { mensajeError, supabase } from "~/lib/supabase";
 import { mostrarAviso } from "~/ui/Aviso";
 import Chat, { type MensajeChat } from "~/ui/Chat";
 import { PantallaApilada, Vacio } from "~/ui/Pantalla";
 import PreguntaEdad from "~/ui/PreguntaEdad";
+
+function marcarBorrado(lista: MensajeClan[], id: string): MensajeClan[] {
+  return lista.map((x) =>
+    x.id === id ? { ...x, borrado: true, texto: TEXTO_ELIMINADO } : x.responde_a === id ? { ...x, responde_a_texto: TEXTO_ELIMINADO } : x
+  );
+}
 
 // Chat del clan: canal en vivo clan-chat:<id>, el mismo que ChatDeClan.tsx de la web.
 export default function ChatClan() {
@@ -50,6 +56,9 @@ export default function ChatClan() {
         supabase.rpc("marcar_chat_clan_leido");
       }
     });
+    c.on("broadcast", { event: "borrado" }, ({ payload }) => {
+      setMensajes((prev) => marcarBorrado(prev, (payload as { id: string }).id));
+    });
     c.subscribe();
     return () => {
       canal.current = null;
@@ -74,7 +83,18 @@ export default function ChatClan() {
     creado: m.created_at,
     citaTexto: m.responde_a_texto,
     citaAutor: m.responde_a_autor_nombre,
+    borrado: !!m.borrado,
   }));
+
+  async function borrar(m: MensajeChat) {
+    try {
+      await borrarMensajeClan(m.id);
+      setMensajes((prev) => marcarBorrado(prev, m.id));
+      canal.current?.send({ type: "broadcast", event: "borrado", payload: { id: m.id } });
+    } catch (e) {
+      mostrarAviso(mensajeError(e), "error");
+    }
+  }
 
   async function enviar(texto: string, cita: MensajeChat | null) {
     if (!clan) return;
@@ -108,6 +128,7 @@ export default function ChatClan() {
         miId={miId}
         mostrarAutor
         enviar={enviar}
+        borrar={borrar}
         vacio="Nadie escribió todavía. ¡Rompe el hielo!"
         soloFrases={!!edad?.esMenor}
         ocultarLibres={!!edad?.esMenor}

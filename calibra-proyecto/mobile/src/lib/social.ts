@@ -96,6 +96,8 @@ export interface MensajeDirecto {
   responde_a: string | null;
   responde_a_texto: string | null;
   responde_a_remitente_id: string | null;
+  // 0256: borrado por quien lo mandó (el texto llega como «Mensaje eliminado»).
+  borrado?: boolean;
 }
 
 // Abrir la conversación ya la marca como leída en el servidor.
@@ -126,6 +128,15 @@ export function avisarEnVivo(canal: string, evento: string, payload: Record<stri
     if (estado !== "SUBSCRIBED") return;
     c.send({ type: "broadcast", event: evento, payload }).finally(() => supabase.removeChannel(c));
   });
+}
+
+// Borra un mensaje propio para los dos (0256): en la base queda guardado como
+// respaldo; el chat muestra «Mensaje eliminado».
+export const TEXTO_ELIMINADO = "Mensaje eliminado";
+
+export async function borrarMensajeDirecto(mensajeId: string) {
+  const { error } = await supabase.rpc("borrar_mensaje_directo", { p_mensaje_id: mensajeId });
+  if (error) throw error;
 }
 
 export function marcarConversacionLeida(amigoId: string) {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FlatList, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Alert, FlatList, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import Animated, { FadeInUp, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { esFraseRapida, FRASES_RAPIDAS, TEXTO_OCULTO } from "~/lib/edad";
@@ -9,9 +9,10 @@ import { IconoCerrar, IconoEnviar } from "./Iconos";
 import AvatarMarco from "./placa/AvatarMarco";
 import Texto from "./Texto";
 
-// Chat de la app (mensajes directos y del clan): burbujas que entran con resorte,
-// mantener apretado un mensaje para responderlo, y el campo de texto que sube con el
-// teclado.
+// Chat de la app (mensajes directos y del clan), como WhatsApp o Instagram: lo más
+// nuevo abajo, junto al campo de texto. Burbujas que entran con resorte; mantener
+// apretado un mensaje abre Responder y, si es tuyo, Borrar (0256: se oculta para
+// todos, pero queda guardado en la base como respaldo).
 export interface MensajeChat {
   id: string;
   autorId: string;
@@ -21,6 +22,7 @@ export interface MensajeChat {
   creado: string;
   citaTexto: string | null;
   citaAutor: string | null;
+  borrado?: boolean;
 }
 
 interface Props {
@@ -28,6 +30,8 @@ interface Props {
   miId: string;
   mostrarAutor: boolean;
   enviar: (texto: string, respondeA: MensajeChat | null) => Promise<void>;
+  // Borrar un mensaje propio (si no se pasa, no se ofrece).
+  borrar?: (m: MensajeChat) => Promise<void>;
   vacio: string;
   // Controles por edad (lib/edad.ts): solo frases rápidas, mensajes de texto libre
   // de los demás ocultos, o pedir la edad antes de escribir.
@@ -41,13 +45,38 @@ function hora(iso: string) {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-export default function Chat({ mensajes, miId, mostrarAutor, enviar, vacio, soloFrases, ocultarLibres, pedirEdad }: Props) {
+export default function Chat({ mensajes, miId, mostrarAutor, enviar, borrar, vacio, soloFrases, ocultarLibres, pedirEdad }: Props) {
   const insets = useSafeAreaInsets();
   const [texto, setTexto] = useState("");
   const [cita, setCita] = useState<MensajeChat | null>(null);
   const [enviando, setEnviando] = useState(false);
   const lista = useRef<FlatList<MensajeChat>>(null);
-  const invertidos = mensajes.slice().reverse();
+  // La lista va invertida (el primer elemento queda abajo): del más nuevo al más
+  // viejo, ordenado por fecha sin importar en qué orden llegue del servidor.
+  const invertidos = mensajes.slice().sort((a, b) => b.creado.localeCompare(a.creado));
+
+  function opciones(m: MensajeChat) {
+    if (m.borrado) return;
+    vibrar.medio();
+    const mio = m.autorId === miId;
+    if (!mio || !borrar) {
+      setCita(m);
+      return;
+    }
+    Alert.alert("Mensaje", m.texto.length > 80 ? `${m.texto.slice(0, 80)}…` : m.texto, [
+      { text: "Responder", onPress: () => setCita(m) },
+      {
+        text: "Borrar",
+        style: "destructive",
+        onPress: () =>
+          Alert.alert("¿Borrar el mensaje?", "Se borra para todos en este chat.", [
+            { text: "Cancelar", style: "cancel" },
+            { text: "Borrar", style: "destructive", onPress: () => borrar(m) },
+          ]),
+      },
+      { text: "Cancelar", style: "cancel" },
+    ]);
+  }
 
   useEffect(() => {
     lista.current?.scrollToOffset({ offset: 0, animated: true });
@@ -90,10 +119,7 @@ export default function Chat({ mensajes, miId, mostrarAutor, enviar, vacio, solo
                 <View style={{ width: 30 }}>{!agrupado && <AvatarMarco url={m.autorAvatar} nombre={m.autorNombre ?? "?"} tam={28} animar={false} />}</View>
               )}
               <Pressable
-                onLongPress={() => {
-                  vibrar.medio();
-                  setCita(m);
-                }}
+                onLongPress={() => opciones(m)}
                 delayLongPress={300}
                 style={[styles.burbuja, mio ? styles.mia : styles.suya]}
               >
@@ -112,7 +138,11 @@ export default function Chat({ mensajes, miId, mostrarAutor, enviar, vacio, solo
                     </Texto>
                   </View>
                 ) : null}
-                {ocultarLibres && !mio && !esFraseRapida(m.texto) ? (
+                {m.borrado ? (
+                  <Texto v="nota" c={mio ? "rgba(255,255,255,0.75)" : color.texto2} style={{ fontStyle: "italic" }}>
+                    🚫 Mensaje eliminado
+                  </Texto>
+                ) : ocultarLibres && !mio && !esFraseRapida(m.texto) ? (
                   <Texto v="nota" c={color.texto2} style={{ fontStyle: "italic" }}>
                     {TEXTO_OCULTO}
                   </Texto>

@@ -204,12 +204,18 @@ export interface MensajeClan {
   responde_a_texto: string | null;
   responde_a_autor_id: string | null;
   responde_a_autor_nombre: string | null;
+  borrado?: boolean;
 }
 
 export async function mensajesDeClan(clanId: string): Promise<MensajeClan[]> {
   const { data } = await supabase.rpc("mensajes_de_clan", { p_clan_id: clanId, p_limite: 100 });
   supabase.rpc("marcar_chat_clan_leido");
   return ((data as MensajeClan[] | null) ?? []).slice().reverse();
+}
+
+export async function borrarMensajeClan(mensajeId: string) {
+  const { error } = await supabase.rpc("borrar_mensaje_clan", { p_mensaje_id: mensajeId });
+  if (error) throw error;
 }
 
 export async function enviarMensajeClan(texto: string, respondeA: string | null) {
