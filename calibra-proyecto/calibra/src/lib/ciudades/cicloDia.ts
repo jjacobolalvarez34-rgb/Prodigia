@@ -59,6 +59,13 @@ export function alineacionEnCurso(ahoraMs: number): { inicio: number; fin: numbe
   return ahoraMs < inicio + DURACION_EVENTO_MS ? { inicio, fin: inicio + DURACION_EVENTO_MS } : null;
 }
 
+// De noche en esa ciudad: del anochecer (0,55) a la madrugada (0,95). Mismo corte
+// que ciudad_de_noche() de la base (0259): ahí las constelaciones dan +20 %.
+export function esDeNoche(slug: string, ahoraMs: number): boolean {
+  const f = faseDelDia(slug, ahoraMs);
+  return f >= 0.55 && f < 0.95;
+}
+
 // ---------- Colores del cielo según la hora ----------
 
 interface Clave {

@@ -21,6 +21,7 @@ import Destacados, { type NovedadDestacada } from "~/ui/Destacados";
 import { IconoChispa, IconoCompetir, IconoLlama } from "~/ui/Iconos";
 import NumeroAnimado from "~/ui/NumeroAnimado";
 import { PantallaPestana, TituloSeccion } from "~/ui/Pantalla";
+import PrimerosPasos from "~/ui/PrimerosPasos";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
 import { color, MUNDO_POR_SLUG, mundoDe } from "~/tema";
@@ -147,6 +148,8 @@ export default function Hoy() {
         );
       })()}
 
+      {!esInvitado && <PrimerosPasos indice={indice++} />}
+
       {!esInvitado && (
         <Tarjeta indice={indice++} acento={totalPendientes(recompensas) > 0 ? color.logro : undefined} brillo={totalPendientes(recompensas) > 0 ? 0.3 : 0} onPress={() => router.push("/recompensas")}>
           <View style={styles.fila}>
@@ -165,10 +168,10 @@ export default function Hoy() {
                     ]
                       .filter(Boolean)
                       .join(" · ")
-                  : "Misiones, calendario y cápsulas"}
+                  : "Constelaciones, misiones y calendario"}
               </Texto>
               <Texto v="nota" tam={12}>
-                {totalPendientes(recompensas) > 0 ? "Toca para reclamar" : "Juega para ganar cápsulas y completar tus misiones del día"}
+                {totalPendientes(recompensas) > 0 ? "Toca para reclamar" : "Cada partida enciende estrellas en tus constelaciones"}
               </Texto>
             </View>
             {totalPendientes(recompensas) > 0 && (

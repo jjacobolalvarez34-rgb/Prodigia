@@ -4647,7 +4647,7 @@
   "Recompensas": {
     "metadata": {
       "title": "Rewards · Prodigia",
-      "description": "Capsules, daily missions, calendar and city collections."
+      "description": "Constellations, daily missions, calendar and city collections."
     },
     "titulo": "Rewards",
     "subtitulo": "Everything is earned by playing: none of this can be bought.",
@@ -4678,14 +4678,16 @@
         "chispas": "{n} Sparks",
         "hielo": "1 ice",
         "tiempo_extra": "+3 s",
-        "capsula": "Streak capsule"
-      }
+        "capsula": "Streak capsule",
+        "estrellas": "{n} stars"
+      },
+      "estrellas": "{n} stars in your favorite city!"
     },
     "misiones": {
       "titulo": "Today's missions",
-      "nota": "Finish all 3 and get an extra capsule.",
+      "nota": "Complete all 3 to light 2 stars in your favorite city.",
       "reclamar": "Claim",
-      "tresCompletas": "All 3 missions! You earned a capsule.",
+      "tresCompletas": "All 3 missions! +2 stars in your favorite city.",
       "chispas": "+{n} Sparks",
       "tipos": {
         "aciertos": "Get {n} answers right",
@@ -4717,7 +4719,7 @@
       "nota": "6 pieces per city: frame, background, trail, effect, emote and title. Complete it to win its animated frame.",
       "de": "{ciudad} collection",
       "enTienda": "in the shop",
-      "enCapsulas": "in city or league capsules",
+      "enCapsulas": "by completing this city's constellations",
       "irTienda": "Go to the shop",
       "categorias": {
         "marco": "Frame",
@@ -4730,8 +4732,8 @@
     },
     "inicio": {
       "titulo": "Rewards",
-      "nada": "Missions, calendar and capsules",
-      "notaNada": "Play to earn capsules and finish your daily missions",
+      "nada": "Constellations, missions and calendar",
+      "notaNada": "Every game lights stars in your constellations",
       "pendientes": "You have {n, plural, one {# reward} other {# rewards}} to claim",
       "toca": "Tap to claim"
     },
@@ -4786,7 +4788,7 @@
         "legendario": "Legendary"
       }
     },
-    "invitado": "Capsules, missions and the calendar are for registered accounts. Create your account to start earning them.",
+    "invitado": "Constellations, missions and the calendar are for registered accounts. Create your account to start earning them.",
     "detalle": {
       "nivel": "Level {n}",
       "racha": "{n}-day streak",
@@ -4807,6 +4809,88 @@
       "cosmetico": "A {rareza} cosmetic",
       "coleccion": "A {ciudad} collection piece you don't have",
       "marcoColeccion": "The {ciudad} collection frame"
+    },
+    "constelaciones": {
+      "titulo": "Constellations",
+      "nota": "Every game lights stars in its city's sky. At 7, the constellation draws itself and gives you its prize.",
+      "comoFunciona": "How does it work?",
+      "como": [
+        "Every game lights 1 star in the city where you played (+1 if you get 80% or more right).",
+        "Leveling up, a 7-day streak, the 3 daily missions and the league light stars in your favorite city.",
+        "At 7 stars, the constellation draws itself in the sky and gives you its prize.",
+        "If it is night in that city, the prize is 20% bigger. During the Great Alignment, double."
+      ],
+      "fugaz": "1 in 5 constellations brings a shooting star with an extra prize.",
+      "alineacion": "✦ Great Alignment: constellations give double prizes",
+      "leyenda": "☾ Night in that city: +20%. ★ Your favorite city: stars from levels, streak, missions and league land there.",
+      "estado": "{n}/7 · {chispas} Sparks",
+      "pieza": "+ piece",
+      "celebracion": {
+        "de": "{ciudad} constellation · No. {n}",
+        "titulo": "It drew itself in the sky!",
+        "chispas": "{n} Sparks",
+        "fugaz": "Shooting star: {premio}",
+        "alineacion": "Great Alignment: double prize.",
+        "noche": "It was night in the city: +20%.",
+        "siguiente": "Next",
+        "genial": "Great!",
+        "fugaces": {
+          "hielo": "1 ice",
+          "tiempo_extra": "+3 seconds",
+          "pista": "1 hint",
+          "chispas": "200 Sparks"
+        }
+      }
+    }
+  },
+  "PrimerosPasos": {
+    "titulo": "First steps",
+    "verTodo": "see all",
+    "ocultar": "hide",
+    "reclamar": "Claim {premio}",
+    "alFinal": "Complete all 8: 500 Sparks and the title “On the right track”.",
+    "finalReclamado": "First steps complete! Title “On the right track”.",
+    "premio": {
+      "chispas": "{n} Sparks",
+      "hielo": "{n, plural, one {# ice} other {# ices}}"
+    },
+    "tareas": {
+      "reto_diario": {
+        "titulo": "Play the daily challenge",
+        "ensena": "The same challenge for everyone, every day."
+      },
+      "tecnica": {
+        "titulo": "Complete a Technique in Learn",
+        "ensena": "Short tricks to solve faster."
+      },
+      "amigo": {
+        "titulo": "Add a friend",
+        "ensena": "Play and compete with your people."
+      },
+      "duelo_amigo": {
+        "titulo": "Challenge a friend to a duel",
+        "ensena": "Live duels, face to face."
+      },
+      "misiones": {
+        "titulo": "Complete the 3 daily missions",
+        "ensena": "3 new missions every day."
+      },
+      "constelacion": {
+        "titulo": "Complete your first constellation",
+        "ensena": "Every game lights stars in its city."
+      },
+      "placa": {
+        "titulo": "Customize your plaque",
+        "ensena": "Photo, frame, background or font: make it yours."
+      },
+      "racha": {
+        "titulo": "Reach a 3-day streak",
+        "ensena": "Play every day to make it grow."
+      },
+      "final": {
+        "titulo": "All first steps!",
+        "ensena": "500 Sparks and the title “On the right track”."
+      }
     }
   }
 }

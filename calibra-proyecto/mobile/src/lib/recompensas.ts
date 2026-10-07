@@ -92,9 +92,30 @@ export async function recargarPendientes(): Promise<Pendientes> {
 }
 
 // Al terminar una partida: otorga lo que corresponda y actualiza el contador.
+// Constelaciones completadas por celebrar (0259): se avisa después de cada partida
+// y al abrir la app; CelebracionConstelaciones las busca cuando puede mostrarlas.
+let avisoConstelaciones = true;
+const oyentesConstelaciones = new Set<() => void>();
+export function avisarConstelaciones() {
+  avisoConstelaciones = true;
+  oyentesConstelaciones.forEach((o) => o());
+}
+export function limpiarAvisoConstelaciones() {
+  avisoConstelaciones = false;
+  oyentesConstelaciones.forEach((o) => o());
+}
+export const leerAvisoConstelaciones = () => avisoConstelaciones;
+export function suscribirAvisoConstelaciones(o: () => void) {
+  oyentesConstelaciones.add(o);
+  return () => {
+    oyentesConstelaciones.delete(o);
+  };
+}
+
 export async function revisarTrasPartida(): Promise<number> {
   try {
     const r = await api.revisarRecompensas(supabase);
+    avisarConstelaciones();
     await recargarPendientes();
     return r.nuevas;
   } catch {

@@ -27,6 +27,8 @@ import {
   type Regalo,
 } from "@/lib/recompensas/api";
 import { refrescarCosmeticosWeb } from "@/lib/recompensas/cosmeticosWeb";
+import { misConstelaciones, type Constelacion as DatosConstelacion } from "@/lib/recompensas/constelaciones";
+import Constelacion from "@/components/recompensas/Constelacion";
 import AbrirCapsula, { DibujoCapsula } from "@/components/recompensas/AbrirCapsula";
 import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
 
@@ -38,6 +40,8 @@ export default function RecompensasClient({ invitado }: { invitado: boolean }) {
   const [calendario, setCalendario] = useState<EstadoCalendario | null>(null);
   const [regalos, setRegalos] = useState<Regalo[]>([]);
   const [colecciones, setColecciones] = useState<PiezaColeccion[]>([]);
+  const [constelaciones, setConstelaciones] = useState<DatosConstelacion[]>([]);
+  const [verComo, setVerComo] = useState(false);
   const [abriendo, setAbriendo] = useState<Capsula | null>(null);
   const [verContenido, setVerContenido] = useState<{ capsula: Capsula; filas: ContenidoCapsula[] } | null>(null);
   const [verCiudad, setVerCiudad] = useState<string | null>(null);
@@ -49,7 +53,8 @@ export default function RecompensasClient({ invitado }: { invitado: boolean }) {
     const sb = createClient();
     try {
       await revisarRecompensas(sb);
-      const [c, m, cal, r, col] = await Promise.all([misCapsulas(sb), misMisiones(sb), miCalendario(sb), misRegalos(sb), misColecciones(sb)]);
+      const [c, m, cal, r, col, cons] = await Promise.all([misCapsulas(sb), misMisiones(sb), miCalendario(sb), misRegalos(sb), misColecciones(sb), misConstelaciones(sb)]);
+      setConstelaciones(cons);
       setCapsulas(c);
       setMisiones(m);
       setCalendario(cal);
@@ -135,11 +140,48 @@ export default function RecompensasClient({ invitado }: { invitado: boolean }) {
 
       {sinBase && <p className="rounded-2xl border border-racha/50 bg-racha/10 px-4 py-3 text-sm text-foreground">{t("sinBase")}</p>}
 
-      <section className="flex flex-col gap-3">
+      {constelaciones.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <h2 className="font-display text-lg font-bold text-foreground">{t("constelaciones.titulo")}</h2>
+          <p className="text-sm text-texto-secundario">
+            {t("constelaciones.nota")}{" "}
+            <button type="button" className="font-semibold text-primario hover:underline" onClick={() => setVerComo((v) => !v)}>
+              {t("constelaciones.comoFunciona")}
+            </button>
+          </p>
+          {verComo && (
+            <ul className="flex flex-col gap-1.5 rounded-2xl border border-border bg-surface p-4 text-sm text-foreground">
+              {(t.raw("constelaciones.como") as string[]).map((x) => (
+                <li key={x}>✦ {x}</li>
+              ))}
+              <li className="text-texto-secundario">{t("constelaciones.fugaz")}</li>
+            </ul>
+          )}
+          {constelaciones[0]?.alineacion && <p className="rounded-2xl border border-logro/60 bg-logro/10 px-4 py-2 text-sm font-bold text-logro">{t("constelaciones.alineacion")}</p>}
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
+            {[...constelaciones]
+              .sort((a, b) => Number(b.favorita) - Number(a.favorita) || b.estrellas - a.estrellas)
+              .map((c) => (
+                <div key={c.mundo} className="flex flex-col items-center gap-1 text-center">
+                  <Constelacion mundo={c.mundo} estrellas={c.estrellas} tam={96} />
+                  <span className="text-xs font-bold text-foreground">
+                    {c.de_noche ? "☾ " : ""}
+                    {tMundos(c.mundo)}
+                    {c.favorita ? " ★" : ""}
+                  </span>
+                  <span className="text-[11px] text-texto-secundario">
+                    {t("constelaciones.estado", { n: c.estrellas, chispas: c.chispas_premio })} {c.falta_pieza ? t("constelaciones.pieza") : ""}
+                  </span>
+                </div>
+              ))}
+          </div>
+          <p className="text-xs text-texto-secundario">{t("constelaciones.leyenda")}</p>
+        </section>
+      )}
+
+      <section className="flex flex-col gap-3" hidden={(capsulas ?? []).length === 0}>
         <h2 className="font-display text-lg font-bold text-foreground">{t("capsulas.titulo")}</h2>
-        {capsulas && capsulas.length === 0 ? (
-          <p className="text-sm text-texto-secundario">{t("capsulas.vacio")}</p>
-        ) : (
+        {(capsulas ?? []).length === 0 ? null : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {(capsulas ?? []).map((c, i) => (
               <motion.div key={c.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="flex flex-col items-center gap-1">
@@ -175,7 +217,7 @@ export default function RecompensasClient({ invitado }: { invitado: boolean }) {
             return (
               <div key={p.dia} className={`flex flex-col items-center gap-1 rounded-xl border px-1 py-2 text-center ${hoy ? "border-logro bg-logro/10" : "border-border bg-surface-2"} ${hecho ? "opacity-55" : ""}`}>
                 <span className="text-[10px] font-bold uppercase text-texto-secundario">{t("calendario.dia", { n: p.dia })}</span>
-                <span className="text-lg">{hecho ? "✓" : p.premio === "chispas" ? "✦" : p.premio === "hielo" ? "🧊" : p.premio === "tiempo_extra" ? "⏱️" : "🎁"}</span>
+                <span className="text-lg">{hecho ? "✓" : p.premio === "chispas" ? "✦" : p.premio === "hielo" ? "🧊" : p.premio === "tiempo_extra" ? "⏱️" : "✨"}</span>
                 <span className="text-[10px] leading-tight text-texto-secundario">{t(`calendario.premio.${p.premio}`, { n: p.cantidad })}</span>
               </div>
             );
@@ -190,7 +232,7 @@ export default function RecompensasClient({ invitado }: { invitado: boolean }) {
                 accion("calendario", async () => {
                   const r = await reclamarCalendario(createClient());
                   reproducirTono("compra");
-                  return r.premio === "capsula" ? t("calendario.capsula") : t("calendario.reclamado");
+                  return r.premio === "estrellas" ? t("calendario.estrellas", { n: r.cantidad }) : t("calendario.reclamado");
                 })
               }
               className="rounded-full bg-logro px-6 py-3 font-display font-bold text-[#2A1A00] disabled:opacity-60"

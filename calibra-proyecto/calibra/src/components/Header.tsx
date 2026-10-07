@@ -10,6 +10,7 @@ import { textoInsignia } from "@/lib/mensajes/util";
 import RecordatorioInvitado from "./RecordatorioInvitado";
 import PedirEdadModal from "./PedirEdadModal";
 import AceptarTerminosModal from "./AceptarTerminosModal";
+import CelebracionConstelaciones from "./recompensas/CelebracionConstelaciones";
 import Logo from "./Logo";
 import MundoSelector from "./MundoSelector";
 import ProfileMenu from "./ProfileMenu";
@@ -132,6 +133,7 @@ export default function Header({ autenticado = false, invitado = false }: Props)
       {invitado && <RecordatorioInvitado />}
       {autenticado && !invitado && <PedirEdadModal />}
       {autenticado && !invitado && <AceptarTerminosModal />}
+      {autenticado && !invitado && <CelebracionConstelaciones />}
       <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4">
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           {autenticado && <BotonVolverAtras colorMundo={colorMundo} />}

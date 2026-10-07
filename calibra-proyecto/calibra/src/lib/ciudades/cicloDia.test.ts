@@ -5,6 +5,7 @@ import {
   CICLO_TOTAL_HORAS,
   CICLO_TOTAL_MS,
   DURACION_EVENTO_MS,
+  esDeNoche,
   estadoCielo,
   faseDelDia,
   HORAS_DIA_CIUDAD,
@@ -77,5 +78,29 @@ describe("ciclo de día de las ciudades", () => {
       expect(e.noche).toBeGreaterThanOrEqual(0);
       expect(e.noche).toBeLessThanOrEqual(1);
     }
+  });
+});
+
+describe("noche de cada ciudad (mismo corte que ciudad_de_noche de 0259)", () => {
+  it("es de noche entre las fases 0,55 y 0,95 del día de esa ciudad", () => {
+    const h = HORAS_DIA_CIUDAD.geografia * HORA;
+    expect(esDeNoche("geografia", PRIMERA_ALINEACION_MS)).toBe(false);
+    expect(esDeNoche("geografia", PRIMERA_ALINEACION_MS + h * 0.54)).toBe(false);
+    expect(esDeNoche("geografia", PRIMERA_ALINEACION_MS + h * 0.56)).toBe(true);
+    expect(esDeNoche("geografia", PRIMERA_ALINEACION_MS + h * 0.94)).toBe(true);
+    expect(esDeNoche("geografia", PRIMERA_ALINEACION_MS + h * 0.96)).toBe(false);
+    // Antes de la primera alineación también vale (la cuenta es módulo el largo del día).
+    expect(esDeNoche("codia", PRIMERA_ALINEACION_MS - HORAS_DIA_CIUDAD.codia * HORA * 0.3)).toBe(true);
+  });
+
+  it("casi siempre hay alguna ciudad de noche (solo no la hay en las horas que siguen a la alineación, cuando todas amanecieron)", () => {
+    let conNoche = 0;
+    const muestras = 2000;
+    for (let k = 0; k < muestras; k++) {
+      const t = PRIMERA_ALINEACION_MS + ((k * CICLO_TOTAL_MS) / muestras);
+      if (Object.keys(HORAS_DIA_CIUDAD).some((s) => esDeNoche(s, t))) conNoche++;
+    }
+    expect(conNoche / muestras).toBeGreaterThan(0.95);
+    expect(Object.keys(HORAS_DIA_CIUDAD).some((s) => esDeNoche(s, PRIMERA_ALINEACION_MS + 2 * HORA))).toBe(false);
   });
 });

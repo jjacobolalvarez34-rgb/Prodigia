@@ -5,7 +5,8 @@ import { CATALOGO_NUEVO, CIUDADES, EFECTOS, EMOTES, ESTELAS, PAQUETES, particula
 
 const MIGRACIONES = path.join(__dirname, "..", "..", "..", "supabase", "migrations");
 const sql0248 = readFileSync(path.join(MIGRACIONES, "0248_catalogo_cosmeticos_y_tienda.sql"), "utf8");
-const sql0249 = readFileSync(path.join(MIGRACIONES, "0249_capsulas_misiones_calendario.sql"), "utf8");
+// premios_calendario() vigente: 0259 cambió el día 7 (cápsula → 3 estrellas).
+const sql0259 = readFileSync(path.join(MIGRACIONES, "0259_constelaciones_y_alineacion.sql"), "utf8");
 
 // Filas fijas: ('slug', 'categoria', 'valor', 'nombre', 'rareza', precio, vendible, …)
 const fijas = new Map<string, { categoria: string; valor: string; rareza: string; precio: number; vendible: boolean }>();
@@ -50,7 +51,7 @@ describe("catálogo de la tienda ampliada", () => {
 
   it("el calendario da lo mismo que premios_calendario()", () => {
     for (const p of PREMIOS_CALENDARIO) {
-      expect(sql0249).toContain(`(${p.dia}, '${p.premio}', ${p.cantidad})`);
+      expect(sql0259).toContain(`(${p.dia}, '${p.premio}', ${p.cantidad})`);
     }
   });
 

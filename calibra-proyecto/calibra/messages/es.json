@@ -4647,7 +4647,7 @@
   "Recompensas": {
     "metadata": {
       "title": "Recompensas · Prodigia",
-      "description": "Cápsulas, misiones del día, calendario y colecciones por ciudad."
+      "description": "Constelaciones, misiones del día, calendario y colecciones por ciudad."
     },
     "titulo": "Recompensas",
     "subtitulo": "Todo se gana jugando: nada de esto se compra.",
@@ -4678,14 +4678,16 @@
         "chispas": "{n} Chispas",
         "hielo": "1 hielo",
         "tiempo_extra": "+3 s",
-        "capsula": "Cápsula de racha"
-      }
+        "capsula": "Cápsula de racha",
+        "estrellas": "{n} estrellas"
+      },
+      "estrellas": "¡{n} estrellas en tu ciudad favorita!"
     },
     "misiones": {
       "titulo": "Misiones de hoy",
-      "nota": "Completa las 3 y te llevas una cápsula extra.",
+      "nota": "Completa las 3 y enciendes 2 estrellas en tu ciudad favorita.",
       "reclamar": "Reclamar",
-      "tresCompletas": "¡Las 3 misiones! Ganaste una cápsula.",
+      "tresCompletas": "¡Las 3 misiones! +2 estrellas en tu ciudad favorita.",
       "chispas": "+{n} Chispas",
       "tipos": {
         "aciertos": "Acierta {n} respuestas",
@@ -4717,7 +4719,7 @@
       "nota": "6 piezas por ciudad: marco, fondo, estela, efecto, emote y título. Complétala y ganas su marco animado.",
       "de": "Colección de {ciudad}",
       "enTienda": "en la tienda",
-      "enCapsulas": "en cápsulas de ciudad o de liga",
+      "enCapsulas": "al completar constelaciones de esta ciudad",
       "irTienda": "Ir a la tienda",
       "categorias": {
         "marco": "Marco",
@@ -4730,8 +4732,8 @@
     },
     "inicio": {
       "titulo": "Recompensas",
-      "nada": "Misiones, calendario y cápsulas",
-      "notaNada": "Juega para ganar cápsulas y completar tus misiones del día",
+      "nada": "Constelaciones, misiones y calendario",
+      "notaNada": "Cada partida enciende estrellas en tus constelaciones",
       "pendientes": "Tienes {n, plural, one {# recompensa} other {# recompensas}} por reclamar",
       "toca": "Toca para reclamar"
     },
@@ -4786,7 +4788,7 @@
         "legendario": "Legendario"
       }
     },
-    "invitado": "Las cápsulas, misiones y el calendario son para cuentas registradas. Crea tu cuenta para empezar a ganarlas.",
+    "invitado": "Las constelaciones, misiones y el calendario son para cuentas registradas. Crea tu cuenta para empezar a ganarlas.",
     "detalle": {
       "nivel": "Nivel {n}",
       "racha": "{n} días de racha",
@@ -4807,6 +4809,88 @@
       "cosmetico": "Un cosmético {rareza}",
       "coleccion": "Una pieza de la colección de {ciudad} que te falte",
       "marcoColeccion": "El marco de colección de {ciudad}"
+    },
+    "constelaciones": {
+      "titulo": "Constelaciones",
+      "nota": "Cada partida enciende estrellas en el cielo de su ciudad. Con 7, la constelación se dibuja y te da su premio.",
+      "comoFunciona": "¿Cómo funciona?",
+      "como": [
+        "Cada partida enciende 1 estrella en la ciudad donde jugaste (+1 si aciertas el 80 % o más).",
+        "Subir de nivel, la racha de 7 días, las 3 misiones del día y la liga encienden estrellas en tu ciudad favorita.",
+        "Al llegar a 7, la constelación se dibuja en el cielo y te da su premio.",
+        "Si en esa ciudad es de noche, el premio sube un 20 %. En la Gran Alineación, el doble."
+      ],
+      "fugaz": "1 de cada 5 constelaciones trae una estrella fugaz con un premio extra.",
+      "alineacion": "✦ Gran Alineación: las constelaciones dan premio doble",
+      "leyenda": "☾ De noche en esa ciudad: +20 %. ★ Tu ciudad favorita: ahí caen las estrellas de niveles, racha, misiones y liga.",
+      "estado": "{n}/7 · {chispas} Chispas",
+      "pieza": "+ pieza",
+      "celebracion": {
+        "de": "Constelación de {ciudad} · Nº {n}",
+        "titulo": "¡Se dibujó en el cielo!",
+        "chispas": "{n} Chispas",
+        "fugaz": "Estrella fugaz: {premio}",
+        "alineacion": "Gran Alineación: premio doble.",
+        "noche": "Era de noche en la ciudad: +20 %.",
+        "siguiente": "Siguiente",
+        "genial": "¡Genial!",
+        "fugaces": {
+          "hielo": "1 hielo",
+          "tiempo_extra": "+3 segundos",
+          "pista": "1 pista",
+          "chispas": "200 Chispas"
+        }
+      }
+    }
+  },
+  "PrimerosPasos": {
+    "titulo": "Primeros pasos",
+    "verTodo": "ver todo",
+    "ocultar": "ocultar",
+    "reclamar": "Reclamar {premio}",
+    "alFinal": "Al completar las 8: 500 Chispas y el título «Bien encaminado».",
+    "finalReclamado": "¡Primeros pasos completos! Título «Bien encaminado».",
+    "premio": {
+      "chispas": "{n} Chispas",
+      "hielo": "{n, plural, one {# hielo} other {# hielos}}"
+    },
+    "tareas": {
+      "reto_diario": {
+        "titulo": "Juega el reto diario",
+        "ensena": "El mismo reto para todos, cada día."
+      },
+      "tecnica": {
+        "titulo": "Completa una Técnica en Aprender",
+        "ensena": "Trucos cortos para resolver más rápido."
+      },
+      "amigo": {
+        "titulo": "Agrega un amigo",
+        "ensena": "Juega y compite con tu gente."
+      },
+      "duelo_amigo": {
+        "titulo": "Reta a un amigo a un duelo",
+        "ensena": "Duelos en vivo, cara a cara."
+      },
+      "misiones": {
+        "titulo": "Completa las 3 misiones del día",
+        "ensena": "Cada día, 3 misiones nuevas."
+      },
+      "constelacion": {
+        "titulo": "Completa tu primera constelación",
+        "ensena": "Cada partida enciende estrellas en su ciudad."
+      },
+      "placa": {
+        "titulo": "Personaliza tu placa",
+        "ensena": "Foto, marco, fondo o fuente: es tuya."
+      },
+      "racha": {
+        "titulo": "Llega a 3 días de racha",
+        "ensena": "Juega cada día para que crezca."
+      },
+      "final": {
+        "titulo": "¡Todos los primeros pasos!",
+        "ensena": "500 Chispas y el título «Bien encaminado»."
+      }
     }
   }
 }

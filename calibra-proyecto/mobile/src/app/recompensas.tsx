@@ -17,6 +17,7 @@ import {
   type Rareza,
   type TipoCapsula,
 } from "@/lib/recompensas/catalogo";
+import { COMO_SE_ENCIENDEN, ESTRELLAS_POR_CONSTELACION, misConstelaciones, TEXTO_FUGAZ, textoPremioConstelacion, type Constelacion as DatosConstelacion } from "@/lib/recompensas/constelaciones";
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, useJugador } from "~/lib/jugador";
 import {
@@ -48,14 +49,16 @@ import { IconoCheck, IconoChispa, IconoCopo, IconoEscudo, IconoReloj } from "~/u
 import { PantallaApilada, TituloSeccion, Vacio } from "~/ui/Pantalla";
 import AbrirCapsula from "~/ui/recompensas/AbrirCapsula";
 import Capsula from "~/ui/recompensas/Capsula";
+import Constelacion from "~/ui/recompensas/Constelacion";
 import VistaCosmetico from "~/ui/recompensas/VistaCosmetico";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
-import { color, conAlfa, fuente } from "~/tema";
+import { color, conAlfa, fuente, mundoDe } from "~/tema";
 
 // Recompensas (docs/economy/PROPUESTA_TIENDA_Y_RECOMPENSAS.md, igual que
-// /recompensas en la web): cápsulas por abrir, calendario de 7 días, misiones del
-// día, regalos de amigos y colecciones por ciudad. Todo lo decide la base (0249).
+// /recompensas en la web): constelaciones de las 13 ciudades (0259, en vez de las
+// cápsulas), cápsulas que queden por abrir, calendario de 7 días, misiones del día,
+// regalos de amigos y colecciones por ciudad. Todo lo decide la base (0249/0259).
 
 function CapsulaQuieta({ tipo, mundo }: { tipo: TipoCapsula; mundo: string | null }) {
   const abierta = useSharedValue(0);
@@ -86,6 +89,8 @@ export default function Recompensas() {
   const [calendario, setCalendario] = useState<EstadoCalendario | null>(null);
   const [regalos, setRegalos] = useState<Regalo[]>([]);
   const [colecciones, setColecciones] = useState<PiezaColeccion[]>([]);
+  const [constelaciones, setConstelaciones] = useState<DatosConstelacion[]>([]);
+  const [verComo, setVerComo] = useState(false);
   const [abriendo, setAbriendo] = useState<DatosCapsula | null>(null);
   const [verContenido, setVerContenido] = useState<{ capsula: DatosCapsula; filas: ContenidoCapsula[] } | null>(null);
   const [verCiudad, setVerCiudad] = useState<string | null>(null);
@@ -95,7 +100,8 @@ export default function Recompensas() {
   const cargar = useCallback(async () => {
     try {
       await revisarRecompensas(supabase);
-      const [c, m, cal, r, col] = await Promise.all([misCapsulas(supabase), misMisiones(supabase), miCalendario(supabase), misRegalos(supabase), misColecciones(supabase)]);
+      const [c, m, cal, r, col, cons] = await Promise.all([misCapsulas(supabase), misMisiones(supabase), miCalendario(supabase), misRegalos(supabase), misColecciones(supabase), misConstelaciones(supabase)]);
+      setConstelaciones(cons);
       setCapsulas(c);
       setMisiones(m);
       setCalendario(cal);
@@ -159,10 +165,52 @@ export default function Recompensas() {
           </Tarjeta>
         )}
 
-        <TituloSeccion>Cápsulas por abrir</TituloSeccion>
-        {capsulas && capsulas.length === 0 ? (
-          <Texto v="nota">No tienes cápsulas ahora. Juega tu primera partida del día, completa las misiones o sube de nivel para ganar una.</Texto>
-        ) : (
+        {constelaciones.length > 0 && (
+          <>
+            <TituloSeccion>Constelaciones</TituloSeccion>
+            <Pressable onPress={() => setVerComo(true)} hitSlop={6}>
+              <Texto v="nota" tam={12}>
+                Cada partida enciende estrellas en el cielo de su ciudad. Con 7, la constelación se dibuja y te da su premio.{" "}
+                <Texto v="nota" tam={12} c={color.primarioClaro}>
+                  ¿Cómo funciona?
+                </Texto>
+              </Texto>
+            </Pressable>
+            {constelaciones[0]?.alineacion && (
+              <Tarjeta acento={color.logro} brillo={0.25}>
+                <Texto v="fuerte" c={color.logro}>
+                  ✦ Gran Alineación: las constelaciones dan premio doble
+                </Texto>
+              </Tarjeta>
+            )}
+            <View style={styles.grilla}>
+              {[...constelaciones]
+                .sort((a, b) => Number(b.favorita) - Number(a.favorita) || b.estrellas - a.estrellas)
+                .map((c, i) => {
+                  const m = mundoDe(c.mundo);
+                  return (
+                    <Animated.View key={c.mundo} entering={FadeInDown.delay(i * 30).duration(240)} style={[styles.celda, { alignItems: "center" }]}>
+                      <Constelacion mundo={c.mundo} estrellas={c.estrellas} tam={98} />
+                      <Texto v="fuerte" tam={11.5} centro numberOfLines={1}>
+                        {c.de_noche ? "☾ " : ""}
+                        {m?.nombre ?? c.mundo}
+                        {c.favorita ? " ★" : ""}
+                      </Texto>
+                      <Texto v="nota" tam={10.5} centro numberOfLines={1}>
+                        {c.estrellas}/{ESTRELLAS_POR_CONSTELACION} · {c.chispas_premio} Chispas{c.falta_pieza ? " + pieza" : ""}
+                      </Texto>
+                    </Animated.View>
+                  );
+                })}
+            </View>
+            <Texto v="nota" tam={11}>
+              ☾ De noche en esa ciudad: +20 %. ★ Tu ciudad favorita: ahí caen las estrellas de niveles, racha, misiones y liga.
+            </Texto>
+          </>
+        )}
+
+        {(capsulas ?? []).length > 0 && <TituloSeccion>Cápsulas por abrir</TituloSeccion>}
+        {(capsulas ?? []).length === 0 ? null : (
           <View style={styles.grilla}>
             {(capsulas ?? []).map((c, i) => (
               <Animated.View key={c.id} entering={FadeInDown.delay(i * 50).duration(260)} style={styles.celda}>
@@ -212,7 +260,7 @@ export default function Recompensas() {
                     ) : p.premio === "tiempo_extra" ? (
                       <IconoReloj tam={18} c={color.logro} />
                     ) : (
-                      <Texto style={{ fontSize: 18 }}>🎁</Texto>
+                      <Texto style={{ fontSize: 18 }}>✦</Texto>
                     )}
                   </View>
                   <Texto v="nota" tam={9.5} centro numberOfLines={2}>
@@ -235,7 +283,7 @@ export default function Recompensas() {
                     fijarChispas(r.puntos_total);
                     sonar("recompensa");
                     vibrar.exito();
-                    mostrarAviso(r.premio === "capsula" ? "¡Cápsula de racha! Ábrela arriba." : "¡Premio del día reclamado!", "logro");
+                    mostrarAviso(r.premio === "estrellas" ? `¡${r.cantidad} estrellas en tu ciudad favorita!` : "¡Premio del día reclamado!", "logro");
                   })
                 }
               />
@@ -275,7 +323,7 @@ export default function Recompensas() {
                         fijarChispas(r.puntos_total);
                         sonar("recompensa");
                         vibrar.exito();
-                        mostrarAviso(r.capsula ? "¡Las 3 misiones! Ganaste una cápsula." : `+${m.recompensa} Chispas`, "logro");
+                        mostrarAviso(r.capsula ? "¡Las 3 misiones! +2 estrellas en tu ciudad favorita." : `+${m.recompensa} Chispas`, "logro");
                       })
                     }
                     style={[styles.reclamar, !lista && { opacity: 0.4 }]}
@@ -291,7 +339,7 @@ export default function Recompensas() {
           );
         })}
         <Texto v="nota" tam={11.5}>
-          Completa las 3 y te llevas una cápsula extra.
+          Completa las 3 y enciendes 2 estrellas en tu ciudad favorita.
         </Texto>
 
         {regalos.length > 0 && (
@@ -365,6 +413,26 @@ export default function Recompensas() {
         )}
       </Hoja>
 
+      <Hoja visible={verComo} onCerrar={() => setVerComo(false)}>
+        <View style={{ gap: 10 }}>
+          <Texto v="h2">Constelaciones</Texto>
+          {COMO_SE_ENCIENDEN.map((t) => (
+            <View key={t} style={{ flexDirection: "row", gap: 8 }}>
+              <Texto c={color.logro}>✦</Texto>
+              <Texto v="cuerpo" tam={14} style={{ flex: 1 }}>
+                {t}
+              </Texto>
+            </View>
+          ))}
+          <Texto v="nota">{TEXTO_FUGAZ}</Texto>
+          {constelaciones.length > 0 && (
+            <Texto v="nota">
+              Ahora mismo, tu próxima en {mundoDe(constelaciones.find((c) => c.favorita)?.mundo ?? "numeria")?.nombre}: {textoPremioConstelacion(constelaciones.find((c) => c.favorita) ?? constelaciones[0], mundoDe(constelaciones.find((c) => c.favorita)?.mundo ?? "numeria")?.nombre ?? "")}.
+            </Texto>
+          )}
+        </View>
+      </Hoja>
+
       <Hoja visible={!!verCiudad} onCerrar={() => setVerCiudad(null)}>
         {verCiudad && (
           <View style={{ gap: 10 }}>
@@ -381,7 +449,7 @@ export default function Recompensas() {
                   <View style={{ flex: 1 }}>
                     <Texto v="fuerte">{p.nombre}</Texto>
                     <Texto v="nota" tam={11}>
-                      {NOMBRE_CATEGORIA[p.categoria] ?? p.categoria} · <Texto v="nota" tam={11} c={COLOR_RAREZA[p.rareza as Rareza]}>{NOMBRE_RAREZA[p.rareza as Rareza]}</Texto> · {p.vendible ? "en la tienda" : "en cápsulas de ciudad o de liga"}
+                      {NOMBRE_CATEGORIA[p.categoria] ?? p.categoria} · <Texto v="nota" tam={11} c={COLOR_RAREZA[p.rareza as Rareza]}>{NOMBRE_RAREZA[p.rareza as Rareza]}</Texto> · {p.vendible ? "en la tienda" : "al completar constelaciones de esta ciudad"}
                     </Texto>
                   </View>
                   {p.tengo ? <IconoCheck tam={22} c={color.correcto} /> : null}

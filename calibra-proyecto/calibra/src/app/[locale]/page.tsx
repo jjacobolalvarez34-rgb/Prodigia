@@ -11,6 +11,7 @@ import Avatar from "@/components/Avatar";
 import WorldCard from "@/components/WorldCard";
 import EventoDobleExperiencia from "@/components/EventoDobleExperiencia";
 import TarjetaRecompensas from "@/components/recompensas/TarjetaRecompensas";
+import PrimerosPasos from "@/components/recompensas/PrimerosPasos";
 import PrimeraVezTip from "@/components/PrimeraVezTip";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { calcularRachaDiaria, lunesDeEstaSemanaIso } from "@/lib/practica/racha";
@@ -160,6 +161,7 @@ export default async function ProdigiaHomePage() {
         </div>
 
         <EventoDobleExperiencia />
+        {!user.is_anonymous && <PrimerosPasos />}
         {!user.is_anonymous && <TarjetaRecompensas />}
 
         <section className="flex flex-col gap-4">

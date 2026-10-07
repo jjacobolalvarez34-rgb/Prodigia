@@ -379,21 +379,22 @@ export function textoMision(tipo: string, meta: number, mundo: string | null): s
 }
 
 // Premio de cada día del calendario (espejo de premios_calendario()).
-export const PREMIOS_CALENDARIO: { dia: number; premio: "chispas" | "hielo" | "tiempo_extra" | "capsula"; cantidad: number }[] = [
+export const PREMIOS_CALENDARIO: { dia: number; premio: "chispas" | "hielo" | "tiempo_extra" | "estrellas"; cantidad: number }[] = [
   { dia: 1, premio: "chispas", cantidad: 50 },
   { dia: 2, premio: "chispas", cantidad: 75 },
   { dia: 3, premio: "hielo", cantidad: 1 },
   { dia: 4, premio: "chispas", cantidad: 100 },
   { dia: 5, premio: "tiempo_extra", cantidad: 1 },
   { dia: 6, premio: "chispas", cantidad: 150 },
-  { dia: 7, premio: "capsula", cantidad: 1 },
+  // Desde 0259: 3 estrellas en tu constelación favorita (antes, una cápsula).
+  { dia: 7, premio: "estrellas", cantidad: 3 },
 ];
 
 export function textoPremioCalendario(p: (typeof PREMIOS_CALENDARIO)[number]): string {
   if (p.premio === "chispas") return `${p.cantidad} Chispas`;
   if (p.premio === "hielo") return "1 hielo";
   if (p.premio === "tiempo_extra") return "+3 s";
-  return "Cápsula de racha";
+  return `${p.cantidad} estrellas`;
 }
 
 // Nombre de un cosmético por su slug (catálogo nuevo o de antes).

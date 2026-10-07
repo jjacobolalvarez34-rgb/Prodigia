@@ -34,6 +34,7 @@ import AceptarTerminos, { registrarAceptacionEnLaCuenta, terminosAceptadosEnEste
 import IntroMarca, { INTRO_ACTIVA } from "~/ui/IntroMarca";
 import PantallaCarga from "~/ui/PantallaCarga";
 import PrimeraVez from "~/ui/PrimeraVez";
+import CelebracionConstelaciones from "~/ui/recompensas/CelebracionConstelaciones";
 import { color, MUNDOS } from "~/tema";
 
 SplashScreen.preventAutoHideAsync();
@@ -218,6 +219,7 @@ function Navegacion() {
       )}
       {!cargando && userId && !sesion?.user.is_anonymous && <AvisoDuelo userId={userId} />}
       <AvisoGlobal />
+      {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <CelebracionConstelaciones />}
       {!cargando && userId && terminos && !cargaVisible && <PrimeraVez key={userId} userId={userId} anonimo={!!sesion?.user.is_anonymous} />}
       {terminos === false && !cargaVisible && <AceptarTerminos onAceptar={() => setTerminos(true)} />}
       {cargaVisible && introEnNegro && <PantallaCarga progreso={progreso} etapa={etapa} onTerminada={ocultarCarga} />}
