@@ -89,8 +89,16 @@ export function prepararSonidos() {
 
 const ultimoSonido = new Map<Sonido, number>();
 
+// Mientras se ve la intro de Mamut y la pantalla de carga, la app ya está montada
+// detrás (el contador de Chispas sube, etc.): nada suena hasta que termina la carga
+// (_layout.tsx llama a habilitarSonidos). Así no se mezcla nada con el logo.
+let arranqueTerminado = false;
+export function habilitarSonidos() {
+  arranqueTerminado = true;
+}
+
 export function sonar(nombre: Sonido) {
-  if (!leerAjustes().sonido) return;
+  if (!arranqueTerminado || !leerAjustes().sonido) return;
   // El mismo sonido no se repite en menos de 70 ms (monedas que llegan en ráfaga).
   const ahora = Date.now();
   if (ahora - (ultimoSonido.get(nombre) ?? 0) < 70) return;

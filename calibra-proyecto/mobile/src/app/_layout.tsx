@@ -21,7 +21,7 @@ import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { cargarAjustes } from "~/lib/ajustes";
-import { prepararSonidos } from "~/lib/efectos";
+import { habilitarSonidos, prepararSonidos } from "~/lib/efectos";
 import { precargarAprender } from "~/lib/aprender";
 import { cargarJugadorGuardado, leerJugador, limpiarJugador, recargarJugador } from "~/lib/jugador";
 import { rutaDeAviso, sincronizarAvisos } from "~/lib/notificaciones";
@@ -156,7 +156,10 @@ function Navegacion() {
     conectarPresencia(userId);
   }, [userId]);
 
-  const ocultarCarga = useCallback(() => setCargaVisible(false), []);
+  const ocultarCarga = useCallback(() => {
+    setCargaVisible(false);
+    habilitarSonidos();
+  }, []);
 
 
   return (

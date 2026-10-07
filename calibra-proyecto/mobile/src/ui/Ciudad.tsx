@@ -4,6 +4,7 @@ import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue, withDelay,
 import Svg, { Circle, Defs, G, LinearGradient, Path, RadialGradient, Rect, Stop } from "react-native-svg";
 import { useAnimacionActiva, useLiviano } from "~/lib/rendimiento";
 import { aclarar, conAlfa } from "~/tema";
+import { alineacionEnCurso, estadoCielo, faseDelDia } from "@/lib/ciudades/cicloDia";
 import Cielo from "./Cielo";
 
 // "Cada mundo es una ciudad que se enciende de noche" (02-SISTEMA-VISUAL.md §1): el
@@ -13,6 +14,11 @@ import Cielo from "./Cielo";
 // hilo nativo: ventanas que se prenden y apagan y, de vez en cuando, algo que
 // cruza el cielo (Cielo.tsx: avión, pájaros, ovni o el paquete de doble experiencia).
 // Apagada = mundo bloqueado: en gris, sin luces ni movimiento.
+//
+// Día y noche (2026-10-06): cada ciudad tiene su propio largo de día
+// (lib/ciudades/cicloDia.ts), así que el cielo, el sol o la luna y cuántas ventanas
+// se ven encendidas dependen de la hora de ESA ciudad. Cada 28 días las 13 amanecen
+// juntas («La Gran Alineación») y el sol sale dorado con un anillo.
 
 function rng(semilla: string) {
   let h = 2166136261;
@@ -103,6 +109,16 @@ function CiudadBase({ semilla, acento, alto = 96, apagada, radio = 14, densidad 
   const [ancho, setAncho] = useState(0);
   const activa = useAnimacionActiva();
   const liviano = useLiviano();
+  // La hora avanza despacio (el día más corto dura 12 h): con refrescar cada minuto alcanza.
+  const [ahora, setAhora] = useState(() => Date.now());
+  useEffect(() => {
+    if (!activa || apagada) return;
+    const id = setInterval(() => setAhora(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, [activa, apagada]);
+  const cielo = apagada ? null : estadoCielo(faseDelDia(semilla, ahora));
+  const alineacion = !apagada && alineacionEnCurso(ahora) !== null;
+  const noche = cielo ? cielo.noche : 1;
   const edificios = useMemo(() => (ancho > 0 ? armarSkyline(semilla, ancho, alto, densidad) : []), [semilla, ancho, alto, densidad]);
   const luz = apagada ? "#39405A" : aclarar(acento, 0.15);
   const ventanasDelDibujo = useMemo(() => {
@@ -143,24 +159,41 @@ function CiudadBase({ semilla, acento, alto = 96, apagada, radio = 14, densidad 
           <Svg width={ancho} height={alto}>
             <Defs>
               <LinearGradient id={`${id}cielo`} x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor={apagada ? "#0B0D16" : "#0C1024"} />
-                <Stop offset="1" stopColor="#070913" />
+                <Stop offset="0" stopColor={cielo ? cielo.arriba : "#0B0D16"} />
+                <Stop offset="1" stopColor={cielo ? cielo.abajo : "#070913"} />
               </LinearGradient>
               <RadialGradient id={`${id}halo`} cx="70%" cy="0%" rx="80%" ry="90%">
-                <Stop offset="0" stopColor={apagada ? "#30344A" : acento} stopOpacity={apagada ? 0.25 : 0.42} />
+                <Stop offset="0" stopColor={apagada ? "#30344A" : acento} stopOpacity={apagada ? 0.25 : 0.12 + 0.3 * noche} />
                 <Stop offset="1" stopColor={acento} stopOpacity={0} />
               </RadialGradient>
               <RadialGradient id={`${id}luna`} cx="50%" cy="50%" r="50%">
                 <Stop offset="0" stopColor="#F7F2E0" stopOpacity={apagada ? 0.15 : 0.5} />
                 <Stop offset="1" stopColor="#F7F2E0" stopOpacity={0} />
               </RadialGradient>
+              <RadialGradient id={`${id}sol`} cx="50%" cy="50%" r="50%">
+                <Stop offset="0" stopColor={alineacion ? "#FFD15C" : "#FFE6A3"} stopOpacity={0.75} />
+                <Stop offset="1" stopColor="#FFB347" stopOpacity={0} />
+              </RadialGradient>
             </Defs>
             <Rect x={0} y={0} width={ancho} height={alto} fill={`url(#${id}cielo)`} />
             <Rect x={0} y={0} width={ancho} height={alto} fill={`url(#${id}halo)`} />
-            {!sinLuna && (
+            {!sinLuna && apagada && (
               <G>
                 <Circle cx={ancho - 30} cy={20} r={20} fill={`url(#${id}luna)`} />
-                <Circle cx={ancho - 30} cy={20} r={8} fill={apagada ? "#5A5F70" : "#F7F2E0"} />
+                <Circle cx={ancho - 30} cy={20} r={8} fill="#5A5F70" />
+              </G>
+            )}
+            {!sinLuna && cielo?.luna && (
+              <G>
+                <Circle cx={cielo.luna.x * ancho} cy={cielo.luna.y * alto} r={20} fill={`url(#${id}luna)`} />
+                <Circle cx={cielo.luna.x * ancho} cy={cielo.luna.y * alto} r={8} fill="#F7F2E0" />
+              </G>
+            )}
+            {!sinLuna && cielo?.sol && (
+              <G>
+                <Circle cx={cielo.sol.x * ancho} cy={cielo.sol.y * alto} r={alineacion ? 30 : 24} fill={`url(#${id}sol)`} />
+                <Circle cx={cielo.sol.x * ancho} cy={cielo.sol.y * alto} r={9} fill={alineacion ? "#FFD15C" : "#FFF1C4"} />
+                {alineacion && <Circle cx={cielo.sol.x * ancho} cy={cielo.sol.y * alto} r={15} fill="none" stroke="#FFD15C" strokeWidth={1.5} opacity={0.8} />}
               </G>
             )}
             {edificios.map((e, i) => (
@@ -168,13 +201,18 @@ function CiudadBase({ semilla, acento, alto = 96, apagada, radio = 14, densidad 
             ))}
             {/* Todas las ventanas de un mismo color en UN solo trazo (antes eran cientos de
                 rectángulos sueltos por ciudad, cada uno una vista nativa). */}
-            {ventanasDelDibujo.comunes ? <Path d={ventanasDelDibujo.comunes} fill={apagada ? "#2A2F42" : luz} opacity={apagada ? 0.8 : 0.9} /> : null}
-            {ventanasDelDibujo.blancas ? <Path d={ventanasDelDibujo.blancas} fill="#FFF3D6" opacity={0.9} /> : null}
+            {ventanasDelDibujo.comunes ? <Path d={ventanasDelDibujo.comunes} fill={apagada ? "#2A2F42" : luz} opacity={apagada ? 0.8 : 0.15 + 0.75 * noche} /> : null}
+            {ventanasDelDibujo.blancas ? <Path d={ventanasDelDibujo.blancas} fill="#FFF3D6" opacity={0.15 + 0.75 * noche} /> : null}
             {!apagada && <Rect x={0} y={alto - 1.5} width={ancho} height={1.5} fill={conAlfa(acento, 0.5)} />}
           </Svg>
-          {grupos.map((g, i) => (
-            <GrupoVentanas key={i} ventanas={g.ventanas} periodo={g.periodo} demora={g.demora} activa={activa} />
-          ))}
+          {/* De día casi no se ven luces encendidas: las que parpadean, solo de noche. */}
+          {noche > 0.35 && (
+            <View style={[StyleSheet.absoluteFill, { opacity: noche }]} pointerEvents="none">
+              {grupos.map((g, i) => (
+                <GrupoVentanas key={i} ventanas={g.ventanas} periodo={g.periodo} demora={g.demora} activa={activa} />
+              ))}
+            </View>
+          )}
           {conAvion && <Cielo semilla={semilla} ancho={ancho} alto={alto} activa={activa} liviano={liviano} />}
         </>
       )}
