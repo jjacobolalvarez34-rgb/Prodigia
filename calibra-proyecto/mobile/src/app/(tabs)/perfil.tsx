@@ -148,6 +148,7 @@ export default function Perfil() {
 
       <Tarjeta relleno={4} indice={2}>
         <Item indice={0} titulo="Logros y títulos" icono={<IconoTrofeo tam={18} c={color.logro} />} onPress={() => router.push("/logros")} />
+        <Item indice={0} titulo="Estadísticas" icono={<Texto tam={16}>📊</Texto>} onPress={() => router.push("/estadisticas" as Href)} extra={plan === "pro" ? null : <Texto v="nota" c={color.logro}>PRO</Texto>} />
         <Item
           indice={1}
           titulo="Tienda"
