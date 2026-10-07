@@ -30,6 +30,7 @@ import { iniciarSincronizacion } from "~/lib/sinConexion";
 import { conectarPresencia, desconectarPresencia } from "~/lib/social";
 import AvisoGlobal from "~/ui/Aviso";
 import AvisoDuelo from "~/ui/AvisoDuelo";
+import AceptarTerminos, { registrarAceptacionEnLaCuenta, terminosAceptadosEnEsteTelefono } from "~/ui/AceptarTerminos";
 import IntroMarca, { INTRO_ACTIVA } from "~/ui/IntroMarca";
 import PantallaCarga from "~/ui/PantallaCarga";
 import { color, MUNDOS } from "~/tema";
@@ -96,6 +97,14 @@ function Navegacion() {
   }, []);
   const ocultarIntro = useCallback(() => setIntroVisible(false), []);
   const arrancoRef = useRef(false);
+  // Términos y privacidad: se piden la primera vez, antes de entrar (null = leyendo).
+  const [terminos, setTerminos] = useState<boolean | null>(null);
+  useEffect(() => {
+    terminosAceptadosEnEsteTelefono().then(setTerminos);
+  }, []);
+  useEffect(() => {
+    if (userId && terminos) registrarAceptacionEnLaCuenta();
+  }, [userId, terminos]);
   const sincronizadoRef = useRef<string | null>(null);
 
   // La pantalla de carga animada reemplaza al splash nativo (mismo fondo) apenas monta.
@@ -206,6 +215,7 @@ function Navegacion() {
       )}
       {!cargando && userId && !sesion?.user.is_anonymous && <AvisoDuelo userId={userId} />}
       <AvisoGlobal />
+      {terminos === false && !cargaVisible && <AceptarTerminos onAceptar={() => setTerminos(true)} />}
       {cargaVisible && introEnNegro && <PantallaCarga progreso={progreso} etapa={etapa} onTerminada={ocultarCarga} />}
       {introVisible && <IntroMarca onNegro={introNegra} onTerminada={ocultarIntro} />}
     </>

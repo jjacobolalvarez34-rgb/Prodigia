@@ -962,6 +962,15 @@
       "descripcion": "A UFO took this page. It happens a lot around Prodigia's cities: head back home and keep practicing.",
       "inicio": "Back to home",
       "aprender": "Go to Learn"
+    },
+    "aceptarTerminos": {
+      "titulo": "Terms and privacy",
+      "texto": "To keep using Prodigia, please read and accept the Terms and conditions and the Privacy policy: what data we keep, why, and the rules of the game.",
+      "verTerminos": "Read the Terms and conditions",
+      "verPrivacidad": "Read the Privacy policy",
+      "casilla": "I have read and accept the Terms and conditions and the Privacy policy.",
+      "boton": "Accept and continue",
+      "error": "We couldn't save your acceptance. Please try again."
     }
   },
   "Geografia": {
@@ -1691,7 +1700,9 @@
       "reenviando": "Resending…",
       "reenviarEn": "Resend in {segundos}s",
       "codigoReenviado": "Done, we sent it again — check spam too.",
-      "errorReenviar": "We couldn't resend it. Try again in a moment."
+      "errorReenviar": "We couldn't resend it. Try again in a moment.",
+      "aceptoTerminos": "I have read and accept the <terminos>Terms and conditions</terminos> and the <privacidad>Privacy policy</privacidad>.",
+      "errorTerminos": "To create your account you need to accept the Terms and the Privacy policy."
     },
     "recuperar": {
       "titulo": "Recover password",

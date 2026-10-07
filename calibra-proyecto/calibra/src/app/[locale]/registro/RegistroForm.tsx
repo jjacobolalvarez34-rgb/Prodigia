@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { VERSION_TERMINOS } from "@/lib/legal/terminos";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -39,6 +40,8 @@ export default function RegistroForm({ refId }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmar, setConfirmar] = useState("");
+  // Aceptación de Términos y Privacidad (0257): obligatoria para crear la cuenta.
+  const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmacionPendiente, setConfirmacionPendiente] = useState(false);
@@ -98,6 +101,10 @@ export default function RegistroForm({ refId }: Props) {
       setError(t("errorPasswordsNoCoinciden"));
       return;
     }
+    if (!aceptaTerminos) {
+      setError(t("errorTerminos"));
+      return;
+    }
 
     setEnviando(true);
     const supabase = createClient();
@@ -112,7 +119,9 @@ export default function RegistroForm({ refId }: Props) {
     const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: urlAbsoluta(redirectPath) },
+      // Queda en la cuenta qué versión de los Términos aceptó; al entrar, AceptarTerminosModal
+      // la registra en el perfil sin volver a preguntar.
+      options: { emailRedirectTo: urlAbsoluta(redirectPath), data: { terminos_version: VERSION_TERMINOS } },
     });
 
     if (authError) {
@@ -245,6 +254,23 @@ export default function RegistroForm({ refId }: Props) {
         placeholder={t("confirmarPlaceholder")}
         autoComplete="new-password"
       />
+      <label className="flex items-start gap-2 text-sm text-foreground">
+        <input type="checkbox" checked={aceptaTerminos} onChange={(e) => setAceptaTerminos(e.target.checked)} className="mt-0.5 h-4 w-4 accent-primario" />
+        <span>
+          {t.rich("aceptoTerminos", {
+            terminos: (c) => (
+              <Link href="/terminos" target="_blank" className="font-semibold text-primario hover:underline">
+                {c}
+              </Link>
+            ),
+            privacidad: (c) => (
+              <Link href="/privacidad" target="_blank" className="font-semibold text-primario hover:underline">
+                {c}
+              </Link>
+            ),
+          })}
+        </span>
+      </label>
       <Boton type="submit" cargando={enviando} className="w-full">
         {enviando ? t("creandoCuenta") : t("botonCrearCuenta")}
       </Boton>

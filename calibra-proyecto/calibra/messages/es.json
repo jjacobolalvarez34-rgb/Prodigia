@@ -962,6 +962,15 @@
       "descripcion": "Un ovni se llevó esta página. Pasa seguido por las ciudades de Prodigia: mejor vuelve al inicio y sigue practicando.",
       "inicio": "Volver al inicio",
       "aprender": "Ir a Aprender"
+    },
+    "aceptarTerminos": {
+      "titulo": "Términos y privacidad",
+      "texto": "Para seguir usando Prodigia necesitamos que leas y aceptes los Términos y condiciones y la Política de privacidad: qué datos guardamos, para qué y cuáles son las reglas del juego.",
+      "verTerminos": "Leer los Términos y condiciones",
+      "verPrivacidad": "Leer la Política de privacidad",
+      "casilla": "Leí y acepto los Términos y condiciones y la Política de privacidad.",
+      "boton": "Aceptar y continuar",
+      "error": "No pudimos guardar tu aceptación. Prueba de nuevo."
     }
   },
   "Geografia": {
@@ -1691,7 +1700,9 @@
       "reenviando": "Reenviando…",
       "reenviarEn": "Reenviar en {segundos}s",
       "codigoReenviado": "Listo, te lo mandamos de nuevo — revisa también spam.",
-      "errorReenviar": "No pudimos reenviarlo. Prueba de nuevo en un momento."
+      "errorReenviar": "No pudimos reenviarlo. Prueba de nuevo en un momento.",
+      "aceptoTerminos": "Leí y acepto los <terminos>Términos y condiciones</terminos> y la <privacidad>Política de privacidad</privacidad>.",
+      "errorTerminos": "Para crear tu cuenta tienes que aceptar los Términos y la Política de privacidad."
     },
     "recuperar": {
       "titulo": "Recuperar contraseña",
