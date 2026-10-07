@@ -1,6 +1,7 @@
 # Plan: la primera vez en la app de Prodigia
 
-> **Estado: PROPUESTA, para aprobar.** No se construye nada de este documento hasta que lo apruebes (o me digas qué cambiar).
+> **Estado: APROBADO (las 8 decisiones, 2026-10-07) e IMPLEMENTADO.** Migraciones 0258 (Kit del Pionero), 0259 (Constelaciones y Gran Alineación) y 0260 (Primeros pasos).
+> Diferencias con lo propuesto: el premio final de «Primeros pasos» es 500 Chispas y el título «Bien encaminado» (el marco «Pionero» ya lo da el Kit); las cápsulas diaria y de ciudad también pasaron a estrellas (la de colección se queda); justo después de cada Gran Alineación hay unas horas en que ninguna ciudad está de noche (todas acaban de amanecer). Google necesita que se active el proveedor en Supabase y `prodigia://auth` en Redirect URLs.
 > Fecha: 6 de octubre de 2026.
 > Incluye: (1) el paso a paso desde que se abre la app por primera vez, con el tutorial; (2) cuenta obligatoria (sin modo invitado); (3) recompensa por usar la app; (4) rediseño de las cápsulas; (5) la Gran Alineación como evento.
 > Al final hay una lista de **decisiones** con mi recomendación en cada una.

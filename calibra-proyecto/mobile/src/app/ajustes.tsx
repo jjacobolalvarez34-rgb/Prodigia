@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { Alert, Pressable, StyleSheet, Switch, View } from "react-native";
 import { useEffect, useState, type ReactNode } from "react";
+import { verTutorialOtraVez } from "~/lib/bienvenida";
 import { cambiarAjuste, useAjustes } from "~/lib/ajustes";
 import { cargarEstadoEdad, desbloquearJugador, limpiarEstadoEdad, misBloqueados, useEdad, type Bloqueado } from "~/lib/edad";
 import { vibrar } from "~/lib/efectos";
@@ -104,6 +105,14 @@ export default function Ajustes() {
       <TituloSeccion>Avisos</TituloSeccion>
       <Tarjeta relleno={4}>
         <Fila titulo="Notificaciones" nota="Qué avisos recibir y cuándo" onPress={() => router.push("/ajustes-avisos")} />
+        <Fila
+          titulo="Ver el tutorial otra vez"
+          nota="El recorrido por las pestañas y las ayudas de cada sección"
+          onPress={async () => {
+            await verTutorialOtraVez();
+            router.replace("/");
+          }}
+        />
       </Tarjeta>
 
       <TituloSeccion>Seguridad</TituloSeccion>

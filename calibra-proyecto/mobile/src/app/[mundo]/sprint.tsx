@@ -4,6 +4,7 @@ import { ActivityIndicator, Alert, BackHandler, ScrollView, StyleSheet } from "r
 import Animated, { useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { mulberry32 } from "@/lib/rng";
+import { pistaSprint } from "~/lib/ayudas";
 import { obtenerDuelo, registrarResultadoDuelo, type InfoDuelo } from "~/lib/competir";
 import { useProgresoEnVivo } from "~/lib/duelos";
 import { sonar, sonarAcierto, vibrar } from "~/lib/efectos";
@@ -147,6 +148,7 @@ export default function SprintMundo() {
     inicioRef.current = ahora;
     mostradoEnRef.current = ahora;
     setInicio(ahora);
+    if (!dueloId) pistaSprint("inicio");
   }
 
   const alAcabarElTiempo = useCallback(() => {
@@ -250,6 +252,7 @@ export default function SprintMundo() {
     setFeedback(correcto ? "correcto" : "incorrecto");
     setResultados((r) => [...r, correcto]);
     comboRef.current = correcto ? comboRef.current + 1 : 0;
+    if (!dueloId) pistaSprint(!correcto ? "error" : comboRef.current === 3 ? "tres_seguidas" : "acierto");
     setCombo(comboRef.current);
     if (correcto) {
       sonarAcierto(comboRef.current);

@@ -15,7 +15,7 @@ import { SpaceGrotesk_600SemiBold } from "@expo-google-fonts/space-grotesk/600Se
 import { SpaceGrotesk_700Bold } from "@expo-google-fonts/space-grotesk/700Bold";
 import { useFonts } from "expo-font";
 import * as Notifications from "expo-notifications";
-import { DarkTheme, Stack, ThemeProvider, useRouter, type Href } from "expo-router";
+import { DarkTheme, Stack, ThemeProvider, useRouter, useSegments, type Href } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -34,6 +34,7 @@ import AceptarTerminos, { registrarAceptacionEnLaCuenta, terminosAceptadosEnEste
 import IntroMarca, { INTRO_ACTIVA } from "~/ui/IntroMarca";
 import PantallaCarga from "~/ui/PantallaCarga";
 import PrimeraVez from "~/ui/PrimeraVez";
+import { GlobosPorRuta } from "~/ui/GloboAyuda";
 import CelebracionConstelaciones from "~/ui/recompensas/CelebracionConstelaciones";
 import { color, MUNDOS } from "~/tema";
 
@@ -83,6 +84,7 @@ const introTerminada = INTRO_ACTIVA ? new Promise<void>((resolver) => (finIntro 
 function Navegacion() {
   const { sesion, cargando } = useSesion();
   const userId = sesion?.user.id;
+  const segmentos = useSegments() as string[];
   const [progreso, setProgreso] = useState(0.1);
   const [etapa, setEtapa] = useState("Encendiendo las luces de la ciudad…");
   const [cargaVisible, setCargaVisible] = useState(true);
@@ -220,6 +222,7 @@ function Navegacion() {
       {!cargando && userId && !sesion?.user.is_anonymous && <AvisoDuelo userId={userId} />}
       <AvisoGlobal />
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <CelebracionConstelaciones />}
+      {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <GlobosPorRuta segmentos={segmentos} />}
       {!cargando && userId && terminos && !cargaVisible && <PrimeraVez key={userId} userId={userId} anonimo={!!sesion?.user.is_anonymous} />}
       {terminos === false && !cargaVisible && <AceptarTerminos onAceptar={() => setTerminos(true)} />}
       {cargaVisible && introEnNegro && <PantallaCarga progreso={progreso} etapa={etapa} onTerminada={ocultarCarga} />}

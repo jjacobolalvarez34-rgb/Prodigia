@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { esAndroid, hayPushRemoto } from "./entorno";
+import { alineacionEnCurso, DURACION_EVENTO_MS, proximaAlineacion } from "@/lib/ciudades/cicloDia";
 import { supabase } from "./supabase";
 
 // Avisos de la app (docs/app-nativa/04-BUCLE-DE-ENGANCHE.md §5). El push remoto lo
@@ -162,6 +163,33 @@ export async function sincronizarAvisos() {
   } catch {
     // Se reintenta la próxima vez que se abra la app.
   }
+  await programarAvisosAlineacion(prefs.categorias.includes("novedades"));
+}
+
+// Gran Alineación (PLAN_PRIMERA_VEZ_APP.md §6): aviso local el día anterior y 10
+// minutos antes de la próxima, si «Novedades» está activa. Nunca entre las 21:00 y
+// las 08:00 de este teléfono (si cae ahí, ese aviso no se manda).
+const IDS_ALINEACION = ["alineacion-dia-antes", "alineacion-10-min"] as const;
+
+export async function programarAvisosAlineacion(activa: boolean) {
+  await Promise.all(IDS_ALINEACION.map((id) => Notifications.cancelScheduledNotificationAsync(id).catch(() => undefined)));
+  if (!activa) return;
+  const ahora = Date.now();
+  const proxima = alineacionEnCurso(ahora) ? proximaAlineacion(ahora + DURACION_EVENTO_MS) : proximaAlineacion(ahora);
+  const hora = new Date(proxima).toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" });
+  const avisos = [
+    { id: IDS_ALINEACION[0], cuando: proxima - 24 * 3_600_000, titulo: "✦ Mañana: la Gran Alineación", cuerpo: `Las 13 ciudades amanecen juntas a las ${hora}. 3 horas de Exp doble y constelaciones con premio doble.` },
+    { id: IDS_ALINEACION[1], cuando: proxima - 10 * 60_000, titulo: "✦ En 10 minutos, la Gran Alineación", cuerpo: "Exp doble en todas las ciudades durante 3 horas. ¡Prepárate!" },
+  ];
+  for (const a of avisos) {
+    const h = new Date(a.cuando).getHours();
+    if (a.cuando <= ahora || h < 8 || h >= 21) continue;
+    await Notifications.scheduleNotificationAsync({
+      identifier: a.id,
+      content: { title: a.titulo, body: a.cuerpo, data: { tipo: "alineacion" }, color: "#FFB627" },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(a.cuando), channelId: "novedades" },
+    }).catch(() => undefined);
+  }
 }
 
 export async function cambiarCategoria(id: Categoria, activa: boolean): Promise<PreferenciasAvisos> {
@@ -171,6 +199,7 @@ export async function cambiarCategoria(id: Categoria, activa: boolean): Promise<
   await guardarPreferencias(nuevas);
   if (tokenRegistrado) {
     await supabase.rpc("actualizar_categorias_push", { p_token: tokenRegistrado, p_categorias: categorias });
+    if (id === "novedades") await programarAvisosAlineacion(activa);
   } else {
     await sincronizarAvisos();
   }
@@ -211,5 +240,6 @@ export function rutaDeAviso(data: Record<string, unknown> | undefined): string {
   if (tipo === "clan_mensaje") return "/clan/chat";
   if (tipo === "duelo" && typeof data?.duelId === "string") return `/duelo/${data.duelId}`;
   if (tipo === "anuncio") return "/avisos";
+  if (tipo === "alineacion") return "/mundos";
   return "/";
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { aplicarNombrePendiente, fijarPrimeraVezActiva, marcarRecorridoVisto, reclamarKitApp, recorridoVisto } from "~/lib/bienvenida";
+import { aplicarNombrePendiente, fijarPrimeraVezActiva, marcarRecorridoVisto, reclamarKitApp, recorridoVisto, suscribirPedidoRecorrido } from "~/lib/bienvenida";
 import { recargarJugador } from "~/lib/jugador";
 import GuardaTuProgreso from "./GuardaTuProgreso";
 import KitPionero from "./KitPionero";
@@ -31,6 +31,9 @@ export default function PrimeraVez({ userId, anonimo }: { userId: string; anonim
       vivo = false;
     };
   }, [userId, anonimo]);
+
+  // Ajustes → «Ver el tutorial otra vez».
+  useEffect(() => suscribirPedidoRecorrido(() => setFase("recorrido")), []);
 
   const activa = anonimo || fase === "kit" || fase === "recorrido" || fase === "revisando";
   useEffect(() => {

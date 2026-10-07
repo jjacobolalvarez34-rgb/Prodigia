@@ -136,3 +136,19 @@ export function suscribirPrimeraVez(o: () => void) {
   };
 }
 export const leerPrimeraVezActiva = () => primeraVezActiva;
+
+// «Ver el tutorial otra vez» (Ajustes): vuelve a mostrar el recorrido por las
+// pestañas, los globos de cada sección y las pistas de la primera partida.
+const oyentesRecorrido = new Set<() => void>();
+export function suscribirPedidoRecorrido(o: () => void) {
+  oyentesRecorrido.add(o);
+  return () => {
+    oyentesRecorrido.delete(o);
+  };
+}
+export async function verTutorialOtraVez() {
+  await guardar(CLAVE_RECORRIDO, null);
+  const { olvidarAyudas } = await import("./ayudas");
+  await olvidarAyudas();
+  oyentesRecorrido.forEach((o) => o());
+}
