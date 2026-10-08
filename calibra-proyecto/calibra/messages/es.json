@@ -4923,5 +4923,155 @@
         "ensena": "500 Chispas y el título «Bien encaminado»."
       }
     }
+  },
+  "MundoNuevo": {
+    "hub": {
+      "practicar": "Practicar",
+      "aprenderCard": "Aprender",
+      "modosTitulo": "Modos",
+      "metaCumplida": "Ya cumpliste tu meta de hoy."
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practicar",
+        "description": "Elige un modo para practicar."
+      },
+      "titulo": "¿Qué modo practicamos?",
+      "subtitulo": "Elige un modo para arrancar."
+    },
+    "practicaClient": {
+      "subtituloRonda": "Ronda {numero}/{total} · {mundo}",
+      "noSePudoCerrar": "No se pudo cerrar la partida.",
+      "errorConexion": "No pudimos conectar con el servidor. Prueba de nuevo.",
+      "errorCerrarPartida": "No pudimos cerrar la partida: {error}",
+      "volver": "Volver",
+      "boostActivo": "⚡ Boost activo — Chispas ×1.5 en esta partida",
+      "preguntasOSegundos": "10 preguntas o 60 segundos, lo que llegue primero.",
+      "iniciarPartida": "Iniciar partida",
+      "resumen": {
+        "ahiQuedo": "Resultado de la partida",
+        "experiencia": "Experiencia",
+        "aciertos": "Aciertos",
+        "precision": "Precisión",
+        "experienciaHoy": "Experiencia hoy",
+        "repasemosEsto": "Repasemos esto",
+        "ningunoFallado": "Ninguna fallada — así se hace. 🎯",
+        "sinRespuestas": "No alcanzaste a responder ninguna esta vez. Prueba de nuevo cuando quieras.",
+        "incompletaSinErrores": "Te quedó incompleta, pero ninguna de las que respondiste estuvo mal. Prueba de nuevo cuando quieras."
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} escudos disponibles",
+      "exp": "{n} Exp",
+      "segundos": "{n}s",
+      "ok": "Ok",
+      "ayudaDecimal": "Usa coma o punto para los decimales."
+    },
+    "diagnostico": {
+      "introTitulo": "Unos datos para calibrar",
+      "empezar": "Empezar",
+      "arrancarNivel1": "Prefiero arrancar en nivel 1",
+      "ok": "Ok",
+      "tuRespuesta": "Tu respuesta",
+      "laCorrectaEra": "La respuesta era {valor}",
+      "guardando": "Guardando tu diagnóstico...",
+      "resultadoTitulo": "Así arrancas",
+      "nivel": "Nivel {n}",
+      "errorGuardado": "No pudimos guardar tu progreso — prueba de nuevo antes de continuar.",
+      "continuar": "Continuar",
+      "reintentar": "Reintentar"
+    },
+    "aprender": {
+      "progreso": "Progreso",
+      "tecnicas": "{n}/{total} técnicas",
+      "titulo": "Aprender",
+      "clases": {
+        "desbloqueaConPro": "Desbloquea con Pro"
+      }
+    },
+    "leccion": {
+      "clase": "Clase",
+      "tecnica": "Técnica",
+      "verElTruco": "Ver el truco",
+      "anterior": "Anterior",
+      "siguientePaso": "Siguiente paso",
+      "marcarAprendida": "Marcar como aprendida",
+      "completaste": "¡Completaste {nombre}!",
+      "volverAAprender": "Volver a Aprender",
+      "irAPracticar": "Ir a Practicar",
+      "continuarAlQuiz": "Continuar al quiz",
+      "quizTitulo": "Quiz de comprensión",
+      "quizSubtitulo": "Responde las preguntas para marcar este módulo como aprendido. Puedes reintentar todas las veces que quieras.",
+      "respuestaIncorrecta": "Esa no es — revisa de nuevo",
+      "enviarRespuestas": "Enviar respuestas",
+      "enviando": "Enviando...",
+      "reintentaCuandoQuieras": "Algunas respuestas no eran correctas. Revisa el porqué arriba y reintenta cuando quieras."
+    }
+  },
+  "Dinamia": {
+    "metadata": {
+      "title": "Dinamia",
+      "description": "Física con dificultad adaptativa: cinemática, vectores, leyes de Newton, energía, termodinámica y fluidos."
+    },
+    "nombreMundo": "Dinamia",
+    "titulo": "Movimiento, fuerzas y energía",
+    "aviso": "Física en partidas de 60 segundos: movimiento, fuerzas, energía, calor y fluidos, con dificultad que se adapta a ti.",
+    "practicarDescripcion": "Cinemática, vectores, Newton, energía, termodinámica y fluidos.",
+    "aprenderDescripcion": "Trucos para resolver más rápido y clases desde cero, con animaciones.",
+    "modos": {
+      "cinematica": "Cinemática",
+      "vectores": "Vectores",
+      "newton": "Leyes de Newton",
+      "energia": "Trabajo y energía",
+      "termo": "Termodinámica",
+      "fluidos": "Fluidos"
+    },
+    "descripciones": {
+      "cinematica": "MRU, MRUA, caída libre, tiro vertical y parabólico",
+      "vectores": "Sumar, restar, descomponer y equilibrar vectores",
+      "newton": "Fuerza, masa y aceleración, rozamiento, planos inclinados y gravitación",
+      "energia": "Trabajo, potencia, energía cinética y potencial, choques y resortes",
+      "termo": "Escalas de temperatura, calor, cambios de fase, gases y máquinas térmicas",
+      "fluidos": "Densidad, presión, Pascal, Arquímedes y fluidos en movimiento"
+    },
+    "diagnosticoIntro": "Sin presión: 8 preguntas de movimiento, solo para arrancar en el nivel justo.",
+    "aprenderMetadata": {
+      "title": "Aprender Dinamia",
+      "description": "Técnicas rápidas y clases de física desde cero, con animaciones."
+    },
+    "aprenderSubtitulo": "Trucos para resolver más rápido y clases para entender cada ley desde cero."
+  },
+  "Vitalia": {
+    "metadata": {
+      "title": "Vitalia",
+      "description": "Biología con dificultad adaptativa: la célula, procesos celulares, genética, sistemas del cuerpo, reinos y ecología."
+    },
+    "nombreMundo": "Vitalia",
+    "titulo": "La vida, de la célula a los reinos",
+    "aviso": "Biología en partidas de 60 segundos: la célula, la genética, cómo funciona el cuerpo y los seres vivos, con dificultad que se adapta a ti.",
+    "practicarDescripcion": "Célula, procesos, genética, sistemas del cuerpo, reinos y ecología.",
+    "aprenderDescripcion": "Trucos para recordar y clases desde cero, con animaciones.",
+    "modos": {
+      "celula": "La célula",
+      "procesos": "Procesos celulares",
+      "genetica": "Genética",
+      "sistemas": "Sistemas del cuerpo",
+      "reinos": "Reinos y clasificación",
+      "ecologia": "Ecología"
+    },
+    "descripciones": {
+      "celula": "Organelos, célula animal y vegetal, membrana y biomoléculas",
+      "procesos": "Fotosíntesis, respiración, fermentación, mitosis y meiosis",
+      "genetica": "ADN, ARN, codones, cuadros de Punnett y herencia",
+      "sistemas": "Digestión, circulación, riñón, hormonas y defensas",
+      "reinos": "Los reinos, vertebrados, invertebrados, plantas y taxonomía",
+      "ecologia": "Cadenas alimentarias, energía, relaciones y ciclos"
+    },
+    "diagnosticoIntro": "Sin presión: 8 preguntas sobre la célula, solo para arrancar en el nivel justo.",
+    "aprenderMetadata": {
+      "title": "Aprender Vitalia",
+      "description": "Técnicas para recordar y clases de biología desde cero, con animaciones."
+    },
+    "aprenderSubtitulo": "Trucos para recordar y clases para entender cómo funciona la vida desde cero."
   }
 }

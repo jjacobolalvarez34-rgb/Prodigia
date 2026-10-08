@@ -4923,5 +4923,155 @@
         "ensena": "500 Sparks and the title “On the right track”."
       }
     }
+  },
+  "MundoNuevo": {
+    "hub": {
+      "practicar": "Practice",
+      "aprenderCard": "Learn",
+      "modosTitulo": "Modes",
+      "metaCumplida": "You already hit today's goal."
+    },
+    "elegir": {
+      "metadata": {
+        "title": "Practice",
+        "description": "Choose a mode to practice."
+      },
+      "titulo": "Which mode should we practice?",
+      "subtitulo": "Choose a mode to get started."
+    },
+    "practicaClient": {
+      "subtituloRonda": "Round {numero}/{total} · {mundo}",
+      "noSePudoCerrar": "We couldn't close the game.",
+      "errorConexion": "We couldn't connect to the server. Try again.",
+      "errorCerrarPartida": "We couldn't close the game: {error}",
+      "volver": "Back",
+      "boostActivo": "⚡ Boost active — Chispas ×1.5 this game",
+      "preguntasOSegundos": "10 questions or 60 seconds, whichever comes first.",
+      "iniciarPartida": "Start game",
+      "resumen": {
+        "ahiQuedo": "Match result",
+        "experiencia": "Experience",
+        "aciertos": "Correct",
+        "precision": "Accuracy",
+        "experienciaHoy": "XP today",
+        "repasemosEsto": "Let's review this",
+        "ningunoFallado": "None missed — that's how it's done. 🎯",
+        "sinRespuestas": "You didn't get to answer any this time. Try again whenever you want.",
+        "incompletaSinErrores": "You didn't finish this one, but none of your answers were wrong. Try again whenever you want."
+      }
+    },
+    "sprintRunner": {
+      "escudosDisponibles": "{n} shields available",
+      "exp": "{n} XP",
+      "segundos": "{n}s",
+      "ok": "Ok",
+      "ayudaDecimal": "Use a comma or a period for decimals."
+    },
+    "diagnostico": {
+      "introTitulo": "Some data to calibrate",
+      "empezar": "Start",
+      "arrancarNivel1": "I'd rather start at level 1",
+      "ok": "Ok",
+      "tuRespuesta": "Your answer",
+      "laCorrectaEra": "The answer was {valor}",
+      "guardando": "Saving your diagnostic...",
+      "resultadoTitulo": "This is your starting point",
+      "nivel": "Level {n}",
+      "errorGuardado": "We couldn't save your progress — try again before continuing.",
+      "continuar": "Continue",
+      "reintentar": "Retry"
+    },
+    "aprender": {
+      "progreso": "Progress",
+      "tecnicas": "{n}/{total} techniques",
+      "titulo": "Learn",
+      "clases": {
+        "desbloqueaConPro": "Unlock with Pro"
+      }
+    },
+    "leccion": {
+      "clase": "Class",
+      "tecnica": "Technique",
+      "verElTruco": "See the trick",
+      "anterior": "Previous",
+      "siguientePaso": "Next step",
+      "marcarAprendida": "Mark as learned",
+      "completaste": "You completed {nombre}!",
+      "volverAAprender": "Back to Learn",
+      "irAPracticar": "Go to Practice",
+      "continuarAlQuiz": "Continue to quiz",
+      "quizTitulo": "Comprehension quiz",
+      "quizSubtitulo": "Answer the questions to mark this module as learned. You can retry as many times as you want.",
+      "respuestaIncorrecta": "That's not it — check again",
+      "enviarRespuestas": "Submit answers",
+      "enviando": "Submitting...",
+      "reintentaCuandoQuieras": "Some answers weren't correct. Check why above and retry whenever you want."
+    }
+  },
+  "Dinamia": {
+    "metadata": {
+      "title": "Dinamia",
+      "description": "Physics with adaptive difficulty: kinematics, vectors, Newton's laws, energy, thermodynamics and fluids."
+    },
+    "nombreMundo": "Dinamia",
+    "titulo": "Motion, forces and energy",
+    "aviso": "Physics in 60-second games: motion, forces, energy, heat and fluids, with difficulty that adapts to you.",
+    "practicarDescripcion": "Kinematics, vectors, Newton, energy, thermodynamics and fluids.",
+    "aprenderDescripcion": "Tricks to solve faster and classes from scratch, with animations.",
+    "modos": {
+      "cinematica": "Kinematics",
+      "vectores": "Vectors",
+      "newton": "Newton's laws",
+      "energia": "Work and energy",
+      "termo": "Thermodynamics",
+      "fluidos": "Fluids"
+    },
+    "descripciones": {
+      "cinematica": "Uniform and accelerated motion, free fall and projectiles",
+      "vectores": "Add, subtract, break down and balance vectors",
+      "newton": "Force, mass and acceleration, friction, inclines and gravitation",
+      "energia": "Work, power, kinetic and potential energy, collisions and springs",
+      "termo": "Temperature scales, heat, phase changes, gases and heat engines",
+      "fluidos": "Density, pressure, Pascal, Archimedes and moving fluids"
+    },
+    "diagnosticoIntro": "No pressure: 8 questions about motion, just to start at the right level.",
+    "aprenderMetadata": {
+      "title": "Learn Dinamia",
+      "description": "Quick techniques and physics classes from scratch, with animations."
+    },
+    "aprenderSubtitulo": "Tricks to solve faster and classes to understand each law from scratch."
+  },
+  "Vitalia": {
+    "metadata": {
+      "title": "Vitalia",
+      "description": "Biology with adaptive difficulty: the cell, cell processes, genetics, body systems, kingdoms and ecology."
+    },
+    "nombreMundo": "Vitalia",
+    "titulo": "Life, from the cell to the kingdoms",
+    "aviso": "Biology in 60-second games: the cell, genetics, how the body works and living things, with difficulty that adapts to you.",
+    "practicarDescripcion": "Cell, processes, genetics, body systems, kingdoms and ecology.",
+    "aprenderDescripcion": "Tricks to remember and classes from scratch, with animations.",
+    "modos": {
+      "celula": "The cell",
+      "procesos": "Cell processes",
+      "genetica": "Genetics",
+      "sistemas": "Body systems",
+      "reinos": "Kingdoms and classification",
+      "ecologia": "Ecology"
+    },
+    "descripciones": {
+      "celula": "Organelles, animal and plant cells, membrane and biomolecules",
+      "procesos": "Photosynthesis, respiration, fermentation, mitosis and meiosis",
+      "genetica": "DNA, RNA, codons, Punnett squares and inheritance",
+      "sistemas": "Digestion, circulation, kidney, hormones and defenses",
+      "reinos": "Kingdoms, vertebrates, invertebrates, plants and taxonomy",
+      "ecologia": "Food chains, energy, relationships and cycles"
+    },
+    "diagnosticoIntro": "No pressure: 8 questions about the cell, just to start at the right level.",
+    "aprenderMetadata": {
+      "title": "Learn Vitalia",
+      "description": "Memory tricks and biology classes from scratch, with animations."
+    },
+    "aprenderSubtitulo": "Tricks to remember and classes to understand how life works from scratch."
   }
 }
