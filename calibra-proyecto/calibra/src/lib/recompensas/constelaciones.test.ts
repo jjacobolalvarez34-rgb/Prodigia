@@ -3,7 +3,7 @@ import { MUNDOS_LANDING as MUNDOS } from "@/lib/mundos";
 import { ESTRELLAS_POR_CONSTELACION, FORMAS_CONSTELACION } from "./constelaciones";
 
 describe("formas de las constelaciones", () => {
-  it("hay una por cada una de las 13 ciudades, con 7 estrellas dentro de la caja de 100 × 100", () => {
+  it("hay una por cada una de las 15 ciudades, con 7 estrellas dentro de la caja de 100 × 100", () => {
     expect(Object.keys(FORMAS_CONSTELACION).sort()).toEqual(MUNDOS.map((m) => m.slug).sort());
     for (const [mundo, f] of Object.entries(FORMAS_CONSTELACION)) {
       expect(f.puntos.length, mundo).toBe(ESTRELLAS_POR_CONSTELACION);

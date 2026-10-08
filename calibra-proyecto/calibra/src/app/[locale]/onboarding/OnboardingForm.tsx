@@ -19,6 +19,8 @@ import {
   IconEstadistica,
   IconNaipia,
   IconCodia,
+  IconDinamia,
+  IconVitalia,
   IconCandado,
 } from "@/components/icons";
 import Boton from "@/components/Boton";
@@ -54,6 +56,8 @@ const ICONO_MUNDO: Record<MundoPago, typeof IconSuma> = {
   estadistica: IconEstadistica,
   naipia: IconNaipia,
   codia: IconCodia,
+  dinamia: IconDinamia,
+  vitalia: IconVitalia,
 };
 
 export default function OnboardingForm({ next, saltarPasoNombre }: Props) {

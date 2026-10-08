@@ -399,6 +399,8 @@ function BuscarPartida({
     { id: "estadistica", nombre: tMundos("estadistica"), descripcion: t("ciudades.estadistica") },
     { id: "naipia", nombre: tMundos("naipia"), descripcion: t("ciudades.naipia") },
     { id: "codia", nombre: tMundos("codia"), descripcion: t("ciudades.codia") },
+    { id: "dinamia", nombre: tMundos("dinamia"), descripcion: t("ciudades.dinamia") },
+    { id: "vitalia", nombre: tMundos("vitalia"), descripcion: t("ciudades.vitalia") },
     { id: "aleatorio", nombre: t("todasLasCiudades"), descripcion: t("ciudades.aleatorio") },
   ];
   // Fase 7 (Rankeds: Platino+ solo "todas las ciudades"): desde Platino

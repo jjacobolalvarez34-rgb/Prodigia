@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { ARITHMETIC_PROBLEM_TYPES } from "@/types/database";
 import { respuestaError } from "@/lib/api/respuestaError";
 
-const MUNDOS_VALIDOS = ["numeria", "geografia", "enigmia", "quimia", "anatomia", "melodia", "trigonometria", "historia", "calculia", "circuitia", "estadistica", "naipia", "codia"];
+const MUNDOS_VALIDOS = ["numeria", "geografia", "enigmia", "quimia", "anatomia", "melodia", "trigonometria", "historia", "calculia", "circuitia", "estadistica", "naipia", "codia", "dinamia", "vitalia"];
 const SUB_TIPOS_VALIDOS: Record<string, string[]> = {
   geografia: ["america", "europa", "africa", "asia_oceania"],
   enigmia: ["memoria", "patrones", "deduccion", "computacional"],
@@ -17,6 +17,8 @@ const SUB_TIPOS_VALIDOS: Record<string, string[]> = {
   estadistica: ["central", "dispersion", "probabilidad", "datos", "graficos"],
   naipia: ["hilo", "ko", "hiopt2", "omega2", "verdadero"],
   codia: ["sintaxis", "salida", "error", "estructuras"],
+  dinamia: ["cinematica", "vectores", "newton", "energia", "termo", "fluidos"],
+  vitalia: ["celula", "procesos", "genetica", "sistemas", "reinos", "ecologia"],
 };
 
 interface Body {

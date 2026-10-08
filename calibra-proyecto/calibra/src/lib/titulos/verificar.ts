@@ -14,6 +14,8 @@ const TIPOS_CIRCUITIA = ["circuitia_serie", "circuitia_paralelo", "circuitia_mix
 const TIPOS_ESTADISTICA = ["estadistica_central", "estadistica_dispersion", "estadistica_probabilidad", "estadistica_datos", "estadistica_graficos"];
 const TIPOS_NAIPIA = ["naipia_hilo", "naipia_ko", "naipia_hiopt2", "naipia_omega2", "naipia_verdadero"];
 const TIPOS_CODIA = ["codia_sintaxis", "codia_salida", "codia_error", "codia_estructuras"];
+const TIPOS_DINAMIA = ["dinamia_cinematica", "dinamia_vectores", "dinamia_newton", "dinamia_energia", "dinamia_termo", "dinamia_fluidos"];
+const TIPOS_VITALIA = ["vitalia_celula", "vitalia_procesos", "vitalia_genetica", "vitalia_sistemas", "vitalia_reinos", "vitalia_ecologia"];
 
 // Mismo espíritu que verificarLogros (src/lib/logros/verificar.ts):
 // solo calcula lo que hace falta para los títulos todavía no
@@ -248,6 +250,10 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
     } else if (mundo === "codia") {
       const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_CODIA);
       mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_CODIA.length && (rows ?? []).every((r) => r.nivel >= 10));
+    } else if (mundo === "dinamia" || mundo === "vitalia") {
+      const tipos = mundo === "dinamia" ? TIPOS_DINAMIA : TIPOS_VITALIA;
+      const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", tipos);
+      mundoCompletado.set(mundo, (rows ?? []).length === tipos.length && (rows ?? []).every((r) => r.nivel >= 10));
     }
   }
 

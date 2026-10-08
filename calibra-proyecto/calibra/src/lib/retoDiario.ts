@@ -12,6 +12,8 @@ import { generarProblemaCalculia, conRngSembrado as conRngSembradoCalculia, type
 import { preguntaEstadistica } from "@/lib/practica/estadistica";
 import { preguntaNaipia } from "@/lib/practica/naipia";
 import { preguntaCodia } from "@/lib/practica/codia";
+import { preguntaDinamia } from "@/lib/practica/dinamia";
+import { preguntaVitalia } from "@/lib/practica/vitalia";
 import { generarProblemaCircuitia, conRngSembrado as conRngSembradoCircuitia, type ModoCircuitia } from "@/lib/practica/circuitia";
 
 // Fase 3 (reto diario multi-ciudad, 2026-08-25): antes esto solo
@@ -24,7 +26,7 @@ import { generarProblemaCircuitia, conRngSembrado as conRngSembradoCircuitia, ty
 // mundos_desbloqueados de profiles (Fase 12, Chispas) — el llamador
 // (reto-diario/page.tsx, reto-semanal/page.tsx) manda esa lista desde
 // afuera, esta función no la calcula.
-export type MundoRetoDiario = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia";
+export type MundoRetoDiario = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia" | "dinamia" | "vitalia";
 
 export const TOTAL_PREGUNTAS_RETO_DIARIO = 5;
 export const TOTAL_PREGUNTAS_RETO_SEMANAL = 45;
@@ -245,6 +247,8 @@ const GENERADORES: Partial<Record<MundoRetoDiario, (rng: () => number) => Pregun
   estadistica: preguntaEstadistica,
   naipia: preguntaNaipia,
   codia: preguntaCodia,
+  dinamia: preguntaDinamia,
+  vitalia: preguntaVitalia,
 };
 
 function claveDePregunta(p: PreguntaRetoDiario): string {

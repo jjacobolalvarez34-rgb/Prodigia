@@ -79,7 +79,9 @@ export type MundoSlug =
   | "circuitia"
   | "estadistica"
   | "naipia"
-  | "codia";
+  | "codia"
+  | "dinamia"
+  | "vitalia";
 
 export interface Mundo {
   slug: MundoSlug;
@@ -108,6 +110,8 @@ export const MUNDOS: Mundo[] = [
   { slug: "estadistica", nombre: "Estadística", tema: "Datos", base: "#0D9488", neon: "#2DD4BF", glifo: "σ", glifos: ["σ", "x̄", "%"], enApp: true },
   { slug: "naipia", nombre: "Naipia", tema: "Memoria de cartas", base: "#B91C1C", neon: "#F25C5C", glifo: "♠", glifos: ["♠", "♥", "♦", "♣"], enApp: true },
   { slug: "codia", nombre: "Codia", tema: "Programación", base: "#06B6D4", neon: "#4FE0F5", glifo: "</>", glifos: ["{", "}", "<", "/>"], enApp: true },
+  { slug: "dinamia", nombre: "Dinamia", tema: "Física", base: "#2563EB", neon: "#60A5FA", glifo: "⇀", glifos: ["⇀", "g", "ΣF", "Δt"], enApp: true },
+  { slug: "vitalia", nombre: "Vitalia", tema: "Biología", base: "#16A34A", neon: "#4ADE80", glifo: "✿", glifos: ["✿", "◉", "ADN", "❦"], enApp: true },
 ];
 
 export const MUNDO_POR_SLUG = Object.fromEntries(MUNDOS.map((m) => [m.slug, m])) as Record<MundoSlug, Mundo>;

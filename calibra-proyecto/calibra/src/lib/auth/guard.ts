@@ -224,6 +224,31 @@ export async function requireMundoCodia(supabase: SupabaseClient, pathActual: st
   return { user, profile };
 }
 
+// Mundos 14-15 (Dinamia, Vitalia; 0263): mismo patrón.
+export async function requireMundoDinamia(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
+  const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
+  requireMundoComprado(profile, "dinamia", pathActual);
+
+  if (!profile.onboarding_dinamia_completado) {
+    redirect(`/dinamia/diagnostico?next=${encodeURIComponent(pathActual)}`);
+  }
+
+  return { user, profile };
+}
+
+export async function requireMundoVitalia(supabase: SupabaseClient, pathActual: string, enDuelo = false) {
+  const { user, profile } = await requireUsuario(supabase, pathActual);
+  if (enDuelo) return { user, profile };
+  requireMundoComprado(profile, "vitalia", pathActual);
+
+  if (!profile.onboarding_vitalia_completado) {
+    redirect(`/vitalia/diagnostico?next=${encodeURIComponent(pathActual)}`);
+  }
+
+  return { user, profile };
+}
+
 // Geografía nunca tuvo diagnóstico propio (arranca directo) — con Fase
 // 12 pasa a necesitar este guard nuevo en vez de requireUsuario a
 // secas, solo para el chequeo de compra.

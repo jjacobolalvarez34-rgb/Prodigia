@@ -42,6 +42,8 @@ const MUNDOS: string[] = [
   "estadistica",
   "naipia",
   "codia",
+  "dinamia",
+  "vitalia",
 ];
 
 function formatearFecha(iso: string, locale: string): string {

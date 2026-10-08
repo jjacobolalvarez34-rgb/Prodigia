@@ -268,6 +268,31 @@ export function IconCodia({ className }: IconProps) {
   );
 }
 
+// Mundo Dinamia (Física): la trayectoria de un tiro, con su piso, la pelota
+// arriba de la parábola y la flecha de la velocidad.
+export function IconDinamia({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M3 20h18" />
+      <path d="M4 19c3-13 13-13 16 0" />
+      <circle cx="12" cy="9.2" r="1.6" fill="currentColor" stroke="none" />
+      <path d="M15.4 10.6l2.1 2.2M17.5 12.8l-.1-2.6" />
+    </svg>
+  );
+}
+
+// Mundo Vitalia (Biología): una célula con su núcleo y una mitocondria.
+export function IconVitalia({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="12" r="8.5" />
+      <circle cx="14" cy="10" r="2.6" />
+      <path d="M6.8 15.4c1.2-1.7 3.5-1.7 4.7 0" />
+      <path d="M7.6 15.2l.8-.8.8.8.8-.8.8.8" />
+    </svg>
+  );
+}
+
 export function IconEscudo({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

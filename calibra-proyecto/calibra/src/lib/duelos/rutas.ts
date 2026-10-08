@@ -1,6 +1,6 @@
 import type { ArithmeticProblemType } from "@/types/database";
 
-export type MundoDuelo = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia";
+export type MundoDuelo = "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia" | "dinamia" | "vitalia";
 
 // Paleta de acento por mundo — fuente única para todo lo relacionado a
 // duelos (antes vivía duplicada, mismos 6 hex, en RankedsClient,
@@ -20,6 +20,8 @@ export const COLOR_MUNDO: Record<MundoDuelo, string> = {
   estadistica: "#0D9488",
   naipia: "#B91C1C",
   codia: "#06B6D4",
+  dinamia: "#2563EB",
+  vitalia: "#16A34A",
 };
 
 // A dónde lleva jugar un duelo según en qué ciudad cayó — un solo lugar,
@@ -100,6 +102,8 @@ export function hrefDuelo(mundo: MundoDuelo, operationType: ArithmeticProblemTyp
     if (subTipo === "estructuras") return `/codia/practica/estructuras?duelo=${duelId}`;
     return `/codia/practica?duelo=${duelId}`;
   }
+  // Mundos 14-15: una sola página de práctica por modo (/<mundo>/practica/<modo>).
+  if (mundo === "dinamia" || mundo === "vitalia") return `/${mundo}/practica/${subTipo || (mundo === "dinamia" ? "cinematica" : "celula")}?duelo=${duelId}`;
   // La operación real (asignada por buscar_rival_duelo, ver Rankeds) se
   // lee siempre del duelo en sí (obtener_duelo) apenas se carga
   // /practica?duelo=... — operationType acá es solo para no perder la

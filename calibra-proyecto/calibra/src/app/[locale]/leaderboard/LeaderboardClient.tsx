@@ -9,7 +9,7 @@ import ListaRanking from "./ListaRanking";
 
 type Alcance = "global" | "amigos";
 type Filtro = "total" | "mundo";
-type Mundo = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia";
+type Mundo = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia" | "dinamia" | "vitalia";
 
 const MUNDOS: { id: Mundo; colorHex: string }[] = [
   { id: "numeria", colorHex: "#6C4CF1" },
@@ -25,6 +25,8 @@ const MUNDOS: { id: Mundo; colorHex: string }[] = [
   { id: "estadistica", colorHex: "#0D9488" },
   { id: "naipia", colorHex: "#B91C1C" },
   { id: "codia", colorHex: "#06B6D4" },
+  { id: "dinamia", colorHex: "#2563EB" },
+  { id: "vitalia", colorHex: "#16A34A" },
 ];
 
 interface Props {

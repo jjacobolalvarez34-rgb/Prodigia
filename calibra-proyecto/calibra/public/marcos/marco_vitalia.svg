@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!--
+    Marco temático de Vitalia (mundo 15, Biología) — generado por código como
+    los de Calculia/Circuitia/Codia: anillo verde con hojas y una doble hélice
+    abajo. Centro transparente: va encima del avatar (AvatarConMarco.tsx).
+  -->
+  <defs>
+    <linearGradient id="anilloVitalia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16A34A" />
+      <stop offset="100%" stop-color="#86EFAC" />
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="92" fill="none" stroke="url(#anilloVitalia)" stroke-width="10" />
+  <g fill="#4ADE80" stroke="#14532D" stroke-width="1.5">
+    <path d="M100 2 C112 8 112 20 100 24 C88 20 88 8 100 2 Z" />
+    <path d="M28 30 C42 30 46 42 38 50 C26 48 22 38 28 30 Z" />
+    <path d="M172 30 C158 30 154 42 162 50 C174 48 178 38 172 30 Z" />
+    <path d="M4 104 C10 92 22 92 26 100 C22 110 10 112 4 104 Z" />
+    <path d="M196 104 C190 92 178 92 174 100 C178 110 190 112 196 104 Z" />
+  </g>
+  <g fill="none" stroke-width="3" stroke-linecap="round">
+    <path d="M78 178 C86 190 94 190 100 182 C106 174 114 174 122 186" stroke="#86EFAC" />
+    <path d="M78 186 C86 174 94 174 100 182 C106 190 114 190 122 178" stroke="#16A34A" />
+  </g>
+  <g stroke="#DCFCE7" stroke-width="2" stroke-linecap="round">
+    <line x1="88" y1="178" x2="88" y2="186" />
+    <line x1="112" y1="178" x2="112" y2="186" />
+  </g>
+</svg>

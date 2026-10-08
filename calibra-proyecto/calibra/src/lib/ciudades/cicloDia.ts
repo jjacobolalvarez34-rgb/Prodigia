@@ -1,7 +1,7 @@
-// Ciclo de día y noche de las 13 ciudades (pedido del usuario, 2026-10-06): cada
+// Ciclo de día y noche de las 15 ciudades (pedido del usuario, 2026-10-06): cada
 // ciudad tiene su propio largo de día, así que en cada momento unas están de día y
 // otras de noche, y el sol de cada una va a su ritmo. Los largos son divisores de
-// 672 horas (28 días): por eso, cada 28 días exactos, las 13 ciudades amanecen a la
+// 672 horas (28 días): por eso, cada 28 días exactos, las 15 ciudades amanecen a la
 // vez. Ese instante es «La Gran Alineación», un evento especial.
 //
 // Todo es una cuenta pura sobre el reloj (sin servidor): cualquier teléfono y la web
@@ -10,9 +10,10 @@
 export const CICLO_TOTAL_HORAS = 672;
 
 // Horas que dura un día completo (amanecer → amanecer) en cada ciudad. Todos son
-// divisores de 672 y distintos entre sí, del más rápido (Codia, 12 h) al más lento
-// (Historia, 112 h: el tiempo pasa despacio).
+// divisores de 672 y distintos entre sí, del más rápido (Dinamia, 8 h) al más lento
+// (Vitalia, 168 h: una semana, al ritmo lento de la vida).
 export const HORAS_DIA_CIUDAD: Record<string, number> = {
+  dinamia: 8,
   codia: 12,
   circuitia: 14,
   numeria: 16,
@@ -26,6 +27,7 @@ export const HORAS_DIA_CIUDAD: Record<string, number> = {
   naipia: 84,
   anatomia: 96,
   historia: 112,
+  vitalia: 168,
 };
 
 // Primera alineación: sábado 24 de octubre de 2026, 18:00 en Colombia (23:00 UTC).

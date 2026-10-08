@@ -91,6 +91,9 @@ export const COSTOS = {
   marco_estadistica: 2400,
   marco_naipia: 2400,
   marco_codia: 2400,
+  // Dinamia y Vitalia (mundos 14-15, 0263): igual que los anteriores.
+  marco_dinamia: 2400,
+  marco_vitalia: 2400,
   // Grupo B, Fase 7: "Colección de Mundos" — los marcos de mundo de una
   // sola vez, con descuento (comprados sueltos costarían más), pero SIN
   // saltarse el requisito de nivel de cada uno — exige nivel_mundo >= 40
@@ -102,10 +105,10 @@ export const COSTOS = {
   // 21600 sueltos, ~25% de descuento, mismo criterio que el precio
   // original). Ahora de 16200 a 18000 al pasar de 9 a 10 mundos (10 ×
   // 2400 = 24000 sueltos, mismo ~25% de descuento). Ahora de 18000 a
-  // 23400 al pasar de 10 a 13 mundos (13 × 2400 = 31200 sueltos, mismo
+  // 27000 con 15 mundos (0263: 15 × 2400 − 25 %); antes 23400 al pasar de 10 a 13 mundos (13 × 2400 = 31200 sueltos, mismo
   // ~25% de descuento) — DEBE coincidir con el precio dentro de
   // comprar_item_tienda (0190_trece_mundos.sql).
-  paquete_marcos_mundo: 23400,
+  paquete_marcos_mundo: 27000,
   // Fase 10 ("Tienda: animaciones y fondos"): mismo escalonado que las
   // fuentes (todo CSS, sin costo de licencia) — ondulante/brillo cerca
   // del piso, arcoiris/neon un poco más caras por ser más vistosas.

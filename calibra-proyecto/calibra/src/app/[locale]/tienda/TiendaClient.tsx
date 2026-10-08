@@ -146,6 +146,8 @@ export default function TiendaClient({
     marco_estadistica: t("items.marcoEstadistica"),
     marco_naipia: t("items.marcoNaipia"),
     marco_codia: t("items.marcoCodia"),
+    marco_dinamia: t("items.marcoDinamia"),
+    marco_vitalia: t("items.marcoVitalia"),
     paquete_marcos_mundo: t("items.paqueteMarcosMundo"),
     animacion_ondulante: t("items.animacionOndulante"),
     animacion_brillo: t("items.animacionBrillo"),

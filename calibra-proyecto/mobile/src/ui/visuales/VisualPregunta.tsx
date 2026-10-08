@@ -10,6 +10,9 @@ import Molecula from "./Molecula";
 import NotaAudio from "./NotaAudio";
 import PulsoAudio from "./PulsoAudio";
 import Triangulo from "./Triangulo";
+import DibujoSvg from "./DibujoSvg";
+import { dibujoDinamia } from "@/lib/dinamia/diagramas";
+import { dibujoVitalia } from "@/lib/vitalia/diagramas";
 
 // Lo que se dibuja arriba del enunciado en el sprint genérico, según el mundo:
 // pentagrama, figura rítmica, nota para escuchar, molécula, triángulo, circuito,
@@ -57,6 +60,10 @@ export default function VisualPregunta({ visual, acento }: { visual: Visual; ace
           </View>
         </View>
       );
+    case "dinamia":
+      return <DibujoSvg dibujo={dibujoDinamia(visual.diagrama)} acento={acento} maxAlto={visual.diagrama.tipo === "vectores" ? 220 : 190} />;
+    case "vitalia":
+      return <DibujoSvg dibujo={dibujoVitalia(visual.diagrama)} acento={acento} maxAlto={200} />;
     case "cartas":
       return (
         <View style={styles.cartas}>

@@ -703,6 +703,16 @@ select:disabled {
   --mn-glow: rgba(6, 182, 212, 0.6);
   --mn-glow-suave: rgba(6, 182, 212, 0.3);
 }
+.marco-coleccion-dinamia {
+  --mn-color: #2563eb;
+  --mn-glow: rgba(37, 99, 235, 0.6);
+  --mn-glow-suave: rgba(37, 99, 235, 0.3);
+}
+.marco-coleccion-vitalia {
+  --mn-color: #16a34a;
+  --mn-glow: rgba(22, 163, 74, 0.6);
+  --mn-glow-suave: rgba(22, 163, 74, 0.3);
+}
 @keyframes marco-coleccion-giro {
   to {
     transform: rotate(360deg);

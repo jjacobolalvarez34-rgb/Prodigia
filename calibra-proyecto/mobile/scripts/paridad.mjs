@@ -4,7 +4,7 @@
 // Revisa, leyendo el código fuente (sin ejecutar nada):
 //   1. Modos: cada clave de NOMBRE_MODO_* / NOMBRE_CATEGORIA_ENIGMIA de la web que
 //      usa un adaptador de la app tiene que estar completa (todos los modos).
-//   2. Mundos: los 13 con enApp: true en src/tema.ts y con adaptador o pantalla propia.
+//   2. Mundos: los 15 con enApp: true en src/tema.ts y con adaptador o pantalla propia.
 //   3. Visuales de lecciones: los mismos `tipo` registrados en la web
 //      (components/<mundo>/visuales/registro.ts) y en la app (src/ui/aprender/registro.ts).
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -69,7 +69,7 @@ for (const archivo of adaptadores) {
 // ---------- 2. Mundos ----------
 const tema = leer(join(raiz, "src/tema.ts"));
 const mundos = [...tema.matchAll(/slug: "([a-z]+)",[^\n]*enApp: (true|false)/g)].map((m) => ({ slug: m[1], enApp: m[2] === "true" }));
-if (mundos.length !== 13) problemas.push(`tema.ts: se esperaban 13 mundos y hay ${mundos.length}`);
+if (mundos.length !== 15) problemas.push(`tema.ts: se esperaban 15 mundos y hay ${mundos.length}`);
 const conPantallaPropia = new Set(["numeria", "geografia"]);
 const registro = leer(join(dirAdaptadores, "index.ts"));
 for (const m of mundos) {

@@ -14,6 +14,8 @@ import { NOMBRE_MODO_CIRCUITIA, type ModoCircuitia } from "@/lib/practica/circui
 import { NOMBRE_MODO_ESTADISTICA, type ModoEstadistica } from "@/lib/practica/estadistica";
 import { NOMBRE_MODO_NAIPIA, type ModoNaipia } from "@/lib/practica/naipia";
 import { NOMBRE_MODO_CODIA, type ModoCodia } from "@/lib/practica/codia";
+import { NOMBRE_MODO_DINAMIA, type ModoDinamia } from "@/lib/dinamia/tipos";
+import { NOMBRE_MODO_VITALIA, type ModoVitalia } from "@/lib/vitalia/tipos";
 import type { Continente } from "@/lib/practica/geografia";
 import { COLOR_MUNDO, type MundoDuelo } from "@/lib/duelos/rutas";
 
@@ -21,10 +23,10 @@ export type SeleccionMundoDuelo = MundoDuelo | "aleatorio";
 
 const CONTINENTES: Continente[] = ["america", "europa", "africa", "asia_oceania"];
 
-// Los 13 mundos elegibles para duelar, sin descripción — lista base para
+// Los 15 mundos elegibles para duelar, sin descripción — lista base para
 // retar a un amigo / invitar por link (Rankeds arma la suya propia, con
 // descripciones traducidas y la opción "todas las ciudades").
-const MUNDOS_DUELO_IDS: MundoDuelo[] = ["numeria", "geografia", "enigmia", "quimia", "anatomia", "melodia", "trigonometria", "historia", "calculia", "circuitia", "estadistica", "naipia", "codia"];
+const MUNDOS_DUELO_IDS: MundoDuelo[] = ["numeria", "geografia", "enigmia", "quimia", "anatomia", "melodia", "trigonometria", "historia", "calculia", "circuitia", "estadistica", "naipia", "codia", "dinamia", "vitalia"];
 
 // Hook (no una constante) porque el nombre de cada mundo depende del
 // locale activo (Mundos.nombres) — Numeria/Enigmia/Quimia se mantienen
@@ -65,6 +67,8 @@ export function useEtiquetasDuelo() {
     if (mundo === "estadistica") return NOMBRE_MODO_ESTADISTICA[opcion as ModoEstadistica] ?? opcion;
     if (mundo === "naipia") return NOMBRE_MODO_NAIPIA[opcion as ModoNaipia] ?? opcion;
     if (mundo === "codia") return NOMBRE_MODO_CODIA[opcion as ModoCodia] ?? opcion;
+    if (mundo === "dinamia") return NOMBRE_MODO_DINAMIA[opcion as ModoDinamia] ?? opcion;
+    if (mundo === "vitalia") return NOMBRE_MODO_VITALIA[opcion as ModoVitalia] ?? opcion;
     return NOMBRE_MODO_QUIMIA[opcion as ModoQuimia] ?? opcion;
   }
 
@@ -150,6 +154,8 @@ export default function SelectorMundoDuelo({
     estadistica: (Object.keys(NOMBRE_MODO_ESTADISTICA) as ModoEstadistica[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_ESTADISTICA[m] })),
     naipia: (Object.keys(NOMBRE_MODO_NAIPIA) as ModoNaipia[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_NAIPIA[m] })),
     codia: (Object.keys(NOMBRE_MODO_CODIA) as ModoCodia[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_CODIA[m] })),
+    dinamia: (Object.keys(NOMBRE_MODO_DINAMIA) as ModoDinamia[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_DINAMIA[m] })),
+    vitalia: (Object.keys(NOMBRE_MODO_VITALIA) as ModoVitalia[]).map((m) => ({ id: m, nombre: NOMBRE_MODO_VITALIA[m] })),
   };
 
   return (

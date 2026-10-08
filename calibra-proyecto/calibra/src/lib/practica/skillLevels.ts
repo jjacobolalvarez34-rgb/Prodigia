@@ -110,7 +110,19 @@ export type ProblemTypeCalibrable =
   | "codia_sintaxis"
   | "codia_salida"
   | "codia_error"
-  | "codia_estructuras";
+  | "codia_estructuras"
+  | "dinamia_cinematica"
+  | "dinamia_vectores"
+  | "dinamia_newton"
+  | "dinamia_energia"
+  | "dinamia_termo"
+  | "dinamia_fluidos"
+  | "vitalia_celula"
+  | "vitalia_procesos"
+  | "vitalia_genetica"
+  | "vitalia_sistemas"
+  | "vitalia_reinos"
+  | "vitalia_ecologia";
 
 export async function actualizarSkillLevel(
   supabase: SupabaseClient,

@@ -118,6 +118,8 @@
       "estadistica": "Mode based on your rank",
       "naipia": "Counting system based on your rank",
       "codia": "Mode based on your rank",
+      "dinamia": "Mode based on your rank",
+      "vitalia": "Mode based on your rank",
       "aleatorio": "Best of 3, one city per round"
     },
     "buscandoRival": "Looking for a rival…",
@@ -241,6 +243,8 @@
       "estadistica": "Statistics",
       "naipia": "Naipia",
       "codia": "Codia",
+      "dinamia": "Dinamia",
+      "vitalia": "Vitalia",
       "aleatorio": "all the cities",
       "suMundo": "their world"
     },
@@ -518,7 +522,9 @@
         "circuitia": "Circuitia",
         "estadistica": "Statistics",
         "naipia": "Naipia",
-        "codia": "Codia"
+        "codia": "Codia",
+        "dinamia": "Dinamia",
+        "vitalia": "Vitalia"
       },
       "eloValor": "{n} ELO",
       "nivelLabel": "Level",
@@ -574,6 +580,8 @@
       "marcoEstadistica": "Statistics Frame",
       "marcoNaipia": "Naipia Frame",
       "marcoCodia": "Codia Frame",
+      "marcoDinamia": "Dinamia Frame",
+      "marcoVitalia": "Vitalia Frame",
       "paqueteMarcosMundo": "World Collection",
       "animacionOndulante": "Wave Animation",
       "animacionBrillo": "Shine Animation",
@@ -1236,7 +1244,9 @@
       "circuitia": "Series, parallel, mixed circuits, and qualitative analysis.",
       "estadistica": "Central tendency, dispersion, probability, data analysis, and chart reading.",
       "naipia": "A memory mind-sport: mental counting with five point systems, from Hi-Lo to true count.",
-      "codia": "Syntax, code output, bug hunting, and data structures in Python, Java, JavaScript, and TypeScript."
+      "codia": "Syntax, code output, bug hunting, and data structures in Python, Java, JavaScript, and TypeScript.",
+      "dinamia": "Physics: motion, vectors, Newton's laws, energy, heat and fluids.",
+      "vitalia": "Biology: the cell, its processes, genetics, how the body works, kingdoms and ecology."
     }
   },
   "Numeria": {
@@ -1991,7 +2001,9 @@
         "circuitia": "Circuitia",
         "estadistica": "Statistics",
         "naipia": "Naipia",
-        "codia": "Codia"
+        "codia": "Codia",
+        "dinamia": "Dinamia",
+        "vitalia": "Vitalia"
       }
     },
     "nombreConFuente": {
@@ -2811,7 +2823,9 @@
       "circuitia": "Circuitia",
       "estadistica": "Statistics",
       "naipia": "Naipia",
-      "codia": "Codia"
+      "codia": "Codia",
+      "dinamia": "Dinamia",
+      "vitalia": "Vitalia"
     }
   },
   "Onboarding": {
@@ -3359,7 +3373,9 @@
       "circuitia": "Circuitia",
       "estadistica": "Statistics",
       "naipia": "Naipia",
-      "codia": "Codia"
+      "codia": "Codia",
+      "dinamia": "Dinamia",
+      "vitalia": "Vitalia"
     },
     "etiquetaDiario": "Daily challenge",
     "etiquetaSemanal": "Weekly challenge",

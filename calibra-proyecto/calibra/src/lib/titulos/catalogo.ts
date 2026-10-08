@@ -7,8 +7,8 @@
 // idempotente, el primero que se desbloquea se activa solo), solo que
 // disparado desde acá (verificar.ts) en vez de desde SQL.
 export type CriterioTitulo =
-  | { tipo: "mundo_completado"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia" }
-  | { tipo: "aprender_completo"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia" }
+  | { tipo: "mundo_completado"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia" | "dinamia" | "vitalia" }
+  | { tipo: "aprender_completo"; mundo: "numeria" | "geografia" | "enigmia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia" | "dinamia" | "vitalia" }
   | { tipo: "partidas_totales"; valor: number }
   | { tipo: "precision_semana"; valor: number }
   | { tipo: "duelos_ganados"; valor: number }
@@ -49,6 +49,8 @@ export const CATALOGO_TITULOS: TituloCatalogo[] = [
   { slug: "maestro-estadistica", nombre: "Maestro de Estadística", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "estadistica" } },
   { slug: "maestro-naipia", nombre: "Maestro de Naipia", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "naipia" } },
   { slug: "maestro-codia", nombre: "Maestro de Codia", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "codia" } },
+  { slug: "maestro-dinamia", nombre: "Maestro de Dinamia", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "dinamia" } },
+  { slug: "maestro-vitalia", nombre: "Maestro de Vitalia", categoria: "mundo", criterio: { tipo: "mundo_completado", mundo: "vitalia" } },
 
   // ---------- por volumen de juego (partidas ≈ problemas resueltos / 10) ----------
   { slug: "partidas-10", nombre: "Recién Empiezas", categoria: "volumen", criterio: { tipo: "partidas_totales", valor: 10 } },
@@ -88,13 +90,13 @@ export const CATALOGO_TITULOS: TituloCatalogo[] = [
   { slug: "retos-30", nombre: "Ritual Diario", categoria: "constancia", criterio: { tipo: "racha_retos_diarios", valor: 30 } },
 
   // ---------- por curiosidad / exploración ----------
-  // Sube de 10 a 13 con Estadística/Naipia/Codia ("todos los mundos" ya
+  // Sube de 13 a 15 con Dinamia/Vitalia (0263). Antes: de 10 a 13 con Estadística/Naipia/Codia ("todos los mundos" ya
   // son 13). Antes, en la misma línea: sube de 9 a 10 con Circuitia —
   // dejarlo en 9 hacía que el título se desbloqueara sin haber tocado
   // el nuevo, contradiciendo el propio nombre ("Total"). Mismo ajuste
   // que se hizo cuando entraron Anatomía (4→5), Melodía (5→6),
   // Trigonometría/Historia (6→8), Calculia (8→9) y Circuitia (9→10).
-  { slug: "explorador-total", nombre: "Explorador Total", categoria: "curiosidad", criterio: { tipo: "mundos_explorados", valor: 13 } },
+  { slug: "explorador-total", nombre: "Explorador Total", categoria: "curiosidad", criterio: { tipo: "mundos_explorados", valor: 15 } },
   { slug: "embajador", nombre: "Embajador", categoria: "curiosidad", criterio: { tipo: "embajador" } },
   { slug: "chispas-de-sobra", nombre: "Chispas de Sobra", categoria: "curiosidad", criterio: { tipo: "chispas_balance", valor: 5000 } },
   { slug: "estudioso-numeria", nombre: "Estudioso de Numeria", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "numeria" } },
@@ -110,6 +112,8 @@ export const CATALOGO_TITULOS: TituloCatalogo[] = [
   { slug: "estudioso-estadistica", nombre: "Estudioso de Estadística", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "estadistica" } },
   { slug: "estudioso-naipia", nombre: "Estudioso de Naipia", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "naipia" } },
   { slug: "estudioso-codia", nombre: "Estudioso de Codia", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "codia" } },
+  { slug: "estudioso-dinamia", nombre: "Estudioso de Dinamia", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "dinamia" } },
+  { slug: "estudioso-vitalia", nombre: "Estudioso de Vitalia", categoria: "curiosidad", criterio: { tipo: "aprender_completo", mundo: "vitalia" } },
 
   // ---------- por Trastienda (apuestas y predicciones de ranking) ---------
   // M3 de TRASTIENDA-ECONOMIA.md §3. Los slugs/nombres son los mismos que

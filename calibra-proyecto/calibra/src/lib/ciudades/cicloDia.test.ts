@@ -16,16 +16,16 @@ import {
 const HORA = 3_600_000;
 
 describe("ciclo de día de las ciudades", () => {
-  it("cada una de las 13 ciudades tiene su propio largo de día, todos distintos y divisores del ciclo de 28 días", () => {
+  it("cada una de las 15 ciudades tiene su propio largo de día, todos distintos y divisores del ciclo de 28 días", () => {
     const slugs = MUNDOS.map((m) => m.slug).sort();
     expect(Object.keys(HORAS_DIA_CIUDAD).sort()).toEqual(slugs);
     const horas = Object.values(HORAS_DIA_CIUDAD);
-    expect(new Set(horas).size).toBe(13);
+    expect(new Set(horas).size).toBe(15);
     for (const h of horas) expect(CICLO_TOTAL_HORAS % h, String(h)).toBe(0);
     expect(CICLO_TOTAL_HORAS).toBe(28 * 24);
   });
 
-  it("en cada alineación las 13 amanecen a la vez, y no antes: 28 días es el primer momento en que coinciden", () => {
+  it("en cada alineación las 15 amanecen a la vez, y no antes: 28 días es el primer momento en que coinciden", () => {
     for (const k of [0, 1, 5]) {
       const t = PRIMERA_ALINEACION_MS + k * CICLO_TOTAL_MS;
       for (const slug of Object.keys(HORAS_DIA_CIUDAD)) expect(faseDelDia(slug, t), `${slug} k=${k}`).toBeCloseTo(0, 9);

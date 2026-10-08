@@ -21,7 +21,9 @@ export type MundoCiudad =
   | "circuitia"
   | "estadistica"
   | "naipia"
-  | "codia";
+  | "codia"
+  | "dinamia"
+  | "vitalia";
 
 // Color y glifo de cada ciudad (mismos colores que lib/mundos.ts).
 export const CIUDADES: { slug: MundoCiudad; nombre: string; color: string; glifo: string; emoji: string }[] = [
@@ -38,6 +40,8 @@ export const CIUDADES: { slug: MundoCiudad; nombre: string; color: string; glifo
   { slug: "estadistica", nombre: "Estadística", color: "#0D9488", glifo: "σ", emoji: "📊" },
   { slug: "naipia", nombre: "Naipia", color: "#B91C1C", glifo: "♠", emoji: "🃏" },
   { slug: "codia", nombre: "Codia", color: "#06B6D4", glifo: "</>", emoji: "💻" },
+  { slug: "dinamia", nombre: "Dinamia", color: "#2563EB", glifo: "⇀", emoji: "🚀" },
+  { slug: "vitalia", nombre: "Vitalia", color: "#16A34A", glifo: "✿", emoji: "🧬" },
 ];
 
 export function ciudadDe(slug: string | null | undefined) {

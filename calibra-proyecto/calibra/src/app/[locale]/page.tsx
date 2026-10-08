@@ -16,7 +16,7 @@ import PrimeraVezTip from "@/components/PrimeraVezTip";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { calcularRachaDiaria, lunesDeEstaSemanaIso } from "@/lib/practica/racha";
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
-import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria, IconCalculia, IconCircuitia, IconEstadistica, IconNaipia, IconCodia } from "@/components/icons";
+import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria, IconCalculia, IconCircuitia, IconEstadistica, IconNaipia, IconCodia, IconDinamia, IconVitalia } from "@/components/icons";
 import Greeting from "./Greeting";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -274,6 +274,22 @@ export default async function ProdigiaHomePage() {
                 href="/codia"
                 colorHex="#06B6D4"
                 bloqueado={!profile.mundos_desbloqueados?.includes("codia")}
+              />
+              <WorldCard
+                nombre={tMundos("dinamia")}
+                descripcion={t("mundos.dinamia")}
+                Icono={IconDinamia}
+                href="/dinamia"
+                colorHex="#2563EB"
+                bloqueado={!profile.mundos_desbloqueados?.includes("dinamia")}
+              />
+              <WorldCard
+                nombre={tMundos("vitalia")}
+                descripcion={t("mundos.vitalia")}
+                Icono={IconVitalia}
+                href="/vitalia"
+                colorHex="#16A34A"
+                bloqueado={!profile.mundos_desbloqueados?.includes("vitalia")}
               />
             </div>
           </PrimeraVezTip>

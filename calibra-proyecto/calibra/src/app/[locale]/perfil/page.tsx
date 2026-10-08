@@ -57,6 +57,8 @@ export default async function PerfilPage() {
     estadistica: tMundos("estadistica"),
     naipia: tMundos("naipia"),
     codia: tMundos("codia"),
+    dinamia: tMundos("dinamia"),
+    vitalia: tMundos("vitalia"),
     geometria: tNumeriaTemas("geometria"),
     fracciones: tNumeriaTemas("fracciones"),
     decimales: tNumeriaTemas("decimales"),
@@ -85,6 +87,8 @@ export default async function PerfilPage() {
     { count: estadisticaTotal },
     { count: naipiaTotal },
     { count: codiaTotal },
+    { count: dinamiaTotal },
+    { count: vitaliaTotal },
     { data: worldRows },
     { data: titulosRows },
     { data: afinidadRows },
@@ -138,7 +142,9 @@ export default async function PerfilPage() {
       .not("problem_type", "like", "circuitia_%")
       .not("problem_type", "like", "estadistica_%")
       .not("problem_type", "like", "naipia_%")
-      .not("problem_type", "like", "codia_%"),
+      .not("problem_type", "like", "codia_%")
+      .not("problem_type", "like", "dinamia_%")
+      .not("problem_type", "like", "vitalia_%"),
     supabase.from("logic_attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
     // `like` (no `.in` con lista exacta) para sumar el histórico bare
     // "geografia" junto con los 4 sub-tipos nuevos por continente.
@@ -153,6 +159,8 @@ export default async function PerfilPage() {
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["estadistica_central", "estadistica_dispersion", "estadistica_probabilidad", "estadistica_datos", "estadistica_graficos"]),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["naipia_hilo", "naipia_ko", "naipia_hiopt2", "naipia_omega2", "naipia_verdadero"]),
     supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["codia_sintaxis", "codia_salida", "codia_error", "codia_estructuras"]),
+    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["dinamia_cinematica", "dinamia_vectores", "dinamia_newton", "dinamia_energia", "dinamia_termo", "dinamia_fluidos"]),
+    supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", user.id).in("problem_type", ["vitalia_celula", "vitalia_procesos", "vitalia_genetica", "vitalia_sistemas", "vitalia_reinos", "vitalia_ecologia"]),
     supabase.from("world_progress").select("world, nivel_mundo").eq("user_id", user.id),
     supabase.rpc("mis_titulos"),
     supabase.rpc("afinidad_por_mundo"),
@@ -411,6 +419,16 @@ export default async function PerfilPage() {
             <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("codia")}</p>
             <p className="mt-1 font-mono text-xl font-bold text-foreground">{codiaTotal ?? 0}</p>
             <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("codia") })}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("dinamia")}</p>
+            <p className="mt-1 font-mono text-xl font-bold text-foreground">{dinamiaTotal ?? 0}</p>
+            <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("dinamia") })}</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-texto-secundario">{tMundos("vitalia")}</p>
+            <p className="mt-1 font-mono text-xl font-bold text-foreground">{vitaliaTotal ?? 0}</p>
+            <p className="text-xs text-texto-secundario">{t("problemasResueltosNivel", { n: nivelMundoDe("vitalia") })}</p>
           </div>
         </section>
 

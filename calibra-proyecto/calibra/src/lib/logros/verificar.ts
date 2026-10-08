@@ -475,6 +475,27 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     codiaNivelMundo = worldRow?.nivel_mundo ?? 0;
   }
 
+  // Mundos 14-15 (Dinamia y Vitalia, 0263): los mismos 3 logros que Codia, con sus 6 modos.
+  const TIPOS_MUNDO_NUEVO: Record<"dinamia" | "vitalia", string[]> = {
+    dinamia: ["dinamia_cinematica", "dinamia_vectores", "dinamia_newton", "dinamia_energia", "dinamia_termo", "dinamia_fluidos"],
+    vitalia: ["vitalia_celula", "vitalia_procesos", "vitalia_genetica", "vitalia_sistemas", "vitalia_reinos", "vitalia_ecologia"],
+  };
+  const mundoNuevo: Record<string, number> = {};
+  for (const m of ["dinamia", "vitalia"] as const) {
+    if (tiposNecesarios.has(`${m}_problemas_totales`)) {
+      const { count } = await supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", userId).in("problem_type", TIPOS_MUNDO_NUEVO[m]);
+      mundoNuevo[`${m}_problemas_totales`] = count ?? 0;
+    }
+    if (tiposNecesarios.has(`${m}_modos_variados`)) {
+      const { data: rows } = await supabase.from("attempts").select("problem_type").eq("user_id", userId).in("problem_type", TIPOS_MUNDO_NUEVO[m]);
+      mundoNuevo[`${m}_modos_variados`] = new Set((rows ?? []).map((r) => r.problem_type)).size;
+    }
+    if (tiposNecesarios.has(`${m}_nivel_mundo`)) {
+      const { data: worldRow } = await supabase.from("world_progress").select("nivel_mundo").eq("user_id", userId).eq("world", m).maybeSingle();
+      mundoNuevo[`${m}_nivel_mundo`] = worldRow?.nivel_mundo ?? 0;
+    }
+  }
+
   let rachaRetosDiarios = 0;
   if (tiposNecesarios.has("racha_retos_diarios")) {
     const { data: retoRows } = await supabase
@@ -616,6 +637,7 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     else if (tipo === "codia_problemas_totales") cumplido = codiaProblemasTotales >= valor;
     else if (tipo === "codia_modos_variados") cumplido = codiaModosVariados >= valor;
     else if (tipo === "codia_nivel_mundo") cumplido = codiaNivelMundo >= valor;
+    else if (tipo in mundoNuevo) cumplido = mundoNuevo[tipo] >= valor;
     else if (tipo === "mundo_completado_numeria") cumplido = numeriaCompletado;
     else if (tipo === "mundo_completado_geografia") cumplido = geografiaCompletado;
     else if (tipo === "mundo_completado_quimia") cumplido = quimiaCompletado;

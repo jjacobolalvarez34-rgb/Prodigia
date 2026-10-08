@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, subscribeEfectos } from "@/lib/efectos";
 
-export type MundoFondo = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia";
+export type MundoFondo = "numeria" | "enigmia" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia" | "dinamia" | "vitalia";
 
 interface Posicion {
   simbolo: string;
@@ -133,6 +133,22 @@ const SETS: Record<MundoFondo, Posicion[]> = {
     { simbolo: ";", left: "14%", top: "72%", size: 44, rotate: -4, delay: 1 },
     { simbolo: "=>", left: "88%", top: "66%", size: 32, rotate: 8, delay: 1.3 },
     { simbolo: "[ ]", left: "50%", top: "8%", size: 34, rotate: 6, delay: 0.7 },
+  ],
+  // Mundo Dinamia: vectores, gravedad, fuerza y la caída de una pelota.
+  dinamia: [
+    { simbolo: "⇀", left: "8%", top: "14%", size: 58, rotate: -8, delay: 0 },
+    { simbolo: "g", left: "90%", top: "20%", size: 44, rotate: 4, delay: 0.5 },
+    { simbolo: "ΣF", left: "14%", top: "72%", size: 38, rotate: -4, delay: 1 },
+    { simbolo: "Δt", left: "88%", top: "66%", size: 34, rotate: 8, delay: 1.3 },
+    { simbolo: "°C", left: "50%", top: "8%", size: 32, rotate: 6, delay: 0.7 },
+  ],
+  // Mundo Vitalia: flor, célula, ADN y hoja.
+  vitalia: [
+    { simbolo: "✿", left: "8%", top: "14%", size: 58, rotate: -8, delay: 0 },
+    { simbolo: "◉", left: "90%", top: "20%", size: 42, rotate: 4, delay: 0.5 },
+    { simbolo: "ADN", left: "14%", top: "72%", size: 32, rotate: -4, delay: 1 },
+    { simbolo: "❦", left: "88%", top: "66%", size: 38, rotate: 8, delay: 1.3 },
+    { simbolo: "⌬", left: "50%", top: "8%", size: 34, rotate: 6, delay: 0.7 },
   ],
 };
 

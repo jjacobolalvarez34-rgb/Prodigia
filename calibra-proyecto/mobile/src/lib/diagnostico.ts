@@ -69,6 +69,8 @@ const MODO_DIAGNOSTICO: Partial<Record<MundoSlug, string>> = {
   estadistica: "central",
   naipia: "hilo",
   codia: "salida",
+  dinamia: "cinematica",
+  vitalia: "celula",
 };
 
 const OPERACIONES = ["suma", "resta", "multiplicacion", "division"];

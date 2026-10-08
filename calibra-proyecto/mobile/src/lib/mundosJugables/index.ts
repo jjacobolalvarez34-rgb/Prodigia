@@ -7,6 +7,7 @@ import { ANATOMIA } from "./anatomia";
 import { CALCULIA } from "./calculia";
 import { CIRCUITIA } from "./circuitia";
 import { CODIA } from "./codia";
+import { DINAMIA } from "./dinamia";
 import { ENIGMIA } from "./enigmia";
 import { ESTADISTICA } from "./estadistica";
 import { HISTORIA } from "./historia";
@@ -14,6 +15,7 @@ import { MELODIA } from "./melodia";
 import { NAIPIA } from "./naipia";
 import { QUIMIA } from "./quimia";
 import { TRIGONOMETRIA } from "./trigonometria";
+import { VITALIA } from "./vitalia";
 import type { MundoJugable } from "./tipos";
 
 export const MUNDOS_JUGABLES: Partial<Record<MundoSlug, MundoJugable>> = {
@@ -28,6 +30,8 @@ export const MUNDOS_JUGABLES: Partial<Record<MundoSlug, MundoJugable>> = {
   estadistica: ESTADISTICA,
   naipia: NAIPIA,
   codia: CODIA,
+  dinamia: DINAMIA,
+  vitalia: VITALIA,
 };
 
 export function mundoJugable(slug: string | undefined): MundoJugable | null {

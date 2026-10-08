@@ -17,6 +17,8 @@ export const ORDEN_MUNDOS_EVENTO = [
   "estadistica",
   "naipia",
   "codia",
+  "dinamia",
+  "vitalia",
 ] as const;
 
 export type MundoEvento = (typeof ORDEN_MUNDOS_EVENTO)[number];
@@ -30,7 +32,7 @@ export function hoyUtcIso(ahora: Date = new Date()): string {
 
 export function mundoDobleExperiencia(fechaIso: string = hoyUtcIso()): MundoEvento {
   const dia = Math.floor(Date.parse(`${fechaIso}T00:00:00Z`) / 86_400_000);
-  const i = (((dia * 7 + 3) % 13) + 13) % 13;
+  const i = (((dia * 7 + 3) % 15) + 15) % 15;
   return ORDEN_MUNDOS_EVENTO[i];
 }
 

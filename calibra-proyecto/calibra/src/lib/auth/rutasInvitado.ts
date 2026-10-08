@@ -17,6 +17,8 @@ export const RUTAS_BLOQUEADAS_INVITADO: { prefijo: string; etiqueta: string }[] 
   { prefijo: "/estadistica/aprender", etiqueta: "Aprender" },
   { prefijo: "/naipia/aprender", etiqueta: "Aprender" },
   { prefijo: "/codia/aprender", etiqueta: "Aprender" },
+  { prefijo: "/dinamia/aprender", etiqueta: "Aprender" },
+  { prefijo: "/vitalia/aprender", etiqueta: "Aprender" },
   { prefijo: "/perfil", etiqueta: "Perfil" },
   { prefijo: "/pro", etiqueta: "Prodigia Pro" },
   { prefijo: "/rankeds", etiqueta: "Rankeds" },

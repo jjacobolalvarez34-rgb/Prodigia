@@ -55,6 +55,10 @@ export const FORMAS_CONSTELACION: Record<string, FormaConstelacion> = {
   naipia: { puntos: [[50, 12], [22, 44], [26, 66], [50, 62], [74, 66], [78, 44], [50, 88]], lineas: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [3, 6]] },
   // </>
   codia: { puntos: [[30, 28], [12, 50], [30, 72], [58, 18], [42, 82], [70, 28], [88, 50]], lineas: [[0, 1], [1, 2], [3, 4], [5, 6]] },
+  // Un tiro parabólico: la pelota sale, sube, cae, y la flecha de su velocidad.
+  dinamia: { puntos: [[10, 82], [24, 46], [42, 26], [60, 26], [78, 46], [90, 74], [96, 60]], lineas: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6]] },
+  // Una flor de cinco pétalos alrededor de su centro, con el tallo.
+  vitalia: { puntos: [[50, 40], [50, 14], [74, 32], [66, 60], [34, 60], [26, 32], [50, 90]], lineas: [[1, 2], [2, 3], [3, 4], [4, 5], [5, 1], [0, 6]] },
 };
 
 // Polvo de estrellas de fondo del cielo de cada ciudad: siempre el mismo para la misma ciudad.

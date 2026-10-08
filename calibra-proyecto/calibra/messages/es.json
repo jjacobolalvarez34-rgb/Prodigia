@@ -118,6 +118,8 @@
       "estadistica": "Modo según tu rango",
       "naipia": "Sistema de conteo según tu rango",
       "codia": "Modo según tu rango",
+      "dinamia": "Modo según tu rango",
+      "vitalia": "Modo según tu rango",
       "aleatorio": "Mejor de 3, una ciudad por ronda"
     },
     "buscandoRival": "Buscando rival…",
@@ -241,6 +243,8 @@
       "estadistica": "Estadística",
       "naipia": "Naipia",
       "codia": "Codia",
+      "dinamia": "Dinamia",
+      "vitalia": "Vitalia",
       "aleatorio": "todas las ciudades",
       "suMundo": "su mundo"
     },
@@ -518,7 +522,9 @@
         "circuitia": "Circuitia",
         "estadistica": "Estadística",
         "naipia": "Naipia",
-        "codia": "Codia"
+        "codia": "Codia",
+        "dinamia": "Dinamia",
+        "vitalia": "Vitalia"
       },
       "eloValor": "{n} ELO",
       "nivelLabel": "Nivel",
@@ -574,6 +580,8 @@
       "marcoEstadistica": "Marco Estadística",
       "marcoNaipia": "Marco Naipia",
       "marcoCodia": "Marco Codia",
+      "marcoDinamia": "Marco Dinamia",
+      "marcoVitalia": "Marco Vitalia",
       "paqueteMarcosMundo": "Colección de Mundos",
       "animacionOndulante": "Animación Ondulante",
       "animacionBrillo": "Animación Brillo",
@@ -1236,7 +1244,9 @@
       "circuitia": "Circuitos en serie, en paralelo, mixtos y análisis cualitativo.",
       "estadistica": "Tendencia central, dispersión, probabilidad, análisis de datos y lectura de gráficos.",
       "naipia": "Deporte mental de memoria: conteo mental con cinco sistemas de puntos, del Hi-Lo al conteo verdadero.",
-      "codia": "Sintaxis, salida de código, búsqueda de errores y estructuras en Python, Java, JavaScript y TypeScript."
+      "codia": "Sintaxis, salida de código, búsqueda de errores y estructuras en Python, Java, JavaScript y TypeScript.",
+      "dinamia": "Física: movimiento, vectores, leyes de Newton, energía, calor y fluidos.",
+      "vitalia": "Biología: la célula, sus procesos, genética, cómo funciona el cuerpo, los reinos y la ecología."
     }
   },
   "Numeria": {
@@ -1991,7 +2001,9 @@
         "circuitia": "Circuitia",
         "estadistica": "Estadística",
         "naipia": "Naipia",
-        "codia": "Codia"
+        "codia": "Codia",
+        "dinamia": "Dinamia",
+        "vitalia": "Vitalia"
       }
     },
     "nombreConFuente": {
@@ -2811,7 +2823,9 @@
       "circuitia": "Circuitia",
       "estadistica": "Estadística",
       "naipia": "Naipia",
-      "codia": "Codia"
+      "codia": "Codia",
+      "dinamia": "Dinamia",
+      "vitalia": "Vitalia"
     }
   },
   "Onboarding": {
@@ -3359,7 +3373,9 @@
       "circuitia": "Circuitia",
       "estadistica": "Estadística",
       "naipia": "Naipia",
-      "codia": "Codia"
+      "codia": "Codia",
+      "dinamia": "Dinamia",
+      "vitalia": "Vitalia"
     },
     "etiquetaDiario": "Reto diario",
     "etiquetaSemanal": "Reto semanal",

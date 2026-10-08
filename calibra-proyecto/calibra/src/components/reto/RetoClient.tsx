@@ -60,6 +60,8 @@ const COLOR_MUNDO: Record<MundoRetoDiario, string> = {
   estadistica: "#0D9488",
   naipia: "#B91C1C",
   codia: "#06B6D4",
+  dinamia: "#2563EB",
+  vitalia: "#16A34A",
 };
 
 const ENDPOINT_TIPO: Record<TipoReto, string> = {
@@ -102,6 +104,8 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
     estadistica: t("mundos.estadistica"),
     naipia: t("mundos.naipia"),
     codia: t("mundos.codia"),
+    dinamia: t("mundos.dinamia"),
+    vitalia: t("mundos.vitalia"),
   };
   const TEXTO_TIPO: Record<TipoReto, { etiqueta: string; periodo: string; endpoint: string; volver: string }> = {
     diario: { etiqueta: t("etiquetaDiario"), periodo: t("periodoDiario"), endpoint: ENDPOINT_TIPO.diario, volver: t("volverDiario") },

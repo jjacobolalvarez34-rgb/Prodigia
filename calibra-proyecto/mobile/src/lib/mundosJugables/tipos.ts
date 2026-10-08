@@ -5,6 +5,8 @@
 import type { FiguraRitmica, NotaMusical } from "@/lib/practica/melodia";
 import type { TrianguloDiagrama } from "@/lib/practica/trigonometriaTipos";
 import type { GraficoEstadistica } from "@/lib/estadistica/tipos";
+import type { DiagramaDinamia } from "@/lib/dinamia/tipos";
+import type { DiagramaVitalia } from "@/lib/vitalia/tipos";
 import type { MundoSlug } from "~/tema";
 import type { ResultadoIntento } from "../partida";
 
@@ -25,6 +27,8 @@ export type Visual =
   | { tipo: "grafico"; grafico: GraficoEstadistica }
   | { tipo: "codigo"; codigo: string; lenguaje: string }
   | { tipo: "cartas"; cartas: CartaVisual[] }
+  | { tipo: "dinamia"; diagrama: DiagramaDinamia }
+  | { tipo: "vitalia"; diagrama: DiagramaVitalia }
   | { tipo: "tabla"; titulo: string; filas: { etiqueta: string; valor: string }[] };
 
 export type Entrada =

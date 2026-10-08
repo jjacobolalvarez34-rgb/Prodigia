@@ -61,7 +61,7 @@ describe("catálogo de la tienda ampliada", () => {
       if (it.categoria === "efecto") expect(EFECTOS[it.valor], it.item).toBeDefined();
       if (it.categoria === "emote") expect(EMOTES[it.valor], it.item).toBeDefined();
     }
-    expect(CIUDADES).toHaveLength(13);
+    expect(CIUDADES).toHaveLength(15);
   });
 
   it("la temporada sigue la misma cuenta que temporada_actual()", () => {

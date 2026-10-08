@@ -90,8 +90,11 @@ const TIPOS_CIRCUITIA = new Set(["circuitia_serie", "circuitia_paralelo", "circu
 const TIPOS_ESTADISTICA = new Set(["estadistica_central", "estadistica_dispersion", "estadistica_probabilidad", "estadistica_datos", "estadistica_graficos"]);
 const TIPOS_NAIPIA = new Set(["naipia_hilo", "naipia_ko", "naipia_hiopt2", "naipia_omega2", "naipia_verdadero"]);
 const TIPOS_CODIA = new Set(["codia_sintaxis", "codia_salida", "codia_error", "codia_estructuras"]);
+// Mundos 14-15 (0263).
+const TIPOS_DINAMIA = new Set(["dinamia_cinematica", "dinamia_vectores", "dinamia_newton", "dinamia_energia", "dinamia_termo", "dinamia_fluidos"]);
+const TIPOS_VITALIA = new Set(["vitalia_celula", "vitalia_procesos", "vitalia_genetica", "vitalia_sistemas", "vitalia_reinos", "vitalia_ecologia"]);
 
-function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia" | null {
+function mundoDeProblemType(problemType: string | undefined): "numeria" | "geografia" | "quimia" | "anatomia" | "melodia" | "trigonometria" | "historia" | "calculia" | "circuitia" | "estadistica" | "naipia" | "codia" | "dinamia" | "vitalia" | null {
   if (!problemType) return null;
   if (TIPOS_GEOGRAFIA.has(problemType)) return "geografia";
   if (TIPOS_QUIMIA.has(problemType)) return "quimia";
@@ -104,6 +107,8 @@ function mundoDeProblemType(problemType: string | undefined): "numeria" | "geogr
   if (TIPOS_ESTADISTICA.has(problemType)) return "estadistica";
   if (TIPOS_NAIPIA.has(problemType)) return "naipia";
   if (TIPOS_CODIA.has(problemType)) return "codia";
+  if (TIPOS_DINAMIA.has(problemType)) return "dinamia";
+  if (TIPOS_VITALIA.has(problemType)) return "vitalia";
   if (TIPOS_NUMERIA.has(problemType)) return "numeria";
   return null;
 }

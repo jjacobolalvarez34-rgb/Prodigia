@@ -11,6 +11,7 @@ import { obtenerCaminoAnatomia } from "@/lib/anatomia/path";
 import { obtenerCaminoCalculia } from "@/lib/calculia/path";
 import { obtenerCaminoCircuitia } from "@/lib/circuitia/path";
 import { obtenerCaminoCodia } from "@/lib/codia/path";
+import { obtenerCaminoDinamia, obtenerCaminoVitalia } from "@/lib/aprender/caminoPorTema";
 import { obtenerCaminoConClasesEnigmia } from "@/lib/enigmia/pathClases";
 import { obtenerCaminoEstadistica } from "@/lib/estadistica/path";
 import { obtenerCaminoGeografia } from "@/lib/geografia/path";
@@ -73,6 +74,8 @@ const CAMINOS: Record<MundoSlug, Cargador> = {
   estadistica: (sb, u, p) => comoNodos(obtenerCaminoEstadistica(sb as never, u, p)),
   naipia: (sb, u, p) => comoNodos(obtenerCaminoNaipia(sb as never, u, p)),
   codia: (sb, u, p) => comoNodos(obtenerCaminoCodia(sb as never, u, p)),
+  dinamia: (sb, u, p) => comoNodos(obtenerCaminoDinamia(sb as never, u, p)),
+  vitalia: (sb, u, p) => comoNodos(obtenerCaminoVitalia(sb as never, u, p)),
 };
 
 // Enigmia guarda sus lecciones aparte (logic_techniques); el resto en techniques.

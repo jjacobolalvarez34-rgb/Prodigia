@@ -17,6 +17,8 @@ const TOTAL_SUBTEMAS: Record<string, number> = {
   estadistica: 5,
   naipia: 5,
   codia: 4,
+  dinamia: 6,
+  vitalia: 6,
 };
 
 const SUBTIPOS: Record<string, string[]> = {
@@ -67,6 +69,12 @@ const SUBTIPOS: Record<string, string[]> = {
   ],
   codia: [
     "codia_sintaxis", "codia_salida", "codia_error", "codia_estructuras",
+  ],
+  dinamia: [
+    "dinamia_cinematica", "dinamia_vectores", "dinamia_newton", "dinamia_energia", "dinamia_termo", "dinamia_fluidos",
+  ],
+  vitalia: [
+    "vitalia_celula", "vitalia_procesos", "vitalia_genetica", "vitalia_sistemas", "vitalia_reinos", "vitalia_ecologia",
   ],
 };
 

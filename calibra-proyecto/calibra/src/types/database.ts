@@ -50,7 +50,9 @@ export type Mundo =
   | "circuitia"
   | "estadistica"
   | "naipia"
-  | "codia";
+  | "codia"
+  | "dinamia"
+  | "vitalia";
 
 // Fase 5 (mercado): "color del dial" se retiró de la tienda — no
 // generaba sensación de diferencia real jugando de verdad — pero el
@@ -197,6 +199,8 @@ export interface Profile {
   onboarding_estadistica_completado: boolean; // diagnóstico de Estadística hecho/salteado
   onboarding_naipia_completado: boolean; // diagnóstico de Naipia hecho/salteado
   onboarding_codia_completado: boolean; // diagnóstico de Codia hecho/salteado
+  onboarding_dinamia_completado: boolean; // diagnóstico de Dinamia hecho/salteado
+  onboarding_vitalia_completado: boolean; // diagnóstico de Vitalia hecho/salteado
   mundos_desbloqueados: string[]; // Fase 12: qué mundos ya compró/eligió — puede no incluir 'numeria'
   nivel_cuenta: number; // Fase 4 (nivel de cuenta): nivel general de la cuenta, no el de un mundo puntual
   idioma: "es" | "en";
@@ -465,6 +469,8 @@ export const ESTILO_MARCO_PERFIL: Record<string, string> = {
   coleccion_estadistica: "marco-neon-perfil marco-coleccion-estadistica",
   coleccion_naipia: "marco-neon-perfil marco-coleccion-naipia",
   coleccion_codia: "marco-neon-perfil marco-coleccion-codia",
+  coleccion_dinamia: "marco-neon-perfil marco-coleccion-dinamia",
+  coleccion_vitalia: "marco-neon-perfil marco-coleccion-vitalia",
   // Kit del Pionero (0258): exclusivo de quien entra a la app.
   pionero: "marco-neon-perfil marco-pionero",
 };
@@ -518,6 +524,9 @@ export const MARCOS_MUNDO: Record<string, { nombre: string; imagen: string }> = 
   estadistica: { nombre: "Estadística", imagen: "/marcos/marco_estadistica.svg" },
   naipia: { nombre: "Naipia", imagen: "/marcos/marco_naipia.svg" },
   codia: { nombre: "Codia", imagen: "/marcos/marco_codia.svg" },
+  // Mundos 14-15 (0263): mismo criterio, SVG generado por código.
+  dinamia: { nombre: "Dinamia", imagen: "/marcos/marco_dinamia.svg" },
+  vitalia: { nombre: "Vitalia", imagen: "/marcos/marco_vitalia.svg" },
 };
 
 // ---------- Rankeds: títulos (Fase 2) ----------
@@ -546,7 +555,9 @@ export type MundoDuelo =
   | "circuitia"
   | "estadistica"
   | "naipia"
-  | "codia";
+  | "codia"
+  | "dinamia"
+  | "vitalia";
 export type ModoDuelo = "simple" | "mejor_de_3";
 
 // ---------- Enigmia (Fase X): mundo de lógica ----------
