@@ -10,6 +10,7 @@ import * as Geografia from "./geografia/visuales";
 import * as Historia from "./historia/visuales";
 import * as Melodia from "./melodia/visuales";
 import * as MelodiaMetronomo from "./melodia/metronomo";
+import * as MundosNuevos from "./mundosNuevos/escena";
 import * as Naipia from "./naipia/visuales";
 import * as NumeriaCurso from "./numeria/curso";
 import * as Numeria from "./numeria/visuales";
@@ -113,4 +114,19 @@ export const REGISTRO_VISUALES: Record<string, ComponenteVisual> = {
   "historia.siglos": c(Historia.Siglos),
   "historia.sincronia": c(Historia.Sincronia),
   "historia.personaje": c(Historia.Personaje),
+  "dinamia.trayecto": c(MundosNuevos.VisualDinamia),
+  "dinamia.grafica": c(MundosNuevos.VisualDinamia),
+  "dinamia.caida": c(MundosNuevos.VisualDinamia),
+  "dinamia.parabola": c(MundosNuevos.VisualDinamia),
+  "dinamia.vectores": c(MundosNuevos.VisualDinamia),
+  "dinamia.cuerpoLibre": c(MundosNuevos.VisualDinamia),
+  "dinamia.poleas": c(MundosNuevos.VisualDinamia),
+  "dinamia.circular": c(MundosNuevos.VisualDinamia),
+  "dinamia.energia": c(MundosNuevos.VisualDinamia),
+  "dinamia.choque": c(MundosNuevos.VisualDinamia),
+  "dinamia.termometro": c(MundosNuevos.VisualDinamia),
+  "dinamia.particulas": c(MundosNuevos.VisualDinamia),
+  "dinamia.ciclo": c(MundosNuevos.VisualDinamia),
+  "dinamia.fluido": c(MundosNuevos.VisualDinamia),
+  "dinamia.tubo": c(MundosNuevos.VisualDinamia),
 };
