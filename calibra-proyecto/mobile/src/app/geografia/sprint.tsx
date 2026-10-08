@@ -199,7 +199,7 @@ export default function SprintGeografia() {
           mundo: "geografia",
           tema: continenteRef.current,
           repetir: dueloId ? "" : JSON.stringify({ pathname: "/geografia/sprint", params: { continente: continenteRef.current } }),
-          datos: JSON.stringify({ ...r, xp: xpRef.current, correctos, total, tiempoMs: Math.min(DURACION_SPRINT_GEO_MS, Date.now() - inicioRef.current), duelo: resultadoDuelo, rival: duelo?.rivalNombre ?? null }),
+          datos: JSON.stringify({ ...r, xp: xpRef.current, correctos, total, tiempoMs: Math.min(DURACION_SPRINT_GEO_MS, Date.now() - inicioRef.current), duelo: resultadoDuelo, dueloId, rival: duelo?.rivalNombre ?? null }),
         },
       });
     } catch (e) {

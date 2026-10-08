@@ -105,7 +105,7 @@ export default function Chat({ mensajes, miId, mostrarAutor, enviar, borrar, vac
         keyExtractor={(m) => m.id}
         contentContainerStyle={{ padding: 14, gap: 8 }}
         ListEmptyComponent={
-          <Texto v="nota" centro style={{ transform: [{ scaleY: -1 }], paddingVertical: 30 }}>
+          <Texto v="nota" centro style={{ paddingVertical: 30 }}>
             {vacio}
           </Texto>
         }

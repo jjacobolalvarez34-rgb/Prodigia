@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useLocalSearchParams, useRouter, type Href } from "expo-router";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { BackHandler, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { Easing, FadeIn, FadeInDown, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withTiming, ZoomIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,6 +13,7 @@ import Anillo from "~/ui/Anillo";
 import Barra from "~/ui/Barra";
 import Boton3D from "~/ui/Boton3D";
 import CapsulaNivel from "~/ui/CapsulaNivel";
+import ComparativaDuelo from "~/ui/ComparativaDuelo";
 import Ciudad from "~/ui/Ciudad";
 import Confeti from "~/ui/Confeti";
 import { IconoCheck, IconoChispa, IconoLlama } from "~/ui/Iconos";
@@ -21,7 +22,7 @@ import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
 
-type Datos = ResultadoPartida & { xp: number; correctos: number; total: number; tiempoMs?: number; duelo?: ResultadoDuelo | null; rival?: string | null };
+type Datos = ResultadoPartida & { xp: number; correctos: number; total: number; tiempoMs?: number; duelo?: ResultadoDuelo | null; dueloId?: string | null; rival?: string | null };
 
 const TEMAS: Record<string, string> = {
   suma: "Suma",
@@ -81,8 +82,16 @@ export default function Resultado() {
   const pendientesRecompensas = usePendientes();
   const params = useLocalSearchParams<{ mundo?: string; tema?: string; datos?: string; repetir?: string }>();
   const mundo = MUNDO_POR_SLUG[(params.mundo ?? "numeria") as MundoSlug] ?? MUNDO_POR_SLUG.numeria;
-  const d = JSON.parse(params.datos ?? "{}") as Datos;
+  const [d] = useState(() => JSON.parse(params.datos ?? "{}") as Datos);
   const [paso, setPaso] = useState(0);
+  // El duelo puede resolverse con la pantalla abierta (el rival termina después).
+  const [duelo, setDuelo] = useState<ResultadoDuelo | null>(d.duelo ?? null);
+  // Después de un duelo se vuelve a Competir (o a Social si fue con un amigo), no a la ciudad.
+  const tipoSalida = duelo ? (duelo.clasificatorio === false ? "amigos" : "rankeds") : null;
+  const salida = useMemo(
+    () => (tipoSalida === "amigos" ? { pathname: "/social", params: { seccion: "amigos" } } : tipoSalida === "rankeds" ? { pathname: "/competir", params: { seccion: "rankeds" } } : `/${mundo.slug}`) as Href,
+    [tipoSalida, mundo.slug]
+  );
   // Cápsula de Chispas al subir de nivel de cuenta: aparece una vez, al llegar a
   // ese paso de la cascada (o al saltar al final).
   const [capsulaCerrada, setCapsulaCerrada] = useState(false);
@@ -90,7 +99,7 @@ export default function Resultado() {
   const precision = d.total > 0 ? d.correctos / d.total : 0;
   const subioMundo = d.nivelMundo != null && d.nivelMundoAnterior != null && d.nivelMundo > d.nivelMundoAnterior;
   const subioRacha = d.rachaDespues > d.rachaAntes;
-  const titulo = d.duelo?.resuelto ? (d.duelo.gane ? "¡Ganaste el duelo!" : d.duelo.empate ? "¡Empate!" : "Perdiste el duelo") : precision >= 0.9 ? "¡Sprint perfecto!" : precision >= 0.7 ? "¡Buen sprint!" : precision >= 0.4 ? "¡Bien jugado!" : "¡A seguir!";
+  const titulo = duelo?.resuelto ? (duelo.gane ? "¡Ganaste el duelo!" : duelo.empate ? "¡Empate!" : "Perdiste el duelo") : duelo ? "¡Terminaste tu parte!" : precision >= 0.9 ? "¡Sprint perfecto!" : precision >= 0.7 ? "¡Buen sprint!" : precision >= 0.4 ? "¡Bien jugado!" : "¡A seguir!";
   const ultimoPaso = PASOS_MS.length - 1;
 
   useEffect(() => {
@@ -102,7 +111,7 @@ export default function Resultado() {
   // Sonido y vibración de cada paso.
   useEffect(() => {
     if (paso === 0) {
-      if (d.duelo?.resuelto) sonar(d.duelo.gane ? "victoria" : d.duelo.empate ? "combo" : "derrota");
+      if (duelo?.resuelto) sonar(duelo.gane ? "victoria" : duelo.empate ? "combo" : "derrota");
       else sonar(precision >= 0.7 ? "victoria" : "recompensa");
       vibrar.exito();
     }
@@ -122,11 +131,11 @@ export default function Resultado() {
 
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      router.replace(`/${mundo.slug}` as "/numeria");
+      router.replace(salida);
       return true;
     });
     return () => sub.remove();
-  }, [router, mundo.slug]);
+  }, [router, salida]);
 
   function saltar() {
     if (paso >= ultimoPaso) return;
@@ -136,7 +145,7 @@ export default function Resultado() {
 
   const chispasAntes = Math.max(0, (d.chispasTotal ?? 0) - (d.xp ?? 0) - (d.bonusNivel ?? 0));
   const s = Math.round((d.tiempoMs ?? 0) / 1000);
-  const delta = d.duelo?.resuelto && d.duelo.elo_nuevo != null && d.duelo.elo_anterior != null ? d.duelo.elo_nuevo - d.duelo.elo_anterior : null;
+  const delta = duelo?.resuelto && duelo.elo_nuevo != null && duelo.elo_anterior != null ? duelo.elo_nuevo - duelo.elo_anterior : null;
 
   return (
     <SafeAreaView style={styles.pantalla}>
@@ -145,7 +154,7 @@ export default function Resultado() {
         <Ciudad semilla={mundo.slug} acento={mundo.neon} alto={260} radio={0} densidad={1.2} />
         <LinearGradient colors={[color.bg, "rgba(9,12,20,0.3)", "rgba(9,12,20,0)"]} locations={[0, 0.45, 1]} style={StyleSheet.absoluteFill} />
       </View>
-      {(precision >= 0.7 || d.duelo?.gane) && <Confeti cantidad={40} />}
+      {(duelo ? duelo.gane : precision >= 0.7) && <Confeti key={duelo?.resuelto ? "duelo" : "sprint"} cantidad={40} />}
       <Pressable style={{ flex: 1 }} onPress={saltar}>
         <ScrollView contentContainerStyle={styles.contenido} showsVerticalScrollIndicator={false}>
           <Paso visible indice={0}>
@@ -178,6 +187,24 @@ export default function Resultado() {
                 </View>
               ))}
             </View>
+            {duelo && (
+              <View style={{ marginTop: 12, gap: 8 }}>
+                <ComparativaDuelo duelId={d.dueloId ?? null} inicial={duelo} rivalNombre={d.rival ?? "tu rival"} total={d.total} acento={mundo.neon} onResuelto={setDuelo} />
+                {delta != null && duelo.clasificatorio && (
+                  <Tarjeta sinEntrada estilo={{ alignItems: "center" }}>
+                    <NumeroAnimado
+                      valor={duelo.elo_nuevo ?? 0}
+                      desde={duelo.elo_anterior ?? 0}
+                      v="mono"
+                      sufijo={` ELO (${delta >= 0 ? "+" : ""}${delta})`}
+                      c={delta >= 0 ? color.correcto : color.error}
+                      duracion={1400}
+                      estilo={{ fontSize: 20 }}
+                    />
+                  </Tarjeta>
+                )}
+              </View>
+            )}
           </Paso>
 
           <Paso visible={paso >= 1} indice={1}>
@@ -318,36 +345,6 @@ export default function Resultado() {
                   </View>
                 </Tarjeta>
               ))}
-              {d.duelo && (
-                <Tarjeta sinEntrada acento={d.duelo.resuelto ? (d.duelo.gane ? color.logro : color.error) : color.primario} brillo={0.3}>
-                  {d.duelo.resuelto ? (
-                    <>
-                      <View style={styles.entre}>
-                        <Texto v="h3">vs {d.duelo.oponente_nombre ?? d.rival}</Texto>
-                        <Texto v="mono" tam={16}>
-                          {d.duelo.mi_puntaje}–{d.duelo.rival_puntaje}
-                        </Texto>
-                      </View>
-                      {delta != null && d.duelo.clasificatorio && (
-                        <NumeroAnimado
-                          valor={d.duelo.elo_nuevo ?? 0}
-                          desde={d.duelo.elo_anterior ?? 0}
-                          v="mono"
-                          sufijo={` ELO (${delta >= 0 ? "+" : ""}${delta})`}
-                          c={delta >= 0 ? color.correcto : color.error}
-                          duracion={1400}
-                          estilo={{ marginTop: 6, fontSize: 18 }}
-                        />
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <Texto v="h3">Tu lado del duelo quedó guardado</Texto>
-                      <Texto v="nota">Cuando {d.rival ?? "tu rival"} juegue, correrá contra tu registro exacto. Te avisamos el resultado.</Texto>
-                    </>
-                  )}
-                </Tarjeta>
-              )}
             </View>
           </Paso>
         </ScrollView>
@@ -356,8 +353,8 @@ export default function Resultado() {
       <View style={styles.pie}>
         {paso >= ultimoPaso ? (
           <Animated.View entering={FadeInDown.duration(300)} style={{ gap: 10 }}>
-            {d.duelo ? (
-              <Boton3D titulo="Otro duelo" acento={mundo.base} brillo onPress={() => router.replace({ pathname: "/competir", params: { seccion: "rankeds" } })} />
+            {duelo ? (
+              <Boton3D titulo={duelo.clasificatorio === false ? "Volver a mis amigos" : "Otro duelo"} acento={mundo.base} brillo onPress={() => router.replace(salida)} />
             ) : (
               <Boton3D titulo="Otra partida" acento={mundo.base} brillo onPress={() => (params.repetir ? router.replace(JSON.parse(params.repetir)) : router.back())} />
             )}

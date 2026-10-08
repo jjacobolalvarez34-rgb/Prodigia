@@ -1,16 +1,22 @@
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
+import { Pressable, View } from "react-native";
+import Svg, { Circle, Path } from "react-native-svg";
+import { fondoChatDe } from "@/lib/mensajes/fondosChat";
 import { sonar } from "~/lib/efectos";
 import { cargarEstadoEdad, errorDeChat, useEdad } from "~/lib/edad";
 import { recargarJugador, useJugador } from "~/lib/jugador";
 import { useSesion } from "~/lib/sesion";
-import { avisarEnVivo, borrarMensajeDirecto, canalConversacion, cargarConversacion, enviarMensajeDirecto, marcarConversacionLeida, TEXTO_ELIMINADO, type MensajeDirecto } from "~/lib/social";
+import { avisarEnVivo, borrarMensajeDirecto, canalConversacion, cargarConversacion, enviarMensajeDirecto, fondoDeChat, marcarConversacionLeida, TEXTO_ELIMINADO, type MensajeDirecto } from "~/lib/social";
 import { mensajeError, supabase } from "~/lib/supabase";
 import { mostrarAviso } from "~/ui/Aviso";
 import Chat, { type MensajeChat } from "~/ui/Chat";
+import ElegirFondoChat from "~/ui/ElegirFondoChat";
+import FondoChat from "~/ui/FondoChat";
 import { PantallaApilada } from "~/ui/Pantalla";
 import PreguntaEdad from "~/ui/PreguntaEdad";
+import { color } from "~/tema";
 
 // Marca un mensaje como borrado (y su cita en las respuestas) sin sacarlo de la lista.
 function marcarBorrado(lista: MensajeDirecto[], id: string): MensajeDirecto[] {
@@ -31,6 +37,9 @@ export default function ChatDirecto() {
   const [pidiendoEdad, setPidiendoEdad] = useState(false);
   // La base avisa si el amigo es menor de 13: desde ahí, solo frases en esta charla.
   const [frasesPorAmigo, setFrasesPorAmigo] = useState(false);
+  // Fondo de la conversación (0262): lo ven los dos y cambia en vivo.
+  const [fondo, setFondo] = useState<string | null>(null);
+  const [eligiendoFondo, setEligiendoFondo] = useState(false);
 
   useEffect(() => {
     cargarEstadoEdad();
@@ -39,6 +48,7 @@ export default function ChatDirecto() {
 
   useEffect(() => {
     if (!id || !miId) return;
+    fondoDeChat(id).then(setFondo);
     cargarConversacion(id)
       .then((m) => {
         setMensajes(m);
@@ -54,6 +64,9 @@ export default function ChatDirecto() {
         sonar("tecla");
         marcarConversacionLeida(id);
       }
+    });
+    c.on("broadcast", { event: "fondo" }, ({ payload }) => {
+      setFondo((payload as { fondo: string | null }).fondo);
     });
     c.on("broadcast", { event: "borrado" }, ({ payload }) => {
       setMensajes((prev) => marcarBorrado(prev, (payload as { id: string }).id));
@@ -76,6 +89,8 @@ export default function ChatDirecto() {
     citaAutor: m.responde_a_remitente_id ? (m.responde_a_remitente_id === miId ? "Tú" : nombre ?? "") : null,
     borrado: !!m.borrado,
   }));
+
+  const datosFondo = fondoChatDe(fondo);
 
   async function borrar(m: MensajeChat) {
     try {
@@ -113,18 +128,48 @@ export default function ChatDirecto() {
   }
 
   return (
-    <PantallaApilada titulo={nombre || "Mensajes"} subtitulo="Mantén apretado un mensaje para responderlo o borrarlo" sinScroll>
-      <Chat
-        mensajes={lista}
-        miId={miId}
-        mostrarAutor={false}
-        enviar={enviar}
-        borrar={borrar}
-        vacio="Todavía no hay mensajes. ¡Saluda!"
-        soloFrases={!!edad?.esMenor || frasesPorAmigo}
-        ocultarLibres={!!edad?.esMenor}
-        pedirEdad={edad && !edad.tieneFecha ? () => setPidiendoEdad(true) : undefined}
-      />
+    <PantallaApilada
+      titulo={nombre || "Mensajes"}
+      subtitulo="Mantén apretado un mensaje para responderlo o borrarlo"
+      sinScroll
+      derecha={
+        <Pressable onPress={() => setEligiendoFondo(true)} hitSlop={10} accessibilityLabel="Fondo del chat" style={{ padding: 6 }}>
+          <Svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={color.texto2} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <Path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4-4-7.4-9-7.4z" />
+            <Circle cx={7.5} cy={11} r={1} fill={color.texto2} />
+            <Circle cx={10.5} cy={7} r={1} fill={color.texto2} />
+            <Circle cx={15} cy={7.5} r={1} fill={color.texto2} />
+          </Svg>
+        </Pressable>
+      }
+    >
+      <View style={{ flex: 1 }}>
+        {datosFondo && <FondoChat fondo={datosFondo} />}
+        <Chat
+          mensajes={lista}
+          miId={miId}
+          mostrarAutor={false}
+          enviar={enviar}
+          borrar={borrar}
+          vacio="Todavía no hay mensajes. ¡Saluda!"
+          soloFrases={!!edad?.esMenor || frasesPorAmigo}
+          ocultarLibres={!!edad?.esMenor}
+          pedirEdad={edad && !edad.tieneFecha ? () => setPidiendoEdad(true) : undefined}
+        />
+      </View>
+      {eligiendoFondo && (
+        <ElegirFondoChat
+          visible
+          amigoId={id}
+          nombreAmigo={nombre || "tu amigo"}
+          actual={fondo}
+          onCerrar={() => setEligiendoFondo(false)}
+          onPuesto={(f) => {
+            setFondo(f);
+            canal.current?.send({ type: "broadcast", event: "fondo", payload: { fondo: f } });
+          }}
+        />
+      )}
       <PreguntaEdad visible={pidiendoEdad} onCerrar={() => setPidiendoEdad(false)} />
     </PantallaApilada>
   );

@@ -231,7 +231,7 @@ export default function Sprint() {
           mundo: "numeria",
           tema: nombreTema,
           repetir: dueloId ? "" : JSON.stringify({ pathname: "/numeria/sprint", params: { seccion: seccionRef.current, temas: temasRef.current.join(",") } }),
-          datos: JSON.stringify({ ...r, xp: xpRef.current, correctos, total, tiempoMs: Math.min(DURACION_SPRINT_MS, Date.now() - inicioRef.current), duelo: resultadoDuelo, rival: duelo?.rivalNombre ?? null }),
+          datos: JSON.stringify({ ...r, xp: xpRef.current, correctos, total, tiempoMs: Math.min(DURACION_SPRINT_MS, Date.now() - inicioRef.current), duelo: resultadoDuelo, dueloId, rival: duelo?.rivalNombre ?? null }),
         },
       });
     } catch (e) {

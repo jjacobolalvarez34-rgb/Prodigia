@@ -96,9 +96,8 @@ export default function DiagnosticoMelodiaClient({ destino }: Props) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return false;
-    await supabase
-      .from("skill_levels")
-      .upsert({ user_id: user.id, problem_type: "melodia_fundamentos", nivel, racha_actual: 0 }, { onConflict: "user_id,problem_type" });
+    const { error: errorNivel } = await supabase.rpc("guardar_diagnostico_mundo", { p_problem_type: "melodia_fundamentos", p_nivel: nivel });
+    if (errorNivel) return false;
     const { error } = await supabase.from("profiles").update({ onboarding_melodia_completado: true }).eq("id", user.id);
     return !error;
   }

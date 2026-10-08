@@ -324,7 +324,22 @@
       },
       "borrar": "Delete message",
       "confirmarBorrar": "Delete this message? It will be deleted for everyone in the chat.",
-      "eliminado": "Message deleted"
+      "eliminado": "Message deleted",
+      "fondo": {
+        "boton": "Background",
+        "titulo": "Chat background",
+        "explicacion": "Both of you see it: you and {nombre}. What you buy stays yours for any chat.",
+        "sinFondo": "No background",
+        "gratis": "Free",
+        "tuyo": "Yours",
+        "poner": "Use in this chat",
+        "quitar": "Remove background",
+        "actual": "Current background",
+        "comprar": "Buy and use · {precio} Sparks",
+        "faltan": "You need {n} more Sparks.",
+        "sinChispas": "You need more Sparks for this background. Play a few games and come back.",
+        "cerrar": "Close"
+      }
     }
   },
   "mundoProgreso": {

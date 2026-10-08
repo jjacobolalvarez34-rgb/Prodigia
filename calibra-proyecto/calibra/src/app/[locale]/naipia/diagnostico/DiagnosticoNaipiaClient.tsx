@@ -103,9 +103,8 @@ export default function DiagnosticoNaipiaClient({ destino }: Props) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return false;
-    await supabase
-      .from("skill_levels")
-      .upsert({ user_id: user.id, problem_type: "naipia_hilo", nivel, racha_actual: 0 }, { onConflict: "user_id,problem_type" });
+    const { error: errorNivel } = await supabase.rpc("guardar_diagnostico_mundo", { p_problem_type: "naipia_hilo", p_nivel: nivel });
+    if (errorNivel) return false;
     const { error } = await supabase.from("profiles").update({ onboarding_naipia_completado: true }).eq("id", user.id);
     return !error;
   }

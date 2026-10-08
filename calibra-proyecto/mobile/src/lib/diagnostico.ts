@@ -4,7 +4,6 @@
 // guarda ese nivel de arranque y la marca onboarding_<mundo>_completado, igual que
 // la web: después de esto no vuelve a aparecer en ningún lado.
 import { generarAcertijoProcedural } from "@/lib/enigmia/generadores";
-import { filasDiagnostico } from "@/lib/enigmia/diagnostico";
 import { tiempoEsperadoMs } from "@/lib/practica/formulas";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { claveNaipia, generarProblemaNaipia } from "@/lib/practica/naipia";
@@ -101,7 +100,7 @@ function diagnosticoNumeria(): Diagnostico {
 }
 
 // Enigmia: acertijos del banco cerca del nivel (de cualquier categoría) y el nivel
-// resultante va a "patrones"; las demás categorías arrancan en 1 (filasDiagnostico).
+// resultante va a "patrones"; las demás categorías arrancan en 1 (guardar_diagnostico_enigmia, 0261).
 function diagnosticoEnigmia(): Diagnostico {
   return {
     total: 8,
@@ -125,8 +124,8 @@ function diagnosticoEnigmia(): Diagnostico {
         },
       };
     },
-    guardar: async (n, userId) => {
-      const { error } = await supabase.from("logic_skill_levels").upsert(filasDiagnostico(userId, "patrones", n.nivel), { onConflict: "user_id,categoria" });
+    guardar: async (n) => {
+      const { error } = await supabase.rpc("guardar_diagnostico_enigmia", { p_categoria: "patrones", p_nivel: n.nivel });
       if (error) throw error;
     },
   };
@@ -159,10 +158,9 @@ export function diagnosticoDe(slug: MundoSlug): Diagnostico | null {
       }
       return { clave: "nivel", pregunta: def.generar(modo, niveles.nivel, usados, null) };
     },
-    guardar: async (n, userId) => {
-      const { error } = await supabase
-        .from("skill_levels")
-        .upsert({ user_id: userId, problem_type: problemTypeDe(def, modo), nivel: n.nivel, racha_actual: 0 }, { onConflict: "user_id,problem_type" });
+    guardar: async (n) => {
+      // Por la función segura de 0261: la tabla no deja escribir directo.
+      const { error } = await supabase.rpc("guardar_diagnostico_mundo", { p_problem_type: problemTypeDe(def, modo), p_nivel: n.nivel });
       if (error) throw error;
     },
   };

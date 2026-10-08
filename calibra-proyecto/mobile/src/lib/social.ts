@@ -107,6 +107,29 @@ export async function cargarConversacion(amigoId: string): Promise<MensajeDirect
   return (data as MensajeDirecto[] | null) ?? [];
 }
 
+// ---------- Fondo del chat (0262) ----------
+export async function fondoDeChat(amigoId: string): Promise<string | null> {
+  const { data } = await supabase.rpc("fondo_chat", { p_amigo: amigoId });
+  return (data as string | null) ?? null;
+}
+
+export async function misFondosChat(userId: string): Promise<string[]> {
+  const { data } = await supabase.from("profiles").select("fondos_chat_desbloqueados").eq("id", userId).maybeSingle();
+  return (data as { fondos_chat_desbloqueados: string[] } | null)?.fondos_chat_desbloqueados ?? [];
+}
+
+// Devuelve las Chispas que quedan.
+export async function comprarFondoChat(slug: string): Promise<number> {
+  const { data, error } = await supabase.rpc("comprar_fondo_chat", { p_fondo: slug });
+  if (error) throw error;
+  return data as number;
+}
+
+export async function ponerFondoChat(amigoId: string, slug: string) {
+  const { error } = await supabase.rpc("poner_fondo_chat", { p_amigo: amigoId, p_fondo: slug });
+  if (error) throw error;
+}
+
 export function canalConversacion(a: string, b: string): string {
   return `dm:${[a, b].sort().join(":")}`;
 }

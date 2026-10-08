@@ -75,7 +75,14 @@ function FilaCiudades({ opciones, valor, onElegir }: { opciones: Eleccion[]; val
       contentContainerStyle={{ gap: 8, paddingHorizontal: 16 }}
     >
       {opciones.map((id) => (
-        <View key={id} onLayout={(e) => setPosiciones((p) => ({ ...p, [id]: e.nativeEvent.layout.x }))}>
+        <View
+          key={id}
+          onLayout={(e) => {
+            // Se lee ya: el evento se recicla antes de que corra la función de setPosiciones.
+            const x = e.nativeEvent.layout.x;
+            setPosiciones((p) => (p[id] === x ? p : { ...p, [id]: x }));
+          }}
+        >
           <ChipMundo id={id} activo={valor === id} onPress={() => onElegir(id)} />
         </View>
       ))}

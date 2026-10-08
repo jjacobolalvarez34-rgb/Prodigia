@@ -1,6 +1,6 @@
 # Plan: mundos 14 y 15 — Física y Biología
 
-> **Estado: PROPUESTA, para aprobar.** Solo planeación: nombre, logo, modos de juego y lecciones (tema, división y animaciones). No hay código ni migraciones todavía.
+> **Estado: APROBADO (2026-10-08), con las decisiones recomendadas del final.** Falta construirlo: es lo siguiente. Hasta ahora no hay código ni migraciones.
 > Fecha: 8 de octubre de 2026.
 > Al final hay una lista de **decisiones** con mi recomendación en cada una.
 

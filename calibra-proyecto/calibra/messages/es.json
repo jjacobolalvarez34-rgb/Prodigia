@@ -324,7 +324,22 @@
       },
       "borrar": "Borrar mensaje",
       "confirmarBorrar": "¿Borrar este mensaje? Se borra para todos en el chat.",
-      "eliminado": "Mensaje eliminado"
+      "eliminado": "Mensaje eliminado",
+      "fondo": {
+        "boton": "Fondo",
+        "titulo": "Fondo del chat",
+        "explicacion": "Lo ven los dos: tú y {nombre}. Lo que compras queda tuyo para cualquier chat.",
+        "sinFondo": "Sin fondo",
+        "gratis": "Gratis",
+        "tuyo": "Tuyo",
+        "poner": "Poner en este chat",
+        "quitar": "Quitar el fondo",
+        "actual": "Es el fondo actual",
+        "comprar": "Comprar y poner · {precio} Chispas",
+        "faltan": "Te faltan {n} Chispas.",
+        "sinChispas": "Te faltan Chispas para este fondo. Juega unas partidas y vuelve.",
+        "cerrar": "Cerrar"
+      }
     }
   },
   "mundoProgreso": {

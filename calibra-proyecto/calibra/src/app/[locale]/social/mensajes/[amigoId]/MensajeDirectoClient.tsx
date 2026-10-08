@@ -8,6 +8,8 @@ import ReportarBoton from "@/app/[locale]/perfil/[userId]/ReportarBoton";
 import { IconResponder } from "@/components/icons";
 import { useMensajesNoLeidos } from "@/lib/mensajes/MensajesNoLeidos";
 import { recortar } from "@/lib/mensajes/util";
+import { fondoChatDe } from "@/lib/mensajes/fondosChat";
+import { ElegirFondoChat, estiloFondoChat } from "@/components/mensajes/FondoChat";
 
 export interface MensajeDirecto {
   id: string;
@@ -75,6 +77,10 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
   const finRef = useRef<HTMLDivElement>(null);
   const cajaRef = useRef<HTMLTextAreaElement>(null);
   const channelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
+  // Fondo de la conversación (0262): lo ven los dos y cambia en vivo.
+  const [fondo, setFondo] = useState<string | null>(null);
+  const [eligiendoFondo, setEligiendoFondo] = useState(false);
+  const tFondo = useTranslations("Social.mensajes.fondo");
 
   // Abrir la conversación ya la marcó como leída en el servidor (mi_conversacion).
   useEffect(() => {
@@ -89,10 +95,14 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
       const m = payload as MensajeDirecto;
       setMensajes((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
     });
+    channel.on("broadcast", { event: "fondo" }, ({ payload }) => {
+      setFondo((payload as { fondo: string | null }).fondo);
+    });
     channel.on("broadcast", { event: "borrado" }, ({ payload }) => {
       setMensajes((prev) => marcarBorrado(prev, (payload as { id: string }).id, t("eliminado")));
     });
     channel.subscribe();
+    supabase.rpc("fondo_chat", { p_amigo: amigoId }).then(({ data }) => setFondo((data as string | null) ?? null));
 
     return () => {
       channelRef.current = null;
@@ -190,11 +200,30 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
       <div className="flex items-center gap-2 border-b border-border pb-3">
         <Avatar url={amigoAvatarUrl} nombre={amigoNombre} size={32} />
         <h1 className="truncate font-display text-base font-bold text-foreground">{amigoNombre ?? tSocial("jugador")}</h1>
+        <button
+          type="button"
+          onClick={() => setEligiendoFondo((v) => !v)}
+          className="ml-auto rounded-full border border-border px-3 py-1 text-xs font-semibold text-texto-secundario hover:text-foreground"
+        >
+          🎨 {tFondo("boton")}
+        </button>
       </div>
+      {eligiendoFondo && (
+        <ElegirFondoChat
+          amigoId={amigoId}
+          nombreAmigo={amigoNombre ?? tSocial("jugador")}
+          actual={fondo}
+          onCerrar={() => setEligiendoFondo(false)}
+          onPuesto={(f) => {
+            setFondo(f);
+            channelRef.current?.send({ type: "broadcast", event: "fondo", payload: { fondo: f } });
+          }}
+        />
+      )}
 
-      <div className="flex min-h-[24rem] flex-1 flex-col gap-2.5 overflow-y-auto px-1 py-2">
+      <div className="flex min-h-[24rem] flex-1 flex-col gap-2.5 overflow-y-auto rounded-xl px-1 py-2" style={estiloFondoChat(fondoChatDe(fondo))}>
         {mensajes.length === 0 ? (
-          <p className="text-center text-xs text-texto-secundario">{t("vacio")}</p>
+          <p className="self-center rounded-full bg-surface px-3 py-1 text-center text-xs text-texto-secundario">{t("vacio")}</p>
         ) : (
           mensajes.map((m) => {
             const esMio = m.remitente_id === miUserId;

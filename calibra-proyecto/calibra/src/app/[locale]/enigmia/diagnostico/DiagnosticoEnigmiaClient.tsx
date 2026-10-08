@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { tiempoEsperadoMs } from "@/lib/practica/formulas";
 import type { CategoriaEnigmia, LogicPuzzle } from "@/types/database";
-import { filasDiagnostico } from "@/lib/enigmia/diagnostico";
 import AcertijoMemoria from "@/components/AcertijoMemoria";
 
 type Fase = "intro" | "diagnostico" | "guardando" | "resultado";
@@ -113,13 +112,9 @@ export default function DiagnosticoEnigmiaClient({ puzzles, destino }: Props) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return;
-    // Inserta las 4 filas de una vez (0205_enigmia_niveles_por_categoria.sql
-    // ya no acepta una sola fila global): la categoría diagnosticada con
-    // el nivel real calculado arriba, las otras 3 en nivel 1 — para que
-    // existan desde el día uno y empiecen a subir jugando, sin bloquear
-    // ningún modo.
-    const filas = filasDiagnostico(user.id, CATEGORIA_DIAGNOSTICADA, nivel);
-    await supabase.from("logic_skill_levels").upsert(filas, { onConflict: "user_id,categoria" });
+    // Las 4 categorías de una vez (0261): la diagnosticada con su nivel y las
+    // otras 3 en nivel 1, para que empiecen a subir jugando.
+    await supabase.rpc("guardar_diagnostico_enigmia", { p_categoria: CATEGORIA_DIAGNOSTICADA, p_nivel: nivel });
     await supabase.from("profiles").update({ onboarding_enigmia_completado: true }).eq("id", user.id);
   }
 
