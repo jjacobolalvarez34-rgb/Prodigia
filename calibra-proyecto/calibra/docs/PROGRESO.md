@@ -4059,3 +4059,46 @@ Tres mundos nuevos, normales en todo (catálogo, Practicar, Rankeds, duelos, log
 - PENDIENTE del usuario: rotar la key de fal.ai; correr 0222-0242 en orden (0225 antes de las de inglés, 0239 antes de 0240).
 - **Hallazgo nuevo, sin resolver**: `resolver_apuesta_partida`/`resolver_prediccion_ranking` (pagan apuestas a duelos ajenos y a predicciones de ranking) no las llama ningún código — esas apuestas quedan pendientes para siempre. Anotado en `TECH-DEBT.md`.
 - Pendiente de decisión de PO: PROD-01 completo (Trastienda en Android sí/no, umbral de edad real), y el resto de la auditoría general (SEG-04..09, stack de la app nativa).
+
+## 2026-10-08/09 — Mundos 14 y 15 (Dinamia y Vitalia), Modo Zen, efectos con Skia, sonidos nuevos y arreglos
+
+### Construí
+- **Dinamia (Física) y Vitalia (Biología)**, plan en `PLAN_MUNDOS_FISICA_BIOLOGIA.md`:
+  - base en 0263;
+  - generadores con tests;
+  - páginas web genéricas (`components/mundosNuevos`);
+  - app;
+  - 29 animaciones compartidas por la web y la app (`lib/<mundo>/escenas.ts`);
+  - 114 lecciones (0264 y 0265, generadas desde `lib/<mundo>/lecciones` con un test que las compara byte a byte);
+  - anuncio (0267).
+- **Modo Zen**, plan en `PLAN_MODO_SIN_RELOJ.md`:
+  - botoncito «☯ Modo Zen» en las 15 ciudades, en la web y en la app;
+  - tema y dificultad a elección, 10 preguntas sin reloj, reintento y pista gratis;
+  - solo suma a la racha (0266);
+  - los adaptadores de preguntas ahora son compartidos (`src/lib/mundosJugables`).
+- **App**:
+  - cápsulas y celebraciones dibujadas con Skia: rayos, ondas, partículas con física y suspenso según la rareza;
+  - fórmulas con LaTeX real (MathJax a SVG);
+  - contador de la Gran Alineación;
+  - «volver» después de una partida ya no se repite;
+  - esqueleto con fondo negro y zoom con botones;
+  - logo y barrita del final de cada partida con el color de la ciudad.
+- **Web y app**:
+  - sonido de error «eh-ehhh»;
+  - tic en los últimos 10 segundos y uno propio al acabarse el tiempo;
+  - cartel al terminar los retos;
+  - la tienda ya no equipa lo comprado;
+  - sticker, anuncio y página `/descargar` del APK.
+
+### Verifiqué
+- `tsc` limpio en la web y la app, `eslint` sin errores y `vitest` en verde (2.687 pruebas antes de la última tanda).
+- `npm run paridad`: 118 visuales en la web y 118 en la app.
+- Las escenas animadas, revisadas en una galería renderizada a PNG.
+- Las 24 migraciones pendientes (0244 a 0267), validadas con `pglast`; las dos funciones de trigger que `pglast` no lee, revisadas a mano.
+- Arreglada la 0263: `obtener_duelo` ahora se borra antes de crearse (error 42723) y sus mensajes ya no tienen voseo.
+
+### Resultado
+- **Pendiente del usuario:** correr 0244 a 0267 en orden.
+- **Pendiente:**
+  - inglés del contenido de las lecciones de Dinamia y Vitalia (hoy se ven en español también en inglés);
+  - que la app re-exporte los adaptadores compartidos en vez de sus copias.

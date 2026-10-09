@@ -40,35 +40,36 @@ confirmar en vivo · ❌ ausente.
 
 ## Matriz completa
 
-| # | Sistema | Numeria | Enigmia | Geografía | Quimia | Anatomía | Melodía | Trigonometría | Historia | Calculia | Circuitia | Estadística | Naipia | Codia |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | Practicar: tema→sub-tema→chips | ✅ | ✅¹⁸ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| 2 | Calibración 1-10 | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 3 | Aprender: camino continuo | ✅ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ |
-| 4 | world_progress avanzando | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 5 | Racha/combo (useRachaCombo) | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 6 | Logros y títulos propios | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 7 | Aparece en /perfil | ✅² | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 8 | Rankeds: ciudad seleccionable | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 9 | Rankeds: dificultad por rango | ✅ | ✅⁵ | ✅ | ✅¹ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 10 | Duelo casual | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 11 | Duelo con amigo (selector) | ✅ | ✅ | ✅ | ✅¹ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 12 | Invitar por link (sin cuenta) | ✅ | ✅ | ✅ | ✅¹ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 13 | Progreso en vivo del rival | ✅ | ✅³ | ✅³ | ✅³ | ✅³ | ✅³ | ⚠️⁶ | ⚠️⁶ | ⚠️⁷ | ⚠️⁸ | ⚠️¹¹ | ⚠️¹¹ | ⚠️¹¹ |
-| 14 | Pantalla VS antes de arrancar | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 15 | TextType "todas las ciudades" | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 16 | Countdown automático 10s | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 17 | Resultados + ELO animado | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 18 | Mundos por Chispas | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 19 | Feed: tarjetas automáticas | ✅ | ✅¹,⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 20 | Responsive en mobile real | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| 21 | Aparece en estadísticas Pro (/perfil/estadisticas) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅¹⁰ | ✅¹⁰ | ✅¹¹ | ✅¹¹ | ✅¹¹ |
-| 22 | Aprender con pestañas Técnicas \| Clases (Pro, clase 1 gratis) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ✅²³ | ✅²⁴ | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² |
-| 23 | Aprender con explicación visual animada (no solo texto) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ✅²³ | ✅²⁴ | ✅²⁸ | ✅²⁵ | ✅²⁶ | ✅¹³ | ✅²⁷ |
-| 24 | Español neutro, sin voseo, en el contenido de lecciones | ✅³⁰ | ✅¹⁷ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅¹⁵ | ✅¹⁵ | ✅¹⁵ |
-| 25 | Botones con el diseño de pastilla + placa de ícono (color de la ciudad) y flecha para volver a la página anterior | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ |
-| 26 | Confirmación al abandonar una partida o lección desde el menú (Ranked: avisa que se pierde ELO y cierra el duelo con resultado) | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ |
-| 27 | Reloj de su ciudad (día y noche propios, divisor de 672 h) y Gran Alineación con contador | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ |
+| # | Sistema | Numeria | Enigmia | Geografía | Quimia | Anatomía | Melodía | Trigonometría | Historia | Calculia | Circuitia | Estadística | Naipia | Codia | Dinamia | Vitalia |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | Practicar: tema→sub-tema→chips | ✅ | ✅¹⁸ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| 2 | Calibración 1-10 | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 3 | Aprender: camino continuo | ✅ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅⁹ | ✅³² | ✅³² |
+| 4 | world_progress avanzando | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 5 | Racha/combo (useRachaCombo) | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 6 | Logros y títulos propios | ✅ | ✅⁵ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 7 | Aparece en /perfil | ✅² | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 8 | Rankeds: ciudad seleccionable | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 9 | Rankeds: dificultad por rango | ✅ | ✅⁵ | ✅ | ✅¹ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 10 | Duelo casual | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 11 | Duelo con amigo (selector) | ✅ | ✅ | ✅ | ✅¹ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 12 | Invitar por link (sin cuenta) | ✅ | ✅ | ✅ | ✅¹ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 13 | Progreso en vivo del rival | ✅ | ✅³ | ✅³ | ✅³ | ✅³ | ✅³ | ⚠️⁶ | ⚠️⁶ | ⚠️⁷ | ⚠️⁸ | ⚠️¹¹ | ⚠️¹¹ | ⚠️¹¹ | ⚠️³² | ⚠️³² |
+| 14 | Pantalla VS antes de arrancar | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 15 | TextType "todas las ciudades" | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 16 | Countdown automático 10s | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 17 | Resultados + ELO animado | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 18 | Mundos por Chispas | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁴ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 19 | Feed: tarjetas automáticas | ✅ | ✅¹,⁵ | ✅ | ✅ | ✅ | ✅¹ | ✅⁶ | ✅⁶ | ✅⁷ | ✅⁸ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 20 | Responsive en mobile real | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| 21 | Aparece en estadísticas Pro (/perfil/estadisticas) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅¹⁰ | ✅¹⁰ | ✅¹¹ | ✅¹¹ | ✅¹¹ | ✅³² | ✅³² |
+| 22 | Aprender con pestañas Técnicas \| Clases (Pro, clase 1 gratis) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ✅²³ | ✅²⁴ | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅¹² | ✅³² | ✅³² |
+| 23 | Aprender con explicación visual animada (no solo texto) | ✅¹⁴ | ✅¹⁶ | ✅¹⁹ | ✅²⁰ | ✅²¹ | ✅²² | ✅²³ | ✅²⁴ | ✅²⁸ | ✅²⁵ | ✅²⁶ | ✅¹³ | ✅²⁷ | ✅³² | ✅³² |
+| 24 | Español neutro, sin voseo, en el contenido de lecciones | ✅³⁰ | ✅¹⁷ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅¹⁵ | ✅¹⁵ | ✅¹⁵ | ✅³² | ✅³² |
+| 25 | Botones con el diseño de pastilla + placa de ícono (color de la ciudad) y flecha para volver a la página anterior | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅³² | ✅³² |
+| 26 | Confirmación al abandonar una partida o lección desde el menú (Ranked: avisa que se pierde ELO y cierra el duelo con resultado) | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅³² | ✅³² |
+| 27 | Reloj de su ciudad (día y noche propios, divisor de 672 h) y Gran Alineación con contador | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ |
+| 28 | Modo Zen (☯): sin reloj, tema y dificultad a elección, solo suma a la racha | ✅³³ | ✅³³ | ✅³³ | ✅³³ | ✅³³ | ✅³³ | ✅³³ | ✅³³ | ✅³³ | ✅³³ | ✅³³ | ✅³³ | ✅³³ | ✅³³ | ✅³³ |
 
 
 ³¹ = **Fila 27, pedido del usuario 2026-10-08: "el reloj de los otros dos mundos… eso también toca agregarlo a la paridad".** Cada ciudad tiene su propio día. Sus horas están en tres lugares que deben coincidir:
@@ -81,6 +82,34 @@ confirmar en vivo · ❌ ausente.
 Cada 28 días, todas las ciudades amanecen juntas durante 3 h: constelaciones con premio doble y doble experiencia (`en_gran_alineacion()`, 0259). El **contador en vivo** de la próxima alineación (o de cuánto falta para que termine) está en `/recompensas` de la web (`components/recompensas/ContadorAlineacion.tsx`) y en la app, en la pestaña Mundos y en Recompensas (`mobile/src/ui/ContadorAlineacion.tsx`). Los dos usan `src/lib/recompensas/contadorAlineacion.ts`, con test.
 
 Los textos que cuentan ciudades o mundos («las 15 ciudades») se actualizan con cada mundo nuevo. Mundos 14 y 15: Dinamia, 8 h (el día más rápido); Vitalia, 168 h (una semana, al ritmo lento de la vida). Las dos columnas se suman a la matriz cuando se cierre su documentación.
+
+
+³² = **Mundos 14 y 15, Dinamia (Física) y Vitalia (Biología), 2026-10-08/09**, plan en `docs/PLAN_MUNDOS_FISICA_BIOLOGIA.md`. Los ✅ son por código y build (tsc, lint, vitest y `npm run paridad`), igual que los de Calculia y Circuitia: todavía sin confirmar jugando, porque las migraciones están pendientes.
+- **Base:** 0263 (todo lo transversal a 15 mundos, armado desde la última definición de cada función), 0264 (54 lecciones de Dinamia) y 0265 (60 de Vitalia, con Ecología).
+- **Generadores:** `lib/practica/dinamia.ts` y `lib/practica/vitalia.ts`, con tests.
+- **Páginas web genéricas:** `components/mundosNuevos/*`, configuradas por `lib/mundosNuevos/config.ts`.
+- **Animaciones:**
+  - 15 escenas de Dinamia y 14 de Vitalia en `lib/<mundo>/escenas.ts`, compartidas por la web y la app;
+  - un reproductor por plataforma;
+  - tests que revisan cada cuadro;
+  - galería revisada a ojo.
+- **Temas de Aprender:** `GRUPOS_APRENDER.dinamia` y `.vitalia`, con desbloqueo por tema.
+- Fila 13 en ⚠️, como en los demás mundos nuevos.
+
+³³ = **Fila 28, Modo Zen (pedido del usuario 2026-10-08/09):** plan en `docs/PLAN_MODO_SIN_RELOJ.md`.
+- **Dónde está:** botoncito «☯ Modo Zen»:
+  - en la web, en la tarjeta de progreso de cada ciudad (`NivelMundoProgreso`), que lleva a `/zen/<mundo>`;
+  - en la app, en la cabecera común `HubMundo`, que lleva a `zen/[mundo]`.
+- **Cómo se juega:**
+  - tema (o Mezcla) y dificultad del 1 al 10;
+  - 10 preguntas sin reloj;
+  - un reintento por pregunta;
+  - pista gratis;
+  - resumen con lo fallado.
+- **Qué no da:** no guarda intentos ni da Chispas, XP o nivel. Solo marca el día para la racha (`registrar_partida_zen`, 0266).
+- **Preguntas:** salen de los adaptadores compartidos `src/lib/mundosJugables`, los mismos de la app; Numeria y Geografía, de sus generadores directos (`lib/zen/preguntas.ts`, con test de los 15 mundos).
+
+**Regla vinculante:** un mundo nuevo tiene que tener su adaptador en `src/lib/mundosJugables` (o su caso en `lib/zen/preguntas.ts`). Con eso aparece solo en el Modo Zen.
 
 ¹ = bug real encontrado en esta auditoría y **ya corregido en el código** esta sesión — ver "Changelog" abajo. La celda muestra el estado ACTUAL (post-fix), no el que se encontró.
 ² = /perfil de Numeria tenía un bug propio (ver changelog) que inflaba su propio contador con attempts de otros mundos — también corregido.
