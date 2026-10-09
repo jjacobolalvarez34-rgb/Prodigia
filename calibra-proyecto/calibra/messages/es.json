@@ -4865,14 +4865,23 @@
         "fugaz": "Estrella fugaz: {premio}",
         "alineacion": "Gran Alineación: premio doble.",
         "noche": "Era de noche en la ciudad: +20 %.",
-        "siguiente": "Siguiente",
+        "siguiente": "Siguiente constelación",
         "genial": "¡Genial!",
         "fugaces": {
           "hielo": "1 hielo",
           "tiempo_extra": "+3 segundos",
           "pista": "1 pista",
           "chispas": "200 Chispas"
-        }
+        },
+        "siguientePremio": "Siguiente premio",
+        "etiquetaChispas": "Chispas",
+        "etiquetaPieza": "Pieza de colección",
+        "etiquetaFugaz": "¡Estrella fugaz!",
+        "piezaTuya": "Ya es tuya. Póntela desde la tienda.",
+        "fugazNota": "1 de cada 5 constelaciones trae una.",
+        "alineacionCorto": "🪐 Gran Alineación ×2",
+        "nocheCorto": "🌙 De noche +20 %",
+        "deCuantos": "{premio} · {n} de {total}"
       },
       "contador": {
         "proxima": "Próxima Gran Alineación",

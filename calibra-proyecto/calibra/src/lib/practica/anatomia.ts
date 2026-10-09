@@ -6,6 +6,8 @@
 // nunca un dato inventado — mismo criterio de honestidad de contenido
 // que el resto de la app.
 
+import { formatosDe, type FormatoAnatomia } from "./anatomiaFormatos";
+
 export type ModoAnatomia = "oseo" | "muscular" | "organos" | "nervioso";
 
 export const NOMBRE_MODO_ANATOMIA: Record<ModoAnatomia, string> = {
@@ -64,6 +66,8 @@ export interface PreguntaAnatomiaOpcion {
   opciones: string[];
   respuesta: string;
   clave: string;
+  // "clasificacion" = "¿cuál de estas opciones es un músculo?"; el resto, ver anatomiaFormatos.ts.
+  formato?: FormatoAnatomia;
 }
 
 // Fase 2 ("identificación por ubicación directa"): en vez de elegir el
@@ -226,6 +230,13 @@ export function generarPreguntaAnatomia(modo: ModoAnatomia, nivel: number, usado
     };
   }
 
+  // Muscular, órganos y nervioso: además de la clasificación, preguntas de función,
+  // ubicación, recorridos y pares craneales (anatomiaFormatos.ts). Se elige un formato
+  // al azar entre los del nivel; la clasificación es uno más, no el único.
+  const formatos = formatosDe(modo, band);
+  const formato = formatos[Math.floor(rng() * formatos.length)];
+  if (formato) return { tipo: "opcion", ...formato(usados, rng) };
+
   let pool: string[];
   let etiqueta: string;
   if (modo === "organos") {
@@ -251,5 +262,6 @@ export function generarPreguntaAnatomia(modo: ModoAnatomia, nivel: number, usado
     opciones,
     respuesta: correcta,
     clave: correcta,
+    formato: "clasificacion",
   };
 }

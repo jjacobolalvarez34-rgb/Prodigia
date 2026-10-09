@@ -15,6 +15,8 @@ import { TECNICAS as TECNICAS_NAIPIA, CLASES as CLASES_NAIPIA } from "@/lib/naip
 import { TECNICAS as TECNICAS_CODIA, CLASES as CLASES_CODIA } from "@/lib/codia/lecciones";
 import { CLASES_NUMERIA, TECNICAS_NUMERIA } from "@/lib/numeria/lecciones";
 import { CLASES_ENIGMIA, CLASES_ENIGMIA_NUEVAS, TECNICAS_ENIGMIA_NUEVAS } from "@/lib/enigmia/lecciones";
+import { TECNICAS_DINAMIA, CLASES_DINAMIA } from "@/lib/dinamia/lecciones";
+import { TECNICAS_VITALIA, CLASES_VITALIA } from "@/lib/vitalia/lecciones";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { aNeutroProfundo } from "@/lib/texto/neutroSembrado";
@@ -33,7 +35,9 @@ export type MundoTraducible =
   | "circuitia"
   | "estadistica"
   | "naipia"
-  | "codia";
+  | "codia"
+  | "dinamia"
+  | "vitalia";
 
 interface LeccionTipada {
   slug: string;
@@ -110,6 +114,10 @@ export function leccionesFuente(mundo: MundoTraducible): LeccionFuente[] {
       return lista(TECNICAS_NAIPIA as LeccionTipada[], CLASES_NAIPIA as LeccionTipada[]);
     case "codia":
       return lista(TECNICAS_CODIA as LeccionTipada[], CLASES_CODIA as LeccionTipada[]);
+    case "dinamia":
+      return lista(TECNICAS_DINAMIA as LeccionTipada[], CLASES_DINAMIA as LeccionTipada[]);
+    case "vitalia":
+      return lista(TECNICAS_VITALIA as LeccionTipada[], CLASES_VITALIA as LeccionTipada[]);
   }
 }
 

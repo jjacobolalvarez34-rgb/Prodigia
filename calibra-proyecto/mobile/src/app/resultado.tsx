@@ -14,6 +14,7 @@ import Barra from "~/ui/Barra";
 import Boton3D from "~/ui/Boton3D";
 import CapsulaNivel from "~/ui/CapsulaNivel";
 import ComparativaDuelo from "~/ui/ComparativaDuelo";
+import ResultadoVersus from "~/ui/ResultadoVersus";
 import Ciudad from "~/ui/Ciudad";
 import Confeti from "~/ui/Confeti";
 import { IconoCheck, IconoChispa, IconoLlama } from "~/ui/Iconos";
@@ -145,7 +146,10 @@ export default function Resultado() {
 
   const chispasAntes = Math.max(0, (d.chispasTotal ?? 0) - (d.xp ?? 0) - (d.bonusNivel ?? 0));
   const s = Math.round((d.tiempoMs ?? 0) / 1000);
-  const delta = duelo?.resuelto && duelo.elo_nuevo != null && duelo.elo_anterior != null ? duelo.elo_nuevo - duelo.elo_anterior : null;
+  const rival = duelo?.oponente_nombre ?? d.rival ?? "tu rival";
+  const seg = (ms: number | null | undefined) => (ms == null ? "—" : `${(ms / 1000).toFixed(1)}s`);
+  const pct = (p: number | null | undefined) => (p == null ? "—" : `${Math.round(p * 100)}%`);
+  const aciertosDe = (p: number | null | undefined) => (p == null ? "—" : `${Math.round(p * d.total)}/${d.total}`);
 
   return (
     <SafeAreaView style={styles.pantalla}>
@@ -155,21 +159,59 @@ export default function Resultado() {
         <LinearGradient colors={[color.bg, "rgba(9,12,20,0.3)", "rgba(9,12,20,0)"]} locations={[0, 0.45, 1]} style={StyleSheet.absoluteFill} />
       </View>
       {(duelo ? duelo.gane : precision >= 0.7) && <Confeti key={duelo?.resuelto ? "duelo" : "sprint"} cantidad={40} />}
-      <Pressable style={{ flex: 1 }} onPress={saltar}>
-        <ScrollView contentContainerStyle={styles.contenido} showsVerticalScrollIndicator={false}>
+      {/* Sin Pressable alrededor: envolver el ScrollView en uno le quitaba el desplazamiento
+          y lo de abajo quedaba tapado por los botones. Cualquier toque adelanta la cascada. */}
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.contenido} showsVerticalScrollIndicator={false} onTouchStart={saltar}>
           <Paso visible indice={0}>
             <View style={{ alignItems: "center", gap: 2, marginTop: 6 }}>
               <Texto v="micro" c={mundo.neon}>
-                {mundo.nombre} · {TEMAS[params.tema ?? ""] ?? ""}
-                {d.rival ? ` · vs ${d.rival}` : ""}
+                {mundo.nombre} · {TEMAS[params.tema ?? ""] ?? params.tema ?? ""}
+                {duelo ? ` · vs ${rival}` : ""}
               </Texto>
-              <Animated.View entering={ZoomIn.duration(320)}>
-                <Texto v="display" tam={32} centro>
-                  {titulo}
-                </Texto>
-              </Animated.View>
+              {!duelo && (
+                <Animated.View entering={ZoomIn.duration(320)}>
+                  <Texto v="display" tam={32} centro>
+                    {titulo}
+                  </Texto>
+                </Animated.View>
+              )}
             </View>
-            <View style={[styles.fila, { marginTop: 12 }]}>
+            {/* En un duelo manda el versus (igual que ResultadoDueloBlock de la web): quién
+                ganó, el ELO y tú contra el rival. Tu resumen personal va debajo. */}
+            {duelo && (
+              <View style={{ marginTop: 10 }}>
+                {duelo.resuelto ? (
+                  <ResultadoVersus
+                    gane={!!duelo.gane}
+                    empate={!!duelo.empate}
+                    rival={rival}
+                    linea={duelo.empate ? `Empataste con ${rival}` : duelo.gane ? `Le ganaste a ${rival}` : `Esta vez ganó ${rival}`}
+                    marcador={duelo.mi_puntaje != null && duelo.rival_puntaje != null ? `${duelo.mi_puntaje} – ${duelo.rival_puntaje}` : undefined}
+                    eloAnterior={duelo.clasificatorio !== false ? duelo.elo_anterior : null}
+                    eloNuevo={duelo.clasificatorio !== false ? duelo.elo_nuevo : null}
+                    desglose={
+                      duelo.mi_precision != null || duelo.rival_precision != null
+                        ? [
+                            { etiqueta: "aciertos", mio: aciertosDe(duelo.mi_precision), suyo: aciertosDe(duelo.rival_precision) },
+                            { etiqueta: "precisión", mio: pct(duelo.mi_precision), suyo: pct(duelo.rival_precision) },
+                            ...(duelo.mi_tiempo_promedio != null || duelo.rival_tiempo_promedio != null
+                              ? [{ etiqueta: "tiempo prom.", mio: seg(duelo.mi_tiempo_promedio), suyo: seg(duelo.rival_tiempo_promedio) }]
+                              : []),
+                          ]
+                        : undefined
+                    }
+                  />
+                ) : (
+                  <ComparativaDuelo duelId={d.dueloId ?? null} inicial={duelo} rivalNombre={rival} total={d.total} acento={mundo.neon} onResuelto={setDuelo} />
+                )}
+              </View>
+            )}
+            {duelo && (
+              <Texto v="micro" style={{ marginTop: 14 }}>
+                Tu partida
+              </Texto>
+            )}
+            <View style={[styles.fila, { marginTop: duelo ? 6 : 12 }]}>
               {[
                 [`${d.correctos}/${d.total}`, "aciertos"],
                 [`${Math.round(precision * 100)}%`, "precisión"],
@@ -187,24 +229,6 @@ export default function Resultado() {
                 </View>
               ))}
             </View>
-            {duelo && (
-              <View style={{ marginTop: 12, gap: 8 }}>
-                <ComparativaDuelo duelId={d.dueloId ?? null} inicial={duelo} rivalNombre={d.rival ?? "tu rival"} total={d.total} acento={mundo.neon} onResuelto={setDuelo} />
-                {delta != null && duelo.clasificatorio && (
-                  <Tarjeta sinEntrada estilo={{ alignItems: "center" }}>
-                    <NumeroAnimado
-                      valor={duelo.elo_nuevo ?? 0}
-                      desde={duelo.elo_anterior ?? 0}
-                      v="mono"
-                      sufijo={` ELO (${delta >= 0 ? "+" : ""}${delta})`}
-                      c={delta >= 0 ? color.correcto : color.error}
-                      duracion={1400}
-                      estilo={{ fontSize: 20 }}
-                    />
-                  </Tarjeta>
-                )}
-              </View>
-            )}
           </Paso>
 
           <Paso visible={paso >= 1} indice={1}>
@@ -347,8 +371,7 @@ export default function Resultado() {
               ))}
             </View>
           </Paso>
-        </ScrollView>
-      </Pressable>
+      </ScrollView>
 
       <View style={styles.pie}>
         {paso >= ultimoPaso ? (
@@ -358,11 +381,13 @@ export default function Resultado() {
             ) : (
               <Boton3D titulo="Otra partida" acento={mundo.base} brillo onPress={() => (params.repetir ? router.replace(JSON.parse(params.repetir)) : router.back())} />
             )}
-            <Pressable onPress={() => router.dismissTo(`/${mundo.slug}` as "/numeria")} hitSlop={10}>
-              <Texto v="nota" centro>
-                Volver al mundo
-              </Texto>
-            </Pressable>
+            {!duelo && (
+              <Pressable onPress={() => router.dismissTo(`/${mundo.slug}` as "/numeria")} hitSlop={10}>
+                <Texto v="nota" centro>
+                  Volver al mundo
+                </Texto>
+              </Pressable>
+            )}
           </Animated.View>
         ) : (
           <Texto v="nota" centro>
@@ -387,7 +412,7 @@ export default function Resultado() {
 const styles = StyleSheet.create({
   fondoCiudad: { position: "absolute", left: 0, right: 0, bottom: 0, height: 260, opacity: 0.8 },
   pantalla: { flex: 1, backgroundColor: color.bg },
-  contenido: { padding: 16, gap: 12, paddingBottom: 24 },
+  contenido: { padding: 16, gap: 12, paddingBottom: 40 },
   fila: { flexDirection: "row", alignItems: "center", gap: 10 },
   filaCentro: { flexDirection: "row", alignItems: "center", gap: 6, justifyContent: "center" },
   entre: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },

@@ -49,12 +49,18 @@ async function marcarHecho(slug: MundoSlug, userId: string) {
 
 // ¿Le falta el diagnóstico de este mundo? Sin conexión (o si no se puede leer)
 // responde false: nunca se bloquea el juego por esto.
+// Igual que la web (requireMundoComprado va antes que el diagnóstico): si la ciudad
+// no es tuya no hay diagnóstico; el hub muestra el candado. Pasa, por ejemplo, al
+// volver de una ronda de "todas las ciudades" que cayó en una ciudad que no tienes.
 export async function faltaDiagnostico(slug: MundoSlug, userId: string): Promise<boolean> {
   if (slug === "geografia") return false;
   const columna = columnaDiagnostico(slug);
-  const { data, error } = await supabase.from("profiles").select(columna).eq("id", userId).maybeSingle();
+  const { data, error } = await supabase.from("profiles").select(`${columna}, mundos_desbloqueados, plan`).eq("id", userId).maybeSingle();
   if (error || !data) return false;
-  return (data as unknown as Record<string, boolean | null>)[columna] === false;
+  const fila = data as unknown as Record<string, unknown>;
+  // Mismo criterio que el candado de HubMundo.
+  if (fila.plan !== "pro" && !((fila.mundos_desbloqueados as string[] | null) ?? []).includes(slug)) return false;
+  return fila[columna] === false;
 }
 
 // Modo de entrada de cada mundo (el mismo que diagnostica la web).

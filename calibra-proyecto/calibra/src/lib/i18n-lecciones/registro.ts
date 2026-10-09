@@ -16,6 +16,8 @@ import { MELODIA_EN } from "./en/melodia";
 import { ANATOMIA_EN } from "./en/anatomia";
 import { QUIMIA_EN } from "./en/quimia";
 import { TRIGONOMETRIA_EN } from "./en/trigonometria";
+import { DINAMIA_EN } from "./en/dinamia";
+import { VITALIA_EN } from "./en/vitalia";
 
 export interface EntradaTraduccion {
   // Traducciones por slug.
@@ -43,6 +45,8 @@ export const REGISTRO_TRADUCCIONES: Partial<Record<MundoTraducible, EntradaTradu
   quimia: { traducciones: QUIMIA_EN, migracion: "0237_quimia_lecciones_en.sql", completo: true },
   trigonometria: { traducciones: TRIGONOMETRIA_EN, migracion: "0238_trigonometria_lecciones_en.sql", completo: true },
   naipia: { traducciones: NAIPIA_EN, migracion: "0226_naipia_lecciones_en.sql", completo: true },
+  dinamia: { traducciones: DINAMIA_EN, migracion: "0268_dinamia_lecciones_en.sql", completo: true },
+  vitalia: { traducciones: VITALIA_EN, migracion: "0269_vitalia_lecciones_en.sql", completo: true },
 };
 
 export function encabezadoMigracion(mundo: MundoTraducible, cantidad: number, numero: string): string {

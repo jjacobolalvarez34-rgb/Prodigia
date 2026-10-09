@@ -4865,14 +4865,23 @@
         "fugaz": "Shooting star: {premio}",
         "alineacion": "Great Alignment: double prize.",
         "noche": "It was night in the city: +20%.",
-        "siguiente": "Next",
+        "siguiente": "Next constellation",
         "genial": "Great!",
         "fugaces": {
           "hielo": "1 ice",
           "tiempo_extra": "+3 seconds",
           "pista": "1 hint",
           "chispas": "200 Sparks"
-        }
+        },
+        "siguientePremio": "Next prize",
+        "etiquetaChispas": "Sparks",
+        "etiquetaPieza": "Collection piece",
+        "etiquetaFugaz": "Shooting star!",
+        "piezaTuya": "It's yours. Equip it from the shop.",
+        "fugazNota": "1 in 5 constellations brings one.",
+        "alineacionCorto": "🪐 Great Alignment ×2",
+        "nocheCorto": "🌙 At night +20%",
+        "deCuantos": "{premio} · {n} of {total}"
       },
       "contador": {
         "proxima": "Next Great Alignment",

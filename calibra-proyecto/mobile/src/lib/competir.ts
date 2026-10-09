@@ -181,6 +181,8 @@ export interface ResultadoDuelo {
   ronda_total: number | null;
   mi_precision?: number | null;
   rival_precision?: number | null;
+  mi_tiempo_promedio?: number | null;
+  rival_tiempo_promedio?: number | null;
 }
 
 export async function registrarResultadoDuelo(duelId: string, precision: number, tiempoPromedio: number, puntaje: number, respuestas: { correct: boolean; timeMs: number }[]): Promise<ResultadoDuelo> {
