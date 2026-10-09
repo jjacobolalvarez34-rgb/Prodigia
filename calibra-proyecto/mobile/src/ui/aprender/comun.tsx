@@ -3,8 +3,7 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import Animated, { useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { G, Path, type PathProps } from "react-native-svg";
 import { color, conAlfa } from "~/tema";
-import Texto from "../Texto";
-import { textoConFormulas } from "../TextoMate";
+import TextoLatex from "../TextoLatex";
 import { ControlesReproductor, type Reproductor } from "./reproductor";
 
 // Piezas comunes de los visuales de lecciones portados de la web
@@ -26,11 +25,7 @@ export function mezcla(c: string, porcentaje: number): string {
 export function Marco({ acento, titulo, r, children, estilo }: { acento: string; titulo?: string; r?: Reproductor; children: ReactNode; estilo?: StyleProp<ViewStyle> }) {
   return (
     <View style={[styles.marco, { borderTopColor: acento }, estilo]}>
-      {titulo ? (
-        <Texto v="fuerte" tam={13} centro>
-          {textoConFormulas(titulo)}
-        </Texto>
-      ) : null}
+      {titulo ? <TextoLatex v="fuerte" centro texto={titulo} estilo={{ fontSize: 13, lineHeight: 18 }} /> : null}
       {children}
       {r && r.total > 1 && <ControlesReproductor r={r} acento={acento} />}
     </View>
@@ -41,13 +36,9 @@ export function Leyenda({ acento, children }: { acento: string; children: ReactN
   return <View style={[styles.leyenda, { borderColor: acento, backgroundColor: mezcla(acento, 9) }]}>{children}</View>;
 }
 
-// Texto chico con fórmulas ($…$) ya pasadas a Unicode.
+// Texto chico con fórmulas ($…$) dibujadas en LaTeX.
 export function T({ children, tam = 13, c = FG, negrita, centro, estilo }: { children: string; tam?: number; c?: string; negrita?: boolean; centro?: boolean; estilo?: StyleProp<import("react-native").TextStyle> }) {
-  return (
-    <Texto v={negrita ? "fuerte" : "cuerpo"} tam={tam} c={c} centro={centro} style={estilo}>
-      {textoConFormulas(children)}
-    </Texto>
-  );
+  return <TextoLatex v={negrita ? "fuerte" : "cuerpo"} c={c} centro={centro} texto={children} estilo={[{ fontSize: tam, lineHeight: Math.round(tam * 1.35) }, estilo]} />;
 }
 
 // Aparece / se desvanece suave cuando cambia `visible` (las transiciones CSS de la web).
@@ -82,13 +73,9 @@ const styles = StyleSheet.create({
   leyenda: { minHeight: 52, gap: 3, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, borderWidth: 1 },
 });
 
-// Fórmula centrada (LaTeX sin "$" de la web → Unicode).
+// Fórmula centrada (LaTeX sin "$", como en la web), dibujada con MathJax.
 export function Formula({ tex, tam = 16 }: { tex: string; tam?: number }) {
-  return (
-    <Texto v="fuerte" tam={tam} centro>
-      {textoConFormulas(`$${tex.replace(/\$/g, "")}$`)}
-    </Texto>
-  );
+  return <TextoLatex v="fuerte" centro texto={`$${tex.replace(/\$/g, "")}$`} estilo={{ fontSize: tam }} />;
 }
 
 // Largo de una poligonal (para dibujar un trazo de a poco).

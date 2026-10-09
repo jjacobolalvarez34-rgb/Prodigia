@@ -762,8 +762,9 @@ export function BarraRival({
 const styles = StyleSheet.create({
   cabecera: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingTop: 4, minHeight: 66 },
   tiempoGanado: { position: "absolute", left: 60, top: 18 },
-  consumibles: { flexDirection: "row", justifyContent: "center", gap: 10, paddingHorizontal: 16, paddingTop: 6 },
-  consumible: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, borderWidth: 1, backgroundColor: color.surface1 },
+  // Con uno de cada consumible no entran en una fila en pantallas angostas: bajan a una segunda.
+  consumibles: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", columnGap: 8, rowGap: 6, paddingHorizontal: 12, paddingTop: 6 },
+  consumible: { flexDirection: "row", alignItems: "center", gap: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, borderWidth: 1, backgroundColor: color.surface1 },
   x: { width: 38, height: 38, borderRadius: 19, backgroundColor: color.surface1, borderWidth: 1, borderColor: color.border, alignItems: "center", justifyContent: "center" },
   racha: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: conAlfa(color.racha, 0.16) },
   brasa: { position: "absolute", bottom: 14, width: 5, height: 5, borderRadius: 3, backgroundColor: "#FFD36B" },

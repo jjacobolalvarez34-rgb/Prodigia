@@ -9,6 +9,7 @@ import Barra from "./Barra";
 import Boton3D from "./Boton3D";
 import { Teclado } from "./Sprint";
 import Texto from "./Texto";
+import TextoLatex from "./TextoLatex";
 import { textoConFormulas } from "./TextoMate";
 import Carta, { Dorso } from "./visuales/Carta";
 import Esqueleto from "./visuales/Esqueleto";
@@ -116,16 +117,24 @@ export function CuerpoPregunta({
       {(pregunta.visuales ?? []).map((v, i) => (
         <VisualPregunta key={i} visual={v} acento={acento} />
       ))}
-      <Texto style={{ fontFamily: fuente.display, fontSize: pregunta.enunciado.length > 90 ? 17 : 20, color: color.texto, textAlign: "center" }}>{mostrar(pregunta.enunciado, pregunta.formato)}</Texto>
+      {pregunta.formato === "formulas" ? (
+        <TextoLatex texto={pregunta.enunciado} centro estilo={{ fontFamily: fuente.display, fontSize: pregunta.enunciado.length > 90 ? 17 : 20, color: color.texto }} />
+      ) : (
+        <Texto style={{ fontFamily: fuente.display, fontSize: pregunta.enunciado.length > 90 ? 17 : 20, color: color.texto, textAlign: "center" }}>{mostrar(pregunta.enunciado, pregunta.formato)}</Texto>
+      )}
       {e.tipo === "numero" && (
         <Texto style={{ fontFamily: fuente.mono, fontSize: 30, letterSpacing: 3, color: colorEstado, textDecorationLine: feedback === "incorrecto" ? "line-through" : "none" }}>
           {respuesta === "" ? "_" : respuesta}
         </Texto>
       )}
       {feedback === "incorrecto" && (
-        <Texto v="fuerte" c={color.correcto} centro>
-          Era {mostrar(solucion, pregunta.formato)}
-        </Texto>
+        pregunta.formato === "formulas" ? (
+          <TextoLatex v="fuerte" c={color.correcto} centro texto={`Era ${solucion}`} />
+        ) : (
+          <Texto v="fuerte" c={color.correcto} centro>
+            Era {mostrar(solucion, pregunta.formato)}
+          </Texto>
+        )
       )}
     </>
   );
@@ -184,7 +193,11 @@ export function OpcionesPregunta({
                 esMala && { borderColor: color.error, backgroundColor: conAlfa(color.error, 0.15) },
               ]}
             >
-              <Texto style={{ fontFamily: fuente.cuerpoFuerte, fontSize: op.length > 30 ? 13 : 15, color: color.texto, textAlign: "center" }}>{mostrar(op, pregunta.formato)}</Texto>
+              {pregunta.formato === "formulas" ? (
+                <TextoLatex texto={op} centro estilo={{ fontFamily: fuente.cuerpoFuerte, fontSize: op.length > 30 ? 13 : 15, color: color.texto }} />
+              ) : (
+                <Texto style={{ fontFamily: fuente.cuerpoFuerte, fontSize: op.length > 30 ? 13 : 15, color: color.texto, textAlign: "center" }}>{mostrar(op, pregunta.formato)}</Texto>
+              )}
             </Pressable>
           </Animated.View>
         );

@@ -9,6 +9,7 @@ import ChispaClick from "@/components/ChispaClick";
 import EfectoAciertoGlobal from "@/components/recompensas/EfectoAciertoGlobal";
 import NotificacionesDuelo from "@/components/NotificacionesDuelo";
 import AnunciosModal from "@/components/AnunciosModal";
+import StickerApp from "@/components/descargarApp/StickerApp";
 import RegistrarServiceWorker from "@/components/RegistrarServiceWorker";
 import NativePush from "@/components/NativePush";
 import NativeBackButton from "@/components/NativeBackButton";
@@ -185,6 +186,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <NotificacionesDuelo />
             <EfectoAciertoGlobal />
             <AnunciosModal />
+            <StickerApp />
             <RegistrarServiceWorker />
             {/* Solo actúan adentro de la app nativa (Capacitor); 100% inertes en web/PWA */}
             <NativePush />

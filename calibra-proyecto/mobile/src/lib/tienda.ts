@@ -507,6 +507,10 @@ export async function subirFondo(userId: string): Promise<string | null> {
   const url = `${supabase.storage.from("fondos-perfil").getPublicUrl(ruta).data.publicUrl}?v=${Date.now()}`;
   const { error: e2 } = await supabase.rpc("guardar_fondo_perfil_url", { p_url: url });
   if (e2) throw e2;
+  // La imagen subida solo se ve con el fondo «personalizado» puesto: sin esto, quien
+  // tenía otro fondo (o ninguno) subía la imagen y su placa no cambiaba.
+  const { error: e3 } = await supabase.rpc("elegir_fondo_perfil", { p_fondo: "personalizado" });
+  if (e3) throw e3;
   return url;
 }
 

@@ -71,6 +71,8 @@ export default function SubirFondoPerfil({ userId, urlInicial }: Props) {
     const urlConVersion = `${publicUrlData.publicUrl}?v=${Date.now()}`;
 
     const { error: rpcError } = await supabase.rpc("guardar_fondo_perfil_url", { p_url: urlConVersion });
+    // La imagen solo se ve con el fondo «personalizado» puesto (igual que en la app).
+    if (!rpcError) await supabase.rpc("elegir_fondo_perfil", { p_fondo: "personalizado" });
 
     setSubiendo(false);
     if (rpcError) {

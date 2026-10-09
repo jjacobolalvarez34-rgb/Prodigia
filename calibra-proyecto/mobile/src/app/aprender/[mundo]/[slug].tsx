@@ -18,6 +18,7 @@ import { BotonAtras } from "~/ui/Pantalla";
 import { Teclado } from "~/ui/Sprint";
 import Texto from "~/ui/Texto";
 import { textoConFormulas } from "~/ui/TextoMate";
+import TextoLatex from "~/ui/TextoLatex";
 import VisualLeccion from "~/ui/aprender/VisualLeccion";
 import { brillo, color, conAlfa, fuente, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
 
@@ -42,12 +43,12 @@ const SIN_PRACTICA_NUMERIA = new Set([
 
 // Texto de un paso: en Codia los bloques ``` son código; el resto, fórmulas.
 function TextoPaso({ texto, mundo }: { texto: string; mundo: MundoSlug }) {
-  if (mundo !== "codia" || !texto.includes("```")) return <Texto v="cuerpo">{textoConFormulas(texto)}</Texto>;
+  if (mundo !== "codia" || !texto.includes("```")) return <TextoLatex v="cuerpo" texto={texto} />;
   const partes = texto.split("```");
   return (
     <View style={{ gap: 8 }}>
       {partes.map((parte, i) => {
-        if (i % 2 === 0) return parte.trim() ? <Texto key={i} v="cuerpo">{textoConFormulas(parte.trim())}</Texto> : null;
+        if (i % 2 === 0) return parte.trim() ? <TextoLatex key={i} v="cuerpo" texto={parte.trim()} /> : null;
         const salto = parte.indexOf("\n");
         const etiqueta = (salto >= 0 ? parte.slice(0, salto) : parte).trim().toLowerCase().replace(/!$/, "");
         const cuerpo = (salto >= 0 ? parte.slice(salto + 1) : "").replace(/\n$/, "");
@@ -290,9 +291,7 @@ export default function PantallaLeccion() {
             const mal = incorrectas?.includes(qi) ?? false;
             return (
               <Animated.View key={qi} entering={FadeInDown.delay(qi * 80).duration(300)} style={[styles.pregunta, mal && { borderColor: color.error }]}>
-                <Texto v="fuerte">
-                  {qi + 1}. {textoConFormulas(q.pregunta)}
-                </Texto>
+                <TextoLatex v="fuerte" texto={`${qi + 1}. ${q.pregunta}`} />
                 {q.opciones.map((op) => {
                   const elegida = respuestas[qi] === op;
                   return (
@@ -308,14 +307,12 @@ export default function PantallaLeccion() {
                         pressed && { transform: [{ scale: 0.98 }] },
                       ]}
                     >
-                      <Texto v="cuerpo">{textoConFormulas(op)}</Texto>
+                      <TextoLatex v="cuerpo" texto={op} />
                     </Pressable>
                   );
                 })}
                 {mal && (
-                  <Texto v="nota" c={color.error}>
-                    No es esa.{q.explicacion ? ` ${textoConFormulas(q.explicacion)}` : ""}
-                  </Texto>
+                  <TextoLatex v="nota" c={color.error} texto={`No es esa.${q.explicacion ? ` ${q.explicacion}` : ""}`} />
                 )}
               </Animated.View>
             );

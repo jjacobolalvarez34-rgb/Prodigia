@@ -5073,5 +5073,31 @@
       "description": "Memory tricks and biology classes from scratch, with animations."
     },
     "aprenderSubtitulo": "Tricks to remember and classes to understand how life works from scratch."
+  },
+  "DescargarApp": {
+    "sticker": "The app is here!",
+    "stickerSub": "Android · free",
+    "ocultar": "Hide for a few days",
+    "etiqueta": "New · Beta",
+    "titulo": "Prodigia, now on your phone",
+    "sub": "Your worlds, duels and streaks in one app: faster, with notifications and no browser needed.",
+    "datos": "Free · v{version} · {mb} MB · Android {android} or newer",
+    "descargar": "Download the app",
+    "descargarOtraVez": "Didn't start? Download again",
+    "descargaIniciada": "Done! The download started: check your notifications.",
+    "pasosTitulo": "How to install it",
+    "paso1": "Open “Prodigia.apk” from the download notification or your Downloads folder.",
+    "paso2": "If Android asks, allow “Install unknown apps” for your browser (just this once).",
+    "paso3": "Tap “Install” and sign in with the same account: your progress is waiting.",
+    "confianzaTitulo": "Why does Android warn me?",
+    "confianza": "Because the app isn't on the Play Store yet, and Android warns about any app that doesn't come from there. The file comes straight from Prodigia (not from a download site), asks for no strange permissions and, once we're on the Play Store, it will update from there.",
+    "ios": "For now the app is Android only. On iPhone, open Prodigia in Safari and tap Share → “Add to Home Screen”: it works like an app.",
+    "escritorioTitulo": "Scan it with your phone",
+    "escritorio": "Point your Android camera at this code: this same page opens and you can download it there.",
+    "escritorioDirecto": "Or download the APK on this computer",
+    "cerrar": "Close",
+    "ahoraNo": "Not now",
+    "paginaTitulo": "Download the Prodigia app",
+    "irWeb": "Continue on the web"
   }
 }

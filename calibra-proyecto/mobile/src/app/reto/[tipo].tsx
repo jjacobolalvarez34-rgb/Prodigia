@@ -23,7 +23,7 @@ import { PlacaFila } from "~/ui/placa/Placa";
 import { animarAcierto, animarError, TarjetaProblema } from "~/ui/Sprint";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
-import { textoConFormulas } from "~/ui/TextoMate";
+import TextoLatex from "~/ui/TextoLatex";
 import { brillo, color, conAlfa, fuente, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
 
 const CON_FORMULAS = new Set(["calculia", "circuitia", "estadistica", "trigonometria"]);
@@ -275,9 +275,13 @@ export default function Reto() {
             </Texto>
             {p.notasMelodia && <Pentagrama notas={p.notasMelodia} disposicion={p.disposicionMelodia} acento={m?.neon} />}
             {p.figuraMelodia && <FiguraRitmicaIcono figura={p.figuraMelodia} acento={m?.neon} />}
-            <Texto style={{ fontFamily: esCodigo ? fuente.monoMedio : fuente.display, fontSize: esCodigo ? 15 : 20, lineHeight: esCodigo ? 21 : 26, color: color.texto, textAlign: esCodigo ? "left" : "center", alignSelf: "stretch" }}>
-              {formulas ? textoConFormulas(p.enunciado) : p.enunciado}
-            </Texto>
+            {formulas ? (
+              <TextoLatex texto={p.enunciado} centro estilo={{ fontFamily: fuente.display, fontSize: 20, lineHeight: 26, color: color.texto }} />
+            ) : (
+              <Texto style={{ fontFamily: esCodigo ? fuente.monoMedio : fuente.display, fontSize: esCodigo ? 15 : 20, lineHeight: esCodigo ? 21 : 26, color: color.texto, textAlign: esCodigo ? "left" : "center", alignSelf: "stretch" }}>
+                {p.enunciado}
+              </Texto>
+            )}
           </TarjetaProblema>
         </Animated.View>
         <View style={{ gap: 10 }}>
@@ -299,9 +303,13 @@ export default function Reto() {
                     mala && { borderColor: color.error, backgroundColor: conAlfa(color.error, 0.15) },
                   ]}
                 >
-                  <Texto style={{ fontFamily: esCodigo ? fuente.monoMedio : fuente.cuerpoFuerte, fontSize: 15, color: color.texto, textAlign: "center" }}>
-                    {formulas ? textoConFormulas(op) : op}
-                  </Texto>
+                  {formulas ? (
+                    <TextoLatex texto={op} centro estilo={{ fontFamily: fuente.cuerpoFuerte, fontSize: 15, color: color.texto }} />
+                  ) : (
+                    <Texto style={{ fontFamily: esCodigo ? fuente.monoMedio : fuente.cuerpoFuerte, fontSize: 15, color: color.texto, textAlign: "center" }}>
+                      {op}
+                    </Texto>
+                  )}
                 </Pressable>
               </Animated.View>
             );

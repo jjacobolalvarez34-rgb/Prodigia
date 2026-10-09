@@ -203,7 +203,9 @@ export default function EditarPlaca() {
                 try {
                   if (await subirFondo(userId)) {
                     sonar("recompensa");
-                    await recargarJugador();
+                    setPrueba({});
+                    await Promise.all([recargarJugador(), cargar()]);
+                    mostrarAviso("Tu fondo nuevo ya está en tu Placa", "ok");
                   }
                 } catch (err) {
                   mostrarAviso(mensajeError(err), "error");

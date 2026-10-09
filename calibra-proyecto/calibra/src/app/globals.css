@@ -814,3 +814,83 @@ select:disabled {
   background-size: 200% 200%;
   animation: fondo-perfil-flujo 8s ease-in-out infinite alternate;
 }
+
+/* ---------- App de Android: sticker y anuncio de descarga (DescargarApp) ---------- */
+@property --app-giro {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes app-giro {
+  to {
+    --app-giro: 360deg;
+  }
+}
+@keyframes app-sticker-saludo {
+  0%, 82%, 100% { transform: rotate(-6deg) scale(1); }
+  86% { transform: rotate(4deg) scale(1.08); }
+  90% { transform: rotate(-10deg) scale(1.05); }
+  94% { transform: rotate(2deg) scale(1.02); }
+}
+@keyframes app-barrido {
+  0%, 60% { transform: translateX(-120%) skewX(-20deg); }
+  100% { transform: translateX(220%) skewX(-20deg); }
+}
+@keyframes app-flotar {
+  0%, 100% { transform: translateY(0) rotateX(8deg) rotateY(-14deg) rotateZ(-3deg); }
+  50% { transform: translateY(-12px) rotateX(4deg) rotateY(-8deg) rotateZ(-1deg); }
+}
+@keyframes app-aurora {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(8%, -6%) scale(1.15); }
+  66% { transform: translate(-6%, 5%) scale(0.92); }
+}
+@keyframes app-chispa {
+  0% { transform: translate(0, 0) scale(0); opacity: 0; }
+  20% { opacity: 1; transform: translate(calc(var(--dx) * 0.3), calc(var(--dy) * 0.3)) scale(1); }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+}
+@keyframes app-latido {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(124 92 255 / 0.55), 0 10px 30px -8px rgb(56 189 248 / 0.6); }
+  50% { box-shadow: 0 0 0 12px rgb(124 92 255 / 0), 0 10px 40px -6px rgb(236 72 153 / 0.7); }
+}
+@keyframes app-entrada {
+  from { transform: translateY(40px) scale(0.94); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.app-holo {
+  background: conic-gradient(from var(--app-giro), #7c5cff, #38bdf8, #34d399, #facc15, #f472b6, #7c5cff);
+  animation: app-giro 4s linear infinite;
+}
+.app-sticker {
+  animation: app-sticker-saludo 6s ease-in-out infinite;
+  transform-origin: 30% 70%;
+}
+.app-barrido::after {
+  content: "";
+  position: absolute;
+  inset: -20% auto -20% 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.55), transparent);
+  animation: app-barrido 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+.app-flotar {
+  animation: app-flotar 5s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+.app-aurora {
+  animation: app-aurora 14s ease-in-out infinite;
+}
+.app-chispa {
+  animation: app-chispa 1.1s ease-out forwards;
+}
+.app-latido {
+  animation: app-latido 2.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-holo, .app-sticker, .app-barrido::after, .app-flotar, .app-aurora, .app-latido {
+    animation: none;
+  }
+  .app-sticker { transform: rotate(-6deg); }
+}

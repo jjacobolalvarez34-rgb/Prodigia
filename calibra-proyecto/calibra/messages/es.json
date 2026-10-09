@@ -5073,5 +5073,31 @@
       "description": "Técnicas para recordar y clases de biología desde cero, con animaciones."
     },
     "aprenderSubtitulo": "Trucos para recordar y clases para entender cómo funciona la vida desde cero."
+  },
+  "DescargarApp": {
+    "sticker": "¡Ya hay app!",
+    "stickerSub": "Android · gratis",
+    "ocultar": "Ocultar por unos días",
+    "etiqueta": "Nuevo · Beta",
+    "titulo": "Prodigia, ahora en tu celular",
+    "sub": "Tus mundos, duelos y rachas en una app: más rápida, con avisos y sin abrir el navegador.",
+    "datos": "Gratis · v{version} · {mb} MB · Android {android} o más nuevo",
+    "descargar": "Descargar la app",
+    "descargarOtraVez": "¿No empezó? Descargar de nuevo",
+    "descargaIniciada": "¡Listo! La descarga empezó: mira tus notificaciones.",
+    "pasosTitulo": "Cómo instalarla",
+    "paso1": "Abre «Prodigia.apk» desde la notificación de descarga o desde la carpeta Descargas.",
+    "paso2": "Si Android lo pide, permite «Instalar apps desconocidas» para tu navegador (solo esta vez).",
+    "paso3": "Toca «Instalar» y entra con tu misma cuenta: tu progreso te está esperando.",
+    "confianzaTitulo": "¿Por qué Android me avisa?",
+    "confianza": "Porque la app todavía no está en Play Store, y Android avisa con cualquier app que no venga de ahí. El archivo sale directo de Prodigia (no de una página de descargas), no pide permisos raros y, cuando lleguemos a Play Store, se actualizará desde ahí.",
+    "ios": "Por ahora la app es solo para Android. En iPhone, abre Prodigia en Safari y toca Compartir → «Agregar a inicio»: queda como una app.",
+    "escritorioTitulo": "Escanéalo con tu celular",
+    "escritorio": "Apunta la cámara de tu Android a este código: se abre esta misma página y la descargas desde ahí.",
+    "escritorioDirecto": "O descarga el APK en esta computadora",
+    "cerrar": "Cerrar",
+    "ahoraNo": "Ahora no",
+    "paginaTitulo": "Descarga la app de Prodigia",
+    "irWeb": "Seguir en la web"
   }
 }
