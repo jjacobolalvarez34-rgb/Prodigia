@@ -10,8 +10,10 @@ import datos from "~/lib/datos/esqueleto.json";
 
 // Anatomía, modo óseo: el esqueleto de la web (dominio público, LadyofHats) con cada
 // hueso tocable. Se puede pellizcar para acercar y arrastrar (los huesos de la mano
-// y del pie son chicos). Al responder, el hueso correcto se pinta de verde y el
-// tocado por error de rojo.
+// y del pie son chicos), o usar los botones + y − (pedido 2026-10-09: dentro de una
+// pantalla con scroll el pellizco a veces no entra). Fondo negro, como pidió el
+// usuario: los huesos son dorados y se ven mejor. Al responder, el hueso correcto
+// se pinta de verde y el tocado por error de rojo.
 interface Trazo {
   d: string;
   f?: string;
@@ -108,6 +110,32 @@ export default function Esqueleto({ objetivo, respondido, seleccion, onElegir }:
       <View style={styles.controles}>
         <Pressable
           style={styles.boton}
+          accessibilityLabel="Acercar"
+          onPress={() => {
+            vibrar.seleccion();
+            escala.set(withTiming(Math.min(5, escala.value + 0.75), { duration: 200 }));
+          }}
+        >
+          <Texto v="fuerte">＋</Texto>
+        </Pressable>
+        <Pressable
+          style={styles.boton}
+          accessibilityLabel="Alejar"
+          onPress={() => {
+            vibrar.seleccion();
+            const nueva = Math.max(1, escala.value - 0.75);
+            escala.set(withTiming(nueva, { duration: 200 }));
+            if (nueva === 1) {
+              tx.set(withTiming(0, { duration: 200 }));
+              ty.set(withTiming(0, { duration: 200 }));
+            }
+          }}
+        >
+          <Texto v="fuerte">－</Texto>
+        </Pressable>
+        <Pressable
+          style={styles.boton}
+          accessibilityLabel="Volver al tamaño original"
           onPress={() => {
             escala.set(withTiming(1, { duration: 220 }));
             tx.set(withTiming(0, { duration: 220 }));
@@ -118,15 +146,15 @@ export default function Esqueleto({ objetivo, respondido, seleccion, onElegir }:
         </Pressable>
       </View>
       <Texto v="nota" tam={11} centro style={styles.ayuda}>
-        Toca el hueso · pellizca para acercar
+        Toca el hueso · pellizca o usa + y − para acercar · arrastra para moverte
       </Texto>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  marco: { width: "100%", height: 430, borderRadius: 18, overflow: "hidden", backgroundColor: "#F3EEDF" },
-  controles: { position: "absolute", right: 8, top: 8 },
-  boton: { width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(18,23,42,0.85)", alignItems: "center", justifyContent: "center" },
-  ayuda: { position: "absolute", bottom: 4, left: 0, right: 0, color: "#5A5040" },
+  marco: { width: "100%", height: 430, borderRadius: 18, overflow: "hidden", backgroundColor: "#000000", borderWidth: 1, borderColor: color.border },
+  controles: { position: "absolute", right: 8, top: 8, gap: 8 },
+  boton: { width: 38, height: 38, borderRadius: 19, backgroundColor: "rgba(40,44,70,0.92)", borderWidth: 1, borderColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center" },
+  ayuda: { position: "absolute", bottom: 4, left: 0, right: 0, color: "rgba(255,255,255,0.6)" },
 });

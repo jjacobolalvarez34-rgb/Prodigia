@@ -894,3 +894,12 @@ select:disabled {
   }
   .app-sticker { transform: rotate(-6deg); }
 }
+
+/* Barrita de la pantalla de carga (loading.tsx), del color de la ciudad. */
+@keyframes carga-barra {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(320%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[carga-barra_1\.1s_ease-in-out_infinite\] { animation: none; transform: translateX(100%); }
+}

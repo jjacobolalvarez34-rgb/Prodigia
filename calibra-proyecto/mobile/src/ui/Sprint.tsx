@@ -655,7 +655,7 @@ export function CartelFinal({ texto, nota, acento = color.primarioNeon, progreso
           <Texto style={{ fontFamily: fuente.display, fontSize: 50, color: color.texto, textShadowColor: acento, textShadowRadius: 18 }}>{texto}</Texto>
         </Animated.View>
         <Animated.View style={[{ boxShadow: brillo(acento, 30, 0.35), borderRadius: 50 }, estiloLogo]}>
-          <Logo tam={78} />
+          <Logo tam={78} color={acento} />
         </Animated.View>
         <Porcentaje progreso={progreso} acento={acento} />
         <Texto v="nota" centro>
