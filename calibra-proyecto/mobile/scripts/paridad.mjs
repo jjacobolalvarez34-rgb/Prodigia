@@ -45,10 +45,14 @@ function clavesDeObjetoWeb(nombre) {
 }
 
 // ---------- 1. Modos de cada mundo ----------
+// Los adaptadores viven en la web (src/lib/mundosJugables) y la app los re-exporta:
+// los modos se leen de ahí, el registro de la app (index.ts) se revisa abajo.
 const dirAdaptadores = join(raiz, "src/lib/mundosJugables");
-const adaptadores = readdirSync(dirAdaptadores).filter((f) => f.endsWith(".ts") && !["index.ts", "tipos.ts"].includes(f));
+const dirCompartidos = join(web, "lib/mundosJugables");
+const adaptadores = readdirSync(dirCompartidos).filter((f) => f.endsWith(".ts") && !["index.ts", "tipos.ts"].includes(f));
 for (const archivo of adaptadores) {
-  const s = leer(join(dirAdaptadores, archivo));
+  const s = leer(join(dirCompartidos, archivo));
+  if (!existsSync(join(dirAdaptadores, archivo))) problemas.push(`mobile/src/lib/mundosJugables/${archivo}: falta (debe re-exportar el de la web)`);
   const usados = new Map();
   for (const m of s.matchAll(/(NOMBRE_(?:MODO_[A-Z]+|CATEGORIA_ENIGMIA))\.([a-z_0-9]+)/g)) {
     if (!usados.has(m[1])) usados.set(m[1], new Set());
