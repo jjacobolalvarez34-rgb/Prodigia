@@ -898,7 +898,8 @@ describe("Melodía: migración de la ampliación (0253)", () => {
     expect(fs.readdirSync(dir).filter((f) => f.startsWith(ARCHIVO_MIGRACION_AMPLIACION_MELODIA.slice(0, 5)))).toEqual([ARCHIVO_MIGRACION_AMPLIACION_MELODIA]);
     const nuevos = [...TECNICAS_AMPLIACION_MELODIA, ...CLASES_AMPLIACION_MELODIA].map((l) => l.slug);
     expect(new Set(nuevos).size).toBe(nuevos.length);
-    for (const f of fs.readdirSync(dir).filter((n) => n.endsWith(".sql") && n !== ARCHIVO_MIGRACION_AMPLIACION_MELODIA)) {
+    // Las traducciones (*_lecciones_en.sql) solo llenan las columnas _en de estas mismas filas.
+    for (const f of fs.readdirSync(dir).filter((n) => n.endsWith(".sql") && n !== ARCHIVO_MIGRACION_AMPLIACION_MELODIA && !n.endsWith("_lecciones_en.sql"))) {
       const otro = fs.readFileSync(path.join(dir, f), "utf8");
       for (const slug of nuevos) expect(otro.includes(`'${slug}'`), `${f} ya usa ${slug}`).toBe(false);
     }

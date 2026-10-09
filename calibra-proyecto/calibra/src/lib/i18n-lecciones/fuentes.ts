@@ -14,6 +14,10 @@ import { TECNICAS_ESTADISTICA, CLASES_ESTADISTICA } from "@/lib/estadistica/lecc
 import { TECNICAS as TECNICAS_NAIPIA, CLASES as CLASES_NAIPIA } from "@/lib/naipia/lecciones";
 import { TECNICAS as TECNICAS_CODIA, CLASES as CLASES_CODIA } from "@/lib/codia/lecciones";
 import { CLASES_NUMERIA, TECNICAS_NUMERIA } from "@/lib/numeria/lecciones";
+import { CURSO_NUMERIA } from "@/lib/numeria/lecciones/curso";
+import { TECNICAS_CURSO_CALCULIA, CLASES_CURSO_CALCULIA } from "@/lib/calculia/lecciones";
+import { TECNICAS_AMPLIACION_MELODIA, CLASES_AMPLIACION_MELODIA } from "@/lib/melodia/lecciones";
+import { TECNICAS_LENGUAJES, CLASES_LENGUAJES } from "@/lib/codia/lecciones";
 import { CLASES_ENIGMIA, CLASES_ENIGMIA_NUEVAS, TECNICAS_ENIGMIA_NUEVAS } from "@/lib/enigmia/lecciones";
 import { TECNICAS_DINAMIA, CLASES_DINAMIA } from "@/lib/dinamia/lecciones";
 import { TECNICAS_VITALIA, CLASES_VITALIA } from "@/lib/vitalia/lecciones";
@@ -37,7 +41,13 @@ export type MundoTraducible =
   | "naipia"
   | "codia"
   | "dinamia"
-  | "vitalia";
+  | "vitalia"
+  // Lecciones que se sumaron después de la traducción de su mundo: van en su propia
+  // migración, para no regenerar una que ya está aplicada.
+  | "numeria-curso"
+  | "calculia-curso"
+  | "melodia-ampliacion"
+  | "codia-lenguajes";
 
 interface LeccionTipada {
   slug: string;
@@ -118,6 +128,14 @@ export function leccionesFuente(mundo: MundoTraducible): LeccionFuente[] {
       return lista(TECNICAS_DINAMIA as LeccionTipada[], CLASES_DINAMIA as LeccionTipada[]);
     case "vitalia":
       return lista(TECNICAS_VITALIA as LeccionTipada[], CLASES_VITALIA as LeccionTipada[]);
+    case "numeria-curso":
+      return lista(CURSO_NUMERIA as LeccionTipada[]);
+    case "calculia-curso":
+      return lista(TECNICAS_CURSO_CALCULIA as LeccionTipada[], CLASES_CURSO_CALCULIA as LeccionTipada[]);
+    case "melodia-ampliacion":
+      return lista(TECNICAS_AMPLIACION_MELODIA as LeccionTipada[], CLASES_AMPLIACION_MELODIA as LeccionTipada[]);
+    case "codia-lenguajes":
+      return lista(TECNICAS_LENGUAJES as LeccionTipada[], CLASES_LENGUAJES as LeccionTipada[]);
   }
 }
 

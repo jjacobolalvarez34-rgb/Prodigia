@@ -396,7 +396,8 @@ describe(`Codia por lenguaje: migración ${ARCHIVO_MIGRACION_LENGUAJES_CODIA}`, 
       expect(o.visuales.length).toBeGreaterThan(0);
     }
     const dir = path.dirname(ruta);
-    for (const archivo of fs.readdirSync(dir).filter((n) => n.endsWith(".sql") && n !== ARCHIVO_MIGRACION_LENGUAJES_CODIA)) {
+    // Las traducciones (*_lecciones_en.sql) solo llenan las columnas _en de estas mismas filas.
+    for (const archivo of fs.readdirSync(dir).filter((n) => n.endsWith(".sql") && n !== ARCHIVO_MIGRACION_LENGUAJES_CODIA && !n.endsWith("_lecciones_en.sql"))) {
       const otro = fs.readFileSync(path.join(dir, archivo), "utf8");
       for (const l of LECCIONES_LENGUAJES) expect(otro.includes(`'${l.slug}'`), `${archivo} ya usa ${l.slug}`).toBe(false);
     }

@@ -1,0 +1,194 @@
+import type { TraduccionLeccion } from "../traducir";
+
+// Melodía — the 10 lessons added in 0253 (short note values, chord ear training, tempo and
+// time signatures) in English. Same terms and Latin note names as en/melodia.ts; semicorchea =
+// sixteenth note, fusa = thirty-second note, semifusa = sixty-fourth note, puntillo = dot,
+// corchete = flag, barra = beam, cifra de compás = time signature, tiempo = beat.
+export const MELODIA_AMPLIACION_EN: Record<string, TraduccionLeccion> = {
+  "melodia-figuras-cortas-y-puntillo": {
+    nombre: "One more flag, half the length; the dot adds half",
+    descripcion:
+      "Each flag cuts the length in half: eighth note (1), sixteenth note (2), thirty-second note (3) and sixty-fourth note (4). The dot makes a note longer by half of its value, and two eighth notes joined by a beam last as long as a quarter note.",
+    pasos: [
+      "Count the flags (the little banners on the stem): one is an eighth note (half a beat), two is a sixteenth note (a quarter of a beat), three is a thirty-second note (an eighth of a beat) and four is a sixty-fourth note (a sixteenth of a beat). Each extra flag cuts the length in half.",
+      "That's why 2 sixteenth notes fit in an eighth note, 4 in a quarter note and 16 in a whole note; and 2 thirty-second notes in a sixteenth note.",
+      "The dot (a dot to the right of the note head) adds half of the note's value: a dotted quarter note lasts 1 + ½ = a beat and a half, and a dotted half note, 2 + 1 = 3 beats.",
+      "When there are several eighth notes in a row, the flags are replaced by a beam that joins them. Two beamed eighth notes last ½ + ½ = 1 beat, the same as a quarter note: the beam doesn't change the length, it only groups them so they're easier to read.",
+    ],
+    quiz: [
+      { pregunta: "How many flags does a thirty-second note have?", opciones: ["2", "4", "1", "3"], respuesta: 3, explicacion: "Eighth note 1, sixteenth note 2, thirty-second note 3 and sixty-fourth note 4." },
+      { pregunta: "How many sixteenth notes fit in a quarter note?", opciones: ["2", "8", "16", "4"], respuesta: 3, explicacion: "The quarter note lasts 1 beat and the sixteenth note a quarter of a beat: 4 fit." },
+      { pregunta: "How long does a dotted quarter note last?", opciones: ["A beat and a half", "2 beats", "1 beat", "3 beats"], respuesta: 0, explicacion: "The dot adds half: 1 + ½ = a beat and a half." },
+      { pregunta: "Two eighth notes joined by a beam last as long as...", opciones: ["A half note", "An eighth note", "A sixteenth note", "A quarter note"], respuesta: 3, explicacion: "½ + ½ = 1 beat, the same as the quarter note." },
+    ],
+    visuales: ["One more flag, half the length", "The dot and beamed eighth notes"],
+  },
+  "melodia-oido-color-de-los-acordes": {
+    nombre: "Chords by ear: listen to the character and the middle note",
+    descripcion:
+      "The four triads sound different: the major one, stable and bright; the minor one, stable but darker; the diminished one, tense; the augmented one, open and restless. The difference is in the thirds that build them.",
+    pasos: [
+      "In the high levels of Perfect pitch, a chord plays (three notes at once) and you have to say what type it is. You don't need to name each note: first listen to the overall character.",
+      "Major triad: it sounds stable and bright. Minor triad: also stable, but darker. Both have the same 5th; only the middle note (the 3rd) changes, which in the minor one is a semitone lower. Simplification: \"bright\" and \"dark\" are aids to get started, not rules.",
+      "Diminished triad: it sounds tense, as if it wanted to move to another chord (its 5th is a semitone lower than in the minor one). Augmented triad: it sounds open and restless (its 5th is a semitone higher than in the major one).",
+      "In levels 9 and 10 you have to name the whole chord, for example \"Sol minor\". Find the lowest note (the root, which gives the chord its name) by singing it in your head, and then decide whether it sounds major or minor.",
+    ],
+    quiz: [
+      { pregunta: "Which note changes between a major and a minor triad with the same root?", opciones: ["The 3rd (the middle one)", "The root", "The 5th", "None"], respuesta: 0, explicacion: "The minor one has the 3rd a semitone lower: Do-Mi-Sol versus Do-Mi♭-Sol." },
+      { pregunta: "Which triad sounds tense, as if it wanted to move?", opciones: ["Major triad", "Diminished triad", "Minor triad", "Augmented triad"], respuesta: 1, explicacion: "The diminished one has two minor thirds: it sounds unstable and tight." },
+      { pregunta: "In the chord \"Sol minor\", what does \"Sol\" tell you?", opciones: ["The root of the chord", "The highest note", "The 3rd of the chord", "The tempo of the song"], respuesta: 0, explicacion: "The name of the chord is its root; \"minor\" is its type." },
+    ],
+    visuales: ["Major triad: Do-Mi-Sol", "Minor triad: Do-Mi♭-Sol"],
+  },
+  "melodia-tempo-bpm-en-segundos": {
+    nombre: "BPM: how many beats fit in a minute",
+    descripcion: "Tempo is measured in BPM (beats per minute). At 60 BPM there's one beat per second; at 120, two. To know how long a beat lasts: 60 ÷ BPM seconds.",
+    pasos: [
+      "The beat is the steady pulse of the music. The tempo is how fast that beat goes, and it's measured in BPM: beats per minute.",
+      "Anchor: 60 BPM is one beat per second, like the second hand of a clock. 120 BPM is twice as fast (two beats per second) and 30 BPM, half as fast.",
+      "How long a beat lasts: 60 ÷ BPM seconds. At 120 BPM, 60 ÷ 120 = 0.5 s; at 90 BPM, 60 ÷ 90 ≈ 0.67 s. If the quarter note is the beat, a half note lasts twice as long and an eighth note, half as long.",
+      "In Practice a metronome plays and you have to say how many BPM it's going at. Compare it with the second hand (60) and decide whether it's faster or slower, and by how much: double, half or a little.",
+    ],
+    quiz: [
+      { pregunta: "What does BPM mean?", opciones: ["Beats per second", "Measures per minute", "Notes per measure", "Beats per minute"], respuesta: 3, explicacion: "BPM = beats per minute: how many beats fit in a minute." },
+      { pregunta: "At 120 BPM, how long does a beat last?", opciones: ["1 s", "0.5 s", "2 s", "0.25 s"], respuesta: 1, explicacion: "60 ÷ 120 = 0.5 seconds." },
+      { pregunta: "At 60 BPM, how long does a half note last if the quarter note is the beat?", opciones: ["1 s", "0.5 s", "2 s", "4 s"], respuesta: 2, explicacion: "At 60 BPM the quarter note lasts 1 s; the half note, twice as long." },
+      { pregunta: "A metronome at 30 BPM goes...", opciones: ["Twice as fast as at 60", "The same as at 60", "One beat per second", "Half as fast as at 60"], respuesta: 3, explicacion: "30 beats per minute: one beat every 2 seconds." },
+    ],
+    visuales: ["60 and 120 BPM: one and two beats per second"],
+  },
+  "melodia-tempo-terminos-italianos": {
+    nombre: "Tempo markings: from Largo to Presto",
+    descripcion: "Scores give the tempo with Italian words. From slow to fast: Largo, Adagio, Andante, Moderato, Allegro and Presto.",
+    pasos: [
+      "Before metronomes existed, composers wrote the tempo with words, almost always in Italian. They're still used, sometimes together with the BPM number.",
+      "From slow to fast: Largo (very slow, about 40-60 BPM), Adagio (slow, 66-76), Andante (at a walking pace, 76-108), Moderato (moderate, 108-120), Allegro (fast and lively, 120-156) and Presto (very fast, 168-200).",
+      "Trick: Andante comes from the Italian \"andare\", to walk: it's the tempo of a calm stroll. What's below it is slow (Largo, Adagio) and what's above it gets faster and faster (Moderato, Allegro, Presto).",
+      "Simplification: the BPM ranges are approximate and change a little from book to book or metronome to metronome; what matters is the order and the character of each marking.",
+    ],
+    quiz: [
+      { pregunta: "What does \"Andante\" indicate?", opciones: ["At a walking pace", "Very fast", "Very slow", "Fast and lively"], respuesta: 0, explicacion: "Andante comes from \"to walk\": the tempo of a calm stroll." },
+      { pregunta: "Of these four, which is the fastest tempo?", opciones: ["Allegro", "Presto", "Moderato", "Adagio"], respuesta: 1, explicacion: "From slow to fast: Largo, Adagio, Andante, Moderato, Allegro, Presto." },
+      { pregunta: "Of these four, which is the slowest tempo?", opciones: ["Largo", "Andante", "Adagio", "Moderato"], respuesta: 0, explicacion: "Largo is the slowest on the list (about 40-60 BPM)." },
+      { pregunta: "A piece marked \"Allegro\" goes...", opciones: ["Very slow", "At a walking pace", "Slow", "Fast and lively"], respuesta: 3, explicacion: "Allegro: fast and lively, about 120-156 BPM." },
+    ],
+    visuales: ["Largo, Andante and Allegro"],
+  },
+  "melodia-tempo-leer-el-compas": {
+    nombre: "The time signature: the top number counts, the bottom one gives the note",
+    descripcion: "In 2/4, 3/4 and 4/4 the top number says how many beats each measure has and the bottom one, which note gets one beat (4 = quarter note, 2 = half note, 8 = eighth note).",
+    pasos: [
+      "The time signature is two numbers at the start of the staff. The top one counts how many beats each measure has: 2/4 has 2, 3/4 has 3 and 4/4 has 4.",
+      "The bottom one says which note gets one beat: 4 is the quarter note (the whole note split into 4), 2 is the half note and 8 is the eighth note. That's why in 2/2 each beat is a half note.",
+      "The first beat of each measure is the strong one. In 3/4 you count ONE-two-three (like a waltz) and in 4/4, ONE-two-three-four, with the three a bit stressed.",
+      "To know how many eighth notes fit, count the beats and multiply by what each one is worth: in 3/4 there are 3 quarter notes = 6 eighth notes; in 4/4, 8 eighth notes; in 2/2, 2 half notes = 8 eighth notes.",
+    ],
+    quiz: [
+      { pregunta: "In 3/4 time, how many beats does each measure have?", opciones: ["4", "2", "3", "6"], respuesta: 2, explicacion: "The top number gives the beats: 3." },
+      { pregunta: "In 2/2 time, which note gets one beat?", opciones: ["Quarter note", "Eighth note", "Half note", "Whole note"], respuesta: 2, explicacion: "The bottom 2 is the half note." },
+      { pregunta: "How many eighth notes fit in a 3/4 measure?", opciones: ["3", "8", "4", "6"], respuesta: 3, explicacion: "3 quarter notes × 2 eighth notes = 6 eighth notes." },
+      { pregunta: "Which beat of the measure is the strong one?", opciones: ["The last one", "The second one", "The first one", "All of them equally"], respuesta: 2, explicacion: "The first beat of each measure is the one that's stressed." },
+    ],
+    visuales: ["3/4: ONE-two-three"],
+  },
+  "melodia-clase-figuras-cortas-y-puntillo": {
+    nombre: "Sixteenth, thirty-second and sixty-fourth notes, dots and beamed eighth notes",
+    descripcion: "The notes shorter than the eighth note, how they're drawn, how many fit in the others, what the dot does and why eighth notes are joined with a beam.",
+    pasos: [
+      "You already know the whole note (4 beats), the half note (2), the quarter note (1) and the eighth note (½). The series keeps halving: the sixteenth note lasts a quarter of a beat, the thirty-second note an eighth and the sixty-fourth note a sixteenth. You recognize them by their flags: the eighth note has 1, the sixteenth note 2, the thirty-second note 3 and the sixty-fourth note 4.",
+      "Equivalences worth keeping at hand (with the quarter note as the beat): 1 whole note = 2 half notes = 4 quarter notes = 8 eighth notes = 16 sixteenth notes. 1 quarter note = 2 eighth notes = 4 sixteenth notes = 8 thirty-second notes = 16 sixty-fourth notes.",
+      "To work out how many short notes fit in a long one, divide their lengths: in a half note (2 beats) fit 2 ÷ ¼ = 8 sixteenth notes; in an eighth note (½) fit 2 sixteenth notes or 4 thirty-second notes.",
+      "The dot is a dot to the right of the note head and adds half of the note's value. Dotted quarter note: 1 + ½ = a beat and a half, so 1 dotted quarter note = 3 eighth notes = 6 sixteenth notes. Dotted half note: 2 + 1 = 3 beats, so 1 dotted half note = 3 quarter notes = 6 eighth notes = 12 sixteenth notes.",
+      "When several eighth notes come in a row, they're written joined by a beam instead of each one having its flag. Two beamed eighth notes last ½ + ½ = 1 beat, the same as a quarter note. One beam is worth one flag; with two beams, sixteenth notes are joined.",
+      "Common mistakes: thinking that more flags means a longer note (it's the opposite: each flag cuts the length in half); believing the dot always adds half a beat (it adds half of the note: on the half note it adds a whole beat); and thinking the beam changes the length of the eighth notes (it only groups them so they're easier to read).",
+    ],
+    quiz: [
+      { pregunta: "How many sixteenth notes fit in a half note?", opciones: ["8", "4", "16", "6"], respuesta: 0, explicacion: "The half note lasts 2 beats and the sixteenth note a quarter of a beat: 2 ÷ ¼ = 8." },
+      { pregunta: "Which note has three flags?", opciones: ["Sixteenth note", "Sixty-fourth note", "Eighth note", "Thirty-second note"], respuesta: 3, explicacion: "1 flag is an eighth note, 2 a sixteenth note, 3 a thirty-second note and 4 a sixty-fourth note." },
+      { pregunta: "How many eighth notes add up to a dotted half note?", opciones: ["4", "3", "6", "8"], respuesta: 2, explicacion: "The dotted half note lasts 3 beats, and 2 eighth notes fit in each beat: 6." },
+      { pregunta: "What does the dot do?", opciones: ["Doubles the length", "Always adds half a beat", "Adds half of the note's value", "Turns the note into a rest"], respuesta: 2, explicacion: "Dotted quarter note: 1 + ½; dotted half note: 2 + 1." },
+      { pregunta: "How long do two eighth notes joined by a beam last?", opciones: ["1 beat", "half a beat", "2 beats", "a quarter of a beat"], respuesta: 0, explicacion: "½ + ½ = 1 beat: the same as a quarter note." },
+    ],
+    visuales: ["Each flag cuts the length in half", "Dots and beamed eighth notes"],
+  },
+  "melodia-clase-oido-de-acordes": {
+    nombre: "Chord ear training: major, minor, diminished and augmented triads",
+    descripcion: "How the four triads are built from major and minor thirds, how to recognize them by ear and how to name a whole chord (root and type).",
+    pasos: [
+      "A triad is three notes stacked in thirds: root, 3rd and 5th. There are two sizes of third: the major one (4 semitones) and the minor one (3 semitones). Combining them gives the four triads.",
+      "Major triad = major 3rd + minor 3rd (0-4-7): Do-Mi-Sol. Minor triad = minor 3rd + major 3rd (0-3-7): Do-Mi♭-Sol. Both reach 7 semitones above the root: a perfect 5th, which sounds stable.",
+      "Diminished triad = two minor 3rds (0-3-6): Do-Mi♭-Sol♭. Augmented triad = two major 3rds (0-4-8): Do-Mi-Sol♯. Since the 5th is no longer perfect, both sound unstable: the diminished one, tense and tight; the augmented one, open and restless.",
+      "To recognize them by ear, first decide whether the chord sounds stable (major or minor) or unstable (diminished or augmented). If it's stable, listen for whether it's bright (major) or dark (minor). If it's unstable, whether it sounds tight (diminished) or open (augmented).",
+      "In levels 9 and 10 you're asked for the whole chord, like \"Re minor\" or \"Fa major\". The name is the root, which in these questions is also the lowest note. Sing it in your head, compare it with a reference you know (like La4 at 440 Hz) and then decide major or minor.",
+      "Common mistakes: taking the highest note for the root (the chord is named after the bottom one when it isn't inverted); thinking major and minor differ in the 5th (it's the 3rd); and believing \"minor\" means lower or softer: it's a type of chord, not a volume or a register. Simplification: saying major is happy and minor is sad helps at first, but there are happy songs in minor and sad ones in major.",
+    ],
+    quiz: [
+      { pregunta: "How many semitones does a major 3rd have?", opciones: ["3", "5", "4", "2"], respuesta: 2, explicacion: "The major 3rd has 4 semitones and the minor 3rd, 3." },
+      { pregunta: "Which triad is built from two major thirds?", opciones: ["Augmented triad", "Major triad", "Diminished triad", "Minor triad"], respuesta: 0, explicacion: "4 + 4 = 8 semitones: Do-Mi-Sol♯." },
+      { pregunta: "What do the major and minor triads have in common?", opciones: ["The same 3rd", "The perfect 5th (7 semitones)", "That they sound unstable", "That they have 4 notes"], respuesta: 1, explicacion: "Both reach the perfect 5th; what changes is the 3rd." },
+      { pregunta: "In the chord \"Re minor\", which note is the root?", opciones: ["Fa", "La", "Re", "Mi"], respuesta: 2, explicacion: "The root is the one that names the chord: Re (Re-Fa-La)." },
+      { pregunta: "An unstable, tight chord plays. What type is it most likely to be?", opciones: ["Diminished triad", "Augmented triad", "Major triad", "Minor triad"], respuesta: 0, explicacion: "The diminished one (two minor 3rds) sounds tense and tight; the augmented one, open." },
+    ],
+    visuales: ["Major triad (0-4-7)", "Minor triad (0-3-7)", "Diminished triad (0-3-6)", "Augmented triad (0-4-8)"],
+  },
+  "melodia-clase-pulso-y-tempo": {
+    nombre: "Beat, tempo and BPM: measuring the speed of music",
+    descripcion: "What the beat is, what the tempo is, how it's measured in BPM and how to work out how long each note lasts in seconds at a given tempo.",
+    pasos: [
+      "The beat is the steady pulse of the music: what you tap with your foot or clap without thinking. Rhythmic note values (whole note, half note, quarter note...) say how many beats each sound lasts, but not how many seconds.",
+      "The tempo is the speed of the beat and it's measured in BPM (beats per minute). A metronome is the device that marks that beat with a click. 60 BPM is 60 beats per minute: the beat matches the second hand of a clock.",
+      "Formula: length of one beat = 60 ÷ BPM seconds. At 60 BPM, 1 s; at 120 BPM, 0.5 s; at 30 BPM, 2 s; at 240 BPM, 0.25 s. More BPM, shorter beats.",
+      "With the quarter note as the beat, each note lasts its beats multiplied by how long one beat lasts. At 120 BPM: quarter note 0.5 s, half note 1 s, whole note 2 s, eighth note 0.25 s and dotted quarter note 0.75 s.",
+      "To recognize a tempo by ear, compare it with references: 60 BPM is one click per second and 120 BPM, two per second (like a quick march). If the click goes a bit faster than the second hand, you're between 60 and 90; if it's almost double, close to 120.",
+      "Common mistakes: thinking a note always lasts the same (it depends on the tempo: a quarter note at 60 BPM lasts twice as long as at 120); confusing BPM with notes per minute (it counts beats, not notes); and believing more BPM means louder (it's faster, not more volume).",
+    ],
+    quiz: [
+      { pregunta: "What does the tempo measure?", opciones: ["The speed of the beat", "The volume of the music", "How many notes a chord has", "The pitch of the notes"], respuesta: 0, explicacion: "The tempo is how fast the beat goes, and it's measured in BPM." },
+      { pregunta: "At 120 BPM, how long does a half note last if the quarter note is the beat?", opciones: ["0.5 s", "1 s", "2 s", "0.25 s"], respuesta: 1, explicacion: "One beat lasts 60 ÷ 120 = 0.5 s and the half note is 2 beats: 1 s." },
+      { pregunta: "At 30 BPM, how long does a beat last?", opciones: ["0.5 s", "1 s", "2 s", "30 s"], respuesta: 2, explicacion: "60 ÷ 30 = 2 seconds." },
+      { pregunta: "If the tempo goes from 60 to 120 BPM, the quarter notes...", opciones: ["Last twice as long", "Last the same", "Sound louder", "Last half as long"], respuesta: 3, explicacion: "Twice as many beats per minute: each beat lasts half as long." },
+      { pregunta: "At 120 BPM, how long does a dotted quarter note last?", opciones: ["0.5 s", "1 s", "1.5 s", "0.75 s"], respuesta: 3, explicacion: "A beat and a half × 0.5 s = 0.75 s." },
+    ],
+    visuales: ["60, 120 and 240 BPM", "Beats of each note (the quarter note is the beat)"],
+  },
+  "melodia-clase-terminos-de-tempo": {
+    nombre: "Italian tempo markings and the metronome",
+    descripcion: "Largo, Adagio, Andante, Moderato, Allegro and Presto: what each one means, what BPM range it usually covers and how a tempo change inside a piece is marked.",
+    pasos: [
+      "For centuries the tempo was written with words. Italian became the common language of music, and that's why those markings still appear at the start of scores, often next to the metronome number.",
+      "The slow ones: Largo (very slow, about 40-60 BPM) and Adagio (slow, about 66-76 BPM). They're used in calm or solemn pieces.",
+      "The medium ones: Andante (at a walking pace, about 76-108 BPM) and Moderato (moderate, about 108-120 BPM). Andante comes from \"to walk\": think of a calm stroll.",
+      "The fast ones: Allegro (fast and lively, about 120-156 BPM) and Presto (very fast, about 168-200 BPM). Sorted from slow to fast: Largo, Adagio, Andante, Moderato, Allegro, Presto.",
+      "The tempo can also change inside a piece: accelerando (speed up little by little), ritardando (slow down little by little) and a tempo (go back to the previous tempo).",
+      "Common mistakes: believing Allegro only means a cheerful character (above all it marks a fast tempo); thinking Andante is as slow as Adagio (it's quicker: a walking pace); and taking the BPM ranges as exact. Simplification: every book and every metronome gives slightly different ranges; what doesn't change is the order.",
+    ],
+    quiz: [
+      { pregunta: "What does \"Adagio\" indicate?", opciones: ["Very fast", "Slow", "At a walking pace", "Moderate"], respuesta: 1, explicacion: "Adagio: slow, about 66-76 BPM." },
+      { pregunta: "Sorted from slow to fast, which marking comes right after Andante?", opciones: ["Allegro", "Moderato", "Adagio", "Presto"], respuesta: 1, explicacion: "Largo, Adagio, Andante, Moderato, Allegro, Presto." },
+      { pregunta: "What does \"Presto\" indicate?", opciones: ["Very fast", "Fast and lively", "Very slow", "Moderate"], respuesta: 0, explicacion: "Presto is the fastest on the list: about 168-200 BPM." },
+      { pregunta: "What does \"ritardando\" mean?", opciones: ["Slowing down little by little", "Speeding up little by little", "Going back to the previous tempo", "Playing louder"], respuesta: 0, explicacion: "Ritardando slows down; accelerando speeds up; a tempo goes back to the previous tempo." },
+      { pregunta: "A piece at 92 BPM is closest to...", opciones: ["Largo", "Presto", "Andante", "Allegro"], respuesta: 2, explicacion: "92 BPM falls in the Andante range (about 76-108)." },
+    ],
+    visuales: ["Largo, Adagio and Andante", "Moderato, Allegro and Presto"],
+  },
+  "melodia-clase-compases": {
+    nombre: "Time signatures: 2/4, 3/4, 4/4, 2/2 and 6/8",
+    descripcion: "How to read the time signature, how many beats and eighth notes fit in each measure, where the accents fall and what makes 6/8 different.",
+    pasos: [
+      "The measure groups the beats into equal blocks separated by vertical bar lines. The time signature, at the start, is two numbers: the top one says how many beats there are and the bottom one, which note gets one beat (4 = quarter note, 2 = half note, 8 = eighth note).",
+      "The most common simple meters: 2/4 (2 quarter notes, like a march: ONE-two), 3/4 (3 quarter notes, like a waltz: ONE-two-three) and 4/4 (4 quarter notes: ONE-two-three-four, the most common in popular music). In 2/2 there are 2 beats, and each one is a half note.",
+      "How many notes fit: multiply the beats by what each one is worth. 2/4 = 4 eighth notes; 3/4 = 6 eighth notes; 4/4 = 8 eighth notes = 1 whole note; 2/2 = 2 half notes = 8 eighth notes.",
+      "The first beat of each measure is the strong one. In 4/4 the third is medium-strong (ONE-two-THREE-four) and the others, weak. That's why a waltz and a march are told apart by how the accents are grouped, even at the same tempo.",
+      "6/8 is a compound meter: it has 6 eighth notes per measure, but it's felt in two groups of three (ONE-two-three-TWO-two-three). Each group equals a dotted quarter note, so it's often counted in 2 beats of a dotted quarter note.",
+      "Common mistakes: simplifying the time signature like a fraction (2/4 isn't played like 1/2 or 4/8: the way you count changes); thinking the bottom number counts beats (it says which note gets one); and counting 6/8 like 3/4 (both have 6 eighth notes, but 3/4 groups them in twos and 6/8, in threes).",
+    ],
+    quiz: [
+      { pregunta: "In a 4/4 measure, how many eighth notes fit?", opciones: ["8", "4", "6", "16"], respuesta: 0, explicacion: "4 quarter notes × 2 eighth notes = 8." },
+      { pregunta: "What does the bottom number of the time signature indicate?", opciones: ["Which note gets one beat", "How many beats there are", "The tempo in BPM", "How many measures the piece has"], respuesta: 0, explicacion: "4 = quarter note, 2 = half note, 8 = eighth note." },
+      { pregunta: "How are the eighth notes grouped in 6/8?", opciones: ["In three groups of two", "In two groups of three", "In one group of six", "In six groups of one"], respuesta: 1, explicacion: "ONE-two-three-TWO-two-three: two beats of a dotted quarter note." },
+      { pregunta: "In 4/4, which beat is medium-strong?", opciones: ["The second one", "The fourth one", "The third one", "The first one"], respuesta: 2, explicacion: "ONE-two-THREE-four: strong on 1 and medium-strong on 3." },
+      { pregunta: "Which time signature has 3 quarter-note beats, like a waltz?", opciones: ["2/4", "3/4", "4/4", "6/8"], respuesta: 1, explicacion: "The top 3 is 3 beats; the bottom 4, the quarter note." },
+    ],
+    visuales: ["3/4: ONE-two-three", "4/4: ONE-two-THREE-four", "6/8: two groups of three eighth notes"],
+  },
+};

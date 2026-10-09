@@ -18,6 +18,10 @@ import { QUIMIA_EN } from "./en/quimia";
 import { TRIGONOMETRIA_EN } from "./en/trigonometria";
 import { DINAMIA_EN } from "./en/dinamia";
 import { VITALIA_EN } from "./en/vitalia";
+import { MELODIA_AMPLIACION_EN } from "./en/melodiaAmpliacion";
+import { CODIA_LENGUAJES_EN } from "./en/codiaLenguajes";
+import { NUMERIA_CURSO_EN } from "./en/numeriaCurso";
+import { CALCULIA_CURSO_EN } from "./en/calculiaCurso";
 
 export interface EntradaTraduccion {
   // Traducciones por slug.
@@ -47,6 +51,10 @@ export const REGISTRO_TRADUCCIONES: Partial<Record<MundoTraducible, EntradaTradu
   naipia: { traducciones: NAIPIA_EN, migracion: "0226_naipia_lecciones_en.sql", completo: true },
   dinamia: { traducciones: DINAMIA_EN, migracion: "0268_dinamia_lecciones_en.sql", completo: true },
   vitalia: { traducciones: VITALIA_EN, migracion: "0269_vitalia_lecciones_en.sql", completo: true },
+  "melodia-ampliacion": { traducciones: MELODIA_AMPLIACION_EN, migracion: "0270_melodia_ampliacion_lecciones_en.sql", completo: true },
+  "codia-lenguajes": { traducciones: CODIA_LENGUAJES_EN, migracion: "0271_codia_lenguajes_lecciones_en.sql", completo: true },
+  "numeria-curso": { traducciones: NUMERIA_CURSO_EN, migracion: "0272_numeria_curso_lecciones_en.sql", completo: true },
+  "calculia-curso": { traducciones: CALCULIA_CURSO_EN, migracion: "0273_calculia_curso_lecciones_en.sql", completo: true },
 };
 
 export function encabezadoMigracion(mundo: MundoTraducible, cantidad: number, numero: string): string {

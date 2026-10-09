@@ -389,7 +389,8 @@ describe(`Calculia curso: migración ${ARCHIVO_MIGRACION_CURSO_CALCULIA}`, () =>
     }
     expect(bloques).toBe(NUEVAS.length);
     expect(detectarVoseo(sql)).toEqual([]);
-    for (const f of fs.readdirSync(dirMigraciones).filter((n) => n.endsWith(".sql") && n !== ARCHIVO_MIGRACION_CURSO_CALCULIA)) {
+    // Las traducciones (*_lecciones_en.sql) solo llenan las columnas _en de estas mismas filas.
+    for (const f of fs.readdirSync(dirMigraciones).filter((n) => n.endsWith(".sql") && n !== ARCHIVO_MIGRACION_CURSO_CALCULIA && !n.endsWith("_lecciones_en.sql"))) {
       const otro = fs.readFileSync(path.join(dirMigraciones, f), "utf8");
       for (const l of NUEVAS) expect(otro.includes(`'${l.slug}'`), `${f} ya usa ${l.slug}`).toBe(false);
     }

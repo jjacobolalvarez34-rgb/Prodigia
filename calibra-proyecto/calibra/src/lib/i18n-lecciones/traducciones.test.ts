@@ -87,3 +87,32 @@ describe("traducciones de lecciones al inglés", () => {
     });
   }
 });
+
+// Pedido del 2026-10-09 («que nada se escape»): una lección que se agrega en una
+// migración y nunca pasa por el registro de arriba quedaba en español sin que nada
+// avisara (así quedaron afuera el curso de Numeria de 0251, la ampliación de Melodía
+// de 0253, el curso de Calculia de 0254, los lenguajes de Codia de 0255 y una lección
+// suelta de Trigonometría de 0147). Esta prueba lee TODAS las migraciones: cada slug
+// que se inserta en techniques o logic_techniques (y no se borra después) tiene que
+// tener su nombre_en en alguna migración.
+describe("ninguna lección de las migraciones queda sin inglés", () => {
+  it("cada lección insertada tiene una migración que le llena nombre_en", () => {
+    const archivos = fs.readdirSync(DIR_MIGRACIONES).filter((f) => f.endsWith(".sql")).sort();
+    const insertadas = new Map<string, string>();
+    const borradas = new Set<string>();
+    const conIngles = new Set<string>();
+    for (const archivo of archivos) {
+      const sql = fs.readFileSync(path.join(DIR_MIGRACIONES, archivo), "utf8").replace(/\r\n/g, "\n");
+      for (const m of sql.matchAll(/insert into (?:public\.)?(?:logic_techniques|techniques)\s*\(([^)]*)\)\s*values([\s\S]*?);\s*$/gim)) {
+        if (!m[1].split(",").map((c) => c.trim()).includes("slug")) continue;
+        for (const t of m[2].matchAll(/\(\s*'([a-z0-9][a-z0-9_-]+)'/g)) if (!insertadas.has(t[1])) insertadas.set(t[1], archivo);
+      }
+      for (const m of sql.matchAll(/delete from (?:public\.)?(?:logic_techniques|techniques)\s+where\s+slug\s*(?:=|in)\s*\(?([^;]*)/gi)) {
+        for (const t of m[1].matchAll(/'([a-z0-9_-]+)'/g)) borradas.add(t[1]);
+      }
+      for (const m of sql.matchAll(/nombre_en\s*=[\s\S]*?where\s+slug\s*=\s*'([^']+)'/gi)) conIngles.add(m[1]);
+    }
+    const faltan = [...insertadas].filter(([slug]) => !borradas.has(slug) && !conIngles.has(slug)).map(([slug, archivo]) => `${slug} (${archivo})`);
+    expect(faltan).toEqual([]);
+  });
+});
