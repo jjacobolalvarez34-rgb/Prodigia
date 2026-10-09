@@ -3398,7 +3398,9 @@
     "quienMasCompleto": "Quién más completó {periodo}",
     "vuelvePorProximo": "Vuelve {volver} por el próximo.",
     "volverAInicio": "Volver a Inicio",
-    "guardando": "Guardando..."
+    "guardando": "Guardando...",
+    "cartelTitulo": "¡Reto completado!",
+    "cartelNota": "Contando tus recompensas…"
   },
   "Trigonometria": {
     "metadata": {

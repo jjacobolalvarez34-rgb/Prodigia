@@ -193,7 +193,7 @@ export default function TiendaAmpliada() {
       if (!res.ok) throw new Error(data.error ?? "");
       reproducirTono("compra");
       window.dispatchEvent(new CustomEvent("prodigia:chispas", { detail: data.puntos_total }));
-      if (!["utilidad", "paquete", "emote"].includes(elegido.categoria)) await equipar(elegido).catch(() => undefined);
+      // Comprar no lo pone solo (pedido 2026-10-09): se usa con el botón «Usar».
       avisar(t("comprado", { nombre: elegido.nombre }));
       setConfirmar(false);
       await cargar();

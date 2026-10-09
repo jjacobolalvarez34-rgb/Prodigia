@@ -3398,7 +3398,9 @@
     "quienMasCompleto": "Who else completed it {periodo}",
     "vuelvePorProximo": "Come back {volver} for the next one.",
     "volverAInicio": "Back to Home",
-    "guardando": "Saving..."
+    "guardando": "Saving...",
+    "cartelTitulo": "Challenge complete!",
+    "cartelNota": "Counting your rewards…"
   },
   "Trigonometria": {
     "metadata": {

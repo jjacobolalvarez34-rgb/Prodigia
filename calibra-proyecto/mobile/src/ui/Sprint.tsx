@@ -95,8 +95,17 @@ export function useReloj(inicio: number | null, totalMs: number, onFin: () => vo
     progreso.set(Math.min(1, restante / totalMs));
     progreso.set(withTiming(0, { duration: restante, easing: Easing.linear }));
     const t = setTimeout(() => onFinRef.current(), restante);
+    // Cuenta regresiva de los últimos 10 segundos: un tic por segundo, más agudo
+    // en los 3 últimos (pedido 2026-10-09). Se reprograma si el reloj se frena o
+    // gana tiempo, porque este efecto vuelve a correr.
+    const tics: ReturnType<typeof setTimeout>[] = [];
+    for (let seg = 10; seg >= 1; seg--) {
+      const en = restante - seg * 1000;
+      if (en >= 0) tics.push(setTimeout(() => sonar(seg <= 3 ? "tic_urgente" : "tic"), en));
+    }
     return () => {
       clearTimeout(t);
+      tics.forEach(clearTimeout);
       if (desdeRef.current != null) restanteRef.current = Math.max(0, restanteRef.current - (Date.now() - desdeRef.current));
       desdeRef.current = null;
     };

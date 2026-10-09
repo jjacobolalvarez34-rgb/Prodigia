@@ -193,7 +193,7 @@ export default function Sprint() {
     if (terminadoRef.current) return;
     terminadoRef.current = true;
     setFinal(motivo);
-    sonar(motivo === "tiempo" ? "cuenta" : "ya");
+    sonar(motivo === "tiempo" ? "tiempo_fin" : "ya");
     vibrar.exito();
     salir();
     setProgresoFinal(0.25);

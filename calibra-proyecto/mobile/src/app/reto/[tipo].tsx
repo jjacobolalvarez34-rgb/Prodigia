@@ -20,7 +20,7 @@ import { IconoCerrar, IconoChispa, IconoLlama } from "~/ui/Iconos";
 import { BotonAtras, TituloSeccion } from "~/ui/Pantalla";
 import Pentagrama, { FiguraRitmicaIcono } from "~/ui/Pentagrama";
 import { PlacaFila } from "~/ui/placa/Placa";
-import { animarAcierto, animarError, TarjetaProblema } from "~/ui/Sprint";
+import { animarAcierto, animarError, CartelFinal, TarjetaProblema } from "~/ui/Sprint";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
 import TextoLatex from "~/ui/TextoLatex";
@@ -43,7 +43,8 @@ export default function Reto() {
   const [combo, setCombo] = useState(0);
   const [bonus, setBonus] = useState<number | null>(null);
   const [ranking, setRanking] = useState<{ placa: PlacaDatos; correctos: number }[]>([]);
-  const [enviando, setEnviando] = useState(false);
+  const [, setEnviando] = useState(false);
+  const [cartel, setCartel] = useState<number | null>(null);
   const sello = useSharedValue(1);
   const sacudida = useSharedValue(0);
   const pulso = useSharedValue(0);
@@ -93,17 +94,28 @@ export default function Reto() {
   async function terminar(correctos: number) {
     if (!reto) return;
     setEnviando(true);
+    // Pantalla de carga como al terminar una partida (pedido 2026-10-09): el cartel
+    // queda al menos un momento mientras se guardan y cuentan las recompensas.
+    setCartel(0.25);
+    sonar("ya");
+    vibrar.exito();
+    const minimo = new Promise((ok) => setTimeout(ok, 1300));
     try {
       const r = await completarReto(tipo, reto.clave, correctos, miId);
+      setCartel(0.75);
       setBonus(r.puntos_bonus);
       fijarChispas(r.puntos_total);
       AsyncStorage.removeItem(CLAVE_PROGRESO(tipo, reto.clave)).catch(() => {});
+      await minimo;
+      setCartel(1);
+      await new Promise((ok) => setTimeout(ok, 250));
+      setCartel(null);
       sonar("victoria");
-      vibrar.exito();
       setFase("fin");
       rankingReto(tipo, reto.clave).then(setRanking);
       r.logros.forEach((l) => mostrarAviso(`Logro: ${l.nombre}`, "logro"));
     } catch (e) {
+      setCartel(null);
       mostrarAviso(mensajeError(e), "error");
     } finally {
       setEnviando(false);
@@ -315,8 +327,8 @@ export default function Reto() {
             );
           })}
         </View>
-        {enviando && <ActivityIndicator color={color.logro} />}
       </ScrollView>
+      {cartel != null && <CartelFinal texto="¡Reto completado!" nota="Contando tus recompensas…" acento={color.logro} progreso={cartel} />}
     </SafeAreaView>
   );
 }

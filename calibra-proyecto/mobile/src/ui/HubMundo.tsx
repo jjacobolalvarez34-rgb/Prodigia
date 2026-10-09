@@ -1,4 +1,4 @@
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter, type Href } from "expo-router";
 import { useCallback, useState, type ReactNode } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -74,6 +74,7 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
   const { mundos, plan } = useJugador();
   const [progreso, setProgreso] = useState<ProgresoMundo | null>(null);
   const [pestana, setPestana] = useState<"practicar" | "aprender">("practicar");
+  const router = useRouter();
 
   useFocusEffect(
     useCallback(() => {
@@ -94,6 +95,19 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
           <View style={styles.atras}>
             <BotonAtras />
           </View>
+          {/* Modo Zen: practicar sin reloj, con tema y dificultad a elección (docs/PLAN_MODO_SIN_RELOJ.md). */}
+          <Pressable
+            onPress={() => {
+              vibrar.seleccion();
+              router.push(`/zen/${mundo.slug}` as Href);
+            }}
+            style={({ pressed }) => [styles.zen, { borderColor: conAlfa(mundo.neon, 0.6) }, pressed && { transform: [{ scale: 0.95 }] }]}
+            accessibilityRole="button"
+            accessibilityLabel="Modo Zen: practicar sin reloj"
+            hitSlop={6}
+          >
+            <Texto style={{ fontFamily: fuente.cuerpoFuerte, fontSize: 12, color: color.texto }}>☯ Modo Zen</Texto>
+          </Pressable>
           <View style={styles.titulo}>
             <Texto style={{ fontFamily: fuente.display, fontSize: 30, letterSpacing: 2, color: color.texto, textShadowColor: mundo.neon, textShadowRadius: 16 }}>
               {mundo.nombre.toUpperCase()}
@@ -153,6 +167,7 @@ const styles = StyleSheet.create({
   doble: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderRadius: 16, borderWidth: 1, borderColor: conAlfa(color.logro, 0.5), backgroundColor: conAlfa(color.logro, 0.1) },
   pantalla: { flex: 1, backgroundColor: color.bg },
   atras: { position: "absolute", top: 8, left: 14 },
+  zen: { position: "absolute", top: 12, right: 14, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, borderWidth: 1, backgroundColor: "rgba(8,8,20,0.6)" },
   titulo: { position: "absolute", left: 16, right: 16, bottom: 12, flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between" },
   contenido: { padding: 16, gap: 12 },
   entre: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },

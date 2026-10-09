@@ -70,6 +70,8 @@ function obtenerContexto(): AudioContext | null {
 
 interface Nota {
   freq: number;
+  // Si está, la altura se desliza hasta acá durante la nota (el «ehhh» del error).
+  freqFin?: number;
   inicio: number; // segundos desde que arranca la secuencia
   duracion: number;
   volumen?: number;
@@ -86,8 +88,9 @@ function reproducirSecuencia(notas: Nota[]) {
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     osc.type = nota.tipoOnda ?? "sine";
-    osc.frequency.value = nota.freq;
     const t0 = ahora + nota.inicio;
+    osc.frequency.setValueAtTime(nota.freq, t0);
+    if (nota.freqFin) osc.frequency.exponentialRampToValueAtTime(nota.freqFin, t0 + nota.duracion);
     const vol = nota.volumen ?? 0.12;
     gain.gain.setValueAtTime(vol, t0);
     gain.gain.exponentialRampToValueAtTime(0.0001, t0 + nota.duracion);
@@ -203,7 +206,7 @@ export function probarPaqueteAcierto(paquete: string) {
   }
 }
 
-export type TipoTono = "correcto" | "error" | "nivel" | "nivel_cuenta" | "logro" | "duelo_gano" | "duelo_perdio" | "compra" | "notificacion" | "cuenta" | "ya";
+export type TipoTono = "correcto" | "error" | "nivel" | "nivel_cuenta" | "logro" | "duelo_gano" | "duelo_perdio" | "compra" | "notificacion" | "cuenta" | "ya" | "tic" | "tic_urgente" | "tiempo_fin";
 
 // Tonos generados con Web Audio (sin archivos de audio con licencia):
 // tick agudo al acertar, uno grave al fallar, chime ascendente al subir
@@ -227,7 +230,12 @@ export function reproducirTono(tipo: TipoTono) {
         reproducirSecuencia([{ freq: 880, inicio: 0, duracion: 0.22 }]);
       }
     } else if (tipo === "error") {
-      reproducirSecuencia([{ freq: 220, inicio: 0, duracion: 0.22 }]);
+      // «Eh-ehhh»: dos notas que caen, la segunda deslizándose hacia abajo
+      // (pedido 2026-10-09). Mismos números en mobile/scripts/generar-sonidos.py.
+      reproducirSecuencia([
+        { freq: 330, freqFin: 294, inicio: 0, duracion: 0.13, tipoOnda: "triangle", volumen: 0.1 },
+        { freq: 294, freqFin: 185, inicio: 0.15, duracion: 0.42, tipoOnda: "triangle", volumen: 0.11 },
+      ]);
     } else if (tipo === "nivel") {
       reproducirSecuencia([
         { freq: 523.25, inicio: 0, duracion: 0.16, tipoOnda: "triangle" },
@@ -282,6 +290,26 @@ export function reproducirTono(tipo: TipoTono) {
       reproducirSecuencia([
         { freq: 990, inicio: 0, duracion: 0.32, volumen: 0.1 },
         { freq: 1320, inicio: 0, duracion: 0.32, volumen: 0.07 },
+      ]);
+    } else if (tipo === "tic") {
+      // Cuenta regresiva de los últimos 10 segundos.
+      reproducirSecuencia([
+        { freq: 1250, inicio: 0, duracion: 0.045, volumen: 0.09 },
+        { freq: 2500, inicio: 0, duracion: 0.02, volumen: 0.03 },
+      ]);
+    } else if (tipo === "tic_urgente") {
+      // Los últimos 3 segundos: más agudo y fuerte.
+      reproducirSecuencia([
+        { freq: 1650, inicio: 0, duracion: 0.07, volumen: 0.11 },
+        { freq: 3300, inicio: 0, duracion: 0.03, volumen: 0.04 },
+      ]);
+    } else if (tipo === "tiempo_fin") {
+      // Se acabó el tiempo: tres notas que bajan y una base grave.
+      reproducirSecuencia([
+        { freq: 880, inicio: 0, duracion: 0.12, tipoOnda: "square", volumen: 0.07 },
+        { freq: 698.46, inicio: 0.12, duracion: 0.12, tipoOnda: "square", volumen: 0.07 },
+        { freq: 587.33, inicio: 0.24, duracion: 0.5, tipoOnda: "square", volumen: 0.08 },
+        { freq: 293.66, inicio: 0.24, duracion: 0.5, tipoOnda: "triangle", volumen: 0.06 },
       ]);
     } else if (tipo === "notificacion") {
       reproducirSecuencia([

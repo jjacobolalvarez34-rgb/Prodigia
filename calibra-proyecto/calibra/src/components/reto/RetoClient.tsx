@@ -165,6 +165,10 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
 
   async function finalizar(correctosFinal: number) {
     setEnviando(true);
+    reproducirTono("ya");
+    // El cartel de «contando recompensas» se ve al menos un momento (pedido
+    // 2026-10-09), igual que al terminar una partida en la app.
+    const minimo = new Promise((ok) => setTimeout(ok, 1300));
     try {
       const res = await fetch(texto.endpoint, {
         method: "POST",
@@ -196,6 +200,7 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
     } catch {
       // No pasa nada si no se pudo limpiar — la próxima carga la pisa el chequeo de arriba.
     }
+    await minimo;
     setEnviando(false);
     setFase("resumen");
   }
@@ -383,7 +388,33 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
           </motion.div>
         )}
       </AnimatePresence>
-      {enviando && <p className="text-center text-xs text-texto-secundario">{t("guardando")}</p>}
+      <AnimatePresence>
+        {enviando && (
+          <motion.div
+            key="cartel"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[80] flex flex-col items-center justify-center gap-5 bg-black/80 backdrop-blur-sm"
+            role="status"
+            aria-live="polite"
+          >
+            <motion.div
+              className="h-20 w-20 rounded-full border-4 border-logro/25 border-t-logro"
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 0.9, ease: "linear" }}
+              aria-hidden="true"
+            />
+            <motion.p initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", damping: 10 }} className="font-display text-3xl font-bold text-white">
+              {t("cartelTitulo")}
+            </motion.p>
+            <p className="text-sm text-white/70">{t("cartelNota")}</p>
+            <div className="h-1.5 w-56 overflow-hidden rounded-full bg-white/15">
+              <motion.div className="h-full rounded-full bg-logro" initial={{ width: "15%" }} animate={{ width: "90%" }} transition={{ duration: 1.3, ease: "easeOut" }} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

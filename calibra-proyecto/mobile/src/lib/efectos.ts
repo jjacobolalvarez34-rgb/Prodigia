@@ -55,6 +55,9 @@ const FUENTES = {
   notificacion: require("../../assets/sonidos/notificacion.wav"),
   nivel_cuenta: require("../../assets/sonidos/nivel_cuenta.wav"),
   swoosh: require("../../assets/sonidos/swoosh.wav"),
+  tic: require("../../assets/sonidos/tic.wav"),
+  tic_urgente: require("../../assets/sonidos/tic_urgente.wav"),
+  tiempo_fin: require("../../assets/sonidos/tiempo_fin.wav"),
 } as const;
 
 export type Sonido = keyof typeof FUENTES;

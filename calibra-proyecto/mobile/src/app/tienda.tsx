@@ -285,10 +285,9 @@ export default function Tienda() {
       sonar("recompensa");
       vibrar.exito();
       setFestejo((n) => n + 1);
-      mostrarAviso(`¡${elegido.nombre} es tuyo!`, "logro");
-      if (!["utilidad", "color", "paquete", "emote"].includes(elegido.categoria) && !(elegido.categoria === "fondo" && elegido.valor === "personalizado")) {
-        await equipar(elegido, elegido.categoria).catch(() => {});
-      }
+      // Comprar no lo pone solo (pedido 2026-10-09): queda en tu colección y lo
+      // usas cuando quieras con «Usar».
+      mostrarAviso(["utilidad", "paquete", "emote"].includes(elegido.categoria) ? `¡${elegido.nombre} es tuyo!` : `¡${elegido.nombre} es tuyo! Toca «Usar» para ponértelo.`, "logro");
       if (userId) recargarCosmeticos(userId);
       setConfirmar(false);
       await Promise.all([cargar(), recargarJugador()]);

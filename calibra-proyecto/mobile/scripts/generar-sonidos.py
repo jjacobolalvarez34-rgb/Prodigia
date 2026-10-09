@@ -13,18 +13,24 @@ def onda(tipo,f,t):
         else: s+=((-1)**((k-1)//2))*np.sin(2*np.pi*k*f*t)/(k*k)
         k+=2
     return s*(4/np.pi if tipo=="square" else 8/np.pi**2)
-def nota(f,dur,vol=0.12,tipo="sine"):
+def onda_deslizada(tipo,f0,f1,t,dur):
+    # Altura que cae (o sube) exponencial de f0 a f1, como exponentialRampToValueAtTime:
+    # se integra la frecuencia para obtener la fase (si no, la onda «salta»).
+    f=f0*(f1/f0)**(t/dur); fase=2*np.pi*np.cumsum(f)/SR
+    if tipo=="sine": return np.sin(fase)
+    return (2/np.pi)*np.arcsin(np.sin(fase)) if tipo=="triangle" else np.sign(np.sin(fase))
+def nota(f,dur,vol=0.12,tipo="sine",f_fin=None):
     n=int(SR*dur); t=np.arange(n)/SR
     # Igual que gain.exponentialRampToValueAtTime(0.0001, t0+dur), con 3 ms de
     # entrada para que no haga "clic".
     env=vol*np.exp(np.log(0.0001/vol)*t/dur)*np.minimum(1,t/0.003)
-    return onda(tipo,f,t)*env
+    return (onda_deslizada(tipo,f,f_fin,t,dur) if f_fin else onda(tipo,f,t))*env
 def secuencia(notas,cola=0.03):
     fin=max(i+d for _,i,d,*_ in notas)+cola
     s=np.zeros(int(SR*fin))
     for f,i,d,*r in notas:
-        vol=r[0] if r else 0.12; tipo=r[1] if len(r)>1 else "sine"
-        x=nota(f,d,vol,tipo); a=int(SR*i); s[a:a+len(x)]+=x
+        vol=r[0] if r else 0.12; tipo=r[1] if len(r)>1 else "sine"; f_fin=r[2] if len(r)>2 else None
+        x=nota(f,d,vol,tipo,f_fin); a=int(SR*i); s[a:a+len(x)]+=x
     return s
 def guardar(nombre,s,pico=0.7):
     m=np.max(np.abs(s)); s=s/m*pico if m>0 else s
@@ -38,7 +44,12 @@ for f in os.listdir(OUT):
 escala=[0,2,4,5,7,9,11,12]
 for i,st in enumerate(escala):
     guardar(f"acierto{i}",secuencia([(880*2**(st/12),0,0.22)]),0.6)
-guardar("error",secuencia([(220,0,0.22)]),0.55)
+# «Eh-ehhh» (pedido 2026-10-09): dos notas que caen, la segunda deslizándose.
+guardar("error",secuencia([(330,0,.13,.1,"triangle",294),(294,.15,.42,.11,"triangle",185)]),0.55)
+# Cuenta regresiva de los últimos 10 segundos (los 3 últimos, más urgentes) y el fin.
+guardar("tic",secuencia([(1250,0,.045,.09),(2500,0,.02,.03)]),0.45)
+guardar("tic_urgente",secuencia([(1650,0,.07,.11),(3300,0,.03,.04)]),0.55)
+guardar("tiempo_fin",secuencia([(880,0,.12,.07,"square"),(698.46,.12,.12,.07,"square"),(587.33,.24,.5,.08,"square"),(293.66,.24,.5,.06,"triangle")]),0.6)
 guardar("nivel",secuencia([(523.25,0,.16,.12,"triangle"),(659.25,.09,.16,.12,"triangle"),(784,.18,.28,.12,"triangle")]),0.65)
 guardar("logro",secuencia([(523.25,0,.14,.08,"square"),(659.25,.08,.14,.08,"square"),(784,.16,.14,.08,"square"),(1046.5,.24,.4,.1,"square")]),0.5)
 guardar("victoria",secuencia([(659.25,0,.18,.12,"triangle"),(784,.1,.18,.12,"triangle"),(1046.5,.2,.45,.12,"triangle")]),0.65)
