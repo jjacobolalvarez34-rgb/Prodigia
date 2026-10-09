@@ -1,89 +1,83 @@
-# Plan: modo «Sin reloj» (para aprobar)
+# Plan: modo «Zen» (sin reloj)
 
 Pedido del usuario (2026-10-08): un modo de juego sin tiempo, que no estorbe la
-forma normal de jugar. Este documento es solo la planeación; no hay código todavía.
+forma normal de jugar. Decisiones del usuario: nombre **Zen**, **10 preguntas**,
+**dificultad y tema elegibles**, **sin Chispas** y **pistas gratis**. Es solo la
+planeación; se implementa cuando el usuario diga «continuar».
 
 ## 1. Idea
 
-Una partida de **10 preguntas sin cronómetro**, para aprender con calma. Cuando
-fallas, el modo explica la respuesta en vez de apurarte. La contrarreloj de 60 s sigue
-siendo el modo principal y por defecto: «Sin reloj» es una opción al lado, no un
-reemplazo.
+Una partida de **10 preguntas sin cronómetro**, en la que eliges el tema y la
+dificultad. Sirve para practicar con calma lo que quieras, sin premios ni presión.
+La contrarreloj de 60 s sigue siendo el modo principal y por defecto.
 
 ## 2. Dónde va (sin estorbar)
 
 1. **En la pantalla de cada modo, antes de jugar.** Un selector de dos pastillas
-   encima del botón Jugar: «⏱ Contrarreloj | ∞ Sin reloj».
+   encima del botón Jugar: «⏱ Contrarreloj | ☯ Zen».
    - Arranca en Contrarreloj.
    - Recuerda la última elección en cada mundo.
-   - No agrega pantallas nuevas.
-2. **Al terminar una lección de Aprender:** botón «Practicar sin reloj» con ese
-   mismo tema, el momento más natural para practicar tranquilo.
-3. **En el resultado de una partida con muchos errores:** sugerencia «¿Repasar sin reloj?».
+   - Al elegir Zen aparecen dos filas más:
+     - **Tema:** los modos o temas del mundo, más «Mezcla».
+     - **Dificultad:** nivel 1 a 10, en una barra deslizable con palabras guía (Fácil · Media · Difícil · Experto). Arranca en tu nivel actual de ese tema.
+2. **Al terminar una lección de Aprender:** botón «Practicar en Zen», ya con el tema
+   de la lección elegido.
+3. **En el resultado de una partida con muchos errores:** sugerencia «¿Repasar en Zen?»,
+   con ese tema y un nivel menos.
 
 **No aparece en** Rankeds, duelos, reto diario o semanal, ligas ni el diagnóstico.
-Todo lo competitivo sigue igual.
 
 ## 3. Cómo se juega
 
-- **Progreso:** en lugar del reloj, una barra «4 de 10». Las preguntas, su dificultad y
-  el ajuste según cómo te va son los mismos de siempre.
+- **Progreso:** barra «4 de 10» en lugar del reloj.
+- **Dificultad fija:** la que elegiste, sin ajuste automático durante la partida.
 - **Al fallar:** muestra la respuesta correcta y, si el mundo la tiene, la explicación
   paso a paso. No avanza solo: tocas «Siguiente». Una vez por pregunta puedes
   «Intentar de nuevo».
-- **Pistas:** gratis en este modo, sin gastar la pista de la tienda.
-- **Hielo y +3 s:** se ocultan, porque no sirven sin reloj, y no se gastan.
-- **Efectos:** los sonidos y efectos de acierto se mantienen. El multiplicador de
-  combo, que premia la velocidad, no.
+- **Pistas:** gratis, sin gastar la pista de la tienda.
+- **Hielo y +3 s:** se ocultan y no se gastan.
+- **Efectos:** los sonidos y efectos de acierto se mantienen. No hay multiplicador de
+  combo ni puntaje.
 - **Resumen final:**
   - aciertos;
-  - temas para repasar, con link a su lección;
-  - botón «Probar en contrarreloj».
+  - preguntas falladas con su respuesta;
+  - «Otra vez», «Subir un nivel» y «Probar en contrarreloj».
 
-## 4. Recompensas y justicia (para que no se pueda abusar)
+## 4. Qué cuenta (sin Chispas)
 
-| Sistema | En «Sin reloj» |
+| Sistema | En Zen |
 |---|---|
-| Racha diaria | Sí cuenta: es jugar |
-| XP del mundo | Sí, a la mitad |
-| Chispas | A la mitad, con tope diario (p. ej. 3 partidas sin reloj con Chispas por día) |
-| Misiones | Cuentan las de «juega / acierta N»; no las de puntaje o velocidad |
-| Constelaciones | 1 estrella, como cualquier partida |
-| Logros | Los de aciertos, sí; los de velocidad o puntaje, no |
-| Ranking semanal, ligas, ELO | No |
-| Calibración (nivel por tema) | Cuenta solo la precisión, con menos peso: puede bajar el nivel si fallas mucho, y lo sube a la mitad de ritmo |
+| Chispas | **No** (decisión del usuario) |
+| Misiones, constelaciones, cápsulas | No: todas dan Chispas o premios, así que no avanzan |
+| Racha diaria | Sí cuenta *(a confirmar)*: es jugar, y no da Chispas por sí sola |
+| XP del mundo | No (con dificultad elegida a mano se podría inflar) |
+| Calibración (nivel por tema) | No: la dificultad la eligió el jugador, así que no mide su nivel real |
+| Ranking, ligas, ELO, logros | No |
 
-**Antes de implementar hay que verificar** cómo usa el tiempo de respuesta la
-calibración actual (`skill_levels` / `api/attempts`), para que las respuestas lentas
-no se lean como «le cuesta».
+Zen queda como práctica pura: no cambia la economía ni el nivel.
 
 ## 5. Implementación (resumen)
 
-- **Base:** una migración nueva (después de las que estén) con:
-  - una marca `sin_tiempo` en la partida o los intentos;
-  - el factor de XP y Chispas y el tope diario en las funciones de cierre de partida
-    (siempre desde su última definición);
-  - excluir estas partidas de rankings y ligas.
-- **Web:** los runners de cada mundo reciben `sinTiempo`. Lo ideal es pasar el reloj
-  a un hook compartido que, con `sinTiempo`, no corre; así son pocas líneas por
-  runner. Además:
-  - el selector en la pantalla del modo;
-  - el botón en Aprender;
-  - la sugerencia en el resultado.
-- **App:** `Sprint.tsx` (y los sprints de Numeria y Geografía) con la misma prop, más
-  el selector en la pantalla del modo.
+- **Base:** probablemente sin migración.
+  - Si Zen no guarda nada, la partida no pasa por el cierre normal (`api/practica/finish`) ni por `api/attempts`.
+  - Solo hace falta registrar la racha si se confirma que cuenta, con una RPC chica que marque el día jugado; esa RPC sí sería una migración.
+- **Generadores:** ya reciben `(modo, nivel)`, así que Zen solo pasa el tema y el nivel elegidos. «Mezcla» elige un modo al azar por pregunta.
+- **Web:**
+  - Lo ideal es un runner Zen genérico (como `SprintRunnerMundo`) que use el generador de cada mundo; así no se tocan los ~15 runners con reloj.
+  - El selector Tema/Dificultad va en la pantalla de cada modo, más el botón en Aprender y la sugerencia en el resultado.
+  - Hay que revisar cada mundo con visuales propios (mapa de Geografía, cartas de Naipia, pentagrama de Melodía…) para que el runner Zen los muestre igual.
+- **App:**
+  - una pantalla `zen/[mundo]` que reusa `PreguntaVista` y los adaptadores de `mundosJugables` (ya generan por modo y nivel);
+  - el selector en la pantalla del modo.
 - **Cierre:**
   - textos es/en;
   - `npm run paridad`;
   - un anuncio;
-  - una fila nueva en PARIDAD_MUNDOS («Sin reloj» en todos los mundos).
+  - una fila en PARIDAD_MUNDOS («Zen» en todos los mundos).
 
-Tamaño estimado: 1 migración y unos 20–25 archivos entre la web y la app.
+Tamaño estimado: un runner nuevo en la web y una pantalla nueva en la app, más el
+selector en ~15 pantallas de modo (o en una sola, si la de elegir modo es compartida).
 
-## 6. Decisiones para aprobar (recomendada primero)
+## 6. Pendiente de confirmar
 
-1. **Nombre:** «Sin reloj» (recomendado) · «Modo calma» · «Zen».
-2. **Largo:** 10 preguntas fijas (recomendado) · elegir 10 / 20 / sin fin.
-3. **Chispas y XP:** a la mitad con tope diario (recomendado) · normales · ninguna.
-4. **Calibración:** cuenta con menos peso (recomendado) · no cuenta.
-5. **Pistas gratis en este modo:** sí (recomendado) · no.
+1. ¿La racha diaria cuenta con una partida Zen? (Recomendado: sí.)
