@@ -1,8 +1,9 @@
 # Plan: modo «Zen» (sin reloj)
 
 Pedido del usuario (2026-10-08): un modo de juego sin tiempo, que no estorbe la
-forma normal de jugar. Decisiones del usuario: nombre **Zen**, **10 preguntas**,
-**dificultad y tema elegibles**, **sin Chispas** y **pistas gratis**. Es solo la
+forma normal de jugar. Decisiones del usuario: nombre **Zen**, que se activa con un **botoncito arriba**,
+**10 preguntas**, **dificultad y tema elegibles**, **sin Chispas**, **pistas gratis**
+y que **cuenta para la racha**. Es solo la
 planeación; se implementa cuando el usuario diga «continuar».
 
 ## 1. Idea
@@ -13,13 +14,14 @@ La contrarreloj de 60 s sigue siendo el modo principal y por defecto.
 
 ## 2. Dónde va (sin estorbar)
 
-1. **En la pantalla de cada modo, antes de jugar.** Un selector de dos pastillas
-   encima del botón Jugar: «⏱ Contrarreloj | ☯ Zen».
-   - Arranca en Contrarreloj.
-   - Recuerda la última elección en cada mundo.
-   - Al elegir Zen aparecen dos filas más:
+1. **Un botoncito arriba, en la pantalla de cada mundo y modo** (decisión del usuario).
+   - Es una pastilla chica en la esquina de arriba que dice «☯ Modo Zen».
+   - Al tocarla, la pantalla pasa a Zen: la pastilla se ilumina («☯ Zen activado»), el botón Jugar cambia a «Jugar en Zen» y aparecen dos filas:
      - **Tema:** los modos o temas del mundo, más «Mezcla».
      - **Dificultad:** nivel 1 a 10, en una barra deslizable con palabras guía (Fácil · Media · Difícil · Experto). Arranca en tu nivel actual de ese tema.
+   - Al tocarla de nuevo, vuelve a la contrarreloj.
+   - Arranca apagada y recuerda la última elección en cada mundo.
+   - No ocupa lugar en la pantalla normal.
 2. **Al terminar una lección de Aprender:** botón «Practicar en Zen», ya con el tema
    de la lección elegido.
 3. **En el resultado de una partida con muchos errores:** sugerencia «¿Repasar en Zen?»,
@@ -49,7 +51,7 @@ La contrarreloj de 60 s sigue siendo el modo principal y por defecto.
 |---|---|
 | Chispas | **No** (decisión del usuario) |
 | Misiones, constelaciones, cápsulas | No: todas dan Chispas o premios, así que no avanzan |
-| Racha diaria | Sí cuenta *(a confirmar)*: es jugar, y no da Chispas por sí sola |
+| Racha diaria | **Sí cuenta** (decisión del usuario) |
 | XP del mundo | No (con dificultad elegida a mano se podría inflar) |
 | Calibración (nivel por tema) | No: la dificultad la eligió el jugador, así que no mide su nivel real |
 | Ranking, ligas, ELO, logros | No |
@@ -58,17 +60,16 @@ Zen queda como práctica pura: no cambia la economía ni el nivel.
 
 ## 5. Implementación (resumen)
 
-- **Base:** probablemente sin migración.
-  - Si Zen no guarda nada, la partida no pasa por el cierre normal (`api/practica/finish`) ni por `api/attempts`.
-  - Solo hace falta registrar la racha si se confirma que cuenta, con una RPC chica que marque el día jugado; esa RPC sí sería una migración.
+- **Base:** una migración chica con una RPC `registrar_partida_zen` que solo marca el día jugado para la racha, sin Chispas, XP ni nivel. Va desde la definición vigente de la lógica de racha.
+  - La partida Zen no pasa por el cierre normal (`api/practica/finish`) ni por `api/attempts`.
 - **Generadores:** ya reciben `(modo, nivel)`, así que Zen solo pasa el tema y el nivel elegidos. «Mezcla» elige un modo al azar por pregunta.
 - **Web:**
   - Lo ideal es un runner Zen genérico (como `SprintRunnerMundo`) que use el generador de cada mundo; así no se tocan los ~15 runners con reloj.
-  - El selector Tema/Dificultad va en la pantalla de cada modo, más el botón en Aprender y la sugerencia en el resultado.
+  - El botoncito Zen y las filas de Tema/Dificultad van en la pantalla de cada modo, más el botón en Aprender y la sugerencia en el resultado.
   - Hay que revisar cada mundo con visuales propios (mapa de Geografía, cartas de Naipia, pentagrama de Melodía…) para que el runner Zen los muestre igual.
 - **App:**
   - una pantalla `zen/[mundo]` que reusa `PreguntaVista` y los adaptadores de `mundosJugables` (ya generan por modo y nivel);
-  - el selector en la pantalla del modo.
+  - el botoncito Zen en la pantalla del modo.
 - **Cierre:**
   - textos es/en;
   - `npm run paridad`;
@@ -76,8 +77,15 @@ Zen queda como práctica pura: no cambia la economía ni el nivel.
   - una fila en PARIDAD_MUNDOS («Zen» en todos los mundos).
 
 Tamaño estimado: un runner nuevo en la web y una pantalla nueva en la app, más el
-selector en ~15 pantallas de modo (o en una sola, si la de elegir modo es compartida).
+botoncito en ~15 pantallas de modo (o en una sola, si la de elegir modo es compartida).
 
-## 6. Pendiente de confirmar
+## 6. Decisiones
 
-1. ¿La racha diaria cuenta con una partida Zen? (Recomendado: sí.)
+Todas tomadas por el usuario:
+- nombre Zen;
+- botoncito arriba;
+- 10 preguntas;
+- tema y dificultad elegibles;
+- sin Chispas;
+- pistas gratis;
+- cuenta para la racha.
