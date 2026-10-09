@@ -3,6 +3,8 @@ import { View } from "react-native";
 import type { Escena } from "@/lib/dibujo/escena";
 import { escenaDinamia } from "@/lib/dinamia/escenas";
 import type { VisualDinamia as DatosDinamia } from "@/lib/dinamia/visuales";
+import { escenaVitalia } from "@/lib/vitalia/escenas";
+import type { VisualVitalia as DatosVitalia } from "@/lib/vitalia/visuales";
 import { MUNDOS } from "~/tema";
 import DibujoSvg from "../../visuales/DibujoSvg";
 import { Leyenda, Marco, T } from "../comun";
@@ -66,3 +68,4 @@ function crearVisualEscena<V extends { titulo?: string; estatico?: boolean }>(cr
 }
 
 export const VisualDinamia = crearVisualEscena<DatosDinamia>(escenaDinamia, "dinamia");
+export const VisualVitalia = crearVisualEscena<DatosVitalia>(escenaVitalia, "vitalia");

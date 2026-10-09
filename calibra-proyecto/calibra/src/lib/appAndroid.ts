@@ -11,7 +11,7 @@ export const URL_APK: string | null = "https://github.com/jjacobolalvarez34-rgb/
 // Datos que se muestran junto al botón (actualizar al publicar una versión nueva).
 export const APP_ANDROID = {
   version: "0.1.0",
-  tamanoMb: 59,
+  tamanoMb: 76,
   // Android 7 o más nuevo (minSdk 24 de Expo).
   androidMinimo: "7",
 };

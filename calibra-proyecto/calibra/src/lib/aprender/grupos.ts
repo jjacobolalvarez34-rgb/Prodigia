@@ -36,6 +36,8 @@ import { TECNICAS_TRIGONOMETRIA, CLASES_TRIGONOMETRIA } from "@/lib/trigonometri
 import { ORDEN_GRUPOS_TRIGONOMETRIA, NOMBRES_GRUPOS_TRIGONOMETRIA } from "@/lib/trigonometria/bloques";
 import { TECNICAS_HISTORIA, CLASES_HISTORIA } from "@/lib/historia/lecciones";
 import { ORDEN_GRUPOS_HISTORIA, NOMBRES_GRUPOS_HISTORIA } from "@/lib/historia/bloques";
+import { TECNICAS_DINAMIA, CLASES_DINAMIA, ORDEN_GRUPOS_DINAMIA, NOMBRES_GRUPOS_DINAMIA } from "@/lib/dinamia/lecciones";
+import { TECNICAS_VITALIA, CLASES_VITALIA, ORDEN_GRUPOS_VITALIA, NOMBRES_GRUPOS_VITALIA } from "@/lib/vitalia/lecciones";
 
 export type PestanaGrupos = "tecnicas" | "clases";
 type Idioma = "es" | "en";
@@ -401,6 +403,16 @@ export const GRUPOS_APRENDER: Record<string, GruposMundo> = {
         g(gr.id, gr.es, gr.en, CLASES_LENGUAJES.filter((c) => GRUPO_DE_LECCION_LENGUAJE[c.slug] === gr.id).map((c) => c.slug))
       ),
     ],
+  },
+  // Mundos 14 y 15: un tema por modo de juego, con desbloqueo propio en cada
+  // pestaña (src/lib/aprender/caminoPorTema.ts).
+  dinamia: {
+    tecnicas: ORDEN_GRUPOS_DINAMIA.map((id) => g(id, NOMBRES_GRUPOS_DINAMIA[id].es, NOMBRES_GRUPOS_DINAMIA[id].en, TECNICAS_DINAMIA.filter((t) => t.grupo === id).map((t) => t.slug))),
+    clases: ORDEN_GRUPOS_DINAMIA.map((id) => g(id, NOMBRES_GRUPOS_DINAMIA[id].es, NOMBRES_GRUPOS_DINAMIA[id].en, CLASES_DINAMIA.filter((c) => c.grupo === id).map((c) => c.slug))),
+  },
+  vitalia: {
+    tecnicas: ORDEN_GRUPOS_VITALIA.map((id) => g(id, NOMBRES_GRUPOS_VITALIA[id].es, NOMBRES_GRUPOS_VITALIA[id].en, TECNICAS_VITALIA.filter((t) => t.grupo === id).map((t) => t.slug))),
+    clases: ORDEN_GRUPOS_VITALIA.map((id) => g(id, NOMBRES_GRUPOS_VITALIA[id].es, NOMBRES_GRUPOS_VITALIA[id].en, CLASES_VITALIA.filter((c) => c.grupo === id).map((c) => c.slug))),
   },
 };
 

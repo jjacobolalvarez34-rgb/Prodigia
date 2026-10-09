@@ -1,0 +1,581 @@
+import type { LeccionDinamia } from "./tipos";
+
+// Las 30 Clases de Dinamia (Pro; la primera es la gratis del mundo): enseñan el
+// tema desde cero, con un ejemplo resuelto paso a paso, su animación y un quiz
+// de 3 preguntas. g = 10 m/s² salvo que el enunciado diga otra cosa.
+type Clase = Omit<LeccionDinamia, "orden" | "requierePro">;
+
+const C: Clase[] = [
+  // ---------- 1. Cinemática ----------
+  {
+    slug: "dinamia-clase-posicion-y-velocidad",
+    grupo: "cinematica",
+    nombre: "Posición, distancia y velocidad",
+    descripcion: "Sistema de referencia, desplazamiento y velocidad media.",
+    pasos: [
+      "Para describir un movimiento primero eliges un **sistema de referencia**: un punto cero y un sentido positivo. La **posición** $x$ es dónde está el móvil respecto de ese cero.",
+      "El **desplazamiento** es el cambio de posición: $\\Delta x = x_f - x_i$. Puede ser negativo (si fue hacia atrás) o cero (si volvió al mismo lugar).",
+      "La **distancia recorrida** es todo el camino hecho, siempre positiva. Si caminas $30$ m hacia adelante y $10$ m de vuelta, el desplazamiento es $20$ m, pero la distancia es $40$ m.",
+      "La **velocidad media** es el desplazamiento dividido entre el tiempo: $v_m = \\dfrac{\\Delta x}{\\Delta t}$. Si un auto pasa de $x = 50$ m a $x = 350$ m en $20$ s, $v_m = \\dfrac{300}{20} = 15$ m/s.",
+    ],
+    visuales: [{ tipo: "dinamia.trayecto", v0: 5, a: 0, segundos: 4, titulo: "Cada segundo, el mismo desplazamiento: $5$ m" }],
+    quiz: [
+      { pregunta: "Caminas $50$ m hacia el norte y vuelves $20$ m. ¿Cuál es tu desplazamiento?", opciones: ["30 m al norte", "70 m al norte", "20 m al sur", "50 m al norte"], respuesta: "30 m al norte", explicacion: "$\\Delta x = 50 - 20 = 30$ m hacia el norte. La distancia recorrida sí es $70$ m." },
+      { pregunta: "Un corredor da una vuelta completa a una pista de $400$ m y termina donde empezó. ¿Cuál es su desplazamiento?", opciones: ["0 m", "400 m", "200 m", "800 m"], respuesta: "0 m", explicacion: "Terminó en la misma posición: $\\Delta x = 0$." },
+      { pregunta: "Un tren pasa de $x = 2$ km a $x = 14$ km en $10$ min. ¿Cuál es su velocidad media en m/s?", opciones: ["20 m/s", "1,2 m/s", "72 m/s", "120 m/s"], respuesta: "20 m/s", explicacion: "$\\Delta x = 12\\,000$ m y $\\Delta t = 600$ s: $\\dfrac{12\\,000}{600} = 20$ m/s." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-mru",
+    grupo: "cinematica",
+    nombre: "Movimiento rectilíneo uniforme",
+    descripcion: "d = v·t, gráficas x-t y v-t, y encuentros.",
+    pasos: [
+      "En el **MRU** la velocidad es constante: el móvil recorre distancias iguales en tiempos iguales. Su posición es $x = x_0 + v \\cdot t$.",
+      "En la gráfica $x$-$t$ es una **recta**, y su pendiente es la velocidad. En la $v$-$t$ es una **horizontal**, y el área debajo es lo recorrido.",
+      "**Encuentros**: dos autos a $72$ m van uno hacia el otro a $7$ y $11$ m/s. Se acercan a $7 + 11 = 18$ m/s, así que se encuentran a los $\\dfrac{72}{18} = 4$ s.",
+      "Si van en el mismo sentido, el de atrás alcanza al de adelante a la **diferencia** de velocidades.",
+    ],
+    visuales: [
+      { tipo: "dinamia.trayecto", v0: 10, a: 0, segundos: 3, titulo: "MRU: marcas igual de separadas" },
+      { tipo: "dinamia.grafica", eje: "x-t", v0: 10, a: 0, segundos: 4, x0: 5, titulo: "Recta en $x$-$t$: pendiente $= 10$ m/s" },
+    ],
+    quiz: [
+      { pregunta: "Un auto sale de $x_0 = 20$ m a $15$ m/s constante. ¿Dónde está a los $6$ s?", opciones: ["110 m", "90 m", "35 m", "120 m"], respuesta: "110 m", explicacion: "$x = 20 + 15 \\cdot 6 = 110$ m." },
+      { pregunta: "Dos ciclistas a $90$ m van uno hacia el otro a $4$ y $5$ m/s. ¿A los cuántos segundos se encuentran?", opciones: ["10 s", "90 s", "18 s", "22,5 s"], respuesta: "10 s", explicacion: "Se acercan a $9$ m/s: $\\dfrac{90}{9} = 10$ s." },
+      { pregunta: "En una gráfica $v$-$t$ de un MRU, ¿qué representa el área debajo de la línea?", opciones: ["La distancia recorrida", "La aceleración", "El tiempo", "La velocidad"], respuesta: "La distancia recorrida", explicacion: "Es velocidad por tiempo, que da distancia." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-mrua",
+    grupo: "cinematica",
+    nombre: "Aceleración y MRUA",
+    descripcion: "Las tres ecuaciones, cuándo usar cada una, y el frenado.",
+    pasos: [
+      "La **aceleración** es cuánto cambia la velocidad por segundo: $a = \\dfrac{\\Delta v}{\\Delta t}$. Si un auto pasa de $0$ a $20$ m/s en $5$ s, $a = 4\\ \\text{m/s}^2$.",
+      "En el **MRUA** (aceleración constante) hay tres ecuaciones: (1) $v = v_0 + a t$; (2) $x = v_0 t + \\tfrac{1}{2} a t^2$; (3) $v^2 = v_0^2 + 2 a x$.",
+      "Elige la que **no** tiene el dato que te falta: si no te dan el tiempo, usa la (3).",
+      "**Frenado**: un auto a $25$ m/s frena con $a = -5\\ \\text{m/s}^2$. Se detiene cuando $v = 0$: $t = \\dfrac{25}{5} = 5$ s, y recorre $x = \\dfrac{25^2}{2 \\cdot 5} = 62{,}5$ m.",
+    ],
+    visuales: [
+      { tipo: "dinamia.trayecto", v0: 12, a: -3, segundos: 4, titulo: "Frenando: las marcas se juntan hasta parar" },
+      { tipo: "dinamia.grafica", eje: "v-t", v0: 10, a: -2, segundos: 5, titulo: "En $v$-$t$ es una recta; el área es lo que recorrió" },
+    ],
+    quiz: [
+      { pregunta: "Una moto sale del reposo con $a = 3\\ \\text{m/s}^2$. ¿A qué velocidad va a los $4$ s?", opciones: ["12 m/s", "24 m/s", "7 m/s", "48 m/s"], respuesta: "12 m/s", explicacion: "$v = 0 + 3 \\cdot 4 = 12$ m/s." },
+      { pregunta: "¿Cuántos metros recorrió esa moto en esos $4$ s?", opciones: ["24 m", "12 m", "48 m", "6 m"], respuesta: "24 m", explicacion: "$x = \\tfrac{1}{2} \\cdot 3 \\cdot 16 = 24$ m." },
+      { pregunta: "Un auto a $20$ m/s frena con $4\\ \\text{m/s}^2$. ¿Cuántos metros necesita para detenerse?", opciones: ["50 m", "5 m", "80 m", "100 m"], respuesta: "50 m", explicacion: "Sin el tiempo, usa $v^2 = v_0^2 + 2ax$: $0 = 400 - 8x$, $x = 50$ m." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-caida-libre",
+    grupo: "cinematica",
+    nombre: "Caída libre y tiro vertical",
+    descripcion: "Altura máxima, tiempo de vuelo y por qué tarda lo mismo en subir que en bajar.",
+    pasos: [
+      "Sin aire, todo cae con la misma aceleración $g \\approx 9{,}8\\ \\text{m/s}^2$ (usamos $10$ para cuentas rápidas), sea una pluma o un martillo.",
+      "Si lanzas algo hacia arriba a $v_0$, la gravedad le quita $10$ m/s cada segundo: tarda $t = \\dfrac{v_0}{g}$ en detenerse arriba.",
+      "La **altura máxima** es $h = \\dfrac{v_0^2}{2g}$. Lanzada a $20$ m/s: sube $2$ s y llega a $\\dfrac{400}{20} = 20$ m.",
+      "La bajada es la subida al revés: tarda lo mismo ($2$ s) y vuelve a tu mano a $20$ m/s. El tiempo total de vuelo es $\\dfrac{2 v_0}{g} = 4$ s.",
+    ],
+    visuales: [{ tipo: "dinamia.caida", g: 10, v0: 20, segundos: 4, titulo: "Sube, se detiene un instante arriba y baja" }],
+    quiz: [
+      { pregunta: "Lanzas una pelota hacia arriba a $30$ m/s. ¿Cuánto tarda en llegar arriba? ($g = 10$)", opciones: ["3 s", "6 s", "30 s", "0,3 s"], respuesta: "3 s", explicacion: "$t = \\dfrac{30}{10} = 3$ s." },
+      { pregunta: "¿Qué altura máxima alcanza?", opciones: ["45 m", "90 m", "30 m", "300 m"], respuesta: "45 m", explicacion: "$h = \\dfrac{30^2}{20} = 45$ m." },
+      { pregunta: "En el punto más alto, ¿cuánto valen su velocidad y su aceleración?", opciones: ["v = 0 y a = g hacia abajo", "v = 0 y a = 0", "v = g y a = 0", "v = 30 m/s y a = g"], respuesta: "v = 0 y a = g hacia abajo", explicacion: "Se detiene un instante, pero la gravedad nunca deja de actuar." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-tiro-parabolico",
+    grupo: "cinematica",
+    nombre: "Tiro parabólico",
+    descripcion: "Dos movimientos a la vez: uniforme en x y MRUA en y; alcance máximo a 45°.",
+    pasos: [
+      "Un proyectil lanzado en diagonal hace **dos movimientos independientes**: en horizontal va a velocidad constante $v_x = v_0 \\cos\\theta$; en vertical es un tiro vertical con $v_y = v_0 \\sin\\theta$.",
+      "El tiempo de vuelo sale del eje $y$: $T = \\dfrac{2 v_y}{g}$. El alcance sale del eje $x$: $R = v_x \\cdot T$.",
+      "Ejemplo a $20$ m/s y $45^\\circ$: $v_x = v_y \\approx 14{,}2$ m/s; $T \\approx 2{,}84$ s; $R \\approx 40{,}3$ m.",
+      "Para una misma velocidad, el mayor alcance se logra a $45^\\circ$. Y ángulos complementarios ($30^\\circ$ y $60^\\circ$) llegan igual de lejos.",
+    ],
+    visuales: [{ tipo: "dinamia.parabola", v0: 20, angulo: 45, titulo: "$v_x$ no cambia; $v_y$ se achica, es cero arriba y crece hacia abajo" }],
+    quiz: [
+      { pregunta: "En un tiro parabólico (sin aire), ¿qué componente de la velocidad no cambia?", opciones: ["La horizontal", "La vertical", "Las dos", "Ninguna"], respuesta: "La horizontal", explicacion: "En $x$ no hay aceleración; la gravedad solo cambia $v_y$." },
+      { pregunta: "Una pelota sale con $v_x = 10$ m/s y $v_y = 15$ m/s. ¿Cuánto dura en el aire? ($g = 10$)", opciones: ["3 s", "1,5 s", "2 s", "2,5 s"], respuesta: "3 s", explicacion: "$T = \\dfrac{2 \\cdot 15}{10} = 3$ s." },
+      { pregunta: "¿Qué alcance tiene esa pelota?", opciones: ["30 m", "45 m", "15 m", "25 m"], respuesta: "30 m", explicacion: "$R = v_x \\cdot T = 10 \\cdot 3 = 30$ m." },
+    ],
+  },
+  // ---------- 2. Vectores ----------
+  {
+    slug: "dinamia-clase-escalares-y-vectores",
+    grupo: "vectores",
+    nombre: "Escalares y vectores",
+    descripcion: "Módulo, dirección y sentido; vectores sobre una línea.",
+    pasos: [
+      "Una magnitud **escalar** queda dicha con un número y su unidad: masa ($5$ kg), tiempo ($3$ s), temperatura, energía.",
+      "Una magnitud **vectorial** necesita además hacia dónde: **módulo** (cuánto), **dirección** (la recta) y **sentido** (hacia qué lado). Fuerza, velocidad, desplazamiento y aceleración son vectores.",
+      "Sobre una misma línea, los vectores se suman con signos: $10$ N a la derecha y $13$ N a la izquierda dan $10 - 13 = -3$ N, o sea $3$ N a la izquierda.",
+      "Por eso «voy a $60$ km/h» es rapidez (escalar), pero «voy a $60$ km/h hacia el norte» es velocidad (vector).",
+    ],
+    visuales: [{ tipo: "dinamia.vectores", modo: "suma", vectores: [{ nombre: "A", x: 6, y: 0 }, { nombre: "B", x: -9, y: 0 }], titulo: "Sobre una línea: $6 + (-9) = -3$" }],
+    quiz: [
+      { pregunta: "¿Cuál de estas magnitudes es vectorial?", opciones: ["La fuerza", "La masa", "La temperatura", "El tiempo"], respuesta: "La fuerza", explicacion: "Una fuerza necesita módulo, dirección y sentido." },
+      { pregunta: "Sobre una caja tiran $8$ N hacia la derecha y $15$ N hacia la izquierda. ¿Cuál es la resultante? (derecha positiva)", opciones: ["-7 N", "7 N", "23 N", "-23 N"], respuesta: "-7 N", explicacion: "$8 - 15 = -7$ N: $7$ N hacia la izquierda." },
+      { pregunta: "¿Qué tres datos definen un vector?", opciones: ["Módulo, dirección y sentido", "Masa, tiempo y unidad", "Origen, color y largo", "Solo el módulo"], respuesta: "Módulo, dirección y sentido", explicacion: "Cuánto, sobre qué recta y hacia qué lado." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-sumar-vectores",
+    grupo: "vectores",
+    nombre: "Sumar vectores",
+    descripcion: "Punta con cola y paralelogramo.",
+    pasos: [
+      "Para sumar vectores con un dibujo, pon la **cola** del segundo en la **punta** del primero. La resultante va desde la cola del primero hasta la punta del último.",
+      "La **regla del paralelogramo** es lo mismo: con los dos vectores saliendo del mismo punto, la resultante es la diagonal del paralelogramo que forman.",
+      "Con números, se suman las componentes: $A = (3, 0)$ y $B = (0, 4)$ dan $R = (3, 4)$, de módulo $5$.",
+      "El orden no importa: $A + B = B + A$. Y la resultante nunca mide más que la suma de los módulos ni menos que su diferencia.",
+    ],
+    visuales: [{ tipo: "dinamia.vectores", modo: "suma", vectores: [{ nombre: "A", x: 4, y: 1 }, { nombre: "B", x: 2, y: 7 }], titulo: "Punta con cola: $R = (6, 8)$" }],
+    quiz: [
+      { pregunta: "Suma $A = (-2, 5)$ y $B = (7, 7)$. ¿Cuál es la resultante?", opciones: ["(5, 12)", "(9, 2)", "(5, 2)", "(-9, 12)"], respuesta: "(5, 12)", explicacion: "$x$: $-2 + 7 = 5$; $y$: $5 + 7 = 12$." },
+      { pregunta: "¿Cuánto mide esa resultante $(5, 12)$?", opciones: ["13", "17", "7", "60"], respuesta: "13", explicacion: "$\\sqrt{25 + 144} = \\sqrt{169} = 13$." },
+      { pregunta: "Dos fuerzas de $6$ N y $8$ N actúan sobre un punto. ¿Qué resultante es imposible?", opciones: ["15 N", "2 N", "10 N", "14 N"], respuesta: "15 N", explicacion: "La resultante está entre $8 - 6 = 2$ y $8 + 6 = 14$ N." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-componentes",
+    grupo: "vectores",
+    nombre: "Componentes",
+    descripcion: "Descomponer y recomponer con seno y coseno.",
+    pasos: [
+      "Un vector de módulo $F$ con ángulo $\\theta$ respecto del eje $x$ se **descompone** en $F_x = F \\cos\\theta$ y $F_y = F \\sin\\theta$.",
+      "Ejemplo: $F = 20$ N a $30^\\circ$: $F_x = 20 \\cdot 0{,}87 = 17{,}4$ N y $F_y = 20 \\cdot 0{,}5 = 10$ N.",
+      "Para **recomponer**, Pitágoras: $F = \\sqrt{F_x^2 + F_y^2}$. Con $(17{,}4;\\ 10)$ vuelve a dar unos $20$ N.",
+      "Los signos dicen el cuadrante: una componente $x$ negativa apunta a la izquierda; una $y$ negativa, hacia abajo.",
+    ],
+    visuales: [{ tipo: "dinamia.vectores", modo: "componentes", vectores: [{ nombre: "F", x: 8, y: 6 }], titulo: "El vector es la suma de sus dos componentes" }],
+    quiz: [
+      { pregunta: "Una fuerza de $50$ N forma $60^\\circ$ con el eje $x$. ¿Cuánto vale $F_y$? ($\\sin 60^\\circ \\approx 0{,}87$)", opciones: ["43,5 N", "25 N", "50 N", "86,6 N"], respuesta: "43,5 N", explicacion: "$F_y = 50 \\cdot 0{,}87 = 43{,}5$ N." },
+      { pregunta: "Un vector tiene componentes $(-8, 6)$. ¿Hacia dónde apunta?", opciones: ["Arriba y a la izquierda", "Abajo y a la derecha", "Arriba y a la derecha", "Abajo y a la izquierda"], respuesta: "Arriba y a la izquierda", explicacion: "$x$ negativa: izquierda; $y$ positiva: arriba." },
+      { pregunta: "¿Cuánto mide el vector $(-8, 6)$?", opciones: ["10", "14", "-2", "100"], respuesta: "10", explicacion: "$\\sqrt{64 + 36} = 10$." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-angulo-y-producto-escalar",
+    grupo: "vectores",
+    nombre: "Ángulo de la resultante y producto escalar",
+    descripcion: "Arcotangente, y cuándo dos vectores son perpendiculares.",
+    pasos: [
+      "El **ángulo** de un vector $(x, y)$ con el eje $x$ cumple $\\tan\\theta = \\dfrac{y}{x}$. Para $(1, 1)$, $\\tan\\theta = 1$ y $\\theta = 45^\\circ$.",
+      "Ojo con el cuadrante: $(-1, -1)$ también da $\\tan\\theta = 1$, pero apunta a $225^\\circ$. Mira los signos antes de dar el ángulo.",
+      "El **producto escalar** es $A \\cdot B = A_x B_x + A_y B_y$. Da un número (no un vector) e indica cuánto apuntan hacia el mismo lado.",
+      "Si $A \\cdot B = 0$, los vectores son **perpendiculares**. Ejemplo: $(3, 4) \\cdot (-4, 3) = -12 + 12 = 0$.",
+    ],
+    visuales: [{ tipo: "dinamia.vectores", modo: "suma", vectores: [{ nombre: "A", x: 3, y: 4 }, { nombre: "B", x: -4, y: 3 }], titulo: "$A \\cdot B = 0$: forman un ángulo recto" }],
+    quiz: [
+      { pregunta: "¿Cuánto vale $A \\cdot B$ con $A = (5, 6)$ y $B = (-4, -1)$?", opciones: ["-26", "-14", "26", "(-20, -6)"], respuesta: "-26", explicacion: "$5 \\cdot (-4) + 6 \\cdot (-1) = -20 - 6 = -26$." },
+      { pregunta: "¿Cuál de estos vectores es perpendicular a $(2, 3)$?", opciones: ["(3, -2)", "(2, 3)", "(-2, -3)", "(3, 2)"], respuesta: "(3, -2)", explicacion: "$2 \\cdot 3 + 3 \\cdot (-2) = 0$." },
+      { pregunta: "Un vector $(4, 4)$, ¿qué ángulo forma con el eje $x$?", opciones: ["45°", "90°", "30°", "60°"], respuesta: "45°", explicacion: "$\\tan\\theta = \\dfrac{4}{4} = 1$, y está en el primer cuadrante." },
+    ],
+  },
+  // ---------- 3. Leyes de Newton ----------
+  {
+    slug: "dinamia-clase-primera-ley",
+    grupo: "newton",
+    nombre: "Fuerza y primera ley",
+    descripcion: "Inercia: sin fuerza neta, nada cambia.",
+    pasos: [
+      "Una **fuerza** es un empujón o un tirón; se mide en newtons (N). Lo que importa es la **fuerza neta**: la suma de todas las fuerzas.",
+      "**Primera ley (inercia)**: si la fuerza neta es cero, un cuerpo quieto sigue quieto y uno que se mueve sigue en línea recta a velocidad constante.",
+      "Por eso, si el bus frena de golpe, tu cuerpo sigue hacia adelante: nada lo frenó a él todavía.",
+      "Ojo: «se mueve» no quiere decir «hay fuerza». Una nave en el espacio puede ir rapidísimo con fuerza neta cero.",
+    ],
+    visuales: [{ tipo: "dinamia.cuerpoLibre", situacion: "piso", masa: 5, titulo: "Peso y normal se cancelan: fuerza neta cero, sigue quieto" }],
+    quiz: [
+      { pregunta: "Un disco de hockey se desliza sobre hielo perfecto, sin rozamiento. ¿Qué hace?", opciones: ["Sigue en línea recta a la misma velocidad", "Frena hasta parar", "Acelera", "Gira en círculos"], respuesta: "Sigue en línea recta a la misma velocidad", explicacion: "Sin fuerza neta, la velocidad no cambia (inercia)." },
+      { pregunta: "Un auto va a $80$ km/h constantes en una recta. ¿Cuánto vale la fuerza neta sobre él?", opciones: ["Cero", "Hacia adelante", "Hacia atrás", "Igual a su peso"], respuesta: "Cero", explicacion: "Velocidad constante en línea recta: el motor y los roces se equilibran." },
+      { pregunta: "¿Qué ley explica que el mantel salga y la vajilla quede en la mesa?", opciones: ["Primera ley (inercia)", "Segunda ley", "Tercera ley", "Ley de Hooke"], respuesta: "Primera ley (inercia)", explicacion: "Los platos tienden a quedarse quietos si casi no reciben fuerza." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-segunda-ley",
+    grupo: "newton",
+    nombre: "Segunda ley: F = m·a",
+    descripcion: "Fuerza neta, unidades y despejes.",
+    pasos: [
+      "**Segunda ley**: la fuerza neta produce una aceleración en su misma dirección: $F_{\\text{neta}} = m \\cdot a$.",
+      "Un newton es la fuerza que le da $1\\ \\text{m/s}^2$ a $1$ kg: $1\\ \\text{N} = 1\\ \\text{kg} \\cdot \\text{m/s}^2$.",
+      "Despejes: $a = \\dfrac{F}{m}$ y $m = \\dfrac{F}{a}$. Con la misma fuerza, el doble de masa acelera la mitad.",
+      "Ejemplo: empujas una caja de $10$ kg con $50$ N y el rozamiento es $20$ N. La neta es $30$ N y $a = \\dfrac{30}{10} = 3\\ \\text{m/s}^2$.",
+    ],
+    visuales: [{ tipo: "dinamia.cuerpoLibre", situacion: "empujado", masa: 10, empuje: 50, mu: 0.2, titulo: "Neta $= 50 - 20 = 30$ N, $a = 3\\ \\text{m/s}^2$" }],
+    quiz: [
+      { pregunta: "¿Qué fuerza neta necesita una moto de $150$ kg para acelerar a $2\\ \\text{m/s}^2$?", opciones: ["300 N", "75 N", "152 N", "1500 N"], respuesta: "300 N", explicacion: "$F = 150 \\cdot 2 = 300$ N." },
+      { pregunta: "Empujas un carro de $40$ kg con $100$ N y el rozamiento es $20$ N. ¿Qué aceleración tiene?", opciones: ["2 m/s²", "2,5 m/s²", "3 m/s²", "0,5 m/s²"], respuesta: "2 m/s²", explicacion: "Neta $= 80$ N; $a = \\dfrac{80}{40} = 2\\ \\text{m/s}^2$." },
+      { pregunta: "Con la misma fuerza, empujas un cuerpo de doble masa. ¿Qué pasa con la aceleración?", opciones: ["Se reduce a la mitad", "Se duplica", "No cambia", "Se hace cero"], respuesta: "Se reduce a la mitad", explicacion: "$a = \\dfrac{F}{m}$: el doble de masa, la mitad de aceleración." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-tercera-ley-y-normal",
+    grupo: "newton",
+    nombre: "Tercera ley y la normal",
+    descripcion: "Acción y reacción en cuerpos distintos; por qué la normal no siempre es igual al peso.",
+    pasos: [
+      "**Tercera ley**: si A empuja a B, B empuja a A con la misma fuerza y en sentido contrario. Al remar, empujas el agua hacia atrás y el agua te empuja hacia adelante.",
+      "Las dos fuerzas actúan sobre **cuerpos distintos**, por eso no se cancelan entre sí.",
+      "La **normal** es la fuerza con que una superficie empuja a lo que apoya en ella, perpendicular a la superficie. **No** es la reacción del peso: la reacción del peso es la Tierra atraída por el cuerpo.",
+      "La normal solo es igual al peso en un piso horizontal sin otras fuerzas verticales. En una rampa vale $m g \\cos\\theta$; si alguien empuja hacia abajo, es mayor que el peso.",
+    ],
+    visuales: [{ tipo: "dinamia.cuerpoLibre", situacion: "plano", masa: 4, angulo: 30, titulo: "En la rampa, la normal es menor que el peso: $40 \\cdot 0{,}87 = 34{,}8$ N" }],
+    quiz: [
+      { pregunta: "Un cohete expulsa gases hacia abajo. ¿Qué lo hace subir?", opciones: ["Los gases lo empujan hacia arriba", "El aire de abajo", "Su peso", "La normal"], respuesta: "Los gases lo empujan hacia arriba", explicacion: "Acción y reacción: el cohete empuja los gases y los gases empujan al cohete." },
+      { pregunta: "¿Por qué el peso de un libro y la normal de la mesa NO son un par de acción y reacción?", opciones: ["Actúan sobre el mismo cuerpo", "No miden lo mismo", "Van en el mismo sentido", "Una es más grande"], respuesta: "Actúan sobre el mismo cuerpo", explicacion: "Un par de acción y reacción actúa sobre cuerpos distintos." },
+      { pregunta: "Un bloque de $10$ kg en una rampa de $60^\\circ$. ¿Cuánto vale la normal? ($\\cos 60^\\circ = 0{,}5$)", opciones: ["50 N", "100 N", "87 N", "10 N"], respuesta: "50 N", explicacion: "$N = m g \\cos\\theta = 10 \\cdot 10 \\cdot 0{,}5 = 50$ N." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-rozamiento",
+    grupo: "newton",
+    nombre: "Rozamiento",
+    descripcion: "Estático y cinético, el coeficiente μ y cuándo empieza a moverse.",
+    pasos: [
+      "El **rozamiento** aparece entre superficies que se tocan y se opone a que deslicen. Depende de la normal y de un coeficiente $\\mu$ (sin unidades).",
+      "**Estático**: mientras el cuerpo no se mueve, el rozamiento iguala a tu empujón, hasta un máximo $\\mu_e N$. Si empujas más que eso, empieza a moverse.",
+      "**Cinético**: una vez que desliza, el rozamiento vale $\\mu_c N$, y suele ser un poco menor. Por eso cuesta más arrancar un mueble que mantenerlo en movimiento.",
+      "Ejemplo: caja de $20$ kg con $\\mu_c = 0{,}25$ en piso horizontal: $N = 200$ N y el rozamiento es $0{,}25 \\cdot 200 = 50$ N.",
+    ],
+    visuales: [{ tipo: "dinamia.cuerpoLibre", situacion: "empujado", masa: 20, empuje: 80, mu: 0.25, titulo: "Rozamiento $= \\mu N = 50$ N, en contra del movimiento" }],
+    quiz: [
+      { pregunta: "Una caja de $30$ kg desliza con $\\mu_c = 0{,}2$. ¿Cuánto vale el rozamiento?", opciones: ["60 N", "6 N", "150 N", "300 N"], respuesta: "60 N", explicacion: "$N = 300$ N; $0{,}2 \\cdot 300 = 60$ N." },
+      { pregunta: "Un mueble tiene un rozamiento estático máximo de $120$ N. Lo empujas con $90$ N. ¿Cuánto rozamiento actúa?", opciones: ["90 N", "120 N", "30 N", "0 N"], respuesta: "90 N", explicacion: "Mientras no se mueve, el rozamiento estático iguala tu empujón." },
+      { pregunta: "¿Por qué cuesta más arrancar un mueble que mantenerlo en movimiento?", opciones: ["El rozamiento estático máximo es mayor que el cinético", "La masa aumenta", "La normal baja al moverse", "El peso cambia"], respuesta: "El rozamiento estático máximo es mayor que el cinético", explicacion: "Normalmente $\\mu_e > \\mu_c$." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-plano-y-poleas",
+    grupo: "newton",
+    nombre: "Plano inclinado y poleas",
+    descripcion: "Problemas con dos cuerpos, paso a paso.",
+    pasos: [
+      "Receta para problemas con varios cuerpos: (1) diagrama de cuerpo libre de cada uno; (2) ejes en el sentido del movimiento; (3) $F = m a$ para cada cuerpo; (4) resolver el sistema.",
+      "**Máquina de Atwood** ($m_1 = 3$ kg y $m_2 = 2$ kg colgando de una polea): gana el más pesado. $a = \\dfrac{(3 - 2) \\cdot 10}{5} = 2\\ \\text{m/s}^2$.",
+      "La tensión sale de cualquiera de los dos: para $m_2$, $T - 20 = 2 \\cdot 2$, así que $T = 24$ N. Está entre los dos pesos, como debe ser.",
+      "En un **plano inclinado** sin rozamiento, lo que tira rampa abajo es $m g \\sin\\theta$: un bloque de $4$ kg a $30^\\circ$ siente $20$ N y acelera a $5\\ \\text{m/s}^2$.",
+    ],
+    visuales: [
+      { tipo: "dinamia.poleas", m1: 3, m2: 2, titulo: "Atwood: $a = 2\\ \\text{m/s}^2$ y $T = 24$ N" },
+      { tipo: "dinamia.cuerpoLibre", situacion: "plano", masa: 4, angulo: 30, titulo: "Plano de $30^\\circ$ sin rozamiento" },
+    ],
+    quiz: [
+      { pregunta: "En una Atwood cuelgan $6$ kg y $4$ kg. ¿Qué aceleración tienen? ($g = 10$)", opciones: ["2 m/s²", "10 m/s²", "5 m/s²", "1 m/s²"], respuesta: "2 m/s²", explicacion: "$a = \\dfrac{(6 - 4) \\cdot 10}{10} = 2\\ \\text{m/s}^2$." },
+      { pregunta: "¿Cuánto vale la tensión de la cuerda en esa Atwood?", opciones: ["48 N", "40 N", "60 N", "20 N"], respuesta: "48 N", explicacion: "Para el de $4$ kg: $T - 40 = 4 \\cdot 2$, así que $T = 48$ N." },
+      { pregunta: "Un bloque de $10$ kg en un plano de $30^\\circ$, sin rozamiento. ¿Qué aceleración tiene?", opciones: ["5 m/s²", "10 m/s²", "8,7 m/s²", "50 m/s²"], respuesta: "5 m/s²", explicacion: "$a = g \\sin 30^\\circ = 10 \\cdot 0{,}5 = 5\\ \\text{m/s}^2$." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-circular-y-gravitacion",
+    grupo: "newton",
+    nombre: "Movimiento circular y gravitación",
+    descripcion: "Fuerza centrípeta y la ley de gravitación universal.",
+    pasos: [
+      "En un círculo, aunque la rapidez sea constante, la **dirección** de la velocidad cambia todo el tiempo: hay aceleración hacia el centro, $a_c = \\dfrac{v^2}{r}$.",
+      "Esa aceleración necesita una fuerza hacia el centro, la **centrípeta**: $F_c = \\dfrac{m v^2}{r}$. Puede venir de una cuerda, del rozamiento de las ruedas o de la gravedad.",
+      "Si la fuerza desaparece (se corta la cuerda), el objeto sigue en línea recta por la **tangente**.",
+      "**Gravitación universal**: dos masas se atraen con $F = G \\dfrac{m_1 m_2}{d^2}$. Si la distancia se duplica, la fuerza baja a la cuarta parte. Es la fuerza centrípeta que mantiene a la Luna girando.",
+    ],
+    visuales: [{ tipo: "dinamia.circular", masa: 2, radio: 4, v: 6, titulo: "$F_c = \\dfrac{2 \\cdot 36}{4} = 18$ N hacia el centro" }],
+    quiz: [
+      { pregunta: "Una piedra de $0{,}5$ kg gira en una cuerda de $1$ m a $4$ m/s. ¿Qué fuerza hace la cuerda?", opciones: ["8 N", "2 N", "4 N", "16 N"], respuesta: "8 N", explicacion: "$F_c = \\dfrac{0{,}5 \\cdot 16}{1} = 8$ N." },
+      { pregunta: "Si se corta la cuerda, ¿hacia dónde sale la piedra?", opciones: ["En línea recta por la tangente", "Hacia el centro", "Hacia afuera, en línea con la cuerda", "Sigue girando"], respuesta: "En línea recta por la tangente", explicacion: "Sin fuerza al centro, sigue con la velocidad que tenía, que es tangente." },
+      { pregunta: "Si la distancia entre dos planetas se triplica, ¿qué pasa con la fuerza de gravedad entre ellos?", opciones: ["Se divide entre 9", "Se divide entre 3", "Se triplica", "No cambia"], respuesta: "Se divide entre 9", explicacion: "Depende de $\\dfrac{1}{d^2}$: $3^2 = 9$." },
+    ],
+  },
+  // ---------- 4. Trabajo y energía ----------
+  {
+    slug: "dinamia-clase-trabajo-y-potencia",
+    grupo: "energia",
+    nombre: "Trabajo y potencia",
+    descripcion: "W = F·d·cos θ, P = W/t, y el kWh.",
+    pasos: [
+      "Una fuerza hace **trabajo** cuando mueve algo: $W = F \\cdot d \\cdot \\cos\\theta$, en julios (J). Solo cuenta la parte de la fuerza en la dirección del movimiento.",
+      "Ejemplo: arrastras una caja $5$ m con una cuerda de $40$ N a $60^\\circ$ del piso: $W = 40 \\cdot 5 \\cdot 0{,}5 = 100$ J.",
+      "La **potencia** es qué tan rápido se hace el trabajo: $P = \\dfrac{W}{t}$, en vatios (W). Subir la escalera corriendo cuesta el mismo trabajo pero más potencia.",
+      "El **kilovatio-hora** (kWh) es energía, no potencia: lo que gasta un aparato de $1000$ W en una hora. $1\\ \\text{kWh} = 3{,}6$ millones de J.",
+    ],
+    visuales: [{ tipo: "dinamia.cuerpoLibre", situacion: "empujado", masa: 10, empuje: 40, titulo: "Solo el empuje hace trabajo: peso y normal son perpendiculares" }],
+    quiz: [
+      { pregunta: "Empujas un carro $10$ m con $30$ N en la dirección del movimiento. ¿Cuánto trabajo haces?", opciones: ["300 J", "3 J", "40 J", "30 J"], respuesta: "300 J", explicacion: "$W = 30 \\cdot 10 = 300$ J." },
+      { pregunta: "Un motor hace $1200$ J en $4$ s. ¿Qué potencia tiene?", opciones: ["300 W", "4800 W", "1200 W", "1196 W"], respuesta: "300 W", explicacion: "$P = \\dfrac{1200}{4} = 300$ W." },
+      { pregunta: "Una estufa de $2000$ W está prendida $3$ horas. ¿Cuánta energía gasta?", opciones: ["6 kWh", "667 kWh", "2 kWh", "6000 kWh"], respuesta: "6 kWh", explicacion: "$2\\ \\text{kW} \\cdot 3\\ \\text{h} = 6$ kWh." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-cinetica-y-potencial",
+    grupo: "energia",
+    nombre: "Energía cinética y potencial",
+    descripcion: "De dónde salen las fórmulas y qué significan.",
+    pasos: [
+      "La **energía** es la capacidad de hacer trabajo. Un cuerpo en movimiento la tiene: **cinética**, $E_c = \\tfrac{1}{2} m v^2$.",
+      "La velocidad está al cuadrado: ir al doble de rápido es tener **cuatro veces** la energía. Por eso frenar a $100$ km/h cuesta mucho más que a $50$.",
+      "Un cuerpo en altura tiene energía **potencial gravitatoria**, $E_p = m g h$: es el trabajo que hizo falta para subirlo.",
+      "Ejemplo: una bici con ciclista ($80$ kg) a $5$ m/s tiene $E_c = \\tfrac{1}{2} \\cdot 80 \\cdot 25 = 1000$ J; subida a un muro de $2$ m tendría $E_p = 80 \\cdot 10 \\cdot 2 = 1600$ J.",
+    ],
+    visuales: [{ tipo: "dinamia.energia", masa: 2, altura: 5, titulo: "Arriba todo es potencial; abajo, todo cinética" }],
+    quiz: [
+      { pregunta: "¿Cuánta energía cinética tiene una pelota de $0{,}4$ kg a $10$ m/s?", opciones: ["20 J", "4 J", "40 J", "2 J"], respuesta: "20 J", explicacion: "$\\tfrac{1}{2} \\cdot 0{,}4 \\cdot 100 = 20$ J." },
+      { pregunta: "Si un auto pasa de $10$ a $20$ m/s, ¿cuántas veces aumenta su energía cinética?", opciones: ["4 veces", "2 veces", "10 veces", "No cambia"], respuesta: "4 veces", explicacion: "$E_c$ va con $v^2$: $2^2 = 4$." },
+      { pregunta: "¿Cuánta energía potencial gana una mochila de $5$ kg al subirla $3$ m?", opciones: ["150 J", "15 J", "50 J", "1,5 J"], respuesta: "150 J", explicacion: "$E_p = 5 \\cdot 10 \\cdot 3 = 150$ J." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-conservacion-energia",
+    grupo: "energia",
+    nombre: "Conservación de la energía",
+    descripcion: "Toboganes, péndulos y montañas rusas sin rozamiento.",
+    pasos: [
+      "Sin rozamiento, la **energía mecánica** ($E_c + E_p$) se conserva: lo que baja una, sube la otra.",
+      "En una montaña rusa que arranca quieta a $20$ m de altura, arriba hay solo potencial; en el punto más bajo, solo cinética.",
+      "Para saber la velocidad en cualquier punto, iguala energías: $m g h_1 = m g h_2 + \\tfrac{1}{2} m v^2$, o sea $v = \\sqrt{2 g (h_1 - h_2)}$.",
+      "Ejemplo: desde $20$ m, al pasar por un punto a $15$ m va a $\\sqrt{2 \\cdot 10 \\cdot 5} = 10$ m/s. Nunca puede subir más alto que donde empezó.",
+    ],
+    visuales: [{ tipo: "dinamia.energia", masa: 2, altura: 20, titulo: "Las barras se pasan energía; la suma no cambia" }],
+    quiz: [
+      { pregunta: "Un péndulo se suelta desde $0{,}8$ m sobre su punto más bajo. ¿A qué velocidad pasa por abajo?", opciones: ["4 m/s", "16 m/s", "8 m/s", "2 m/s"], respuesta: "4 m/s", explicacion: "$v = \\sqrt{2 \\cdot 10 \\cdot 0{,}8} = \\sqrt{16} = 4$ m/s." },
+      { pregunta: "Un carrito sale quieto a $30$ m de altura, sin rozamiento. ¿Puede subir una loma de $35$ m?", opciones: ["No, nunca supera la altura de partida", "Sí, si va rápido", "Sí, si es liviano", "Depende de la forma de la pista"], respuesta: "No, nunca supera la altura de partida", explicacion: "Su energía total es la de $30$ m de altura." },
+      { pregunta: "Una pelota de $1$ kg cae desde $5$ m. ¿Cuánta energía cinética tiene justo antes de tocar el piso?", opciones: ["50 J", "5 J", "500 J", "25 J"], respuesta: "50 J", explicacion: "Toda la potencial se volvió cinética: $1 \\cdot 10 \\cdot 5 = 50$ J." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-rozamiento-calor-rendimiento",
+    grupo: "energia",
+    nombre: "Rozamiento, calor y rendimiento",
+    descripcion: "Adónde va la energía que «se pierde».",
+    pasos: [
+      "Con rozamiento, la energía mecánica **no** se conserva: una parte se transforma en **calor** (por eso se calientan los frenos). Pero la energía total sí se conserva.",
+      "Balance: $E_{\\text{inicial}} = E_{\\text{final}} + \\text{calor}$. Un trineo de $10$ kg baja de $5$ m ($500$ J) y llega abajo a $8$ m/s ($320$ J): se fueron $180$ J en calor.",
+      "El calor que genera el rozamiento es su trabajo: $Q = f \\cdot d$.",
+      "El **rendimiento** de una máquina es la parte útil: $\\eta = \\dfrac{E_{\\text{útil}}}{E_{\\text{entra}}} \\cdot 100\\ \\%$. Un motor de auto anda por el $30\\ \\%$; uno eléctrico, por el $90\\ \\%$.",
+    ],
+    visuales: [{ tipo: "dinamia.energia", masa: 1, altura: 20, perdida: 0.3, titulo: "La barra de calor crece: lo que falta no desaparece" }],
+    quiz: [
+      { pregunta: "Un trineo de $20$ kg baja desde $10$ m y llega abajo a $10$ m/s. ¿Cuánta energía se volvió calor?", opciones: ["1000 J", "2000 J", "1500 J", "0 J"], respuesta: "1000 J", explicacion: "$E_p = 2000$ J; $E_c = \\tfrac{1}{2} \\cdot 20 \\cdot 100 = 1000$ J; calor $= 1000$ J." },
+      { pregunta: "Un rozamiento de $15$ N actúa a lo largo de $8$ m. ¿Cuánto calor genera?", opciones: ["120 J", "23 J", "1,9 J", "7 J"], respuesta: "120 J", explicacion: "$Q = f \\cdot d = 15 \\cdot 8 = 120$ J." },
+      { pregunta: "Un motor recibe $2000$ J y pierde $1400$ J en calor. ¿Cuál es su rendimiento?", opciones: ["30 %", "70 %", "60 %", "14 %"], respuesta: "30 %", explicacion: "Útil $= 600$ J; $\\dfrac{600}{2000} = 30\\ \\%$." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-resortes-y-choques",
+    grupo: "energia",
+    nombre: "Resortes y cantidad de movimiento",
+    descripcion: "Ley de Hooke, impulso y choques.",
+    pasos: [
+      "**Ley de Hooke**: un resorte estirado o comprimido $x$ hace una fuerza $F = k x$ ($k$ es su constante, en N/m). Guarda energía $E = \\tfrac{1}{2} k x^2$.",
+      "La **cantidad de movimiento** es $p = m v$. El **impulso** de una fuerza es $F \\cdot \\Delta t$ y es igual al cambio de $p$: por eso los airbags alargan el choque y bajan la fuerza.",
+      "En un **choque** sin fuerzas de afuera, la $p$ total se conserva. Si quedan pegados (plástico): $v_f = \\dfrac{m_1 v_1 + m_2 v_2}{m_1 + m_2}$.",
+      "En un choque **elástico** también se conserva la energía cinética. Con masas iguales, se intercambian las velocidades: el que venía se queda quieto y el otro sale.",
+    ],
+    visuales: [
+      { tipo: "dinamia.choque", m1: 2, v1: 6, m2: 1, v2: 0, clase: "plastico", titulo: "Plástico: quedan pegados, la suma de $p$ no cambia" },
+      { tipo: "dinamia.choque", m1: 1, v1: 4, m2: 1, v2: 0, clase: "elastico", titulo: "Elástico con masas iguales: intercambian velocidades" },
+    ],
+    quiz: [
+      { pregunta: "Un resorte de $k = 200$ N/m se comprime $0{,}1$ m. ¿Qué fuerza hace?", opciones: ["20 N", "2000 N", "200 N", "1 N"], respuesta: "20 N", explicacion: "$F = k x = 200 \\cdot 0{,}1 = 20$ N." },
+      { pregunta: "Un vagón de $1000$ kg a $3$ m/s se engancha a otro de $500$ kg quieto. ¿A qué velocidad siguen?", opciones: ["2 m/s", "3 m/s", "1,5 m/s", "1 m/s"], respuesta: "2 m/s", explicacion: "$v_f = \\dfrac{3000}{1500} = 2$ m/s." },
+      { pregunta: "¿Por qué un airbag reduce la fuerza del golpe?", opciones: ["Alarga el tiempo del frenado", "Reduce la masa", "Elimina la cantidad de movimiento", "Aumenta la velocidad"], respuesta: "Alarga el tiempo del frenado", explicacion: "El cambio de $p$ es el mismo; con más $\\Delta t$, la fuerza es menor." },
+    ],
+  },
+  // ---------- 5. Termodinámica ----------
+  {
+    slug: "dinamia-clase-temperatura-y-calor",
+    grupo: "termo",
+    nombre: "Temperatura y calor",
+    descripcion: "Qué mide cada uno, y las escalas.",
+    pasos: [
+      "La **temperatura** mide qué tan rápido se mueven, en promedio, las partículas de algo. El **calor** es energía que pasa de un cuerpo caliente a uno frío.",
+      "No son lo mismo: una bañera a $40\\ ^\\circ\\text{C}$ tiene más energía térmica que una taza a $90\\ ^\\circ\\text{C}$, aunque la taza esté más caliente.",
+      "El calor pasa siempre del más caliente al más frío, hasta que quedan a la misma temperatura (**equilibrio térmico**).",
+      "Escalas: $T_K = T_{^\\circ\\text{C}} + 273$ y $^\\circ\\text{F} = ^\\circ\\text{C} \\cdot \\tfrac{9}{5} + 32$. En física se usa kelvin porque empieza en el cero absoluto.",
+    ],
+    visuales: [
+      { tipo: "dinamia.particulas", modo: "temperatura", valores: [200, 300, 450], titulo: "Más temperatura, partículas más rápidas" },
+      { tipo: "dinamia.termometro", modo: "escalas", temperaturas: [0, 37, 100], titulo: "La misma temperatura en tres escalas" },
+    ],
+    quiz: [
+      { pregunta: "Pones una cuchara fría en una sopa caliente. ¿Hacia dónde va el calor?", opciones: ["De la sopa a la cuchara", "De la cuchara a la sopa", "En los dos sentidos por igual", "No hay calor"], respuesta: "De la sopa a la cuchara", explicacion: "El calor va del más caliente al más frío." },
+      { pregunta: "¿Qué mide la temperatura?", opciones: ["La agitación promedio de las partículas", "La cantidad total de energía", "El calor que tiene un cuerpo", "La masa de las partículas"], respuesta: "La agitación promedio de las partículas", explicacion: "Por eso una taza puede estar más caliente que una bañera con menos energía total." },
+      { pregunta: "¿Cuántos °F son $37\\ ^\\circ\\text{C}$?", opciones: ["98,6 °F", "310 °F", "66,6 °F", "104 °F"], respuesta: "98,6 °F", explicacion: "$37 \\cdot 1{,}8 + 32 = 98{,}6$." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-calor-especifico",
+    grupo: "termo",
+    nombre: "Calor específico",
+    descripcion: "Q = m·c·ΔT y por qué el agua tarda en calentarse.",
+    pasos: [
+      "Para calentar algo hace falta calor: $Q = m \\cdot c \\cdot \\Delta T$, con $c$ el **calor específico** (cuánta energía necesita $1$ kg para subir $1\\ ^\\circ\\text{C}$).",
+      "El agua tiene un $c$ muy alto: $4180\\ \\text{J/(kg}\\cdot{}^\\circ\\text{C)}$. El hierro, unos $450$. Por eso el mar tarda en calentarse y modera el clima de la costa.",
+      "Ejemplo: calentar $2$ kg de agua de $20$ a $70\\ ^\\circ\\text{C}$ necesita $Q = 2 \\cdot 4180 \\cdot 50 = 418\\,000$ J.",
+      "En las mezclas, el calor que cede el caliente es el que gana el frío: $m_1 c_1 (T_1 - T_f) = m_2 c_2 (T_f - T_2)$.",
+    ],
+    visuales: [{ tipo: "dinamia.termometro", modo: "escalas", temperaturas: [20, 45, 70], titulo: "Cada grado de agua cuesta $4180$ J por kilo" }],
+    quiz: [
+      { pregunta: "¿Cuánto calor hace falta para subir $1$ kg de agua de $10$ a $30\\ ^\\circ\\text{C}$? ($c = 4180$)", opciones: ["83 600 J", "4180 J", "125 400 J", "41 800 J"], respuesta: "83 600 J", explicacion: "$Q = 1 \\cdot 4180 \\cdot 20 = 83\\,600$ J." },
+      { pregunta: "Con el mismo calor, ¿qué se calienta más: $1$ kg de agua o $1$ kg de hierro?", opciones: ["El hierro", "El agua", "Los dos igual", "Depende del recipiente"], respuesta: "El hierro", explicacion: "Su calor específico es mucho menor: necesita menos energía por grado." },
+      { pregunta: "Mezclas $1$ kg de agua a $80\\ ^\\circ\\text{C}$ con $3$ kg a $20\\ ^\\circ\\text{C}$. ¿Temperatura final?", opciones: ["35 °C", "50 °C", "65 °C", "40 °C"], respuesta: "35 °C", explicacion: "$\\dfrac{80 + 60}{4} = 35\\ ^\\circ\\text{C}$." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-cambios-de-fase",
+    grupo: "termo",
+    nombre: "Cambios de fase",
+    descripcion: "Calor latente y la curva de calentamiento.",
+    pasos: [
+      "Mientras una sustancia cambia de estado (se derrite o hierve), recibe calor pero **su temperatura no sube**: la energía se usa para separar las partículas.",
+      "Ese calor es el **calor latente**: $Q = m \\cdot L$. Derretir hielo cuesta $L_f \\approx 334\\,000$ J/kg; evaporar agua, $L_v \\approx 2\\,260\\,000$ J/kg.",
+      "En la **curva de calentamiento** del agua se ven dos mesetas: a $0\\ ^\\circ\\text{C}$ (se derrite) y a $100\\ ^\\circ\\text{C}$ (hierve).",
+      "Por eso una quemadura con vapor es peor que con agua hirviendo: el vapor, al condensarse en tu piel, suelta además todo su calor latente.",
+    ],
+    visuales: [{ tipo: "dinamia.termometro", modo: "calentamiento", titulo: "Las mesetas: el calor entra, la temperatura no sube" }],
+    quiz: [
+      { pregunta: "Mientras el agua hierve a $100\\ ^\\circ\\text{C}$, sigues dándole calor. ¿Qué pasa con su temperatura?", opciones: ["Se queda en 100 °C", "Sube", "Baja", "Oscila"], respuesta: "Se queda en 100 °C", explicacion: "El calor se usa para pasar de líquido a vapor." },
+      { pregunta: "¿Cuánto calor hace falta para derretir $2$ kg de hielo a $0\\ ^\\circ\\text{C}$? ($L_f = 334\\,000$ J/kg)", opciones: ["668 000 J", "334 000 J", "167 000 J", "8360 J"], respuesta: "668 000 J", explicacion: "$Q = m L = 2 \\cdot 334\\,000$ J." },
+      { pregunta: "¿Cómo se llama el calor que se usa en un cambio de estado?", opciones: ["Calor latente", "Calor específico", "Temperatura", "Calor sensible"], respuesta: "Calor latente", explicacion: "«Latente» porque no se nota en el termómetro." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-gases-ideales",
+    grupo: "termo",
+    nombre: "Dilatación y gases ideales",
+    descripcion: "Las tres leyes de los gases y P·V = n·R·T.",
+    pasos: [
+      "Al calentarse, casi todo se **dilata**: los rieles del tren tienen juntas, y el mercurio de un termómetro sube.",
+      "En los gases se nota mucho más. Con la temperatura siempre en **kelvin**: Boyle ($T$ fija) $P_1 V_1 = P_2 V_2$; Charles ($P$ fija) $\\dfrac{V_1}{T_1} = \\dfrac{V_2}{T_2}$; Gay-Lussac ($V$ fijo) $\\dfrac{P_1}{T_1} = \\dfrac{P_2}{T_2}$.",
+      "Las tres juntas: $\\dfrac{P V}{T}$ es constante, y la **ley del gas ideal** dice cuánto vale: $P V = n R T$, con $n$ los moles y $R = 8{,}31\\ \\text{J/(mol·K)}$.",
+      "Ejemplo: un globo de $8$ L a $350$ K se calienta a $525$ K con la presión fija: $V_2 = 8 \\cdot \\dfrac{525}{350} = 12$ L.",
+    ],
+    visuales: [
+      { tipo: "dinamia.particulas", modo: "boyle", valores: [4, 2, 1], inicial: 1, titulo: "Boyle: a la mitad de volumen, el doble de presión" },
+      { tipo: "dinamia.particulas", modo: "charles", valores: [300, 450, 600], inicial: 2, titulo: "Charles: el volumen sigue a la temperatura en kelvin" },
+    ],
+    quiz: [
+      { pregunta: "Un gas tiene $3$ atm en un tanque rígido a $300$ K. Si se calienta a $400$ K, ¿qué presión tiene?", opciones: ["4 atm", "2,25 atm", "3 atm", "400 atm"], respuesta: "4 atm", explicacion: "Gay-Lussac: $P_2 = 3 \\cdot \\dfrac{400}{300} = 4$ atm." },
+      { pregunta: "¿Por qué las leyes de los gases se usan con kelvin y no con °C?", opciones: ["Porque necesitan una escala que empiece en el cero absoluto", "Por costumbre", "Porque los °C son más grandes", "Da lo mismo"], respuesta: "Porque necesitan una escala que empiece en el cero absoluto", explicacion: "Con °C, a $0$ grados el volumen sería cero, lo que es absurdo." },
+      { pregunta: "Un gas ocupa $10$ L a $1$ atm. A temperatura fija, se comprime a $2$ L. ¿Qué presión tiene?", opciones: ["5 atm", "0,2 atm", "20 atm", "2 atm"], respuesta: "5 atm", explicacion: "Boyle: $1 \\cdot 10 = P_2 \\cdot 2$, así que $P_2 = 5$ atm." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-primera-ley-maquinas",
+    grupo: "termo",
+    nombre: "Primera ley y máquinas térmicas",
+    descripcion: "ΔU = Q − W, ciclos y el rendimiento de Carnot.",
+    pasos: [
+      "**Primera ley de la termodinámica**: el calor que entra a un gas se reparte entre aumentar su energía interna y hacer trabajo: $\\Delta U = Q - W$.",
+      "Una **máquina térmica** toma calor $Q_c$ de un foco caliente, hace trabajo $W$ y tira el resto $Q_f$ a un foco frío: $W = Q_c - Q_f$.",
+      "Su rendimiento es $\\eta = \\dfrac{W}{Q_c}$. Nunca llega al $100\\ \\%$: siempre hay que tirar algo de calor al frío (segunda ley).",
+      "El máximo posible es el de **Carnot**: $\\eta_{\\max} = 1 - \\dfrac{T_f}{T_c}$, en kelvin. Entre $600$ K y $300$ K, como mucho $50\\ \\%$.",
+    ],
+    visuales: [{ tipo: "dinamia.ciclo", qc: 1000, w: 300, titulo: "El área del ciclo es el trabajo; lo que sobra va al foco frío" }],
+    quiz: [
+      { pregunta: "Un gas recibe $500$ J de calor y hace $200$ J de trabajo. ¿Cuánto cambia su energía interna?", opciones: ["300 J", "700 J", "-300 J", "200 J"], respuesta: "300 J", explicacion: "$\\Delta U = Q - W = 500 - 200 = 300$ J." },
+      { pregunta: "Una máquina toma $2000$ J del foco caliente y tira $1500$ J al frío. ¿Cuál es su rendimiento?", opciones: ["25 %", "75 %", "33 %", "50 %"], respuesta: "25 %", explicacion: "$W = 500$ J; $\\dfrac{500}{2000} = 25\\ \\%$." },
+      { pregunta: "¿Cuál es el rendimiento máximo (Carnot) entre $400$ K y $300$ K?", opciones: ["25 %", "75 %", "100 %", "33 %"], respuesta: "25 %", explicacion: "$1 - \\dfrac{300}{400} = 0{,}25$." },
+    ],
+  },
+  // ---------- 6. Fluidos ----------
+  {
+    slug: "dinamia-clase-densidad-y-presion",
+    grupo: "fluidos",
+    nombre: "Densidad y presión",
+    descripcion: "ρ = m/V y P = F/A.",
+    pasos: [
+      "La **densidad** dice cuánta masa hay en cada metro cúbico: $\\rho = \\dfrac{m}{V}$. Agua: $1000\\ \\text{kg/m}^3$; aceite, unos $900$; hierro, $7800$.",
+      "Un objeto de $4000$ kg que ocupa $5\\ \\text{m}^3$ tiene $\\rho = 800\\ \\text{kg/m}^3$.",
+      "La **presión** es fuerza repartida en un área: $P = \\dfrac{F}{A}$, en pascales ($1\\ \\text{Pa} = 1\\ \\text{N/m}^2$).",
+      "La misma fuerza en menos área hace más presión: por eso un cuchillo afilado corta y unas raquetas para nieve evitan hundirse.",
+    ],
+    visuales: [{ tipo: "dinamia.fluido", modo: "presion", profundidades: [1, 3, 5], titulo: "En un líquido, la presión crece con la profundidad" }],
+    quiz: [
+      { pregunta: "Un bloque de $54$ kg ocupa $0{,}02\\ \\text{m}^3$. ¿Cuál es su densidad?", opciones: ["2700 kg/m³", "1,08 kg/m³", "540 kg/m³", "27 kg/m³"], respuesta: "2700 kg/m³", explicacion: "$\\dfrac{54}{0{,}02} = 2700\\ \\text{kg/m}^3$ (es aluminio)." },
+      { pregunta: "Una caja de $600$ N apoya sobre $0{,}3\\ \\text{m}^2$. ¿Qué presión hace?", opciones: ["2000 Pa", "180 Pa", "600 Pa", "200 Pa"], respuesta: "2000 Pa", explicacion: "$P = \\dfrac{600}{0{,}3} = 2000$ Pa." },
+      { pregunta: "¿Por qué un cuchillo afilado corta mejor que uno sin filo?", opciones: ["La misma fuerza va en menos área: más presión", "Pesa más", "Tiene más densidad", "Hace menos presión"], respuesta: "La misma fuerza va en menos área: más presión", explicacion: "$P = F / A$: con $A$ chica, $P$ grande." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-presion-en-liquidos",
+    grupo: "fluidos",
+    nombre: "Presión en los líquidos",
+    descripcion: "P = ρ·g·h, presión atmosférica y manométrica.",
+    pasos: [
+      "En un líquido, la presión crece con la profundidad: $P = \\rho g h$. En agua, $10$ kPa por metro.",
+      "Solo importa la profundidad, no la forma ni la cantidad de agua: en el fondo de un tubo fino de $5$ m y de una pileta de $5$ m la presión es la misma.",
+      "El aire también pesa: la **presión atmosférica** al nivel del mar es unos $101$ kPa (1 atm).",
+      "**Manométrica** es la que mide un manómetro (solo la del líquido); **absoluta** suma también la atmosférica. A $11$ m bajo el agua: manométrica $110$ kPa, absoluta $211$ kPa.",
+    ],
+    visuales: [{ tipo: "dinamia.fluido", modo: "presion", profundidades: [2, 6, 11], titulo: "$10$ kPa más por cada metro" }],
+    quiz: [
+      { pregunta: "¿Qué presión manométrica hay a $25$ m de profundidad en agua dulce?", opciones: ["250 kPa", "351 kPa", "25 kPa", "2500 kPa"], respuesta: "250 kPa", explicacion: "$1000 \\cdot 10 \\cdot 25 = 250\\,000$ Pa." },
+      { pregunta: "¿Y la presión absoluta ahí? (Aire: $101$ kPa)", opciones: ["351 kPa", "250 kPa", "126 kPa", "149 kPa"], respuesta: "351 kPa", explicacion: "$250 + 101 = 351$ kPa." },
+      { pregunta: "Un tanque angosto y una pileta ancha tienen $3$ m de agua. ¿Dónde hay más presión en el fondo?", opciones: ["Es la misma", "En la pileta", "En el tanque", "Depende de la cantidad de agua"], respuesta: "Es la misma", explicacion: "$P = \\rho g h$: solo importa la profundidad." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-pascal",
+    grupo: "fluidos",
+    nombre: "Principio de Pascal",
+    descripcion: "Prensa y frenos hidráulicos.",
+    pasos: [
+      "**Principio de Pascal**: la presión que aplicas a un líquido encerrado se transmite igual a todos sus puntos.",
+      "En una **prensa hidráulica**, la presión en los dos pistones es la misma: $\\dfrac{F_1}{A_1} = \\dfrac{F_2}{A_2}$, así que $F_2 = F_1 \\cdot \\dfrac{A_2}{A_1}$.",
+      "Ejemplo: $100$ N sobre $0{,}01\\ \\text{m}^2$ hacen $10\\,000$ Pa; sobre $0{,}5\\ \\text{m}^2$ eso empuja con $5000$ N, suficiente para levantar un auto chico.",
+      "La energía no se regala: el pistón grande sube tantas veces menos como fuerza gana. Los **frenos** de un auto funcionan así: un pedal chico mueve pistones grandes en cada rueda.",
+    ],
+    visuales: [{ tipo: "dinamia.fluido", modo: "prensa", f1: 100, a1: 0.01, a2: 0.5, titulo: "Misma presión, área $50$ veces mayor: fuerza $50$ veces mayor" }],
+    quiz: [
+      { pregunta: "En una prensa, $A_1 = 0{,}02\\ \\text{m}^2$ y $A_2 = 1\\ \\text{m}^2$. Con $F_1 = 200$ N, ¿cuánto vale $F_2$?", opciones: ["10 000 N", "4 N", "200 N", "1000 N"], respuesta: "10 000 N", explicacion: "$F_2 = 200 \\cdot \\dfrac{1}{0{,}02} = 10\\,000$ N." },
+      { pregunta: "¿Qué tienen igual los dos pistones de una prensa hidráulica?", opciones: ["La presión", "La fuerza", "El área", "Lo que se desplazan"], respuesta: "La presión", explicacion: "Es lo que dice Pascal: la presión se transmite igual." },
+      { pregunta: "Si el pistón grande tiene $40$ veces el área del chico y sube $1$ cm, ¿cuánto bajó el chico?", opciones: ["40 cm", "1 cm", "0,025 cm", "4 cm"], respuesta: "40 cm", explicacion: "El volumen de líquido que se mueve es el mismo de los dos lados." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-arquimedes",
+    grupo: "fluidos",
+    nombre: "Principio de Arquímedes",
+    descripcion: "Empuje, peso aparente y flotación.",
+    pasos: [
+      "**Arquímedes**: un cuerpo sumergido recibe un **empuje** hacia arriba igual al peso del líquido que desaloja: $E = \\rho_{\\text{líq}} \\cdot g \\cdot V_{\\text{sumergido}}$.",
+      "Si el empuje con el cuerpo entero adentro es mayor que su peso, sube y **flota**; si es menor, se hunde. Eso pasa cuando el cuerpo es menos denso que el líquido.",
+      "Un cuerpo que flota se hunde justo lo necesario para que el empuje iguale su peso. La fracción sumergida es $\\dfrac{\\rho_{\\text{cuerpo}}}{\\rho_{\\text{líq}}}$.",
+      "**Peso aparente**: bajo el agua, una piedra «pesa» menos: $P_{ap} = P - E$. Una piedra de $1\\ \\text{dm}^3$ ($10^{-3}\\ \\text{m}^3$) recibe $10$ N de empuje.",
+    ],
+    visuales: [
+      { tipo: "dinamia.fluido", modo: "flota", densidad: 600, liquido: 1000, titulo: "Flota con el $60\\ \\%$ adentro: ahí el empuje iguala al peso" },
+      { tipo: "dinamia.fluido", modo: "flota", densidad: 2700, liquido: 1000, titulo: "Aun entero adentro, el empuje no alcanza: se hunde" },
+    ],
+    quiz: [
+      { pregunta: "Un objeto de $0{,}002\\ \\text{m}^3$ está completamente sumergido en agua. ¿Qué empuje recibe? ($g = 10$)", opciones: ["20 N", "2 N", "200 N", "0,02 N"], respuesta: "20 N", explicacion: "$E = 1000 \\cdot 10 \\cdot 0{,}002 = 20$ N." },
+      { pregunta: "Una piedra pesa $50$ N y bajo el agua recibe $20$ N de empuje. ¿Cuál es su peso aparente?", opciones: ["30 N", "70 N", "50 N", "20 N"], respuesta: "30 N", explicacion: "$P_{ap} = 50 - 20 = 30$ N." },
+      { pregunta: "Un tronco de $500\\ \\text{kg/m}^3$ flota en agua. ¿Qué fracción queda sumergida?", opciones: ["La mitad", "Todo", "Un cuarto", "Nada"], respuesta: "La mitad", explicacion: "$\\dfrac{500}{1000} = 0{,}5$." },
+    ],
+  },
+  {
+    slug: "dinamia-clase-fluidos-en-movimiento",
+    grupo: "fluidos",
+    nombre: "Fluidos en movimiento",
+    descripcion: "Caudal, continuidad, Torricelli y Bernoulli.",
+    pasos: [
+      "El **caudal** es el volumen que pasa por segundo: $Q = A \\cdot v$, en $\\text{m}^3/\\text{s}$. En un caño lleno es igual en todos lados (**continuidad**): $A_1 v_1 = A_2 v_2$.",
+      "**Torricelli**: el agua sale por un agujero a una profundidad $h$ con la velocidad que tendría cayendo desde esa altura: $v = \\sqrt{2 g h}$. Con $5$ m de agua encima, sale a $10$ m/s.",
+      "**Bernoulli**: donde un fluido va más rápido, su presión es menor. En un caño que se angosta, el agua acelera y su presión baja.",
+      "Así se sostiene en parte un avión: el aire pasa más rápido por arriba del ala que por abajo, y la diferencia de presión empuja el ala hacia arriba.",
+    ],
+    visuales: [
+      { tipo: "dinamia.tubo", modo: "continuidad", v1: 2, k: 3, titulo: "Continuidad: área a un tercio, velocidad por tres" },
+      { tipo: "dinamia.tubo", modo: "torricelli", h: 5, titulo: "Torricelli: $v = \\sqrt{2 \\cdot 10 \\cdot 5} = 10$ m/s" },
+    ],
+    quiz: [
+      { pregunta: "Un caño de $0{,}05\\ \\text{m}^2$ se angosta a $0{,}01\\ \\text{m}^2$. Si el agua entra a $2$ m/s, ¿a qué velocidad sale?", opciones: ["10 m/s", "0,4 m/s", "2 m/s", "5 m/s"], respuesta: "10 m/s", explicacion: "$0{,}05 \\cdot 2 = 0{,}01 \\cdot v$, así que $v = 10$ m/s." },
+      { pregunta: "Un tanque tiene un agujero $20$ m debajo de la superficie. ¿A qué velocidad sale el agua? ($g = 10$)", opciones: ["20 m/s", "200 m/s", "400 m/s", "14 m/s"], respuesta: "20 m/s", explicacion: "$v = \\sqrt{2 \\cdot 10 \\cdot 20} = \\sqrt{400} = 20$ m/s." },
+      { pregunta: "Según Bernoulli, en la parte angosta de un caño, ¿cómo es la presión?", opciones: ["Menor, porque el agua va más rápido", "Mayor, porque el caño aprieta", "Igual que en la parte ancha", "Cero"], respuesta: "Menor, porque el agua va más rápido", explicacion: "Más velocidad, menos presión." },
+    ],
+  },
+];
+
+export const CLASES_DINAMIA: LeccionDinamia[] = C.map((c, i) => ({ ...c, orden: 25 + i, requierePro: true }));

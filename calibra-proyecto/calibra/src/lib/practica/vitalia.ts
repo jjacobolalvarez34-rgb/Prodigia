@@ -233,9 +233,9 @@ function procesos(nivel: number): ProblemaVitalia {
     case "cromosomas": {
       const e = elegir(ESPECIES);
       const que = elegir(["gameto", "mitosis", "meiosis"] as const);
-      if (que === "gameto") return num(M, "cromosomas_gameto", `Las células del cuerpo de ${e.nombre} tienen ${e.dosN} cromosomas (2n). ¿Cuántos tiene un gameto (óvulo o espermatozoide)?`, e.dosN / 2);
-      if (que === "mitosis") return num(M, "cromosomas_mitosis", `Una célula de ${e.nombre} con ${e.dosN} cromosomas hace mitosis. ¿Cuántos cromosomas tiene cada célula hija?`, e.dosN);
-      return num(M, "cromosomas_meiosis", `Una célula de ${e.nombre} con ${e.dosN} cromosomas termina la meiosis. ¿Cuántas células se forman?`, 4);
+      if (que === "gameto") return num(M, "cromosomas_gameto", `Las células del cuerpo ${deArticulo(e.nombre)} tienen ${e.dosN} cromosomas (2n). ¿Cuántos tiene un gameto (óvulo o espermatozoide)?`, e.dosN / 2);
+      if (que === "mitosis") return num(M, "cromosomas_mitosis", `Una célula ${deArticulo(e.nombre)} con ${e.dosN} cromosomas hace mitosis. ¿Cuántos cromosomas tiene cada célula hija?`, e.dosN);
+      return num(M, "cromosomas_meiosis", `Una célula ${deArticulo(e.nombre)} con ${e.dosN} cromosomas termina la meiosis. ¿Cuántas células se forman?`, 4);
     }
     case "ciclo":
       return deTabla(M, "ciclo", CICLO);
@@ -583,7 +583,7 @@ const INVERTEBRADOS: { nombre: string; grupo: string }[] = [
 ];
 const PLANTAS_HONGOS: Item[] = [
   { q: "El musgo no tiene vasos para llevar agua. ¿A qué grupo pertenece?", ok: "Briofitas", no: ["Helechos", "Gimnospermas", "Angiospermas"] },
-  { q: "El helecho tiene vasos pero no semillas: se reproduce por esporas. ¿Qué grupo es?", ok: "Helechos (pteridofitas)", no: ["Briofitas", "Gimnospermas", "Angiospermas"] },
+  { q: "Una planta tiene vasos pero no semillas: se reproduce por esporas. ¿Qué grupo es?", ok: "Helechos (pteridofitas)", no: ["Briofitas", "Gimnospermas", "Angiospermas"] },
   { q: "El pino tiene semillas en conos, sin fruto. ¿Qué grupo es?", ok: "Gimnospermas", no: ["Angiospermas", "Helechos", "Briofitas"] },
   { q: "El manzano tiene flores y sus semillas van dentro de un fruto. ¿Qué grupo es?", ok: "Angiospermas", no: ["Gimnospermas", "Helechos", "Briofitas"] },
   { q: "¿Qué tienen las angiospermas que no tiene ningún otro grupo de plantas?", ok: "Flores y frutos", no: ["Hojas", "Raíces", "Clorofila"] },
@@ -686,7 +686,7 @@ function ecologia(nivel: number): ProblemaVitalia {
     case "rol": {
       const c = elegir(CADENAS);
       const i = randomInt(0, 3);
-      return opc(M, "rol", `En la cadena ${c.eslabones.join(" → ")}, ¿qué papel cumple ${c.eslabones[i]}?`, ROL[i], [...ROL.filter((_, k) => k !== i), "Descomponedor"]);
+      return opc(M, "rol", `En la cadena ${c.eslabones.join(" → ")}, ¿qué papel ${/^(los|las) /.test(c.eslabones[i]) ? "cumplen" : "cumple"} ${c.eslabones[i]}?`, ROL[i], [...ROL.filter((_, k) => k !== i), "Descomponedor"]);
     }
     case "diez": {
       const base = elegir([1000, 10000, 20000, 50000, 100000]);
@@ -702,6 +702,11 @@ function ecologia(nivel: number): ProblemaVitalia {
 }
 
 // ============================================================
+
+// «de» + nombre con artículo: «de el gato» → «del gato»; «de la mosca» queda igual.
+function deArticulo(nombre: string): string {
+  return nombre.startsWith("el ") ? `del ${nombre.slice(3)}` : `de ${nombre}`;
+}
 
 export function generarProblemaVitalia(modo: ModoVitalia, nivel: number): ProblemaVitalia {
   if (modo === "celula") return celula(nivel);

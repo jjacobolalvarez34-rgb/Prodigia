@@ -1254,7 +1254,7 @@ begin
   from public.profiles pr where pr.id = v_user;
 
   if p_mundo = any(v_actuales) then
-    raise exception 'ya tenés ese mundo desbloqueado';
+    raise exception 'ya tienes ese mundo desbloqueado';
   end if;
   if v_saldo < v_costo then
     raise exception 'te faltan Chispas — % cuesta % Chispas', p_mundo, v_costo;
@@ -1287,10 +1287,10 @@ begin
     raise exception 'no autenticado';
   end if;
   if cardinality(p_mundos) <> 2 then
-    raise exception 'elegí exactamente 2 mundos';
+    raise exception 'elige exactamente 2 mundos';
   end if;
   if p_mundos[1] = p_mundos[2] then
-    raise exception 'elegí 2 mundos distintos';
+    raise exception 'elige 2 mundos distintos';
   end if;
   foreach v_mundo in array p_mundos loop
     if not (v_mundo = any(v_validos)) then
@@ -2031,6 +2031,9 @@ begin
   return query select v_duel_id, true, v_rango, v_segundos, v_mundo_encontrado;
 end;
 $$;
+
+-- Ya existe (0244): se borra y se vuelve a crear con las columnas de los dos mundos.
+drop function if exists public.obtener_duelo(uuid);
 
 create function public.obtener_duelo(p_duel_id uuid)
 returns table (

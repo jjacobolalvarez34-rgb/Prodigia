@@ -59,8 +59,8 @@ describe("degradeBoton", () => {
     }
   });
 
-  it("las 13 paradas iniciales/intermedias/finales de TODOS los mundos cumplen contraste AA", () => {
-    expect(MUNDOS_LANDING.length).toBe(13);
+  it("las paradas iniciales/intermedias/finales de los 15 mundos cumplen contraste AA", () => {
+    expect(MUNDOS_LANDING.length).toBe(15);
     for (const { slug, colorHex } of MUNDOS_LANDING) {
       const paradas = degradeCalidoMundo(colorHex);
       for (const parada of paradas) {
@@ -83,7 +83,7 @@ describe("degradeBoton", () => {
   // degradado". colorSolidoPrimario es la primera parada de siempre
   // (protagonista, ya ajustada a contraste AA), sin mezclar hacia
   // rosa/naranja — un solo color plano, no un linear-gradient.
-  it("colorSolidoPrimario devuelve un color plano (no un linear-gradient) y cumple contraste AA para el default y los 13 mundos", () => {
+  it("colorSolidoPrimario devuelve un color plano (no un linear-gradient) y cumple contraste AA para el default y los 15 mundos", () => {
     const solidoDefault = colorSolidoPrimario();
     expect(solidoDefault).toMatch(/^#[0-9a-fA-F]{6}$/);
     expect(solidoDefault).toBe(DEGRADE_PRIMARIO_DEFAULT[0]);

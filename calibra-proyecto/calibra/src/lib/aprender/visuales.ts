@@ -12,6 +12,7 @@ import type { VisualCodia } from "@/lib/codia/visuales";
 import type { VisualCircuitia } from "@/lib/circuitia/visuales";
 import type { VisualEstadistica } from "@/lib/estadistica/visuales";
 import type { VisualDinamia } from "@/lib/dinamia/visuales";
+import type { VisualVitalia } from "@/lib/vitalia/visuales";
 
 // Formato de lección con explicación VISUAL/ANIMADA (compartido por todos
 // los mundos). En `techniques.contenido` (jsonb):
@@ -62,7 +63,7 @@ export interface VisualCuadros extends VisualBase {
 
 // ---------- Unión de todos los visuales conocidos ----------
 
-export type VisualLeccion = VisualCuadros | VisualNaipia | VisualNumeria | VisualEnigmia | VisualGeografia | VisualQuimia | VisualAnatomia | VisualMelodia | VisualTrigonometria | VisualHistoria | VisualCalculia | VisualCircuitia | VisualEstadistica | VisualCodia | VisualDinamia;
+export type VisualLeccion = VisualCuadros | VisualNaipia | VisualNumeria | VisualEnigmia | VisualGeografia | VisualQuimia | VisualAnatomia | VisualMelodia | VisualTrigonometria | VisualHistoria | VisualCalculia | VisualCircuitia | VisualEstadistica | VisualCodia | VisualDinamia | VisualVitalia;
 
 // Validador tolerante: solo exige la forma mínima ({ tipo: string no vacío }
 // y `despuesDePaso` entero >= 0 si está). NO valida el tipo (un tipo que
