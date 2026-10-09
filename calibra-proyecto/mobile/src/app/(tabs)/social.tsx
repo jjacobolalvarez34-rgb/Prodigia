@@ -90,7 +90,7 @@ export default function Social() {
   }
 
   function invitar() {
-    Share.share({ message: `¡Juega conmigo en Prodigia! Aprende jugando en 13 mundos: ${URL_WEB}` });
+    Share.share({ message: `¡Juega conmigo en Prodigia! Aprende jugando en 15 mundos: ${URL_WEB}` });
   }
 
   if (esInvitado) {

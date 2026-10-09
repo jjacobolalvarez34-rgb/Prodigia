@@ -68,6 +68,19 @@ confirmar en vivo · ❌ ausente.
 | 24 | Español neutro, sin voseo, en el contenido de lecciones | ✅³⁰ | ✅¹⁷ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅³⁰ | ✅¹⁵ | ✅¹⁵ | ✅¹⁵ |
 | 25 | Botones con el diseño de pastilla + placa de ícono (color de la ciudad) y flecha para volver a la página anterior | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ |
 | 26 | Confirmación al abandonar una partida o lección desde el menú (Ranked: avisa que se pierde ELO y cierra el duelo con resultado) | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ | ✅²⁹ |
+| 27 | Reloj de su ciudad (día y noche propios, divisor de 672 h) y Gran Alineación con contador | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ | ✅³¹ |
+
+
+³¹ = **Fila 27, pedido del usuario 2026-10-08: "el reloj de los otros dos mundos… eso también toca agregarlo a la paridad".** Cada ciudad tiene su propio día. Sus horas están en tres lugares que deben coincidir:
+- `HORAS_DIA_CIUDAD` en `src/lib/ciudades/cicloDia.ts`, compartido por la web y la app;
+- `horas_dia_ciudad()` en la base (última definición: 0263);
+- el cielo de la app (`mobile/src/ui/Ciudad.tsx`, que lo lee de cicloDia).
+
+**Regla vinculante para todo mundo nuevo:** las horas de su día tienen que ser un **divisor de 672** (28 días) y **distintas** de las de las otras ciudades. Si no divide 672, la Gran Alineación deja de caer junta para todas.
+
+Cada 28 días, todas las ciudades amanecen juntas durante 3 h: constelaciones con premio doble y doble experiencia (`en_gran_alineacion()`, 0259). El **contador en vivo** de la próxima alineación (o de cuánto falta para que termine) está en `/recompensas` de la web (`components/recompensas/ContadorAlineacion.tsx`) y en la app, en la pestaña Mundos y en Recompensas (`mobile/src/ui/ContadorAlineacion.tsx`). Los dos usan `src/lib/recompensas/contadorAlineacion.ts`, con test.
+
+Los textos que cuentan ciudades o mundos («las 15 ciudades») se actualizan con cada mundo nuevo. Mundos 14 y 15: Dinamia, 8 h (el día más rápido); Vitalia, 168 h (una semana, al ritmo lento de la vida). Las dos columnas se suman a la matriz cuando se cierre su documentación.
 
 ¹ = bug real encontrado en esta auditoría y **ya corregido en el código** esta sesión — ver "Changelog" abajo. La celda muestra el estado ACTUAL (post-fix), no el que se encontró.
 ² = /perfil de Numeria tenía un bug propio (ver changelog) que inflaba su propio contador con attempts de otros mundos — también corregido.

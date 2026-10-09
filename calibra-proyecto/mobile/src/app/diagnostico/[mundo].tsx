@@ -86,7 +86,7 @@ export default function DiagnosticoMundo() {
     try {
       await guardarDiagnostico(mundo.slug, diag, niveles, userId);
       if (saltado) {
-        router.replace(`/${mundo.slug}` as Href);
+        router.dismissTo(`/${mundo.slug}` as Href);
         return;
       }
       setResultado(niveles);
@@ -204,7 +204,7 @@ export default function DiagnosticoMundo() {
             {error ? (
               <Boton3D titulo="Reintentar" acento={mundo.base} brillo onPress={() => guardar(resultado, false)} />
             ) : (
-              <Boton3D titulo={`Ir a ${mundo.nombre}`} acento={mundo.base} brillo onPress={() => router.replace(`/${mundo.slug}` as Href)} />
+              <Boton3D titulo={`Ir a ${mundo.nombre}`} acento={mundo.base} brillo onPress={() => router.dismissTo(`/${mundo.slug}` as Href)} />
             )}
           </View>
         </ScrollView>

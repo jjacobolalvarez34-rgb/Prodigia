@@ -131,7 +131,7 @@ export default function Resultado() {
 
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      router.replace(salida);
+      router.dismissTo(salida);
       return true;
     });
     return () => sub.remove();
@@ -354,11 +354,11 @@ export default function Resultado() {
         {paso >= ultimoPaso ? (
           <Animated.View entering={FadeInDown.duration(300)} style={{ gap: 10 }}>
             {duelo ? (
-              <Boton3D titulo={duelo.clasificatorio === false ? "Volver a mis amigos" : "Otro duelo"} acento={mundo.base} brillo onPress={() => router.replace(salida)} />
+              <Boton3D titulo={duelo.clasificatorio === false ? "Volver a mis amigos" : "Otro duelo"} acento={mundo.base} brillo onPress={() => router.dismissTo(salida)} />
             ) : (
               <Boton3D titulo="Otra partida" acento={mundo.base} brillo onPress={() => (params.repetir ? router.replace(JSON.parse(params.repetir)) : router.back())} />
             )}
-            <Pressable onPress={() => router.replace(`/${mundo.slug}` as "/numeria")} hitSlop={10}>
+            <Pressable onPress={() => router.dismissTo(`/${mundo.slug}` as "/numeria")} hitSlop={10}>
               <Texto v="nota" centro>
                 Volver al mundo
               </Texto>

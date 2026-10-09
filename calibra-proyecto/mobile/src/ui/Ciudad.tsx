@@ -17,7 +17,7 @@ import Cielo from "./Cielo";
 //
 // Día y noche (2026-10-06): cada ciudad tiene su propio largo de día
 // (lib/ciudades/cicloDia.ts), así que el cielo, el sol o la luna y cuántas ventanas
-// se ven encendidas dependen de la hora de ESA ciudad. Cada 28 días las 13 amanecen
+// se ven encendidas dependen de la hora de ESA ciudad. Cada 28 días las 15 amanecen
 // juntas («La Gran Alineación») y el sol sale dorado con un anillo.
 
 function rng(semilla: string) {

@@ -143,7 +143,7 @@ function Navegacion() {
         setEtapa("Preparando la entrada…");
       }
       setProgreso(0.9);
-      setEtapa("Preparando los 13 mundos…");
+      setEtapa("Preparando los 15 mundos…");
       await introTerminada;
       await esperar(Math.max(0, CARGA_MINIMA_MS - (Date.now() - inicioRef.current)));
       setProgreso(1);

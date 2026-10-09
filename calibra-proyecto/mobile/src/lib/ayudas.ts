@@ -64,7 +64,7 @@ export async function pistaSprint(evento: EventoSprint) {
 
 // ---------- Globos de cada sección ----------
 export const GLOBOS = {
-  mundos: { titulo: "Las 13 ciudades", texto: "Cada una tiene su propio día y su propia noche. Toca una para practicar o aprender." },
+  mundos: { titulo: "Las 15 ciudades", texto: "Cada una tiene su propio día y su propia noche. Toca una para practicar o aprender." },
   mundo: { titulo: "Practicar y Aprender", texto: "Practicar: partidas de 60 segundos que se adaptan a ti. Aprender: técnicas cortas para resolver más rápido." },
   competir: { titulo: "Competir", texto: "Rankeds contra gente de tu nivel: ganar sube tu ELO, de Bronce a Prodigio. También hay casuales y la liga de la semana." },
   social: { titulo: "Social", texto: "Agrega amigos para retarlos en vivo y únete a un clan para sumar puntos juntos." },

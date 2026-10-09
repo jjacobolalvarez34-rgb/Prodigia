@@ -90,7 +90,7 @@ export function Saludo({ onNuevo, onTengoCuenta }: { onNuevo: () => void; onTeng
   );
 }
 
-// ---------- Escena 1: las 13 ciudades ----------
+// ---------- Escena 1: las 15 ciudades ----------
 function EscenaCiudades() {
   const { width } = useWindowDimensions();
   const radio = Math.min(140, (width - 80) / 2);
@@ -228,7 +228,7 @@ function EscenaCompetir() {
 }
 
 const ESCENAS = [
-  { Dibujo: EscenaCiudades, titulo: "Una ciudad para cada forma de pensar", texto: "13 ciudades: cálculo, lógica, mapas, química, música, código y más. Cada una con su propio día y su propia noche." },
+  { Dibujo: EscenaCiudades, titulo: "Una ciudad para cada forma de pensar", texto: "15 ciudades: cálculo, lógica, mapas, química, física, biología, música, código y más. Cada una con su propio día y su propia noche." },
   { Dibujo: EscenaPartida, titulo: "10 preguntas. 60 segundos.", texto: "Partidas cortas que se adaptan a tu nivel. En racha ganas segundos; si respondes rápido, ganas más Exp." },
   { Dibujo: EscenaPremios, titulo: "Juegas y ganas", texto: "Cada partida te da Exp y Chispas. Con las Chispas compras marcos, fondos y ayudas en la tienda." },
   { Dibujo: EscenaCompetir, titulo: "Y cuando quieras, compite", texto: "Duelos en vivo con amigos, rankeds de Bronce a Prodigio, clanes y una liga cada semana." },

@@ -12,7 +12,7 @@
       "boton": "Let's talk about your school"
     },
     "mundos": {
-      "titulo": "13 worlds, one practice system",
+      "titulo": "15 worlds, one practice system",
       "descripcion": "Every world calibrates its own level per student — nobody gets bored going too slow, or frustrated going too fast."
     },
     "beneficios": {
@@ -676,9 +676,9 @@
     "vidrieraDeMarcosTematicos": "World frames",
     "vidrieraMarcosTematicosDescripcion": "A different ring for each world, for your avatar. Unlocks at level {n} in that world — or free, as a gift, if you fully master it.",
     "requiereNivelMundo": "Level {n} in {mundo} to unlock",
-    "paqueteMarcosMundoDescripcion": "All 13 world frames together, discounted — for when you're seriously playing all 13.",
-    "paqueteMarcosMundoRequisito": "You need level {n} in all 13 worlds to unlock it",
-    "paqueteMarcosMundoCompleto": "You already have all 13 world frames",
+    "paqueteMarcosMundoDescripcion": "All 15 world frames together, discounted — for when you're seriously playing all 15.",
+    "paqueteMarcosMundoRequisito": "You need level {n} in all 15 worlds to unlock it",
+    "paqueteMarcosMundoCompleto": "You already have all 15 world frames",
     "vidrieraDeAnimaciones": "Name animations",
     "vidrieraAnimacionesDescripcion": "Your name moves — shows on your profile, Rankeds, the feed, and clan chat.",
     "sinAnimacion": "No animation",
@@ -4871,6 +4871,17 @@
           "pista": "1 hint",
           "chispas": "200 Sparks"
         }
+      },
+      "contador": {
+        "proxima": "Next Great Alignment",
+        "enCurso": "Great Alignment happening now!",
+        "dias": "days",
+        "horas": "hours",
+        "minutos": "min",
+        "segundos": "sec",
+        "empiezaEl": "Starts {fecha}",
+        "terminaEl": "Ends {fecha}",
+        "premio": "Every city wakes up together: double constellation rewards and double XP in every world."
       }
     }
   },

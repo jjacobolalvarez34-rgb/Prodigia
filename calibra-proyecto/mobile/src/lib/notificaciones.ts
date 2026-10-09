@@ -178,7 +178,7 @@ export async function programarAvisosAlineacion(activa: boolean) {
   const proxima = alineacionEnCurso(ahora) ? proximaAlineacion(ahora + DURACION_EVENTO_MS) : proximaAlineacion(ahora);
   const hora = new Date(proxima).toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" });
   const avisos = [
-    { id: IDS_ALINEACION[0], cuando: proxima - 24 * 3_600_000, titulo: "✦ Mañana: la Gran Alineación", cuerpo: `Las 13 ciudades amanecen juntas a las ${hora}. 3 horas de Exp doble y constelaciones con premio doble.` },
+    { id: IDS_ALINEACION[0], cuando: proxima - 24 * 3_600_000, titulo: "✦ Mañana: la Gran Alineación", cuerpo: `Las 15 ciudades amanecen juntas a las ${hora}. 3 horas de Exp doble y constelaciones con premio doble.` },
     { id: IDS_ALINEACION[1], cuando: proxima - 10 * 60_000, titulo: "✦ En 10 minutos, la Gran Alineación", cuerpo: "Exp doble en todas las ciudades durante 3 horas. ¡Prepárate!" },
   ];
   for (const a of avisos) {

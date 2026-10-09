@@ -16,7 +16,7 @@ const PASOS: Paso[] = [
   { hud: "chispas", titulo: "Tus Chispas", texto: "Las ganas jugando. Toca aquí cuando quieras para abrir la tienda: marcos, fondos, fuentes y ayudas para las partidas." },
   { hud: "racha", titulo: "Tu racha", texto: "Los días seguidos que juegas. Con una partida al día, la llama sigue encendida." },
   { pestana: 0, titulo: "Inicio", texto: "Sigue jugando donde quedaste, el reto diario y tus recompensas." },
-  { pestana: 1, titulo: "Mundos", texto: "Las 13 ciudades. Entra a una para practicar o aprender sus técnicas." },
+  { pestana: 1, titulo: "Mundos", texto: "Las 15 ciudades. Entra a una para practicar o aprender sus técnicas." },
   { pestana: 2, titulo: "Competir", texto: "Rankeds, duelos en vivo con amigos y la liga de la semana." },
   { pestana: 3, titulo: "Social", texto: "Amigos, clanes y chat." },
   { pestana: 4, titulo: "Perfil", texto: "Tu placa, tus logros y tus estadísticas." },

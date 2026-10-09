@@ -61,7 +61,7 @@ export default function Destacados({ novedades }: { novedades: NovedadDestacada[
     {
       id: "aprender",
       etiqueta: "APRENDER",
-      titulo: "Técnicas y Clases en los 13 mundos",
+      titulo: "Técnicas y Clases en los 15 mundos",
       texto: "Trucos de cálculo mental, química, música, código… también en inglés.",
       icono: "📚",
       colores: ["#0B5E57", "#08201E"],

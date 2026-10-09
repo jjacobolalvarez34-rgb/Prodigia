@@ -1,49 +1,30 @@
-import { StyleSheet, View } from "react-native";
-import Animated, { useAnimatedStyle, type SharedValue } from "react-native-reanimated";
-import Svg, { Defs, LinearGradient, Path, Stop } from "react-native-svg";
-import { tono } from "@/lib/recompensas/catalogo";
+import { BlurMask, Canvas, Circle, Group, Oval, RadialGradient, Skia, useClock, vec } from "@shopify/react-native-skia";
+import { useDerivedValue, useSharedValue, type SharedValue } from "react-native-reanimated";
+import { CuerpoCapsula, rgba } from "../fx/capas";
 
-// La cápsula de Chispas (NivelCuentaSubio.tsx de la web): dos mitades que se
-// separan al abrirse (`abierta` de 0 a 1). Los colores cambian según el tipo de
-// cápsula (diaria, de racha, de ciudad, de liga…); por defecto, los de la marca.
+// La cápsula de Chispas en chico (lista de Recompensas): las mismas dos mitades con
+// volumen de fx/capas, flotando con un reflejo que la cruza cada tanto. Los colores
+// cambian según el tipo de cápsula (diaria, de racha, de ciudad, de liga…).
 export default function Capsula({ abierta, colores = ["#7C5CFF", "#FFC53D"], tam = 110 }: { abierta: SharedValue<number>; colores?: [string, string]; tam?: number }) {
-  const [a, b] = colores;
-  const id = `${a}${b}`.replace(/#/g, "");
-  const arriba = useAnimatedStyle(() => ({
-    opacity: 1 - abierta.value,
-    transform: [{ translateY: -60 * abierta.value }, { translateX: -18 * abierta.value }, { rotate: `${-28 * abierta.value}deg` }],
-  }));
-  const abajo = useAnimatedStyle(() => ({
-    opacity: 1 - abierta.value,
-    transform: [{ translateY: 60 * abierta.value }, { translateX: 18 * abierta.value }, { rotate: `${28 * abierta.value}deg` }],
-  }));
   const alto = (tam * 150) / 110;
+  const reloj = useClock();
+  const ranura = useSharedValue(0);
+  const transform = useDerivedValue(() => [{ translateX: tam / 2 }, { translateY: alto * 0.47 + Math.sin((reloj.value / 1000) * 2.2) * tam * 0.03 }]);
+  const sombra = useDerivedValue(() => {
+    const w = tam * (0.5 - Math.sin((reloj.value / 1000) * 2.2) * 0.04);
+    return Skia.XYWHRect(tam / 2 - w / 2, alto * 0.86, w, tam * 0.08);
+  });
   return (
-    <View style={{ width: tam, height: alto }}>
-      <Animated.View style={[StyleSheet.absoluteFill, arriba]}>
-        <Svg width={tam} height={alto} viewBox="0 0 100 140">
-          <Defs>
-            <LinearGradient id={`capA${id}`} x1="0" y1="1" x2="1" y2="0">
-              <Stop offset="0" stopColor={a} />
-              <Stop offset="1" stopColor={tono(a, 0.35)} />
-            </LinearGradient>
-          </Defs>
-          <Path d="M20 70 V50 A30 30 0 0 1 80 50 V70 Z" fill={`url(#capA${id})`} />
-          <Path d="M30 44 A20 20 0 0 1 48 30" stroke="#FFFFFF" strokeOpacity={0.55} strokeWidth={5} strokeLinecap="round" fill="none" />
-        </Svg>
-      </Animated.View>
-      <Animated.View style={[StyleSheet.absoluteFill, abajo]}>
-        <Svg width={tam} height={alto} viewBox="0 0 100 140">
-          <Defs>
-            <LinearGradient id={`capB${id}`} x1="0" y1="0" x2="1" y2="1">
-              <Stop offset="0" stopColor={b} />
-              <Stop offset="1" stopColor={tono(b, 0.3)} />
-            </LinearGradient>
-          </Defs>
-          <Path d="M20 70 V90 A30 30 0 0 0 80 90 V70 Z" fill={`url(#capB${id})`} />
-          <Path d="M17 69 H83 V73 H17 Z" fill="#2A1A00" fillOpacity={0.25} />
-        </Svg>
-      </Animated.View>
-    </View>
+    <Canvas style={{ width: tam, height: alto }}>
+      <Circle cx={tam / 2} cy={alto * 0.47} r={tam * 0.5}>
+        <RadialGradient c={vec(tam / 2, alto * 0.47)} r={tam * 0.5} colors={[rgba(colores[1], 0.35), rgba(colores[0], 0.12), rgba(colores[0], 0)]} />
+      </Circle>
+      <Oval rect={sombra} color="rgba(0,0,0,0.5)">
+        <BlurMask blur={3} style="normal" />
+      </Oval>
+      <Group transform={transform}>
+        <CuerpoCapsula ancho={tam * 0.58} colores={colores} abierta={abierta} ranura={ranura} colorRanura={colores[1]} reloj={reloj} />
+      </Group>
+    </Canvas>
   );
 }

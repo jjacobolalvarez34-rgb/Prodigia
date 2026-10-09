@@ -28,6 +28,7 @@ import {
 } from "@/lib/recompensas/api";
 import { refrescarCosmeticosWeb } from "@/lib/recompensas/cosmeticosWeb";
 import { misConstelaciones, type Constelacion as DatosConstelacion } from "@/lib/recompensas/constelaciones";
+import ContadorAlineacion from "@/components/recompensas/ContadorAlineacion";
 import Constelacion from "@/components/recompensas/Constelacion";
 import AbrirCapsula, { DibujoCapsula } from "@/components/recompensas/AbrirCapsula";
 import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
@@ -157,7 +158,7 @@ export default function RecompensasClient({ invitado }: { invitado: boolean }) {
               <li className="text-texto-secundario">{t("constelaciones.fugaz")}</li>
             </ul>
           )}
-          {constelaciones[0]?.alineacion && <p className="rounded-2xl border border-logro/60 bg-logro/10 px-4 py-2 text-sm font-bold text-logro">{t("constelaciones.alineacion")}</p>}
+          <ContadorAlineacion />
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
             {[...constelaciones]
               .sort((a, b) => Number(b.favorita) - Number(a.favorita) || b.estrellas - a.estrellas)

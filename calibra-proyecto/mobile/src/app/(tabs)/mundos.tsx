@@ -3,7 +3,6 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
-import { alineacionEnCurso, proximaAlineacion } from "@/lib/ciudades/cicloDia";
 import { mundoDobleExperiencia } from "@/lib/eventos/dobleExperiencia";
 import { PRECIO_MUNDO_CHISPAS } from "@/lib/mundos/precios";
 import { sonar, vibrar } from "~/lib/efectos";
@@ -16,6 +15,7 @@ import { mostrarAviso } from "~/ui/Aviso";
 import Barra from "~/ui/Barra";
 import Boton3D from "~/ui/Boton3D";
 import Ciudad from "~/ui/Ciudad";
+import ContadorAlineacion from "~/ui/ContadorAlineacion";
 import Confeti from "~/ui/Confeti";
 import Hoja from "~/ui/Hoja";
 import { IconoCandado, IconoChispa } from "~/ui/Iconos";
@@ -92,26 +92,6 @@ function TarjetaMundo({ mundo, tuyo, nivel, indice, recien, onPress }: { mundo: 
   );
 }
 
-// La Gran Alineación (lib/ciudades/cicloDia.ts): cada 28 días las 13 ciudades
-// amanecen juntas. Mientras dura (3 h) se anuncia; si no, cuánto falta.
-function Alineacion() {
-  const [ahora] = useState(() => Date.now());
-  const enCurso = alineacionEnCurso(ahora);
-  const dias = Math.ceil((proximaAlineacion(ahora) - ahora) / 86_400_000);
-  return (
-    <View style={[styles.alineacion, enCurso && { borderColor: color.logro, backgroundColor: conAlfa(color.logro, 0.12) }]}>
-      <Texto tam={20}>{enCurso ? "🌅" : "☀️"}</Texto>
-      <View style={{ flex: 1 }}>
-        <Texto v="fuerte" tam={13} c={enCurso ? color.logro : color.texto}>
-          {enCurso ? "¡La Gran Alineación! Las 13 ciudades amanecen juntas" : "Cada ciudad tiene su propio día y su propia noche"}
-        </Texto>
-        <Texto v="nota" tam={11}>
-          {enCurso ? "Pasa una vez cada 28 días." : dias <= 1 ? "Mañana amanecen todas juntas: la Gran Alineación." : `Faltan ${dias} días para que las 13 amanezcan juntas.`}
-        </Texto>
-      </View>
-    </View>
-  );
-}
 
 export default function Mundos() {
   const router = useRouter();
@@ -174,7 +154,7 @@ export default function Mundos() {
             de 13 encendidos
           </Texto>
         </View>
-        <Alineacion />
+        <ContadorAlineacion compacto />
         <View style={styles.fila}>
           <Chip texto="Todos" activo={filtro === "todos"} onPress={() => setFiltro("todos")} />
           <Chip texto="Míos" activo={filtro === "mios"} onPress={() => setFiltro("mios")} />
@@ -240,7 +220,6 @@ export default function Mundos() {
 }
 
 const styles = StyleSheet.create({
-  alineacion: { flexDirection: "row", alignItems: "center", gap: 10, padding: 10, borderRadius: 14, borderWidth: 1, borderColor: color.border, backgroundColor: color.surface1 },
   doble: { position: "absolute", top: 8, left: 8, paddingHorizontal: 9, paddingVertical: 4, borderRadius: 999, backgroundColor: color.logro },
   fila: { flexDirection: "row", alignItems: "center", gap: 8 },
   entre: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 },

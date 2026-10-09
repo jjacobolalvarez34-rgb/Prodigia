@@ -12,7 +12,7 @@ import { color, fuente } from "~/tema";
 // Prodigia Pro (03-PANTALLAS §4.13). La compra llega con Google Play Billing; por
 // ahora la pantalla muestra qué incluye y si ya lo tienes.
 const BENEFICIOS = [
-  "Los 13 mundos encendidos, sin gastar Chispas",
+  "Los 15 mundos encendidos, sin gastar Chispas",
   "Clases: lecciones paso a paso en cada mundo",
   "Estadísticas avanzadas de tu progreso",
   "Fondo Prodigio y animación Prisma para tu Placa",

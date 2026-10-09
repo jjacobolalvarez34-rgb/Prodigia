@@ -49,6 +49,8 @@ import { IconoCheck, IconoChispa, IconoCopo, IconoEscudo, IconoReloj } from "~/u
 import { PantallaApilada, TituloSeccion, Vacio } from "~/ui/Pantalla";
 import AbrirCapsula from "~/ui/recompensas/AbrirCapsula";
 import Capsula from "~/ui/recompensas/Capsula";
+import CelebracionPremio from "~/ui/recompensas/CelebracionPremio";
+import ContadorAlineacion from "~/ui/ContadorAlineacion";
 import Constelacion from "~/ui/recompensas/Constelacion";
 import VistaCosmetico from "~/ui/recompensas/VistaCosmetico";
 import Tarjeta from "~/ui/Tarjeta";
@@ -56,7 +58,7 @@ import Texto from "~/ui/Texto";
 import { color, conAlfa, fuente, mundoDe } from "~/tema";
 
 // Recompensas (docs/economy/PROPUESTA_TIENDA_Y_RECOMPENSAS.md, igual que
-// /recompensas en la web): constelaciones de las 13 ciudades (0259, en vez de las
+// /recompensas en la web): constelaciones de las 15 ciudades (0259, en vez de las
 // cápsulas), cápsulas que queden por abrir, calendario de 7 días, misiones del día,
 // regalos de amigos y colecciones por ciudad. Todo lo decide la base (0249/0259).
 
@@ -92,6 +94,8 @@ export default function Recompensas() {
   const [constelaciones, setConstelaciones] = useState<DatosConstelacion[]>([]);
   const [verComo, setVerComo] = useState(false);
   const [abriendo, setAbriendo] = useState<DatosCapsula | null>(null);
+  // Premio reclamado (calendario o misión) que se está celebrando.
+  const [celebrando, setCelebrando] = useState<{ tipo: "calendario"; dia: number; premio: string; cantidad: number } | { tipo: "mision"; chispas: number; completas: boolean } | null>(null);
   const [verContenido, setVerContenido] = useState<{ capsula: DatosCapsula; filas: ContenidoCapsula[] } | null>(null);
   const [verCiudad, setVerCiudad] = useState<string | null>(null);
   const [ocupado, setOcupado] = useState<string | null>(null);
@@ -176,13 +180,7 @@ export default function Recompensas() {
                 </Texto>
               </Texto>
             </Pressable>
-            {constelaciones[0]?.alineacion && (
-              <Tarjeta acento={color.logro} brillo={0.25}>
-                <Texto v="fuerte" c={color.logro}>
-                  ✦ Gran Alineación: las constelaciones dan premio doble
-                </Texto>
-              </Tarjeta>
-            )}
+            <ContadorAlineacion />
             <View style={styles.grilla}>
               {[...constelaciones]
                 .sort((a, b) => Number(b.favorita) - Number(a.favorita) || b.estrellas - a.estrellas)
@@ -281,9 +279,7 @@ export default function Recompensas() {
                   accion("calendario", async () => {
                     const r = await reclamarCalendario(supabase);
                     fijarChispas(r.puntos_total);
-                    sonar("recompensa");
-                    vibrar.exito();
-                    mostrarAviso(r.premio === "estrellas" ? `¡${r.cantidad} estrellas en tu ciudad favorita!` : "¡Premio del día reclamado!", "logro");
+                    setCelebrando({ tipo: "calendario", dia: r.dia, premio: r.premio, cantidad: r.cantidad });
                   })
                 }
               />
@@ -321,9 +317,7 @@ export default function Recompensas() {
                       accion(m.tipo, async () => {
                         const r = await reclamarMision(supabase, m.tipo);
                         fijarChispas(r.puntos_total);
-                        sonar("recompensa");
-                        vibrar.exito();
-                        mostrarAviso(r.capsula ? "¡Las 3 misiones! +2 estrellas en tu ciudad favorita." : `+${m.recompensa} Chispas`, "logro");
+                        setCelebrando({ tipo: "mision", chispas: m.recompensa, completas: r.capsula });
                       })
                     }
                     style={[styles.reclamar, !lista && { opacity: 0.4 }]}
@@ -468,6 +462,31 @@ export default function Recompensas() {
         )}
       </Hoja>
 
+      {celebrando?.tipo === "calendario" && (
+        <CelebracionPremio
+          colorPremio={celebrando.premio === "hielo" ? "#7FD8FF" : celebrando.premio === "estrellas" ? "#B07CFF" : color.logro}
+          icono={celebrando.premio === "hielo" ? <IconoCopo tam={56} c="#BDEBFF" /> : celebrando.premio === "tiempo_extra" ? <IconoReloj tam={56} c={color.logro} /> : celebrando.premio === "estrellas" ? <Texto style={{ fontSize: 58, color: "#D9C6FF" }}>✦</Texto> : <IconoChispa tam={60} />}
+          etiqueta={`Calendario · día ${celebrando.dia}`}
+          titulo={celebrando.premio === "estrellas" ? "¡Estrellas para tu ciudad favorita!" : celebrando.premio === "hielo" ? "¡Hielo para tus partidas!" : celebrando.premio === "tiempo_extra" ? "¡Tiempo extra!" : "¡Premio del día!"}
+          cantidad={celebrando.cantidad}
+          sufijo={celebrando.premio === "chispas" ? "Chispas" : celebrando.premio === "estrellas" ? "estrellas" : undefined}
+          nota={celebrando.dia === 7 ? "¡Completaste la semana! Mañana vuelve a empezar." : `Vuelve mañana por el día ${celebrando.dia + 1}.`}
+          grande={celebrando.dia === 7}
+          onCerrar={() => setCelebrando(null)}
+        />
+      )}
+      {celebrando?.tipo === "mision" && (
+        <CelebracionPremio
+          icono={<IconoChispa tam={60} />}
+          etiqueta={celebrando.completas ? "Las 3 misiones de hoy" : "Misión cumplida"}
+          titulo={celebrando.completas ? "¡Día perfecto!" : "¡Misión cumplida!"}
+          cantidad={celebrando.chispas}
+          sufijo="Chispas"
+          nota={celebrando.completas ? "+2 estrellas en tu ciudad favorita." : undefined}
+          grande={celebrando.completas}
+          onCerrar={() => setCelebrando(null)}
+        />
+      )}
       {abriendo && (
         <AbrirCapsula
           capsula={abriendo}

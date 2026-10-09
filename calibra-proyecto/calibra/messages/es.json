@@ -12,7 +12,7 @@
       "boton": "Hablemos de tu colegio"
     },
     "mundos": {
-      "titulo": "13 mundos, un mismo sistema de práctica",
+      "titulo": "15 mundos, un mismo sistema de práctica",
       "descripcion": "Cada mundo calibra su propio nivel por estudiante — nadie se aburre por ir muy lento, ni se frustra por ir muy rápido."
     },
     "beneficios": {
@@ -676,9 +676,9 @@
     "vidrieraDeMarcosTematicos": "Marcos de mundo",
     "vidrieraMarcosTematicosDescripcion": "Un anillo distinto para cada mundo, para tu avatar. Se desbloquea al llegar a nivel {n} en ese mundo — o gratis, de regalo, si lo dominas por completo.",
     "requiereNivelMundo": "Nivel {n} en {mundo} para desbloquear",
-    "paqueteMarcosMundoDescripcion": "Los 13 marcos de mundo juntos, con descuento — para cuando ya juegas los 13 en serio.",
-    "paqueteMarcosMundoRequisito": "Necesitas nivel {n} en los 13 mundos para desbloquearlo",
-    "paqueteMarcosMundoCompleto": "Ya tienes los 13 marcos de mundo",
+    "paqueteMarcosMundoDescripcion": "Los 15 marcos de mundo juntos, con descuento — para cuando ya juegas los 15 en serio.",
+    "paqueteMarcosMundoRequisito": "Necesitas nivel {n} en los 15 mundos para desbloquearlo",
+    "paqueteMarcosMundoCompleto": "Ya tienes los 15 marcos de mundo",
     "vidrieraDeAnimaciones": "Animaciones de nombre",
     "vidrieraAnimacionesDescripcion": "Tu nombre se mueve — se ve en tu perfil, en Rankeds, en el feed y en el chat de clan.",
     "sinAnimacion": "Sin animación",
@@ -4871,6 +4871,17 @@
           "pista": "1 pista",
           "chispas": "200 Chispas"
         }
+      },
+      "contador": {
+        "proxima": "Próxima Gran Alineación",
+        "enCurso": "¡Gran Alineación en curso!",
+        "dias": "días",
+        "horas": "horas",
+        "minutos": "min",
+        "segundos": "seg",
+        "empiezaEl": "Empieza el {fecha}",
+        "terminaEl": "Termina el {fecha}",
+        "premio": "Todas las ciudades amanecen juntas: constelaciones con premio doble y doble experiencia en todos los mundos."
       }
     }
   },

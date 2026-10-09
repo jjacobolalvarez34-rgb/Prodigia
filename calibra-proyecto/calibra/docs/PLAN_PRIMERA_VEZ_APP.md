@@ -206,7 +206,7 @@ Algo propio de Prodigia: aprovecha el cielo de cada ciudad y el ciclo de día y 
 |---|---|---|
 | 1 | ¿Se aprueba el paso a paso de la sección 2 tal como está? | Sí, con los cambios que quieras |
 | 2 | ¿Una pregunta de prueba antes de crear la cuenta (Paso 4)? | Sí: sube mucho las cuentas creadas |
-| 3 | ¿Registro con Google en la app? | Sí (hay que configurarlo en Supabase y Google Cloud) |
+| 3 | ¿Registro con Google en la app? | Sí (hay que configurarlo en Supabase y Google Cloud). ✅ **Funciona**: confirmado por el usuario en su teléfono el 2026-10-08 |
 | 4 | ¿Quitar «Entrar como invitado» de la app? | Sí, y convertir a los invitados que ya existen |
 | 5 | ¿Kit del Pionero: 1.000 Chispas, marco y título exclusivos? | Sí |
 | 6 | ¿Reemplazar las cápsulas por Constelaciones? | Sí, conservando las cápsulas que ya tiene cada uno |

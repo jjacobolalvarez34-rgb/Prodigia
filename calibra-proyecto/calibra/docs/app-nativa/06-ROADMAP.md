@@ -34,7 +34,7 @@
 | # | Tarea | Terminado cuando |
 |---|---|---|
 | 2.1 | App Expo en `apps/mobile` con expo-router, fuentes, tokens, ícono y splash | Instala en un teléfono real vía EAS (build interno) |
-| 2.2 | Auth: invitado, email/contraseña, Google nativo, App Links para `/auth/confirm` | Crear cuenta en la app y ver el mismo progreso en la web |
+| 2.2 | Auth: invitado, email/contraseña, Google nativo, App Links para `/auth/confirm` | Crear cuenta en la app y ver el mismo progreso en la web. ✅ **Inicio de sesión con Google: funciona** (confirmado por el usuario en su teléfono, 2026-10-08) |
 | 2.3 | Componentes base: `Boton3D`, `Tarjeta`, `HUD`, `BarraInferior`, `Teclado`, `Toast` | Pantalla de catálogo de componentes dentro de la app (solo en builds de desarrollo) |
 | 2.4 | Hoy (versión mínima) + Mundos (carrusel) + Hub de Numeria | Navegación completa con el botón atrás de Android correcto |
 | 2.5 | Sprint de Numeria con generadores de `core` + `insertar_intento` + finish | Una partida en la app suma XP visible en la web |
