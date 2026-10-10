@@ -1000,6 +1000,19 @@
       "casilla": "I have read and accept the Terms and conditions and the Privacy policy.",
       "boton": "Accept and continue",
       "error": "We couldn't save your acceptance. Please try again."
+    },
+    "proTermino": {
+      "titulo": "Your Pro has ended",
+      "texto": "Your subscription expired, so the Pro perks are now off:",
+      "lista": {
+        "mundos": "Worlds you didn't buy are locked again",
+        "clases": "Classes after the first one",
+        "estadisticas": "Advanced stats",
+        "anuncios": "Ad-free games"
+      },
+      "seQueda": "The worlds you bought, your progress and your cosmetics are still yours.",
+      "renovar": "Renew Pro",
+      "ahoraNo": "Not now"
     }
   },
   "Geografia": {
@@ -4905,6 +4918,17 @@
         "terminaEl": "Ends {fecha}",
         "premio": "Every city wakes up together: double constellation rewards and double XP in every world."
       }
+    },
+    "extras": {
+      "duplicarAnuncio": "▶ Watch an ad to double today's prize",
+      "duplicarPro": "Double today's prize · Pro",
+      "duplicado": "Prize doubled!",
+      "capsulaTitulo": "Today's bonus capsule",
+      "capsulaTextoAnuncio": "Watch a short ad and it's yours. One a day, and it's optional.",
+      "capsulaTextoPro": "With Pro it's yours, no ads. One a day.",
+      "verAnuncio": "▶ Watch ad",
+      "reclamarPro": "Claim · Pro",
+      "capsulaLista": "Bonus capsule! It's waiting in your capsules."
     }
   },
   "PrimerosPasos": {

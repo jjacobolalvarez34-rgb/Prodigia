@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -15,6 +15,8 @@ import {
   misColecciones,
   misMisiones,
   misRegalos,
+  premioPorAnuncio,
+  premiosAnuncioHoy,
   reclamarCalendario,
   reclamarMision,
   recibirRegalo,
@@ -23,17 +25,19 @@ import {
   type ContenidoCapsula,
   type EstadoCalendario,
   type Mision,
+  type PremioAnuncio,
   type PiezaColeccion,
   type Regalo,
 } from "@/lib/recompensas/api";
 import { refrescarCosmeticosWeb } from "@/lib/recompensas/cosmeticosWeb";
+import { anuncioConPremioWeb, publicidadWebActiva, suscribirPublicidadWeb } from "@/lib/publicidad/web";
 import { misConstelaciones, type Constelacion as DatosConstelacion } from "@/lib/recompensas/constelaciones";
 import ContadorAlineacion from "@/components/recompensas/ContadorAlineacion";
 import Constelacion from "@/components/recompensas/Constelacion";
 import AbrirCapsula, { DibujoCapsula } from "@/components/recompensas/AbrirCapsula";
 import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
 
-export default function RecompensasClient({ invitado }: { invitado: boolean }) {
+export default function RecompensasClient({ invitado, plan }: { invitado: boolean; plan: string }) {
   const t = useTranslations("Recompensas");
   const tMundos = useTranslations("Mundos.nombres");
   const [capsulas, setCapsulas] = useState<Capsula[] | null>(null);
@@ -49,6 +53,11 @@ export default function RecompensasClient({ invitado }: { invitado: boolean }) {
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const [sinBase, setSinBase] = useState(false);
+  // Premios por anuncio que ya usaste hoy (0277); null mientras no se sabe.
+  const [extrasHoy, setExtrasHoy] = useState<PremioAnuncio[] | null>(null);
+  const esPro = plan === "pro";
+  const conAnuncios = useSyncExternalStore(suscribirPublicidadWeb, publicidadWebActiva, () => false);
+  const hayExtras = esPro || (plan === "free" && conAnuncios);
 
   const cargar = useCallback(async () => {
     const sb = createClient();
@@ -61,6 +70,7 @@ export default function RecompensasClient({ invitado }: { invitado: boolean }) {
       setCalendario(cal);
       setRegalos(r);
       setColecciones(col);
+      premiosAnuncioHoy(sb).then(setExtrasHoy, () => setExtrasHoy(null));
       setSinBase(!cal && c.length === 0 && m.length === 0);
       refrescarCosmeticosWeb();
     } catch {
@@ -98,6 +108,17 @@ export default function RecompensasClient({ invitado }: { invitado: boolean }) {
     } finally {
       setOcupado(null);
     }
+  }
+
+  // Duplicar el calendario o una cápsula extra: con un anuncio (gratis) o directo (Pro).
+  function extra(tipo: PremioAnuncio) {
+    accion(`extra-${tipo}`, async () => {
+      if (!esPro && !(await anuncioConPremioWeb())) throw new Error("sin anuncio");
+      const r = await premioPorAnuncio(createClient(), tipo);
+      reproducirTono("compra");
+      if (tipo === "capsula") return t("extras.capsulaLista");
+      return r.premio === "estrellas" ? t("calendario.estrellas", { n: r.cantidad }) : t("extras.duplicado");
+    });
   }
 
   function detalle(c: Capsula): string {
@@ -244,9 +265,39 @@ export default function RecompensasClient({ invitado }: { invitado: boolean }) {
             <p className="text-center text-sm text-texto-secundario">{t("calendario.juegaPrimero", { n: calendario.dia })}</p>
           )
         ) : calendario ? (
-          <p className="text-center text-sm text-texto-secundario">{t("calendario.vuelveManana", { n: calendario.dia === 7 ? 1 : calendario.dia + 1 })}</p>
+          <>
+            <p className="text-center text-sm text-texto-secundario">{t("calendario.vuelveManana", { n: calendario.dia === 7 ? 1 : calendario.dia + 1 })}</p>
+            {hayExtras && extrasHoy && !extrasHoy.includes("calendario") && (
+              <button
+                type="button"
+                disabled={ocupado === "extra-calendario"}
+                onClick={() => extra("calendario")}
+                className="self-center rounded-full border border-logro/60 px-5 py-2 text-sm font-semibold text-logro hover:bg-logro/10 disabled:opacity-60"
+              >
+                {esPro ? t("extras.duplicarPro") : t("extras.duplicarAnuncio")}
+              </button>
+            )}
+          </>
         ) : null}
       </section>
+
+      {hayExtras && extrasHoy && !extrasHoy.includes("capsula") && (
+        <section className="flex items-center gap-4 rounded-2xl border border-border bg-surface p-4">
+          <DibujoCapsula colores={coloresCapsula("diaria", null)} tam={52} />
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <p className="font-display font-bold text-foreground">{t("extras.capsulaTitulo")}</p>
+            <p className="text-sm text-texto-secundario">{esPro ? t("extras.capsulaTextoPro") : t("extras.capsulaTextoAnuncio")}</p>
+          </div>
+          <button
+            type="button"
+            disabled={ocupado === "extra-capsula"}
+            onClick={() => extra("capsula")}
+            className="shrink-0 rounded-full bg-logro px-4 py-2 text-sm font-bold text-[#2A1A00] disabled:opacity-60"
+          >
+            {esPro ? t("extras.reclamarPro") : t("extras.verAnuncio")}
+          </button>
+        </section>
+      )}
 
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-lg font-bold text-foreground">{t("misiones.titulo")}</h2>

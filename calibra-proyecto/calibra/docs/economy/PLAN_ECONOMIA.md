@@ -52,7 +52,8 @@ general (cualquier persona que estudia); el plan para colegios es un producto ap
   dinero.** Los consumibles (hielo, +3 s, escudo, boost) solo se compran con Chispas y siguen
   prohibidos en duelos.
 - **Con dinero se compra tiempo, contenido y estilo**: mundos antes de tiempo, Clases, cosméticos
-  exclusivos, el pase de evento y comodidades (reparar una racha).
+  exclusivos, el paquete del evento y comodidades (reparar una racha). **Sin pase de batalla**
+  (decidido el 2026-10-10, ver §7).
 - **Las cápsulas se ganan gratis y también se pueden abrir con Cometas, nunca con dinero
   directo** (como los cofres de Clash Royale): probabilidades visibles antes de abrir, garantía
   por nivel, solo cosméticos o comodidades, nada intercambiable y **todo lo que sale también se
@@ -71,7 +72,7 @@ general (cualquier persona que estudia); el plan para colegios es un producto ap
 | | **Chispas** (moneda blanda) | **Cometas** (moneda premium; decidido el 2026-10-10) |
 |---|---|---|
 | Cómo se gana | Jugando, misiones, cápsulas, constelaciones, retos, eventos | **Comprándolas**; y pocas gratis: logros, ligas, hitos de racha, eventos |
-| Para qué sirve | Mundos, consumibles, cosméticos comunes a épicos, fusión de cápsulas, tienda de eventos | Cosméticos legendarios y de temporada, mundos al instante, reparar racha, pase de evento |
+| Para qué sirve | Mundos, consumibles, cosméticos comunes a épicos, fusión de cápsulas, tienda de eventos | Cosméticos legendarios y de temporada, mundos al instante, reparar racha, paquete del evento |
 | Se convierte | No | 1 Cometa → 10 Chispas (un solo sentido) |
 
 ---
@@ -109,7 +110,7 @@ general (cualquier persona que estudia); el plan para colegios es un producto ap
 | Fusionar 3 cápsulas | — | 50 Chispas (bronce → plata) · 150 (plata → oro) · 400 (oro → prisma) | — |
 | Reparar una racha perdida | — | 50 Cometas (1 vez por semana) | — |
 
-### 4.3 Lo que se vende con dinero (precios en US$; con precio regional en Latinoamérica)
+### 4.3 Lo que se vende con dinero (precios en US$; con precio regional, decidido el 2026-10-10)
 
 | Producto | Precio | Notas |
 |---|---|---|
@@ -118,47 +119,87 @@ general (cualquier persona que estudia); el plan para colegios es un producto ap
 | Cometas | 100 por 0,99 · 550 por 4,99 · 1200 por 9,99 · 2600 por 19,99 · 7000 por 49,99 | Más volumen, más bonus |
 | **Paquete de inicio** (una vez) | US$2,99 | 1 mundo + 200 Cometas + marco exclusivo: el primer pago tiene que sentirse regalado |
 | Mundo suelto | US$2,99 | O 300 Cometas |
-| **Pase de evento** (opcional) | US$4,99 por evento | Carril gratis para todos; carril premium solo con cosméticos (ver §7) |
+| **Paquete del evento** (opcional) | US$2,99–4,99 por evento | Las piezas del evento de una vez, más la versión animada del marco (ver §7) |
 | Paquetes de cosméticos | US$1,99–6,99 | Temáticos por ciudad o temporada, siempre visibles antes de pagar |
+
+**Precio regional (decidido).** Se fija por país en Google Play y en Paddle, no con un
+descuento a mano: Google Play sugiere el precio local a partir del de EE. UU. y se ajusta en
+Latinoamérica a ~40–60 % (p. ej. Pro mensual ≈ US$1,99–2,99 en Argentina, Colombia o
+Perú; ≈ US$2,99 en México y Brasil). Mercado Pago cobra en moneda local con la misma tabla.
+Las Cometas siguen la misma tabla, así que 550 Cometas cuestan lo mismo en esfuerzo en todos
+lados.
 
 ---
 
 ## 5. Pro, rediseñado
 
-Hoy Pro regala 10 000 Chispas y por eso se canibaliza. Propuesta:
+Hoy Pro regala 10 000 Chispas y por eso se canibaliza. Propuesta (decidida el 2026-10-10):
 
 - **Todos los mundos abiertos** mientras dure la suscripción (lo que compraste con Chispas se queda).
+  **Hecho** en web y app (`tieneMundo` en `src/lib/mundos/precios.ts`; la app ya lo hacía).
 - **Todas las Clases** (hoy ya es de Pro: se mantiene, la primera de cada mundo gratis).
 - **Sin anuncios.**
 - **+25 % de Chispas** al jugar (la Experiencia no cambia: no da ventaja en ligas).
 - **300 Cometas al mes.**
-- **Carril premium del pase de evento incluido.**
+- **El regalo de cada evento**: la pieza Pro de la colección del evento, sin gastar (ver §7).
 - Estadísticas avanzadas y cosméticos de Pro (como hoy).
 - **Prueba gratis de 7 días.**
 
+### 5.1 Cuando Pro termina (hecho, 0276)
+
+Pedido: «cuando se acabe la suscripción se deben apagar y debe aparecer un letrero».
+
+- Pro vence solo: cuenta si la suscripción está activa **y** su período no terminó hace más
+  de 2 días (margen para la renovación). Antes solo bajaba si llegaba el aviso del proveedor.
+- Se revisa al entrar (la web en cada página si eres Pro; la app al cargar tu perfil) y,
+  con pg_cron activo, cada hora para todas las cuentas (`vencer_pro_vencidos`).
+- Se apaga lo que da Pro: mundos no comprados con candado otra vez, Clases después de la
+  primera, estadísticas y partidas sin anuncios. Lo comprado con Chispas y el progreso quedan.
+- Aparece una vez «Tu Pro terminó», con la lista de lo que se apagó y «Renovar Pro».
+- Pro dado a mano (sin suscripción, p. ej. cuentas de prueba) no vence.
+
 ---
 
-## 6. Anuncios (solo cuentas gratis)
+## 6. Anuncios (solo cuentas gratis) — decidido y programado el 2026-10-10
 
-- **Con premio, siempre opcionales**: ver un anuncio para duplicar la cápsula del día, recuperar
-  la racha una vez por mes o sumar un tiro extra en un evento. Es lo que más rinde y no
-  molesta, porque lo elige la persona.
-- **Intersticial suave**: uno cada 3 partidas, nunca durante una partida ni en una lección.
-- **Nada** en duelos, diagnóstico ni lecciones.
-- App: AdMob. Web: AdSense en pantallas de menú. Pro los quita todos.
+- **Con premio, siempre opcionales** (en Recompensas, uno por día cada uno):
+  - duplicar el premio del calendario que reclamaste hoy;
+  - una cápsula extra.
+  Pro recibe los dos sin anuncio. La base pone el tope (`premio_por_anuncio`, 0277).
+  Más adelante: recuperar la racha una vez por mes y un tiro extra en eventos.
+- **Entre partidas**: uno cada 3 partidas de práctica, al salir del resultado (app) o al
+  pedir otra partida (web). Si no hay uno listo, no se espera.
+- **Nada** en duelos, diagnóstico ni lecciones. Ni Pro, ni colegio, ni invitados.
+- App: AdMob (`react-native-google-mobile-ads`, `mobile/src/lib/publicidad.ts`), con el
+  formulario de consentimiento de Google donde la ley lo pide y contenido apto para
+  adolescentes (`T`). Web: AdSense con la Ad Placement API (`src/lib/publicidad/web.ts`);
+  no carga dentro de la app nativa.
+
+**Para encenderlos de verdad** (hoy usan los anuncios de prueba de Google):
+1. Crear la cuenta de AdMob, la app y dos bloques (con premio y entre partidas). Poner el
+   App ID en `mobile/app.json` (plugin `react-native-google-mobile-ads`) y los bloques en
+   `EXPO_PUBLIC_ADMOB_RECOMPENSA` y `EXPO_PUBLIC_ADMOB_ENTRE_PARTIDAS`; recompilar.
+2. En Play Console: declarar que la app tiene anuncios y usa el ID de publicidad.
+3. Web: cuenta de AdSense aprobada para el dominio y `NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-…`.
+4. Cuando haya tráfico real, sumar la verificación del lado del servidor de AdMob (SSV).
 
 ---
 
-## 7. Pase de evento (cambia una decisión anterior)
+## 7. Eventos sin pase de batalla (decidido el 2026-10-10)
 
-En 0249 se decidió «recompensas que hacen volver, **sin pase de batalla**». Con este plan
-propongo un pase **solo cosmético** por evento (Halloween, Navidad, findes temáticos):
+No va pase de batalla (sigue la decisión de 0249). En su lugar, **colección del evento**:
 
-- 20 escalones que se suben jugando (Experiencia del evento).
-- **Carril gratis**: Chispas, consumibles, 1 cosmético raro y cápsulas.
-- **Carril premium** (US$4,99 o incluido en Pro): cosméticos épicos y legendarios del
-  evento, Cometas de vuelta (~40 % del precio) y un marco animado.
-- Nada del carril premium da ventaja en partidas, duelos ni ligas.
+- Cada evento (Halloween, Navidad, findes temáticos) trae una colección de ~8 piezas:
+  marco, fondo, estela, efecto, emote, título y un marco animado.
+- **Jugando**: las misiones del evento dan **Fichas del evento**, y con ellas **eliges** qué
+  pieza llevarte en la tienda del evento. No hay escalones en orden ni progreso que se pierde:
+  si te faltó una pieza, la compras con Fichas o Cometas.
+- **Pagando** (opcional): cada pieza con Cometas, o el **paquete del evento** (US$2,99–4,99)
+  con todas las piezas y la versión animada del marco.
+- **Pro**: la pieza Pro de cada colección de regalo.
+- Las colecciones vuelven en la edición del año siguiente, así que no hay apuro por perder
+  algo para siempre.
+- Nada de la colección da ventaja en partidas, duelos ni ligas.
 
 ---
 
@@ -178,10 +219,10 @@ Comisiones aproximadas: Google Play 15 %, Paddle ~5 % + US$0,50, Mercado Pago ~4
 
 Si se baja lo que da jugar, los saldos actuales quedan inflados. Opciones:
 
-1. **Recomendada:** convertir los saldos a la escala nueva (dividir entre 6, que es la
-   relación entre lo que daba una partida antes y lo que da ahora) y dar a cada cuenta
-   existente el marco «Pionero de la economía» y 100 Cometas de regalo.
-2. No tocar los saldos: quien juega desde antes queda con ventaja de compra por meses.
+**Decidido (2026-10-10):** convertir los saldos a la escala nueva (dividir entre 6, que es la
+relación entre lo que daba una partida antes y lo que da ahora) y dar a cada cuenta existente
+el marco «Pionero de la economía» y 100 Cometas de regalo. Se hace en la Fase 1, junto con
+los precios nuevos, y con un aviso que lo explica.
 
 Lo ya comprado (mundos, cosméticos) no se toca nunca.
 
@@ -209,18 +250,18 @@ Lo ya comprado (mundos, cosméticos) no se toca nunca.
 | **1. Separar Experiencia y Chispas** | `insertar_intento` y `acreditar_chispas` dejan de sumar Chispas por Experiencia; nueva fórmula por partida con tope diario; nuevos premios de nivel, misiones, calendario, constelaciones y retos; precios nuevos; conversión de saldos; tabla `economia_precios`; simulador. Web y app a la vez |
 | **2. Cometas** | Columna y movimientos en la base, tienda con las dos monedas, Cometas gratis (logros, ligas, niveles) |
 | **3. Cobros reales** | RevenueCat + Google Play Billing en la app; Paddle y Mercado Pago encendidos en la web; productos de §4.3; paquete de inicio |
-| **4. Pro nuevo** | Beneficios de §5 y prueba gratis de 7 días |
-| **5. Anuncios** | AdMob con premio en la app; AdSense en la web; nunca para Pro |
+| **4. Pro nuevo** | Beneficios de §5 y prueba gratis de 7 días. Ya hecho: todos los mundos y el apagado con aviso (§5.1) |
+| **5. Anuncios** | **Programado** (§6); falta crear las cuentas y poner los IDs reales |
 | **6. Cápsulas por niveles** | `PLAN_CAPSULAS_Y_EVENTOS.md` §2, con los números de este plan |
-| **7. Eventos y pase** | `PLAN_CAPSULAS_Y_EVENTOS.md` §3 y el pase de §7; Halloween primero |
+| **7. Eventos** | `PLAN_CAPSULAS_Y_EVENTOS.md` §3 y la colección del evento de §7; Halloween primero |
 
 ---
 
-## 12. Decisiones que te tocan
+## 12. Decisiones (todas tomadas el 2026-10-10)
 
-1. **Decidido:** dos monedas, Chispas y **Cometas**; las cápsulas también se abren con Cometas.
-2. Saldos actuales: ¿convertir dividiendo entre 6 con regalo (recomendado) o dejarlos?
-3. ¿Pase de evento con carril premium cosmético? (Cambia la decisión de 0249.)
-4. Anuncios: ¿con premio más un intersticial cada 3 partidas (recomendado), o solo con premio?
-5. ¿Precio regional (más barato en Latinoamérica)? Recomendado.
-6. ¿Pro con todos los mundos abiertos? Recomendado: es lo que más vende la suscripción.
+1. Dos monedas, Chispas y **Cometas**; las cápsulas también se abren con Cometas.
+2. Saldos: se convierten dividiendo entre 6, con regalo (§9).
+3. Sin pase de batalla: colección del evento (§7).
+4. Anuncios con premio más uno entre partidas cada 3: programado (§6).
+5. Precio regional: sí (§4.3).
+6. Pro con todos los mundos, y se apaga con aviso al terminar: hecho (§5 y §5.1).

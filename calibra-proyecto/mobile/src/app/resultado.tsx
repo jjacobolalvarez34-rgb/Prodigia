@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { ResultadoDuelo } from "~/lib/competir";
 import { sonar, vibrar } from "~/lib/efectos";
 import { recargarJugador } from "~/lib/jugador";
+import { anuncioEntrePartidas, contarPartida } from "~/lib/publicidad";
 import { totalPendientes, usePendientes } from "~/lib/recompensas";
 import type { ResultadoPartida } from "~/lib/partida";
 import Anillo from "~/ui/Anillo";
@@ -103,6 +104,15 @@ export default function Resultado() {
   const titulo = duelo?.resuelto ? (duelo.gane ? "¡Ganaste el duelo!" : duelo.empate ? "¡Empate!" : "Perdiste el duelo") : duelo ? "¡Terminaste tu parte!" : precision >= 0.9 ? "¡Sprint perfecto!" : precision >= 0.7 ? "¡Buen sprint!" : precision >= 0.4 ? "¡Bien jugado!" : "¡A seguir!";
   const ultimoPaso = PASOS_MS.length - 1;
 
+  const esDuelo = !!d.duelo || !!d.dueloId;
+  // Anuncio entre partidas (solo cuentas gratis, uno cada 3 de práctica, nunca en
+  // duelos): se cuenta al llegar y se muestra al salir.
+  const salir = (ir: () => void) => (esDuelo ? ir() : void anuncioEntrePartidas().then(ir));
+
+  useEffect(() => {
+    if (!esDuelo) void contarPartida();
+  }, [esDuelo]);
+
   useEffect(() => {
     recargarJugador();
     timers.current = PASOS_MS.map((ms, i) => setTimeout(() => setPaso((p) => Math.max(p, i)), ms));
@@ -132,11 +142,11 @@ export default function Resultado() {
 
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      router.dismissTo(salida);
+      salir(() => router.dismissTo(salida));
       return true;
     });
     return () => sub.remove();
-  }, [router, salida]);
+  }, [router, salida]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function saltar() {
     if (paso >= ultimoPaso) return;
@@ -379,10 +389,10 @@ export default function Resultado() {
             {duelo ? (
               <Boton3D titulo={duelo.clasificatorio === false ? "Volver a mis amigos" : "Otro duelo"} acento={mundo.base} brillo onPress={() => router.dismissTo(salida)} />
             ) : (
-              <Boton3D titulo="Otra partida" acento={mundo.base} brillo onPress={() => (params.repetir ? router.replace(JSON.parse(params.repetir)) : router.back())} />
+              <Boton3D titulo="Otra partida" acento={mundo.base} brillo onPress={() => salir(() => (params.repetir ? router.replace(JSON.parse(params.repetir)) : router.back()))} />
             )}
             {!duelo && (
-              <Pressable onPress={() => router.dismissTo(`/${mundo.slug}` as "/numeria")} hitSlop={10}>
+              <Pressable onPress={() => salir(() => router.dismissTo(`/${mundo.slug}` as "/numeria"))} hitSlop={10}>
                 <Texto v="nota" centro>
                   Volver al mundo
                 </Texto>

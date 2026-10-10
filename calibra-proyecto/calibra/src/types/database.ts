@@ -205,6 +205,8 @@ export interface Profile {
   onboarding_dinamia_completado: boolean; // diagnóstico de Dinamia hecho/salteado
   onboarding_vitalia_completado: boolean; // diagnóstico de Vitalia hecho/salteado
   mundos_desbloqueados: string[]; // Fase 12: qué mundos ya compró/eligió — puede no incluir 'numeria'
+  pro_termino_aviso?: boolean; // 0276: Pro venció y falta mostrar el aviso
+  pro_termino_en?: string | null; // 0276
   nivel_cuenta: number; // Fase 4 (nivel de cuenta): nivel general de la cuenta, no el de un mundo puntual
   idioma: "es" | "en";
   interes_inicial: ArithmeticProblemType | "logica" | null; // capa Prodigia del onboarding

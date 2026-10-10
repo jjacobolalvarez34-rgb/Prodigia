@@ -1,3 +1,4 @@
+import { tieneMundo } from "@/lib/mundos/precios";
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { verificarLogros } from "@/lib/logros/verificar";
@@ -114,10 +115,10 @@ const { data: registroRows, error: registroError } = await supabase.rpc("registr
     if (duelRow && esParticipante && !duelRow.clasificatorio) {
       const { data: miProfile } = await supabase
         .from("profiles")
-        .select("mundos_desbloqueados")
+        .select("plan, mundos_desbloqueados")
         .eq("id", user.id)
         .single();
-      if (!miProfile?.mundos_desbloqueados?.includes("enigmia")) {
+      if (!tieneMundo(miProfile, "enigmia")) {
         sumaNivelMundo = false;
       }
     }

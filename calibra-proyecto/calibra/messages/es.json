@@ -1000,6 +1000,19 @@
       "casilla": "Leí y acepto los Términos y condiciones y la Política de privacidad.",
       "boton": "Aceptar y continuar",
       "error": "No pudimos guardar tu aceptación. Prueba de nuevo."
+    },
+    "proTermino": {
+      "titulo": "Tu Pro terminó",
+      "texto": "Tu suscripción venció, así que se apagó lo que daba Pro:",
+      "lista": {
+        "mundos": "Los mundos que no compraste vuelven a tener candado",
+        "clases": "Las Clases después de la primera",
+        "estadisticas": "Estadísticas avanzadas",
+        "anuncios": "Partidas sin anuncios"
+      },
+      "seQueda": "Tus mundos comprados, tu progreso y tus cosméticos siguen siendo tuyos.",
+      "renovar": "Renovar Pro",
+      "ahoraNo": "Ahora no"
     }
   },
   "Geografia": {
@@ -4905,6 +4918,17 @@
         "terminaEl": "Termina el {fecha}",
         "premio": "Todas las ciudades amanecen juntas: constelaciones con premio doble y doble experiencia en todos los mundos."
       }
+    },
+    "extras": {
+      "duplicarAnuncio": "▶ Ver un anuncio y duplicar el premio",
+      "duplicarPro": "Duplicar el premio de hoy · Pro",
+      "duplicado": "¡Premio duplicado!",
+      "capsulaTitulo": "Cápsula extra de hoy",
+      "capsulaTextoAnuncio": "Mira un anuncio corto y llévatela. Una por día, y es opcional.",
+      "capsulaTextoPro": "Con Pro es tuya sin anuncios. Una por día.",
+      "verAnuncio": "▶ Ver anuncio",
+      "reclamarPro": "Reclamar · Pro",
+      "capsulaLista": "¡Cápsula extra! Ya está en tus cápsulas por abrir."
     }
   },
   "PrimerosPasos": {

@@ -155,9 +155,10 @@ probar el motor.
 - Todo evento se puede completar jugando unos 15 minutos por día; nadie queda afuera por
   no jugar horas.
 - Nada que se pierda para siempre por faltar un día: lo que sobra se convierte en Chispas.
-- El pase de evento tiene un carril gratis completo; el carril premium (US$4,99 o incluido en
-  Pro) es solo cosmético (ver `economy/PLAN_ECONOMIA.md` §7). Nada pago da ventaja en
-  partidas, duelos ni ligas.
+- Sin pase de batalla (decidido el 2026-10-10): cada evento trae su colección, que se gana
+  con Fichas del evento eligiendo qué pieza llevarse, o se compra con Cometas o con el
+  paquete del evento (ver `economy/PLAN_ECONOMIA.md` §7). Nada pago da ventaja en partidas,
+  duelos ni ligas.
 - Los avisos respetan las horas de silencio y el límite de avisos por día que ya existen.
 
 ---

@@ -89,6 +89,9 @@ export function mensajeError(e: unknown): string {
   if (/juega una partida/i.test(m)) return "Juega una partida hoy para reclamarlo.";
   if (/ya reclamaste/i.test(m)) return "Ya lo reclamaste.";
   if (/todavia no completaste/i.test(m)) return "Todavía no completaste esa misión.";
+  if (/ya usaste este premio/i.test(m)) return "Ya lo usaste hoy. Vuelve mañana.";
+  if (/reclama primero/i.test(m)) return "Reclama primero el premio de hoy.";
+  if (/sin anuncio/i.test(m)) return "El anuncio no se completó. Prueba de nuevo en un rato.";
   return "No se pudo. Inténtalo de nuevo.";
 }
 
@@ -142,6 +145,21 @@ export async function reclamarCalendario(sb: SupabaseClient): Promise<{ dia: num
   const { data, error } = await sb.rpc("reclamar_calendario");
   if (error) throw error;
   return filas<{ dia: number; premio: string; cantidad: number; puntos_total: number }>(data)[0];
+}
+
+// Premios por ver un anuncio (0277): una vez por día cada uno. Pro los recibe
+// sin anuncio.
+export type PremioAnuncio = "calendario" | "capsula";
+
+export async function premiosAnuncioHoy(sb: SupabaseClient): Promise<PremioAnuncio[]> {
+  const { data } = await sb.rpc("premios_anuncio_hoy");
+  return (data as PremioAnuncio[] | null) ?? [];
+}
+
+export async function premioPorAnuncio(sb: SupabaseClient, tipo: PremioAnuncio): Promise<{ tipo: PremioAnuncio; premio: string; cantidad: number; puntos_total: number }> {
+  const { data, error } = await sb.rpc("premio_por_anuncio", { p_tipo: tipo });
+  if (error) throw error;
+  return filas<{ tipo: PremioAnuncio; premio: string; cantidad: number; puntos_total: number }>(data)[0];
 }
 
 export async function misColecciones(sb: SupabaseClient): Promise<PiezaColeccion[]> {

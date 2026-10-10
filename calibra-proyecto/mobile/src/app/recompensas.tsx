@@ -20,6 +20,7 @@ import {
 import { COMO_SE_ENCIENDEN, ESTRELLAS_POR_CONSTELACION, misConstelaciones, TEXTO_FUGAZ, textoPremioConstelacion, type Constelacion as DatosConstelacion } from "@/lib/recompensas/constelaciones";
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, useJugador } from "~/lib/jugador";
+import { veAnuncios, verAnuncioConPremio } from "~/lib/publicidad";
 import {
   contenidoCapsula,
   mensajeError,
@@ -28,6 +29,8 @@ import {
   misColecciones,
   misMisiones,
   misRegalos,
+  premioPorAnuncio,
+  premiosAnuncioHoy,
   recargarPendientes,
   reclamarCalendario,
   reclamarMision,
@@ -37,6 +40,7 @@ import {
   type ContenidoCapsula,
   type EstadoCalendario,
   type Mision,
+  type PremioAnuncio,
   type PiezaColeccion,
   type Regalo,
 } from "~/lib/recompensas";
@@ -85,7 +89,8 @@ const NOMBRE_CATEGORIA: Record<string, string> = { marco: "Marco", fondo: "Fondo
 
 export default function Recompensas() {
   const router = useRouter();
-  const { esInvitado } = useJugador();
+  const { esInvitado, plan } = useJugador();
+  const esPro = plan === "pro";
   const [capsulas, setCapsulas] = useState<DatosCapsula[] | null>(null);
   const [misiones, setMisiones] = useState<Mision[]>([]);
   const [calendario, setCalendario] = useState<EstadoCalendario | null>(null);
@@ -100,6 +105,9 @@ export default function Recompensas() {
   const [verCiudad, setVerCiudad] = useState<string | null>(null);
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [sinBase, setSinBase] = useState(false);
+  // Premios por anuncio que ya usaste hoy (0277); null mientras no se sabe.
+  const [extrasHoy, setExtrasHoy] = useState<PremioAnuncio[] | null>(null);
+  const hayExtras = esPro || veAnuncios();
 
   const cargar = useCallback(async () => {
     try {
@@ -111,6 +119,7 @@ export default function Recompensas() {
       setCalendario(cal);
       setRegalos(r);
       setColecciones(col);
+      premiosAnuncioHoy(supabase).then(setExtrasHoy, () => setExtrasHoy(null));
       setSinBase(!cal && c.length === 0 && m.length === 0);
       recargarPendientes();
     } catch {
@@ -147,6 +156,17 @@ export default function Recompensas() {
     } finally {
       setOcupado(null);
     }
+  }
+
+  // Duplicar el calendario o una cápsula extra: con un anuncio (gratis) o directo (Pro).
+  function extra(tipo: PremioAnuncio) {
+    accion(`extra-${tipo}`, async () => {
+      if (!esPro && !(await verAnuncioConPremio())) throw new Error("sin anuncio");
+      const r = await premioPorAnuncio(supabase, tipo);
+      fijarChispas(r.puntos_total);
+      if (tipo === "calendario" && calendario) setCelebrando({ tipo: "calendario", dia: calendario.dia, premio: r.premio, cantidad: r.cantidad });
+      if (tipo === "capsula") mostrarAviso("¡Cápsula extra! Ya está en «Cápsulas por abrir».", "ok");
+    });
   }
 
   if (esInvitado) {
@@ -289,11 +309,31 @@ export default function Recompensas() {
               </Texto>
             )
           ) : calendario ? (
-            <Texto v="nota" centro>
-              Vuelve mañana por el día {calendario.dia === 7 ? 1 : calendario.dia + 1}. Si faltas un día, vuelve a empezar (un congelamiento de racha lo cubre).
-            </Texto>
+            <>
+              <Texto v="nota" centro>
+                Vuelve mañana por el día {calendario.dia === 7 ? 1 : calendario.dia + 1}. Si faltas un día, vuelve a empezar (un congelamiento de racha lo cubre).
+              </Texto>
+              {hayExtras && extrasHoy && !extrasHoy.includes("calendario") && (
+                <Boton3D titulo={esPro ? "Duplicar el premio de hoy · Pro" : "▶ Ver un anuncio y duplicar el premio"} variante={esPro ? "pro" : "secundario"} tamano="sm" cargando={ocupado === "extra-calendario"} onPress={() => extra("calendario")} />
+              )}
+            </>
           ) : null}
         </Tarjeta>
+
+        {hayExtras && extrasHoy && !extrasHoy.includes("capsula") && (
+          <Tarjeta acento={esPro ? color.logro : undefined}>
+            <View style={styles.fila}>
+              <CapsulaQuieta tipo="diaria" mundo={null} />
+              <View style={{ flex: 1, gap: 2 }}>
+                <Texto v="fuerte">Cápsula extra de hoy</Texto>
+                <Texto v="nota" tam={12}>
+                  {esPro ? "Con Pro es tuya sin anuncios. Una por día." : "Mira un anuncio corto y llévatela. Una por día, y es opcional."}
+                </Texto>
+              </View>
+            </View>
+            <Boton3D titulo={esPro ? "Reclamar · Pro" : "▶ Ver anuncio"} variante={esPro ? "pro" : "secundario"} tamano="sm" cargando={ocupado === "extra-capsula"} onPress={() => extra("capsula")} />
+          </Tarjeta>
+        )}
 
         <TituloSeccion>Misiones de hoy</TituloSeccion>
         {misiones.map((m) => {

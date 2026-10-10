@@ -15,6 +15,8 @@ export interface EstadoJugador {
   plan: string;
   mundos: string[];
   esInvitado: boolean;
+  // Tu Pro terminó y todavía no viste el aviso (0276).
+  proTermino?: boolean;
 }
 
 let estado: EstadoJugador = { placa: null, resumen: null, plan: "free", mundos: [], esInvitado: false };
@@ -52,6 +54,10 @@ export async function recargarJugador(): Promise<void> {
       emitir();
       return;
     }
+    // revisar_mi_pro (0276) apaga Pro si ya venció y dice si falta mostrar el aviso;
+    // va primero para que el plan que se lee después ya esté al día.
+    const { data: pro } = user.is_anonymous ? { data: null } : await supabase.rpc("revisar_mi_pro");
+    const revisado = ((pro as { plan: string; aviso: boolean }[] | null) ?? [])[0];
     const [resumen, placa, { data: perfil }] = await Promise.all([
       cargarResumen(),
       cargarMiPlaca(user.id),
@@ -65,6 +71,7 @@ export async function recargarJugador(): Promise<void> {
       plan: p?.plan ?? estado.plan,
       mundos: p?.mundos_desbloqueados ?? estado.mundos,
       esInvitado: !!user.is_anonymous,
+      proTermino: revisado?.aviso ?? false,
     };
     emitir();
     if (p) AsyncStorage.setItem(`prodigia:copia:jugador:${user.id}`, JSON.stringify(estado)).catch(() => undefined);
@@ -84,6 +91,13 @@ export function fijarChispas(total: number) {
   if (estado.resumen) estado = { ...estado, resumen: { ...estado.resumen, chispas: total } };
   if (estado.placa) estado = { ...estado, placa: { ...estado.placa, chispas: total } };
   emitir();
+}
+
+// El aviso de «tu Pro terminó» ya se vio (o se tocó «Renovar»).
+export async function cerrarAvisoProTermino() {
+  estado = { ...estado, proTermino: false };
+  emitir();
+  await supabase.rpc("marcar_aviso_pro_visto");
 }
 
 export function limpiarJugador() {

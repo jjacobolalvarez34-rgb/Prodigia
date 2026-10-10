@@ -25,6 +25,7 @@ import { habilitarSonidos, prepararSonidos } from "~/lib/efectos";
 import { precargarAprender } from "~/lib/aprender";
 import { cargarJugadorGuardado, leerJugador, limpiarJugador, recargarJugador } from "~/lib/jugador";
 import { rutaDeAviso, sincronizarAvisos } from "~/lib/notificaciones";
+import { iniciarPublicidad } from "~/lib/publicidad";
 import { ProveedorSesion, useSesion } from "~/lib/sesion";
 import { iniciarSincronizacion } from "~/lib/sinConexion";
 import { conectarPresencia, desconectarPresencia } from "~/lib/social";
@@ -34,6 +35,7 @@ import AceptarTerminos, { registrarAceptacionEnLaCuenta, terminosAceptadosEnEste
 import IntroMarca, { INTRO_ACTIVA } from "~/ui/IntroMarca";
 import PantallaCarga from "~/ui/PantallaCarga";
 import PrimeraVez from "~/ui/PrimeraVez";
+import AvisoProTermino from "~/ui/AvisoProTermino";
 import { GlobosPorRuta } from "~/ui/GloboAyuda";
 import CelebracionConstelaciones from "~/ui/recompensas/CelebracionConstelaciones";
 import { color, MUNDOS } from "~/tema";
@@ -133,6 +135,8 @@ function Navegacion() {
         sincronizadoRef.current = userId;
         setEtapa("Trayendo tu Placa, tu racha y tus Chispas…");
         await conTiempoLimite(recargarJugador(), 7000);
+        // Anuncios solo para cuentas gratis (lib/publicidad.ts); no frena el arranque.
+        void iniciarPublicidad();
         conectarPresencia(userId);
         setProgreso(0.68);
         setEtapa("Revisando tus avisos…");
@@ -225,6 +229,7 @@ function Navegacion() {
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <CelebracionConstelaciones />}
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <GlobosPorRuta segmentos={segmentos} />}
       {!cargando && userId && terminos && !cargaVisible && <PrimeraVez key={userId} userId={userId} anonimo={!!sesion?.user.is_anonymous} />}
+      {!cargando && userId && terminos && !cargaVisible && <AvisoProTermino />}
       {terminos === false && !cargaVisible && <AceptarTerminos onAceptar={() => setTerminos(true)} />}
       {cargaVisible && introEnNegro && <PantallaCarga progreso={progreso} etapa={etapa} onTerminada={ocultarCarga} />}
       {introVisible && <IntroMarca onNegro={introNegra} onTerminada={ocultarIntro} />}

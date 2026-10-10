@@ -15,11 +15,11 @@ export async function generateMetadata(): Promise<Metadata> {
 // colecciones por ciudad. Misma pantalla que /recompensas en la app.
 export default async function RecompensasPage() {
   const supabase = await createClient();
-  const { user } = await requireUsuario(supabase, "/recompensas");
+  const { user, profile } = await requireUsuario(supabase, "/recompensas");
   return (
     <>
       <Header autenticado invitado={user.is_anonymous} />
-      <RecompensasClient invitado={!!user.is_anonymous} />
+      <RecompensasClient invitado={!!user.is_anonymous} plan={profile.plan} />
     </>
   );
 }

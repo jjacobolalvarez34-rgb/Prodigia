@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Profile } from "@/types/database";
-import { type MundoPago } from "@/lib/mundos/precios";
+import { tieneMundo, type MundoPago } from "@/lib/mundos/precios";
 
 // Guards en capas (Fase V/W): Prodigia (la cuenta) es la capa de afuera,
 // cada mundo (Numeria, Enigmia...) tiene su propio diagnóstico adentro.
@@ -36,6 +36,14 @@ export async function requireUsuario(supabase: SupabaseClient, pathActual: strin
   // mundos ya pasó por el flujo y no se le vuelve a pedir.
   if (!profile?.mundos_desbloqueados || profile.mundos_desbloqueados.length < 2) {
     redirect(`/onboarding?next=${encodeURIComponent(pathActual)}`);
+  }
+
+  // Pro vencido (0276): si el período terminó, revisar_mi_pro lo apaga acá
+  // mismo, así ninguna página llega a abrir un mundo con un Pro que ya no existe.
+  if (profile.plan === "pro") {
+    const { data: revisado } = await supabase.rpc("revisar_mi_pro");
+    const fila = (revisado as { plan: string }[] | null)?.[0];
+    if (fila) profile.plan = fila.plan;
   }
 
   return { user, profile: profile as Profile };
@@ -75,7 +83,7 @@ export async function requireMundoNumeria(supabase: SupabaseClient, pathActual: 
 // URL directo). redirige a /mundo-bloqueado, que muestra el precio y
 // deja comprarlo ahí mismo.
 function requireMundoComprado(profile: Profile, mundo: MundoPago, pathActual: string) {
-  if (!profile.mundos_desbloqueados?.includes(mundo)) {
+  if (!tieneMundo(profile, mundo)) {
     redirect(`/mundo-bloqueado?mundo=${mundo}&next=${encodeURIComponent(pathActual)}`);
   }
 }

@@ -17,6 +17,7 @@ import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { calcularRachaDiaria, lunesDeEstaSemanaIso } from "@/lib/practica/racha";
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
 import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria, IconCalculia, IconCircuitia, IconEstadistica, IconNaipia, IconCodia, IconDinamia, IconVitalia } from "@/components/icons";
+import { tieneMundo } from "@/lib/mundos/precios";
 import Greeting from "./Greeting";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -177,7 +178,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconSuma}
                 href="/numeria"
                 colorHex="#6C4CF1"
-                bloqueado={!profile.mundos_desbloqueados?.includes("numeria")}
+                bloqueado={!tieneMundo(profile, "numeria")}
               />
               <WorldCard
                 nombre={tMundos("enigmia")}
@@ -185,7 +186,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconLogica}
                 href="/enigmia"
                 colorHex="#0E9F6E"
-                bloqueado={!profile.mundos_desbloqueados?.includes("enigmia")}
+                bloqueado={!tieneMundo(profile, "enigmia")}
               />
               <WorldCard
                 nombre={tMundos("geografia")}
@@ -193,7 +194,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconGeometria}
                 href="/geografia"
                 colorHex="#1E7A8C"
-                bloqueado={!profile.mundos_desbloqueados?.includes("geografia")}
+                bloqueado={!tieneMundo(profile, "geografia")}
               />
               <WorldCard
                 nombre={tMundos("quimia")}
@@ -201,7 +202,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconQuimica}
                 href="/quimia"
                 colorHex="#C026D3"
-                bloqueado={!profile.mundos_desbloqueados?.includes("quimia")}
+                bloqueado={!tieneMundo(profile, "quimia")}
               />
               <WorldCard
                 nombre={tMundos("anatomia")}
@@ -209,7 +210,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconAnatomia}
                 href="/anatomia"
                 colorHex="#8B2942"
-                bloqueado={!profile.mundos_desbloqueados?.includes("anatomia")}
+                bloqueado={!tieneMundo(profile, "anatomia")}
               />
               <WorldCard
                 nombre={tMundos("melodia")}
@@ -217,7 +218,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconMelodia}
                 href="/melodia"
                 colorHex="#B8860B"
-                bloqueado={!profile.mundos_desbloqueados?.includes("melodia")}
+                bloqueado={!tieneMundo(profile, "melodia")}
               />
               <WorldCard
                 nombre={tMundos("trigonometria")}
@@ -225,7 +226,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconTrigonometria}
                 href="/trigonometria"
                 colorHex="#84CC16"
-                bloqueado={!profile.mundos_desbloqueados?.includes("trigonometria")}
+                bloqueado={!tieneMundo(profile, "trigonometria")}
               />
               <WorldCard
                 nombre={tMundos("historia")}
@@ -233,7 +234,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconHistoria}
                 href="/historia"
                 colorHex="#A0522D"
-                bloqueado={!profile.mundos_desbloqueados?.includes("historia")}
+                bloqueado={!tieneMundo(profile, "historia")}
               />
               <WorldCard
                 nombre={tMundos("calculia")}
@@ -241,7 +242,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconCalculia}
                 href="/calculia"
                 colorHex="#4338CA"
-                bloqueado={!profile.mundos_desbloqueados?.includes("calculia")}
+                bloqueado={!tieneMundo(profile, "calculia")}
               />
               <WorldCard
                 nombre={tMundos("circuitia")}
@@ -249,7 +250,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconCircuitia}
                 href="/circuitia"
                 colorHex="#F59E0B"
-                bloqueado={!profile.mundos_desbloqueados?.includes("circuitia")}
+                bloqueado={!tieneMundo(profile, "circuitia")}
               />
               <WorldCard
                 nombre={tMundos("estadistica")}
@@ -257,7 +258,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconEstadistica}
                 href="/estadistica"
                 colorHex="#0D9488"
-                bloqueado={!profile.mundos_desbloqueados?.includes("estadistica")}
+                bloqueado={!tieneMundo(profile, "estadistica")}
               />
               <WorldCard
                 nombre={tMundos("naipia")}
@@ -265,7 +266,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconNaipia}
                 href="/naipia"
                 colorHex="#B91C1C"
-                bloqueado={!profile.mundos_desbloqueados?.includes("naipia")}
+                bloqueado={!tieneMundo(profile, "naipia")}
               />
               <WorldCard
                 nombre={tMundos("codia")}
@@ -273,7 +274,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconCodia}
                 href="/codia"
                 colorHex="#06B6D4"
-                bloqueado={!profile.mundos_desbloqueados?.includes("codia")}
+                bloqueado={!tieneMundo(profile, "codia")}
               />
               <WorldCard
                 nombre={tMundos("dinamia")}
@@ -281,7 +282,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconDinamia}
                 href="/dinamia"
                 colorHex="#2563EB"
-                bloqueado={!profile.mundos_desbloqueados?.includes("dinamia")}
+                bloqueado={!tieneMundo(profile, "dinamia")}
               />
               <WorldCard
                 nombre={tMundos("vitalia")}
@@ -289,7 +290,7 @@ export default async function ProdigiaHomePage() {
                 Icono={IconVitalia}
                 href="/vitalia"
                 colorHex="#16A34A"
-                bloqueado={!profile.mundos_desbloqueados?.includes("vitalia")}
+                bloqueado={!tieneMundo(profile, "vitalia")}
               />
             </div>
           </PrimeraVezTip>

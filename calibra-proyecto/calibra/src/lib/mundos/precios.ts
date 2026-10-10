@@ -18,6 +18,13 @@ export function esMundoPago(valor: string): valor is MundoPago {
   return (MUNDOS_PAGOS as readonly string[]).includes(valor);
 }
 
+// Pro abre todos los mundos mientras dure (PLAN_ECONOMIA.md §5); al terminar
+// vuelven a tener candado los que no compraste (0276). La app hace lo mismo
+// (mobile: HubMundo, pestaña Mundos, diagnóstico).
+export function tieneMundo(p: { plan?: string | null; mundos_desbloqueados?: string[] | null } | null | undefined, mundo: string): boolean {
+  return p?.plan === "pro" || !!p?.mundos_desbloqueados?.includes(mundo);
+}
+
 // El nombre para mostrar de cada mundo vive en i18n (Mundos.nombres),
 // no acá — Geografía/Anatomía/Melodía/Trigonometría/Historia se
 // traducen según el locale, Numeria/Enigmia/Quimia se mantienen

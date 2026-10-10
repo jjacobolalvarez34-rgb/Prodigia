@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
-import { esMundoPago } from "@/lib/mundos/precios";
+import { esMundoPago, tieneMundo } from "@/lib/mundos/precios";
 import Header from "@/components/Header";
 import MundoBloqueadoClient from "./MundoBloqueadoClient";
 
@@ -33,7 +33,7 @@ export default async function MundoBloqueadoPage({ searchParams }: Props) {
   // Si ya lo compró (volvió con el back del navegador después de
   // pagarlo, por ejemplo) no tiene sentido mostrarle la pantalla de
   // compra — mandarlo directo a donde iba.
-  if (profile.mundos_desbloqueados?.includes(mundo)) {
+  if (tieneMundo(profile, mundo)) {
     redirect(next || "/");
   }
 
