@@ -1,4 +1,5 @@
 import { CIUDADES, degradeFondoCiudad, type MundoCiudad } from "@/lib/recompensas/catalogo";
+import { degradeFondoEstilo, FONDOS_ESTILO, MARCOS_ESTILO, type FondoEstilo } from "@/lib/recompensas/catalogoAmpliado";
 import type { VisualLeccion } from "@/lib/aprender/visuales";
 // Tipos que reflejan el esquema de supabase/migrations/*.sql.
 // Cuando el esquema crezca, lo ideal es generar esto automáticamente con:
@@ -164,7 +165,7 @@ export const ANIMACIONES_PESADAS: ReadonlySet<AnimacionNombre> = new Set(["shuff
 // "prodigio" (Fase 4, pagos): exclusivo de Prodigia Pro, mismo gate
 // que animacion "prisma" — ver 0146_prodigia_pro_gates_y_estadisticas.sql.
 // + los 13 fondos de ciudad de la tienda ampliada (0248): degradé del color del mundo.
-export type FondoPerfil = "ninguno" | "aurora" | "nebulosa" | "dorado" | "oceano" | "bosque" | "personalizado" | "prodigio" | `ciudad_${MundoCiudad}`;
+export type FondoPerfil = "ninguno" | "aurora" | "nebulosa" | "dorado" | "oceano" | "bosque" | "personalizado" | "prodigio" | `ciudad_${MundoCiudad}` | FondoEstilo;
 
 export const FONDO_PERFIL_ESTILO: Record<FondoPerfil, string> = {
   ninguno: "",
@@ -176,6 +177,8 @@ export const FONDO_PERFIL_ESTILO: Record<FondoPerfil, string> = {
   personalizado: "",
   prodigio: "linear-gradient(120deg, #3d1a5c, #ffc53d, #7c5cff, #3d1a5c)",
   ...(Object.fromEntries(CIUDADES.map((c) => [`ciudad_${c.slug}`, degradeFondoCiudad(c.slug) ?? ""])) as Record<`ciudad_${MundoCiudad}`, string>),
+  // Tienda ampliada (0275).
+  ...(Object.fromEntries(FONDOS_ESTILO.map((f) => [f.valor, degradeFondoEstilo(f.valor) ?? ""])) as Record<FondoEstilo, string>),
 };
 
 export interface Profile {
@@ -473,6 +476,8 @@ export const ESTILO_MARCO_PERFIL: Record<string, string> = {
   coleccion_vitalia: "marco-neon-perfil marco-coleccion-vitalia",
   // Kit del Pionero (0258): exclusivo de quien entra a la app.
   pionero: "marco-neon-perfil marco-pionero",
+  // Marcos de colores de la tienda ampliada (0275): clases .marco-estilo-* de globals.css.
+  ...Object.fromEntries(MARCOS_ESTILO.map((m) => [m.slug, `marco-neon-perfil marco-${m.slug.replace(/_/g, "-")}`])),
 };
 
 // Los 3 marcos neón de arriba, con su color para la vidriera de la
@@ -487,21 +492,21 @@ export const MARCOS_NEON: { slug: string; colorHex: string }[] = [
 
 // Grupo B, Fase 1: 6 marcos temáticos, uno por mundo — a diferencia de
 // los de rango (arriba, tiñen el borde de la tarjeta entera),
-// public/marcos/marco_<mundo>.png es un anillo circular con el centro
+// public/marcos/marco_<mundo>.svg (generado por lib/recompensas/marcosMundo.ts) es un anillo circular con el centro
 // transparente: se renderiza superpuesto sobre el avatar (ver
 // AvatarConMarco.tsx), no como borde de tarjeta. mundoDeMarco() separa
 // "es un marco de mundo" de "es un marco de rango" en un solo lugar,
 // para no repetir la lista de 6 slugs en cada componente que dibuja un
 // avatar con marco.
 export const MARCOS_MUNDO: Record<string, { nombre: string; imagen: string }> = {
-  numeria: { nombre: "Numeria", imagen: "/marcos/marco_numeria.png" },
-  enigmia: { nombre: "Enigmia", imagen: "/marcos/marco_enigmia.png" },
-  geografia: { nombre: "Geografía", imagen: "/marcos/marco_geografia.png" },
-  quimia: { nombre: "Quimia", imagen: "/marcos/marco_quimia.png" },
-  anatomia: { nombre: "Anatomía", imagen: "/marcos/marco_anatomia.png" },
-  melodia: { nombre: "Melodía", imagen: "/marcos/marco_melodia.png" },
-  trigonometria: { nombre: "Trigonometría", imagen: "/marcos/marco_trigonometria.png" },
-  historia: { nombre: "Historia", imagen: "/marcos/marco_historia.png" },
+  numeria: { nombre: "Numeria", imagen: "/marcos/marco_numeria.svg" },
+  enigmia: { nombre: "Enigmia", imagen: "/marcos/marco_enigmia.svg" },
+  geografia: { nombre: "Geografía", imagen: "/marcos/marco_geografia.svg" },
+  quimia: { nombre: "Quimia", imagen: "/marcos/marco_quimia.svg" },
+  anatomia: { nombre: "Anatomía", imagen: "/marcos/marco_anatomia.svg" },
+  melodia: { nombre: "Melodía", imagen: "/marcos/marco_melodia.svg" },
+  trigonometria: { nombre: "Trigonometría", imagen: "/marcos/marco_trigonometria.svg" },
+  historia: { nombre: "Historia", imagen: "/marcos/marco_historia.svg" },
   // Mundo 9 (Calculia): a diferencia de los 8 marcos anteriores (PNG de
   // diseño real), todavía no hay un asset comisionado — AvatarConMarco.tsx
   // usa un <img> plano sin fallback, así que un archivo ausente se

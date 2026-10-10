@@ -6,6 +6,8 @@
 // migración. Lo usan la web y la app (docs/PARIDAD_APP_WEB.md), por eso no
 // importa nada de React.
 
+import { EFECTOS_NUEVOS, EMOTES_NUEVOS, ESTELAS_NUEVAS, filasCatalogoAmpliado, MARCOS_ESTILO, PAQUETES_NUEVOS, SONIDOS_NUEVOS } from "./catalogoAmpliado";
+
 export type Rareza = "comun" | "raro" | "epico" | "legendario";
 
 export type MundoCiudad =
@@ -75,6 +77,7 @@ export const ESTELAS: Record<string, Estela> = {
   dorada: { nombre: "Dorada", base: "#B8860B", punta: "#FFF3B0" },
   arcoiris: { nombre: "Arcoíris", base: "#EF4444", punta: "#3B82F6", arcoiris: true },
   ...Object.fromEntries(CIUDADES.map((c) => [`ciudad_${c.slug}`, { nombre: `Estela de ${c.nombre}`, base: c.color, punta: tono(c.color, 0.6) }])),
+  ...Object.fromEntries(ESTELAS_NUEVAS.map((e) => [e.valor, { nombre: e.nombre, base: e.base, punta: e.punta }])),
 };
 
 export const ARCOIRIS = ["#EF4444", "#F59E0B", "#FACC15", "#22C55E", "#3B82F6", "#8B5CF6"];
@@ -101,6 +104,7 @@ export const EFECTOS: Record<string, Efecto> = {
   pixeles: { nombre: "Píxeles", forma: "pixeles", colores: ["#22C55E", "#4ADE80", "#FACC15", "#38BDF8"] },
   estrellas: { nombre: "Estrellas", forma: "estrellas", colores: ["#FFC53D", "#FFF3B0", "#FFFFFF"] },
   ...Object.fromEntries(CIUDADES.map((c) => [`ciudad_${c.slug}`, { nombre: `Destellos de ${c.nombre}`, forma: "glifo" as const, colores: [c.color, tono(c.color, 0.5)], glifo: c.glifo }])),
+  ...Object.fromEntries(EFECTOS_NUEVOS.map((e) => [e.valor, { nombre: e.nombre, forma: e.forma, colores: e.colores, glifo: e.glifo }])),
 };
 
 export function efectoDe(valor: string | null | undefined): Efecto {
@@ -172,6 +176,7 @@ export const SONIDOS: Record<string, { nombre: string; notas: NotaSonido[] }> = 
       { rel: 2, inicio: 0, duracion: 0.08, onda: "sine", volumen: 0.04 },
     ],
   },
+  ...Object.fromEntries(SONIDOS_NUEVOS.map((x) => [x.valor, { nombre: x.nombre, notas: x.notas }])),
 };
 
 // ---------- Emotes de duelo ----------
@@ -185,6 +190,7 @@ export const EMOTES: Record<string, { emoji: string; texto: string }> = {
   rayo: { emoji: "⚡", texto: "¡Rapidísimo!" },
   corona: { emoji: "👑", texto: "¡Reinado!" },
   ...Object.fromEntries(CIUDADES.map((c) => [`ciudad_${c.slug}`, { emoji: c.emoji, texto: `¡Viva ${c.nombre}!` }])),
+  ...Object.fromEntries(EMOTES_NUEVOS.map((e) => [e.valor, { emoji: e.emoji, texto: e.texto }])),
 };
 
 export const EMOTES_GRATIS = ["bien_jugado", "hola"];
@@ -208,9 +214,10 @@ export const MARCOS_ESPECIALES: { slug: string; nombre: string; colores: string[
   { slug: "pionero", nombre: "Pionero", colores: CIUDADES.map((c) => c.color) },
 ];
 
-// Marcos con aro de colores que gira: los de temporada y los especiales.
+// Marcos con aro de colores que gira: los de temporada, los especiales y los de
+// colores de la tienda ampliada (catalogoAmpliado.ts).
 export function marcoTemporadaDe(slug: string | null | undefined): { slug: string; nombre: string; colores: string[] } | null {
-  return MARCOS_TEMPORADA.find((m) => m.slug === slug) ?? MARCOS_ESPECIALES.find((m) => m.slug === slug) ?? null;
+  return MARCOS_TEMPORADA.find((m) => m.slug === slug) ?? MARCOS_ESPECIALES.find((m) => m.slug === slug) ?? MARCOS_ESTILO.find((m) => m.slug === slug) ?? null;
 }
 
 // "coleccion_quimia" → la ciudad del marco animado de colección.
@@ -297,6 +304,9 @@ export const CATALOGO_NUEVO: ItemCatalogo[] = [
     { item: `efecto_ciudad_${c.slug}`, categoria: "efecto" as const, valor: `ciudad_${c.slug}`, nombre: `Destellos de ${c.nombre}`, precio: 1600, rareza: "raro" as const, vendible: false, mundo: c.slug },
     { item: `titulo_ciudad_${c.slug}`, categoria: "titulo" as const, valor: `habitante-${c.slug}`, nombre: `Habitante de ${c.nombre}`, precio: 3000, rareza: "epico" as const, vendible: false, mundo: c.slug },
   ]),
+  // Ampliación del 2026-10-10 (0275): marcos de colores, fondos, estelas, efectos,
+  // sonidos, emotes y títulos nuevos.
+  ...filasCatalogoAmpliado().map((f) => ({ ...f, categoria: f.categoria as CategoriaNueva, vendible: true })),
 ];
 
 // Las 6 piezas de la colección de una ciudad (marco del mundo, fondo, estela,
@@ -311,6 +321,7 @@ export const PAQUETES: { item: string; nombre: string; items: string[]; precio: 
   { item: "pack_fuego", nombre: "Pack Fuego", items: ["fondo_dorado", "estela_dorada", "efecto_estrellas"], precio: 5250 },
   { item: "pack_sonidos", nombre: "Pack Sonidos", items: ["sonido_campanitas", "sonido_ochobits", "sonido_marimba"], precio: 2625 },
   { item: "pack_emotes", nombre: "Pack Emotes", items: ["emote_fuego", "emote_uy", "emote_gg", "emote_cerebro", "emote_rayo", "emote_corona"], precio: 2475 },
+  ...PAQUETES_NUEVOS,
 ];
 
 export const UTILIDADES_NUEVAS: { item: "pista" | "segunda_oportunidad" | "cofre_hielos"; nombre: string; descripcion: string; precio: number }[] = [

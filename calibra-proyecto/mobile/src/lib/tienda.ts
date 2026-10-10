@@ -170,7 +170,9 @@ export const CATALOGO: ItemTienda[] = [
   { item: "color_nombre_personalizado", nombre: "Color de nombre", descripcion: "Elige el color de tu nombre.", categoria: "color", valor: "color", costoBase: COSTOS.color_nombre_personalizado },
   // ---------- Tienda ampliada (0248, catálogo en @/lib/recompensas/catalogo) ----------
   ...UTILIDADES_NUEVAS.map((u) => ({ item: u.item as ItemComprable, nombre: u.nombre, descripcion: u.descripcion, categoria: "utilidad" as const, valor: u.item, costoBase: u.precio })),
-  ...CATALOGO_NUEVO.filter((x) => x.vendible).map((x) => ({
+  // Lo que no se vende (piezas de colección) entra como «especial»: la Tienda no lo
+  // muestra, pero el Inventario sí, si lo tienes.
+  ...CATALOGO_NUEVO.map((x) => ({
     item: x.item as ItemComprable,
     nombre: x.nombre,
     descripcion:
@@ -188,6 +190,7 @@ export const CATALOGO: ItemTienda[] = [
     costoBase: x.precio,
     rareza: x.rareza as RarezaNueva,
     temporada: x.temporada,
+    especial: x.vendible ? undefined : true,
   })),
   ...PAQUETES.map((p) => ({
     item: p.item as ItemComprable,

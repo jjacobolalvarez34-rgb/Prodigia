@@ -59,11 +59,11 @@ export type InfoMarco =
   | { tipo: "ninguno"; color: string }
   | { tipo: "rango"; color: string }
   | { tipo: "neon"; color: string }
-  | { tipo: "mundo"; color: string; imagen: string }
+  | { tipo: "mundo"; color: string; imagen: string; ciudad: string }
   // Tienda ampliada (0248): de temporada (aro con degradé que gira) y de colección
   // (el anillo del mundo con un resplandor de su color que late).
   | { tipo: "temporada"; color: string; colores: string[] }
-  | { tipo: "coleccion"; color: string; imagen: string };
+  | { tipo: "coleccion"; color: string; imagen: string; ciudad: string };
 
 export function infoMarco(marco: string | null | undefined): InfoMarco {
   if (!marco || marco === "ninguno") return { tipo: "ninguno", color: "#7C5CFF" };
@@ -74,9 +74,9 @@ export function infoMarco(marco: string | null | undefined): InfoMarco {
   const temporada = marcoTemporadaDe(marco);
   if (temporada) return { tipo: "temporada", color: temporada.colores[0], colores: temporada.colores };
   const coleccion = ciudadDeMarcoColeccion(marco);
-  if (coleccion && MARCOS_MUNDO[coleccion.slug]) return { tipo: "coleccion", color: coleccion.color, imagen: urlAbsoluta(MARCOS_MUNDO[coleccion.slug].imagen) ?? "" };
+  if (coleccion && MARCOS_MUNDO[coleccion.slug]) return { tipo: "coleccion", color: coleccion.color, imagen: urlAbsoluta(MARCOS_MUNDO[coleccion.slug].imagen) ?? "", ciudad: coleccion.slug };
   const mundo = MARCOS_MUNDO[marco];
-  if (mundo) return { tipo: "mundo", color: "#FFB627", imagen: urlAbsoluta(mundo.imagen) ?? "" };
+  if (mundo) return { tipo: "mundo", color: "#FFB627", imagen: urlAbsoluta(mundo.imagen) ?? "", ciudad: marco };
   return { tipo: "ninguno", color: "#7C5CFF" };
 }
 

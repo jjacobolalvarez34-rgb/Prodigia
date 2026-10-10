@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { msHastaFinDelEvento } from "@/lib/eventos/dobleExperiencia";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { memo, useCallback, useMemo, useState } from "react";
 import { Dimensions, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -44,6 +44,7 @@ import { BotonAtras, PantallaApilada } from "~/ui/Pantalla";
 import AvatarMarco from "~/ui/placa/AvatarMarco";
 import FondoPlaca from "~/ui/placa/FondoPlaca";
 import NombreEstilizado from "~/ui/placa/NombreEstilizado";
+import Segmentos from "~/ui/Segmentos";
 import { PlacaTarjeta } from "~/ui/placa/Placa";
 import VistaCosmetico from "~/ui/recompensas/VistaCosmetico";
 import Texto from "~/ui/Texto";
@@ -209,8 +210,14 @@ const TarjetaItem = memo(function TarjetaItem({ it, e, placa, ancho, onPress }: 
   );
 });
 
+// Dos vistas (pedido 2026-10-10): la Tienda muestra solo lo que todavía no tienes
+// (las ayudas siempre, porque se gastan) y el Inventario, todo lo tuyo para usarlo.
+type Modo = "tienda" | "inventario";
+
 export default function Tienda() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ modo?: string }>();
+  const [modo, setModo] = useState<Modo>(params.modo === "inventario" ? "inventario" : "tienda");
   const { sesion } = useSesion();
   const userId = sesion?.user.id;
   const { placa } = useJugador();
@@ -320,7 +327,13 @@ export default function Tienda() {
   const bloqueoPro = elegido?.soloPro && e.plan !== "pro";
   const ninguno: Partial<Record<Categoria, string>> = { marco: "ninguno", marco_mundo: "ninguno", fuente: "default", animacion: "ninguna", fondo: "ninguno", galeria: "ninguno", estela: "clasica", efecto: "chispas", sonido: "clasico" };
 
-  const items = catalogo.filter((x) => CATEGORIAS_DE[pestana].includes(x.categoria) && aLaVenta(x) && (!x.especial || loTiene(x, e)));
+  const pestanas = modo === "inventario" ? PESTANAS.filter((p) => p.id !== "paquetes") : PESTANAS;
+  const pestanaVista = pestanas.some((p) => p.id === pestana) ? pestana : pestanas[0].id;
+  const items = catalogo.filter((x) => {
+    if (!CATEGORIAS_DE[pestanaVista].includes(x.categoria)) return false;
+    if (modo === "inventario") return x.categoria === "utilidad" ? (cantidadUtilidad(x, e) ?? 0) > 0 : loTiene(x, e);
+    return aLaVenta(x) && !x.especial && (x.categoria === "utilidad" || !loTiene(x, e));
+  });
   const horasOferta = Math.floor(msHastaFinDelEvento() / 3_600_000);
 
   return (
@@ -329,9 +342,9 @@ export default function Tienda() {
         <View style={styles.barra}>
           <BotonAtras />
           <View style={{ flex: 1 }}>
-            <Texto v="h2">Bazar</Texto>
+            <Texto v="h2">{modo === "inventario" ? "Inventario" : "Bazar"}</Texto>
             <Texto v="nota" tam={12}>
-              Cosméticos y ayudas para tus partidas
+              {modo === "inventario" ? "Todo lo tuyo: toca algo para usarlo" : "Cosméticos y ayudas para tus partidas"}
             </Texto>
           </View>
           <View style={styles.saldo}>
@@ -340,8 +353,20 @@ export default function Tienda() {
           </View>
         </View>
         <ScrollView stickyHeaderIndices={[1]} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
-          <View style={{ paddingHorizontal: 16, paddingTop: 6, paddingBottom: 12 }}>
-            {itemOferta && (
+          <View style={{ paddingHorizontal: 16, paddingTop: 6, paddingBottom: 12, gap: 12 }}>
+            <Segmentos<Modo>
+              opciones={[
+                { id: "tienda", titulo: "Tienda" },
+                { id: "inventario", titulo: "Inventario" },
+              ]}
+              valor={modo}
+              onCambio={(m) => {
+                vibrar.seleccion();
+                setModo(m);
+                setElegido(null);
+              }}
+            />
+            {modo === "tienda" && itemOferta && !loTiene(itemOferta, e) && (
               <Pressable
                 onPress={() => {
                   vibrar.seleccion();
@@ -382,8 +407,8 @@ export default function Tienda() {
 
           <View style={styles.chipsCaja}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 16 }}>
-              {PESTANAS.map((p) => {
-                const activa = p.id === pestana;
+              {pestanas.map((p) => {
+                const activa = p.id === pestanaVista;
                 return (
                   <Pressable
                     key={p.id}
@@ -400,11 +425,25 @@ export default function Tienda() {
             </ScrollView>
           </View>
 
-          <Animated.View key={pestana} entering={FadeIn.duration(220)} style={styles.grilla}>
+          <Animated.View key={`${modo}-${pestanaVista}`} entering={FadeIn.duration(220)} style={styles.grilla}>
             {items.map((it) => (
               <TarjetaItem key={it.item} it={it} e={e} placa={placa} ancho={anchoTarjeta} onPress={elegirItem} />
             ))}
           </Animated.View>
+          {items.length === 0 && (
+            <View style={{ alignItems: "center", gap: 10, paddingHorizontal: 24, paddingTop: 30 }}>
+              <Texto style={{ fontSize: 40 }}>{modo === "inventario" ? "🎒" : "✨"}</Texto>
+              <Texto v="nota" centro>
+                {modo === "inventario" ? "Todavía no tienes nada de esta sección." : "Ya tienes todo lo de esta sección. Míralo en tu Inventario."}
+              </Texto>
+              <Boton3D
+                titulo={modo === "inventario" ? "Ir a la tienda" : "Ver mi inventario"}
+                tamano="sm"
+                variante="secundario"
+                onPress={() => setModo(modo === "inventario" ? "tienda" : "inventario")}
+              />
+            </View>
+          )}
           <Texto v="nota" tam={12} centro style={{ marginTop: 14, paddingHorizontal: 24 }}>
             Las Chispas se ganan jugando. Muy pronto también se podrán conseguir paquetes desde la app.
           </Texto>

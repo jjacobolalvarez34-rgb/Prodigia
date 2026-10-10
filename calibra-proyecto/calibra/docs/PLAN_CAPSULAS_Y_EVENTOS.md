@@ -90,8 +90,10 @@ Para que no sea siempre «Chispas»:
 
 - Probabilidades siempre a la vista, por nivel.
 - Garantía visible: «faltan N para un raro» por nivel.
-- Nada de esto se vende. El plan Pro **no** da cápsulas extra; como mucho, una animación
-  distinta.
+- Las cápsulas no se venden con dinero (cajas al azar pagadas: problemas legales y de Google
+  Play). Con dinero se venden cosas que se ven antes de pagar: ver `economy/PLAN_ECONOMIA.md`.
+- **Los números (Chispas, Gemas, precios de fusión) salen de `economy/PLAN_ECONOMIA.md`**, que
+  va antes que este plan.
 - Todo en la base (RPC y tablas); la app y la web solo muestran (regla del proyecto).
 
 ---
@@ -147,12 +149,14 @@ evento. Al terminar, los tickets que sobran se convierten en Chispas; no se pier
 **Lo más cercano es Halloween (31 de octubre, en 3 semanas):** sirve de primer evento para
 probar el motor.
 
-### 3.4 Cuidados (la app la usan chicos y colegios)
+### 3.4 Cuidados (público general)
 
 - Todo evento se puede completar jugando unos 15 minutos por día; nadie queda afuera por
   no jugar horas.
 - Nada que se pierda para siempre por faltar un día: lo que sobra se convierte en Chispas.
-- Nada de eventos pagos ni de «comprar más tiempo».
+- El pase de evento tiene un carril gratis completo; el carril premium (US$4,99 o incluido en
+  Pro) es solo cosmético (ver `economy/PLAN_ECONOMIA.md` §7). Nada pago da ventaja en
+  partidas, duelos ni ligas.
 - Los avisos respetan las horas de silencio y el límite de avisos por día que ya existen.
 
 ---
@@ -172,9 +176,10 @@ Cada fase sale en la web y en la app al mismo tiempo (`PARIDAD_APP_WEB.md`), con
 de la base (probabilidades que suman 100, nadie fusiona sin tener 3 cápsulas, un evento
 fuera de fecha no multiplica nada).
 
-## 5. Decisiones que te tocan
+## 5. Decisiones
 
-1. ¿Los cuatro niveles reemplazan los tipos actuales o se suman? (Recomiendo **reemplazar**:
-   diaria y misiones pasan a bronce; racha y nivel, a plata; ciudad y ligas, a oro.)
+1. **Decidido (2026-10-10): los cuatro niveles reemplazan los tipos actuales**, con
+   animaciones nuevas: diaria y misiones pasan a bronce; racha y nivel, a plata; ciudad y
+   ligas, a oro. Va **después** de la fase 1 de `economy/PLAN_ECONOMIA.md`.
 2. ¿Halloween como primer evento? Sí, si se quiere tener listo para el 31 de octubre.
 3. ¿El Desafío de la comunidad cuenta a todos los jugadores o solo a los de cada país?

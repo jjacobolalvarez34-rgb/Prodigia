@@ -113,7 +113,7 @@ describe("PlacaAmigo — render", () => {
     // RangoBadge (mostrarElo=false por defecto, mismo criterio que en
     // /perfil/[userId]) no imprime el ELO crudo — 1450 cae en Platino.
     expect(html).toContain("Platino");
-    expect(html).toContain("marco_numeria.png");
+    expect(html).toContain("marco_numeria.svg");
   });
 
   it("amigo neutro (sin fondo, sin marco, sin título): no tira excepción", () => {

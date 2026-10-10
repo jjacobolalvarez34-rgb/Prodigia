@@ -902,7 +902,13 @@
         "prediccion": "The oracle wouldn't answer.",
         "laCalcu": "Couldn't play the calculator."
       }
-    }
+    },
+    "modoTienda": "Shop",
+    "modoInventario": "Inventory",
+    "tusAyudas": "Your boosts",
+    "sinAyudas": "You don't have any saved boosts.",
+    "sinColorNombre": "You don't have the name color yet.",
+    "yaLoTienes": "You already have it: it's in your Inventory."
   },
   "Common": {
     "entendido": "Got it",
@@ -4784,6 +4790,7 @@
       "subtitulo": "Trails, effects and sounds for your games, your city on your Badge, emotes, the frame of the month and bundles.",
       "pestanas": {
         "paquetes": "Bundles",
+        "marcos": "Frames",
         "partida": "In game",
         "placa": "Badge",
         "duelos": "Duels",
@@ -4819,7 +4826,11 @@
         "raro": "Rare",
         "epico": "Epic",
         "legendario": "Legendary"
-      }
+      },
+      "inventarioTitulo": "More of your inventory",
+      "inventarioSubtitulo": "Trails, effects, sounds, emotes, titles, cities and frames that are already yours.",
+      "inventarioVacio": "You don't have anything from this section yet.",
+      "yaTienesTodo": "You already have everything in this section: see it in your Inventory."
     },
     "invitado": "Constellations, missions and the calendar are for registered accounts. Create your account to start earning them.",
     "detalle": {

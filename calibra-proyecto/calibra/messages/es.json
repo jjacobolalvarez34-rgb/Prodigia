@@ -902,7 +902,13 @@
         "prediccion": "El oráculo no respondió.",
         "laCalcu": "No se pudo jugar a la calculadora."
       }
-    }
+    },
+    "modoTienda": "Tienda",
+    "modoInventario": "Inventario",
+    "tusAyudas": "Tus ayudas",
+    "sinAyudas": "No tienes ayudas guardadas.",
+    "sinColorNombre": "Todavía no tienes el color de nombre.",
+    "yaLoTienes": "Ya lo tienes: está en tu Inventario."
   },
   "Common": {
     "entendido": "Entendido",
@@ -4784,6 +4790,7 @@
       "subtitulo": "Estelas, efectos y sonidos para tus partidas, tu ciudad en la Placa, emotes, el marco del mes y paquetes.",
       "pestanas": {
         "paquetes": "Paquetes",
+        "marcos": "Marcos",
         "partida": "Partida",
         "placa": "Placa",
         "duelos": "Duelos",
@@ -4819,7 +4826,11 @@
         "raro": "Raro",
         "epico": "Épico",
         "legendario": "Legendario"
-      }
+      },
+      "inventarioTitulo": "Más de tu inventario",
+      "inventarioSubtitulo": "Estelas, efectos, sonidos, emotes, títulos, ciudades y marcos que ya son tuyos.",
+      "inventarioVacio": "Todavía no tienes nada de esta sección.",
+      "yaTienesTodo": "Ya tienes todo lo de esta sección: míralo en tu Inventario."
     },
     "invitado": "Las constelaciones, misiones y el calendario son para cuentas registradas. Crea tu cuenta para empezar a ganarlas.",
     "detalle": {

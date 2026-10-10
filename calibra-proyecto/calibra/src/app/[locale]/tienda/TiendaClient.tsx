@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   RANGOS_ELO,
@@ -111,6 +112,11 @@ export default function TiendaClient({
   ocultarTrastienda,
 }: Props) {
   const t = useTranslations("Tienda");
+  // Tienda (solo lo que todavía no tienes) o Inventario (todo lo tuyo, para usarlo);
+  // va en la URL (?modo=inventario) para que TiendaAmpliada siga el mismo modo.
+  const router = useRouter();
+  const inventario = useSearchParams().get("modo") === "inventario";
+  const cambiarModo = (inv: boolean) => router.replace({ pathname: "/tienda", query: inv ? { modo: "inventario" } : {} }, { scroll: false });
   const tMundos = useTranslations("Mundos.nombres");
   const tRangos = useTranslations("Rankeds.rangos");
   const tMarcosNeon = useTranslations("Tienda.marcosNeon");
@@ -455,9 +461,22 @@ export default function TiendaClient({
           <p className="mt-1 font-mono text-sm font-semibold text-[#5C3A22]">{t("chispasDisponibles", { n: puntos })}</p>
         </div>
 
-        <OfertaDelDia oferta={oferta} nombre={NOMBRES_ITEM[oferta.item as ItemComprable]} />
+        <div className="mx-auto flex w-fit gap-1 rounded-full border border-[#3D2410]/30 bg-[#3D2410]/25 p-1">
+          {[false, true].map((inv) => (
+            <button
+              key={String(inv)}
+              type="button"
+              onClick={() => cambiarModo(inv)}
+              className={`rounded-full px-5 py-2 text-sm font-bold transition-colors ${inventario === inv ? "bg-[#F4E4C1] text-[#3D2410]" : "text-[#F4E4C1]"}`}
+            >
+              {inv ? `🎒 ${t("modoInventario")}` : `🏺 ${t("modoTienda")}`}
+            </button>
+          ))}
+        </div>
 
-        {PAGOS_REALES_HABILITADOS && (
+        {!inventario && <OfertaDelDia oferta={oferta} nombre={NOMBRES_ITEM[oferta.item as ItemComprable]} />}
+
+        {!inventario && PAGOS_REALES_HABILITADOS && (
         <EstanteCategoria titulo={t("pagos.titulo")} franja="#FFC53D">
           <p className="text-sm text-[#F4E4C1]/90">{t("pagos.descripcion")}</p>
           <div className="flex w-fit gap-1 rounded-full border border-[#F4E4C1]/30 bg-[#3D2410]/30 p-1">
@@ -500,6 +519,30 @@ export default function TiendaClient({
         </EstanteCategoria>
         )}
 
+        {inventario && (
+          <EstanteCategoria titulo={t("tusAyudas")} franja="#6C4CF1">
+            <div className="flex flex-wrap gap-2 text-sm text-[#F4E4C1]">
+              {(
+                [
+                  ["🛡️", t("items.escudo"), escudos],
+                  ["❄️", t("items.congelamiento"), congelamientos],
+                  ["⚡", t("items.boost"), boost],
+                  ["🧊", t("items.hielo"), hielos],
+                  ["⏱️", t("items.tiempoExtra"), tiemposExtra],
+                ] as [string, string, number][]
+              )
+                .filter(([, , n]) => n > 0)
+                .map(([icono, nombre, n]) => (
+                  <span key={nombre} className="rounded-full border border-[#F4E4C1]/40 bg-[#3D2410]/30 px-3 py-1.5">
+                    {icono} {nombre} × {n}
+                  </span>
+                ))}
+              {escudos + congelamientos + boost + hielos + tiemposExtra === 0 && <span className="text-[#F4E4C1]/70">{t("sinAyudas")}</span>}
+            </div>
+          </EstanteCategoria>
+        )}
+
+        {!inventario && (
         <EstanteCategoria titulo={t("puestoDeUtilidad")} franja="#6C4CF1">
           <ItemEstante
             icono={<IconEscudo className="h-6 w-6 text-[#6C4CF1]" />}
@@ -573,6 +616,7 @@ export default function TiendaClient({
           />
           {error?.contexto === "utilidad" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
         </EstanteCategoria>
+        )}
 
         <EstanteCategoria titulo={t("vidrieraDeTipografias")} franja="#A78355">
           <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraDescripcion")}</p>
@@ -582,6 +626,7 @@ export default function TiendaClient({
               const compra = FUENTES_COMPRABLES.find((f) => f.fuente === fuente);
               const elegida = fuenteElegida === fuente;
               const claseFuente = FUENTE_NOMBRE_CLASS[fuente];
+              if (desbloqueada !== inventario) return null;
               if (desbloqueada) {
                 return (
                   <button
@@ -619,6 +664,7 @@ export default function TiendaClient({
         <EstanteCategoria titulo={t("herreroDeMarcos")} franja="#E8B34D">
           <p className="text-sm text-[#F4E4C1]/90">{t("herreroDescripcion")}</p>
           <div className="flex flex-wrap gap-2">
+            {inventario && (
             <button
               onClick={() => elegirMarco("ninguno")}
               disabled={cambiandoCosmetico || marcoElegido === "ninguno"}
@@ -630,6 +676,7 @@ export default function TiendaClient({
             >
               {t("sinMarco")}{marcoElegido === "ninguno" && ` · ${t("activo")}`}
             </button>
+            )}
             {[...MARCOS_COMPRABLES, ...MARCOS_NEON_COMPRABLES].map(({ marco, item, colorHex }) => {
               // Los 3 marcos "neón" (pedido 2026-09-22) no son un rango de
               // Rankeds — su nombre sale de Tienda.marcosNeon, no de
@@ -638,6 +685,7 @@ export default function TiendaClient({
               const nombre = esNeon ? tMarcosNeon(marco) : tRangos(marco);
               const desbloqueado = marcosDesbl.includes(marco);
               const elegido = marcoElegido === marco;
+              if (desbloqueado !== inventario) return null;
               if (desbloqueado) {
                 return (
                   <button
@@ -687,6 +735,7 @@ export default function TiendaClient({
               const elegido = marcoElegido === mundo;
               const nivelActual = nivelesMundo[mundo] ?? 0;
               const alcanzaNivel = nivelActual >= NIVEL_MUNDO_REQUERIDO_MARCO;
+              if (desbloqueado !== inventario) return null;
 
               if (desbloqueado) {
                 return (
@@ -735,6 +784,7 @@ export default function TiendaClient({
           </div>
           {error?.contexto === "marco-mundo" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
 
+          {!inventario && (
           <PaqueteMarcosMundo
             marcosDesbl={marcosDesbl}
             nivelesMundo={nivelesMundo}
@@ -743,6 +793,7 @@ export default function TiendaClient({
             onComprar={() => comprar("paquete_marcos_mundo", "marco-mundo")}
             costo={costoDe("paquete_marcos_mundo")}
           />
+          )}
         </EstanteCategoria>
 
         <EstanteCategoria titulo={t("vidrieraDeAnimaciones")} franja="#3ddc97">
@@ -753,6 +804,7 @@ export default function TiendaClient({
               const compra = ANIMACIONES_COMPRABLES.find((a) => a.animacion === animacion);
               const elegida = animacionElegida === animacion;
               const claseAnimacion = ANIMACION_NOMBRE_CLASS[animacion];
+              if (desbloqueada !== inventario) return null;
               if (desbloqueada) {
                 return (
                   <button
@@ -808,6 +860,7 @@ export default function TiendaClient({
               Galería de fondos (abajo), con el degradé real de fondo en
               vez de una miniatura de imagen. */}
           <div className="flex flex-wrap gap-3">
+            {inventario && (
             <div className="flex w-28 flex-col items-center gap-1.5">
               <button
                 onClick={() => elegirFondo("ninguno")}
@@ -824,9 +877,11 @@ export default function TiendaClient({
                 </span>
               )}
             </div>
+            )}
             {FONDOS_COMPRABLES.map(({ fondo, item, nombre, requierePro }) => {
               const desbloqueado = fondosDesbl.includes(fondo);
               const elegido = fondoElegido === fondo;
+              if (desbloqueado !== inventario) return null;
               const preview =
                 fondo === "personalizado" ? (
                   <span className="text-2xl leading-none">🖼️</span>
@@ -904,7 +959,9 @@ export default function TiendaClient({
             el desbloqueo. */}
         <EstanteCategoria titulo={t("vidrieraDeColorNombre")} franja="#7C5CFF">
           <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraColorNombreDescripcion")}</p>
-          {colorNombreDesbl ? (
+          {colorNombreDesbl !== inventario ? (
+            <p className="text-sm text-[#F4E4C1]/70">{inventario ? t("sinColorNombre") : t("yaLoTienes")}</p>
+          ) : colorNombreDesbl ? (
             <p className="text-sm text-[#F4E4C1]">
               ✓ {t("colorNombreDesbloqueado")}{" "}
               <Link href="/perfil" className="underline hover:text-white">
@@ -936,6 +993,7 @@ export default function TiendaClient({
               {fondosGaleria.map(({ slug, nombre, url, costo }) => {
                 const desbloqueado = fondosGaleriaDesbl.includes(slug);
                 const elegido = fondoElegido === "personalizado" && fondoPerfilUrl === url;
+                if (desbloqueado !== inventario) return null;
                 return (
                   <div key={slug} className="flex w-28 flex-col items-center gap-1.5">
                     <div
@@ -995,7 +1053,7 @@ export default function TiendaClient({
             este cartel nunca chequeaba ese flag — solo escondía el
             widget de Doble o Nada DENTRO de /trastienda. Ahora sí se
             oculta acá también, para que el ajuste haga lo que promete. */}
-        {!ocultarTrastienda && (
+        {!inventario && !ocultarTrastienda && (
           <Link
             href="/trastienda"
             aria-label={t("entrarALaTrastienda")}

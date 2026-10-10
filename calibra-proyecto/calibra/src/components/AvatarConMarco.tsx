@@ -10,8 +10,8 @@ interface Props {
   className?: string;
 }
 
-// Grupo B, Fase 1: los 6 marcos de mundo son un anillo PNG con centro
-// transparente (public/marcos/marco_<mundo>.png), pensado para
+// Grupo B, Fase 1: los marcos de mundo son un anillo con centro transparente
+// (public/marcos/marco_<mundo>.svg, generado por lib/recompensas/marcosMundo.ts), pensado para
 // superponerse sobre el avatar — a diferencia de los marcos de rango
 // (bronce..prodigio), que siguen tiñendo el borde de la tarjeta entera
 // vía ESTILO_MARCO_PERFIL y no pasan por acá. El anillo mide ~1.3x el

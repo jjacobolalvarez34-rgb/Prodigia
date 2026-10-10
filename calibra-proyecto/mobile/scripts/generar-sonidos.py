@@ -77,6 +77,11 @@ PAQUETES={
     "campanitas":[(2,0,.6,"sine",.1),(5.4,0,.35,"sine",.03),(3,.07,.5,"sine",.06)],
     "ochobits":[(1,0,.07,"square",.06),(1.5,.06,.07,"square",.06),(2,.12,.1,"square",.06)],
     "marimba":[(.5,0,.3,"sine",.16),(2,0,.08,"sine",.04)],
+    # Tienda ampliada (0275, SONIDOS_NUEVOS de calibra/src/lib/recompensas/catalogoAmpliado.ts).
+    "xilofono":[(2,0,.18,"sine",.12),(4,0,.06,"sine",.03)],
+    "arcade":[(1,0,.05,"square",.05),(1.25,.05,.05,"square",.05),(1.5,.1,.05,"square",.05),(2,.15,.12,"square",.05)],
+    "arpa":[(1,0,.35,"triangle",.08),(1.25,.06,.35,"triangle",.07),(1.5,.12,.45,"triangle",.07)],
+    "cristal":[(3,0,.5,"sine",.06),(4.5,.02,.4,"sine",.03),(6,.04,.3,"sine",.02)],
 }
 for nombre,notas in PAQUETES.items():
     for i,st in enumerate(escala):

@@ -4,7 +4,8 @@ import { describe, expect, it } from "vitest";
 import { CATALOGO_NUEVO, CIUDADES, EFECTOS, EMOTES, ESTELAS, PAQUETES, particulasDe, PREMIOS_CALENDARIO, temporadaActual, UTILIDADES_NUEVAS } from "./catalogo";
 
 const MIGRACIONES = path.join(__dirname, "..", "..", "..", "supabase", "migrations");
-const sql0248 = readFileSync(path.join(MIGRACIONES, "0248_catalogo_cosmeticos_y_tienda.sql"), "utf8");
+// 0248 más la ampliación de 0275 (mismo formato de filas y de paquetes).
+const sql0248 = readFileSync(path.join(MIGRACIONES, "0248_catalogo_cosmeticos_y_tienda.sql"), "utf8") + readFileSync(path.join(MIGRACIONES, "0275_tienda_ampliada_mas_cosmeticos.sql"), "utf8");
 // premios_calendario() vigente: 0259 cambió el día 7 (cápsula → 3 estrellas).
 const sql0259 = readFileSync(path.join(MIGRACIONES, "0259_constelaciones_y_alineacion.sql"), "utf8");
 

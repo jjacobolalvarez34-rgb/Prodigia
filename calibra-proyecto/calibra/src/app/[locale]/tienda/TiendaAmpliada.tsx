@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { probarPaqueteAcierto, reproducirTono } from "@/lib/sonido";
 import { CATALOGO_NUEVO, COLOR_RAREZA, diasHastaFinDeMes, PAQUETES, temporadaActual, UTILIDADES_NUEVAS, type Rareza } from "@/lib/recompensas/catalogo";
@@ -16,8 +17,8 @@ import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
 // revalida todo. Avisa la compra con el evento "prodigia:chispas" para que el saldo
 // de arriba (TiendaClient) se actualice.
 
-type Pestana = "paquetes" | "partida" | "placa" | "duelos" | "temporada" | "utilidades";
-const PESTANAS: Pestana[] = ["paquetes", "partida", "placa", "duelos", "temporada", "utilidades"];
+type Pestana = "paquetes" | "marcos" | "partida" | "placa" | "duelos" | "temporada" | "utilidades";
+const PESTANAS: Pestana[] = ["paquetes", "marcos", "partida", "placa", "duelos", "temporada", "utilidades"];
 
 interface Item {
   item: string;
@@ -31,15 +32,23 @@ interface Item {
 }
 
 const ITEMS: Item[] = [
-  ...CATALOGO_NUEVO.filter((x) => x.vendible && !(x.categoria === "fondo") && !(x.categoria === "marco" && x.temporada == null)).map((x) => ({ ...x })),
+  // Los marcos de rango y de ciudad se venden arriba (TiendaClient); acá, los de temporada y los de colores (0275).
+  ...CATALOGO_NUEVO.filter((x) => x.vendible && !(x.categoria === "fondo") && !(x.categoria === "marco" && x.temporada == null && !x.valor.startsWith("estilo_"))).map((x) => ({ ...x })),
   ...PAQUETES.map((p) => ({ item: p.item, categoria: "paquete", valor: p.item, nombre: p.nombre, precio: p.precio, rareza: "epico" as Rareza, items: p.items })),
   ...UTILIDADES_NUEVAS.map((u) => ({ item: u.item, categoria: "utilidad", valor: u.item, nombre: u.nombre, precio: u.precio, rareza: "comun" as Rareza })),
 ];
 // Los fondos de ciudad (también vendibles) van con su colección, en la pestaña Placa.
 const FONDOS_CIUDAD: Item[] = CATALOGO_NUEVO.filter((x) => x.vendible && x.categoria === "fondo").map((x) => ({ ...x }));
+// Inventario: todo lo que se puede tener, también lo que no se vende (piezas de colección,
+// marcos de otros meses) y las ayudas.
+const TODO_INVENTARIO: Item[] = [
+  ...CATALOGO_NUEVO.map((x) => ({ ...x })),
+  ...UTILIDADES_NUEVAS.map((u) => ({ item: u.item, categoria: "utilidad", valor: u.item, nombre: u.nombre, precio: u.precio, rareza: "comun" as Rareza })),
+];
 
 const DE_PESTANA: Record<Pestana, (it: Item) => boolean> = {
   paquetes: (it) => it.categoria === "paquete",
+  marcos: (it) => it.categoria === "marco" && it.temporada == null && it.valor.startsWith("estilo_"),
   partida: (it) => it.categoria === "estela" || it.categoria === "efecto" || it.categoria === "sonido",
   placa: (it) => it.categoria === "ciudad_placa" || it.categoria === "titulo" || it.categoria === "fondo",
   duelos: (it) => it.categoria === "emote",
@@ -61,6 +70,8 @@ interface Estado {
 
 export default function TiendaAmpliada() {
   const t = useTranslations("Recompensas.tienda");
+  // Tienda (solo lo que no tienes) o Inventario (todo lo tuyo); lo elige TiendaClient con ?modo=.
+  const inventario = useSearchParams().get("modo") === "inventario";
   const [pestana, setPestana] = useState<Pestana>("paquetes");
   const [e, setE] = useState<Estado | null>(null);
   const [elegido, setElegido] = useState<Item | null>(null);
@@ -156,7 +167,19 @@ export default function TiendaAmpliada() {
     return null;
   }
 
-  const lista = useMemo(() => [...ITEMS, ...FONDOS_CIUDAD].filter(DE_PESTANA[pestana]), [pestana]);
+  const pestanas = inventario ? PESTANAS.filter((p) => p !== "paquetes") : PESTANAS;
+  const pestanaVista = pestanas.includes(pestana) ? pestana : pestanas[0];
+  const lista = useMemo(() => {
+    if (inventario) {
+      // En el inventario, «Del mes» muestra todos los marcos de temporada que tengas.
+      const filtro = pestanaVista === "temporada" ? (it: Item) => it.temporada != null : DE_PESTANA[pestanaVista];
+      return TODO_INVENTARIO.filter(filtro).filter((it) => (it.categoria === "utilidad" ? (cantidad(it) ?? 0) > 0 : tiene(it)));
+    }
+    return [...ITEMS, ...FONDOS_CIUDAD]
+      .filter(DE_PESTANA[pestanaVista])
+      .filter((it) => it.categoria === "utilidad" || !(tiene(it) || (it.categoria === "paquete" && (it.items ?? []).every(tieneSlug))));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pestanaVista, inventario, e]);
 
   function avisar(texto: string) {
     setAviso(texto);
@@ -208,23 +231,26 @@ export default function TiendaAmpliada() {
   return (
     <section className="mx-auto flex w-full max-w-4xl flex-col gap-4 px-4 pb-12 sm:px-6">
       <div>
-        <h2 className="font-display text-2xl font-bold text-foreground">{t("titulo")}</h2>
-        <p className="text-sm text-texto-secundario">{t("subtitulo")}</p>
+        <h2 className="font-display text-2xl font-bold text-foreground">{inventario ? t("inventarioTitulo") : t("titulo")}</h2>
+        <p className="text-sm text-texto-secundario">{inventario ? t("inventarioSubtitulo") : t("subtitulo")}</p>
       </div>
       <div className="flex gap-2 overflow-x-auto pb-1">
-        {PESTANAS.map((p) => (
+        {pestanas.map((p) => (
           <button
             key={p}
             type="button"
             onClick={() => setPestana(p)}
-            className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold ${pestana === p ? "border-primario bg-primario/20 text-foreground" : "border-border bg-surface text-texto-secundario"}`}
+            className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold ${pestanaVista === p ? "border-primario bg-primario/20 text-foreground" : "border-border bg-surface text-texto-secundario"}`}
           >
             {t(`pestanas.${p}`)}
           </button>
         ))}
       </div>
-      {pestana === "temporada" && <p className="text-sm font-semibold text-racha">{t("quedanDias", { n: diasHastaFinDeMes() })}</p>}
-      <motion.div key={pestana} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {!inventario && pestanaVista === "temporada" && <p className="text-sm font-semibold text-racha">{t("quedanDias", { n: diasHastaFinDeMes() })}</p>}
+      {lista.length === 0 && (
+        <p className="rounded-2xl border border-dashed border-border px-4 py-6 text-center text-sm text-texto-secundario">{inventario ? t("inventarioVacio") : t("yaTienesTodo")}</p>
+      )}
+      <motion.div key={`${inventario}-${pestanaVista}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {lista.map((it) => {
           const mio = tiene(it) || (it.categoria === "paquete" && (it.items ?? []).every(tieneSlug));
           const enUso = usa(it);

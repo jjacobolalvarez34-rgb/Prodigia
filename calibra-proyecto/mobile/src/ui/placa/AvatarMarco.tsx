@@ -1,7 +1,9 @@
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, type ReactNode } from "react";
+import { memo, useEffect, type ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
+import { SvgXml } from "react-native-svg";
+import { svgMarcoMundo } from "@/lib/recompensas/marcosMundo";
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 import { useAnimacionActiva } from "~/lib/rendimiento";
 import { infoMarco } from "~/lib/placa";
@@ -28,6 +30,17 @@ function Inicial({ nombre, tam }: { nombre: string; tam: number }) {
     </LinearGradient>
   );
 }
+
+// Marco de ciudad (nivel 40): el mismo SVG que la web, dibujado acá sin descargarlo.
+const MarcoCiudad = memo(function MarcoCiudad({ ciudad, tam }: { ciudad: string; tam: number }) {
+  const xml = svgMarcoMundo(ciudad);
+  if (!xml) return null;
+  return (
+    <View pointerEvents="none" style={{ position: "absolute", width: tam, height: tam }}>
+      <SvgXml xml={xml} width={tam} height={tam} />
+    </View>
+  );
+});
 
 export default function AvatarMarco({ url, nombre, marco = "ninguno", tam = 40, animar = true, presencia }: Props) {
   const info = infoMarco(marco);
@@ -98,7 +111,7 @@ export default function AvatarMarco({ url, nombre, marco = "ninguno", tam = 40, 
         <View style={{ width: tam, height: tam, borderRadius: tam / 2, overflow: "hidden" }}>
           {url ? <Image source={{ uri: url }} style={styles.relleno} contentFit="cover" autoplay={animar} /> : <Inicial nombre={nombre} tam={tam} />}
         </View>
-        <Image source={{ uri: info.imagen }} style={{ position: "absolute", width: anillo, height: anillo }} contentFit="contain" />
+        <MarcoCiudad ciudad={info.ciudad} tam={anillo} />
       </View>
     );
   } else if (info.tipo === "mundo") {
@@ -108,7 +121,7 @@ export default function AvatarMarco({ url, nombre, marco = "ninguno", tam = 40, 
         <View style={{ width: tam, height: tam, borderRadius: tam / 2, overflow: "hidden" }}>
           {url ? <Image source={{ uri: url }} style={styles.relleno} contentFit="cover" autoplay={animar} /> : <Inicial nombre={nombre} tam={tam} />}
         </View>
-        <Image source={{ uri: info.imagen }} style={{ position: "absolute", width: anillo, height: anillo }} contentFit="contain" />
+        <MarcoCiudad ciudad={info.ciudad} tam={anillo} />
       </View>
     );
   } else {
