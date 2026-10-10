@@ -90,8 +90,9 @@ Para que no sea siempre «Chispas»:
 
 - Probabilidades siempre a la vista, por nivel.
 - Garantía visible: «faltan N para un raro» por nivel.
-- Las cápsulas no se venden con dinero (cajas al azar pagadas: problemas legales y de Google
-  Play). Con dinero se venden cosas que se ven antes de pagar: ver `economy/PLAN_ECONOMIA.md`.
+- Las cápsulas no se venden con dinero directo, pero se pueden abrir con **Cometas** (la moneda
+  premium), con probabilidades visibles y todo lo que sale disponible también sin azar: ver
+  `economy/PLAN_ECONOMIA.md` §2.
 - **Los números (Chispas, Gemas, precios de fusión) salen de `economy/PLAN_ECONOMIA.md`**, que
   va antes que este plan.
 - Todo en la base (RPC y tablas); la app y la web solo muestran (regla del proyecto).

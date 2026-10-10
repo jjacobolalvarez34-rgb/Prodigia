@@ -53,9 +53,13 @@ general (cualquier persona que estudia); el plan para colegios es un producto ap
   prohibidos en duelos.
 - **Con dinero se compra tiempo, contenido y estilo**: mundos antes de tiempo, Clases, cosméticos
   exclusivos, el pase de evento y comodidades (reparar una racha).
-- **Las cápsulas no se venden.** Las cajas al azar pagadas tienen problemas legales (Bélgica y
-  Países Bajos las prohíben; Google Play exige mostrar probabilidades y lo revisa). Se venden
-  cosas que se ven antes de pagar.
+- **Las cápsulas se ganan gratis y también se pueden abrir con Cometas, nunca con dinero
+  directo** (como los cofres de Clash Royale): probabilidades visibles antes de abrir, garantía
+  por nivel, solo cosméticos o comodidades, nada intercambiable y **todo lo que sale también se
+  consigue sin azar** (tienda, fragmentos, eventos). Compra de cápsulas desactivada en Bélgica y
+  Países Bajos; revisar Brasil (ley de 2025 sobre cajas al azar en juegos para menores). La
+  clasificación de la tienda queda para todo público con el aviso «elementos al azar»; Prodigia
+  no entra al programa infantil de Google Play.
 - **Un jugador gratis constante consigue casi todo**, pero tarda; quien paga llega antes o
   luce distinto.
 - **La base decide todos los números** (regla del proyecto); una tabla única de precios.
@@ -64,11 +68,11 @@ general (cualquier persona que estudia); el plan para colegios es un producto ap
 
 ## 3. Dos monedas
 
-| | **Chispas** (moneda blanda) | **Gemas** (moneda premium; el nombre se puede cambiar) |
+| | **Chispas** (moneda blanda) | **Cometas** (moneda premium; decidido el 2026-10-10) |
 |---|---|---|
 | Cómo se gana | Jugando, misiones, cápsulas, constelaciones, retos, eventos | **Comprándolas**; y pocas gratis: logros, ligas, hitos de racha, eventos |
 | Para qué sirve | Mundos, consumibles, cosméticos comunes a épicos, fusión de cápsulas, tienda de eventos | Cosméticos legendarios y de temporada, mundos al instante, reparar racha, pase de evento |
-| Se convierte | No | 1 Gema → 10 Chispas (un solo sentido) |
+| Se convierte | No | 1 Cometa → 10 Chispas (un solo sentido) |
 
 ---
 
@@ -81,29 +85,29 @@ general (cualquier persona que estudia); el plan para colegios es un producto ap
 | Partida terminada | ~130 (hasta 700) | **10 + 1 por acierto** → 12–20. Doble experiencia: las Chispas también ×2 |
 | Tope diario | Ninguno | Después de 10 partidas al día, la mitad (la Experiencia sigue completa) |
 | Experiencia | = Chispas | **Sin cambios**: sigue la fórmula de hoy (niveles, ligas y meta diaria intactos) |
-| Subir de nivel | 50 × nivel + 250 | **100 Chispas fijas**; cada 10 niveles, **25 Gemas** |
+| Subir de nivel | 50 × nivel + 250 | **100 Chispas fijas**; cada 10 niveles, **25 Cometas** |
 | Misiones del día | 40 / 50 / 60 | 20 / 25 / 30; las 3 → cápsula de bronce |
 | Cápsula bronce (antes diaria) | 20–80 | 15–40 Chispas o un consumible |
-| Calendario de 7 días | 50 … 150 | 20, 30, hielo, 40, +3 s, 60, **10 Gemas** + estrellas |
+| Calendario de 7 días | 50 … 150 | 20, 30, hielo, 40, +3 s, 60, **10 Cometas** + estrellas |
 | Constelación | 300 | **120 Chispas** + pieza (o 60 más si la colección está completa) |
 | Reto diario / semanal | hasta 100 / 450 | hasta 40 / 150 |
-| Liga semanal | cápsulas | igual, y **Oro: 30 Gemas**, Plata: 15, Bronce: 5 |
-| Logros | — | 10–50 Gemas según dificultad |
-| **Total aproximado** | 1000–2500 al día | **~170 Chispas al día ≈ 5000 al mes, más ~60 Gemas al mes** |
+| Liga semanal | cápsulas | igual, y **Oro: 30 Cometas**, Plata: 15, Bronce: 5 |
+| Logros | — | 10–50 Cometas según dificultad |
+| **Total aproximado** | 1000–2500 al día | **~170 Chispas al día ≈ 5000 al mes, más ~60 Cometas al mes** |
 
 ### 4.2 Lo que cuesta
 
 | Qué | Ahora | Propuesta | Jugador gratis tarda |
 |---|---|---|---|
-| Mundo nuevo | 3000 | **2500 Chispas** o **300 Gemas** | ~2 semanas |
+| Mundo nuevo | 3000 | **2500 Chispas** o **300 Cometas** | ~2 semanas |
 | Hielo / +3 s | 300 / 250 | 60 / 50 | 2–3 partidas |
 | Escudo / boost | 350 / 600 | 120 / 150 | ~1 día |
 | Cosmético común | 1000–1200 | 400 | 2–3 días |
 | Cosmético raro | 1300–2200 | 1200 | ~1 semana |
 | Cosmético épico | 2400–6000 | 3000 | ~3 semanas |
-| Cosmético legendario | — | **solo Gemas (600)**, cápsulas oro/prisma o eventos | — |
+| Cosmético legendario | — | **solo Cometas (600)**, cápsulas oro/prisma o eventos | — |
 | Fusionar 3 cápsulas | — | 50 Chispas (bronce → plata) · 150 (plata → oro) · 400 (oro → prisma) | — |
-| Reparar una racha perdida | — | 50 Gemas (1 vez por semana) | — |
+| Reparar una racha perdida | — | 50 Cometas (1 vez por semana) | — |
 
 ### 4.3 Lo que se vende con dinero (precios en US$; con precio regional en Latinoamérica)
 
@@ -111,9 +115,9 @@ general (cualquier persona que estudia); el plan para colegios es un producto ap
 |---|---|---|
 | **Pro mensual** | US$4,99 | Ver §5 |
 | **Pro anual** | US$39,99 | ~33 % de descuento |
-| Gemas | 100 por 0,99 · 550 por 4,99 · 1200 por 9,99 · 2600 por 19,99 · 7000 por 49,99 | Más volumen, más bonus |
-| **Paquete de inicio** (una vez) | US$2,99 | 1 mundo + 200 Gemas + marco exclusivo: el primer pago tiene que sentirse regalado |
-| Mundo suelto | US$2,99 | O 300 Gemas |
+| Cometas | 100 por 0,99 · 550 por 4,99 · 1200 por 9,99 · 2600 por 19,99 · 7000 por 49,99 | Más volumen, más bonus |
+| **Paquete de inicio** (una vez) | US$2,99 | 1 mundo + 200 Cometas + marco exclusivo: el primer pago tiene que sentirse regalado |
+| Mundo suelto | US$2,99 | O 300 Cometas |
 | **Pase de evento** (opcional) | US$4,99 por evento | Carril gratis para todos; carril premium solo con cosméticos (ver §7) |
 | Paquetes de cosméticos | US$1,99–6,99 | Temáticos por ciudad o temporada, siempre visibles antes de pagar |
 
@@ -127,7 +131,7 @@ Hoy Pro regala 10 000 Chispas y por eso se canibaliza. Propuesta:
 - **Todas las Clases** (hoy ya es de Pro: se mantiene, la primera de cada mundo gratis).
 - **Sin anuncios.**
 - **+25 % de Chispas** al jugar (la Experiencia no cambia: no da ventaja en ligas).
-- **300 Gemas al mes.**
+- **300 Cometas al mes.**
 - **Carril premium del pase de evento incluido.**
 - Estadísticas avanzadas y cosméticos de Pro (como hoy).
 - **Prueba gratis de 7 días.**
@@ -153,7 +157,7 @@ propongo un pase **solo cosmético** por evento (Halloween, Navidad, findes tem�
 - 20 escalones que se suben jugando (Experiencia del evento).
 - **Carril gratis**: Chispas, consumibles, 1 cosmético raro y cápsulas.
 - **Carril premium** (US$4,99 o incluido en Pro): cosméticos épicos y legendarios del
-  evento, Gemas de vuelta (~40 % del precio) y un marco animado.
+  evento, Cometas de vuelta (~40 % del precio) y un marco animado.
 - Nada del carril premium da ventaja en partidas, duelos ni ligas.
 
 ---
@@ -164,7 +168,7 @@ propongo un pase **solo cosmético** por evento (Halloween, Navidad, findes tem�
 |---|---|---|
 | App en Google Play | **Google Play Billing** (es obligatorio para bienes digitales en Play). Recomiendo **RevenueCat** para manejarlo y unificar las compras de web y app | No existe |
 | Web | Paddle (internacional) y Mercado Pago (Latinoamérica), ya programados | Apagados: faltan los precios en Paddle y conectar Mercado Pago |
-| Base | `acreditar_chispas_compradas` ya existe; se suma `acreditar_gemas` con el mismo cuidado (idempotente por id de pago) | Parcial |
+| Base | `acreditar_chispas_compradas` ya existe; se suma `acreditar_Cometas` con el mismo cuidado (idempotente por id de pago) | Parcial |
 
 Comisiones aproximadas: Google Play 15 %, Paddle ~5 % + US$0,50, Mercado Pago ~4–6 %.
 
@@ -176,7 +180,7 @@ Si se baja lo que da jugar, los saldos actuales quedan inflados. Opciones:
 
 1. **Recomendada:** convertir los saldos a la escala nueva (dividir entre 6, que es la
    relación entre lo que daba una partida antes y lo que da ahora) y dar a cada cuenta
-   existente el marco «Pionero de la economía» y 100 Gemas de regalo.
+   existente el marco «Pionero de la economía» y 100 Cometas de regalo.
 2. No tocar los saldos: quien juega desde antes queda con ventaja de compra por meses.
 
 Lo ya comprado (mundos, cosméticos) no se toca nunca.
@@ -193,7 +197,7 @@ Lo ya comprado (mundos, cosméticos) no se toca nunca.
   - el intenso no supera 2× al gratis (el tope diario funciona);
   - ninguna recompensa diaria vale menos que una partida, ni más que 10;
   - con Pro, un mundo no se compra solo con lo que da Pro en Chispas.
-- **Panel de economía para ti**: Chispas y Gemas creadas y gastadas por día, compras y
+- **Panel de economía para ti**: Chispas y Cometas creadas y gastadas por día, compras y
   conversión a Pro.
 
 ---
@@ -203,7 +207,7 @@ Lo ya comprado (mundos, cosméticos) no se toca nunca.
 | Fase | Qué |
 |---|---|
 | **1. Separar Experiencia y Chispas** | `insertar_intento` y `acreditar_chispas` dejan de sumar Chispas por Experiencia; nueva fórmula por partida con tope diario; nuevos premios de nivel, misiones, calendario, constelaciones y retos; precios nuevos; conversión de saldos; tabla `economia_precios`; simulador. Web y app a la vez |
-| **2. Gemas** | Columna y movimientos en la base, tienda con las dos monedas, Gemas gratis (logros, ligas, niveles) |
+| **2. Cometas** | Columna y movimientos en la base, tienda con las dos monedas, Cometas gratis (logros, ligas, niveles) |
 | **3. Cobros reales** | RevenueCat + Google Play Billing en la app; Paddle y Mercado Pago encendidos en la web; productos de §4.3; paquete de inicio |
 | **4. Pro nuevo** | Beneficios de §5 y prueba gratis de 7 días |
 | **5. Anuncios** | AdMob con premio en la app; AdSense en la web; nunca para Pro |
@@ -214,7 +218,7 @@ Lo ya comprado (mundos, cosméticos) no se toca nunca.
 
 ## 12. Decisiones que te tocan
 
-1. ¿Dos monedas (Chispas y Gemas)? ¿Y el nombre de la premium: Gemas, Diamantes, Prismas…?
+1. **Decidido:** dos monedas, Chispas y **Cometas**; las cápsulas también se abren con Cometas.
 2. Saldos actuales: ¿convertir dividiendo entre 6 con regalo (recomendado) o dejarlos?
 3. ¿Pase de evento con carril premium cosmético? (Cambia la decisión de 0249.)
 4. Anuncios: ¿con premio más un intersticial cada 3 partidas (recomendado), o solo con premio?
