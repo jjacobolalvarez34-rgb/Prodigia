@@ -1,0 +1,85 @@
+/* ===== Arcade noventero ===== */
+[data-skin="arcade"]{
+  --pagina-bg:#050008; --pagina-texto:#f6f2ff; --pagina-tenue:#9a8bc0; --pagina-borde:#3a1658; --pagina-acento:#ff2fd6;
+  --bg:#07020f; --sup1:#0d0520; --sup2:#140a2c; --sup3:#22104a; --borde:#2ff3ff;
+  --texto:#f6f2ff; --texto2:#a59bd0;
+  --primario:#ff2fd6; --primario-base:#c218a8; --primario-claro:#ff7be6;
+  --logro:#ffe14d; --logro-labio:#a88a00; --racha:#ff7a1a; --correcto:#39ff88; --error:#ff3355;
+  --f-display:"Bungee", "Impact", sans-serif; --f-texto:"Chakra Petch", "Segoe UI", sans-serif; --f-num:"Press Start 2P", "Courier New", monospace;
+  --radio:0px; --radio-chico:0px; --radio-boton:0px; --radio-pildora:0px; --radio-seg:0px; --radio-dia:0px; --radio-barra:0; --radio-avatar:0; --radio-punto:0;
+  --borde-w:2px; --labio:0px; --trazo:2.4;
+  --barra-fondo:#14082a; --barra-alto:10px;
+  --edif:#12062a; --edif2:#1d0b40; --cielo-ciudad:#2a0a4a; --ventana-off:#2a1458; --luna:#ffe14d;
+  --tab-bg:#07020f; --carcasa:#1a1a1a; --placa-bg:#0d0520; --placa-borde:#ffe14d;
+  --h1:24px; --h1-peso:400; --mayus:uppercase;
+
+  .tel{background:linear-gradient(180deg,#120330 0,#07020f 40%),#07020f}
+  .tel::after{content:"";position:absolute;inset:0;z-index:7;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.3) 0 1px,transparent 1px 3px),radial-gradient(120% 90% at 50% 50%,transparent 60%,rgba(0,0,0,.55))}
+  .num,.t-mono{font-size:.82em;letter-spacing:-.5px}
+  .t-h1,.placa-nombre{font-weight:400;background:linear-gradient(180deg,#fff 0,#ffe14d 45%,#ff7a1a 55%,#ff2fd6 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(2px 2px 0 #2a0a4a)}
+  .t-h2{font-weight:400}
+  .t-h3{font:400 14px var(--f-display);letter-spacing:.5px}
+  .t-micro{font:400 8px var(--f-num);letter-spacing:0}
+  .t-nota{font-size:12.5px}
+  .titulo-seccion{font:400 9px var(--f-num);color:#2ff3ff;text-shadow:0 0 8px #2ff3ff}
+  .titulo-seccion::before{content:"▶ "}
+  .tarjeta,.celda{background:#0d0520;border:2px solid #2ff3ff;box-shadow:0 0 10px rgba(47,243,255,.35),inset 0 0 12px rgba(47,243,255,.12)}
+  .tarjeta[style*="--acc"],.tarjeta.continuar,.tarjeta.mundo:not(.bloqueado){border-color:var(--acc,var(--mundo));box-shadow:0 0 12px color-mix(in srgb,var(--acc,var(--mundo)) 50%,transparent),inset 0 0 12px color-mix(in srgb,var(--acc,var(--mundo)) 18%,transparent)}
+  .bloqueado{border-color:#3a2a5a;box-shadow:none}
+  .continuar,.mundo,.destacado{padding:6px}
+  .ciudad{border-radius:0}
+  .ciudad .c-cielo{fill:#1a0636}
+  .ciudad .v{fill:var(--mundo,#ff2fd6);filter:drop-shadow(0 0 2px var(--mundo,#ff2fd6))}
+  .pildora,.redondo,.chip,.precio,.premio-mision{background:#07020f;border:2px solid #ff2fd6;box-shadow:0 0 6px rgba(255,47,214,.5)}
+  .pildora b,.precio b{font-size:10px}
+  .chip{font:400 11px var(--f-display);border-color:#3a2a5a;box-shadow:none}
+  .chip.on,.segmentos .on{background:#ff2fd6;color:#07020f;border-color:#ff2fd6}
+  .segmentos{background:#07020f;border:2px solid #ff2fd6;gap:0;padding:2px}
+  .segmentos span{font:400 11px var(--f-display)}
+  .boton{font:400 18px var(--f-display);border:3px solid #07020f;outline:2px solid currentColor;outline-offset:-6px;box-shadow:4px 4px 0 #ff2fd6;margin:0 4px 4px 0}
+  .b-mundo,.b-primario{--b-color:#ffe14d;--b-texto:#07020f}
+  .b-logro{--b-color:#39ff88;--b-texto:#07020f}
+  .b-sec{--b-color:#14082a;--b-texto:#2ff3ff;box-shadow:4px 4px 0 #2ff3ff}
+  .barra{border:2px solid #f6f2ff;padding:1px;height:12px}
+  .barra i{background:repeating-linear-gradient(90deg,#39ff88 0 5px,#07020f 5px 6px)}
+  .mundo .barra i,.favorita .barra i{background:repeating-linear-gradient(90deg,var(--mundo) 0 5px,#07020f 5px 6px)}
+  .barra.blanca i,.rango-barra i{background:repeating-linear-gradient(90deg,#ffe14d 0 5px,#07020f 5px 6px)}
+  .anillo-valor{stroke-linecap:butt}
+  .anillo circle{stroke-width:8}
+  .reloj{--anillo-c:#ffe14d}
+  .anillo b{font-size:9px}
+  .anillo.grande b{font-size:12px}
+  .reloj b{font-size:14px}
+  .teclado a{background:#14082a;border:2px solid #2ff3ff;box-shadow:inset -3px -3px 0 rgba(0,0,0,.5),inset 3px 3px 0 rgba(255,255,255,.12);font:400 16px var(--f-num);color:#2ff3ff}
+  .teclado .t-ok{background:#39ff88;color:#07020f;border-color:#39ff88}
+  .problema .enunciado{font:400 32px var(--f-num);color:#ffe14d;text-shadow:3px 3px 0 #ff2fd6}
+  .respuesta{font:400 22px var(--f-num)}
+  .combo{background:#07020f;border:2px solid #ff7a1a;font:400 16px var(--f-num);text-shadow:0 0 8px #ff7a1a}
+  .exp{font:400 28px var(--f-num);color:#ffe14d;text-shadow:3px 3px 0 #ff2fd6}
+  .placa{border:3px solid #ffe14d;box-shadow:0 0 14px rgba(255,225,77,.4);color:#f6f2ff}
+  .placa .vidrio{background:#07020f;border:2px solid #2ff3ff;border-radius:0}
+  .placa .chip-titulo{background:#ff2fd6;color:#07020f;border-radius:0;font-family:var(--f-display);font-weight:400}
+  .c-oro-rango{color:#ffe14d}
+  .avatar{border:2px solid #ffe14d;background:var(--av,#c218a8)}
+  .insignia,.doble-exp,.sello-evento,.medalla,.glifo,.item-ico,.res{border-radius:0}
+  .sello-evento{background:#ffe14d;color:#07020f;font:400 12px var(--f-num)}
+  .doble-exp{font:400 8px var(--f-num);padding:5px 6px}
+  .insignia{font-size:8px}
+  .insignia-rango path{fill:#ffe14d}
+  .medalla{background:#39ff88}
+  .stat b{font-size:13px;color:#ffe14d}
+  .glifo{border:2px solid var(--mundo)}
+  .cielo{background:#07020f;border:2px solid #3a2a5a}
+  .est-on circle{fill:#ffe14d;filter:drop-shadow(0 0 2px #ffe14d)}
+  .capsula{border-radius:0;background:linear-gradient(180deg,#ff7be6,#c218a8);border:2px solid #f6f2ff}
+  .dia{border:2px solid #3a2a5a;background:#07020f}
+  .dia b{font:400 6px var(--f-num)}
+  .dia.hoy{border-color:#ffe14d;background:#2a2200}
+  .rareza{font-family:var(--f-num);font-size:7px}
+  .emote-gg{font-family:var(--f-display);color:#ffe14d;text-shadow:2px 2px 0 #ff2fd6}
+  .fila-lista{border-bottom:1px dashed #3a2a5a}
+  .tabbar{border-top:2px solid #ff2fd6}
+  .tabbar a{font:400 7px var(--f-num);color:#7a6aa8}
+  .tabbar .on{color:#ffe14d;text-shadow:0 0 6px #ffe14d}
+  .punto,.amigo .avatar::after{border-radius:0}
+}

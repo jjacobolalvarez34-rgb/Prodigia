@@ -1,0 +1,84 @@
+/* ===== Papelería japonesa: diario de estudio ===== */
+[data-skin="papeleria"]{
+  --pagina-bg:#f7f5ee; --pagina-texto:#3a3550; --pagina-tenue:#8a85a0; --pagina-borde:#dcd8cc; --pagina-acento:#8f7cf7;
+  --bg:#fbfaf5; --sup1:#ffffff; --sup2:#f3f0ff; --sup3:#e9e4ff; --borde:#d9d4c7;
+  --texto:#36314d; --texto2:#7d7896;
+  --primario:#8f7cf7; --primario-base:#8f7cf7; --primario-claro:#6f5ae0;
+  --logro:#f5b93a; --logro-labio:#d39a1f; --racha:#ff8a6b; --correcto:#5cc79a; --error:#ef6f7a;
+  --f-display:"Zen Maru Gothic", "Hiragino Maru Gothic ProN", sans-serif; --f-texto:"Klee One", "Zen Maru Gothic", sans-serif; --f-num:"Zen Maru Gothic", sans-serif;
+  --radio:6px; --radio-chico:8px; --radio-boton:12px; --radio-seg:10px;
+  --borde-w:1.5px; --labio:3px; --trazo:1.9;
+  --barra-fondo:#ece8dd; --barra-alto:10px;
+  --edif:#d9d1f5; --edif2:#ebe5ff; --cielo-ciudad:#fffaf0; --ventana-off:#c7bfe6; --luna:#ffd88a;
+  --tab-bg:#fbfaf5; --carcasa:#3a3550; --placa-bg:#fff; --placa-borde:#36314d;
+  --h1:28px; --h1-peso:900;
+
+  .tel{background:linear-gradient(#e7eaf6 1px,transparent 1px) 0 0/16px 16px,linear-gradient(90deg,#e7eaf6 1px,transparent 1px) 0 0/16px 16px,#fbfaf5}
+  .tel::before{content:"";position:absolute;top:0;bottom:0;left:28px;width:1.5px;background:#f3b4b4;z-index:0}
+  .t-h1{display:inline;background:linear-gradient(transparent 58%,#fff07a 58% 90%,transparent 90%);align-self:flex-start;padding:0 4px}
+  .t-h2,.t-h3,.titulo-seccion,.placa-nombre{font-weight:900}
+  .t-micro{font:600 11px var(--f-texto);letter-spacing:.5px}
+  .t-nota{font-size:13px}
+  .titulo-seccion{font-size:15px;display:flex;align-items:center;gap:8px}
+  .titulo-seccion::before{content:"";width:14px;height:14px;border-radius:50%;border:1.5px solid #ef6f7a;background:radial-gradient(circle,#ef6f7a 0 2px,transparent 3px)}
+  .tarjeta,.celda{background:#fff;border:1.5px solid #d9d4c7;box-shadow:2px 3px 0 rgba(54,49,77,.08)}
+  .tarjeta[style*="--acc"],.tarjeta.continuar,.tarjeta.mundo:not(.bloqueado){border-color:#d9d4c7}
+  /* cinta washi */
+  .continuar::before,.mundo::before,.rango::before,.problema::before,.placa::before,.destacado::before{content:"";position:absolute;top:-8px;left:50%;width:76px;height:20px;transform:translateX(-50%) rotate(-3deg);z-index:3;opacity:.85;
+    background:repeating-linear-gradient(45deg,color-mix(in srgb,var(--mundo,var(--primario)) 55%,#fff) 0 6px,color-mix(in srgb,var(--mundo,var(--primario)) 30%,#fff) 6px 12px)}
+  .mundo.doble::before{transform:translateX(-50%) rotate(4deg)}
+  .continuar,.mundo,.destacado{overflow:visible;padding:8px}
+  .continuar .ciudad,.mundo .ciudad,.destacado .ciudad{border-radius:4px}
+  .c-mundo{color:color-mix(in srgb,var(--mundo-base) 85%,#000)}
+  .ciudad .v{fill:color-mix(in srgb,var(--mundo,#8f7cf7) 70%,#fff)}
+  .ciudad .ed{fill:color-mix(in srgb,var(--mundo-base,#8f7cf7) 30%,#fff)}
+  .ciudad .ed2{fill:color-mix(in srgb,var(--mundo-base,#8f7cf7) 15%,#fff)}
+  .ciudad .vo{fill:#fff}
+  .bloqueado .ciudad{filter:grayscale(1) opacity(.6)}
+  .pildora,.redondo,.chip,.precio,.premio-mision{background:#fff;border:1.5px solid #d9d4c7}
+  .chip.on{background:#fff07a;border-color:#e6d94f;color:#36314d}
+  .segmentos{background:#f3f0e6}
+  .segmentos .on{background:#fff;box-shadow:0 1px 0 #d9d4c7;color:#36314d}
+  .boton{font:900 16px var(--f-display);border:1.5px solid #36314d;box-shadow:0 var(--labio) 0 #36314d}
+  .b-mundo{--b-color:color-mix(in srgb,var(--mundo-base) 70%,#fff);--b-texto:#1f1b33}
+  .b-primario{--b-color:#b3a6ff;--b-texto:#1f1b33}
+  .b-logro{--b-color:#ffd166;--b-texto:#3a2a00}
+  .b-sec{--b-color:#fff;--b-texto:#36314d}
+  .barra{border:1.5px solid #36314d;background:#fff}
+  .barra i{background:repeating-linear-gradient(-45deg,var(--mundo-base,#8f7cf7) 0 4px,color-mix(in srgb,var(--mundo-base,#8f7cf7) 70%,#fff) 4px 8px);border-radius:inherit}
+  .anillo-fondo{stroke:#ece8dd}
+  .teclado a{background:#fff;border:1.5px solid #36314d;box-shadow:0 3px 0 #36314d;font:700 22px var(--f-num)}
+  .teclado .t-ok{background:#a8e6c9;color:#1f4d37;border:1.5px solid #36314d;box-shadow:0 3px 0 #36314d}
+  .problema .enunciado{font:900 46px var(--f-num)}
+  .problema{background:linear-gradient(#eef0f9 1px,transparent 1px) 0 12px/100% 24px,#fff}
+  .respuesta{font-family:var(--f-texto)}
+  .combo{background:#ffe3d8;color:#e2592f;--racha:#e2592f}
+  .exp{color:#e09a10}
+  .c-logro{color:#b97d00}
+  .placa{border:1.5px solid #36314d;background:#fff;color:#36314d;--texto2:#7d7896;overflow:visible}
+  .placa-ciudad .ciudad{border-radius:20px 20px 0 0}
+  .placa .vidrio{background:#f7f5ff;border:1.5px dashed #b3a6ff}
+  .placa .chip-titulo{background:#ffe3ec;color:#c2456b;border:1.5px solid #f3a7bd}
+  .barra.blanca{--barra-relleno:#8f7cf7;--barra-fondo:#fff}
+  .c-oro-rango{color:#c98a00}
+  .avatar{border:2px solid #36314d;background:color-mix(in srgb,var(--av,#8f7cf7) 45%,#fff);color:#36314d}
+  .glifo{background:color-mix(in srgb,var(--mundo-base) 22%,#fff);color:color-mix(in srgb,var(--mundo-base) 85%,#000)}
+  .item-ico{background:#f3f0ff}
+  /* sello hanko */
+  .sello-evento,.medalla,.insignia{background:transparent;color:#d6443d;border:2px solid #d6443d;border-radius:50%;transform:rotate(-12deg);font-family:var(--f-display);font-weight:900}
+  .insignia{transform:none}
+  .doble-exp{background:#fff07a;color:#36314d;border:1.5px solid #36314d;transform:rotate(-3deg)}
+  .insignia-rango path{fill:#ffd166;stroke:#36314d;stroke-width:1.5}
+  .res{border:1.5px solid currentColor;background:#fff}
+  .cielo{background:#3a3550;border-radius:4px}
+  .capsula{background:linear-gradient(180deg,#d6ceff,#a99cff);border:1.5px solid #36314d}
+  .dia{background:#fff;border:1.5px solid #d9d4c7}
+  .dia.hoy{background:#fff07a;border-color:#e6d94f}
+  .muestra{border:1.5px dashed #d9d4c7;background:#fbfaf5}
+  .emote-gg{color:#e09a10}
+  .fila-lista{border-bottom:1.5px dashed #d9d4c7}
+  .tabbar{border-top:1.5px solid #d9d4c7;padding-top:0}
+  .tabbar a{padding-top:8px;color:#9a95b0}
+  .tabbar .on{color:#36314d;background:#fff07a;border-radius:0 0 10px 10px;box-shadow:0 2px 0 #e6d94f}
+  .amigo .avatar::after{border-color:#fbfaf5}
+}

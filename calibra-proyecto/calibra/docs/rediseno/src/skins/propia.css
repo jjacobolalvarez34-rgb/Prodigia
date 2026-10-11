@@ -1,0 +1,86 @@
+/* ===== Prodigia con identidad: la de hoy, pulida =====
+   Idea: la noche. Cielo con estrellas, ciudades protagonistas, barras que se llenan
+   como pisos de ventanas, luz solo donde hay ventanas o mundo activo. */
+[data-skin="propia"]{
+  --pagina-bg:#05070e; --pagina-borde:rgba(148,160,214,.16); --pagina-acento:#7C5CFF;
+  --bg:#080B15; --sup1:#10152a; --sup2:#161c35; --sup3:#202848; --borde:rgba(148,160,214,.13);
+  --texto:#F2F4FB; --texto2:#8E97B8;
+  --f-display:"Bricolage Grotesque", "Segoe UI", sans-serif;
+  --f-texto:"Onest", "Segoe UI", sans-serif;
+  --f-num:"Geist Mono", ui-monospace, monospace;
+  --radio:20px; --radio-chico:13px; --radio-boton:16px; --radio-seg:15px;
+  --h1:30px; --h1-peso:800; --h1-track:-.6px;
+  --barra-fondo:#1a2140; --barra-alto:9px; --radio-barra:3px;
+  --edif:#0f1428; --edif2:#141a33; --ventana-off:#1c2342; --luna:#F3EEDB;
+  --tab-bg:transparent; --carcasa:#03040a;
+
+  .tel{background:
+      radial-gradient(1.2px 1.2px at 12% 6%,#fff9 50%,transparent 52%),
+      radial-gradient(1px 1px at 34% 3%,#fff7 50%,transparent 52%),
+      radial-gradient(1.3px 1.3px at 58% 9%,#fffa 50%,transparent 52%),
+      radial-gradient(1px 1px at 81% 4%,#fff6 50%,transparent 52%),
+      radial-gradient(1px 1px at 92% 14%,#fff8 50%,transparent 52%),
+      radial-gradient(1px 1px at 6% 18%,#fff5 50%,transparent 52%),
+      radial-gradient(120% 40% at 50% 0,#141a3a 0,transparent 70%),
+      var(--bg)}
+  .tarjeta,.celda{background:linear-gradient(180deg,#131a32 0,#0f1428 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 12px 24px -16px rgba(0,0,0,.9)}
+  .tarjeta[style*="--acc"]{border-color:color-mix(in srgb,var(--acc) 38%,var(--borde))}
+  .t-h1{font-variation-settings:"opsz" 72}
+  .t-h2,.t-h3,.placa-nombre{font-variation-settings:"opsz" 48;letter-spacing:-.2px}
+  .t-micro{font-weight:600;letter-spacing:1.5px}
+  .titulo-seccion{display:flex;align-items:center;gap:10px;font:600 11px var(--f-texto);letter-spacing:1.6px;text-transform:uppercase;color:var(--texto2);margin:8px 0 -2px}
+  .titulo-seccion::after{content:"";flex:1;height:1px;background:var(--borde)}
+
+  /* HUD: el ícono vive en su círculo de color */
+  .pildora{background:rgba(16,21,42,.85);padding:3px 11px 3px 3px;gap:6px}
+  .pildora .ico{width:24px;height:24px;padding:4px;border-radius:50%}
+  .racha .ico{background:color-mix(in srgb,var(--racha) 20%,transparent)}
+  .chispas .ico{background:color-mix(in srgb,var(--logro) 18%,transparent)}
+  .avatar{border-width:2px;box-shadow:0 0 0 3px var(--bg),0 0 0 4px rgba(232,179,77,.35)}
+  .hud .avatar{background:linear-gradient(160deg,#3b2f80,#211a4d)}
+
+  /* barras: pisos de ventanas que se encienden */
+  .barra{position:relative}
+  .barra i{background:linear-gradient(90deg,var(--mundo-base,var(--primario-base)),var(--mundo,var(--primario-claro)));box-shadow:0 0 10px color-mix(in srgb,var(--mundo,var(--primario)) 45%,transparent);border-radius:0}
+  .barra::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 2px),#10152a calc(10% - 2px) 10%)}
+  .barra.blanca::after,.barra.fina::after{background:repeating-linear-gradient(90deg,transparent 0 calc(5% - 1.5px),rgba(10,12,24,.9) calc(5% - 1.5px) 5%)}
+  .barra.blanca i{background:#fff;box-shadow:none}
+
+  /* ciudades: cielo teñido por el mundo, ventanas que alumbran */
+  .ciudad{background:linear-gradient(180deg,color-mix(in srgb,var(--mundo-base,#6C4CF1) 32%,#0a0d1c) 0,#0a0d1c 85%)}
+  .ciudad .c-cielo{fill:transparent}
+  .ciudad .v{filter:drop-shadow(0 0 2px var(--mundo,#9B85FF))}
+  .ciudad.apagada{background:#0c0f1c}
+  .continuar .ciudad{height:96px}
+  .continuar .tarjeta-in{padding-top:12px}
+  .mundo{padding:8px}
+  .mundo .ciudad{border-radius:14px}
+  .nombre-mundo{font-size:17px;letter-spacing:1.4px}
+  .bloqueado{opacity:.92}
+  .bloqueado .ciudad{filter:saturate(.2) brightness(.75)}
+
+  /* botones con relieve, sin halo */
+  .boton{background:linear-gradient(180deg,color-mix(in srgb,var(--b-color) 88%,#fff) 0,var(--b-color) 55%);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 var(--labio) 0 var(--b-labio),0 8px 16px -8px rgba(0,0,0,.8);font-size:17px;letter-spacing:.1px}
+  .b-sec{background:var(--sup2);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 var(--labio) 0 #0b0f20}
+  .chip{background:transparent}
+  .chip.on{background:color-mix(in srgb,var(--primario) 22%,transparent);border-color:color-mix(in srgb,var(--primario) 60%,transparent);color:#fff}
+  .segmentos{background:#0b0f1f}
+  .segmentos .on{background:linear-gradient(180deg,#252e55,#1c2445);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 2px 6px rgba(0,0,0,.5)}
+
+  .meta{background:radial-gradient(90% 120% at 0 50%,rgba(255,182,39,.10),transparent 60%),linear-gradient(180deg,#131a32,#0f1428)}
+  .sello-evento{border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffd77a,#FFB627 55%,#c98500);color:#2A1A00;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
+  .evento{border-color:rgba(255,182,39,.28)}
+  .recompensas-chico{border-color:rgba(255,182,39,.35)}
+  .rango{background:radial-gradient(80% 70% at 50% 0,rgba(232,179,77,.16),transparent 70%),linear-gradient(180deg,#131a32,#0f1428)}
+  .problema{background:radial-gradient(90% 80% at 50% 0,color-mix(in srgb,var(--mundo) 14%,transparent),transparent 70%),linear-gradient(180deg,#131a32,#0f1428)}
+  .teclado a{background:linear-gradient(180deg,#1b2240,#151b34);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 3px 0 #0a0e1e}
+  .teclado .t-ok{background:linear-gradient(180deg,#5fe8ab,#3DDC97);color:#05301c;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 #1d8a5c}
+  .placa{border-width:1.5px}
+  .cielo{background:radial-gradient(120% 90% at 50% 100%,color-mix(in srgb,var(--mundo) 18%,#070a14),#070a14)}
+  .est-on circle{filter:drop-shadow(0 0 3px var(--logro))}
+
+  /* pestañas: muelle flotante */
+  .tabbar{margin:0 12px 14px;padding:7px 6px;border:1px solid var(--borde);border-radius:22px;background:rgba(14,18,36,.92);box-shadow:0 12px 26px -10px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.05)}
+  .tabbar a{padding:6px 0;border-radius:15px}
+  .tabbar .on{background:color-mix(in srgb,var(--primario) 20%,transparent);color:#d6ccff}
+}

@@ -1,0 +1,68 @@
+/* ===== Dark academia: academia arcana ===== */
+[data-skin="academia"]{
+  --pagina-bg:#1c1310; --pagina-texto:#e8dcc0; --pagina-tenue:#b8a37c; --pagina-borde:#5a4428; --pagina-acento:#8a1f2b;
+  --bg:#21160f; --sup1:#2a1d15; --sup2:#33241a; --sup3:#3f2d20; --borde:#7a5c2b;
+  --texto:#ecdfc2; --texto2:#b8a37c;
+  --primario:#7a62d8; --primario-base:#5b3fc4; --primario-claro:#a896ff;
+  --logro:#d9b25f; --logro-labio:#7a5c2b; --racha:#e0703a; --correcto:#6fae7f; --error:#c0453f;
+  --f-display:"IM Fell English SC", Georgia, serif; --f-texto:"Cormorant Garamond", Georgia, serif; --f-num:"Cormorant Garamond", Georgia, serif;
+  --radio:3px; --radio-chico:2px; --radio-boton:2px; --radio-pildora:2px; --radio-seg:2px; --radio-dia:2px; --radio-barra:0;
+  --labio:0px; --trazo:1.6;
+  --barra-fondo:#cbb88f; --barra-alto:6px;
+  --edif:#2a1b15; --edif2:#3a2a1e; --cielo-ciudad:#16100c; --ventana-off:#3a2a1e; --luna:#f3e3b8;
+  --tab-bg:#140d0a; --carcasa:#0d0806; --placa-bg:#2a1d15; --placa-borde:#b08a4a;
+  --h1:32px; --h1-peso:400;
+
+  .tel{background:radial-gradient(90% 50% at 50% 0,rgba(255,207,107,.10),transparent 70%),repeating-linear-gradient(135deg,rgba(255,255,255,.012) 0 2px,transparent 2px 6px),#21160f;font-size:16px}
+  .t-h1,.t-h2,.t-h3,.titulo-seccion,.placa-nombre,.nombre-mundo{font-weight:400}
+  .t-h3{font-size:18px}.t-nota{font-size:14.5px;font-style:italic}
+  .t-micro{font:400 12px var(--f-display);letter-spacing:2px;text-transform:none}
+  .t-mono,.num{font-family:var(--f-texto);font-weight:700;font-variant-numeric:oldstyle-nums tabular-nums}
+  .titulo-seccion{font-size:18px;color:#d9b25f;display:flex;align-items:center;gap:10px}
+  .titulo-seccion::before,.titulo-seccion::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,#b08a4a,transparent)}
+  /* páginas de papel envejecido */
+  .tarjeta,.celda{--texto:#2a1a12;--texto2:#5a4636;--sup2:#cbb88f;--sup3:#bfa97c;--borde:#7a5c2b;--barra-fondo:#bfa97c;--primario-claro:#5b3fc4;--logro:#8a5a12;--ventana-off:#bfa97c;
+    background:radial-gradient(120% 80% at 50% 50%,transparent 60%,rgba(90,60,30,.25)),#dccdab;color:#2a1a12;border:1px solid #7a5c2b;box-shadow:inset 0 0 0 4px #dccdab,inset 0 0 0 5px #a07d42,0 6px 14px rgba(0,0,0,.4)}
+  .tarjeta[style*="--acc"],.tarjeta.continuar,.tarjeta.mundo:not(.bloqueado){border-color:#7a5c2b}
+  .continuar,.mundo,.destacado{padding:7px}
+  .c-mundo{color:var(--mundo-base)}
+  .ciudad{border-radius:0;border:1px solid #7a5c2b}
+  .tarjeta .ciudad{--cielo-ciudad:#1d140f}
+  .pildora,.redondo,.chip,.precio,.premio-mision{background:transparent;border:1px solid #b08a4a;color:#ecdfc2}
+  .tarjeta .precio,.tarjeta .premio-mision{color:#2a1a12;border-color:#7a5c2b}
+  .chip.on,.segmentos .on{background:#5b3fc4;color:#f3e7cc;border-color:#5b3fc4}
+  .segmentos{background:transparent;border:1px solid #b08a4a}
+  .segmentos span{font-family:var(--f-display);font-size:13px}
+  .boton{font:400 19px var(--f-display);background:#8a1f2b;border:1px solid #3d0a10;box-shadow:inset 0 0 0 2px rgba(243,214,168,.25);color:#f3e3c0}
+  .b-mundo,.b-primario{background:#5b3fc4;border-color:#2f1f7a}
+  .b-logro{background:linear-gradient(180deg,#c9a463,#8f6a32);color:#1c1310;border-color:#4d3a19}
+  .b-sec{background:transparent;color:inherit;border-color:#7a5c2b;box-shadow:none}
+  .barra i{background:var(--mundo-base,#5b3fc4);border-radius:0}
+  .teclado a{background:#dccdab;color:#2a1a12;border:1px solid #7a5c2b;box-shadow:inset 0 0 0 3px #dccdab,inset 0 0 0 4px #a07d42;font:700 26px var(--f-texto)}
+  .teclado .t-ok{background:#2f6b4a;color:#f3e3c0;box-shadow:inset 0 0 0 2px rgba(243,214,168,.3)}
+  .problema .enunciado{font:400 50px var(--f-display);color:#2a1a12}
+  .combo{background:transparent;border:1px solid #e0703a;font:400 20px var(--f-display)}
+  .anillo-valor{stroke-linecap:butt}.anillo circle{stroke-width:4}
+  .reloj{--anillo-c:#e0703a}
+  .exp{font:700 40px var(--f-texto);color:#d9b25f}
+  .placa{background:#2a1d15;box-shadow:inset 0 0 0 4px #2a1d15,inset 0 0 0 5px #b08a4a}
+  .placa .vidrio{background:rgba(220,205,171,.08);border:1px solid #7a5c2b;border-radius:0}
+  .placa .chip-titulo{background:transparent;border:1px solid #a896ff;color:#a896ff;font-style:italic;font-family:var(--f-texto);font-size:13px}
+  .barra.blanca{--barra-relleno:#d9b25f;--barra-fondo:rgba(255,255,255,.12)}
+  .avatar{border:2px solid #b08a4a;border-radius:2px;background:#3a2a22}
+  .sello-evento,.medalla{border-radius:50%;background:radial-gradient(circle at 35% 35%,#b8323f,#8a1f2b 60%,#5a1019);color:#f3d6a8;font-family:var(--f-display)}
+  .insignia{background:#8a1f2b;color:#f3d6a8;border-radius:50%}
+  .doble-exp{background:#8a1f2b;color:#f3d6a8;border-radius:2px;font-family:var(--f-display);font-weight:400}
+  .insignia-rango path{fill:#b08a4a}
+  .capsula{background:radial-gradient(circle at 35% 35%,#8f78ff,#5b3fc4 60%,#2f1f7a);border-radius:50%;width:44px;height:44px}
+  .capsula i{display:none}
+  .cielo{background:#140d0a;border:1px solid #7a5c2b;border-radius:50% / 30%}
+  .trazo{stroke:#8f78ff}.est-on circle{fill:#ffcf6b}
+  .celda .t-fuerte,.celda .t-nota{color:#2a1a12}
+  .dia{background:#cbb88f;border-color:#7a5c2b}
+  .dia.hoy{background:#8a1f2b;color:#f3e3c0}.dia.hoy b{color:#f3d6a8}
+  .fila-lista{border-bottom:1px dotted #7a5c2b}
+  .tabbar{border-top:1px solid #7a5c2b}
+  .tabbar a{font-family:var(--f-display);font-size:11px;color:#8d7a5c}
+  .tabbar .on{color:#ffcf6b}
+}

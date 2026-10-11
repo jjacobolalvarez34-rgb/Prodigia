@@ -1,0 +1,95 @@
+/* ===== Editorial suizo / brutalismo ===== */
+[data-skin="suizo"]{
+  --pagina-bg:#ffffff; --pagina-texto:#0a0a0a; --pagina-tenue:#5a5a5a; --pagina-borde:#0a0a0a; --pagina-acento:#5b3cf5;
+  --bg:#ffffff; --sup1:#ffffff; --sup2:#f1f1f1; --sup3:#e4e4e4; --borde:#0a0a0a;
+  --texto:#0a0a0a; --texto2:#5a5a5a;
+  --primario:#5b3cf5; --primario-base:#5b3cf5; --primario-claro:#5b3cf5;
+  --logro:#ffb000; --logro-labio:#0a0a0a; --racha:#ff4a1c; --correcto:#00a35c; --error:#e0151b;
+  --f-display:"Archivo", "Helvetica Neue", Arial, sans-serif; --f-texto:"Archivo", "Helvetica Neue", Arial, sans-serif; --f-num:"IBM Plex Mono", ui-monospace, monospace;
+  --radio:0px; --radio-chico:0px; --radio-boton:0px; --radio-pildora:0px; --radio-seg:0px; --radio-dia:0px; --radio-barra:0; --radio-avatar:0; --radio-punto:0;
+  --borde-w:2px; --labio:0px; --trazo:2.2;
+  --barra-fondo:#ffffff; --barra-alto:12px;
+  --edif:#0a0a0a; --edif2:#3a3a3a; --cielo-ciudad:#ffffff; --ventana-off:#2a2a2a; --luna:#ff4a1c;
+  --tab-bg:#0a0a0a; --carcasa:#0a0a0a; --placa-bg:#ffffff; --placa-borde:#0a0a0a;
+  --h1:38px; --h1-peso:900; --h1-track:-1.5px; --mayus:uppercase; --gap:10px;
+
+  .tel{border-width:3px;border-radius:0;font-stretch:100%}
+  .tel::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(90deg,transparent calc(50% - .5px),rgba(10,10,10,.06) calc(50% - .5px) calc(50% + .5px),transparent 0)}
+  .t-h1{font-stretch:125%;line-height:.88}
+  .t-h2{font-stretch:125%;font-weight:900;text-transform:uppercase;letter-spacing:-.5px;font-size:24px}
+  .t-h3{font-weight:800;font-stretch:110%}
+  .t-micro{font:600 10px var(--f-num);letter-spacing:.5px}
+  .t-nota{color:#3a3a3a}
+  .titulo-seccion{font:600 11px var(--f-num);text-transform:uppercase;letter-spacing:1px;border-top:2px solid #0a0a0a;padding-top:6px;margin-top:8px}
+  .titulo-seccion::before{content:"→ "}
+  .tarjeta,.celda{background:#fff;border:2px solid #0a0a0a;box-shadow:none}
+  .tarjeta[style*="--acc"],.tarjeta.continuar,.tarjeta.mundo:not(.bloqueado){border-color:#0a0a0a}
+  .tarjeta[style*="--acc"]{box-shadow:inset 8px 0 0 var(--acc)}
+  .tarjeta[style*="--acc"] > *{margin-left:6px}
+  .continuar,.mundo{padding:0}
+  .continuar .ciudad,.mundo .ciudad{border-bottom:2px solid #0a0a0a}
+  .mundo > .entre,.mundo > .barra{margin-inline:12px}
+  .mundo > .barra{margin-bottom:12px}
+  .nombre-mundo{font-stretch:125%;font-weight:900;font-size:20px;letter-spacing:-.3px}
+  .grande{font-size:20px}
+  .c-mundo{color:#0a0a0a;background:var(--mundo);padding:0 4px}
+  .c-logro{color:#0a0a0a;background:#ffb000;padding:0 4px;justify-self:start}
+  .t-micro.c-mundo{color:#fff;background:var(--mundo-base)}
+  .ciudad{border-radius:0}
+  .ciudad .v{fill:var(--mundo,#5b3cf5)}
+  .bloqueado .ciudad{filter:grayscale(1)}
+  .pildora,.redondo,.chip,.precio,.premio-mision,.segmentos{background:#fff;border:2px solid #0a0a0a;color:#0a0a0a}
+  .chip.on,.segmentos .on{background:#0a0a0a;color:#fff}
+  .segmentos{padding:0;gap:0}
+  .segmentos span{border-right:2px solid #0a0a0a;font-weight:700;text-transform:uppercase;font-size:11px}
+  .segmentos span:last-child{border-right:0}
+  .boton{border:2px solid #0a0a0a;font:900 17px var(--f-display);font-stretch:125%;text-transform:uppercase;box-shadow:5px 5px 0 #0a0a0a;margin:0 5px 5px 0}
+  .b-sm{font-size:12px;font-stretch:100%}
+  .b-mundo{--b-color:var(--mundo-base)}
+  .b-primario{--b-color:#5b3cf5}
+  .b-logro{--b-color:#ffb000;--b-texto:#0a0a0a}
+  .b-sec{--b-color:#fff;--b-texto:#0a0a0a}
+  .barra{border:2px solid #0a0a0a}
+  .barra i{background:#0a0a0a;border-radius:0}
+  .mundo .barra i,.favorita .barra i{background:var(--mundo-base)}
+  .rango-barra i{background:#0a0a0a}
+  .anillo{--anillo-c:#0a0a0a}
+  .anillo-valor{stroke-linecap:butt}
+  .anillo circle{stroke-width:10}
+  .anillo-fondo{stroke:#e4e4e4}
+  .meta .anillo-valor{stroke:#5b3cf5}
+  .teclado a{border:2px solid #0a0a0a;background:#fff;box-shadow:none;font:500 24px var(--f-num)}
+  .teclado .t-ok{background:#5b3cf5;color:#fff;border:2px solid #0a0a0a;box-shadow:none}
+  .problema .enunciado{font:900 58px var(--f-display);font-stretch:125%;letter-spacing:-2px}
+  .problema{text-align:left;padding:18px 14px}
+  .combo{background:#ff4a1c;color:#fff;--racha:#fff;border:2px solid #0a0a0a;font:900 20px var(--f-display)}
+  .exp{font:900 48px var(--f-display);font-stretch:125%;color:#0a0a0a;letter-spacing:-1px}
+  .placa{border:2px solid #0a0a0a;border-radius:0;color:#0a0a0a;--texto2:#3a3a3a}
+  .placa-nombre{font-stretch:125%;font-size:34px;letter-spacing:-1px}
+  .placa .vidrio{background:#fff;border:2px solid #0a0a0a;border-radius:0}
+  .placa .chip-titulo{background:#5b3cf5;color:#fff;border-radius:0}
+  .barra.blanca{--barra-relleno:#0a0a0a;--barra-fondo:#fff;height:10px}
+  .c-oro-rango{color:#0a0a0a;background:#ffb000;padding:0 4px}
+  .avatar{background:#0a0a0a;border:2px solid #0a0a0a;border-radius:0}
+  .placa .avatar{background:#5b3cf5}
+  .glifo,.item-ico{background:#fff;border:2px solid #0a0a0a;color:#0a0a0a}
+  .glifo{background:var(--mundo);color:#0a0a0a}
+  .insignia,.doble-exp,.sello-evento,.medalla{border-radius:0;border:2px solid #0a0a0a}
+  .sello-evento{background:#ffb000;color:#0a0a0a;font-stretch:125%;font-weight:900}
+  .insignia-rango path{fill:#ffb000;stroke:#0a0a0a;stroke-width:2}
+  .res{border-radius:0;border:2px solid currentColor;background:#fff}
+  .stat b{font:900 26px var(--f-display);font-stretch:125%}
+  .stat:first-child{background:#0a0a0a;color:#fff;--texto2:#bbb}
+  .cielo{background:#0a0a0a;border-radius:0}
+  .trazo{stroke:#fff}.trazo.falta{stroke:#888}.est-on circle{fill:#ffb000}.est-off circle{stroke:#888}
+  .capsula{border-radius:0;background:#5b3cf5;border:2px solid #0a0a0a}
+  .dia{border:2px solid #0a0a0a;background:#fff}
+  .dia.hoy{background:#ffb000}
+  .dia.hecho{opacity:1;background:#0a0a0a;color:#fff}.dia.hecho b{color:#bbb}.dia.hecho .ico{color:#fff}
+  .muestra{border:2px solid #0a0a0a;border-radius:0}
+  .fila-lista{border-bottom:2px solid #0a0a0a}
+  .amigo .avatar::after{border-radius:0;border-color:#fff}
+  .tabbar{border-top:0}
+  .tabbar a{color:#999;font-size:9.5px;text-transform:uppercase;font-weight:800;letter-spacing:.5px}
+  .tabbar .on{color:#fff;background:#5b3cf5;margin:-8px 0 -16px;padding:8px 0}
+}

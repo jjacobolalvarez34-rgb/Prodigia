@@ -1,0 +1,57 @@
+/* ===== Fantasía RPG móvil: Clash Royale ===== */
+[data-skin="rpg"]{
+  --pagina-bg:#160f3d; --pagina-borde:#3b2f8a; --pagina-acento:#FFB627; --pagina-sobre-acento:#2a1a00; --pagina-tenue:#b8b0ff;
+  --bg:#2a2f9e; --sup1:#1d2b6b; --sup2:#16205e; --sup3:#2c3f94; --borde:#0a0f3a;
+  --texto:#ffffff; --texto2:#cdd6ff;
+  --f-display:"Lilita One", "Arial Black", sans-serif; --f-texto:"Nunito", "Segoe UI", sans-serif; --f-num:"Lilita One", "Arial Black", sans-serif;
+  --radio:14px; --radio-chico:10px; --radio-boton:14px; --radio-seg:12px;
+  --borde-w:2px; --labio:6px; --trazo:2.4;
+  --barra-fondo:#0d1240; --barra-alto:12px;
+  --edif:#3a46a8; --edif2:#5262c7; --cielo-ciudad:#89b4ff; --ventana-off:#2a347e; --luna:#fff8d6;
+  --tab-bg:linear-gradient(180deg,#2b3b8f,#1b2466); --carcasa:#0a0620; --placa-bg:#1d2b6b; --placa-borde:#FFB627;
+  --h1:30px; --h1-peso:400;
+
+  .tel{background:linear-gradient(180deg,#5a8cff 0,#3d5fe0 32%,#2a2f9e 62%,#1d1a66 100%);font-weight:800}
+  .t-h1,.t-h2,.t-h3,.titulo-seccion,.placa-nombre,.boton,.combo,.emote-gg,.stat b,.exp,.enunciado,.nombre-mundo{font-weight:400;-webkit-text-stroke:1.5px #120a26;paint-order:stroke fill;text-shadow:0 3px 0 #120a26}
+  .t-h3,.titulo-seccion{-webkit-text-stroke:1.2px #120a26;text-shadow:0 2px 0 #120a26}
+  .titulo-seccion{font-size:18px}
+  .t-nota{color:#dbe2ff;font-weight:700}
+  .tarjeta,.celda{background:linear-gradient(180deg,#2c3f94,#1d2b6b);border:3px solid #FFB627;box-shadow:inset 0 0 0 2px #0e1550,0 4px 0 #0b0f3a}
+  .tarjeta[style*="--acc"],.tarjeta.continuar,.tarjeta.mundo:not(.bloqueado){border-color:#FFB627}
+  .tarjeta.bloqueado{border-color:#6a7ad8}
+  .problema{background:#f5e6c4;color:#3d2410;border-color:#6b3f1f;box-shadow:inset 0 0 0 2px #e0c898,0 5px 0 #3d2410}
+  .problema .enunciado{-webkit-text-stroke:0;text-shadow:none;font-family:"Lilita One",sans-serif}
+  .problema .respuesta{color:#3a86ff}
+  .boton{border:3px solid #120a26;font-size:21px;background:linear-gradient(180deg,color-mix(in srgb,var(--b-color) 70%,#fff) 0 50%,var(--b-color) 50%);box-shadow:inset 0 3px 0 rgba(255,255,255,.45),0 var(--labio) 0 var(--b-labio),0 calc(var(--labio) + 2px) 0 #120a26}
+  .b-mundo,.b-primario{--b-color:#3a86ff;--b-labio:#1b4aa8}
+  .b-logro{--b-color:#ffb000;--b-labio:#8a5a00;--b-texto:#fff}
+  .b-sec{--b-color:#6b7bd6;--b-labio:#2c3a8a;--b-texto:#fff}
+  .pildora,.redondo,.precio,.premio-mision{background:#0d1240;border:2px solid #000;color:#fff}
+  .pildora .ico{width:22px;height:22px;padding:3px;border-radius:50%;border:2px solid #120a26}
+  .racha .ico{background:#FF8A3D;--racha:#fff}
+  .chispas .ico{background:#FFB627;--logro:#fff}
+  .avatar{border-radius:12px;border:3px solid #FFB627}
+  .chip{background:#16205e;border:2px solid #0a0f3a;color:#cdd6ff}
+  .chip.on,.segmentos .on{background:linear-gradient(180deg,#ffd24d 0 50%,#ffb000 50%);color:#fff;-webkit-text-stroke:1px #120a26;paint-order:stroke fill;border-color:#120a26}
+  .segmentos{background:#0d1240;border:2px solid #000}
+  .barra{border:2px solid #000}
+  .barra i{background:linear-gradient(180deg,#a8ffda,#3DDC97);border-radius:0}
+  .rango-barra i{background:linear-gradient(180deg,#ffe08a,#e8b34d)}
+  .mundo .barra i,.favorita .barra i{background:linear-gradient(180deg,color-mix(in srgb,var(--mundo) 60%,#fff),var(--mundo-base))}
+  .teclado a{background:linear-gradient(180deg,#6bb2ff 0 50%,#3a86ff 50%);border:3px solid #120a26;color:#fff;-webkit-text-stroke:1px #120a26;paint-order:stroke fill;box-shadow:inset 0 3px 0 rgba(255,255,255,.4),0 4px 0 #1b4aa8}
+  .teclado .t-ok{background:linear-gradient(180deg,#6df0b3 0 50%,#2fcf86 50%);border:3px solid #120a26;box-shadow:inset 0 3px 0 rgba(255,255,255,.4),0 4px 0 #1e9c62}
+  .combo{background:#0d1240;border:2px solid #000;color:#fff}
+  .doble-exp{border:2px solid #120a26;color:#fff;-webkit-text-stroke:1px #120a26;paint-order:stroke fill}
+  .insignia,.medalla,.sello-evento{border:2px solid #120a26}
+  .sello-evento{background:#FFB627;color:#fff;-webkit-text-stroke:1px #120a26;paint-order:stroke fill}
+  .ciudad{border:2px solid #120a26;border-radius:10px}
+  .ciudad .ed{fill:#4bb36a}
+  .ciudad .ed2{fill:#5262c7}
+  .placa{border-width:3px;box-shadow:inset 0 0 0 2px #0e1550,0 5px 0 #0b0f3a}
+  .capsula{border:3px solid #120a26}
+  .tabbar{border-top:3px solid #0a0f3a;padding-top:4px}
+  .tabbar a{color:#cdd6ff}
+  .tabbar .ico{width:40px;height:34px;padding:6px;border-radius:10px;background:#22307a;border:2px solid #0a0f3a}
+  .tabbar .on{color:#fff}
+  .tabbar .on .ico{width:52px;height:46px;margin-top:-14px;background:linear-gradient(180deg,#5a8cff,#3a5ad8);border:3px solid #FFB627}
+}

@@ -1,0 +1,93 @@
+/* ===== Atlas ilustrado: mapas antiguos ===== */
+[data-skin="atlas"]{
+  --pagina-bg:#e8dcbf; --pagina-texto:#1f2c45; --pagina-tenue:#6a6450; --pagina-borde:#b9a77c; --pagina-acento:#1f2c45;
+  --bg:#efe3c6; --sup1:#f6edd6; --sup2:#ece0c1; --sup3:#e2d3ae; --borde:#3a3324;
+  --texto:#1f2c45; --texto2:#6a6450;
+  --primario:#2f4f7a; --primario-base:#2f4f7a; --primario-claro:#2f4f7a;
+  --logro:#b8862c; --logro-labio:#6e4f12; --racha:#c4502a; --correcto:#4f7a3a; --error:#a8322a;
+  --f-display:"Alegreya SC", Georgia, serif; --f-texto:"Alegreya", Georgia, serif; --f-num:"Alegreya", Georgia, serif;
+  --radio:2px; --radio-chico:2px; --radio-boton:2px; --radio-pildora:2px; --radio-seg:2px; --radio-dia:2px; --radio-barra:0;
+  --borde-w:1px; --labio:0px; --trazo:1.5;
+  --barra-fondo:#e2d3ae; --barra-alto:7px;
+  --edif:#f6edd6; --edif2:#ece0c1; --cielo-ciudad:#e6d8b6; --ventana-off:#d9c79c; --luna:#f6edd6;
+  --tab-bg:#e9dcbd; --carcasa:#2a2418; --placa-bg:#f6edd6; --placa-borde:#3a3324;
+  --h1:30px; --h1-peso:700;
+
+  .tel{background:
+      repeating-radial-gradient(ellipse at 80% 20%,transparent 0 18px,rgba(58,51,36,.10) 18px 19px,transparent 19px 22px),
+      repeating-radial-gradient(ellipse at 10% 85%,transparent 0 22px,rgba(58,51,36,.08) 22px 23px,transparent 23px 26px),
+      radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(110,79,18,.18)),#efe3c6;font-size:15px}
+  .tel::before{content:"N";position:absolute;right:16px;top:106px;width:46px;height:46px;z-index:0;pointer-events:none;display:grid;place-items:start center;font:700 10px var(--f-display);color:#3a3324;opacity:.55;
+    background:conic-gradient(from -22.5deg,transparent 0 40deg,#3a3324 40deg 50deg,transparent 50deg 130deg,#3a3324 130deg 140deg,transparent 140deg 220deg,#3a3324 220deg 230deg,transparent 230deg 310deg,#3a3324 310deg 320deg,transparent 320deg);clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)}
+  .t-h1,.t-h2,.placa-nombre{font-weight:700;letter-spacing:.5px}
+  .t-h3{font:700 17px var(--f-display)}
+  .t-micro{font:500 12px var(--f-display);letter-spacing:1.5px;text-transform:none}
+  .t-nota{font-style:italic;font-size:13.5px}
+  .titulo-seccion{font:700 16px var(--f-display);letter-spacing:1px;text-align:center;display:flex;align-items:center;gap:8px}
+  .titulo-seccion::before,.titulo-seccion::after{content:"";flex:1;height:3px;border-block:1px solid #3a3324}
+  /* cartelas de doble filete */
+  .tarjeta,.celda{background:#f6edd6;border:1px solid #3a3324;box-shadow:inset 0 0 0 3px #f6edd6,inset 0 0 0 4px #3a3324,2px 3px 0 rgba(58,51,36,.12)}
+  .tarjeta[style*="--acc"],.tarjeta.continuar,.tarjeta.mundo:not(.bloqueado){border-color:#3a3324}
+  .tarjeta[style*="--acc"]{background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 22%,transparent) 0 6px,transparent 6px),#f6edd6}
+  .continuar,.mundo,.destacado{padding:8px}
+  .c-mundo{color:color-mix(in srgb,var(--mundo-base) 80%,#1f2c45)}
+  /* ciudad en tinta con manchas de acuarela */
+  .ciudad{border-radius:0;border:1px solid #3a3324;background:radial-gradient(60% 80% at 40% 70%,color-mix(in srgb,var(--mundo-base,#2f4f7a) 28%,transparent),transparent 70%),#efe3c6}
+  .ciudad .c-cielo{fill:transparent}
+  .ciudad .ed,.ciudad .ed2{fill:#f6edd6;stroke:#3a3324;stroke-width:1}
+  .ciudad .ed2{fill:#ece0c1}
+  .ciudad .v{fill:#3a3324}
+  .ciudad .vo{fill:transparent}
+  .ciudad .c-luna{fill:none;stroke:#3a3324}
+  .bloqueado .ciudad{filter:grayscale(1) opacity(.55)}
+  .pildora,.redondo,.chip,.precio,.premio-mision{background:#f6edd6;border:1px solid #3a3324}
+  .chip.on,.segmentos .on{background:#1f2c45;color:#f6edd6}
+  .segmentos{background:#f6edd6;border:1px solid #3a3324}
+  .segmentos span,.chip{font-family:var(--f-display);font-weight:500;font-size:13px}
+  .boton{font:700 18px var(--f-display);letter-spacing:1px;border:1px solid #1f2c45;box-shadow:inset 0 0 0 3px var(--b-color),inset 0 0 0 4px rgba(246,237,214,.6)}
+  .b-mundo{--b-color:color-mix(in srgb,var(--mundo-base) 70%,#1f2c45)}
+  .b-primario{--b-color:#1f2c45}
+  .b-logro{--b-color:#b8862c;--b-texto:#fff8e6}
+  .b-sec{--b-color:#f6edd6;--b-texto:#1f2c45;box-shadow:inset 0 0 0 3px #f6edd6,inset 0 0 0 4px #3a3324}
+  .barra{border:1px solid #3a3324;background:#f6edd6;height:8px}
+  .barra i{background:repeating-linear-gradient(90deg,#1f2c45 0 8px,transparent 8px 12px);border-radius:0}
+  .mundo .barra i,.favorita .barra i{background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--mundo-base) 80%,#1f2c45) 0 8px,transparent 8px 12px)}
+  .barra.blanca i{background:repeating-linear-gradient(90deg,#b8862c 0 8px,transparent 8px 12px)}
+  .rango-barra i{background:repeating-linear-gradient(90deg,#b8862c 0 8px,transparent 8px 12px)}
+  .anillo-valor{stroke-linecap:butt;stroke:#c4502a}
+  .anillo circle{stroke-width:4}
+  .anillo-fondo{stroke:#d9c79c;stroke-dasharray:3 2}
+  .reloj{--anillo-c:#1f2c45}
+  .teclado a{background:#f6edd6;border:1px solid #3a3324;box-shadow:inset 0 0 0 3px #f6edd6,inset 0 0 0 4px #b9a77c;font:700 24px var(--f-num)}
+  .teclado .t-ok{background:#4f7a3a;color:#fff8e6;box-shadow:none}
+  .problema .enunciado{font:700 50px var(--f-num)}
+  .respuesta{color:#2f4f7a}
+  .combo{background:transparent;border:1px solid #c4502a;color:#c4502a;font:700 18px var(--f-display)}
+  .exp{font:700 40px var(--f-num);color:#b8862c}
+  .placa{border:1px solid #3a3324;box-shadow:inset 0 0 0 4px #f6edd6,inset 0 0 0 5px #3a3324;color:#1f2c45;--texto2:#6a6450}
+  .placa-ciudad .ciudad{border:0;border-bottom:1px solid #3a3324}
+  .placa .vidrio{background:#efe3c6;border:1px solid #b9a77c;border-radius:0}
+  .placa .chip-titulo{background:transparent;border:1px solid #3a3324;border-radius:0;font-style:italic;font-family:var(--f-texto);font-size:13px}
+  .barra.blanca{--barra-fondo:#f6edd6}
+  .c-oro-rango{color:#8a6014}
+  .avatar{border:1px solid #3a3324;box-shadow:0 0 0 3px #f6edd6,0 0 0 4px #3a3324;background:color-mix(in srgb,var(--av,#2f4f7a) 65%,#1f2c45)}
+  .placa .avatar{border-color:#3a3324}
+  .glifo{background:color-mix(in srgb,var(--mundo-base) 22%,#f6edd6);color:color-mix(in srgb,var(--mundo-base) 80%,#1f2c45);border:1px solid #3a3324}
+  .item-ico{background:#efe3c6;border:1px solid #b9a77c}
+  .sello-evento,.medalla{border-radius:50%;border:1px solid #3a3324;box-shadow:0 0 0 2px #f6edd6,0 0 0 3px #3a3324;background:#f6edd6;color:#c4502a;font-family:var(--f-display)}
+  .insignia,.doble-exp{border-radius:2px;background:#c4502a;color:#fff8e6;font-family:var(--f-display);font-weight:700}
+  .insignia-rango path{fill:#e9cf8f;stroke:#3a3324;stroke-width:1}
+  .res{border:1px solid currentColor;border-radius:50%;background:transparent}
+  .cielo{background:#1f2c45;border-radius:50%/40%}
+  .trazo{stroke:#e9cf8f}.est-on circle{fill:#f6edd6}
+  .capsula{background:radial-gradient(circle at 35% 30%,#e9cf8f,#b8862c);border:1px solid #3a3324;border-radius:50%}
+  .capsula i{background:#3a3324;height:1px;top:19px}
+  .dia{background:#f6edd6;border:1px solid #b9a77c}
+  .dia.hoy{border-color:#c4502a;background:#f3dcc8}
+  .muestra{border:1px solid #b9a77c;background:#efe3c6}
+  .fila-lista{border-bottom:1px dotted #3a3324}
+  .tabbar{border-top:1px solid #3a3324;box-shadow:inset 0 3px 0 #e9dcbd,inset 0 4px 0 #3a3324}
+  .tabbar a{font-family:var(--f-display);font-size:11.5px;color:#7a7158}
+  .tabbar .on{color:#1f2c45}
+  .tabbar .on span{border-bottom:1px solid #1f2c45}
+}

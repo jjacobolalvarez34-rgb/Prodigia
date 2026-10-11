@@ -1,0 +1,73 @@
+/* ===== Retro portátil: Game Boy (4 verdes) ===== */
+[data-skin="portatil"]{
+  --g0:#0f380f; --g1:#306230; --g2:#8bac0f; --g3:#9bbc0f;
+  --pagina-bg:#d3cfc6; --pagina-texto:#2d2a7a; --pagina-tenue:#5c5a6b; --pagina-borde:#a9a49b; --pagina-acento:#8b1d4a;
+  --bg:var(--g3); --sup1:var(--g3); --sup2:var(--g2); --sup3:var(--g2); --borde:var(--g0);
+  --texto:var(--g0); --texto2:var(--g1);
+  --primario:var(--g0); --primario-base:var(--g1); --primario-claro:var(--g0);
+  --logro:var(--g0); --logro-labio:var(--g0); --correcto:var(--g1); --error:var(--g0); --racha:var(--g0);
+  --f-display:"Silkscreen", "Courier New", monospace; --f-texto:"DotGothic16", "Courier New", monospace; --f-num:"Silkscreen", "Courier New", monospace;
+  --radio:0px; --radio-chico:0px; --radio-boton:0px; --radio-pildora:0px; --radio-seg:0px; --radio-dia:0px; --radio-barra:0px; --radio-avatar:0; --radio-punto:0;
+  --borde-w:2px; --labio:0px; --trazo:2.5;
+  --barra-fondo:var(--g3); --barra-alto:10px;
+  --edif:var(--g1); --edif2:var(--g2); --cielo-ciudad:var(--g3); --ventana-off:var(--g1); --luna:var(--g2);
+  --tab-bg:var(--g3); --carcasa:#5c5a6b; --placa-bg:var(--g3); --placa-borde:var(--g0);
+  --h1:22px; --mayus:uppercase;
+
+  .tel[style],.tel [style]{--mundo:var(--g0)!important;--mundo-base:var(--g1)!important;--acc:var(--g0)!important;--av:var(--g1)!important}
+  .tel{border:16px solid #5c5a6b;border-radius:14px 14px 40px 14px;box-shadow:0 0 0 10px #c9c5bd,0 0 0 12px #a9a49b,8px 12px 0 12px #9a958c;font-size:13px}
+  .tel::after{content:"";position:absolute;inset:0;z-index:6;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(15,56,15,.07) 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,rgba(15,56,15,.05) 0 1px,transparent 1px 3px)}
+  .t-h1,.t-h2,.t-h3,.titulo-seccion,.nombre-mundo,.placa-nombre{font-weight:700;letter-spacing:.5px}
+  .t-h2{font-size:17px}.t-h3{font-size:13px}.titulo-seccion{font-size:12px;text-transform:uppercase}
+  .t-nota{font-size:12px;color:var(--g1)}
+  .t-micro{font-family:var(--f-display);letter-spacing:.5px}
+  .tarjeta,.celda,.placa{border:3px double var(--g0);outline:2px solid var(--g3);box-shadow:0 0 0 4px var(--g0);margin:4px;background:var(--g3)}
+  .tarjeta[style*="--acc"],.tarjeta.continuar,.tarjeta.mundo:not(.bloqueado){border-color:var(--g0)}
+  .pildora,.redondo,.chip,.precio,.premio-mision,.segmentos{background:var(--g3);border:2px solid var(--g0);color:var(--g0)}
+  .chip.on,.segmentos .on{background:var(--g0);color:var(--g3)}
+  .segmentos span{font-family:var(--f-display);font-size:11px}
+  .boton{background:var(--g0);color:var(--g3);border:2px solid var(--g0);font-size:14px;text-transform:uppercase;box-shadow:none}
+  .boton::before{content:"▶";font-size:11px}
+  .b-sec{background:var(--g3);color:var(--g0)}
+  .b-logro{--b-texto:var(--g3)}
+  .barra{border:2px solid var(--g0)}
+  .barra i,.barra.blanca i{background:var(--g1)}
+  .rango-barra i{background:var(--g1)}
+  .ico use[href="#i-chispa"],.ico use[href="#i-llama"]{fill:var(--g0)}
+  .ciudad{border:2px solid var(--g0);image-rendering:pixelated}
+  .ciudad .v{fill:var(--g0)}
+  .apagada .ed,.apagada .ed2{fill:var(--g2)}
+  .bloqueado .ciudad{filter:none}
+  .avatar{background:var(--g1);color:var(--g3);border:2px solid var(--g0)}
+  .insignia,.doble-exp,.sello-evento,.medalla{background:var(--g0);color:var(--g3);border-radius:0}
+  .insignia-rango path{fill:var(--g1)}
+  .insignia-rango b{color:var(--g3)}
+  .c-oro-rango{color:var(--g0)}
+  .vidrio,.chip-titulo{background:var(--g2);border:2px solid var(--g0);border-radius:0}
+  .barra.blanca{--barra-fondo:var(--g3)}
+  .teclado a{background:var(--g3);border:2px solid var(--g0);box-shadow:none;font-size:20px}
+  .teclado .t-ok{background:var(--g0);color:var(--g3);box-shadow:none}
+  .puntos i{border:2px solid var(--g0);background:var(--g3)}
+  .puntos .ok{background:var(--g1)}.puntos .mal{background:var(--g3);background-image:linear-gradient(45deg,transparent 40%,var(--g0) 40% 60%,transparent 60%)}.puntos .actual{background:var(--g0)}
+  .combo{background:var(--g0);color:var(--g3);--racha:var(--g3)}
+  .cursor{background:var(--g0)}
+  .problema .enunciado{font-size:34px}
+  .cielo{background:var(--g3);border:2px solid var(--g0)}
+  .trazo{stroke:var(--g0)}.est-on circle{fill:var(--g0)}.est-off circle{stroke:var(--g1)}
+  .capsula{background:var(--g1);border:2px solid var(--g0);border-radius:0}
+  .dia{background:var(--g3);border:2px solid var(--g0)}
+  .dia.hoy{background:var(--g0);color:var(--g3)}.dia.hoy b{color:var(--g3)}
+  .dia .ico use[href="#i-copo"],.dia .ico use[href="#i-regalo"]{stroke:currentColor}
+  .muestra,.marco-aurora::after{background:var(--g2)}
+  .fondo-nebulosa{background:repeating-linear-gradient(45deg,var(--g1) 0 4px,var(--g2) 4px 8px)}
+  .estela-marea i{background:var(--g0)}
+  .rareza,.epico,.raro{color:var(--g0)}
+  .gano,.perdio{background:var(--g0);color:var(--g3);border-radius:0}
+  .glifo,.item-ico{background:var(--g2);border-radius:0}
+  .amigo .avatar::after{border-radius:0;background:var(--g0);border-color:var(--g3)}
+  .tabbar{border-top:2px solid var(--g0)}
+  .tabbar a{font-family:var(--f-display);font-size:8px;text-transform:uppercase}
+  .tabbar .on{color:var(--g3);background:var(--g0)}
+  .tabbar .on{padding:4px 0}
+  .punto{border-radius:0;background:var(--g0)}
+}

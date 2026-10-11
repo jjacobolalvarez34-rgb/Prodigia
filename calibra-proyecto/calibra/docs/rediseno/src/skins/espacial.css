@@ -1,0 +1,76 @@
+/* ===== Exploración espacial retrofuturista ===== */
+[data-skin="espacial"]{
+  --pagina-bg:#070b16; --pagina-texto:#f1e6cf; --pagina-tenue:#8fa0b8; --pagina-borde:#24324f; --pagina-acento:#ff8a3d; --pagina-sobre-acento:#1a0d00;
+  --bg:#0a1020; --sup1:#111a30; --sup2:#16223d; --sup3:#1e2d50; --borde:#2c3b62;
+  --texto:#f1e6cf; --texto2:#8fa0b8;
+  --primario:#3ac7c0; --primario-base:#22958f; --primario-claro:#5fe0d8;
+  --logro:#ffc24a; --logro-labio:#a8700c; --racha:#ff8a3d; --correcto:#7fe0a0; --error:#ff5a4a;
+  --f-display:"Syncopate", "Arial Black", sans-serif; --f-texto:"Share Tech Mono", ui-monospace, monospace; --f-num:"Share Tech Mono", ui-monospace, monospace;
+  --radio:10px; --radio-chico:6px; --radio-boton:24px; --radio-seg:20px; --radio-dia:4px;
+  --borde-w:1.5px; --labio:3px; --trazo:1.8;
+  --barra-fondo:#0a1222; --barra-alto:10px;
+  --edif:#14203a; --edif2:#1b2a4a; --cielo-ciudad:#0d1630; --ventana-off:#22304f; --luna:#ffc24a;
+  --tab-bg:#080d1a; --carcasa:#1b2235; --placa-bg:#0e1730; --placa-borde:#ff8a3d;
+  --h1:22px; --mayus:uppercase; --h1-track:2px; --h3-mayus:uppercase; --h3-track:1px;
+
+  .tel{background:radial-gradient(circle,rgba(143,160,184,.22) 1px,transparent 1.2px) 0 0/18px 18px,radial-gradient(90% 40% at 80% 0,rgba(124,92,255,.22),transparent 70%),#0a1020}
+  .t-h1,.t-h2,.placa-nombre{font-weight:700;color:#ffd9a8}
+  .t-h2{font-size:16px;letter-spacing:2px}
+  .t-h3{font:700 12px var(--f-display);letter-spacing:1.5px}
+  .t-micro{font:400 11px var(--f-texto);letter-spacing:2px;color:#ff8a3d}
+  .t-nota{font-size:12px}
+  .titulo-seccion{font:700 10.5px var(--f-display);letter-spacing:3px;text-transform:uppercase;color:#8fa0b8;display:flex;align-items:center;gap:8px}
+  .titulo-seccion::before{content:"";width:8px;height:8px;border-radius:50%;background:#3ac7c0;box-shadow:0 0 6px #3ac7c0}
+  /* paneles de instrumentos con tornillos */
+  .tarjeta,.celda{background:radial-gradient(circle at 7px 7px,#3a4a70 2px,transparent 2.5px),radial-gradient(circle at calc(100% - 7px) 7px,#3a4a70 2px,transparent 2.5px),radial-gradient(circle at 7px calc(100% - 7px),#3a4a70 2px,transparent 2.5px),radial-gradient(circle at calc(100% - 7px) calc(100% - 7px),#3a4a70 2px,transparent 2.5px),linear-gradient(180deg,#152140,#0f182e);
+    border:1.5px solid #2c3b62;box-shadow:inset 0 0 0 3px #0c1428,inset 0 0 0 4px #233256}
+  .tarjeta[style*="--acc"],.tarjeta.continuar,.tarjeta.mundo:not(.bloqueado){border-color:color-mix(in srgb,var(--acc,var(--mundo)) 60%,#2c3b62)}
+  .continuar,.mundo,.destacado{padding:8px}
+  .ciudad{border-radius:50% 50% 6px 6px / 22px 22px 6px 6px;border:1.5px solid #2c3b62}
+  .ciudad .c-cielo{fill:#0b1330}
+  .pildora,.redondo,.chip,.precio,.premio-mision{background:#0d1528;border:1.5px solid #2c3b62}
+  .chip.on{background:#ff8a3d;color:#1a0d00;border-color:#ffb37a}
+  .segmentos{background:#0d1528;border:1.5px solid #2c3b62}
+  .segmentos span{font-family:var(--f-display);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+  .segmentos .on{background:#ff8a3d;color:#1a0d00}
+  .boton{font:700 13px var(--f-display);letter-spacing:2.5px;text-transform:uppercase;background:linear-gradient(180deg,color-mix(in srgb,var(--b-color) 80%,#fff),var(--b-color));box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 var(--labio) 0 var(--b-labio)}
+  .b-mundo,.b-primario{--b-color:#ff8a3d;--b-labio:#a84e14;--b-texto:#1a0d00}
+  .b-logro{--b-color:#ffc24a;--b-texto:#1a0d00}
+  .b-sec{--b-color:#16223d;--b-texto:#f1e6cf}
+  .barra{border:1.5px solid #2c3b62;height:12px;padding:1.5px}
+  .barra i{background:repeating-linear-gradient(90deg,#3ac7c0 0 6px,transparent 6px 8px);border-radius:0;box-shadow:none}
+  .mundo .barra i,.favorita .barra i{background:repeating-linear-gradient(90deg,var(--mundo) 0 6px,transparent 6px 8px)}
+  .barra.blanca i{background:repeating-linear-gradient(90deg,#ffc24a 0 6px,transparent 6px 8px)}
+  .rango-barra i{background:repeating-linear-gradient(90deg,#ffc24a 0 6px,transparent 6px 8px)}
+  .anillo-valor{stroke-linecap:butt}
+  .anillo-fondo{stroke:#1e2d50;stroke-dasharray:2 2}
+  .reloj{--anillo-c:#ff8a3d}
+  .teclado a{background:linear-gradient(180deg,#1b2a4a,#121c33);border:1.5px solid #2c3b62;border-radius:8px;box-shadow:0 3px 0 #070b16;font:400 26px var(--f-num);color:#ffd9a8}
+  .teclado .t-ok{background:linear-gradient(180deg,#5fe0d8,#22958f);color:#04211f}
+  .problema .enunciado{font:400 50px var(--f-num);color:#ffd9a8;text-shadow:0 0 14px rgba(255,138,61,.35)}
+  .problema{background:repeating-linear-gradient(0deg,rgba(58,199,192,.05) 0 1px,transparent 1px 4px),linear-gradient(180deg,#152140,#0f182e)}
+  .respuesta{color:#5fe0d8}
+  .combo{background:transparent;border:1.5px solid #ff8a3d;font:700 18px var(--f-display);box-shadow:0 0 10px rgba(255,138,61,.35),inset 0 0 8px rgba(255,138,61,.2)}
+  .exp{font:400 40px var(--f-num);color:#ffc24a}
+  .placa{border-width:1.5px;box-shadow:inset 0 0 0 4px #0e1730,inset 0 0 0 5px #3a2a20}
+  .placa .vidrio{background:#0b1226;border:1.5px solid #2c3b62;border-radius:6px}
+  .placa .chip-titulo{background:transparent;border:1.5px solid #3ac7c0;color:#5fe0d8;font-family:var(--f-display);font-size:9px;letter-spacing:2px;text-transform:uppercase}
+  .placa-ciudad .ciudad{border:0;border-radius:0}
+  .avatar{border:2px solid #ff8a3d;background:radial-gradient(circle at 35% 30%,#2a3d6a,#0d1528)}
+  .item-ico,.glifo{border:1.5px solid #2c3b62;background:#0d1528}
+  .sello-evento{border-radius:50%;border:1.5px solid #ffc24a;background:transparent}
+  .medalla{box-shadow:0 0 0 3px #0a1020,0 0 0 4.5px #ffc24a}
+  .doble-exp{font-family:var(--f-display);font-size:9px;letter-spacing:1.5px}
+  .insignia-rango path{fill:#ffc24a}
+  .cielo{background:radial-gradient(circle at 70% 30%,rgba(124,92,255,.35),transparent 60%),#070b16;border:1.5px solid #2c3b62}
+  .capsula{border-radius:50%;width:44px;height:44px;background:radial-gradient(circle at 35% 30%,#ffd9a8,#ff8a3d 50%,#a84e14)}
+  .capsula i{top:20px;height:3px;background:rgba(0,0,0,.35);transform:rotate(-12deg)}
+  .dia{background:#0d1528;border:1.5px solid #2c3b62}
+  .dia.hoy{border-color:#ff8a3d;background:#2a1a10}
+  .fila-lista{border-bottom:1px dashed #2c3b62}
+  .tabbar{border-top:1.5px solid #2c3b62}
+  .tabbar a{font-family:var(--f-display);font-size:7.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700}
+  .tabbar a::before{content:"";width:6px;height:6px;border-radius:50%;background:#22304f;margin-bottom:2px}
+  .tabbar .on{color:#ffd9a8}
+  .tabbar .on::before{background:#ff8a3d;box-shadow:0 0 8px #ff8a3d}
+}

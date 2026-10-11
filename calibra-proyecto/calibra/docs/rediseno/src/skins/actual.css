@@ -1,0 +1,16 @@
+/* ===== Hoy: la app tal como está (referencia) ===== */
+[data-skin="actual"]{
+  --f-display:"Space Grotesk", system-ui, sans-serif;
+  --f-texto:"Inter", system-ui, sans-serif;
+  --f-num:"JetBrains Mono", ui-monospace, monospace;
+  --pagina-acento:#7C5CFF;
+  --radio:18px; --radio-chico:12px; --radio-boton:16px;
+
+  .tarjeta[style*="--acc"],.tarjeta.continuar,.tarjeta.mundo:not(.bloqueado),.problema{box-shadow:0 0 26px color-mix(in srgb,var(--acc,var(--mundo)) 30%,transparent)}
+  .recompensas-chico{border-color:var(--logro);box-shadow:0 0 14px color-mix(in srgb,var(--logro) 35%,transparent)}
+  .evento{border-color:color-mix(in srgb,var(--logro) 50%,var(--borde));box-shadow:0 0 18px color-mix(in srgb,var(--logro) 14%,transparent)}
+  .placa{box-shadow:0 0 28px rgba(232,179,77,.32)}
+  .boton{box-shadow:0 var(--labio) 0 var(--b-labio),0 0 22px color-mix(in srgb,var(--b-color) 40%,transparent)}
+  .b-sec{box-shadow:0 var(--labio) 0 var(--b-labio)}
+  .combo{box-shadow:0 0 22px color-mix(in srgb,var(--racha) 45%,transparent)}
+}

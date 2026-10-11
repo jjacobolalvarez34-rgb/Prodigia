@@ -1,0 +1,64 @@
+/* ===== Roguelike indie: Balatro, Slay the Spire, Gambonanza ===== */
+[data-skin="roguelike"]{
+  --pagina-bg:#170f28; --pagina-borde:#3b2c5c; --pagina-acento:#ff4d3d; --pagina-tenue:#a99cc8;
+  --bg:#221838; --sup1:#2a2140; --sup2:#352a52; --sup3:#433566; --borde:#0d0a14;
+  --texto:#f6efe2; --texto2:#b9aed3;
+  --f-display:"Pixelify Sans", "Courier New", monospace; --f-texto:"Pixelify Sans", "Courier New", monospace; --f-num:"Pixelify Sans", "Courier New", monospace;
+  --radio:10px; --radio-chico:8px; --radio-boton:9px; --radio-pildora:8px; --radio-seg:9px; --radio-dia:6px; --radio-barra:4px;
+  --borde-w:3px; --labio:5px; --trazo:2.6;
+  --barra-fondo:#140f20; --barra-alto:12px;
+  --edif:#1a1330; --edif2:#251b42; --cielo-ciudad:#3a2a6e; --ventana-off:#2e2450;
+  --tab-bg:#120d1e; --carcasa:#0b0812; --placa-bg:#f4ede0; --placa-borde:#0d0a14;
+  --h1:30px;
+
+  .tel{background:conic-gradient(from 210deg at 30% 40%,#2c1b55,#4a2a8e,#1f2f6e,#5a1f4a,#2c1b55)}
+  .tel::before{content:"";position:absolute;inset:-40%;z-index:0;pointer-events:none;background:repeating-radial-gradient(circle at 40% 60%,rgba(255,255,255,.04) 0 16px,transparent 16px 32px);animation:remolino 50s linear infinite}
+  .tel::after{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 1px,transparent 1px 3px)}
+  .t-h1,.t-h2,.placa-nombre{text-shadow:3px 3px 0 #0d0a14}
+  .titulo-seccion{text-shadow:2px 2px 0 #0d0a14;font-size:17px}
+  /* tarjetas = cartas color hueso */
+  .tarjeta,.celda{--texto:#1a1426;--texto2:#5e5272;--sup2:#e5dac6;--sup3:#d7c9af;--barra-fondo:#d8cbb3;--ventana-off:#c9bba0;
+    background:#f4ede0;color:#1a1426;box-shadow:4px 5px 0 #0d0a14}
+  .tarjeta[style*="--acc"],.tarjeta.continuar,.tarjeta.mundo:not(.bloqueado){border-color:#0d0a14}
+  .continuar,.mundo:nth-of-type(odd){transform:rotate(-.6deg)}
+  .mundo.doble{transform:rotate(.8deg)}
+  .c-mundo{color:var(--mundo-base)}
+  .tarjeta .c-logro,.celda .c-logro{color:#b36b00}
+  .tarjeta .c-primario{color:#5a3fd6}
+  .problema{background:#f4ede0}
+  .respuesta{color:var(--mundo-base)}
+  .pildora,.redondo,.chip,.precio,.segmentos,.premio-mision{box-shadow:3px 3px 0 #0d0a14;background:#2a2140;color:#f6efe2}
+  .tarjeta .precio,.tarjeta .premio-mision{background:#2a2140;color:#f6efe2}
+  .chip.on,.segmentos .on{background:#ff4d3d;color:#fff}
+  .segmentos span{border-radius:6px}
+  .boton{border:3px solid #0d0a14;--b-labio:#0d0a14;font-size:19px}
+  .b-mundo,.b-primario{--b-color:#3b7bff}
+  .b-logro{--b-color:#FFB627}
+  .b-sec{--b-color:#3a2e58;--b-texto:#f6efe2}
+  .teclado a{background:#f4ede0;color:#1a1426;box-shadow:3px 4px 0 #0d0a14;--tecla-labio:#0d0a14}
+  .teclado .t-ok{background:#3DDC97;box-shadow:3px 4px 0 #0d0a14;border:3px solid #0d0a14}
+  .combo{background:#ff4d3d;color:#fff;border:3px solid #0d0a14;box-shadow:3px 3px 0 #0d0a14;--racha:#fff}
+  .reloj{--anillo-c:#3b7bff;--anillo-g:8;--anillo-cap:butt}
+  .anillo-valor{stroke-linecap:butt}
+  .puntos i{border-radius:2px;border:2px solid #0d0a14;width:12px;height:12px}
+  .barra{border:3px solid #0d0a14;height:14px}
+  .barra.fina{height:10px;border-width:2px}
+  .barra i{border-radius:0}
+  .insignia-rango path{stroke:#0d0a14;stroke-width:3}
+  .placa{color:#1a1426;--texto:#1a1426;--texto2:#5e5272;box-shadow:5px 6px 0 #0d0a14;border-width:3px}
+  .placa .chip-titulo{background:#C026D3;color:#fff}
+  .placa .vidrio{background:#e5dac6;border:2px solid #0d0a14}
+  .barra.blanca{--barra-relleno:#3b7bff;--barra-fondo:#d8cbb3}
+  .ciudad{border:2px solid #0d0a14}
+  .placa-ciudad .ciudad{border:0;border-bottom:3px solid #0d0a14}
+  .capsula{border:3px solid #0d0a14;background:repeating-linear-gradient(45deg,#7C5CFF 0 6px,#5a3fd6 6px 12px)}
+  .dia.hoy{background:#ffe3a6}
+  .medalla,.sello-evento{border:3px solid #0d0a14;background:#FFB627;color:#1a1426}
+  .avatar{border:3px solid #0d0a14;box-shadow:2px 2px 0 #0d0a14;border-radius:10px}
+  .placa .avatar{border-color:#0d0a14;border-radius:12px}
+  .tabbar{border-top:3px solid #0d0a14}
+  .tabbar .on{color:#FFB627}
+  .tabbar .on .ico{background:#FFB627;color:#1a1426;border-radius:6px;padding:2px;box-shadow:2px 2px 0 #0d0a14}
+  .muestra{border:2px solid #0d0a14}
+}
+@keyframes remolino{to{transform:rotate(360deg)}}

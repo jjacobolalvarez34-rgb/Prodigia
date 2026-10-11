@@ -1,0 +1,71 @@
+/* ===== Mitología ilustrada: Hades ===== */
+[data-skin="mitologia"]{
+  --pagina-bg:#0a0505; --pagina-texto:#f4e6c9; --pagina-tenue:#b8925a; --pagina-borde:#4a1e14; --pagina-acento:#e0482c;
+  --bg:#0c0606; --sup1:#170c0a; --sup2:#22110d; --sup3:#331a12; --borde:#6b3b1a;
+  --texto:#f6e8cc; --texto2:#c7a678;
+  --primario:#e0482c; --primario-base:#b8301c; --primario-claro:#ff8a5c;
+  --logro:#f2c14e; --logro-labio:#8a5f12; --racha:#ff6a2a; --correcto:#9bd36a; --error:#ff4040;
+  --f-display:"Cinzel", "Times New Roman", serif; --f-texto:"Alegreya Sans", "Segoe UI", sans-serif; --f-num:"Cinzel", "Times New Roman", serif;
+  --radio:0px; --radio-chico:0px; --radio-boton:0px; --radio-pildora:0px; --radio-seg:0px; --radio-dia:0px; --radio-barra:0;
+  --borde-w:1.5px; --labio:0px; --trazo:2.2;
+  --barra-fondo:#2a120c; --barra-alto:8px;
+  --edif:#3a1a10; --edif2:#4e2414; --cielo-ciudad:#1a0705; --ventana-off:#2a120c; --luna:#ffb36b;
+  --tab-bg:#080404; --carcasa:#000; --placa-bg:#120808; --placa-borde:#f2c14e;
+  --h1:30px; --h1-peso:900; --mayus:uppercase; --h1-track:1px; --h3-mayus:uppercase; --h3-track:.6px;
+  --corte:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0 calc(100% - 12px),0 12px);
+
+  .tel{background:radial-gradient(120% 50% at 50% 100%,rgba(224,72,44,.28),transparent 70%),radial-gradient(80% 30% at 50% 0,rgba(242,193,78,.08),transparent),#0c0606}
+  .t-h1,.placa-nombre{color:#f2c14e;text-shadow:0 2px 0 #3a0e06,0 0 18px rgba(255,106,42,.35)}
+  .t-h3{font-size:15px;font-weight:800}
+  .t-micro{color:#ff8a5c}
+  .titulo-seccion{font:800 14px var(--f-display);text-transform:uppercase;letter-spacing:2px;color:#f2c14e;padding-bottom:8px;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='6'%3E%3Cpath d='M0 5h4V1h8v3H8V3' fill='none' stroke='%23b8862c' stroke-width='1.2'/%3E%3C/svg%3E") repeat-x left bottom}
+  .tarjeta,.celda{background:linear-gradient(180deg,#1d0f0b,#120807);border:0;clip-path:var(--corte);box-shadow:none;outline:0}
+  .tarjeta::before,.celda::before{content:"";position:absolute;inset:0;pointer-events:none;clip-path:var(--corte);
+    background:linear-gradient(#b8862c,#b8862c) top/100% 1.5px no-repeat,linear-gradient(#6b3b1a,#6b3b1a) bottom/100% 1.5px no-repeat,linear-gradient(#6b3b1a,#6b3b1a) left/1.5px 100% no-repeat,linear-gradient(#6b3b1a,#6b3b1a) right/1.5px 100% no-repeat}
+  .tarjeta[style*="--acc"]::before,.continuar::before,.mundo:not(.bloqueado)::before,.problema::before{background:linear-gradient(var(--acc,var(--mundo)),var(--acc,var(--mundo))) top/100% 2px no-repeat,linear-gradient(#6b3b1a,#6b3b1a) bottom/100% 1.5px no-repeat,linear-gradient(#6b3b1a,#6b3b1a) left/1.5px 100% no-repeat,linear-gradient(#6b3b1a,#6b3b1a) right/1.5px 100% no-repeat}
+  .continuar,.mundo{padding:8px}
+  .continuar{padding:0}
+  .ciudad{border-radius:0;clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%,0 8px)}
+  .ciudad .c-cielo{fill:transparent}
+  .ciudad{background:linear-gradient(180deg,#120504,#4a160a)}
+  .ciudad .v{fill:#ffb36b}
+  .tarjeta.mundo .ciudad .v,.continuar .ciudad .v{fill:var(--mundo)}
+  .pildora,.redondo,.chip,.precio,.premio-mision,.segmentos{background:#170c0a;border:1px solid #6b3b1a}
+  .chip.on,.segmentos .on{background:linear-gradient(180deg,#e0482c,#8a1c10);color:#fff3d6;border-color:#f2c14e}
+  .segmentos span,.chip{font-family:var(--f-display);font-weight:800;text-transform:uppercase;font-size:11px;letter-spacing:1px}
+  .boton{clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,14px 100%,0 50%);font:900 16px var(--f-display);text-transform:uppercase;letter-spacing:2px;background:linear-gradient(180deg,#ff6a2a,#b8301c 60%,#7a1a0e);color:#fff3d6;text-shadow:0 1px 0 #3a0e06;margin-bottom:0}
+  .b-mundo{background:linear-gradient(180deg,color-mix(in srgb,var(--mundo) 80%,#fff),var(--mundo-base) 60%,color-mix(in srgb,var(--mundo-base) 60%,#000))}
+  .b-logro{background:linear-gradient(180deg,#ffe08a,#f2c14e 50%,#a8761a);color:#2a1300;text-shadow:none}
+  .b-sec{background:linear-gradient(180deg,#3a1f14,#1d0f0b);color:#f2c14e}
+  .barra{border:1px solid #6b3b1a;height:9px}
+  .barra i{background:linear-gradient(90deg,#b8301c,#ff6a2a,#f2c14e);border-radius:0}
+  .mundo .barra i,.favorita .barra i{background:linear-gradient(90deg,var(--mundo-base),var(--mundo))}
+  .teclado a{background:linear-gradient(180deg,#22110d,#140907);border:1px solid #6b3b1a;box-shadow:none;font:800 24px var(--f-display);color:#f6e8cc;clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%,0 8px)}
+  .teclado .t-ok{background:linear-gradient(180deg,#9bd36a,#3f7a24);color:#0c0606}
+  .problema .enunciado{font:900 50px var(--f-display);color:#f6e8cc;text-shadow:0 0 22px rgba(255,106,42,.4)}
+  .combo{background:transparent;border:1px solid #ff6a2a;font:900 22px var(--f-display);text-shadow:0 0 12px #ff6a2a}
+  .anillo-valor{stroke-linecap:butt}
+  .exp{font:900 40px var(--f-display);color:#f2c14e;text-shadow:0 0 18px rgba(242,193,78,.5)}
+  .placa{border:1.5px solid #f2c14e;clip-path:var(--corte)}
+  .placa .vidrio{background:rgba(242,193,78,.06);border:1px solid #6b3b1a;border-radius:0}
+  .placa .chip-titulo{background:transparent;border:1px solid #ff8a5c;color:#ff8a5c;border-radius:0;font-family:var(--f-display);text-transform:uppercase;letter-spacing:1px}
+  .barra.blanca{--barra-relleno:#f2c14e}
+  .avatar{border-radius:0;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);border:0;background:linear-gradient(180deg,#e0482c,#5a120a)}
+  .placa .avatar{width:80px;height:88px}
+  .amigo .avatar::after{display:none}
+  .sello-evento,.medalla,.glifo,.item-ico{border-radius:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:#f2c14e;color:#2a1300}
+  .glifo{background:color-mix(in srgb,var(--mundo-base) 60%,#000);color:#fff3d6}
+  .item-ico{background:#22110d;color:#f2c14e}
+  .insignia,.doble-exp{border-radius:0;font-family:var(--f-display);font-weight:900}
+  .capsula{border-radius:4px 4px 0 0;clip-path:polygon(50% 0,100% 30%,100% 100%,0 100%,0 30%);background:linear-gradient(180deg,#ffe08a,#c98500)}
+  .cielo{background:radial-gradient(circle at 50% 100%,#3a120a,#0c0606 70%);border-radius:0}
+  .trazo{stroke:#ff8a5c}
+  .dia{background:#170c0a;border:1px solid #6b3b1a}
+  .dia.hoy{background:linear-gradient(180deg,#e0482c,#7a1a0e);border-color:#f2c14e}.dia.hoy b{color:#fff3d6}
+  .muestra{border-radius:0}
+  .fila-lista{border-bottom:1px solid #3a1f14}
+  .tabbar{border-top:1.5px solid #b8862c}
+  .tabbar a{font-family:var(--f-display);font-weight:800;font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:#9b7a52}
+  .tabbar .on{color:#f2c14e;text-shadow:0 0 10px rgba(255,106,42,.6)}
+}

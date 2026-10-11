@@ -1,0 +1,81 @@
+/* ===== Geometría imposible: Monument Valley ===== */
+[data-skin="geometria"]{
+  --pagina-bg:#f6d9cc; --pagina-texto:#3d3358; --pagina-tenue:#7d6f99; --pagina-borde:#e4bfb4; --pagina-acento:#9d8df1;
+  --bg:#f7dccf; --sup1:#fff6ef; --sup2:#fbe9df; --sup3:#f2d8cd; --borde:transparent;
+  --texto:#3d3358; --texto2:#8a7ca3;
+  --primario:#9d8df1; --primario-base:#8a78ea; --primario-claro:#6c5bd4;
+  --logro:#f0b65a; --logro-labio:#c98a2c; --racha:#ef8b78; --correcto:#5fc2a6; --error:#e87a8a;
+  --f-display:"Josefin Sans", "Futura", sans-serif; --f-texto:"Quicksand", "Segoe UI", sans-serif; --f-num:"Josefin Sans", "Futura", sans-serif;
+  --radio:4px; --radio-chico:3px; --radio-boton:4px; --radio-pildora:4px; --radio-seg:4px; --radio-dia:3px; --radio-barra:0; --radio-avatar:4px;
+  --borde-w:0px; --labio:6px; --trazo:1.5;
+  --barra-fondo:#f0d6ca; --barra-alto:8px;
+  --edif:#c9b8f0; --edif2:#e3d4f7; --cielo-ciudad:#fbe6dc; --ventana-off:#b6a3e6; --luna:#fff3c9;
+  --tab-bg:#fff6ef; --carcasa:#3d3358; --placa-bg:#fff6ef; --placa-borde:#3d3358;
+  --h1:30px; --h1-peso:300; --mayus:uppercase; --h1-track:4px; --h3-mayus:uppercase; --h3-track:2px; --gap:14px;
+
+  .tel{background:linear-gradient(180deg,#f9c9b6 0,#f4d6d0 35%,#d9cff2 75%,#c4c6ef 100%);font-weight:500}
+  .tel::before{content:"";position:absolute;left:-30px;bottom:110px;width:200px;height:200px;z-index:0;opacity:.35;pointer-events:none;
+    background:conic-gradient(from 150deg at 50% 50%,#e9a8b8 0 60deg,#f6c7a8 60deg 120deg,transparent 120deg);clip-path:polygon(50% 0,100% 28%,100% 72%,50% 100%,0 72%,0 28%)}
+  .t-h1{font-weight:300}
+  .t-h2,.placa-nombre{font-weight:300;text-transform:uppercase;letter-spacing:3px}
+  .t-h3{font-weight:600;font-size:14px}
+  .t-micro{font:600 10px var(--f-display);letter-spacing:3px}
+  .titulo-seccion{font:600 11px var(--f-display);letter-spacing:4px;text-transform:uppercase;color:#7d6f99}
+  /* losas con canto sólido, como bloques isométricos */
+  .tarjeta,.celda{background:#fff6ef;box-shadow:0 7px 0 #e0bfd8,0 7px 0 1px rgba(61,51,88,.04);margin-bottom:7px}
+  .tarjeta[style*="--acc"]{box-shadow:0 7px 0 color-mix(in srgb,var(--acc) 45%,#e0bfd8)}
+  .continuar,.mundo:not(.bloqueado){box-shadow:0 7px 0 color-mix(in srgb,var(--mundo-base) 40%,#e0bfd8)}
+  .continuar,.mundo,.destacado{padding:8px}
+  .ciudad{border-radius:2px}
+  .ciudad .ed{fill:color-mix(in srgb,var(--mundo-base,#8a78ea) 35%,#f4e6ff)}
+  .ciudad .ed2{fill:color-mix(in srgb,var(--mundo-base,#8a78ea) 18%,#fbeefa)}
+  .ciudad .v{fill:#fff8e8}
+  .ciudad .vo{fill:color-mix(in srgb,var(--mundo-base,#8a78ea) 45%,#f4e6ff)}
+  .bloqueado .ciudad{filter:grayscale(.8) opacity(.6)}
+  .c-logro{color:#b97a1c}
+  .c-mundo{color:color-mix(in srgb,var(--mundo-base) 85%,#3d3358)}
+  .pildora,.redondo,.chip,.precio,.premio-mision{background:#fff6ef;box-shadow:0 3px 0 #e8c9c0}
+  .chip.on,.segmentos .on{background:#3d3358;color:#fff6ef;box-shadow:0 3px 0 #2a2240}
+  .segmentos{background:#f3dcd2}
+  .segmentos span,.chip{font-family:var(--f-display);font-weight:600;letter-spacing:2px;text-transform:uppercase;font-size:10px}
+  .boton{font:600 14px var(--f-display);letter-spacing:4px;text-transform:uppercase}
+  .b-mundo{--b-color:color-mix(in srgb,var(--mundo-base) 70%,#fff);--b-labio:color-mix(in srgb,var(--mundo-base) 70%,#3d3358);--b-texto:#fff}
+  .b-primario{--b-color:#9d8df1;--b-labio:#6c5bd4}
+  .b-logro{--b-color:#f0b65a;--b-labio:#c98a2c;--b-texto:#fff}
+  .b-sec{--b-color:#fff6ef;--b-labio:#e0bfd8;--b-texto:#3d3358}
+  .barra i{background:linear-gradient(90deg,#ef8b78,#9d8df1);border-radius:0}
+  .mundo .barra i,.favorita .barra i{background:var(--mundo-base)}
+  .anillo circle{stroke-width:3}
+  .anillo-valor{stroke-linecap:butt;stroke:#ef8b78}
+  .reloj .anillo-valor{stroke:var(--mundo-base)}
+  .teclado a{background:#fff6ef;box-shadow:0 5px 0 #e0bfd8;font:300 26px var(--f-num)}
+  .teclado .t-ok{background:#8fd9c2;color:#fff;box-shadow:0 5px 0 #5fa894}
+  .problema .enunciado{font:300 52px var(--f-num);letter-spacing:2px}
+  .combo{background:#fff6ef;color:#ef8b78;--racha:#ef8b78;box-shadow:0 3px 0 #e8c9c0;font:600 18px var(--f-display)}
+  .exp{font:300 44px var(--f-num);color:#e09a3a}
+  .placa{border:0;box-shadow:0 8px 0 #c9b0d8;color:#3d3358;--texto2:#8a7ca3}
+  .placa .vidrio{background:#fbe9df;border:0;border-radius:2px}
+  .placa .chip-titulo{background:#3d3358;color:#fff6ef;border-radius:2px;letter-spacing:2px;text-transform:uppercase;font-size:9.5px}
+  .barra.blanca{--barra-relleno:#9d8df1;--barra-fondo:#fff6ef}
+  .c-oro-rango{color:#d8962c}
+  .avatar{border:0;background:linear-gradient(135deg,color-mix(in srgb,var(--av,#9d8df1) 50%,#fff) 50%,color-mix(in srgb,var(--av,#9d8df1) 75%,#3d3358) 50%);box-shadow:0 3px 0 #c9b0d8}
+  .sello-evento,.medalla{background:transparent;color:#d8962c;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:#fbe0b8}
+  .glifo,.item-ico{background:#fbe9df}
+  .insignia-rango path{fill:#f0b65a}
+  .insignia-rango .int{fill:#fff6ef;opacity:.4}
+  .doble-exp{background:#3d3358;color:#fff6ef;letter-spacing:2px}
+  .res{border-radius:2px}
+  .cielo{background:linear-gradient(180deg,#3d3358,#6b5a8e);border-radius:2px}
+  .est-on circle{fill:#fff3c9}
+  .capsula{background:linear-gradient(135deg,#d7cbff 50%,#a998ef 50%);border-radius:2px;clip-path:polygon(50% 0,100% 25%,100% 100%,0 100%,0 25%)}
+  .capsula i{display:none}
+  .dia{background:#fbe9df}
+  .dia.hoy{background:#fbe0b8}
+  .muestra{background:#fbe9df}
+  .fila-lista{border-bottom:1px solid #f0dcd3}
+  .amigo .avatar::after{border-radius:2px}
+  .tabbar{box-shadow:0 -6px 0 #f0d6ca}
+  .tabbar a{font-family:var(--f-display);font-size:8.5px;letter-spacing:1.5px;text-transform:uppercase}
+  .tabbar .on{color:#3d3358}
+  .tabbar .on .ico{stroke-width:2.2}
+}
