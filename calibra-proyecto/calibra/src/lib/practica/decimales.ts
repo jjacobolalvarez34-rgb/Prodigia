@@ -6,7 +6,11 @@ export interface ProblemaDecimal {
   enunciado: string;
   respuesta: number;
   tolerancia: number;
+  // «Cómo se resuelve» para el repaso de errores (repaso.ts).
+  pasos?: string[];
 }
+
+const fmt = (x: number) => x.toLocaleString("es", { maximumFractionDigits: 3 });
 
 function randomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -27,6 +31,10 @@ function generarConvertir(nivel: number): ProblemaDecimal {
     enunciado: `Convierte $\\frac{${num}}{${den}}$ a decimal`,
     respuesta,
     tolerancia: 0.01,
+    pasos:
+      100 % den === 0
+        ? [`Multiplica arriba y abajo por ${100 / den} para que abajo quede 100: ${num}/${den} = ${num * (100 / den)}/100`, `${num * (100 / den)}/100 = ${fmt(respuesta)}`]
+        : [`Divide el numerador entre el denominador: ${num} ÷ ${den} = ${fmt(respuesta)}`],
   };
 }
 
@@ -41,6 +49,11 @@ function generarPorcentaje(nivel: number): ProblemaDecimal {
     enunciado: `¿Cuánto es ${porcentaje}% de ${base}?`,
     respuesta,
     tolerancia: 0,
+    pasos: [
+      `El 1 % de ${base} es ${base} ÷ 100 = ${fmt(base / 100)}`,
+      `El ${porcentaje} % es ${porcentaje} veces eso: ${fmt(base / 100)} × ${porcentaje} = ${fmt((base * porcentaje) / 100)}`,
+      ...((base * porcentaje) % 100 === 0 ? [] : [`Redondeado al entero más cercano: ${respuesta}`]),
+    ],
   };
 }
 
@@ -57,6 +70,11 @@ function generarRedondear(nivel: number): ProblemaDecimal {
     enunciado: `Redondea ${numero} a ${lugares} decimal${lugares > 1 ? "es" : ""}`,
     respuesta,
     tolerancia: 0,
+    pasos: [
+      `Mira la cifra que viene después del ${lugares === 1 ? "primer" : "segundo"} decimal: es ${String(decimales)[lugares]}`,
+      Number(String(decimales)[lugares]) >= 5 ? `Es 5 o más: el decimal anterior sube uno` : `Es menor que 5: el decimal anterior queda igual`,
+      `Queda ${fmt(respuesta)}`,
+    ],
   };
 }
 

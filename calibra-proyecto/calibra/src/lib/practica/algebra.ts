@@ -6,7 +6,11 @@ export interface ProblemaAlgebra {
   enunciado: string;
   respuesta: number;
   tolerancia: number;
+  // «Cómo se resuelve» para el repaso de errores (repaso.ts).
+  pasos?: string[];
 }
+
+const n = (x: number) => (x < 0 ? `−${-x}` : String(x));
 
 function randomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -26,6 +30,7 @@ function generarEvaluar(nivel: number): ProblemaAlgebra {
     enunciado: `Si $x = ${x}$, ¿cuánto vale $${a}x ${suma ? "+" : "-"} ${b}$?`,
     respuesta,
     tolerancia: 0,
+    pasos: [`Reemplaza la x por ${x}: ${a} × ${x} ${suma ? "+" : "−"} ${b}`, `Primero la multiplicación: ${a} × ${x} = ${a * x}`, `Después: ${a * x} ${suma ? "+" : "−"} ${b} = ${n(respuesta)}`],
   };
 }
 
@@ -41,6 +46,7 @@ function generarUnPaso(nivel: number): ProblemaAlgebra {
       enunciado: `$x + ${b} = ${x + b}$. ¿Cuánto vale $x$?`,
       respuesta: x,
       tolerancia: 0,
+      pasos: [`Para dejar sola la x, resta ${b} en los dos lados`, `x = ${x + b} − ${b} = ${x}`],
     };
   }
   if (forma === 1) {
@@ -51,6 +57,7 @@ function generarUnPaso(nivel: number): ProblemaAlgebra {
       enunciado: `$x - ${b} = ${x - b}$. ¿Cuánto vale $x$?`,
       respuesta: x,
       tolerancia: 0,
+      pasos: [`Para dejar sola la x, suma ${b} en los dos lados`, `x = ${n(x - b)} + ${b} = ${x}`],
     };
   }
   const a = randomInt(2, 4 + Math.floor(nivel / 2));
@@ -60,6 +67,7 @@ function generarUnPaso(nivel: number): ProblemaAlgebra {
     enunciado: `$${a}x = ${a * x}$. ¿Cuánto vale $x$?`,
     respuesta: x,
     tolerancia: 0,
+    pasos: [`La x está multiplicada por ${a}: divide los dos lados entre ${a}`, `x = ${a * x} ÷ ${a} = ${x}`],
   };
 }
 
@@ -76,6 +84,11 @@ function generarDosPasos(nivel: number): ProblemaAlgebra {
     enunciado: `$${a}x ${suma ? "+" : "-"} ${b} = ${resultado}$. ¿Cuánto vale $x$?`,
     respuesta: x,
     tolerancia: 0,
+    pasos: [
+      suma ? `Resta ${b} en los dos lados: ${a}x = ${n(resultado)} − ${b} = ${a * x}` : `Suma ${b} en los dos lados: ${a}x = ${n(resultado)} + ${b} = ${a * x}`,
+      `Divide entre ${a}: x = ${a * x} ÷ ${a} = ${x}`,
+      `Comprueba: ${a} × ${x} ${suma ? "+" : "−"} ${b} = ${n(resultado)}`,
+    ],
   };
 }
 

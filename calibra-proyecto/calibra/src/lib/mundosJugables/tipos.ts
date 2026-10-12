@@ -69,6 +69,8 @@ export interface PreguntaMundo {
   nivel?: number;
   // Datos que necesita el guardado propio del mundo (p. ej. id del acertijo).
   datos?: Record<string, string | number>;
+  // «Cómo se resuelve», para el repaso de errores al terminar (repaso.ts).
+  pasos?: string[];
 }
 
 export interface ModoMundo {

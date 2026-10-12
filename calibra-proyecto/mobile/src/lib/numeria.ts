@@ -11,6 +11,7 @@ import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { generarProblemaGeometria, type TipoGeometria } from "@/lib/practica/geometria";
 import { generarProblemaPotencia, type TipoPotencia } from "@/lib/practica/potencias";
 import { generarProblema, type Problem } from "@/lib/practica/problems";
+import { pasosAritmetica, pasosFraccion } from "@/lib/practica/repaso";
 import { operacionPermitidaInvitado, temaAvanzadoBloqueadoParaInvitado } from "@/lib/auth/accesoInvitado";
 import { textoConFormulas } from "~/ui/TextoMate";
 import { guardarIntentoTipo } from "./partida";
@@ -133,6 +134,7 @@ export interface ProblemaNumeria {
   solucion: string; // "Era …"
   clave: string; // para no repetir en la misma partida
   original?: Problem; // aritmética: el problema de la web (semilla de duelos)
+  pasos: string[]; // «Cómo se resuelve», para el repaso de errores
 }
 
 function textoFraccion(f: [number, number]) {
@@ -149,6 +151,7 @@ function desdeAritmetica(p: Problem): ProblemaNumeria {
     solucion: String(p.answer),
     clave: `${p.problemType}:${p.a}${p.symbol}${p.b}${p.incognitaB ? "?" : ""}`,
     original: p,
+    pasos: pasosAritmetica(p),
   };
 }
 
@@ -163,6 +166,7 @@ function desdeFraccion(p: ProblemaFraccion): ProblemaNumeria {
       respuesta: { tipo: "comparar", valor: p.respuestaComparacion },
       solucion: p.respuestaComparacion,
       clave: `comparar:${textoFraccion(p.frac1)}:${textoFraccion(p.frac2)}`,
+      pasos: pasosFraccion(p),
     };
   }
   const [num, den] = p.respuestaFraccion ?? [0, 1];
@@ -175,10 +179,11 @@ function desdeFraccion(p: ProblemaFraccion): ProblemaNumeria {
     respuesta: { tipo: "fraccion", num, den },
     solucion: `${num}/${den}`,
     clave: `${p.tipo}:${texto}`,
+    pasos: pasosFraccion(p),
   };
 }
 
-function desdeEnunciado(seccion: SeccionId, p: { tipo: string; enunciado: string; respuesta: number; tolerancia: number }, nivel: number): ProblemaNumeria {
+function desdeEnunciado(seccion: SeccionId, p: { tipo: string; enunciado: string; respuesta: number; tolerancia: number; pasos?: string[] }, nivel: number): ProblemaNumeria {
   const texto = textoConFormulas(p.enunciado);
   return {
     problemType: `${seccion}_${p.tipo}`,
@@ -188,6 +193,7 @@ function desdeEnunciado(seccion: SeccionId, p: { tipo: string; enunciado: string
     respuesta: { tipo: "numero", valor: p.respuesta, tolerancia: p.tolerancia },
     solucion: String(p.respuesta).replace(".", ","),
     clave: `${p.tipo}:${p.enunciado}`,
+    pasos: p.pasos ?? [],
   };
 }
 

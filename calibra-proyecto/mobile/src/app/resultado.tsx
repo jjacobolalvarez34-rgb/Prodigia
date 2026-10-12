@@ -20,11 +20,13 @@ import Ciudad from "~/ui/Ciudad";
 import Confeti from "~/ui/Confeti";
 import { IconoCheck, IconoChispa, IconoLlama } from "~/ui/Iconos";
 import NumeroAnimado from "~/ui/NumeroAnimado";
+import RepasoErrores from "~/ui/RepasoErrores";
 import Tarjeta from "~/ui/Tarjeta";
+import type { FallaRepaso } from "@/lib/practica/repaso";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
 
-type Datos = ResultadoPartida & { xp: number; correctos: number; total: number; tiempoMs?: number; duelo?: ResultadoDuelo | null; dueloId?: string | null; rival?: string | null };
+type Datos = ResultadoPartida & { xp: number; correctos: number; total: number; tiempoMs?: number; duelo?: ResultadoDuelo | null; dueloId?: string | null; rival?: string | null; fallos?: FallaRepaso[] };
 
 const TEMAS: Record<string, string> = {
   suma: "Suma",
@@ -381,6 +383,11 @@ export default function Resultado() {
               ))}
             </View>
           </Paso>
+          {paso >= ultimoPaso && (d.fallos?.length ?? 0) > 0 && (
+            <Animated.View entering={FadeInDown.duration(300)}>
+              <RepasoErrores fallos={d.fallos ?? []} acento={mundo.neon} />
+            </Animated.View>
+          )}
       </ScrollView>
 
       <View style={styles.pie}>

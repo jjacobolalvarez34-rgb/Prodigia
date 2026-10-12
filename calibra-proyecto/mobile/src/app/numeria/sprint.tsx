@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { MAX_FALLAS_REPASO, type FallaRepaso } from "@/lib/practica/repaso";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, BackHandler, Pressable, StyleSheet, View } from "react-native";
 import Animated, { useSharedValue, withSequence, withTiming } from "react-native-reanimated";
@@ -98,6 +99,7 @@ export default function Sprint() {
   const pendientesRef = useRef<Promise<unknown>[]>([]);
   const xpRef = useRef(0);
   const respuestasRef = useRef<{ correct: boolean; timeMs: number }[]>([]);
+  const fallosRef = useRef<FallaRepaso[]>([]);
   const escudosRef = useRef(0);
   const comboRef = useRef(0);
   const flotanteId = useRef(0);
@@ -231,7 +233,7 @@ export default function Sprint() {
           mundo: "numeria",
           tema: nombreTema,
           repetir: dueloId ? "" : JSON.stringify({ pathname: "/numeria/sprint", params: { seccion: seccionRef.current, temas: temasRef.current.join(",") } }),
-          datos: JSON.stringify({ ...r, xp: xpRef.current, correctos, total, tiempoMs: Math.min(DURACION_SPRINT_MS, Date.now() - inicioRef.current), duelo: resultadoDuelo, dueloId, rival: duelo?.rivalNombre ?? null }),
+          datos: JSON.stringify({ ...r, xp: xpRef.current, correctos, total, tiempoMs: Math.min(DURACION_SPRINT_MS, Date.now() - inicioRef.current), duelo: resultadoDuelo, dueloId, rival: duelo?.rivalNombre ?? null, fallos: fallosRef.current }),
         },
       });
     } catch (e) {
@@ -270,6 +272,10 @@ export default function Sprint() {
       return;
     }
     respuestasRef.current.push({ correct: correcto, timeMs });
+    if (!correcto && fallosRef.current.length < MAX_FALLAS_REPASO) {
+      const dada = entrada.comparacion ?? (entrada.num != null || entrada.den != null ? `${entrada.num ?? ""}/${entrada.den ?? ""}` : entrada.texto);
+      fallosRef.current.push({ enunciado: problema.texto, tuRespuesta: dada.trim() || null, correcta: problema.solucion, pasos: problema.pasos });
+    }
     setFeedback(correcto ? "correcto" : "incorrecto");
     setResultados((r) => [...r, correcto]);
     comboRef.current = correcto ? comboRef.current + 1 : 0;

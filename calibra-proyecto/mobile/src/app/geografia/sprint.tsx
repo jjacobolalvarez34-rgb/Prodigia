@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { MAX_FALLAS_REPASO, type FallaRepaso } from "@/lib/practica/repaso";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, BackHandler, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
@@ -74,6 +75,7 @@ export default function SprintGeografia() {
   const pendientesRef = useRef<Promise<unknown>[]>([]);
   const xpRef = useRef(0);
   const respuestasRef = useRef<{ correct: boolean; timeMs: number }[]>([]);
+  const fallosRef = useRef<FallaRepaso[]>([]);
   const comboRef = useRef(0);
   const flotanteId = useRef(0);
 
@@ -199,7 +201,7 @@ export default function SprintGeografia() {
           mundo: "geografia",
           tema: continenteRef.current,
           repetir: dueloId ? "" : JSON.stringify({ pathname: "/geografia/sprint", params: { continente: continenteRef.current } }),
-          datos: JSON.stringify({ ...r, xp: xpRef.current, correctos, total, tiempoMs: Math.min(DURACION_SPRINT_GEO_MS, Date.now() - inicioRef.current), duelo: resultadoDuelo, dueloId, rival: duelo?.rivalNombre ?? null }),
+          datos: JSON.stringify({ ...r, xp: xpRef.current, correctos, total, tiempoMs: Math.min(DURACION_SPRINT_GEO_MS, Date.now() - inicioRef.current), duelo: resultadoDuelo, dueloId, rival: duelo?.rivalNombre ?? null, fallos: fallosRef.current }),
         },
       });
     } catch (e) {
@@ -226,6 +228,14 @@ export default function SprintGeografia() {
       return;
     }
     respuestasRef.current.push({ correct: correcto, timeMs });
+    if (!correcto && fallosRef.current.length < MAX_FALLAS_REPASO) {
+      const avanzadaP = esPreguntaAvanzada(pregunta);
+      fallosRef.current.push(
+        avanzadaP
+          ? { enunciado: pregunta.pregunta, tuRespuesta: pregunta.opciones.find((o) => o.id === id)?.texto ?? null, correcta: pregunta.opciones.find((o) => o.id === pregunta.id)?.texto ?? pregunta.nombre, pasos: [] }
+          : { enunciado: `¿Dónde está ${pregunta.nombre}?`, tuRespuesta: nombrePais(continente, id) ?? null, correcta: pregunta.nombre, pasos: [`${pregunta.nombre} está en ${nombreContinente}. Búscalo en el mapa antes de tu próxima partida.`] }
+      );
+    }
     setSeleccionId(id);
     setRespondido(true);
     setResultados((r) => [...r, correcto]);

@@ -6,6 +6,20 @@ export interface ProblemaPotencia {
   enunciado: string;
   respuesta: number;
   tolerancia: number;
+  // «Cómo se resuelve» para el repaso de errores (repaso.ts).
+  pasos?: string[];
+}
+
+const sup = (x: number) => String(x).split("").map((c) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[Number(c)]).join("");
+
+function pasosPotencia(base: number, exp: number): string[] {
+  const pasos = [`${base}${sup(exp)} es ${base} multiplicado por sí mismo ${exp} veces: ${Array(exp).fill(base).join(" × ")}`];
+  let acumulado = base;
+  for (let i = 1; i < exp; i++) {
+    pasos.push(`${acumulado.toLocaleString("es")} × ${base} = ${(acumulado * base).toLocaleString("es")}`);
+    acumulado *= base;
+  }
+  return pasos;
 }
 
 function randomInt(min: number, max: number): number {
@@ -47,6 +61,7 @@ function generarPotencia(nivel: number): ProblemaPotencia {
     enunciado: `$${base}^{${exp}}$`,
     respuesta: base ** exp,
     tolerancia: 0,
+    pasos: pasosPotencia(base, exp),
   };
 }
 
@@ -59,6 +74,7 @@ function generarRaiz(nivel: number): ProblemaPotencia {
     enunciado: `$\\sqrt{${raiz * raiz}}$`,
     respuesta: raiz,
     tolerancia: 0,
+    pasos: [`Busca el número que multiplicado por sí mismo da ${raiz * raiz}`, `${raiz} × ${raiz} = ${raiz * raiz}, así que √${raiz * raiz} = ${raiz}`],
   };
 }
 
@@ -71,6 +87,10 @@ function generarNotacion(nivel: number): ProblemaPotencia {
     enunciado: `Escrito en notación científica, ¿cuál es el exponente de ${numero.toLocaleString("es-AR")}?`,
     respuesta: ceros,
     tolerancia: 0,
+    pasos: [
+      `Corre la coma hasta que quede una sola cifra adelante: ${numero.toLocaleString("es-AR")} = ${numero / 10 ** ceros} × 10${sup(ceros)}`,
+      `La corriste ${ceros} lugares: ese es el exponente`,
+    ],
   };
 }
 
