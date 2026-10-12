@@ -80,9 +80,6 @@ export function infoMarco(marco: string | null | undefined): InfoMarco {
   return { tipo: "ninguno", color: "#7C5CFF" };
 }
 
-export function imagenRango(slug: string): string {
-  return urlAbsoluta(`/rangos/${slug}.png`) ?? "";
-}
 
 // Divisiones dentro de cada rango (Oro III → Oro I), como en la maqueta de Competir:
 // tres tramos iguales entre el mínimo del rango y el del siguiente.

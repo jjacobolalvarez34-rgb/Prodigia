@@ -1,8 +1,7 @@
-import { Image } from "expo-image";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
-import Animated, { Easing, FadeInDown, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { textoVence,
   cargarCompetitivo,
   ELO_SOLO_TODAS,
@@ -20,7 +19,8 @@ import { textoVence,
 } from "~/lib/competir";
 import { vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
-import { divisionDeElo, imagenRango, rangoDeElo, type PlacaDatos } from "~/lib/placa";
+import { divisionDeElo, rangoDeElo, type PlacaDatos } from "~/lib/placa";
+import InsigniaRango from "~/ui/placa/InsigniaRango";
 import { claveDe } from "~/lib/retos";
 import { useSesion } from "~/lib/sesion";
 import { escucharPresencia } from "~/lib/social";
@@ -90,20 +90,13 @@ function FilaCiudades({ opciones, valor, onElegir }: { opciones: Eleccion[]; val
   );
 }
 
+// Insignia grande de la tarjeta de rango: las Torres (mismo dibujo que la Placa),
+// apoyadas en una sombra de piso; sin halo ni flotar.
 function InsigniaHeroe({ elo }: { elo: number }) {
-  const rango = rangoDeElo(elo);
-  const t = useSharedValue(0);
-  useEffect(() => {
-    t.set(withRepeat(withSequence(withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.quad) }), withTiming(0, { duration: 1500 })), -1));
-  }, [t]);
-  const halo = useAnimatedStyle(() => ({ opacity: 0.3 + t.value * 0.5, transform: [{ scale: 0.9 + t.value * 0.15 }] }));
-  const flota = useAnimatedStyle(() => ({ transform: [{ translateY: -4 * t.value }] }));
   return (
-    <View style={{ alignItems: "center", justifyContent: "center", height: 110 }}>
-      <Animated.View style={[{ position: "absolute", width: 90, height: 90, borderRadius: 45, boxShadow: `0px 0px 40px ${rango.colorHex}` }, halo]} />
-      <Animated.View style={flota}>
-        <Image source={{ uri: imagenRango(rango.slug) }} style={{ width: 104, height: 104 }} contentFit="contain" />
-      </Animated.View>
+    <View style={{ alignItems: "center", justifyContent: "flex-end", height: 116 }}>
+      <View style={{ position: "absolute", bottom: 2, width: 76, height: 8, borderRadius: 40, backgroundColor: "rgba(0,0,0,0.35)" }} />
+      <InsigniaRango elo={elo} tam={108} />
     </View>
   );
 }

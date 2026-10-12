@@ -1,0 +1,331 @@
+<title>Insignias de Rankeds</title>
+<meta name="description" content="Seis familias nuevas de insignias de rango para Prodigia, junto a la de hoy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Onest:wght@400;500;600;700&family=Geist+Mono:wght@500;700&display=swap">
+<style>
+/* Concepto: la pantalla de Competir de noche. Cada familia es una fila de taller:
+   la insignia en grande como en la tarjeta de rango, los 6 rangos, las 3 divisiones
+   y el tamaño chico de la lista de ranking. Un solo tema oscuro, a propósito. */
+:root{
+  color-scheme:dark;
+  --noche:#080B15; --panel:#10152A; --panel2:#161C35; --linea:rgba(148,160,214,.14);
+  --texto:#F2F4FB; --tenue:#8E97B8; --violeta:#7C5CFF; --violeta-claro:#B9A8FF; --dorado:#FFB627;
+  --f-display:"Bricolage Grotesque", "Segoe UI", sans-serif;
+  --f-texto:"Onest", "Segoe UI", sans-serif;
+  --f-num:"Geist Mono", ui-monospace, monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--noche);color:var(--texto);font-family:var(--f-texto);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:28px 72px}
+p{margin:0}
+.envoltura{max-width:1180px;margin:0 auto;display:grid;gap:26px}
+.cabecera{display:grid;gap:8px}
+.cabecera h1{margin:0;font:800 clamp(30px,4.4vw,46px)/1 var(--f-display);letter-spacing:-.8px;text-wrap:balance;font-variation-settings:"opsz" 96}
+.cabecera p{color:var(--tenue);max-width:64ch}
+.control{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:12px 14px;background:rgba(10,13,26,.94);border:1px solid var(--linea);border-radius:14px;backdrop-filter:blur(6px)}
+.control label{font:600 12px var(--f-texto);letter-spacing:1.2px;text-transform:uppercase;color:var(--tenue)}
+.control input{flex:1 1 220px;accent-color:var(--violeta)}
+.lectura{font:700 14px var(--f-num);min-width:150px;font-variant-numeric:tabular-nums}
+.saltos{display:flex;flex-wrap:wrap;gap:6px}
+.saltos button{font:600 12px var(--f-texto);padding:6px 10px;border-radius:999px;border:1px solid var(--linea);background:transparent;color:var(--texto);cursor:pointer}
+.saltos button[aria-pressed="true"]{background:var(--violeta);border-color:var(--violeta)}
+.saltos button:focus-visible,.control input:focus-visible{outline:2px solid var(--violeta-claro);outline-offset:2px}
+
+.familia{display:grid;grid-template-columns:minmax(230px,280px) minmax(0,1fr);gap:18px;padding-top:22px;border-top:1px solid var(--linea)}
+.familia.referencia{opacity:.88}
+@media (max-width:760px){.familia{grid-template-columns:1fr}}
+.heroe{display:grid;justify-items:center;gap:4px;padding:20px 16px 16px;border-radius:18px;background:var(--panel);border:1px solid var(--linea);align-self:start}
+.heroe svg{width:118px;height:118px}
+.heroe .div{font:800 21px var(--f-display);margin-top:6px}
+.heroe .elo{font:500 13px var(--f-texto);color:var(--tenue)}
+.heroe .elo b{font:700 15px var(--f-num);color:var(--texto)}
+.heroe .barra{width:100%;height:8px;border-radius:3px;background:#1a2140;margin-top:10px;overflow:hidden}
+.heroe .barra i{display:block;height:100%}
+.heroe .falta{font-size:11.5px;color:var(--tenue)}
+.cuerpo{display:grid;gap:16px;align-content:start}
+.titulo{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.titulo h2{margin:0;font:800 24px/1.1 var(--f-display);font-variation-settings:"opsz" 48}
+.etiqueta{font:600 11px var(--f-texto);letter-spacing:1.2px;text-transform:uppercase;color:var(--dorado)}
+.idea{color:#C9CFE3;max-width:68ch}
+.sub{font:600 11px var(--f-texto);letter-spacing:1.4px;text-transform:uppercase;color:var(--tenue);margin-bottom:6px}
+.rangos{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.rangos{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.rango{display:grid;justify-items:center;gap:3px;padding:10px 4px 8px;border-radius:12px;border:1px solid transparent;background:transparent;color:var(--texto);cursor:pointer;font:inherit}
+.rango:hover{background:var(--panel)}
+.rango[aria-current="true"]{background:var(--panel2);border-color:var(--linea)}
+.rango svg{width:62px;height:62px}
+.rango b{font:700 12.5px var(--f-texto)}
+.rango span{font:500 11px var(--f-num);color:var(--tenue)}
+.dos{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px 26px;align-items:start}
+@media (max-width:620px){.dos{grid-template-columns:1fr}}
+.divisiones{display:flex;gap:14px}
+.divisiones figure{margin:0;display:grid;justify-items:center;gap:2px}
+.divisiones svg{width:52px;height:52px}
+.divisiones figcaption{font:700 12px var(--f-num);color:var(--tenue)}
+.divisiones figure.actual figcaption{color:var(--texto)}
+.lista{display:grid;border-radius:12px;background:var(--panel);border:1px solid var(--linea);padding:2px 12px}
+.fila{display:grid;grid-template-columns:18px 22px minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--linea);font-size:13.5px}
+.fila:last-child{border-bottom:0}
+.fila .pos{font:700 12px var(--f-num);color:var(--tenue)}
+.fila svg{width:22px;height:22px}
+.fila .num{font:700 13px var(--f-num);font-variant-numeric:tabular-nums}
+.pie{color:var(--tenue);font-size:13px;max-width:70ch}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="envoltura">
+  <header class="cabecera">
+    <h1>Insignias de Rankeds</h1>
+    <p>Seis ideas nuevas para los seis rangos, y la de hoy arriba para comparar. Mueve el ELO o toca un rango: cada familia muestra la insignia como en la tarjeta de Competir, las tres divisiones y cómo se ve a 22 px en el ranking.</p>
+  </header>
+
+  <div class="control">
+    <label for="elo">Tu ELO</label>
+    <input id="elo" type="range" min="0" max="1900" step="1" value="1184">
+    <span class="lectura" id="lectura"></span>
+    <div class="saltos" id="saltos" role="group" aria-label="Ir a un rango"></div>
+  </div>
+
+  <div id="familias" class="envoltura"></div>
+
+  <p class="pie">Ninguna usa brillos ni degradés: la diferencia entre rangos está en la forma, el metal y lo que cambia adentro. La elegida se dibuja en la app con el mismo SVG y reemplaza a la insignia en Competir, la Placa, el ranking y el resultado de los duelos.</p>
+</div>
+
+<script>
+(function () {
+  var RANGOS = [
+    { slug: "bronce", nombre: "Bronce", min: 0, c: "#E9B886", b: "#B47A44", o: "#6B4220", t: "#2B1809", cielo: "#0E1228" },
+    { slug: "plata", nombre: "Plata", min: 900, c: "#F3F6FB", b: "#B7C3D8", o: "#68768F", t: "#1C2232", cielo: "#0E1228" },
+    { slug: "oro", nombre: "Oro", min: 1100, c: "#FFE6A0", b: "#E8B34D", o: "#9A6612", t: "#382303", cielo: "#0E1228" },
+    { slug: "platino", nombre: "Platino", min: 1300, c: "#C4F3E6", b: "#5FBFA8", o: "#2A7262", t: "#0D2922", cielo: "#0B1A22" },
+    { slug: "diamante", nombre: "Diamante", min: 1500, c: "#D8F5FF", b: "#5DC8F5", o: "#2277A6", t: "#0A283B", cielo: "#0A1630" },
+    { slug: "prodigio", nombre: "Prodigio", min: 1700, c: "#FFE9A8", b: "#FFC53D", o: "#B07A00", t: "#1B1240", v: "#7C5CFF", v2: "#A794FF", v3: "#3B2A8F", cielo: "#160F38" },
+  ];
+  var ROMANOS = ["III", "II", "I"];
+  var uid = 0;
+
+  function rangoDe(elo) { var r = RANGOS[0]; RANGOS.forEach(function (x) { if (elo >= x.min) r = x; }); return r; }
+  function divisionDe(elo) {
+    var i = RANGOS.indexOf(rangoDe(elo)), r = RANGOS[i], s = RANGOS[i + 1];
+    if (!s) return { i: i, d: 2, nombre: r.nombre, prox: null, faltan: 0, prog: 1 };
+    var tramo = (s.min - r.min) / 3, d = Math.min(2, Math.floor((elo - r.min) / tramo));
+    var techo = d === 2 ? s.min : r.min + tramo * (d + 1);
+    return { i: i, d: d, nombre: r.nombre + " " + ROMANOS[d], prox: d === 2 ? s.nombre + " III" : r.nombre + " " + ROMANOS[d + 1], faltan: Math.max(0, Math.ceil(techo - elo)), prog: (elo - r.min) / (s.min - r.min) };
+  }
+  function svg(cuerpo, etiqueta) { return '<svg viewBox="0 0 100 100" role="img" aria-label="' + etiqueta + '">' + cuerpo + "</svg>"; }
+  function estrella(cx, cy, r, puntas, interno) {
+    var p = [], n = puntas * 2;
+    for (var k = 0; k < n; k++) { var a = -Math.PI / 2 + (k * Math.PI) / puntas, rr = k % 2 ? r * interno : r; p.push((cx + Math.cos(a) * rr).toFixed(2) + "," + (cy + Math.sin(a) * rr).toFixed(2)); }
+    return p.join(" ");
+  }
+
+  // ---------- Hoy: hexágono con degradé (referencia) ----------
+  function hoy(r) {
+    var id = "h" + uid++, c1 = r.v2 || r.c, c2 = r.b, c3 = r.o;
+    return '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="' + c1 + '"/><stop offset=".5" stop-color="' + c2 + '"/><stop offset="1" stop-color="' + c3 + '"/></linearGradient></defs>' +
+      '<circle cx="50" cy="50" r="40" fill="' + r.b + '" opacity=".22"/>' +
+      '<path d="M50 2 L93 26 L93 74 L50 98 L7 74 L7 26 Z" fill="url(#' + id + ')"/>' +
+      '<path d="M50 12 L84 31 L84 69 L50 88 L16 69 L16 31 Z" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2"/>' +
+      '<text x="50" y="55" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="13" fill="' + r.t + '" letter-spacing=".6">' + r.nombre.toUpperCase() + "</text>";
+  }
+
+  // ---------- Torres: la ciudad que crece ----------
+  var EDIFICIOS = {
+    bronce: [{ x: 36, w: 28, h: 24, k: 2, techo: "pico" }],
+    plata: [{ x: 34, w: 32, h: 38, k: 3 }],
+    oro: [{ x: 26, w: 18, h: 26, k: 2 }, { x: 46, w: 26, h: 50, k: 3, techo: "antena" }],
+    platino: [{ x: 22, w: 22, h: 40, k: 2 }, { x: 47, w: 22, h: 54, k: 2, techo: "antena" }, { x: 71, w: 10, h: 24, k: 1 }],
+    diamante: [{ x: 20, w: 18, h: 32, k: 2 }, { x: 40, w: 22, h: 58, k: 2, techo: "cristal" }, { x: 64, w: 17, h: 40, k: 2 }],
+    prodigio: [{ x: 19, w: 16, h: 36, k: 2 }, { x: 37, w: 26, h: 64, k: 3, techo: "cristal" }, { x: 65, w: 16, h: 46, k: 2, techo: "antena" }],
+  };
+  function torres(r, d) {
+    var id = "t" + uid++, suelo = 86, s = "";
+    var arco = "M14 96 V42 A36 36 0 0 1 86 42 V96 Z";
+    s += '<defs><clipPath id="' + id + '"><path d="' + arco + '"/></clipPath></defs>';
+    s += '<path d="' + arco + '" fill="' + r.cielo + '"/>';
+    s += '<g clip-path="url(#' + id + ')">';
+    if (r.slug === "prodigio") s += '<circle cx="72" cy="30" r="6" fill="' + r.c + '"/><circle cx="75" cy="28" r="5.5" fill="' + r.cielo + '"/><polygon points="' + estrella(28, 26, 3.4, 4, 0.35) + '" fill="' + r.c + '"/>';
+    else s += '<circle cx="70" cy="30" r="1.2" fill="' + r.c + '" opacity=".7"/><circle cx="30" cy="36" r="1" fill="' + r.c + '" opacity=".5"/>';
+    EDIFICIOS[r.slug].forEach(function (e) {
+      var y = suelo - e.h, cuerpo = r.slug === "prodigio" ? r.v3 : r.o;
+      if (e.techo === "pico") s += '<polygon points="' + (e.x - 3) + "," + y + " " + (e.x + e.w / 2) + "," + (y - 14) + " " + (e.x + e.w + 3) + "," + y + '" fill="' + r.b + '"/>';
+      if (e.techo === "antena") s += '<line x1="' + (e.x + e.w / 2) + '" y1="' + y + '" x2="' + (e.x + e.w / 2) + '" y2="' + (y - 11) + '" stroke="' + r.b + '" stroke-width="2"/><circle cx="' + (e.x + e.w / 2) + '" cy="' + (y - 12) + '" r="2" fill="' + r.c + '"/>';
+      if (e.techo === "cristal") s += '<polygon points="' + e.x + "," + y + " " + (e.x + e.w / 2) + "," + (y - 14) + " " + (e.x + e.w) + "," + y + '" fill="' + r.c + '"/><polygon points="' + (e.x + e.w / 2) + "," + (y - 14) + " " + (e.x + e.w) + "," + y + " " + (e.x + e.w / 2) + "," + y + '" fill="' + r.b + '"/>';
+      s += '<rect x="' + e.x + '" y="' + y + '" width="' + e.w + '" height="' + e.h + '" fill="' + cuerpo + '"/>';
+      var pisos = Math.floor((e.h - 6) / 7), encendidos = Math.ceil((pisos * (d + 1)) / 3);
+      var paso = e.w / e.k;
+      for (var p = 0; p < pisos; p++) {
+        var vy = suelo - 7 - p * 7;
+        for (var k = 0; k < e.k; k++) {
+          var vx = e.x + k * paso + paso / 2 - 2;
+          s += '<rect x="' + vx.toFixed(1) + '" y="' + vy + '" width="4" height="4.2" fill="' + (p < encendidos ? r.c : "rgba(255,255,255,.1)") + '"/>';
+        }
+      }
+    });
+    s += '<rect x="0" y="' + suelo + '" width="100" height="14" fill="' + (r.v || r.o) + '"/></g>';
+    s += '<path d="' + arco + '" fill="none" stroke="' + r.b + '" stroke-width="5"/>';
+    s += '<path d="M19 96 V42 A31 31 0 0 1 81 42 V96" fill="none" stroke="' + r.c + '" stroke-width="1" opacity=".55"/>';
+    return s;
+  }
+
+  // ---------- Constelación ----------
+  var CONSTELACIONES = {
+    bronce: { p: [[32, 62], [50, 34], [68, 62]], l: [[0, 1], [1, 2], [2, 0]] },
+    plata: { p: [[30, 52], [50, 30], [70, 50], [52, 72]], l: [[0, 1], [1, 2], [2, 3], [3, 0]] },
+    oro: { p: [[22, 40], [36, 62], [50, 44], [64, 64], [78, 40]], l: [[0, 1], [1, 2], [2, 3], [3, 4]] },
+    platino: { p: [[24, 38], [36, 34], [48, 40], [56, 52], [72, 50], [76, 66], [58, 68]], l: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 3]] },
+    diamante: { p: [[50, 22], [74, 46], [50, 78], [26, 46], [50, 48], [38, 34], [62, 34]], l: [[0, 6], [6, 1], [1, 2], [2, 3], [3, 5], [5, 0], [3, 4], [4, 1], [4, 2]] },
+    prodigio: { p: [[24, 66], [28, 40], [40, 54], [50, 30], [60, 54], [72, 40], [76, 66]], l: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 0]] },
+  };
+  function constelacion(r, d) {
+    var k = CONSTELACIONES[r.slug], s = "";
+    s += '<circle cx="50" cy="50" r="47" fill="' + (r.v || r.b) + '"/><circle cx="50" cy="50" r="47" fill="none" stroke="' + r.o + '" stroke-width="1.5"/>';
+    s += '<circle cx="50" cy="50" r="39" fill="' + r.cielo + '"/>';
+    [[38, 22], [66, 76], [30, 76], [76, 28], [58, 18]].forEach(function (q) { s += '<circle cx="' + q[0] + '" cy="' + q[1] + '" r=".8" fill="#fff" opacity=".35"/>'; });
+    k.l.forEach(function (a) { s += '<line x1="' + k.p[a[0]][0] + '" y1="' + k.p[a[0]][1] + '" x2="' + k.p[a[1]][0] + '" y2="' + k.p[a[1]][1] + '" stroke="' + r.c + '" stroke-width="1.3" opacity=".55"/>'; });
+    k.p.forEach(function (q, i) {
+      var mayor = r.slug === "prodigio" ? i === 3 : i === 1;
+      s += mayor ? '<polygon points="' + estrella(q[0], q[1], 6.5, 4, 0.32) + '" fill="' + r.c + '"/>' : '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="2.7" fill="' + r.c + '"/>';
+    });
+    [-22, 0, 22].forEach(function (g, i) {
+      var a = ((g - 90) * Math.PI) / 180, x = 50 + Math.cos(a) * 43, y = 50 + Math.sin(a) * 43;
+      s += '<polygon points="' + estrella(x, y, 3.4, 4, 0.45) + '" fill="' + (i <= d ? r.c : r.o) + '"/>';
+    });
+    return s;
+  }
+
+  // ---------- Medalla acuñada ----------
+  var SIMBOLOS = {
+    bronce: "M50 34 V66 M34 50 H66",
+    plata: "M38 38 L62 62 M62 38 L38 62",
+    oro: "M31 53 L39 49 L46 65 L55 33 H70",
+    platino: "M33 38 H67 M43 38 V65 M57 38 V59 Q57 65 63 65",
+    diamante: "M50 50 C44 40 30 40 30 50 C30 60 44 60 50 50 C56 40 70 40 70 50 C70 60 56 60 50 50 Z",
+    prodigio: "M66 35 H36 L52 50 L36 65 H66",
+  };
+  function medalla(r, d) {
+    var s = "", campo = r.slug === "prodigio" ? r.v3 : r.o;
+    s += '<circle cx="50" cy="50" r="48" fill="' + r.o + '"/>';
+    s += '<circle cx="50" cy="50" r="45.5" fill="none" stroke="' + r.b + '" stroke-width="4.5" stroke-dasharray="1.5 1.3"/>';
+    s += '<circle cx="50" cy="50" r="41" fill="' + r.c + '"/><circle cx="50" cy="50" r="39" fill="' + r.b + '"/>';
+    s += '<circle cx="50" cy="50" r="33" fill="' + campo + '"/>';
+    s += '<path d="' + SIMBOLOS[r.slug] + '" transform="translate(1.6 1.8)" fill="none" stroke="' + r.t + '" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>';
+    s += '<path d="' + SIMBOLOS[r.slug] + '" fill="none" stroke="' + r.c + '" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>';
+    [42, 50, 58].forEach(function (x, i) { s += '<polygon points="' + estrella(x, 76.5, 3.2, 5, 0.45) + '" fill="' + (i <= d ? r.c : r.t) + '"/>'; });
+    return s;
+  }
+
+  // ---------- Estandarte ----------
+  var LARGO = { bronce: 56, plata: 62, oro: 68, platino: 74, diamante: 80, prodigio: 86 };
+  function emblema(r) {
+    var c = r.c, x = 50, y = 36;
+    switch (r.slug) {
+      case "bronce": return '<circle cx="' + x + '" cy="' + y + '" r="7" fill="' + c + '"/>';
+      case "plata": return '<rect x="' + (x - 6.5) + '" y="' + (y - 6.5) + '" width="13" height="13" transform="rotate(45 ' + x + " " + y + ')" fill="' + c + '"/>';
+      case "oro": { var s = '<circle cx="' + x + '" cy="' + y + '" r="5.5" fill="' + c + '"/>'; for (var k = 0; k < 8; k++) { var a = (k * Math.PI) / 4; s += '<line x1="' + (x + Math.cos(a) * 8) + '" y1="' + (y + Math.sin(a) * 8) + '" x2="' + (x + Math.cos(a) * 11.5) + '" y2="' + (y + Math.sin(a) * 11.5) + '" stroke="' + c + '" stroke-width="2.4" stroke-linecap="round"/>'; } return s; }
+      case "platino": return '<polygon points="' + estrella(x, y, 9, 3, 1) + '" fill="' + c + '" transform="rotate(30 ' + x + " " + y + ')"/>';
+      case "diamante": return '<polygon points="' + x + "," + (y - 11) + " " + (x + 8) + "," + y + " " + x + "," + (y + 11) + " " + (x - 8) + "," + y + '" fill="' + c + '"/><polygon points="' + x + "," + (y - 11) + " " + (x + 8) + "," + y + " " + x + "," + y + '" fill="' + r.b + '"/>';
+      default: return '<polygon points="' + estrella(x, y, 11, 5, 0.45) + '" fill="' + c + '"/>';
+    }
+  }
+  function estandarte(r, d) {
+    var L = LARGO[r.slug], fin = 12 + L, tela = r.v || r.b, s = "";
+    var forma = "M24 12 H76 V" + fin + " L50 " + (fin - 12) + " L24 " + fin + " Z";
+    s += '<path d="' + forma + '" fill="' + tela + '"/>';
+    s += '<path d="M64 12 H76 V' + fin + ' L64 ' + (fin - 5.5) + ' Z" fill="#000" opacity=".2"/>';
+    if (r.min >= 1100) s += '<path d="M28 12 V' + (fin - 6) + " L50 " + (fin - 17) + " L72 " + (fin - 6) + ' V12" fill="none" stroke="' + (r.v ? r.b : r.c) + '" stroke-width="1.6" opacity=".9"/>';
+    s += emblema(r.v ? { slug: r.slug, c: r.b, b: r.o } : r);
+    for (var k = 0; k <= d; k++) { var y = 54 + k * 7.5; s += '<polyline points="38,' + y + " 50," + (y + 6) + " 62," + y + '" fill="none" stroke="' + (r.v ? r.b : r.c) + '" stroke-width="3.6" stroke-linejoin="miter"/>'; }
+    if (r.slug === "prodigio" || r.slug === "diamante") s += '<circle cx="24" cy="' + (fin + 3) + '" r="2.6" fill="' + (r.v ? r.b : r.c) + '"/><circle cx="76" cy="' + (fin + 3) + '" r="2.6" fill="' + (r.v ? r.b : r.c) + '"/>';
+    s += '<rect x="12" y="7" width="76" height="5.5" rx="2.5" fill="' + r.o + '"/><circle cx="12" cy="9.75" r="4" fill="' + r.c + '"/><circle cx="88" cy="9.75" r="4" fill="' + r.c + '"/>';
+    return s;
+  }
+
+  // ---------- Escudo heráldico ----------
+  var ESCUDO = "M15 10 H85 V46 C85 72 68 86 50 94 C32 86 15 72 15 46 Z";
+  function escudo(r, d) {
+    var id = "e" + uid++, s = "", campo = r.v || r.b;
+    s += '<defs><clipPath id="' + id + '"><path d="' + ESCUDO + '"/></clipPath>';
+    if (r.slug === "diamante") s += '<pattern id="' + id + 'p" width="12" height="16" patternUnits="userSpaceOnUse"><rect width="12" height="16" fill="' + r.b + '"/><polygon points="6,0 12,8 6,16 0,8" fill="' + r.c + '"/></pattern>';
+    s += "</defs>";
+    s += '<path d="' + ESCUDO + '" fill="' + (r.slug === "diamante" ? "url(#" + id + "p)" : campo) + '"/>';
+    s += '<g clip-path="url(#' + id + ')">';
+    if (r.slug === "plata") s += '<rect x="50" y="0" width="50" height="100" fill="' + r.c + '"/>';
+    if (r.slug === "oro") s += '<polygon points="10,76 50,42 90,76 90,90 50,56 10,90" fill="' + r.o + '"/>';
+    if (r.slug === "platino") s += '<rect x="50" y="26" width="50" height="34" fill="' + r.o + '"/><rect x="0" y="60" width="50" height="40" fill="' + r.o + '"/>';
+    if (r.slug === "prodigio") s += '<polygon points="0,30 18,26 100,96 100,100 76,100 0,40" fill="' + r.b + '"/><polygon points="' + estrella(64, 50, 9, 5, 0.45) + '" fill="' + r.b + '"/>';
+    s += '<rect x="0" y="0" width="100" height="26" fill="' + r.t + '"/>';
+    if (r.slug === "prodigio") s += '<path d="M36 22 L36 13 L43 18 L50 11 L57 18 L64 13 L64 22 Z" fill="' + r.b + '"/>';
+    else [38, 50, 62].forEach(function (x, i) { s += '<circle cx="' + x + '" cy="18" r="3.6" fill="' + (i <= d ? r.c : r.o) + '"/>'; });
+    s += "</g>";
+    s += '<path d="' + ESCUDO + '" fill="none" stroke="' + r.t + '" stroke-width="3.5" stroke-linejoin="round"/>';
+    s += '<path d="' + ESCUDO + '" transform="translate(50 52) scale(.84) translate(-50 -52)" fill="none" stroke="' + (r.v ? r.b : r.c) + '" stroke-width="1.6" opacity=".75"/>';
+    return s;
+  }
+
+  // ---------- Gema tallada ----------
+  function caras(lista, borde) { return lista.map(function (f) { return '<polygon points="' + f[0] + '" fill="' + f[1] + '" stroke="' + borde + '" stroke-width="1.4" stroke-linejoin="round"/>'; }).join(""); }
+  function gema(r, d) {
+    var c = r.c, b = r.b, o = r.o, t = r.t, s = "";
+    s += '<circle cx="50" cy="52" r="45" fill="#0E1226" stroke="' + o + '" stroke-width="2"/>';
+    switch (r.slug) {
+      case "bronce": s += caras([["28,64 34,40 50,52", b], ["34,40 52,30 50,52", c], ["52,30 70,40 50,52", b], ["70,40 74,62 50,52", o], ["74,62 56,74 50,52", o], ["56,74 28,64 50,52", b]], t); break;
+      case "plata": s += '<ellipse cx="50" cy="54" rx="27" ry="21" fill="' + b + '" stroke="' + t + '" stroke-width="1.4"/><path d="M24 58 A27 21 0 0 0 76 58 A27 14 0 0 1 24 58 Z" fill="' + o + '"/><ellipse cx="41" cy="46" rx="8" ry="4.5" fill="' + c + '"/>'; break;
+      case "oro": s += caras([["50,24 78,72 22,72", b], ["50,42 62,63 38,63", c], ["50,24 62,63 50,42", c], ["78,72 38,63 62,63", o], ["22,72 38,63 50,42 50,24", b]], t); break;
+      case "platino": s += caras([["34,28 66,28 76,40 76,66 66,78 34,78 24,66 24,40", b], ["34,28 66,28 60,40 40,40", c], ["66,28 76,40 76,66 60,66 60,40", o], ["76,66 66,78 34,78 40,66 60,66", o], ["24,40 34,28 40,40 40,66 34,78 24,66", b], ["40,40 60,40 60,66 40,66", c]], t); break;
+      case "diamante": s += caras([["26,44 38,28 44,44", c], ["38,28 62,28 56,44 44,44", c], ["62,28 74,44 56,44", b], ["26,44 44,44 50,82", b], ["44,44 56,44 50,82", c], ["56,44 74,44 50,82", o]], t); break;
+      default: s += '<path d="M36 26 L36 14 L43 20 L50 11 L57 20 L64 14 L64 26 Z" fill="' + b + '" stroke="' + t + '" stroke-width="1.4" stroke-linejoin="round"/>' + caras([["26,46 38,30 44,46", r.v2], ["38,30 62,30 56,46 44,46", r.v2], ["62,30 74,46 56,46", r.v], ["26,46 44,46 50,84", r.v], ["44,46 56,46 50,84", r.v2], ["56,46 74,46 50,84", r.v3]], t); break;
+    }
+    [[80, 30], [20, 34], [81, 72]].forEach(function (q, i) { s += '<polygon points="' + estrella(q[0], q[1], 5.5, 4, 0.3) + '" fill="' + (i <= d ? (r.v ? r.b : c) : "rgba(255,255,255,.12)") + '"/>'; });
+    return s;
+  }
+
+  var FAMILIAS = [
+    { id: "hoy", nombre: "La de hoy", etiqueta: "Referencia", dibujar: hoy, idea: "Hexágono con degradé y un brillo que late. Todos los rangos tienen la misma forma y solo cambia el color, por eso se ve genérica." },
+    { id: "torres", nombre: "Torres", etiqueta: "La ciudad que crece", dibujar: torres, idea: "Tu rango es tu ciudad: una casa en Bronce, torres con antena en Oro, un rascacielos de cristal en Diamante y el horizonte completo con luna en Prodigio. Cada división enciende más pisos. Es la que más se parece a Prodigia, porque sale de las ciudades de los mundos. En chico se pierden las ventanas, pero la silueta se sigue leyendo." },
+    { id: "constelacion", nombre: "Constelación", etiqueta: "Une las estrellas", dibujar: constelacion, idea: "Cada rango es una constelación más grande dentro de un aro de su metal. Prodigio es una corona de estrellas sobre violeta. Las tres estrellitas del aro son la división. Combina con las Constelaciones de Recompensas, pero en chico queda fina." },
+    { id: "medalla", nombre: "Medalla acuñada", etiqueta: "Un símbolo por rango", dibujar: medalla, idea: "Una moneda con el canto estriado y un símbolo en relieve: + en Bronce, × en Plata, √ en Oro, π en Platino, ∞ en Diamante y Σ en Prodigio. Las estrellas de abajo marcan la división. Es la que mejor se lee a 22 px." },
+    { id: "estandarte", nombre: "Estandarte", etiqueta: "Bandera con galones", dibujar: estandarte, idea: "Un banderín que se alarga y se adorna en cada rango: desde Oro lleva ribete, desde Diamante borlas, y Prodigio es violeta con estrella dorada. Las divisiones son galones, como en los uniformes. Funciona bien en la Placa." },
+    { id: "escudo", nombre: "Escudo", etiqueta: "Heráldica", dibujar: escudo, idea: "El campo del escudo se divide de forma más compleja en cada rango: liso, partido, cheurón, cuartelado y losanjado. Prodigio lleva corona. Las tres bolitas de la franja de arriba son la división." },
+    { id: "gema", nombre: "Gema tallada", etiqueta: "De la piedra al brillante", dibujar: gema, idea: "Cada rango es una talla más fina: piedra en bruto, cabujón, trillón, talla esmeralda y brillante. Prodigio es una gema violeta coronada. Los destellos alrededor marcan la división." },
+  ];
+
+  var JUGADORES = [{ nombre: "Tomás G.", elo: 1512 }, { nombre: "Ana P.", elo: 1184 }, { nombre: "Lucía R.", elo: 942 }];
+  var raiz = document.getElementById("familias"), entrada = document.getElementById("elo"), lectura = document.getElementById("lectura"), saltos = document.getElementById("saltos");
+
+  RANGOS.forEach(function (r) {
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = r.nombre; b.dataset.min = r.min;
+    b.addEventListener("click", function () { fijar(r.slug === "prodigio" ? 1760 : r.min + Math.round((RANGOS[RANGOS.indexOf(r) + 1].min - r.min) * 0.5)); });
+    saltos.appendChild(b);
+  });
+
+  function insignia(f, r, d) { return svg(f.dibujar(r, d), r.nombre + (r.slug === "prodigio" ? "" : " " + ROMANOS[d])); }
+  function dibujar() {
+    var elo = Number(entrada.value), dv = divisionDe(elo), r = RANGOS[dv.i];
+    lectura.textContent = dv.nombre + " · " + elo.toLocaleString("es") + " ELO";
+    Array.prototype.forEach.call(saltos.children, function (b) { b.setAttribute("aria-pressed", String(b.textContent === r.nombre)); });
+    raiz.innerHTML = FAMILIAS.map(function (f) {
+      var html = '<section class="familia' + (f.id === "hoy" ? " referencia" : "") + '">';
+      html += '<div class="heroe">' + insignia(f, r, dv.d) + '<p class="div">' + dv.nombre + '</p><p class="elo"><b>' + elo.toLocaleString("es") + "</b> ELO</p>";
+      html += '<div class="barra"><i style="width:' + Math.round(dv.prog * 100) + "%;background:" + (r.v || r.b) + '"></i></div><p class="falta">' + (dv.prox ? dv.faltan + " ELO para " + dv.prox : "El rango más alto") + "</p></div>";
+      html += '<div class="cuerpo"><div class="titulo"><h2>' + f.nombre + '</h2><span class="etiqueta">' + f.etiqueta + '</span></div><p class="idea">' + f.idea + "</p>";
+      html += '<div><p class="sub">Los seis rangos</p><div class="rangos">' + RANGOS.map(function (x, i) {
+        return '<button type="button" class="rango" data-i="' + i + '" aria-current="' + (i === dv.i) + '">' + insignia(f, x, x.slug === "prodigio" ? 2 : 1) + "<b>" + x.nombre + "</b><span>" + x.min.toLocaleString("es") + "+</span></button>";
+      }).join("") + "</div></div>";
+      html += '<div class="dos"><div><p class="sub">Divisiones de ' + r.nombre + '</p><div class="divisiones">' + (r.slug === "prodigio" ? '<p class="pie">Prodigio no tiene divisiones.</p>' : [0, 1, 2].map(function (k) { return '<figure class="' + (k === dv.d ? "actual" : "") + '">' + insignia(f, r, k) + "<figcaption>" + ROMANOS[k] + "</figcaption></figure>"; }).join("")) + "</div></div>";
+      html += '<div><p class="sub">En el ranking, a 22 px</p><div class="lista">' + JUGADORES.map(function (j, n) { var dj = divisionDe(j.elo); return '<div class="fila"><span class="pos">' + (n + 1) + "</span>" + insignia(f, RANGOS[dj.i], dj.d) + "<span>" + j.nombre + '</span><span class="num">' + j.elo.toLocaleString("es") + "</span></div>"; }).join("") + "</div></div></div>";
+      return html + "</div></section>";
+    }).join("");
+  }
+  function fijar(v) { entrada.value = v; dibujar(); }
+  raiz.addEventListener("click", function (ev) {
+    var b = ev.target.closest(".rango"); if (!b) return;
+    var r = RANGOS[Number(b.dataset.i)], s = RANGOS[Number(b.dataset.i) + 1];
+    fijar(s ? r.min + Math.round((s.min - r.min) * 0.5) : 1760);
+  });
+  entrada.addEventListener("input", dibujar);
+  dibujar();
+})();
+</script>

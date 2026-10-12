@@ -1,57 +1,42 @@
-import { useEffect } from "react";
+import { memo } from "react";
 import { View } from "react-native";
-import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
-import { useAnimacionActiva } from "~/lib/rendimiento";
-import Svg, { Defs, LinearGradient, Path, Stop } from "react-native-svg";
+import Svg, { Circle, Line, Path, Polygon, Rect } from "react-native-svg";
+import { indiceDivision, piezasInsigniaTorres, type Pieza } from "@/lib/rangos/insigniaTorres";
 import { rangoDeElo } from "~/lib/placa";
-import { aclarar, fuente, oscurecer } from "~/tema";
-import Texto from "../Texto";
 
-// Insignia hexagonal del rango (maqueta 8, "Competir"): degradé del color del rango
-// y un brillo que late. Prodigio usa el degradé violeta → dorado.
+// Insignia de rango «Torres» (2026-10-12): la ciudad que crece con tu rango y
+// enciende pisos con cada división. La geometría es compartida con la web
+// (@/lib/rangos/insigniaTorres); acá solo se dibuja. Sin brillo ni animación.
 
 interface Props {
   elo: number;
   tam?: number;
-  animar?: boolean;
-  conTexto?: boolean;
 }
 
-export default function InsigniaRango({ elo, tam = 46, animar = true, conTexto = true }: Props) {
-  const rango = rangoDeElo(elo);
-  const [c1, c2] = rango.degradado ?? [aclarar(rango.colorHex, 0.75), rango.colorHex];
-  const c3 = oscurecer(rango.degradado ? rango.degradado[1] : rango.colorHex, 0.5);
-  const pulso = useSharedValue(0);
-  const activa = useAnimacionActiva();
-  useEffect(() => {
-    if (!animar || !activa) {
-      cancelAnimation(pulso);
-      return;
-    }
-    pulso.set(withRepeat(withSequence(withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.quad) }), withTiming(0, { duration: 1500 })), -1));
-    return () => cancelAnimation(pulso);
-  }, [animar, activa, pulso]);
-  const halo = useAnimatedStyle(() => ({ opacity: 0.25 + pulso.value * 0.55, transform: [{ scale: 1 + pulso.value * 0.08 }] }));
-  const id = `ins${rango.slug}${tam}`;
+function dibujar(p: Pieza, i: number) {
+  switch (p.t) {
+    case "path":
+      return <Path key={i} d={p.d} fill={p.fill ?? "none"} stroke={p.stroke} strokeWidth={p.ancho} opacity={p.opacidad} />;
+    case "rect":
+      return <Rect key={i} x={p.x} y={p.y} width={p.w} height={p.h} fill={p.fill} />;
+    case "circle":
+      return <Circle key={i} cx={p.cx} cy={p.cy} r={p.r} fill={p.fill} opacity={p.opacidad} />;
+    case "polygon":
+      return <Polygon key={i} points={p.puntos} fill={p.fill} />;
+    case "line":
+      return <Line key={i} x1={p.x1} y1={p.y1} x2={p.x2} y2={p.y2} stroke={p.stroke} strokeWidth={p.ancho} />;
+  }
+}
+
+function InsigniaRango({ elo, tam = 46 }: Props) {
+  const piezas = piezasInsigniaTorres(rangoDeElo(elo).slug, indiceDivision(elo));
   return (
-    <View style={{ width: tam, height: tam, alignItems: "center", justifyContent: "center" }}>
-      <Animated.View style={[{ position: "absolute", width: tam * 0.8, height: tam * 0.8, borderRadius: tam, boxShadow: `0px 0px ${tam * 0.4}px ${rango.colorHex}` }, halo]} />
-      <Svg width={tam} height={tam} viewBox="0 0 100 100" style={{ position: "absolute" }}>
-        <Defs>
-          <LinearGradient id={id} x1="0" y1="0" x2="0.6" y2="1">
-            <Stop offset="0" stopColor={c1} />
-            <Stop offset="0.5" stopColor={c2} />
-            <Stop offset="1" stopColor={c3} />
-          </LinearGradient>
-        </Defs>
-        <Path d="M50 2 L93 26 L93 74 L50 98 L7 74 L7 26 Z" fill={`url(#${id})`} />
-        <Path d="M50 12 L84 31 L84 69 L50 88 L16 69 L16 31 Z" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth={2} />
+    <View style={{ width: tam, height: tam }} accessibilityRole="image" accessibilityLabel={`Rango ${rangoDeElo(elo).nombre}`}>
+      <Svg width={tam} height={tam} viewBox="0 0 100 100">
+        {piezas.map(dibujar)}
       </Svg>
-      {conTexto && (
-        <Texto style={{ fontFamily: fuente.display, fontSize: Math.max(8, tam * 0.15), color: oscurecer(rango.colorHex, 0.25), letterSpacing: 0.6 }}>
-          {rango.nombre.toUpperCase()}
-        </Texto>
-      )}
     </View>
   );
 }
+
+export default memo(InsigniaRango);

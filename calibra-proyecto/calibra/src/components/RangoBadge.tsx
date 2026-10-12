@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { rangoDeElo } from "@/types/database";
-import { IconRango } from "@/components/icons";
+import InsigniaRango from "@/components/InsigniaRango";
 
 interface Props {
   elo: number;
@@ -18,9 +18,9 @@ interface Props {
 }
 
 const TAMANOS = {
-  sm: { icon: "h-3.5 w-3.5", texto: "text-xs" },
-  md: { icon: "h-[18px] w-[18px]", texto: "text-sm" },
-  lg: { icon: "h-6.5 w-6.5", texto: "text-lg" },
+  sm: { icon: "h-[18px] w-[18px]", texto: "text-xs" },
+  md: { icon: "h-[22px] w-[22px]", texto: "text-sm" },
+  lg: { icon: "h-8 w-8", texto: "text-lg" },
 } as const;
 
 // Fase 1 de Rankeds: ícono + color + nombre del rango, en un solo
@@ -46,9 +46,7 @@ export default function RangoBadge({ elo, size = "md", mostrarElo = false, titul
 
   return (
     <span className={`inline-flex min-w-0 items-center gap-1.5 font-display font-bold ${t.texto} ${className}`}>
-      <span className="shrink-0" style={{ color: rango.colorHex }}>
-        <IconRango className={t.icon} />
-      </span>
+      <InsigniaRango elo={elo} className={t.icon} />
       <span className="shrink-0" style={estiloNombre}>{tRangos(rango.slug)}</span>
       {tituloNombre && (
         // min-w-0 + truncate: sin esto, un título largo ("Bautismo de

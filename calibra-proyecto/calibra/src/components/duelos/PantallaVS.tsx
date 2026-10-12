@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { rangoDeElo } from "@/types/database";
+import InsigniaRango from "@/components/InsigniaRango";
 
 interface Props {
   miNombre: string;
@@ -46,7 +47,7 @@ export default function PantallaVS({ miNombre, miElo, rivalNombre, rivalElo, riv
         {subtitulo && <p className="-mt-2 text-xs font-medium uppercase tracking-wide text-texto-secundario">{subtitulo}</p>}
 
         <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-3">
-          <LadoJugador nombre={miNombre} elo={miElo} colorHex={miRango.colorHex} insigniaSlug={miRango.slug} align="right" />
+          <LadoJugador nombre={miNombre} elo={miElo} colorHex={miRango.colorHex} align="right" />
 
           <div className="flex flex-col items-center gap-1">
             <span className="font-display text-4xl font-black italic tracking-tight text-foreground sm:text-5xl">{t("vs")}</span>
@@ -59,7 +60,6 @@ export default function PantallaVS({ miNombre, miElo, rivalNombre, rivalElo, riv
             nombre={rivalEsBot ? rivalNombre : rivalNombre}
             elo={rivalElo}
             colorHex={rivalRango.colorHex}
-            insigniaSlug={rivalRango.slug}
             align="left"
             esBot={rivalEsBot}
           />
@@ -73,22 +73,19 @@ function LadoJugador({
   nombre,
   elo,
   colorHex,
-  insigniaSlug,
   align,
   esBot = false,
 }: {
   nombre: string;
   elo: number;
   colorHex: string;
-  insigniaSlug: string;
   align: "left" | "right";
   esBot?: boolean;
 }) {
   const t = useTranslations("Duelos.pantallaVS");
   return (
     <div className={`flex min-w-0 flex-col items-center gap-1.5 text-center ${align === "right" ? "sm:items-end sm:text-right" : "sm:items-start sm:text-left"}`}>
-      {/* eslint-disable-next-line @next/next/no-img-element -- mismo criterio que RankedsClient: tamaño intrínseco variable por rango */}
-      <img src={`/rangos/${insigniaSlug}.png`} alt="" className="h-16 w-auto drop-shadow-lg sm:h-20" />
+      <InsigniaRango elo={elo} className="h-16 w-16 sm:h-20 sm:w-20" />
       <p className="max-w-[9rem] truncate font-display text-lg font-bold text-foreground sm:max-w-[11rem] sm:text-xl">{nombre}</p>
       <p className="font-mono text-sm font-semibold" style={{ color: colorHex }}>
         {t("eloValor", { elo })}

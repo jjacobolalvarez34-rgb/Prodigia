@@ -4803,6 +4803,7 @@
       "subtitulo": "Trails, effects and sounds for your games, your city on your Badge, emotes, the frame of the month and bundles.",
       "pestanas": {
         "paquetes": "Bundles",
+        "temas": "Themes ✦",
         "marcos": "Frames",
         "partida": "In game",
         "placa": "Badge",
@@ -4843,7 +4844,17 @@
       "inventarioTitulo": "More of your inventory",
       "inventarioSubtitulo": "Trails, effects, sounds, emotes, titles, cities and frames that are already yours.",
       "inventarioVacio": "You don't have anything from this section yet.",
-      "yaTienesTodo": "You already have everything in this section: see it in your Inventory."
+      "yaTienesTodo": "You already have everything in this section: see it in your Inventory.",
+      "temas": {
+        "pronto": "Coming soon",
+        "titulo": "Change how the whole app looks",
+        "sub": "New colors, fonts, cards and buttons for all of Prodigia. Your worlds, progress and items stay the same.",
+        "etiqueta": "SOON",
+        "etiquetaLarga": "Theme · Coming soon",
+        "inspiracion": "Inspired by: {x}",
+        "nota": "It only changes how Prodigia looks: your worlds, progress and items stay the same.",
+        "boton": "Coming soon"
+      }
     },
     "invitado": "Constellations, missions and the calendar are for registered accounts. Create your account to start earning them.",
     "detalle": {

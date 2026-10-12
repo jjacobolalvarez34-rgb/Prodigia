@@ -10,6 +10,7 @@ import { CATALOGO_NUEVO, COLOR_RAREZA, diasHastaFinDeMes, PAQUETES, temporadaAct
 import { cosmeticosDesdeFila, COLUMNAS_COSMETICOS_NUEVOS, equiparCosmetico, mensajeError, type CosmeticosNuevos } from "@/lib/recompensas/api";
 import { refrescarCosmeticosWeb } from "@/lib/recompensas/cosmeticosWeb";
 import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
+import { TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
 
 // Tienda ampliada (0248) en la web: la misma vidriera que las pestañas nuevas del
 // Bazar de la app (paquetes, partida, Placa, duelos, marco del mes y ayudas). La
@@ -17,8 +18,8 @@ import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
 // revalida todo. Avisa la compra con el evento "prodigia:chispas" para que el saldo
 // de arriba (TiendaClient) se actualice.
 
-type Pestana = "paquetes" | "marcos" | "partida" | "placa" | "duelos" | "temporada" | "utilidades";
-const PESTANAS: Pestana[] = ["paquetes", "marcos", "partida", "placa", "duelos", "temporada", "utilidades"];
+type Pestana = "paquetes" | "temas" | "marcos" | "partida" | "placa" | "duelos" | "temporada" | "utilidades";
+const PESTANAS: Pestana[] = ["paquetes", "temas", "marcos", "partida", "placa", "duelos", "temporada", "utilidades"];
 
 interface Item {
   item: string;
@@ -48,6 +49,7 @@ const TODO_INVENTARIO: Item[] = [
 
 const DE_PESTANA: Record<Pestana, (it: Item) => boolean> = {
   paquetes: (it) => it.categoria === "paquete",
+  temas: () => false,
   marcos: (it) => it.categoria === "marco" && it.temporada == null && it.valor.startsWith("estilo_"),
   partida: (it) => it.categoria === "estela" || it.categoria === "efecto" || it.categoria === "sonido",
   placa: (it) => it.categoria === "ciudad_placa" || it.categoria === "titulo" || it.categoria === "fondo",
@@ -55,6 +57,31 @@ const DE_PESTANA: Record<Pestana, (it: Item) => boolean> = {
   temporada: (it) => it.temporada != null && it.temporada === temporadaActual(),
   utilidades: (it) => it.categoria === "utilidad",
 };
+
+// Miniatura de un tema (Próximamente): pantallita con sus colores, la forma de sus
+// tarjetas y su botón. Igual que en el Bazar de la app.
+function MiniTema({ tema, grande = false }: { tema: TemaApp; grande?: boolean }) {
+  const k = tema.colores;
+  const radio = Math.min(tema.radio, 6);
+  const tarjeta = (alto: string) => (
+    <span className="relative block" style={{ height: alto }}>
+      {tema.sombra === "dura" && <span className="absolute inset-0 translate-x-[2px] translate-y-[2px]" style={{ borderRadius: radio, background: k.borde }} />}
+      <span className="relative flex h-full flex-col justify-center gap-[3px] p-1" style={{ borderRadius: radio, background: k.tarjeta, border: `${tema.borde}px solid ${k.borde}` }}>
+        <span className="block h-[3px] w-[62%] rounded-sm opacity-85" style={{ background: k.texto }} />
+        <span className="block h-[3px] w-[40%] rounded-sm" style={{ background: k.detalle }} />
+      </span>
+    </span>
+  );
+  return (
+    <span className={`flex flex-col gap-1.5 overflow-hidden rounded-xl p-2 ${grande ? "h-32 w-24" : "aspect-[10/13] w-full"}`} style={{ background: k.fondo }} aria-hidden="true">
+      <span className="block h-[5px] w-[48%] rounded-sm" style={{ background: k.texto === k.tarjeta ? k.borde : k.texto }} />
+      {tarjeta("24%")}
+      {tarjeta("17%")}
+      <span className="flex-1" />
+      <span className="block h-[12%]" style={{ borderRadius: radio, background: k.acento, border: tema.borde ? `1px solid ${k.borde}` : undefined }} />
+    </span>
+  );
+}
 
 interface Estado {
   cos: CosmeticosNuevos;
@@ -73,6 +100,7 @@ export default function TiendaAmpliada() {
   // Tienda (solo lo que no tienes) o Inventario (todo lo tuyo); lo elige TiendaClient con ?modo=.
   const inventario = useSearchParams().get("modo") === "inventario";
   const [pestana, setPestana] = useState<Pestana>("paquetes");
+  const [tema, setTema] = useState<TemaApp | null>(null);
   const [e, setE] = useState<Estado | null>(null);
   const [elegido, setElegido] = useState<Item | null>(null);
   const [confirmar, setConfirmar] = useState(false);
@@ -167,7 +195,7 @@ export default function TiendaAmpliada() {
     return null;
   }
 
-  const pestanas = inventario ? PESTANAS.filter((p) => p !== "paquetes") : PESTANAS;
+  const pestanas = inventario ? PESTANAS.filter((p) => p !== "paquetes" && p !== "temas") : PESTANAS;
   const pestanaVista = pestanas.includes(pestana) ? pestana : pestanas[0];
   const lista = useMemo(() => {
     if (inventario) {
@@ -247,7 +275,44 @@ export default function TiendaAmpliada() {
         ))}
       </div>
       {!inventario && pestanaVista === "temporada" && <p className="text-sm font-semibold text-racha">{t("quedanDias", { n: diasHastaFinDeMes() })}</p>}
-      {lista.length === 0 && (
+      {!inventario && pestanaVista === "temas" && (
+        <>
+          <div className="rounded-2xl border border-logro/35 bg-logro/5 p-4">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-logro">{t("temas.pronto")}</p>
+            <p className="font-display text-lg font-bold text-foreground">{t("temas.titulo")}</p>
+            <p className="text-sm text-texto-secundario">{t("temas.sub")}</p>
+          </div>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+            {TEMAS_APP.map((tm) => (
+              <button key={tm.slug} type="button" onClick={() => setTema(tm)} className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-surface p-2 text-center transition-transform hover:-translate-y-1">
+                <MiniTema tema={tm} />
+                <span className="text-xs font-bold text-foreground">{tm.nombre}</span>
+                <span className="rounded-full border border-logro/50 px-2 py-0.5 text-[9px] font-bold tracking-wider text-logro">{t("temas.etiqueta")}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+      {tema && (
+        <div className="fixed inset-0 z-[95] flex items-end justify-center bg-black/60 p-4 sm:items-center" onClick={() => setTema(null)} role="dialog" aria-modal="true">
+          <div className="flex w-full max-w-md flex-col gap-3 rounded-3xl border border-border bg-surface p-5" onClick={(ev) => ev.stopPropagation()}>
+            <div className="flex items-center gap-4">
+              <MiniTema tema={tema} grande />
+              <div className="min-w-0">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-logro">{t("temas.etiquetaLarga")}</span>
+                <p className="font-display text-xl font-bold text-foreground">{tema.nombre}</p>
+                <p className="text-xs text-texto-secundario">{t("temas.inspiracion", { x: tema.inspiracion })}</p>
+              </div>
+            </div>
+            <p className="text-sm text-foreground">{tema.descripcion}</p>
+            <p className="text-xs text-texto-secundario">{t("temas.nota")}</p>
+            <button type="button" disabled className="rounded-full border border-border bg-surface-2 px-6 py-3 font-display font-bold text-texto-secundario">
+              {t("temas.boton")}
+            </button>
+          </div>
+        </div>
+      )}
+      {lista.length === 0 && pestanaVista !== "temas" && (
         <p className="rounded-2xl border border-dashed border-border px-4 py-6 text-center text-sm text-texto-secundario">{inventario ? t("inventarioVacio") : t("yaTienesTodo")}</p>
       )}
       <motion.div key={`${inventario}-${pestanaVista}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-2 gap-3 sm:grid-cols-4">

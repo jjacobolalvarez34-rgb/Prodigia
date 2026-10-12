@@ -7,6 +7,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { rangoDeElo, type ArithmeticProblemType } from "@/types/database";
 import RangoBadge from "@/components/RangoBadge";
+import InsigniaRango from "@/components/InsigniaRango";
 import GlareHover from "@/components/reactbits/GlareHover";
 import BorderGlow from "@/components/reactbits/BorderGlow";
 import Boton from "@/components/Boton";
@@ -281,12 +282,8 @@ function MiCompetitivo({
 
       <AvisoPrimeraVez avisoKey="rangos-intro" texto={t("rangosIntro")}>
         <div className="flex flex-col items-center gap-1 rounded-2xl border-2 border-primario/30 bg-primario/5 px-6 py-6 text-center">
-          {/* Sección 8: insignia real del rango (antes solo texto + color) —
-              los 6 estandartes vienen de public/rangos/<slug>.png, recortados
-              del collage que diste, con el fondo negro convertido a
-              transparente. */}
-          {/* eslint-disable-next-line @next/next/no-img-element -- tamaño intrínseco variable por rango, no vale la pena declarar 6 width/height distintos para next/image acá */}
-          <img src={`/rangos/${rangoDeElo(miElo).slug}.png`} alt="" className="h-24 w-auto drop-shadow-lg" />
+          {/* Insignia del rango: las Torres (2026-10-12), que reemplazan a los estandartes PNG. */}
+          <InsigniaRango elo={miElo} className="h-28 w-28" />
           <span className="font-mono text-4xl font-bold text-primario">{miElo}</span>
           <RangoBadge elo={miElo} tituloNombre={miTituloNombre} size="md" />
         </div>

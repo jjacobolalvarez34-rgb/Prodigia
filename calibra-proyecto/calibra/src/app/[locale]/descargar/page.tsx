@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import PanelDescarga, { FondoAurora } from "@/components/descargarApp/PanelDescarga";
+import PanelDescarga, { FondoNoche } from "@/components/descargarApp/PanelDescarga";
 import { Link } from "@/i18n/navigation";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -16,8 +16,8 @@ export default async function DescargarPage({ params }: { params: Promise<{ loca
   const t = await getTranslations("DescargarApp");
   return (
     <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-4 py-10">
-      <FondoAurora />
-      <div className="relative w-full max-w-md rounded-[2rem] border border-white/15 bg-white/[0.03] px-5 py-8 backdrop-blur-sm">
+      <FondoNoche />
+      <div className="relative w-full max-w-md overflow-hidden rounded-[1.75rem] border border-[rgba(148,160,214,0.18)] bg-[#080B15] px-5 py-8 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.9)]">
         <PanelDescarga />
       </div>
       <Link href="/" className="relative mt-6 text-sm font-semibold text-white/70 underline underline-offset-4 hover:text-white">

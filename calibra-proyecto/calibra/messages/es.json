@@ -4803,6 +4803,7 @@
       "subtitulo": "Estelas, efectos y sonidos para tus partidas, tu ciudad en la Placa, emotes, el marco del mes y paquetes.",
       "pestanas": {
         "paquetes": "Paquetes",
+        "temas": "Temas ✦",
         "marcos": "Marcos",
         "partida": "Partida",
         "placa": "Placa",
@@ -4843,7 +4844,17 @@
       "inventarioTitulo": "Más de tu inventario",
       "inventarioSubtitulo": "Estelas, efectos, sonidos, emotes, títulos, ciudades y marcos que ya son tuyos.",
       "inventarioVacio": "Todavía no tienes nada de esta sección.",
-      "yaTienesTodo": "Ya tienes todo lo de esta sección: míralo en tu Inventario."
+      "yaTienesTodo": "Ya tienes todo lo de esta sección: míralo en tu Inventario.",
+      "temas": {
+        "pronto": "Próximamente",
+        "titulo": "Cambia el aspecto de toda la app",
+        "sub": "Colores, letras, tarjetas y botones nuevos para todo Prodigia. Tus mundos, tu progreso y tus cosas quedan iguales.",
+        "etiqueta": "PRONTO",
+        "etiquetaLarga": "Tema · Próximamente",
+        "inspiracion": "Inspirado en: {x}",
+        "nota": "Cambia solo cómo se ve Prodigia: tus mundos, tu progreso y tus cosas quedan iguales.",
+        "boton": "Muy pronto"
+      }
     },
     "invitado": "Las constelaciones, misiones y el calendario son para cuentas registradas. Crea tu cuenta para empezar a ganarlas.",
     "detalle": {

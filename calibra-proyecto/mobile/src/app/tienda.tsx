@@ -7,6 +7,7 @@ import { Dimensions, Pressable, ScrollView, StyleSheet, View } from "react-nativ
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { CATALOGO_NUEVO, diasHastaFinDeMes } from "@/lib/recompensas/catalogo";
+import { TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
 import { probarPaqueteAcierto, sonar, vibrar } from "~/lib/efectos";
 import { recargarCosmeticos } from "~/lib/recompensas";
 import { fijarChispas, recargarJugador, useJugador } from "~/lib/jugador";
@@ -53,10 +54,11 @@ import { FUENTE_FAMILIA } from "~/lib/placa";
 
 // Una categoría a la vez (antes la tienda dibujaba todo el catálogo junto y se
 // trababa): menos cosas en pantalla, y la grilla entra con un fundido.
-type Pestana = "utilidad" | "paquetes" | "marcos" | "nombre" | "fondos" | "partida" | "placa" | "duelos";
+type Pestana = "utilidad" | "paquetes" | "temas" | "marcos" | "nombre" | "fondos" | "partida" | "placa" | "duelos";
 const PESTANAS: { id: Pestana; titulo: string }[] = [
   { id: "utilidad", titulo: "Utilidades" },
   { id: "paquetes", titulo: "Paquetes" },
+  { id: "temas", titulo: "Temas ✦" },
   { id: "marcos", titulo: "Marcos" },
   { id: "partida", titulo: "Partida" },
   { id: "nombre", titulo: "Nombre" },
@@ -67,6 +69,7 @@ const PESTANAS: { id: Pestana; titulo: string }[] = [
 const CATEGORIAS_DE: Record<Pestana, Categoria[]> = {
   utilidad: ["utilidad"],
   paquetes: ["paquete"],
+  temas: [],
   marcos: ["marco", "marco_mundo"],
   nombre: ["fuente", "animacion", "color"],
   fondos: ["fondo", "galeria"],
@@ -210,6 +213,31 @@ const TarjetaItem = memo(function TarjetaItem({ it, e, placa, ancho, onPress }: 
   );
 });
 
+// Miniatura de un tema (Próximamente): una pantallita con sus colores, la forma de
+// sus tarjetas y su botón. Los temas todavía no se venden.
+const MiniTema = memo(function MiniTema({ tema, ancho, alto }: { tema: TemaApp; ancho: number; alto: number }) {
+  const k = tema.colores;
+  const radio = Math.min(tema.radio, 6);
+  const tarjeta = (h: number) => (
+    <View style={{ height: h }}>
+      {tema.sombra === "dura" && <View style={{ position: "absolute", left: 2, top: 2, right: -2, bottom: -2, borderRadius: radio, backgroundColor: k.borde }} />}
+      <View style={{ flex: 1, borderRadius: radio, backgroundColor: k.tarjeta, borderWidth: tema.borde, borderColor: k.borde, padding: 4, gap: 3, justifyContent: "center" }}>
+        <View style={{ width: "62%", height: 3, borderRadius: 2, backgroundColor: k.texto, opacity: 0.85 }} />
+        <View style={{ width: "40%", height: 3, borderRadius: 2, backgroundColor: k.detalle }} />
+      </View>
+    </View>
+  );
+  return (
+    <View style={{ width: ancho, height: alto, borderRadius: 10, overflow: "hidden", backgroundColor: k.fondo, padding: 7, gap: 5 }}>
+      <View style={{ width: "48%", height: 5, borderRadius: 2, backgroundColor: k.texto === k.tarjeta ? k.borde : k.texto, opacity: 0.9 }} />
+      {tarjeta(alto * 0.24)}
+      {tarjeta(alto * 0.17)}
+      <View style={{ flex: 1 }} />
+      <View style={{ height: alto * 0.12, borderRadius: radio, backgroundColor: k.acento, borderWidth: tema.borde ? 1 : 0, borderColor: k.borde }} />
+    </View>
+  );
+});
+
 // Dos vistas (pedido 2026-10-10): la Tienda muestra solo lo que todavía no tienes
 // (las ayudas siempre, porque se gastan) y el Inventario, todo lo tuyo para usarlo.
 type Modo = "tienda" | "inventario";
@@ -227,6 +255,7 @@ export default function Tienda() {
   const [ocupado, setOcupado] = useState(false);
   const [festejo, setFestejo] = useState(0);
   const [pestana, setPestana] = useState<Pestana>("utilidad");
+  const [tema, setTema] = useState<TemaApp | null>(null);
   const anchoTarjeta = Math.floor((Dimensions.get("window").width - 32 - 20) / 3);
   const elegirItem = useCallback((it: ItemTienda) => {
     setElegido(it);
@@ -327,7 +356,7 @@ export default function Tienda() {
   const bloqueoPro = elegido?.soloPro && e.plan !== "pro";
   const ninguno: Partial<Record<Categoria, string>> = { marco: "ninguno", marco_mundo: "ninguno", fuente: "default", animacion: "ninguna", fondo: "ninguno", galeria: "ninguno", estela: "clasica", efecto: "chispas", sonido: "clasico" };
 
-  const pestanas = modo === "inventario" ? PESTANAS.filter((p) => p.id !== "paquetes") : PESTANAS;
+  const pestanas = modo === "inventario" ? PESTANAS.filter((p) => p.id !== "paquetes" && p.id !== "temas") : PESTANAS;
   const pestanaVista = pestanas.some((p) => p.id === pestana) ? pestana : pestanas[0].id;
   const items = catalogo.filter((x) => {
     if (!CATEGORIAS_DE[pestanaVista].includes(x.categoria)) return false;
@@ -425,12 +454,44 @@ export default function Tienda() {
             </ScrollView>
           </View>
 
-          <Animated.View key={`${modo}-${pestanaVista}`} entering={FadeIn.duration(220)} style={styles.grilla}>
-            {items.map((it) => (
-              <TarjetaItem key={it.item} it={it} e={e} placa={placa} ancho={anchoTarjeta} onPress={elegirItem} />
-            ))}
-          </Animated.View>
-          {items.length === 0 && (
+          {pestanaVista === "temas" ? (
+            <Animated.View key="temas" entering={FadeIn.duration(220)} style={{ paddingHorizontal: 16, paddingTop: 14, gap: 12 }}>
+              <View style={styles.avisoTemas}>
+                <Texto v="micro" c={color.logro}>
+                  Próximamente
+                </Texto>
+                <Texto v="h3">Cambia el aspecto de toda la app</Texto>
+                <Texto v="nota">Colores, letras, tarjetas y botones nuevos para todo Prodigia. Tus mundos, tu progreso y tus cosas quedan iguales.</Texto>
+              </View>
+              <View style={[styles.grilla, { paddingHorizontal: 0, paddingTop: 0 }]}>
+                {TEMAS_APP.map((t) => (
+                  <Pressable
+                    key={t.slug}
+                    onPress={() => {
+                      vibrar.seleccion();
+                      setTema(t);
+                    }}
+                    style={({ pressed }) => [styles.item, { width: anchoTarjeta, paddingTop: 8, borderColor: color.border }, { transform: [{ scale: pressed ? 0.95 : 1 }] }]}
+                  >
+                    <MiniTema tema={t} ancho={anchoTarjeta - 16} alto={(anchoTarjeta - 16) * 1.3} />
+                    <Texto v="fuerte" tam={11.5} numberOfLines={1} centro>
+                      {t.nombre}
+                    </Texto>
+                    <View style={styles.pronto}>
+                      <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 9, letterSpacing: 0.8, color: color.logro }}>PRONTO</Texto>
+                    </View>
+                  </Pressable>
+                ))}
+              </View>
+            </Animated.View>
+          ) : (
+            <Animated.View key={`${modo}-${pestanaVista}`} entering={FadeIn.duration(220)} style={styles.grilla}>
+              {items.map((it) => (
+                <TarjetaItem key={it.item} it={it} e={e} placa={placa} ancho={anchoTarjeta} onPress={elegirItem} />
+              ))}
+            </Animated.View>
+          )}
+          {items.length === 0 && pestanaVista !== "temas" && (
             <View style={{ alignItems: "center", gap: 10, paddingHorizontal: 24, paddingTop: 30 }}>
               <Texto style={{ fontSize: 40 }}>{modo === "inventario" ? "🎒" : "✨"}</Texto>
               <Texto v="nota" centro>
@@ -603,6 +664,30 @@ export default function Tienda() {
           </>
         )}
       </Hoja>
+
+      <Hoja visible={!!tema} onCerrar={() => setTema(null)}>
+        {tema && (
+          <>
+            <View style={{ flexDirection: "row", gap: 14, alignItems: "center" }}>
+              <MiniTema tema={tema} ancho={96} alto={128} />
+              <View style={{ flex: 1, gap: 4 }}>
+                <Texto v="micro" c={color.logro}>
+                  Tema · Próximamente
+                </Texto>
+                <Texto v="h2">{tema.nombre}</Texto>
+                <Texto v="nota" tam={12}>
+                  Inspirado en: {tema.inspiracion}
+                </Texto>
+              </View>
+            </View>
+            <Texto v="nota">{tema.descripcion}</Texto>
+            <Texto v="nota" tam={12}>
+              Cambia solo cómo se ve la app: tus mundos, tu progreso y tus cosas quedan iguales.
+            </Texto>
+            <Boton3D titulo="Muy pronto" variante="secundario" deshabilitado onPress={() => {}} />
+          </>
+        )}
+      </Hoja>
       {festejo > 0 && <Confeti key={festejo} cantidad={36} />}
     </View>
   );
@@ -619,6 +704,8 @@ const styles = StyleSheet.create({
   chipsCaja: { paddingVertical: 10, backgroundColor: color.bg, borderBottomWidth: 1, borderBottomColor: color.border },
   chip: { paddingHorizontal: 16, paddingVertical: 9, borderRadius: 999, borderWidth: 1, borderColor: color.border, backgroundColor: color.surface1 },
   chipActivo: { borderColor: color.primarioNeon, backgroundColor: conAlfa(color.primario, 0.22) },
+  avisoTemas: { gap: 4, padding: 14, borderRadius: 16, borderWidth: 1, borderColor: conAlfa(color.logro, 0.35), backgroundColor: conAlfa(color.logro, 0.06) },
+  pronto: { paddingHorizontal: 7, paddingVertical: 2, borderRadius: 999, borderWidth: 1, borderColor: conAlfa(color.logro, 0.5) },
   grilla: { flexDirection: "row", flexWrap: "wrap", gap: 10, paddingHorizontal: 16, paddingTop: 14 },
   muestra: { height: 62, alignItems: "center", justifyContent: "center" },
   mini: { width: 74, height: 54, borderRadius: 10, overflow: "hidden", alignItems: "center", justifyContent: "center" },

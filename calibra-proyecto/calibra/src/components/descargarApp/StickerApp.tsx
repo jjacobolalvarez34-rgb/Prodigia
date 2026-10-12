@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { Capacitor } from "@capacitor/core";
 import { usePathname } from "@/i18n/navigation";
 import { URL_APK } from "@/lib/appAndroid";
-import PanelDescarga, { FondoAurora } from "./PanelDescarga";
+import PanelDescarga, { FondoNoche } from "./PanelDescarga";
 
 const CLAVE_OCULTO = "prodigia:sticker-app-oculto-hasta";
 const CLAVE_ANUNCIO = "prodigia:anuncio-app-visto";
@@ -81,26 +81,25 @@ export default function StickerApp() {
           <button
             type="button"
             onClick={() => setAbierto(true)}
-            className="app-sticker group relative block rounded-2xl p-[3px] shadow-[0_12px_30px_-8px_rgba(124,92,255,0.7)]"
+            className="flex items-center gap-2.5 rounded-2xl border border-[rgba(148,160,214,0.22)] bg-[#10152A] py-2 pl-2 pr-3.5 text-left transition-transform hover:-translate-y-0.5"
+            style={{ boxShadow: "0 4px 0 #05070E, 0 14px 24px -12px rgba(0,0,0,0.8)" }}
             aria-label={`${t("sticker")} ${t("stickerSub")}`}
           >
-            <span className="app-holo absolute inset-0 rounded-2xl" aria-hidden="true" />
-            <span className="app-barrido relative flex items-center gap-2 overflow-hidden rounded-[13px] bg-[#0b0820] px-3 py-2 text-left">
-              <svg viewBox="0 0 24 24" className="h-7 w-7 shrink-0" aria-hidden="true">
-                <defs>
-                  <linearGradient id="sticker-tel" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0" stopColor="#a78bfa" />
-                    <stop offset="1" stopColor="#38bdf8" />
-                  </linearGradient>
-                </defs>
-                <rect x="6" y="2" width="12" height="20" rx="3" fill="url(#sticker-tel)" />
-                <rect x="8" y="5" width="8" height="12" rx="1.2" fill="#0b0820" />
-                <path d="M12 8.5v5m0 0-2-2m2 2 2-2" stroke="#6ee7b7" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span className="flex flex-col leading-tight">
-                <span className="font-display text-sm font-bold text-white">{t("sticker")}</span>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#6ee7b7]">{t("stickerSub")}</span>
-              </span>
+            <svg viewBox="0 0 32 32" className="h-9 w-9 shrink-0" aria-hidden="true">
+              <rect width="32" height="32" rx="9" fill="#141A3A" />
+              <rect x="4" y="16" width="7" height="16" fill="#0E1329" />
+              <rect x="12" y="9" width="8" height="23" fill="#121833" />
+              <rect x="21" y="19" width="7" height="13" fill="#0E1329" />
+              <rect x="14" y="12" width="2" height="2.5" fill="#9B85FF" />
+              <rect x="17" y="16" width="2" height="2.5" fill="#FFB627" />
+              <rect x="14" y="20" width="2" height="2.5" fill="#9B85FF" />
+              <rect x="6" y="20" width="2" height="2.5" fill="#9B85FF" />
+              <rect x="23" y="23" width="2" height="2.5" fill="#9B85FF" />
+              <circle cx="25" cy="8" r="2.5" fill="#F3EEDB" />
+            </svg>
+            <span className="flex flex-col leading-tight">
+              <span className="font-display text-sm font-bold text-white">{t("sticker")}</span>
+              <span className="text-[11px] font-semibold text-[#FFB627]">{t("stickerSub")}</span>
             </span>
           </button>
           <button
@@ -109,7 +108,7 @@ export default function StickerApp() {
               guardar(CLAVE_OCULTO, String(Date.now() + SIETE_DIAS));
               setOculto(true);
             }}
-            className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border border-white/30 bg-[#0b0820] text-[10px] text-white/80 hover:text-white"
+            className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full border border-[rgba(148,160,214,0.3)] bg-[#080B15] text-[10px] text-white/80 hover:text-white"
             aria-label={t("ocultar")}
           >
             ✕
@@ -119,27 +118,27 @@ export default function StickerApp() {
 
       {abierto &&
         createPortal(
-          <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-6" onClick={() => setAbierto(false)} role="presentation">
+          <div className="fixed inset-0 z-[70] flex items-end justify-center bg-[rgba(3,4,10,0.75)] p-0 sm:items-center sm:p-6" onClick={() => setAbierto(false)} role="presentation">
             <div
               role="dialog"
               aria-modal="true"
               aria-label={t("titulo")}
               onClick={(e) => e.stopPropagation()}
-              className="relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border border-white/15 px-5 pb-6 pt-8 shadow-[0_30px_80px_-20px_rgba(124,92,255,0.6)] sm:rounded-[2rem]"
-              style={{ animation: "app-entrada 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2)" }}
+              className="relative max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-[1.75rem] border border-[rgba(148,160,214,0.18)] px-5 pb-6 pt-8 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.9)] sm:rounded-[1.75rem]"
+              style={{ animation: "app-entrada 0.35s cubic-bezier(0.2, 0.8, 0.3, 1)" }}
             >
-              <FondoAurora />
+              <FondoNoche />
               <button
                 type="button"
                 onClick={() => setAbierto(false)}
-                className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white"
+                className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(148,160,214,0.22)] bg-[#10152A] text-white/80 hover:text-white"
                 aria-label={t("cerrar")}
               >
                 ✕
               </button>
               <div className="relative">
                 <PanelDescarga />
-                <button type="button" onClick={() => setAbierto(false)} className="mt-4 w-full text-center text-xs font-medium text-white/50 hover:text-white/80">
+                <button type="button" onClick={() => setAbierto(false)} className="mt-4 w-full text-center text-sm font-medium text-[#8E97B8] hover:text-white">
                   {t("ahoraNo")}
                 </button>
               </div>
