@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { calcularRachaDiaria } from "@/lib/practica/racha";
 import { supabase } from "./supabase";
 
 // Foto chica del estado del jugador: la usan el inicio, el centro de avisos y los
@@ -32,6 +33,18 @@ function hoyEnBase(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+// Racha de días: se deriva de daily_progress, igual que la web (calcularRachaDiaria).
+// profiles.streak_dias no la escribe nada en la base y siempre valía 0 (2026-10-12).
+export async function rachaDelJugador(userId: string): Promise<number> {
+  const { data } = await supabase
+    .from("daily_progress")
+    .select("fecha, meta_alcanzada, congelado")
+    .eq("user_id", userId)
+    .order("fecha", { ascending: false })
+    .limit(60);
+  return calcularRachaDiaria((data as { fecha: string; meta_alcanzada: boolean; congelado: boolean | null }[] | null)?.map((d) => ({ ...d, congelado: !!d.congelado })) ?? [], hoyEnBase());
+}
+
 // Consulta todo en paralelo. Las RPC de mensajes (0198/0224) y novedades (0065) se
 // toleran ausentes: si la base todavía no tiene una migración, esa cifra queda en 0.
 export async function cargarResumen(): Promise<Resumen | null> {
@@ -40,24 +53,26 @@ export async function cargarResumen(): Promise<Resumen | null> {
   if (!user) return null;
 
   const [perfil, progreso, conversaciones, clan, novedades] = await Promise.all([
-    supabase.from("profiles").select("display_name, streak_dias, puntos_total, nivel_cuenta, meta_xp_diaria").eq("id", user.id).single(),
-    supabase.from("daily_progress").select("xp_ganado").eq("user_id", user.id).eq("fecha", hoyEnBase()).maybeSingle(),
+    supabase.from("profiles").select("display_name, puntos_total, nivel_cuenta, meta_xp_diaria").eq("id", user.id).single(),
+    supabase.from("daily_progress").select("fecha, xp_ganado, meta_alcanzada, congelado").eq("user_id", user.id).order("fecha", { ascending: false }).limit(60),
     user.is_anonymous ? Promise.resolve({ data: [] }) : supabase.rpc("mis_conversaciones"),
     user.is_anonymous ? Promise.resolve({ data: [] }) : supabase.rpc("clan_chat_resumen"),
     supabase.rpc("anuncios_pendientes"),
   ]);
   if (perfil.error || !perfil.data) return null;
 
-  const p = perfil.data as { display_name: string | null; streak_dias: number; puntos_total: number; nivel_cuenta: number; meta_xp_diaria: number };
+  const p = perfil.data as { display_name: string | null; puntos_total: number; nivel_cuenta: number; meta_xp_diaria: number };
+  const dias = ((progreso.data as { fecha: string; xp_ganado: number; meta_alcanzada: boolean; congelado: boolean | null }[] | null) ?? []).map((d) => ({ ...d, congelado: !!d.congelado }));
+  const hoy = hoyEnBase();
   const directos = ((conversaciones.data as { no_leidos: number }[] | null) ?? []).reduce((acc, c) => acc + Number(c.no_leidos ?? 0), 0);
   const deClan = ((clan.data as { out_no_leidos: number }[] | null) ?? []).reduce((acc, c) => acc + Number(c.out_no_leidos ?? 0), 0);
 
   const resumen: Resumen = {
     nombre: user.is_anonymous ? "Invitado" : p.display_name ?? "Jugador",
-    racha: p.streak_dias ?? 0,
+    racha: calcularRachaDiaria(dias, hoy),
     chispas: p.puntos_total ?? 0,
     nivelCuenta: p.nivel_cuenta ?? 1,
-    xpHoy: (progreso.data as { xp_ganado: number } | null)?.xp_ganado ?? 0,
+    xpHoy: dias.find((d) => d.fecha === hoy)?.xp_ganado ?? 0,
     metaDiaria: p.meta_xp_diaria ?? 100,
     mensajesSinLeer: directos + deClan,
     novedadesSinLeer: ((novedades.data as unknown[] | null) ?? []).length,

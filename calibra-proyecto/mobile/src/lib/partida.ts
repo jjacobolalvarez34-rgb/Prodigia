@@ -8,6 +8,7 @@ import type { MundoSlug } from "~/tema";
 import { encolar, esErrorDeRed, hayPendientes, marcarSinRed, sincronizar } from "./sinConexion";
 import { supabase } from "./supabase";
 import { revisarTrasPartida } from "./recompensas";
+import { rachaDelJugador } from "./resumen";
 
 // La lógica compartida con la web tipa el cliente con su propia copia de
 // supabase-js; en ejecución es el mismo cliente.
@@ -97,8 +98,9 @@ export async function cerrarPartida(xpSprint: number, mundo: MundoSlug = "numeri
   if (hayPendientes()) return partidaSinConexion(mundo);
   const { data: sesion } = await supabase.auth.getSession();
   const userId = sesion.session?.user.id;
-  const { data: antes } = userId ? await supabase.from("profiles").select("streak_dias, mundos_desbloqueados").eq("id", userId).single() : { data: null };
-  const perfilAntes = antes as { streak_dias: number; mundos_desbloqueados: string[] } | null;
+  const { data: antes } = userId ? await supabase.from("profiles").select("mundos_desbloqueados").eq("id", userId).single() : { data: null };
+  const perfilAntes = antes as { mundos_desbloqueados: string[] } | null;
+  const rachaAntes = userId ? await rachaDelJugador(userId) : 0;
 
   const { data: registro, error } = await supabase.rpc("registrar_xp_diario", { p_xp: xpSprint });
   if (error && esErrorDeRed(error)) return partidaSinConexion(mundo);
@@ -143,7 +145,7 @@ export async function cerrarPartida(xpSprint: number, mundo: MundoSlug = "numeri
     nivel_cuenta_bonus: number;
   }[])[0];
 
-  const { data: despues } = userId ? await supabase.from("profiles").select("streak_dias").eq("id", userId).single() : { data: null };
+  const rachaDespues = userId ? await rachaDelJugador(userId) : rachaAntes;
 
   return {
     chispasTotal: r.xp_total,
@@ -155,8 +157,8 @@ export async function cerrarPartida(xpSprint: number, mundo: MundoSlug = "numeri
     bonusNivel: r.nivel_cuenta_bonus,
     nivelMundo,
     nivelMundoAnterior,
-    rachaAntes: perfilAntes?.streak_dias ?? 0,
-    rachaDespues: (despues as { streak_dias: number } | null)?.streak_dias ?? perfilAntes?.streak_dias ?? 0,
+    rachaAntes,
+    rachaDespues,
     logros,
   };
 }
