@@ -1,6 +1,8 @@
 "use client";
 
 import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
+import RepasoErrores from "@/components/practica/RepasoErrores";
+import { fallasDeLaPartida } from "@/lib/practica/repasoPartida";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -280,16 +282,7 @@ export default function AnatomiaPracticaClient({ modo, nivelInicial, escudosExtr
         </div>
 
         {errores.length > 0 ? (
-          <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
-            <p className="mb-3 font-display text-sm font-semibold text-foreground">{t("practicaClient.repasemosEsto")}</p>
-            <div className="flex flex-wrap gap-2">
-              {errores.map((p, i) => (
-                <span key={i} className="rounded-full bg-surface-2 px-3 py-1 text-sm text-foreground">
-                  {p.respuesta}
-                </span>
-              ))}
-            </div>
-          </div>
+          <RepasoErrores fallos={fallasDeLaPartida()} />
         ) : estadoResumen === "sinRespuestas" ? (
           <p className="text-sm text-texto-secundario">{t("practicaClient.sinRespuestas")}</p>
         ) : estadoResumen === "incompletaSinErrores" ? (

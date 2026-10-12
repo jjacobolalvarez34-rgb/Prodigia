@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
 import { generarPreguntaMelodia, type ModoMelodia, type PreguntaMelodia } from "@/lib/practica/melodia";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
@@ -99,6 +100,7 @@ export default function MelodiaSprintRunner({
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<PreguntaMelodia[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const shownAtRef = useRef(0);
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
@@ -192,6 +194,7 @@ export default function MelodiaSprintRunner({
     let protegido = false;
     if (!correct) {
       erroresRef.current.push(pregunta);
+      anotarFalla({ enunciado: pregunta.enunciado, tuRespuesta: opcion, correcta: pregunta.respuesta, pasos: [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

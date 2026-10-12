@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
 import { generarProblemaCircuitia, type ModoCircuitia, type ProblemaCircuitia } from "@/lib/practica/circuitia";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
@@ -100,6 +101,7 @@ export default function CircuitiaSprintRunner({
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<ProblemaCircuitia[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const shownAtRef = useRef(0);
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
@@ -181,6 +183,7 @@ export default function CircuitiaSprintRunner({
     let protegido = false;
     if (!correct) {
       if (problema) erroresRef.current.push(problema);
+      if (problema) anotarFalla({ enunciado: problema.enunciado, tuRespuesta: respuestaMostrada, correcta: String(problema.respuesta), pasos: [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

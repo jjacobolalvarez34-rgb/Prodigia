@@ -1,9 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
+import RepasoErrores from "@/components/practica/RepasoErrores";
+import { fallasDeLaPartida } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
 import CountUp from "@/components/CountUp";
-import { formatearProblema, type Problem } from "@/lib/practica/problems";
+import type { Problem } from "@/lib/practica/problems";
 import { estadoResumenPartida } from "@/lib/practica/resumenPartida";
 import { IconCheck } from "@/components/icons";
 import BotonesFinPartida from "@/components/BotonesFinPartida";
@@ -161,19 +163,7 @@ export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volv
       <p className="font-mono text-xs text-texto-secundario">{t("chispasTotales", { n: resumen.puntosTotal })}</p>
 
       {errores.length > 0 ? (
-        <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
-          <p className="mb-3 font-display text-sm font-semibold text-foreground">{t("repasemosEsto")}</p>
-          <div className="flex flex-col gap-2.5">
-            {errores.map((p, i) => (
-              <div key={i} className="flex items-center justify-between font-mono text-sm">
-                <span className="text-texto-secundario">{formatearProblema(p)}</span>
-                <span className="text-texto-secundario">
-                  {t("laRespuestaEra")} <span className="font-semibold text-error">{p.answer}</span>
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <RepasoErrores fallos={fallasDeLaPartida()} />
       ) : estadoResumen === "sinRespuestas" ? (
         <p className="text-sm text-texto-secundario">{t("sinRespuestas")}</p>
       ) : estadoResumen === "incompletaSinErrores" ? (

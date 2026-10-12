@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
 import { CATEGORIA_DE_TIPO, type CategoriaEnigmia, type LogicPuzzle } from "@/types/database";
 import { reproducirTono } from "@/lib/sonido";
@@ -178,6 +179,7 @@ export default function EnigmiaSprintRunner({
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<LogicPuzzle[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const shownAtRef = useRef(0);
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
@@ -291,6 +293,7 @@ export default function EnigmiaSprintRunner({
     let protegido = false;
     if (!correct) {
       erroresRef.current.push(puzzle);
+      anotarFalla({ enunciado: puzzle.contenido.enunciado, tuRespuesta: opcion, correcta: puzzle.respuesta, pasos: [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

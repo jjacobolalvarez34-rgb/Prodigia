@@ -1,6 +1,8 @@
 "use client";
 
 import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
+import RepasoErrores from "@/components/practica/RepasoErrores";
+import { fallasDeLaPartida } from "@/lib/practica/repasoPartida";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -25,7 +27,6 @@ import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
 import TransicionFinalizando from "@/components/duelos/TransicionFinalizando";
 import BotonRendirse from "@/components/duelos/BotonRendirse";
 import QuimiaSprintRunner from "./QuimiaSprintRunner";
-import TextoQuimica from "@/components/quimia/TextoQuimica";
 import { COLOR_QUIMIA } from "./colores";
 import { estadoResumenPartida } from "@/lib/practica/resumenPartida";
 
@@ -287,16 +288,7 @@ export default function QuimiaPracticaClient({ modo, nivelInicial, escudosExtra,
         </div>
 
         {errores.length > 0 ? (
-          <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
-            <p className="mb-3 font-display text-sm font-semibold text-foreground">{t("repasemosEsto")}</p>
-            <div className="flex flex-wrap gap-2">
-              {errores.map((p, i) => (
-                <span key={i} className="rounded-full bg-surface-2 px-3 py-1 text-sm text-foreground">
-                  <TextoQuimica texto={p.respuesta} />
-                </span>
-              ))}
-            </div>
-          </div>
+          <RepasoErrores fallos={fallasDeLaPartida()} />
         ) : estadoResumen === "sinRespuestas" ? (
           <p className="text-sm text-texto-secundario">{t("sinRespuestas")}</p>
         ) : estadoResumen === "incompletaSinErrores" ? (

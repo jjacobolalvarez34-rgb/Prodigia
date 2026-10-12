@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
+import { pasosAritmetica } from "@/lib/practica/repaso";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ArithmeticProblemType, ModifierSlug } from "@/types/database";
@@ -157,6 +159,7 @@ export default function SprintRunner({
   const usadosRef = useRef<Set<string>>(new Set());
   const escudosRef = useRef(escudosIniciales);
   const erroresRef = useRef<Problem[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const respuestasRef = useRef<RespuestaDuelo[]>([]);
   const posicionRankingRef = useRef<number | null>(null);
   const problemShownAtRef = useRef(0);
@@ -389,6 +392,7 @@ export default function SprintRunner({
     if (!correct) {
       setMiRespuesta(respuesta);
       erroresRef.current.push(problema);
+      anotarFalla({ enunciado: problema.incognitaB ? `${problema.a} ${problema.symbol} ? = ${problema.b}` : `${problema.a} ${problema.symbol} ${problema.b}`, tuRespuesta: String(respuesta), correcta: String(problema.answer), pasos: pasosAritmetica(problema) });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

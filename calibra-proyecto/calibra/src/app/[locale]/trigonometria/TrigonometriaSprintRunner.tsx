@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
 import { generarProblemaTrigonometria, type ModoTrigonometria, type ProblemaTrigonometria } from "@/lib/practica/trigonometria";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
@@ -99,6 +100,7 @@ export default function TrigonometriaSprintRunner({
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<ProblemaTrigonometria[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const shownAtRef = useRef(0);
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
@@ -184,6 +186,7 @@ export default function TrigonometriaSprintRunner({
     let protegido = false;
     if (!correct) {
       if (problema) erroresRef.current.push(problema);
+      if (problema) anotarFalla({ enunciado: problema.enunciado, tuRespuesta: respuestaMostrada, correcta: String(problema.respuesta), pasos: [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

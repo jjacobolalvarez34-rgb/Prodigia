@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
 import {
   generarProblemaNaipia,
@@ -124,6 +125,7 @@ export default function NaipiaSprintRunner({
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<ProblemaNaipia[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const cronoRef = useRef(crearCronometroRespuesta());
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
@@ -217,6 +219,7 @@ export default function NaipiaSprintRunner({
     let protegido = false;
     if (!correct) {
       if (problema) erroresRef.current.push(problema);
+      if (problema) anotarFalla({ enunciado: problema.enunciado, tuRespuesta: respuestaMostrada, correcta: String(problema.respuesta), pasos: [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

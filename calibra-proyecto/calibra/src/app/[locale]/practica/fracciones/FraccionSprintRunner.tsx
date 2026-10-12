@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
+import { enunciadoFraccion, pasosFraccion } from "@/lib/practica/repaso";
 import { useTranslations } from "next-intl";
 import { generarProblemaFraccion, type ProblemaFraccion, type TipoFraccion } from "@/lib/practica/fracciones";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
@@ -91,6 +93,7 @@ export default function FraccionSprintRunner({
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<ProblemaFraccion[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const shownAtRef = useRef(0);
   // Pista y segunda oportunidad de la tienda (0248).
   const ayudas = useAyudasPartida(true);
@@ -250,6 +253,7 @@ export default function FraccionSprintRunner({
     if (!correct) {
       setMiRespuesta(opcion);
       setRespuestaCorrecta(problema.respuestaComparacion ?? "");
+      anotarFalla({ enunciado: enunciadoFraccion(problema), tuRespuesta: opcion, correcta: problema.respuestaComparacion ?? "", pasos: pasosFraccion(problema) });
     }
     reproducirTono(correct ? "correcto" : "error");
     registrar(correct, timeMs);
@@ -272,6 +276,7 @@ export default function FraccionSprintRunner({
     if (!correct) {
       setMiRespuesta(`${num}/${den}`);
       setRespuestaCorrecta(`${respNum}/${respDen}`);
+      anotarFalla({ enunciado: enunciadoFraccion(problema), tuRespuesta: `${num}/${den}`, correcta: `${respNum}/${respDen}`, pasos: pasosFraccion(problema) });
     }
     setFeedback(correct ? "correcto" : "incorrecto");
     reproducirTono(correct ? "correcto" : "error");

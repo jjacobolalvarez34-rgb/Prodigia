@@ -146,6 +146,12 @@ function mcd(a: number, b: number): number {
 
 const f = ([a, b]: [number, number]) => `${a}/${b}`;
 
+export function enunciadoFraccion(p: ProblemaFraccion): string {
+  if (p.tipo === "simplificar" && p.frac) return `Simplifica ${f(p.frac)}`;
+  if (p.frac1 && p.frac2) return p.tipo === "comparar" ? `${f(p.frac1)}  ?  ${f(p.frac2)}` : `${f(p.frac1)} + ${f(p.frac2)}`;
+  return "";
+}
+
 export function pasosFraccion(p: ProblemaFraccion): string[] {
   if (p.tipo === "simplificar" && p.frac && p.respuestaFraccion) {
     const [a, b] = p.frac;

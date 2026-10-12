@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
 import { CONFIG_MUNDOS_NUEVOS, leerNumero, respuestaComoTexto, type ProblemaMundoNuevo, type SlugMundoNuevo } from "@/lib/mundosNuevos/config";
 import { conRngSembrado } from "@/lib/estadistica/util";
@@ -98,6 +99,7 @@ export default function SprintRunnerMundo({
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<ProblemaMundoNuevo[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const shownAtRef = useRef(0);
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
@@ -177,6 +179,7 @@ export default function SprintRunnerMundo({
     let protegido = false;
     if (!correct) {
       if (problema) erroresRef.current.push(problema);
+      if (problema) anotarFalla({ enunciado: problema.enunciado, tuRespuesta: respuestaMostrada, correcta: respuestaComoTexto(problema), pasos: [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

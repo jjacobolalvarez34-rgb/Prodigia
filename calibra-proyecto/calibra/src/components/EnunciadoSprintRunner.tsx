@@ -1,6 +1,7 @@
 "use client";
 
 import MathText from "@/components/MathText";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { reproducirTono } from "@/lib/sonido";
@@ -28,6 +29,7 @@ export interface ProblemaGenerico {
   enunciado: string;
   respuesta: number;
   tolerancia: number;
+  pasos?: string[];
 }
 
 interface Props<T extends ProblemaGenerico, TTipo extends string> {
@@ -89,6 +91,7 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico, TTipo 
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<T[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const shownAtRef = useRef(0);
   // Pista y segunda oportunidad de la tienda (0248).
   const ayudas = useAyudasPartida(true);
@@ -190,6 +193,7 @@ export default function EnunciadoSprintRunner<T extends ProblemaGenerico, TTipo 
     let protegido = false;
     if (!correct) {
       erroresRef.current.push(problema);
+      anotarFalla({ enunciado: problema.enunciado, tuRespuesta: String(respuesta).replace(".", ","), correcta: String(problema.respuesta).replace(".", ","), pasos: problema.pasos ?? [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

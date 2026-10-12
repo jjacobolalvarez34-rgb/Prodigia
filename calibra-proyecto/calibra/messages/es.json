@@ -5211,5 +5211,14 @@
     "cambiar": "Cambiar tema o dificultad",
     "contrarreloj": "Probar en contrarreloj",
     "escuchar": "Escuchar"
+  },
+  "RepasoErrores": {
+    "titulo": "Repasa tus errores",
+    "sub": "Toca uno para ver cómo se resuelve",
+    "sinResponder": "Sin responder",
+    "tuRespuesta": "Tu respuesta",
+    "correcta": "La correcta",
+    "comoSeResuelve": "Cómo se resuelve",
+    "sinPasos": "Esta pregunta todavía no tiene el paso a paso. Fíjate en la respuesta correcta y vuelve a intentarla en la próxima partida."
   }
 }

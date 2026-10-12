@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
 import { generarPreguntaHistoria, type ModoHistoria, type PreguntaHistoria } from "@/lib/practica/historia";
 import { reproducirTono } from "@/lib/sonido";
@@ -91,6 +92,7 @@ export default function HistoriaSprintRunner({
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<PreguntaHistoria[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const shownAtRef = useRef(0);
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
@@ -185,6 +187,7 @@ export default function HistoriaSprintRunner({
     let protegido = false;
     if (!correct) {
       erroresRef.current.push(pregunta);
+      anotarFalla({ enunciado: pregunta.enunciado, tuRespuesta: opcion, correcta: pregunta.respuesta, pasos: [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

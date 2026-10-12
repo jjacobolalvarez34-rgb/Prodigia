@@ -5211,5 +5211,14 @@
     "cambiar": "Change topic or difficulty",
     "contrarreloj": "Try it against the clock",
     "escuchar": "Listen"
+  },
+  "RepasoErrores": {
+    "titulo": "Review your mistakes",
+    "sub": "Tap one to see how it's solved",
+    "sinResponder": "No answer",
+    "tuRespuesta": "Your answer",
+    "correcta": "Correct answer",
+    "comoSeResuelve": "How to solve it",
+    "sinPasos": "This question doesn't have a step-by-step yet. Look at the correct answer and try it again next game."
   }
 }

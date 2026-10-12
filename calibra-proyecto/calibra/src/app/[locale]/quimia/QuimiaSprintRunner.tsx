@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
 import { generarPreguntaQuimia, type ModoQuimia, type PreguntaQuimia } from "@/lib/practica/quimia";
 import { generarPreguntaOrganica, COMPUESTOS_ORGANICOS } from "@/lib/practica/quimicaOrganica";
@@ -94,6 +95,7 @@ export default function QuimiaSprintRunner({
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<PreguntaQuimia[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const shownAtRef = useRef(0);
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
@@ -201,6 +203,7 @@ export default function QuimiaSprintRunner({
     let protegido = false;
     if (!correct) {
       erroresRef.current.push(pregunta);
+      anotarFalla({ enunciado: pregunta.enunciado, formato: "quimica", tuRespuesta: opcion, correcta: pregunta.respuesta, pasos: [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

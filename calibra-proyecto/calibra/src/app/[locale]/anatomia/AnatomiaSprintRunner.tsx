@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
 import { generarPreguntaAnatomia, NOMBRE_POR_HUESO_CLICKEABLE, type ModoAnatomia, type PreguntaAnatomia } from "@/lib/practica/anatomia";
 import { reproducirTono } from "@/lib/sonido";
@@ -88,6 +89,7 @@ export default function AnatomiaSprintRunner({
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<PreguntaAnatomia[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const shownAtRef = useRef(0);
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
@@ -182,6 +184,7 @@ export default function AnatomiaSprintRunner({
     let protegido = false;
     if (!correct) {
       erroresRef.current.push(pregunta);
+      anotarFalla({ enunciado: pregunta.enunciado, tuRespuesta: pregunta.tipo === "click" ? (NOMBRE_POR_HUESO_CLICKEABLE[opcion] ?? opcion) : opcion, correcta: pregunta.respuesta, pasos: [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

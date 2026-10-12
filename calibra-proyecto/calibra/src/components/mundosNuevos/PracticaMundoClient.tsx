@@ -1,12 +1,13 @@
 "use client";
 
 import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
-import MathText from "@/components/MathText";
+import RepasoErrores from "@/components/practica/RepasoErrores";
+import { fallasDeLaPartida } from "@/lib/practica/repasoPartida";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
-import { CONFIG_MUNDOS_NUEVOS, respuestaComoTexto, type ProblemaMundoNuevo, type SlugMundoNuevo } from "@/lib/mundosNuevos/config";
+import { CONFIG_MUNDOS_NUEVOS, type ProblemaMundoNuevo, type SlugMundoNuevo } from "@/lib/mundosNuevos/config";
 import type { DueloMundoNuevoInfo } from "@/lib/mundosNuevos/cargarPractica";
 import type { Achievement } from "@/types/database";
 import Boton from "@/components/Boton";
@@ -267,16 +268,7 @@ export default function PracticaMundoClient({ slug, modo, nivelInicial, escudosE
         </div>
 
         {errores.length > 0 ? (
-          <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
-            <p className="mb-3 font-display text-sm font-semibold text-foreground">{t("practicaClient.resumen.repasemosEsto")}</p>
-            <div className="flex flex-wrap gap-2">
-              {errores.map((p, i) => (
-                <span key={i} className="rounded-full bg-surface-2 px-3 py-1 text-sm text-foreground">
-                  <MathText texto={respuestaComoTexto(p)} />
-                </span>
-              ))}
-            </div>
-          </div>
+          <RepasoErrores fallos={fallasDeLaPartida()} />
         ) : estadoResumen === "sinRespuestas" ? (
           <p className="text-sm text-texto-secundario">{t("practicaClient.resumen.sinRespuestas")}</p>
         ) : estadoResumen === "incompletaSinErrores" ? (

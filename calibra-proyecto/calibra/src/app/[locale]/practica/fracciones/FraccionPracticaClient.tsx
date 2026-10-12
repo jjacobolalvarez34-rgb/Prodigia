@@ -1,6 +1,8 @@
 "use client";
 
 import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
+import RepasoErrores from "@/components/practica/RepasoErrores";
+import { fallasDeLaPartida } from "@/lib/practica/repasoPartida";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
@@ -44,18 +46,6 @@ interface Props {
   tiemposExtraDisponibles: number;
   boostActivo: boolean;
   colorDial?: string;
-}
-
-function formatearError(p: ProblemaFraccion): string {
-  if (p.tipo === "simplificar" && p.frac) return `Simplificar ${p.frac[0]}/${p.frac[1]}`;
-  if (p.tipo === "sumar" && p.frac1 && p.frac2) return `${p.frac1[0]}/${p.frac1[1]} + ${p.frac2[0]}/${p.frac2[1]}`;
-  if (p.tipo === "comparar" && p.frac1 && p.frac2) return `${p.frac1[0]}/${p.frac1[1]} vs ${p.frac2[0]}/${p.frac2[1]}`;
-  return "";
-}
-
-function respuestaCorrecta(p: ProblemaFraccion): string {
-  if (p.respuestaFraccion) return `${p.respuestaFraccion[0]}/${p.respuestaFraccion[1]}`;
-  return p.respuestaComparacion ?? "";
 }
 
 export default function FraccionPracticaClient({
@@ -175,19 +165,7 @@ export default function FraccionPracticaClient({
         </div>
 
         {errores.length > 0 ? (
-          <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">
-            <p className="mb-3 font-display text-sm font-semibold text-foreground">{t("resumen.repasemosEsto")}</p>
-            <div className="flex flex-col gap-2.5">
-              {errores.map((p, i) => (
-                <div key={i} className="flex items-center justify-between font-mono text-sm">
-                  <span className="text-texto-secundario">{formatearError(p)}</span>
-                  <span className="text-texto-secundario">
-                    {t("resumen.era")} <span className="font-semibold text-error">{respuestaCorrecta(p)}</span>
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <RepasoErrores fallos={fallasDeLaPartida()} />
         ) : estadoResumen === "sinRespuestas" ? (
           <p className="text-sm text-texto-secundario">{t("resumen.sinRespuestas")}</p>
         ) : estadoResumen === "incompletaSinErrores" ? (

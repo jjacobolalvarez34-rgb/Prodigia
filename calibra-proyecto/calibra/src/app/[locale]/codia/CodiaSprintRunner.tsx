@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
 import { generarProblemaCodia, type ModoCodia, type ProblemaCodia } from "@/lib/practica/codia";
 import BloqueCodigo from "@/components/codia/BloqueCodigo";
@@ -103,6 +104,7 @@ export default function CodiaSprintRunner({
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<ProblemaCodia[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const shownAtRef = useRef(0);
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
@@ -183,6 +185,7 @@ export default function CodiaSprintRunner({
     let protegido = false;
     if (!correct) {
       if (problema) erroresRef.current.push(problema);
+      if (problema) anotarFalla({ enunciado: problema.enunciado, tuRespuesta: respuestaMostrada, correcta: problema.respuesta.split("\n").join(" ↵ "), pasos: [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

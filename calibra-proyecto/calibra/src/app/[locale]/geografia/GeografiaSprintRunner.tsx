@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
 import { elegirPaisAleatorio, PAISES_POR_CONTINENTE, type Continente, type PaisAmerica } from "@/lib/practica/geografia";
 import {
@@ -114,6 +115,7 @@ export default function GeografiaSprintRunner({
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<(PaisAmerica | PreguntaAvanzada)[]>([]);
+  useEffect(() => reiniciarRepaso(), []);
   const shownAtRef = useRef(0);
   const submittingRef = useRef(false);
   const finishedRef = useRef(false);
@@ -210,6 +212,11 @@ export default function GeografiaSprintRunner({
     let protegido = false;
     if (!correct) {
       erroresRef.current.push(pais);
+      anotarFalla(
+        esPreguntaAvanzada(pais)
+          ? { enunciado: pais.pregunta, tuRespuesta: pais.opciones.find((o) => o.id === id)?.texto ?? null, correcta: pais.opciones.find((o) => o.id === pais.id)?.texto ?? pais.nombre, pasos: [] }
+          : { enunciado: `¿Dónde está ${pais.nombre}?`, tuRespuesta: paises.find((x) => x.id === id)?.nombre ?? null, correcta: pais.nombre, pasos: [] }
+      );
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;
