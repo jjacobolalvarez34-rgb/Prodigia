@@ -242,7 +242,8 @@ export default function TiendaClient({
   const [comprando, setComprando] = useState(false);
   const [cambiandoCosmetico, setCambiandoCosmetico] = useState(false);
   const [error, setError] = useState<{ msg: string; contexto: Contexto } | null>(null);
-  const [proveedorPago, setProveedorPago] = useState<Proveedor>("mercadopago");
+  // Solo Paddle (2026-10-12): Mercado Pago quedó fuera, su adaptador sigue en lib/pagos sin uso.
+  const proveedorPago: Proveedor = "paddle";
   const [comprandoPago, setComprandoPago] = useState<ProductoComprable | null>(null);
   const [errorPago, setErrorPago] = useState<string | null>(null);
 
@@ -481,24 +482,6 @@ export default function TiendaClient({
         {!inventario && pagosHabilitados && (
         <EstanteCategoria titulo={t("pagos.titulo")} franja="#FFC53D">
           <p className="text-sm text-[#F4E4C1]/90">{t("pagos.descripcion")}</p>
-          <div className="flex w-fit gap-1 rounded-full border border-[#F4E4C1]/30 bg-[#3D2410]/30 p-1">
-            <button
-              onClick={() => setProveedorPago("mercadopago")}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                proveedorPago === "mercadopago" ? "bg-[#F4E4C1] text-[#3D2410]" : "text-[#F4E4C1]/70"
-              }`}
-            >
-              {t("pagos.colombia")}
-            </button>
-            <button
-              onClick={() => setProveedorPago("paddle")}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                proveedorPago === "paddle" ? "bg-[#F4E4C1] text-[#3D2410]" : "text-[#F4E4C1]/70"
-              }`}
-            >
-              {t("pagos.internacional")}
-            </button>
-          </div>
           <div className="flex flex-wrap gap-2">
             {PACKS_CHISPAS.map((producto) => {
               const def = PRODUCTOS[producto];

@@ -9,7 +9,8 @@ interface Body {
   proveedor: string;
 }
 
-const PROVEEDORES_VALIDOS: Proveedor[] = ["mercadopago", "paddle"];
+// Solo Paddle (2026-10-12). Mercado Pago se dejó de lado: su adaptador sigue en lib/pagos sin uso.
+const PROVEEDORES_VALIDOS: Proveedor[] = ["paddle"];
 
 // Única ruta que arranca un checkout real — nunca decide nada de
 // entitlements por sí misma (eso pasa solo en los webhooks, ver

@@ -22,7 +22,8 @@ interface Props {
 // se muestra tal cual, sin pretender que funcionó.
 export default function ProClient({ esPro, pagosHabilitados }: Props) {
   const t = useTranslations("Legal.pro");
-  const [proveedor, setProveedor] = useState<Proveedor>("mercadopago");
+  // Solo Paddle (2026-10-12): Mercado Pago quedó fuera, su adaptador sigue en lib/pagos sin uso.
+  const proveedor: Proveedor = "paddle";
   const [comprando, setComprando] = useState<ProductoComprable | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,24 +81,6 @@ export default function ProClient({ esPro, pagosHabilitados }: Props) {
 
   return (
     <div className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-surface-2 px-6 py-8 text-center">
-      <div className="flex w-fit gap-1 rounded-full border border-border bg-surface p-1">
-        <button
-          onClick={() => setProveedor("mercadopago")}
-          className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-            proveedor === "mercadopago" ? "bg-primario text-white" : "text-texto-secundario"
-          }`}
-        >
-          {t("colombia")}
-        </button>
-        <button
-          onClick={() => setProveedor("paddle")}
-          className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-            proveedor === "paddle" ? "bg-primario text-white" : "text-texto-secundario"
-          }`}
-        >
-          {t("internacional")}
-        </button>
-      </div>
 
       <div className="grid w-full gap-3 sm:grid-cols-2">
         <button
