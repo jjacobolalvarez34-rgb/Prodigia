@@ -8,8 +8,8 @@ import { leerJugador } from "./jugador";
 //   - Con premio, siempre opcional (Recompensas: duplicar el calendario, cápsula extra).
 //   - Una entre partidas cada 3 de práctica, al salir del resultado. Nunca en
 //     duelos, diagnóstico ni lecciones (esas pantallas no llaman a esto).
-// Mientras no estén los bloques reales de AdMob (EXPO_PUBLIC_ADMOB_*), se usan los
-// de prueba de Google, que muestran anuncios de muestra y no cobran.
+// En desarrollo se usan los bloques de prueba de Google (muestran anuncios de muestra
+// y no cobran); el APK de release usa los bloques reales de abajo.
 
 const CADA_PARTIDAS = 3;
 const CLAVE_CONTADOR = "prodigia:publicidad:partidas";
@@ -28,9 +28,14 @@ function ads(): typeof Ads | null {
   return modulo;
 }
 
+// Bloques reales de AdMob (cuenta de Prodigia, 2026-10-12). Se pueden pisar con
+// EXPO_PUBLIC_ADMOB_*. En desarrollo (__DEV__) siempre se usan los de prueba.
+const BLOQUE_RECOMPENSA = "ca-app-pub-5931991300168591/2058822089";
+const BLOQUE_ENTRE_PARTIDAS = "ca-app-pub-5931991300168591/3131310734";
+
 function idBloque(tipo: "recompensa" | "entrePartidas"): string {
   const m = ads();
-  const real = tipo === "recompensa" ? process.env.EXPO_PUBLIC_ADMOB_RECOMPENSA : process.env.EXPO_PUBLIC_ADMOB_ENTRE_PARTIDAS;
+  const real = tipo === "recompensa" ? (process.env.EXPO_PUBLIC_ADMOB_RECOMPENSA ?? BLOQUE_RECOMPENSA) : (process.env.EXPO_PUBLIC_ADMOB_ENTRE_PARTIDAS ?? BLOQUE_ENTRE_PARTIDAS);
   if (!__DEV__ && real) return real;
   return tipo === "recompensa" ? (m?.TestIds.REWARDED ?? "") : (m?.TestIds.INTERSTITIAL ?? "");
 }
