@@ -1,0 +1,458 @@
+<title>Seis Bazares</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700&display=swap">
+<style>
+/* Layout: galería de 6 teléfonos sobre la noche de Prodigia; cada propuesta = maqueta + ficha a su lado. Un solo tema (oscuro), igual que la app. */
+:root {
+  color-scheme: dark;
+  --noche: #05070D;
+  --fondo: #090C14;
+  --panel: #12172A;
+  --panel2: #1A2140;
+  --borde: #262E4D;
+  --texto: #E8ECF8;
+  --texto2: #8892B0;
+  --violeta: #7C5CFF;
+  --oro: #FFB627;
+  --cometa: #5DE4FF;
+  --comun: #8892B0;
+  --raro: #4FE0F5;
+  --epico: #B07CFF;
+  --legend: #FFB627;
+  --display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --cuerpo: "Inter", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: radial-gradient(120% 60% at 50% 0%, #141a3a 0%, var(--fondo) 55%) fixed, var(--fondo);
+  color: var(--texto);
+  font-family: var(--cuerpo);
+  line-height: 1.5;
+}
+.envoltura { max-width: 1180px; margin: 0 auto; padding: 48px 20px 80px; display: flex; flex-direction: column; gap: 56px; }
+header.portada { display: flex; flex-direction: column; gap: 14px; max-width: 70ch; }
+.etiqueta { font: 600 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--cometa); }
+h1 { font: 700 clamp(34px, 6vw, 58px)/1.02 var(--display); margin: 0; letter-spacing: -.02em; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--oro); }
+.intro { color: var(--texto2); font-size: 16px; margin: 0; }
+.leyenda { display: flex; flex-wrap: wrap; gap: 8px 18px; font: 600 12px var(--mono); color: var(--texto2); }
+.leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+.punto { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+.propuesta { display: grid; grid-template-columns: 300px 1fr; gap: 40px; align-items: start; }
+.propuesta:nth-child(even) .ficha { order: -1; }
+@media (max-width: 760px) {
+  .propuesta { grid-template-columns: 1fr; justify-items: center; gap: 22px; }
+  .propuesta:nth-child(even) .ficha { order: 0; }
+}
+.ficha { display: flex; flex-direction: column; gap: 14px; padding-top: 28px; max-width: 62ch; }
+.ficha .letra { font: 700 13px var(--mono); color: var(--texto2); letter-spacing: .1em; }
+.ficha h2 { font: 700 30px/1.1 var(--display); margin: 0; text-wrap: balance; }
+.ficha p { margin: 0; color: #C3CAE0; }
+.ficha dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 14px; }
+.ficha dt { font: 600 11px/1.9 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--texto2); }
+.ficha dd { margin: 0; }
+.recomendada { align-self: flex-start; font: 700 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: #1a1200; background: var(--oro); padding: 6px 10px; border-radius: 999px; }
+
+/* ---------- Teléfono ---------- */
+.tel {
+  width: 300px; max-width: 100%; height: 620px; border-radius: 38px; padding: 10px;
+  background: #1c2036; box-shadow: 0 30px 60px -20px rgba(0,0,0,.7), inset 0 0 0 1px #2b3150;
+}
+.pantalla {
+  height: 100%; border-radius: 30px; overflow: hidden; background: var(--noche); position: relative;
+  display: flex; flex-direction: column; gap: 10px; padding: 12px 12px 14px; font-size: 12px;
+}
+.estado { display: flex; justify-content: space-between; font: 600 10px var(--mono); color: var(--texto2); padding: 0 6px; }
+.barra { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.barra b { font: 700 18px var(--display); }
+.saldos { display: flex; gap: 5px; }
+.saldo { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 999px; background: var(--panel); border: 1px solid var(--borde); font: 700 11px var(--mono); font-variant-numeric: tabular-nums; }
+.saldo.c { border-color: rgba(93,228,255,.45); }
+.ico { width: 13px; height: 13px; flex: none; }
+.precio { display: inline-flex; align-items: center; gap: 3px; font: 700 10.5px var(--mono); font-variant-numeric: tabular-nums; }
+.mini { font: 600 9px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.r-comun { color: var(--comun); } .r-raro { color: var(--raro); } .r-epico { color: var(--epico); } .r-legend { color: var(--legend); }
+
+/* Muestras de cosméticos */
+.aro { border-radius: 50%; display: grid; place-items: center; }
+.aro i { display: block; border-radius: 50%; background: #2a3152; }
+.holo { background: conic-gradient(#FF9AE5, #9AF5FF, #C3FF9A, #FFE59A, #FF9AE5); }
+.fenix { background: conic-gradient(#FF3D00, #FFB300, #FFF176, #FF3D00); }
+.zafiro { background: conic-gradient(#0D1B5E, #2962FF, #82B1FF, #0D1B5E); }
+.artico { background: conic-gradient(#E1F5FE, #80D8FF, #FFFFFF, #E1F5FE); }
+.sakura { background: linear-gradient(120deg, #3D0F25, #F48FB1, #FFE4EC, #3D0F25); }
+.galaxia { background: linear-gradient(120deg, #0B0430, #4A1B8C, #FF4FD8, #0B0430); }
+.llama { background: radial-gradient(60% 80% at 50% 90%, #FFF6DE 0%, #FFB627 35%, #B87800 70%, transparent 72%); }
+
+/* ===== A · Rotación del día ===== */
+.a-cuenta { display: flex; justify-content: space-between; align-items: baseline; }
+.a-cuenta span:last-child { font: 700 11px var(--mono); color: var(--oro); font-variant-numeric: tabular-nums; }
+.a-destacado {
+  border-radius: 20px; padding: 14px; display: grid; grid-template-columns: 92px 1fr; gap: 12px; align-items: center;
+  background: radial-gradient(90% 120% at 0% 0%, rgba(255,182,39,.28), transparent 60%), var(--panel);
+  border: 1px solid rgba(255,182,39,.55); box-shadow: 0 0 28px -8px rgba(255,182,39,.5);
+}
+.a-destacado .aro { width: 92px; height: 92px; } .a-destacado .aro i { width: 72px; height: 72px; }
+.a-destacado h3 { margin: 2px 0 6px; font: 700 17px/1.1 var(--display); }
+.boton { display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 7px 11px; border-radius: 999px; font: 700 11px var(--display); border: 0; }
+.boton.cometa { background: var(--cometa); color: #06202A; }
+.boton.oro { background: var(--oro); color: #2A1A00; }
+.a-rejilla { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.a-item { background: var(--panel); border: 1px solid var(--borde); border-radius: 16px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+.a-item .vista { height: 54px; border-radius: 10px; display: grid; place-items: center; background: var(--panel2); font-size: 22px; }
+.a-item .pie { display: flex; justify-content: space-between; align-items: center; }
+.a-item b { font: 600 11.5px/1.2 var(--cuerpo); }
+.a-ayudas { display: flex; gap: 6px; }
+.a-ayudas span { flex: 1; text-align: center; background: var(--panel); border: 1px solid var(--borde); border-radius: 12px; padding: 6px 2px; display: flex; flex-direction: column; gap: 2px; align-items: center; font-size: 10.5px; }
+.enlace { text-align: center; font: 700 11px var(--display); color: var(--violeta); margin-top: auto; }
+
+/* ===== B · Probador ===== */
+.b-placa {
+  border-radius: 22px; padding: 16px 14px 14px; display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; overflow: hidden;
+  background: linear-gradient(160deg, #3D0F25, #8E3A5E 45%, #F48FB1); border: 1px solid rgba(244,143,177,.6);
+}
+.b-placa::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(5,7,13,.55)); }
+.b-placa > * { position: relative; z-index: 1; }
+.b-placa .aro { width: 86px; height: 86px; box-shadow: 0 0 22px rgba(255,179,0,.6); } .b-placa .aro i { width: 70px; height: 70px; background: #3a2140; display: grid; place-items: center; font: 700 26px var(--display); font-style: normal; }
+.b-nombre { font: 700 20px var(--display); background: linear-gradient(90deg, #FFF176, #FFB300, #FF3D00); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.b-titulo { font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: #FFE4EC; }
+.b-probando { position: absolute; top: 10px; left: 10px; z-index: 2; font: 700 9px var(--mono); letter-spacing: .08em; padding: 4px 8px; border-radius: 999px; background: rgba(5,7,13,.65); color: var(--oro); }
+.pestanas { display: flex; gap: 4px; background: var(--panel); border-radius: 999px; padding: 3px; }
+.pestanas span { flex: 1; text-align: center; padding: 5px 0; border-radius: 999px; font: 600 10.5px var(--cuerpo); color: var(--texto2); }
+.pestanas span.on { background: var(--panel2); color: var(--texto); box-shadow: inset 0 0 0 1px var(--borde); }
+.b-tira { display: flex; gap: 10px; overflow: hidden; padding: 4px 2px; }
+.b-tira div { flex: none; width: 58px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.b-tira .aro { width: 52px; height: 52px; } .b-tira .aro i { width: 40px; height: 40px; }
+.b-tira .sel .aro { outline: 2px solid var(--texto); outline-offset: 3px; }
+.b-tira .tuyo { font: 700 9px var(--mono); color: var(--violeta); }
+.b-compra { margin-top: auto; background: var(--panel); border: 1px solid var(--borde); border-radius: 18px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.b-compra b { display: block; font: 700 13px var(--display); }
+
+/* ===== C · Mercado nocturno ===== */
+.c-cielo { height: 46px; border-radius: 14px; position: relative; overflow: hidden; background: linear-gradient(180deg, #0c1230, #1a1440); }
+.c-cielo::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 26px; background:
+  linear-gradient(#0a0d1c,#0a0d1c) 4% 100%/9% 70% no-repeat, linear-gradient(#0a0d1c,#0a0d1c) 15% 100%/7% 100% no-repeat,
+  linear-gradient(#0a0d1c,#0a0d1c) 25% 100%/11% 55% no-repeat, linear-gradient(#0a0d1c,#0a0d1c) 39% 100%/6% 90% no-repeat,
+  linear-gradient(#0a0d1c,#0a0d1c) 48% 100%/12% 65% no-repeat, linear-gradient(#0a0d1c,#0a0d1c) 63% 100%/8% 100% no-repeat,
+  linear-gradient(#0a0d1c,#0a0d1c) 74% 100%/10% 60% no-repeat, linear-gradient(#0a0d1c,#0a0d1c) 87% 100%/7% 85% no-repeat,
+  linear-gradient(#0a0d1c,#0a0d1c) 97% 100%/6% 50% no-repeat; }
+.c-cielo span { position: absolute; top: 8px; left: 12px; font: 700 11px var(--display); color: #cfd6f5; }
+.c-calle { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.puesto { border-radius: 14px; overflow: hidden; background: var(--panel); border: 1px solid var(--borde); display: flex; flex-direction: column; }
+.toldo { height: 16px; background: repeating-linear-gradient(90deg, var(--t1) 0 12px, var(--t2) 12px 24px); clip-path: polygon(0 0,100% 0,100% 70%, 94% 100%, 88% 70%, 82% 100%, 76% 70%, 70% 100%, 64% 70%, 58% 100%, 52% 70%, 46% 100%, 40% 70%, 34% 100%, 28% 70%, 22% 100%, 16% 70%, 10% 100%, 4% 70%, 0 100%); }
+.puesto .cuerpo { padding: 8px 9px 10px; display: flex; flex-direction: column; gap: 4px; }
+.neon { font: 700 13px var(--display); color: var(--t1); text-shadow: 0 0 8px var(--t1); }
+.puesto small { color: var(--texto2); font-size: 10px; }
+.nuevo { align-self: flex-start; font: 700 8.5px var(--mono); padding: 2px 6px; border-radius: 999px; background: var(--t1); color: #05070D; }
+.c-dia { margin-top: auto; border-radius: 16px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, rgba(124,92,255,.35), rgba(124,92,255,.08)); border: 1px solid rgba(124,92,255,.6); }
+.c-dia b { font: 700 13px var(--display); display: block; }
+
+/* ===== D · Vitrinas por rareza ===== */
+.chips { display: flex; gap: 5px; }
+.chips span { padding: 4px 9px; border-radius: 999px; background: var(--panel); border: 1px solid var(--borde); font-size: 10.5px; color: var(--texto2); }
+.chips span.on { background: var(--texto); color: var(--noche); border-color: var(--texto); font-weight: 600; }
+.vitrina { border-radius: 16px; padding: 9px; display: flex; flex-direction: column; gap: 7px; background: linear-gradient(180deg, color-mix(in srgb, var(--rc) 16%, transparent), transparent 80%); border: 1px solid color-mix(in srgb, var(--rc) 45%, transparent); }
+.vitrina header { display: flex; justify-content: space-between; align-items: center; }
+.vitrina header .mini { color: var(--rc); }
+.estante { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.estante.dos { grid-template-columns: repeat(2, 1fr); }
+.pieza { background: rgba(5,7,13,.6); border-radius: 11px; padding: 7px 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.pieza .vista { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; font-size: 18px; }
+.pieza .aro { width: 38px; height: 38px; } .pieza .aro i { width: 28px; height: 28px; }
+.pieza b { font: 600 10px/1.15 var(--cuerpo); min-height: 2.3em; display: grid; place-items: center; }
+
+/* ===== E · Colecciones ===== */
+.e-ciudad { border-radius: 18px; padding: 11px 12px; background: radial-gradient(100% 140% at 100% 0%, color-mix(in srgb, var(--cc) 30%, transparent), transparent 60%), var(--panel); border: 1px solid color-mix(in srgb, var(--cc) 55%, transparent); display: flex; flex-direction: column; gap: 8px; }
+.e-cab { display: flex; justify-content: space-between; align-items: baseline; }
+.e-cab b { font: 700 15px var(--display); }
+.e-cab span { font: 700 11px var(--mono); color: var(--cc); }
+.e-piezas { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+.e-piezas span { aspect-ratio: 1; border-radius: 9px; display: grid; place-items: center; font-size: 13px; background: color-mix(in srgb, var(--cc) 28%, #12172A); }
+.e-piezas span.falta { background: transparent; border: 1.5px dashed color-mix(in srgb, var(--cc) 60%, transparent); color: var(--texto2); font: 700 11px var(--mono); }
+.e-barra { height: 5px; border-radius: 9px; background: #232a45; overflow: hidden; }
+.e-barra i { display: block; height: 100%; background: var(--cc); }
+.e-pie { display: flex; justify-content: space-between; color: var(--texto2); font-size: 10px; }
+
+/* ===== F · Lista ordenada ===== */
+.buscar { display: flex; align-items: center; gap: 6px; background: var(--panel); border: 1px solid var(--borde); border-radius: 12px; padding: 7px 10px; color: var(--texto2); }
+.orden { display: flex; justify-content: space-between; color: var(--texto2); font-size: 10.5px; }
+.orden b { color: var(--texto); font-weight: 600; }
+.lista { display: flex; flex-direction: column; border-radius: 14px; overflow: hidden; border: 1px solid var(--borde); }
+.fila { display: grid; grid-template-columns: 34px 1fr auto; gap: 9px; align-items: center; padding: 8px 10px; background: var(--panel); }
+.fila + .fila { border-top: 1px solid var(--borde); }
+.fila .vista { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; font-size: 16px; background: var(--panel2); }
+.fila .aro { width: 34px; height: 34px; } .fila .aro i { width: 25px; height: 25px; }
+.fila b { display: block; font: 600 11.5px/1.2 var(--cuerpo); }
+.fila .mini { display: block; margin-top: 2px; }
+.grupo { font: 600 9.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--texto2); padding: 2px 4px 0; }
+
+.cierre { border-top: 1px solid var(--borde); padding-top: 32px; display: flex; flex-direction: column; gap: 10px; max-width: 70ch; }
+.cierre h2 { font: 700 26px var(--display); margin: 0; }
+.cierre p { margin: 0; color: #C3CAE0; }
+@media (prefers-reduced-motion: no-preference) {
+  .a-destacado .aro, .b-placa .aro { animation: girar 9s linear infinite; }
+  @keyframes girar { to { rotate: 360deg; } }
+  .a-destacado .aro i, .b-placa .aro i { animation: girar 9s linear infinite reverse; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="g-cola" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5DE4FF"/><stop offset=".5" stop-color="#7C5CFF" stop-opacity=".85"/><stop offset="1" stop-color="#7C5CFF" stop-opacity="0"/></linearGradient>
+    <radialGradient id="g-nucleo"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#BFF6FF"/><stop offset="1" stop-color="#2AA8D8"/></radialGradient>
+    <linearGradient id="g-chispa" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE7A0"/><stop offset="1" stop-color="#FFB627"/></linearGradient>
+  </defs>
+  <symbol id="cometa" viewBox="0 0 32 32">
+    <path d="M21.5 6.2C14.5 9.5 8 17 3 29C10 23 17.5 18.5 26.2 13.6Z" fill="url(#g-cola)"/>
+    <path d="M26.5 9.5C22 14.5 17.5 21.5 13.5 29C18 24.5 23 19 27.8 12.6Z" fill="url(#g-cola)" opacity=".7"/>
+    <circle cx="24.5" cy="9.5" r="7" fill="#5DE4FF" opacity=".18"/>
+    <circle cx="24.5" cy="9.5" r="4.7" fill="url(#g-nucleo)"/>
+    <circle cx="22.9" cy="7.9" r="1.4" fill="#FFFFFF" opacity=".85"/>
+  </symbol>
+  <symbol id="chispa" viewBox="0 0 32 32">
+    <path d="M16 2L19.2 12.8L30 16L19.2 19.2L16 30L12.8 19.2L2 16L12.8 12.8Z" fill="url(#g-chispa)"/>
+  </symbol>
+</svg>
+
+<main class="envoltura">
+  <header class="portada">
+    <span class="etiqueta">Prodigia · propuestas de la tienda</span>
+    <h1>Seis maneras de ordenar el <em>Bazar</em></h1>
+    <p class="intro">La tienda de hoy muestra todo a la vez: estantes largos, precios en lugares distintos y nada que te diga qué mirar primero. Cada propuesta de abajo es la misma tienda, con los mismos artículos y precios de la economía nueva, ordenada con otra idea. Se pueden combinar.</p>
+    <div class="leyenda" aria-label="Colores de rareza">
+      <span><i class="punto" style="background:var(--comun)"></i>Común · 400</span>
+      <span><i class="punto" style="background:var(--raro)"></i>Raro · 1 200</span>
+      <span><i class="punto" style="background:var(--epico)"></i>Épico · 3 000</span>
+      <span><i class="punto" style="background:var(--legend)"></i>Legendario · 600 Cometas</span>
+    </div>
+  </header>
+
+  <!-- A -->
+  <section class="propuesta">
+    <div class="tel"><div class="pantalla">
+      <div class="estado"><span>9:41</span><span>5G ▮▮▮</span></div>
+      <div class="barra"><b>Bazar</b><div class="saldos"><span class="saldo"><svg class="ico"><use href="#chispa"/></svg>2 480</span><span class="saldo c"><svg class="ico"><use href="#cometa"/></svg>140</span></div></div>
+      <div class="a-cuenta"><span class="mini" style="color:var(--texto2)">Hoy en el Bazar</span><span>cambia en 07:42:10</span></div>
+      <div class="a-destacado">
+        <div class="aro holo"><i></i></div>
+        <div><span class="mini r-legend">Legendario</span><h3>Marco Holograma</h3><span class="boton cometa"><svg class="ico"><use href="#cometa"/></svg>600</span></div>
+      </div>
+      <div class="a-rejilla">
+        <div class="a-item"><div class="vista llama"></div><b>Estela Dorada</b><div class="pie"><span class="mini r-epico">Épico</span><span class="precio"><svg class="ico"><use href="#chispa"/></svg>3 000</span></div></div>
+        <div class="a-item"><div class="vista sakura"></div><b>Fondo Sakura</b><div class="pie"><span class="mini r-raro">Raro</span><span class="precio"><svg class="ico"><use href="#chispa"/></svg>1 200</span></div></div>
+        <div class="a-item"><div class="vista" style="color:#FF4D8D">♥ ♥</div><b>Efecto Corazones</b><div class="pie"><span class="mini r-comun">Común</span><span class="precio"><svg class="ico"><use href="#chispa"/></svg>400</span></div></div>
+        <div class="a-item"><div class="vista">😂</div><b>¡Jajaja! (duelos)</b><div class="pie"><span class="mini r-comun">Común</span><span class="precio"><svg class="ico"><use href="#chispa"/></svg>400</span></div></div>
+      </div>
+      <span class="mini" style="color:var(--texto2)">Ayudas para tus partidas</span>
+      <div class="a-ayudas">
+        <span>🧊 Hielo<b class="precio">60</b></span><span>⏱ +3 s<b class="precio">50</b></span><span>🛡 Escudo<b class="precio">120</b></span><span>⚡ Boost<b class="precio">150</b></span>
+      </div>
+      <div class="enlace">Ver todo el catálogo (214) →</div>
+    </div></div>
+    <div class="ficha">
+      <span class="letra">A</span>
+      <span class="recomendada">La que recomiendo como portada</span>
+      <h2>Rotación del día</h2>
+      <p>Al entrar ves pocas cosas: una pieza destacada, cuatro del día y las ayudas. Cambian cada día a la misma hora para todos, con un reloj que lo muestra. El catálogo completo sigue a un toque.</p>
+      <dl>
+        <dt>Arregla</dt><dd>El desorden: la primera pantalla tiene 6 artículos, no 200.</dd>
+        <dt>Suma</dt><dd>Una razón para volver cada día, y un lugar fijo para vender lo legendario con Cometas.</dd>
+        <dt>Ojo</dt><dd>Hay que elegir bien qué rota: siempre una pieza de cada rareza.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <!-- B -->
+  <section class="propuesta">
+    <div class="tel"><div class="pantalla">
+      <div class="estado"><span>9:41</span><span>5G ▮▮▮</span></div>
+      <div class="barra"><b>Probador</b><div class="saldos"><span class="saldo"><svg class="ico"><use href="#chispa"/></svg>2 480</span><span class="saldo c"><svg class="ico"><use href="#cometa"/></svg>140</span></div></div>
+      <div class="b-placa">
+        <span class="b-probando">PROBANDO</span>
+        <div class="aro fenix"><i>N</i></div>
+        <span class="b-nombre">Nico</span>
+        <span class="b-titulo">Mente Veloz · nivel 23</span>
+      </div>
+      <div class="pestanas"><span class="on">Marco</span><span>Fondo</span><span>Estela</span><span>Efecto</span><span>Título</span></div>
+      <div class="b-tira">
+        <div><div class="aro artico"><i></i></div><span class="tuyo">TUYO</span></div>
+        <div class="sel"><div class="aro fenix"><i></i></div><span class="precio"><svg class="ico"><use href="#chispa"/></svg>3 000</span></div>
+        <div><div class="aro zafiro"><i></i></div><span class="precio"><svg class="ico"><use href="#chispa"/></svg>1 200</span></div>
+        <div><div class="aro holo"><i></i></div><span class="precio"><svg class="ico"><use href="#cometa"/></svg>600</span></div>
+      </div>
+      <p style="margin:0;color:var(--texto2);font-size:11px;text-align:center">Toca algo y te lo pones aquí arriba antes de comprarlo.</p>
+      <div class="b-compra">
+        <div><span class="mini r-epico">Épico</span><b>Marco Fénix</b></div>
+        <span class="boton oro"><svg class="ico"><use href="#chispa"/></svg>Comprar · 3 000</span>
+      </div>
+    </div></div>
+    <div class="ficha">
+      <span class="letra">B</span>
+      <h2>Probador</h2>
+      <p>Tu Placa queda arriba, grande, y la tienda se ordena por la parte de la Placa que cambia: marco, fondo, estela, efecto, título. Tocar una pieza te la pone encima al instante; comprar es el último paso, no el primero.</p>
+      <dl>
+        <dt>Arregla</dt><dd>Las categorías mezcladas: cada pestaña es una parte de tu Placa.</dd>
+        <dt>Suma</dt><dd>Ver cómo te queda antes de pagar. Es lo que más ayuda a decidir un épico o un legendario.</dd>
+        <dt>Ojo</dt><dd>Las ayudas (hielo, escudo) no se ven en la Placa: van en otra pestaña.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <!-- C -->
+  <section class="propuesta">
+    <div class="tel"><div class="pantalla">
+      <div class="estado"><span>9:41</span><span>5G ▮▮▮</span></div>
+      <div class="barra"><b>Mercado</b><div class="saldos"><span class="saldo"><svg class="ico"><use href="#chispa"/></svg>2 480</span><span class="saldo c"><svg class="ico"><use href="#cometa"/></svg>140</span></div></div>
+      <div class="c-cielo"><span>La calle del Bazar, de noche</span></div>
+      <div class="c-calle">
+        <div class="puesto" style="--t1:#FFB627;--t2:#5a3b00"><div class="toldo"></div><div class="cuerpo"><span class="neon">Herrería</span><small>Marcos · 46</small><span class="nuevo">3 nuevos</span></div></div>
+        <div class="puesto" style="--t1:#F48FB1;--t2:#4a1630"><div class="toldo"></div><div class="cuerpo"><span class="neon">Estudio</span><small>Fondos · 31</small></div></div>
+        <div class="puesto" style="--t1:#FF7A3D;--t2:#4a1a08"><div class="toldo"></div><div class="cuerpo"><span class="neon">Pirotecnia</span><small>Estelas y efectos · 40</small><span class="nuevo">2 nuevos</span></div></div>
+        <div class="puesto" style="--t1:#4FE0F5;--t2:#0b3a44"><div class="toldo"></div><div class="cuerpo"><span class="neon">Música</span><small>Sonidos · 9</small></div></div>
+        <div class="puesto" style="--t1:#B07CFF;--t2:#2c1a55"><div class="toldo"></div><div class="cuerpo"><span class="neon">Arena</span><small>Emotes de duelo · 23</small></div></div>
+        <div class="puesto" style="--t1:#3DDC97;--t2:#0d3a26"><div class="toldo"></div><div class="cuerpo"><span class="neon">Botica</span><small>Ayudas · 8</small></div></div>
+      </div>
+      <div class="c-dia"><div><span class="mini" style="color:#cdbfff">Puesto del día</span><b>Pack Noche −25 %</b></div><span class="precio"><svg class="ico"><use href="#chispa"/></svg>6 750</span></div>
+    </div></div>
+    <div class="ficha">
+      <span class="letra">C</span>
+      <h2>Mercado nocturno</h2>
+      <p>La tienda es una calle de Prodigia con seis puestos, cada uno con su toldo y su letrero de neón. Entras a un puesto y ves solo lo suyo, en una cuadrícula limpia. Encaja con las ciudades y la noche que ya tiene la app.</p>
+      <dl>
+        <dt>Arregla</dt><dd>La lista larga: la primera pantalla son 6 puertas, no 200 artículos.</dd>
+        <dt>Suma</dt><dd>Personalidad. Es la propuesta que más se siente Prodigia y menos tienda genérica.</dd>
+        <dt>Ojo</dt><dd>Un toque más para llegar a un artículo. Conviene sumarle la rotación (A) arriba.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <!-- D -->
+  <section class="propuesta">
+    <div class="tel"><div class="pantalla">
+      <div class="estado"><span>9:41</span><span>5G ▮▮▮</span></div>
+      <div class="barra"><b>Vitrinas</b><div class="saldos"><span class="saldo"><svg class="ico"><use href="#chispa"/></svg>2 480</span><span class="saldo c"><svg class="ico"><use href="#cometa"/></svg>140</span></div></div>
+      <div class="chips"><span class="on">Todo</span><span>Marcos</span><span>Fondos</span><span>Estelas</span></div>
+      <div class="vitrina" style="--rc:var(--legend)">
+        <header><span class="mini">Legendario · con Cometas</span><span class="precio"><svg class="ico"><use href="#cometa"/></svg>600 c/u</span></header>
+        <div class="estante dos">
+          <div class="pieza"><div class="aro holo"><i></i></div><b>Marco Holograma</b></div>
+          <div class="pieza"><div class="aro" style="background:conic-gradient(#EF4444,#F59E0B,#FACC15,#22C55E,#3B82F6,#8B5CF6,#EF4444)"><i></i></div><b>Marco Arcoíris</b></div>
+        </div>
+      </div>
+      <div class="vitrina" style="--rc:var(--epico)">
+        <header><span class="mini">Épico</span><span class="precio"><svg class="ico"><use href="#chispa"/></svg>3 000 c/u</span></header>
+        <div class="estante">
+          <div class="pieza"><div class="aro fenix"><i></i></div><b>Marco Fénix</b></div>
+          <div class="pieza"><div class="vista llama"></div><b>Estela Dorada</b></div>
+          <div class="pieza"><div class="vista galaxia"></div><b>Fondo Galaxia</b></div>
+        </div>
+      </div>
+      <div class="vitrina" style="--rc:var(--raro)">
+        <header><span class="mini">Raro</span><span class="precio"><svg class="ico"><use href="#chispa"/></svg>1 200 c/u</span></header>
+        <div class="estante">
+          <div class="pieza"><div class="aro zafiro"><i></i></div><b>Marco Zafiro</b></div>
+          <div class="pieza"><div class="vista sakura"></div><b>Fondo Sakura</b></div>
+          <div class="pieza"><div class="vista" style="color:#FACC15">⚡</div><b>Efecto Rayos</b></div>
+        </div>
+      </div>
+      <div class="vitrina" style="--rc:var(--comun)">
+        <header><span class="mini">Común</span><span class="precio"><svg class="ico"><use href="#chispa"/></svg>400 c/u</span></header>
+        <div class="estante">
+          <div class="pieza"><div class="aro artico"><i></i></div><b>Marco Ártico</b></div>
+          <div class="pieza"><div class="vista" style="color:#FF4D8D">♥</div><b>Corazones</b></div>
+          <div class="pieza"><div class="vista">😂</div><b>¡Jajaja!</b></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="ficha">
+      <span class="letra">D</span>
+      <h2>Vitrinas por rareza</h2>
+      <p>Como los precios ahora salen de la rareza, la tienda se puede ordenar igual: una vitrina por rareza, con su color y su precio una sola vez arriba. Lo legendario queda en la vitrina dorada, que es la única que se paga con Cometas.</p>
+      <dl>
+        <dt>Arregla</dt><dd>Los precios repetidos y desparejos: cada vitrina dice el precio una vez.</dd>
+        <dt>Suma</dt><dd>Se entiende de un vistazo qué cuesta qué y qué es valioso.</dd>
+        <dt>Ojo</dt><dd>Mezcla tipos de cosas en cada vitrina; los chips de arriba lo filtran.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <!-- E -->
+  <section class="propuesta">
+    <div class="tel"><div class="pantalla">
+      <div class="estado"><span>9:41</span><span>5G ▮▮▮</span></div>
+      <div class="barra"><b>Colecciones</b><div class="saldos"><span class="saldo"><svg class="ico"><use href="#chispa"/></svg>2 480</span><span class="saldo c"><svg class="ico"><use href="#cometa"/></svg>140</span></div></div>
+      <div class="e-ciudad" style="--cc:#7C5CFF">
+        <div class="e-cab"><b>Numeria</b><span>5 / 6</span></div>
+        <div class="e-piezas"><span>◎</span><span>▦</span><span>〰</span><span>✦</span><span>🎉</span><span class="falta">T</span></div>
+        <div class="e-barra"><i style="width:83%"></i></div>
+        <div class="e-pie"><span>Falta: Título «Habitante de Numeria»</span><span>marco animado</span></div>
+      </div>
+      <div class="e-ciudad" style="--cc:#C026D3">
+        <div class="e-cab"><b>Quimia</b><span>3 / 6</span></div>
+        <div class="e-piezas"><span>◎</span><span>▦</span><span>🎉</span><span class="falta">E</span><span class="falta">F</span><span class="falta">T</span></div>
+        <div class="e-barra"><i style="width:50%"></i></div>
+        <div class="e-pie"><span>Faltan: estela, destellos, título</span><span>marco animado</span></div>
+      </div>
+      <div class="e-ciudad" style="--cc:#1E7A8C">
+        <div class="e-cab"><b>Geografía</b><span>1 / 6</span></div>
+        <div class="e-piezas"><span>▦</span><span class="falta">M</span><span class="falta">E</span><span class="falta">F</span><span class="falta">☺</span><span class="falta">T</span></div>
+        <div class="e-barra"><i style="width:17%"></i></div>
+        <div class="e-pie"><span>El marco pide nivel 40 en la ciudad</span><span>marco animado</span></div>
+      </div>
+      <div class="enlace">Ver las 15 ciudades →</div>
+    </div></div>
+    <div class="ficha">
+      <span class="letra">E</span>
+      <h2>Colecciones de ciudad</h2>
+      <p>Cada ciudad tiene seis piezas (marco, fondo, estela, destellos, emote y título) y completarlas da su marco animado. Esta propuesta muestra la tienda como un álbum: cuánto te falta de cada ciudad y qué pieza comprar para cerrarla.</p>
+      <dl>
+        <dt>Arregla</dt><dd>La falta de meta: comprar tiene un objetivo, completar la ciudad.</dd>
+        <dt>Suma</dt><dd>Une la tienda con las constelaciones y las cápsulas de ciudad, que ya dan estas piezas.</dd>
+        <dt>Ojo</dt><dd>Solo cubre lo de las ciudades; los marcos de colores y las ayudas van aparte.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <!-- F -->
+  <section class="propuesta">
+    <div class="tel"><div class="pantalla">
+      <div class="estado"><span>9:41</span><span>5G ▮▮▮</span></div>
+      <div class="barra"><b>Bazar</b><div class="saldos"><span class="saldo"><svg class="ico"><use href="#chispa"/></svg>2 480</span><span class="saldo c"><svg class="ico"><use href="#cometa"/></svg>140</span></div></div>
+      <div class="buscar">⌕ <span>Buscar marcos, fondos, emotes…</span></div>
+      <div class="orden"><span>214 cosas · <b>no tienes 171</b></span><span>Orden: <b>precio ↑</b></span></div>
+      <span class="grupo">Ayudas</span>
+      <div class="lista">
+        <div class="fila"><div class="vista">⏱</div><div><b>+3 segundos</b><span class="mini r-comun">Ayuda · tienes 2</span></div><span class="precio"><svg class="ico"><use href="#chispa"/></svg>50</span></div>
+        <div class="fila"><div class="vista">🧊</div><div><b>Hielo</b><span class="mini r-comun">Ayuda · tienes 0</span></div><span class="precio"><svg class="ico"><use href="#chispa"/></svg>60</span></div>
+      </div>
+      <span class="grupo">Cosméticos</span>
+      <div class="lista">
+        <div class="fila"><div class="vista" style="color:#FF4D8D">♥</div><div><b>Efecto Corazones</b><span class="mini r-comun">Común · efecto</span></div><span class="precio"><svg class="ico"><use href="#chispa"/></svg>400</span></div>
+        <div class="fila"><div class="aro zafiro"><i></i></div><div><b>Marco Zafiro</b><span class="mini r-raro">Raro · marco</span></div><span class="precio"><svg class="ico"><use href="#chispa"/></svg>1 200</span></div>
+        <div class="fila"><div class="vista sakura"></div><div><b>Fondo Sakura</b><span class="mini r-raro">Raro · fondo</span></div><span class="precio"><svg class="ico"><use href="#chispa"/></svg>1 200</span></div>
+        <div class="fila"><div class="vista llama"></div><div><b>Estela Dorada</b><span class="mini r-epico">Épico · estela</span></div><span class="precio"><svg class="ico"><use href="#chispa"/></svg>3 000</span></div>
+        <div class="fila"><div class="aro holo"><i></i></div><div><b>Marco Holograma</b><span class="mini r-legend">Legendario · marco</span></div><span class="precio"><svg class="ico"><use href="#cometa"/></svg>600</span></div>
+      </div>
+    </div></div>
+    <div class="ficha">
+      <span class="letra">F</span>
+      <h2>Lista con buscador</h2>
+      <p>La opción tranquila: un buscador, un orden que eliges y una lista donde el precio siempre está en el mismo lugar, a la derecha. Menos espectáculo, cero desorden.</p>
+      <dl>
+        <dt>Arregla</dt><dd>Encontrar algo concreto: escribes «sakura» y aparece.</dd>
+        <dt>Suma</dt><dd>Sirve igual con 200 o con 600 artículos.</dd>
+        <dt>Ojo</dt><dd>Es la menos emocionante. Funciona mejor como el «catálogo completo» detrás de A o C.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="cierre">
+    <span class="etiqueta">Mi recomendación</span>
+    <h2>A como portada, B al tocar, F como catálogo</h2>
+    <p>Entras y ves la rotación del día (A). Tocas cualquier cosa y se abre el probador con tu Placa (B), así ves cómo te queda antes de pagar. «Ver todo» lleva a la lista con buscador (F). Si quieres más personalidad, cambia A por el mercado nocturno (C) y deja la rotación como su «puesto del día». Dime cuál te gusta y la armo igual en la web y en la app.</p>
+  </section>
+</main>
