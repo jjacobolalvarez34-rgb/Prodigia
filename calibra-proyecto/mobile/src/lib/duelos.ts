@@ -34,6 +34,13 @@ export function useArranqueSincronizado({
   const [preguntar, setPreguntar] = useState(false);
   const canalRef = useRef<RealtimeChannel | null>(null);
   const empezoRef = useRef(false);
+  // Bug 2026-10-13 (web + celular): el inicio viajaba como hora absoluta del reloj del
+  // anfitrión y cada lado la comparaba con SU reloj; con relojes desfasados uno
+  // arrancaba al instante y el otro se quedaba esperando. Ahora el aviso lleva cuándo
+  // se mandó (enviadoEn) y cada lado arranca a los (startAt − enviadoEn) ms de
+  // recibirlo. El anfitrión reenvía su inicio si el rival entra tarde o vuelve.
+  const inicioHostRef = useRef<number | null>(null);
+  const cuentaIniciadaRef = useRef(false);
   const onEmpezarRef = useRef(onEmpezar);
   useEffect(() => {
     onEmpezarRef.current = onEmpezar;
@@ -47,6 +54,8 @@ export function useArranqueSincronizado({
   }
 
   function cuentaRegresiva(startAt: number) {
+    if (cuentaIniciadaRef.current) return;
+    cuentaIniciadaRef.current = true;
     setEstado("cuenta-regresiva");
     const tick = () => {
       const faltan = startAt - Date.now();
@@ -78,7 +87,9 @@ export function useArranqueSincronizado({
     });
     canal.on("broadcast", { event: "start" }, ({ payload }) => {
       if (cancelado || empezoRef.current) return;
-      cuentaRegresiva((payload as { startAt: number }).startAt);
+      const p = payload as { startAt: number; enviadoEn?: number };
+      // Clientes viejos solo mandan startAt (hora absoluta de su reloj).
+      cuentaRegresiva(typeof p.enviadoEn === "number" ? Date.now() + (p.startAt - p.enviadoEn) : p.startAt);
     });
     canal.subscribe(async (s) => {
       if (s !== "SUBSCRIBED" || cancelado) return;
@@ -107,10 +118,13 @@ export function useArranqueSincronizado({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duelId, miUserId, rivalId, sinEspera]);
 
+  // El anfitrión fija el inicio una sola vez y lo (re)envía cada vez que ve llegar al
+  // rival: si el otro entra tarde o sale y vuelve, recibe lo que falta.
   useEffect(() => {
-    if (estado !== "esperando" || !rivalPresente || !soyHost) return;
-    const startAt = Date.now() + 10_000;
-    canalRef.current?.send({ type: "broadcast", event: "start", payload: { startAt } });
+    if (estado === "conectando" || estado === "agotado" || !rivalPresente || !soyHost) return;
+    if (inicioHostRef.current == null) inicioHostRef.current = Date.now() + 10_000;
+    const startAt = inicioHostRef.current;
+    canalRef.current?.send({ type: "broadcast", event: "start", payload: { startAt, enviadoEn: Date.now() } });
     queueMicrotask(() => cuentaRegresiva(startAt));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estado, rivalPresente, soyHost]);

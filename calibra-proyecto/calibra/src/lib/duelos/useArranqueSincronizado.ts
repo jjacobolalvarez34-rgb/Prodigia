@@ -50,6 +50,14 @@ export function useArranqueSincronizado({
 
   const channelRef = useRef<RealtimeChannel | null>(null);
   const empezoRef = useRef(false);
+  // Bug 2026-10-13 (web + celular): el inicio viajaba como hora absoluta del reloj del
+  // anfitrión, y cada lado la comparaba con SU reloj; con relojes desfasados uno
+  // arrancaba al instante y el otro se quedaba esperando. Ahora el aviso lleva también
+  // cuándo se mandó (enviadoEn), y cada lado arranca a los (startAt − enviadoEn) ms de
+  // recibirlo, sin mirar la hora del otro. El anfitrión guarda su inicio para
+  // reenviarlo si el rival entra tarde o vuelve a la sala.
+  const inicioHostRef = useRef<number | null>(null);
+  const cuentaIniciadaRef = useRef(false);
   const soyHost = !!miUserId && !!rivalId && miUserId < rivalId;
 
   function empezarUnaVez() {
@@ -59,6 +67,8 @@ export function useArranqueSincronizado({
   }
 
   function arrancarCuentaRegresiva(startAt: number) {
+    if (cuentaIniciadaRef.current) return;
+    cuentaIniciadaRef.current = true;
     setEstado("cuenta-regresiva");
     const tick = () => {
       const faltanMs = startAt - Date.now();
@@ -107,7 +117,9 @@ export function useArranqueSincronizado({
 
     channel.on("broadcast", { event: "start" }, ({ payload }) => {
       if (cancelado || empezoRef.current) return;
-      arrancarCuentaRegresiva((payload as { startAt: number }).startAt);
+      const p = payload as { startAt: number; enviadoEn?: number };
+      // Clientes viejos solo mandan startAt (hora absoluta de su reloj).
+      arrancarCuentaRegresiva(typeof p.enviadoEn === "number" ? Date.now() + (p.startAt - p.enviadoEn) : p.startAt);
     });
 
     channel.subscribe(async (status) => {
@@ -137,10 +149,13 @@ export function useArranqueSincronizado({
   // Apenas los dos están presentes, el host (determinístico por id)
   // dispara el broadcast de arranque — el otro lado lo recibe por el
   // handler de "broadcast" de arriba.
+  // El anfitrión fija el inicio una sola vez y lo (re)envía cada vez que ve llegar al
+  // rival: si el otro entra tarde o sale y vuelve, recibe lo que falta.
   useEffect(() => {
-    if (estado !== "esperando" || !rivalPresente || !soyHost) return;
-    const startAt = Date.now() + margenMs;
-    channelRef.current?.send({ type: "broadcast", event: "start", payload: { startAt } });
+    if (estado === "conectando" || estado === "agotado" || !rivalPresente || !soyHost) return;
+    if (inicioHostRef.current == null) inicioHostRef.current = Date.now() + margenMs;
+    const startAt = inicioHostRef.current;
+    channelRef.current?.send({ type: "broadcast", event: "start", payload: { startAt, enviadoEn: Date.now() } });
     queueMicrotask(() => arrancarCuentaRegresiva(startAt));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estado, rivalPresente, soyHost]);
