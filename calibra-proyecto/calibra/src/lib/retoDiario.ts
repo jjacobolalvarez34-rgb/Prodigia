@@ -294,3 +294,25 @@ export function generarRetoSemanal(semanaIso: string, mundosDesbloqueados: Mundo
   // secuencia).
   return generarPreguntasReto(`semana:${semanaIso}`, mundosDesbloqueados, TOTAL_PREGUNTAS_RETO_SEMANAL);
 }
+
+// ---------- Reto de fin de semana (0281) ----------
+// Las mismas 10 preguntas para todos, de 3 ciudades sorteadas entre las 15 (no
+// entre las que tiene cada uno): así la dificultad es igual para todos y el
+// ranking es justo. sabadoIso = el sábado del fin de semana ("YYYY-MM-DD").
+export const TOTAL_PREGUNTAS_RETO_FINDE = 10;
+
+export function ciudadesRetoFinde(sabadoIso: string): MundoRetoDiario[] {
+  const rng = mulberry32(hashFecha(`finde-ciudades:${sabadoIso}`));
+  const pool = (Object.keys(GENERADORES) as MundoRetoDiario[]).slice();
+  const elegidas: MundoRetoDiario[] = [];
+  while (elegidas.length < 3 && pool.length > 0) {
+    const m = elegirRng(rng, pool);
+    elegidas.push(m);
+    pool.splice(pool.indexOf(m), 1);
+  }
+  return elegidas;
+}
+
+export function generarRetoFinde(sabadoIso: string): PreguntaRetoDiario[] {
+  return generarPreguntasReto(`finde:${sabadoIso}`, ciudadesRetoFinde(sabadoIso), TOTAL_PREGUNTAS_RETO_FINDE);
+}

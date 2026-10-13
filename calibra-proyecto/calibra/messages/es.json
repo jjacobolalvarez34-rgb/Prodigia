@@ -5242,5 +5242,34 @@
     "comprarTitulo": "Conseguir Cometas",
     "errorCompra": "No se pudo abrir el pago. Intenta de nuevo.",
     "comoConseguir": "También ganas Cometas subiendo de nivel (cada 10 niveles), en la liga semanal, con logros y en el reto de fin de semana."
+  },
+  "RetoFinde": {
+    "metadata": {
+      "title": "Reto de fin de semana · Prodigia",
+      "description": "10 preguntas de 3 ciudades, iguales para todos. Dos intentos: gana el que más acierta y, si empatan, el más rápido."
+    },
+    "etiqueta": "Reto de fin de semana",
+    "titulo": "10 preguntas, 3 ciudades, iguales para todos",
+    "reglas": "Tienes dos intentos y cuenta el mejor: gana quien más acierta y, si empatan, quien tardó menos. Terminar el primer intento da hasta {chispas} Chispas; los mejores puestos ganan Cometas el lunes (con {minimo} aciertos o más).",
+    "puesto1": "1.º",
+    "puestoHasta": "Top {n}",
+    "tuMejor": "Tu mejor intento: {correctos}/10 en {tiempo}",
+    "empezar": "Empezar (el reloj corre)",
+    "segundoIntento": "Usar mi segundo intento",
+    "sinIntentos": "Ya usaste tus dos intentos. ¡Mira cómo va el ranking!",
+    "quedan": "Te {n, plural, one {queda # intento} other {quedan # intentos}} · termina en {termina}",
+    "empiezaEn": "El próximo reto empieza el sábado: faltan {falta}.",
+    "rankingActual": "Ranking de este finde",
+    "rankingPasado": "Así terminó el finde pasado",
+    "premioCobrado": "¡Quedaste {puesto}.º el finde pasado! Ganaste {cometas} Cometas.",
+    "preguntaXdeY": "Pregunta {actual} de {total}",
+    "terminaste": "¡Terminaste!",
+    "chispasGanadas": "+{n} Chispas por jugar el reto",
+    "tuPuesto": "Vas {puesto}.º con tu mejor intento ({correctos}/10 en {tiempo}).",
+    "volver": "Volver al inicio",
+    "guardando": "Guardando…",
+    "tarjeta": "Reto del finde",
+    "tarjetaActivo": "Hoy hay reto: 10 preguntas, premios en Cometas",
+    "tarjetaInactivo": "Vuelve el sábado"
   }
 }

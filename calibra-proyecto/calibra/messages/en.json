@@ -5242,5 +5242,34 @@
     "comprarTitulo": "Get Comets",
     "errorCompra": "Couldn't open the payment. Try again.",
     "comoConseguir": "You also earn Comets by leveling up (every 10 levels), in the weekly league, with achievements and in the weekend challenge."
+  },
+  "RetoFinde": {
+    "metadata": {
+      "title": "Weekend challenge · Prodigia",
+      "description": "10 questions from 3 cities, the same for everyone. Two tries: most correct answers wins, then the fastest."
+    },
+    "etiqueta": "Weekend challenge",
+    "titulo": "10 questions, 3 cities, the same for everyone",
+    "reglas": "You get two tries and your best one counts: most correct answers wins and, on a tie, the fastest. Finishing your first try gives up to {chispas} Chispas; the top spots win Comets on Monday (with {minimo} or more correct).",
+    "puesto1": "1st",
+    "puestoHasta": "Top {n}",
+    "tuMejor": "Your best try: {correctos}/10 in {tiempo}",
+    "empezar": "Start (the clock runs)",
+    "segundoIntento": "Use my second try",
+    "sinIntentos": "You used both tries. Check how the ranking is going!",
+    "quedan": "{n, plural, one {# try left} other {# tries left}} · ends in {termina}",
+    "empiezaEn": "The next challenge starts on Saturday: {falta} to go.",
+    "rankingActual": "This weekend's ranking",
+    "rankingPasado": "How last weekend ended",
+    "premioCobrado": "You finished #{puesto} last weekend! You won {cometas} Comets.",
+    "preguntaXdeY": "Question {actual} of {total}",
+    "terminaste": "Done!",
+    "chispasGanadas": "+{n} Chispas for playing the challenge",
+    "tuPuesto": "You're #{puesto} with your best try ({correctos}/10 in {tiempo}).",
+    "volver": "Back to home",
+    "guardando": "Saving…",
+    "tarjeta": "Weekend challenge",
+    "tarjetaActivo": "Challenge today: 10 questions, prizes in Comets",
+    "tarjetaInactivo": "Back on Saturday"
   }
 }

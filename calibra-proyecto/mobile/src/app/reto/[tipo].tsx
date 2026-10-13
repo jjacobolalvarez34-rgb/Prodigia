@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, BackHandler, Pressable, ScrollView, StyleSheet, View } from "react-native";
-import Animated, { FadeInDown, FadeInRight, useSharedValue, withSequence, withTiming, ZoomIn } from "react-native-reanimated";
+import Animated, { useSharedValue, withSequence, withTiming, ZoomIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { rankingReto } from "~/lib/competir";
 import { sonar, sonarAcierto, vibrar } from "~/lib/efectos";
@@ -18,15 +18,12 @@ import Confeti from "~/ui/Confeti";
 import Glifos from "~/ui/Glifos";
 import { IconoCerrar, IconoChispa, IconoLlama } from "~/ui/Iconos";
 import { BotonAtras, TituloSeccion } from "~/ui/Pantalla";
-import Pentagrama, { FiguraRitmicaIcono } from "~/ui/Pentagrama";
 import { PlacaFila } from "~/ui/placa/Placa";
-import { animarAcierto, animarError, CartelFinal, TarjetaProblema } from "~/ui/Sprint";
+import { animarAcierto, animarError, CartelFinal } from "~/ui/Sprint";
+import PreguntaReto from "~/ui/PreguntaReto";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
-import TextoLatex from "~/ui/TextoLatex";
-import { brillo, color, conAlfa, fuente, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
-
-const CON_FORMULAS = new Set(["calculia", "circuitia", "estadistica", "trigonometria"]);
+import { color, fuente, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
 
 export default function Reto() {
   const router = useRouter();
@@ -255,8 +252,6 @@ export default function Reto() {
 
   const p = reto.preguntas[indice];
   const m = MUNDO_POR_SLUG[p.mundo as MundoSlug];
-  const formulas = CON_FORMULAS.has(p.mundo);
-  const esCodigo = p.mundo === "codia";
 
   return (
     <SafeAreaView style={styles.pantalla}>
@@ -280,53 +275,7 @@ export default function Reto() {
         )}
       </View>
       <ScrollView contentContainerStyle={{ padding: 16, gap: 14, flexGrow: 1, justifyContent: "center" }}>
-        <Animated.View key={indice} entering={FadeInRight.duration(300)}>
-          <TarjetaProblema acento={m?.neon ?? color.logro} combo={combo} feedback={!elegida ? "idle" : elegida === p.respuesta ? "correcto" : "incorrecto"} sello={sello} sacudida={sacudida}>
-            <Texto v="micro" c={m?.neon}>
-              {m?.nombre ?? p.mundo}
-            </Texto>
-            {p.notasMelodia && <Pentagrama notas={p.notasMelodia} disposicion={p.disposicionMelodia} acento={m?.neon} />}
-            {p.figuraMelodia && <FiguraRitmicaIcono figura={p.figuraMelodia} acento={m?.neon} />}
-            {formulas ? (
-              <TextoLatex texto={p.enunciado} centro estilo={{ fontFamily: fuente.display, fontSize: 20, lineHeight: 26, color: color.texto }} />
-            ) : (
-              <Texto style={{ fontFamily: esCodigo ? fuente.monoMedio : fuente.display, fontSize: esCodigo ? 15 : 20, lineHeight: esCodigo ? 21 : 26, color: color.texto, textAlign: esCodigo ? "left" : "center", alignSelf: "stretch" }}>
-                {p.enunciado}
-              </Texto>
-            )}
-          </TarjetaProblema>
-        </Animated.View>
-        <View style={{ gap: 10 }}>
-          {p.opciones.map((op, i) => {
-            const correcta = !!elegida && op === p.respuesta;
-            const mala = elegida === op && op !== p.respuesta;
-            return (
-              <Animated.View key={`${indice}-${op}`} entering={FadeInDown.delay(80 + i * 60).duration(300)}>
-                <Pressable
-                  disabled={!!elegida}
-                  onPress={() => {
-                    vibrar.seleccion();
-                    responder(op);
-                  }}
-                  style={({ pressed }) => [
-                    styles.opcion,
-                    pressed && { transform: [{ scale: 0.97 }] },
-                    correcta && { borderColor: color.correcto, backgroundColor: conAlfa(color.correcto, 0.15), boxShadow: brillo(color.correcto, 16, 0.35) },
-                    mala && { borderColor: color.error, backgroundColor: conAlfa(color.error, 0.15) },
-                  ]}
-                >
-                  {formulas ? (
-                    <TextoLatex texto={op} centro estilo={{ fontFamily: fuente.cuerpoFuerte, fontSize: 15, color: color.texto }} />
-                  ) : (
-                    <Texto style={{ fontFamily: esCodigo ? fuente.monoMedio : fuente.cuerpoFuerte, fontSize: 15, color: color.texto, textAlign: "center" }}>
-                      {op}
-                    </Texto>
-                  )}
-                </Pressable>
-              </Animated.View>
-            );
-          })}
-        </View>
+        <PreguntaReto pregunta={p} indice={indice} elegida={elegida} combo={combo} sello={sello} sacudida={sacudida} onResponder={responder} />
       </ScrollView>
       {cartel != null && <CartelFinal texto="¡Reto completado!" nota="Contando tus recompensas…" acento={color.logro} progreso={cartel} />}
     </SafeAreaView>
@@ -338,5 +287,4 @@ const styles = StyleSheet.create({
   fila: { flexDirection: "row", alignItems: "center", gap: 10 },
   cabecera: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 16, paddingTop: 6 },
   x: { width: 38, height: 38, borderRadius: 19, backgroundColor: color.surface1, borderWidth: 1, borderColor: color.border, alignItems: "center", justifyContent: "center" },
-  opcion: { borderWidth: 2, borderColor: color.border, backgroundColor: color.surface1, borderRadius: 16, paddingVertical: 15, paddingHorizontal: 14 },
 });

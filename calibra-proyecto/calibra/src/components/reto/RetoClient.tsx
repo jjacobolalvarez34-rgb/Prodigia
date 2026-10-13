@@ -46,7 +46,7 @@ interface Props {
 // puede traer montos) un "$" suelto nunca debe tratarse como marca de fórmula.
 const MUNDOS_CON_MATH: ReadonlySet<MundoRetoDiario> = new Set<MundoRetoDiario>(["calculia", "circuitia", "estadistica", "trigonometria"]);
 
-const COLOR_MUNDO: Record<MundoRetoDiario, string> = {
+export const COLOR_MUNDO_RETO: Record<MundoRetoDiario, string> = {
   numeria: "#6C4CF1",
   enigmia: "#0E9F6E",
   geografia: "#1E7A8C",
@@ -275,7 +275,7 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
                 >
                   <IconFlechaAtras className="h-3.5 w-3.5" /> {t("salirPorAhora")}
                 </Link>
-                <span className="font-medium text-xs" style={{ color: COLOR_MUNDO[pregunta.mundo] }}>
+                <span className="font-medium text-xs" style={{ color: COLOR_MUNDO_RETO[pregunta.mundo] }}>
                   {NOMBRE_MUNDO[pregunta.mundo]}
                 </span>
               </div>
@@ -288,48 +288,12 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-foreground/10">
                 <div
                   className="h-full rounded-full transition-all"
-                  style={{ width: `${((indice + 1) / total) * 100}%`, background: COLOR_MUNDO[pregunta.mundo] }}
+                  style={{ width: `${((indice + 1) / total) * 100}%`, background: COLOR_MUNDO_RETO[pregunta.mundo] }}
                 />
               </div>
             </div>
 
-            <div
-              className={`flex w-full flex-col items-center gap-5 rounded-3xl border-2 bg-surface px-6 py-8 transition-colors ${
-                feedback === "correcto" ? "border-correcto" : feedback === "incorrecto" ? "border-error" : "border-border"
-              }`}
-            >
-              {pregunta.notasMelodia && (
-                <div className="w-full overflow-x-auto">
-                  <Pentagrama notas={pregunta.notasMelodia} disposicion={pregunta.disposicionMelodia} colorHex={COLOR_MUNDO.melodia} />
-                </div>
-              )}
-              {pregunta.figuraMelodia && <FiguraRitmicaIcono figura={pregunta.figuraMelodia} colorHex={COLOR_MUNDO.melodia} />}
-
-              <p className={`font-medium text-foreground ${pregunta.mundo === "codia" ? "w-full overflow-x-auto whitespace-pre-wrap text-left font-mono text-sm" : "text-center"}`}>{MUNDOS_CON_MATH.has(pregunta.mundo) ? <MathText texto={pregunta.enunciado} /> : pregunta.enunciado}</p>
-
-              <div className="grid w-full grid-cols-2 gap-2.5">
-                {pregunta.opciones.map((op) => {
-                  const esElegida = seleccion === op;
-                  const esCorrecta = feedback !== "idle" && op === pregunta.respuesta;
-                  return (
-                    <button
-                      key={op}
-                      onClick={() => handleElegir(op)}
-                      disabled={feedback !== "idle"}
-                      className={`rounded-xl border-2 px-4 py-3 text-sm font-medium transition-colors disabled:opacity-100 ${pregunta.mundo === "codia" ? "whitespace-pre-wrap text-left font-mono" : ""} ${
-                        esCorrecta
-                          ? "border-correcto bg-correcto/10 text-correcto"
-                          : esElegida
-                            ? "border-error bg-error/10 text-error"
-                            : "border-border bg-background text-foreground"
-                      }`}
-                    >
-                      {MUNDOS_CON_MATH.has(pregunta.mundo) ? <MathText texto={op} /> : op}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            <TarjetaPreguntaReto pregunta={pregunta} seleccion={seleccion} feedback={feedback} onElegir={handleElegir} />
           </motion.div>
         )}
 
@@ -415,6 +379,61 @@ export default function RetoClient({ tipo, clave, problemas, yaCompletado, racha
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// La tarjeta de una pregunta del reto (enunciado, visuales y opciones). La usan
+// el reto diario/semanal y el de fin de semana (RetoFindeClient).
+export function TarjetaPreguntaReto({
+  pregunta,
+  seleccion,
+  feedback,
+  onElegir,
+}: {
+  pregunta: PreguntaRetoDiario;
+  seleccion: string | null;
+  feedback: "idle" | "correcto" | "incorrecto";
+  onElegir: (opcion: string) => void;
+}) {
+  const handleElegir = onElegir;
+  return (
+    <div
+      className={`flex w-full flex-col items-center gap-5 rounded-3xl border-2 bg-surface px-6 py-8 transition-colors ${
+        feedback === "correcto" ? "border-correcto" : feedback === "incorrecto" ? "border-error" : "border-border"
+      }`}
+    >
+      {pregunta.notasMelodia && (
+        <div className="w-full overflow-x-auto">
+          <Pentagrama notas={pregunta.notasMelodia} disposicion={pregunta.disposicionMelodia} colorHex={COLOR_MUNDO_RETO.melodia} />
+        </div>
+      )}
+      {pregunta.figuraMelodia && <FiguraRitmicaIcono figura={pregunta.figuraMelodia} colorHex={COLOR_MUNDO_RETO.melodia} />}
+
+      <p className={`font-medium text-foreground ${pregunta.mundo === "codia" ? "w-full overflow-x-auto whitespace-pre-wrap text-left font-mono text-sm" : "text-center"}`}>{MUNDOS_CON_MATH.has(pregunta.mundo) ? <MathText texto={pregunta.enunciado} /> : pregunta.enunciado}</p>
+
+      <div className="grid w-full grid-cols-2 gap-2.5">
+        {pregunta.opciones.map((op) => {
+          const esElegida = seleccion === op;
+          const esCorrecta = feedback !== "idle" && op === pregunta.respuesta;
+          return (
+            <button
+              key={op}
+              onClick={() => handleElegir(op)}
+              disabled={feedback !== "idle"}
+              className={`rounded-xl border-2 px-4 py-3 text-sm font-medium transition-colors disabled:opacity-100 ${pregunta.mundo === "codia" ? "whitespace-pre-wrap text-left font-mono" : ""} ${
+                esCorrecta
+                  ? "border-correcto bg-correcto/10 text-correcto"
+                  : esElegida
+                    ? "border-error bg-error/10 text-error"
+                    : "border-border bg-background text-foreground"
+              }`}
+            >
+              {MUNDOS_CON_MATH.has(pregunta.mundo) ? <MathText texto={op} /> : op}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

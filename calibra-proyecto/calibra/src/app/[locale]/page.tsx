@@ -18,6 +18,7 @@ import { calcularRachaDiaria, lunesDeEstaSemanaIso } from "@/lib/practica/racha"
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
 import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria, IconCalculia, IconCircuitia, IconEstadistica, IconNaipia, IconCodia, IconDinamia, IconVitalia } from "@/components/icons";
 import { tieneMundo } from "@/lib/mundos/precios";
+import { sabadoDelFinde } from "@/lib/retoFinde";
 import Greeting from "./Greeting";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -37,6 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ProdigiaHomePage() {
   const t = await getTranslations("Home");
   const tMundos = await getTranslations("Mundos.nombres");
+  const tFinde = await getTranslations("RetoFinde");
   const supabase = await createClient();
 
   const {
@@ -157,6 +159,19 @@ export default async function ProdigiaHomePage() {
             </div>
             <span className="shrink-0 rounded-full bg-primario px-4 py-2 text-sm font-display font-semibold text-white">
               {retoSemana ? t("ver") : t("jugar")}
+            </span>
+          </Link>
+          {/* Reto de fin de semana (0281): sábado y domingo, premios en Cometas. */}
+          <Link
+            href="/reto-finde"
+            className="flex items-center justify-between gap-4 rounded-2xl border border-[#5DE4FF]/40 bg-[#5DE4FF]/10 px-5 py-4 transition-colors hover:border-[#5DE4FF]/70 sm:col-span-2"
+          >
+            <div>
+              <p className="font-display text-sm font-bold text-foreground">{tFinde("tarjeta")}</p>
+              <p className="text-xs text-texto-secundario">{sabadoDelFinde() ? tFinde("tarjetaActivo") : tFinde("tarjetaInactivo")}</p>
+            </div>
+            <span className="shrink-0 rounded-full bg-[#5DE4FF] px-4 py-2 text-sm font-display font-semibold text-[#06202A]">
+              {sabadoDelFinde() ? t("jugar") : t("ver")}
             </span>
           </Link>
         </div>

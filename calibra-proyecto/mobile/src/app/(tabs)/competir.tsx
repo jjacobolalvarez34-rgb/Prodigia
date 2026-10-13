@@ -26,7 +26,9 @@ import { useSesion } from "~/lib/sesion";
 import { escucharPresencia } from "~/lib/social";
 import Barra from "~/ui/Barra";
 import Boton3D from "~/ui/Boton3D";
-import { IconoCompetir, IconoFantasma } from "~/ui/Iconos";
+import { IconoCometa, IconoCompetir, IconoFantasma } from "~/ui/Iconos";
+import { COLOR_COMETA } from "@/lib/recompensas/iconoCometa";
+import { sabadoDelFinde } from "@/lib/retoFinde";
 import { PantallaPestana, TituloSeccion, Vacio } from "~/ui/Pantalla";
 import { PlacaFila } from "~/ui/placa/Placa";
 import AvatarMarco from "~/ui/placa/AvatarMarco";
@@ -459,6 +461,21 @@ export default function Competir() {
             <Texto v="h2">45 preguntas de tus ciudades</Texto>
             <Texto v="nota">Las mismas para todos. Puedes dejarlo a la mitad y seguir después. Bonus de Chispas por cada acierto.</Texto>
             <Boton3D titulo="Jugar el reto semanal" variante="logro" estilo={{ marginTop: 12 }} onPress={() => router.push({ pathname: "/reto/[tipo]", params: { tipo: "semanal" } })} />
+          </Tarjeta>
+          {/* Reto de fin de semana (0281): sábado y domingo, premios en Cometas. */}
+          <Tarjeta acento={COLOR_COMETA} brillo={sabadoDelFinde() ? 0.22 : 0} onPress={() => router.push("/reto-finde")}>
+            <View style={styles.entre}>
+              <View style={{ flex: 1 }}>
+                <View style={styles.fila}>
+                  <IconoCometa tam={18} />
+                  <Texto v="h3">Reto de fin de semana</Texto>
+                </View>
+                <Texto v="nota">{sabadoDelFinde() ? "Hoy: 10 preguntas, 2 intentos, premios en Cometas" : "Vuelve el sábado · premios en Cometas"}</Texto>
+              </View>
+              <Texto v="mono" c={COLOR_COMETA}>
+                {sabadoDelFinde() ? "JUGAR →" : "VER →"}
+              </Texto>
+            </View>
           </Tarjeta>
           <Tarjeta onPress={() => router.push({ pathname: "/reto/[tipo]", params: { tipo: "diario" } })}>
             <View style={styles.entre}>
