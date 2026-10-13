@@ -8,4 +8,8 @@
 // probados de punta a punta, este flag es el único lugar que hay que
 // tocar para volver a mostrar la UI real (no hay que deshacer nada más
 // — el resto del código de Fundación/Fase 4/5 queda intacto).
-export const PAGOS_REALES_HABILITADOS = false;
+//
+// Desde 2026-10-12 lo decide la variable NEXT_PUBLIC_PAGOS_HABILITADOS ("1" = se
+// ven): encendida en el .env.local para probar el sandbox de Paddle y apagada en
+// Vercel hasta que los cobros estén probados de punta a punta.
+export const PAGOS_REALES_HABILITADOS = process.env.NEXT_PUBLIC_PAGOS_HABILITADOS === "1";
