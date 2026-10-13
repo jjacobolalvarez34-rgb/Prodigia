@@ -4,11 +4,12 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { PRODUCTOS } from "@/lib/pagos/productos";
 import { abrirCheckoutPaddle } from "@/lib/pagos/paddleClient";
-import { PAGOS_REALES_HABILITADOS } from "@/lib/pagos/flags";
 import type { Proveedor, ProductoComprable } from "@/lib/pagos/tipos";
 
 interface Props {
   esPro: boolean;
+  // Lo decide el servidor en cada visita (lib/pagos/flags.ts).
+  pagosHabilitados: boolean;
 }
 
 // Fase 4 (infraestructura de pagos): antes /pro tenía un botón
@@ -19,7 +20,7 @@ interface Props {
 // proveedor). Si Mercado Pago/Paddle todavía no están conectados
 // (Fase 2/3 del plan), la ruta devuelve un 503 con el motivo exacto —
 // se muestra tal cual, sin pretender que funcionó.
-export default function ProClient({ esPro }: Props) {
+export default function ProClient({ esPro, pagosHabilitados }: Props) {
   const t = useTranslations("Legal.pro");
   const [proveedor, setProveedor] = useState<Proveedor>("mercadopago");
   const [comprando, setComprando] = useState<ProductoComprable | null>(null);
@@ -62,7 +63,7 @@ export default function ProClient({ esPro }: Props) {
     );
   }
 
-  if (!PAGOS_REALES_HABILITADOS) {
+  if (!pagosHabilitados) {
     return (
       <div className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-surface-2 px-6 py-8 text-center">
         <button

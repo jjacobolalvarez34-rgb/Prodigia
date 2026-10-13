@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import TiendaClient from "./TiendaClient";
+import { pagosHabilitados } from "@/lib/pagos/flags";
 import TiendaAmpliada from "./TiendaAmpliada";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -57,6 +58,7 @@ export default async function TiendaPage() {
         esPro={profile?.plan === "pro"}
         nivelesMundo={nivelesMundo}
         fechaHoy={hoyIso}
+        pagosHabilitados={pagosHabilitados()}
       />
       <TiendaAmpliada />
     </>

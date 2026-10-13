@@ -25,7 +25,6 @@ import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
 import { reproducirTono } from "@/lib/sonido";
 import { PRODUCTOS } from "@/lib/pagos/productos";
 import { abrirCheckoutPaddle } from "@/lib/pagos/paddleClient";
-import { PAGOS_REALES_HABILITADOS } from "@/lib/pagos/flags";
 import type { Proveedor, ProductoComprable } from "@/lib/pagos/tipos";
 
 const PACKS_CHISPAS: ProductoComprable[] = ["chispas_1000", "chispas_2500", "chispas_6000", "chispas_15000"];
@@ -85,6 +84,8 @@ interface Props {
   fechaHoy: string;
   esPro: boolean;
   ocultarTrastienda: boolean;
+  // Lo decide el servidor en cada visita (lib/pagos/flags.ts).
+  pagosHabilitados: boolean;
 }
 
 export default function TiendaClient({
@@ -110,6 +111,7 @@ export default function TiendaClient({
   fechaHoy,
   esPro,
   ocultarTrastienda,
+  pagosHabilitados,
 }: Props) {
   const t = useTranslations("Tienda");
   // Tienda (solo lo que todavía no tienes) o Inventario (todo lo tuyo, para usarlo);
@@ -476,7 +478,7 @@ export default function TiendaClient({
 
         {!inventario && <OfertaDelDia oferta={oferta} nombre={NOMBRES_ITEM[oferta.item as ItemComprable]} />}
 
-        {!inventario && PAGOS_REALES_HABILITADOS && (
+        {!inventario && pagosHabilitados && (
         <EstanteCategoria titulo={t("pagos.titulo")} franja="#FFC53D">
           <p className="text-sm text-[#F4E4C1]/90">{t("pagos.descripcion")}</p>
           <div className="flex w-fit gap-1 rounded-full border border-[#F4E4C1]/30 bg-[#3D2410]/30 p-1">

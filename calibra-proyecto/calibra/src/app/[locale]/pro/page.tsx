@@ -5,6 +5,7 @@ import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import { BENEFICIOS_PRO } from "@/lib/pro/beneficios";
 import ProClient from "./ProClient";
+import { pagosHabilitados } from "@/lib/pagos/flags";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Legal.pro.metadata");
@@ -49,7 +50,7 @@ export default async function ProPage() {
           ))}
         </div>
 
-        <ProClient esPro={profile?.plan === "pro"} />
+        <ProClient esPro={profile?.plan === "pro"} pagosHabilitados={pagosHabilitados()} />
       </div>
     </>
   );
