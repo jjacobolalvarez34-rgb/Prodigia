@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { calcularVencimientoPro, textoRestantePro, type SuscripcionPro } from "@/lib/pro/vencimiento";
 import { PRODUCTOS } from "@/lib/pagos/productos";
 import { abrirCheckoutPaddle } from "@/lib/pagos/paddleClient";
 import type { Proveedor, ProductoComprable } from "@/lib/pagos/tipos";
@@ -10,6 +11,29 @@ interface Props {
   esPro: boolean;
   // Lo decide el servidor en cada visita (lib/pagos/flags.ts).
   pagosHabilitados: boolean;
+  // Para el contador de cuánto le queda a Pro (null = Pro sin suscripción, p. ej. dado a mano).
+  suscripcion: SuscripcionPro | null;
+}
+
+// Cuánto le queda a Pro, con la fecha; se actualiza cada 30 s.
+function ContadorPro({ suscripcion }: { suscripcion: SuscripcionPro | null }) {
+  const t = useTranslations("Legal.pro.vence");
+  const locale = useLocale();
+  const [ahora, setAhora] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setAhora(Date.now()), 30_000);
+    return () => clearInterval(id);
+  }, []);
+  const v = calcularVencimientoPro(suscripcion, ahora);
+  if (!v) return null;
+  const fecha = v.fin.toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" });
+  return (
+    <div className={`mt-2 flex w-full max-w-xs flex-col items-center gap-1 rounded-xl border px-4 py-3 ${v.renueva ? "border-primario/30 bg-surface" : "border-racha/50 bg-racha/10"}`}>
+      <span className="text-[11px] font-bold uppercase tracking-wider text-texto-secundario">{v.renueva ? t("renueva") : t("termina")}</span>
+      <span className={`font-mono text-2xl font-bold ${v.renueva ? "text-foreground" : "text-racha"}`}>{textoRestantePro(v)}</span>
+      <span className="text-xs text-texto-secundario">{t(v.renueva ? "fechaRenueva" : "fechaTermina", { fecha })}</span>
+    </div>
+  );
 }
 
 // Fase 4 (infraestructura de pagos): antes /pro tenía un botón
@@ -20,7 +44,7 @@ interface Props {
 // proveedor). Si Mercado Pago/Paddle todavía no están conectados
 // (Fase 2/3 del plan), la ruta devuelve un 503 con el motivo exacto —
 // se muestra tal cual, sin pretender que funcionó.
-export default function ProClient({ esPro, pagosHabilitados }: Props) {
+export default function ProClient({ esPro, pagosHabilitados, suscripcion }: Props) {
   const t = useTranslations("Legal.pro");
   // Solo Paddle (2026-10-12): Mercado Pago quedó fuera, su adaptador sigue en lib/pagos sin uso.
   const proveedor: Proveedor = "paddle";
@@ -60,6 +84,7 @@ export default function ProClient({ esPro, pagosHabilitados }: Props) {
         <span className="text-2xl">✨</span>
         <p className="font-display text-lg font-bold text-foreground">{t("yaSosPro")}</p>
         <p className="text-xs text-texto-secundario">{t("yaSosProDetalle")}</p>
+        <ContadorPro suscripcion={suscripcion} />
       </div>
     );
   }

@@ -2600,7 +2600,13 @@
       "yaSosPro": "You're already Prodigia Pro",
       "yaSosProDetalle": "Your monthly Chispas and benefits are already active.",
       "proximamente": "Coming soon",
-      "noDisponible": "Prodigia Pro isn't available to buy yet."
+      "noDisponible": "Prodigia Pro isn't available to buy yet.",
+      "vence": {
+        "renueva": "Renews in",
+        "termina": "Your Pro ends in",
+        "fechaRenueva": "Next charge on {fecha}",
+        "fechaTermina": "On {fecha} you go back to the free account"
+      }
     }
   },
   "Melodia": {

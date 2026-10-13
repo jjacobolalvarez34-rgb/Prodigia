@@ -492,7 +492,7 @@ export default function Sprint() {
       </Animated.View>
 
       {!dueloId && inicio == null && <CuentaInicio acento={NUMERIA.neon} onListo={arrancar} />}
-      {final && <CartelFinal texto={final === "tiempo" ? "¡Tiempo!" : "¡Listo!"} nota={dueloId ? "Comparando con tu rival…" : "Contando tus recompensas…"} acento={NUMERIA.neon} progreso={progresoFinal} />}
+      {final && <CartelFinal texto={final === "tiempo" ? "¡Tiempo!" : "¡Listo!"} nota={dueloId ? "Comparando con tu rival…" : "Contando tus recompensas…"} acento={NUMERIA.neon} progreso={progresoFinal} semilla="numeria" />}
     </SafeAreaView>
   );
 }

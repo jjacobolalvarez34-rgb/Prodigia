@@ -1,4 +1,6 @@
 import { useFocusEffect, useRouter, type Href } from "expo-router";
+import { useVencimientoPro } from "~/lib/pro";
+import { textoRestantePro } from "@/lib/pro/vencimiento";
 import { useCallback, useState, type ReactNode } from "react";
 import { Pressable, Share, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -58,6 +60,7 @@ export default function Perfil() {
   const { sesion } = useSesion();
   const userId = sesion?.user.id;
   const { placa, plan, esInvitado, resumen } = useJugador();
+  const vencePro = useVencimientoPro();
   const [extra, setExtra] = useState<ExtraCompleta>({});
   const [niveles, setNiveles] = useState<Record<string, number>>({});
 
@@ -169,7 +172,7 @@ export default function Perfil() {
           titulo="Prodigia Pro"
           icono={<Texto style={{ fontFamily: fuente.display, color: color.logro, fontSize: 13 }}>PRO</Texto>}
           onPress={() => router.push("/pro" as Href)}
-          extra={plan === "pro" ? <Texto v="nota" c={color.correcto}>Activo</Texto> : null}
+          extra={plan === "pro" ? <Texto v="nota" c={vencePro && !vencePro.renueva ? color.racha : color.correcto}>{vencePro ? `${vencePro.renueva ? "Activo" : "Termina en"} · ${textoRestantePro(vencePro)}` : "Activo"}</Texto> : null}
         />
         <Item indice={3} titulo="Ajustes y cuenta" icono={<IconoEngranaje tam={18} c={color.texto2} />} onPress={() => router.push("/ajustes")} />
       </Tarjeta>

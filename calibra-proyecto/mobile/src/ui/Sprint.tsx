@@ -1,4 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
+import FondoCiudad from "./FondoCiudad";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Pressable, StyleSheet, View, type LayoutChangeEvent } from "react-native";
 import Animated, {
@@ -638,7 +639,9 @@ function Porcentaje({ progreso, acento }: { progreso: number; acento: string }) 
   );
 }
 
-export function CartelFinal({ texto, nota, acento = color.primarioNeon, progreso = 0 }: { texto: string; nota: string; acento?: string; progreso?: number }) {
+// Pantalla de carga del final (partida o reto): opaca, con la ciudad de fondo (2026-10-13),
+// para que no se vea la pregunta por debajo. `semilla`: la ciudad que se dibuja.
+export function CartelFinal({ texto, nota, acento = color.primarioNeon, progreso = 0, semilla = "prodigia" }: { texto: string; nota: string; acento?: string; progreso?: number; semilla?: string }) {
   const giro = useSharedValue(0);
   const entrada = useSharedValue(0);
   useEffect(() => {
@@ -649,13 +652,14 @@ export function CartelFinal({ texto, nota, acento = color.primarioNeon, progreso
   const estiloLogo = useAnimatedStyle(() => ({ transform: [{ rotate: `${giro.value * 360}deg` }] }));
   const estiloTexto = useAnimatedStyle(() => ({ opacity: Math.min(1, entrada.value * 1.5), transform: [{ scale: 0.7 + entrada.value * 0.3 }] }));
   return (
-    <Animated.View entering={FadeIn.delay(150).duration(260)} style={styles.cuenta} pointerEvents="none">
-      <View style={{ alignItems: "center", gap: 18 }}>
+    <Animated.View entering={FadeIn.duration(220)} style={styles.cuenta} pointerEvents="none">
+      <FondoCiudad semilla={semilla} acento={acento} />
+      <View style={{ alignItems: "center", gap: 18, marginBottom: 140 }}>
         <Animated.View style={estiloTexto}>
           <Texto style={{ fontFamily: fuente.display, fontSize: 50, color: color.texto, textShadowColor: acento, textShadowRadius: 18 }}>{texto}</Texto>
         </Animated.View>
         <Animated.View style={[{ boxShadow: brillo(acento, 30, 0.35), borderRadius: 50 }, estiloLogo]}>
-          <Logo tam={78} color={acento} />
+          <Logo tam={78} />
         </Animated.View>
         <Porcentaje progreso={progreso} acento={acento} />
         <Texto v="nota" centro>

@@ -6,7 +6,7 @@ import { urlAbsoluta } from "./entorno";
 import { supabase } from "./supabase";
 
 export type Rol = "fundador" | "guia" | "miembro";
-export const COSTO_CREAR_CLAN = 5000;
+export const COSTO_CREAR_CLAN = 10000;
 export const COLORES_CLAN = ["#6C4CF1", "#0E9F6E", "#1E7A8C", "#C026D3", "#FF8A3D", "#3FB88B", "#FFC53D", "#FF6B6B"];
 
 export interface MiClan {

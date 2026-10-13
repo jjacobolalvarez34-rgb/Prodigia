@@ -1,4 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
+import FondoCiudad from "./FondoCiudad";
 import { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, Easing, StyleSheet, Text, View } from "react-native";
 import { color, mono, MUNDOS, fuente } from "~/tema";
@@ -124,7 +125,7 @@ export default function PantallaCarga({ progreso, etapa, onTerminada }: Props) {
 
   return (
     <Animated.View style={[StyleSheet.absoluteFill, styles.pantalla, { opacity: salida }]} pointerEvents="none">
-      <LinearGradient colors={["#1B1440", color.bg, color.bgHondo]} locations={[0, 0.55, 1]} style={StyleSheet.absoluteFill} />
+      <FondoCiudad semilla="prodigia" acento={color.primarioNeon} />
       {GLIFOS.map((g, i) => (
         <GlifoFlotante key={i} glifo={g.glifo} color={g.color} indice={i} />
       ))}

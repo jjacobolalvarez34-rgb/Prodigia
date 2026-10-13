@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, { Easing, FadeInDown, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 import { useJugador } from "~/lib/jugador";
+import { useVencimientoPro } from "~/lib/pro";
+import { textoRestantePro } from "@/lib/pro/vencimiento";
 import { IconoCheck } from "~/ui/Iconos";
 import { PantallaApilada } from "~/ui/Pantalla";
 import Tarjeta from "~/ui/Tarjeta";
@@ -21,6 +23,7 @@ const BENEFICIOS = [
 
 export default function Pro() {
   const { plan } = useJugador();
+  const vence = useVencimientoPro();
   const brilla = useSharedValue(0);
   useEffect(() => {
     brilla.set(withRepeat(withSequence(withTiming(1, { duration: 1600, easing: Easing.inOut(Easing.quad) }), withTiming(0, { duration: 1600 })), -1));
@@ -38,6 +41,22 @@ export default function Pro() {
       <Texto v="display" centro>
         {plan === "pro" ? "Ya eres Pro ✦" : "Todo Prodigia, sin límites"}
       </Texto>
+      {vence && (
+        <Tarjeta acento={vence.renueva ? color.primario : color.racha} brillo={vence.urgente ? 0.3 : 0.1}>
+          <View style={{ alignItems: "center", gap: 2 }}>
+            <Texto v="micro" c={vence.renueva ? color.texto2 : color.racha}>
+              {vence.renueva ? "Se renueva en" : "Tu Pro termina en"}
+            </Texto>
+            <Texto v="mono" tam={28} c={vence.renueva ? color.texto : color.racha}>
+              {textoRestantePro(vence)}
+            </Texto>
+            <Texto v="nota" tam={12}>
+              {vence.renueva ? "Se cobra de nuevo el " : "Vuelves a la cuenta gratis el "}
+              {vence.fin.toLocaleDateString("es", { day: "numeric", month: "long", year: "numeric" })}
+            </Texto>
+          </View>
+        </Tarjeta>
+      )}
       <Tarjeta acento={color.logro} brillo={0.2}>
         {BENEFICIOS.map((b, i) => (
           <Animated.View key={b} entering={FadeInDown.delay(150 + i * 80)} style={styles.beneficio}>

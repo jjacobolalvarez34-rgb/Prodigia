@@ -24,6 +24,14 @@ export default async function ProPage() {
   const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
   bloquearInvitado(user, tBloqueos("pro"));
   const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
+  // Contador de Pro (2026-10-13): la suscripción más reciente, si la hay.
+  const { data: suscripcion } = await supabase
+    .from("subscriptions")
+    .select("current_period_end, cancel_at_period_end, status")
+    .eq("user_id", user.id)
+    .order("current_period_end", { ascending: false, nullsFirst: false })
+    .limit(1)
+    .maybeSingle();
 
   return (
     <>
@@ -50,7 +58,7 @@ export default async function ProPage() {
           ))}
         </div>
 
-        <ProClient esPro={profile?.plan === "pro"} pagosHabilitados={pagosHabilitados()} />
+        <ProClient esPro={profile?.plan === "pro"} pagosHabilitados={pagosHabilitados()} suscripcion={suscripcion ?? null} />
       </div>
     </>
   );

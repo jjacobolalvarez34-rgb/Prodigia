@@ -16,7 +16,7 @@ import CountdownSemanal from "@/components/CountdownSemanal";
 
 type Rol = "fundador" | "guia" | "miembro";
 
-const COSTO_CREAR_CLAN = 5000;
+const COSTO_CREAR_CLAN = 10000;
 
 export interface MiClan {
   clan_id: string;
