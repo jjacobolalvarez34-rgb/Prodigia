@@ -67,6 +67,7 @@ export default async function TiendaPage() {
         nivelesMundo={nivelesMundo}
         fechaHoy={hoyIso}
         pagosHabilitados={pagosHabilitados()}
+        cometasIniciales={(filaCometas as { cometas?: number } | null)?.cometas ?? 0}
         seccionCometas={
           <SeccionCometas
             cometasIniciales={(filaCometas as { cometas?: number } | null)?.cometas ?? 0}

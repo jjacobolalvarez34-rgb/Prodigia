@@ -24,6 +24,7 @@ import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiari
 import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
 import { reproducirTono } from "@/lib/sonido";
 import { PRODUCTOS } from "@/lib/pagos/productos";
+import { precioEnCometas } from "@/lib/recompensas/catalogo";
 import { abrirCheckoutPaddle } from "@/lib/pagos/paddleClient";
 import type { Proveedor, ProductoComprable } from "@/lib/pagos/tipos";
 
@@ -88,6 +89,7 @@ interface Props {
   pagosHabilitados: boolean;
   // Saldo, canje y compra de Cometas (0279); lo arma la página.
   seccionCometas?: ReactNode;
+  cometasIniciales?: number;
 }
 
 export default function TiendaClient({
@@ -115,6 +117,7 @@ export default function TiendaClient({
   ocultarTrastienda,
   pagosHabilitados,
   seccionCometas,
+  cometasIniciales = 0,
 }: Props) {
   const t = useTranslations("Tienda");
   // Tienda (solo lo que todavía no tienes) o Inventario (todo lo tuyo, para usarlo);
@@ -224,6 +227,25 @@ export default function TiendaClient({
     window.addEventListener("prodigia:chispas", alComprar);
     return () => window.removeEventListener("prodigia:chispas", alComprar);
   }, []);
+  // Lo legendario (marco Prodigio, neón, fuente Manuscrita) se compra con Cometas (0280).
+  const [cometas, setCometas] = useState(cometasIniciales);
+  useEffect(() => {
+    const alCambiar = (ev: Event) => {
+      const n = (ev as CustomEvent<number>).detail;
+      if (typeof n === "number") setCometas(n);
+    };
+    window.addEventListener("prodigia:cometas", alCambiar);
+    return () => window.removeEventListener("prodigia:cometas", alCambiar);
+  }, []);
+  // ¿Alcanza para comprarlo? Con Cometas si es legendario, si no con Chispas.
+  const alcanzaPara = (item: ItemComprable, costo: number) => {
+    const pc = precioEnCometas(item);
+    return pc != null ? cometas >= pc : puntos >= costo;
+  };
+  const etiquetaPrecio = (nombre: string, item: ItemComprable, costo: number) => {
+    const pc = precioEnCometas(item);
+    return pc != null ? t("nombreCometas", { nombre, costo: pc }) : t("nombreChispas", { nombre, costo });
+  };
   const [escudos, setEscudos] = useState(escudosIniciales);
   const [congelamientos, setCongelamientos] = useState(congelamientosIniciales);
   const [boost, setBoost] = useState(boostIniciales);
@@ -270,10 +292,14 @@ export default function TiendaClient({
         setError({ msg: data.error ?? t("noSePudoComprar"), contexto });
         return;
       }
-      setPuntos(data.puntos_total);
-      setEscudos(data.escudos_extra_pendientes);
-      setCongelamientos(data.congelamientos_disponibles);
-      setBoost(data.boost_multiplicador_pendiente > 1 ? 1 : 0);
+      if (typeof data.puntos_total === "number") setPuntos(data.puntos_total);
+      if (typeof data.escudos_extra_pendientes === "number") setEscudos(data.escudos_extra_pendientes);
+      if (typeof data.congelamientos_disponibles === "number") setCongelamientos(data.congelamientos_disponibles);
+      if (data.boost_multiplicador_pendiente != null) setBoost(data.boost_multiplicador_pendiente > 1 ? 1 : 0);
+      if (typeof data.cometas === "number") {
+        setCometas(data.cometas);
+        window.dispatchEvent(new CustomEvent("prodigia:cometas", { detail: data.cometas }));
+      }
       if (typeof data.hielos_disponibles === "number") setHielos(data.hielos_disponibles);
       if (typeof data.tiempos_extra_disponibles === "number") setTiemposExtra(data.tiempos_extra_disponibles);
       if (Array.isArray(data.fuentes_desbloqueadas)) setFuentesDesbl(data.fuentes_desbloqueadas);
@@ -640,10 +666,10 @@ export default function TiendaClient({
                 <button
                   key={fuente}
                   onClick={() => comprar(compra.item, "fuente")}
-                  disabled={comprando || puntos < costo}
+                  disabled={comprando || !alcanzaPara(compra.item, costo)}
                   className={`rounded-full border border-dashed border-[#F4E4C1]/50 px-3 py-1.5 text-sm text-[#F4E4C1]/70 disabled:opacity-40 ${claseFuente}`}
                 >
-                  {t("nombreChispas", { nombre: compra.nombre, costo })}
+                  {etiquetaPrecio(compra.nombre, compra.item, costo)}
                 </button>
               );
             })}
@@ -701,14 +727,14 @@ export default function TiendaClient({
                 <button
                   key={marco}
                   onClick={() => comprar(item, "marco")}
-                  disabled={comprando || puntos < costo}
+                  disabled={comprando || !alcanzaPara(item, costo)}
                   className="flex items-center gap-1.5 rounded-full border border-dashed border-[#F4E4C1]/50 px-3 py-1.5 text-sm text-[#F4E4C1]/70 disabled:opacity-40"
                 >
                   <span
                     className={`h-2.5 w-2.5 rounded-full ${esNeon ? "marco-neon-perfil" : ""} ${esNeon ? `marco-${marco.replace("_", "-")}` : ""}`}
                     style={{ background: colorHex }}
                   />
-                  {t("nombreChispas", { nombre, costo })}
+                  {etiquetaPrecio(nombre, item, costo)}
                 </button>
               );
             })}

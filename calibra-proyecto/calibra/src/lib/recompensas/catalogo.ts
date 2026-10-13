@@ -6,6 +6,7 @@
 // migración. Lo usan la web y la app (docs/PARIDAD_APP_WEB.md), por eso no
 // importa nada de React.
 
+import { COSTOS, PRECIO_LEGENDARIO_COMETAS, PRECIO_RAREZA_CHISPAS, SOLO_COMETAS } from "../tienda/costos";
 import { EFECTOS_NUEVOS, EMOTES_NUEVOS, ESTELAS_NUEVAS, filasCatalogoAmpliado, MARCOS_ESTILO, PAQUETES_NUEVOS, SONIDOS_NUEVOS } from "./catalogoAmpliado";
 
 export type Rareza = "comun" | "raro" | "epico" | "legendario";
@@ -251,6 +252,15 @@ export interface ItemCatalogo {
   vendible: boolean;
   mundo?: MundoCiudad;
   temporada?: number;
+  // Solo lo legendario (0280): se compra con Cometas, no con Chispas.
+  precioCometas?: number;
+}
+
+// Economía nueva (0280): el precio de venta sale de la rareza (común 400, raro
+// 1200, épico 3000; legendario solo con Cometas). Los números de cada fila de
+// abajo son los de 0248/0275, que siguen siendo la referencia de esas migraciones.
+function conPrecioNuevo<T extends { rareza: Rareza; vendible: boolean }>(x: T): T & { precio: number; precioCometas?: number } {
+  return { ...x, precio: PRECIO_RAREZA_CHISPAS[x.rareza], ...(x.rareza === "legendario" && x.vendible ? { precioCometas: PRECIO_LEGENDARIO_COMETAS } : {}) };
 }
 
 const ESTELAS_VENTA: [string, number, Rareza][] = [
@@ -307,7 +317,18 @@ export const CATALOGO_NUEVO: ItemCatalogo[] = [
   // Ampliación del 2026-10-10 (0275): marcos de colores, fondos, estelas, efectos,
   // sonidos, emotes y títulos nuevos.
   ...filasCatalogoAmpliado().map((f) => ({ ...f, categoria: f.categoria as CategoriaNueva, vendible: true })),
-];
+].map(conPrecioNuevo);
+
+// Precio en Cometas de algo de la tienda (null si se compra con Chispas).
+export function precioEnCometas(item: string): number | null {
+  if ((SOLO_COMETAS as readonly string[]).includes(item)) return PRECIO_LEGENDARIO_COMETAS;
+  return CATALOGO_NUEVO.find((x) => x.item === item && x.vendible)?.precioCometas ?? null;
+}
+
+// Precio en Chispas de una pieza (catálogo nuevo o de antes), para los paquetes.
+function precioPieza(item: string): number {
+  return CATALOGO_NUEVO.find((x) => x.item === item)?.precio ?? (COSTOS as Record<string, number>)[item] ?? 0;
+}
 
 // Las 6 piezas de la colección de una ciudad (marco del mundo, fondo, estela,
 // efecto, emote y título). Completarla da el marco animado de colección.
@@ -316,18 +337,19 @@ export function piezasColeccion(mundo: string): string[] {
 }
 
 // ---------- Paquetes y utilidades nuevas ----------
+// Paquetes: la suma de lo que traen con −25 % (0280 recalcula paquetes_tienda igual).
 export const PAQUETES: { item: string; nombre: string; items: string[]; precio: number }[] = [
   { item: "pack_noche", nombre: "Pack Noche", items: ["fondo_nebulosa", "marco_neon_violeta", "estela_violeta"], precio: 7500 },
   { item: "pack_fuego", nombre: "Pack Fuego", items: ["fondo_dorado", "estela_dorada", "efecto_estrellas"], precio: 5250 },
   { item: "pack_sonidos", nombre: "Pack Sonidos", items: ["sonido_campanitas", "sonido_ochobits", "sonido_marimba"], precio: 2625 },
   { item: "pack_emotes", nombre: "Pack Emotes", items: ["emote_fuego", "emote_uy", "emote_gg", "emote_cerebro", "emote_rayo", "emote_corona"], precio: 2475 },
   ...PAQUETES_NUEVOS,
-];
+].map((p) => ({ ...p, precio: Math.floor(p.items.reduce((a, s) => a + precioPieza(s), 0) * 0.75) }));
 
 export const UTILIDADES_NUEVAS: { item: "pista" | "segunda_oportunidad" | "cofre_hielos"; nombre: string; descripcion: string; precio: number }[] = [
-  { item: "pista", nombre: "Pista", descripcion: "Descarta 2 opciones incorrectas de una pregunta. No vale en duelos.", precio: 300 },
-  { item: "segunda_oportunidad", nombre: "Segunda oportunidad", descripcion: "Si fallas, vuelves a responder la misma pregunta sin que cuente el error. No vale en duelos.", precio: 500 },
-  { item: "cofre_hielos", nombre: "Cofre de hielos", descripcion: "3 hielos por menos de lo que cuestan sueltos.", precio: 800 },
+  { item: "pista", nombre: "Pista", descripcion: "Descarta 2 opciones incorrectas de una pregunta. No vale en duelos.", precio: 60 },
+  { item: "segunda_oportunidad", nombre: "Segunda oportunidad", descripcion: "Si fallas, vuelves a responder la misma pregunta sin que cuente el error. No vale en duelos.", precio: 100 },
+  { item: "cofre_hielos", nombre: "Cofre de hielos", descripcion: "3 hielos por menos de lo que cuestan sueltos.", precio: 150 },
 ];
 
 export const COLOR_RAREZA: Record<Rareza, string> = { comun: "#8892B0", raro: "#4FE0F5", epico: "#B07CFF", legendario: "#FFB627" };
@@ -395,13 +417,14 @@ export function textoMision(tipo: string, meta: number, mundo: string | null): s
 
 // Premio de cada día del calendario (espejo de premios_calendario()).
 export const PREMIOS_CALENDARIO: { dia: number; premio: "chispas" | "hielo" | "tiempo_extra" | "estrellas"; cantidad: number }[] = [
-  { dia: 1, premio: "chispas", cantidad: 50 },
-  { dia: 2, premio: "chispas", cantidad: 75 },
+  { dia: 1, premio: "chispas", cantidad: 20 },
+  { dia: 2, premio: "chispas", cantidad: 30 },
   { dia: 3, premio: "hielo", cantidad: 1 },
-  { dia: 4, premio: "chispas", cantidad: 100 },
+  { dia: 4, premio: "chispas", cantidad: 40 },
   { dia: 5, premio: "tiempo_extra", cantidad: 1 },
-  { dia: 6, premio: "chispas", cantidad: 150 },
-  // Desde 0259: 3 estrellas en tu constelación favorita (antes, una cápsula).
+  { dia: 6, premio: "chispas", cantidad: 60 },
+  // Desde 0259: 3 estrellas en tu constelación favorita (antes, una cápsula); desde
+  // 0280, además 10 Cometas (COMETAS_DIA_7).
   { dia: 7, premio: "estrellas", cantidad: 3 },
 ];
 
@@ -409,8 +432,10 @@ export function textoPremioCalendario(p: (typeof PREMIOS_CALENDARIO)[number]): s
   if (p.premio === "chispas") return `${p.cantidad} Chispas`;
   if (p.premio === "hielo") return "1 hielo";
   if (p.premio === "tiempo_extra") return "+3 s";
-  return `${p.cantidad} estrellas`;
+  return `${p.cantidad} estrellas + ${COMETAS_DIA_7} Cometas`;
 }
+
+export const COMETAS_DIA_7 = 10;
 
 // Nombre de un cosmético por su slug (catálogo nuevo o de antes).
 export function nombreCosmetico(slug: string): string {

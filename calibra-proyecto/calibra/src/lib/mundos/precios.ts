@@ -8,7 +8,9 @@
 // (0097_mundos_por_chispas.sql), nunca acá ni en el cliente — este
 // número es solo para mostrarlo en la UI antes de comprar (el servidor
 // jamás confía en lo que mande el cliente, ver esa migración).
-export const PRECIO_MUNDO_CHISPAS = 3000;
+// Economía nueva (0280): 2500 Chispas o 300 Cometas (desbloquear_mundo_con_cometas).
+export const PRECIO_MUNDO_CHISPAS = 2500;
+export const PRECIO_MUNDO_COMETAS = 300;
 
 export const MUNDOS_PAGOS = ["numeria", "geografia", "enigmia", "quimia", "anatomia", "melodia", "trigonometria", "historia", "calculia", "circuitia", "estadistica", "naipia", "codia", "dinamia", "vitalia"] as const;
 

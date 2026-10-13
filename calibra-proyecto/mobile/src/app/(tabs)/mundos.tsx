@@ -4,10 +4,10 @@ import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { mundoDobleExperiencia } from "@/lib/eventos/dobleExperiencia";
-import { PRECIO_MUNDO_CHISPAS } from "@/lib/mundos/precios";
+import { PRECIO_MUNDO_CHISPAS, PRECIO_MUNDO_COMETAS } from "@/lib/mundos/precios";
 import { sonar, vibrar } from "~/lib/efectos";
 import { URL_WEB } from "~/lib/entorno";
-import { fijarChispas, recargarJugador, useJugador } from "~/lib/jugador";
+import { fijarChispas, fijarCometas, recargarJugador, useJugador } from "~/lib/jugador";
 import { nivelesDeMundos } from "~/lib/mundos";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError, supabase } from "~/lib/supabase";
@@ -18,7 +18,7 @@ import Ciudad from "~/ui/Ciudad";
 import ContadorAlineacion from "~/ui/ContadorAlineacion";
 import Confeti from "~/ui/Confeti";
 import Hoja from "~/ui/Hoja";
-import { IconoCandado, IconoChispa } from "~/ui/Iconos";
+import { IconoCandado, IconoChispa, IconoCometa } from "~/ui/Iconos";
 import { PantallaPestana } from "~/ui/Pantalla";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
@@ -120,14 +120,21 @@ export default function Mundos() {
   const lista = MUNDOS.filter((m) => (filtro === "mios" ? esTuyo(m) : filtro === "bloqueados" ? !esTuyo(m) : true)).sort((a, b) => Number(esTuyo(b)) - Number(esTuyo(a)));
   const encendidos = MUNDOS.filter(esTuyo).length;
   const chispas = resumen?.chispas ?? 0;
+  const cometas = resumen?.cometas ?? 0;
 
-  async function desbloquear(m: Mundo) {
+  // Con Chispas (2500) o con Cometas (300), 0280.
+  async function desbloquear(m: Mundo, conCometas = false) {
     setComprando(true);
     try {
-      const { data, error } = await supabase.rpc("desbloquear_mundo", { p_mundo: m.slug });
-      if (error) throw error;
-      const fila = (data as { puntos_total: number }[])[0];
-      fijarChispas(fila.puntos_total);
+      if (conCometas) {
+        const { data, error } = await supabase.rpc("desbloquear_mundo_con_cometas", { p_mundo: m.slug });
+        if (error) throw error;
+        fijarCometas((data as { cometas: number }[])[0].cometas);
+      } else {
+        const { data, error } = await supabase.rpc("desbloquear_mundo", { p_mundo: m.slug });
+        if (error) throw error;
+        fijarChispas((data as { puntos_total: number }[])[0].puntos_total);
+      }
       sonar("nivel");
       vibrar.exito();
       setRecien(m.slug);
@@ -207,6 +214,15 @@ export default function Mundos() {
                   <Texto v="nota" centro>
                     Te faltan {(PRECIO_MUNDO_CHISPAS - chispas).toLocaleString("es")} Chispas. ¡Juega unas partidas!
                   </Texto>
+                )}
+                {cometas >= PRECIO_MUNDO_COMETAS && (
+                  <Boton3D
+                    titulo={`O por ${PRECIO_MUNDO_COMETAS} Cometas`}
+                    icono={<IconoCometa tam={18} />}
+                    tamano="sm"
+                    cargando={comprando}
+                    onPress={() => desbloquear(elegido, true)}
+                  />
                 )}
                 <Boton3D titulo="Ver Prodigia Pro" variante="pro" tamano="sm" onPress={() => { setElegido(null); router.push("/pro"); }} />
               </>

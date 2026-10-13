@@ -10,7 +10,7 @@ import { mostrarAviso } from "~/ui/Aviso";
 import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiario";
 import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
 import { COLUMNAS_COSMETICOS_NUEVOS, cosmeticosDesdeFila, equiparCosmetico, type CosmeticosNuevos } from "@/lib/recompensas/api";
-import { CATALOGO_NUEVO, MARCOS_ESPECIALES, PAQUETES, temporadaActual, UTILIDADES_NUEVAS, type Rareza as RarezaNueva } from "@/lib/recompensas/catalogo";
+import { CATALOGO_NUEVO, MARCOS_ESPECIALES, PAQUETES, precioEnCometas, temporadaActual, UTILIDADES_NUEVAS, type Rareza as RarezaNueva } from "@/lib/recompensas/catalogo";
 import { MARCOS_MUNDO, MARCOS_NEON, RANGOS_ELO } from "@/types/database";
 import { supabase } from "./supabase";
 
@@ -60,11 +60,18 @@ export function rarezaDeItem(it: ItemTienda): Rareza {
   return it.rareza ?? rarezaDe(it.costoBase);
 }
 
+// Con los precios de 0280 (común 400, raro 1200, épico 3000; legendario = 6000 de referencia).
 export function rarezaDe(costo: number): Rareza {
   if (costo >= 5000) return "legendario";
   if (costo >= 2400) return "epico";
-  if (costo >= 1400) return "raro";
+  if (costo >= 1200) return "raro";
   return "comun";
+}
+
+// Lo legendario se compra solo con Cometas (0280): su precio, o null si va con Chispas.
+export function cometasDe(it: ItemTienda): number | null {
+  if (it.item.startsWith("galeria:")) return null;
+  return precioEnCometas(it.item);
 }
 
 export const COLOR_RAREZA: Record<Rareza, string> = { comun: "#8892B0", raro: "#4FE0F5", epico: "#B07CFF", legendario: "#FFB627" };
@@ -387,15 +394,21 @@ export function cantidadUtilidad(it: ItemTienda, e: EstadoTienda): number | null
   }
 }
 
-export async function comprar(it: ItemTienda): Promise<number> {
+// Devuelve el saldo nuevo de la moneda con la que se pagó.
+export async function comprar(it: ItemTienda): Promise<{ chispas?: number; cometas?: number }> {
   if (it.item.startsWith("galeria:")) {
     const { data, error } = await supabase.rpc("comprar_fondo_galeria", { p_slug: it.valor });
     if (error) throw error;
-    return (data as { puntos_total: number }[])[0].puntos_total;
+    return { chispas: (data as { puntos_total: number }[])[0].puntos_total };
+  }
+  if (cometasDe(it) != null) {
+    const { data, error } = await supabase.rpc("comprar_con_cometas", { p_item: it.item });
+    if (error) throw error;
+    return { cometas: (data as { cometas: number }[])[0].cometas };
   }
   const { data, error } = await supabase.rpc("comprar_item_tienda", { p_item: it.item, p_costo: precioDe(it) });
   if (error) throw error;
-  return (data as { puntos_total: number }[])[0].puntos_total;
+  return { chispas: (data as { puntos_total: number }[])[0].puntos_total };
 }
 
 export async function equipar(it: ItemTienda | null, categoria: Categoria, valorNinguno?: string) {

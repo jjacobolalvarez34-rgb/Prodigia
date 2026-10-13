@@ -35,6 +35,9 @@ interface RegistrarXpDiarioResult {
   nivel_cuenta_subio: boolean;
   nivel_cuenta_nuevo: number;
   nivel_cuenta_bonus: number;
+  // Economía nueva (0280): las Chispas ya no son la Experiencia.
+  chispas_partida?: number;
+  cometas_nivel?: number;
 }
 
 // Nombres de columna del RPC registrar_progreso_mundo (0132): world/
@@ -281,6 +284,7 @@ export async function POST(request: Request) {
       correctos: sprintCorrectos,
       precision: sprintPrecision,
       xpGanado: sprintXp,
+      chispasGanadas: registro.chispas_partida ?? 0,
       avgTimeMs: sprintAvgTimeMs,
     },
     historico: {
@@ -306,7 +310,7 @@ export async function POST(request: Request) {
     // docs/audits/LEVEL-UP-ANIMACION-2026-09-08.md: el hueco real era
     // que este endpoint nunca exponía si subió profiles.nivel_cuenta.
     nivelCuenta: registro.nivel_cuenta_subio
-      ? { subio: true, nivel: registro.nivel_cuenta_nuevo, bonus: registro.nivel_cuenta_bonus }
+      ? { subio: true, nivel: registro.nivel_cuenta_nuevo, bonus: registro.nivel_cuenta_bonus, cometas: registro.cometas_nivel ?? 0 }
       : null,
   });
 }

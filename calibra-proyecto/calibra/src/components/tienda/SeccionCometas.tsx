@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import IconoCometa from "@/components/IconoCometa";
 import { createClient } from "@/lib/supabase/client";
@@ -30,6 +30,16 @@ export default function SeccionCometas({
   const [ocupado, setOcupado] = useState(false);
   const [mensaje, setMensaje] = useState<{ texto: string; error: boolean } | null>(null);
 
+  // Compras con Cometas en otra parte de la tienda (lo legendario).
+  useEffect(() => {
+    const alCambiar = (ev: Event) => {
+      const n = (ev as CustomEvent<number>).detail;
+      if (typeof n === "number") setCometas(n);
+    };
+    window.addEventListener("prodigia:cometas", alCambiar);
+    return () => window.removeEventListener("prodigia:cometas", alCambiar);
+  }, []);
+
   async function canjear(n: number) {
     if (pendiente !== n) {
       setPendiente(n);
@@ -48,6 +58,7 @@ export default function SeccionCometas({
     if (fila) {
       setCometas(fila.cometas);
       window.dispatchEvent(new CustomEvent("prodigia:chispas", { detail: fila.puntos_total }));
+      window.dispatchEvent(new CustomEvent("prodigia:cometas", { detail: fila.cometas }));
     }
     setMensaje({ texto: t("canjeHecho", { n: (n * CHISPAS_POR_COMETA).toLocaleString() }), error: false });
   }

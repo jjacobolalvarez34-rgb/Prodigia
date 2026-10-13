@@ -23,6 +23,9 @@ interface RegistrarXpDiarioResult {
   nivel_cuenta_subio: boolean;
   nivel_cuenta_nuevo: number;
   nivel_cuenta_bonus: number;
+  // Economía nueva (0280): las Chispas ya no son la Experiencia.
+  chispas_partida?: number;
+  cometas_nivel?: number;
 }
 
 // Nombres de columna del RPC registrar_progreso_mundo (0132): world/
@@ -165,6 +168,7 @@ const { data: registroRows, error: registroError } = await supabase.rpc("registr
       correctos,
       precision: partidaPrecision,
       xpGanado,
+      chispasGanadas: registro.chispas_partida ?? 0,
       avgTimeMs,
     },
     historico: {
@@ -185,7 +189,7 @@ const { data: registroRows, error: registroError } = await supabase.rpc("registr
       subio: nivelMundo.nivel_mundo_out > nivelMundo.nivel_anterior,
     },
     nivelCuenta: registro.nivel_cuenta_subio
-      ? { subio: true, nivel: registro.nivel_cuenta_nuevo, bonus: registro.nivel_cuenta_bonus }
+      ? { subio: true, nivel: registro.nivel_cuenta_nuevo, bonus: registro.nivel_cuenta_bonus, cometas: registro.cometas_nivel ?? 0 }
       : null,
   });
 }

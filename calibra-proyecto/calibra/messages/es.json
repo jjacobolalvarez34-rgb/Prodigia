@@ -908,7 +908,8 @@
     "tusAyudas": "Tus ayudas",
     "sinAyudas": "No tienes ayudas guardadas.",
     "sinColorNombre": "Todavía no tienes el color de nombre.",
-    "yaLoTienes": "Ya lo tienes: está en tu Inventario."
+    "yaLoTienes": "Ya lo tienes: está en tu Inventario.",
+    "nombreCometas": "{nombre} · {costo} Cometas"
   },
   "Common": {
     "entendido": "Entendido",
@@ -1836,7 +1837,8 @@
       "teFaltanChispas": "Te faltan Chispas",
       "sigueJugando": "Sigue jugando para ganar más Chispas, o mira la tienda.",
       "noSePudoDesbloquear": "No se pudo desbloquear. Prueba de nuevo.",
-      "noSePudoConectar": "No se pudo conectar. Prueba de nuevo."
+      "noSePudoConectar": "No se pudo conectar. Prueba de nuevo.",
+      "desbloquearCometas": "O por {precio} Cometas"
     }
   },
   "Clanes": {
@@ -1985,7 +1987,8 @@
       "titulo": "¡NIVEL {nivel}!",
       "chispas": "Chispas",
       "subtitulo": "Sigue sumando para el nivel {siguiente}",
-      "continuar": "¡Continuar!"
+      "continuar": "¡Continuar!",
+      "cometas": "Cometas"
     },
     "chispasGanadas": {
       "texto": "+{n} Chispas ganadas"
@@ -4737,9 +4740,9 @@
         "hielo": "1 hielo",
         "tiempo_extra": "+3 s",
         "capsula": "Cápsula de racha",
-        "estrellas": "{n} estrellas"
+        "estrellas": "{n} estrellas + 10 Cometas"
       },
-      "estrellas": "¡{n} estrellas en tu ciudad favorita!"
+      "estrellas": "¡{n} estrellas en tu ciudad favorita! Y 10 Cometas."
     },
     "misiones": {
       "titulo": "Misiones de hoy",
@@ -4860,7 +4863,9 @@
         "inspiracion": "Inspirado en: {x}",
         "nota": "Cambia solo cómo se ve Prodigia: tus mundos, tu progreso y tus cosas quedan iguales.",
         "boton": "Muy pronto"
-      }
+      },
+      "comprarCometas": "Comprar por {n} Cometas",
+      "teFaltanCometas": "Te faltan {n} Cometas"
     },
     "invitado": "Las constelaciones, misiones y el calendario son para cuentas registradas. Crea tu cuenta para empezar a ganarlas.",
     "detalle": {

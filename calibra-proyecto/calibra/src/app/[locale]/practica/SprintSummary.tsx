@@ -24,6 +24,7 @@ export interface FinishResponse {
     correctos: number;
     precision: number | null;
     xpGanado: number;
+    chispasGanadas?: number;
     avgTimeMs: number | null;
   };
   historico: {
@@ -126,7 +127,7 @@ export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volv
           +<CountUp value={sprint.xpGanado} />{" "}
           <span className="text-base font-medium text-texto-secundario">{t("experiencia")}</span>
         </p>
-        <ChispasGanadasNota valor={sprint.xpGanado} />
+        <ChispasGanadasNota valor={sprint.chispasGanadas ?? 0} />
       </div>
 
       {resumen.metaAlcanzada && (

@@ -10,6 +10,7 @@ import { CATALOGO_NUEVO, COLOR_RAREZA, diasHastaFinDeMes, PAQUETES, temporadaAct
 import { cosmeticosDesdeFila, COLUMNAS_COSMETICOS_NUEVOS, equiparCosmetico, mensajeError, type CosmeticosNuevos } from "@/lib/recompensas/api";
 import { refrescarCosmeticosWeb } from "@/lib/recompensas/cosmeticosWeb";
 import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
+import IconoCometa from "@/components/IconoCometa";
 import { TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
 
 // Tienda ampliada (0248) en la web: la misma vidriera que las pestañas nuevas del
@@ -30,6 +31,8 @@ interface Item {
   rareza: Rareza;
   temporada?: number;
   items?: string[];
+  // Lo legendario se compra con Cometas (0280).
+  precioCometas?: number;
 }
 
 const ITEMS: Item[] = [
@@ -93,6 +96,7 @@ interface Estado {
   fondo: string;
   hielos: number;
   chispas: number;
+  cometas: number;
 }
 
 export default function TiendaAmpliada() {
@@ -116,6 +120,8 @@ export default function TiendaAmpliada() {
       sb.from("profiles").select("puntos_total, marco_perfil, marcos_desbloqueados, fondo_perfil, fondos_desbloqueados, hielos_disponibles, titulo_activo").eq("id", u.user.id).maybeSingle(),
       sb.from("titulos_usuario").select("slug").eq("user_id", u.user.id),
     ]);
+    // Aparte: si 0279 no se aplicó, la columna no existe y la tienda sigue andando.
+    const { data: filaCometas } = await sb.from("profiles").select("cometas").eq("id", u.user.id).maybeSingle();
     const b = (base ?? {}) as Record<string, unknown>;
     setE({
       cos: cosmeticosDesdeFila(nuevos as Record<string, unknown> | null),
@@ -127,6 +133,7 @@ export default function TiendaAmpliada() {
       fondo: (b.fondo_perfil as string) ?? "ninguno",
       hielos: (b.hielos_disponibles as number) ?? 0,
       chispas: (b.puntos_total as number) ?? 0,
+      cometas: (filaCometas as { cometas?: number } | null)?.cometas ?? 0,
     });
   }, []);
 
@@ -135,6 +142,16 @@ export default function TiendaAmpliada() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     cargar();
   }, [cargar]);
+
+  // Canje o compra de Cometas en otra parte de la tienda.
+  useEffect(() => {
+    const alCambiar = (ev: Event) => {
+      const n = (ev as CustomEvent<number>).detail;
+      if (typeof n === "number") setE((prev) => (prev ? { ...prev, cometas: n } : prev));
+    };
+    window.addEventListener("prodigia:cometas", alCambiar);
+    return () => window.removeEventListener("prodigia:cometas", alCambiar);
+  }, []);
 
   const tiene = useCallback(
     (it: Item): boolean => {
@@ -243,7 +260,8 @@ export default function TiendaAmpliada() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? "");
       reproducirTono("compra");
-      window.dispatchEvent(new CustomEvent("prodigia:chispas", { detail: data.puntos_total }));
+      if (typeof data.puntos_total === "number") window.dispatchEvent(new CustomEvent("prodigia:chispas", { detail: data.puntos_total }));
+      if (typeof data.cometas === "number") window.dispatchEvent(new CustomEvent("prodigia:cometas", { detail: data.cometas }));
       // Comprar no lo pone solo (pedido 2026-10-09): se usa con el botón «Usar».
       avisar(t("comprado", { nombre: elegido.nombre }));
       setConfirmar(false);
@@ -347,7 +365,14 @@ export default function TiendaAmpliada() {
                   {t(`rareza.${it.rareza}`).toUpperCase()}
                 </span>
               )}
-              {(!mio || n != null) && <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-xs text-foreground">✦ {it.precio.toLocaleString()}</span>}
+              {(!mio || n != null) &&
+                (it.precioCometas ? (
+                  <span className="flex items-center gap-1 rounded-full border border-[#5DE4FF]/50 bg-surface-2 px-2 py-0.5 font-mono text-xs text-foreground">
+                    <IconoCometa className="h-3.5 w-3.5" /> {it.precioCometas.toLocaleString()}
+                  </span>
+                ) : (
+                  <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-xs text-foreground">✦ {it.precio.toLocaleString()}</span>
+                ))}
             </button>
           );
         })}
@@ -417,6 +442,18 @@ export default function TiendaAmpliada() {
                   >
                     {usa(elegido) ? t("quitar") : t("usar")}
                   </button>
+                );
+              }
+              if (elegido.precioCometas) {
+                const pc = elegido.precioCometas;
+                return (
+                  <>
+                    <button type="button" disabled={ocupado || e.cometas < pc} onClick={comprar} className="flex items-center justify-center gap-2 rounded-full bg-[#5DE4FF] px-6 py-3 font-display font-bold text-[#06202A] disabled:opacity-50">
+                      <IconoCometa className="h-5 w-5" />
+                      {confirmar ? t("confirmar") : t("comprarCometas", { n: pc.toLocaleString() })}
+                    </button>
+                    {e.cometas < pc && <p className="text-center text-xs text-texto-secundario">{t("teFaltanCometas", { n: (pc - e.cometas).toLocaleString() })}</p>}
+                  </>
                 );
               }
               return (

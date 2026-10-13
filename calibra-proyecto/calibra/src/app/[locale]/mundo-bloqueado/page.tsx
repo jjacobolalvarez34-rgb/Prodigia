@@ -37,6 +37,9 @@ export default async function MundoBloqueadoPage({ searchParams }: Props) {
     redirect(next || "/");
   }
 
+  // Cometas aparte: si 0279 todavía no se aplicó, la columna no existe (saldo 0).
+  const { data: filaCometas } = await supabase.from("profiles").select("cometas").eq("id", profile.id).maybeSingle();
+
   return (
     <>
       <Header autenticado />
@@ -44,6 +47,7 @@ export default async function MundoBloqueadoPage({ searchParams }: Props) {
         mundo={mundo}
         nombreMundo={tMundos(mundo)}
         puntosIniciales={profile.puntos_total}
+        cometasIniciales={(filaCometas as { cometas?: number } | null)?.cometas ?? 0}
         destino={next || "/"}
       />
     </>

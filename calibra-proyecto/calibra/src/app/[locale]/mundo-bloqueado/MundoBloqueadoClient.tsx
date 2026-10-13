@@ -5,16 +5,20 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import Boton from "@/components/Boton";
 import { IconCandado } from "@/components/icons";
-import { PRECIO_MUNDO_CHISPAS, type MundoPago } from "@/lib/mundos/precios";
+import IconoCometa from "@/components/IconoCometa";
+import { createClient } from "@/lib/supabase/client";
+import { PRECIO_MUNDO_CHISPAS, PRECIO_MUNDO_COMETAS, type MundoPago } from "@/lib/mundos/precios";
 
 interface Props {
   mundo: MundoPago;
   nombreMundo: string;
   puntosIniciales: number;
+  // O con Cometas (0280: 300).
+  cometasIniciales: number;
   destino: string;
 }
 
-export default function MundoBloqueadoClient({ mundo, nombreMundo, puntosIniciales, destino }: Props) {
+export default function MundoBloqueadoClient({ mundo, nombreMundo, puntosIniciales, cometasIniciales, destino }: Props) {
   const t = useTranslations("Bloqueos.mundo");
   const router = useRouter();
   const [puntos, setPuntos] = useState(puntosIniciales);
@@ -23,6 +27,20 @@ export default function MundoBloqueadoClient({ mundo, nombreMundo, puntosInicial
   const [comprado, setComprado] = useState(false);
 
   const alcanza = puntos >= PRECIO_MUNDO_CHISPAS;
+  const alcanzaCometas = cometasIniciales >= PRECIO_MUNDO_COMETAS;
+
+  async function comprarConCometas() {
+    setComprando(true);
+    setError(null);
+    const { error: e } = await createClient().rpc("desbloquear_mundo_con_cometas", { p_mundo: mundo });
+    setComprando(false);
+    if (e) {
+      setError(e.message || t("noSePudoDesbloquear"));
+      return;
+    }
+    setComprado(true);
+    setTimeout(() => router.push(destino), 900);
+  }
 
   async function comprar() {
     setComprando(true);
@@ -76,7 +94,18 @@ export default function MundoBloqueadoClient({ mundo, nombreMundo, puntosInicial
           <Boton onClick={comprar} disabled={!alcanza} cargando={comprando} destacado>
             {alcanza ? t("desbloquearPor", { precio: PRECIO_MUNDO_CHISPAS }) : t("teFaltanChispas")}
           </Boton>
-          {!alcanza && (
+          {alcanzaCometas && (
+            <button
+              type="button"
+              onClick={comprarConCometas}
+              disabled={comprando}
+              className="flex items-center gap-2 rounded-full border border-[#5DE4FF]/60 bg-[#5DE4FF]/10 px-5 py-2.5 text-sm font-bold text-foreground disabled:opacity-50"
+            >
+              <IconoCometa className="h-5 w-5" />
+              {t("desbloquearCometas", { precio: PRECIO_MUNDO_COMETAS })}
+            </button>
+          )}
+          {!alcanza && !alcanzaCometas && (
             <p className="text-xs text-texto-secundario">
               {t("sigueJugando")}
             </p>

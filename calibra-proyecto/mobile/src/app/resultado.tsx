@@ -18,7 +18,8 @@ import ComparativaDuelo from "~/ui/ComparativaDuelo";
 import ResultadoVersus from "~/ui/ResultadoVersus";
 import Ciudad from "~/ui/Ciudad";
 import Confeti from "~/ui/Confeti";
-import { IconoCheck, IconoChispa, IconoLlama } from "~/ui/Iconos";
+import { IconoCheck, IconoChispa, IconoCometa, IconoLlama } from "~/ui/Iconos";
+import { COLOR_COMETA } from "@/lib/recompensas/iconoCometa";
 import NumeroAnimado from "~/ui/NumeroAnimado";
 import RepasoErrores from "~/ui/RepasoErrores";
 import Tarjeta from "~/ui/Tarjeta";
@@ -156,7 +157,8 @@ export default function Resultado() {
     setPaso(ultimoPaso);
   }
 
-  const chispasAntes = Math.max(0, (d.chispasTotal ?? 0) - (d.xp ?? 0) - (d.bonusNivel ?? 0));
+  // Economía nueva (0280): lo que suma la partida ya no es la Experiencia.
+  const chispasAntes = Math.max(0, (d.chispasTotal ?? 0) - (d.chispasPartida ?? 0) - (d.bonusNivel ?? 0));
   const s = Math.round((d.tiempoMs ?? 0) / 1000);
   const rival = duelo?.oponente_nombre ?? d.rival ?? "tu rival";
   const seg = (ms: number | null | undefined) => (ms == null ? "—" : `${(ms / 1000).toFixed(1)}s`);
@@ -270,7 +272,7 @@ export default function Resultado() {
             <View style={styles.fila}>
               <View style={{ flex: 1 }}>
                 <Tarjeta sinEntrada acento={color.logro} brillo={0.18} estilo={{ alignItems: "center" }}>
-                  {paso === 2 && Array.from({ length: Math.min(8, Math.max(3, Math.round(d.xp / 15))) }, (_, i) => <Moneda key={i} i={i} />)}
+                  {paso === 2 && Array.from({ length: Math.min(8, Math.max(3, Math.round((d.chispasPartida ?? 0) / 3))) }, (_, i) => <Moneda key={i} i={i} />)}
                   <View style={styles.filaCentro}>
                     <IconoChispa tam={22} />
                     <NumeroAnimado valor={d.chispasTotal ?? 0} desde={chispasAntes} v="mono" c={color.logro} estilo={{ fontSize: 18 }} duracion={1100} onTic={() => sonar("moneda")} />
@@ -359,6 +361,14 @@ export default function Resultado() {
                       </Texto>
                       <Texto v="h3">Nivel {d.nivelCuentaNuevo}</Texto>
                       {d.bonusNivel > 0 && <Texto v="nota">+{d.bonusNivel.toLocaleString("es")} Chispas de regalo</Texto>}
+                      {(d.cometasNivel ?? 0) > 0 && (
+                        <View style={[styles.filaCentro, { justifyContent: "flex-start", marginTop: 2 }]}>
+                          <IconoCometa tam={16} />
+                          <Texto v="nota" c={COLOR_COMETA}>
+                            +{d.cometasNivel} Cometas
+                          </Texto>
+                        </View>
+                      )}
                     </View>
                   </View>
                 </Tarjeta>

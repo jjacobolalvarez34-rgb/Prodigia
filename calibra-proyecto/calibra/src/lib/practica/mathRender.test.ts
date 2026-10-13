@@ -210,8 +210,12 @@ describe("puntos de render: los componentes que muestran preguntas usan MathText
       "app/[locale]/estadistica/EstadisticaPracticaClient.tsx",
       "app/[locale]/trigonometria/TrigonometriaPracticaClient.tsx",
     ]) {
-      expect(leer(f), f).toContain("<MathText texto={String(p.respuesta)} />");
+      // Desde el repaso de errores (b345c48) la lista de errores la dibuja RepasoErrores.
+      expect(leer(f), f).toContain("<RepasoErrores fallos=");
     }
+    const repaso = leer("components/practica/RepasoErrores.tsx");
+    expect(repaso).toContain("<MathText texto={f.enunciado} />");
+    expect(repaso).toContain("<MathText texto={f.correcta} />");
     expect(leer("components/practica/RevelarRespuesta.tsx")).toContain("<MathText");
     const reto = leer("components/reto/RetoClient.tsx");
     expect(reto).toContain("<MathText texto={pregunta.enunciado} />");

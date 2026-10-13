@@ -4,6 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import CountUp from "@/components/CountUp";
+import IconoCometa from "@/components/IconoCometa";
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, subscribeEfectos } from "@/lib/efectos";
 import { reproducirTono } from "@/lib/sonido";
 
@@ -11,6 +12,8 @@ export interface NivelCuentaInfo {
   subio: boolean;
   nivel: number;
   bonus: number;
+  // 25 Cometas al llegar a un nivel múltiplo de 10 (0280).
+  cometas?: number;
 }
 
 interface Props {
@@ -113,6 +116,11 @@ export default function NivelCuentaSubio({ nivelCuenta }: Props) {
                   <p className="font-mono text-2xl font-bold text-primario">
                     +<CountUp value={nivelCuenta.bonus} /> {t("chispas")}
                   </p>
+                  {(nivelCuenta.cometas ?? 0) > 0 && (
+                    <p className="flex items-center gap-1.5 font-mono text-xl font-bold text-[#2AA8D8]">
+                      <IconoCometa className="h-6 w-6" /> +{nivelCuenta.cometas} {t("cometas")}
+                    </p>
+                  )}
                   <p className="text-sm text-texto-secundario">{t("subtitulo", { siguiente: nivelCuenta.nivel + 1 })}</p>
                 </motion.div>
               )}

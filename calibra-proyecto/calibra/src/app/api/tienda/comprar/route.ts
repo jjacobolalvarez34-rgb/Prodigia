@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { precioConDescuento } from "@/lib/descuentoDiario";
 import { respuestaError } from "@/lib/api/respuestaError";
 import { COSTOS, type ItemComprable as Item } from "@/lib/tienda/costos";
-import { CATALOGO_NUEVO, PAQUETES, UTILIDADES_NUEVAS } from "@/lib/recompensas/catalogo";
+import { CATALOGO_NUEVO, PAQUETES, precioEnCometas, UTILIDADES_NUEVAS } from "@/lib/recompensas/catalogo";
 
 interface Body {
   item: Item | string;
@@ -32,6 +32,19 @@ export async function POST(request: Request) {
   }
 
   const body = (await request.json()) as Body;
+
+  // Lo legendario se compra solo con Cometas (0280). Se devuelve también lo
+  // desbloqueado para que la tienda lo marque como tuyo sin recargar.
+  if (precioEnCometas(body.item) != null) {
+    const { data, error } = await supabase.rpc("comprar_con_cometas", { p_item: body.item });
+    if (error) return respuestaError("tienda/comprar:cometas", error);
+    const { data: perfil } = await supabase
+      .from("profiles")
+      .select("puntos_total, fuentes_desbloqueadas, marcos_desbloqueados, animaciones_desbloqueadas, fondos_desbloqueados")
+      .eq("id", user.id)
+      .single();
+    return NextResponse.json({ ok: true, ...(perfil ?? {}), cometas: (data as { cometas: number }[] | null)?.[0]?.cometas ?? null });
+  }
   const nuevo = body.item in COSTOS ? null : precioNuevo(body.item);
   if (!(body.item in COSTOS) && nuevo == null) {
     return NextResponse.json({ error: "Item inválido" }, { status: 400 });

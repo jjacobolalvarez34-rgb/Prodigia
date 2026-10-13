@@ -78,6 +78,9 @@ export interface ResultadoPartida {
   nivelCuentaSubio: boolean;
   nivelCuentaNuevo: number;
   bonusNivel: number;
+  // Economía nueva (0280): Chispas de esta partida y Cometas por nivel múltiplo de 10.
+  chispasPartida: number;
+  cometasNivel: number;
   nivelMundo: number | null;
   nivelMundoAnterior: number | null;
   rachaAntes: number;
@@ -143,6 +146,8 @@ export async function cerrarPartida(xpSprint: number, mundo: MundoSlug = "numeri
     nivel_cuenta_subio: boolean;
     nivel_cuenta_nuevo: number;
     nivel_cuenta_bonus: number;
+    chispas_partida?: number;
+    cometas_nivel?: number;
   }[])[0];
 
   const rachaDespues = userId ? await rachaDelJugador(userId) : rachaAntes;
@@ -155,6 +160,8 @@ export async function cerrarPartida(xpSprint: number, mundo: MundoSlug = "numeri
     nivelCuentaSubio: r.nivel_cuenta_subio,
     nivelCuentaNuevo: r.nivel_cuenta_nuevo,
     bonusNivel: r.nivel_cuenta_bonus,
+    chispasPartida: r.chispas_partida ?? 0,
+    cometasNivel: r.cometas_nivel ?? 0,
     nivelMundo,
     nivelMundoAnterior,
     rachaAntes,
@@ -178,6 +185,8 @@ async function partidaSinConexion(mundo: MundoSlug): Promise<ResultadoPartida> {
     nivelCuentaSubio: false,
     nivelCuentaNuevo: 0,
     bonusNivel: 0,
+    chispasPartida: 0,
+    cometasNivel: 0,
     nivelMundo: null,
     nivelMundoAnterior: null,
     rachaAntes: racha,

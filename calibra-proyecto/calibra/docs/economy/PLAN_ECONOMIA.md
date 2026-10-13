@@ -79,12 +79,20 @@ general (cualquier persona que estudia); el plan para colegios es un producto ap
 
 ## 4. Números nuevos
 
+> **Hecho el 2026-10-13 (0279 y 0280), web y app.** Cambios respecto de lo de abajo, decididos
+> ese día: **sin tope diario** de Chispas y **sin convertir los saldos** (§9). La partida paga
+> 1 Chispa por respuesta (hasta 10) + 1 por acierto (hasta 20), ×2 en doble experiencia y ×1,5
+> con boost. Los logros dan Cometas solo si la base puede comprobarlos (racha, problemas,
+> nivel de mundo, duelos, ELO, retos, técnicas), porque cualquiera puede insertar un logro desde
+> su sesión. Liga: Oro = top 3, Plata = top 10, Bronce = top 50 de la semana. Pendiente: fusión
+> de cápsulas y reparar racha con Cometas, Pro nuevo (§5) y la tabla `economia_precios` (§10).
+
 ### 4.1 Lo que se gana (jugador gratis que hace ~5 partidas al día)
 
 | Fuente | Ahora | Propuesta |
 |---|---|---|
 | Partida terminada | ~130 (hasta 700) | **10 + 1 por acierto** → 12–20. Doble experiencia: las Chispas también ×2 |
-| Tope diario | Ninguno | Después de 10 partidas al día, la mitad (la Experiencia sigue completa) |
+| Tope diario | Ninguno | ~~Después de 10 partidas al día, la mitad~~ **Descartado el 2026-10-13: sin tope** |
 | Experiencia | = Chispas | **Sin cambios**: sigue la fórmula de hoy (niveles, ligas y meta diaria intactos) |
 | Subir de nivel | 50 × nivel + 250 | **100 Chispas fijas**; cada 10 niveles, **25 Cometas** |
 | Misiones del día | 40 / 50 / 60 | 20 / 25 / 30; las 3 → cápsula de bronce |
@@ -219,7 +227,10 @@ Comisiones aproximadas: Google Play 15 %, Paddle ~5 % + US$0,50, Mercado Pago ~4
 
 Si se baja lo que da jugar, los saldos actuales quedan inflados. Opciones:
 
-**Decidido (2026-10-10):** convertir los saldos a la escala nueva (dividir entre 6, que es la
+**Cambiado el 2026-10-13: los saldos NO se convierten** («no conviertas los saldos»). Lo de
+abajo queda como historia.
+
+~~Decidido (2026-10-10):~~ convertir los saldos a la escala nueva (dividir entre 6, que es la
 relación entre lo que daba una partida antes y lo que da ahora) y dar a cada cuenta existente
 el marco «Pionero de la economía» y 100 Cometas de regalo. Se hace en la Fase 1, junto con
 los precios nuevos, y con un aviso que lo explica.
@@ -247,8 +258,8 @@ Lo ya comprado (mundos, cosméticos) no se toca nunca.
 
 | Fase | Qué |
 |---|---|
-| **1. Separar Experiencia y Chispas** | `insertar_intento` y `acreditar_chispas` dejan de sumar Chispas por Experiencia; nueva fórmula por partida con tope diario; nuevos premios de nivel, misiones, calendario, constelaciones y retos; precios nuevos; conversión de saldos; tabla `economia_precios`; simulador. Web y app a la vez |
-| **2. Cometas** | Columna y movimientos en la base, tienda con las dos monedas, Cometas gratis (logros, ligas, niveles) |
+| **1. Separar Experiencia y Chispas** — hecho (0280, sin conversión ni tope) | `insertar_intento` y `acreditar_chispas` dejan de sumar Chispas por Experiencia; nueva fórmula por partida con tope diario; nuevos premios de nivel, misiones, calendario, constelaciones y retos; precios nuevos; conversión de saldos; tabla `economia_precios`; simulador. Web y app a la vez |
+| **2. Cometas** — hecho (0279 y 0280) | Columna y movimientos en la base, tienda con las dos monedas, Cometas gratis (logros, ligas, niveles) |
 | **3. Cobros reales** | RevenueCat + Google Play Billing en la app; Paddle y Mercado Pago encendidos en la web; productos de §4.3; paquete de inicio |
 | **4. Pro nuevo** | Beneficios de §5 y prueba gratis de 7 días. Ya hecho: todos los mundos y el apagado con aviso (§5.1) |
 | **5. Anuncios** | **Programado** (§6); falta crear las cuentas y poner los IDs reales |

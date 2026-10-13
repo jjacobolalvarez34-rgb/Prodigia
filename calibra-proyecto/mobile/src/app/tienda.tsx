@@ -30,6 +30,7 @@ import {
   loUsa,
   NOMBRE_RAREZA,
   precioDe,
+  cometasDe,
   rarezaDeItem,
   subirFondo,
   tieneSlug,
@@ -158,6 +159,7 @@ function Muestra({ it, placa }: { it: ItemTienda; placa: PlacaDatos }) {
 // memo: tocar una tarjeta no vuelve a dibujar las demás.
 const TarjetaItem = memo(function TarjetaItem({ it, e, placa, ancho, onPress }: { it: ItemTienda; e: EstadoTienda; placa: PlacaDatos; ancho: number; onPress: (it: ItemTienda) => void }) {
   const precio = precioDe(it);
+  const precioCometas = cometasDe(it);
   const rareza = rarezaDeItem(it);
   const c = COLOR_RAREZA[rareza];
   const tiene = loTiene(it, e);
@@ -201,12 +203,21 @@ const TarjetaItem = memo(function TarjetaItem({ it, e, placa, ancho, onPress }: 
         <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 9.5, letterSpacing: 0.8, color: c }}>{NOMBRE_RAREZA[rareza].toUpperCase()}</Texto>
       )}
       {(!tiene || it.categoria === "utilidad") && (
-        <View style={[styles.precio, oferta && { borderColor: color.correcto }]}>
-          <IconoChispa tam={12} />
-          <Texto v="mono" tam={11.5} c={oferta ? color.correcto : color.texto}>
-            {precio.toLocaleString("es")}
-          </Texto>
-        </View>
+        precioCometas != null ? (
+          <View style={[styles.precio, { borderColor: conAlfa(COLOR_COMETA, 0.6) }]}>
+            <IconoCometa tam={12} />
+            <Texto v="mono" tam={11.5}>
+              {precioCometas.toLocaleString("es")}
+            </Texto>
+          </View>
+        ) : (
+          <View style={[styles.precio, oferta && { borderColor: color.correcto }]}>
+            <IconoChispa tam={12} />
+            <Texto v="mono" tam={11.5} c={oferta ? color.correcto : color.texto}>
+              {precio.toLocaleString("es")}
+            </Texto>
+          </View>
+        )
       )}
       {it.soloPro && (
         <View style={styles.pro}>
@@ -323,8 +334,9 @@ export default function Tienda() {
     }
     setOcupado(true);
     try {
-      const total = await comprar(elegido);
-      fijarChispas(total);
+      const saldo = await comprar(elegido);
+      if (saldo.chispas != null) fijarChispas(saldo.chispas);
+      if (saldo.cometas != null) fijarCometas(saldo.cometas);
       sonar("recompensa");
       vibrar.exito();
       setFestejo((n) => n + 1);
@@ -359,6 +371,8 @@ export default function Tienda() {
   const tiene = elegido ? loTiene(elegido, e) : false;
   const usa = elegido ? loUsa(elegido, e) : false;
   const precio = elegido ? precioDe(elegido) : 0;
+  const precioCometas = elegido ? cometasDe(elegido) : null;
+  const misCometas = resumen?.cometas ?? 0;
   const bloqueoNivel = elegido?.nivelMundo && (e.nivelesMundo[elegido.nivelMundo] ?? 0) < 40;
   const bloqueoPro = elegido?.soloPro && e.plan !== "pro";
   const ninguno: Partial<Record<Categoria, string>> = { marco: "ninguno", marco_mundo: "ninguno", fuente: "default", animacion: "ninguna", fondo: "ninguno", galeria: "ninguno", estela: "clasica", efecto: "chispas", sonido: "clasico" };
@@ -723,6 +737,23 @@ export default function Tienda() {
             ) : bloqueoPro ? (
               <Boton3D titulo="Exclusivo de Prodigia Pro" variante="pro" onPress={() => { setElegido(null); router.push("/pro"); }} />
             ) : (
+              precioCometas != null ? (
+                <>
+                  <Boton3D
+                    titulo={confirmar ? "¿Seguro? Confirmar compra" : `Comprar por ${precioCometas.toLocaleString("es")} Cometas`}
+                    icono={confirmar ? undefined : <IconoCometa tam={18} />}
+                    brillo
+                    deshabilitado={misCometas < precioCometas}
+                    cargando={ocupado}
+                    onPress={hacerCompra}
+                  />
+                  <Texto v="nota" centro tam={12}>
+                    {misCometas < precioCometas
+                      ? `Lo legendario va con Cometas: te faltan ${(precioCometas - misCometas).toLocaleString("es")}`
+                      : `Te quedarán ${(misCometas - precioCometas).toLocaleString("es")} Cometas`}
+                  </Texto>
+                </>
+              ) : (
               <>
                 <Boton3D
                   titulo={confirmar ? "¿Seguro? Confirmar compra" : `Comprar por ${precio.toLocaleString("es")}`}
@@ -739,6 +770,7 @@ export default function Tienda() {
                     : `Te quedarán ${(e.chispas - precio).toLocaleString("es")} Chispas`}
                 </Texto>
               </>
+              )
             )}
           </>
         )}

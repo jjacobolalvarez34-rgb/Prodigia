@@ -37,7 +37,7 @@ const OBJETIVO_SPRINT = 10;
 type Fase = "inicio" | "vs" | "sprint" | "finalizando" | "resumen";
 
 interface FinishResponse {
-  sprint: { total: number; correctos: number; precision: number | null; xpGanado: number; avgTimeMs: number | null };
+  sprint: { total: number; correctos: number; precision: number | null; xpGanado: number; chispasGanadas?: number; avgTimeMs: number | null };
   puntosTotal: number;
   xpGanadoHoy: number;
   metaAlcanzada: boolean;
@@ -269,7 +269,7 @@ export default function AnatomiaPracticaClient({ modo, nivelInicial, escudosExtr
             +{resumen.sprint.xpGanado}{" "}
             <span className="text-base font-medium text-texto-secundario">{t("practicaClient.experiencia")}</span>
           </p>
-          <ChispasGanadasNota valor={resumen.sprint.xpGanado} />
+          <ChispasGanadasNota valor={resumen.sprint.chispasGanadas ?? 0} />
         </div>
 
         <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">

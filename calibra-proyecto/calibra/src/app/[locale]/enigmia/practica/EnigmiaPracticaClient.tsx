@@ -34,7 +34,7 @@ const OBJETIVO_SPRINT = 10;
 type Fase = "inicio" | "vs" | "sprint" | "finalizando" | "resumen";
 
 interface FinishResponse {
-  partida: { total: number; correctos: number; precision: number | null; xpGanado: number; avgTimeMs: number | null };
+  partida: { total: number; correctos: number; precision: number | null; xpGanado: number; chispasGanadas?: number; avgTimeMs: number | null };
   historico: { total: number; correctos: number; precision: number | null; avgTimeMs: number | null };
   puntosTotal: number;
   xpGanadoHoy: number;
@@ -305,7 +305,7 @@ export default function EnigmiaPracticaClient({
           <p className="font-mono text-3xl font-bold text-foreground">
             +{resumen.partida.xpGanado} <span className="text-base font-medium text-texto-secundario">{t("experiencia")}</span>
           </p>
-          <ChispasGanadasNota valor={resumen.partida.xpGanado} />
+          <ChispasGanadasNota valor={resumen.partida.chispasGanadas ?? 0} />
         </div>
 
         <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-6 py-4 shadow-sm">

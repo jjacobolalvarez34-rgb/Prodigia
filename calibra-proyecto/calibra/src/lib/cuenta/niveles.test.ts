@@ -3,6 +3,7 @@ import {
   costoMarginalNivelCuenta,
   nivelDesdeXpCuenta,
   recompensaNivelCuenta,
+  cometasNivelCuenta,
   xpRequeridoNivelCuenta,
 } from "./niveles";
 
@@ -87,34 +88,13 @@ describe("nivelDesdeXpCuenta (0118)", () => {
   });
 });
 
-describe("recompensaNivelCuenta (T6)", () => {
-  it("50*n + 250: 300 en nivel 1, 1000 en el 15, 2750 en el 50", () => {
-    expect(recompensaNivelCuenta(1)).toBe(300);
-    expect(recompensaNivelCuenta(5)).toBe(500);
-    expect(recompensaNivelCuenta(10)).toBe(750);
-    expect(recompensaNivelCuenta(15)).toBe(1000);
-    expect(recompensaNivelCuenta(20)).toBe(1250);
-    expect(recompensaNivelCuenta(30)).toBe(1750);
-    expect(recompensaNivelCuenta(50)).toBe(2750);
-  });
-
-  it("niveles bajos emocionan sin llegar a 2x el costo del nivel", () => {
-    for (let n = 2; n <= 10; n++) {
-      expect(recompensaNivelCuenta(n)).toBeLessThanOrEqual(Math.round(costoMarginalNivelCuenta(n) * 1.75));
-      expect(recompensaNivelCuenta(n)).toBeGreaterThanOrEqual(Math.round(costoMarginalNivelCuenta(n) * 0.9));
-    }
-  });
-
-  it("niveles medios/altos pagan entre 0.7x y 1.15x el costo del nivel", () => {
-    for (let n = 11; n <= 50; n++) {
-      expect(recompensaNivelCuenta(n)).toBeLessThanOrEqual(Math.round(costoMarginalNivelCuenta(n) * 1.15));
-      expect(recompensaNivelCuenta(n)).toBeGreaterThanOrEqual(Math.round(costoMarginalNivelCuenta(n) * 0.6));
-    }
-  });
-
-  it("es creciente (los niveles altos valen más)", () => {
-    for (let n = 1; n < 200; n++) {
-      expect(recompensaNivelCuenta(n + 1)).toBeGreaterThan(recompensaNivelCuenta(n));
-    }
+describe("premio por subir de nivel (0280)", () => {
+  it("100 Chispas por nivel y 25 Cometas en cada múltiplo de 10", () => {
+    expect(recompensaNivelCuenta()).toBe(100);
+    expect(cometasNivelCuenta(9)).toBe(0);
+    expect(cometasNivelCuenta(10)).toBe(25);
+    expect(cometasNivelCuenta(20)).toBe(25);
+    expect(cometasNivelCuenta(21)).toBe(0);
   });
 });
+

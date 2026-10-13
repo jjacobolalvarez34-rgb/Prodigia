@@ -908,7 +908,8 @@
     "tusAyudas": "Your boosts",
     "sinAyudas": "You don't have any saved boosts.",
     "sinColorNombre": "You don't have the name color yet.",
-    "yaLoTienes": "You already have it: it's in your Inventory."
+    "yaLoTienes": "You already have it: it's in your Inventory.",
+    "nombreCometas": "{nombre} · {costo} Comets"
   },
   "Common": {
     "entendido": "Got it",
@@ -1836,7 +1837,8 @@
       "teFaltanChispas": "You're short on Chispas",
       "sigueJugando": "Keep playing to earn more Chispas, or check out the shop.",
       "noSePudoDesbloquear": "Couldn't unlock it. Try again.",
-      "noSePudoConectar": "Couldn't connect. Try again."
+      "noSePudoConectar": "Couldn't connect. Try again.",
+      "desbloquearCometas": "Or for {precio} Comets"
     }
   },
   "Clanes": {
@@ -1985,7 +1987,8 @@
       "titulo": "LEVEL {nivel}!",
       "chispas": "Chispas",
       "subtitulo": "Keep going for level {siguiente}",
-      "continuar": "Continue!"
+      "continuar": "Continue!",
+      "cometas": "Comets"
     },
     "chispasGanadas": {
       "texto": "+{n} Chispas earned"
@@ -4737,9 +4740,9 @@
         "hielo": "1 ice",
         "tiempo_extra": "+3 s",
         "capsula": "Streak capsule",
-        "estrellas": "{n} stars"
+        "estrellas": "{n} stars + 10 Comets"
       },
-      "estrellas": "{n} stars in your favorite city!"
+      "estrellas": "{n} stars in your favorite city! And 10 Comets."
     },
     "misiones": {
       "titulo": "Today's missions",
@@ -4860,7 +4863,9 @@
         "inspiracion": "Inspired by: {x}",
         "nota": "It only changes how Prodigia looks: your worlds, progress and items stay the same.",
         "boton": "Coming soon"
-      }
+      },
+      "comprarCometas": "Buy for {n} Comets",
+      "teFaltanCometas": "You need {n} more Comets"
     },
     "invitado": "Constellations, missions and the calendar are for registered accounts. Create your account to start earning them.",
     "detalle": {

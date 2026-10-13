@@ -37,6 +37,12 @@ export function nivelDesdeXpCuenta(xp: number): number {
   return nivel;
 }
 
-export function recompensaNivelCuenta(nivel: number): number {
-  return 50 * Math.max(1, Math.floor(nivel)) + 250;
+// Economía nueva (0280): 100 Chispas por nivel y 25 Cometas al llegar a cada
+// múltiplo de 10 (recompensa_nivel_cuenta / cometas_nivel_cuenta).
+export function recompensaNivelCuenta(): number {
+  return 100;
+}
+
+export function cometasNivelCuenta(nivel: number): number {
+  return nivel > 0 && nivel % 10 === 0 ? 25 : 0;
 }
