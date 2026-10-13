@@ -10,7 +10,9 @@ import { CATALOGO_NUEVO, diasHastaFinDeMes } from "@/lib/recompensas/catalogo";
 import { TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
 import { probarPaqueteAcierto, sonar, vibrar } from "~/lib/efectos";
 import { recargarCosmeticos } from "~/lib/recompensas";
-import { fijarChispas, recargarJugador, useJugador } from "~/lib/jugador";
+import { fijarChispas, fijarCometas, recargarJugador, useJugador } from "~/lib/jugador";
+import { CANJES_COMETAS, canjearCometas, CHISPAS_POR_COMETA } from "~/lib/cometas";
+import { COLOR_COMETA } from "@/lib/recompensas/iconoCometa";
 import type { PlacaDatos } from "~/lib/placa";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError } from "~/lib/supabase";
@@ -39,7 +41,7 @@ import { mostrarAviso } from "~/ui/Aviso";
 import Boton3D from "~/ui/Boton3D";
 import Confeti from "~/ui/Confeti";
 import Hoja from "~/ui/Hoja";
-import { IconoChispa, IconoCopo, IconoEscudo, IconoRayo, IconoReloj } from "~/ui/Iconos";
+import { IconoChispa, IconoCometa, IconoCopo, IconoEscudo, IconoRayo, IconoReloj } from "~/ui/Iconos";
 import NumeroAnimado from "~/ui/NumeroAnimado";
 import { BotonAtras, PantallaApilada } from "~/ui/Pantalla";
 import AvatarMarco from "~/ui/placa/AvatarMarco";
@@ -54,8 +56,9 @@ import { FUENTE_FAMILIA } from "~/lib/placa";
 
 // Una categoría a la vez (antes la tienda dibujaba todo el catálogo junto y se
 // trababa): menos cosas en pantalla, y la grilla entra con un fundido.
-type Pestana = "utilidad" | "paquetes" | "temas" | "marcos" | "nombre" | "fondos" | "partida" | "placa" | "duelos";
+type Pestana = "cometas" | "utilidad" | "paquetes" | "temas" | "marcos" | "nombre" | "fondos" | "partida" | "placa" | "duelos";
 const PESTANAS: { id: Pestana; titulo: string }[] = [
+  { id: "cometas", titulo: "Cometas" },
   { id: "utilidad", titulo: "Utilidades" },
   { id: "paquetes", titulo: "Paquetes" },
   { id: "temas", titulo: "Temas ✦" },
@@ -67,6 +70,7 @@ const PESTANAS: { id: Pestana; titulo: string }[] = [
   { id: "duelos", titulo: "Duelos" },
 ];
 const CATEGORIAS_DE: Record<Pestana, Categoria[]> = {
+  cometas: [],
   utilidad: ["utilidad"],
   paquetes: ["paquete"],
   temas: [],
@@ -244,17 +248,20 @@ type Modo = "tienda" | "inventario";
 
 export default function Tienda() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ modo?: string }>();
+  const params = useLocalSearchParams<{ modo?: string; pestana?: string }>();
   const [modo, setModo] = useState<Modo>(params.modo === "inventario" ? "inventario" : "tienda");
   const { sesion } = useSesion();
   const userId = sesion?.user.id;
-  const { placa } = useJugador();
+  const { placa, resumen } = useJugador();
   const [e, setE] = useState<EstadoTienda | null>(null);
   const [elegido, setElegido] = useState<ItemTienda | null>(null);
   const [confirmar, setConfirmar] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [festejo, setFestejo] = useState(0);
-  const [pestana, setPestana] = useState<Pestana>("utilidad");
+  const [pestana, setPestana] = useState<Pestana>(params.pestana === "cometas" ? "cometas" : "utilidad");
+  const cometas = resumen?.cometas ?? 0;
+  const [canjePendiente, setCanjePendiente] = useState<number | null>(null);
+  const [canjeando, setCanjeando] = useState(false);
   const [tema, setTema] = useState<TemaApp | null>(null);
   const anchoTarjeta = Math.floor((Dimensions.get("window").width - 32 - 20) / 3);
   const elegirItem = useCallback((it: ItemTienda) => {
@@ -356,7 +363,7 @@ export default function Tienda() {
   const bloqueoPro = elegido?.soloPro && e.plan !== "pro";
   const ninguno: Partial<Record<Categoria, string>> = { marco: "ninguno", marco_mundo: "ninguno", fuente: "default", animacion: "ninguna", fondo: "ninguno", galeria: "ninguno", estela: "clasica", efecto: "chispas", sonido: "clasico" };
 
-  const pestanas = modo === "inventario" ? PESTANAS.filter((p) => p.id !== "paquetes" && p.id !== "temas") : PESTANAS;
+  const pestanas = modo === "inventario" ? PESTANAS.filter((p) => p.id !== "paquetes" && p.id !== "temas" && p.id !== "cometas") : PESTANAS;
   const pestanaVista = pestanas.some((p) => p.id === pestana) ? pestana : pestanas[0].id;
   const items = catalogo.filter((x) => {
     if (!CATEGORIAS_DE[pestanaVista].includes(x.categoria)) return false;
@@ -454,7 +461,79 @@ export default function Tienda() {
             </ScrollView>
           </View>
 
-          {pestanaVista === "temas" ? (
+          {pestanaVista === "cometas" ? (
+            <Animated.View key="cometas" entering={FadeIn.duration(220)} style={{ paddingHorizontal: 16, paddingTop: 14, gap: 14 }}>
+              <View style={styles.cometasCaja}>
+                <IconoCometa tam={52} />
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Texto v="micro" c={COLOR_COMETA}>
+                    Tus Cometas
+                  </Texto>
+                  <Texto v="mono" tam={28}>
+                    {cometas.toLocaleString("es")}
+                  </Texto>
+                  <Texto v="nota" tam={12}>
+                    La moneda premium. Cada Cometa vale {CHISPAS_POR_COMETA} Chispas.
+                  </Texto>
+                </View>
+              </View>
+              <Texto v="h3">Cambiar por Chispas</Texto>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
+                {CANJES_COMETAS.map((n) => {
+                  const alcanza = cometas >= n;
+                  const confirmando = canjePendiente === n;
+                  return (
+                    <Pressable
+                      key={n}
+                      disabled={!alcanza || canjeando}
+                      onPress={async () => {
+                        vibrar.seleccion();
+                        if (!confirmando) {
+                          setCanjePendiente(n);
+                          return;
+                        }
+                        setCanjeando(true);
+                        try {
+                          const r = await canjearCometas(n);
+                          fijarCometas(r.cometas);
+                          fijarChispas(r.chispas);
+                          sonar("recompensa");
+                          vibrar.exito();
+                          mostrarAviso(`+${(n * CHISPAS_POR_COMETA).toLocaleString("es")} Chispas`, "logro");
+                          await cargar();
+                        } catch (err) {
+                          mostrarAviso(mensajeError(err), "error");
+                        } finally {
+                          setCanjeando(false);
+                          setCanjePendiente(null);
+                        }
+                      }}
+                      style={({ pressed }) => [styles.canje, { width: anchoTarjeta * 1.5 + 5 }, confirmando && { borderColor: COLOR_COMETA }, !alcanza && { opacity: 0.45 }, pressed && { transform: [{ scale: 0.96 }] }]}
+                    >
+                      <View style={styles.fila}>
+                        <IconoCometa tam={20} />
+                        <Texto v="mono" tam={16}>
+                          {n}
+                        </Texto>
+                      </View>
+                      <Texto v="nota" tam={12}>
+                        {confirmando ? "Toca otra vez para confirmar" : "se cambian por"}
+                      </Texto>
+                      <View style={styles.fila}>
+                        <IconoChispa tam={16} />
+                        <Texto v="mono" tam={16} c={color.logro}>
+                          {(n * CHISPAS_POR_COMETA).toLocaleString("es")}
+                        </Texto>
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              <Texto v="nota" tam={12}>
+                Consigues Cometas comprándolos en la web (pronto también desde la app) y, de a poco, jugando: cada 10 niveles de cuenta, en la liga semanal, en los logros y en el reto de fin de semana.
+              </Texto>
+            </Animated.View>
+          ) : pestanaVista === "temas" ? (
             <Animated.View key="temas" entering={FadeIn.duration(220)} style={{ paddingHorizontal: 16, paddingTop: 14, gap: 12 }}>
               <View style={styles.avisoTemas}>
                 <Texto v="micro" c={color.logro}>
@@ -704,6 +783,8 @@ const styles = StyleSheet.create({
   chipsCaja: { paddingVertical: 10, backgroundColor: color.bg, borderBottomWidth: 1, borderBottomColor: color.border },
   chip: { paddingHorizontal: 16, paddingVertical: 9, borderRadius: 999, borderWidth: 1, borderColor: color.border, backgroundColor: color.surface1 },
   chipActivo: { borderColor: color.primarioNeon, backgroundColor: conAlfa(color.primario, 0.22) },
+  cometasCaja: { flexDirection: "row", alignItems: "center", gap: 14, padding: 16, borderRadius: 18, borderWidth: 1, borderColor: conAlfa(COLOR_COMETA, 0.4), backgroundColor: conAlfa(COLOR_COMETA, 0.07) },
+  canje: { alignItems: "center", gap: 6, paddingVertical: 14, borderRadius: 16, borderWidth: 1.5, borderColor: color.border, backgroundColor: color.surface1 },
   avisoTemas: { gap: 4, padding: 14, borderRadius: 16, borderWidth: 1, borderColor: conAlfa(color.logro, 0.35), backgroundColor: conAlfa(color.logro, 0.06) },
   pronto: { paddingHorizontal: 7, paddingVertical: 2, borderRadius: 999, borderWidth: 1, borderColor: conAlfa(color.logro, 0.5) },
   grilla: { flexDirection: "row", flexWrap: "wrap", gap: 10, paddingHorizontal: 16, paddingTop: 14 },

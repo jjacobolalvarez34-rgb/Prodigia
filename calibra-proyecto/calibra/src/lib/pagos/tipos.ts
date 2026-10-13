@@ -18,13 +18,15 @@ export type MotivoSuscripcion = "activacion" | "renovacion" | "actualizacion" | 
 // Catálogo de productos comprables — ver productos.ts para los valores
 // reales. "chispas_*" son packs de Chispas con dinero real, separados
 // del catálogo de gameplay (src/lib/tienda/costos.ts).
-export type ProductoComprable = "pro_mensual" | "pro_anual" | "chispas_1000" | "chispas_2500" | "chispas_6000" | "chispas_15000";
+// "cometas_*" (2026-10-13): la moneda premium (0279), PLAN_ECONOMIA.md §4.3.
+export type ProductoComprable = "pro_mensual" | "pro_anual" | "chispas_1000" | "chispas_2500" | "chispas_6000" | "chispas_15000" | "cometas_100" | "cometas_550" | "cometas_1200" | "cometas_2600" | "cometas_7000";
 
 export interface DefinicionProducto {
   id: ProductoComprable;
-  tipo: "suscripcion" | "chispas";
+  tipo: "suscripcion" | "chispas" | "cometas";
   intervalo?: IntervaloPlan; // solo si tipo === "suscripcion"
   montoChispas?: number; // solo si tipo === "chispas"
+  montoCometas?: number; // solo si tipo === "cometas"
   precioUsd: number; // referencia para mostrar en la UI antes del checkout
 }
 
@@ -49,6 +51,12 @@ export type EventoWebhookNormalizado =
       intervalo: IntervaloPlan;
       periodoFin: string | null; // ISO timestamp
       cancelaAlFinDePeriodo: boolean;
+    }
+  | {
+      tipo: "compra_cometas";
+      userId: string;
+      providerTransactionId: string;
+      montoCometas: number;
     }
   | {
       tipo: "compra_chispas";

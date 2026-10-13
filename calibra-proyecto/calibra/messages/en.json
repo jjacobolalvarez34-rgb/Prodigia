@@ -5226,5 +5226,16 @@
     "correcta": "Correct answer",
     "comoSeResuelve": "How to solve it",
     "sinPasos": "This question doesn't have a step-by-step yet. Look at the correct answer and try it again next game."
+  },
+  "Cometas": {
+    "tusCometas": "Your Comets",
+    "explicacion": "The premium currency. Each Comet trades for {n} Chispas.",
+    "canjeTitulo": "Trade Comets for Chispas",
+    "seCambianPor": "trade for",
+    "confirmar": "Tap again to confirm",
+    "canjeHecho": "Done! You got {n} Chispas.",
+    "comprarTitulo": "Get Comets",
+    "errorCompra": "Couldn't open the payment. Try again.",
+    "comoConseguir": "You also earn Comets by leveling up (every 10 levels), in the weekly league, with achievements and in the weekend challenge."
   }
 }

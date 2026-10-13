@@ -68,6 +68,14 @@ export async function aplicarEventoWebhook(
       p_motivo: evento.motivo,
     });
     if (error) throw error;
+  } else if (evento.tipo === "compra_cometas") {
+    const { error } = await admin.rpc("acreditar_cometas_compradas", {
+      p_user_id: evento.userId,
+      p_provider: proveedor,
+      p_provider_transaction_id: evento.providerTransactionId,
+      p_monto_cometas: evento.montoCometas,
+    });
+    if (error) throw error;
   } else {
     const { error } = await admin.rpc("acreditar_chispas_compradas", {
       p_user_id: evento.userId,

@@ -9,6 +9,8 @@ export interface Resumen {
   nombre: string;
   racha: number;
   chispas: number;
+  // Moneda premium (0279). Sin la migración aplicada, 0.
+  cometas: number;
   nivelCuenta: number;
   xpHoy: number;
   metaDiaria: number;
@@ -52,12 +54,14 @@ export async function cargarResumen(): Promise<Resumen | null> {
   const user = sesion.session?.user;
   if (!user) return null;
 
-  const [perfil, progreso, conversaciones, clan, novedades] = await Promise.all([
+  const [perfil, progreso, conversaciones, clan, novedades, cometas] = await Promise.all([
     supabase.from("profiles").select("display_name, puntos_total, nivel_cuenta, meta_xp_diaria").eq("id", user.id).single(),
     supabase.from("daily_progress").select("fecha, xp_ganado, meta_alcanzada, congelado").eq("user_id", user.id).order("fecha", { ascending: false }).limit(60),
     user.is_anonymous ? Promise.resolve({ data: [] }) : supabase.rpc("mis_conversaciones"),
     user.is_anonymous ? Promise.resolve({ data: [] }) : supabase.rpc("clan_chat_resumen"),
     supabase.rpc("anuncios_pendientes"),
+    // Aparte: si la columna todavía no existe (0279 sin aplicar), no rompe el resto.
+    supabase.from("profiles").select("cometas").eq("id", user.id).maybeSingle(),
   ]);
   if (perfil.error || !perfil.data) return null;
 
@@ -71,6 +75,7 @@ export async function cargarResumen(): Promise<Resumen | null> {
     nombre: user.is_anonymous ? "Invitado" : p.display_name ?? "Jugador",
     racha: calcularRachaDiaria(dias, hoy),
     chispas: p.puntos_total ?? 0,
+    cometas: cometas.error ? 0 : ((cometas.data as { cometas: number } | null)?.cometas ?? 0),
     nivelCuenta: p.nivel_cuenta ?? 1,
     xpHoy: dias.find((d) => d.fecha === hoy)?.xp_ganado ?? 0,
     metaDiaria: p.meta_xp_diaria ?? 100,

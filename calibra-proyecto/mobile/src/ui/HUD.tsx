@@ -7,7 +7,7 @@ import { registrarMedidorHud, type Rect } from "~/lib/ayudas";
 import { sonar, vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
 import { color } from "~/tema";
-import { IconoCampana, IconoChispa, IconoLlama } from "./Iconos";
+import { IconoCampana, IconoChispa, IconoCometa, IconoLlama } from "./Iconos";
 import NumeroAnimado from "./NumeroAnimado";
 import AvatarMarco from "./placa/AvatarMarco";
 
@@ -40,6 +40,7 @@ export default function HUD({ derecha }: { derecha?: ReactNode }) {
   const { placa, resumen } = useJugador();
   const racha = resumen?.racha ?? 0;
   const chispas = resumen?.chispas ?? placa?.chispas ?? 0;
+  const cometas = resumen?.cometas ?? 0;
   const avisos = (resumen?.mensajesSinLeer ?? 0) + (resumen?.novedadesSinLeer ?? 0);
 
   // Cuando suben las Chispas, la píldora da un saltito dorado.
@@ -102,6 +103,10 @@ export default function HUD({ derecha }: { derecha?: ReactNode }) {
           <NumeroAnimado valor={chispas} v="contador" onTic={() => sonar("moneda")} />
         </Pildora>
       </Animated.View>
+      <Pildora onPress={() => router.push({ pathname: "/tienda", params: { pestana: "cometas" } })}>
+        <IconoCometa tam={16} />
+        <NumeroAnimado valor={cometas} v="contador" />
+      </Pildora>
       <View style={{ flex: 1 }} />
       {derecha}
       <Pressable

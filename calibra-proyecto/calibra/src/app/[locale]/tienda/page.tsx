@@ -6,6 +6,9 @@ import Header from "@/components/Header";
 import TiendaClient from "./TiendaClient";
 import { pagosHabilitados } from "@/lib/pagos/flags";
 import TiendaAmpliada from "./TiendaAmpliada";
+import SeccionCometas from "@/components/tienda/SeccionCometas";
+import { productosConPrecio } from "@/lib/pagos/paddle";
+import { PRODUCTOS } from "@/lib/pagos/productos";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Tienda.metadata");
@@ -28,6 +31,11 @@ export default async function TiendaPage() {
     supabase.from("fondos_galeria").select("slug, nombre, url, costo").eq("activo", true).order("orden"),
     supabase.from("fondos_galeria_desbloqueados").select("slug").eq("user_id", user.id),
   ]);
+
+  // Cometas en consulta aparte: si 0279 todavía no se aplicó, la columna no existe
+  // y la tienda sigue andando con saldo 0.
+  const { data: filaCometas } = await supabase.from("profiles").select("cometas").eq("id", user.id).maybeSingle();
+  const paquetesCometas = productosConPrecio().filter((p) => PRODUCTOS[p].tipo === "cometas");
 
   const hoyIso = new Date().toISOString().slice(0, 10);
   const nivelesMundo = Object.fromEntries((mundosRows ?? []).map((w) => [w.world, w.nivel_mundo])) as Record<string, number>;
@@ -59,6 +67,13 @@ export default async function TiendaPage() {
         nivelesMundo={nivelesMundo}
         fechaHoy={hoyIso}
         pagosHabilitados={pagosHabilitados()}
+        seccionCometas={
+          <SeccionCometas
+            cometasIniciales={(filaCometas as { cometas?: number } | null)?.cometas ?? 0}
+            paquetes={user.is_anonymous ? [] : paquetesCometas}
+            pagosHabilitados={pagosHabilitados()}
+          />
+        }
       />
       <TiendaAmpliada />
     </>

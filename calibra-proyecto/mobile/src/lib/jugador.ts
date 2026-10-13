@@ -93,6 +93,12 @@ export function fijarChispas(total: number) {
   emitir();
 }
 
+// Saldo de Cometas después de canjear o comprar (0279).
+export function fijarCometas(total: number) {
+  if (estado.resumen) estado = { ...estado, resumen: { ...estado.resumen, cometas: total } };
+  emitir();
+}
+
 // El aviso de «tu Pro terminó» ya se vio (o se tocó «Renovar»).
 export async function cerrarAvisoProTermino() {
   estado = { ...estado, proTermino: false };

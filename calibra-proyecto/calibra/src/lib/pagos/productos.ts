@@ -20,6 +20,12 @@ export const PRODUCTOS: Record<ProductoComprable, DefinicionProducto> = {
   chispas_2500: { id: "chispas_2500", tipo: "chispas", montoChispas: 2500, precioUsd: 3.99 },
   chispas_6000: { id: "chispas_6000", tipo: "chispas", montoChispas: 6000, precioUsd: 7.99 },
   chispas_15000: { id: "chispas_15000", tipo: "chispas", montoChispas: 15000, precioUsd: 14.99 },
+  // Cometas (2026-10-13, PLAN_ECONOMIA.md §4.3): más volumen, más bonus.
+  cometas_100: { id: "cometas_100", tipo: "cometas", montoCometas: 100, precioUsd: 0.99 },
+  cometas_550: { id: "cometas_550", tipo: "cometas", montoCometas: 550, precioUsd: 4.99 },
+  cometas_1200: { id: "cometas_1200", tipo: "cometas", montoCometas: 1200, precioUsd: 9.99 },
+  cometas_2600: { id: "cometas_2600", tipo: "cometas", montoCometas: 2600, precioUsd: 19.99 },
+  cometas_7000: { id: "cometas_7000", tipo: "cometas", montoCometas: 7000, precioUsd: 49.99 },
 };
 
 export function definicionDe(producto: ProductoComprable): DefinicionProducto {

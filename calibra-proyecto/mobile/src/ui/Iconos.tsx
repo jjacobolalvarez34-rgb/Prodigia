@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
+import Svg, { Circle, Defs, LinearGradient, Path, RadialGradient, Rect, Stop } from "react-native-svg";
+import { COMETA } from "@/lib/recompensas/iconoCometa";
 import { ARCOIRIS, ESTELAS, type Estela } from "@/lib/recompensas/catalogo";
 import { color } from "~/tema";
 
@@ -23,6 +24,32 @@ export function IconoChispa({ tam = 18 }: Props) {
         </LinearGradient>
       </Defs>
       <Path d="M12 1.5c.6 5 2.4 7.6 9.5 10.5-7.1 2.9-8.9 5.5-9.5 10.5-.6-5-2.4-7.6-9.5-10.5C9.6 9.1 11.4 6.5 12 1.5z" fill="url(#gChispa)" />
+    </Svg>
+  );
+}
+
+// El Cometa (moneda premium, 0279): dibujo propio, misma geometría que la web.
+export function IconoCometa({ tam = 18 }: Props) {
+  return (
+    <Svg width={tam} height={tam} viewBox="0 0 32 32">
+      <Defs>
+        <LinearGradient id="gCometaCola" x1="26" y1="8" x2="4" y2="29" gradientUnits="userSpaceOnUse">
+          {COMETA.cola.map((p) => (
+            <Stop key={p.offset} offset={p.offset} stopColor={p.color} stopOpacity={p.opacidad} />
+          ))}
+        </LinearGradient>
+        <RadialGradient id="gCometaNucleo" cx="40%" cy="40%" r="65%">
+          {COMETA.nucleo.map((p) => (
+            <Stop key={p.offset} offset={p.offset} stopColor={p.color} />
+          ))}
+        </RadialGradient>
+      </Defs>
+      <Path d={COMETA.colaGrande} fill="url(#gCometaCola)" />
+      <Path d={COMETA.colaChica} fill="url(#gCometaCola)" opacity={0.7} />
+      <Circle cx={COMETA.halo.cx} cy={COMETA.halo.cy} r={COMETA.halo.r} fill="#5DE4FF" opacity={0.28} />
+      <Circle cx={COMETA.cabeza.cx} cy={COMETA.cabeza.cy} r={COMETA.cabeza.r} fill="url(#gCometaNucleo)" />
+      <Circle cx={COMETA.reflejo.cx} cy={COMETA.reflejo.cy} r={COMETA.reflejo.r} fill="#FFFFFF" opacity={0.9} />
+      <Path d={COMETA.destello} fill="#FFFFFF" opacity={0.85} />
     </Svg>
   );
 }

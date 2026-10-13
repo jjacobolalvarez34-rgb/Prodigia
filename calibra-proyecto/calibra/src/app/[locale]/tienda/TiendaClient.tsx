@@ -86,6 +86,8 @@ interface Props {
   ocultarTrastienda: boolean;
   // Lo decide el servidor en cada visita (lib/pagos/flags.ts).
   pagosHabilitados: boolean;
+  // Saldo, canje y compra de Cometas (0279); lo arma la página.
+  seccionCometas?: ReactNode;
 }
 
 export default function TiendaClient({
@@ -112,6 +114,7 @@ export default function TiendaClient({
   esPro,
   ocultarTrastienda,
   pagosHabilitados,
+  seccionCometas,
 }: Props) {
   const t = useTranslations("Tienda");
   // Tienda (solo lo que todavía no tienes) o Inventario (todo lo tuyo, para usarlo);
@@ -476,6 +479,8 @@ export default function TiendaClient({
             </button>
           ))}
         </div>
+
+        {seccionCometas}
 
         {!inventario && <OfertaDelDia oferta={oferta} nombre={NOMBRES_ITEM[oferta.item as ItemComprable]} />}
 

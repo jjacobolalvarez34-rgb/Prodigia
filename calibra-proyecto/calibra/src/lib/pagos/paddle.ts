@@ -30,7 +30,17 @@ const ENV_PRICE_ID: Record<ProductoComprable, string | undefined> = {
   chispas_2500: process.env.PADDLE_PRICE_CHISPAS_2500,
   chispas_6000: process.env.PADDLE_PRICE_CHISPAS_6000,
   chispas_15000: process.env.PADDLE_PRICE_CHISPAS_15000,
+  cometas_100: process.env.PADDLE_PRICE_COMETAS_100,
+  cometas_550: process.env.PADDLE_PRICE_COMETAS_550,
+  cometas_1200: process.env.PADDLE_PRICE_COMETAS_1200,
+  cometas_2600: process.env.PADDLE_PRICE_COMETAS_2600,
+  cometas_7000: process.env.PADDLE_PRICE_COMETAS_7000,
 };
+
+// Productos con price_id cargado: la tienda solo muestra los que se pueden comprar.
+export function productosConPrecio(): ProductoComprable[] {
+  return (Object.keys(ENV_PRICE_ID) as ProductoComprable[]).filter((p) => !!ENV_PRICE_ID[p]?.trim());
+}
 
 function priceIdDe(producto: ProductoComprable): string {
   const id = ENV_PRICE_ID[producto];
@@ -166,6 +176,15 @@ async function normalizarEvento(_rawBody: string, parsedBody: unknown): Promise<
     if (!userId || !d.custom_data?.producto) return null;
     const producto = d.custom_data.producto as ProductoComprable;
     const def = definicionDe(producto);
+
+    if (def.tipo === "cometas") {
+      return {
+        tipo: "compra_cometas",
+        userId,
+        providerTransactionId: d.id,
+        montoCometas: def.montoCometas ?? 0,
+      };
+    }
 
     if (def.tipo === "chispas") {
       const centavos = Math.round(parseFloat(d.details?.totals?.total ?? "0") * 1);

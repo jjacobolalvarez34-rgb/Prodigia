@@ -5226,5 +5226,16 @@
     "correcta": "La correcta",
     "comoSeResuelve": "Cómo se resuelve",
     "sinPasos": "Esta pregunta todavía no tiene el paso a paso. Fíjate en la respuesta correcta y vuelve a intentarla en la próxima partida."
+  },
+  "Cometas": {
+    "tusCometas": "Tus Cometas",
+    "explicacion": "La moneda premium. Cada Cometa se cambia por {n} Chispas.",
+    "canjeTitulo": "Cambiar Cometas por Chispas",
+    "seCambianPor": "se cambian por",
+    "confirmar": "Toca otra vez para confirmar",
+    "canjeHecho": "¡Listo! Sumaste {n} Chispas.",
+    "comprarTitulo": "Conseguir Cometas",
+    "errorCompra": "No se pudo abrir el pago. Intenta de nuevo.",
+    "comoConseguir": "También ganas Cometas subiendo de nivel (cada 10 niveles), en la liga semanal, con logros y en el reto de fin de semana."
   }
 }
