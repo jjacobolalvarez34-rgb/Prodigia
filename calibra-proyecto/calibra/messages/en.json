@@ -2167,6 +2167,10 @@
       "tituloInvalido": "This duel link no longer works",
       "esTuPropioLink": "It's your own link — share it with someone else.",
       "motivoGenerico": "It may have already been used, canceled, or the link was copied wrong."
+    },
+    "reconexion": {
+      "texto": "You have a duel in progress. Your rival is waiting!",
+      "volver": "Back to the duel"
     }
   },
   "Enigmia": {

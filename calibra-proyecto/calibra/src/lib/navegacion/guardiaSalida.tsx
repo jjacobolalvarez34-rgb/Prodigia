@@ -69,10 +69,49 @@ export function GuardiaSalidaProvider({ children }: { children: ReactNode }) {
   const [pendiente, setPendiente] = useState<{ navegar: () => void; ranked: boolean } | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activa, setActiva] = useState(false);
 
   const registrarGuardia = useCallback((config: ConfigGuardiaSalida) => {
     guardiaRef.current = config;
+    setActiva(config.activo);
   }, []);
+
+  // Botón «atrás» del navegador (pedido 2026-10-14: en medio de una ronda de la serie,
+  // atrás no preguntaba nada y te sacaba; el rival ni se enteraba). Mientras hay una
+  // partida, se deja una entrada extra en el historial: al ir atrás se vuelve a poner y
+  // se pide confirmación (en Rankeds, confirmar es rendirse, así el rival se entera).
+  // Cerrar o recargar la pestaña pide confirmación del navegador.
+  useEffect(() => {
+    if (!activa) return;
+    const marcar = () => window.history.pushState({ ...(window.history.state ?? {}), __guardiaSalida: true }, "");
+    marcar();
+    const alIrAtras = () => {
+      const guardia = guardiaRef.current;
+      if (!guardia.activo) return;
+      marcar();
+      setError(null);
+      setPendiente({
+        navegar: () => {
+          guardiaRef.current = GUARDIA_INACTIVA;
+          window.history.go(-2);
+        },
+        ranked: !!guardia.ranked,
+      });
+    };
+    const alCerrar = (e: BeforeUnloadEvent) => {
+      if (!guardiaRef.current.activo) return;
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("popstate", alIrAtras);
+    window.addEventListener("beforeunload", alCerrar);
+    return () => {
+      window.removeEventListener("popstate", alIrAtras);
+      window.removeEventListener("beforeunload", alCerrar);
+      // Terminó la partida sin salir de la página: se saca la entrada extra.
+      if ((window.history.state as { __guardiaSalida?: boolean } | null)?.__guardiaSalida) window.history.back();
+    };
+  }, [activa]);
 
   const pedirConfirmacion = useCallback((navegar: () => void) => {
     const guardia = guardiaRef.current;

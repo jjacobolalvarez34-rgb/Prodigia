@@ -2167,6 +2167,10 @@
       "tituloInvalido": "Este link de duelo ya no sirve",
       "esTuPropioLink": "Es tu propio link — compárteselo a otra persona.",
       "motivoGenerico": "Puede que ya se haya usado, se haya cancelado, o el link esté mal copiado."
+    },
+    "reconexion": {
+      "texto": "Tienes un duelo en curso. ¡Tu rival te espera!",
+      "volver": "Volver al duelo"
     }
   },
   "Enigmia": {
