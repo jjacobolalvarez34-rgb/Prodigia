@@ -154,12 +154,8 @@ export default function Ajustes() {
       {necesitaContrasenaRespaldo(sesion?.user) && !respaldoListo && <ContrasenaRespaldo alGuardar={() => setRespaldoListo(true)} />}
       <Tarjeta relleno={4}>
         <Fila titulo="Correo" nota={sesion?.user.is_anonymous ? "Invitado (sin correo)" : sesion?.user.email ?? ""} />
-        <Fila titulo="Cambiar contraseña" nota="Te mandamos un correo para cambiarla" onPress={async () => {
-          if (!sesion?.user.email) return;
-          const { error } = await supabase.auth.resetPasswordForEmail(sesion.user.email, { redirectTo: `${URL_WEB}/auth/actualizar-password` });
-          if (error) mostrarAviso(mensajeError(error), "error");
-          else mostrarAviso("Te mandamos un correo para cambiar tu contraseña", "ok");
-        }} />
+        {/* Revisión 2026-10-14: igual que «¿Olvidaste tu contraseña?» del login (preguntas en la web). */}
+        <Fila titulo="Cambiar contraseña" nota="Respondes 3 preguntas y eliges una nueva" onPress={() => WebBrowser.openBrowserAsync(`${URL_WEB}/recuperar`)} />
         <Fila titulo="Privacidad" onPress={() => WebBrowser.openBrowserAsync(`${URL_WEB}/privacidad`)} />
         <Fila titulo="Términos" onPress={() => WebBrowser.openBrowserAsync(`${URL_WEB}/terminos`)} />
         <Fila titulo="Eliminar mi cuenta" nota="Se hace desde la web, con tu sesión" onPress={() => WebBrowser.openBrowserAsync(`${URL_WEB}/ajustes`)} />

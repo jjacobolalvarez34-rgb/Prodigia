@@ -8,7 +8,9 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/";
+  // Solo rutas internas (revisión 2026-10-14: next=@otro.com llevaba a otro dominio).
+  const nextParam = searchParams.get("next") ?? "/";
+  const next = nextParam.startsWith("/") && !nextParam.startsWith("//") && !nextParam.startsWith("/\\") ? nextParam : "/";
   // Sección 10.2: link de invitación de amigo — ver RegistroForm.tsx.
   // emailRedirectTo lleva este param a través de todo el viaje de
   // confirmación de email; recién acá, con sesión real ya

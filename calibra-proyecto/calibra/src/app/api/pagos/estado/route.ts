@@ -22,13 +22,17 @@ const VARIABLES = [
   "PADDLE_PRICE_COMETAS_2600",
   "PADDLE_PRICE_COMETAS_7000",
   "NEXT_PUBLIC_PAGOS_HABILITADOS",
+  "DIAGNOSTICO_CLAVE",
 ];
 
-// Con ?precios=1 además revisa en Paddle que cada price_id sea del producto correcto
-// (detecta claves cruzadas: Pro apuntando a un pago único, etc.).
+// Con ?precios=1&clave=<DIAGNOSTICO_CLAVE> además revisa en Paddle que cada price_id
+// sea del producto correcto (detecta claves cruzadas). Pide la clave para que nadie de
+// afuera pueda hacer que el servidor consulte Paddle una y otra vez (revisión 2026-10-14).
 export async function GET(request: Request) {
   const env: Record<string, string | undefined> = process.env;
-  const conPrecios = new URL(request.url).searchParams.get("precios") === "1";
+  const params = new URL(request.url).searchParams;
+  const clave = env["DIAGNOSTICO_CLAVE"]?.trim();
+  const conPrecios = params.get("precios") === "1" && !!clave && params.get("clave") === clave;
   return NextResponse.json({
     ...(conPrecios && env["PADDLE_API_KEY"] ? { precios: await revisarPrecios() } : {}),
     pagosHabilitados: pagosHabilitados(),

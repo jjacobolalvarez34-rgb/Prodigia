@@ -11,7 +11,9 @@ import { createClient } from "@/lib/supabase/server";
 export async function confirmarCuenta(formData: FormData) {
   const tokenHash = formData.get("token_hash");
   const type = formData.get("type");
-  const next = (formData.get("next") as string) || "/";
+  // Solo rutas internas (revisión 2026-10-14: evitar redirigir a otro dominio).
+  const nextCrudo = (formData.get("next") as string) || "/";
+  const next = nextCrudo.startsWith("/") && !nextCrudo.startsWith("//") && !nextCrudo.startsWith("/\\") ? nextCrudo : "/";
   const ref = formData.get("ref");
 
   if (typeof tokenHash !== "string" || typeof type !== "string" || !tokenHash || !type) {
