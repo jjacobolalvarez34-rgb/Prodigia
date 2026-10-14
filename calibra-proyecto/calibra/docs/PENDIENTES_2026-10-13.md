@@ -174,12 +174,19 @@ debería ser una suscripción»).
 
 ## Pedidos del 2026-10-14 (noche)
 
-28. [ ] ¿Dónde se compran las Cometas en la web? Hacerlo visible (la portada de la tienda no tenía acceso).
-29. [ ] Lista de lo que quedó planeado y no se hizo.
-30. [ ] Web: que la parte de compras extra y paquetes se vea mejor; paquetes con imágenes propias (no emojis).
-31. [ ] App: que no haya emojis sueltos en la interfaz.
-32. [ ] Pagos con aspecto profesional (tarjetas de planes como el componente de referencia), sin tener que bajar tanto. Web y app.
-33. [ ] Al pagar en Paddle: el overlay queda en «pago hecho» y hay que tocar la flecha; no salió la cinemática ni el «ya eres Pro», hubo que recargar. Que se cierre solo y lleve a la bienvenida.
-34. [ ] App: en el encabezado de Mundos dice «15 de 13 mundos».
-35. [ ] La mejora gráfica de pagos también en Pro, Chispas y Cometas: que comprar con dinero dé ganas.
-36. [ ] Modo Zen: se puede usar en mundos que no tienes; tiene que estar bloqueado.
+28. [x] ¿Dónde se compran las Cometas en la web? Hacerlo visible (la portada de la tienda no tenía acceso).
+29. [x] Lista de lo que quedó planeado y no se hizo.
+30. [x] Web: que la parte de compras extra y paquetes se vea mejor; paquetes con imágenes propias (no emojis).
+31. [x] App: que no haya emojis sueltos en la interfaz.
+32. [x] Pagos con aspecto profesional (tarjetas de planes como el componente de referencia), sin tener que bajar tanto. Web y app.
+33. [x] Al pagar en Paddle: el overlay queda en «pago hecho» y hay que tocar la flecha; no salió la cinemática ni el «ya eres Pro», hubo que recargar. Que se cierre solo y lleve a la bienvenida.
+34. [x] App: en el encabezado de Mundos dice «15 de 13 mundos».
+35. [x] La mejora gráfica de pagos también en Pro, Chispas y Cometas: que comprar con dinero dé ganas.
+36. [x] Modo Zen: se puede usar en mundos que no tienes; tiene que estar bloqueado.
+
+Hecho (2026-10-14 noche): 28 cartel «Recarga: Cometas y Chispas» en la portada del Bazar → Mercado; 29 respondido en el chat;
+30 cada paquete con ilustración propia (src/lib/tienda/ilustracionesPaquetes.ts), lo que trae y cuánto ahorras; 31 la app sin
+emojis en la interfaz (quedan los del chat, los emotes y las notificaciones del sistema); 32 y 35 tarjetas de planes y Vitrina
+de Cometas y Chispas en web (components/pagos/Vitrina.tsx) y app (ui/pagos/Vitrina.tsx); 33 el overlay de Paddle se cierra solo
+y lleva a /pro/bienvenida; 34 «de 15 encendidos»; 36 Zen bloqueado en mundos que no tienes.
+Falta: recompilar el APK con todo esto.
