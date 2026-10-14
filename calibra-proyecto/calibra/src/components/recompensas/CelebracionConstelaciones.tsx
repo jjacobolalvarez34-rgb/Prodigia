@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
@@ -11,6 +11,7 @@ import { constelacionesPorVer, marcarConstelacionesVistas, type ConstelacionComp
 import { refrescarCosmeticosWeb } from "@/lib/recompensas/cosmeticosWeb";
 import CountUp from "@/components/CountUp";
 import Constelacion from "./Constelacion";
+import { crearLienzoFx, type LienzoFx } from "@/components/fx/lienzoFx";
 import VistaCosmetico from "./VistaCosmetico";
 
 // Constelaciones completadas que todavía no se celebraron (0259): se muestran una
@@ -20,7 +21,8 @@ import VistaCosmetico from "./VistaCosmetico";
 // Secuencia: las estrellas se encienden y las líneas se dibujan; al cerrarse el
 // dibujo, destello del color de la ciudad; la constelación sube y cada premio sale
 // en el centro, uno por uno, con su propio estallido. Abajo se juntan los que salieron.
-const NO_INTERRUMPIR = /(practica|sprint|duelo|diagnostico|reto)/;
+// rankeds/serie: entre rondas de una serie (pedido 2026-10-14, saltaba entre la 2 y la 3).
+const NO_INTERRUMPIR = /(practica|sprint|duelo|diagnostico|reto|rankeds\/serie|resultado)/;
 const DIBUJO_MS = 2600;
 
 interface PremioVista {
@@ -34,40 +36,6 @@ interface PremioVista {
 
 const ICONO_FUGAZ: Record<string, string> = { hielo: "❄️", tiempo_extra: "⏱️", pista: "💡", chispas: "⚡" };
 
-function Estallido({ color, grande }: { color: string; grande: boolean }) {
-  const particulas = useMemo(
-    () =>
-      Array.from({ length: grande ? 26 : 18 }, (_, i) => {
-        const a = (i / (grande ? 26 : 18)) * Math.PI * 2 + (i % 3) * 0.2;
-        const d = 120 + ((i * 37) % 90);
-        return { x: Math.cos(a) * d, y: Math.sin(a) * d, tam: 4 + (i % 4) * 2 };
-      }),
-    [grande]
-  );
-  return (
-    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-      <motion.span
-        className="absolute h-[520px] w-[520px] rounded-full opacity-40"
-        style={{ background: `repeating-conic-gradient(from 0deg, ${color}55 0deg 8deg, transparent 8deg 24deg)` }}
-        initial={{ scale: 0.4, opacity: 0, rotate: 0 }}
-        animate={{ scale: 1, opacity: 0.45, rotate: 360 }}
-        transition={{ scale: { duration: 0.4 }, opacity: { duration: 0.3 }, rotate: { duration: 16, repeat: Infinity, ease: "linear" } }}
-      />
-      <motion.span className="absolute h-40 w-40 rounded-full" style={{ background: color }} initial={{ scale: 0.4, opacity: 0.8 }} animate={{ scale: 3.2, opacity: 0 }} transition={{ duration: 0.9 }} />
-      {particulas.map((p, i) => (
-        <motion.span
-          key={i}
-          className="absolute rounded-full"
-          style={{ width: p.tam, height: p.tam, background: i % 3 === 0 ? "#fff" : color, boxShadow: `0 0 8px ${color}` }}
-          initial={{ x: 0, y: 0, opacity: 1 }}
-          animate={{ x: p.x, y: p.y + 40, opacity: 0 }}
-          transition={{ duration: 1.4, ease: "easeOut" }}
-        />
-      ))}
-    </div>
-  );
-}
-
 export default function CelebracionConstelaciones() {
   const t = useTranslations("Recompensas.constelaciones.celebracion");
   const tRareza = useTranslations("Recompensas.tienda.rareza");
@@ -78,6 +46,11 @@ export default function CelebracionConstelaciones() {
   const [cerrado, setCerrado] = useState(false);
   // -1 mientras se dibuja; 0..n-1 el premio que está en el centro.
   const [k, setK] = useState(-1);
+  // Efectos en canvas (2026-10-14, «mejorar gráficamente la constelación completa»).
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fxRef = useRef<LienzoFx | null>(null);
+  const dibujoRef = useRef<HTMLDivElement>(null);
+  const premioRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (NO_INTERRUMPIR.test(ruta) || lista.length > 0) return;
@@ -188,6 +161,63 @@ export default function CelebracionConstelaciones() {
     if (premio) reproducirTono(premio.grande ? "logro" : "correcto");
   }, [premio]);
 
+  const colorCiudad = actual ? tono(ciudadDe(actual.mundo)?.color ?? "#6C4CF1", 0.35) : "#B9A8FF";
+  const centroDe = (el: HTMLElement | null) => {
+    const b = el?.getBoundingClientRect();
+    return b ? { x: b.left + b.width / 2, y: b.top + b.height / 2 } : { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  };
+
+  // El lienzo vive mientras hay algo que celebrar.
+  useEffect(() => {
+    if (!actual || !canvasRef.current) return;
+    const fx = crearLienzoFx(canvasRef.current);
+    fxRef.current = fx;
+    const c = centroDe(dibujoRef.current);
+    fx.halo(colorCiudad, c.x, c.y, 220);
+    // Mientras se encienden las estrellas, se escapan chispas del dibujo.
+    const chispas = setInterval(() => {
+      const d = centroDe(dibujoRef.current);
+      fx.fuga(d.x, d.y, Math.random() < 0.5 ? colorCiudad : "#FFFFFF", 2);
+    }, 90);
+    const fin = setTimeout(() => clearInterval(chispas), DIBUJO_MS);
+    return () => {
+      clearInterval(chispas);
+      clearTimeout(fin);
+      fx.detener();
+      fxRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actual]);
+
+  // Al cerrarse el dibujo: destello, doble onda, gran estallido y rayos.
+  useEffect(() => {
+    if (!cerrado || !fxRef.current) return;
+    const fx = fxRef.current;
+    const c = centroDe(dibujoRef.current);
+    fx.destello(0.75);
+    fx.onda(c.x, c.y, colorCiudad, 620, 5);
+    const t2 = setTimeout(() => fx.onda(c.x, c.y, "#FFFFFF", 820, 2), 140);
+    fx.explosion(c.x, c.y, [colorCiudad, "#FFFFFF", "#FFC53D"], 3);
+    fx.rayos(colorCiudad, c.x, c.y);
+    return () => clearTimeout(t2);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cerrado]);
+
+  // Cada premio sale con su propio estallido del color del premio.
+  useEffect(() => {
+    if (!premio || !fxRef.current) return;
+    const fx = fxRef.current;
+    const id = setTimeout(() => {
+      const c = centroDe(premioRef.current);
+      fx.halo(premio.color, c.x, c.y, 200);
+      fx.rayos(premio.color, c.x, c.y);
+      fx.onda(c.x, c.y, premio.color, 560, 4);
+      fx.explosion(c.x, c.y, [premio.color, "#FFFFFF"], premio.grande ? 4 : 2);
+      if (premio.grande) fx.destello(0.5);
+    }, 120);
+    return () => clearTimeout(id);
+  }, [premio]);
+
   async function seguir() {
     setCerrado(false);
     setK(-1);
@@ -213,16 +243,7 @@ export default function CelebracionConstelaciones() {
     <AnimatePresence>
       {actual && (
         <motion.div key="fondo" className="fixed inset-0 z-[90] flex flex-col items-center overflow-hidden bg-[#05070D]/95 p-6 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={avanzar}>
-          {cerrado && !premio && (
-            <div className="absolute inset-0">
-              <Estallido color={acento} grande={false} />
-            </div>
-          )}
-          {premio && (
-            <div key={premio.clave} className="absolute inset-x-0 top-[52%] h-0">
-              <Estallido color={premio.color} grande={premio.grande} />
-            </div>
-          )}
+          <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 h-full w-full" aria-hidden="true" />
           {premio?.clave === "fugaz" && (
             <motion.span
               className="pointer-events-none fixed left-0 top-16 h-[3px] w-24 rounded-full bg-white shadow-[0_0_12px_#FFB627]"
@@ -243,7 +264,7 @@ export default function CelebracionConstelaciones() {
             <p className="text-xs font-bold uppercase tracking-widest" style={{ color: acento }}>
               {t("de", { ciudad: tMundos(actual.mundo), n: actual.numero })}
             </p>
-            <div className="rounded-2xl transition-shadow duration-500" style={{ boxShadow: cerrado ? `0 0 40px ${acento}88` : "none" }}>
+            <div ref={dibujoRef} className="rounded-2xl transition-shadow duration-500" style={{ boxShadow: cerrado ? `0 0 40px ${acento}88` : "none" }}>
               <Constelacion mundo={actual.mundo} estrellas={7} tam={260} celebrar />
             </div>
             {cerrado && !premio && (
@@ -261,7 +282,7 @@ export default function CelebracionConstelaciones() {
                   {premios.length > 1 ? t("deCuantos", { premio: premio.etiqueta, n: k + 1, total: premios.length }) : premio.etiqueta}
                 </p>
               </div>
-              <motion.div key={premio.clave} className="relative mt-8" initial={{ scale: 0.3, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", damping: 9, stiffness: 150 }}>
+              <motion.div ref={premioRef} key={premio.clave} className="relative mt-8" initial={{ scale: 0.3, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", damping: 9, stiffness: 150 }}>
                 {premio.contenido}
               </motion.div>
               <div className="absolute inset-x-6 bottom-8 mx-auto flex max-w-sm flex-col gap-4">
