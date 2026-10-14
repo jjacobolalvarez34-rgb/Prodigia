@@ -110,3 +110,13 @@ en la tienda en cuanto su variable existe.
 17. [ ] **Compilar el APK** mientras tanto (pedido explícito).
 18. [ ] **Motion para redes:** tutorial de cómo se personaliza el perfil y todo lo que se puede
     cambiar. Envolvente y bien hecho.
+19. [ ] **La animación de abrir cápsula no se ve en la web.**
+20. [ ] **Mejorar la animación de constelación completa** (más gráfica).
+21. [ ] **Cambio de idioma roto en la web:** al tocar «es» se agrega /es a la URL pero no cambia el
+    idioma; al tocarlo otra vez queda /es/es y da 404. Revisar también la app.
+22. [ ] **Constelación en medio de una serie ranked:** la animación salta de una e interrumpe el
+    cambio de ciudad entre la ronda 2 y 3. Que no aparezca en medio de una serie (mostrarla al final).
+23. [ ] **Atrás en medio de una ronda de la serie:** no pregunta si quieres salir; vuelve al resumen
+    de la ronda anterior y otro atrás saca de la página. El rival no se entera de que te fuiste.
+24. [ ] **Reconexión a duelos:** si sales de la app en un duelo y vuelves al instante, no te vuelve a
+    meter al duelo. Debería haber reconexión.

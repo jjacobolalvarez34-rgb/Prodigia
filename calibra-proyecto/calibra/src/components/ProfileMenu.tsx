@@ -72,12 +72,18 @@ export default function ProfileMenu() {
 
   function elegirIdioma(siguiente: string) {
     if (siguiente === locale) return;
-    router.replace(pathname, { locale: siguiente });
     fetch("/api/perfil/idioma", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idioma: siguiente }),
+      keepalive: true,
     }).catch(() => {});
+    // Bug 2026-10-14: con router.replace la URL pasaba a /es pero la página seguía en
+    // inglés (el proveedor de textos vive en el layout raíz, que no se vuelve a dibujar
+    // al navegar dentro de la app) y al tocar otra vez quedaba /es/es → 404. Una
+    // navegación completa recarga todo en el idioma nuevo.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- a propósito: navegación completa
+    window.location.assign(`/${siguiente}${pathname === "/" ? "" : pathname}${window.location.search}`);
   }
 
   return (
