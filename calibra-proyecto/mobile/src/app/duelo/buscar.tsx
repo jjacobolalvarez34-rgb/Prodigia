@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { BackHandler, StyleSheet, View } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { cancelarBusqueda, pasoBusqueda } from "~/lib/competir";
+import { marcarBuscandoDuelo } from "@/lib/duelos/emparejamiento";
+import { cancelarBusqueda, duelosPendientesPrevios, pasoBusqueda } from "~/lib/competir";
 import { sonar, vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
 import { useSesion } from "~/lib/sesion";
@@ -49,11 +50,14 @@ export default function BuscarDuelo() {
   useEffect(() => {
     if (!sesion || !mundo) return;
     cancelado.current = false;
-    const inicio = new Date().toISOString();
+    const inicio = Date.now();
+    marcarBuscandoDuelo(true);
     (async () => {
+      // Los duelos pendientes que ya tenías (retos de amigos) no son el emparejamiento.
+      const conocidos = await duelosPendientesPrevios(sesion.user.id).catch(() => new Set<string>());
       while (!cancelado.current) {
         try {
-          const p = await pasoBusqueda(sesion.user.id, mundo, esRanked, inicio);
+          const p = await pasoBusqueda(sesion.user.id, mundo, esRanked, inicio, conocidos);
           if (cancelado.current) return;
           if (p.encontrado && p.duelId) {
             sonar("swoosh");
@@ -77,6 +81,7 @@ export default function BuscarDuelo() {
     })();
     return () => {
       cancelado.current = true;
+      marcarBuscandoDuelo(false);
       cancelarBusqueda();
     };
   }, [sesion, mundo, esRanked, router]);

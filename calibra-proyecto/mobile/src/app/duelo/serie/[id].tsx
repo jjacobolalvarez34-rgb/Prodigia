@@ -91,6 +91,7 @@ export default function Serie() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [rondas, setRondas] = useState<RondaSerie[]>([]);
   const [final, setFinal] = useState<Final>(null);
+  const [ranked, setRanked] = useState(true);
   const [cargado, setCargado] = useState(false);
   const [enPantalla, setEnPantalla] = useState(true);
   const [rondaLista, setRondaLista] = useState<string | null>(null);
@@ -101,6 +102,7 @@ export default function Serie() {
     const r = await estadoSerie(id);
     setRondas([...r.rondas].sort((a, b) => a.ronda_numero - b.ronda_numero));
     setFinal(r.final);
+    setRanked(r.clasificatorio);
     setCargado(true);
     if (r.final?.finalizada) recargarJugador();
     return r.final;
@@ -202,11 +204,11 @@ export default function Serie() {
             rival={oponente}
             linea={final.empate ? `Empataste la serie con ${oponente}` : final.gane ? `Le ganaste la serie a ${oponente}` : `${oponente} ganó la serie`}
             marcador={`${final.victorias_propias} – ${final.victorias_rival}`}
-            eloAnterior={final.elo_anterior}
-            eloNuevo={final.elo_nuevo}
+            eloAnterior={ranked ? final.elo_anterior : null}
+            eloNuevo={ranked ? final.elo_nuevo : null}
           />
           {listaRondas}
-          <Boton3D titulo="Otra partida" brillo onPress={() => router.replace({ pathname: "/duelo/buscar", params: { mundo: "aleatorio", ranked: "1" } })} />
+          <Boton3D titulo="Otra partida" brillo onPress={() => router.replace({ pathname: "/duelo/buscar", params: { mundo: "aleatorio", ranked: ranked ? "1" : "0" } })} />
           <Boton3D titulo="Volver a Competir" variante="secundario" onPress={salir} />
         </PantallaApilada>
         {final.gane && <Confeti cantidad={48} />}

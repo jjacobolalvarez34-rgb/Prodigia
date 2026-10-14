@@ -1,6 +1,7 @@
 // Competir: Rankeds, duelos casuales, liga semanal y duelos de amigos. Las mismas
 // RPC que RankedsClient.tsx, /practica?duelo= y /api/duelos/resultado de la web: el
 // ELO, el matchmaking y quién ganó se deciden en la base, nunca en el teléfono.
+import { desdeConMargen, dueloNuevo } from "@/lib/duelos/emparejamiento";
 import { MUNDOS, type MundoSlug } from "~/tema";
 import { placaBasica, placaDesdeFila, type PlacaDatos } from "./placa";
 import { supabase } from "./supabase";
@@ -83,7 +84,9 @@ export interface PasoBusqueda {
 
 // Un paso del matchmaking (se llama cada ~2 s). Antes de pedir rival se revisa si ya
 // nos encontró alguien a nosotros (el que encuentra es el único que recibe el id).
-export async function pasoBusqueda(userId: string, mundo: string, ranked: boolean, inicioIso: string): Promise<PasoBusqueda> {
+// Sin depender del reloj del teléfono (src/lib/duelos/emparejamiento.ts): el primer
+// duelo pendiente que no existía al empezar (`conocidos`, de duelosPendientesPrevios).
+export async function pasoBusqueda(userId: string, mundo: string, ranked: boolean, inicioMs: number, conocidos: ReadonlySet<string>): Promise<PasoBusqueda> {
   const { data: ya } = await supabase
     .from("duels")
     .select("id, mundo")
@@ -91,9 +94,10 @@ export async function pasoBusqueda(userId: string, mundo: string, ranked: boolea
     .eq("estado", "pendiente")
     .eq("clasificatorio", ranked)
     .or("ronda_numero.is.null,ronda_numero.eq.1")
-    .gte("creado_at", inicioIso)
-    .limit(1);
-  const fila0 = (ya as { id: string; mundo: MundoSlug }[] | null)?.[0];
+    .gte("creado_at", desdeConMargen(inicioMs))
+    .order("creado_at", { ascending: false })
+    .limit(10);
+  const fila0 = dueloNuevo(ya as { id: string; mundo: MundoSlug }[] | null, conocidos);
   if (fila0) return { encontrado: true, duelId: fila0.id, mundo: fila0.mundo, rango: 0, segundos: 0 };
 
   const { data, error } = await supabase.rpc("buscar_rival_duelo", { p_mundo: mundo, p_operation_type: null, p_ranked: ranked });
@@ -106,6 +110,11 @@ export async function pasoBusqueda(userId: string, mundo: string, ranked: boolea
     rango: fila?.rango_actual ?? 30,
     segundos: fila?.segundos_esperando ?? 0,
   };
+}
+
+export async function duelosPendientesPrevios(userId: string): Promise<Set<string>> {
+  const { data } = await supabase.from("duels").select("id").eq("retado_id", userId).eq("estado", "pendiente");
+  return new Set(((data ?? []) as { id: string }[]).map((d) => d.id));
 }
 
 export async function cancelarBusqueda() {
@@ -223,11 +232,14 @@ export interface RondaSerie {
 }
 
 export async function estadoSerie(serieId: string) {
-  const [{ data: rondas }, { data: fin }] = await Promise.all([
+  const [{ data: rondas }, { data: fin }, { data: tipo }] = await Promise.all([
     supabase.rpc("estado_serie_duelo", { p_serie_id: serieId }),
     supabase.rpc("finalizar_serie_si_corresponde", { p_serie_id: serieId }),
+    supabase.from("duels").select("clasificatorio").eq("serie_id", serieId).limit(1).maybeSingle(),
   ]);
   return {
+    // Casual (false): sin ELO y «Otra partida» vuelve a buscar en casual.
+    clasificatorio: (tipo as { clasificatorio: boolean } | null)?.clasificatorio ?? true,
     rondas: (rondas as RondaSerie[] | null) ?? [],
     final: (fin as { finalizada: boolean; gane: boolean; empate: boolean; elo_nuevo: number; elo_anterior: number; victorias_propias: number; victorias_rival: number; oponente_nombre: string | null }[] | null)?.[0] ?? null,
   };

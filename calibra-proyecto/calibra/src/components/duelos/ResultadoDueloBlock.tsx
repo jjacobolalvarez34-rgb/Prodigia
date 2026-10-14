@@ -21,6 +21,8 @@ export interface ResultadoDuelo {
   mi_puntaje?: number | null;
   rival_puntaje?: number | null;
   oponente_es_bot?: boolean | null;
+  // Casual (false): sin ELO en la pantalla (el ELO no se mueve, 0244/0282).
+  clasificatorio?: boolean | null;
   // Sección "Rankeds visual" (tanda nocturna): desglose completo
   // (aciertos/precisión/tiempo) para el tratamiento tetr.io de la
   // pantalla de resultado — ya vivía en duel_results, ver
@@ -177,7 +179,8 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
 
   const rangoAnterior = rangoDeElo(duelo.elo_anterior);
   const rangoNuevo = rangoDeElo(duelo.elo_nuevo);
-  const subioDeRango = duelo.gane && rangoNuevo.slug !== rangoAnterior.slug;
+  const conElo = duelo.clasificatorio !== false;
+  const subioDeRango = conElo && duelo.gane && rangoNuevo.slug !== rangoAnterior.slug;
   const hayPuntajes = duelo.mi_puntaje != null && duelo.rival_puntaje != null;
 
   if (duelo.empate) {
@@ -188,9 +191,11 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
           {t("empataronCon", { oponente: duelo.oponente_nombre ?? t("rivalPorDefecto") })}
           {duelo.oponente_es_bot && <TagClanDeBots />}
         </p>
-        <div className="mt-3">
-          <BloqueElo anterior={duelo.elo_anterior} nuevo={duelo.elo_nuevo} />
-        </div>
+        {conElo && (
+          <div className="mt-3">
+            <BloqueElo anterior={duelo.elo_anterior} nuevo={duelo.elo_nuevo} />
+          </div>
+        )}
         <DesgloseCompleto duelo={duelo} />
         {hayPuntajes && !duelo.mi_precision && <BarraComparacion miPuntaje={duelo.mi_puntaje!} rivalPuntaje={duelo.rival_puntaje!} />}
         {duelo.oponente_id && !duelo.oponente_es_bot && (
@@ -218,9 +223,11 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
           {t("leGanasteA", { oponente: duelo.oponente_nombre ?? t("rivalPorDefecto") })}
           {duelo.oponente_es_bot && <TagClanDeBots />}
         </p>
-        <div className="mt-3">
-          <BloqueElo anterior={duelo.elo_anterior} nuevo={duelo.elo_nuevo} />
-        </div>
+        {conElo && (
+          <div className="mt-3">
+            <BloqueElo anterior={duelo.elo_anterior} nuevo={duelo.elo_nuevo} />
+          </div>
+        )}
         <DesgloseCompleto duelo={duelo} />
         {hayPuntajes && !duelo.mi_precision && <BarraComparacion miPuntaje={duelo.mi_puntaje!} rivalPuntaje={duelo.rival_puntaje!} />}
         {subioDeRango && (
@@ -253,9 +260,11 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
         {t("estaVezGano", { oponente: duelo.oponente_nombre ?? t("rivalPorDefecto") })}
         {duelo.oponente_es_bot && <TagClanDeBots />}
       </p>
-      <div className="mt-3">
-        <BloqueElo anterior={duelo.elo_anterior} nuevo={duelo.elo_nuevo} />
-      </div>
+      {conElo && (
+        <div className="mt-3">
+          <BloqueElo anterior={duelo.elo_anterior} nuevo={duelo.elo_nuevo} />
+        </div>
+      )}
       <DesgloseCompleto duelo={duelo} />
       {hayPuntajes && !duelo.mi_precision && <BarraComparacion miPuntaje={duelo.mi_puntaje!} rivalPuntaje={duelo.rival_puntaje!} />}
       <div className="mt-3 flex items-center gap-3">

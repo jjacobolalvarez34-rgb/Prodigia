@@ -10,6 +10,7 @@ import type { ArithmeticProblemType } from "@/types/database";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 import { useEtiquetasDuelo } from "@/components/duelos/SelectorMundoDuelo";
 import { reproducirTono } from "@/lib/sonido";
+import { estaBuscandoDuelo } from "@/lib/duelos/emparejamiento";
 
 interface Aviso {
   id: string;
@@ -66,6 +67,8 @@ export default function NotificacionesDuelo() {
           { event: "INSERT", schema: "public", table: "duels", filter: `retado_id=eq.${uid}` },
           (payload) => {
             const fila = payload.new as { id: string; mundo: MundoDuelo; operation_type: ArithmeticProblemType | null; sub_tipo: string | null };
+            // Buscando rival: este duelo es el del emparejamiento y la búsqueda entra sola.
+            if (estaBuscandoDuelo()) return;
             reproducirTono("logro");
             const id = `${fila.id}-${idRef.current++}`;
             setAvisos((prev) => [...prev, { id, duelId: fila.id, mundo: fila.mundo, operacion: fila.operation_type, subTipo: fila.sub_tipo }]);

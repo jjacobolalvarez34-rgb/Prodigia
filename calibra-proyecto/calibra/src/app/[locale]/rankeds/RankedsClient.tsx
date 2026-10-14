@@ -12,6 +12,7 @@ import GlareHover from "@/components/reactbits/GlareHover";
 import BorderGlow from "@/components/reactbits/BorderGlow";
 import Boton from "@/components/Boton";
 import { COLOR_MUNDO, hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
+import { desdeConMargen, dueloNuevo, marcarBuscandoDuelo } from "@/lib/duelos/emparejamiento";
 import { formatoRestante, useRetosPendientes, type RetoPendienteBase } from "@/app/[locale]/social/useRetosPendientes";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { useConteoUsuariosEnLinea } from "@/lib/presencia/useConteoUsuariosEnLinea";
@@ -470,7 +471,7 @@ function BuscarPartida({
     router.push(hrefDuelo(mundoEncontrado, null, duelId));
   }
 
-  async function poll(m: SeleccionMundo, ranked: boolean, inicioIso: string) {
+  async function poll(m: SeleccionMundo, ranked: boolean, inicioMs: number, conocidos: ReadonlySet<string>) {
     const supabase = createClient();
     while (!cancelarRef.current) {
       // buscar_rival_duelo solo le devuelve el duel_id a quien hizo LA
@@ -485,18 +486,22 @@ function BuscarPartida({
       // El modo "simple" arranca con ronda_numero NULL, así que el
       // fallback cubre ronda NULL o 1; el filtro de clasificatorio evita
       // saltar a un duelo casual desde una búsqueda rankeds.
-      const { data: yaMatcheado } = await supabase
+      // Sin depender del reloj del dispositivo (ver lib/duelos/emparejamiento.ts):
+      // el primer duelo pendiente que no existía al empezar a buscar.
+      const { data: candidatos } = await supabase
         .from("duels")
         .select("id, mundo")
         .eq("retado_id", miUserId)
         .eq("estado", "pendiente")
         .eq("clasificatorio", ranked)
         .or("ronda_numero.is.null,ronda_numero.eq.1")
-        .gte("creado_at", inicioIso)
-        .limit(1);
+        .gte("creado_at", desdeConMargen(inicioMs))
+        .order("creado_at", { ascending: false })
+        .limit(10);
       if (cancelarRef.current) return;
-      if (yaMatcheado && yaMatcheado[0]) {
-        irAlDuelo(yaMatcheado[0].mundo as MundoDuelo, yaMatcheado[0].id);
+      const yaMatcheado = dueloNuevo(candidatos, conocidos);
+      if (yaMatcheado) {
+        irAlDuelo(yaMatcheado.mundo as MundoDuelo, yaMatcheado.id);
         return;
       }
 
@@ -535,12 +540,20 @@ function BuscarPartida({
     }
   }
 
-  function iniciarBusqueda() {
+  async function iniciarBusqueda() {
     cancelarRef.current = false;
     setSegundos(0);
     setRango(30);
     setEstado("buscando");
-    poll(mundo, modoClasificacion === "clasificatoria", new Date().toISOString());
+    // Los duelos pendientes que ya tenías (retos de amigos, etc.) no son el emparejamiento.
+    const { data: previos } = await createClient().from("duels").select("id").eq("retado_id", miUserId).eq("estado", "pendiente");
+    const conocidos = new Set(((previos ?? []) as { id: string }[]).map((d) => d.id));
+    marcarBuscandoDuelo(true);
+    try {
+      await poll(mundo, modoClasificacion === "clasificatoria", Date.now(), conocidos);
+    } finally {
+      marcarBuscandoDuelo(false);
+    }
   }
 
   async function cancelarBusqueda() {
