@@ -112,6 +112,16 @@ export async function entrarConGoogle(): Promise<{ ok: boolean; error?: string }
   const url = r.url;
   const params = new URLSearchParams(url.includes("#") ? url.split("#")[1] : url.split("?")[1] ?? "");
   const errorUrl = params.get("error_description");
+  // Revisión 2026-10-14: un invitado cuya cuenta de Google ya existe quedaba trabado.
+  // Se sale del invitado y se entra con esa cuenta (lo jugado como invitado no se puede
+  // sumar a una cuenta que ya existe).
+  if (params.get("error_code") === "identity_already_exists" || /already/i.test(errorUrl ?? "")) {
+    const { data: actual } = await supabase.auth.getSession();
+    if (actual.session?.user.is_anonymous) {
+      await supabase.auth.signOut();
+      return entrarConGoogle();
+    }
+  }
   if (errorUrl) return { ok: false, error: errorUrl.replace(/\+/g, " ") };
   const code = params.get("code");
   if (code) {

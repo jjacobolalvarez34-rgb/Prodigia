@@ -3,9 +3,10 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Header from "@/components/Header";
 import LoginForm from "./LoginForm";
+import BotonGoogle from "@/components/BotonGoogle";
 
 interface Props {
-  searchParams: Promise<{ next?: string; error?: string }>;
+  searchParams: Promise<{ next?: string; error?: string; google?: string }>;
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -14,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function LoginPage({ searchParams }: Props) {
-  const { next, error } = await searchParams;
+  const { next, error, google } = await searchParams;
   const t = await getTranslations("Auth.login");
 
   return (
@@ -27,6 +28,12 @@ export default async function LoginPage({ searchParams }: Props) {
           </h1>
           <p className="mt-2 mb-7 text-sm text-texto-secundario">{t("subtitulo")}</p>
 
+          {google === "existe" && (
+            <div className="mb-5 flex flex-col gap-3 rounded-xl border border-primario/40 bg-primario/10 p-4 text-sm text-foreground">
+              <p>{t("googleExiste")}</p>
+              <BotonGoogle cuentaExistente />
+            </div>
+          )}
           <LoginForm next={next} />
 
           {error && (

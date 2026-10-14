@@ -28,5 +28,12 @@ export async function GET(request: Request) {
     }
   }
 
+  // Un invitado quiso sumar Google pero esa cuenta de Google ya es de otro usuario
+  // (revisión 2026-10-14): se ofrece entrar directo con ella.
+  const codigoError = searchParams.get("error_code") ?? "";
+  if (codigoError === "identity_already_exists" || /already/i.test(searchParams.get("error_description") ?? "")) {
+    return NextResponse.redirect(`${origin}/login?google=existe`);
+  }
+
   return NextResponse.redirect(`${origin}/login?error=auth`);
 }

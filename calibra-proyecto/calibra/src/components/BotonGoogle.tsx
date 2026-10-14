@@ -10,7 +10,7 @@ import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
 // que la app (mobile/src/lib/bienvenida.ts): si entraste como invitado, se le suma
 // Google a ESA cuenta (no pierdes lo jugado); si no, se entra o se crea la cuenta.
 // Vuelve por /auth/callback, que cambia el code por la sesión.
-export default function BotonGoogle({ siguiente = "/" }: { siguiente?: string }) {
+export default function BotonGoogle({ siguiente = "/", cuentaExistente = false }: { siguiente?: string; cuentaExistente?: boolean }) {
   const t = useTranslations("Auth.google");
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +21,9 @@ export default function BotonGoogle({ siguiente = "/" }: { siguiente?: string })
     const sb = createClient();
     const redirectTo = urlAbsoluta(`/auth/callback?next=${encodeURIComponent(siguiente)}`);
     const { data: s } = await sb.auth.getSession();
-    if (s.session?.user.is_anonymous) {
+    // Esa cuenta de Google ya existe: se sale del invitado y se entra con ella.
+    if (cuentaExistente && s.session?.user.is_anonymous) await sb.auth.signOut();
+    else if (s.session?.user.is_anonymous) {
       const v = await sb.auth.linkIdentity({ provider: "google", options: { redirectTo } });
       if (!v.error) return; // el navegador ya se va a Google
     }

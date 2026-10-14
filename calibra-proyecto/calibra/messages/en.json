@@ -1720,7 +1720,8 @@
       "botonInvitado": "Continue as guest",
       "practicaSinCuenta": "Practice without creating an account. You can save your progress later.",
       "errorInvitado": "We couldn't create a guest session. Try again.",
-      "errorLogin": "We couldn't sign you in. Try again."
+      "errorLogin": "We couldn't sign you in. Try again.",
+      "googleExiste": "That Google account already has a Prodigia account. Sign in with it; what you played as a guest can't be added to an existing account."
     },
     "registro": {
       "titulo": "Create your account",

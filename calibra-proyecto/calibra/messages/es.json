@@ -1720,7 +1720,8 @@
       "botonInvitado": "Entrar como invitado",
       "practicaSinCuenta": "Practica sin crear cuenta. Puedes guardar tu progreso después.",
       "errorInvitado": "No pudimos crear una sesión de invitado. Prueba de nuevo.",
-      "errorLogin": "No pudimos iniciar sesión. Prueba de nuevo."
+      "errorLogin": "No pudimos iniciar sesión. Prueba de nuevo.",
+      "googleExiste": "Esa cuenta de Google ya tiene una cuenta en Prodigia. Entra con ella; lo que jugaste como invitado no se puede sumar a una cuenta que ya existe."
     },
     "registro": {
       "titulo": "Crea tu cuenta",
