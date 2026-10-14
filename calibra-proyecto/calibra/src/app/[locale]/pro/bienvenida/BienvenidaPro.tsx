@@ -21,6 +21,7 @@ const DURACION_CINEMATICA_MS = 5200;
 // que tarda unos segundos: mientras tanto se espera mirando profiles.plan.
 export default function BienvenidaPro({ userId, yaEraPro }: { userId: string; yaEraPro: boolean }) {
   const t = useTranslations("ProBienvenida");
+  const tBen = useTranslations("ProBeneficios");
   const reducirMovimiento = useReducedMotion();
   const [fase, setFase] = useState<Fase>(yaEraPro ? "cinematica" : "activando");
   // Cuándo empezó a esperar; se fija dentro del efecto (no en el render).
@@ -119,11 +120,11 @@ export default function BienvenidaPro({ userId, yaEraPro }: { userId: string; ya
             </div>
             <ul className="flex flex-col gap-2">
               {BENEFICIOS_PRO.map((b, i) => (
-                <motion.li key={b.titulo} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.08 * i }} className="flex gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <motion.li key={b.id} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.08 * i }} className="flex gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                   <span className="text-2xl" aria-hidden="true">{b.emoji}</span>
                   <span>
-                    <span className="block font-display font-bold">{b.titulo}</span>
-                    <span className="block text-sm text-white/70">{b.descripcion}</span>
+                    <span className="block font-display font-bold">{tBen(`${b.id}.titulo`)}</span>
+                    <span className="block text-sm text-white/70">{tBen(`${b.id}.descripcion`)}</span>
                   </span>
                 </motion.li>
               ))}

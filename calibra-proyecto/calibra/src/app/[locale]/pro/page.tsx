@@ -22,6 +22,7 @@ export default async function ProPage() {
   const supabase = await createClient();
   const { user } = await requireUsuario(supabase, "/pro");
   const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
+  const tBen = await getTranslations("ProBeneficios");
   bloquearInvitado(user, tBloqueos("pro"));
   const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
   // Contador de Pro (2026-10-13): la suscripción más reciente, si la hay.
@@ -48,12 +49,12 @@ export default async function ProPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           {BENEFICIOS_PRO.map((b) => (
             <div
-              key={b.titulo}
+              key={b.id}
               className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-5"
             >
               <span className="text-2xl">{b.emoji}</span>
-              <h2 className="font-display text-base font-bold text-foreground">{b.titulo}</h2>
-              <p className="text-sm text-texto-secundario">{b.descripcion}</p>
+              <h2 className="font-display text-base font-bold text-foreground">{tBen(`${b.id}.titulo`)}</h2>
+              <p className="text-sm text-texto-secundario">{tBen(`${b.id}.descripcion`)}</p>
             </div>
           ))}
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { CAPSULAS, CATALOGO_NUEVO, ciudadDe, COLOR_RAREZA, coloresCapsula, type Rareza } from "@/lib/recompensas/catalogo";
+import { CATALOGO_NUEVO, ciudadDe, COLOR_RAREZA, coloresCapsula, type Rareza } from "@/lib/recompensas/catalogo";
 import { abrirCapsula, type Capsula, type PremioCapsula } from "@/lib/recompensas/api";
 import { refrescarCosmeticosWeb } from "@/lib/recompensas/cosmeticosWeb";
 import { createClient } from "@/lib/supabase/client";
@@ -62,7 +62,7 @@ function revelado(p: PremioCapsula): Omit<PremioRevelado, "contenido"> {
 export default function AbrirCapsula({ capsula, onCerrar, onChispas }: { capsula: Capsula; onCerrar: () => void; onChispas?: (total: number) => void }) {
   const t = useTranslations("Recompensas.capsulas");
   const ciudad = ciudadDe(capsula.mundo);
-  const nombre = CAPSULAS[capsula.tipo]?.nombre ?? "";
+  const nombre = t(`nombres.${capsula.tipo}`);
   return (
     <RevelacionWeb
       colores={coloresCapsula(capsula.tipo, capsula.mundo)}

@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { reproducirTono } from "@/lib/sonido";
-import { CAPSULAS, CATALOGO_NUEVO, CIUDADES, COLOR_RAREZA, coloresCapsula, PREMIOS_CALENDARIO, type Rareza } from "@/lib/recompensas/catalogo";
+import { CATALOGO_NUEVO, CIUDADES, COLOR_RAREZA, coloresCapsula, PREMIOS_CALENDARIO, type Rareza } from "@/lib/recompensas/catalogo";
 import {
   contenidoCapsula,
   mensajeError,
@@ -215,7 +215,7 @@ export default function RecompensasClient({ invitado, plan }: { invitado: boolea
                   style={{ borderColor: `${coloresCapsula(c.tipo, c.mundo)[0]}aa` }}
                 >
                   <DibujoCapsula colores={coloresCapsula(c.tipo, c.mundo)} tam={54} />
-                  <span className="text-center text-xs font-bold text-foreground">{CAPSULAS[c.tipo]?.nombre}</span>
+                  <span className="text-center text-xs font-bold text-foreground">{t(`capsulas.nombres.${c.tipo}`)}</span>
                   <span className="text-center text-[11px] text-texto-secundario">{detalle(c)}</span>
                 </button>
                 <button
@@ -390,7 +390,7 @@ export default function RecompensasClient({ invitado, plan }: { invitado: boolea
       {verContenido && (
         <div className="fixed inset-0 z-[95] flex items-end justify-center bg-black/60 p-4 sm:items-center" onClick={() => setVerContenido(null)} role="dialog" aria-modal="true">
           <div className="w-full max-w-md rounded-3xl border border-border bg-surface p-5" onClick={(e) => e.stopPropagation()}>
-            <h3 className="font-display text-xl font-bold text-foreground">{CAPSULAS[verContenido.capsula.tipo]?.nombre}</h3>
+            <h3 className="font-display text-xl font-bold text-foreground">{t(`capsulas.nombres.${verContenido.capsula.tipo}`)}</h3>
             <p className="mt-1 text-sm text-texto-secundario">{t("capsulas.probabilidades")}</p>
             <ul className="mt-3 flex flex-col gap-2">
               {verContenido.filas.map((f) => (

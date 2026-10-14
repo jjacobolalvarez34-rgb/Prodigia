@@ -4771,7 +4771,20 @@
       "yaTenias": "You already had {nombre}: it turned into Sparks.",
       "esTuyo": "It's yours. Equip it from the shop.",
       "error": "Couldn't open it right now. Try again.",
-      "cerrar": "Close"
+      "cerrar": "Close",
+      "nombres": {
+        "diaria": "Daily capsule",
+        "misiones": "Missions capsule",
+        "racha": "Streak capsule",
+        "nivel": "Level capsule",
+        "ciudad": "City capsule",
+        "liga": "League capsule",
+        "liga_bronce": "League capsule · Bronze",
+        "liga_plata": "League capsule · Silver",
+        "liga_oro": "League capsule · Gold",
+        "coleccion": "Collection capsule",
+        "pro": "Pro capsule"
+      }
     },
     "calendario": {
       "titulo": "7-day calendar",
@@ -5288,7 +5301,9 @@
     "canjeHecho": "Done! You got {n} Chispas.",
     "comprarTitulo": "Get Comets",
     "errorCompra": "Couldn't open the payment. Try again.",
-    "comoConseguir": "You also earn Comets by leveling up (every 10 levels), in the weekly league, with achievements, in the weekend challenge and with Prodigia Pro (300 a month)."
+    "comoConseguir": "You also earn Comets by leveling up (every 10 levels), in the weekly league, with achievements, in the weekend challenge and with Prodigia Pro (300 a month).",
+    "faltan": "You don't have enough Comets for that.",
+    "errorCanje": "Couldn't make the exchange. Try again."
   },
   "RetoFinde": {
     "metadata": {
@@ -5332,5 +5347,43 @@
     "contador": "You can always see how much Pro you have left in the Pro section, with its countdown. Keep an eye on it so you don't miss the renewal.",
     "volver": "Back to Prodigia",
     "verPro": "See my Pro"
+  },
+  "ProBeneficios": {
+    "chispas": {
+      "titulo": "10,000 Chispas with every payment",
+      "descripcion": "When you subscribe and on every renewal: every month on the monthly plan, once a year on the yearly one."
+    },
+    "mundos": {
+      "titulo": "All 15 worlds unlocked",
+      "descripcion": "Play every city while your Pro lasts, without spending Chispas to unlock them."
+    },
+    "cometas": {
+      "titulo": "300 Comets a month",
+      "descripcion": "The premium currency, for legendary items or to trade for Chispas."
+    },
+    "capsulas": {
+      "titulo": "2 Pro capsules every week",
+      "descripcion": "Special capsules that almost always bring an epic or legendary cosmetic. They arrive the weeks you come in to play."
+    },
+    "anuncios": {
+      "titulo": "No ads",
+      "descripcion": "Zero ads, on any screen."
+    },
+    "cosmeticos": {
+      "titulo": "Exclusive cosmetics",
+      "descripcion": "Prism animation and Prodigy Background — only for Pro accounts."
+    },
+    "estadisticas": {
+      "titulo": "Advanced stats",
+      "descripcion": "Accuracy per world and progress over time, in more detail than the regular profile."
+    },
+    "anticipado": {
+      "titulo": "Early access",
+      "descripcion": "Try new worlds and features before everyone else."
+    },
+    "clases": {
+      "titulo": "Classes",
+      "descripcion": "A Classes tab in Learn for every world: step-by-step lessons that build on each other, with worked examples and a quiz between lessons. The first class is free."
+    }
   }
 }

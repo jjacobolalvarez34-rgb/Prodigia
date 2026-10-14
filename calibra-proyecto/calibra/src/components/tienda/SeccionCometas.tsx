@@ -50,7 +50,7 @@ export default function SeccionCometas({
     setOcupado(false);
     setPendiente(null);
     if (error) {
-      setMensaje({ texto: error.message, error: true });
+      setMensaje({ texto: /faltan Cometas/i.test(error.message) ? t("faltan") : t("errorCanje"), error: true });
       return;
     }
     const fila = (data as { cometas: number; puntos_total: number }[] | null)?.[0];

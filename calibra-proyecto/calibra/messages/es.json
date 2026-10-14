@@ -4771,7 +4771,20 @@
       "yaTenias": "Ya tenías {nombre}: se convirtió en Chispas.",
       "esTuyo": "Ya es tuyo. Póntelo desde la tienda.",
       "error": "No se pudo abrir ahora. Inténtalo de nuevo.",
-      "cerrar": "Cerrar"
+      "cerrar": "Cerrar",
+      "nombres": {
+        "diaria": "Cápsula diaria",
+        "misiones": "Cápsula de misiones",
+        "racha": "Cápsula de racha",
+        "nivel": "Cápsula de nivel",
+        "ciudad": "Cápsula de ciudad",
+        "liga": "Cápsula de liga",
+        "liga_bronce": "Cápsula de liga · Bronce",
+        "liga_plata": "Cápsula de liga · Plata",
+        "liga_oro": "Cápsula de liga · Oro",
+        "coleccion": "Cápsula de colección",
+        "pro": "Cápsula Pro"
+      }
     },
     "calendario": {
       "titulo": "Calendario de 7 días",
@@ -5288,7 +5301,9 @@
     "canjeHecho": "¡Listo! Sumaste {n} Chispas.",
     "comprarTitulo": "Conseguir Cometas",
     "errorCompra": "No se pudo abrir el pago. Intenta de nuevo.",
-    "comoConseguir": "También ganas Cometas subiendo de nivel (cada 10 niveles), en la liga semanal, con logros, en el reto de fin de semana y con Prodigia Pro (300 al mes)."
+    "comoConseguir": "También ganas Cometas subiendo de nivel (cada 10 niveles), en la liga semanal, con logros, en el reto de fin de semana y con Prodigia Pro (300 al mes).",
+    "faltan": "Te faltan Cometas para ese canje.",
+    "errorCanje": "No se pudo hacer el canje. Prueba de nuevo."
   },
   "RetoFinde": {
     "metadata": {
@@ -5332,5 +5347,43 @@
     "contador": "Cuánto le queda a tu Pro lo ves siempre en la sección Pro, con su contador. Tenlo a la vista para no perderte la renovación.",
     "volver": "Volver a Prodigia",
     "verPro": "Ver mi Pro"
+  },
+  "ProBeneficios": {
+    "chispas": {
+      "titulo": "10.000 Chispas con cada pago",
+      "descripcion": "Al suscribirte y en cada renovación: cada mes con el plan mensual, una vez al año con el anual."
+    },
+    "mundos": {
+      "titulo": "Los 15 mundos encendidos",
+      "descripcion": "Juega todas las ciudades mientras dure tu Pro, sin gastar Chispas en desbloquearlas."
+    },
+    "cometas": {
+      "titulo": "300 Cometas al mes",
+      "descripcion": "La moneda premium, para lo legendario o para cambiarla por Chispas."
+    },
+    "capsulas": {
+      "titulo": "2 cápsulas Pro cada semana",
+      "descripcion": "Cápsulas especiales que casi siempre traen un cosmético épico o legendario. Llegan la semana que entras a jugar."
+    },
+    "anuncios": {
+      "titulo": "Sin anuncios",
+      "descripcion": "Cero publicidad, en cualquier pantalla de la web."
+    },
+    "cosmeticos": {
+      "titulo": "Cosméticos exclusivos",
+      "descripcion": "Animación Prisma y Fondo Prodigio — solo disponibles para cuentas Pro."
+    },
+    "estadisticas": {
+      "titulo": "Estadísticas avanzadas",
+      "descripcion": "Precisión por mundo y evolución en el tiempo, con más detalle que el perfil normal."
+    },
+    "anticipado": {
+      "titulo": "Acceso anticipado",
+      "descripcion": "Prueba mundos y funciones nuevas antes de que salgan para todos."
+    },
+    "clases": {
+      "titulo": "Clases",
+      "descripcion": "Pestaña Clases dentro de Aprender de cada mundo: lecciones progresivas y dependientes entre sí, con ejemplos resueltos paso a paso y un quiz entre lecciones. La primera clase es gratis."
+    }
   }
 }

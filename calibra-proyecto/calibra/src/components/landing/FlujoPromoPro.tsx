@@ -12,6 +12,7 @@ interface Props {
 // /pro) en vez de duplicar la lista.
 export default function FlujoPromoPro({ onContinuar }: Props) {
   const t = useTranslations("Landing.promo");
+  const tBen = useTranslations("ProBeneficios");
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center gap-6 px-4 py-16 text-center">
@@ -22,11 +23,11 @@ export default function FlujoPromoPro({ onContinuar }: Props) {
       <div className="grid w-full gap-3 sm:grid-cols-2">
         {BENEFICIOS_PRO.map((b) => (
           <div
-            key={b.titulo}
+            key={b.id}
             className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-surface px-4 py-4 text-center"
           >
             <span className="text-xl">{b.emoji}</span>
-            <p className="text-xs font-semibold text-foreground">{b.titulo}</p>
+            <p className="text-xs font-semibold text-foreground">{tBen(`${b.id}.titulo`)}</p>
           </div>
         ))}
       </div>
