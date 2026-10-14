@@ -24,6 +24,8 @@ import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiari
 import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
 import { reproducirTono } from "@/lib/sonido";
 import { PRODUCTOS } from "@/lib/pagos/productos";
+import PortadaBazar, { CabeceraPuesto } from "@/components/tienda/PortadaBazar";
+import { puestoDe, type PuestoId } from "@/lib/tienda/bazar";
 import { precioEnCometas } from "@/lib/recompensas/catalogo";
 import { abrirCheckoutPaddle } from "@/lib/pagos/paddleClient";
 import type { Proveedor, ProductoComprable } from "@/lib/pagos/tipos";
@@ -123,7 +125,13 @@ export default function TiendaClient({
   // Tienda (solo lo que todavía no tienes) o Inventario (todo lo tuyo, para usarlo);
   // va en la URL (?modo=inventario) para que TiendaAmpliada siga el mismo modo.
   const router = useRouter();
-  const inventario = useSearchParams().get("modo") === "inventario";
+  const parametros = useSearchParams();
+  const inventario = parametros.get("modo") === "inventario";
+  // Tienda A + C (2026-10-14): sin puesto, la portada (lo del día y la calle); con
+  // puesto, solo sus estantes. En el Inventario se ve todo, como antes.
+  const puesto = puestoDe(parametros.get("puesto"))?.id ?? null;
+  const portada = !inventario && !puesto;
+  const ver = (id: PuestoId) => inventario || puesto === id;
   const cambiarModo = (inv: boolean) => router.replace({ pathname: "/tienda", query: inv ? { modo: "inventario" } : {} }, { scroll: false });
   const tMundos = useTranslations("Mundos.nombres");
   const tRangos = useTranslations("Rankeds.rangos");
@@ -506,11 +514,16 @@ export default function TiendaClient({
           ))}
         </div>
 
-        {seccionCometas}
+        {portada && (
+          <PortadaBazar
+            oferta={<OfertaDelDia oferta={oferta} nombre={NOMBRES_ITEM[oferta.item as ItemComprable]} />}
+          />
+        )}
+        {!inventario && puesto && <CabeceraPuesto puesto={puesto} />}
 
-        {!inventario && <OfertaDelDia oferta={oferta} nombre={NOMBRES_ITEM[oferta.item as ItemComprable]} />}
+        {!inventario && puesto === "mercado" && seccionCometas}
 
-        {!inventario && pagosHabilitados && (
+        {!inventario && puesto === "mercado" && pagosHabilitados && (
         <EstanteCategoria titulo={t("pagos.titulo")} franja="#FFC53D">
           <p className="text-sm text-[#F4E4C1]/90">{t("pagos.descripcion")}</p>
           <div className="flex flex-wrap gap-2">
@@ -558,7 +571,7 @@ export default function TiendaClient({
           </EstanteCategoria>
         )}
 
-        {!inventario && (
+        {!inventario && puesto === "botica" && (
         <EstanteCategoria titulo={t("puestoDeUtilidad")} franja="#6C4CF1">
           <ItemEstante
             icono={<IconEscudo className="h-6 w-6 text-[#6C4CF1]" />}
@@ -634,6 +647,7 @@ export default function TiendaClient({
         </EstanteCategoria>
         )}
 
+        {ver("caligrafia") && (
         <EstanteCategoria titulo={t("vidrieraDeTipografias")} franja="#A78355">
           <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraDescripcion")}</p>
           <div className="flex flex-wrap gap-2">
@@ -676,7 +690,9 @@ export default function TiendaClient({
           </div>
           {error?.contexto === "fuente" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
         </EstanteCategoria>
+        )}
 
+        {ver("herreria") && (
         <EstanteCategoria titulo={t("herreroDeMarcos")} franja="#E8B34D">
           <p className="text-sm text-[#F4E4C1]/90">{t("herreroDescripcion")}</p>
           <div className="flex flex-wrap gap-2">
@@ -741,7 +757,9 @@ export default function TiendaClient({
           </div>
           {error?.contexto === "marco" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
         </EstanteCategoria>
+        )}
 
+        {ver("herreria") && (
         <EstanteCategoria titulo={t("vidrieraDeMarcosTematicos")} franja="#6C4CF1">
           <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraMarcosTematicosDescripcion", { n: NIVEL_MUNDO_REQUERIDO_MARCO })}</p>
           <div className="flex flex-wrap gap-3">
@@ -811,7 +829,9 @@ export default function TiendaClient({
           />
           )}
         </EstanteCategoria>
+        )}
 
+        {ver("caligrafia") && (
         <EstanteCategoria titulo={t("vidrieraDeAnimaciones")} franja="#3ddc97">
           <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraAnimacionesDescripcion")}</p>
           <div className="flex flex-wrap gap-2">
@@ -867,7 +887,9 @@ export default function TiendaClient({
           </div>
           {error?.contexto === "animacion" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
         </EstanteCategoria>
+        )}
 
+        {ver("estudio") && (
         <EstanteCategoria titulo={t("vidrieraDeFondos")} franja="#4CC9F0">
           <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraFondosDescripcion")}</p>
           {/* Pedido en vivo (2026-09-15): "agrégales vista previa" — antes
@@ -967,12 +989,14 @@ export default function TiendaClient({
           )}
           {error?.contexto === "fondo" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
         </EstanteCategoria>
+        )}
 
         {/* Pedido en vivo (2026-09-15): "¿podrías permitir cambiar el
             color del nombre?" — un único ítem que desbloquea el picker
             (cualquier color, no un catálogo fijo). El color en sí se
             elige en /perfil (ColorNombrePicker.tsx), acá solo se compra
             el desbloqueo. */}
+        {ver("caligrafia") && (
         <EstanteCategoria titulo={t("vidrieraDeColorNombre")} franja="#7C5CFF">
           <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraColorNombreDescripcion")}</p>
           {colorNombreDesbl !== inventario ? (
@@ -995,6 +1019,7 @@ export default function TiendaClient({
           )}
           {error?.contexto === "color-nombre" && <p className="text-sm font-medium text-[#5C1A1A]">{error.msg}</p>}
         </EstanteCategoria>
+        )}
 
         {/* Galería de fondos animados (0152) — pedido en vivo
             (2026-09-15): un catálogo APARTE de los 5 degradés de arriba,
@@ -1002,8 +1027,8 @@ export default function TiendaClient({
             sin deploy (sube a Storage, agrega una fila por SQL). Si
             todavía no hay ningún ítem activo, la sección entera no se
             renderiza — nada raro que mostrar en un catálogo vacío. */}
-        {fondosGaleria.length > 0 && (
-          <EstanteCategoria titulo={t("vidrieraDeFondosGaleria")} franja="#FF5D5D">
+        {fondosGaleria.length > 0 && ver("estudio") && (
+        <EstanteCategoria titulo={t("vidrieraDeFondosGaleria")} franja="#FF5D5D">
             <p className="text-sm text-[#F4E4C1]/90">{t("vidrieraFondosGaleriaDescripcion")}</p>
             <div className="flex flex-wrap gap-3">
               {fondosGaleria.map(({ slug, nombre, url, costo }) => {
@@ -1069,7 +1094,7 @@ export default function TiendaClient({
             este cartel nunca chequeaba ese flag — solo escondía el
             widget de Doble o Nada DENTRO de /trastienda. Ahora sí se
             oculta acá también, para que el ajuste haga lo que promete. */}
-        {!inventario && !ocultarTrastienda && (
+        {portada && !ocultarTrastienda && (
           <Link
             href="/trastienda"
             aria-label={t("entrarALaTrastienda")}

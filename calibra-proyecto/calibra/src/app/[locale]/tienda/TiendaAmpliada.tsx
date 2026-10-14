@@ -12,6 +12,7 @@ import { refrescarCosmeticosWeb } from "@/lib/recompensas/cosmeticosWeb";
 import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
 import IconoCometa from "@/components/IconoCometa";
 import { TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
+import { puestoDe, type PuestoId } from "@/lib/tienda/bazar";
 
 // Tienda ampliada (0248) en la web: la misma vidriera que las pestañas nuevas del
 // Bazar de la app (paquetes, partida, Placa, duelos, marco del mes y ayudas). La
@@ -19,7 +20,7 @@ import { TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
 // revalida todo. Avisa la compra con el evento "prodigia:chispas" para que el saldo
 // de arriba (TiendaClient) se actualice.
 
-type Pestana = "paquetes" | "temas" | "marcos" | "partida" | "placa" | "duelos" | "temporada" | "utilidades";
+type Pestana = "paquetes" | "temas" | "marcos" | "partida" | "placa" | "duelos" | "temporada" | "utilidades" | "pirotecnia" | "musica" | "titulos";
 const PESTANAS: Pestana[] = ["paquetes", "temas", "marcos", "partida", "placa", "duelos", "temporada", "utilidades"];
 
 interface Item {
@@ -50,7 +51,22 @@ const TODO_INVENTARIO: Item[] = [
   ...UTILIDADES_NUEVAS.map((u) => ({ item: u.item, categoria: "utilidad", valor: u.item, nombre: u.nombre, precio: u.precio, rareza: "comun" as Rareza })),
 ];
 
+// Tienda A + C: qué pestañas tiene cada puesto de la calle (src/lib/tienda/bazar.ts).
+const PESTANAS_DE_PUESTO: Record<PuestoId, Pestana[]> = {
+  herreria: ["marcos", "temporada"],
+  estudio: ["placa"],
+  pirotecnia: ["pirotecnia"],
+  musica: ["musica"],
+  arena: ["duelos"],
+  caligrafia: ["titulos"],
+  botica: ["utilidades"],
+  mercado: ["paquetes", "temas"],
+};
+
 const DE_PESTANA: Record<Pestana, (it: Item) => boolean> = {
+  pirotecnia: (it) => it.categoria === "estela" || it.categoria === "efecto",
+  musica: (it) => it.categoria === "sonido",
+  titulos: (it) => it.categoria === "titulo",
   paquetes: (it) => it.categoria === "paquete",
   temas: () => false,
   marcos: (it) => it.categoria === "marco" && it.temporada == null && it.valor.startsWith("estilo_"),
@@ -102,7 +118,11 @@ interface Estado {
 export default function TiendaAmpliada() {
   const t = useTranslations("Recompensas.tienda");
   // Tienda (solo lo que no tienes) o Inventario (todo lo tuyo); lo elige TiendaClient con ?modo=.
-  const inventario = useSearchParams().get("modo") === "inventario";
+  const parametros = useSearchParams();
+  const inventario = parametros.get("modo") === "inventario";
+  const puesto = puestoDe(parametros.get("puesto"))?.id ?? null;
+  // Desde «Hoy en el Bazar» se llega con ?item=: se abre ese artículo.
+  const itemPedido = parametros.get("item");
   const [pestana, setPestana] = useState<Pestana>("paquetes");
   const [tema, setTema] = useState<TemaApp | null>(null);
   const [e, setE] = useState<Estado | null>(null);
@@ -212,8 +232,22 @@ export default function TiendaAmpliada() {
     return null;
   }
 
-  const pestanas = inventario ? PESTANAS.filter((p) => p !== "paquetes" && p !== "temas") : PESTANAS;
+  const pestanas = useMemo(() => (inventario ? PESTANAS.filter((p) => p !== "paquetes" && p !== "temas") : puesto ? PESTANAS_DE_PUESTO[puesto] : []), [inventario, puesto]);
   const pestanaVista = pestanas.includes(pestana) ? pestana : pestanas[0];
+  const [pedidoAbierto, setPedidoAbierto] = useState<string | null>(null);
+  useEffect(() => {
+    if (!e || !itemPedido || pedidoAbierto === itemPedido) return;
+    const it = [...ITEMS, ...FONDOS_CIUDAD].find((x) => x.item === itemPedido);
+    const enPestana = it ? pestanas.find((p) => DE_PESTANA[p](it)) : undefined;
+    // Abrir el artículo elegido desde «Hoy en el Bazar» (sistema externo: la URL).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPedidoAbierto(itemPedido);
+    if (it) {
+      if (enPestana) setPestana(enPestana);
+      setElegido(it);
+    }
+  }, [e, itemPedido, pedidoAbierto, pestanas]);
+
   const lista = useMemo(() => {
     if (inventario) {
       // En el inventario, «Del mes» muestra todos los marcos de temporada que tengas.
@@ -274,13 +308,16 @@ export default function TiendaAmpliada() {
     }
   }
 
+  // En la portada (sin puesto) la tienda ampliada no se muestra: está repartida en los puestos.
+  if (pestanas.length === 0) return null;
+
   return (
     <section className="mx-auto flex w-full max-w-4xl flex-col gap-4 px-4 pb-12 sm:px-6">
       <div>
         <h2 className="font-display text-2xl font-bold text-foreground">{inventario ? t("inventarioTitulo") : t("titulo")}</h2>
         <p className="text-sm text-texto-secundario">{inventario ? t("inventarioSubtitulo") : t("subtitulo")}</p>
       </div>
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      <div className={`flex gap-2 overflow-x-auto pb-1 ${pestanas.length < 2 ? "hidden" : ""}`}>
         {pestanas.map((p) => (
           <button
             key={p}

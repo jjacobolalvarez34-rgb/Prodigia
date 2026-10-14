@@ -4,11 +4,12 @@ import { URL_WEB } from "~/lib/entorno";
 import { LinearGradient } from "expo-linear-gradient";
 import { msHastaFinDelEvento } from "@/lib/eventos/dobleExperiencia";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Dimensions, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { FadeIn } from "react-native-reanimated";
-import { CATALOGO_NUEVO, diasHastaFinDeMes } from "@/lib/recompensas/catalogo";
+import { CATALOGO_NUEVO, diasHastaFinDeMes, temporadaActual as temporadaDelMes } from "@/lib/recompensas/catalogo";
+import { msHastaCambioDiario, PUESTOS, puestoDe, relojHasta, rotacionDelDia, type PuestoId } from "@/lib/tienda/bazar";
 import { TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
 import { probarPaqueteAcierto, sonar, vibrar } from "~/lib/efectos";
 import { recargarCosmeticos } from "~/lib/recompensas";
@@ -33,6 +34,7 @@ import {
   NOMBRE_RAREZA,
   precioDe,
   cometasDe,
+  hoyIso,
   rarezaDeItem,
   subirFondo,
   tieneSlug,
@@ -57,32 +59,20 @@ import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente } from "~/tema";
 import { FUENTE_FAMILIA } from "~/lib/placa";
 
-// Una categoría a la vez (antes la tienda dibujaba todo el catálogo junto y se
-// trababa): menos cosas en pantalla, y la grilla entra con un fundido.
-type Pestana = "cometas" | "utilidad" | "paquetes" | "temas" | "marcos" | "nombre" | "fondos" | "partida" | "placa" | "duelos";
+// Tienda A + C (2026-10-14, docs/rediseno/tienda.html): en Tienda, la portada muestra lo
+// del día (rotación y oferta) y la calle con sus puestos; cada puesto es una grilla con
+// sus categorías (src/lib/tienda/bazar.ts, igual que la web). En Inventario, los mismos
+// puestos como pestañas.
+type Pestana = "cometas" | "temas" | PuestoId;
 const PESTANAS: { id: Pestana; titulo: string }[] = [
   { id: "cometas", titulo: "Cometas" },
-  { id: "utilidad", titulo: "Utilidades" },
-  { id: "paquetes", titulo: "Paquetes" },
+  ...PUESTOS.map((p) => ({ id: p.id as Pestana, titulo: p.nombre })),
   { id: "temas", titulo: "Temas ✦" },
-  { id: "marcos", titulo: "Marcos" },
-  { id: "partida", titulo: "Partida" },
-  { id: "nombre", titulo: "Nombre" },
-  { id: "fondos", titulo: "Fondos" },
-  { id: "placa", titulo: "Placa" },
-  { id: "duelos", titulo: "Duelos" },
 ];
 const CATEGORIAS_DE: Record<Pestana, Categoria[]> = {
   cometas: [],
-  utilidad: ["utilidad"],
-  paquetes: ["paquete"],
   temas: [],
-  marcos: ["marco", "marco_mundo"],
-  nombre: ["fuente", "animacion", "color"],
-  fondos: ["fondo", "galeria"],
-  partida: ["estela", "efecto", "sonido"],
-  placa: ["ciudad_placa", "titulo"],
-  duelos: ["emote"],
+  ...(Object.fromEntries(PUESTOS.map((p) => [p.id, p.categorias as Categoria[]])) as Record<PuestoId, Categoria[]>),
 };
 // Lo que se ve sobre tu Placa (vista previa con la Placa); el resto, con su muestra.
 const SOBRE_PLACA: Categoria[] = ["marco", "marco_mundo", "fuente", "animacion", "fondo", "galeria", "color", "ciudad_placa"];
@@ -159,7 +149,7 @@ function Muestra({ it, placa }: { it: ItemTienda; placa: PlacaDatos }) {
 // Tarjeta de la grilla: muestra del cosmético sobre un degradé del color de su
 // rareza (los legendarios brillan), nombre, estado (tuyo / en uso) y precio.
 // memo: tocar una tarjeta no vuelve a dibujar las demás.
-const TarjetaItem = memo(function TarjetaItem({ it, e, placa, ancho, onPress }: { it: ItemTienda; e: EstadoTienda; placa: PlacaDatos; ancho: number; onPress: (it: ItemTienda) => void }) {
+const TarjetaItem = memo(function TarjetaItem({ it, e, placa, ancho, onPress, delDia }: { it: ItemTienda; e: EstadoTienda; placa: PlacaDatos; ancho: number; onPress: (it: ItemTienda) => void; delDia?: boolean }) {
   const precio = precioDe(it);
   const precioCometas = cometasDe(it);
   const rareza = rarezaDeItem(it);
@@ -221,6 +211,11 @@ const TarjetaItem = memo(function TarjetaItem({ it, e, placa, ancho, onPress }: 
           </View>
         )
       )}
+      {delDia && (
+        <View style={styles.marcaDia}>
+          <Texto style={{ fontFamily: fuente.display, fontSize: 8.5, color: "#2A1A00", letterSpacing: 0.6 }}>DEL DÍA</Texto>
+        </View>
+      )}
       {it.soloPro && (
         <View style={styles.pro}>
           <Texto style={{ fontFamily: fuente.display, fontSize: 9, color: "#fff" }}>PRO</Texto>
@@ -255,6 +250,116 @@ const MiniTema = memo(function MiniTema({ tema, ancho, alto }: { tema: TemaApp; 
   );
 });
 
+// Toldo de un puesto: rayas de sus dos colores.
+function Toldo({ claro, oscuro, alto = 12 }: { claro: string; oscuro: string; alto?: number }) {
+  return (
+    <View style={{ flexDirection: "row", height: alto, overflow: "hidden", borderTopLeftRadius: 12, borderTopRightRadius: 12 }}>
+      {Array.from({ length: 12 }, (_, i) => (
+        <View key={i} style={{ flex: 1, backgroundColor: i % 2 ? oscuro : claro, borderBottomLeftRadius: alto / 2, borderBottomRightRadius: alto / 2 }} />
+      ))}
+    </View>
+  );
+}
+
+// Portada del Bazar: lo del día arriba (rotación con su reloj) y la calle abajo.
+function PortadaBazar({ catalogo, e, placa, ancho, onPress, onPuesto }: { catalogo: ItemTienda[]; e: EstadoTienda; placa: PlacaDatos; ancho: number; onPress: (it: ItemTienda) => void; onPuesto: (p: Pestana) => void }) {
+  const [ahora, setAhora] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setAhora(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const rot = useMemo(() => rotacionDelDia(hoyIso(), CATALOGO_NUEVO, temporadaDelMes()), []);
+  const destacado = catalogo.find((x) => x.item === rot.destacado) ?? null;
+  const otros = rot.otros.map((s) => catalogo.find((x) => x.item === s)).filter((x): x is ItemTienda => !!x);
+  const anchoPuesto = Math.floor((Dimensions.get("window").width - 32 - 16) / 3);
+  return (
+    <Animated.View entering={FadeIn.duration(220)} style={{ paddingHorizontal: 16, paddingTop: 12, gap: 14 }}>
+      <View style={styles.hoy}>
+        <LinearGradient colors={[conAlfa(color.logro, 0.22), "rgba(18,23,42,0)"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+        <View style={[styles.fila, { justifyContent: "space-between" }]}>
+          <Texto v="micro" c={color.logro}>
+            Hoy en el Bazar
+          </Texto>
+          <Texto v="mono" tam={12} c={color.logro}>
+            cambia en {relojHasta(msHastaCambioDiario(ahora))}
+          </Texto>
+        </View>
+        {destacado && (
+          <Pressable
+            onPress={() => {
+              vibrar.seleccion();
+              onPress(destacado);
+            }}
+            style={({ pressed }) => [styles.destacado, pressed && { transform: [{ scale: 0.98 }] }]}
+          >
+            <View style={styles.destacadoMuestra}>
+              <Muestra it={destacado} placa={placa} />
+            </View>
+            <View style={{ flex: 1, gap: 4 }}>
+              <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 10, letterSpacing: 1, color: COLOR_RAREZA[rarezaDeItem(destacado)] }}>{NOMBRE_RAREZA[rarezaDeItem(destacado)].toUpperCase()}</Texto>
+              <Texto v="h3" numberOfLines={2}>
+                {destacado.nombre}
+              </Texto>
+              {loTiene(destacado, e) ? (
+                <Texto v="fuerte" tam={12} c={color.primarioClaro}>
+                  YA ES TUYO
+                </Texto>
+              ) : cometasDe(destacado) != null ? (
+                <View style={[styles.precio, { alignSelf: "flex-start", borderColor: conAlfa(COLOR_COMETA, 0.6) }]}>
+                  <IconoCometa tam={13} />
+                  <Texto v="mono" tam={13}>
+                    {cometasDe(destacado)}
+                  </Texto>
+                </View>
+              ) : (
+                <View style={[styles.precio, { alignSelf: "flex-start" }]}>
+                  <IconoChispa tam={13} />
+                  <Texto v="mono" tam={13}>
+                    {precioDe(destacado).toLocaleString("es")}
+                  </Texto>
+                </View>
+              )}
+            </View>
+          </Pressable>
+        )}
+        <View style={[styles.grilla, { paddingHorizontal: 0, paddingTop: 0 }]}>
+          {otros.map((it) => (
+            <TarjetaItem key={it.item} it={it} e={e} placa={placa} ancho={ancho} onPress={onPress} />
+          ))}
+        </View>
+      </View>
+
+      <Texto v="micro" c={color.texto2}>
+        La calle · siempre abierta
+      </Texto>
+      <View style={[styles.fila, { flexWrap: "wrap", gap: 8 }]}>
+        {PUESTOS.map((p) => (
+          <Pressable
+            key={p.id}
+            onPress={() => {
+              vibrar.seleccion();
+              onPuesto(p.id);
+            }}
+            style={({ pressed }) => [styles.puesto, { width: anchoPuesto }, pressed && { transform: [{ scale: 0.96 }] }]}
+          >
+            <Toldo claro={p.color} oscuro={p.oscuro} />
+            <View style={{ padding: 8, gap: 2 }}>
+              <Texto style={{ fontFamily: fuente.display, fontSize: 14, color: p.color, textShadowColor: p.color, textShadowRadius: 8 }}>{p.nombre}</Texto>
+              <Texto v="nota" tam={10.5} numberOfLines={1}>
+                {p.que}
+              </Texto>
+            </View>
+          </Pressable>
+        ))}
+      </View>
+      <View style={[styles.fila, { gap: 8 }]}>
+        <Boton3D titulo="Cometas" icono={<IconoCometa tam={16} />} variante="secundario" tamano="sm" estilo={{ flex: 1 }} onPress={() => onPuesto("cometas")} />
+        <Boton3D titulo="Temas ✦" variante="secundario" tamano="sm" estilo={{ flex: 1 }} onPress={() => onPuesto("temas")} />
+      </View>
+    </Animated.View>
+  );
+}
+
 // Dos vistas (pedido 2026-10-10): la Tienda muestra solo lo que todavía no tienes
 // (las ayudas siempre, porque se gastan) y el Inventario, todo lo tuyo para usarlo.
 type Modo = "tienda" | "inventario";
@@ -271,7 +376,8 @@ export default function Tienda() {
   const [confirmar, setConfirmar] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [festejo, setFestejo] = useState(0);
-  const [pestana, setPestana] = useState<Pestana>(params.pestana === "cometas" ? "cometas" : "utilidad");
+  // null = portada del Bazar (solo en Tienda).
+  const [pestana, setPestana] = useState<Pestana | null>(params.pestana === "cometas" ? "cometas" : null);
   const cometas = resumen?.cometas ?? 0;
   const [canjePendiente, setCanjePendiente] = useState<number | null>(null);
   const [canjeando, setCanjeando] = useState(false);
@@ -379,10 +485,14 @@ export default function Tienda() {
   const bloqueoPro = elegido?.soloPro && e.plan !== "pro";
   const ninguno: Partial<Record<Categoria, string>> = { marco: "ninguno", marco_mundo: "ninguno", fuente: "default", animacion: "ninguna", fondo: "ninguno", galeria: "ninguno", estela: "clasica", efecto: "chispas", sonido: "clasico" };
 
-  const pestanas = modo === "inventario" ? PESTANAS.filter((p) => p.id !== "paquetes" && p.id !== "temas" && p.id !== "cometas") : PESTANAS;
-  const pestanaVista = pestanas.some((p) => p.id === pestana) ? pestana : pestanas[0].id;
+  const pestanas = modo === "inventario" ? PESTANAS.filter((p) => p.id !== "mercado" && p.id !== "temas" && p.id !== "cometas") : PESTANAS;
+  const pestanaVista: Pestana | null =
+    modo === "inventario" ? (pestanas.some((p) => p.id === pestana) ? (pestana as Pestana) : pestanas[0].id) : pestana;
+  const puestoVista = puestoDe(pestanaVista);
+  const rotHoy = rotacionDelDia(hoyIso(), CATALOGO_NUEVO, temporadaDelMes());
+  const delDia = new Set([rotHoy.destacado, ...rotHoy.otros]);
   const items = catalogo.filter((x) => {
-    if (!CATEGORIAS_DE[pestanaVista].includes(x.categoria)) return false;
+    if (!pestanaVista || !CATEGORIAS_DE[pestanaVista].includes(x.categoria)) return false;
     if (modo === "inventario") return x.categoria === "utilidad" ? (cantidadUtilidad(x, e) ?? 0) > 0 : loTiene(x, e);
     return aLaVenta(x) && !x.especial && (x.categoria === "utilidad" || !loTiene(x, e));
   });
@@ -418,7 +528,7 @@ export default function Tienda() {
                 setElegido(null);
               }}
             />
-            {modo === "tienda" && itemOferta && !loTiene(itemOferta, e) && (
+            {modo === "tienda" && pestanaVista === null && itemOferta && !loTiene(itemOferta, e) && (
               <Pressable
                 onPress={() => {
                   vibrar.seleccion();
@@ -457,6 +567,32 @@ export default function Tienda() {
             )}
           </View>
 
+          {modo === "tienda" ? (
+            <View style={[styles.chipsCaja, { paddingHorizontal: 16 }]}>
+              {pestanaVista === null ? (
+                <Texto v="nota" tam={12}>
+                  Elige un puesto de la calle o mira lo de hoy.
+                </Texto>
+              ) : (
+                <View style={[styles.fila, { justifyContent: "space-between" }]}>
+                  <Pressable
+                    onPress={() => {
+                      vibrar.seleccion();
+                      setPestana(null);
+                    }}
+                    hitSlop={10}
+                  >
+                    <Texto v="fuerte" c={color.texto2}>
+                      ← La calle
+                    </Texto>
+                  </Pressable>
+                  <Texto style={{ fontFamily: fuente.display, fontSize: 18, color: puestoVista?.color ?? (pestanaVista === "cometas" ? COLOR_COMETA : color.logro), textShadowColor: puestoVista?.color ?? COLOR_COMETA, textShadowRadius: 10 }}>
+                    {puestoVista?.nombre ?? (pestanaVista === "cometas" ? "Cometas" : "Temas")}
+                  </Texto>
+                </View>
+              )}
+            </View>
+          ) : (
           <View style={styles.chipsCaja}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 16 }}>
               {pestanas.map((p) => {
@@ -476,8 +612,12 @@ export default function Tienda() {
               })}
             </ScrollView>
           </View>
+          )}
+          {puestoVista && modo === "tienda" && <Toldo claro={puestoVista.color} oscuro={puestoVista.oscuro} alto={14} />}
 
-          {pestanaVista === "cometas" ? (
+          {pestanaVista === null ? (
+            <PortadaBazar catalogo={catalogo} e={e} placa={placa} ancho={anchoTarjeta} onPress={elegirItem} onPuesto={(p) => setPestana(p)} />
+          ) : pestanaVista === "cometas" ? (
             <Animated.View key="cometas" entering={FadeIn.duration(220)} style={{ paddingHorizontal: 16, paddingTop: 14, gap: 14 }}>
               <View style={styles.cometasCaja}>
                 <IconoCometa tam={52} />
@@ -584,11 +724,11 @@ export default function Tienda() {
           ) : (
             <Animated.View key={`${modo}-${pestanaVista}`} entering={FadeIn.duration(220)} style={styles.grilla}>
               {items.map((it) => (
-                <TarjetaItem key={it.item} it={it} e={e} placa={placa} ancho={anchoTarjeta} onPress={elegirItem} />
+                <TarjetaItem key={it.item} it={it} e={e} placa={placa} ancho={anchoTarjeta} onPress={elegirItem} delDia={modo === "tienda" && delDia.has(it.item)} />
               ))}
             </Animated.View>
           )}
-          {items.length === 0 && pestanaVista !== "temas" && (
+          {items.length === 0 && pestanaVista !== null && pestanaVista !== "temas" && pestanaVista !== "cometas" && (
             <View style={{ alignItems: "center", gap: 10, paddingHorizontal: 24, paddingTop: 30 }}>
               <Texto style={{ fontSize: 40 }}>{modo === "inventario" ? "🎒" : "✨"}</Texto>
               <Texto v="nota" centro>
@@ -824,6 +964,11 @@ const styles = StyleSheet.create({
   avisoTemas: { gap: 4, padding: 14, borderRadius: 16, borderWidth: 1, borderColor: conAlfa(color.logro, 0.35), backgroundColor: conAlfa(color.logro, 0.06) },
   pronto: { paddingHorizontal: 7, paddingVertical: 2, borderRadius: 999, borderWidth: 1, borderColor: conAlfa(color.logro, 0.5) },
   grilla: { flexDirection: "row", flexWrap: "wrap", gap: 10, paddingHorizontal: 16, paddingTop: 14 },
+  marcaDia: { position: "absolute", top: 6, right: 6, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 999, backgroundColor: color.logro },
+  hoy: { borderRadius: 20, padding: 12, gap: 10, overflow: "hidden", borderWidth: 1, borderColor: conAlfa(color.logro, 0.45), backgroundColor: color.surface1 },
+  destacado: { flexDirection: "row", gap: 12, alignItems: "center", padding: 10, borderRadius: 16, backgroundColor: conAlfa(color.bgHondo, 0.55) },
+  destacadoMuestra: { width: 92, height: 92, borderRadius: 16, alignItems: "center", justifyContent: "center", overflow: "hidden", backgroundColor: color.surface2 },
+  puesto: { borderRadius: 12, overflow: "hidden", backgroundColor: color.surface1, borderWidth: 1, borderColor: color.border },
   muestra: { height: 62, alignItems: "center", justifyContent: "center" },
   mini: { width: 74, height: 54, borderRadius: 10, overflow: "hidden", alignItems: "center", justifyContent: "center" },
   precio: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999, backgroundColor: color.surface2, borderWidth: 1, borderColor: color.border },

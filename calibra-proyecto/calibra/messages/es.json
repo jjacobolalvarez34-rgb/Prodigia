@@ -4878,7 +4878,10 @@
         "placa": "Placa",
         "duelos": "Duelos",
         "temporada": "Marco del mes",
-        "utilidades": "Ayudas"
+        "utilidades": "Ayudas",
+        "pirotecnia": "Estelas y efectos",
+        "musica": "Sonidos",
+        "titulos": "Títulos"
       },
       "comprar": "Comprar por {n}",
       "confirmar": "¿Seguro? Confirmar compra",
@@ -5385,6 +5388,46 @@
     "clases": {
       "titulo": "Clases",
       "descripcion": "Pestaña Clases dentro de Aprender de cada mundo: lecciones progresivas y dependientes entre sí, con ejemplos resueltos paso a paso y un quiz entre lecciones. La primera clase es gratis."
+    }
+  },
+  "Bazar": {
+    "hoy": "Hoy en el Bazar",
+    "cambiaEn": "cambia en {reloj}",
+    "calle": "La calle · siempre abierta",
+    "volverCalle": "La calle",
+    "puestos": {
+      "herreria": {
+        "nombre": "Herrería",
+        "que": "Marcos"
+      },
+      "estudio": {
+        "nombre": "Estudio",
+        "que": "Fondos y ciudad"
+      },
+      "pirotecnia": {
+        "nombre": "Pirotecnia",
+        "que": "Estelas y efectos"
+      },
+      "musica": {
+        "nombre": "Música",
+        "que": "Sonidos"
+      },
+      "arena": {
+        "nombre": "Arena",
+        "que": "Emotes de duelo"
+      },
+      "caligrafia": {
+        "nombre": "Caligrafía",
+        "que": "Tu nombre y títulos"
+      },
+      "botica": {
+        "nombre": "Botica",
+        "que": "Ayudas"
+      },
+      "mercado": {
+        "nombre": "Mercado",
+        "que": "Paquetes, Cometas y temas"
+      }
     }
   }
 }

@@ -4878,7 +4878,10 @@
         "placa": "Badge",
         "duelos": "Duels",
         "temporada": "Frame of the month",
-        "utilidades": "Boosts"
+        "utilidades": "Boosts",
+        "pirotecnia": "Trails and effects",
+        "musica": "Sounds",
+        "titulos": "Titles"
       },
       "comprar": "Buy for {n}",
       "confirmar": "Sure? Confirm purchase",
@@ -5385,6 +5388,46 @@
     "clases": {
       "titulo": "Classes",
       "descripcion": "A Classes tab in Learn for every world: step-by-step lessons that build on each other, with worked examples and a quiz between lessons. The first class is free."
+    }
+  },
+  "Bazar": {
+    "hoy": "Today at the Bazaar",
+    "cambiaEn": "changes in {reloj}",
+    "calle": "The street · always open",
+    "volverCalle": "The street",
+    "puestos": {
+      "herreria": {
+        "nombre": "Forge",
+        "que": "Frames"
+      },
+      "estudio": {
+        "nombre": "Studio",
+        "que": "Backgrounds and city"
+      },
+      "pirotecnia": {
+        "nombre": "Fireworks",
+        "que": "Trails and effects"
+      },
+      "musica": {
+        "nombre": "Music",
+        "que": "Sounds"
+      },
+      "arena": {
+        "nombre": "Arena",
+        "que": "Duel emotes"
+      },
+      "caligrafia": {
+        "nombre": "Lettering",
+        "que": "Your name and titles"
+      },
+      "botica": {
+        "nombre": "Apothecary",
+        "que": "Helpers"
+      },
+      "mercado": {
+        "nombre": "Market",
+        "que": "Bundles, Comets and themes"
+      }
     }
   }
 }
