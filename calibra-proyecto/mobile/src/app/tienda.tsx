@@ -1,4 +1,6 @@
 import { Image } from "expo-image";
+import * as WebBrowser from "expo-web-browser";
+import { URL_WEB } from "~/lib/entorno";
 import { LinearGradient } from "expo-linear-gradient";
 import { msHastaFinDelEvento } from "@/lib/eventos/dobleExperiencia";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
@@ -544,8 +546,10 @@ export default function Tienda() {
                 })}
               </View>
               <Texto v="nota" tam={12}>
-                Consigues Cometas comprándolos en la web (pronto también desde la app) y, de a poco, jugando: cada 10 niveles de cuenta, en la liga semanal, en los logros y en el reto de fin de semana.
+                Consigues Cometas jugando (cada 10 niveles de cuenta, en la liga semanal, con logros y en el reto de fin de semana), con Prodigia Pro (300 al mes) o comprándolos en la web. Comprar desde la app llega con Google Play.
               </Texto>
+              {/* Revisión 2026-10-14: la app no tiene cobro todavía (PARIDAD_APP_WEB.md). */}
+              <Boton3D titulo="Comprar Cometas en la web" variante="secundario" tamano="sm" onPress={() => WebBrowser.openBrowserAsync(`${URL_WEB}/tienda`)} />
             </Animated.View>
           ) : pestanaVista === "temas" ? (
             <Animated.View key="temas" entering={FadeIn.duration(220)} style={{ paddingHorizontal: 16, paddingTop: 14, gap: 12 }}>

@@ -39,6 +39,7 @@ import AvisoProTermino from "~/ui/AvisoProTermino";
 import { GlobosPorRuta } from "~/ui/GloboAyuda";
 import CelebracionConstelaciones from "~/ui/recompensas/CelebracionConstelaciones";
 import BannerDueloEnCurso from "~/ui/BannerDueloEnCurso";
+import BienvenidaPro from "~/ui/BienvenidaPro";
 import { color, MUNDOS } from "~/tema";
 
 SplashScreen.preventAutoHideAsync();
@@ -232,6 +233,7 @@ function Navegacion() {
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <GlobosPorRuta segmentos={segmentos} />}
       {!cargando && userId && terminos && !cargaVisible && <PrimeraVez key={userId} userId={userId} anonimo={!!sesion?.user.is_anonymous} />}
       {!cargando && userId && terminos && !cargaVisible && <AvisoProTermino />}
+      {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <BienvenidaPro userId={userId} />}
       {terminos === false && !cargaVisible && <AceptarTerminos onAceptar={() => setTerminos(true)} />}
       {cargaVisible && introEnNegro && <PantallaCarga progreso={progreso} etapa={etapa} onTerminada={ocultarCarga} />}
       {introVisible && <IntroMarca onNegro={introNegra} onTerminada={ocultarIntro} />}

@@ -66,10 +66,20 @@ lecciones o visuales, junto con `tsc` y `eslint` de los dos proyectos.
 | Qué | Dónde | Motivo |
 |---|---|---|
 | Trastienda y apuestas | Solo web | PROD-01: política de Google Play para apps con menores |
-| Comprar Pro o Chispas con dinero | Solo web por ahora | Llega a la app con Google Play Billing |
+| Comprar Pro, Chispas o Cometas con dinero | Solo web por ahora (la app tiene un botón a la tienda web) | Llega a la app con Google Play Billing |
+| Recuperar la contraseña con preguntas | Web (la app abre /recuperar) | Usa rutas del servidor con la clave de servicio |
+| Corregir el reto del finde | Servidor de la web (/api/reto-finde/terminar) | La app manda sus respuestas ahí con su sesión |
 | Widgets de la pantalla de inicio, intro de Mamut | Solo app | Son del sistema Android |
 | Práctica sin conexión | Solo app | La web no funciona sin conexión |
 | Borrar la cuenta | Web (la app abre la web) | Pendiente dentro de la app |
+
+## Agregado el 2026-10-13 y 14 (en los dos lados)
+
+Cometas (saldo, canje 1:10, lo legendario con Cometas, mundo por 300), economía nueva (0280), reto de
+fin de semana, cápsula Pro semanal y 300 Cometas al mes, bienvenida a Pro (web: cinemática en
+/pro/bienvenida; app: aviso con la lista la primera vez que el plan es Pro), contraseña de respaldo
+para cuentas de Google, aviso para volver a un duelo a medias, lista de beneficios de Pro única
+(src/lib/pro/beneficios.ts) y constantes de Cometas únicas (src/lib/cometas.ts).
 
 ## Recompensas y tienda ampliada (2026-10-05)
 
