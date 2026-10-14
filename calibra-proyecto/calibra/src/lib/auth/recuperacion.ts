@@ -4,17 +4,17 @@
 // contraseña. 3 intentos fallidos bloquean la recuperación y hay que escribirnos.
 // Lógica pura (sin red); la usan las rutas /api/recuperar/* y la pantalla /recuperar.
 //
-// Cuidado de privacidad: el correo nunca se muestra entero, solo enmascarado
-// ("ja•••@gmail.com"), y las opciones dependen solo del nombre de usuario: recargar
-// no cambia las opciones falsas (si cambiaran, la verdadera sería la única fija).
-// Para un usuario que no existe se arman 4 opciones falsas con el mismo formato, así
-// desde afuera no se puede saber si un nombre existe.
+// Privacidad (endurecido tras la revisión del 2026-10-14): el correo nunca se muestra
+// entero, y las 4 opciones tienen las MISMAS dos primeras letras; solo cambia el
+// dominio, así la verdadera no se distingue a simple vista. Las opciones dependen solo
+// del nombre de usuario (recargar no las cambia) y un usuario que no existe recibe
+// opciones con el mismo formato.
 
 export const MAX_INTENTOS_RECUPERACION = 3;
+export const MAX_INTENTOS_POR_HORA_IP = 20;
 export const CORREO_SOPORTE = "prodigia.oficial@gmail.com";
 
-const DOMINIOS = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com"];
-const LETRAS = "abcdefghijklmnopqrstuvwxyz";
+const DOMINIOS = ["gmail.com", "hotmail.com", "outlook.com", "yahoo.com", "icloud.com", "live.com"];
 
 export function enmascararCorreo(correo: string): string {
   const [usuario, dominio] = correo.trim().toLowerCase().split("@");
@@ -34,17 +34,19 @@ function azarDe(semilla: string) {
   };
 }
 
-// 4 opciones enmascaradas: la verdadera (si hay correo) y falsas creíbles, mezcladas.
+// 4 opciones enmascaradas con las mismas iniciales: la verdadera (si hay correo) y
+// 3 con otros dominios comunes, mezcladas.
 export function opcionesDeCorreo(usuario: string, correoReal: string | null): string[] {
   const azar = azarDe(`recuperar:${usuario}`);
-  const verdadera = correoReal ? enmascararCorreo(correoReal) : null;
-  const opciones = new Set<string>(verdadera ? [verdadera] : []);
-  while (opciones.size < 4) {
-    const a = LETRAS[Math.floor(azar() * 26)];
-    const b = LETRAS[Math.floor(azar() * 26)];
-    opciones.add(`${a}${b}•••@${DOMINIOS[Math.floor(azar() * DOMINIOS.length)]}`);
+  const [inicioReal, dominioReal] = correoReal ? correoReal.trim().toLowerCase().split("@") : [null, null];
+  const letras = (inicioReal ?? usuario.toLowerCase().replace(/[^a-z0-9]/g, "")).slice(0, 2).padEnd(2, "x");
+  const dominios = DOMINIOS.filter((d) => d !== dominioReal);
+  for (let i = dominios.length - 1; i > 0; i--) {
+    const j = Math.floor(azar() * (i + 1));
+    [dominios[i], dominios[j]] = [dominios[j], dominios[i]];
   }
-  const lista = [...opciones];
+  const elegidos = dominioReal ? [dominioReal, ...dominios.slice(0, 3)] : dominios.slice(0, 4);
+  const lista = elegidos.map((d) => `${letras}•••@${d}`);
   for (let i = lista.length - 1; i > 0; i--) {
     const j = Math.floor(azar() * (i + 1));
     [lista[i], lista[j]] = [lista[j], lista[i]];
@@ -52,10 +54,11 @@ export function opcionesDeCorreo(usuario: string, correoReal: string | null): st
   return lista;
 }
 
-// Los dos primeros mundos, sin importar el orden.
+// Los dos primeros mundos, sin importar el orden. Una cuenta vieja con menos de dos
+// mundos acierta si elige los que tiene (más cualquiera para completar dos).
 export function mundosCoinciden(elegidos: readonly string[], primeros: readonly string[]): boolean {
-  if (elegidos.length !== 2 || primeros.length < 2) return false;
-  const a = [...elegidos].sort().join("|");
-  const b = [...primeros.slice(0, 2)].sort().join("|");
-  return a === b;
+  if (elegidos.length !== 2) return false;
+  const reales = primeros.slice(0, 2);
+  if (reales.length < 2) return reales.every((m) => elegidos.includes(m));
+  return [...elegidos].sort().join("|") === [...reales].sort().join("|");
 }
