@@ -19,10 +19,10 @@ Lista completa para no perder nada. Se marca cada punto al terminarlo.
 7. [x] **Google en la web:** botón «Continuar con Google» en iniciar sesión y en registro (si eras
    invitado, se suma a tu cuenta). **Falta activar Google en Supabase** si no estaba (abajo).
 8. [x] **Contraseña de respaldo** para cuentas de Google: tarjeta en Ajustes, web y app.
-9. [ ] Tienda nueva A + C (maqueta aprobada en docs/rediseno/tienda.html): construir.
+9. [x] Tienda nueva A + C (maqueta aprobada en docs/rediseno/tienda.html): construir.
 10. [ ] Compilar APK nuevo con todo esto (avisar antes).
 
-Migraciones: el 14/10 se aplicaron hasta la 0284. Falta repetir 0281 y 0283 (versión nueva) y correr 0285.
+Migraciones: el 14/10 se aplicaron hasta la 0284. Falta repetir 0281 y 0283 (versión nueva) y correr 0285 y 0286.
 
 ---
 
@@ -168,6 +168,6 @@ Después del Redeploy abre
 Cada producto tiene que decir `"ok": true`; si no, dice qué está mal (por ejemplo «es un pago único y
 debería ser una suscripción»).
 
-25. [ ] Pro: quitar las 10 000 Chispas por pago y dar +25 % de Chispas al jugar (decidido 14/10).
-26. [ ] Construir la tienda A + C (web y app) y después compilar el APK.
-27. [ ] Perfil: que todo lo que se tiene se pueda poner desde la personalización de la Placa (web y app). Ej.: no deja poner el fondo de ciudad.
+25. [x] Pro: quitar las 10 000 Chispas por pago y dar +25 % de Chispas al jugar (decidido 14/10).
+26. [x] Construir la tienda A + C (web y app) y después compilar el APK.
+27. [x] Perfil: que todo lo que se tiene se pueda poner desde la personalización de la Placa (web y app). Ej.: no deja poner el fondo de ciudad.
