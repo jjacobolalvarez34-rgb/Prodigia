@@ -470,7 +470,7 @@ export default function Competir() {
                   <IconoCometa tam={18} />
                   <Texto v="h3">Reto de fin de semana</Texto>
                 </View>
-                <Texto v="nota">{sabadoDelFinde() ? "Hoy: 10 preguntas, 2 intentos, premios en Cometas" : "Vuelve el sábado · premios en Cometas"}</Texto>
+                <Texto v="nota">{sabadoDelFinde() ? "Hoy: 10 preguntas, 2 intentos, premios en Cometas" : "Vuelve el fin de semana · premios en Cometas"}</Texto>
               </View>
               <Texto v="mono" c={COLOR_COMETA}>
                 {sabadoDelFinde() ? "JUGAR →" : "VER →"}

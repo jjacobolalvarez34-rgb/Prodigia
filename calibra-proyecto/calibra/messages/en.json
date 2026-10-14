@@ -5321,7 +5321,7 @@
     "segundoIntento": "Use my second try",
     "sinIntentos": "You used both tries. Check how the ranking is going!",
     "quedan": "{n, plural, one {# try left} other {# tries left}} · ends in {termina}",
-    "empiezaEn": "The next challenge starts on Saturday: {falta} to go.",
+    "empiezaEn": "The next challenge starts {cuando} (your time): {falta} to go.",
     "rankingActual": "This weekend's ranking",
     "rankingPasado": "How last weekend ended",
     "premioCobrado": "You finished #{puesto} last weekend! You won {cometas} Comets.",
@@ -5333,7 +5333,7 @@
     "guardando": "Saving…",
     "tarjeta": "Weekend challenge",
     "tarjetaActivo": "Challenge today: 10 questions, prizes in Comets",
-    "tarjetaInactivo": "Back on Saturday",
+    "tarjetaInactivo": "Back on the weekend",
     "error": "Couldn't save your try. Try again."
   },
   "ProBienvenida": {

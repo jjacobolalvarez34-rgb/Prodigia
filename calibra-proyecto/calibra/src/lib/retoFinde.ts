@@ -56,3 +56,10 @@ export function msHastaCambioFinde(ahora: Date = new Date()): number {
   const objetivo = sab ? Date.parse(`${sab}T00:00:00Z`) + 2 * DIA_MS : Date.parse(`${proximoSabado(ahora)}T00:00:00Z`);
   return Math.max(0, objetivo - ahora.getTime());
 }
+
+// Cuándo empieza el reto en la hora de quien lo mira (revisión 2026-10-14: el reto
+// sigue el día UTC, así que en Latinoamérica arranca el viernes por la tarde y decir
+// «el sábado» confundía). Ej.: «viernes 19:00».
+export function inicioLocalFinde(sabadoIso: string, locale = "es"): string {
+  return new Date(`${sabadoIso}T00:00:00Z`).toLocaleString(locale, { weekday: "long", hour: "2-digit", minute: "2-digit" });
+}

@@ -5321,7 +5321,7 @@
     "segundoIntento": "Usar mi segundo intento",
     "sinIntentos": "Ya usaste tus dos intentos. ¡Mira cómo va el ranking!",
     "quedan": "Te {n, plural, one {queda # intento} other {quedan # intentos}} · termina en {termina}",
-    "empiezaEn": "El próximo reto empieza el sábado: faltan {falta}.",
+    "empiezaEn": "El próximo reto empieza el {cuando} (tu hora): faltan {falta}.",
     "rankingActual": "Ranking de este finde",
     "rankingPasado": "Así terminó el finde pasado",
     "premioCobrado": "¡Quedaste {puesto}.º el finde pasado! Ganaste {cometas} Cometas.",
@@ -5333,7 +5333,7 @@
     "guardando": "Guardando…",
     "tarjeta": "Reto del finde",
     "tarjetaActivo": "Hoy hay reto: 10 preguntas, premios en Cometas",
-    "tarjetaInactivo": "Vuelve el sábado",
+    "tarjetaInactivo": "Vuelve el fin de semana",
     "error": "No se pudo guardar tu intento. Prueba de nuevo."
   },
   "ProBienvenida": {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "@/i18n/navigation";
 import Boton from "@/components/Boton";
@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 import { reproducirTono } from "@/lib/sonido";
 import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
 import type { MundoRetoDiario, PreguntaRetoDiario } from "@/lib/retoDiario";
-import { chispasRetoFinde, ciudadesRetoFinde, INTENTOS_RETO_FINDE, MINIMO_ACIERTOS_PREMIO, msHastaCambioFinde, PREMIOS_RETO_FINDE } from "@/lib/retoFinde";
+import { chispasRetoFinde, ciudadesRetoFinde, inicioLocalFinde, INTENTOS_RETO_FINDE, MINIMO_ACIERTOS_PREMIO, msHastaCambioFinde, PREMIOS_RETO_FINDE } from "@/lib/retoFinde";
 import { COLOR_MUNDO_RETO, TarjetaPreguntaReto } from "./RetoClient";
 
 export interface IntentoFinde {
@@ -70,6 +70,7 @@ export default function RetoFindeClient({
   premio: { puesto: number; cometas: number } | null;
 }) {
   const t = useTranslations("RetoFinde");
+  const locale = useLocale();
   const tMundos = useTranslations("Reto.mundos");
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("intro");
@@ -224,7 +225,7 @@ export default function RetoFindeClient({
                 <p className="text-xs text-texto-secundario">{t("quedan", { n: quedan, termina: textoFalta(msHastaCambioFinde(new Date(ahora))) })}</p>
               </>
             ) : (
-              <p className="rounded-2xl border border-border bg-surface px-4 py-3 text-sm font-semibold text-foreground">{t("empiezaEn", { falta: textoFalta(msHastaCambioFinde(new Date(ahora))) })}</p>
+              <p className="rounded-2xl border border-border bg-surface px-4 py-3 text-sm font-semibold text-foreground">{t("empiezaEn", { cuando: inicioLocalFinde(proximo, locale), falta: textoFalta(msHastaCambioFinde(new Date(ahora))) })}</p>
             )}
             {error && <p className="text-sm text-error">{error}</p>}
             {listaRanking}

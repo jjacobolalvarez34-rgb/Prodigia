@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import Animated, { useSharedValue, ZoomIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { chispasRetoFinde, ciudadesRetoFinde, INTENTOS_RETO_FINDE, MINIMO_ACIERTOS_PREMIO, msHastaCambioFinde, PREMIOS_RETO_FINDE, proximoSabado } from "@/lib/retoFinde";
+import { chispasRetoFinde, ciudadesRetoFinde, inicioLocalFinde, INTENTOS_RETO_FINDE, MINIMO_ACIERTOS_PREMIO, msHastaCambioFinde, PREMIOS_RETO_FINDE, proximoSabado } from "@/lib/retoFinde";
 import { COLOR_COMETA } from "@/lib/recompensas/iconoCometa";
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, recargarJugador } from "~/lib/jugador";
@@ -258,7 +258,7 @@ export default function RetoFinde() {
         ) : (
           <Tarjeta acento={COLOR_COMETA} brillo={0.15}>
             <Texto v="h3" centro>
-              Empieza el sábado
+              Empieza el {inicioLocalFinde(proximoSabado())} (tu hora)
             </Texto>
             <Texto v="nota" centro>
               Faltan {textoFalta(msHastaCambioFinde(new Date(ahora)))}.
