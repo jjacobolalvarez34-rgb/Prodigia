@@ -38,6 +38,7 @@ import PrimeraVez from "~/ui/PrimeraVez";
 import AvisoProTermino from "~/ui/AvisoProTermino";
 import { GlobosPorRuta } from "~/ui/GloboAyuda";
 import CelebracionConstelaciones from "~/ui/recompensas/CelebracionConstelaciones";
+import BannerDueloEnCurso from "~/ui/BannerDueloEnCurso";
 import { color, MUNDOS } from "~/tema";
 
 SplashScreen.preventAutoHideAsync();
@@ -225,6 +226,7 @@ function Navegacion() {
         </Stack>
       )}
       {!cargando && userId && !sesion?.user.is_anonymous && <AvisoDuelo userId={userId} />}
+      {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <BannerDueloEnCurso userId={userId} segmentos={segmentos} />}
       <AvisoGlobal />
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <CelebracionConstelaciones />}
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <GlobosPorRuta segmentos={segmentos} />}
