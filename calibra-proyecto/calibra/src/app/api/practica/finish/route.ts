@@ -265,6 +265,7 @@ export async function POST(request: Request) {
 
   // Cápsulas (diaria, de nivel, de ciudad…): las otorga la base (0249); si todavía
   // no está aplicada, no pasa nada.
+  await supabase.rpc("capsulas_pro_semana");
   const { data: recompensasRows } = await supabase.rpc("revisar_recompensas");
   const recompensas = (recompensasRows as { nuevas: number; pendientes: number }[] | null)?.[0] ?? null;
 

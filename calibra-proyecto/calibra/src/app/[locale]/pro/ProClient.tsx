@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { calcularVencimientoPro, textoRestantePro, type SuscripcionPro } from "@/lib/pro/vencimiento";
 import { PRODUCTOS } from "@/lib/pagos/productos";
 import { abrirCheckoutPaddle } from "@/lib/pagos/paddleClient";
@@ -45,6 +46,7 @@ function ContadorPro({ suscripcion }: { suscripcion: SuscripcionPro | null }) {
 // (Fase 2/3 del plan), la ruta devuelve un 503 con el motivo exacto —
 // se muestra tal cual, sin pretender que funcionó.
 export default function ProClient({ esPro, pagosHabilitados, suscripcion }: Props) {
+  const router = useRouter();
   const t = useTranslations("Legal.pro");
   // Solo Paddle (2026-10-12): Mercado Pago quedó fuera, su adaptador sigue en lib/pagos sin uso.
   const proveedor: Proveedor = "paddle";
@@ -68,7 +70,8 @@ export default function ProClient({ esPro, pagosHabilitados, suscripcion }: Prop
       if (data.tipo === "redirect") {
         window.location.assign(data.url);
       } else if (data.tipo === "overlay") {
-        const abierto = await abrirCheckoutPaddle(data.transactionId, () => window.location.reload());
+        // Al pagar: la bienvenida espera a que Pro se active y lo festeja (2026-10-13).
+        const abierto = await abrirCheckoutPaddle(data.transactionId, () => router.push("/pro/bienvenida"));
         if (!abierto) setError(t("overlayNoDisponible"));
       }
     } catch {

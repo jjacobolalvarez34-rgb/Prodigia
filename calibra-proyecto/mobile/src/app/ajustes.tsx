@@ -17,6 +17,7 @@ import { mensajeError, supabase } from "~/lib/supabase";
 import { actualizarWidgets } from "~/widgets/registro";
 import { mostrarAviso } from "~/ui/Aviso";
 import Boton3D from "~/ui/Boton3D";
+import ContrasenaRespaldo, { necesitaContrasenaRespaldo } from "~/ui/ContrasenaRespaldo";
 import { IconoDerecha } from "~/ui/Iconos";
 import { PantallaApilada, TituloSeccion } from "~/ui/Pantalla";
 import PreguntaEdad from "~/ui/PreguntaEdad";
@@ -54,6 +55,7 @@ export default function Ajustes() {
   const edad = useEdad();
   const [pidiendoEdad, setPidiendoEdad] = useState(false);
   const [bloqueados, setBloqueados] = useState<Bloqueado[]>([]);
+  const [respaldoListo, setRespaldoListo] = useState(false);
   useEffect(() => {
     cargarEstadoEdad();
     misBloqueados().then(setBloqueados);
@@ -149,11 +151,12 @@ export default function Ajustes() {
       </Tarjeta>
 
       <TituloSeccion>Cuenta</TituloSeccion>
+      {necesitaContrasenaRespaldo(sesion?.user) && !respaldoListo && <ContrasenaRespaldo alGuardar={() => setRespaldoListo(true)} />}
       <Tarjeta relleno={4}>
         <Fila titulo="Correo" nota={sesion?.user.is_anonymous ? "Invitado (sin correo)" : sesion?.user.email ?? ""} />
         <Fila titulo="Cambiar contraseña" nota="Te mandamos un correo para cambiarla" onPress={async () => {
           if (!sesion?.user.email) return;
-          const { error } = await supabase.auth.resetPasswordForEmail(sesion.user.email);
+          const { error } = await supabase.auth.resetPasswordForEmail(sesion.user.email, { redirectTo: `${URL_WEB}/auth/actualizar-password` });
           if (error) mostrarAviso(mensajeError(error), "error");
           else mostrarAviso("Te mandamos un correo para cambiar tu contraseña", "ok");
         }} />

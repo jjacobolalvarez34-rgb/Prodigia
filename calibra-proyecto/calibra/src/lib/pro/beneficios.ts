@@ -16,6 +16,11 @@ export const BENEFICIOS_PRO = [
     descripcion: "Apenas te suscribes y en cada renovación — para gastar en la Tienda sin depender solo de jugar.",
   },
   {
+    emoji: "💠",
+    titulo: "2 cápsulas Pro cada semana",
+    descripcion: "Cápsulas especiales que casi siempre traen un cosmético épico o legendario.",
+  },
+  {
     emoji: "🚫",
     titulo: "Sin anuncios",
     descripcion: "Cero publicidad, en cualquier pantalla de la web.",

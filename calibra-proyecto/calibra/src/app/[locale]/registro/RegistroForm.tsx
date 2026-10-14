@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { VERSION_TERMINOS } from "@/lib/legal/terminos";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import BotonGoogle from "@/components/BotonGoogle";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
@@ -37,6 +38,7 @@ const COOLDOWN_REENVIO_SEGUNDOS = 45;
 export default function RegistroForm({ refId }: Props) {
   const router = useRouter();
   const t = useTranslations("Auth.registro");
+  const tGoogle = useTranslations("Auth.google");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmar, setConfirmar] = useState("");
@@ -232,6 +234,8 @@ export default function RegistroForm({ refId }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <BotonGoogle />
+      <p className="text-center text-xs text-texto-secundario">{tGoogle("oConCorreo")}</p>
       <input
         type="email"
         required

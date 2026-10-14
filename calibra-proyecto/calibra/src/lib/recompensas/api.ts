@@ -96,6 +96,8 @@ export function mensajeError(e: unknown): string {
 }
 
 export async function revisarRecompensas(sb: SupabaseClient): Promise<{ nuevas: number; pendientes: number }> {
+  // Las 2 cápsulas Pro de la semana (0283); sin Pro o sin la migración, no hace nada.
+  await sb.rpc("capsulas_pro_semana").then(() => undefined, () => undefined);
   const { data } = await sb.rpc("revisar_recompensas");
   return filas<{ nuevas: number; pendientes: number }>(data)[0] ?? { nuevas: 0, pendientes: 0 };
 }

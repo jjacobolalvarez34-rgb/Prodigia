@@ -356,7 +356,7 @@ export const COLOR_RAREZA: Record<Rareza, string> = { comun: "#8892B0", raro: "#
 export const NOMBRE_RAREZA: Record<Rareza, string> = { comun: "Común", raro: "Raro", epico: "Épico", legendario: "Legendario" };
 
 // ---------- Cápsulas ----------
-export type TipoCapsula = "diaria" | "misiones" | "racha" | "nivel" | "ciudad" | "liga" | "liga_bronce" | "liga_plata" | "liga_oro" | "coleccion";
+export type TipoCapsula = "diaria" | "misiones" | "racha" | "nivel" | "ciudad" | "liga" | "liga_bronce" | "liga_plata" | "liga_oro" | "coleccion" | "pro";
 
 export const CAPSULAS: Record<TipoCapsula, { nombre: string; colores: [string, string] }> = {
   diaria: { nombre: "Cápsula diaria", colores: ["#7C5CFF", "#FFC53D"] },
@@ -369,6 +369,8 @@ export const CAPSULAS: Record<TipoCapsula, { nombre: string; colores: [string, s
   liga_plata: { nombre: "Cápsula de liga · Plata", colores: ["#B8C4D9", "#FFFFFF"] },
   liga_oro: { nombre: "Cápsula de liga · Oro", colores: ["#E8B34D", "#FFF3B0"] },
   coleccion: { nombre: "Cápsula de colección", colores: ["#FFB627", "#B07CFF"] },
+  // Pro (0283): 2 por semana, épico o legendario casi siempre.
+  pro: { nombre: "Cápsula Pro", colores: ["#7C5CFF", "#5DE4FF"] },
 };
 
 // Colores de una cápsula de ciudad: los de su mundo.

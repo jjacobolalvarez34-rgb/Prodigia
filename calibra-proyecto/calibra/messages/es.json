@@ -1801,6 +1801,24 @@
       "reenviarEn": "Reenviar en {segundos}s",
       "codigoReenviado": "Listo, te lo mandamos de nuevo — revisa también spam.",
       "errorReenviar": "No pudimos reenviarlo. Prueba de nuevo en un momento."
+    },
+    "google": {
+      "continuar": "Continuar con Google",
+      "abriendo": "Abriendo Google…",
+      "error": "No se pudo abrir Google. Prueba de nuevo.",
+      "oConCorreo": "o crea tu cuenta con correo"
+    },
+    "respaldo": {
+      "titulo": "Crea una contraseña de respaldo",
+      "texto": "Entraste con Google. Si algún día Google falla o pierdes esa cuenta, con tu correo y esta contraseña sigues entrando a Prodigia.",
+      "nueva": "Contraseña nueva (mínimo 6)",
+      "repetir": "Repítela",
+      "guardar": "Guardar contraseña",
+      "guardando": "Guardando…",
+      "corta": "Tiene que tener al menos 6 caracteres.",
+      "noCoinciden": "Las dos contraseñas no coinciden.",
+      "error": "No se pudo guardar. Prueba de nuevo.",
+      "lista": "Listo: ya puedes entrar también con tu correo y esta contraseña."
     }
   },
   "Bloqueos": {
@@ -5271,5 +5289,18 @@
     "tarjeta": "Reto del finde",
     "tarjetaActivo": "Hoy hay reto: 10 preguntas, premios en Cometas",
     "tarjetaInactivo": "Vuelve el sábado"
+  },
+  "ProBienvenida": {
+    "metaTitulo": "Bienvenido a Prodigia Pro",
+    "activando": "Activando tu Pro…",
+    "activandoNota": "Ya recibimos tu pago. Paddle nos avisa en unos segundos; no cierres esta pantalla.",
+    "demoraTitulo": "Tu Pro está tardando",
+    "demoraTexto": "El pago se hizo, pero la activación todavía no llegó. Suele resolverse en unos minutos. Si no, escríbenos con el correo del pago.",
+    "reintentar": "Revisar de nuevo",
+    "yaTienesPro": "¡Ya tienes Pro!",
+    "estoEsLoNuevo": "Esto es todo lo que se acaba de encender en tu cuenta:",
+    "contador": "Cuánto le queda a tu Pro lo ves siempre en la sección Pro, con su contador. Tenlo a la vista para no perderte la renovación.",
+    "volver": "Volver a Prodigia",
+    "verPro": "Ver mi Pro"
   }
 }

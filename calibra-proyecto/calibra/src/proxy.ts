@@ -174,6 +174,6 @@ export const config = {
   // verificación en la ubicación esperada" pese a que el archivo
   // estaba bien puesto en public/.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api|auth/callback|data/|manifest\\.webmanifest|sw\\.js|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api|auth/callback|auth/confirmar|data/|manifest\\.webmanifest|sw\\.js|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)",
   ],
 };

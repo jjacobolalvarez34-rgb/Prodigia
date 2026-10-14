@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import AjustesClient from "./AjustesClient";
+import ContrasenaRespaldo, { necesitaContrasenaRespaldo } from "@/components/ContrasenaRespaldo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Ajustes.metadata");
@@ -27,6 +28,7 @@ export default async function AjustesPage() {
       <Header autenticado invitado={user.is_anonymous} />
       <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
         <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
+        {necesitaContrasenaRespaldo(user) && <ContrasenaRespaldo />}
         <AjustesClient
           userId={user.id}
           ocultarDobleONadaInicial={profileFull?.ocultar_doble_o_nada ?? false}

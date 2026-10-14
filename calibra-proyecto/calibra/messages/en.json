@@ -1801,6 +1801,24 @@
       "reenviarEn": "Resend in {segundos}s",
       "codigoReenviado": "Done, we sent it again — check spam too.",
       "errorReenviar": "We couldn't resend it. Try again in a moment."
+    },
+    "google": {
+      "continuar": "Continue with Google",
+      "abriendo": "Opening Google…",
+      "error": "Couldn't open Google. Try again.",
+      "oConCorreo": "or sign up with email"
+    },
+    "respaldo": {
+      "titulo": "Create a backup password",
+      "texto": "You signed in with Google. If Google ever fails or you lose that account, your email and this password still get you into Prodigia.",
+      "nueva": "New password (at least 6)",
+      "repetir": "Repeat it",
+      "guardar": "Save password",
+      "guardando": "Saving…",
+      "corta": "It needs at least 6 characters.",
+      "noCoinciden": "The two passwords don't match.",
+      "error": "Couldn't save it. Try again.",
+      "lista": "Done: you can now also sign in with your email and this password."
     }
   },
   "Bloqueos": {
@@ -5271,5 +5289,18 @@
     "tarjeta": "Weekend challenge",
     "tarjetaActivo": "Challenge today: 10 questions, prizes in Comets",
     "tarjetaInactivo": "Back on Saturday"
+  },
+  "ProBienvenida": {
+    "metaTitulo": "Welcome to Prodigia Pro",
+    "activando": "Activating your Pro…",
+    "activandoNota": "We got your payment. Paddle lets us know in a few seconds; don't close this screen.",
+    "demoraTitulo": "Your Pro is taking a while",
+    "demoraTexto": "The payment went through, but the activation hasn't arrived yet. It usually sorts itself out in a few minutes. If not, write to us with the payment email.",
+    "reintentar": "Check again",
+    "yaTienesPro": "You have Pro!",
+    "estoEsLoNuevo": "Here's everything that just turned on in your account:",
+    "contador": "You can always see how much Pro you have left in the Pro section, with its countdown. Keep an eye on it so you don't miss the renewal.",
+    "volver": "Back to Prodigia",
+    "verPro": "See my Pro"
   }
 }

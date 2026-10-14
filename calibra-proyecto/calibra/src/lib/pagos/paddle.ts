@@ -222,3 +222,41 @@ export const paddleAdapter: AdaptadorPago = {
   verificarFirma,
   normalizarEvento,
 };
+
+// Diagnóstico (2026-10-13, claves cruzadas): pregunta a Paddle por cada price_id y
+// dice si corresponde al producto. Pro tiene que ser una suscripción del intervalo
+// correcto; Chispas y Cometas, un pago único. También compara el precio en US$.
+// Nunca devuelve claves, solo el id del precio y qué está mal.
+export async function revisarPrecios(): Promise<Record<string, { priceId: string | null; ok: boolean; problema: string | null }>> {
+  const salida: Record<string, { priceId: string | null; ok: boolean; problema: string | null }> = {};
+  for (const producto of Object.keys(ENV_PRICE_ID) as ProductoComprable[]) {
+    const priceId = ENV_PRICE_ID[producto]?.trim() || null;
+    if (!priceId) {
+      salida[producto] = { priceId: null, ok: false, problema: "sin configurar" };
+      continue;
+    }
+    const def = definicionDe(producto);
+    try {
+      const res = await fetch(`${baseUrl()}/prices/${priceId}`, { headers: { Authorization: `Bearer ${apiKey()}` }, cache: "no-store" });
+      if (!res.ok) {
+        salida[producto] = { priceId, ok: false, problema: `Paddle respondió ${res.status} (¿el precio es de otra cuenta o de producción?)` };
+        continue;
+      }
+      const p = ((await res.json()) as { data: { billing_cycle: { interval: string } | null; unit_price: { amount: string; currency_code: string } } }).data;
+      const problemas: string[] = [];
+      if (def.tipo === "suscripcion") {
+        const esperado = def.intervalo === "anual" ? "year" : "month";
+        if (!p.billing_cycle) problemas.push("es un pago único y debería ser una suscripción");
+        else if (p.billing_cycle.interval !== esperado) problemas.push(`se cobra cada ${p.billing_cycle.interval} y debería ser cada ${esperado}`);
+      } else if (p.billing_cycle) {
+        problemas.push("es una suscripción y debería ser un pago único (One-time)");
+      }
+      const usd = Number(p.unit_price.amount) / 100;
+      if (p.unit_price.currency_code === "USD" && Math.abs(usd - def.precioUsd) > 0.005) problemas.push(`cuesta US$${usd.toFixed(2)} y debería costar US$${def.precioUsd.toFixed(2)}`);
+      salida[producto] = { priceId, ok: problemas.length === 0, problema: problemas.join("; ") || null };
+    } catch {
+      salida[producto] = { priceId, ok: false, problema: "no se pudo consultar a Paddle" };
+    }
+  }
+  return salida;
+}

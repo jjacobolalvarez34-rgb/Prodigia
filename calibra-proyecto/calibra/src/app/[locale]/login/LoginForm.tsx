@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import Boton from "@/components/Boton";
 import CampoPassword from "@/components/CampoPassword";
+import BotonGoogle from "@/components/BotonGoogle";
 import { mensajeErrorAuth } from "@/lib/auth/mensajeError";
 
 interface Props {
@@ -76,6 +77,12 @@ export default function LoginForm({ next }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <BotonGoogle />
+      <div className="my-1 flex items-center gap-3 text-xs text-texto-secundario">
+        <span className="h-px flex-1 bg-border" />
+        {t("separadorO")}
+        <span className="h-px flex-1 bg-border" />
+      </div>
       <input
         type="text"
         required
