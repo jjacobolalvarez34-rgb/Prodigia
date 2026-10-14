@@ -90,3 +90,23 @@ Catalog → Products → New product «Cometas» (tipo: Standard digital goods).
 
 Copiar cada `pri_…` a su variable, Redeploy y revisar con `?precios=1`. Los paquetes aparecen solos
 en la tienda en cuanto su variable existe.
+
+---
+
+## Pedidos del 2026-10-14
+
+11. [ ] **Tabla completa de claves** (todas las variables, también las que todavía no existen) y cómo
+    cargarlas en Vercel y en la app.
+12. [ ] **Recuperar contraseña con preguntas** en vez del correo: ¿entraste con Google?, ¿cuáles fueron
+    tus dos primeros mundos? (elegir), ¿cuál es tu correo y nombre de usuario? (opciones con la
+    correcta). Si acierta, cambia la contraseña. 3 intentos; al tercero la cuenta se bloquea y hay
+    que escribirnos por correo.
+13. [ ] **¿Dónde se ve la bienvenida de Pro?** Darle una forma de verla, y exportar la cinemática como
+    video para mirarla.
+14. [ ] **Pro da más:** las cápsulas Pro no aparecen en la lista de beneficios; Pro también da Cometas
+    gratis.
+15. [ ] **No se ve la venta de Cometas en la tienda** (solo el canje por Chispas).
+16. [ ] **Revisión general de web y app** (paridad y todo): pasar el informe primero y después arreglar.
+17. [ ] **Compilar el APK** mientras tanto (pedido explícito).
+18. [ ] **Motion para redes:** tutorial de cómo se personaliza el perfil y todo lo que se puede
+    cambiar. Envolvente y bien hecho.
