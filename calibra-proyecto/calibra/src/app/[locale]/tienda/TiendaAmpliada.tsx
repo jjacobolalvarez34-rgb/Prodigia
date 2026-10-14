@@ -13,6 +13,8 @@ import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
 import IconoCometa from "@/components/IconoCometa";
 import { TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
 import { puestoDe, type PuestoId } from "@/lib/tienda/bazar";
+import IlustracionPaquete from "@/components/tienda/IlustracionPaquete";
+import IconoTrazo from "@/components/IconoTrazo";
 
 // Tienda ampliada (0248) en la web: la misma vidriera que las pestañas nuevas del
 // Bazar de la app (paquetes, partida, Placa, duelos, marco del mes y ayudas). La
@@ -42,6 +44,31 @@ const ITEMS: Item[] = [
   ...PAQUETES.map((p) => ({ item: p.item, categoria: "paquete", valor: p.item, nombre: p.nombre, precio: p.precio, rareza: "epico" as Rareza, items: p.items })),
   ...UTILIDADES_NUEVAS.map((u) => ({ item: u.item, categoria: "utilidad", valor: u.item, nombre: u.nombre, precio: u.precio, rareza: "comun" as Rareza })),
 ];
+// Lo que costaría lo de un paquete comprado por separado (null si falta algún precio).
+function precioSuelto(it: Item): number | null {
+  let total = 0;
+  for (const s of it.items ?? []) {
+    const x = CATALOGO_NUEVO.find((c) => c.item === s);
+    if (!x || !x.precio) return null;
+    total += x.precio;
+  }
+  return total > it.precio ? total : null;
+}
+
+// Ayudas sueltas dibujadas (antes eran emojis).
+function IconoAyuda({ item, grande }: { item: string; grande?: boolean }) {
+  const clase = grande ? "h-12 w-12" : "h-10 w-10";
+  if (item === "pista") return <IconoTrazo nombre="bombilla" className={`${clase} text-[#C9BDFF]`} />;
+  if (item === "segunda_oportunidad") return <IconoTrazo nombre="repetir" className={`${clase} text-correcto`} />;
+  return (
+    <span className="flex -space-x-3 text-[#7FD8FF]">
+      <IconoTrazo nombre="copo" className={clase} />
+      {!grande && <IconoTrazo nombre="copo" className={clase} />}
+      {!grande && <IconoTrazo nombre="copo" className={clase} />}
+    </span>
+  );
+}
+
 // Los fondos de ciudad (también vendibles) van con su colección, en la pestaña Placa.
 const FONDOS_CIUDAD: Item[] = CATALOGO_NUEVO.filter((x) => x.vendible && x.categoria === "fondo").map((x) => ({ ...x }));
 // Inventario: todo lo que se puede tener, también lo que no se vende (piezas de colección,
@@ -376,6 +403,29 @@ export default function TiendaAmpliada() {
           const enUso = usa(it);
           const c = COLOR_RAREZA[it.rareza];
           const n = cantidad(it);
+          const pie = (
+            <>
+                {n != null ? (
+                  <span className="text-[11px] text-texto-secundario">{t("tienes", { n })}</span>
+                ) : enUso ? (
+                  <span className="text-[11px] font-bold text-correcto">{t("enUso").toUpperCase()}</span>
+                ) : mio ? (
+                  <span className="text-[11px] font-bold text-primario">{t("tuyo").toUpperCase()}</span>
+                ) : (
+                  <span className="text-[10px] font-bold tracking-wider" style={{ color: c }}>
+                    {t(`rareza.${it.rareza}`).toUpperCase()}
+                  </span>
+                )}
+                {(!mio || n != null) &&
+                  (it.precioCometas ? (
+                    <span className="flex items-center gap-1 rounded-full border border-[#5DE4FF]/50 bg-surface-2 px-2 py-0.5 font-mono text-xs text-foreground">
+                      <IconoCometa className="h-3.5 w-3.5" /> {it.precioCometas.toLocaleString()}
+                    </span>
+                  ) : (
+                    <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-xs text-foreground">✦ {it.precio.toLocaleString()}</span>
+                  ))}
+            </>
+          );
           return (
             <button
               key={it.item}
@@ -384,32 +434,34 @@ export default function TiendaAmpliada() {
                 setElegido(it);
                 setConfirmar(false);
               }}
-              className={`flex flex-col items-center gap-1.5 rounded-2xl border-2 bg-surface p-3 text-center transition-transform hover:-translate-y-1 ${enUso ? "border-correcto" : ""}`}
+              className={`flex flex-col items-center gap-1.5 rounded-2xl border-2 bg-surface p-3 text-center transition-transform hover:-translate-y-1 ${enUso ? "border-correcto" : ""} ${it.categoria === "paquete" ? "col-span-2 !flex-row !items-center gap-3 text-left" : ""}`}
               style={enUso ? undefined : { borderColor: `${c}99` }}
             >
-              <span className="flex h-16 items-center justify-center">
-                {it.categoria === "paquete" ? <span className="text-4xl">🎁</span> : it.categoria === "utilidad" ? <span className="text-3xl">{it.item === "pista" ? "💡" : it.item === "segunda_oportunidad" ? "🔁" : "🧊🧊🧊"}</span> : <VistaCosmetico categoria={it.categoria} valor={it.valor} tam={52} />}
-              </span>
-              <span className="min-h-[2.5rem] text-xs font-bold text-foreground">{it.nombre}</span>
-              {n != null ? (
-                <span className="text-[11px] text-texto-secundario">{t("tienes", { n })}</span>
-              ) : enUso ? (
-                <span className="text-[11px] font-bold text-correcto">{t("enUso").toUpperCase()}</span>
-              ) : mio ? (
-                <span className="text-[11px] font-bold text-primario">{t("tuyo").toUpperCase()}</span>
-              ) : (
-                <span className="text-[10px] font-bold tracking-wider" style={{ color: c }}>
-                  {t(`rareza.${it.rareza}`).toUpperCase()}
-                </span>
-              )}
-              {(!mio || n != null) &&
-                (it.precioCometas ? (
-                  <span className="flex items-center gap-1 rounded-full border border-[#5DE4FF]/50 bg-surface-2 px-2 py-0.5 font-mono text-xs text-foreground">
-                    <IconoCometa className="h-3.5 w-3.5" /> {it.precioCometas.toLocaleString()}
+              {it.categoria === "paquete" ? (
+                <>
+                  <IlustracionPaquete item={it.item} className="h-24 w-24 sm:h-28 sm:w-28" />
+                  <span className="flex min-w-0 flex-1 flex-col items-start gap-1">
+                    <span className="font-display text-base font-bold text-foreground">{it.nombre}</span>
+                    <span className="text-[11px] text-texto-secundario">{t("cosas", { n: it.items?.length ?? 0 })}</span>
+                    {(() => {
+                      const suelto = precioSuelto(it);
+                      return suelto && !mio ? (
+                        <span className="flex flex-wrap items-center gap-1.5">
+                          <span className="font-mono text-[11px] text-texto-secundario line-through">✦ {suelto.toLocaleString()}</span>
+                          <span className="rounded-full bg-correcto/15 px-2 py-0.5 text-[10px] font-bold text-correcto">{t("ahorras", { n: Math.round((1 - it.precio / suelto) * 100) })}</span>
+                        </span>
+                      ) : null;
+                    })()}
+                    <span className="flex flex-wrap items-center gap-2">{pie}</span>
                   </span>
-                ) : (
-                  <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-xs text-foreground">✦ {it.precio.toLocaleString()}</span>
-                ))}
+                </>
+              ) : (
+              <span className="flex h-16 items-center justify-center">
+                {it.categoria === "utilidad" ? <IconoAyuda item={it.item} /> : <VistaCosmetico categoria={it.categoria} valor={it.valor} tam={52} />}
+              </span>
+              )}
+              {it.categoria !== "paquete" && <span className="min-h-[2.5rem] text-xs font-bold text-foreground">{it.nombre}</span>}
+              {it.categoria !== "paquete" && pie}
             </button>
           );
         })}
@@ -420,7 +472,7 @@ export default function TiendaAmpliada() {
           <div className="flex w-full max-w-md flex-col gap-3 rounded-3xl border border-border bg-surface p-5" onClick={(ev) => ev.stopPropagation()}>
             <div className="flex items-center gap-4">
               <span className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-surface-2">
-                {elegido.categoria === "paquete" ? <span className="text-5xl">🎁</span> : elegido.categoria === "utilidad" ? <span className="text-4xl">{elegido.item === "pista" ? "💡" : elegido.item === "segunda_oportunidad" ? "🔁" : "🧊"}</span> : <VistaCosmetico categoria={elegido.categoria} valor={elegido.valor} tam={72} />}
+                {elegido.categoria === "paquete" ? <IlustracionPaquete item={elegido.item} className="h-24 w-24" /> : elegido.categoria === "utilidad" ? <IconoAyuda item={elegido.item} grande /> : <VistaCosmetico categoria={elegido.categoria} valor={elegido.valor} tam={72} />}
               </span>
               <div className="min-w-0">
                 <span className="text-[10px] font-bold tracking-wider" style={{ color: COLOR_RAREZA[elegido.rareza] }}>

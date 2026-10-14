@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
 import IconoCometa from "@/components/IconoCometa";
 import { CATALOGO_NUEVO, COLOR_RAREZA, temporadaActual } from "@/lib/recompensas/catalogo";
+import { bonoPorcentaje, PAQUETES_CHISPAS } from "@/lib/pagos/vitrina";
 import { msHastaCambioDiario, PUESTOS, relojHasta, rotacionDelDia, type PuestoId } from "@/lib/tienda/bazar";
 
 // Portada del Bazar en la web (tienda A + C, 2026-10-14; igual que la app): arriba lo
@@ -88,6 +89,25 @@ export default function PortadaBazar({ oferta, extra }: { oferta: ReactNode; ext
       </section>
 
       {oferta}
+
+      {/* Comprar Cometas y Chispas (2026-10-14): a la vista desde la portada, no escondido en el Mercado. */}
+      <Link
+        href={{ pathname: "/tienda", query: { puesto: "mercado" } }}
+        className="group relative flex items-center gap-4 overflow-hidden rounded-3xl border-2 border-[#05060F] bg-gradient-to-r from-[#2A1F5C] via-[#12172A] to-[#0B3A4A] p-4 text-white shadow-[6px_6px_0_0_#05060F] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[3px_3px_0_0_#05060F]"
+      >
+        <span className="relative flex h-16 w-16 shrink-0 items-center justify-center">
+          <span className="absolute inset-0 rounded-full bg-[#5DE4FF]/30 blur-xl" />
+          <IconoCometa className="relative h-14 w-14 transition-transform group-hover:rotate-[-8deg] group-hover:scale-110" />
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#5DE4FF]">{t("recargaEyebrow")}</span>
+          <span className="font-display text-xl font-bold leading-tight">{t("recargaTitulo")}</span>
+          <span className="text-xs text-white/70">{t("recargaTexto", { n: Math.max(...PAQUETES_CHISPAS.map(bonoPorcentaje)) })}</span>
+        </span>
+        <span className="hidden shrink-0 rounded-xl border-2 border-[#05060F] bg-[#5DE4FF] px-4 py-2 font-display text-sm font-bold text-[#04121A] shadow-[3px_3px_0_0_#05060F] sm:block">
+          {t("recargaBoton")}
+        </span>
+      </Link>
 
       <section className="flex flex-col gap-3">
         <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#3D2410]">{t("calle")}</span>

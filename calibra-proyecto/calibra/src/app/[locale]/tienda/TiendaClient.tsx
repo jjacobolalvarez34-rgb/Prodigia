@@ -23,14 +23,11 @@ import ScrollFloat from "@/components/reactbits/ScrollFloat";
 import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiario";
 import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
 import { reproducirTono } from "@/lib/sonido";
-import { PRODUCTOS } from "@/lib/pagos/productos";
 import PortadaBazar, { CabeceraPuesto } from "@/components/tienda/PortadaBazar";
 import { puestoDe, type PuestoId } from "@/lib/tienda/bazar";
 import { precioEnCometas } from "@/lib/recompensas/catalogo";
-import { abrirCheckoutPaddle } from "@/lib/pagos/paddleClient";
-import type { Proveedor, ProductoComprable } from "@/lib/pagos/tipos";
-
-const PACKS_CHISPAS: ProductoComprable[] = ["chispas_1000", "chispas_2500", "chispas_6000", "chispas_15000"];
+import IconoTrazo from "@/components/IconoTrazo";
+import type { NombreTrazo } from "@/lib/iconosTrazo";
 
 // Fase 7: reusa la paleta de rangos de Rankeds (RANGOS_ELO) en vez de
 // inventar colores nuevos — 6 marcos, uno por rango real.
@@ -117,7 +114,6 @@ export default function TiendaClient({
   fechaHoy,
   esPro,
   ocultarTrastienda,
-  pagosHabilitados,
   seccionCometas,
   cometasIniciales = 0,
 }: Props) {
@@ -275,10 +271,6 @@ export default function TiendaClient({
   const [comprando, setComprando] = useState(false);
   const [cambiandoCosmetico, setCambiandoCosmetico] = useState(false);
   const [error, setError] = useState<{ msg: string; contexto: Contexto } | null>(null);
-  // Solo Paddle (2026-10-12): Mercado Pago quedó fuera, su adaptador sigue en lib/pagos sin uso.
-  const proveedorPago: Proveedor = "paddle";
-  const [comprandoPago, setComprandoPago] = useState<ProductoComprable | null>(null);
-  const [errorPago, setErrorPago] = useState<string | null>(null);
 
   const oferta = obtenerDescuentoDelDia(fechaHoy);
 
@@ -453,41 +445,6 @@ export default function TiendaClient({
     }
   }
 
-  // Fase 5 (pagos): Chispas con dinero real. A diferencia de comprar()
-  // (que gasta Chispas ya ganadas), esto arranca un checkout real vía
-  // /api/pagos/checkout — el otorgamiento de Chispas NUNCA pasa por
-  // acá, pasa server-to-server cuando llega el webhook del proveedor
-  // (ver src/lib/pagos/servicio.ts). Esta función solo abre el
-  // checkout; si el proveedor todavía no está conectado (Fase 2/3 del
-  // plan de pagos), la ruta devuelve un 503 con el motivo, que se
-  // muestra tal cual.
-  async function comprarChispasReales(producto: ProductoComprable) {
-    setComprandoPago(producto);
-    setErrorPago(null);
-    try {
-      const res = await fetch("/api/pagos/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ producto, proveedor: proveedorPago }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setErrorPago(data.error ?? t("pagos.errorGenerico"));
-        return;
-      }
-      if (data.tipo === "redirect") {
-        window.location.assign(data.url);
-      } else if (data.tipo === "overlay") {
-        const abierto = await abrirCheckoutPaddle(data.transactionId, () => window.location.reload());
-        if (!abierto) setErrorPago(t("pagos.overlayNoDisponible"));
-      }
-    } catch {
-      setErrorPago(t("pagos.errorConexion"));
-    } finally {
-      setComprandoPago(null);
-    }
-  }
-
   return (
     <div
       className="flex-1"
@@ -496,7 +453,7 @@ export default function TiendaClient({
       <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-12 sm:px-6">
         <div className="text-center">
           <h1 className="font-display text-3xl font-bold tracking-tight text-[#3D2410] drop-shadow-sm">
-            🏺 {t("elBazarDeProdigia")}
+            {t("elBazarDeProdigia")}
           </h1>
           <p className="mt-1 font-mono text-sm font-semibold text-[#5C3A22]">{t("chispasDisponibles", { n: puntos })}</p>
         </div>
@@ -509,7 +466,10 @@ export default function TiendaClient({
               onClick={() => cambiarModo(inv)}
               className={`rounded-full px-5 py-2 text-sm font-bold transition-colors ${inventario === inv ? "bg-[#F4E4C1] text-[#3D2410]" : "text-[#F4E4C1]"}`}
             >
-              {inv ? `🎒 ${t("modoInventario")}` : `🏺 ${t("modoTienda")}`}
+              <span className="flex items-center gap-1.5">
+                <IconoTrazo nombre={inv ? "mochila" : "tienda"} className="h-4 w-4" />
+                {inv ? t("modoInventario") : t("modoTienda")}
+              </span>
             </button>
           ))}
         </div>
@@ -523,47 +483,23 @@ export default function TiendaClient({
 
         {!inventario && puesto === "mercado" && seccionCometas}
 
-        {!inventario && puesto === "mercado" && pagosHabilitados && (
-        <EstanteCategoria titulo={t("pagos.titulo")} franja="#FFC53D">
-          <p className="text-sm text-[#F4E4C1]/90">{t("pagos.descripcion")}</p>
-          <div className="flex flex-wrap gap-2">
-            {PACKS_CHISPAS.map((producto) => {
-              const def = PRODUCTOS[producto];
-              return (
-                <button
-                  key={producto}
-                  onClick={() => comprarChispasReales(producto)}
-                  disabled={comprandoPago !== null}
-                  className="flex flex-col items-center gap-0.5 rounded-xl border border-[#F4E4C1]/50 bg-[#3D2410]/30 px-4 py-2.5 text-[#F4E4C1] transition-colors hover:border-[#F4E4C1] disabled:opacity-50"
-                >
-                  <span className="font-mono text-sm font-bold">{t("pagos.packChispas", { n: def.montoChispas ?? 0 })}</span>
-                  <span className="text-xs text-[#F4E4C1]/70">
-                    {comprandoPago === producto ? t("pagos.procesando") : t("pagos.precioUsd", { precio: def.precioUsd })}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-          {errorPago && <p className="text-sm font-medium text-[#5C1A1A]">{errorPago}</p>}
-        </EstanteCategoria>
-        )}
 
         {inventario && (
           <EstanteCategoria titulo={t("tusAyudas")} franja="#6C4CF1">
             <div className="flex flex-wrap gap-2 text-sm text-[#F4E4C1]">
               {(
                 [
-                  ["🛡️", t("items.escudo"), escudos],
-                  ["❄️", t("items.congelamiento"), congelamientos],
-                  ["⚡", t("items.boost"), boost],
-                  ["🧊", t("items.hielo"), hielos],
-                  ["⏱️", t("items.tiempoExtra"), tiemposExtra],
-                ] as [string, string, number][]
+                  ["escudo", t("items.escudo"), escudos],
+                  ["copo", t("items.congelamiento"), congelamientos],
+                  ["rayo", t("items.boost"), boost],
+                  ["copo", t("items.hielo"), hielos],
+                  ["reloj", t("items.tiempoExtra"), tiemposExtra],
+                ] as [NombreTrazo, string, number][]
               )
                 .filter(([, , n]) => n > 0)
                 .map(([icono, nombre, n]) => (
-                  <span key={nombre} className="rounded-full border border-[#F4E4C1]/40 bg-[#3D2410]/30 px-3 py-1.5">
-                    {icono} {nombre} × {n}
+                  <span key={nombre} className="flex items-center gap-1.5 rounded-full border border-[#F4E4C1]/40 bg-[#3D2410]/30 px-3 py-1.5">
+                    <IconoTrazo nombre={icono} className="h-4 w-4" /> {nombre} × {n}
                   </span>
                 ))}
               {escudos + congelamientos + boost + hielos + tiemposExtra === 0 && <span className="text-[#F4E4C1]/70">{t("sinAyudas")}</span>}

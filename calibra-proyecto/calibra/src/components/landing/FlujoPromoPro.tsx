@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { BENEFICIOS_PRO } from "@/lib/pro/beneficios";
+import IconoTrazo from "@/components/IconoTrazo";
 
 interface Props {
   onContinuar: () => void;
@@ -26,7 +27,7 @@ export default function FlujoPromoPro({ onContinuar }: Props) {
             key={b.id}
             className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-surface px-4 py-4 text-center"
           >
-            <span className="text-xl">{b.emoji}</span>
+            <IconoTrazo nombre={b.icono} className="h-6 w-6 text-primario" />
             <p className="text-xs font-semibold text-foreground">{tBen(`${b.id}.titulo`)}</p>
           </div>
         ))}

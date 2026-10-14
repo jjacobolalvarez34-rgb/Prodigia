@@ -2633,7 +2633,7 @@
     "pro": {
       "metadata": {
         "title": "Prodigia Pro",
-        "description": "Subscribe to Prodigia Pro: monthly Chispas, exclusive cosmetics, no ads, and more."
+        "description": "Prodigia Pro: all 15 worlds, +25% Sparks when you play, 300 Comets a month, Pro capsules and no ads."
       },
       "marca": "Prodigia",
       "titulo": "Prodigia Pro",
@@ -2648,7 +2648,7 @@
       "errorConexion": "Couldn't start the subscription. Check your connection.",
       "overlayNoDisponible": "This payment method isn't available yet. Try the other one.",
       "yaSosPro": "You're already Prodigia Pro",
-      "yaSosProDetalle": "Your monthly Chispas and benefits are already active.",
+      "yaSosProDetalle": "Your benefits are on: +25% Sparks, 300 Comets a month and all 15 worlds.",
       "proximamente": "Coming soon",
       "noDisponible": "Prodigia Pro isn't available to buy yet.",
       "vence": {
@@ -2656,7 +2656,10 @@
         "termina": "Your Pro ends in",
         "fechaRenueva": "Next charge on {fecha}",
         "fechaTermina": "On {fecha} you go back to the free account"
-      }
+      },
+      "tituloVenta": "Play Prodigia without limits",
+      "subtituloVenta": "All 15 worlds, more Sparks every game, Comets every month and Pro capsules. Pick your plan.",
+      "incluye": "Everything Pro includes"
     }
   },
   "Melodia": {
@@ -4928,7 +4931,9 @@
         "boton": "Coming soon"
       },
       "comprarCometas": "Buy for {n} Comets",
-      "teFaltanCometas": "You need {n} more Comets"
+      "teFaltanCometas": "You need {n} more Comets",
+      "cosas": "{n} items",
+      "ahorras": "Save {n}%"
     },
     "invitado": "Constellations, missions and the calendar are for registered accounts. Create your account to start earning them.",
     "detalle": {
@@ -5428,6 +5433,50 @@
         "nombre": "Market",
         "que": "Bundles, Comets and themes"
       }
+    },
+    "recargaEyebrow": "Top up",
+    "recargaTitulo": "Comets and Sparks",
+    "recargaTexto": "Bundles with up to +{n}% extra. They arrive in seconds.",
+    "recargaBoton": "See bundles"
+  },
+  "Vitrina": {
+    "eyebrow": "Top up",
+    "titulo": "Comets and Sparks",
+    "cometas": "Comets",
+    "chispas": "Sparks",
+    "cometasQue": "The premium currency: legendary items, or swap them for Sparks (1 Comet = 10 Sparks).",
+    "chispasQue": "For the whole Bazaar: frames, backgrounds, helpers and new worlds.",
+    "extra": "+{n}% extra",
+    "masElegido": "Most popular",
+    "mejorValor": "Best value",
+    "procesando": "Opening…",
+    "seguro": "Secure payment with Paddle. It reaches your account in seconds, on the web and in the app.",
+    "proAtajo": "With Pro: 300 Comets a month",
+    "noDisponible": "Purchases open very soon.",
+    "errorGenerico": "Couldn't open the payment.",
+    "errorConexion": "Couldn't open the payment. Check your connection.",
+    "errorOverlay": "Payment isn't available right now.",
+    "planes": {
+      "mensual": {
+        "nombre": "Monthly",
+        "periodo": "/month",
+        "nota": "Renews every month.",
+        "p1": "Every Pro benefit",
+        "p2": "300 Comets every month",
+        "p3": "Pay month to month"
+      },
+      "anual": {
+        "nombre": "Yearly",
+        "periodo": "/year",
+        "nota": "That's US${porMes} a month.",
+        "sello": "Save {porcentaje}%",
+        "p1": "Every Pro benefit",
+        "p2": "Save US${usd} vs. monthly",
+        "p3": "3,600 Comets over the year"
+      },
+      "elegir": "Choose {plan}",
+      "procesando": "Opening payment…",
+      "proximamente": "Coming soon"
     }
   }
 }

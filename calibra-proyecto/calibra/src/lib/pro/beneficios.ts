@@ -11,59 +11,62 @@
 // concreto desde el día uno de la fase de Google Ads.
 // `id`: clave de traducción en la web (messages → ProBeneficios.<id>); la app usa el
 // texto en español de acá (revisión 2026-10-14: en la web en inglés salía en español).
-export const BENEFICIOS_PRO = [
+// `icono`: dibujo de src/lib/iconosTrazo.ts (antes era un emoji).
+import type { NombreTrazo } from "@/lib/iconosTrazo";
+
+export const BENEFICIOS_PRO: readonly { id: string; icono: NombreTrazo; titulo: string; descripcion: string }[] = [
   {
     id: "chispas",
-    emoji: "⚡",
+    icono: "rayo",
     titulo: "+25 % de Chispas al jugar",
     descripcion: "Cada partida te da un cuarto más de Chispas. La Experiencia es la misma para todos, así no da ventaja en ligas ni rankings.",
   },
   {
     id: "mundos",
-    emoji: "🌍",
+    icono: "mundos",
     titulo: "Los 15 mundos encendidos",
     descripcion: "Juega todas las ciudades mientras dure tu Pro, sin gastar Chispas en desbloquearlas.",
   },
   {
     id: "cometas",
-    emoji: "☄️",
+    icono: "cometa",
     titulo: "300 Cometas al mes",
     descripcion: "La moneda premium, para lo legendario o para cambiarla por Chispas.",
   },
   {
     id: "capsulas",
-    emoji: "💠",
+    icono: "capsula",
     titulo: "2 cápsulas Pro cada semana",
     descripcion: "Cápsulas especiales que casi siempre traen un cosmético épico o legendario. Llegan la semana que entras a jugar.",
   },
   {
     id: "anuncios",
-    emoji: "🚫",
+    icono: "sinAnuncios",
     titulo: "Sin anuncios",
     descripcion: "Cero publicidad, en cualquier pantalla de la web.",
   },
   {
     id: "cosmeticos",
-    emoji: "🎨",
+    icono: "pincel",
     titulo: "Cosméticos exclusivos",
     descripcion: "Animación Prisma y Fondo Prodigio — solo disponibles para cuentas Pro.",
   },
   {
     id: "estadisticas",
-    emoji: "📊",
+    icono: "grafico",
     titulo: "Estadísticas avanzadas",
     descripcion: "Precisión por mundo y evolución en el tiempo, con más detalle que el perfil normal.",
   },
   {
     id: "anticipado",
-    emoji: "🚀",
+    icono: "cohete",
     titulo: "Acceso anticipado",
     descripcion: "Prueba mundos y funciones nuevas antes de que salgan para todos.",
   },
   {
     id: "clases",
-    emoji: "🎓",
+    icono: "birrete",
     titulo: "Clases",
     descripcion: "Pestaña Clases dentro de Aprender de cada mundo: lecciones progresivas y dependientes entre sí, con ejemplos resueltos paso a paso y un quiz entre lecciones. La primera clase es gratis.",
   },
-] as const;
+];

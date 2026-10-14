@@ -2633,7 +2633,7 @@
     "pro": {
       "metadata": {
         "title": "Prodigia Pro",
-        "description": "Suscríbete a Prodigia Pro: Chispas mensuales, cosméticos exclusivos, sin anuncios y más."
+        "description": "Prodigia Pro: los 15 mundos, +25 % de Chispas al jugar, 300 Cometas al mes, cápsulas Pro y sin anuncios."
       },
       "marca": "Prodigia",
       "titulo": "Prodigia Pro",
@@ -2648,7 +2648,7 @@
       "errorConexion": "No se pudo iniciar la suscripción. Revisa tu conexión.",
       "overlayNoDisponible": "Este método de pago todavía no está disponible. Prueba con el otro.",
       "yaSosPro": "Ya eres Prodigia Pro",
-      "yaSosProDetalle": "Tus Chispas mensuales y beneficios ya están activos.",
+      "yaSosProDetalle": "Tus beneficios ya están activos: +25 % de Chispas, 300 Cometas al mes y los 15 mundos.",
       "proximamente": "Próximamente",
       "noDisponible": "Todavía no se puede comprar Prodigia Pro.",
       "vence": {
@@ -2656,7 +2656,10 @@
         "termina": "Tu Pro termina en",
         "fechaRenueva": "Se cobra de nuevo el {fecha}",
         "fechaTermina": "El {fecha} vuelves a la cuenta gratis"
-      }
+      },
+      "tituloVenta": "Juega Prodigia sin límites",
+      "subtituloVenta": "Los 15 mundos, más Chispas en cada partida, Cometas cada mes y cápsulas Pro. Elige tu plan.",
+      "incluye": "Todo lo que incluye Pro"
     }
   },
   "Melodia": {
@@ -4928,7 +4931,9 @@
         "boton": "Muy pronto"
       },
       "comprarCometas": "Comprar por {n} Cometas",
-      "teFaltanCometas": "Te faltan {n} Cometas"
+      "teFaltanCometas": "Te faltan {n} Cometas",
+      "cosas": "{n} cosas",
+      "ahorras": "Ahorras {n} %"
     },
     "invitado": "Las constelaciones, misiones y el calendario son para cuentas registradas. Crea tu cuenta para empezar a ganarlas.",
     "detalle": {
@@ -5428,6 +5433,50 @@
         "nombre": "Mercado",
         "que": "Paquetes, Cometas y temas"
       }
+    },
+    "recargaEyebrow": "Recarga",
+    "recargaTitulo": "Cometas y Chispas",
+    "recargaTexto": "Paquetes con hasta +{n} % extra. Llegan en segundos.",
+    "recargaBoton": "Ver paquetes"
+  },
+  "Vitrina": {
+    "eyebrow": "Recarga",
+    "titulo": "Cometas y Chispas",
+    "cometas": "Cometas",
+    "chispas": "Chispas",
+    "cometasQue": "La moneda premium: lo legendario, o cámbiala por Chispas (1 Cometa = 10 Chispas).",
+    "chispasQue": "Para todo el Bazar: marcos, fondos, ayudas y mundos nuevos.",
+    "extra": "+{n} % extra",
+    "masElegido": "Más elegido",
+    "mejorValor": "Mejor valor",
+    "procesando": "Abriendo…",
+    "seguro": "Pago seguro con Paddle. Llega a tu cuenta en segundos, en la web y en la app.",
+    "proAtajo": "Con Pro: 300 Cometas al mes",
+    "noDisponible": "Las compras se abren muy pronto.",
+    "errorGenerico": "No se pudo abrir el pago.",
+    "errorConexion": "No se pudo abrir el pago. Revisa tu conexión.",
+    "errorOverlay": "El pago no está disponible en este momento.",
+    "planes": {
+      "mensual": {
+        "nombre": "Mensual",
+        "periodo": "/mes",
+        "nota": "Se renueva cada mes.",
+        "p1": "Todos los beneficios de Pro",
+        "p2": "300 Cometas cada mes",
+        "p3": "Pagas mes a mes"
+      },
+      "anual": {
+        "nombre": "Anual",
+        "periodo": "/año",
+        "nota": "Equivale a US${porMes} al mes.",
+        "sello": "Ahorras {porcentaje} %",
+        "p1": "Todos los beneficios de Pro",
+        "p2": "Ahorras US${usd} frente al mensual",
+        "p3": "3.600 Cometas en el año"
+      },
+      "elegir": "Elegir {plan}",
+      "procesando": "Abriendo pago…",
+      "proximamente": "Próximamente"
     }
   }
 }

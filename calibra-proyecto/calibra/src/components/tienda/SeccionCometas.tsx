@@ -4,25 +4,15 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import IconoCometa from "@/components/IconoCometa";
 import { createClient } from "@/lib/supabase/client";
-import { abrirCheckoutPaddle } from "@/lib/pagos/paddleClient";
-import { PRODUCTOS } from "@/lib/pagos/productos";
-import type { ProductoComprable } from "@/lib/pagos/tipos";
 
 // Cometas en la tienda de la web (2026-10-13, 0279): saldo, canje por Chispas
 // (1 Cometa = 10 Chispas, lo hace la base) y compra con Paddle. Igual que la
 // pestaña Cometas del Bazar de la app.
 import { CANJES_COMETAS as CANJES, CHISPAS_POR_COMETA } from "@/lib/cometas";
 
-export default function SeccionCometas({
-  cometasIniciales,
-  paquetes,
-  pagosHabilitados,
-}: {
-  cometasIniciales: number;
-  // Paquetes de Cometas con price_id cargado (los demás no se muestran).
-  paquetes: ProductoComprable[];
-  pagosHabilitados: boolean;
-}) {
+// La compra con dinero pasó a la vitrina (components/pagos/Vitrina.tsx, 2026-10-14);
+// acá quedan el saldo y el canje.
+export default function SeccionCometas({ cometasIniciales }: { cometasIniciales: number }) {
   const t = useTranslations("Cometas");
   const [cometas, setCometas] = useState(cometasIniciales);
   const [pendiente, setPendiente] = useState<number | null>(null);
@@ -62,31 +52,6 @@ export default function SeccionCometas({
     setMensaje({ texto: t("canjeHecho", { n: (n * CHISPAS_POR_COMETA).toLocaleString() }), error: false });
   }
 
-  async function comprar(producto: ProductoComprable) {
-    setOcupado(true);
-    setMensaje(null);
-    try {
-      const res = await fetch("/api/pagos/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ producto, proveedor: "paddle" }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setMensaje({ texto: data.error ?? t("errorCompra"), error: true });
-        return;
-      }
-      if (data.tipo === "overlay") {
-        const abierto = await abrirCheckoutPaddle(data.transactionId, () => window.location.reload());
-        if (!abierto) setMensaje({ texto: t("errorCompra"), error: true });
-      }
-    } catch {
-      setMensaje({ texto: t("errorCompra"), error: true });
-    } finally {
-      setOcupado(false);
-    }
-  }
-
   return (
     <section className="flex flex-col gap-4 rounded-2xl border border-[#5DE4FF]/40 bg-[#0B1022]/85 p-5 text-white shadow-[0_10px_30px_-12px_rgba(0,0,0,0.6)]">
       <div className="flex items-center gap-4">
@@ -122,31 +87,6 @@ export default function SeccionCometas({
           })}
         </div>
       </div>
-
-      {pagosHabilitados && paquetes.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <h3 className="font-display text-base font-bold">{t("comprarTitulo")}</h3>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {paquetes.map((p) => {
-              const def = PRODUCTOS[p];
-              return (
-                <button
-                  key={p}
-                  type="button"
-                  disabled={ocupado}
-                  onClick={() => comprar(p)}
-                  className="flex flex-col items-center gap-1 rounded-xl border border-[#5DE4FF]/30 bg-[#5DE4FF]/5 px-3 py-3 transition-transform enabled:hover:-translate-y-0.5 disabled:opacity-50"
-                >
-                  <span className="flex items-center gap-1 font-mono text-lg font-bold">
-                    <IconoCometa className="h-5 w-5" /> {def.montoCometas?.toLocaleString()}
-                  </span>
-                  <span className="text-sm font-semibold text-white/90">US${def.precioUsd.toFixed(2)}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       {mensaje && <p className={`text-sm font-semibold ${mensaje.error ? "text-[#FF8A8A]" : "text-[#3DDC97]"}`}>{mensaje.texto}</p>}
       <p className="text-xs text-white/60">{t("comoConseguir")}</p>

@@ -7,6 +7,7 @@ import TiendaClient from "./TiendaClient";
 import { pagosHabilitados } from "@/lib/pagos/flags";
 import TiendaAmpliada from "./TiendaAmpliada";
 import SeccionCometas from "@/components/tienda/SeccionCometas";
+import { VitrinaMonedas } from "@/components/pagos/Vitrina";
 import { productosConPrecio } from "@/lib/pagos/paddle";
 import { PRODUCTOS } from "@/lib/pagos/productos";
 
@@ -69,11 +70,10 @@ export default async function TiendaPage() {
         pagosHabilitados={pagosHabilitados()}
         cometasIniciales={(filaCometas as { cometas?: number } | null)?.cometas ?? 0}
         seccionCometas={
-          <SeccionCometas
-            cometasIniciales={(filaCometas as { cometas?: number } | null)?.cometas ?? 0}
-            paquetes={user.is_anonymous ? [] : paquetesCometas}
-            pagosHabilitados={pagosHabilitados()}
-          />
+          <>
+            <VitrinaMonedas pagosHabilitados={pagosHabilitados() && !user.is_anonymous} cometasDisponibles={paquetesCometas} esPro={profile?.plan === "pro"} />
+            <SeccionCometas cometasIniciales={(filaCometas as { cometas?: number } | null)?.cometas ?? 0} />
+          </>
         }
       />
       <TiendaAmpliada />

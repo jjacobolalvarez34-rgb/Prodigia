@@ -2,11 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
 import { calcularVencimientoPro, textoRestantePro, type SuscripcionPro } from "@/lib/pro/vencimiento";
-import { PRODUCTOS } from "@/lib/pagos/productos";
-import { abrirCheckoutPaddle } from "@/lib/pagos/paddleClient";
-import type { Proveedor, ProductoComprable } from "@/lib/pagos/tipos";
+import IconoTrazo from "@/components/IconoTrazo";
+import { PlanesPro } from "@/components/pagos/Vitrina";
 
 interface Props {
   esPro: boolean;
@@ -14,6 +12,7 @@ interface Props {
   pagosHabilitados: boolean;
   // Para el contador de cuánto le queda a Pro (null = Pro sin suscripción, p. ej. dado a mano).
   suscripcion: SuscripcionPro | null;
+  ahorro: { usd: number; porcentaje: number; porMes: number };
 }
 
 // Cuánto le queda a Pro, con la fecha; se actualiza cada 30 s.
@@ -29,112 +28,30 @@ function ContadorPro({ suscripcion }: { suscripcion: SuscripcionPro | null }) {
   if (!v) return null;
   const fecha = v.fin.toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" });
   return (
-    <div className={`mt-2 flex w-full max-w-xs flex-col items-center gap-1 rounded-xl border px-4 py-3 ${v.renueva ? "border-primario/30 bg-surface" : "border-racha/50 bg-racha/10"}`}>
-      <span className="text-[11px] font-bold uppercase tracking-wider text-texto-secundario">{v.renueva ? t("renueva") : t("termina")}</span>
-      <span className={`font-mono text-2xl font-bold ${v.renueva ? "text-foreground" : "text-racha"}`}>{textoRestantePro(v)}</span>
-      <span className="text-xs text-texto-secundario">{t(v.renueva ? "fechaRenueva" : "fechaTermina", { fecha })}</span>
+    <div className={`mt-2 flex w-full max-w-xs flex-col items-center gap-1 rounded-xl border px-4 py-3 ${v.renueva ? "border-white/20 bg-white/5" : "border-racha/50 bg-racha/10"}`}>
+      <span className="text-[11px] font-bold uppercase tracking-wider text-white/60">{v.renueva ? t("renueva") : t("termina")}</span>
+      <span className={`font-mono text-2xl font-bold ${v.renueva ? "text-white" : "text-racha"}`}>{textoRestantePro(v)}</span>
+      <span className="text-xs text-white/60">{t(v.renueva ? "fechaRenueva" : "fechaTermina", { fecha })}</span>
     </div>
   );
 }
 
-// Fase 4 (infraestructura de pagos): antes /pro tenía un botón
-// deshabilitado a propósito ("Stripe no cubre Colombia directamente").
-// Ahora pega de verdad a /api/pagos/checkout — mismo flujo y mismo
-// criterio que la sección "Comprar Chispas" de TiendaClient.tsx (nunca
-// otorga nada acá mismo, el otorgamiento real pasa por el webhook del
-// proveedor). Si Mercado Pago/Paddle todavía no están conectados
-// (Fase 2/3 del plan), la ruta devuelve un 503 con el motivo exacto —
-// se muestra tal cual, sin pretender que funcionó.
-export default function ProClient({ esPro, pagosHabilitados, suscripcion }: Props) {
-  const router = useRouter();
+// Rediseño 2026-10-14: los dos planes como tarjetas grandes (components/pagos/Vitrina),
+// arriba de todo para no tener que bajar. El cobro sigue igual: /api/pagos/checkout abre
+// Paddle y al pagar se pasa a /pro/bienvenida; el Pro lo da el webhook del servidor.
+export default function ProClient({ esPro, pagosHabilitados, suscripcion, ahorro }: Props) {
   const t = useTranslations("Legal.pro");
-  // Solo Paddle (2026-10-12): Mercado Pago quedó fuera, su adaptador sigue en lib/pagos sin uso.
-  const proveedor: Proveedor = "paddle";
-  const [comprando, setComprando] = useState<ProductoComprable | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  async function suscribirse(producto: ProductoComprable) {
-    setComprando(producto);
-    setError(null);
-    try {
-      const res = await fetch("/api/pagos/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ producto, proveedor }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setError(data.error ?? t("errorGenerico"));
-        return;
-      }
-      if (data.tipo === "redirect") {
-        window.location.assign(data.url);
-      } else if (data.tipo === "overlay") {
-        // Al pagar: la bienvenida espera a que Pro se active y lo festeja (2026-10-13).
-        const abierto = await abrirCheckoutPaddle(data.transactionId, () => router.push("/pro/bienvenida"));
-        if (!abierto) setError(t("overlayNoDisponible"));
-      }
-    } catch {
-      setError(t("errorConexion"));
-    } finally {
-      setComprando(null);
-    }
-  }
 
   if (esPro) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-2xl border-2 border-primario/40 bg-primario/5 px-6 py-8 text-center">
-        <span className="text-2xl">✨</span>
-        <p className="font-display text-lg font-bold text-foreground">{t("yaSosPro")}</p>
-        <p className="text-xs text-texto-secundario">{t("yaSosProDetalle")}</p>
+      <div className="mx-auto flex w-full max-w-md flex-col items-center gap-2 rounded-3xl border-2 border-[#05060F] bg-gradient-to-br from-[#3B2C8F] to-[#12172A] px-6 py-8 text-center shadow-[8px_8px_0_0_#FFC53D]">
+        <IconoTrazo nombre="corona" className="h-10 w-10 text-[#FFC53D]" />
+        <p className="font-display text-xl font-bold">{t("yaSosPro")}</p>
+        <p className="text-sm text-white/70">{t("yaSosProDetalle")}</p>
         <ContadorPro suscripcion={suscripcion} />
       </div>
     );
   }
 
-  if (!pagosHabilitados) {
-    return (
-      <div className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-surface-2 px-6 py-8 text-center">
-        <button
-          type="button"
-          disabled
-          className="cursor-not-allowed rounded-xl bg-primario/40 px-6 py-3 font-display font-semibold text-white opacity-70"
-        >
-          {t("proximamente")}
-        </button>
-        <p className="text-xs text-texto-secundario">{t("noDisponible")}</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-surface-2 px-6 py-8 text-center">
-
-      <div className="grid w-full gap-3 sm:grid-cols-2">
-        <button
-          type="button"
-          onClick={() => suscribirse("pro_mensual")}
-          disabled={comprando !== null}
-          className="flex flex-col items-center gap-1 rounded-xl bg-primario px-6 py-4 font-display font-semibold text-white transition-opacity disabled:opacity-60"
-        >
-          <span>{t("planMensual")}</span>
-          <span className="font-mono text-sm font-normal opacity-90">
-            {comprando === "pro_mensual" ? t("procesando") : t("precioUsd", { precio: PRODUCTOS.pro_mensual.precioUsd })}
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => suscribirse("pro_anual")}
-          disabled={comprando !== null}
-          className="flex flex-col items-center gap-1 rounded-xl border-2 border-primario px-6 py-4 font-display font-semibold text-primario transition-opacity disabled:opacity-60"
-        >
-          <span>{t("planAnual")}</span>
-          <span className="font-mono text-sm font-normal opacity-90">
-            {comprando === "pro_anual" ? t("procesando") : t("precioUsd", { precio: PRODUCTOS.pro_anual.precioUsd })}
-          </span>
-        </button>
-      </div>
-      {error && <p className="text-xs text-error">{error}</p>}
-    </div>
-  );
+  return <PlanesPro pagosHabilitados={pagosHabilitados} ahorro={ahorro} />;
 }

@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import GestoLogo from "@/components/GestoLogo";
 import { createClient } from "@/lib/supabase/client";
 import { BENEFICIOS_PRO } from "@/lib/pro/beneficios";
+import IconoTrazo from "@/components/IconoTrazo";
 import { reproducirTono } from "@/lib/sonido";
 
 type Fase = "activando" | "cinematica" | "lista" | "demora";
@@ -121,7 +122,7 @@ export default function BienvenidaPro({ userId, yaEraPro }: { userId: string; ya
             <ul className="flex flex-col gap-2">
               {BENEFICIOS_PRO.map((b, i) => (
                 <motion.li key={b.id} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.08 * i }} className="flex gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                  <span className="text-2xl" aria-hidden="true">{b.emoji}</span>
+                  <IconoTrazo nombre={b.icono} className="mt-0.5 h-6 w-6 text-[#FFC53D]" />
                   <span>
                     <span className="block font-display font-bold">{tBen(`${b.id}.titulo`)}</span>
                     <span className="block text-sm text-white/70">{tBen(`${b.id}.descripcion`)}</span>
