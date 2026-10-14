@@ -126,6 +126,11 @@ interface EventoPaddle {
     scheduled_change?: { action?: string } | null;
     currency_code?: string;
     details?: { totals?: { total?: string } };
+    // transaction.*: a qué suscripción pertenece, el período que cubre y de dónde vino
+    // ("subscription_recurring" = renovación automática).
+    subscription_id?: string | null;
+    billing_period?: { ends_at?: string } | null;
+    origin?: string;
   };
 }
 
@@ -198,18 +203,23 @@ async function normalizarEvento(_rawBody: string, parsedBody: unknown): Promise<
       };
     }
 
-    // Transacción de una suscripción (alta o renovación) — esta es la
-    // señal real de "se cobró", así que ACÁ se acredita la Chispas
-    // mensual/anual de Pro, no en subscription.updated.
+    // Transacción de una suscripción. Bug encontrado en la revisión del 2026-10-14: se
+    // mandaba el id de la TRANSACCIÓN como si fuera el de la suscripción y sin fecha de
+    // fin, así que se creaba una segunda suscripción que nunca vencía, y el primer pago
+    // acreditaba las Chispas de Pro dos veces (también subscription.created). Ahora:
+    // - el primer cobro no hace nada acá (lo activa subscription.created);
+    // - solo las renovaciones automáticas acreditan, sobre la suscripción real y con
+    //   el período nuevo.
+    if (d.origin !== "subscription_recurring" || !d.subscription_id) return null;
     return {
       tipo: "suscripcion",
       motivo: "renovacion",
       userId,
-      providerSubscriptionId: d.id,
+      providerSubscriptionId: d.subscription_id,
       providerCustomerId: d.customer_id ?? null,
       estado: "active",
       intervalo: def.intervalo === "anual" ? "anual" : "mensual",
-      periodoFin: null,
+      periodoFin: d.billing_period?.ends_at ?? null,
       cancelaAlFinDePeriodo: false,
     };
   }

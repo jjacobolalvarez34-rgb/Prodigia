@@ -55,6 +55,19 @@ export async function aplicarEventoWebhook(
   // registrado en payment_events, pero no hay nada más que aplicar.
   if (!evento) return { yaProcesado: false };
 
+  // Si aplicar el efecto falla, se borra el registro para que el reintento del
+  // proveedor lo vuelva a intentar (revisión 2026-10-14: antes quedaba «procesado» y
+  // el pago se perdía). Las funciones de acreditar son idempotentes por id de pago.
+  try {
+    await aplicarEfecto(admin, proveedor, evento);
+  } catch (error) {
+    await admin.from("payment_events").delete().eq("provider", proveedor).eq("event_id", eventId);
+    throw error;
+  }
+  return { yaProcesado: false };
+}
+
+async function aplicarEfecto(admin: ReturnType<typeof createAdminClient>, proveedor: Proveedor, evento: EventoWebhookNormalizado): Promise<void> {
   if (evento.tipo === "suscripcion") {
     const { error } = await admin.rpc("aplicar_suscripcion", {
       p_user_id: evento.userId,
@@ -87,6 +100,4 @@ export async function aplicarEventoWebhook(
     });
     if (error) throw error;
   }
-
-  return { yaProcesado: false };
 }
