@@ -12,6 +12,10 @@
 --   - Terminar el primer intento: 30 Chispas + 3 por acierto (hasta 60).
 --   - Puesto final (se cobra desde el lunes, premio_reto_finde): 1.º 50 Cometas,
 --     2.º y 3.º 30, 4.º a 10.º 15, 11.º a 50.º 5. Hace falta acertar 5 o más.
+--   - Los aciertos NO los manda el cliente (revisión 2026-10-14): la web corrige las
+--     respuestas con la misma semilla (/api/reto-finde/terminar) y registra el
+--     resultado con la clave de servicio (registrar_reto_finde). Los invitados no
+--     pueden jugarlo.
 -- Requiere 0279 (Cometas). Mismos números en src/lib/retoFinde.ts. Idempotente.
 -- ============================================================
 
@@ -104,6 +108,9 @@ begin
   if v_user is null then
     raise exception 'no autenticado';
   end if;
+  if coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false) then
+    raise exception 'crea tu cuenta para jugar el reto del finde';
+  end if;
   if v_sab is null then
     raise exception 'el reto del finde se juega sabado y domingo';
   end if;
@@ -126,16 +133,18 @@ $$;
 revoke execute on function public.iniciar_reto_finde() from public, anon;
 grant execute on function public.iniciar_reto_finde() to authenticated;
 
--- Termina el intento abierto. El tiempo es el de la base; menos de 8 s para 10
--- preguntas no es posible jugando, así que cuenta como 0 aciertos.
-create or replace function public.terminar_reto_finde(p_correctos smallint)
+-- Termina el intento abierto de p_user con los aciertos que contó el servidor de la
+-- web (nunca el cliente). El tiempo es el de la base; menos de 8 s para 10 preguntas
+-- no es posible jugando, así que cuenta como 0 aciertos. Solo clave de servicio.
+drop function if exists public.terminar_reto_finde(smallint);
+create or replace function public.registrar_reto_finde(p_user uuid, p_correctos smallint)
 returns table (intento smallint, correctos smallint, tiempo_ms integer, chispas integer, mejor_correctos smallint, mejor_tiempo_ms integer, puesto integer, puntos_total integer)
 language plpgsql
 security definer
 set search_path = public
 as $$
 declare
-  v_user uuid := auth.uid();
+  v_user uuid := p_user;
   v_sab date := public.sabado_finde_actual();
   v_fila public.retos_finde_intentos%rowtype;
   v_tiempo integer;
@@ -179,8 +188,8 @@ begin
     from public.profiles pr where pr.id = v_user;
 end;
 $$;
-revoke execute on function public.terminar_reto_finde(smallint) from public, anon;
-grant execute on function public.terminar_reto_finde(smallint) to authenticated;
+revoke execute on function public.registrar_reto_finde(uuid, smallint) from public, anon, authenticated;
+grant execute on function public.registrar_reto_finde(uuid, smallint) to service_role;
 
 -- Premio del último fin de semana en Cometas. Se puede llamar cuantas veces
 -- se quiera: paga una sola vez (referencia 'finde:<sábado>'). Devuelve una

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "@/i18n/navigation";
@@ -76,13 +76,11 @@ export default function RetoFindeClient({
   const [intentos, setIntentos] = useState(intentosIniciales);
   const [ranking, setRanking] = useState(rankingInicial);
   const [indice, setIndice] = useState(0);
-  const [correctos, setCorrectos] = useState(0);
-  const [seleccion, setSeleccion] = useState<string | null>(null);
-  const [feedback, setFeedback] = useState<"idle" | "correcto" | "incorrecto">("idle");
   const [inicio, setInicio] = useState<number | null>(null);
   const [ahora, setAhora] = useState(() => Date.now());
   const [resultado, setResultado] = useState<Resultado | null>(null);
   const [ocupado, setOcupado] = useState(false);
+  const respuestasRef = useRef<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   useRegistrarGuardiaSalida({ activo: fase === "jugando" });
 
@@ -116,24 +114,24 @@ export default function RetoFindeClient({
     setInicio(Date.parse(fila.iniciado_at) || Date.now());
     setIntentos((xs) => (xs.some((x) => x.intento === fila.intento) ? xs : [...xs, { intento: fila.intento, correctos: null, tiempo_ms: null, terminado_at: null }]));
     setIndice(0);
-    setCorrectos(0);
-    setSeleccion(null);
-    setFeedback("idle");
+    respuestasRef.current = [];
     setResultado(null);
     setFase("jugando");
   }
 
-  async function terminar(totalCorrectos: number) {
+  // Las respuestas las corrige el servidor (revisión 2026-10-14): acá no se sabe
+  // cuál es la correcta hasta terminar.
+  async function terminar(respuestas: string[]) {
     setOcupado(true);
     const sb = createClient();
-    const { data, error: e } = await sb.rpc("terminar_reto_finde", { p_correctos: totalCorrectos });
-    if (e) {
+    const res = await fetch("/api/reto-finde/terminar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ respuestas }) });
+    const fila = (await res.json().catch(() => ({}))) as Resultado & { intento: number; puntos_total: number; error?: string };
+    if (!res.ok) {
       setOcupado(false);
-      setError(e.message);
+      setError(fila.error ?? t("error"));
       setFase("intro");
       return;
     }
-    const fila = (data as (Resultado & { intento: number; puntos_total: number })[])[0];
     setResultado(fila);
     setIntentos((xs) => xs.map((x) => (x.intento === fila.intento ? { ...x, correctos: fila.correctos, tiempo_ms: fila.tiempo_ms, terminado_at: new Date().toISOString() } : x)));
     if (fila.chispas > 0) window.dispatchEvent(new CustomEvent("prodigia:chispas", { detail: fila.puntos_total }));
@@ -145,22 +143,11 @@ export default function RetoFindeClient({
   }
 
   function elegir(opcion: string) {
-    if (feedback !== "idle" || !pregunta) return;
-    const bien = opcion === pregunta.respuesta;
-    setSeleccion(opcion);
-    setFeedback(bien ? "correcto" : "incorrecto");
-    reproducirTono(bien ? "correcto" : "error");
-    const nuevos = bien ? correctos + 1 : correctos;
-    setCorrectos(nuevos);
-    setTimeout(() => {
-      if (indice + 1 >= total) {
-        terminar(nuevos);
-      } else {
-        setIndice(indice + 1);
-        setSeleccion(null);
-        setFeedback("idle");
-      }
-    }, bien ? 350 : 700);
+    if (!pregunta || ocupado) return;
+    reproducirTono("cuenta");
+    respuestasRef.current[indice] = opcion;
+    if (indice + 1 >= total) terminar(respuestasRef.current.slice(0, total));
+    else setIndice(indice + 1);
   }
 
   const tablaPremios = (
@@ -253,7 +240,7 @@ export default function RetoFindeClient({
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-foreground/10">
               <div className="h-full rounded-full transition-all" style={{ width: `${((indice + 1) / total) * 100}%`, background: COLOR_MUNDO_RETO[pregunta.mundo] }} />
             </div>
-            <TarjetaPreguntaReto pregunta={pregunta} seleccion={seleccion} feedback={feedback} onElegir={elegir} />
+            <TarjetaPreguntaReto pregunta={pregunta} seleccion={null} feedback="idle" onElegir={elegir} />
           </motion.div>
         )}
 

@@ -5316,7 +5316,8 @@
     "guardando": "Saving…",
     "tarjeta": "Weekend challenge",
     "tarjetaActivo": "Challenge today: 10 questions, prizes in Comets",
-    "tarjetaInactivo": "Back on Saturday"
+    "tarjetaInactivo": "Back on Saturday",
+    "error": "Couldn't save your try. Try again."
   },
   "ProBienvenida": {
     "metaTitulo": "Welcome to Prodigia Pro",

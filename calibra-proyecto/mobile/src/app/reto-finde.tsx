@@ -5,7 +5,7 @@ import Animated, { useSharedValue, ZoomIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { chispasRetoFinde, ciudadesRetoFinde, INTENTOS_RETO_FINDE, MINIMO_ACIERTOS_PREMIO, msHastaCambioFinde, PREMIOS_RETO_FINDE, proximoSabado } from "@/lib/retoFinde";
 import { COLOR_COMETA } from "@/lib/recompensas/iconoCometa";
-import { sonar, sonarAcierto, vibrar } from "~/lib/efectos";
+import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, recargarJugador } from "~/lib/jugador";
 import { cargarFinde, iniciarFinde, rankingFinde, terminarFinde, type EstadoFinde, type ResultadoFinde } from "~/lib/retoFinde";
 import { useSesion } from "~/lib/sesion";
@@ -18,7 +18,6 @@ import { IconoChispa, IconoCometa } from "~/ui/Iconos";
 import { BotonAtras, TituloSeccion } from "~/ui/Pantalla";
 import { PlacaFila } from "~/ui/placa/Placa";
 import PreguntaReto from "~/ui/PreguntaReto";
-import { animarAcierto, animarError } from "~/ui/Sprint";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
 import { color, fuente, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
@@ -42,7 +41,6 @@ export default function RetoFinde() {
   const [estado, setEstado] = useState<EstadoFinde | null>(null);
   const [fase, setFase] = useState<"intro" | "jugando" | "fin">("intro");
   const [indice, setIndice] = useState(0);
-  const [aciertos, setAciertos] = useState(0);
   const [elegida, setElegida] = useState<string | null>(null);
   const [combo, setCombo] = useState(0);
   const [inicio, setInicio] = useState<number | null>(null);
@@ -51,7 +49,7 @@ export default function RetoFinde() {
   const [ocupado, setOcupado] = useState(false);
   const sello = useSharedValue(1);
   const sacudida = useSharedValue(0);
-  const aciertosRef = useRef(0);
+  const respuestasRef = useRef<string[]>([]);
 
   useEffect(() => {
     if (!miId) return;
@@ -91,8 +89,7 @@ export default function RetoFinde() {
       const r = await iniciarFinde();
       setInicio(r.iniciadoAt);
       setEstado((e) => (e && !e.intentos.some((x) => x.intento === r.intento) ? { ...e, intentos: [...e.intentos, { intento: r.intento, correctos: null, tiempo_ms: null, terminado_at: null }] } : e));
-      aciertosRef.current = 0;
-      setAciertos(0);
+      respuestasRef.current = [];
       setIndice(0);
       setElegida(null);
       setCombo(0);
@@ -105,10 +102,10 @@ export default function RetoFinde() {
     }
   }
 
-  async function terminar(correctos: number) {
+  async function terminar(respuestas: string[]) {
     setOcupado(true);
     try {
-      const r = await terminarFinde(correctos);
+      const r = await terminarFinde(respuestas);
       setResultado(r);
       if (r.chispas > 0) fijarChispas(r.puntos_total);
       const ranking = estado?.sabado ? await rankingFinde(estado.sabado) : [];
@@ -124,35 +121,17 @@ export default function RetoFinde() {
     }
   }
 
+  // No se muestra si acertaste hasta el final: corrige el servidor (revisión 2026-10-14).
   function responder(op: string) {
-    if (elegida || !estado) return;
-    const p = estado.preguntas[indice];
-    const ok = op === p.respuesta;
-    setElegida(op);
-    if (ok) {
-      aciertosRef.current += 1;
-      setAciertos(aciertosRef.current);
-      setCombo((c) => c + 1);
-      sonarAcierto(combo + 1);
-      vibrar.medio();
-      animarAcierto(sello);
-    } else {
-      setCombo(0);
-      sonar("error");
-      vibrar.error();
-      animarError(sacudida);
+    if (elegida || !estado || ocupado) return;
+    vibrar.seleccion();
+    respuestasRef.current[indice] = op;
+    if (indice + 1 >= total) {
+      setElegida(op);
+      terminar(respuestasRef.current.slice(0, total));
+      return;
     }
-    setTimeout(
-      () => {
-        if (indice + 1 >= total) {
-          terminar(aciertosRef.current);
-          return;
-        }
-        setIndice(indice + 1);
-        setElegida(null);
-      },
-      ok ? 450 : 900
-    );
+    setIndice(indice + 1);
   }
 
   const ranking = (
@@ -173,7 +152,7 @@ export default function RetoFinde() {
           <View style={{ flex: 1, gap: 4 }}>
             <Barra valor={indice / total} colores={[m?.base ?? "#2AA8D8", COLOR_COMETA]} duracion={400} />
             <Texto v="nota" tam={11} centro>
-              {indice + 1} de {total} · {aciertos} aciertos
+              Pregunta {indice + 1} de {total}
             </Texto>
           </View>
           <Texto v="mono" tam={16} c={COLOR_COMETA}>

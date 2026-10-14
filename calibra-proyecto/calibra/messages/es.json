@@ -5316,7 +5316,8 @@
     "guardando": "Guardando…",
     "tarjeta": "Reto del finde",
     "tarjetaActivo": "Hoy hay reto: 10 preguntas, premios en Cometas",
-    "tarjetaInactivo": "Vuelve el sábado"
+    "tarjetaInactivo": "Vuelve el sábado",
+    "error": "No se pudo guardar tu intento. Prueba de nuevo."
   },
   "ProBienvenida": {
     "metaTitulo": "Bienvenido a Prodigia Pro",

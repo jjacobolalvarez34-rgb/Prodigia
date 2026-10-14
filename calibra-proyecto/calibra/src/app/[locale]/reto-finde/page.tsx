@@ -36,7 +36,8 @@ export default async function RetoFindePage() {
       <RetoFindeClient
         sabado={sabado}
         proximo={proximoSabado()}
-        preguntas={sabado ? generarRetoFinde(sabado) : []}
+        // Sin la respuesta: la corrige el servidor al terminar (/api/reto-finde/terminar).
+        preguntas={sabado ? generarRetoFinde(sabado).map((p) => ({ ...p, respuesta: "" })) : []}
         intentosIniciales={(intentosRows ?? []) as IntentoFinde[]}
         rankingInicial={(rankingRows ?? []) as FilaRankingFinde[]}
         miUserId={user.id}

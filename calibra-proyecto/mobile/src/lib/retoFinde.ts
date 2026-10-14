@@ -3,6 +3,7 @@
 import { generarRetoFinde, sabadoAnterior, sabadoDelFinde } from "@/lib/retoFinde";
 import type { PreguntaRetoDiario } from "@/lib/retoDiario";
 import { placaBasica, type PlacaDatos } from "./placa";
+import { URL_WEB } from "./entorno";
 import { supabase } from "./supabase";
 
 export interface IntentoFinde {
@@ -74,8 +75,16 @@ export async function iniciarFinde(): Promise<{ intento: number; iniciadoAt: num
   return { intento: f.intento, iniciadoAt: Date.parse(f.iniciado_at) || Date.now() };
 }
 
-export async function terminarFinde(correctos: number): Promise<ResultadoFinde> {
-  const { data, error } = await supabase.rpc("terminar_reto_finde", { p_correctos: correctos });
-  if (error) throw error;
-  return (data as ResultadoFinde[])[0];
+// Las respuestas las corrige el servidor de la web con la misma semilla (revisión
+// 2026-10-14: antes la base creía los aciertos que mandaba el teléfono).
+export async function terminarFinde(respuestas: string[]): Promise<ResultadoFinde> {
+  const { data: s } = await supabase.auth.getSession();
+  const res = await fetch(`${URL_WEB}/api/reto-finde/terminar`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${s.session?.access_token ?? ""}` },
+    body: JSON.stringify({ respuestas }),
+  });
+  const fila = (await res.json().catch(() => ({}))) as ResultadoFinde & { error?: string };
+  if (!res.ok) throw new Error(fila.error ?? "No se pudo guardar tu intento. Prueba de nuevo.");
+  return fila;
 }
