@@ -3,10 +3,11 @@ import { StyleSheet, View } from "react-native";
 import Animated, { Easing, FadeInDown, interpolate, useAnimatedStyle, useSharedValue, withTiming, type SharedValue } from "react-native-reanimated";
 import { sonar, vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
-import { color, conAlfa, fuente, MUNDOS } from "~/tema";
+import { color, conAlfa, MUNDOS } from "~/tema";
 import Boton3D from "./Boton3D";
 import AvatarMarco from "./placa/AvatarMarco";
 import Texto from "./Texto";
+import { IconoCapsulaMini, IconoChispa, IconoEtiqueta, IconoRegalo } from "./Iconos";
 
 // Kit del Pionero (0258): la caja se abre, las 13 luces de las ciudades salen
 // volando, dan una vuelta y se juntan en tu avatar, que aparece con el marco puesto.
@@ -65,7 +66,9 @@ export default function KitPionero({ onCerrar }: { onCerrar: () => void }) {
         {MUNDOS.map((m, i) => (
           <Luz key={m.slug} i={i} p={p} />
         ))}
-        <Animated.Text style={[styles.caja, caja]}>🎁</Animated.Text>
+        <Animated.View style={[styles.caja, caja]}>
+          <IconoRegalo tam={84} c={color.logro} />
+        </Animated.View>
         <Animated.View style={avatar}>
           <AvatarMarco url={placa?.avatarUrl ?? null} nombre={placa?.nombre ?? "?"} marco="pionero" tam={120} />
         </Animated.View>
@@ -80,13 +83,13 @@ export default function KitPionero({ onCerrar }: { onCerrar: () => void }) {
           </Texto>
           <View style={styles.premios}>
             {[
-              ["⚡", "1.000 Chispas"],
-              ["◎", "Marco «Pionero», con las 13 ciudades"],
-              ["🏷", "Título «Pionero» para tu placa"],
-              ["🎁", "1 cápsula para abrir en Recompensas"],
+              [<IconoChispa key="c" tam={20} />, "1.000 Chispas"],
+              [<Texto key="m" tam={18}>◎</Texto>, "Marco «Pionero», con las 13 ciudades"],
+              [<IconoEtiqueta key="t" tam={20} c={color.logro} />, "Título «Pionero» para tu placa"],
+              [<IconoCapsulaMini key="k" tam={20} c={color.logro} />, "1 cápsula para abrir en Recompensas"],
             ].map(([icono, t]) => (
-              <View key={t} style={styles.premio}>
-                <Texto tam={18}>{icono}</Texto>
+              <View key={t as string} style={styles.premio}>
+                {icono}
                 <Texto v="fuerte" tam={15} style={{ flex: 1 }}>
                   {t}
                 </Texto>
@@ -105,7 +108,7 @@ const styles = StyleSheet.create({
   escena: { height: 300, alignItems: "center", justifyContent: "center" },
   halo: { position: "absolute", width: 220, height: 220, borderRadius: 110, backgroundColor: conAlfa(color.logro, 0.18), boxShadow: `0px 0px 60px ${conAlfa(color.primario, 0.6)}` },
   luz: { position: "absolute", width: 16, height: 16, borderRadius: 8 },
-  caja: { position: "absolute", fontSize: 84, fontFamily: fuente.display },
+  caja: { position: "absolute" },
   texto: { gap: 14 },
   premios: { gap: 10, padding: 16, borderRadius: 18, borderWidth: 1, borderColor: conAlfa(color.logro, 0.4), backgroundColor: conAlfa(color.logro, 0.08) },
   premio: { flexDirection: "row", alignItems: "center", gap: 12 },

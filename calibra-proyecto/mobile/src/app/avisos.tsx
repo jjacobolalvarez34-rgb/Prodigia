@@ -10,6 +10,7 @@ import { supabase } from "~/lib/supabase";
 import { actualizarWidgets } from "~/widgets/registro";
 import Boton3D from "~/ui/Boton3D";
 import { color, radio, fuente } from "~/tema";
+import { IconoCampana, IconoDestello, IconoEngranaje, IconoFiesta, IconoLlave, IconoMensaje } from "~/ui/Iconos";
 
 type TipoAnuncio = "evento" | "actualizacion" | "arreglo";
 
@@ -23,10 +24,10 @@ interface Anuncio {
 }
 
 // Cada tipo de anuncio con su propia luz (tokens del sistema visual).
-const ESTILO: Record<TipoAnuncio, { etiqueta: string; icono: string; de: string; a: string; acento: string }> = {
-  evento: { etiqueta: "Evento", icono: "🎉", de: "#3A2A0A", a: "#171D34", acento: "#FFB627" },
-  actualizacion: { etiqueta: "Novedad", icono: "✨", de: "#2A1F5C", a: "#171D34", acento: "#9B85FF" },
-  arreglo: { etiqueta: "Arreglo", icono: "🔧", de: "#0D3326", a: "#171D34", acento: "#3DDC97" },
+const ESTILO: Record<TipoAnuncio, { etiqueta: string; icono: "evento" | "novedad" | "arreglo"; de: string; a: string; acento: string }> = {
+  evento: { etiqueta: "Evento", icono: "evento", de: "#3A2A0A", a: "#171D34", acento: "#FFB627" },
+  actualizacion: { etiqueta: "Novedad", icono: "novedad", de: "#2A1F5C", a: "#171D34", acento: "#9B85FF" },
+  arreglo: { etiqueta: "Arreglo", icono: "arreglo", de: "#0D3326", a: "#171D34", acento: "#3DDC97" },
 };
 
 function formatearFecha(iso: string): string {
@@ -67,10 +68,9 @@ function TarjetaAnuncio({ anuncio, onAbrir }: { anuncio: Anuncio; onAbrir: () =>
     >
       <LinearGradient colors={[e.de, e.a]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.anuncio, { borderColor: anuncio.leido ? color.border : e.acento }]}>
         <View style={styles.anuncioCabecera}>
-          <View style={[styles.chip, { backgroundColor: e.acento + "26" }]}>
-            <Text style={[styles.chipTexto, { color: e.acento }]}>
-              {e.icono} {e.etiqueta}
-            </Text>
+          <View style={[styles.chip, { backgroundColor: e.acento + "26", flexDirection: "row", alignItems: "center", gap: 5 }]}>
+            {e.icono === "evento" ? <IconoFiesta tam={13} c={e.acento} /> : e.icono === "novedad" ? <IconoDestello tam={13} c={e.acento} /> : <IconoLlave tam={13} c={e.acento} />}
+            <Text style={[styles.chipTexto, { color: e.acento }]}>{e.etiqueta}</Text>
           </View>
           <Text style={styles.fecha}>{formatearFecha(anuncio.fecha)}</Text>
           {!anuncio.leido && <View style={[styles.punto, { backgroundColor: e.acento }]} />}
@@ -132,14 +132,17 @@ export default function Avisos() {
         </Pressable>
         <Text style={styles.titulo}>Avisos</Text>
         <Pressable onPress={() => router.push("/ajustes-avisos")} hitSlop={12} accessibilityLabel="Ajustes de avisos">
-          <Text style={styles.engranaje}>⚙︎</Text>
+          <IconoEngranaje tam={22} c={color.texto2} />
         </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={styles.contenido} refreshControl={<RefreshControl refreshing={cargando} onRefresh={cargar} tintColor={color.primario} />}>
         {!permiso && !esInvitado && (
           <LinearGradient colors={["#2A1F5C", "#12172A"]} style={styles.permiso}>
-            <Text style={styles.permisoTitulo}>🔔 Activa los avisos</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <IconoCampana tam={20} c={color.texto} />
+              <Text style={styles.permisoTitulo}>Activa los avisos</Text>
+            </View>
             <Text style={styles.permisoTexto}>
               Te contamos cuando un amigo te escribe, cuando te retan a un duelo o cuando tu racha está por cortarse. Nunca de noche, y eliges qué recibir.
             </Text>
@@ -160,7 +163,7 @@ export default function Avisos() {
                 end={{ x: 1, y: 1 }}
                 style={styles.mensajes}
               >
-                <Text style={styles.mensajesIcono}>💬</Text>
+                <IconoMensaje tam={28} c={color.texto} />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.mensajesTitulo}>
                     {resumen && resumen.mensajesSinLeer > 0

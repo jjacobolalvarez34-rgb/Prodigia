@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { vibrar } from "~/lib/efectos";
 import { color, conAlfa } from "~/tema";
 import Texto from "../Texto";
+import { IconoTambor } from "../Iconos";
 
 const FUERTE = require("../../../assets/sonidos/pulso_fuerte.wav");
 const DEBIL = require("../../../assets/sonidos/pulso.wav");
@@ -66,7 +67,7 @@ export default function PulsoAudio({ bpm, pulsos, acentoCada, acento }: { bpm: n
         style={[styles.boton, { backgroundColor: conAlfa(acento, actual >= 0 && actual % acentoCada === 0 ? 0.45 : 0.25), borderColor: acento }]}
         accessibilityLabel="Escuchar el pulso otra vez"
       >
-        <Texto style={{ fontSize: 34, color: color.texto }}>🥁</Texto>
+        <IconoTambor tam={36} c={color.texto} />
       </Pressable>
       <View style={styles.puntos}>
         {Array.from({ length: acentoCada }, (_, i) => {

@@ -12,6 +12,7 @@ import { PantallaApilada, TituloSeccion, Vacio } from "~/ui/Pantalla";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
 import { color, conAlfa, mundoDe } from "~/tema";
+import { IconoGrafico } from "~/ui/Iconos";
 
 // Estadísticas (Prodigia Pro), las mismas que /perfil/estadisticas de la web:
 // tiempo jugado, intentos, precisión, racha máxima, actividad de los últimos 14
@@ -110,7 +111,10 @@ export default function Estadisticas() {
     return (
       <PantallaApilada titulo="Estadísticas" subtitulo="Prodigia Pro">
         <Tarjeta acento={color.logro} brillo={0.25} estilo={{ gap: 8 }}>
-          <Texto v="h2">📊 Tus estadísticas, a fondo</Texto>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <IconoGrafico tam={22} c={color.logro} />
+            <Texto v="h2">Tus estadísticas, a fondo</Texto>
+          </View>
           <Texto v="nota">
             Tiempo jugado, precisión de cada ciudad, qué tema te cuesta más, tu actividad de las últimas dos semanas y tu racha máxima. Es parte de Prodigia Pro.
           </Texto>
@@ -243,7 +247,7 @@ export default function Estadisticas() {
 
       <TituloSeccion>Tienda</TituloSeccion>
       <View style={styles.fila}>
-        <Kpi indice={0} valor={`${datos.gastoTienda.toLocaleString("es")} ⚡`} etiqueta="Chispas gastadas" />
+        <Kpi indice={0} valor={`${datos.gastoTienda.toLocaleString("es")} ✦`} etiqueta="Chispas gastadas" />
         <Kpi indice={1} valor={datos.itemsDesbloqueados.toLocaleString("es")} etiqueta="Cosas desbloqueadas" />
       </View>
     </PantallaApilada>

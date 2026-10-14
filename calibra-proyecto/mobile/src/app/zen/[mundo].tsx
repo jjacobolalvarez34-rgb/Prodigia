@@ -17,6 +17,7 @@ import { animarAcierto, animarError, opcionesADescartar, Progreso, TarjetaProble
 import Texto from "~/ui/Texto";
 import TextoLatex from "~/ui/TextoLatex";
 import { color, conAlfa, fuente, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
+import { IconoBombilla, IconoZen } from "~/ui/Iconos";
 
 // Modo Zen (calibra/docs/PLAN_MODO_SIN_RELOJ.md): eliges tema y dificultad y
 // juegas 10 preguntas sin reloj. Si fallas, puedes intentar otra vez o ver la
@@ -193,7 +194,7 @@ export default function Zen() {
   // ---------- Elegir tema y dificultad ----------
   if (fase === "elegir") {
     return (
-      <PantallaApilada titulo={`☯ Modo Zen`} subtitulo={`${mundo.nombre} · sin reloj, a tu ritmo`}>
+      <PantallaApilada titulo="Modo Zen" subtitulo={`${mundo.nombre} · sin reloj, a tu ritmo`}>
         <View style={[styles.aviso, { borderColor: conAlfa(mundo.neon, 0.5), backgroundColor: conAlfa(mundo.neon, 0.08) }]}>
           <Texto v="nota" tam={12.5}>
             10 preguntas sin reloj. Si fallas, puedes intentar otra vez o ver la respuesta, y las pistas son gratis. No da Chispas: es para practicar, y cuenta para tu racha.
@@ -254,7 +255,7 @@ export default function Zen() {
             </Texto>
           ))}
         </View>
-        <Boton3D titulo="☯ Jugar en Zen" acento={mundo.base} brillo onPress={empezar} deshabilitado={contexto === undefined} estilo={{ marginTop: 10 }} />
+        <Boton3D titulo="Jugar en Zen" icono={<IconoZen tam={18} c="#fff" />} acento={mundo.base} brillo onPress={empezar} deshabilitado={contexto === undefined} estilo={{ marginTop: 10 }} />
       </PantallaApilada>
     );
   }
@@ -263,7 +264,7 @@ export default function Zen() {
   if (fase === "final") {
     const aciertos = resultados.filter(Boolean).length;
     return (
-      <PantallaApilada titulo="☯ Partida Zen" subtitulo={mundo.nombre}>
+      <PantallaApilada titulo="Partida Zen" subtitulo={mundo.nombre}>
         <Animated.View entering={FadeInDown.duration(350)} style={{ alignItems: "center", gap: 6, paddingVertical: 10 }}>
           <Texto style={{ fontFamily: fuente.display, fontSize: 52, color: mundo.neon }}>
             {aciertos}/{PREGUNTAS_ZEN}
@@ -273,7 +274,7 @@ export default function Zen() {
           </Texto>
           <Texto v="nota" centro>
             Nivel {nivel} · {temas.find((t) => t.id === tema)?.nombre ?? "Mezcla"}
-            {racha != null ? ` · Racha: ${racha} ${racha === 1 ? "día" : "días"} 🔥` : ""}
+            {racha != null ? ` · Racha: ${racha} ${racha === 1 ? "día" : "días"}` : ""}
           </Texto>
         </Animated.View>
         {falladas.length > 0 && (
@@ -325,9 +326,12 @@ export default function Zen() {
             ✕
           </Texto>
         </Pressable>
-        <Texto v="micro" c={mundo.neon}>
-          ☯ Zen · Nv {nivel}
-        </Texto>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+          <IconoZen tam={14} c={mundo.neon} />
+          <Texto v="micro" c={mundo.neon}>
+            Zen · Nv {nivel}
+          </Texto>
+        </View>
         <Texto v="mono" tam={13} c={color.texto2}>
           {Math.min(numero, PREGUNTAS_ZEN)} de {PREGUNTAS_ZEN}
         </Texto>
@@ -355,9 +359,12 @@ export default function Zen() {
 
         {pista && feedback === "idle" && (
           <Animated.View entering={FadeIn.duration(200)}>
-            <Texto v="nota" c={color.logro} centro>
-              💡 {pista}
-            </Texto>
+            <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "center", gap: 6 }}>
+              <IconoBombilla tam={16} c={color.logro} />
+              <Texto v="nota" c={color.logro} style={{ flexShrink: 1 }}>
+                {pista}
+              </Texto>
+            </View>
           </Animated.View>
         )}
 
@@ -376,9 +383,10 @@ export default function Zen() {
         {p && !memorizando && !casi && <OpcionesPregunta pregunta={p} feedback={feedback} seleccion={seleccion} bloqueado={bloqueado} base={mundo.base} onResponder={responder} ocultas={ocultas} />}
 
         {feedback === "idle" && !memorizando && !casi && pregunta.tipo === "mundo" && !pista && (
-          <Pressable onPress={darPista} hitSlop={8} style={styles.pista}>
+          <Pressable onPress={darPista} hitSlop={8} style={[styles.pista, { flexDirection: "row", alignItems: "center", gap: 6 }]}>
+            <IconoBombilla tam={15} c={color.logro} />
             <Texto v="fuerte" tam={13} c={color.logro}>
-              💡 Pista gratis
+              Pista gratis
             </Texto>
           </Pressable>
         )}

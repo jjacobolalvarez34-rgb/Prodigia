@@ -18,7 +18,7 @@ import ComparativaDuelo from "~/ui/ComparativaDuelo";
 import ResultadoVersus from "~/ui/ResultadoVersus";
 import Ciudad from "~/ui/Ciudad";
 import Confeti from "~/ui/Confeti";
-import { IconoCheck, IconoChispa, IconoCometa, IconoLlama } from "~/ui/Iconos";
+import { IconoCheck, IconoChispa, IconoCometa, IconoLlama, IconoRegalo } from "~/ui/Iconos";
 import { COLOR_COMETA } from "@/lib/recompensas/iconoCometa";
 import NumeroAnimado from "~/ui/NumeroAnimado";
 import RepasoErrores from "~/ui/RepasoErrores";
@@ -329,7 +329,7 @@ export default function Resultado() {
                 <Pressable onPress={() => router.push("/recompensas")}>
                   <Tarjeta sinEntrada acento={color.logro} brillo={0.3}>
                     <View style={styles.fila}>
-                      <Texto style={{ fontSize: 30 }}>🎁</Texto>
+                      <IconoRegalo tam={30} c={color.logro} />
                       <View style={{ flex: 1 }}>
                         <Texto v="micro" c={color.logro}>
                           Recompensas

@@ -14,12 +14,12 @@ import { supabase } from "./supabase";
 
 export type Categoria = "mensajes" | "duelos" | "racha" | "novedades";
 
-export const CATEGORIAS: { id: Categoria; nombre: string; descripcion: string; icono: string; color: string; importancia: Notifications.AndroidImportance }[] = [
+export const CATEGORIAS: { id: Categoria; nombre: string; descripcion: string; icono: "mensaje" | "duelo" | "racha" | "novedad"; color: string; importancia: Notifications.AndroidImportance }[] = [
   {
     id: "mensajes",
     nombre: "Mensajes",
     descripcion: "Mensajes de tus amigos y del chat de tu clan (agrupados, como mucho uno cada 30 min por conversación).",
-    icono: "💬",
+    icono: "mensaje",
     color: "#7C5CFF",
     importancia: Notifications.AndroidImportance.HIGH,
   },
@@ -27,7 +27,7 @@ export const CATEGORIAS: { id: Categoria; nombre: string; descripcion: string; i
     id: "duelos",
     nombre: "Duelos",
     descripcion: "Cuando alguien te reta a un duelo.",
-    icono: "⚔️",
+    icono: "duelo",
     color: "#FF5D5D",
     importancia: Notifications.AndroidImportance.HIGH,
   },
@@ -35,7 +35,7 @@ export const CATEGORIAS: { id: Categoria; nombre: string; descripcion: string; i
     id: "racha",
     nombre: "Racha",
     descripcion: "Un aviso al día como mucho, si todavía no jugaste y tu racha está por cortarse.",
-    icono: "🔥",
+    icono: "racha",
     color: "#FF8A3D",
     importancia: Notifications.AndroidImportance.DEFAULT,
   },
@@ -43,7 +43,7 @@ export const CATEGORIAS: { id: Categoria; nombre: string; descripcion: string; i
     id: "novedades",
     nombre: "Novedades y eventos",
     descripcion: "Mundos nuevos, eventos y mejoras de Prodigia. Nunca de noche.",
-    icono: "🎉",
+    icono: "novedad",
     color: "#FFB627",
     importancia: Notifications.AndroidImportance.DEFAULT,
   },

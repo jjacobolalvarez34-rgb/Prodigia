@@ -48,9 +48,9 @@ export async function olvidarAyudas() {
 export type EventoSprint = "inicio" | "acierto" | "tres_seguidas" | "error";
 
 const PISTAS_SPRINT: Record<EventoSprint, string> = {
-  inicio: "⏱️ Responde lo más rápido que puedas: cada acierto en racha te suma segundos.",
+  inicio: "Responde lo más rápido que puedas: cada acierto en racha te suma segundos.",
   acierto: "¡Bien! Cada acierto rápido te suma segundos al reloj.",
-  tres_seguidas: "🔥 ¡3 seguidas! Subiste de nivel en este tema.",
+  tres_seguidas: "¡3 seguidas! Subiste de nivel en este tema.",
   error: "Fallar no te quita nada: bajas un poquito para afianzar.",
 };
 
@@ -70,7 +70,7 @@ export const GLOBOS = {
   social: { titulo: "Social", texto: "Agrega amigos para retarlos en vivo y únete a un clan para sumar puntos juntos." },
   tienda: { titulo: "La tienda", texto: "Gasta tus Chispas en marcos, fondos, fuentes y ayudas para las partidas. Se ganan jugando." },
   recompensas: { titulo: "Recompensas", texto: "Cada partida enciende estrellas en su ciudad. Con 7, la constelación se dibuja y te da su premio." },
-  resultado: { titulo: "Tu resultado", texto: "Exp: sube tu nivel y el de la ciudad. Chispas: la moneda del juego. Racha 🔥: juega cada día para que crezca." },
+  resultado: { titulo: "Tu resultado", texto: "Exp: sube tu nivel y el de la ciudad. Chispas: la moneda del juego. Racha: juega cada día para que crezca." },
   perfil: { titulo: "Tu perfil", texto: "Tu placa la ven todos: personalízala. Aquí también están tus logros y estadísticas." },
 } as const;
 

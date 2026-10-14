@@ -18,7 +18,7 @@ import Ciudad from "~/ui/Ciudad";
 import ContadorAlineacion from "~/ui/ContadorAlineacion";
 import Confeti from "~/ui/Confeti";
 import Hoja from "~/ui/Hoja";
-import { IconoCandado, IconoChispa, IconoCometa } from "~/ui/Iconos";
+import { IconoCandado, IconoChispa, IconoCometa, IconoParacaidas } from "~/ui/Iconos";
 import { PantallaPestana } from "~/ui/Pantalla";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
@@ -71,8 +71,9 @@ function TarjetaMundo({ mundo, tuyo, nivel, indice, recien, onPress }: { mundo: 
       <Animated.View entering={recien ? FadeIn.duration(1200) : undefined}>
         <Ciudad semilla={mundo.slug} acento={mundo.neon} alto={128} densidad={Math.min(1.25, 0.8 + nivel / 100)} />
         {doble && (
-          <View style={styles.doble}>
-            <Texto style={{ fontFamily: fuente.display, fontSize: 11, color: "#2A1A00" }}>🪂 ×2 EXP HOY</Texto>
+          <View style={[styles.doble, { flexDirection: "row", alignItems: "center", gap: 4 }]}>
+            <IconoParacaidas tam={12} c="#2A1A00" />
+            <Texto style={{ fontFamily: fuente.display, fontSize: 11, color: "#2A1A00" }}>×2 EXP HOY</Texto>
           </View>
         )}
       </Animated.View>

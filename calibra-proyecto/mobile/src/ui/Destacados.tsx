@@ -1,9 +1,11 @@
+import type { ReactNode } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { hayWidgets, URL_WEB } from "~/lib/entorno";
 import { anclarWidget } from "~/widgets/registro";
 import { color, radio, fuente } from "~/tema";
+import { IconoCastillo, IconoCompetir, IconoDestello, IconoDiana, IconoFiesta, IconoLibro, IconoMovil } from "./Iconos";
 
 // Carrusel "Destacados" del inicio: las cosas de Prodigia que vale la pena probar,
 // cada una con la luz de su mundo. Lo que todavía no está en la app abre la web.
@@ -15,7 +17,7 @@ interface Destacado {
   etiqueta: string;
   titulo: string;
   texto: string;
-  icono: string;
+  icono: ReactNode;
   colores: [string, string];
   acento: string;
   accion: () => void;
@@ -40,10 +42,10 @@ export default function Destacados({ novedades }: { novedades: NovedadDestacada[
       .slice(0, 2)
       .map((n) => ({
         id: `anuncio-${n.id}`,
-        etiqueta: n.tipo === "evento" ? "🎉 EVENTO" : "✨ NOVEDAD",
+        etiqueta: n.tipo === "evento" ? "EVENTO" : "NOVEDAD",
         titulo: n.titulo,
         texto: n.descripcion,
-        icono: n.tipo === "evento" ? "🎉" : "✨",
+        icono: n.tipo === "evento" ? <IconoFiesta tam={96} c="#FFB627" /> : <IconoDestello tam={96} c="#9B85FF" />,
         colores: (n.tipo === "evento" ? ["#5A3A06", "#1A1206"] : ["#3B2C8F", "#140F33"]) as [string, string],
         acento: n.tipo === "evento" ? "#FFB627" : "#9B85FF",
         accion: () => router.push("/avisos"),
@@ -53,7 +55,7 @@ export default function Destacados({ novedades }: { novedades: NovedadDestacada[
       etiqueta: "NUMERIA",
       titulo: "60 segundos, 4 operaciones",
       texto: "La dificultad se ajusta sola a tu nivel. ¿Cuántas sacas hoy?",
-      icono: "÷",
+      icono: <Text style={styles.iconoTexto}>÷</Text>,
       colores: ["#4A33B8", "#140F33"],
       acento: "#9B85FF",
       accion: () => router.push("/numeria"),
@@ -63,7 +65,7 @@ export default function Destacados({ novedades }: { novedades: NovedadDestacada[
       etiqueta: "APRENDER",
       titulo: "Técnicas y Clases en los 15 mundos",
       texto: "Trucos de cálculo mental, química, música, código… también en inglés.",
-      icono: "📚",
+      icono: <IconoLibro tam={96} c="#2DD4BF" />,
       colores: ["#0B5E57", "#08201E"],
       acento: "#2DD4BF",
       accion: web("/aprender"),
@@ -73,7 +75,7 @@ export default function Destacados({ novedades }: { novedades: NovedadDestacada[
       etiqueta: "RANKEDS",
       titulo: "Duelos en vivo",
       texto: "Mide tu velocidad contra otra persona en tiempo real y sube de liga.",
-      icono: "⚔️",
+      icono: <IconoCompetir tam={96} c="#FF5D5D" />,
       colores: ["#7A1F2B", "#200A0E"],
       acento: "#FF5D5D",
       accion: web("/rankeds"),
@@ -83,7 +85,7 @@ export default function Destacados({ novedades }: { novedades: NovedadDestacada[
       etiqueta: "CLANES",
       titulo: "Tu clan, tu ciudad",
       texto: "Suma Exp con tu clan, cumplan la misión semanal y reclamen las Chispas.",
-      icono: "🏰",
+      icono: <IconoCastillo tam={96} c="#E08A5C" />,
       colores: ["#6B3A12", "#1F1106"],
       acento: "#E08A5C",
       accion: web("/clanes"),
@@ -93,7 +95,7 @@ export default function Destacados({ novedades }: { novedades: NovedadDestacada[
       etiqueta: "RETO DIARIO",
       titulo: "5 preguntas, un ranking",
       texto: "El mismo reto para todos. Compara tu resultado con tus amigos.",
-      icono: "🎯",
+      icono: <IconoDiana tam={96} c="#3DDC97" />,
       colores: ["#1E6A2A", "#0A1F0D"],
       acento: "#3DDC97",
       accion: web("/reto-diario"),
@@ -105,7 +107,7 @@ export default function Destacados({ novedades }: { novedades: NovedadDestacada[
             etiqueta: "NUEVO EN LA APP",
             titulo: "Tu racha en la pantalla de inicio",
             texto: "Agrega el widget de Prodigia y mira tu racha sin abrir la app.",
-            icono: "📱",
+            icono: <IconoMovil tam={96} c="#FFB627" />,
             colores: ["#3B2C8F", "#090C14"] as [string, string],
             acento: "#FFB627",
             accion: () => anclarWidget("Progreso"),
@@ -125,7 +127,7 @@ export default function Destacados({ novedades }: { novedades: NovedadDestacada[
       {tarjetas.map((t) => (
         <Pressable key={t.id} onPress={t.accion} style={({ pressed }) => [pressed && { transform: [{ scale: 0.97 }] }]}>
           <LinearGradient colors={t.colores} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.tarjeta, { borderColor: t.acento + "66" }]}>
-            <Text style={styles.iconoFondo}>{t.icono}</Text>
+            <View style={styles.iconoCaja}>{t.icono}</View>
             <Text style={[styles.etiqueta, { color: t.acento }]}>{t.etiqueta}</Text>
             <Text style={styles.titulo} numberOfLines={2}>
               {t.titulo}
@@ -146,7 +148,8 @@ export default function Destacados({ novedades }: { novedades: NovedadDestacada[
 const styles = StyleSheet.create({
   fila: { gap: 12, paddingRight: 20 },
   tarjeta: { width: ANCHO, height: 170, borderRadius: radio.tarjeta, borderWidth: 1, padding: 16, overflow: "hidden", gap: 6 },
-  iconoFondo: { position: "absolute", right: -6, bottom: -18, fontSize: 96, opacity: 0.16, color: "#FFFFFF" },
+  iconoCaja: { position: "absolute", right: -6, bottom: -18, opacity: 0.16 },
+  iconoTexto: { fontSize: 96, color: "#FFFFFF" },
   etiqueta: { fontSize: 11, fontFamily: fuente.display, letterSpacing: 1 },
   titulo: { color: color.texto, fontSize: 19, fontFamily: fuente.display, lineHeight: 24, paddingRight: 28 },
   texto: { fontFamily: fuente.cuerpo, color: "#C8CEE0", fontSize: 13, lineHeight: 18, paddingRight: 32 },

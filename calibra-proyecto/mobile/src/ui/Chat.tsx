@@ -140,7 +140,7 @@ export default function Chat({ mensajes, miId, mostrarAutor, enviar, borrar, vac
                 ) : null}
                 {m.borrado ? (
                   <Texto v="nota" c={mio ? "rgba(255,255,255,0.75)" : color.texto2} style={{ fontStyle: "italic" }}>
-                    🚫 Mensaje eliminado
+                    Mensaje eliminado
                   </Texto>
                 ) : ocultarLibres && !mio && !esFraseRapida(m.texto) ? (
                   <Texto v="nota" c={color.texto2} style={{ fontStyle: "italic" }}>

@@ -46,7 +46,7 @@ import { mostrarAviso } from "~/ui/Aviso";
 import Boton3D from "~/ui/Boton3D";
 import Confeti from "~/ui/Confeti";
 import Hoja from "~/ui/Hoja";
-import { IconoChispa, IconoCometa, IconoCopo, IconoEscudo, IconoRayo, IconoReloj } from "~/ui/Iconos";
+import { IconoBombilla, IconoChispa, IconoCometa, IconoCopo, IconoDestello, IconoEscudo, IconoMochila, IconoRayo, IconoRegalo, IconoReloj, IconoRepetir } from "~/ui/Iconos";
 import NumeroAnimado from "~/ui/NumeroAnimado";
 import { BotonAtras, PantallaApilada } from "~/ui/Pantalla";
 import AvatarMarco from "~/ui/placa/AvatarMarco";
@@ -85,8 +85,8 @@ function IconoUtilidad({ item }: { item: string }) {
   if (item === "congelamiento") return <IconoCopo tam={32} c="#7FD8FF" />;
   if (item === "boost") return <IconoRayo tam={32} c={color.logro} />;
   if (item === "hielo") return <IconoCopo tam={32} c="#BDEBFF" />;
-  if (item === "pista") return <Texto style={{ fontSize: 30 }}>💡</Texto>;
-  if (item === "segunda_oportunidad") return <Texto style={{ fontSize: 30 }}>🔁</Texto>;
+  if (item === "pista") return <IconoBombilla tam={32} c="#C9BDFF" />;
+  if (item === "segunda_oportunidad") return <IconoRepetir tam={32} c={color.correcto} />;
   if (item === "cofre_hielos")
     return (
       <View style={{ flexDirection: "row" }}>
@@ -129,7 +129,7 @@ function Muestra({ it, placa }: { it: ItemTienda; placa: PlacaDatos }) {
     case "paquete":
       return (
         <View style={{ alignItems: "center", gap: 2 }}>
-          <Texto style={{ fontSize: 30 }}>🎁</Texto>
+          <IconoRegalo tam={30} c={color.logro} />
           <Texto v="nota" tam={10}>
             {it.items?.length ?? 0} cosas
           </Texto>
@@ -730,7 +730,7 @@ export default function Tienda() {
           )}
           {items.length === 0 && pestanaVista !== null && pestanaVista !== "temas" && pestanaVista !== "cometas" && (
             <View style={{ alignItems: "center", gap: 10, paddingHorizontal: 24, paddingTop: 30 }}>
-              <Texto style={{ fontSize: 40 }}>{modo === "inventario" ? "🎒" : "✨"}</Texto>
+              {modo === "inventario" ? <IconoMochila tam={40} c={color.texto2} /> : <IconoDestello tam={40} c={color.logro} />}
               <Texto v="nota" centro>
                 {modo === "inventario" ? "Todavía no tienes nada de esta sección." : "Ya tienes todo lo de esta sección. Míralo en tu Inventario."}
               </Texto>
@@ -754,7 +754,7 @@ export default function Tienda() {
             {elegido.categoria !== "utilidad" && !SOBRE_PLACA.includes(elegido.categoria) ? (
               <View key={elegido.item} style={[styles.fila, { gap: 14 }]}>
                 <View style={[styles.iconoGrande, { width: 96, height: 96 }]}>
-                  {elegido.categoria === "paquete" ? <Texto style={{ fontSize: 44 }}>🎁</Texto> : <VistaCosmetico categoria={elegido.categoria} valor={elegido.valor} tam={72} />}
+                  {elegido.categoria === "paquete" ? <IconoRegalo tam={46} c={color.logro} /> : <VistaCosmetico categoria={elegido.categoria} valor={elegido.valor} tam={72} />}
                 </View>
                 <View style={{ flex: 1, gap: 4 }}>
                   <View style={[styles.rareza, { borderColor: COLOR_RAREZA[rarezaDeItem(elegido)] }]}>

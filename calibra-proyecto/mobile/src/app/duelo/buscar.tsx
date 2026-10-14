@@ -99,7 +99,7 @@ export default function BuscarDuelo() {
 
   return (
     <SafeAreaView style={styles.pantalla}>
-      <Glifos glifos={m?.glifos ?? ["⚔", "✦", "?"]} acento={acento} cantidad={10} />
+      <Glifos glifos={m?.glifos ?? ["×", "✦", "?"]} acento={acento} cantidad={10} />
       <View style={{ alignItems: "center", gap: 4, marginTop: 20 }}>
         <Texto v="micro" c={acento}>
           {esRanked ? "Rankeds" : "Duelo casual"} · {m?.nombre ?? "Todas las ciudades"}

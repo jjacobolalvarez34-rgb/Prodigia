@@ -192,7 +192,7 @@ function ElegirDos({ inicial, onListo }: { inicial: MundoSlug[]; onListo: (m: Mu
                   {m.nombre}
                 </Texto>
                 <Texto v="nota" tam={10.5} c={activo ? m.neon : color.texto2}>
-                  {activo ? "Elegido ✓" : "🔒 Bloqueado"}
+                  {activo ? "Elegido ✓" : "Bloqueado"}
                 </Texto>
               </Pressable>
             </Animated.View>

@@ -114,7 +114,8 @@ function FilaDuelo({ h, indice }: { h: FilaHistorial; indice: number }) {
       </Texto>
       <View style={{ flex: 1 }}>
         <Texto v="fuerte" tam={14} numberOfLines={1}>
-          {h.rival_nombre ?? "Jugador"} {h.rival_es_bot ? "🤖" : ""}
+          {h.rival_nombre ?? "Jugador"}
+          {h.rival_es_bot ? " · bot" : ""}
         </Texto>
         <Texto v="nota" tam={11}>
           {m?.nombre ?? h.mundo} · {h.clasificatorio ? "Ranked" : "Casual"}
@@ -314,7 +315,7 @@ export default function Competir() {
               <Texto v="mono" tam={15} c={color.texto}>
                 {elo}
               </Texto>{" "}
-              ELO{seguidas >= 2 ? ` · ${seguidas} victorias seguidas 🔥` : ""}
+              ELO{seguidas >= 2 ? ` · ${seguidas} victorias seguidas` : ""}
             </Texto>
             {div.siguiente && (
               <>

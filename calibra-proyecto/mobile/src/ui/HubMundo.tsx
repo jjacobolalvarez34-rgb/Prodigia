@@ -13,7 +13,7 @@ import Anillo from "./Anillo";
 import Barra from "./Barra";
 import Ciudad from "./Ciudad";
 import Glifos from "./Glifos";
-import { IconoCandado } from "./Iconos";
+import { IconoCandado, IconoParacaidas, IconoZen } from "./Iconos";
 import { BotonAtras } from "./Pantalla";
 import Segmentos from "./Segmentos";
 import Tarjeta from "./Tarjeta";
@@ -108,7 +108,8 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
             accessibilityLabel="Modo Zen: practicar sin reloj"
             hitSlop={6}
           >
-            <Texto style={{ fontFamily: fuente.cuerpoFuerte, fontSize: 12, color: color.texto }}>☯ Modo Zen</Texto>
+            <IconoZen tam={14} c={color.texto} />
+            <Texto style={{ fontFamily: fuente.cuerpoFuerte, fontSize: 12, color: color.texto }}>Modo Zen</Texto>
           </Pressable>
           )}
           <View style={styles.titulo}>
@@ -127,7 +128,7 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
           </Texto>
           {mundoDobleExperiencia() === mundo.slug && (
             <View style={styles.doble}>
-              <Texto style={{ fontSize: 22 }}>🪂</Texto>
+              <IconoParacaidas tam={24} c={color.logro} />
               <View style={{ flex: 1 }}>
                 <Texto v="fuerte" c={color.logro}>
                   ¡Doble experiencia hoy!

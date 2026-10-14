@@ -12,6 +12,7 @@ import ResultadoVersus from "~/ui/ResultadoVersus";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
 import { color, fuente, MUNDO_POR_SLUG } from "~/tema";
+import { IconoCerrar, IconoCheck, IconoIgual, IconoReloj } from "~/ui/Iconos";
 
 // Serie "todas las ciudades" (mejor de 3), igual que SerieDueloClient de la web:
 // se actualiza sola cada 3 s, deja leer el resultado de la ronda (3,5 s), muestra
@@ -183,7 +184,13 @@ export default function Serie() {
               <Texto v="h3">{m?.nombre ?? r.mundo}</Texto>
             </View>
             <View style={{ alignItems: "flex-end" }}>
-              <Texto style={{ fontSize: 18 }}>{resuelta ? (r.empate_ronda ? "🤝" : r.gane_ronda ? "✅" : "❌") : sobra ? "—" : "⏳"}</Texto>
+              {resuelta ? (
+                r.empate_ronda ? <IconoIgual tam={20} c={color.texto2} /> : r.gane_ronda ? <IconoCheck tam={20} c={color.correcto} /> : <IconoCerrar tam={20} c={color.error} />
+              ) : sobra ? (
+                <Texto style={{ fontSize: 18 }}>—</Texto>
+              ) : (
+                <IconoReloj tam={18} c={color.texto2} />
+              )}
               <Texto v="mono" tam={13} c={resuelta ? (r.gane_ronda ? color.correcto : color.error) : color.texto2}>
                 {resuelta ? `${r.mi_puntaje ?? 0}–${r.rival_puntaje ?? 0}` : sobra ? "No hizo falta" : r.yo_jugue ? `Esperando a ${oponente}` : "Por jugar"}
               </Texto>

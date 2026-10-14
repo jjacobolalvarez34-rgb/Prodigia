@@ -15,7 +15,7 @@ import { color, conAlfa, fuente, mundoDe } from "~/tema";
 import Boton3D from "../Boton3D";
 import { Destello, Halo, Onda, Particulas, Rayos, tonoHex } from "../fx/capas";
 import { crearExplosion } from "../fx/particulas";
-import { IconoChispa, IconoCopo, IconoReloj } from "../Iconos";
+import { IconoBombilla, IconoChispa, IconoCopo, IconoEstrellaFugaz, IconoLuna, IconoPieza, IconoPlaneta, IconoReloj } from "../Iconos";
 import NumeroAnimado from "../NumeroAnimado";
 import Texto from "../Texto";
 import Constelacion from "./Constelacion";
@@ -51,13 +51,13 @@ function IconoFugaz({ premio, tam }: { premio: string; tam: number }) {
   if (premio === "hielo") return <IconoCopo tam={tam} c="#BDEBFF" />;
   if (premio === "tiempo_extra") return <IconoReloj tam={tam} c={color.logro} />;
   if (premio === "chispas") return <IconoChispa tam={tam} />;
-  return <Texto style={{ fontSize: tam * 0.8, lineHeight: tam }}>💡</Texto>;
+  return <IconoBombilla tam={tam} c="#C9BDFF" />;
 }
 
 function premiosDe(c: ConstelacionCompletada): PremioVista[] {
   const p = c.premio;
   const lista: PremioVista[] = [];
-  const multiplicadores = [c.alineacion ? "🪐 Gran Alineación ×2" : null, c.de_noche ? "🌙 De noche +20 %" : null].filter((x): x is string => !!x);
+  const multiplicadores = [c.alineacion ? "Gran Alineación ×2" : null, c.de_noche ? "De noche +20 %" : null].filter((x): x is string => !!x);
   lista.push({
     clave: "chispas",
     color: color.logro,
@@ -77,7 +77,8 @@ function premiosDe(c: ConstelacionCompletada): PremioVista[] {
         {multiplicadores.length > 0 && (
           <View style={styles.chips}>
             {multiplicadores.map((m, i) => (
-              <Animated.View key={m} entering={ZoomIn.delay(900 + i * 250).springify().damping(9)} style={styles.chip}>
+              <Animated.View key={m} entering={ZoomIn.delay(900 + i * 250).springify().damping(9)} style={[styles.chip, { flexDirection: "row", alignItems: "center", gap: 5 }]}>
+                {m.startsWith("Gran") ? <IconoPlaneta tam={14} c={color.logro} /> : <IconoLuna tam={14} c="#9FE6FF" />}
                 <Texto v="nota" tam={12} c={color.texto}>
                   {m}
                 </Texto>
@@ -99,7 +100,7 @@ function premiosDe(c: ConstelacionCompletada): PremioVista[] {
       etiqueta: "Pieza de colección",
       nivel: grande ? 3 : 2,
       sonido: grande ? "victoria" : "logro",
-      mini: <Texto tam={16}>🧩</Texto>,
+      mini: <IconoPieza tam={18} c={tono} />,
       contenido: (
         <View style={styles.premio}>
           <View style={[styles.icono, { borderColor: tono, boxShadow: `0px 0px 34px ${tono}` }]}>
@@ -124,7 +125,7 @@ function premiosDe(c: ConstelacionCompletada): PremioVista[] {
       etiqueta: "¡Estrella fugaz!",
       nivel: 3,
       sonido: "victoria",
-      mini: <Texto tam={16}>🌠</Texto>,
+      mini: <IconoEstrellaFugaz tam={18} c="#9FE6FF" />,
       contenido: (
         <View style={styles.premio}>
           <View style={[styles.icono, { borderColor: "#9FE6FF", boxShadow: "0px 0px 34px #9FE6FF" }]}>

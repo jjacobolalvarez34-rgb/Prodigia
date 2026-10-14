@@ -267,9 +267,12 @@ export default function Reto() {
           </Texto>
         </View>
         {combo >= 2 ? (
-          <Texto v="mono" c={color.racha}>
-            ×{combo}🔥
-          </Texto>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+            <Texto v="mono" c={color.racha}>
+              ×{combo}
+            </Texto>
+            <IconoLlama tam={16} />
+          </View>
         ) : (
           <View style={{ width: 40 }} />
         )}

@@ -26,7 +26,7 @@ import { tiempoEsperadoMs } from "@/lib/practica/formulas";
 import { supabase } from "~/lib/supabase";
 import { efectoDe, estelaDe } from "@/lib/recompensas/catalogo";
 import { usarAyudaPartida, useCosmeticos } from "~/lib/recompensas";
-import { IconoCerrar, IconoCopo, IconoEscudo, IconoLlama, IconoReloj } from "./Iconos";
+import { IconoBombilla, IconoCerrar, IconoCompetir, IconoCopo, IconoEscudo, IconoFantasma, IconoLlama, IconoReloj, IconoRepetir } from "./Iconos";
 import EfectoAcierto from "./recompensas/EfectoAcierto";
 import Logo from "./Logo";
 import Texto from "./Texto";
@@ -296,9 +296,12 @@ export function Consumibles({
           }}
           style={({ pressed }) => [styles.consumible, { borderColor: "#A794FF", opacity: deshabilitado ? 0.45 : 1 }, pressed && { transform: [{ scale: 0.95 }] }]}
         >
-          <Texto v="fuerte" tam={12} c="#C9BDFF">
-            💡 Pista ×{ayudas.pistas}
-          </Texto>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <IconoBombilla tam={14} c="#C9BDFF" />
+            <Texto v="fuerte" tam={12} c="#C9BDFF">
+              Pista ×{ayudas.pistas}
+            </Texto>
+          </View>
         </Pressable>
       )}
       {haySegunda && (
@@ -318,9 +321,12 @@ export function Consumibles({
             pressed && { transform: [{ scale: 0.95 }] },
           ]}
         >
-          <Texto v="fuerte" tam={12} c={color.correcto}>
-            {segundaArmada ? "🛡️ 2ª oportunidad lista" : `🔁 2ª oportunidad ×${ayudas.segundas}`}
-          </Texto>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            {segundaArmada ? <IconoEscudo tam={14} c={color.correcto} /> : <IconoRepetir tam={14} c={color.correcto} />}
+            <Texto v="fuerte" tam={12} c={color.correcto}>
+              {segundaArmada ? "2ª oportunidad lista" : `2ª oportunidad ×${ayudas.segundas}`}
+            </Texto>
+          </View>
         </Pressable>
       )}
     </View>
@@ -759,10 +765,12 @@ export function BarraRival({
   const texto = yo > respondidos ? `Le vas ganando a ${nombre}` : yo < respondidos ? `${nombre} va adelante` : `Parejos con ${nombre}`;
   return (
     <View style={styles.rival}>
-      <Texto v="nota" tam={11} c={color.texto2}>
-        {respuestasFantasma ? "👻 " : "⚔ "}
-        {texto}
-      </Texto>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+        {respuestasFantasma ? <IconoFantasma tam={13} c={color.texto2} /> : <IconoCompetir tam={13} c={color.texto2} />}
+        <Texto v="nota" tam={11} c={color.texto2}>
+          {texto}
+        </Texto>
+      </View>
       <View style={styles.puntos}>
         {Array.from({ length: total }, (_, i) => (
           <View key={i} style={[styles.puntoChico, i < respondidos && { backgroundColor: color.error }]} />

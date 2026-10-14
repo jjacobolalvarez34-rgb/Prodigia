@@ -19,7 +19,7 @@ import Barra from "~/ui/Barra";
 import Boton3D from "~/ui/Boton3D";
 import Ciudad from "~/ui/Ciudad";
 import Destacados, { type NovedadDestacada } from "~/ui/Destacados";
-import { IconoChispa, IconoCompetir, IconoLlama } from "~/ui/Iconos";
+import { IconoChispa, IconoCompetir, IconoLlama, IconoParacaidas } from "~/ui/Iconos";
 import NumeroAnimado from "~/ui/NumeroAnimado";
 import { PantallaPestana, TituloSeccion } from "~/ui/Pantalla";
 import PrimerosPasos from "~/ui/PrimerosPasos";
@@ -161,7 +161,7 @@ export default function Hoy() {
               )}
             </View>
             <Texto v="fuerte" tam={13.5}>
-              {totalPendientes(recompensas) > 0 ? "Para reclamar 🎁" : "Constelaciones 🎁"}
+              {totalPendientes(recompensas) > 0 ? "Para reclamar" : "Constelaciones"}
             </Texto>
             <Texto v="nota" tam={11}>
               Misiones y calendario
@@ -243,7 +243,7 @@ export default function Hoy() {
             onPress={() => router.push(slugDoble === "numeria" || slugDoble === "geografia" ? `/${slugDoble}` : { pathname: "/[mundo]", params: { mundo: slugDoble } })}
           >
             <View style={styles.fila}>
-              <Texto style={{ fontSize: 26 }}>🪂</Texto>
+              <IconoParacaidas tam={28} c={color.logro} />
               <View style={{ flex: 1 }}>
                 <Texto v="micro" c={color.logro}>
                   Evento de hoy · termina en {horas} h

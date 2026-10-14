@@ -7,6 +7,7 @@ import { leerPrimeraVezActiva, suscribirPrimeraVez } from "~/lib/bienvenida";
 import { vibrar } from "~/lib/efectos";
 import { color, conAlfa } from "~/tema";
 import Texto from "./Texto";
+import { IconoBombilla } from "./Iconos";
 
 // Globo de 1 o 2 líneas que aparece UNA vez la primera vez que entras a una
 // sección (PLAN_PRIMERA_VEZ_APP.md, paso 12). Espera a que termine lo de la
@@ -41,9 +42,12 @@ export default function GloboAyuda({ id, sobrePestanas = true }: { id: IdGlobo; 
     <Animated.View entering={FadeInDown.duration(320)} exiting={FadeOut.duration(200)} style={[styles.globo, { bottom: insets.bottom + (sobrePestanas ? 86 : 20) }]}>
       <Pressable onPress={cerrar} style={styles.dentro}>
         <View style={{ flex: 1, gap: 2 }}>
-          <Texto v="fuerte" c={color.primarioClaro}>
-            💡 {g.titulo}
-          </Texto>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <IconoBombilla tam={16} c={color.primarioClaro} />
+            <Texto v="fuerte" c={color.primarioClaro} style={{ flexShrink: 1 }}>
+              {g.titulo}
+            </Texto>
+          </View>
           <Texto v="cuerpo" tam={13.5}>
             {g.texto}
           </Texto>

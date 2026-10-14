@@ -11,7 +11,7 @@ import { nivelesDeMundos } from "~/lib/mundos";
 import { useSesion } from "~/lib/sesion";
 import { supabase } from "~/lib/supabase";
 import Barra from "~/ui/Barra";
-import { IconoChispa, IconoCompartir, IconoDerecha, IconoEngranaje, IconoLapiz, IconoTienda, IconoTrofeo } from "~/ui/Iconos";
+import { IconoChispa, IconoCompartir, IconoDerecha, IconoEngranaje, IconoGrafico, IconoLapiz, IconoMochila, IconoTienda, IconoTrofeo } from "~/ui/Iconos";
 import { PantallaPestana, TituloSeccion } from "~/ui/Pantalla";
 import { PlacaCompleta, type ExtraCompleta } from "~/ui/placa/Placa";
 import Tarjeta from "~/ui/Tarjeta";
@@ -151,8 +151,8 @@ export default function Perfil() {
 
       <Tarjeta relleno={4} indice={2}>
         <Item indice={0} titulo="Logros y títulos" icono={<IconoTrofeo tam={18} c={color.logro} />} onPress={() => router.push("/logros")} />
-        <Item indice={0} titulo="Estadísticas" icono={<Texto tam={16}>📊</Texto>} onPress={() => router.push("/estadisticas" as Href)} extra={plan === "pro" ? null : <Texto v="nota" c={color.logro}>PRO</Texto>} />
-        <Item indice={1} titulo="Inventario" icono={<Texto tam={16}>🎒</Texto>} onPress={() => router.push({ pathname: "/tienda", params: { modo: "inventario" } })} />
+        <Item indice={0} titulo="Estadísticas" icono={<IconoGrafico tam={18} c={color.texto} />} onPress={() => router.push("/estadisticas" as Href)} extra={plan === "pro" ? null : <Texto v="nota" c={color.logro}>PRO</Texto>} />
+        <Item indice={1} titulo="Inventario" icono={<IconoMochila tam={18} c={color.texto} />} onPress={() => router.push({ pathname: "/tienda", params: { modo: "inventario" } })} />
         <Item
           indice={1}
           titulo="Tienda"

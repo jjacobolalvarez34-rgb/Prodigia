@@ -13,6 +13,7 @@ import { color, conAlfa, mundoDe } from "~/tema";
 import Boton3D from "./Boton3D";
 import AvatarMarco from "./placa/AvatarMarco";
 import Texto from "./Texto";
+import { IconoCompetir } from "./Iconos";
 
 // Aviso de «te retaron a un duelo» (mismo canal que NotificacionesDuelo.tsx de la
 // web: cualquier fila nueva de `duels` donde yo soy el retado). Con la app abierta
@@ -88,9 +89,12 @@ export default function AvisoDuelo({ userId }: { userId: string }) {
         <View style={styles.fila}>
           <AvatarMarco url={reto.retadorAvatar} nombre={reto.retadorNombre} tam={40} animar={false} />
           <View style={{ flex: 1 }}>
-            <Texto v="fuerte" tam={15}>
-              ⚔️ {reto.retadorNombre} te retó
-            </Texto>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <IconoCompetir tam={15} c={acento} />
+              <Texto v="fuerte" tam={15} style={{ flexShrink: 1 }}>
+                {reto.retadorNombre} te retó
+              </Texto>
+            </View>
             <Texto v="nota" tam={12} c={acento}>
               {m?.nombre ?? "Duelo"} · en vivo: acéptalo en menos de 2 minutos
             </Texto>

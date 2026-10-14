@@ -18,6 +18,7 @@ import { useSesion } from "~/lib/sesion";
 import { anclarWidget } from "~/widgets/registro";
 import Boton3D from "~/ui/Boton3D";
 import { color, radio, fuente } from "~/tema";
+import { IconoAlarma, IconoCompetir, IconoFiesta, IconoLlama, IconoMensaje } from "~/ui/Iconos";
 
 const WIDGETS: { nombre: "Racha" | "Progreso"; titulo: string; texto: string; imagen: number }[] = [
   { nombre: "Racha", titulo: "Racha", texto: "Chico (2×2): tu racha y tus Chispas.", imagen: require("../../assets/widgets/racha.png") },
@@ -67,7 +68,9 @@ export default function AjustesAvisos() {
         <View style={styles.tarjeta}>
           {CATEGORIAS.map((c, i) => (
             <View key={c.id} style={[styles.fila, i > 0 && styles.separador]}>
-              <Text style={styles.icono}>{c.icono}</Text>
+              <View style={styles.iconoCaja}>
+                {c.icono === "mensaje" ? <IconoMensaje tam={22} c={c.color} /> : c.icono === "duelo" ? <IconoCompetir tam={22} c={c.color} /> : c.icono === "racha" ? <IconoLlama tam={22} /> : <IconoFiesta tam={22} c={c.color} />}
+              </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.nombre}>{c.nombre}</Text>
                 <Text style={styles.descripcion}>{c.descripcion}</Text>
@@ -86,7 +89,9 @@ export default function AjustesAvisos() {
         <Text style={styles.seccion}>Recordatorio de práctica</Text>
         <View style={styles.tarjeta}>
           <View style={styles.fila}>
-            <Text style={styles.icono}>⏰</Text>
+            <View style={styles.iconoCaja}>
+              <IconoAlarma tam={22} c={color.logro} />
+            </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.nombre}>Recordatorio diario</Text>
               <Text style={styles.descripcion}>Un aviso por día a la hora que elijas para jugar tu sprint.</Text>
@@ -118,7 +123,7 @@ export default function AjustesAvisos() {
             </View>
           )}
         </View>
-        <Text style={styles.nota}>🌙 Nunca te avisamos entre las 21:00 y las 08:00, y como mucho mandamos 2 recordatorios o novedades por día.</Text>
+        <Text style={styles.nota}>Nunca te avisamos entre las 21:00 y las 08:00, y como mucho mandamos 2 recordatorios o novedades por día.</Text>
 
         {esAndroid && (
           <>
@@ -154,6 +159,7 @@ const styles = StyleSheet.create({
   tarjeta: { backgroundColor: color.surface1, borderRadius: radio.tarjeta, borderWidth: 1, borderColor: color.border, padding: 14, gap: 10 },
   fila: { flexDirection: "row", alignItems: "center", gap: 12 },
   separador: { borderTopWidth: 1, borderTopColor: color.border, paddingTop: 12 },
+  iconoCaja: { width: 30, alignItems: "center" },
   icono: { fontSize: 24, width: 30, textAlign: "center" },
   nombre: { color: color.texto, fontSize: 16, fontFamily: fuente.cuerpoBold },
   descripcion: { fontFamily: fuente.cuerpo, color: color.texto2, fontSize: 13, lineHeight: 18 },

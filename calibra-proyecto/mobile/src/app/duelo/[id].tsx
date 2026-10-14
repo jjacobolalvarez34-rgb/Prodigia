@@ -198,7 +198,7 @@ export default function Duelo() {
   return (
     <View style={styles.pantalla}>
       <LinearGradient colors={["#1A1540", color.bg, color.bgHondo]} style={StyleSheet.absoluteFill} />
-      <Glifos glifos={m?.glifos ?? ["⚔"]} acento={m?.neon ?? color.primario} cantidad={10} />
+      <Glifos glifos={m?.glifos ?? ["×", "✦"]} acento={m?.neon ?? color.primario} cantidad={10} />
       <SafeAreaView style={{ flex: 1, justifyContent: "space-between" }}>
         <View style={{ alignItems: "center", paddingTop: 10, gap: 2 }}>
           <Texto v="micro" c={m?.neon}>
@@ -223,7 +223,7 @@ export default function Duelo() {
           )}
           {info?.rivalYaJugo && (
             <Texto v="nota" centro>
-              👻 Corres contra el registro exacto de {info.rivalNombre}
+              Corres contra el registro exacto de {info.rivalNombre}
             </Texto>
           )}
         </View>

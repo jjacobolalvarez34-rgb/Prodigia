@@ -3,7 +3,7 @@ import { ciudadDe, efectoDe, EMOTES, estelaDe, particulasDe } from "@/lib/recomp
 import { useJugador } from "~/lib/jugador";
 import { color, fuente, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
 import Ciudad from "../Ciudad";
-import { IconoLlama } from "../Iconos";
+import { IconoLlama, IconoNota } from "../Iconos";
 import AvatarMarco from "../placa/AvatarMarco";
 import FondoPlaca from "../placa/FondoPlaca";
 import Texto from "../Texto";
@@ -45,7 +45,7 @@ export default function VistaCosmetico({ categoria, valor, tam = 56 }: { categor
       );
     }
     case "sonido":
-      return <Texto style={{ fontSize: tam * 0.55 }}>🎵</Texto>;
+      return <IconoNota tam={tam * 0.6} c={color.primarioClaro} />;
     case "emote": {
       const e = EMOTES[valor];
       return <Texto style={{ fontSize: tam * 0.6 }}>{e?.emoji ?? "💬"}</Texto>;

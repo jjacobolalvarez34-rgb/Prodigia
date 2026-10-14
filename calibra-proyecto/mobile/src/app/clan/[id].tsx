@@ -63,7 +63,7 @@ export default function ClanPublico() {
       <Tarjeta>
         <Texto v="cuerpo">{clan.descripcion || "Este clan todavía no tiene descripción."}</Texto>
         <Texto v="nota" style={{ marginTop: 6 }}>
-          {clan.cantidad_miembros}/{clan.capacidad} miembros · 🏆 {clan.guerras_ganadas} guerras ganadas
+          {clan.cantidad_miembros}/{clan.capacidad} miembros · {clan.guerras_ganadas} guerras ganadas
         </Texto>
       </Tarjeta>
       {!miClan && (

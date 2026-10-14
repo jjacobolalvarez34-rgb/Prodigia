@@ -22,10 +22,10 @@ import { supabase } from "./supabase";
 export type { Continente, PaisAmerica, PreguntaAvanzada };
 
 export const CONTINENTES: { id: Continente; nombre: string; glifo: string }[] = [
-  { id: "america", nombre: "América", glifo: "🌎" },
-  { id: "europa", nombre: "Europa", glifo: "🏰" },
-  { id: "africa", nombre: "África", glifo: "🌍" },
-  { id: "asia_oceania", nombre: "Asia y Oceanía", glifo: "🌏" },
+  { id: "america", nombre: "América", glifo: "AM" },
+  { id: "europa", nombre: "Europa", glifo: "EU" },
+  { id: "africa", nombre: "África", glifo: "AF" },
+  { id: "asia_oceania", nombre: "Asia y Oceanía", glifo: "AS" },
 ];
 
 export const DURACION_SPRINT_GEO_MS = 60_000;

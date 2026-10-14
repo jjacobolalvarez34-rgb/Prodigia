@@ -25,7 +25,7 @@ import Anillo from "../Anillo";
 import Barra from "../Barra";
 import Boton3D from "../Boton3D";
 import Ciudad from "../Ciudad";
-import { IconoChispa, IconoLlama } from "../Iconos";
+import { IconoChispa, IconoLlama, IconoRayo, IconoReloj } from "../Iconos";
 import Logo from "../Logo";
 import NumeroAnimado from "../NumeroAnimado";
 import Texto from "../Texto";
@@ -149,9 +149,12 @@ function EscenaPartida() {
         })}
         <Animated.View entering={FadeInUp.delay(1700).duration(400)} style={{ alignSelf: "flex-end" }}>
           <Flota amplitud={5}>
-            <Texto v="mono" c={color.correcto}>
-              🔥 racha +3 s
-            </Texto>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <IconoLlama tam={16} />
+              <Texto v="mono" c={color.correcto}>
+                racha +3 s
+              </Texto>
+            </View>
           </Flota>
         </Animated.View>
       </View>
@@ -345,9 +348,9 @@ export function ElegirCiudad({ onElegir }: { onElegir: (slug: MundoSlug) => void
 
 // ---------- Cómo funciona la partida (y se revela la ciudad) ----------
 const REGLAS = [
-  { icono: "⏱️", titulo: "5 preguntas, 30 segundos", texto: "Esta es de prueba. Las de verdad son 10 preguntas en 60 segundos." },
-  { icono: "🔥", titulo: "En racha, más tiempo", texto: "Cada respuesta seguida bien te suma segundos al reloj." },
-  { icono: "⚡", titulo: "Rápido, más Exp", texto: "Cuanto antes respondes, más Experiencia ganas." },
+  { icono: <IconoReloj tam={28} c={color.texto} />, titulo: "5 preguntas, 30 segundos", texto: "Esta es de prueba. Las de verdad son 10 preguntas en 60 segundos." },
+  { icono: <IconoLlama tam={28} />, titulo: "En racha, más tiempo", texto: "Cada respuesta seguida bien te suma segundos al reloj." },
+  { icono: <IconoRayo tam={28} c={color.logro} />, titulo: "Rápido, más Exp", texto: "Cuanto antes respondes, más Experiencia ganas." },
 ];
 
 export function Mecanismo({ slug, entrando, error, onEmpezar, onCambiar }: { slug: MundoSlug; entrando: boolean; error: string | null; onEmpezar: () => void; onCambiar: () => void }) {
@@ -379,7 +382,7 @@ export function Mecanismo({ slug, entrando, error, onEmpezar, onCambiar }: { slu
       <View style={{ gap: 10 }}>
         {REGLAS.map((r, i) => (
           <Animated.View key={r.titulo} entering={FadeInRight.delay(550 + i * 220).springify().damping(15)} style={styles.regla}>
-            <Texto style={{ fontSize: 26 }}>{r.icono}</Texto>
+            {r.icono}
             <View style={{ flex: 1 }}>
               <Texto v="fuerte" tam={14.5}>
                 {r.titulo}
