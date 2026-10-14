@@ -1757,7 +1757,8 @@
       "enviando": "Enviando...",
       "botonEnviar": "Enviarme el enlace",
       "errorEnviar": "No pudimos enviar el enlace. Prueba de nuevo.",
-      "enviado": "Si hay una cuenta con ese email, te llegó un enlace para elegir una nueva contraseña."
+      "enviado": "Si hay una cuenta con ese email, te llegó un enlace para elegir una nueva contraseña.",
+      "porCorreo": "¿Prefieres recibir un enlace por correo?"
     },
     "actualizarPassword": {
       "titulo": "Elige tu nueva contraseña",
@@ -1819,6 +1820,29 @@
       "noCoinciden": "Las dos contraseñas no coinciden.",
       "error": "No se pudo guardar. Prueba de nuevo.",
       "lista": "Listo: ya puedes entrar también con tu correo y esta contraseña."
+    },
+    "preguntas": {
+      "intro": "Responde tres preguntas sobre tu cuenta. Si aciertas, eliges una contraseña nueva. Tienes 3 intentos.",
+      "usuarioPlaceholder": "Tu nombre de usuario",
+      "seguir": "Seguir",
+      "pregunta": "Pregunta {n} de 3",
+      "googlePregunta": "¿Creaste tu cuenta con Google?",
+      "si": "Sí, con Google",
+      "no": "No, con correo y contraseña",
+      "mundosPregunta": "¿Cuáles fueron tus dos primeros mundos? Elige dos.",
+      "correoPregunta": "¿Cuál es el correo de {usuario}?",
+      "noCoincide": "Alguna respuesta no coincide. Te {n, plural, one {queda # intento} other {quedan # intentos}}.",
+      "noCoincideSinCuenta": "Alguna respuesta no coincide. Revisa tu nombre de usuario y vuelve a intentar.",
+      "nuevaTitulo": "¡Eres tú! Elige tu contraseña nueva",
+      "nueva": "Contraseña nueva (mínimo 6)",
+      "repetir": "Repítela",
+      "guardar": "Guardar contraseña",
+      "corta": "Tiene que tener al menos 6 caracteres.",
+      "noCoinciden": "Las dos contraseñas no coinciden.",
+      "listo": "Listo: tu contraseña cambió. Ya puedes iniciar sesión.",
+      "irALogin": "Ir a iniciar sesión",
+      "bloqueada": "Esta cuenta se bloqueó para recuperarla porque se fallaron 3 intentos. Escríbenos a {correo} desde el correo de tu cuenta y te ayudamos.",
+      "error": "No se pudo. Prueba de nuevo."
     }
   },
   "Bloqueos": {

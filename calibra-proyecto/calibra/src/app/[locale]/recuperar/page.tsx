@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import Header from "@/components/Header";
 import BotonEnlace from "@/components/BotonEnlace";
 import RecuperarForm from "./RecuperarForm";
+import PreguntasRecuperar from "./PreguntasRecuperar";
 
 export default async function RecuperarPage() {
   const t = await getTranslations("Auth.recuperar");
@@ -18,7 +19,15 @@ export default async function RecuperarPage() {
             {t("subtitulo")}
           </p>
 
-          <RecuperarForm />
+          <PreguntasRecuperar />
+
+          {/* El enlace por correo queda como segunda opción (sirve cuando haya SMTP propio). */}
+          <details className="mt-6 text-sm">
+            <summary className="cursor-pointer text-texto-secundario hover:text-foreground">{t("porCorreo")}</summary>
+            <div className="mt-3">
+              <RecuperarForm />
+            </div>
+          </details>
 
           <div className="mt-6 flex justify-center">
             <BotonEnlace href="/login" variante="secundario" atras tamano="sm">

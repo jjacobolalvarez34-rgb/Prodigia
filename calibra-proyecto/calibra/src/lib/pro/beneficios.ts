@@ -16,6 +16,16 @@ export const BENEFICIOS_PRO = [
     descripcion: "Apenas te suscribes y en cada renovación — para gastar en la Tienda sin depender solo de jugar.",
   },
   {
+    emoji: "🌍",
+    titulo: "Los 15 mundos encendidos",
+    descripcion: "Juega todas las ciudades mientras dure tu Pro, sin gastar Chispas en desbloquearlas.",
+  },
+  {
+    emoji: "☄️",
+    titulo: "300 Cometas al mes",
+    descripcion: "La moneda premium, para lo legendario o para cambiarla por Chispas.",
+  },
+  {
     emoji: "💠",
     titulo: "2 cápsulas Pro cada semana",
     descripcion: "Cápsulas especiales que casi siempre traen un cosmético épico o legendario.",

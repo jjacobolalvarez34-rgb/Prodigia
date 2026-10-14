@@ -2,11 +2,14 @@
 -- Prodigia — Cápsulas Pro (0283).
 --
 -- Pedido del 2026-10-13: «en Pro sería bueno que recibieran más cápsulas
--- especiales, de las de mayor rango». Cápsula nueva 'pro': 55 % cosmético épico,
+-- especiales, de las de mayor rango» y (2026-10-14) «Pro también debería darte Cometas
+-- gratis». Cápsula nueva 'pro': 55 % cosmético épico,
 -- 30 % legendario, 15 % de 150 a 300 Chispas (las probabilidades se ven antes de
 -- abrir, como todas). Pro recibe 2 por semana, mientras dure: capsulas_pro_semana()
 -- las da una sola vez por semana (origen 'pro:<lunes>:1' y ':2'); la llaman la web
--- y la app al revisar recompensas. Requiere 0249 y 0280. Idempotente.
+-- y la app al revisar recompensas. La misma función da 300 Cometas por mes de Pro
+-- (PLAN_ECONOMIA.md §5; referencia 'pro-cometas:<año-mes>', una vez por mes).
+-- Requiere 0249, 0279 y 0280. Idempotente.
 -- ============================================================
 
 alter table public.capsulas_usuario drop constraint if exists capsulas_usuario_tipo_check;
@@ -70,6 +73,7 @@ begin
   values (v_user, 'pro', null, 'pro:' || v_lunes || ':1'), (v_user, 'pro', null, 'pro:' || v_lunes || ':2')
   on conflict (user_id, origen) do nothing;
   get diagnostics v_n = row_count;
+  perform public._dar_cometas(v_user, 300, 'pro', 'pro-cometas:' || to_char(current_date, 'YYYY-MM'));
   return v_n;
 end;
 $$;

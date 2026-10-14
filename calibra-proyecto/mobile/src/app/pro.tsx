@@ -7,19 +7,15 @@ import { useVencimientoPro } from "~/lib/pro";
 import { textoRestantePro } from "@/lib/pro/vencimiento";
 import { IconoCheck } from "~/ui/Iconos";
 import { PantallaApilada } from "~/ui/Pantalla";
+import { BENEFICIOS_PRO } from "@/lib/pro/beneficios";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
 import { color, fuente } from "~/tema";
 
 // Prodigia Pro (03-PANTALLAS §4.13). La compra llega con Google Play Billing; por
-// ahora la pantalla muestra qué incluye y si ya lo tienes.
-const BENEFICIOS = [
-  "Los 15 mundos encendidos, sin gastar Chispas",
-  "Clases: lecciones paso a paso en cada mundo",
-  "Estadísticas avanzadas de tu progreso",
-  "Fondo Prodigio y animación Prisma para tu Placa",
-  "Apoyas que Prodigia siga creciendo",
-];
+// ahora la pantalla muestra qué incluye y si ya lo tienes. La lista es la misma de la
+// web (src/lib/pro/beneficios.ts), así nunca se desincronizan.
+const BENEFICIOS = BENEFICIOS_PRO.map((b) => `${b.emoji} ${b.titulo}`);
 
 export default function Pro() {
   const { plan } = useJugador();

@@ -1757,7 +1757,8 @@
       "enviando": "Sending...",
       "botonEnviar": "Send me the link",
       "errorEnviar": "We couldn't send the link. Try again.",
-      "enviado": "If there's an account with that email, a link to choose a new password was sent to it."
+      "enviado": "If there's an account with that email, a link to choose a new password was sent to it.",
+      "porCorreo": "Prefer a link by email?"
     },
     "actualizarPassword": {
       "titulo": "Choose your new password",
@@ -1819,6 +1820,29 @@
       "noCoinciden": "The two passwords don't match.",
       "error": "Couldn't save it. Try again.",
       "lista": "Done: you can now also sign in with your email and this password."
+    },
+    "preguntas": {
+      "intro": "Answer three questions about your account. If you get them right, you choose a new password. You have 3 tries.",
+      "usuarioPlaceholder": "Your username",
+      "seguir": "Continue",
+      "pregunta": "Question {n} of 3",
+      "googlePregunta": "Did you create your account with Google?",
+      "si": "Yes, with Google",
+      "no": "No, with email and password",
+      "mundosPregunta": "Which were your first two worlds? Pick two.",
+      "correoPregunta": "What is {usuario}'s email?",
+      "noCoincide": "Something doesn't match. {n, plural, one {# try left} other {# tries left}}.",
+      "noCoincideSinCuenta": "Something doesn't match. Check your username and try again.",
+      "nuevaTitulo": "It's you! Choose your new password",
+      "nueva": "New password (at least 6)",
+      "repetir": "Repeat it",
+      "guardar": "Save password",
+      "corta": "It needs at least 6 characters.",
+      "noCoinciden": "The two passwords don't match.",
+      "listo": "Done: your password changed. You can sign in now.",
+      "irALogin": "Go to sign in",
+      "bloqueada": "Recovery for this account is locked after 3 failed tries. Write to us at {correo} from your account's email and we'll help you.",
+      "error": "Something went wrong. Try again."
     }
   },
   "Bloqueos": {
