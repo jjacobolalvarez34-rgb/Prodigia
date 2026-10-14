@@ -4923,7 +4923,8 @@
       "liga": "League place {n}",
       "coleccion": "{ciudad} collection",
       "misiones": "Today's 3 missions",
-      "diaria": "For playing today"
+      "diaria": "For playing today",
+      "pro": "Weekly Pro capsule"
     },
     "premios": {
       "chispas": "{min}–{max} Sparks",

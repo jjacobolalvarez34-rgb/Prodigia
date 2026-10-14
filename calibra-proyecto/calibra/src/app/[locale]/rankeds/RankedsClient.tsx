@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { rangoDeElo, type ArithmeticProblemType } from "@/types/database";
+import type { ArithmeticProblemType } from "@/types/database";
 import RangoBadge from "@/components/RangoBadge";
 import InsigniaRango from "@/components/InsigniaRango";
 import GlareHover from "@/components/reactbits/GlareHover";
@@ -407,7 +408,9 @@ function BuscarPartida({
   // directo en "aleatorio" en vez de "numeria". Validado también
   // server-side en buscar_rival_duelo (0078), esto es solo la UI.
   const rangoAlto = miElo >= 1300;
-  const [modoClasificacion, setModoClasificacion] = useState<"clasificatoria" | "casual">("clasificatoria");
+  // ?modo=casual: viene de «Otra partida» de una serie casual.
+  const modoInicial = useSearchParams().get("modo") === "casual" ? "casual" : "clasificatoria";
+  const [modoClasificacion, setModoClasificacion] = useState<"clasificatoria" | "casual">(modoInicial);
   const [mundo, setMundo] = useState<SeleccionMundo>(rangoAlto ? "aleatorio" : "numeria");
   const [estado, setEstado] = useState<"idle" | "buscando" | "sin-rivales">("idle");
   const [segundos, setSegundos] = useState(0);

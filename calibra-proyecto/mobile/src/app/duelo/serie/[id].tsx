@@ -208,7 +208,7 @@ export default function Serie() {
             eloNuevo={ranked ? final.elo_nuevo : null}
           />
           {listaRondas}
-          <Boton3D titulo="Otra partida" brillo onPress={() => router.replace({ pathname: "/duelo/buscar", params: { mundo: "aleatorio", ranked: ranked ? "1" : "0" } })} />
+          <Boton3D titulo="Otra partida" brillo onPress={() => (ranked ? router.replace({ pathname: "/duelo/buscar", params: { mundo: "aleatorio", ranked: "1" } }) : router.replace({ pathname: "/(tabs)/competir", params: { seccion: "casual" } }))} />
           <Boton3D titulo="Volver a Competir" variante="secundario" onPress={salir} />
         </PantallaApilada>
         {final.gane && <Confeti cantidad={48} />}

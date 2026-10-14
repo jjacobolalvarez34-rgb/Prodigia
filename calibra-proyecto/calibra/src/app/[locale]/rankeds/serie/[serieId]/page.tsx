@@ -23,6 +23,9 @@ export default async function SerieDueloPage({ params }: Props) {
   bloquearInvitado(user, tBloqueos("rankeds"));
 
   const { data, error } = await supabase.rpc("estado_serie_duelo", { p_serie_id: serieId });
+  // Casual: «Otra partida» vuelve a buscar en casual (revisión 2026-10-14).
+  const { data: tipo } = await supabase.from("duels").select("clasificatorio").eq("serie_id", serieId).limit(1).maybeSingle();
+  const casual = (tipo as { clasificatorio: boolean } | null)?.clasificatorio === false;
   const rondas = (data as FilaRondaSerie[] | null) ?? [];
 
   if (error || rondas.length === 0) {
@@ -32,7 +35,7 @@ export default async function SerieDueloPage({ params }: Props) {
   return (
     <>
       <Header autenticado />
-      <SerieDueloClient serieId={serieId} rondasIniciales={rondas} />
+      <SerieDueloClient serieId={serieId} rondasIniciales={rondas} casual={casual} />
     </>
   );
 }

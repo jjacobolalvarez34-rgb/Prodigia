@@ -9,5 +9,8 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    // Revisión 2026-10-14: con la máquina compilando el APK, las pruebas pesadas se
+    // caían por tiempo (5 s por defecto).
+    testTimeout: 60_000,
   },
 });

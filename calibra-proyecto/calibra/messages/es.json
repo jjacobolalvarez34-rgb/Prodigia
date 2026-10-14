@@ -4923,7 +4923,8 @@
       "liga": "Puesto {n} de la liga",
       "coleccion": "Colección de {ciudad}",
       "misiones": "Las 3 misiones de hoy",
-      "diaria": "Por jugar hoy"
+      "diaria": "Por jugar hoy",
+      "pro": "Cápsula semanal de Pro"
     },
     "premios": {
       "chispas": "{min}–{max} Chispas",

@@ -132,6 +132,7 @@ export default function RecompensasClient({ invitado, plan }: { invitado: boolea
     if (c.tipo.startsWith("liga") && d?.puesto) return t("detalle.liga", { n: d.puesto });
     if (c.tipo === "coleccion") return t("detalle.coleccion", { ciudad });
     if (c.tipo === "misiones") return t("detalle.misiones");
+    if (c.tipo === "pro") return t("detalle.pro");
     return t("detalle.diaria");
   }
 

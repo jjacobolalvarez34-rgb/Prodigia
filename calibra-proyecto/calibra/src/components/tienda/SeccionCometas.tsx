@@ -11,8 +11,7 @@ import type { ProductoComprable } from "@/lib/pagos/tipos";
 // Cometas en la tienda de la web (2026-10-13, 0279): saldo, canje por Chispas
 // (1 Cometa = 10 Chispas, lo hace la base) y compra con Paddle. Igual que la
 // pestaña Cometas del Bazar de la app.
-const CHISPAS_POR_COMETA = 10;
-const CANJES = [10, 50, 100, 500];
+import { CANJES_COMETAS as CANJES, CHISPAS_POR_COMETA } from "@/lib/cometas";
 
 export default function SeccionCometas({
   cometasIniciales,

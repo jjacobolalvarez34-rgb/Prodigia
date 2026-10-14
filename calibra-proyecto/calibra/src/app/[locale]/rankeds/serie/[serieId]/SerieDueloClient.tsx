@@ -163,9 +163,11 @@ function etiquetaRonda(
 export default function SerieDueloClient({
   serieId,
   rondasIniciales,
+  casual = false,
 }: {
   serieId: string;
   rondasIniciales: FilaRondaSerie[];
+  casual?: boolean;
 }) {
   const t = useTranslations("Rankeds");
   const tMundos = useTranslations("Mundos.nombres");
@@ -352,7 +354,7 @@ export default function SerieDueloClient({
         </div>
 
         <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
-          <BotonEnlace href="/rankeds?tab=buscar" destacado className="flex-1 py-4">
+          <BotonEnlace href={casual ? "/rankeds?tab=buscar&modo=casual" : "/rankeds?tab=buscar"} destacado className="flex-1 py-4">
             {t("serieDuelo.otraPartida")}
           </BotonEnlace>
           <BotonEnlace href="/rankeds" variante="secundario" atras className="py-4">

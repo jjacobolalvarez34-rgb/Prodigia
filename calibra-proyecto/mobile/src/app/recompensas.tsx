@@ -82,6 +82,7 @@ function detalleCapsula(c: DatosCapsula): string {
   if (c.tipo.startsWith("liga") && d?.puesto) return `Puesto ${d.puesto} de la liga`;
   if (c.tipo === "coleccion") return `Colección de ${ciudad}`;
   if (c.tipo === "misiones") return "Las 3 misiones de hoy";
+  if (c.tipo === "pro") return "Cápsula semanal de Pro";
   return "Por jugar hoy";
 }
 

@@ -83,6 +83,9 @@ function filas<T>(data: unknown): T[] {
 export function mensajeError(e: unknown): string {
   const m = (e as { message?: string } | null)?.message ?? "";
   if (/faltan Chispas/i.test(m)) return "Te faltan Chispas.";
+  if (/faltan Cometas/i.test(m)) return "Te faltan Cometas.";
+  if (/legendario se compra con Cometas/i.test(m)) return "Lo legendario se compra con Cometas.";
+  if (/no se vende con Cometas/i.test(m)) return "Esto no se vende con Cometas.";
   if (/ya tienes/i.test(m)) return "Ya lo tienes.";
   if (/temporada/i.test(m)) return "Ese marco ya no está a la venta este mes.";
   if (/ya mandaste/i.test(m)) return "Ya mandaste tu regalo de hoy.";
@@ -98,6 +101,8 @@ export function mensajeError(e: unknown): string {
 export async function revisarRecompensas(sb: SupabaseClient): Promise<{ nuevas: number; pendientes: number }> {
   // Las 2 cápsulas Pro de la semana (0283); sin Pro o sin la migración, no hace nada.
   await sb.rpc("capsulas_pro_semana").then(() => undefined, () => undefined);
+  // Las Cometas del reto del finde pasado (0281), aunque no abras su pantalla.
+  await sb.rpc("premio_reto_finde").then(() => undefined, () => undefined);
   const { data } = await sb.rpc("revisar_recompensas");
   return filas<{ nuevas: number; pendientes: number }>(data)[0] ?? { nuevas: 0, pendientes: 0 };
 }
