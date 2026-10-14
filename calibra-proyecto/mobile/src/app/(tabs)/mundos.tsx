@@ -158,7 +158,7 @@ export default function Mundos() {
             <Texto v="mono" tam={13}>
               {encendidos}
             </Texto>{" "}
-            de 13 encendidos
+            de {MUNDOS.length} encendidos
           </Texto>
         </View>
         <ContadorAlineacion compacto />

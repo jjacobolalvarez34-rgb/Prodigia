@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { sonar, sonarAcierto, vibrar } from "~/lib/efectos";
 import { cargarNivelesMundo, mundoJugable } from "~/lib/mundosJugables";
 import { useSesion } from "~/lib/sesion";
+import { useJugador } from "~/lib/jugador";
 import { generarZen, MEZCLA, nombreDificultad, prepararZen, PREGUNTAS_ZEN, registrarPartidaZen, temasZen, type PreguntaZen } from "~/lib/zen";
 import Boton3D from "~/ui/Boton3D";
 import Glifos from "~/ui/Glifos";
@@ -30,6 +31,9 @@ export default function Zen() {
   const temas = temasZen(slug ?? "");
   const { sesion } = useSesion();
   const userId = sesion?.user.id;
+  // Igual que la web: el Zen solo en mundos tuyos (o con Pro).
+  const { mundos, plan } = useJugador();
+  const mundoBloqueado = mundos.length > 0 && plan !== "pro" && !!slug && !mundos.includes(slug);
 
   const [fase, setFase] = useState<Fase>("elegir");
   const [tema, setTema] = useState<string>(temas[0]?.id ?? MEZCLA);
@@ -73,6 +77,15 @@ export default function Zen() {
     return (
       <PantallaApilada titulo="Modo Zen">
         <Texto v="nota">Esta ciudad todavía no tiene Modo Zen.</Texto>
+      </PantallaApilada>
+    );
+  }
+
+  if (mundoBloqueado) {
+    return (
+      <PantallaApilada titulo="Modo Zen">
+        <Texto v="nota">El Modo Zen de {mundo.nombre} se abre cuando enciendes la ciudad (o con Prodigia Pro).</Texto>
+        <Boton3D titulo="Ver mis mundos" onPress={() => router.replace("/(tabs)/mundos")} />
       </PantallaApilada>
     );
   }

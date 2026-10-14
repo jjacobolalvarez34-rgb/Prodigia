@@ -95,7 +95,9 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
           <View style={styles.atras}>
             <BotonAtras />
           </View>
-          {/* Modo Zen: practicar sin reloj, con tema y dificultad a elección (docs/PLAN_MODO_SIN_RELOJ.md). */}
+          {/* Modo Zen: practicar sin reloj, con tema y dificultad a elección (docs/PLAN_MODO_SIN_RELOJ.md).
+              Solo en mundos tuyos (revisión 2026-10-14: se podía usar sin tener el mundo). */}
+          {!bloqueado && (
           <Pressable
             onPress={() => {
               vibrar.seleccion();
@@ -108,6 +110,7 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
           >
             <Texto style={{ fontFamily: fuente.cuerpoFuerte, fontSize: 12, color: color.texto }}>☯ Modo Zen</Texto>
           </Pressable>
+          )}
           <View style={styles.titulo}>
             <Texto style={{ fontFamily: fuente.display, fontSize: 30, letterSpacing: 2, color: color.texto, textShadowColor: mundo.neon, textShadowRadius: 16 }}>
               {mundo.nombre.toUpperCase()}
