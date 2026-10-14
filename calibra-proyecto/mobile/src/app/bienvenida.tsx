@@ -4,6 +4,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text
 import Animated, { FadeIn, FadeInDown, FadeInUp, useAnimatedStyle, useSharedValue, withDelay, withSpring, ZoomIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BENEFICIOS_PRO } from "@/lib/pro/beneficios";
+import { IconoTrazo } from "~/ui/Iconos";
 import {
   aplicarMundosPendientes,
   convertirInvitado,
@@ -143,7 +144,7 @@ function PromoPro({ onContinuar }: { onContinuar: () => void }) {
       <View style={styles.grillaPro}>
         {BENEFICIOS_PRO.map((b, i) => (
           <Animated.View key={b.titulo} entering={ZoomIn.delay(250 + i * 110).springify().damping(13)} style={styles.beneficio}>
-            <Texto style={{ fontSize: 26 }}>{b.emoji}</Texto>
+            <IconoTrazo nombre={b.icono} tam={28} c={color.logro} />
             <Texto v="fuerte" tam={13} centro>
               {b.titulo}
             </Texto>

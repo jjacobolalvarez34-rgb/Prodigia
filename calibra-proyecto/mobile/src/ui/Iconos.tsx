@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Svg, { Circle, Defs, LinearGradient, Path, RadialGradient, Rect, Stop } from "react-native-svg";
 import { COMETA } from "@/lib/recompensas/iconoCometa";
+import { TRAZOS, type NombreTrazo } from "@/lib/iconosTrazo";
 import { ARCOIRIS, ESTELAS, type Estela } from "@/lib/recompensas/catalogo";
 import { color } from "~/tema";
 
@@ -233,3 +234,14 @@ export const IconoAlarma = (p: Props) => (
     <Path d="M12 9v4l2.5 2.5M3 5l3-2.5M21 5l-3-2.5" />
   </Trazo>
 );
+
+// Íconos de trazo compartidos con la web (src/lib/iconosTrazo.ts): beneficios Pro, ayudas.
+export function IconoTrazo({ nombre, tam = 22, c = "currentColor", ancho = 2 }: Props & { nombre: NombreTrazo; ancho?: number }) {
+  const t = TRAZOS[nombre] as { d?: string; circulos?: [number, number, number][] };
+  return (
+    <Svg width={tam} height={tam} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={ancho} strokeLinecap="round" strokeLinejoin="round">
+      {t.d ? <Path d={t.d} /> : null}
+      {t.circulos?.map(([cx, cy, r]) => <Circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={r} />)}
+    </Svg>
+  );
+}

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeInDown, ZoomIn } from "react-native-reanimated";
 import { BENEFICIOS_PRO } from "@/lib/pro/beneficios";
+import { IconoTrazo } from "./Iconos";
 import { sonar, vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
 import { color, conAlfa } from "~/tema";
@@ -56,7 +57,7 @@ export default function BienvenidaPro({ userId }: { userId: string }) {
         <ScrollView style={{ maxHeight: 320 }} contentContainerStyle={styles.lista}>
           {BENEFICIOS_PRO.map((b, i) => (
             <Animated.View key={b.titulo} entering={FadeInDown.delay(120 + i * 70)} style={styles.fila}>
-              <Texto tam={20}>{b.emoji}</Texto>
+              <IconoTrazo nombre={b.icono} tam={22} c="#FFC53D" />
               <View style={{ flex: 1 }}>
                 <Texto v="fuerte">{b.titulo}</Texto>
                 <Texto v="nota" tam={12}>

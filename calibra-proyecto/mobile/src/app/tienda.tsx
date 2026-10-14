@@ -1,6 +1,4 @@
 import { Image } from "expo-image";
-import * as WebBrowser from "expo-web-browser";
-import { URL_WEB } from "~/lib/entorno";
 import { LinearGradient } from "expo-linear-gradient";
 import { msHastaFinDelEvento } from "@/lib/eventos/dobleExperiencia";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
@@ -46,7 +44,7 @@ import { mostrarAviso } from "~/ui/Aviso";
 import Boton3D from "~/ui/Boton3D";
 import Confeti from "~/ui/Confeti";
 import Hoja from "~/ui/Hoja";
-import { IconoBombilla, IconoChispa, IconoCometa, IconoCopo, IconoDestello, IconoEscudo, IconoMochila, IconoRayo, IconoRegalo, IconoReloj, IconoRepetir } from "~/ui/Iconos";
+import { IconoBombilla, IconoChispa, IconoCometa, IconoCopo, IconoDestello, IconoEscudo, IconoMochila, IconoRayo, IconoReloj, IconoRepetir } from "~/ui/Iconos";
 import NumeroAnimado from "~/ui/NumeroAnimado";
 import { BotonAtras, PantallaApilada } from "~/ui/Pantalla";
 import AvatarMarco from "~/ui/placa/AvatarMarco";
@@ -55,6 +53,8 @@ import NombreEstilizado from "~/ui/placa/NombreEstilizado";
 import Segmentos from "~/ui/Segmentos";
 import { PlacaTarjeta } from "~/ui/placa/Placa";
 import VistaCosmetico from "~/ui/recompensas/VistaCosmetico";
+import IlustracionPaquete from "~/ui/recompensas/IlustracionPaquete";
+import { PaquetesMoneda } from "~/ui/pagos/Vitrina";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente } from "~/tema";
 import { FUENTE_FAMILIA } from "~/lib/placa";
@@ -129,7 +129,7 @@ function Muestra({ it, placa }: { it: ItemTienda; placa: PlacaDatos }) {
     case "paquete":
       return (
         <View style={{ alignItems: "center", gap: 2 }}>
-          <IconoRegalo tam={30} c={color.logro} />
+          <IlustracionPaquete item={it.item} tam={48} />
           <Texto v="nota" tam={10}>
             {it.items?.length ?? 0} cosas
           </Texto>
@@ -379,6 +379,7 @@ export default function Tienda() {
   // null = portada del Bazar (solo en Tienda).
   const [pestana, setPestana] = useState<Pestana | null>(params.pestana === "cometas" ? "cometas" : null);
   const cometas = resumen?.cometas ?? 0;
+  const [monedaVista, setMonedaVista] = useState<"cometas" | "chispas">("cometas");
   const [canjePendiente, setCanjePendiente] = useState<number | null>(null);
   const [canjeando, setCanjeando] = useState(false);
   const [tema, setTema] = useState<TemaApp | null>(null);
@@ -619,6 +620,25 @@ export default function Tienda() {
             <PortadaBazar catalogo={catalogo} e={e} placa={placa} ancho={anchoTarjeta} onPress={elegirItem} onPuesto={(p) => setPestana(p)} />
           ) : pestanaVista === "cometas" ? (
             <Animated.View key="cometas" entering={FadeIn.duration(220)} style={{ paddingHorizontal: 16, paddingTop: 14, gap: 14 }}>
+              {/* Rediseño de pagos 2026-10-14: los paquetes a la vista, igual que en la web. */}
+              <View style={{ gap: 4 }}>
+                <Texto v="micro" c={color.logro}>
+                  Recarga
+                </Texto>
+                <Texto v="h2">Cometas y Chispas</Texto>
+              </View>
+              <Segmentos
+                opciones={[
+                  { id: "cometas", titulo: "Cometas" },
+                  { id: "chispas", titulo: "Chispas" },
+                ]}
+                valor={monedaVista}
+                onCambio={setMonedaVista}
+              />
+              <PaquetesMoneda key={monedaVista} tipo={monedaVista} ancho={Dimensions.get("window").width - 32} />
+              <Texto v="nota" tam={12}>
+                {monedaVista === "cometas" ? "La moneda premium: lo legendario, o cámbiala por Chispas." : "Para todo el Bazar: marcos, fondos, ayudas y mundos nuevos."} El pago se hace en la web, con Paddle, y llega a esta cuenta en segundos.
+              </Texto>
               <View style={styles.cometasCaja}>
                 <IconoCometa tam={52} />
                 <View style={{ flex: 1, gap: 2 }}>
@@ -688,8 +708,6 @@ export default function Tienda() {
               <Texto v="nota" tam={12}>
                 Consigues Cometas jugando (cada 10 niveles de cuenta, en la liga semanal, con logros y en el reto de fin de semana), con Prodigia Pro (300 al mes) o comprándolos en la web. Comprar desde la app llega con Google Play.
               </Texto>
-              {/* Revisión 2026-10-14: la app no tiene cobro todavía (PARIDAD_APP_WEB.md). */}
-              <Boton3D titulo="Comprar Cometas en la web" variante="secundario" tamano="sm" onPress={() => WebBrowser.openBrowserAsync(`${URL_WEB}/tienda`)} />
             </Animated.View>
           ) : pestanaVista === "temas" ? (
             <Animated.View key="temas" entering={FadeIn.duration(220)} style={{ paddingHorizontal: 16, paddingTop: 14, gap: 12 }}>
@@ -754,7 +772,7 @@ export default function Tienda() {
             {elegido.categoria !== "utilidad" && !SOBRE_PLACA.includes(elegido.categoria) ? (
               <View key={elegido.item} style={[styles.fila, { gap: 14 }]}>
                 <View style={[styles.iconoGrande, { width: 96, height: 96 }]}>
-                  {elegido.categoria === "paquete" ? <IconoRegalo tam={46} c={color.logro} /> : <VistaCosmetico categoria={elegido.categoria} valor={elegido.valor} tam={72} />}
+                  {elegido.categoria === "paquete" ? <IlustracionPaquete item={elegido.item} tam={88} /> : <VistaCosmetico categoria={elegido.categoria} valor={elegido.valor} tam={72} />}
                 </View>
                 <View style={{ flex: 1, gap: 4 }}>
                   <View style={[styles.rareza, { borderColor: COLOR_RAREZA[rarezaDeItem(elegido)] }]}>
