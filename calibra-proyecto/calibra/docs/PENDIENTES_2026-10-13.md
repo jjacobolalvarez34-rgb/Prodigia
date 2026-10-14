@@ -22,7 +22,7 @@ Lista completa para no perder nada. Se marca cada punto al terminarlo.
 9. [ ] Tienda nueva A + C (maqueta aprobada en docs/rediseno/tienda.html): construir.
 10. [ ] Compilar APK nuevo con todo esto (avisar antes).
 
-Migraciones pendientes de correr, en orden: 0244 → 0283.
+Migraciones: el 14/10 se aplicaron hasta la 0284. Falta repetir 0281 y 0283 (versión nueva) y correr 0285.
 
 ---
 
@@ -97,26 +97,73 @@ en la tienda en cuanto su variable existe.
 
 11. [ ] **Tabla completa de claves** (todas las variables, también las que todavía no existen) y cómo
     cargarlas en Vercel y en la app.
-12. [ ] **Recuperar contraseña con preguntas** en vez del correo: ¿entraste con Google?, ¿cuáles fueron
+12. [x] **Recuperar contraseña con preguntas** en vez del correo: ¿entraste con Google?, ¿cuáles fueron
     tus dos primeros mundos? (elegir), ¿cuál es tu correo y nombre de usuario? (opciones con la
     correcta). Si acierta, cambia la contraseña. 3 intentos; al tercero la cuenta se bloquea y hay
     que escribirnos por correo.
-13. [ ] **¿Dónde se ve la bienvenida de Pro?** Darle una forma de verla, y exportar la cinemática como
+13. [x] **¿Dónde se ve la bienvenida de Pro?** Darle una forma de verla, y exportar la cinemática como
     video para mirarla.
-14. [ ] **Pro da más:** las cápsulas Pro no aparecen en la lista de beneficios; Pro también da Cometas
+14. [x] **Pro da más:** las cápsulas Pro no aparecen en la lista de beneficios; Pro también da Cometas
     gratis.
-15. [ ] **No se ve la venta de Cometas en la tienda** (solo el canje por Chispas).
-16. [ ] **Revisión general de web y app** (paridad y todo): pasar el informe primero y después arreglar.
-17. [ ] **Compilar el APK** mientras tanto (pedido explícito).
-18. [ ] **Motion para redes:** tutorial de cómo se personaliza el perfil y todo lo que se puede
+15. [x] **No se ve la venta de Cometas en la tienda** (solo el canje por Chispas).
+16. [x] **Revisión general de web y app** (paridad y todo): pasar el informe primero y después arreglar.
+17. [x] **Compilar el APK** mientras tanto (pedido explícito).
+18. [x] **Motion para redes:** tutorial de cómo se personaliza el perfil y todo lo que se puede
     cambiar. Envolvente y bien hecho.
-19. [ ] **La animación de abrir cápsula no se ve en la web.**
-20. [ ] **Mejorar la animación de constelación completa** (más gráfica).
-21. [ ] **Cambio de idioma roto en la web:** al tocar «es» se agrega /es a la URL pero no cambia el
+19. [x] **La animación de abrir cápsula no se ve en la web.**
+20. [x] **Mejorar la animación de constelación completa** (más gráfica).
+21. [x] **Cambio de idioma roto en la web:** al tocar «es» se agrega /es a la URL pero no cambia el
     idioma; al tocarlo otra vez queda /es/es y da 404. Revisar también la app.
-22. [ ] **Constelación en medio de una serie ranked:** la animación salta de una e interrumpe el
+22. [x] **Constelación en medio de una serie ranked:** la animación salta de una e interrumpe el
     cambio de ciudad entre la ronda 2 y 3. Que no aparezca en medio de una serie (mostrarla al final).
-23. [ ] **Atrás en medio de una ronda de la serie:** no pregunta si quieres salir; vuelve al resumen
+23. [x] **Atrás en medio de una ronda de la serie:** no pregunta si quieres salir; vuelve al resumen
     de la ronda anterior y otro atrás saca de la página. El rival no se entera de que te fuiste.
-24. [ ] **Reconexión a duelos:** si sales de la app en un duelo y vuelves al instante, no te vuelve a
+24. [x] **Reconexión a duelos:** si sales de la app en un duelo y vuelves al instante, no te vuelve a
     meter al duelo. Debería haber reconexión.
+
+---
+
+## Tabla completa de claves (2026-10-14)
+
+### Web · Vercel → Settings → Environment Variables (entorno **Production**)
+Para cada fila: **Add New** → **Key** = la variable, **Value** = el valor, Environment = Production
+(y Preview si quieres). Las marcadas «secreta» van con **Sensitive** encendido; las `NEXT_PUBLIC_…`
+nunca son secretas (se ven en el navegador). Al terminar: **Deployments → Redeploy**.
+
+| Variable | Valor | ¿Secreta? | Estado |
+|---|---|---|---|
+| NEXT_PUBLIC_SUPABASE_URL | Supabase → Settings → API → Project URL | No | Ya existe |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY | Supabase → Settings → API → anon public | No | Ya existe |
+| SUPABASE_SERVICE_ROLE_KEY | Supabase → Settings → API → service_role | **Sí** | Ya existe (la usan pagos, recuperar contraseña y reto del finde) |
+| PADDLE_API_KEY | Paddle → Developer tools → Authentication → API key (`pdl_sdbx_…`) | **Sí** | Ya existe |
+| PADDLE_WEBHOOK_SECRET | Paddle → Developer tools → Notifications → tu destino → Secret key | **Sí** | Ya existe |
+| NEXT_PUBLIC_PADDLE_CLIENT_TOKEN | Paddle → Developer tools → Authentication → Client-side token (`test_…`) | No | Ya existe |
+| NEXT_PUBLIC_PAGOS_HABILITADOS | `1` | No | Ya existe |
+| PADDLE_PRICE_PRO_MENSUAL | `pri_01m3ch1dzfah2wfzevz18zr557` | No | Revisar que tenga este valor |
+| PADDLE_PRICE_PRO_ANUAL | `pri_01m4s8rb51k5wwfkxhnwnh8cwp` | No | Revisar |
+| PADDLE_PRICE_CHISPAS_1000 | `pri_01m4s8vp2k4hkpmmcyzb0q0y7q` | No | Revisar |
+| PADDLE_PRICE_CHISPAS_2500 | `pri_01m4s8we8vf6wzm834tew3j09b` | No | Revisar |
+| PADDLE_PRICE_CHISPAS_6000 | `pri_01m4s8x16s0grwfy4pct6n4354` | No | Revisar |
+| PADDLE_PRICE_CHISPAS_15000 | `pri_01m4s8xprc6jwh4jh4y9wdz2fj` | No | Revisar |
+| PADDLE_PRICE_COMETAS_100 | el `pri_…` del precio «100 Cometas · 0,99» | No | **Nueva** (crear en Paddle) |
+| PADDLE_PRICE_COMETAS_550 | el `pri_…` de «550 Cometas · 4,99» | No | **Nueva** |
+| PADDLE_PRICE_COMETAS_1200 | el `pri_…` de «1200 Cometas · 9,99» | No | **Nueva** |
+| PADDLE_PRICE_COMETAS_2600 | el `pri_…` de «2600 Cometas · 19,99» | No | **Nueva** |
+| PADDLE_PRICE_COMETAS_7000 | el `pri_…` de «7000 Cometas · 49,99» | No | **Nueva** |
+| DIAGNOSTICO_CLAVE | una palabra larga que inventes (ej. 20 letras al azar) | **Sí** | **Nueva** (para `/api/pagos/estado?precios=1&clave=…`) |
+| NEXT_PUBLIC_ADSENSE_CLIENT | `ca-pub-5931991300168591` | No | Cuando AdSense apruebe el sitio |
+| NEXT_PUBLIC_SITE_URL | `https://prodigia-sandy.vercel.app` | No | Opcional |
+
+### App · archivo `mobile/.env.local` (se lee al compilar; después de cambiarlo hay que recompilar el APK)
+| Variable | Valor | Estado |
+|---|---|---|
+| EXPO_PUBLIC_SUPABASE_URL | la misma Project URL | Ya existe |
+| EXPO_PUBLIC_SUPABASE_ANON_KEY | la misma anon public | Ya existe |
+| EXPO_PUBLIC_ADMOB_RECOMPENSA | `ca-app-pub-5931991300168591/2058822089` | Opcional: ya está escrito en el código |
+| EXPO_PUBLIC_ADMOB_ENTRE_PARTIDAS | `ca-app-pub-5931991300168591/3131310734` | Opcional: ya está escrito en el código |
+
+### Comprobar
+Después del Redeploy abre
+`https://prodigia-sandy.vercel.app/api/pagos/estado?precios=1&clave=<tu DIAGNOSTICO_CLAVE>`.
+Cada producto tiene que decir `"ok": true`; si no, dice qué está mal (por ejemplo «es un pago único y
+debería ser una suscripción»).
