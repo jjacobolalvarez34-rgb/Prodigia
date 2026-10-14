@@ -11,7 +11,8 @@ export const ESTRELLAS_POR_CONSTELACION = 7;
 // Probabilidad de estrella fugaz al completar una (random() < 0.2 en _completar_constelacion).
 export const PROBABILIDAD_FUGAZ = 0.2;
 export const TEXTO_FUGAZ = "1 de cada 5 constelaciones trae una estrella fugaz con un premio extra.";
-export const CHISPAS_BASE = 300;
+// Chispas por constelación (0280): 120, o 180 si ya tienes la colección completa.
+export const CHISPAS_BASE = 120;
 export const BONUS_NOCHE = 0.2;
 
 // Cómo se encienden (lo mismo que hace la base, para explicarlo en pantalla).
@@ -101,7 +102,7 @@ export const NOMBRE_FUGAZ: Record<string, string> = {
   hielo: "1 hielo",
   tiempo_extra: "+3 segundos",
   pista: "1 pista",
-  chispas: "200 Chispas",
+  chispas: "80 Chispas",
 };
 
 function filas<T>(data: unknown): T[] {

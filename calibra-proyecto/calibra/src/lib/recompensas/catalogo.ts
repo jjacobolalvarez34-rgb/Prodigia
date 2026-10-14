@@ -339,7 +339,8 @@ export function piezasColeccion(mundo: string): string[] {
 // ---------- Paquetes y utilidades nuevas ----------
 // Paquetes: la suma de lo que traen con −25 % (0280 recalcula paquetes_tienda igual).
 export const PAQUETES: { item: string; nombre: string; items: string[]; precio: number }[] = [
-  { item: "pack_noche", nombre: "Pack Noche", items: ["fondo_nebulosa", "marco_neon_violeta", "estela_violeta"], precio: 7500 },
+  // Sin el marco Neón violeta (legendario, solo con Cometas): 0285 lo cambia por la animación Neón.
+  { item: "pack_noche", nombre: "Pack Noche", items: ["fondo_nebulosa", "animacion_neon", "estela_violeta"], precio: 7500 },
   { item: "pack_fuego", nombre: "Pack Fuego", items: ["fondo_dorado", "estela_dorada", "efecto_estrellas"], precio: 5250 },
   { item: "pack_sonidos", nombre: "Pack Sonidos", items: ["sonido_campanitas", "sonido_ochobits", "sonido_marimba"], precio: 2625 },
   { item: "pack_emotes", nombre: "Pack Emotes", items: ["emote_fuego", "emote_uy", "emote_gg", "emote_cerebro", "emote_rayo", "emote_corona"], precio: 2475 },

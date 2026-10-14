@@ -8,7 +8,6 @@ const ITEMS_CON_DESCUENTO = [
   "boost",
   "fuente_mono",
   "fuente_serif",
-  "fuente_manuscrita",
   "fuente_impacto",
   "fuente_script",
   "fuente_futurista",
@@ -17,8 +16,9 @@ const ITEMS_CON_DESCUENTO = [
   "marco_oro",
   "marco_platino",
   "marco_diamante",
-  "marco_prodigio",
 ] as const;
+// Sin lo legendario (fuente Manuscrita, marco Prodigio): se compra con Cometas (0280).
+// La misma lista vive en la base (descuento_del_dia, 0285); una prueba exige que coincidan.
 
 function hashFecha(fecha: string): number {
   let h = 0;

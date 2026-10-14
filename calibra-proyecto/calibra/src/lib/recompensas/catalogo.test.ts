@@ -9,6 +9,12 @@ const MIGRACIONES = path.join(__dirname, "..", "..", "..", "supabase", "migratio
 const sql0248 = readFileSync(path.join(MIGRACIONES, "0248_catalogo_cosmeticos_y_tienda.sql"), "utf8") + readFileSync(path.join(MIGRACIONES, "0275_tienda_ampliada_mas_cosmeticos.sql"), "utf8");
 // Economía nueva (0280): precios por rareza, consumibles, paquetes y calendario vigentes.
 const sql0280 = readFileSync(path.join(MIGRACIONES, "0280_economia_nueva.sql"), "utf8");
+// 0285: Pack Noche sin el legendario (los paquetes que cambian de contenido).
+const sql0285 = readFileSync(path.join(MIGRACIONES, "0285_ajustes_revision.sql"), "utf8");
+const itemsCambiados = new Map<string, string[]>();
+for (const m of sql0285.matchAll(/set items = array\[([^\]]+)\]\s*where slug = '(\w+)'/g)) {
+  itemsCambiados.set(m[2], m[1].split(",").map((x) => x.trim().replace(/'/g, "")));
+}
 
 type RarezaPrecio = keyof typeof PRECIO_RAREZA_CHISPAS;
 
@@ -45,7 +51,7 @@ describe("catálogo de la tienda ampliada", () => {
     for (const p of PAQUETES) {
       const fila = sql0248.match(new RegExp(`\\('${p.item}', '[^']+', array\\[([^\\]]+)\\], (\\d+)\\)`));
       expect(fila, p.item).not.toBeNull();
-      expect(fila![1].split(",").map((s) => s.trim().replace(/'/g, ""))).toEqual(p.items);
+      expect(itemsCambiados.get(p.item) ?? fila![1].split(",").map((s) => s.trim().replace(/'/g, ""))).toEqual(p.items);
       const suma = p.items.reduce((a, s) => a + precioDe(s), 0);
       expect(p.precio, p.item).toBe(Math.floor(suma * 0.75));
     }
