@@ -171,3 +171,15 @@ debería ser una suscripción»).
 25. [x] Pro: quitar las 10 000 Chispas por pago y dar +25 % de Chispas al jugar (decidido 14/10).
 26. [x] Construir la tienda A + C (web y app) y después compilar el APK.
 27. [x] Perfil: que todo lo que se tiene se pueda poner desde la personalización de la Placa (web y app). Ej.: no deja poner el fondo de ciudad.
+
+## Pedidos del 2026-10-14 (noche)
+
+28. [ ] ¿Dónde se compran las Cometas en la web? Hacerlo visible (la portada de la tienda no tenía acceso).
+29. [ ] Lista de lo que quedó planeado y no se hizo.
+30. [ ] Web: que la parte de compras extra y paquetes se vea mejor; paquetes con imágenes propias (no emojis).
+31. [ ] App: que no haya emojis sueltos en la interfaz.
+32. [ ] Pagos con aspecto profesional (tarjetas de planes como el componente de referencia), sin tener que bajar tanto. Web y app.
+33. [ ] Al pagar en Paddle: el overlay queda en «pago hecho» y hay que tocar la flecha; no salió la cinemática ni el «ya eres Pro», hubo que recargar. Que se cierre solo y lleve a la bienvenida.
+34. [ ] App: en el encabezado de Mundos dice «15 de 13 mundos».
+35. [ ] La mejora gráfica de pagos también en Pro, Chispas y Cometas: que comprar con dinero dé ganas.
+36. [ ] Modo Zen: se puede usar en mundos que no tienes; tiene que estar bloqueado.
