@@ -147,8 +147,8 @@ Hoy Pro regala 10 000 Chispas y por eso se canibaliza. Propuesta (decidida el 20
   **Hecho** en web y app (`tieneMundo` en `src/lib/mundos/precios.ts`; la app ya lo hacía).
 - **Todas las Clases** (hoy ya es de Pro: se mantiene, la primera de cada mundo gratis).
 - **Sin anuncios.**
-- **+25 % de Chispas** al jugar (la Experiencia no cambia: no da ventaja en ligas).
-- **300 Cometas al mes.**
+- **+25 % de Chispas** al jugar (la Experiencia no cambia: no da ventaja en ligas). **Hecho el 2026-10-14 (0286)**: y Pro deja de dar 10 000 Chispas por pago.
+- **300 Cometas al mes.** **Hecho (0283).**
 - **El regalo de cada evento**: la pieza Pro de la colección del evento, sin gastar (ver §7).
 - Estadísticas avanzadas y cosméticos de Pro (como hoy).
 - **Prueba gratis de 7 días.**

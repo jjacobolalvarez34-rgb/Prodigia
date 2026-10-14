@@ -167,3 +167,7 @@ Después del Redeploy abre
 `https://prodigia-sandy.vercel.app/api/pagos/estado?precios=1&clave=<tu DIAGNOSTICO_CLAVE>`.
 Cada producto tiene que decir `"ok": true`; si no, dice qué está mal (por ejemplo «es un pago único y
 debería ser una suscripción»).
+
+25. [ ] Pro: quitar las 10 000 Chispas por pago y dar +25 % de Chispas al jugar (decidido 14/10).
+26. [ ] Construir la tienda A + C (web y app) y después compilar el APK.
+27. [ ] Perfil: que todo lo que se tiene se pueda poner desde la personalización de la Placa (web y app). Ej.: no deja poner el fondo de ciudad.

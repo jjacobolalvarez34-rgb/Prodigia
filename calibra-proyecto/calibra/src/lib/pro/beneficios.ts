@@ -15,8 +15,8 @@ export const BENEFICIOS_PRO = [
   {
     id: "chispas",
     emoji: "⚡",
-    titulo: "10.000 Chispas con cada pago",
-    descripcion: "Al suscribirte y en cada renovación: cada mes con el plan mensual, una vez al año con el anual.",
+    titulo: "+25 % de Chispas al jugar",
+    descripcion: "Cada partida te da un cuarto más de Chispas. La Experiencia es la misma para todos, así no da ventaja en ligas ni rankings.",
   },
   {
     id: "mundos",
