@@ -8,10 +8,11 @@ import { cargarTitulos, elegirTitulo, type Titulo } from "~/lib/logros";
 import { FUENTE_FAMILIA, type PlacaDatos } from "~/lib/placa";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError } from "~/lib/supabase";
-import { CATALOGO, cambiarNombre, cargarTienda, equipar, loTiene, precioDe, subirAvatar, subirFondo, type Categoria, type EstadoTienda, type ItemTienda } from "~/lib/tienda";
+import { CATALOGO, cambiarNombre, cargarTienda, cometasDe, equipar, loTiene, loUsa, precioDe, subirAvatar, subirFondo, type Categoria, type EstadoTienda, type ItemTienda } from "~/lib/tienda";
 import { mostrarAviso } from "~/ui/Aviso";
 import Boton3D from "~/ui/Boton3D";
-import { IconoCandado, IconoChispa } from "~/ui/Iconos";
+import { IconoCandado, IconoChispa, IconoCometa } from "~/ui/Iconos";
+import VistaCosmetico from "~/ui/recompensas/VistaCosmetico";
 import { PantallaApilada } from "~/ui/Pantalla";
 import AvatarMarco from "~/ui/placa/AvatarMarco";
 import FondoPlaca from "~/ui/placa/FondoPlaca";
@@ -23,9 +24,11 @@ import { color, conAlfa, fuente } from "~/tema";
 // Editor de placa (03-PANTALLAS §4.11b): la Placa en vivo arriba y abajo las
 // pestañas. Lo que no tienes aparece con candado y precio: tocarlo lo prueba sobre
 // tu Placa y te lleva a la tienda.
-type Pestana = "fondo" | "avatar" | "marco" | "nombre" | "titulo";
+// «partida» y «ciudad» (revisión 2026-10-14: todo lo que tienes se tiene que poder
+// poner desde acá: estela, efecto y sonido de acierto, y la ciudad detrás del avatar).
+type Pestana = "fondo" | "avatar" | "marco" | "nombre" | "titulo" | "partida" | "ciudad";
 
-function Opcion({ activo, bloqueado, precio, onPress, children, etiqueta }: { activo: boolean; bloqueado?: boolean; precio?: number; onPress: () => void; children: ReactNode; etiqueta: string }) {
+function Opcion({ activo, bloqueado, precio, cometas, onPress, children, etiqueta }: { activo: boolean; bloqueado?: boolean; precio?: number; cometas?: number | null; onPress: () => void; children: ReactNode; etiqueta: string }) {
   return (
     <Pressable
       onPress={() => {
@@ -41,7 +44,14 @@ function Opcion({ activo, bloqueado, precio, onPress, children, etiqueta }: { ac
       {bloqueado ? (
         <View style={styles.fila}>
           <IconoCandado tam={11} c={color.texto2} />
-          {precio != null && (
+          {cometas != null ? (
+            <>
+              <IconoCometa tam={11} />
+              <Texto v="mono" tam={10}>
+                {cometas.toLocaleString("es")}
+              </Texto>
+            </>
+          ) : precio != null && (
             <>
               <IconoChispa tam={11} />
               <Texto v="mono" tam={10}>
@@ -138,6 +148,8 @@ export default function EditarPlaca() {
           { id: "marco", titulo: "Marco" },
           { id: "nombre", titulo: "Nombre" },
           { id: "titulo", titulo: "Título" },
+          { id: "partida", titulo: "Partida" },
+          { id: "ciudad", titulo: "Ciudad" },
         ]}
         valor={pestana}
         onCambio={(p) => {
@@ -264,6 +276,7 @@ export default function EditarPlaca() {
                 activo={placa.marco === it.valor}
                 bloqueado={!tiene}
                 precio={precioDe(it)}
+                cometas={cometasDe(it)}
                 onPress={() => {
                   setPrueba({ marco: it.valor });
                   if (tiene) aplicar(it, it.categoria);
@@ -355,6 +368,75 @@ export default function EditarPlaca() {
             ))}
           </ScrollView>
         </>
+      )}
+
+      {pestana === "partida" && (
+        <View style={{ gap: 14 }}>
+          {(
+            [
+              ["estela", "Estela de tu racha", "clasica"],
+              ["efecto", "Efecto al acertar", "chispas"],
+              ["sonido", "Sonido al acertar", "clasico"],
+            ] as const
+          ).map(([cat, titulo, base]) => (
+            <View key={cat} style={{ gap: 8 }}>
+              <Texto v="fuerte">{titulo}</Texto>
+              <View style={styles.grilla}>
+                <Opcion etiqueta="Clásico" activo={!items(cat).some((x) => loUsa(x, e))} onPress={() => aplicar(null, cat, base)}>
+                  <VistaCosmetico categoria={cat} valor={base} tam={40} />
+                </Opcion>
+                {items(cat).map((it) => {
+                  const tiene = loTiene(it, e);
+                  return (
+                    <Opcion
+                      key={it.item}
+                      etiqueta={it.nombre}
+                      activo={loUsa(it, e)}
+                      bloqueado={!tiene}
+                      precio={precioDe(it)}
+                      cometas={cometasDe(it)}
+                      onPress={() => {
+                        if (tiene) aplicar(it, cat);
+                        else mostrarAviso(`${it.nombre} se consigue en el Bazar o en cápsulas.`, "info");
+                      }}
+                    >
+                      <VistaCosmetico categoria={cat} valor={it.valor} tam={40} />
+                    </Opcion>
+                  );
+                })}
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {pestana === "ciudad" && (
+        <View style={{ gap: 8 }}>
+          <Texto v="nota">La ciudad que se ve detrás de tu avatar en la Placa.</Texto>
+          <View style={styles.grilla}>
+            <Opcion etiqueta="Ninguna" activo={!items("ciudad_placa").some((x) => loUsa(x, e))} onPress={() => aplicar(null, "ciudad_placa")}>
+              <View style={{ width: 56, height: 40, borderRadius: 10, borderWidth: 1, borderColor: color.border, borderStyle: "dashed" }} />
+            </Opcion>
+            {items("ciudad_placa").map((it) => {
+              const tiene = loTiene(it, e);
+              return (
+                <Opcion
+                  key={it.item}
+                  etiqueta={it.nombre.replace("Ciudad de ", "").replace(" en tu Placa", "")}
+                  activo={loUsa(it, e)}
+                  bloqueado={!tiene}
+                  precio={precioDe(it)}
+                  onPress={() => {
+                    if (tiene) aplicar(it, "ciudad_placa");
+                    else mostrarAviso(`${it.nombre} se consigue en el Bazar.`, "info");
+                  }}
+                >
+                  <VistaCosmetico categoria="ciudad_placa" valor={it.valor} tam={40} />
+                </Opcion>
+              );
+            })}
+          </View>
+        </View>
       )}
 
       {pestana === "titulo" && (
