@@ -193,6 +193,35 @@ h1 em { font-style: normal; color: var(--oro); }
 .cierre { border-top: 1px solid var(--borde); padding-top: 32px; display: flex; flex-direction: column; gap: 10px; max-width: 70ch; }
 .cierre h2 { font: 700 26px var(--display); margin: 0; }
 .cierre p { margin: 0; color: #C3CAE0; }
+
+/* ===== Elegida: A + C ===== */
+.elegida { display: flex; flex-direction: column; gap: 24px; padding: 28px clamp(14px, 3vw, 28px); border-radius: 28px; background: linear-gradient(160deg, rgba(124,92,255,.14), rgba(93,228,255,.05)); border: 1px solid rgba(124,92,255,.4); }
+.elegida .telefonos { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; }
+.elegida .ficha { padding-top: 0; max-width: 72ch; }
+.elegida figure { margin: 0; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.elegida figcaption { font: 600 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--texto2); }
+.ac-hoy { border-radius: 18px; padding: 10px; display: flex; flex-direction: column; gap: 8px; background: radial-gradient(90% 120% at 0% 0%, rgba(255,182,39,.22), transparent 60%), var(--panel); border: 1px solid rgba(255,182,39,.45); }
+.ac-hoy .a-cuenta span:first-child { color: var(--oro); }
+.ac-fila { display: grid; grid-template-columns: 74px 1fr; gap: 10px; align-items: center; }
+.ac-fila .aro { width: 74px; height: 74px; } .ac-fila .aro i { width: 58px; height: 58px; }
+.ac-fila h3 { margin: 2px 0 5px; font: 700 15px/1.1 var(--display); }
+.ac-tres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.ac-tres div { background: rgba(5,7,13,.55); border-radius: 11px; padding: 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.ac-tres .vista { width: 100%; height: 30px; border-radius: 8px; display: grid; place-items: center; font-size: 15px; background: var(--panel2); }
+.ac-tres b { font: 600 9.5px/1.15 var(--cuerpo); }
+.ac-oferta { display: flex; justify-content: space-between; align-items: center; border-radius: 12px; padding: 7px 10px; background: rgba(61,220,151,.12); border: 1px solid rgba(61,220,151,.5); font-size: 11px; }
+.ac-oferta s { color: var(--texto2); font: 600 10px var(--mono); margin-right: 4px; }
+.ac-calle { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.ac-calle .puesto .cuerpo { padding: 6px 7px 8px; gap: 2px; }
+.ac-calle .neon { font-size: 11.5px; }
+.ac-calle small { font-size: 9px; }
+.ac-calle .toldo { height: 12px; }
+.ac-dentro { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.ac-dentro .a-item { position: relative; }
+.ac-dentro .vista { height: 58px; }
+.marca { position: absolute; top: 6px; right: 6px; font: 700 8px var(--mono); padding: 2px 6px; border-radius: 999px; }
+.marca.dia { background: var(--oro); color: #2A1A00; }
+.marca.nuevo { background: var(--cometa); color: #06202A; }
 @media (prefers-reduced-motion: no-preference) {
   .a-destacado .aro, .b-placa .aro { animation: girar 9s linear infinite; }
   @keyframes girar { to { rotate: 360deg; } }
@@ -230,6 +259,68 @@ h1 em { font-style: normal; color: var(--oro); }
       <span><i class="punto" style="background:var(--legend)"></i>Legendario · 600 Cometas</span>
     </div>
   </header>
+
+
+  <section class="elegida" id="elegida">
+    <div class="ficha">
+      <span class="recomendada">La elegida · A + C</span>
+      <h2>Lo del día arriba, la calle siempre</h2>
+      <p>Arriba va lo momentáneo: la rotación del día con su reloj, la pieza destacada y la oferta del día. Cambia cada día a la misma hora para todos. Abajo va lo permanente: la calle con sus seis puestos, que siempre tienen todo su catálogo. Dentro de cada puesto, lo que hoy está en la rotación lleva la marca «DEL DÍA» y lo recién llegado, «NUEVO».</p>
+      <dl>
+        <dt>Momentáneo</dt><dd>Rotación del día (1 destacada + 3), oferta del día y, más adelante, la tienda de cada evento.</dd>
+        <dt>Permanente</dt><dd>Herrería (marcos), Estudio (fondos), Pirotecnia (estelas y efectos), Música, Arena (emotes) y Botica (ayudas).</dd>
+        <dt>Probar</dt><dd>Tocar una pieza abre el vestidor de tu Placa, que ya existe en el perfil.</dd>
+      </dl>
+    </div>
+    <div class="telefonos">
+      <figure>
+        <div class="tel"><div class="pantalla">
+          <div class="estado"><span>9:41</span><span>5G ▮▮▮</span></div>
+          <div class="barra"><b>Bazar</b><div class="saldos"><span class="saldo"><svg class="ico"><use href="#chispa"/></svg>2 480</span><span class="saldo c"><svg class="ico"><use href="#cometa"/></svg>140</span></div></div>
+          <div class="ac-hoy">
+            <div class="a-cuenta"><span class="mini">Hoy en el Bazar</span><span>cambia en 07:42:10</span></div>
+            <div class="ac-fila">
+              <div class="aro holo"><i></i></div>
+              <div><span class="mini r-legend">Legendario</span><h3>Marco Holograma</h3><span class="boton cometa"><svg class="ico"><use href="#cometa"/></svg>600</span></div>
+            </div>
+            <div class="ac-tres">
+              <div><span class="vista llama"></span><b>Estela Dorada</b><span class="precio"><svg class="ico"><use href="#chispa"/></svg>3 000</span></div>
+              <div><span class="vista sakura"></span><b>Fondo Sakura</b><span class="precio"><svg class="ico"><use href="#chispa"/></svg>1 200</span></div>
+              <div><span class="vista">😂</span><b>¡Jajaja!</b><span class="precio"><svg class="ico"><use href="#chispa"/></svg>400</span></div>
+            </div>
+          </div>
+          <div class="ac-oferta"><span>🛡 Oferta del día: <b>Escudo</b></span><span class="precio"><s>120</s><svg class="ico"><use href="#chispa"/></svg>84</span></div>
+          <span class="mini" style="color:var(--texto2)">La calle · siempre abierta</span>
+          <div class="ac-calle">
+            <div class="puesto" style="--t1:#FFB627;--t2:#5a3b00"><div class="toldo"></div><div class="cuerpo"><span class="neon">Herrería</span><small>Marcos</small></div></div>
+            <div class="puesto" style="--t1:#F48FB1;--t2:#4a1630"><div class="toldo"></div><div class="cuerpo"><span class="neon">Estudio</span><small>Fondos</small></div></div>
+            <div class="puesto" style="--t1:#FF7A3D;--t2:#4a1a08"><div class="toldo"></div><div class="cuerpo"><span class="neon">Pirotecnia</span><small>Estelas</small></div></div>
+            <div class="puesto" style="--t1:#4FE0F5;--t2:#0b3a44"><div class="toldo"></div><div class="cuerpo"><span class="neon">Música</span><small>Sonidos</small></div></div>
+            <div class="puesto" style="--t1:#B07CFF;--t2:#2c1a55"><div class="toldo"></div><div class="cuerpo"><span class="neon">Arena</span><small>Emotes</small></div></div>
+            <div class="puesto" style="--t1:#3DDC97;--t2:#0d3a26"><div class="toldo"></div><div class="cuerpo"><span class="neon">Botica</span><small>Ayudas</small></div></div>
+          </div>
+          <div class="enlace">Cometas y paquetes →</div>
+        </div></div>
+        <figcaption>Al entrar</figcaption>
+      </figure>
+      <figure>
+        <div class="tel"><div class="pantalla">
+          <div class="estado"><span>9:41</span><span>5G ▮▮▮</span></div>
+          <div class="barra"><b style="color:#FFB627;text-shadow:0 0 10px #FFB627">Herrería</b><div class="saldos"><span class="saldo"><svg class="ico"><use href="#chispa"/></svg>2 480</span><span class="saldo c"><svg class="ico"><use href="#cometa"/></svg>140</span></div></div>
+          <div class="chips"><span class="on">Todos</span><span>De rango</span><span>De colores</span><span>De ciudad</span></div>
+          <div class="ac-dentro">
+            <div class="a-item"><span class="marca dia">DEL DÍA</span><div class="vista"><div class="aro" style="width:46px;height:46px;background:conic-gradient(#FF9AE5,#9AF5FF,#C3FF9A,#FFE59A,#FF9AE5)"><i style="width:36px;height:36px"></i></div></div><b>Marco Holograma</b><div class="pie"><span class="mini r-legend">Legend.</span><span class="precio"><svg class="ico"><use href="#cometa"/></svg>600</span></div></div>
+            <div class="a-item"><span class="marca nuevo">NUEVO</span><div class="vista"><div class="aro" style="width:46px;height:46px;background:conic-gradient(#FF3D00,#FFB300,#FFF176,#FF3D00)"><i style="width:36px;height:36px"></i></div></div><b>Marco Fénix</b><div class="pie"><span class="mini r-epico">Épico</span><span class="precio"><svg class="ico"><use href="#chispa"/></svg>3 000</span></div></div>
+            <div class="a-item"><div class="vista"><div class="aro" style="width:46px;height:46px;background:conic-gradient(#0D1B5E,#2962FF,#82B1FF,#0D1B5E)"><i style="width:36px;height:36px"></i></div></div><b>Marco Zafiro</b><div class="pie"><span class="mini r-raro">Raro</span><span class="precio"><svg class="ico"><use href="#chispa"/></svg>1 200</span></div></div>
+            <div class="a-item"><div class="vista"><div class="aro" style="width:46px;height:46px;background:conic-gradient(#E1F5FE,#80D8FF,#FFFFFF,#E1F5FE)"><i style="width:36px;height:36px"></i></div></div><b>Marco Ártico</b><div class="pie"><span class="mini r-comun">Común</span><span class="precio"><svg class="ico"><use href="#chispa"/></svg>400</span></div></div>
+            <div class="a-item"><div class="vista"><div class="aro" style="width:46px;height:46px;background:conic-gradient(#7C5CFF,#C9B8FF,#7C5CFF)"><i style="width:36px;height:36px"></i></div></div><b>Marco de Numeria</b><div class="pie"><span class="mini r-epico">Nivel 40</span><span class="precio"><svg class="ico"><use href="#chispa"/></svg>3 000</span></div></div>
+            <div class="a-item"><div class="vista"><div class="aro" style="width:46px;height:46px;background:conic-gradient(#CD7F32,#F0C08A,#CD7F32)"><i style="width:36px;height:36px"></i></div></div><b>Marco Bronce</b><div class="pie"><span class="mini r-comun">Común</span><span class="precio"><svg class="ico"><use href="#chispa"/></svg>400</span></div></div>
+          </div>
+        </div></div>
+        <figcaption>Dentro de un puesto</figcaption>
+      </figure>
+    </div>
+  </section>
 
   <!-- A -->
   <section class="propuesta">
@@ -451,8 +542,8 @@ h1 em { font-style: normal; color: var(--oro); }
   </section>
 
   <section class="cierre">
-    <span class="etiqueta">Mi recomendación</span>
-    <h2>A como portada, B al tocar, F como catálogo</h2>
-    <p>Entras y ves la rotación del día (A). Tocas cualquier cosa y se abre el probador con tu Placa (B), así ves cómo te queda antes de pagar. «Ver todo» lleva a la lista con buscador (F). Si quieres más personalidad, cambia A por el mercado nocturno (C) y deja la rotación como su «puesto del día». Dime cuál te gusta y la armo igual en la web y en la app.</p>
+    <span class="etiqueta">Decidido el 2026-10-13</span>
+    <h2>A + C, y el vestidor que ya existe</h2>
+    <p>La lista con buscador (F) queda fuera: le quita la emoción de entrar a ver qué salió hoy. La tienda mezcla cosas permanentes (la calle) con cosas momentáneas (la rotación y la oferta del día). Probarse algo sigue pasando por el vestidor del perfil.</p>
   </section>
 </main>
