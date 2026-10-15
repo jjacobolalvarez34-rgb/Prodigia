@@ -11,6 +11,7 @@ import { mundoDobleExperiencia, msHastaFinDelEvento } from "@/lib/eventos/dobleE
 import { recargarPendientes, totalPendientes, usePendientes } from "~/lib/recompensas";
 import { estadoRetosHoy } from "~/lib/retos";
 import { useSesion } from "~/lib/sesion";
+import RepararRacha from "~/ui/RepararRacha";
 import { sincronizar, useSinConexion } from "~/lib/sinConexion";
 import { mensajeError, supabase } from "~/lib/supabase";
 import Anillo from "~/ui/Anillo";
@@ -120,6 +121,8 @@ export default function Hoy() {
           </Texto>
         </Tarjeta>
       )}
+
+      {!esInvitado && <RepararRacha indice={indice++} />}
 
       {continuar && mundoContinuar && (
         <Tarjeta indice={indice++} relleno={0} acento={mundoContinuar.neon} brillo={0.18}>

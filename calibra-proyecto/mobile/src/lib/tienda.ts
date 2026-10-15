@@ -9,7 +9,7 @@ import { comprimirGif } from "@/lib/imagenes/comprimirGif";
 import { mostrarAviso } from "~/ui/Aviso";
 import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiario";
 import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
-import { COLUMNAS_COSMETICOS_NUEVOS, cosmeticosDesdeFila, equiparCosmetico, type CosmeticosNuevos } from "@/lib/recompensas/api";
+import { COLUMNAS_COSMETICOS_NUEVOS, cosmeticosDesdeFila, equiparCosmetico, preciosPaquetesParaMi, type CosmeticosNuevos } from "@/lib/recompensas/api";
 import { CATALOGO_NUEVO, MARCOS_ESPECIALES, PAQUETES, precioEnCometas, temporadaActual, UTILIDADES_NUEVAS, type Rareza as RarezaNueva } from "@/lib/recompensas/catalogo";
 import { MARCOS_MUNDO, MARCOS_NEON, RANGOS_ELO } from "@/types/database";
 import { supabase } from "./supabase";
@@ -242,7 +242,14 @@ export interface EstadoTienda {
   tituloActivo: string | null;
 }
 
+// Precio de cada paquete para esta cuenta (0287): si ya tiene parte, paga solo lo que
+// falta. Lo calcula la base; se refresca cada vez que se carga la tienda.
+let preciosPaquetes: Record<string, { precio: number; paraTi: number; fraccion: number }> = {};
+
 export async function cargarTienda(userId: string): Promise<EstadoTienda | null> {
+  preciosPaquetesParaMi(supabase).then((p) => {
+    preciosPaquetes = p;
+  });
   const [{ data: p }, { data: mundos }, { data: galeria }, { data: mia }] = await Promise.all([
     supabase
       .from("profiles")
@@ -306,6 +313,7 @@ export function descuentoDeHoy() {
 
 export function precioDe(it: ItemTienda): number {
   if (it.item.startsWith("galeria:")) return it.costoBase;
+  if (it.categoria === "paquete" && preciosPaquetes[it.item]) return preciosPaquetes[it.item].paraTi;
   return precioConDescuento(it.costoBase, it.item, hoyIso());
 }
 
@@ -406,6 +414,7 @@ export async function comprar(it: ItemTienda): Promise<{ chispas?: number; comet
     if (error) throw error;
     return { cometas: (data as { cometas: number }[])[0].cometas };
   }
+  if (it.categoria === "paquete") preciosPaquetes = await preciosPaquetesParaMi(supabase);
   const { data, error } = await supabase.rpc("comprar_item_tienda", { p_item: it.item, p_costo: precioDe(it) });
   if (error) throw error;
   return { chispas: (data as { puntos_total: number }[])[0].puntos_total };

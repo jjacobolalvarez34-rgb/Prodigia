@@ -5,6 +5,8 @@ import { Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { mundoDobleExperiencia } from "@/lib/eventos/dobleExperiencia";
 import { PRECIO_MUNDO_CHISPAS, PRECIO_MUNDO_COMETAS } from "@/lib/mundos/precios";
+import { PRODUCTOS } from "@/lib/pagos/productos";
+import { precioTexto } from "@/lib/pagos/vitrina";
 import { sonar, vibrar } from "~/lib/efectos";
 import { URL_WEB } from "~/lib/entorno";
 import { fijarChispas, fijarCometas, recargarJugador, useJugador } from "~/lib/jugador";
@@ -225,6 +227,13 @@ export default function Mundos() {
                     onPress={() => desbloquear(elegido, true)}
                   />
                 )}
+                {/* Mundo suelto con dinero (0287): el pago se hace en la web hasta que llegue Google Play. */}
+                <Boton3D
+                  titulo={`O ábrelo ya por ${precioTexto(PRODUCTOS.mundo_suelto.precioUsd)} en la web`}
+                  variante="secundario"
+                  tamano="sm"
+                  onPress={() => WebBrowser.openBrowserAsync(`${URL_WEB}/mundo-bloqueado?mundo=${elegido.slug}`)}
+                />
                 <Boton3D titulo="Ver Prodigia Pro" variante="pro" tamano="sm" onPress={() => { setElegido(null); router.push("/pro"); }} />
               </>
             )}

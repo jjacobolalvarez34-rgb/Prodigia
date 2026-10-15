@@ -75,6 +75,8 @@ lecciones o visuales, junto con `tsc` y `eslint` de los dos proyectos.
 
 ## Agregado el 2026-10-13 y 14 (en los dos lados)
 
+- 0287: reparar racha con Cometas (web: inicio `RepararRacha`; app: Hoy `ui/RepararRacha`), cápsulas con Cometas (web: Mercado `CapsulasCometas`; app: pestaña Cometas `ui/pagos/CapsulasCometas`), precio de paquete «para ti» (los dos usan `precios_paquetes_para_mi`), mundo suelto y paquetes con dinero (se cobran en la web; la app abre la web hasta Google Play), fondo de ciudad en la pantalla de carga (web `FondoCiudad`, app `ui/FondoCiudad`).
+
 Cometas (saldo, canje 1:10, lo legendario con Cometas, mundo por 300), economía nueva (0280), reto de
 fin de semana, cápsula Pro semanal y 300 Cometas al mes, bienvenida a Pro (web: cinemática en
 /pro/bienvenida; app: aviso con la lista la primera vez que el plan es Pro), contraseña de respaldo

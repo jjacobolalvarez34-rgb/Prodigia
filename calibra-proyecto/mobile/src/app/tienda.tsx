@@ -54,7 +54,8 @@ import Segmentos from "~/ui/Segmentos";
 import { PlacaTarjeta } from "~/ui/placa/Placa";
 import VistaCosmetico from "~/ui/recompensas/VistaCosmetico";
 import IlustracionPaquete from "~/ui/recompensas/IlustracionPaquete";
-import { PaquetesMoneda } from "~/ui/pagos/Vitrina";
+import { abrirCompraWeb, PaquetesMoneda } from "~/ui/pagos/Vitrina";
+import CapsulasCometas from "~/ui/pagos/CapsulasCometas";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente } from "~/tema";
 import { FUENTE_FAMILIA } from "~/lib/placa";
@@ -639,6 +640,7 @@ export default function Tienda() {
               <Texto v="nota" tam={12}>
                 {monedaVista === "cometas" ? "La moneda premium: lo legendario, o cámbiala por Chispas." : "Para todo el Bazar: marcos, fondos, ayudas y mundos nuevos."} El pago se hace en la web, con Paddle, y llega a esta cuenta en segundos.
               </Texto>
+              <CapsulasCometas />
               <View style={styles.cometasCaja}>
                 <IconoCometa tam={52} />
                 <View style={{ flex: 1, gap: 2 }}>
@@ -931,6 +933,17 @@ export default function Tienda() {
                     ? `Te faltan ${(precio - e.chispas).toLocaleString("es")} Chispas`
                     : `Te quedarán ${(e.chispas - precio).toLocaleString("es")} Chispas`}
                 </Texto>
+                {elegido.categoria === "paquete" && (
+                  <>
+                    {precio < elegido.costoBase && (
+                      <Texto v="nota" centro tam={12} c={color.correcto}>
+                        Ya tienes parte: pagas solo lo que te falta.
+                      </Texto>
+                    )}
+                    {/* Paquetes con dinero (0287): se pagan en la web hasta que llegue Google Play. */}
+                    <Boton3D titulo="O cómpralo con dinero en la web" variante="secundario" tamano="sm" onPress={() => abrirCompraWeb(`/tienda?puesto=mercado&item=${elegido.item}`)} />
+                  </>
+                )}
               </>
               )
             )}

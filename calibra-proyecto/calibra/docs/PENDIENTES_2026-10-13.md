@@ -150,6 +150,7 @@ nunca son secretas (se ven en el navegador). Al terminar: **Deployments → Rede
 | PADDLE_PRICE_COMETAS_1200 | el `pri_…` de «1200 Cometas · 9,99» | No | **Nueva** |
 | PADDLE_PRICE_COMETAS_2600 | el `pri_…` de «2600 Cometas · 19,99» | No | **Nueva** |
 | PADDLE_PRICE_COMETAS_7000 | el `pri_…` de «7000 Cometas · 49,99» | No | **Nueva** |
+| PADDLE_PRODUCT_CONTENIDO | el `pro_…` de un producto «Contenido de Prodigia» (Catalog → Products → New product, **sin precio**; tax category Standard). Sirve para el mundo suelto (US$2,99) y los paquetes de cosméticos con dinero: el precio lo pone la web en cada compra | No | **Nueva (0287)** |
 | DIAGNOSTICO_CLAVE | una palabra larga que inventes (ej. 20 letras al azar) | **Sí** | **Nueva** (para `/api/pagos/estado?precios=1&clave=…`) |
 | NEXT_PUBLIC_ADSENSE_CLIENT | `ca-pub-5931991300168591` | No | Cuando AdSense apruebe el sitio |
 | NEXT_PUBLIC_SITE_URL | `https://prodigia-sandy.vercel.app` | No | Opcional |
@@ -190,3 +191,19 @@ emojis en la interfaz (quedan los del chat, los emotes y las notificaciones del 
 de Cometas y Chispas en web (components/pagos/Vitrina.tsx) y app (ui/pagos/Vitrina.tsx); 33 el overlay de Paddle se cierra solo
 y lleva a /pro/bienvenida; 34 «de 15 encendidos»; 36 Zen bloqueado en mundos que no tienes.
 Falta: recompilar el APK con todo esto.
+
+## Pedidos del 2026-10-14 (noche, 2)
+
+37. [x] Reparar la racha con Cometas (PLAN_ECONOMIA: 50 Cometas, 1 vez por semana).
+38. [x] Abrir cápsulas con Cometas.
+39. [x] Mundo suelto con dinero (US$2.99).
+40. [x] Paquetes de cosméticos con dinero.
+41. [x] Paquetes cuando ya tienes parte: no cobrar lo que ya tienes (precio solo de lo que falta).
+42. [x] Paridad: el fondo de ciudad en la pantalla de carga de la web.
+43. [ ] Después: compilar el APK.
+
+Hecho (2026-10-14 noche, 2): migración **0287_cometas_y_dinero.sql** (hay que correrla). 37 reparar racha (Hoy en la app, inicio en la web);
+38 cápsulas estelar (120) y supernova (300) en Mercado (web) y en la pestaña Cometas (app); 39 mundo suelto US$2,99 (pantalla de mundo
+bloqueado en la web; en la app abre la web); 40 paquetes con dinero (ficha del paquete); 41 si ya tienes parte pagas solo lo que falta
+(Chispas y dinero, lo calcula la base); 42 la pantalla de carga de la web con la ciudad de noche. Para vender mundo y paquetes con
+dinero falta crear PADDLE_PRODUCT_CONTENIDO (tabla de claves).
