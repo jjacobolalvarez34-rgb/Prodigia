@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useAnimationControls, useReducedMotion } from "framer-motion";
-import { reproducirTono } from "@/lib/sonido";
+import { reproducirNotaMusical, reproducirTono } from "@/lib/sonido";
+import { COLOR_RAREZA } from "@/lib/recompensas/catalogo";
 import { DibujoCapsula } from "@/components/recompensas/DibujoCapsula";
 import { crearLienzoFx, type LienzoFx } from "./lienzoFx";
 
@@ -13,6 +14,11 @@ import { crearLienzoFx, type LienzoFx } from "./lienzoFx";
 // más dura el suspenso); 4) estalla: destello, onda, partículas, las mitades salen
 // volando y el premio aparece con rayos girando (los legendarios, con lluvia de
 // confeti y doble destello).
+//
+// 2026-10-15 («se traba un poco»; como Clash Royale / Brawl Stars): el premio se pide
+// apenas aparece la cápsula, así al tocarla no hay espera de red; la rareza SUBE por
+// colores escalón por escalón con una nota más aguda cada vez; el premio entra girando
+// como una carta, y los efectos estampan brillos ya dibujados (lienzoFx).
 
 export interface PremioRevelado {
   color: string;
@@ -22,7 +28,10 @@ export interface PremioRevelado {
 
 type Fase = "cae" | "espera" | "carga" | "premio" | "error";
 
-const CARGA_MS = [0, 450, 650, 1150, 1700];
+// Escalones de rareza que se recorren antes de llegar al color del premio.
+const ESCALERA = [COLOR_RAREZA.comun, COLOR_RAREZA.raro, COLOR_RAREZA.epico, COLOR_RAREZA.legendario];
+const NOTAS = [523.25, 659.25, 783.99, 1046.5];
+const PASO_MS = 420;
 
 export default function RevelacionWeb({
   colores,
@@ -52,6 +61,9 @@ export default function RevelacionWeb({
   const [abierta, setAbierta] = useState(false);
   const [premio, setPremio] = useState<PremioRevelado | null>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const [colorGlow, setColorGlow] = useState(colores[1]);
+  // El premio se pide al aparecer la cápsula: al tocarla ya está.
+  const [pedido] = useState(() => abrir());
 
   const centro = () => {
     const r = capsulaRef.current?.getBoundingClientRect();
@@ -85,20 +97,36 @@ export default function RevelacionWeb({
     fxRef.current?.rayos(null);
     let r: PremioRevelado;
     try {
-      r = await abrir();
+      r = await pedido;
     } catch {
       setFase("error");
       return;
     }
     const nivel = r.nivel;
-    const dur = reducir ? 0 : CARGA_MS[nivel];
+    const escalones = [...ESCALERA.slice(0, nivel - 1), r.color];
+    const dur = reducir ? 0 : 250 + escalones.length * PASO_MS;
     // 3) Suspenso: tiembla cada vez más y se escapa luz del color del premio.
     const amp = 3 + nivel * 3;
     controles.start({ x: [0, -amp, amp, -amp, amp, 0], rotate: [0, -2, 2, -2, 2, 0], transition: { duration: 0.22, repeat: Infinity } });
+    // La luz que se escapa es neutra; el color lo pone cada escalón.
     const fuga = setInterval(() => {
       const c = centro();
-      fxRef.current?.fuga(c.x, c.y, r.color, 2 + nivel);
+      fxRef.current?.fuga(c.x, c.y, "#FFFFFF", 2 + nivel);
     }, 60);
+    if (!reducir) {
+      escalones.forEach((col, k) => {
+        timers.current.push(
+          setTimeout(() => {
+            const c = centro();
+            setColorGlow(col);
+            fxRef.current?.halo(col, c.x, c.y, 150 + k * 25);
+            fxRef.current?.pulso(1);
+            fxRef.current?.onda(c.x, c.y, col, 380, 2);
+            reproducirNotaMusical(NOTAS[Math.min(NOTAS.length - 1, k)]);
+          }, 250 + k * PASO_MS)
+        );
+      });
+    }
     timers.current.push(
       setTimeout(() => {
         clearInterval(fuga);
@@ -149,13 +177,21 @@ export default function RevelacionWeb({
               animate={fase === "espera" ? { y: [0, -8, 0], scale: [1, 1.04, 1] } : { y: 0, scale: 1 }}
               transition={{ duration: 1.6, repeat: fase === "espera" ? Infinity : 0, ease: "easeInOut" }}
             >
-              <DibujoCapsula colores={colores} abierta={abierta} tam={130} />
+              <span className="relative block" style={{ filter: fase === "carga" ? `drop-shadow(0 0 22px ${colorGlow})` : undefined, transition: "filter 160ms ease-out" }}>
+                <DibujoCapsula colores={colores} abierta={abierta} tam={130} />
+              </span>
             </motion.button>
           </motion.div>
         )}
 
         {fase === "premio" && premio && (
-          <motion.div initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", damping: 9, stiffness: 160 }} className="flex flex-col items-center gap-5">
+          <motion.div
+            initial={{ scale: 0.55, opacity: 0, rotateY: 100 }}
+            animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+            transition={{ type: "spring", damping: 13, stiffness: 120 }}
+            style={{ transformPerspective: 900 }}
+            className="flex flex-col items-center gap-5"
+          >
             {premio.contenido}
             <button type="button" onClick={onCerrar} className="w-64 max-w-full rounded-full bg-logro px-6 py-3 font-display font-bold text-[#2A1A00]">
               {textoBoton}

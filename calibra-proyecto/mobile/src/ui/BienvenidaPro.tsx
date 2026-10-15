@@ -9,32 +9,40 @@ import { sonar, vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
 import { color, conAlfa } from "~/tema";
 import Boton3D from "./Boton3D";
+import CinematicaPro from "./CinematicaPro";
 import Confeti from "./Confeti";
 import Texto from "./Texto";
 
 // «¡Ya tienes Pro!» en la app (revisión 2026-10-14: la bienvenida solo existía en la
 // web, /pro/bienvenida). Sale una sola vez por cuenta, la primera vez que la app ve
 // el plan en Pro: la lista de todo lo nuevo (la misma de la web) y dónde está el
-// contador. Al revés de AvisoProTermino.
+// contador. Al revés de AvisoProTermino. Antes de la lista, la cinemática (2026-10-15).
 const clave = (userId: string) => `prodigia:pro-bienvenida:${userId}`;
 
 export default function BienvenidaPro({ userId }: { userId: string }) {
   const router = useRouter();
   const { plan } = useJugador();
   const [ver, setVer] = useState(false);
+  const [cine, setCine] = useState(true);
 
   useEffect(() => {
     if (plan !== "pro") return;
     AsyncStorage.getItem(clave(userId)).then((v) => {
-      if (!v) {
-        setVer(true);
-        sonar("victoria");
-        vibrar.exito();
-      }
+      if (!v) setVer(true);
     });
   }, [plan, userId]);
 
   if (!ver) return null;
+  if (cine)
+    return (
+      <CinematicaPro
+        onTerminar={() => {
+          setCine(false);
+          sonar("logro");
+          vibrar.medio();
+        }}
+      />
+    );
   const cerrar = (ir?: Href) => {
     setVer(false);
     void AsyncStorage.setItem(clave(userId), "1");

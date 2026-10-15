@@ -221,5 +221,11 @@ dinero falta crear PADDLE_PRODUCT_CONTENIDO (tabla de claves).
 
 ## Pedidos del 2026-10-15
 
-46. [ ] Cinemática de Prodigia Pro más limpia y con más calidad (web y app).
-47. [ ] Abrir cápsulas se traba un poco: que sea fluido y gráficamente increíble (cómo lo hacen Clash Royale / Brawl Stars).
+46. [x] Cinemática de Prodigia Pro más limpia y con más calidad (web y app).
+47. [x] Abrir cápsulas se traba un poco: que sea fluido y gráficamente increíble (cómo lo hacen Clash Royale / Brawl Stars).
+
+Hecho (2026-10-15): 46 cinemática nueva de Pro (hiperespacio → el logo llega → anillos de energía → estallido → «PRODIGIA PRO»),
+una sola línea de tiempo para web y app (src/lib/fx/cinematicaPro.ts), revisada con capturas en escritorio y teléfono; se salta con
+un toque. 47 cápsulas sin trabas (premio pedido al aparecer, sonidos precargados, brillos horneados en vez de desenfoques en vivo,
+recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (solo Cometas) con «Abrir ya» o «Guardar».
+

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { useTranslations } from "next-intl";
 import { CATALOGO_NUEVO, ciudadDe, COLOR_RAREZA, coloresCapsula, type Rareza } from "@/lib/recompensas/catalogo";
 import { abrirCapsula, type Capsula, type PremioCapsula } from "@/lib/recompensas/api";
@@ -63,6 +64,7 @@ export default function AbrirCapsula({ capsula, onCerrar, onChispas }: { capsula
   const t = useTranslations("Recompensas.capsulas");
   const ciudad = ciudadDe(capsula.mundo);
   const nombre = t(`nombres.${capsula.tipo}`);
+  const chispas = useRef<number | null>(null);
   return (
     <RevelacionWeb
       colores={coloresCapsula(capsula.tipo, capsula.mundo)}
@@ -71,11 +73,16 @@ export default function AbrirCapsula({ capsula, onCerrar, onChispas }: { capsula
       textoTocar={t("tocaParaAbrir")}
       textoBoton={t("genial")}
       textoError={t("error")}
-      onCerrar={onCerrar}
+      onCerrar={() => {
+        // Lo que se recarga (saldo, cosméticos) espera al cierre: recargarlo en medio
+        // de la animación la trababa (2026-10-15).
+        if (chispas.current != null) onChispas?.(chispas.current);
+        refrescarCosmeticosWeb();
+        onCerrar();
+      }}
       abrir={async () => {
         const r = await abrirCapsula(createClient(), capsula.id);
-        onChispas?.(r.puntos_total);
-        refrescarCosmeticosWeb();
+        chispas.current = r.puntos_total;
         return { ...revelado(r), contenido: <Premio p={r} /> };
       }}
     />

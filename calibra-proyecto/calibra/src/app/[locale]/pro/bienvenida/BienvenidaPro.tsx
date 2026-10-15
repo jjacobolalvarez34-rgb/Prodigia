@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
-import GestoLogo from "@/components/GestoLogo";
+import CinematicaPro from "@/components/fx/CinematicaPro";
 import { createClient } from "@/lib/supabase/client";
 import { BENEFICIOS_PRO } from "@/lib/pro/beneficios";
 import IconoTrazo from "@/components/IconoTrazo";
@@ -13,7 +13,6 @@ import { reproducirTono } from "@/lib/sonido";
 type Fase = "activando" | "cinematica" | "lista" | "demora";
 
 const ESPERA_MAX_MS = 90_000;
-const DURACION_CINEMATICA_MS = 5200;
 
 // Pedido 2026-10-13: «apenas se compre, cargue y diga "ya tienes Pro"; una
 // cinemática del logo navegando en el espacio que de la nada recibe poderes y explota
@@ -46,17 +45,18 @@ export default function BienvenidaPro({ userId, yaEraPro }: { userId: string; ya
     return () => clearInterval(id);
   }, [fase, userId]);
 
-  // 2) La cinemática dura unos segundos y pasa sola a la lista.
+  // 2) La cinemática (components/fx/CinematicaPro) pasa sola a la lista al terminar, o
+  // con un toque. Con «reducir movimiento», directo a la lista.
   useEffect(() => {
-    if (fase !== "cinematica") return;
+    if (fase !== "cinematica" || !reducirMovimiento) return;
     reproducirTono("nivel_cuenta");
-    const id = setTimeout(() => setFase("lista"), reducirMovimiento ? 600 : DURACION_CINEMATICA_MS);
+    const id = setTimeout(() => setFase("lista"), 600);
     return () => clearTimeout(id);
   }, [fase, reducirMovimiento]);
 
   return (
     <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-[#03040A] px-4 py-10 text-white">
-      <Estrellas veloces={fase === "cinematica"} />
+      <Estrellas />
       <AnimatePresence mode="wait">
         {fase === "activando" && (
           <motion.div key="activando" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="relative z-10 flex flex-col items-center gap-5 text-center">
@@ -76,42 +76,7 @@ export default function BienvenidaPro({ userId, yaEraPro }: { userId: string; ya
           </motion.div>
         )}
 
-        {fase === "cinematica" && (
-          <motion.div key="cinematica" className="relative z-10 flex h-[60vh] w-full max-w-3xl items-center justify-center" exit={{ opacity: 0 }}>
-            {/* El logo cruza el espacio… */}
-            <motion.div
-              initial={{ x: "-55vw", y: 60, rotate: -20, scale: 0.5 }}
-              animate={{ x: 0, y: 0, rotate: 0, scale: [0.5, 0.8, 1, 1.15, 0] }}
-              transition={{ duration: 3.6, times: [0, 0.4, 0.62, 0.86, 1], ease: "easeOut" }}
-              className="relative"
-            >
-              {/* …recibe poderes: anillos de energía que se cierran sobre él… */}
-              {[0, 1, 2].map((i) => (
-                <motion.span
-                  key={i}
-                  className="absolute left-1/2 top-1/2 rounded-full border-2"
-                  style={{ borderColor: i === 1 ? "#5DE4FF" : "#FFC53D", width: 260, height: 260, marginLeft: -130, marginTop: -130 }}
-                  initial={{ scale: 2.4, opacity: 0 }}
-                  animate={{ scale: [2.4, 0.4], opacity: [0, 1, 0] }}
-                  transition={{ delay: 1.5 + i * 0.35, duration: 0.9, ease: "easeIn" }}
-                />
-              ))}
-              <motion.div animate={{ filter: ["drop-shadow(0 0 0px #FFC53D)", "drop-shadow(0 0 28px #FFC53D)", "drop-shadow(0 0 60px #5DE4FF)"] }} transition={{ delay: 1.4, duration: 2 }}>
-                <GestoLogo size={150} colorHex="#A794FF" />
-              </motion.div>
-            </motion.div>
-            {/* …y explota en «Prodigia Pro». */}
-            <motion.div className="pointer-events-none absolute inset-0 rounded-full" style={{ background: "radial-gradient(circle, #FFFFFF 0%, #FFC53D 25%, #7C5CFF 55%, transparent 70%)" }} initial={{ scale: 0, opacity: 0 }} animate={{ scale: [0, 3], opacity: [0, 1, 0] }} transition={{ delay: 3.4, duration: 0.9, ease: "easeOut" }} />
-            <motion.p
-              className="absolute bg-gradient-to-r from-[#FFC53D] via-white to-[#5DE4FF] bg-clip-text text-center font-display text-5xl font-black tracking-tight text-transparent sm:text-7xl"
-              initial={{ scale: 0.3, opacity: 0 }}
-              animate={{ scale: [0.3, 1.12, 1], opacity: 1 }}
-              transition={{ delay: 3.7, duration: 0.8, ease: "backOut" }}
-            >
-              PRODIGIA PRO
-            </motion.p>
-          </motion.div>
-        )}
+        {fase === "cinematica" && <CinematicaPro key="cinematica" onTerminar={() => setFase("lista")} subtitulo={t("yaTienesPro")} />}
 
         {fase === "lista" && (
           <motion.div key="lista" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 flex w-full max-w-xl flex-col gap-5">
@@ -146,25 +111,17 @@ export default function BienvenidaPro({ userId, yaEraPro }: { userId: string; ya
   );
 }
 
-// Fondo de estrellas: quietas mientras espera; en la cinemática pasan como rayas,
-// como si el logo viajara.
+// Fondo de estrellas quietas (la cinemática dibuja las suyas en su canvas).
 const ESTRELLAS = Array.from({ length: 70 }, (_, i) => {
   const r = (n: number) => ((Math.sin(i * 12.9898 + n * 78.233) * 43758.5453) % 1 + 1) % 1;
   return { x: r(1) * 100, y: r(2) * 100, t: 1 + r(3) * 2, o: 0.3 + r(4) * 0.6 };
 });
 
-function Estrellas({ veloces }: { veloces: boolean }) {
-  const estrellas = ESTRELLAS;
+function Estrellas() {
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-      {estrellas.map((e, i) => (
-        <motion.span
-          key={i}
-          className="absolute rounded-full bg-white"
-          style={{ left: `${e.x}%`, top: `${e.y}%`, height: e.t, opacity: e.o }}
-          animate={veloces ? { width: [e.t, 90, e.t], x: [0, -260] } : { width: e.t, x: 0 }}
-          transition={veloces ? { duration: 0.9 + (i % 5) * 0.15, repeat: Infinity, ease: "linear" } : { duration: 0.3 }}
-        />
+      {ESTRELLAS.map((e, i) => (
+        <span key={i} className="absolute rounded-full bg-white" style={{ left: `${e.x}%`, top: `${e.y}%`, width: e.t, height: e.t, opacity: e.o }} />
       ))}
     </div>
   );
