@@ -20,7 +20,7 @@ Lista completa para no perder nada. Se marca cada punto al terminarlo.
    invitado, se suma a tu cuenta). **Falta activar Google en Supabase** si no estaba (abajo).
 8. [x] **Contraseña de respaldo** para cuentas de Google: tarjeta en Ajustes, web y app.
 9. [x] Tienda nueva A + C (maqueta aprobada en docs/rediseno/tienda.html): construir.
-10. [ ] Compilar APK nuevo con todo esto (avisar antes).
+10. [x] Compilar APK nuevo con todo esto (avisar antes).
 
 Migraciones: el 14/10 se aplicaron hasta la 0284. Falta repetir 0281 y 0283 (versión nueva) y correr 0285 y 0286.
 
@@ -95,7 +95,7 @@ en la tienda en cuanto su variable existe.
 
 ## Pedidos del 2026-10-14
 
-11. [ ] **Tabla completa de claves** (todas las variables, también las que todavía no existen) y cómo
+11. [x] **Tabla completa de claves** (todas las variables, también las que todavía no existen) y cómo
     cargarlas en Vercel y en la app.
 12. [x] **Recuperar contraseña con preguntas** en vez del correo: ¿entraste con Google?, ¿cuáles fueron
     tus dos primeros mundos? (elegir), ¿cuál es tu correo y nombre de usuario? (opciones con la
@@ -200,7 +200,7 @@ Falta: recompilar el APK con todo esto.
 40. [x] Paquetes de cosméticos con dinero.
 41. [x] Paquetes cuando ya tienes parte: no cobrar lo que ya tienes (precio solo de lo que falta).
 42. [x] Paridad: el fondo de ciudad en la pantalla de carga de la web.
-43. [ ] Después: compilar el APK.
+43. [x] Después: compilar el APK (0.3.0, 2026-10-14 20:27).
 
 Hecho (2026-10-14 noche, 2): migración **0287_cometas_y_dinero.sql** (hay que correrla). 37 reparar racha (Hoy en la app, inicio en la web);
 38 cápsulas estelar (120) y supernova (300) en Mercado (web) y en la pestaña Cometas (app); 39 mundo suelto US$2,99 (pantalla de mundo
