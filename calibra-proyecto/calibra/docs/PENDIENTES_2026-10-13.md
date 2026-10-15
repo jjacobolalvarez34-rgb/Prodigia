@@ -207,3 +207,14 @@ Hecho (2026-10-14 noche, 2): migración **0287_cometas_y_dinero.sql** (hay que c
 bloqueado en la web; en la app abre la web); 40 paquetes con dinero (ficha del paquete); 41 si ya tienes parte pagas solo lo que falta
 (Chispas y dinero, lo calcula la base); 42 la pantalla de carga de la web con la ciudad de noche. Para vender mundo y paquetes con
 dinero falta crear PADDLE_PRODUCT_CONTENIDO (tabla de claves).
+
+## Pedidos del 2026-10-14 (noche, 3)
+
+44. [x] Aviso «Hay una nueva versión de Prodigia» en la app: al abrirla pregunta a la web (/api/app/version = último release de GitHub)
+    y, si hay una más nueva, la baja dentro de la app con su barra y abre el instalador (permiso REQUEST_INSTALL_PACKAGES).
+    **Regla al publicar:** el tag del release tiene que ser la versión del APK (app.json → `version`), con «v» adelante:
+    el APK 0.5.0 se publica como **v0.5.0**. Si el tag es mayor que la versión de adentro, el aviso sale siempre.
+    El aviso funciona desde el APK 0.5.0 en adelante (el 0.3.0/«v0.4.0» no lo tiene).
+45. [ ] La descarga del APK en el navegador se queda trabada al final (80 MB), con v0.3 y v0.4. Desde 0.5.0 la actualización se
+    baja dentro de la app y no pasa por el navegador.
+

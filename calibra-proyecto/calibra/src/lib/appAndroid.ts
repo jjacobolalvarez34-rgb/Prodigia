@@ -10,10 +10,14 @@ export const URL_APK: string | null = "https://github.com/jjacobolalvarez34-rgb/
 
 // Datos que se muestran junto al botón (actualizar al publicar una versión nueva).
 export const APP_ANDROID = {
-  version: "0.1.0",
-  tamanoMb: 76,
+  version: "0.5.0",
+  tamanoMb: 81,
   // Android 7 o más nuevo (minSdk 24 de Expo).
   androidMinimo: "7",
 };
 
 export const RUTA_DESCARGA_APK = "/api/app/descargar";
+
+// Repositorio cuyos releases tienen el APK: su último tag (p. ej. «v0.5.0») es la versión
+// más nueva, y la app avisa si la suya es más vieja (/api/app/version).
+export const REPO_APK: string | null = "jjacobolalvarez34-rgb/Prodigia";

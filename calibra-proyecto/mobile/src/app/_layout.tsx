@@ -36,6 +36,7 @@ import IntroMarca, { INTRO_ACTIVA } from "~/ui/IntroMarca";
 import PantallaCarga from "~/ui/PantallaCarga";
 import PrimeraVez from "~/ui/PrimeraVez";
 import AvisoProTermino from "~/ui/AvisoProTermino";
+import AvisoActualizacion from "~/ui/AvisoActualizacion";
 import { GlobosPorRuta } from "~/ui/GloboAyuda";
 import CelebracionConstelaciones from "~/ui/recompensas/CelebracionConstelaciones";
 import BannerDueloEnCurso from "~/ui/BannerDueloEnCurso";
@@ -233,6 +234,8 @@ function Navegacion() {
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <GlobosPorRuta segmentos={segmentos} />}
       {!cargando && userId && terminos && !cargaVisible && <PrimeraVez key={userId} userId={userId} anonimo={!!sesion?.user.is_anonymous} />}
       {!cargando && userId && terminos && !cargaVisible && <AvisoProTermino />}
+      {/* Nueva versión del APK (2026-10-14): se baja y se instala desde la app. */}
+      {!cargando && !cargaVisible && <AvisoActualizacion />}
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <BienvenidaPro userId={userId} />}
       {terminos === false && !cargaVisible && <AceptarTerminos onAceptar={() => setTerminos(true)} />}
       {cargaVisible && introEnNegro && <PantallaCarga progreso={progreso} etapa={etapa} onTerminada={ocultarCarga} />}
