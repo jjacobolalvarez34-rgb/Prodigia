@@ -357,7 +357,7 @@ export const COLOR_RAREZA: Record<Rareza, string> = { comun: "#8892B0", raro: "#
 export const NOMBRE_RAREZA: Record<Rareza, string> = { comun: "Común", raro: "Raro", epico: "Épico", legendario: "Legendario" };
 
 // ---------- Cápsulas ----------
-export type TipoCapsula = "diaria" | "misiones" | "racha" | "nivel" | "ciudad" | "liga" | "liga_bronce" | "liga_plata" | "liga_oro" | "coleccion" | "pro";
+export type TipoCapsula = "diaria" | "misiones" | "racha" | "nivel" | "ciudad" | "liga" | "liga_bronce" | "liga_plata" | "liga_oro" | "coleccion" | "pro" | "estelar" | "supernova";
 
 export const CAPSULAS: Record<TipoCapsula, { nombre: string; colores: [string, string] }> = {
   diaria: { nombre: "Cápsula diaria", colores: ["#7C5CFF", "#FFC53D"] },
@@ -372,7 +372,16 @@ export const CAPSULAS: Record<TipoCapsula, { nombre: string; colores: [string, s
   coleccion: { nombre: "Cápsula de colección", colores: ["#FFB627", "#B07CFF"] },
   // Pro (0283): 2 por semana, épico o legendario casi siempre.
   pro: { nombre: "Cápsula Pro", colores: ["#7C5CFF", "#5DE4FF"] },
+  // Con Cometas (0287): se compran y se abren al momento.
+  estelar: { nombre: "Cápsula estelar", colores: ["#5DE4FF", "#B07CFF"] },
+  supernova: { nombre: "Cápsula supernova", colores: ["#FFB627", "#FF5D8F"] },
 };
+
+// Cápsulas que se compran con Cometas (precio real en comprar_capsula_con_cometas, 0287).
+export const CAPSULAS_CON_COMETAS: { tipo: "estelar" | "supernova"; costo: number }[] = [
+  { tipo: "estelar", costo: 120 },
+  { tipo: "supernova", costo: 300 },
+];
 
 // Colores de una cápsula de ciudad: los de su mundo.
 export function coloresCapsula(tipo: TipoCapsula, mundo?: string | null): [string, string] {

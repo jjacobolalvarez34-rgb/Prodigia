@@ -22,14 +22,14 @@ export function useCheckout(alCompletar: (p: ProductoComprable) => void) {
   const [comprando, setComprando] = useState<ProductoComprable | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function comprar(producto: ProductoComprable) {
+  async function comprar(producto: ProductoComprable, detalle?: { mundo?: string; paquete?: string }) {
     setComprando(producto);
     setError(null);
     try {
       const res = await fetch("/api/pagos/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ producto, proveedor: "paddle" }),
+        body: JSON.stringify({ producto, proveedor: "paddle", ...detalle }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {

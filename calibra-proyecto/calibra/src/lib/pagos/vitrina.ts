@@ -47,3 +47,25 @@ export function ahorroAnual(): { usd: number; porcentaje: number; porMes: number
 export function precioTexto(usd: number): string {
   return `US$${usd.toFixed(2)}`;
 }
+
+// ---------- Paquetes de cosméticos con dinero (0287) ----------
+// Precio en dólares de un paquete según su precio en Chispas (PLAN_ECONOMIA.md §4.3:
+// US$1,99–6,99).
+export function precioUsdPaquete(precioChispas: number): number {
+  if (precioChispas <= 3000) return 1.99;
+  if (precioChispas <= 4500) return 2.99;
+  if (precioChispas <= 6000) return 3.99;
+  if (precioChispas <= 8000) return 4.99;
+  if (precioChispas <= 10000) return 5.99;
+  return 6.99;
+}
+
+// Si ya tienes parte del paquete pagas la fracción (en valor) de lo que te falta,
+// redondeada hacia arriba a ,99 y nunca menos de US$0,99. La fracción la da la base
+// (precios_paquetes_para_mi), igual que para el precio en Chispas.
+export function precioUsdParcial(completo: number, fraccion: number): number {
+  if (fraccion >= 1) return completo;
+  if (fraccion <= 0) return 0;
+  const crudo = completo * fraccion;
+  return Math.min(completo, Math.max(0.99, Math.ceil(crudo) - 0.01));
+}

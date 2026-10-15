@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { PRODUCTOS } from "./productos";
-import { ahorroAnual, bonoPorcentaje, MAS_ELEGIDO, mejorValor, PAQUETES_CHISPAS, PAQUETES_COMETAS, precioTexto } from "./vitrina";
+import { ahorroAnual, bonoPorcentaje, MAS_ELEGIDO, mejorValor, PAQUETES_CHISPAS, PAQUETES_COMETAS, precioTexto, precioUsdPaquete, precioUsdParcial } from "./vitrina";
 import { ilustracionPaquete, ILUSTRACION_GENERICA } from "@/lib/tienda/ilustracionesPaquetes";
 import { PAQUETES } from "@/lib/recompensas/catalogo";
 
@@ -37,5 +37,18 @@ describe("vitrina de pagos", () => {
 
   it("cada paquete de la tienda tiene su ilustración propia", () => {
     for (const p of PAQUETES) expect(ilustracionPaquete(p.item), p.item).not.toBe(ILUSTRACION_GENERICA);
+  });
+
+  it("paquetes con dinero: entre US$1,99 y 6,99, y si ya tienes parte pagas lo que falta", () => {
+    for (const p of PAQUETES) {
+      const usd = precioUsdPaquete(p.precio);
+      expect(usd).toBeGreaterThanOrEqual(1.99);
+      expect(usd).toBeLessThanOrEqual(6.99);
+    }
+    expect(precioUsdPaquete(7500)).toBe(4.99);
+    expect(precioUsdParcial(4.99, 1)).toBe(4.99);
+    expect(precioUsdParcial(4.99, 2 / 3)).toBe(3.99);
+    expect(precioUsdParcial(1.99, 0.1)).toBe(0.99);
+    expect(precioUsdParcial(4.99, 0)).toBe(0);
   });
 });

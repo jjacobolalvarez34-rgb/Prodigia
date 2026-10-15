@@ -8,6 +8,7 @@ import { pagosHabilitados } from "@/lib/pagos/flags";
 import TiendaAmpliada from "./TiendaAmpliada";
 import SeccionCometas from "@/components/tienda/SeccionCometas";
 import { VitrinaMonedas } from "@/components/pagos/Vitrina";
+import CapsulasCometas from "@/components/tienda/CapsulasCometas";
 import { productosConPrecio } from "@/lib/pagos/paddle";
 import { PRODUCTOS } from "@/lib/pagos/productos";
 
@@ -73,10 +74,11 @@ export default async function TiendaPage() {
           <>
             <VitrinaMonedas pagosHabilitados={pagosHabilitados() && !user.is_anonymous} cometasDisponibles={paquetesCometas} esPro={profile?.plan === "pro"} />
             <SeccionCometas cometasIniciales={(filaCometas as { cometas?: number } | null)?.cometas ?? 0} />
+            {!user.is_anonymous && <CapsulasCometas />}
           </>
         }
       />
-      <TiendaAmpliada />
+      <TiendaAmpliada paquetesConDinero={pagosHabilitados() && !user.is_anonymous && productosConPrecio().includes("paquete_cosmetico")} />
     </>
   );
 }

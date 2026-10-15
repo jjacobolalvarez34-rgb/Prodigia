@@ -1881,7 +1881,9 @@
       "sigueJugando": "Sigue jugando para ganar más Chispas, o mira la tienda.",
       "noSePudoDesbloquear": "No se pudo desbloquear. Prueba de nuevo.",
       "noSePudoConectar": "No se pudo conectar. Prueba de nuevo.",
-      "desbloquearCometas": "O por {precio} Cometas"
+      "desbloquearCometas": "O por {precio} Cometas",
+      "desbloquearDinero": "Ábrelo ya por {precio}",
+      "abriendoPago": "Abriendo pago…"
     }
   },
   "Clanes": {
@@ -4787,7 +4789,9 @@
         "liga_plata": "Cápsula de liga · Plata",
         "liga_oro": "Cápsula de liga · Oro",
         "coleccion": "Cápsula de colección",
-        "pro": "Cápsula Pro"
+        "pro": "Cápsula Pro",
+        "estelar": "Cápsula estelar",
+        "supernova": "Cápsula supernova"
       }
     },
     "calendario": {
@@ -4933,7 +4937,10 @@
       "comprarCometas": "Comprar por {n} Cometas",
       "teFaltanCometas": "Te faltan {n} Cometas",
       "cosas": "{n} cosas",
-      "ahorras": "Ahorras {n} %"
+      "ahorras": "Ahorras {n} %",
+      "pagasLoQueFalta": "Ya tienes parte: pagas solo lo que te falta.",
+      "comprarDinero": "O cómpralo por {precio}",
+      "abriendoPago": "Abriendo pago…"
     },
     "invitado": "Las constelaciones, misiones y el calendario son para cuentas registradas. Crea tu cuenta para empezar a ganarlas.",
     "detalle": {
@@ -5478,5 +5485,19 @@
       "procesando": "Abriendo pago…",
       "proximamente": "Próximamente"
     }
+  },
+  "RepararRacha": {
+    "titulo": "Tu racha de {n} días se cortó",
+    "texto": "Faltaron {dias, plural, one {# día} other {# días}}. Repárala con Cometas y sigue donde ibas (una vez por semana).",
+    "boton": "Reparar por {costo}",
+    "reparando": "Reparando…",
+    "yaUsada": "Ya reparaste una racha esta semana. Vuelve a estar disponible el {fecha}."
+  },
+  "CapsulasCometas": {
+    "eyebrow": "Con Cometas",
+    "titulo": "Cápsulas estelares",
+    "texto": "Se abren al momento y siempre traen un cosmético. Si ya lo tienes, se cambia por Chispas.",
+    "abrirPor": "Abrir por {costo}",
+    "abriendo": "Abriendo…"
   }
 }

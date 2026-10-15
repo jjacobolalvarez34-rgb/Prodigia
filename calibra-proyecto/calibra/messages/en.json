@@ -1881,7 +1881,9 @@
       "sigueJugando": "Keep playing to earn more Chispas, or check out the shop.",
       "noSePudoDesbloquear": "Couldn't unlock it. Try again.",
       "noSePudoConectar": "Couldn't connect. Try again.",
-      "desbloquearCometas": "Or for {precio} Comets"
+      "desbloquearCometas": "Or for {precio} Comets",
+      "desbloquearDinero": "Unlock now for {precio}",
+      "abriendoPago": "Opening payment…"
     }
   },
   "Clanes": {
@@ -4787,7 +4789,9 @@
         "liga_plata": "League capsule · Silver",
         "liga_oro": "League capsule · Gold",
         "coleccion": "Collection capsule",
-        "pro": "Pro capsule"
+        "pro": "Pro capsule",
+        "estelar": "Star capsule",
+        "supernova": "Supernova capsule"
       }
     },
     "calendario": {
@@ -4933,7 +4937,10 @@
       "comprarCometas": "Buy for {n} Comets",
       "teFaltanCometas": "You need {n} more Comets",
       "cosas": "{n} items",
-      "ahorras": "Save {n}%"
+      "ahorras": "Save {n}%",
+      "pagasLoQueFalta": "You already own part of it: you only pay for what's missing.",
+      "comprarDinero": "Or buy it for {precio}",
+      "abriendoPago": "Opening payment…"
     },
     "invitado": "Constellations, missions and the calendar are for registered accounts. Create your account to start earning them.",
     "detalle": {
@@ -5478,5 +5485,19 @@
       "procesando": "Opening payment…",
       "proximamente": "Coming soon"
     }
+  },
+  "RepararRacha": {
+    "titulo": "Your {n}-day streak broke",
+    "texto": "You missed {dias, plural, one {# day} other {# days}}. Repair it with Comets and pick up where you left off (once a week).",
+    "boton": "Repair for {costo}",
+    "reparando": "Repairing…",
+    "yaUsada": "You already repaired a streak this week. It's available again on {fecha}."
+  },
+  "CapsulasCometas": {
+    "eyebrow": "With Comets",
+    "titulo": "Star capsules",
+    "texto": "They open right away and always hold a cosmetic. If you already have it, it turns into Sparks.",
+    "abrirPor": "Open for {costo}",
+    "abriendo": "Opening…"
   }
 }

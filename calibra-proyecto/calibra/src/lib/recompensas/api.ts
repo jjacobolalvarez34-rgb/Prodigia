@@ -86,6 +86,9 @@ export function mensajeError(e: unknown): string {
   if (/faltan Cometas/i.test(m)) return "Te faltan Cometas.";
   if (/legendario se compra con Cometas/i.test(m)) return "Lo legendario se compra con Cometas.";
   if (/no se vende con Cometas/i.test(m)) return "Esto no se vende con Cometas.";
+  if (/ya reparaste/i.test(m)) return "Ya reparaste una racha esta semana.";
+  if (/no hay una racha/i.test(m)) return "No hay una racha para reparar.";
+  if (/precio invalido/i.test(m)) return "El precio cambió. Vuelve a abrir la tienda.";
   if (/ya tienes/i.test(m)) return "Ya lo tienes.";
   if (/temporada/i.test(m)) return "Ese marco ya no está a la venta este mes.";
   if (/ya mandaste/i.test(m)) return "Ya mandaste tu regalo de hoy.";
@@ -130,6 +133,46 @@ export async function abrirCapsula(sb: SupabaseClient, id: string): Promise<Prem
   const { data, error } = await sb.rpc("abrir_capsula", { p_id: id });
   if (error) throw error;
   return filas<PremioCapsula>(data)[0];
+}
+
+// ---------- Con Cometas (0287) ----------
+// Compra una cápsula con Cometas; devuelve su id para abrirla al momento.
+export async function comprarCapsulaConCometas(sb: SupabaseClient, tipo: "estelar" | "supernova"): Promise<{ id: string; cometas: number }> {
+  const { data, error } = await sb.rpc("comprar_capsula_con_cometas", { p_tipo: tipo });
+  if (error) throw error;
+  return filas<{ id: string; cometas: number }>(data)[0];
+}
+
+export interface RachaReparable {
+  perdida: number;
+  dias_perdidos: number;
+  costo: number;
+  // Si ya reparaste una esta semana: cuándo vuelve a estar disponible.
+  disponible_en: string | null;
+}
+
+// Si la racha se cortó hace poco (hasta 3 días), cuál era y cuánto cuesta repararla.
+export async function estadoRachaReparable(sb: SupabaseClient): Promise<RachaReparable | null> {
+  const { data, error } = await sb.rpc("estado_racha_reparable");
+  if (error) return null;
+  return filas<RachaReparable>(data)[0] ?? null;
+}
+
+export async function repararRachaConCometas(sb: SupabaseClient): Promise<{ cometas: number; racha: number }> {
+  const { data, error } = await sb.rpc("reparar_racha_con_cometas");
+  if (error) throw error;
+  return filas<{ cometas: number; racha: number }>(data)[0];
+}
+
+// Precio de cada paquete para esta cuenta: si ya tiene parte, solo lo que falta.
+export async function preciosPaquetesParaMi(sb: SupabaseClient): Promise<Record<string, { precio: number; paraTi: number; fraccion: number }>> {
+  const { data, error } = await sb.rpc("precios_paquetes_para_mi");
+  if (error) return {};
+  const salida: Record<string, { precio: number; paraTi: number; fraccion: number }> = {};
+  for (const f of filas<{ slug: string; precio: number; precio_para_ti: number | null; fraccion: number | null }>(data)) {
+    salida[f.slug] = { precio: f.precio, paraTi: f.precio_para_ti ?? f.precio, fraccion: Number(f.fraccion ?? 1) };
+  }
+  return salida;
 }
 
 export async function misMisiones(sb: SupabaseClient): Promise<Mision[]> {

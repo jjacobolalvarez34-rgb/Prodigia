@@ -45,7 +45,13 @@ export async function POST(request: Request) {
       .single();
     return NextResponse.json({ ok: true, ...(perfil ?? {}), cometas: (data as { cometas: number }[] | null)?.[0]?.cometas ?? null });
   }
-  const nuevo = body.item in COSTOS ? null : precioNuevo(body.item);
+  let nuevo = body.item in COSTOS ? null : precioNuevo(body.item);
+  // Paquetes (0287): si ya tienes parte, pagas solo lo que falta (lo calcula la base).
+  if (PAQUETES.some((x) => x.item === body.item)) {
+    const { data: precios } = await supabase.rpc("precios_paquetes_para_mi");
+    const fila = (precios as { slug: string; precio_para_ti: number | null }[] | null)?.find((f) => f.slug === body.item);
+    if (fila?.precio_para_ti != null) nuevo = fila.precio_para_ti;
+  }
   if (!(body.item in COSTOS) && nuevo == null) {
     return NextResponse.json({ error: "Item inválido" }, { status: 400 });
   }

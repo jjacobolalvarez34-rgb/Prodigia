@@ -2,7 +2,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { mercadoPagoAdapter } from "./mercadopago";
 import { paddleAdapter } from "./paddle";
 import type { AdaptadorPago } from "./adapter";
-import type { EventoWebhookNormalizado, Proveedor, ProductoComprable, ResultadoCheckout } from "./tipos";
+import type { DetalleCheckout, EventoWebhookNormalizado, Proveedor, ProductoComprable, ResultadoCheckout } from "./tipos";
 
 // Payment Service — única puerta de entrada del resto de la app hacia
 // los proveedores de pago. Nada fuera de src/lib/pagos/ debería
@@ -19,8 +19,8 @@ export function adaptadorDe(proveedor: Proveedor): AdaptadorPago {
   return ADAPTERS[proveedor];
 }
 
-export async function crearCheckout(userId: string, producto: ProductoComprable, proveedor: Proveedor): Promise<ResultadoCheckout> {
-  return ADAPTERS[proveedor].crearCheckout(userId, producto);
+export async function crearCheckout(userId: string, producto: ProductoComprable, proveedor: Proveedor, detalle?: DetalleCheckout): Promise<ResultadoCheckout> {
+  return ADAPTERS[proveedor].crearCheckout(userId, producto, detalle);
 }
 
 // Único lugar que toca la base de datos para pagos — las rutas de
@@ -80,6 +80,12 @@ async function aplicarEfecto(admin: ReturnType<typeof createAdminClient>, provee
       p_cancel_at_period_end: evento.cancelaAlFinDePeriodo,
       p_motivo: evento.motivo,
     });
+    if (error) throw error;
+  } else if (evento.tipo === "compra_mundo") {
+    const { error } = await admin.rpc("otorgar_mundo_comprado", { p_user: evento.userId, p_mundo: evento.mundo });
+    if (error) throw error;
+  } else if (evento.tipo === "compra_paquete") {
+    const { error } = await admin.rpc("otorgar_paquete_comprado", { p_user: evento.userId, p_slug: evento.paquete });
     if (error) throw error;
   } else if (evento.tipo === "compra_cometas") {
     const { error } = await admin.rpc("acreditar_cometas_compradas", {

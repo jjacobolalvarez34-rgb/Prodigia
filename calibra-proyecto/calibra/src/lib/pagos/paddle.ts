@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import type { AdaptadorPago } from "./adapter";
-import type { EventoWebhookNormalizado, EstadoSuscripcion, IntervaloPlan, MotivoSuscripcion, ProductoComprable } from "./tipos";
+import type { DetalleCheckout, EventoWebhookNormalizado, EstadoSuscripcion, IntervaloPlan, MotivoSuscripcion, ProductoComprable } from "./tipos";
 import { definicionDe } from "./productos";
 
 // Fase 3 del plan de pagos: Paddle Billing (no Paddle Classic — no usa
@@ -23,7 +23,7 @@ function baseUrl(): string {
 // creado a mano en el Catalog del dashboard de Paddle (Paddle Billing no
 // tiene forma de crear productos vía API de un solo paso pensada para
 // esto) — se resuelve por variable de entorno, nunca hardcodeado.
-const ENV_PRICE_ID: Record<ProductoComprable, string | undefined> = {
+const ENV_PRICE_ID: Partial<Record<ProductoComprable, string | undefined>> = {
   pro_mensual: process.env.PADDLE_PRICE_PRO_MENSUAL,
   pro_anual: process.env.PADDLE_PRICE_PRO_ANUAL,
   chispas_1000: process.env.PADDLE_PRICE_CHISPAS_1000,
@@ -37,9 +37,18 @@ const ENV_PRICE_ID: Record<ProductoComprable, string | undefined> = {
   cometas_7000: process.env.PADDLE_PRICE_COMETAS_7000,
 };
 
-// Productos con price_id cargado: la tienda solo muestra los que se pueden comprar.
+// Mundo suelto y paquetes (0287): un solo producto «Contenido de Prodigia» creado en el
+// Catalog de Paddle (sin precio); cada compra lleva su precio calculado acá.
+function productoContenido(): string | null {
+  return process.env.PADDLE_PRODUCT_CONTENIDO?.trim() || null;
+}
+const PRECIO_CALCULADO: ProductoComprable[] = ["mundo_suelto", "paquete_cosmetico"];
+
+// Productos que se pueden comprar ya: los de precio fijo con price_id cargado, y los de
+// precio calculado si existe el producto de contenido.
 export function productosConPrecio(): ProductoComprable[] {
-  return (Object.keys(ENV_PRICE_ID) as ProductoComprable[]).filter((p) => !!ENV_PRICE_ID[p]?.trim());
+  const fijos = (Object.keys(ENV_PRICE_ID) as ProductoComprable[]).filter((p) => !!ENV_PRICE_ID[p]?.trim());
+  return productoContenido() ? [...fijos, ...PRECIO_CALCULADO] : fijos;
 }
 
 function priceIdDe(producto: ProductoComprable): string {
@@ -56,8 +65,29 @@ interface RespuestaTransaccion {
   data: { id: string };
 }
 
-async function crearCheckout(userId: string, producto: ProductoComprable) {
-  const priceId = priceIdDe(producto);
+async function crearCheckout(userId: string, producto: ProductoComprable, detalle?: DetalleCheckout) {
+  let items: unknown[];
+  if (PRECIO_CALCULADO.includes(producto)) {
+    // Precio fuera del catálogo de Paddle («non-catalog price») sobre el producto de
+    // contenido. Lo calcula la ruta de checkout en el servidor, nunca el navegador.
+    const productId = productoContenido();
+    if (!productId) throw new Error("Falta PADDLE_PRODUCT_CONTENIDO: hay que crear el producto «Contenido de Prodigia» en el Catalog de Paddle.");
+    if (!detalle?.precioUsd || detalle.precioUsd <= 0) throw new Error("Falta el precio de la compra.");
+    const nombre = detalle.descripcion ?? producto;
+    items = [
+      {
+        quantity: 1,
+        price: {
+          description: nombre,
+          name: nombre,
+          product_id: productId,
+          unit_price: { amount: String(Math.round(detalle.precioUsd * 100)), currency_code: "USD" },
+        },
+      },
+    ];
+  } else {
+    items = [{ price_id: priceIdDe(producto), quantity: 1 }];
+  }
   const res = await fetch(`${baseUrl()}/transactions`, {
     method: "POST",
     headers: {
@@ -65,8 +95,8 @@ async function crearCheckout(userId: string, producto: ProductoComprable) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      items: [{ price_id: priceId, quantity: 1 }],
-      custom_data: { userId, producto },
+      items,
+      custom_data: { userId, producto, mundo: detalle?.mundo, paquete: detalle?.paquete },
     }),
   });
 
@@ -120,7 +150,7 @@ interface EventoPaddle {
     id: string;
     customer_id?: string;
     status?: string;
-    custom_data?: { userId?: string; producto?: string } | null;
+    custom_data?: { userId?: string; producto?: string; mundo?: string; paquete?: string } | null;
     billing_cycle?: { interval?: string } | null;
     current_billing_period?: { ends_at?: string } | null;
     scheduled_change?: { action?: string } | null;
@@ -181,6 +211,15 @@ async function normalizarEvento(_rawBody: string, parsedBody: unknown): Promise<
     if (!userId || !d.custom_data?.producto) return null;
     const producto = d.custom_data.producto as ProductoComprable;
     const def = definicionDe(producto);
+
+    if (def.tipo === "mundo") {
+      if (!d.custom_data.mundo) return null;
+      return { tipo: "compra_mundo", userId, providerTransactionId: d.id, mundo: d.custom_data.mundo };
+    }
+    if (def.tipo === "paquete") {
+      if (!d.custom_data.paquete) return null;
+      return { tipo: "compra_paquete", userId, providerTransactionId: d.id, paquete: d.custom_data.paquete };
+    }
 
     if (def.tipo === "cometas") {
       return {

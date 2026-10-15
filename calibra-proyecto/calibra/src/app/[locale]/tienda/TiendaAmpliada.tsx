@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { probarPaqueteAcierto, reproducirTono } from "@/lib/sonido";
 import { CATALOGO_NUEVO, COLOR_RAREZA, diasHastaFinDeMes, PAQUETES, temporadaActual, UTILIDADES_NUEVAS, type Rareza } from "@/lib/recompensas/catalogo";
-import { cosmeticosDesdeFila, COLUMNAS_COSMETICOS_NUEVOS, equiparCosmetico, mensajeError, type CosmeticosNuevos } from "@/lib/recompensas/api";
+import { cosmeticosDesdeFila, COLUMNAS_COSMETICOS_NUEVOS, equiparCosmetico, mensajeError, preciosPaquetesParaMi, type CosmeticosNuevos } from "@/lib/recompensas/api";
 import { refrescarCosmeticosWeb } from "@/lib/recompensas/cosmeticosWeb";
 import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
 import IconoCometa from "@/components/IconoCometa";
@@ -15,6 +15,8 @@ import { TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
 import { puestoDe, type PuestoId } from "@/lib/tienda/bazar";
 import IlustracionPaquete from "@/components/tienda/IlustracionPaquete";
 import IconoTrazo from "@/components/IconoTrazo";
+import { useCheckout } from "@/components/pagos/Vitrina";
+import { precioTexto, precioUsdPaquete, precioUsdParcial } from "@/lib/pagos/vitrina";
 
 // Tienda ampliada (0248) en la web: la misma vidriera que las pestañas nuevas del
 // Bazar de la app (paquetes, partida, Placa, duelos, marco del mes y ayudas). La
@@ -142,7 +144,7 @@ interface Estado {
   cometas: number;
 }
 
-export default function TiendaAmpliada() {
+export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetesConDinero?: boolean }) {
   const t = useTranslations("Recompensas.tienda");
   // Tienda (solo lo que no tienes) o Inventario (todo lo tuyo); lo elige TiendaClient con ?modo=.
   const parametros = useSearchParams();
@@ -157,6 +159,9 @@ export default function TiendaAmpliada() {
   const [confirmar, setConfirmar] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
+  // Precio de cada paquete para esta cuenta (0287): si ya tienes parte, solo lo que falta.
+  const [preciosPaq, setPreciosPaq] = useState<Record<string, { precio: number; paraTi: number; fraccion: number }>>({});
+  const precioDe = (it: Item) => (it.categoria === "paquete" && preciosPaq[it.item] ? preciosPaq[it.item].paraTi : it.precio);
 
   const cargar = useCallback(async () => {
     const sb = createClient();
@@ -169,6 +174,7 @@ export default function TiendaAmpliada() {
     ]);
     // Aparte: si 0279 no se aplicó, la columna no existe y la tienda sigue andando.
     const { data: filaCometas } = await sb.from("profiles").select("cometas").eq("id", u.user.id).maybeSingle();
+    setPreciosPaq(await preciosPaquetesParaMi(sb));
     const b = (base ?? {}) as Record<string, unknown>;
     setE({
       cos: cosmeticosDesdeFila(nuevos as Record<string, unknown> | null),
@@ -183,6 +189,14 @@ export default function TiendaAmpliada() {
       cometas: (filaCometas as { cometas?: number } | null)?.cometas ?? 0,
     });
   }, []);
+
+  // Paquetes con dinero: al pagar, el webhook los entrega; se recarga hasta verlos.
+  const { comprar: pagar, comprando: pagando, error: errorPago } = useCheckout(async () => {
+    for (let i = 0; i < 8; i++) {
+      await new Promise((ok) => setTimeout(ok, 1500));
+      await cargar();
+    }
+  });
 
   useEffect(() => {
     // Carga inicial desde la base (sistema externo).
@@ -422,7 +436,7 @@ export default function TiendaAmpliada() {
                       <IconoCometa className="h-3.5 w-3.5" /> {it.precioCometas.toLocaleString()}
                     </span>
                   ) : (
-                    <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-xs text-foreground">✦ {it.precio.toLocaleString()}</span>
+                    <span className="rounded-full border border-border bg-surface-2 px-2 py-0.5 font-mono text-xs text-foreground">✦ {precioDe(it).toLocaleString()}</span>
                   ))}
             </>
           );
@@ -547,10 +561,24 @@ export default function TiendaAmpliada() {
               }
               return (
                 <>
-                  <button type="button" disabled={ocupado || e.chispas < elegido.precio} onClick={comprar} className="rounded-full bg-logro px-6 py-3 font-display font-bold text-[#2A1A00] disabled:opacity-50">
-                    {confirmar ? t("confirmar") : t("comprar", { n: elegido.precio.toLocaleString() })}
+                  {elegido.categoria === "paquete" && precioDe(elegido) < elegido.precio && <p className="text-center text-xs font-semibold text-correcto">{t("pagasLoQueFalta")}</p>}
+                  <button type="button" disabled={ocupado || e.chispas < precioDe(elegido)} onClick={comprar} className="rounded-full bg-logro px-6 py-3 font-display font-bold text-[#2A1A00] disabled:opacity-50">
+                    {confirmar ? t("confirmar") : t("comprar", { n: precioDe(elegido).toLocaleString() })}
                   </button>
-                  {e.chispas < elegido.precio && <p className="text-center text-xs text-texto-secundario">{t("teFaltan", { n: (elegido.precio - e.chispas).toLocaleString() })}</p>}
+                  {e.chispas < precioDe(elegido) && <p className="text-center text-xs text-texto-secundario">{t("teFaltan", { n: (precioDe(elegido) - e.chispas).toLocaleString() })}</p>}
+                  {elegido.categoria === "paquete" && paquetesConDinero && preciosPaq[elegido.item] && (
+                    <>
+                      <button
+                        type="button"
+                        disabled={pagando !== null}
+                        onClick={() => pagar("paquete_cosmetico", { paquete: elegido.item })}
+                        className="rounded-xl border-2 border-[#05060F] bg-[#FFC53D] px-6 py-3 font-display font-bold text-[#1A1206] shadow-[3px_3px_0_0_#05060F] transition-all enabled:hover:translate-x-[1px] enabled:hover:translate-y-[1px] enabled:hover:shadow-[2px_2px_0_0_#05060F] disabled:opacity-60"
+                      >
+                        {pagando ? t("abriendoPago") : t("comprarDinero", { precio: precioTexto(precioUsdParcial(precioUsdPaquete(preciosPaq[elegido.item].precio), preciosPaq[elegido.item].fraccion)) })}
+                      </button>
+                      {errorPago && <p className="text-center text-xs text-error">{errorPago}</p>}
+                    </>
+                  )}
                 </>
               );
             })()}

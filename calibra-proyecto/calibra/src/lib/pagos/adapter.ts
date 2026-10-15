@@ -1,4 +1,4 @@
-import type { EventoWebhookNormalizado, ProductoComprable, ResultadoCheckout } from "./tipos";
+import type { DetalleCheckout, EventoWebhookNormalizado, ProductoComprable, ResultadoCheckout } from "./tipos";
 
 // Contrato que cada proveedor (Mercado Pago, Paddle, a futuro Google
 // Play Billing) tiene que cumplir — servicio.ts solo habla con esto,
@@ -9,7 +9,7 @@ export interface AdaptadorPago {
   // Crea el checkout para un producto del catálogo (productos.ts) y
   // devuelve dónde/cómo continuar — un link de redirect o un token de
   // overlay, según lo que use el proveedor.
-  crearCheckout(userId: string, producto: ProductoComprable): Promise<ResultadoCheckout>;
+  crearCheckout(userId: string, producto: ProductoComprable, detalle?: DetalleCheckout): Promise<ResultadoCheckout>;
 
   // Verifica que el POST del webhook realmente vino del proveedor
   // (HMAC u otro mecanismo de firma) ANTES de leer una sola línea del

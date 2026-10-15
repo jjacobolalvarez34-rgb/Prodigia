@@ -8,6 +8,9 @@ import { IconCandado } from "@/components/icons";
 import IconoCometa from "@/components/IconoCometa";
 import { createClient } from "@/lib/supabase/client";
 import { PRECIO_MUNDO_CHISPAS, PRECIO_MUNDO_COMETAS, type MundoPago } from "@/lib/mundos/precios";
+import { useCheckout } from "@/components/pagos/Vitrina";
+import { PRODUCTOS } from "@/lib/pagos/productos";
+import { precioTexto } from "@/lib/pagos/vitrina";
 
 interface Props {
   mundo: MundoPago;
@@ -16,15 +19,29 @@ interface Props {
   // O con Cometas (0280: 300).
   cometasIniciales: number;
   destino: string;
+  // Mundo suelto con dinero (0287): si Paddle tiene el producto de contenido.
+  ventaConDinero: boolean;
 }
 
-export default function MundoBloqueadoClient({ mundo, nombreMundo, puntosIniciales, cometasIniciales, destino }: Props) {
+export default function MundoBloqueadoClient({ mundo, nombreMundo, puntosIniciales, cometasIniciales, destino, ventaConDinero }: Props) {
   const t = useTranslations("Bloqueos.mundo");
   const router = useRouter();
   const [puntos, setPuntos] = useState(puntosIniciales);
   const [comprando, setComprando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [comprado, setComprado] = useState(false);
+
+  // Al pagar con dinero, el mundo lo abre el webhook: se espera a verlo y se entra.
+  const { comprar: pagar, comprando: pagando, error: errorPago } = useCheckout(async () => {
+    setComprado(true);
+    const sb = createClient();
+    for (let i = 0; i < 15; i++) {
+      const { data } = await sb.from("profiles").select("mundos_desbloqueados").maybeSingle();
+      if ((data?.mundos_desbloqueados as string[] | null)?.includes(mundo)) break;
+      await new Promise((ok) => setTimeout(ok, 1500));
+    }
+    router.push(destino);
+  });
 
   const alcanza = puntos >= PRECIO_MUNDO_CHISPAS;
   const alcanzaCometas = cometasIniciales >= PRECIO_MUNDO_COMETAS;
@@ -105,7 +122,18 @@ export default function MundoBloqueadoClient({ mundo, nombreMundo, puntosInicial
               {t("desbloquearCometas", { precio: PRECIO_MUNDO_COMETAS })}
             </button>
           )}
-          {!alcanza && !alcanzaCometas && (
+          {ventaConDinero && (
+            <button
+              type="button"
+              onClick={() => pagar("mundo_suelto", { mundo })}
+              disabled={comprando || pagando !== null}
+              className="flex items-center gap-2 rounded-xl border-2 border-[#05060F] bg-[#FFC53D] px-5 py-2.5 font-display text-sm font-bold text-[#1A1206] shadow-[3px_3px_0_0_#05060F] transition-all enabled:hover:translate-x-[1px] enabled:hover:translate-y-[1px] enabled:hover:shadow-[2px_2px_0_0_#05060F] disabled:opacity-60"
+            >
+              {pagando ? t("abriendoPago") : t("desbloquearDinero", { precio: precioTexto(PRODUCTOS.mundo_suelto.precioUsd) })}
+            </button>
+          )}
+          {errorPago && <p className="text-xs text-error">{errorPago}</p>}
+          {!alcanza && !alcanzaCometas && !ventaConDinero && (
             <p className="text-xs text-texto-secundario">
               {t("sigueJugando")}
             </p>

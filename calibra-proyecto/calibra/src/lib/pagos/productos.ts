@@ -26,6 +26,10 @@ export const PRODUCTOS: Record<ProductoComprable, DefinicionProducto> = {
   cometas_1200: { id: "cometas_1200", tipo: "cometas", montoCometas: 1200, precioUsd: 9.99 },
   cometas_2600: { id: "cometas_2600", tipo: "cometas", montoCometas: 2600, precioUsd: 19.99 },
   cometas_7000: { id: "cometas_7000", tipo: "cometas", montoCometas: 7000, precioUsd: 49.99 },
+  // 0287 (PLAN_ECONOMIA.md §4.3): un mundo a US$2,99 (o 300 Cometas) y los paquetes de
+  // cosméticos con dinero; el precio de cada paquete sale de precioUsdPaquete (vitrina.ts).
+  mundo_suelto: { id: "mundo_suelto", tipo: "mundo", precioUsd: 2.99 },
+  paquete_cosmetico: { id: "paquete_cosmetico", tipo: "paquete", precioUsd: 0 },
 };
 
 export function definicionDe(producto: ProductoComprable): DefinicionProducto {

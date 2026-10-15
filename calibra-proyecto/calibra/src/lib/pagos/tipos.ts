@@ -19,11 +19,35 @@ export type MotivoSuscripcion = "activacion" | "renovacion" | "actualizacion" | 
 // reales. "chispas_*" son packs de Chispas con dinero real, separados
 // del catálogo de gameplay (src/lib/tienda/costos.ts).
 // "cometas_*" (2026-10-13): la moneda premium (0279), PLAN_ECONOMIA.md §4.3.
-export type ProductoComprable = "pro_mensual" | "pro_anual" | "chispas_1000" | "chispas_2500" | "chispas_6000" | "chispas_15000" | "cometas_100" | "cometas_550" | "cometas_1200" | "cometas_2600" | "cometas_7000";
+// "mundo_suelto" y "paquete_cosmetico" (0287): precio calculado en el servidor sobre un
+// solo producto de Paddle (PADDLE_PRODUCT_CONTENIDO), sin un price_id por cada uno.
+export type ProductoComprable =
+  | "pro_mensual"
+  | "pro_anual"
+  | "chispas_1000"
+  | "chispas_2500"
+  | "chispas_6000"
+  | "chispas_15000"
+  | "cometas_100"
+  | "cometas_550"
+  | "cometas_1200"
+  | "cometas_2600"
+  | "cometas_7000"
+  | "mundo_suelto"
+  | "paquete_cosmetico";
+
+// Qué se compra exactamente cuando el producto depende de algo (qué mundo, qué
+// paquete) y su precio ya calculado en el servidor.
+export interface DetalleCheckout {
+  mundo?: string;
+  paquete?: string;
+  precioUsd?: number;
+  descripcion?: string;
+}
 
 export interface DefinicionProducto {
   id: ProductoComprable;
-  tipo: "suscripcion" | "chispas" | "cometas";
+  tipo: "suscripcion" | "chispas" | "cometas" | "mundo" | "paquete";
   intervalo?: IntervaloPlan; // solo si tipo === "suscripcion"
   montoChispas?: number; // solo si tipo === "chispas"
   montoCometas?: number; // solo si tipo === "cometas"
@@ -51,6 +75,18 @@ export type EventoWebhookNormalizado =
       intervalo: IntervaloPlan;
       periodoFin: string | null; // ISO timestamp
       cancelaAlFinDePeriodo: boolean;
+    }
+  | {
+      tipo: "compra_mundo";
+      userId: string;
+      providerTransactionId: string;
+      mundo: string;
+    }
+  | {
+      tipo: "compra_paquete";
+      userId: string;
+      providerTransactionId: string;
+      paquete: string;
     }
   | {
       tipo: "compra_cometas";

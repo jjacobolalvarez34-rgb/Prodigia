@@ -6,6 +6,8 @@ import { requireUsuario } from "@/lib/auth/guard";
 import { esMundoPago, tieneMundo } from "@/lib/mundos/precios";
 import Header from "@/components/Header";
 import MundoBloqueadoClient from "./MundoBloqueadoClient";
+import { pagosHabilitados } from "@/lib/pagos/flags";
+import { productosConPrecio } from "@/lib/pagos/paddle";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Bloqueos.mundo.metadata");
@@ -24,7 +26,7 @@ export default async function MundoBloqueadoPage({ searchParams }: Props) {
   const { mundo, next } = await searchParams;
   const tMundos = await getTranslations("Mundos.nombres");
   const supabase = await createClient();
-  const { profile } = await requireUsuario(supabase, "/mundo-bloqueado");
+  const { user, profile } = await requireUsuario(supabase, "/mundo-bloqueado");
 
   if (!mundo || !esMundoPago(mundo)) {
     redirect("/");
@@ -49,6 +51,7 @@ export default async function MundoBloqueadoPage({ searchParams }: Props) {
         puntosIniciales={profile.puntos_total}
         cometasIniciales={(filaCometas as { cometas?: number } | null)?.cometas ?? 0}
         destino={next || "/"}
+        ventaConDinero={pagosHabilitados() && !user.is_anonymous && productosConPrecio().includes("mundo_suelto")}
       />
     </>
   );
