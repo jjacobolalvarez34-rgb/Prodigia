@@ -1,10 +1,14 @@
 import { useMemo } from "react";
-import { BlurMask, Circle, createPicture, Group, LinearGradient, Oval, Path, Picture, RadialGradient, Rect, RoundedRect, Skia, vec } from "@shopify/react-native-skia";
+import { Circle, createPicture, Group, LinearGradient, Oval, Path, Picture, RadialGradient, Rect, RoundedRect, Skia, vec } from "@shopify/react-native-skia";
 import { useDerivedValue, type SharedValue } from "react-native-reanimated";
-import { dibujarParticulas, type Particula } from "./particulas";
+import { crearRecursosParticulas, dibujarParticulas, type Particula } from "./particulas";
 
 // Capas de efectos para dibujar dentro de un <Canvas> de Skia. Todas reciben
 // valores compartidos de Reanimated, así se animan en el hilo de la interfaz.
+//
+// Rendimiento (2026-10-15, «al abrir cápsulas se traba»): ninguna capa usa
+// desenfoques en vivo (BlurMask). Lo suave sale de degradés, que la GPU pinta casi
+// gratis, y los brillos se suman con blendMode «plus», como en los juegos.
 
 // ---------- Colores ----------
 function canales(hex: string): [number, number, number] {
@@ -21,8 +25,27 @@ export function tonoHex(hex: string, cuanto: number): string {
   return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
 }
 
+// Color que cambia con la animación (rgba de 0 a 1, como lo da interpolateColors).
+export type ColorVivo = SharedValue<number[]>;
+
+// Degradé de un color con varias opacidades; con color vivo, se recalcula en el hilo de la interfaz.
+function useDegrade(color: string, alfas: number[], vivo?: ColorVivo, blancoAlCentro = false) {
+  const fijo = useMemo(() => alfas.map((a, i) => (blancoAlCentro && i === 0 ? `rgba(255,255,255,${a})` : rgba(color, a))), [color, alfas, blancoAlCentro]);
+  return useDerivedValue(() => {
+    if (!vivo) return fijo;
+    const c = vivo.value;
+    // Como texto rgba: los arreglos tipados no siempre cruzan bien entre hilos.
+    const base = `${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)}`;
+    return alfas.map((a, i) => (blancoAlCentro && i === 0 ? `rgba(255,255,255,${a})` : `rgba(${base},${a})`));
+  });
+}
+
+const ALFAS_ANCHOS = [0.7, 0.22, 0];
+const ALFAS_FINOS = [0.75, 0.2, 0];
+const ALFAS_HALO = [0.95, 0.8, 0.25, 0];
+
 // ---------- Rayos de luz que giran detrás del premio ----------
-export function Rayos({ cx, cy, radio, color, opacidad, reloj, escala, cantidad = 12, velocidad = 0.22 }: { cx: number; cy: number; radio: number; color: string; opacidad: SharedValue<number>; reloj: SharedValue<number>; escala?: SharedValue<number>; cantidad?: number; velocidad?: number }) {
+export function Rayos({ cx, cy, radio, color, colorVivo, opacidad, reloj, escala, cantidad = 12, velocidad = 0.22 }: { cx: number; cy: number; radio: number; color: string; colorVivo?: ColorVivo; opacidad: SharedValue<number>; reloj: SharedValue<number>; escala?: SharedValue<number>; cantidad?: number; velocidad?: number }) {
   const [anchos, finos] = useMemo(() => {
     const hacer = (ancho: number, desfase: number) => {
       const p = Skia.Path.Make();
@@ -40,18 +63,18 @@ export function Rayos({ cx, cy, radio, color, opacidad, reloj, escala, cantidad 
   }, [cantidad, radio]);
   const transform = useDerivedValue(() => [{ translateX: cx }, { translateY: cy }, { rotate: (reloj.value / 1000) * velocidad }, { scale: escala ? escala.value : 1 }]);
   const contra = useDerivedValue(() => [{ translateX: cx }, { translateY: cy }, { rotate: -(reloj.value / 1000) * velocidad * 0.6 }, { scale: escala ? escala.value * 0.85 : 0.85 }]);
+  const coloresAnchos = useDegrade(color, ALFAS_ANCHOS, colorVivo);
+  const coloresFinos = useDegrade(color, ALFAS_FINOS, colorVivo, true);
   return (
     <Group opacity={opacidad} blendMode="plus">
       <Group transform={transform}>
         <Path path={anchos}>
-          <RadialGradient c={vec(0, 0)} r={radio} colors={[rgba(color, 0.75), rgba(color, 0.25), rgba(color, 0)]} positions={[0, 0.45, 1]} />
-          <BlurMask blur={8} style="normal" />
+          <RadialGradient c={vec(0, 0)} r={radio} colors={coloresAnchos} positions={[0, 0.42, 1]} />
         </Path>
       </Group>
       <Group transform={contra}>
         <Path path={finos}>
-          <RadialGradient c={vec(0, 0)} r={radio} colors={["rgba(255,255,255,0.7)", rgba(color, 0.2), rgba(color, 0)]} positions={[0, 0.5, 1]} />
-          <BlurMask blur={3} style="normal" />
+          <RadialGradient c={vec(0, 0)} r={radio} colors={coloresFinos} positions={[0, 0.5, 1]} />
         </Path>
       </Group>
     </Group>
@@ -59,12 +82,13 @@ export function Rayos({ cx, cy, radio, color, opacidad, reloj, escala, cantidad 
 }
 
 // ---------- Halo: resplandor redondo ----------
-export function Halo({ cx, cy, radio, color, opacidad, escala }: { cx: number; cy: number; radio: number; color: string; opacidad: SharedValue<number>; escala?: SharedValue<number> }) {
+export function Halo({ cx, cy, radio, color, colorVivo, opacidad, escala }: { cx: number; cy: number; radio: number; color: string; colorVivo?: ColorVivo; opacidad: SharedValue<number>; escala?: SharedValue<number> }) {
   const r = useDerivedValue(() => radio * (escala ? escala.value : 1));
+  const colores = useDegrade(color, ALFAS_HALO, colorVivo, true);
   return (
     <Group opacity={opacidad} blendMode="plus">
       <Circle cx={cx} cy={cy} r={r}>
-        <RadialGradient c={vec(cx, cy)} r={r} colors={["rgba(255,255,255,0.95)", rgba(color, 0.8), rgba(color, 0.25), rgba(color, 0)]} positions={[0, 0.18, 0.55, 1]} />
+        <RadialGradient c={vec(cx, cy)} r={r} colors={colores} positions={[0, 0.18, 0.55, 1]} />
       </Circle>
     </Group>
   );
@@ -76,13 +100,14 @@ export function Onda({ cx, cy, desde, hasta, color, avance }: { cx: number; cy: 
     const p = avance.value;
     return desde + (hasta - desde) * (1 - (1 - p) * (1 - p) * (1 - p));
   });
-  const ancho = useDerivedValue(() => 2 + 16 * (1 - avance.value));
+  const ancho = useDerivedValue(() => 4 + 26 * (1 - avance.value));
+  const medio = useDerivedValue(() => 2 + 8 * (1 - avance.value));
   const op = useDerivedValue(() => (avance.value <= 0 || avance.value >= 1 ? 0 : (1 - avance.value) * 0.95));
+  const suave = useMemo(() => rgba(color, 0.22), [color]);
   return (
     <Group opacity={op} blendMode="plus">
-      <Circle cx={cx} cy={cy} r={r} style="stroke" strokeWidth={ancho} color={color}>
-        <BlurMask blur={5} style="solid" />
-      </Circle>
+      <Circle cx={cx} cy={cy} r={r} style="stroke" strokeWidth={ancho} color={suave} />
+      <Circle cx={cx} cy={cy} r={r} style="stroke" strokeWidth={medio} color={color} opacity={0.7} />
       <Circle cx={cx} cy={cy} r={r} style="stroke" strokeWidth={1.5} color="rgba(255,255,255,0.9)" />
     </Group>
   );
@@ -95,11 +120,13 @@ export function Destello({ ancho, alto, opacidad, color = "#FFFFFF" }: { ancho: 
 
 // ---------- Partículas: `tiempo` son los segundos desde que salieron (≤ 0 = todavía no) ----------
 export function Particulas({ lista, tiempo, cx, cy, ancho, alto, brillo = true }: { lista: Particula[]; tiempo: SharedValue<number>; cx: number; cy: number; ancho: number; alto: number; brillo?: boolean }) {
+  // Pinturas y brillos se arman una sola vez por lista, no en cada cuadro.
+  const recursos = useMemo(() => crearRecursosParticulas(lista.map((p) => p.color)), [lista]);
   const dibujo = useDerivedValue(() =>
     createPicture(
       (canvas) => {
         if (tiempo.value <= 0) return;
-        dibujarParticulas(canvas, lista, tiempo.value, cx, cy, brillo);
+        dibujarParticulas(canvas, lista, tiempo.value, cx, cy, recursos, brillo);
       },
       { width: ancho, height: alto }
     )
@@ -115,6 +142,7 @@ const MITAD_ARRIBA = "M20 70 V50 A30 30 0 0 1 80 50 V70 Z";
 const MITAD_ABAJO = "M20 70 V90 A30 30 0 0 0 80 90 V70 Z";
 const ENTERA = "M20 70 V50 A30 30 0 0 1 80 50 V90 A30 30 0 0 1 20 90 Z";
 const EMBLEMA = "M50 30 Q51.4 38.6 60 40 Q51.4 41.4 50 50 Q48.6 41.4 40 40 Q48.6 38.6 50 30 Z";
+const BRILLO_VERTICAL = ["rgba(255,255,255,0)", "rgba(255,255,255,0.55)", "rgba(255,255,255,0)"];
 
 function Mitad({ d, color, arriba }: { d: string; color: string; arriba: boolean }) {
   const camino = useMemo(() => Skia.Path.MakeFromSVGString(d)!, [d]);
@@ -131,18 +159,19 @@ function Mitad({ d, color, arriba }: { d: string; color: string; arriba: boolean
       <Path path={camino} style="stroke" strokeWidth={0.8} color="rgba(255,255,255,0.22)" />
       {arriba ? (
         <>
-          <RoundedRect x={28.5} y={34} width={5.5} height={30} r={2.75} color="rgba(255,255,255,0.55)">
-            <BlurMask blur={1.4} style="normal" />
+          {/* Reflejo vertical: degradé en vez de desenfoque. */}
+          <RoundedRect x={27} y={34} width={8.5} height={30} r={4}>
+            <LinearGradient start={vec(27, 0)} end={vec(35.5, 0)} colors={BRILLO_VERTICAL} />
           </RoundedRect>
-          <Circle cx={37} cy={29} r={2.2} color="rgba(255,255,255,0.85)">
-            <BlurMask blur={0.8} style="normal" />
+          <Circle cx={37} cy={29} r={3.2}>
+            <RadialGradient c={vec(37, 29)} r={3.2} colors={["rgba(255,255,255,0.95)", "rgba(255,255,255,0)"]} />
           </Circle>
           <Path path={EMBLEMA} color="rgba(255,255,255,0.92)" />
         </>
       ) : (
         <>
-          <RoundedRect x={28.5} y={76} width={5.5} height={24} r={2.75} color="rgba(255,255,255,0.32)">
-            <BlurMask blur={1.4} style="normal" />
+          <RoundedRect x={27} y={76} width={8.5} height={24} r={4} opacity={0.6}>
+            <LinearGradient start={vec(27, 0)} end={vec(35.5, 0)} colors={BRILLO_VERTICAL} />
           </RoundedRect>
           {/* Aro metálico de la unión. */}
           <Rect x={18.5} y={67.6} width={63} height={5}>
@@ -155,7 +184,7 @@ function Mitad({ d, color, arriba }: { d: string; color: string; arriba: boolean
   );
 }
 
-export function CuerpoCapsula({ ancho, colores, abierta, ranura, colorRanura, reloj }: { ancho: number; colores: [string, string]; abierta: SharedValue<number>; ranura: SharedValue<number>; colorRanura: string; reloj: SharedValue<number> }) {
+export function CuerpoCapsula({ ancho, colores, abierta, ranura, colorRanura, colorVivo, reloj }: { ancho: number; colores: [string, string]; abierta: SharedValue<number>; ranura: SharedValue<number>; colorRanura: string; colorVivo?: ColorVivo; reloj: SharedValue<number> }) {
   const k = ancho / 60;
   const base = useMemo(() => [{ scale: k }, { translateX: -50 }, { translateY: -70 }], [k]);
   const entera = useMemo(() => Skia.Path.MakeFromSVGString(ENTERA)!, []);
@@ -169,8 +198,11 @@ export function CuerpoCapsula({ ancho, colores, abierta, ranura, colorRanura, re
   });
   const opMitades = useDerivedValue(() => (abierta.value < 0.55 ? 1 : Math.max(0, (1 - abierta.value) / 0.45)));
   const opRanura = useDerivedValue(() => ranura.value * (1 - abierta.value));
-  const anchoFuga = useDerivedValue(() => 18 + 110 * ranura.value);
-  const ovalo = useDerivedValue(() => Skia.XYWHRect(50 - anchoFuga.value / 2, 70 - (2 + 6 * ranura.value), anchoFuga.value, 4 + 12 * ranura.value));
+  // Luz que se escapa por la unión: un óvalo con degradé radial (aplastado en vertical).
+  const radioFuga = useDerivedValue(() => 9 + 55 * ranura.value);
+  const ovalo = useDerivedValue(() => Skia.XYWHRect(50 - radioFuga.value, 70 - radioFuga.value, radioFuga.value * 2, radioFuga.value * 2));
+  const aplastar = useDerivedValue(() => [{ scaleY: 0.12 + 0.1 * ranura.value }]);
+  const coloresFuga = useDegrade(colorRanura, ALFAS_HALO, colorVivo, true);
   // Reflejo diagonal que cruza la cápsula cada ~3 s.
   const reflejo = useDerivedValue(() => {
     const ciclo = ((reloj.value / 1000) % 3.2) / 3.2;
@@ -196,12 +228,12 @@ export function CuerpoCapsula({ ancho, colores, abierta, ranura, colorRanura, re
       </Group>
       {/* Luz que se escapa por la unión. */}
       <Group opacity={opRanura} blendMode="plus">
-        <Oval rect={ovalo} color={colorRanura}>
-          <BlurMask blur={6} style="normal" />
-        </Oval>
-        <Rect x={19} y={69} width={62} height={2.2} color="#FFFFFF">
-          <BlurMask blur={1.2} style="solid" />
-        </Rect>
+        <Group transform={aplastar} origin={vec(50, 70)}>
+          <Oval rect={ovalo}>
+            <RadialGradient c={vec(50, 70)} r={radioFuga} colors={coloresFuga} positions={[0, 0.18, 0.55, 1]} />
+          </Oval>
+        </Group>
+        <Rect x={19} y={69.2} width={62} height={1.6} color="#FFFFFF" />
       </Group>
     </Group>
   );

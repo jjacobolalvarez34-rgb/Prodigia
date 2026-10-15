@@ -5494,10 +5494,13 @@
     "yaUsada": "Ya reparaste una racha esta semana. Vuelve a estar disponible el {fecha}."
   },
   "CapsulasCometas": {
-    "eyebrow": "Con Cometas",
-    "titulo": "Cápsulas estelares",
-    "texto": "Se abren al momento y siempre traen un cosmético. Si ya lo tienes, se cambia por Chispas.",
-    "abrirPor": "Abrir por {costo}",
-    "abriendo": "Abriendo…"
+    "eyebrow": "Premium · solo con Cometas",
+    "titulo": "Cápsulas premium",
+    "texto": "Siempre traen un cosmético raro, épico o legendario (si ya lo tienes, se cambia por Chispas). Ábrela ya o guárdala en Recompensas para cuando quieras.",
+    "comprando": "Comprando…",
+    "guardada": "¡{nombre} guardada en tus Recompensas!",
+    "irRecompensas": "Ir a abrirla",
+    "abrirYa": "Abrir ya",
+    "guardar": "Guardar"
   }
 }

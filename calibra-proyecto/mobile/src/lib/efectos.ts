@@ -122,6 +122,12 @@ export function prepararSonidos() {
   (["acierto0", "acierto1", "acierto2", "acierto3", "error", "moneda", "tecla", "boton", "cuenta", "ya"] as Sonido[]).forEach(reproductor);
 }
 
+// Carga antes los sonidos de una escena (cápsulas, cinemáticas): crear el reproductor
+// la primera vez que suena traba un cuadro justo en el momento fuerte.
+export function precargarSonidos(lista: Sonido[]) {
+  lista.forEach(reproductor);
+}
+
 const ultimoSonido = new Map<Sonido, number>();
 
 // Mientras se ve la intro de Mamut y la pantalla de carga, la app ya está montada

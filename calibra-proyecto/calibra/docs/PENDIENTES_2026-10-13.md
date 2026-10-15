@@ -218,3 +218,8 @@ dinero falta crear PADDLE_PRODUCT_CONTENIDO (tabla de claves).
 45. [ ] La descarga del APK en el navegador se queda trabada al final (80 MB), con v0.3 y v0.4. Desde 0.5.0 la actualización se
     baja dentro de la app y no pasa por el navegador.
 
+
+## Pedidos del 2026-10-15
+
+46. [ ] Cinemática de Prodigia Pro más limpia y con más calidad (web y app).
+47. [ ] Abrir cápsulas se traba un poco: que sea fluido y gráficamente increíble (cómo lo hacen Clash Royale / Brawl Stars).

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { CAPSULAS, CATALOGO_NUEVO, ciudadDe, COLOR_RAREZA, coloresCapsula, NOMBRE_RAREZA, type Rareza } from "@/lib/recompensas/catalogo";
 import { sonar } from "~/lib/efectos";
@@ -79,22 +80,33 @@ function revelado(p: PremioCapsula): Omit<PremioRevelado, "contenido"> {
   return { color: COLOR_RAREZA[rareza], nivel: NIVEL_RAREZA[rareza] ?? 2 };
 }
 
+// Lo que se recarga después de abrir (saldo, cosméticos, pendientes) espera a que se
+// cierre la escena: recargarlo en medio re-dibujaba toda la app de fondo y trababa
+// la animación (2026-10-15).
+async function recargarTodo(chispas: number | null) {
+  if (chispas != null) fijarChispas(chispas);
+  const { data } = await supabase.auth.getSession();
+  if (data.session) recargarCosmeticos(data.session.user.id);
+  recargarPendientes();
+  recargarJugador();
+}
+
 export default function AbrirCapsula({ capsula, onCerrar }: { capsula: DatosCapsula; onCerrar: () => void }) {
   const nombre = CAPSULAS[capsula.tipo]?.nombre ?? "Cápsula";
   const ciudad = ciudadDe(capsula.mundo);
+  const [chispas, setChispas] = useState<number | null>(null);
   return (
     <Revelacion
       colores={coloresCapsula(capsula.tipo, capsula.mundo)}
       etiqueta={ciudad ? `${nombre} · ${ciudad.nombre}` : nombre}
       titulo="Te espera un premio"
-      onCerrar={onCerrar}
+      onCerrar={() => {
+        void recargarTodo(chispas);
+        onCerrar();
+      }}
       abrir={async () => {
         const r = await abrirCapsula(supabase, capsula.id);
-        fijarChispas(r.puntos_total);
-        const { data } = await supabase.auth.getSession();
-        if (data.session) recargarCosmeticos(data.session.user.id);
-        recargarPendientes();
-        recargarJugador();
+        setChispas(r.puntos_total);
         return { ...revelado(r), contenido: <Premio p={r} /> };
       }}
     />

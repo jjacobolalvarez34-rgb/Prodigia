@@ -4,19 +4,21 @@ import { useSharedValue } from "react-native-reanimated";
 import { CAPSULAS, CAPSULAS_CON_COMETAS, COLOR_RAREZA, NOMBRE_RAREZA, type Rareza } from "@/lib/recompensas/catalogo";
 import { vibrar } from "~/lib/efectos";
 import { fijarCometas } from "~/lib/jugador";
-import { comprarCapsulaConCometas, contenidoCapsula, mensajeError, type Capsula as DatosCapsula, type ContenidoCapsula } from "~/lib/recompensas";
+import { useRouter } from "expo-router";
+import { comprarCapsulaConCometas, contenidoCapsula, mensajeError, recargarPendientes, type Capsula as DatosCapsula, type ContenidoCapsula } from "~/lib/recompensas";
+import AbrirCapsula from "../recompensas/AbrirCapsula";
 import { supabase } from "~/lib/supabase";
 import { color } from "~/tema";
 import { mostrarAviso } from "../Aviso";
 import Boton3D from "../Boton3D";
 import { IconoCometa } from "../Iconos";
-import AbrirCapsula from "../recompensas/AbrirCapsula";
 import Capsula from "../recompensas/Capsula";
 import Texto from "../Texto";
 
-// Cápsulas con Cometas (0287), igual que en la web: se compran y se abren al momento,
-// con las probabilidades a la vista antes de pagar.
-function Tarjeta({ tipo, costo, contenido, ocupado, onComprar }: { tipo: "estelar" | "supernova"; costo: number; contenido: ContenidoCapsula[]; ocupado: boolean; onComprar: () => void }) {
+// Cápsulas premium (0287), igual que en la web: solo con Cometas, y dos modalidades:
+// «Abrir ya» (la animación al momento) o «Guardar» (queda en Recompensas para abrirla
+// cuando quieras). Las probabilidades se ven antes de pagar.
+function Tarjeta({ tipo, costo, contenido, ocupado, onComprar }: { tipo: "estelar" | "supernova"; costo: number; contenido: ContenidoCapsula[]; ocupado: boolean; onComprar: (abrirYa: boolean) => void }) {
   const abierta = useSharedValue(0);
   const total = contenido.reduce((a, f) => a + f.peso, 0);
   return (
@@ -37,7 +39,16 @@ function Tarjeta({ tipo, costo, contenido, ocupado, onComprar }: { tipo: "estela
             </View>
           );
         })}
-        <Boton3D titulo={`Abrir por ${costo}`} icono={<IconoCometa tam={16} />} tamano="sm" cargando={ocupado} onPress={onComprar} />
+        <View style={styles.fila}>
+          <IconoCometa tam={16} />
+          <Texto v="mono" tam={14} style={{ flex: 1, marginLeft: 4 }}>
+            {costo}
+          </Texto>
+        </View>
+        <View style={{ flexDirection: "row", gap: 8 }}>
+          <Boton3D titulo="Abrir ya" tamano="sm" cargando={ocupado} onPress={() => onComprar(true)} estilo={{ flex: 1 }} />
+          <Boton3D titulo="Guardar" variante="secundario" tamano="sm" deshabilitado={ocupado} onPress={() => onComprar(false)} estilo={{ flex: 1 }} />
+        </View>
       </View>
     </View>
   );
@@ -46,19 +57,27 @@ function Tarjeta({ tipo, costo, contenido, ocupado, onComprar }: { tipo: "estela
 export default function CapsulasCometas() {
   const [contenido, setContenido] = useState<Record<string, ContenidoCapsula[]>>({});
   const [ocupado, setOcupado] = useState<string | null>(null);
+  const [guardada, setGuardada] = useState<string | null>(null);
   const [abriendo, setAbriendo] = useState<DatosCapsula | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     Promise.all(CAPSULAS_CON_COMETAS.map(async (c) => [c.tipo, await contenidoCapsula(supabase, c.tipo)] as const)).then((filas) => setContenido(Object.fromEntries(filas)));
   }, []);
 
-  async function comprar(tipo: "estelar" | "supernova") {
+  async function comprar(tipo: "estelar" | "supernova", abrirYa: boolean) {
     vibrar.medio();
     setOcupado(tipo);
     try {
       const r = await comprarCapsulaConCometas(supabase, tipo);
       fijarCometas(r.cometas);
-      setAbriendo({ id: r.id, tipo, mundo: null, detalle: null, creada_at: new Date().toISOString() });
+      if (abrirYa) {
+        setGuardada(null);
+        setAbriendo({ id: r.id, tipo, mundo: null, detalle: null, creada_at: new Date().toISOString() });
+      } else {
+        setGuardada(CAPSULAS[tipo].nombre);
+        recargarPendientes();
+      }
     } catch (e) {
       mostrarAviso(mensajeError(e), "error");
     } finally {
@@ -70,17 +89,25 @@ export default function CapsulasCometas() {
     <View style={{ gap: 10 }}>
       <View style={{ gap: 2 }}>
         <Texto v="micro" c="#B07CFF">
-          Con Cometas
+          Premium · solo con Cometas
         </Texto>
-        <Texto v="h2">Cápsulas estelares</Texto>
+        <Texto v="h2">Cápsulas premium</Texto>
         <Texto v="nota" tam={12.5}>
-          Se abren al momento y siempre traen un cosmético. Si ya lo tienes, se cambia por Chispas.
+          Siempre traen un cosmético raro, épico o legendario (si ya lo tienes, se cambia por Chispas). Ábrela ya o guárdala en Recompensas para cuando quieras.
         </Texto>
       </View>
       {CAPSULAS_CON_COMETAS.map((c) => (
-        <Tarjeta key={c.tipo} tipo={c.tipo} costo={c.costo} contenido={contenido[c.tipo] ?? []} ocupado={ocupado === c.tipo} onComprar={() => comprar(c.tipo)} />
+        <Tarjeta key={c.tipo} tipo={c.tipo} costo={c.costo} contenido={contenido[c.tipo] ?? []} ocupado={ocupado === c.tipo} onComprar={(abrirYa) => comprar(c.tipo, abrirYa)} />
       ))}
       {abriendo && <AbrirCapsula capsula={abriendo} onCerrar={() => setAbriendo(null)} />}
+      {guardada && (
+        <View style={{ gap: 8 }}>
+          <Texto v="fuerte" c={color.correcto} centro>
+            ¡{guardada} guardada en tus Recompensas!
+          </Texto>
+          <Boton3D titulo="Ir a abrirla" variante="secundario" tamano="sm" onPress={() => router.push("/recompensas")} />
+        </View>
+      )}
     </View>
   );
 }

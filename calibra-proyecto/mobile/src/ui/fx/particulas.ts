@@ -1,4 +1,4 @@
-import { BlendMode, BlurStyle, PaintStyle, Skia, StrokeCap, type SkCanvas } from "@shopify/react-native-skia";
+import { BlendMode, PaintStyle, Skia, StrokeCap, TileMode, type SkCanvas, type SkPaint, type SkPath } from "@shopify/react-native-skia";
 
 // Partículas de las celebraciones (cápsulas, premios): cada una sale con una
 // velocidad, la frena el aire y la tira la gravedad. La posición se calcula de
@@ -101,8 +101,7 @@ export function crearLluvia(ancho: number, cantidad: number, colores: string[], 
 }
 
 // Estrella de 4 puntas de radio 1 (se escala al dibujar).
-function estrella() {
-  "worklet";
+function estrella(): SkPath {
   const p = Skia.Path.Make();
   const a = 1;
   const b = 0.28;
@@ -118,17 +117,49 @@ function estrella() {
   return p;
 }
 
-// Dibuja las partículas `t` segundos después de salir desde (cx, cy).
-export function dibujarParticulas(canvas: SkCanvas, lista: Particula[], t: number, cx: number, cy: number, brillo = true) {
-  "worklet";
-  if (t <= 0) return;
-  const forma = estrella();
+function canal(hex: string, i: number): number {
+  return parseInt(hex.replace("#", "").slice(i * 2, i * 2 + 2), 16) / 255;
+}
+
+// Lo que se reusa en cada cuadro (rendimiento, 2026-10-15): la forma de la estrella,
+// una pintura y, por color, un brillo ya armado con un degradé radial. Antes cada
+// partícula llevaba un desenfoque calculado en vivo (MaskFilter), lo más caro que hay
+// en un teléfono: así lo hacen los juegos, con el brillo «horneado» de antemano.
+export interface RecursosParticulas {
+  estrella: SkPath;
+  pintura: SkPaint;
+  halos: Record<string, SkPaint>;
+}
+
+export function crearRecursosParticulas(colores: string[]): RecursosParticulas {
   const pintura = Skia.Paint();
   pintura.setAntiAlias(true);
-  const halo = Skia.Paint();
-  halo.setAntiAlias(true);
-  halo.setBlendMode(BlendMode.Plus);
-  halo.setMaskFilter(Skia.MaskFilter.MakeBlur(BlurStyle.Normal, 6, true));
+  const halos: Record<string, SkPaint> = {};
+  for (const c of new Set([...colores, "#FFFFFF"])) {
+    const [r, g, b] = [canal(c, 0), canal(c, 1), canal(c, 2)];
+    const h = Skia.Paint();
+    h.setAntiAlias(true);
+    h.setBlendMode(BlendMode.Plus);
+    h.setShader(
+      Skia.Shader.MakeRadialGradient(
+        Skia.Point(0, 0),
+        1,
+        [Skia.Color([r, g, b, 0.85]), Skia.Color([r, g, b, 0.3]), Skia.Color([r, g, b, 0])],
+        [0, 0.38, 1],
+        TileMode.Clamp
+      )
+    );
+    halos[c] = h;
+  }
+  return { estrella: estrella(), pintura, halos };
+}
+
+// Dibuja las partículas `t` segundos después de salir desde (cx, cy).
+export function dibujarParticulas(canvas: SkCanvas, lista: Particula[], t: number, cx: number, cy: number, recursos: RecursosParticulas, brillo = true) {
+  "worklet";
+  if (t <= 0) return;
+  const forma = recursos.estrella;
+  const pintura = recursos.pintura;
   for (let i = 0; i < lista.length; i++) {
     const p = lista[i];
     const s = t - p.retraso;
@@ -141,26 +172,33 @@ export function dibujarParticulas(canvas: SkCanvas, lista: Particula[], t: numbe
     // Aparece de golpe y se apaga en el último 35 %.
     const alfa = vida < 0.65 ? 1 : Math.max(0, (1 - vida) / 0.35);
     const ang = p.giro * s;
+    const halo = recursos.halos[p.color];
     pintura.setColor(Skia.Color(p.color));
     pintura.setAlphaf(alfa);
     canvas.save();
     canvas.translate(x, y);
     if (p.forma === "punto") {
       const titila = 0.75 + 0.25 * Math.sin(s * 18 + p.fase);
-      if (brillo) {
-        halo.setColor(Skia.Color(p.color));
-        halo.setAlphaf(alfa * 0.8);
-        canvas.drawCircle(0, 0, p.tam * 1.8, halo);
+      if (brillo && halo) {
+        const rh = p.tam * 1.8 + 8;
+        halo.setAlphaf(alfa * 0.9);
+        canvas.save();
+        canvas.scale(rh, rh);
+        canvas.drawCircle(0, 0, 1, halo);
+        canvas.restore();
       }
       pintura.setColor(Skia.Color("#FFFFFF"));
       pintura.setAlphaf(alfa * titila);
       canvas.drawCircle(0, 0, p.tam * 0.55, pintura);
     } else if (p.forma === "estrella") {
       const tam = p.tam * (0.9 + 0.3 * Math.sin(s * 14 + p.fase));
-      if (brillo) {
-        halo.setColor(Skia.Color(p.color));
-        halo.setAlphaf(alfa * 0.7);
-        canvas.drawCircle(0, 0, tam * 1.2, halo);
+      if (brillo && halo) {
+        const rh = tam * 1.3 + 8;
+        halo.setAlphaf(alfa * 0.8);
+        canvas.save();
+        canvas.scale(rh, rh);
+        canvas.drawCircle(0, 0, 1, halo);
+        canvas.restore();
       }
       canvas.rotate(ang * 0.4, 0, 0);
       canvas.scale(tam, tam);

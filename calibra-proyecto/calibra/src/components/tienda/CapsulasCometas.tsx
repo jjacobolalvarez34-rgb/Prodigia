@@ -3,14 +3,17 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import IconoCometa from "@/components/IconoCometa";
+import { Link } from "@/i18n/navigation";
 import AbrirCapsula from "@/components/recompensas/AbrirCapsula";
 import { DibujoCapsula } from "@/components/recompensas/DibujoCapsula";
 import { createClient } from "@/lib/supabase/client";
 import { comprarCapsulaConCometas, contenidoCapsula, mensajeError, type Capsula, type ContenidoCapsula } from "@/lib/recompensas/api";
 import { CAPSULAS, CAPSULAS_CON_COMETAS, COLOR_RAREZA, type Rareza } from "@/lib/recompensas/catalogo";
 
-// Cápsulas con Cometas (0287): se compran y se abren al momento, con la animación de
-// siempre. Las probabilidades se ven antes de pagar.
+// Cápsulas premium (0287): solo se compran con Cometas. Dos modalidades (pedido
+// 2026-10-15): «Abrir ya», con la animación al momento, o «Guardar», que la deja en
+// Recompensas para abrirla cuando quieras, como las demás. Las probabilidades se ven
+// antes de pagar.
 export default function CapsulasCometas() {
   const t = useTranslations("CapsulasCometas");
   const tNombre = useTranslations("Recompensas.capsulas.nombres");
@@ -18,6 +21,7 @@ export default function CapsulasCometas() {
   const [contenido, setContenido] = useState<Record<string, ContenidoCapsula[]>>({});
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [guardada, setGuardada] = useState<string | null>(null);
   const [abriendo, setAbriendo] = useState<Capsula | null>(null);
 
   useEffect(() => {
@@ -25,13 +29,15 @@ export default function CapsulasCometas() {
     Promise.all(CAPSULAS_CON_COMETAS.map(async (c) => [c.tipo, await contenidoCapsula(sb, c.tipo)] as const)).then((filas) => setContenido(Object.fromEntries(filas)));
   }, []);
 
-  async function comprar(tipo: "estelar" | "supernova") {
+  async function comprar(tipo: "estelar" | "supernova", abrirYa: boolean) {
     setOcupado(tipo);
     setError(null);
+    setGuardada(null);
     try {
       const r = await comprarCapsulaConCometas(createClient(), tipo);
       window.dispatchEvent(new CustomEvent("prodigia:cometas", { detail: r.cometas }));
-      setAbriendo({ id: r.id, tipo, mundo: null, detalle: null, creada_at: new Date().toISOString() });
+      if (abrirYa) setAbriendo({ id: r.id, tipo, mundo: null, detalle: null, creada_at: new Date().toISOString() });
+      else setGuardada(tNombre(tipo));
     } catch (e) {
       setError(mensajeError(e));
     } finally {
@@ -66,15 +72,27 @@ export default function CapsulasCometas() {
                     );
                   })}
                 </ul>
-                <button
-                  type="button"
-                  disabled={ocupado !== null}
-                  onClick={() => comprar(c.tipo)}
-                  className="flex items-center justify-center gap-2 rounded-xl border-2 border-[#05060F] bg-[#5DE4FF] px-4 py-2 font-display text-sm font-bold text-[#04121A] shadow-[3px_3px_0_0_#05060F] transition-all enabled:hover:translate-x-[1px] enabled:hover:translate-y-[1px] enabled:hover:shadow-[2px_2px_0_0_#05060F] disabled:opacity-60"
-                >
-                  <IconoCometa className="h-4 w-4" />
-                  {ocupado === c.tipo ? t("abriendo") : t("abrirPor", { costo: c.costo })}
-                </button>
+                <span className="flex items-center gap-1 font-mono text-sm font-bold">
+                  <IconoCometa className="h-4 w-4" /> {c.costo}
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    disabled={ocupado !== null}
+                    onClick={() => comprar(c.tipo, true)}
+                    className="rounded-xl border-2 border-[#05060F] bg-[#5DE4FF] px-3 py-2 font-display text-sm font-bold text-[#04121A] shadow-[3px_3px_0_0_#05060F] transition-all enabled:hover:translate-x-[1px] enabled:hover:translate-y-[1px] enabled:hover:shadow-[2px_2px_0_0_#05060F] disabled:opacity-60"
+                  >
+                    {ocupado === c.tipo ? t("comprando") : t("abrirYa")}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={ocupado !== null}
+                    onClick={() => comprar(c.tipo, false)}
+                    className="rounded-xl border-2 border-white/30 px-3 py-2 font-display text-sm font-bold text-white transition-colors enabled:hover:border-white/60 disabled:opacity-60"
+                  >
+                    {t("guardar")}
+                  </button>
+                </div>
               </div>
             </div>
           );
@@ -82,6 +100,14 @@ export default function CapsulasCometas() {
       </div>
       {error && <p className="text-sm font-semibold text-[#FF8A8A]">{error}</p>}
       {abriendo && <AbrirCapsula capsula={abriendo} onCerrar={() => setAbriendo(null)} />}
+      {guardada && (
+        <p className="text-sm font-semibold text-[#3DDC97]">
+          {t("guardada", { nombre: guardada })}{" "}
+          <Link href="/recompensas" className="underline">
+            {t("irRecompensas")}
+          </Link>
+        </p>
+      )}
     </section>
   );
 }

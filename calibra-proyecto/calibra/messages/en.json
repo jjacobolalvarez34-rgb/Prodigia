@@ -5494,10 +5494,13 @@
     "yaUsada": "You already repaired a streak this week. It's available again on {fecha}."
   },
   "CapsulasCometas": {
-    "eyebrow": "With Comets",
-    "titulo": "Star capsules",
-    "texto": "They open right away and always hold a cosmetic. If you already have it, it turns into Sparks.",
-    "abrirPor": "Open for {costo}",
-    "abriendo": "Opening…"
+    "eyebrow": "Premium · Comets only",
+    "titulo": "Premium capsules",
+    "texto": "They always hold a rare, epic or legendary cosmetic (if you already have it, it turns into Sparks). Open it now or save it in Rewards for later.",
+    "comprando": "Buying…",
+    "guardada": "{nombre} saved in your Rewards!",
+    "irRecompensas": "Go open it",
+    "abrirYa": "Open now",
+    "guardar": "Save"
   }
 }
