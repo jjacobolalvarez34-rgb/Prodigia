@@ -52,6 +52,9 @@ export default function RevelacionWeb({
   abrir: () => Promise<PremioRevelado>;
   onCerrar: () => void;
 }) {
+  // Con «reducir movimiento» del sistema (Windows lo activa con «mejor rendimiento»)
+  // se quitan el temblor y la lluvia, que pueden marear; el suspenso por colores, el
+  // estallido y la carta se mantienen (2026-10-15: antes se saltaba todo y quedaba sencilla).
   const reducir = useReducedMotion();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fxRef = useRef<LienzoFx | null>(null);
@@ -104,16 +107,16 @@ export default function RevelacionWeb({
     }
     const nivel = r.nivel;
     const escalones = [...ESCALERA.slice(0, nivel - 1), r.color];
-    const dur = reducir ? 0 : 250 + escalones.length * PASO_MS;
+    const dur = 250 + escalones.length * PASO_MS;
     // 3) Suspenso: tiembla cada vez más y se escapa luz del color del premio.
     const amp = 3 + nivel * 3;
-    controles.start({ x: [0, -amp, amp, -amp, amp, 0], rotate: [0, -2, 2, -2, 2, 0], transition: { duration: 0.22, repeat: Infinity } });
+    if (!reducir) controles.start({ x: [0, -amp, amp, -amp, amp, 0], rotate: [0, -2, 2, -2, 2, 0], transition: { duration: 0.22, repeat: Infinity } });
     // La luz que se escapa es neutra; el color lo pone cada escalón.
     const fuga = setInterval(() => {
       const c = centro();
       fxRef.current?.fuga(c.x, c.y, "#FFFFFF", 2 + nivel);
     }, 60);
-    if (!reducir) {
+    {
       escalones.forEach((col, k) => {
         timers.current.push(
           setTimeout(() => {
@@ -139,7 +142,7 @@ export default function RevelacionWeb({
         fxRef.current?.explosion(c.x, c.y, [r.color, colores[0], colores[1], "#FFFFFF"], nivel);
         fxRef.current?.halo(r.color, c.x, c.y, 160 + nivel * 30);
         fxRef.current?.rayos(r.color, c.x, c.y);
-        if (nivel === 4) {
+        if (nivel === 4 && !reducir) {
           fxRef.current?.lluvia([r.color, "#FFFFFF", colores[0], colores[1]], 120);
           timers.current.push(setTimeout(() => fxRef.current?.destello(0.7), 260));
         }

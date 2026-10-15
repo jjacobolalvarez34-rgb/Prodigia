@@ -2,13 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import CinematicaPro from "@/components/fx/CinematicaPro";
 import { createClient } from "@/lib/supabase/client";
 import { BENEFICIOS_PRO } from "@/lib/pro/beneficios";
 import IconoTrazo from "@/components/IconoTrazo";
-import { reproducirTono } from "@/lib/sonido";
 
 type Fase = "activando" | "cinematica" | "lista" | "demora";
 
@@ -22,7 +21,6 @@ const ESPERA_MAX_MS = 90_000;
 export default function BienvenidaPro({ userId, yaEraPro }: { userId: string; yaEraPro: boolean }) {
   const t = useTranslations("ProBienvenida");
   const tBen = useTranslations("ProBeneficios");
-  const reducirMovimiento = useReducedMotion();
   const [fase, setFase] = useState<Fase>(yaEraPro ? "cinematica" : "activando");
   // Cuándo empezó a esperar; se fija dentro del efecto (no en el render).
   const inicio = useRef<number | null>(null);
@@ -46,13 +44,8 @@ export default function BienvenidaPro({ userId, yaEraPro }: { userId: string; ya
   }, [fase, userId]);
 
   // 2) La cinemática (components/fx/CinematicaPro) pasa sola a la lista al terminar, o
-  // con un toque. Con «reducir movimiento», directo a la lista.
-  useEffect(() => {
-    if (fase !== "cinematica" || !reducirMovimiento) return;
-    reproducirTono("nivel_cuenta");
-    const id = setTimeout(() => setFase("lista"), 600);
-    return () => clearTimeout(id);
-  }, [fase, reducirMovimiento]);
+  // con un toque. Corre aunque el sistema pida reducir movimiento (Windows lo pide con
+  // «mejor rendimiento» y nunca se veía): es una sola vez y se salta tocando.
 
   return (
     <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden bg-[#03040A] px-4 py-10 text-white">

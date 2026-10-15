@@ -8,8 +8,8 @@ import CampoPassword from "@/components/CampoPassword";
 
 // Contraseña de respaldo para cuentas creadas con Google (pedido 2026-10-13): si algo
 // pasa con Google, igual pueden entrar con su correo y esta contraseña. Se muestra
-// solo a quien entró con Google y todavía no la creó (lib/auth/respaldo.ts).
-export { necesitaContrasenaRespaldo } from "@/lib/auth/respaldo";
+// solo a quien entró con Google y todavía no la creó (lib/auth/respaldo.ts; el servidor
+// importa esa función de ahí, no de este archivo de cliente).
 
 export default function ContrasenaRespaldo() {
   const t = useTranslations("Auth.respaldo");

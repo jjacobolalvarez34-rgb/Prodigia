@@ -5,7 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import AjustesClient from "./AjustesClient";
-import ContrasenaRespaldo, { necesitaContrasenaRespaldo } from "@/components/ContrasenaRespaldo";
+import ContrasenaRespaldo from "@/components/ContrasenaRespaldo";
+// Directo de lib (no del componente): una función exportada desde un archivo "use client"
+// no se puede llamar en el servidor, y eso tiraba la página entera (2026-10-15).
+import { necesitaContrasenaRespaldo } from "@/lib/auth/respaldo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Ajustes.metadata");
