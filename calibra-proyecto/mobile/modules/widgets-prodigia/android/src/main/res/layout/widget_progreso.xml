@@ -1,24 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Widget de progreso: ilustración animada de fondo (3 cuadros con fundido) y encima
+     racha (con su llama), Chispas, nivel, meta del día y el botón de jugar. Ver
+     Widgets.kt y Lienzo.kt. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:id="@+id/wp_raiz"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@drawable/wp_fondo"
-  android:orientation="vertical"
-  android:padding="14dp">
+  android:background="@drawable/wp_fondo">
+
+  <ViewFlipper
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:autoStart="true"
+    android:flipInterval="1400"
+    android:inAnimation="@android:anim/fade_in"
+    android:outAnimation="@android:anim/fade_out">
+    <ImageView android:id="@+id/wp_f0" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitXY" android:importantForAccessibility="no" />
+    <ImageView android:id="@+id/wp_f1" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitXY" android:importantForAccessibility="no" />
+    <ImageView android:id="@+id/wp_f2" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitXY" android:importantForAccessibility="no" />
+  </ViewFlipper>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="14dp">
 
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical">
+    <ImageView android:layout_width="11dp" android:layout_height="11dp" android:src="@drawable/wp_chispa" android:importantForAccessibility="no" />
     <TextView
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_weight="1"
-      android:text="✦ PRODIGIA"
+      android:layout_marginStart="5dp"
+      android:letterSpacing="0.18"
+      android:text="PRODIGIA"
       android:textColor="@color/wp_neon"
-      android:textSize="11sp"
+      android:textSize="10sp"
       android:textStyle="bold" />
     <TextView
       android:id="@+id/wp_saludo"
@@ -36,24 +58,37 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="8dp"
     android:orientation="horizontal">
-    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/wp_caja" android:orientation="vertical" android:padding="8dp">
-      <TextView android:id="@+id/wp_racha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="🔥 0" android:textColor="@color/wp_racha" android:textSize="16sp" android:textStyle="bold" />
-      <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="RACHA" android:textColor="@color/wp_texto2" android:textSize="10sp" android:textStyle="bold" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/wp_caja" android:orientation="vertical" android:paddingStart="9dp" android:paddingEnd="6dp" android:paddingTop="7dp" android:paddingBottom="7dp">
+      <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+        <ViewFlipper android:layout_width="22dp" android:layout_height="22dp" android:layout_marginStart="-4dp" android:autoStart="true" android:flipInterval="650" android:inAnimation="@android:anim/fade_in" android:outAnimation="@android:anim/fade_out">
+          <ImageView android:id="@+id/wp_m0" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/wp_llama" android:importantForAccessibility="no" />
+          <ImageView android:id="@+id/wp_m1" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/wp_llama" android:importantForAccessibility="no" />
+          <ImageView android:id="@+id/wp_m2" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/wp_llama" android:importantForAccessibility="no" />
+        </ViewFlipper>
+        <TextView android:id="@+id/wp_racha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:maxLines="1" android:fontFamily="sans-serif-black" android:text="0" android:textColor="@color/wp_texto" android:textSize="16sp" />
+      </LinearLayout>
+      <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:letterSpacing="0.12" android:text="RACHA" android:textColor="@color/wp_texto2" android:textSize="9sp" android:textStyle="bold" />
     </LinearLayout>
-    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" android:background="@drawable/wp_caja" android:orientation="vertical" android:padding="8dp">
-      <TextView android:id="@+id/wp_chispas" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="⚡ 0" android:textColor="@color/wp_logro" android:textSize="16sp" android:textStyle="bold" />
-      <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CHISPAS" android:textColor="@color/wp_texto2" android:textSize="10sp" android:textStyle="bold" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" android:background="@drawable/wp_caja" android:orientation="vertical" android:paddingStart="9dp" android:paddingEnd="6dp" android:paddingTop="7dp" android:paddingBottom="7dp">
+      <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+        <ImageView android:layout_width="14dp" android:layout_height="14dp" android:src="@drawable/wp_chispa" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/wp_chispas" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:maxLines="1" android:fontFamily="sans-serif-black" android:text="0" android:textColor="@color/wp_logro" android:textSize="16sp" />
+      </LinearLayout>
+      <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:letterSpacing="0.12" android:text="CHISPAS" android:textColor="@color/wp_texto2" android:textSize="9sp" android:textStyle="bold" />
     </LinearLayout>
-    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" android:background="@drawable/wp_caja" android:orientation="vertical" android:padding="8dp">
-      <TextView android:id="@+id/wp_nivel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="★ 1" android:textColor="@color/wp_neon" android:textSize="16sp" android:textStyle="bold" />
-      <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="NIVEL" android:textColor="@color/wp_texto2" android:textSize="10sp" android:textStyle="bold" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" android:background="@drawable/wp_caja" android:orientation="vertical" android:paddingStart="9dp" android:paddingEnd="6dp" android:paddingTop="7dp" android:paddingBottom="7dp">
+      <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+        <ImageView android:layout_width="14dp" android:layout_height="14dp" android:src="@drawable/wp_estrella" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/wp_nivel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:maxLines="1" android:fontFamily="sans-serif-black" android:text="0" android:textColor="@color/wp_neon" android:textSize="16sp" />
+      </LinearLayout>
+      <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:letterSpacing="0.12" android:text="NIVEL" android:textColor="@color/wp_texto2" android:textSize="9sp" android:textStyle="bold" />
     </LinearLayout>
   </LinearLayout>
 
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="9dp"
     android:orientation="horizontal">
     <TextView
       android:id="@+id/wp_meta_texto"
@@ -61,14 +96,14 @@
       android:layout_height="wrap_content"
       android:layout_weight="1"
       android:text="Meta del día"
-      android:textColor="@color/wp_texto2"
+      android:textColor="@color/wp_texto"
       android:textSize="11sp"
       android:textStyle="bold" />
     <TextView
       android:id="@+id/wp_meta_numeros"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="0/100"
+      android:text="0/100 Exp"
       android:textColor="@color/wp_texto2"
       android:textSize="11sp" />
   </LinearLayout>
@@ -83,17 +118,25 @@
     android:progress="0"
     android:progressDrawable="@drawable/wp_barra" />
 
-  <TextView
+  <LinearLayout
     android:id="@+id/wp_jugar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
     android:background="@drawable/wp_boton"
     android:gravity="center"
+    android:orientation="horizontal"
     android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:text="▶  Jugar un sprint de 60 s"
-    android:textColor="@color/wp_texto"
-    android:textSize="13sp"
-    android:textStyle="bold" />
-</LinearLayout>
+    android:paddingBottom="11dp">
+    <ImageView android:layout_width="11dp" android:layout_height="11dp" android:src="@drawable/wp_jugar" android:importantForAccessibility="no" />
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="7dp"
+      android:text="Jugar un sprint de 60 s"
+      android:textColor="#1A1206"
+      android:textSize="13sp"
+      android:textStyle="bold" />
+  </LinearLayout>
+  </LinearLayout>
+</FrameLayout>

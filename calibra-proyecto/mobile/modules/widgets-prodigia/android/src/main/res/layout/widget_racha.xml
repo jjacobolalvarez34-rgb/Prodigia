@@ -1,51 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Widget de racha: ilustración animada de fondo (3 cuadros con fundido) y encima la
+     llama que respira, la racha y las Chispas. Ver Widgets.kt y Lienzo.kt. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:id="@+id/wp_raiz"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@drawable/wp_fondo"
-  android:orientation="vertical"
-  android:gravity="center_vertical"
-  android:padding="14dp">
+  android:background="@drawable/wp_fondo">
 
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="✦ PRODIGIA"
-    android:textColor="@color/wp_neon"
-    android:textSize="11sp"
-    android:textStyle="bold" />
+  <ViewFlipper
+    android:id="@+id/wp_fondo_anim"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:autoStart="true"
+    android:flipInterval="1400"
+    android:inAnimation="@android:anim/fade_in"
+    android:outAnimation="@android:anim/fade_out">
+    <ImageView android:id="@+id/wp_f0" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitXY" android:importantForAccessibility="no" />
+    <ImageView android:id="@+id/wp_f1" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitXY" android:importantForAccessibility="no" />
+    <ImageView android:id="@+id/wp_f2" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitXY" android:importantForAccessibility="no" />
+  </ViewFlipper>
 
-  <TextView
-    android:id="@+id/wp_racha"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
-    android:text="🔥 0"
-    android:textColor="@color/wp_racha"
-    android:textSize="34sp"
-    android:textStyle="bold" />
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:padding="14dp">
 
-  <TextView
-    android:id="@+id/wp_racha_texto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="días de racha"
-    android:textColor="@color/wp_texto2"
-    android:textSize="12sp" />
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+      <ImageView android:layout_width="11dp" android:layout_height="11dp" android:src="@drawable/wp_chispa" android:importantForAccessibility="no" />
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:letterSpacing="0.18"
+        android:text="PRODIGIA"
+        android:textColor="@color/wp_neon"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+    </LinearLayout>
 
-  <TextView
-    android:id="@+id/wp_chispas"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:background="@drawable/wp_pildora"
-    android:paddingStart="10dp"
-    android:paddingEnd="10dp"
-    android:paddingTop="3dp"
-    android:paddingBottom="3dp"
-    android:text="⚡ 0"
-    android:textColor="@color/wp_logro"
-    android:textSize="13sp"
-    android:textStyle="bold" />
-</LinearLayout>
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:orientation="horizontal" android:gravity="center_vertical">
+      <ViewFlipper
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_marginStart="-8dp"
+        android:autoStart="true"
+        android:flipInterval="650"
+        android:inAnimation="@android:anim/fade_in"
+        android:outAnimation="@android:anim/fade_out">
+        <ImageView android:id="@+id/wp_l0" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/wp_llama" android:importantForAccessibility="no" />
+        <ImageView android:id="@+id/wp_l1" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/wp_llama" android:importantForAccessibility="no" />
+        <ImageView android:id="@+id/wp_l2" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/wp_llama" android:importantForAccessibility="no" />
+      </ViewFlipper>
+      <TextView
+        android:id="@+id/wp_racha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:includeFontPadding="false"
+        android:shadowColor="#AAFF6A2B"
+        android:shadowDy="2"
+        android:shadowRadius="10"
+        android:text="0"
+        android:textColor="@color/wp_texto"
+        android:textSize="36sp" />
+    </LinearLayout>
+
+    <TextView
+      android:id="@+id/wp_racha_texto"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:shadowColor="#CC05060F"
+      android:shadowRadius="4"
+      android:text="días de racha"
+      android:textColor="@color/wp_texto2"
+      android:textSize="12sp" />
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:background="@drawable/wp_pildora"
+      android:gravity="center_vertical"
+      android:orientation="horizontal"
+      android:paddingStart="8dp"
+      android:paddingEnd="10dp"
+      android:paddingTop="3dp"
+      android:paddingBottom="3dp">
+      <ImageView android:layout_width="13dp" android:layout_height="13dp" android:src="@drawable/wp_chispa" android:importantForAccessibility="no" />
+      <TextView
+        android:id="@+id/wp_chispas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="0"
+        android:textColor="@color/wp_logro"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+    </LinearLayout>
+  </LinearLayout>
+</FrameLayout>

@@ -19,7 +19,9 @@ class WidgetsProdigiaModule : Module() {
 
     Function("guardar") { datos: String ->
       DatosWidgets.guardar(context, datos)
-      DatosWidgets.actualizarTodos(context)
+      // Dibujar las ilustraciones lleva unos milisegundos: fuera del hilo de JavaScript.
+      val ctx = context.applicationContext
+      Thread { DatosWidgets.actualizarTodos(ctx) }.start()
     }
 
     Function("anclar") { tipo: String ->

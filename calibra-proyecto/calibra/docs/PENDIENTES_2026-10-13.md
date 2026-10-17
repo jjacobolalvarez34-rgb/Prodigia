@@ -253,8 +253,8 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
     para activarse solas desde antes.
 57. [ ] Anuncios: alguien nuevo ve de golpe los ~12 anuncios que hay; no es la idea. Arreglarlo y mejorar su diseño.
 58. [ ] Ícono de la app: fondo negro y logo más centrado, como el del APK viejo (el que solo envolvía la web): ese era más bonito.
-59. [ ] En festividades también cambian el ícono y los widgets.
-60. [ ] Widgets: más profundidad (y animación si se puede); hoy se ven feos.
+59. [ ] En festividades también cambian el ícono y los widgets. → Widgets hechos (2026-10-17): la app manda los tramos de festividades de los próximos 60 días y el widget elige la de hoy (acento, adornos de la ciudad, partículas). Falta el ícono.
+60. [x] Widgets: más profundidad (y animación si se puede); hoy se ven feos. → Hecho (2026-10-17): fondo ilustrado nativo (cielo con resplandor y estrellas, ciudad en dos planos con ventanas), llama con brillo que respira y cajas de vidrio; 3 cuadros con fundido (ViewFlipper). Sin emojis. Ver modules/widgets-prodigia/android (Lienzo.kt).
 61. [ ] La llamita (racha) se ve muy sencilla: mejorarla gráficamente, con todas sus skins (estelas de racha).
 62. [ ] Las partículas al acertar se ven rústicas: mejorarlas.
 63. [ ] App: la suma de puntos al acertar como en la web (animación en una esquina de la pregunta que va creciendo).

@@ -109,7 +109,10 @@ export default function Ajustes() {
         <Fila
           titulo="Decoración de temporada"
           nota="En las festividades: copos, adornos en las ciudades, accesorios y bordes. Nunca dentro de una partida."
-          derecha={<Switch value={ajustes.decoracion} onValueChange={(v) => cambiarAjuste("decoracion", v)} trackColor={{ true: color.primario, false: color.surface3 }} thumbColor="#fff" />}
+          derecha={<Switch value={ajustes.decoracion} onValueChange={(v) => {
+                cambiarAjuste("decoracion", v);
+                void actualizarWidgets();
+              }} trackColor={{ true: color.primario, false: color.surface3 }} thumbColor="#fff" />}
         />
         {ajustes.decoracion && (
           <Fila
@@ -121,6 +124,7 @@ export default function Ajustes() {
               const siguiente = actual === null ? lista[0] : lista.indexOf(actual) + 1 < lista.length ? lista[lista.indexOf(actual) + 1] : null;
               verTema(siguiente);
               setVistaPrevia(siguiente);
+              void actualizarWidgets();
             }}
             derecha={
               <Texto v="fuerte" tam={13} c={color.primarioClaro}>
