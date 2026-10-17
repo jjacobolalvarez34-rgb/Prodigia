@@ -1,5 +1,5 @@
 // Genera los íconos de la app (fondo negro, logo centrado por su caja real; 2026-10-16).
-// Uso (desde calibra/, que tiene Playwright): node ../mobile/scripts/generar-iconos.mjs ../mobile/assets/images
+// Uso: copiarlo a calibra/ (que tiene Playwright) y correr: node generar-iconos.mjs ../mobile/assets/images
 import { chromium } from "playwright";
 
 const salida = process.argv[2];
