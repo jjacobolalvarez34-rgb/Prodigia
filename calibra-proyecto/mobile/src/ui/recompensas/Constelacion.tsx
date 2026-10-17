@@ -1,7 +1,10 @@
 import { useMemo } from "react";
 import { View } from "react-native";
 import Animated, { interpolate, useAnimatedProps, type SharedValue } from "react-native-reanimated";
-import Svg, { Circle, Defs, Line, RadialGradient, Rect, Stop } from "react-native-svg";
+import Svg, { Circle, Defs, G, Line, Path, RadialGradient, Rect, Stop } from "react-native-svg";
+import { PARTICULAS } from "@/lib/temas/dibujos";
+import { capaVisible } from "@/lib/temas/temas";
+import { useTemaHoy } from "~/lib/temporada";
 import { FORMAS_CONSTELACION, polvoDeEstrellas } from "@/lib/recompensas/constelaciones";
 import { color, mundoDe, oscurecer } from "~/tema";
 
@@ -34,6 +37,19 @@ function EstrellaQueSeEnciende({ p, i, encendido, c }: { p: [number, number]; i:
   return <CirculoAnimado cx={p[0]} cy={p[1]} fill={c} animatedProps={props} />;
 }
 
+// Estrella con la forma de la festividad (igual que la web), centrada en p.
+function EstrellaTema({ p, tipo, c }: { p: [number, number]; tipo: keyof typeof PARTICULAS; c: string }) {
+  const d = PARTICULAS[tipo];
+  const lado = tipo === "murcielago" ? 16 : 11;
+  return (
+    <G transform={`translate(${p[0] - lado / 2} ${p[1] - lado / 2}) scale(${lado / d.ancho})`}>
+      {d.formas.map((f, i) => (
+        <Path key={i} d={f.d} fill={i === 0 && f.relleno ? c : (f.relleno ?? "none")} stroke={i === 0 && f.trazo && !f.relleno ? c : f.trazo} strokeWidth={f.ancho} strokeLinecap="round" strokeLinejoin="round" opacity={f.opacidad} />
+      ))}
+    </G>
+  );
+}
+
 interface Props {
   mundo: string;
   estrellas: number;
@@ -48,7 +64,10 @@ interface Props {
 export default function Constelacion({ mundo, estrellas, tam = 96, encendido, trazo, completa = false, radio = 16 }: Props) {
   const forma = FORMAS_CONSTELACION[mundo] ?? FORMAS_CONSTELACION.numeria;
   const m = mundoDe(mundo);
-  const brillo = m?.neon ?? color.primarioNeon;
+  // Festividades: las estrellas encendidas toman la forma y el color de la fecha.
+  const tema = useTemaHoy();
+  const piel = capaVisible(tema, "constelacion") ? tema?.tema.constelacion : undefined;
+  const brillo = piel?.color ?? m?.neon ?? color.primarioNeon;
   const fondo = oscurecer(m?.base ?? color.primarioBase, 0.22);
   const polvo = useMemo(() => polvoDeEstrellas(mundo), [mundo]);
   const id = `cielo-${mundo}`;
@@ -75,7 +94,7 @@ export default function Constelacion({ mundo, estrellas, tam = 96, encendido, tr
           encendido ? (
             <EstrellaQueSeEnciende key={i} p={p} i={i} encendido={encendido} c={brillo} />
           ) : i < estrellas || completa ? (
-            <Circle key={i} cx={p[0]} cy={p[1]} r={3.6} fill={brillo} />
+            piel ? <EstrellaTema key={i} p={p} tipo={piel.estrella} c={brillo} /> : <Circle key={i} cx={p[0]} cy={p[1]} r={3.6} fill={brillo} />
           ) : (
             <Circle key={i} cx={p[0]} cy={p[1]} r={2.4} fill="none" stroke={brillo} strokeOpacity={0.45} strokeWidth={1} />
           )

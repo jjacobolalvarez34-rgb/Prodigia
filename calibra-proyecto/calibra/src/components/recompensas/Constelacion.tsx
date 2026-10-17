@@ -4,6 +4,22 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { ciudadDe, tono } from "@/lib/recompensas/catalogo";
 import { FORMAS_CONSTELACION, polvoDeEstrellas } from "@/lib/recompensas/constelaciones";
+import { PARTICULAS } from "@/lib/temas/dibujos";
+import { capaVisible } from "@/lib/temas/temas";
+import { useTemaHoy } from "@/components/temas/useTemaHoy";
+
+// Estrella con la forma de la festividad (copo, murciélago, corazón…), centrada en (x, y).
+function EstrellaTema({ x, y, tipo, c }: { x: number; y: number; tipo: keyof typeof PARTICULAS; c: string }) {
+  const d = PARTICULAS[tipo];
+  const lado = tipo === "murcielago" ? 16 : 11;
+  return (
+    <g transform={`translate(${x - lado / 2} ${y - lado / 2}) scale(${lado / d.ancho})`}>
+      {d.formas.map((f, i) => (
+        <path key={i} d={f.d} fill={i === 0 && f.relleno ? c : (f.relleno ?? "none")} stroke={i === 0 && f.trazo && !f.relleno ? c : f.trazo} strokeWidth={f.ancho} strokeLinecap="round" strokeLinejoin="round" opacity={f.opacidad} />
+      ))}
+    </g>
+  );
+}
 
 // Una constelación en el cielo de su ciudad (0259), igual que
 // mobile/src/ui/recompensas/Constelacion.tsx: 7 estrellas con la forma del glifo;
@@ -11,8 +27,11 @@ import { FORMAS_CONSTELACION, polvoDeEstrellas } from "@/lib/recompensas/constel
 // se encienden de a una y las líneas se dibujan solas.
 export default function Constelacion({ mundo, estrellas, tam = 96, celebrar = false }: { mundo: string; estrellas: number; tam?: number; celebrar?: boolean }) {
   const forma = FORMAS_CONSTELACION[mundo] ?? FORMAS_CONSTELACION.numeria;
+  // Festividades: las estrellas encendidas toman la forma y el color de la fecha.
+  const tema = useTemaHoy();
+  const piel = capaVisible(tema, "constelacion") ? tema?.tema.constelacion : undefined;
   const base = ciudadDe(mundo)?.color ?? "#6C4CF1";
-  const brillo = tono(base, 0.35);
+  const brillo = piel?.color ?? tono(base, 0.35);
   const fondo = tono(base, -0.78);
   const polvo = useMemo(() => polvoDeEstrellas(mundo), [mundo]);
   const id = `cielo-${mundo}-${tam}`;
@@ -60,13 +79,13 @@ export default function Constelacion({ mundo, estrellas, tam = 96, celebrar = fa
           return (
             <motion.g key={i} initial={{ opacity: 0.3 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.2, duration: 0.25 }}>
               <circle cx={x} cy={y} r={7} fill={brillo} opacity={0.35} filter={`url(#${id}-brillo)`} />
-              <circle cx={x} cy={y} r={3.6} fill={brillo} />
+              {piel ? <EstrellaTema x={x} y={y} tipo={piel.estrella} c={brillo} /> : <circle cx={x} cy={y} r={3.6} fill={brillo} />}
             </motion.g>
           );
         return encendida ? (
           <g key={i}>
             <circle cx={x} cy={y} r={7} fill={brillo} opacity={0.35} filter={`url(#${id}-brillo)`} />
-            <circle cx={x} cy={y} r={3.6} fill={brillo} />
+            {piel ? <EstrellaTema x={x} y={y} tipo={piel.estrella} c={brillo} /> : <circle cx={x} cy={y} r={3.6} fill={brillo} />}
           </g>
         ) : (
           <circle key={i} cx={x} cy={y} r={2.4} fill="none" stroke={brillo} strokeOpacity={0.45} strokeWidth={1} />
