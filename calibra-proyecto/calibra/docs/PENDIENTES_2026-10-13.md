@@ -229,3 +229,15 @@ una sola línea de tiempo para web y app (src/lib/fx/cinematicaPro.ts), revisada
 un toque. 47 cápsulas sin trabas (premio pedido al aparecer, sonidos precargados, brillos horneados en vez de desenfoques en vivo,
 recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (solo Cometas) con «Abrir ya» o «Guardar».
 
+
+## Qué falta (revisión del 2026-10-16)
+
+48. [ ] Retroalimentación de cada pregunta (paso a paso / por qué): hoy solo la tienen los modos de Numeria (operaciones,
+    fracciones, decimales, potencias, álgebra, geometría). Faltan: Enigmia, Geografía, Quimia, Anatomía, Melodía, Trigonometría,
+    Historia, Calculia, Circuitia, Estadística, Naipia, Codia, Dinamia y Vitalia (los runners mandan `pasos: []`).
+49. [ ] Cobros en la app con Google Play Billing (o RevenueCat) + verificación en el servidor y la versión de Play sin botones
+    «pagar en la web» ni el permiso REQUEST_INSTALL_PACKAGES / aviso de APK (Play actualiza solo y no lo permite).
+50. [ ] Publicación en Play: AAB firmado, ficha, Data safety, clasificación de contenido, consentimiento de anuncios (UMP).
+51. [ ] Evento de Halloween (31/10) con su colección y su paquete (PLAN_CAPSULAS_Y_EVENTOS.md).
+52. [ ] Resto del plan de economía: pack de inicio, fusión de cápsulas, prueba gratis de Pro, etiqueta «NUEVO», panel de economía.
+53. [ ] Pruebas: duelo en vivo con dos teléfonos; compra de un mundo suelto (falta PADDLE_PRODUCT_CONTENIDO).
