@@ -15,6 +15,7 @@ import { cerrarPartida, guardarIntentoTipo } from "~/lib/partida";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError, supabase } from "~/lib/supabase";
 import Glifos from "~/ui/Glifos";
+import RachaDeFondo from "~/ui/RachaDeFondo";
 import { animarAcierto, animarError, BarraRival, Cabecera, CartelFinal, Consumibles, CuentaInicio, Flotante, opcionesADescartar, Progreso, TarjetaProblema, useConsumibles, useReloj, useSalida } from "~/ui/Sprint";
 import { CuerpoPregunta, esRespuestaCorrecta, OpcionesPregunta, TecladoPregunta, type Feedback } from "~/ui/PreguntaVista";
 import Texto from "~/ui/Texto";
@@ -49,7 +50,7 @@ export default function SprintMundo() {
   const [combo, setCombo] = useState(0);
   const [escudos, setEscudos] = useState(0);
   const [nivelVisible, setNivelVisible] = useState(1);
-  const [flotantes, setFlotantes] = useState<{ id: number; texto: string }[]>([]);
+  const [flotantes, setFlotantes] = useState<{ id: number; puntos: number }[]>([]);
   const [aviso, setAviso] = useState<string | null>(null);
   const [progresoFinal, setProgresoFinal] = useState(0);
   const [final, setFinal] = useState<"tiempo" | "listo" | null>(null);
@@ -296,7 +297,7 @@ export default function SprintMundo() {
         if (res.xp > 0) {
           xpRef.current += res.xp;
           const fid = ++flotanteId.current;
-          setFlotantes((f) => [...f, { id: fid, texto: `+${res.xp}` }]);
+          setFlotantes((f) => [...f, { id: fid, puntos: res.xp }]);
           setTimeout(() => setFlotantes((f) => f.filter((x) => x.id !== fid)), 1100);
         }
         if (nivelForzadoRef.current == null && res.nivel != null) {
@@ -346,6 +347,7 @@ export default function SprintMundo() {
   return (
     <SafeAreaView style={styles.pantalla}>
       <Glifos glifos={mundo.glifos} acento={mundo.neon} cantidad={7} pulso={pulso} />
+      <RachaDeFondo combo={combo} />
       <Animated.View style={[{ flex: 1 }, estiloJuego]}>
         <Cabecera onSalir={confirmarSalida} reloj={reloj} combo={combo} acento={mundo.neon} corriendo={inicio != null && final === null && !memorizando} />
         <Progreso resultados={resultados} total={total} acento={mundo.neon} escudos={escudos} />
@@ -391,7 +393,7 @@ export default function SprintMundo() {
               respuesta={respuesta}
             />
             {flotantes.map((f) => (
-              <Flotante key={f.id} texto={f.texto} />
+              <Flotante key={f.id} puntos={f.puntos} />
             ))}
           </TarjetaProblema>
           {aviso && (

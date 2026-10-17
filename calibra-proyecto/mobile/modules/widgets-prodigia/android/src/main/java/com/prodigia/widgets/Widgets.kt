@@ -94,7 +94,7 @@ object DatosWidgets {
         0 -> intArrayOf(R.id.wp_l0, R.id.wp_l1, R.id.wp_l2)
         else -> intArrayOf(R.id.wp_m0, R.id.wp_m1, R.id.wp_m2)
       }
-      for (i in 0 until Lienzo.CUADROS) vistas.setImageViewBitmap(vistasLlama[i], Lienzo.cuadroLlama((ladoDp * u).toInt(), i, apagada))
+      for (i in 0 until Lienzo.CUADROS) vistas.setImageViewBitmap(vistasLlama[i], Lienzo.cuadroLlama(context, (ladoDp * u).toInt(), i, apagada))
     }
   }
 

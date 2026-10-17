@@ -252,12 +252,12 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
     constelaciones y cápsulas con diseños y animaciones de la fecha. Planear y HACER cada una, prehechas y programadas
     para activarse solas desde antes.
 57. [ ] Anuncios: alguien nuevo ve de golpe los ~12 anuncios que hay; no es la idea. Arreglarlo y mejorar su diseño.
-58. [ ] Ícono de la app: fondo negro y logo más centrado, como el del APK viejo (el que solo envolvía la web): ese era más bonito.
+58. [x] Ícono de la app: fondo negro y logo más centrado, como el del APK viejo (el que solo envolvía la web): ese era más bonito. → Hecho (fondo #07080D, logo centrado; scripts/generar-iconos.mjs).
 59. [ ] En festividades también cambian el ícono y los widgets. → Widgets hechos (2026-10-17): la app manda los tramos de festividades de los próximos 60 días y el widget elige la de hoy (acento, adornos de la ciudad, partículas). Falta el ícono.
 60. [x] Widgets: más profundidad (y animación si se puede); hoy se ven feos. → Hecho (2026-10-17): fondo ilustrado nativo (cielo con resplandor y estrellas, ciudad en dos planos con ventanas), llama con brillo que respira y cajas de vidrio; 3 cuadros con fundido (ViewFlipper). Sin emojis. Ver modules/widgets-prodigia/android (Lienzo.kt).
-61. [ ] La llamita (racha) se ve muy sencilla: mejorarla gráficamente, con todas sus skins (estelas de racha).
-62. [ ] Las partículas al acertar se ven rústicas: mejorarlas.
-63. [ ] App: la suma de puntos al acertar como en la web (animación en una esquina de la pregunta que va creciendo).
-64. [ ] App: más presencia para la racha de preguntas: desde 3 seguidas, la racha aparece grande en toda la pantalla, animada,
-    como fuego, con el número que cambia, transparente de fondo (que se note pero no tape). O una idea mejor.
+61. [x] La llamita (racha) se ve muy sencilla: mejorarla gráficamente, con todas sus skins (estelas de racha). → Hecho (2026-10-17): llama en capas (exterior, media, núcleo, brillo, brasas) en src/lib/fx/llama.ts, la misma en web (LlamaDibujo, titila), app (IconoLlama) y widgets; todas las estelas salen de sus dos colores.
+62. [x] Las partículas al acertar se ven rústicas: mejorarlas. → Hecho (2026-10-17, app): estallido en Skia con destello, onda y partículas con física (motor de las cápsulas) según el efecto equipado.
+63. [x] App: la suma de puntos al acertar como en la web (animación en una esquina de la pregunta que va creciendo). → Hecho (2026-10-17): «+N» dorado en la esquina que salta y crece según lo ganado, con chispitas (como PuntajeCorner).
+64. [x] App: más presencia para la racha de preguntas: desde 3 seguidas, la racha aparece grande en toda la pantalla, animada,
+    como fuego, con el número que cambia, transparente de fondo (que se note pero no tape). O una idea mejor. → Hecho (2026-10-17): RachaDeFondo: desde 3 seguidas, llama enorme translúcida con el número; salta en cada acierto y se desvanece; más fuerte en 5, 10, 15…
 65. [x] Web: el sonido en PC nunca se ha reproducido.

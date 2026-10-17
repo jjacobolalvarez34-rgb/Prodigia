@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import Svg, { Circle, Defs, LinearGradient, Path, RadialGradient, Rect, Stop } from "react-native-svg";
 import { COMETA } from "@/lib/recompensas/iconoCometa";
 import { TRAZOS, type NombreTrazo } from "@/lib/iconosTrazo";
-import { ARCOIRIS, ESTELAS, type Estela } from "@/lib/recompensas/catalogo";
+import { ESTELAS, type Estela } from "@/lib/recompensas/catalogo";
+import { dibujoLlama, type EstadoLlama } from "@/lib/fx/llama";
 import { color } from "~/tema";
 
 // Set propio de íconos (02-SISTEMA-VISUAL.md §5), dibujados con el mismo trazo de 2
@@ -56,25 +57,35 @@ export function IconoCometa({ tam = 18 }: Props) {
 }
 
 // Llama de la racha: apagada (gris), encendida, o "en llamas" (≥ 7 días, más brillo).
-export function IconoLlama({ tam = 18, estado = "encendida", estela }: Props & { estado?: "apagada" | "encendida" | "llamas"; estela?: Estela }) {
-  // Estela de racha de la tienda (0248): cambia los colores de la llama encendida.
-  const conEstela = estela && estado !== "apagada" && estela.base !== ESTELAS.clasica.base;
-  const exterior = estado === "apagada" ? "#4A5270" : conEstela ? estela.base : estado === "llamas" ? "#FF6A2B" : color.racha;
-  const interior = estado === "apagada" ? "#6B7391" : conEstela ? estela.punta : "#FFD36B";
-  const arcoiris = conEstela && estela.arcoiris;
+export function IconoLlama({ tam = 18, estado = "encendida", estela }: Props & { estado?: EstadoLlama; estela?: Estela }) {
+  // La llama en capas (src/lib/fx/llama.ts, igual que la web y los widgets); la estela
+  // de la tienda (0248) le da sus colores.
+  const d = dibujoLlama(estela && estela.base !== ESTELAS.clasica.base ? estela : null, estado);
   return (
     <Svg width={tam} height={tam} viewBox="0 0 24 24">
-      {arcoiris && (
-        <Defs>
-          <LinearGradient id="llamaArcoiris" x1="0" y1="1" x2="0" y2="0">
-            {ARCOIRIS.map((c, i) => (
-              <Stop key={c} offset={i / (ARCOIRIS.length - 1)} stopColor={c} />
+      <Defs>
+        {d.capas.map((c, i) => (
+          <LinearGradient key={i} id={`llama${i}`} x1="0" y1="1" x2="0" y2="0">
+            {c.colores.map((col, j) => (
+              <Stop key={j} offset={j / (c.colores.length - 1)} stopColor={col} />
             ))}
           </LinearGradient>
-        </Defs>
-      )}
-      <Path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.4 1.1-3.9 2.3-5 .2 1.8 1 2.9 2.2 3.3C11 8.6 10.6 5 12 2z" fill={arcoiris ? "url(#llamaArcoiris)" : exterior} />
-      <Path d="M12 12.5c.5 1.6 2.3 2.2 2.3 4.3a2.3 2.3 0 0 1-4.6 0c0-1.2.9-2 1.4-2.6.1.6.4 1 .9 1.1-.2-1-.3-1.9 0-2.8z" fill={arcoiris ? "#FFFFFF" : interior} />
+        ))}
+        {d.halo && (
+          <RadialGradient id="llamaHalo" cx="12" cy="15" r="11" gradientUnits="userSpaceOnUse">
+            <Stop offset="0" stopColor={d.halo} stopOpacity={0.45} />
+            <Stop offset="1" stopColor={d.halo} stopOpacity={0} />
+          </RadialGradient>
+        )}
+      </Defs>
+      {d.halo && estado === "llamas" && <Circle cx={12} cy={15} r={11} fill="url(#llamaHalo)" />}
+      {d.capas.map((c, i) => (
+        <Path key={i} d={c.d} fill={`url(#llama${i})`} />
+      ))}
+      <Path d={d.brillo.d} stroke={d.brillo.color} strokeOpacity={d.brillo.opacidad} strokeWidth={1} strokeLinecap="round" fill="none" />
+      {d.brasas.map((b, i) => (
+        <Circle key={i} cx={b.x} cy={b.y} r={b.r} fill={b.color} />
+      ))}
     </Svg>
   );
 }

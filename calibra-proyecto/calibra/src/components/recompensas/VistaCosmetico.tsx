@@ -1,31 +1,21 @@
 "use client";
 
-import { ARCOIRIS, ciudadDe, efectoDe, EMOTES, estelaDe, particulasDe } from "@/lib/recompensas/catalogo";
+import { ciudadDe, efectoDe, EMOTES, estelaDe, particulasDe } from "@/lib/recompensas/catalogo";
 import { FONDO_PERFIL_ESTILO, ESTILO_MARCO_PERFIL, type FondoPerfil } from "@/types/database";
 import AvatarConMarco from "@/components/AvatarConMarco";
 import CiudadSkyline from "./CiudadSkyline";
+import LlamaDibujo from "@/components/LlamaDibujo";
 
 // Muestra chica de un cosmético de las categorías nuevas (tienda, cápsulas y
 // colecciones). Mismo criterio que VistaCosmetico de la app.
 export default function VistaCosmetico({ categoria, valor, tam = 56 }: { categoria: string; valor: string; tam?: number }) {
   switch (categoria) {
-    case "estela": {
-      const e = estelaDe(valor);
-      const colores = e.arcoiris ? ARCOIRIS : [e.base, e.punta];
-      const id = `vc-estela-${valor}`;
+    case "estela":
       return (
-        <svg viewBox="0 0 24 24" width={tam * 0.8} height={tam * 0.8} aria-hidden="true">
-          <defs>
-            <linearGradient id={id} x1="0" y1="1" x2="0" y2="0">
-              {colores.map((c, i) => (
-                <stop key={c} offset={i / (colores.length - 1)} stopColor={c} />
-              ))}
-            </linearGradient>
-          </defs>
-          <path fill={`url(#${id})`} d="M12 2c1 3-2 4-2 7a2 2 0 0 0 4 0c2 1 3 3 3 5a5 5 0 0 1-10 0c0-4 3-5 3-8 0-1.5.8-3 2-4z" />
-        </svg>
+        <span className="inline-block shrink-0" style={{ width: tam * 0.8, height: tam * 0.8 }}>
+          <LlamaDibujo className="h-full w-full" estela={estelaDe(valor)} estado="llamas" titila />
+        </span>
       );
-    }
     case "efecto": {
       const efecto = efectoDe(valor);
       return (

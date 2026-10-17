@@ -532,17 +532,46 @@ export function TarjetaProblema({
   );
 }
 
-// "+12" que sube y se desvanece.
-export function Flotante({ texto, c = color.correcto }: { texto: string; c?: string }) {
-  const y = useSharedValue(0);
+// Los puntos ganados, en la esquina de la tarjeta (igual que PuntajeCorner de la web):
+// aparecen chicos, saltan y crecen según lo ganado (más puntos = más grande y con
+// chispitas), se quedan un momento y se van hacia arriba.
+const ESCALA_PUNTOS = { chico: 1, medio: 1.3, grande: 1.65 } as const;
+const REBOTE = Easing.out(Easing.back(2.2));
+const CHISPITAS = { chico: 0, medio: 4, grande: 7 } as const;
+
+function Chispita({ i, total, radio, t }: { i: number; total: number; radio: number; t: SharedValue<number> }) {
+  const a = (i / total) * Math.PI * 2 + 0.4;
+  const estilo = useAnimatedStyle(() => {
+    const v = Math.min(1, Math.max(0, (t.value - 0.08) / 0.5));
+    const sale = 1 - (1 - v) * (1 - v);
+    return { opacity: v <= 0 ? 0 : 1 - v, transform: [{ translateX: Math.cos(a) * radio * sale }, { translateY: Math.sin(a) * radio * sale }, { scale: 1 - v * 0.7 }] };
+  });
+  return <Animated.View style={[styles.chispita, estilo]} />;
+}
+
+export function Flotante({ puntos }: { puntos: number }) {
+  const intensidad = puntos >= 30 ? "grande" : puntos >= 18 ? "medio" : "chico";
+  const escala = ESCALA_PUNTOS[intensidad];
+  const t = useSharedValue(0);
   useEffect(() => {
-    y.set(withTiming(1, { duration: 1000, easing: Easing.out(Easing.cubic) }));
-  }, [y]);
-  const estilo = useAnimatedStyle(() => ({ opacity: 1 - y.value * 0.9, transform: [{ translateY: -46 * y.value }, { scale: 0.8 + Math.min(1, y.value * 3) * 0.4 }] }));
+    t.set(withTiming(1, { duration: 950, easing: Easing.linear }));
+  }, [t]);
+  const estilo = useAnimatedStyle(() => {
+    const v = t.value;
+    // 0–0.2: salta (0.4 → escala con rebote); 0.2–0.7: quieto; 0.7–1: sube y se va.
+    const salto = v < 0.2 ? 0.4 + (escala * 1.12 - 0.4) * REBOTE(v / 0.2) : v < 0.3 ? escala * (1.12 - 0.12 * ((v - 0.2) / 0.1)) : escala;
+    const fuera = v < 0.7 ? 0 : (v - 0.7) / 0.3;
+    return { opacity: v < 0.08 ? v / 0.08 : 1 - fuera, transform: [{ translateY: 6 * (1 - Math.min(1, v / 0.2)) - 14 * fuera }, { scale: salto * (1 - fuera * 0.1) }] };
+  });
   return (
-    <Animated.View pointerEvents="none" exiting={FadeOut} style={[styles.flotante, estilo]}>
-      <Texto style={{ fontFamily: fuente.mono, fontSize: 22, color: c }}>{texto}</Texto>
-    </Animated.View>
+    <View pointerEvents="none" style={styles.flotante}>
+      {Array.from({ length: CHISPITAS[intensidad] }, (_, i) => (
+        <Chispita key={i} i={i} total={CHISPITAS[intensidad]} radio={20 + escala * 12} t={t} />
+      ))}
+      <Animated.View style={estilo}>
+        <Texto style={{ fontFamily: fuente.display, fontSize: 21, color: color.logro, textShadowColor: "rgba(255,182,39,0.65)", textShadowRadius: 10 }}>+{puntos}</Texto>
+      </Animated.View>
+    </View>
   );
 }
 
@@ -796,7 +825,8 @@ const styles = StyleSheet.create({
   escudos: { flexDirection: "row", gap: 3 },
   marco: { borderRadius: radio.sprint, borderWidth: 2, overflow: "hidden" },
   tarjeta: { backgroundColor: color.surface1, borderRadius: radio.sprint - 2, margin: 2, paddingVertical: 26, paddingHorizontal: 16, alignItems: "center", gap: 10 },
-  flotante: { position: "absolute", top: 8, right: 18 },
+  flotante: { position: "absolute", top: 10, right: 16, alignItems: "center", justifyContent: "center" },
+  chispita: { position: "absolute", width: 5, height: 5, borderRadius: 3, backgroundColor: color.logro, boxShadow: `0px 0px 6px ${color.logro}` },
   barraFinal: { width: 200, height: 8, borderRadius: 4, backgroundColor: color.surface3, overflow: "hidden" },
   rellenoFinal: { height: 8, borderRadius: 4 },
   cuenta: { position: "absolute", left: 0, right: 0, top: 0, bottom: 0, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(5,7,13,0.78)", zIndex: 50 },

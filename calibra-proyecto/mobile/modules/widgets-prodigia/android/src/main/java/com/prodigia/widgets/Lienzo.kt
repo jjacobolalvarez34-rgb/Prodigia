@@ -1,5 +1,6 @@
 package com.prodigia.widgets
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -252,64 +253,31 @@ object Lienzo {
     }
   }
 
-  // ---------- La llama de la racha (trazos de IconoLlama), con brillo ----------
+  // ---------- La llama de la racha (el vector wp_llama, igual que src/lib/fx/llama.ts) ----------
   // Cada cuadro cambia un poco el alto, la inclinación y el brillo: al turnarse con
-  // fundido, la llama respira y se mece.
-  fun llama(canvas: Canvas, cx: Float, cy: Float, alto: Float, cuadro: Int, apagada: Boolean) {
-    val k = alto / 24f
-    val estira = floatArrayOf(1f, 1.06f, 0.96f)[cuadro % 3]
-    val inclina = floatArrayOf(0f, -0.05f, 0.04f)[cuadro % 3]
+  // fundido, la llama respira y se mece desde la base.
+  fun llama(canvas: Canvas, context: Context, cx: Float, cy: Float, alto: Float, cuadro: Int, apagada: Boolean) {
+    val estira = floatArrayOf(1f, 1.07f, 0.96f)[cuadro % 3]
+    val inclina = floatArrayOf(0f, -0.05f, 0.035f)[cuadro % 3]
     val brillo = floatArrayOf(0.5f, 0.62f, 0.42f)[cuadro % 3]
-    val p = Paint(Paint.ANTI_ALIAS_FLAG)
     if (!apagada) {
-      val r = alto * 0.64f
-      p.shader = RadialGradient(cx, cy + alto * 0.1f, r, intArrayOf(conAlfa(c("#FF9A3D"), brillo), conAlfa(c("#FF5A2B"), brillo * 0.3f), Color.TRANSPARENT), floatArrayOf(0f, 0.5f, 1f), Shader.TileMode.CLAMP)
-      canvas.drawCircle(cx, cy + alto * 0.1f, r, p)
-      p.shader = null
+      val p = Paint(Paint.ANTI_ALIAS_FLAG)
+      val r = alto * 0.62f
+      p.shader = RadialGradient(cx, cy + alto * 0.12f, r, intArrayOf(conAlfa(c("#FF8A3D"), brillo), conAlfa(c("#FF5A2B"), brillo * 0.3f), Color.TRANSPARENT), floatArrayOf(0f, 0.5f, 1f), Shader.TileMode.CLAMP)
+      canvas.drawCircle(cx, cy + alto * 0.12f, r, p)
     }
+    val dibujo = context.getDrawable(if (apagada) R.drawable.wp_llama_apagada else R.drawable.wp_llama)?.mutate() ?: return
+    val k = alto / 24f
     canvas.save()
     canvas.translate(cx - 12f * k, cy - 12f * k)
     canvas.scale(k, k)
-    // Se estira y se inclina desde la base, como una llama de verdad.
-    canvas.translate(12f, 18f)
+    // Base de la llama en (12, 21.5) del vector.
+    canvas.translate(12f, 21.5f)
     canvas.skew(inclina, 0f)
     canvas.scale(1f, estira)
-    canvas.translate(-12f, -18f)
-    val fuera = Path()
-    fuera.moveTo(12f, 2f)
-    fuera.cubicTo(13f, 6f, 17f, 7.5f, 17f, 13f)
-    fuera.arcTo(RectF(7f, 8f, 17f, 18f), 0f, 180f)
-    fuera.cubicTo(7f, 10.6f, 8.1f, 9.1f, 9.3f, 8f)
-    fuera.cubicTo(9.5f, 9.8f, 10.3f, 10.9f, 11.5f, 11.3f)
-    fuera.cubicTo(11f, 8.6f, 10.6f, 5f, 12f, 2f)
-    fuera.close()
-    if (apagada) p.color = c("#4A5270")
-    else p.shader = LinearGradient(12f, 2f, 12f, 18f, intArrayOf(c("#FFE08A"), c("#FF8A3D"), c("#FF3D2E")), floatArrayOf(0f, 0.45f, 1f), Shader.TileMode.CLAMP)
-    canvas.drawPath(fuera, p)
-    p.shader = null
-    // Brillo del borde izquierdo: le da volumen.
-    if (!apagada) {
-      val luz = Path()
-      luz.moveTo(9.3f, 8f)
-      luz.cubicTo(8.1f, 9.1f, 7.6f, 11f, 7.9f, 13.4f)
-      p.style = Paint.Style.STROKE
-      p.strokeWidth = 0.9f
-      p.strokeCap = Paint.Cap.ROUND
-      p.color = conAlfa(c("#FFF3C4"), 0.55f)
-      canvas.drawPath(luz, p)
-      p.style = Paint.Style.FILL
-    }
-    val dentro = Path()
-    dentro.moveTo(12f, 12.5f)
-    dentro.cubicTo(12.5f, 14.1f, 14.3f, 14.7f, 14.3f, 16.8f)
-    dentro.arcTo(RectF(9.7f, 14.5f, 14.3f, 19.1f), 0f, 180f)
-    dentro.cubicTo(9.7f, 15.6f, 10.6f, 14.8f, 11.1f, 14.2f)
-    dentro.cubicTo(11.2f, 14.8f, 11.5f, 15.2f, 12f, 15.3f)
-    dentro.cubicTo(11.8f, 14.3f, 11.7f, 13.4f, 12f, 12.5f)
-    dentro.close()
-    if (apagada) p.color = c("#6B7391")
-    else p.shader = LinearGradient(12f, 12.5f, 12f, 19f, c("#FFFBEA"), c("#FFD36B"), Shader.TileMode.CLAMP)
-    canvas.drawPath(dentro, p)
+    canvas.translate(-12f, -21.5f)
+    dibujo.setBounds(0, 0, 24, 24)
+    dibujo.draw(canvas)
     canvas.restore()
   }
 
@@ -335,11 +303,11 @@ object Lienzo {
   }
 
   // Llama sola, cuadrada, con su brillo dentro del cuadro.
-  fun cuadroLlama(lado: Int, cuadro: Int, apagada: Boolean): Bitmap {
+  fun cuadroLlama(context: Context, lado: Int, cuadro: Int, apagada: Boolean): Bitmap {
     val b = Bitmap.createBitmap(max(1, lado), max(1, lado), Bitmap.Config.ARGB_8888)
     val canvas = Canvas(b)
     val l = lado.toFloat()
-    llama(canvas, l / 2f, l * 0.46f, l * 0.74f, cuadro, apagada)
+    llama(canvas, context, l / 2f, l * 0.52f, l * 0.8f, cuadro, apagada)
     return b
   }
 }

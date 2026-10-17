@@ -985,3 +985,18 @@ html[data-borde="verde"] { --borde-tema: repeating-linear-gradient(90deg, #3DDC9
   --mn-glow: rgba(61, 220, 151, 0.65);
   --mn-glow-suave: rgba(184, 255, 217, 0.35);
 }
+
+/* La llama de la racha (LlamaDibujo, src/lib/fx/llama.ts TITILEO): respira y se mece desde la base. */
+@keyframes llama-titila {
+  0%, 100% { transform: scaleY(1) skewX(0deg); }
+  25% { transform: scaleY(1.07) skewX(-3deg); }
+  50% { transform: scaleY(0.96) skewX(2deg); }
+  75% { transform: scaleY(1.04) skewX(-1.5deg); }
+}
+.llama-titila { animation: llama-titila 0.9s ease-in-out infinite; }
+@keyframes llama-brasa {
+  0% { transform: translateY(2px); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(-5px); opacity: 0; }
+}
+.llama-brasa { animation: llama-brasa 1.2s ease-out infinite; }

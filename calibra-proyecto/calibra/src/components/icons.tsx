@@ -1,3 +1,5 @@
+import LlamaDibujo from "@/components/LlamaDibujo";
+
 interface IconProps {
   className?: string;
 }
@@ -103,12 +105,9 @@ export function IconGeometria({ className }: IconProps) {
   );
 }
 
+// La llama de la racha en capas (LlamaDibujo, igual que la app).
 export function IconLlama({ className }: IconProps) {
-  return (
-    <svg {...base} className={className} fill="currentColor" stroke="none">
-      <path d="M12 2c1 3-2 4-2 7a2 2 0 0 0 4 0c2 1 3 3 3 5a5 5 0 0 1-10 0c0-4 3-5 3-8 0-1.5.8-3 2-4z" />
-    </svg>
-  );
+  return <LlamaDibujo className={className} />;
 }
 
 export function IconCampana({ className }: IconProps) {

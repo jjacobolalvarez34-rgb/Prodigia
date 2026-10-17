@@ -26,6 +26,7 @@ import { mensajeError } from "~/lib/supabase";
 import Glifos from "~/ui/Glifos";
 import MapaGeografia from "~/ui/MapaGeografia";
 import { animarAcierto, animarError, BarraRival, Cabecera, CartelFinal, Consumibles, CuentaInicio, Flotante, opcionesADescartar, Progreso, TarjetaProblema, useConsumibles, useReloj, useSalida } from "~/ui/Sprint";
+import RachaDeFondo from "~/ui/RachaDeFondo";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente, MUNDO_POR_SLUG } from "~/tema";
 import EmotesDuelo from "~/ui/recompensas/EmotesDuelo";
@@ -57,7 +58,7 @@ export default function SprintGeografia() {
   const [combo, setCombo] = useState(0);
   const [escudos, setEscudos] = useState(ESCUDOS_POR_PARTIDA);
   const [aviso, setAviso] = useState<string | null>(null);
-  const [flotantes, setFlotantes] = useState<{ id: number; texto: string }[]>([]);
+  const [flotantes, setFlotantes] = useState<{ id: number; puntos: number }[]>([]);
 
   const sello = useSharedValue(1);
   const sacudida = useSharedValue(0);
@@ -270,7 +271,7 @@ export default function SprintGeografia() {
         if (res.xp > 0) {
           xpRef.current += res.xp;
           const fid = ++flotanteId.current;
-          setFlotantes((f) => [...f, { id: fid, texto: `+${res.xp}` }]);
+          setFlotantes((f) => [...f, { id: fid, puntos: res.xp }]);
           setTimeout(() => setFlotantes((f) => f.filter((x) => x.id !== fid)), 1200);
         }
         if (res.nivel != null) {
@@ -316,6 +317,7 @@ export default function SprintGeografia() {
   return (
     <SafeAreaView style={styles.pantalla}>
       <Glifos glifos={GEOGRAFIA.glifos} acento={GEOGRAFIA.neon} cantidad={7} pulso={pulso} />
+      <RachaDeFondo combo={combo} />
       <Animated.View style={[{ flex: 1 }, estiloJuego]}>
       <Cabecera onSalir={confirmarSalida} reloj={reloj} combo={combo} acento={GEOGRAFIA.neon} corriendo={inicio != null && final === null} />
       <Progreso resultados={resultados} total={totalPartida} acento={GEOGRAFIA.neon} escudos={escudos} />
@@ -352,7 +354,7 @@ export default function SprintGeografia() {
             )}
           </Texto>
           {flotantes.map((f) => (
-            <Flotante key={f.id} texto={f.texto} />
+            <Flotante key={f.id} puntos={f.puntos} />
           ))}
         </TarjetaProblema>
 

@@ -41,6 +41,7 @@ import {
   useReloj,
   useSalida,
 } from "~/ui/Sprint";
+import RachaDeFondo from "~/ui/RachaDeFondo";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente, NUMERIA } from "~/tema";
 import EmotesDuelo from "~/ui/recompensas/EmotesDuelo";
@@ -77,7 +78,7 @@ export default function Sprint() {
   const [feedback, setFeedback] = useState<Feedback>("idle");
   const [resultados, setResultados] = useState<boolean[]>([]);
   const [combo, setCombo] = useState(0);
-  const [flotantes, setFlotantes] = useState<{ id: number; texto: string }[]>([]);
+  const [flotantes, setFlotantes] = useState<{ id: number; puntos: number }[]>([]);
   const [escudos, setEscudos] = useState(0);
   const [aviso, setAviso] = useState<string | null>(null);
   const [progresoFinal, setProgresoFinal] = useState(0);
@@ -311,7 +312,7 @@ export default function Sprint() {
         if (res.xp > 0) {
           xpRef.current += res.xp;
           const fid = ++flotanteId.current;
-          setFlotantes((f) => [...f, { id: fid, texto: `+${res.xp}` }]);
+          setFlotantes((f) => [...f, { id: fid, puntos: res.xp }]);
           setTimeout(() => setFlotantes((f) => f.filter((x) => x.id !== fid)), 1100);
         }
         if (!dueloId && res.nivel != null) {
@@ -386,6 +387,7 @@ export default function Sprint() {
   return (
     <SafeAreaView style={styles.pantalla}>
       <Glifos glifos={NUMERIA.glifos} acento={NUMERIA.neon} cantidad={8} pulso={pulso} />
+      <RachaDeFondo combo={combo} />
       <Animated.View style={[{ flex: 1 }, estiloJuego]}>
         <Cabecera onSalir={confirmarSalida} reloj={reloj} combo={combo} acento={NUMERIA.neon} corriendo={inicio != null && final === null} />
         <Progreso resultados={resultados} total={totalPartida} acento={NUMERIA.neon} escudos={escudos} />
@@ -449,7 +451,7 @@ export default function Sprint() {
               </Texto>
             )}
             {flotantes.map((f) => (
-              <Flotante key={f.id} texto={f.texto} />
+              <Flotante key={f.id} puntos={f.puntos} />
             ))}
           </TarjetaProblema>
           {aviso && (
