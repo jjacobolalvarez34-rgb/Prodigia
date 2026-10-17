@@ -10,6 +10,17 @@ export type AdornoCiudad = "nieve_techos" | "luces" | "arbol" | "calabazas" | "l
 // Borde de los botones principales.
 export type BordeBoton = "caramelo" | "calabaza" | "dorado" | "corazones" | "rombos" | "papel_picado" | "verde";
 
+// Colores de cada borde: rayas diagonales con estos colores en orden, o un degradé.
+export const BORDES: Record<BordeBoton, { tipo: "rayas" | "degrade"; colores: string[] }> = {
+  caramelo: { tipo: "rayas", colores: ["#FFFFFF", "#E63946"] },
+  calabaza: { tipo: "rayas", colores: ["#FF8A1F", "#1C1030"] },
+  dorado: { tipo: "degrade", colores: ["#B8860B", "#FFE08A", "#FFC53D", "#FFF6D8", "#B8860B"] },
+  corazones: { tipo: "rayas", colores: ["#FF5D8F", "#FFB3C7"] },
+  rombos: { tipo: "rayas", colores: ["#3DDC97", "#FFC53D", "#FF5D8F", "#5DE4FF"] },
+  papel_picado: { tipo: "rayas", colores: ["#FF5D8F", "#FF9F1C", "#3DDC97", "#A794FF"] },
+  verde: { tipo: "rayas", colores: ["#3DDC97", "#9BE7FF"] },
+};
+
 export interface Tema {
   id: IdTema;
   nombre: string;

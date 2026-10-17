@@ -9,6 +9,7 @@ import { useAnimacionActiva } from "~/lib/rendimiento";
 import { infoMarco } from "~/lib/placa";
 import { aclarar, brillo, color, fuente, oscurecer } from "~/tema";
 import Texto from "../Texto";
+import AccesorioTemporada from "../temas/AccesorioTemporada";
 
 // Avatar + marco (AvatarConMarco.tsx de la web): marco de rango (aro del color del
 // rango), neón (aro con resplandor que late), de mundo (anillo de la web encima del
@@ -42,7 +43,7 @@ const MarcoCiudad = memo(function MarcoCiudad({ ciudad, tam }: { ciudad: string;
   );
 });
 
-export default function AvatarMarco({ url, nombre, marco = "ninguno", tam = 40, animar = true, presencia }: Props) {
+function AvatarMarcoBase({ url, nombre, marco = "ninguno", tam = 40, animar = true, presencia }: Props) {
   const info = infoMarco(marco);
   const grosor = tam >= 60 ? 3 : 2;
   const pulso = useSharedValue(0.5);
@@ -145,3 +146,15 @@ const styles = StyleSheet.create({
   aro: { alignItems: "center", justifyContent: "center" },
   presencia: { position: "absolute", right: 0, bottom: 1, backgroundColor: color.correcto, borderWidth: 2, borderColor: color.bg },
 });
+
+// En una festividad el avatar lleva el accesorio de la fecha (gorro, sombrero…), igual
+// que en la web (AccesorioTemporada).
+export default function AvatarMarco(props: Props) {
+  const tam = props.tam ?? 40;
+  return (
+    <View style={{ width: tam, height: tam }}>
+      <AvatarMarcoBase {...props} />
+      <AccesorioTemporada tam={tam} />
+    </View>
+  );
+}

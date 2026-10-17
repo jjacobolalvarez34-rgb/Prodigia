@@ -6,6 +6,9 @@ import { useAnimacionActiva, useLiviano } from "~/lib/rendimiento";
 import { aclarar, conAlfa } from "~/tema";
 import { alineacionEnCurso, estadoCielo, faseDelDia } from "@/lib/ciudades/cicloDia";
 import Cielo from "./Cielo";
+import { adornosCiudad } from "@/lib/temas/adornosCiudad";
+import { capaVisible } from "@/lib/temas/temas";
+import { useTemaHoy } from "~/lib/temporada";
 
 // "Cada mundo es una ciudad que se enciende de noche" (02-SISTEMA-VISUAL.md §1): el
 // skyline se arma con una semilla (siempre el mismo para cada mundo), con ventanas
@@ -150,6 +153,10 @@ function CiudadBase({ semilla, acento, alto = 96, apagada, radio = 14, densidad 
     return lista.filter((g) => g.ventanas.length > 0);
   }, [edificios, apagada, quieta, liviano, semilla, luz]);
   const conAvion = !apagada && !quieta && !sinAvion && alto >= 80;
+  // Festividades (src/lib/temas): adornos de la fecha sobre los mismos edificios.
+  const tema = useTemaHoy();
+  const tiposAdorno = !apagada && capaVisible(tema, "ciudad") ? tema?.tema.ciudad : undefined;
+  const adornos = useMemo(() => (tiposAdorno && edificios.length ? adornosCiudad(edificios, ancho, alto, tiposAdorno, semilla) : []), [tiposAdorno, edificios, ancho, alto, semilla]);
   const id = `c${semilla.replace(/[^a-z0-9]/gi, "")}${apagada ? "o" : ""}`;
 
   return (
@@ -204,6 +211,9 @@ function CiudadBase({ semilla, acento, alto = 96, apagada, radio = 14, densidad 
             {ventanasDelDibujo.comunes ? <Path d={ventanasDelDibujo.comunes} fill={apagada ? "#2A2F42" : luz} opacity={apagada ? 0.8 : 0.15 + 0.75 * noche} /> : null}
             {ventanasDelDibujo.blancas ? <Path d={ventanasDelDibujo.blancas} fill="#FFF3D6" opacity={0.15 + 0.75 * noche} /> : null}
             {!apagada && <Rect x={0} y={alto - 1.5} width={ancho} height={1.5} fill={conAlfa(acento, 0.5)} />}
+            {adornos.map((f, i) => (
+              <Path key={`adorno${i}`} d={f.d} fill={f.relleno ?? "none"} stroke={f.trazo} strokeWidth={f.ancho} strokeLinecap="round" opacity={f.opacidad} />
+            ))}
           </Svg>
           {/* De día casi no se ven luces encendidas: las que parpadean, solo de noche. */}
           {noche > 0.35 && (

@@ -2,6 +2,9 @@ import { useMemo } from "react";
 import { Circle, createPicture, Group, LinearGradient, Oval, Path, Picture, RadialGradient, Rect, RoundedRect, Skia, vec } from "@shopify/react-native-skia";
 import { useDerivedValue, type SharedValue } from "react-native-reanimated";
 import { crearRecursosParticulas, dibujarParticulas, type Particula } from "./particulas";
+import { ADORNOS_CAPSULA } from "@/lib/temas/dibujos";
+import { capaVisible } from "@/lib/temas/temas";
+import { useTemaHoy } from "~/lib/temporada";
 
 // Capas de efectos para dibujar dentro de un <Canvas> de Skia. Todas reciben
 // valores compartidos de Reanimated, así se animan en el hilo de la interfaz.
@@ -184,7 +187,13 @@ function Mitad({ d, color, arriba }: { d: string; color: string; arriba: boolean
   );
 }
 
-export function CuerpoCapsula({ ancho, colores, abierta, ranura, colorRanura, colorVivo, reloj }: { ancho: number; colores: [string, string]; abierta: SharedValue<number>; ranura: SharedValue<number>; colorRanura: string; colorVivo?: ColorVivo; reloj: SharedValue<number> }) {
+export function CuerpoCapsula({ ancho, colores: coloresBase, abierta, ranura, colorRanura, colorVivo, reloj }: { ancho: number; colores: [string, string]; abierta: SharedValue<number>; ranura: SharedValue<number>; colorRanura: string; colorVivo?: ColorVivo; reloj: SharedValue<number> }) {
+  // Festividades (src/lib/temas): la cápsula toma los colores y el adorno de la fecha.
+  const tema = useTemaHoy();
+  const piel = capaVisible(tema, "capsula") ? tema?.tema.capsula : undefined;
+  const colores = piel?.colores ?? coloresBase;
+  const adorno = piel ? ADORNOS_CAPSULA[piel.adorno] : null;
+  const opAdorno = useDerivedValue(() => Math.max(0, 1 - abierta.value * 3));
   const k = ancho / 60;
   const base = useMemo(() => [{ scale: k }, { translateX: -50 }, { translateY: -70 }], [k]);
   const entera = useMemo(() => Skia.Path.MakeFromSVGString(ENTERA)!, []);
@@ -226,6 +235,13 @@ export function CuerpoCapsula({ ancho, colores, abierta, ranura, colorRanura, co
           </Rect>
         </Group>
       </Group>
+      {adorno && (
+        <Group opacity={opAdorno}>
+          {adorno.map((f, i) => (
+            <Path key={i} path={f.d} color={f.relleno ?? f.trazo ?? "#FFFFFF"} style={f.relleno ? "fill" : "stroke"} strokeWidth={f.ancho ?? 1} strokeCap="round" strokeJoin="round" opacity={f.opacidad ?? 1} />
+          ))}
+        </Group>
+      )}
       {/* Luz que se escapa por la unión. */}
       <Group opacity={opRanura} blendMode="plus">
         <Group transform={aplastar} origin={vec(50, 70)}>

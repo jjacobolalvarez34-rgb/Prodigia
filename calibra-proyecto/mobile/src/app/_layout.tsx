@@ -36,6 +36,7 @@ import IntroMarca, { INTRO_ACTIVA } from "~/ui/IntroMarca";
 import PantallaCarga from "~/ui/PantallaCarga";
 import PrimeraVez from "~/ui/PrimeraVez";
 import AvisoProTermino from "~/ui/AvisoProTermino";
+import CapaTemporada from "~/ui/temas/CapaTemporada";
 import AvisoActualizacion from "~/ui/AvisoActualizacion";
 import { GlobosPorRuta } from "~/ui/GloboAyuda";
 import CelebracionConstelaciones from "~/ui/recompensas/CelebracionConstelaciones";
@@ -233,6 +234,8 @@ function Navegacion() {
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <CelebracionConstelaciones />}
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <GlobosPorRuta segmentos={segmentos} />}
       {!cargando && userId && terminos && !cargaVisible && <PrimeraVez key={userId} userId={userId} anonimo={!!sesion?.user.is_anonymous} />}
+      {/* Festividades (src/lib/temas): el ambiente de la fecha, nunca dentro de una partida. */}
+      {!cargando && !cargaVisible && !segmentos.some((x) => PANTALLAS_DE_JUEGO.has(x)) && <CapaTemporada />}
       {!cargando && userId && terminos && !cargaVisible && <AvisoProTermino />}
       {/* Nueva versión del APK (2026-10-14): se baja y se instala desde la app. */}
       {!cargando && !cargaVisible && <AvisoActualizacion />}
@@ -243,6 +246,9 @@ function Navegacion() {
     </>
   );
 }
+
+// Pantallas de juego: ahí no va la decoración de temporada.
+const PANTALLAS_DE_JUEGO = new Set(["sprint", "duelo", "reto", "zen", "diagnostico", "reto-finde"]);
 
 export default function RootLayout() {
   // Fuentes de la marca + las 8 fuentes de nombre de la tienda (empaquetadas: la

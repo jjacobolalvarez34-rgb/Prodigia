@@ -1,4 +1,9 @@
+"use client";
+
 import { mulberry32 } from "@/lib/rng";
+import { adornosCiudad } from "@/lib/temas/adornosCiudad";
+import { capaVisible } from "@/lib/temas/temas";
+import { useTemaHoy } from "@/components/temas/useTemaHoy";
 
 // Fondo de la pantalla de carga (paridad con la app, mobile/src/ui/FondoCiudad.tsx):
 // cielo de noche con estrellas, la ciudad con ventanas que titilan y abajo una
@@ -36,7 +41,13 @@ function armar() {
 
 const ESCENA = armar();
 
+// Festividades: los adornos de la fecha sobre la fila de edificios de adelante.
+const ADELANTE = ESCENA.edificios.filter((e) => e.capa === 1);
+
 export default function FondoCiudad({ acento = "#7C5CFF" }: { acento?: string }) {
+  const tema = useTemaHoy();
+  const tipos = capaVisible(tema, "ciudad") ? tema?.tema.ciudad : undefined;
+  const adornos = tipos ? adornosCiudad(ADELANTE, W, SUELO, tipos, "carga", 2.6) : [];
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden bg-[#06080F]" aria-hidden="true">
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" className="absolute inset-0 h-full w-full">
@@ -59,6 +70,9 @@ export default function FondoCiudad({ acento = "#7C5CFF" }: { acento?: string })
         ))}
         {ESCENA.ventanas.map((v, i) => (
           <rect key={i} x={v.x} y={v.y} width={4.5} height={6} fill="#FFD27A" opacity={0.75} className={v.titila ? "fondo-ventana" : undefined} style={v.titila ? { animationDelay: `${v.retraso}ms` } : undefined} />
+        ))}
+        {adornos.map((f, i) => (
+          <path key={`a${i}`} d={f.d} fill={f.relleno ?? "none"} stroke={f.trazo} strokeWidth={f.ancho} strokeLinecap="round" opacity={f.opacidad} />
         ))}
         <rect x={0} y={SUELO} width={W} height={ALTO_CARRETERA} fill="url(#fcAsfalto)" />
         <rect x={0} y={SUELO} width={W} height={10} fill="#1A1E38" />

@@ -8,6 +8,7 @@ import { sonar, vibrar } from "~/lib/efectos";
 import { useAnimacionActiva, useLiviano } from "~/lib/rendimiento";
 import { color, conAlfa, fuente } from "~/tema";
 import Texto from "./Texto";
+import BordeTemporada from "./temas/BordeTemporada";
 
 // Botón de la app con el estilo de components/Boton.tsx de la web: píldora, color
 // sólido de la marca (o del mundo) ajustado a contraste AA con el texto blanco,
@@ -142,6 +143,8 @@ export default function Boton3D({
         accessibilityState={{ disabled: inactivo }}
         style={{ borderRadius: 999, boxShadow: sombra }}
       >
+        {/* Festividades: borde de la fecha en los botones principales. */}
+        {variante !== "secundario" && variante !== "peligro" && <BordeTemporada radio={999} />}
         {destacado ? (
           <View style={styles.marcoDestacado}>
             <Animated.View style={[StyleSheet.absoluteFill, estiloHalo]}>

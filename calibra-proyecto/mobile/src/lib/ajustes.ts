@@ -9,10 +9,12 @@ export interface Ajustes {
   envioAutomatico: boolean;
   // "auto": livianas en teléfonos de poca memoria (ver rendimiento.ts).
   animaciones: "auto" | "completas" | "livianas";
+  // Festividades (src/lib/temas): copos, adornos, accesorios. Nunca dentro de una partida.
+  decoracion: boolean;
 }
 
 const CLAVE = "prodigia:ajustes";
-let estado: Ajustes = { sonido: true, haptica: true, envioAutomatico: false, animaciones: "auto" };
+let estado: Ajustes = { sonido: true, haptica: true, envioAutomatico: false, animaciones: "auto", decoracion: true };
 const oyentes = new Set<() => void>();
 
 export function leerAjustes(): Ajustes {
