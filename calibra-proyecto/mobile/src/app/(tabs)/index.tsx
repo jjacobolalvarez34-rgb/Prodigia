@@ -12,6 +12,7 @@ import { recargarPendientes, totalPendientes, usePendientes } from "~/lib/recomp
 import { estadoRetosHoy } from "~/lib/retos";
 import { useSesion } from "~/lib/sesion";
 import RepararRacha from "~/ui/RepararRacha";
+import CartelTemporada from "~/ui/temas/CartelTemporada";
 import { sincronizar, useSinConexion } from "~/lib/sinConexion";
 import { mensajeError, supabase } from "~/lib/supabase";
 import Anillo from "~/ui/Anillo";
@@ -122,6 +123,7 @@ export default function Hoy() {
         </Tarjeta>
       )}
 
+      <CartelTemporada />
       {!esInvitado && <RepararRacha indice={indice++} />}
 
       {continuar && mundoContinuar && (

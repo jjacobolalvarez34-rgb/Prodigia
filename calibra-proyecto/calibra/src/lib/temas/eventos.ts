@@ -1,4 +1,6 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+// Tipo mínimo del cliente: así sirve el de la web y el de la app (que traen su propia copia de supabase-js).
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SupabaseClient = { rpc: (fn: string, args?: Record<string, unknown>) => any };
 import { COLECCIONES, slugEvento, type Coleccion } from "./colecciones";
 import type { TemaActivo } from "./temas";
 

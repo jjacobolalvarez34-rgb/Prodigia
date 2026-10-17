@@ -197,6 +197,7 @@ function Navegacion() {
             <Stack.Screen name="ajustes" />
             <Stack.Screen name="tienda" options={{ animation: "slide_from_bottom" }} />
             <Stack.Screen name="recompensas" />
+            <Stack.Screen name="evento" />
             <Stack.Screen name="logros" />
             <Stack.Screen name="estadisticas" />
             <Stack.Screen name="editar-placa" options={{ animation: "slide_from_bottom" }} />
