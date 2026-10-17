@@ -936,21 +936,6 @@ select:disabled {
   .animate-\[carga-barra_1\.1s_ease-in-out_infinite\] { animation: none; transform: translateX(100%); }
 }
 
-/* Fondo de ciudad de la pantalla de carga (FondoCiudad.tsx, paridad con la app). */
-@keyframes fondo-lineas {
-  from { transform: translateX(0); }
-  to { transform: translateX(-46px); }
-}
-@keyframes fondo-ventana {
-  0%, 100% { opacity: 0.75; }
-  50% { opacity: 0.12; }
-}
-.fondo-lineas { animation: fondo-lineas 0.9s linear infinite; }
-.fondo-ventana { animation: fondo-ventana 3.2s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) {
-  .fondo-lineas, .fondo-ventana { animation: none; }
-}
-
 /* Festividades (src/lib/temas): borde de temporada en los botones principales
    (`boton-tema`). Lo enciende AplicarTema poniendo data-borde en <html>. */
 html[data-borde] .boton-tema { position: relative; }

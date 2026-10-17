@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation";
 import LogoSpinner from "@/components/LogoSpinner";
-import FondoCiudad from "@/components/FondoCiudad";
 import { MUNDOS_LANDING } from "@/lib/mundos";
 
 // Next.js muestra esto automáticamente como fallback de Suspense mientras
@@ -20,13 +19,9 @@ function colorDeRuta(ruta: string): string {
 export default function GlobalLoading() {
   const color = colorDeRuta(usePathname() ?? "");
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5">
-      {/* Paridad con la app (2026-10-14): la ciudad de noche detrás, del color de la ciudad. */}
-      <FondoCiudad acento={color} />
-      <div className="relative">
-        <LogoSpinner size={96} colorAro={color} />
-      </div>
-      <div className="relative h-1.5 w-40 overflow-hidden rounded-full bg-white/15" aria-hidden="true">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-background/70 backdrop-blur-sm">
+      <LogoSpinner size={96} colorAro={color} />
+      <div className="h-1.5 w-40 overflow-hidden rounded-full bg-foreground/10" aria-hidden="true">
         <div className="h-full w-1/3 animate-[carga-barra_1.1s_ease-in-out_infinite] rounded-full" style={{ background: color }} />
       </div>
     </div>
