@@ -26,7 +26,7 @@ function elipse(x: number, y: number, rx: number, ry: number): string {
 const CORAZON = "M16 28C6 21 3 15 6 10c2-4 8-4 10 1 2-5 8-5 10-1 3 5 0 11-10 18z";
 
 // ---------- Partículas (32 × 32) ----------
-export type TipoParticula = "nieve" | "hoja" | "murcielago" | "petalo" | "corazon" | "linterna" | "farol" | "confeti" | "chispa" | "polvo" | "nota" | "estrella" | "huevo" | "caramelo";
+export type TipoParticula = "nieve" | "hoja" | "murcielago" | "petalo" | "corazon" | "linterna" | "farol" | "confeti" | "chispa" | "polvo" | "nota" | "estrella" | "huevo" | "caramelo" | "dulce";
 
 export const PARTICULAS: Record<TipoParticula, Dibujo> = {
   nieve: {
@@ -95,6 +95,17 @@ export const PARTICULAS: Record<TipoParticula, Dibujo> = {
       { d: "M16 3c6 0 10 9 10 16a10 10 0 0 1-20 0C6 12 10 3 16 3z", relleno: "#9BE7FF" },
       { d: "M7 16c3 2 6-2 9 0s6 2 9 0", trazo: "#FF5D8F", ancho: 2.2 },
       { d: "M6.5 21c3 2 6-2 9.5 0s6.5 2 9.5 0", trazo: "#FFD36B", ancho: 2.2 },
+    ],
+  },
+  // Caramelo envuelto (las fichas de Halloween).
+  dulce: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: "M9 16L2.5 10.5c-.8 2-.8 8 0 11zM23 16l6.5-5.5c.8 2 .8 8 0 11z", relleno: "#FF8A1F" },
+      { d: elipse(16, 16, 8.5, 7), relleno: "#FF8A1F" },
+      { d: "M11 11.5c2-1.5 4-1 6 1.5s4 3 6 1.5M10.5 18c2-1.5 4-1 6 1.5s4 3 5.5 1.5", trazo: "#7C3AED", ancho: 2 },
+      { d: elipse(13, 12.5, 3, 1.6), relleno: "#FFFFFF", opacidad: 0.45 },
     ],
   },
   caramelo: {

@@ -8,6 +8,7 @@
 
 import { COSTOS, PRECIO_LEGENDARIO_COMETAS, PRECIO_RAREZA_CHISPAS, SOLO_COMETAS } from "../tienda/costos";
 import { EFECTOS_NUEVOS, EMOTES_NUEVOS, ESTELAS_NUEVAS, filasCatalogoAmpliado, MARCOS_ESTILO, PAQUETES_NUEVOS, SONIDOS_NUEVOS } from "./catalogoAmpliado";
+import { EFECTOS_EVENTO, EMOTES_EVENTO, ESTELAS_EVENTO, MARCOS_EVENTO, piezasDeEventos } from "@/lib/temas/colecciones";
 
 export type Rareza = "comun" | "raro" | "epico" | "legendario";
 
@@ -79,6 +80,8 @@ export const ESTELAS: Record<string, Estela> = {
   arcoiris: { nombre: "Arcoíris", base: "#EF4444", punta: "#3B82F6", arcoiris: true },
   ...Object.fromEntries(CIUDADES.map((c) => [`ciudad_${c.slug}`, { nombre: `Estela de ${c.nombre}`, base: c.color, punta: tono(c.color, 0.6) }])),
   ...Object.fromEntries(ESTELAS_NUEVAS.map((e) => [e.valor, { nombre: e.nombre, base: e.base, punta: e.punta }])),
+  // Colecciones de los eventos (src/lib/temas/colecciones.ts).
+  ...Object.fromEntries(ESTELAS_EVENTO.map((e) => [e.valor, { nombre: e.nombre, base: e.base, punta: e.punta }])),
 };
 
 export const ARCOIRIS = ["#EF4444", "#F59E0B", "#FACC15", "#22C55E", "#3B82F6", "#8B5CF6"];
@@ -106,6 +109,7 @@ export const EFECTOS: Record<string, Efecto> = {
   estrellas: { nombre: "Estrellas", forma: "estrellas", colores: ["#FFC53D", "#FFF3B0", "#FFFFFF"] },
   ...Object.fromEntries(CIUDADES.map((c) => [`ciudad_${c.slug}`, { nombre: `Destellos de ${c.nombre}`, forma: "glifo" as const, colores: [c.color, tono(c.color, 0.5)], glifo: c.glifo }])),
   ...Object.fromEntries(EFECTOS_NUEVOS.map((e) => [e.valor, { nombre: e.nombre, forma: e.forma, colores: e.colores, glifo: e.glifo }])),
+  ...Object.fromEntries(EFECTOS_EVENTO.map((e) => [e.valor, { nombre: e.nombre, forma: e.forma, colores: e.colores }])),
 };
 
 export function efectoDe(valor: string | null | undefined): Efecto {
@@ -192,6 +196,7 @@ export const EMOTES: Record<string, { emoji: string; texto: string }> = {
   corona: { emoji: "👑", texto: "¡Reinado!" },
   ...Object.fromEntries(CIUDADES.map((c) => [`ciudad_${c.slug}`, { emoji: c.emoji, texto: `¡Viva ${c.nombre}!` }])),
   ...Object.fromEntries(EMOTES_NUEVOS.map((e) => [e.valor, { emoji: e.emoji, texto: e.texto }])),
+  ...Object.fromEntries(EMOTES_EVENTO.map((e) => [e.valor, { emoji: e.emoji, texto: e.texto }])),
 };
 
 export const EMOTES_GRATIS = ["bien_jugado", "hola"];
@@ -218,7 +223,7 @@ export const MARCOS_ESPECIALES: { slug: string; nombre: string; colores: string[
 // Marcos con aro de colores que gira: los de temporada, los especiales y los de
 // colores de la tienda ampliada (catalogoAmpliado.ts).
 export function marcoTemporadaDe(slug: string | null | undefined): { slug: string; nombre: string; colores: string[] } | null {
-  return MARCOS_TEMPORADA.find((m) => m.slug === slug) ?? MARCOS_ESPECIALES.find((m) => m.slug === slug) ?? MARCOS_ESTILO.find((m) => m.slug === slug) ?? null;
+  return MARCOS_TEMPORADA.find((m) => m.slug === slug) ?? MARCOS_ESPECIALES.find((m) => m.slug === slug) ?? MARCOS_ESTILO.find((m) => m.slug === slug) ?? MARCOS_EVENTO.find((m) => m.slug === slug) ?? null;
 }
 
 // "coleccion_quimia" → la ciudad del marco animado de colección.
@@ -317,6 +322,9 @@ export const CATALOGO_NUEVO: ItemCatalogo[] = [
   // Ampliación del 2026-10-10 (0275): marcos de colores, fondos, estelas, efectos,
   // sonidos, emotes y títulos nuevos.
   ...filasCatalogoAmpliado().map((f) => ({ ...f, categoria: f.categoria as CategoriaNueva, vendible: true })),
+  // Piezas de los eventos: no se venden en el Bazar (tienda del evento); acá están para
+  // el inventario y para dibujarlas.
+  ...piezasDeEventos().map((p) => ({ item: p.item, categoria: p.categoria as CategoriaNueva, valor: p.valor, nombre: p.nombre, precio: 1, rareza: p.rareza, vendible: false })),
 ].map(conPrecioNuevo);
 
 // Precio en Cometas de algo de la tienda (null si se compra con Chispas).

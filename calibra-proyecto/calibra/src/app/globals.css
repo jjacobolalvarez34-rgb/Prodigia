@@ -973,3 +973,15 @@ html[data-borde="corazones"] { --borde-tema: repeating-linear-gradient(90deg, #F
 html[data-borde="rombos"] { --borde-tema: repeating-linear-gradient(45deg, #3DDC97 0 6px, #FFC53D 6px 12px, #FF5D8F 12px 18px, #5DE4FF 18px 24px); }
 html[data-borde="papel_picado"] { --borde-tema: repeating-linear-gradient(90deg, #FF5D8F 0 10px, #FF9F1C 10px 20px, #3DDC97 20px 30px, #A794FF 30px 40px); }
 html[data-borde="verde"] { --borde-tema: repeating-linear-gradient(90deg, #3DDC97 0 8px, #9BE7FF 8px 16px); }
+
+/* Marcos de las colecciones de eventos (src/lib/temas/colecciones.ts). */
+.marco-evento-calabaza {
+  --mn-color: #ff8a1f;
+  --mn-glow: rgba(255, 138, 31, 0.6);
+  --mn-glow-suave: rgba(124, 58, 237, 0.35);
+}
+.marco-evento-esqueleto {
+  --mn-color: #b8ffd9;
+  --mn-glow: rgba(61, 220, 151, 0.65);
+  --mn-glow-suave: rgba(184, 255, 217, 0.35);
+}

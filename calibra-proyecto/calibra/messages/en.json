@@ -5506,5 +5506,24 @@
     "irRecompensas": "Go open it",
     "abrirYa": "Open now",
     "guardar": "Save"
+  },
+  "Evento": {
+    "tituloPagina": "Event",
+    "sinEvento": "There's no holiday going on right now.",
+    "seAcerca": "Coming soon",
+    "evento": "Event",
+    "verEvento": "See the event",
+    "empiezaEn": "Starts in {tiempo}",
+    "terminaEn": "Ends in {tiempo}",
+    "terminado": "It's over: trade your tokens",
+    "invitado": "Create your account to earn tokens and collect pieces.",
+    "tusFichas": "Your {ficha}",
+    "comoSeGanan": "Earn them by playing any world: 1 per {exp} XP, up to {max} a day.",
+    "cambiarFichas": "Trade for {chispas} Sparks",
+    "cambiadas": "You traded your tokens for {chispas} Sparks.",
+    "coleccion": "The collection",
+    "tuya": "It's yours!",
+    "nota": "Pick the pieces you want with your {ficha} or with Comets. Leftover tokens become {chispas} Sparks each when it ends. The collection returns next year.",
+    "irTienda": "Go to the Bazaar"
   }
 }

@@ -1,5 +1,6 @@
 import { CIUDADES, degradeFondoCiudad, type MundoCiudad } from "@/lib/recompensas/catalogo";
 import { degradeFondoEstilo, FONDOS_ESTILO, MARCOS_ESTILO, type FondoEstilo } from "@/lib/recompensas/catalogoAmpliado";
+import { FONDOS_EVENTO, MARCOS_EVENTO } from "@/lib/temas/colecciones";
 import type { VisualLeccion } from "@/lib/aprender/visuales";
 // Tipos que reflejan el esquema de supabase/migrations/*.sql.
 // Cuando el esquema crezca, lo ideal es generar esto automáticamente con:
@@ -165,7 +166,7 @@ export const ANIMACIONES_PESADAS: ReadonlySet<AnimacionNombre> = new Set(["shuff
 // "prodigio" (Fase 4, pagos): exclusivo de Prodigia Pro, mismo gate
 // que animacion "prisma" — ver 0146_prodigia_pro_gates_y_estadisticas.sql.
 // + los 13 fondos de ciudad de la tienda ampliada (0248): degradé del color del mundo.
-export type FondoPerfil = "ninguno" | "aurora" | "nebulosa" | "dorado" | "oceano" | "bosque" | "personalizado" | "prodigio" | `ciudad_${MundoCiudad}` | FondoEstilo;
+export type FondoPerfil = "ninguno" | "aurora" | "nebulosa" | "dorado" | "oceano" | "bosque" | "personalizado" | "prodigio" | `ciudad_${MundoCiudad}` | FondoEstilo | (typeof FONDOS_EVENTO)[number]["valor"];
 
 export const FONDO_PERFIL_ESTILO: Record<FondoPerfil, string> = {
   ninguno: "",
@@ -179,6 +180,8 @@ export const FONDO_PERFIL_ESTILO: Record<FondoPerfil, string> = {
   ...(Object.fromEntries(CIUDADES.map((c) => [`ciudad_${c.slug}`, degradeFondoCiudad(c.slug) ?? ""])) as Record<`ciudad_${MundoCiudad}`, string>),
   // Tienda ampliada (0275).
   ...(Object.fromEntries(FONDOS_ESTILO.map((f) => [f.valor, degradeFondoEstilo(f.valor) ?? ""])) as Record<FondoEstilo, string>),
+  // Colecciones de los eventos (src/lib/temas/colecciones.ts).
+  ...(Object.fromEntries(FONDOS_EVENTO.map((f) => [f.valor, `linear-gradient(120deg, ${f.colores.join(", ")})`])) as Record<(typeof FONDOS_EVENTO)[number]["valor"], string>),
 };
 
 export interface Profile {
@@ -480,6 +483,8 @@ export const ESTILO_MARCO_PERFIL: Record<string, string> = {
   pionero: "marco-neon-perfil marco-pionero",
   // Marcos de colores de la tienda ampliada (0275): clases .marco-estilo-* de globals.css.
   ...Object.fromEntries(MARCOS_ESTILO.map((m) => [m.slug, `marco-neon-perfil marco-${m.slug.replace(/_/g, "-")}`])),
+  // Marcos de las colecciones de eventos: clases .marco-evento-* de globals.css.
+  ...Object.fromEntries(MARCOS_EVENTO.map((m) => [m.slug, `marco-neon-perfil marco-${m.slug.replace(/_/g, "-")}`])),
 };
 
 // Los 3 marcos neón de arriba, con su color para la vidriera de la

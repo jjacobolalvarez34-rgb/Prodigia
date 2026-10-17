@@ -6,7 +6,8 @@ import { COSTOS, PRECIO_RAREZA_CHISPAS } from "../tienda/costos";
 
 const MIGRACIONES = path.join(__dirname, "..", "..", "..", "supabase", "migrations");
 // 0248 más la ampliación de 0275 (mismo formato de filas y de paquetes).
-const sql0248 = readFileSync(path.join(MIGRACIONES, "0248_catalogo_cosmeticos_y_tienda.sql"), "utf8") + readFileSync(path.join(MIGRACIONES, "0275_tienda_ampliada_mas_cosmeticos.sql"), "utf8");
+// 0289: las piezas de las colecciones de eventos (no se venden en el Bazar).
+const sql0248 = readFileSync(path.join(MIGRACIONES, "0248_catalogo_cosmeticos_y_tienda.sql"), "utf8") + readFileSync(path.join(MIGRACIONES, "0275_tienda_ampliada_mas_cosmeticos.sql"), "utf8") + readFileSync(path.join(MIGRACIONES, "0289_eventos_y_halloween.sql"), "utf8");
 // Economía nueva (0280): precios por rareza, consumibles, paquetes y calendario vigentes.
 const sql0280 = readFileSync(path.join(MIGRACIONES, "0280_economia_nueva.sql"), "utf8");
 // 0285: Pack Noche sin el legendario (los paquetes que cambian de contenido).

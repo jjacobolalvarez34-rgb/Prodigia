@@ -1,4 +1,4 @@
-import { hoyUtc, temaDeFecha, type FaseTema, type IdTema, type TemaHoy } from "./calendario";
+import { hoyUtc, rangosDelAnio, temaDeFecha, type FaseTema, type IdTema, type TemaHoy } from "./calendario";
 import type { AdornoCapsula, TipoAccesorio, TipoParticula, TipoPasante } from "./dibujos";
 
 // Ficha de cada festividad (docs/eventos/PLAN_FESTIVIDADES.md §3): qué capas usa y con
@@ -270,8 +270,12 @@ export function forzarTema(id: IdTema | null) {
 
 export function temaActivo(ahora = Date.now()): TemaActivo | null {
   if (forzado) {
-    const hoy = temaDeFecha(hoyUtc(ahora));
-    return { tema: TEMAS[forzado], fase: "evento", hoy: hoy ?? { id: forzado, fase: "evento", rango: { id: forzado, decoracion: "", desde: "", hasta: "", cierre: false } } };
+    // Vista previa: la próxima edición de esa fiesta, como si ya estuviera en curso.
+    const hoyIso = hoyUtc(ahora);
+    const anio = Number(hoyIso.slice(0, 4));
+    const rango = [...rangosDelAnio(anio), ...rangosDelAnio(anio + 1)].filter((r) => r.id === forzado && r.hasta >= hoyIso).sort((a, b) => (a.desde < b.desde ? -1 : 1))[0];
+    const r = rango ?? { id: forzado, decoracion: hoyIso, desde: hoyIso, hasta: hoyIso, cierre: false };
+    return { tema: TEMAS[forzado], fase: "evento", hoy: { id: forzado, fase: "evento", rango: r } };
   }
   const hoy = temaDeFecha(hoyUtc(ahora));
   if (!hoy) return null;

@@ -5506,5 +5506,24 @@
     "irRecompensas": "Ir a abrirla",
     "abrirYa": "Abrir ya",
     "guardar": "Guardar"
+  },
+  "Evento": {
+    "tituloPagina": "Evento",
+    "sinEvento": "Ahora no hay ninguna festividad en curso.",
+    "seAcerca": "Se acerca",
+    "evento": "Evento",
+    "verEvento": "Ver el evento",
+    "empiezaEn": "Empieza en {tiempo}",
+    "terminaEn": "Termina en {tiempo}",
+    "terminado": "Terminó: cambia tus fichas",
+    "invitado": "Crea tu cuenta para ganar fichas y llevarte piezas de la colección.",
+    "tusFichas": "Tus {ficha}",
+    "comoSeGanan": "Se ganan jugando en cualquier mundo: 1 cada {exp} de Exp, hasta {max} por día.",
+    "cambiarFichas": "Cambiar por {chispas} Chispas",
+    "cambiadas": "Cambiaste tus fichas por {chispas} Chispas.",
+    "coleccion": "La colección",
+    "tuya": "¡Es tuya!",
+    "nota": "Elige las piezas que quieras con tus {ficha} o con Cometas. Las fichas que sobren al terminar se cambian por {chispas} Chispas cada una. La colección vuelve el año que viene.",
+    "irTienda": "Ir al Bazar"
   }
 }
