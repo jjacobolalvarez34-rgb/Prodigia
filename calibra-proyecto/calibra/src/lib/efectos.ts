@@ -17,10 +17,15 @@ export function subscribeEfectos(listener: Listener) {
 // solo el adorno. Independiente de prefers-reduced-motion (que también
 // se respeta en cada animación por separado) porque acá es una
 // preferencia explícita del usuario, no del sistema operativo.
+// Lo que elegiste en Ajustes manda; si nunca lo tocaste, se sigue al sistema
+// («reducir movimiento»). Antes el sistema ganaba siempre y en una PC con Windows en
+// «mejor rendimiento» los efectos no se podían prender (2026-10-16).
 export function efectosHabilitados(): boolean {
   try {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
-    return localStorage.getItem(CLAVE) !== "off";
+    const guardado = localStorage.getItem(CLAVE);
+    if (guardado === "on") return true;
+    if (guardado === "off") return false;
+    return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   } catch {
     return true;
   }

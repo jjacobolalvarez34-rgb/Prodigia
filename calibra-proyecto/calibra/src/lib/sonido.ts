@@ -40,14 +40,6 @@ export function setSonidoHabilitado(habilitado: boolean) {
 
 let ctx: AudioContext | null = null;
 
-function prefiereMenosEstimulo(): boolean {
-  try {
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  } catch {
-    return false;
-  }
-}
-
 function obtenerContexto(): AudioContext | null {
   try {
     if (!ctx) {
@@ -218,7 +210,10 @@ export type TipoTono = "correcto" | "error" | "nivel" | "nivel_cuenta" | "logro"
 // Social). Respeta el mute de /ajustes y prefers-reduced-motion.
 export function reproducirTono(tipo: TipoTono) {
   oyentesTono.forEach((o) => o(tipo));
-  if (!sonidoHabilitado() || prefiereMenosEstimulo()) return;
+  // Solo el ajuste de sonido decide (2026-10-16: «el sonido en PC nunca se ha
+  // reproducido»): antes también lo apagaba «reducir movimiento» del sistema, que
+  // Windows activa con «mejor rendimiento». Movimiento y sonido son cosas distintas.
+  if (!sonidoHabilitado()) return;
   if (typeof window === "undefined") return;
 
   try {

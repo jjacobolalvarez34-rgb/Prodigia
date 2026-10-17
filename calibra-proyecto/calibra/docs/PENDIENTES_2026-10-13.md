@@ -260,4 +260,4 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 63. [ ] App: la suma de puntos al acertar como en la web (animación en una esquina de la pregunta que va creciendo).
 64. [ ] App: más presencia para la racha de preguntas: desde 3 seguidas, la racha aparece grande en toda la pantalla, animada,
     como fuego, con el número que cambia, transparente de fondo (que se note pero no tape). O una idea mejor.
-65. [ ] Web: el sonido en PC nunca se ha reproducido.
+65. [x] Web: el sonido en PC nunca se ha reproducido.
