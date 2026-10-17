@@ -252,3 +252,12 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
     constelaciones y cápsulas con diseños y animaciones de la fecha. Planear y HACER cada una, prehechas y programadas
     para activarse solas desde antes.
 57. [ ] Anuncios: alguien nuevo ve de golpe los ~12 anuncios que hay; no es la idea. Arreglarlo y mejorar su diseño.
+58. [ ] Ícono de la app: fondo negro y logo más centrado, como el del APK viejo (el que solo envolvía la web): ese era más bonito.
+59. [ ] En festividades también cambian el ícono y los widgets.
+60. [ ] Widgets: más profundidad (y animación si se puede); hoy se ven feos.
+61. [ ] La llamita (racha) se ve muy sencilla: mejorarla gráficamente, con todas sus skins (estelas de racha).
+62. [ ] Las partículas al acertar se ven rústicas: mejorarlas.
+63. [ ] App: la suma de puntos al acertar como en la web (animación en una esquina de la pregunta que va creciendo).
+64. [ ] App: más presencia para la racha de preguntas: desde 3 seguidas, la racha aparece grande en toda la pantalla, animada,
+    como fuego, con el número que cambia, transparente de fondo (que se note pero no tape). O una idea mejor.
+65. [ ] Web: el sonido en PC nunca se ha reproducido.
