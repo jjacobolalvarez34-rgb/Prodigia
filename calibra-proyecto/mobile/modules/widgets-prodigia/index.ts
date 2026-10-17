@@ -6,6 +6,8 @@ import { requireOptionalNativeModule } from "expo";
 interface ModuloWidgets {
   guardar(datos: string): void;
   anclar(tipo: string): boolean;
+  iconoActual?(): string;
+  cambiarIcono?(nombre: string): boolean;
 }
 
 const nativo = requireOptionalNativeModule<ModuloWidgets>("WidgetsProdigia");
@@ -19,3 +21,12 @@ export function anclarWidgetNativo(tipo: "Racha" | "Progreso"): boolean {
 }
 
 export const hayWidgetsNativos = !!nativo;
+
+// Íconos de temporada (alias del launcher, ver plugins/iconos-temporada.js).
+export function iconoActualNativo(): string | null {
+  return nativo?.iconoActual ? nativo.iconoActual() : null;
+}
+
+export function cambiarIconoNativo(nombre: string): boolean {
+  return nativo?.cambiarIcono ? nativo.cambiarIcono(nombre) : false;
+}

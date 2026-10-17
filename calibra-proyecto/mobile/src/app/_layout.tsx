@@ -37,6 +37,7 @@ import PantallaCarga from "~/ui/PantallaCarga";
 import PrimeraVez from "~/ui/PrimeraVez";
 import AvisoProTermino from "~/ui/AvisoProTermino";
 import CapaTemporada from "~/ui/temas/CapaTemporada";
+import { vigilarIconoTemporada } from "~/lib/iconoTemporada";
 import AvisoActualizacion from "~/ui/AvisoActualizacion";
 import { GlobosPorRuta } from "~/ui/GloboAyuda";
 import CelebracionConstelaciones from "~/ui/recompensas/CelebracionConstelaciones";
@@ -116,6 +117,9 @@ function Navegacion() {
     if (userId && terminos) registrarAceptacionEnLaCuenta();
   }, [userId, terminos]);
   const sincronizadoRef = useRef<string | null>(null);
+
+  // Ícono de la festividad (Halloween, Navidad): se cambia al salir de la app.
+  useEffect(() => vigilarIconoTemporada(), []);
 
   // La pantalla de carga animada reemplaza al splash nativo (mismo fondo) apenas monta.
   useEffect(() => {
