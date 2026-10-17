@@ -9,6 +9,8 @@ import ChispaClick from "@/components/ChispaClick";
 import EfectoAciertoGlobal from "@/components/recompensas/EfectoAciertoGlobal";
 import NotificacionesDuelo from "@/components/NotificacionesDuelo";
 import AnunciosModal from "@/components/AnunciosModal";
+import AplicarTema from "@/components/temas/AplicarTema";
+import CapaTemporada from "@/components/temas/CapaTemporada";
 import AvisoProTermino from "@/components/AvisoProTermino";
 import PublicidadWeb from "@/components/PublicidadWeb";
 import StickerApp from "@/components/descargarApp/StickerApp";
@@ -188,6 +190,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <NotificacionesDuelo />
             <EfectoAciertoGlobal />
             <AnunciosModal />
+            <AplicarTema />
+            <CapaTemporada />
             <AvisoProTermino />
             <PublicidadWeb />
             <StickerApp />

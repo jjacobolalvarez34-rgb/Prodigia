@@ -1544,7 +1544,9 @@
     "tema": "Theme",
     "temaDescripcion": "Light or dark.",
     "terminosDeUso": "Terms of use",
-    "privacidad": "Privacy"
+    "privacidad": "Privacy",
+    "decoracion": "Seasonal decorations",
+    "decoracionDescripcion": "During holidays (Halloween, Christmas…): snowflakes, leaves, city decorations, accessories and borders. Never shown during a game."
   },
   "Algebra": {
     "metadata": {

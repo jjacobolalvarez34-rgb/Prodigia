@@ -144,7 +144,8 @@ export default function Boton({
 
   const pequena = tamano === "sm";
   const baseEstilo = esDestacadoPrimario ? ESTILO_PRIMARIO_DESTACADO : ESTILOS[variante];
-  const clasesFinales = `${BASE} ${pequena ? baseEstilo.replace("px-5 py-3", "px-3 py-1.5 text-sm") : baseEstilo} ${className}`;
+  // `boton-tema`: en una festividad los botones principales llevan su borde (globals.css).
+  const clasesFinales = `${BASE} ${pequena ? baseEstilo.replace("px-5 py-3", "px-3 py-1.5 text-sm") : baseEstilo} ${variante === "primario" ? "boton-tema" : ""} ${className}`;
   const contenido = (
     <>
       {cargando ? (

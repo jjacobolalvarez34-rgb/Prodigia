@@ -950,3 +950,26 @@ select:disabled {
 @media (prefers-reduced-motion: reduce) {
   .fondo-lineas, .fondo-ventana { animation: none; }
 }
+
+/* Festividades (src/lib/temas): borde de temporada en los botones principales
+   (`boton-tema`). Lo enciende AplicarTema poniendo data-borde en <html>. */
+html[data-borde] .boton-tema { position: relative; }
+html[data-borde] .boton-tema::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  padding: 3px;
+  background: var(--borde-tema);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+html[data-borde="caramelo"] { --borde-tema: repeating-linear-gradient(45deg, #FFFFFF 0 6px, #E63946 6px 12px); }
+html[data-borde="calabaza"] { --borde-tema: repeating-linear-gradient(45deg, #FF8A1F 0 6px, #1C1030 6px 12px); }
+html[data-borde="dorado"] { --borde-tema: linear-gradient(110deg, #B8860B, #FFE08A 35%, #FFC53D 50%, #FFF6D8 60%, #B8860B); }
+html[data-borde="corazones"] { --borde-tema: repeating-linear-gradient(90deg, #FF5D8F 0 8px, #FFB3C7 8px 16px); }
+html[data-borde="rombos"] { --borde-tema: repeating-linear-gradient(45deg, #3DDC97 0 6px, #FFC53D 6px 12px, #FF5D8F 12px 18px, #5DE4FF 18px 24px); }
+html[data-borde="papel_picado"] { --borde-tema: repeating-linear-gradient(90deg, #FF5D8F 0 10px, #FF9F1C 10px 20px, #3DDC97 20px 30px, #A794FF 30px 40px); }
+html[data-borde="verde"] { --borde-tema: repeating-linear-gradient(90deg, #3DDC97 0 8px, #9BE7FF 8px 16px); }

@@ -1544,7 +1544,9 @@
     "tema": "Tema",
     "temaDescripcion": "Claro u oscuro.",
     "terminosDeUso": "Términos de uso",
-    "privacidad": "Privacidad"
+    "privacidad": "Privacidad",
+    "decoracion": "Decoración de temporada",
+    "decoracionDescripcion": "En las festividades (Halloween, Navidad…): copos, hojas, adornos en las ciudades, accesorios y bordes. Nunca aparece dentro de una partida."
   },
   "Algebra": {
     "metadata": {

@@ -65,8 +65,10 @@ sale de una tabla que se revisa cada año).
 | **Día de la Música** | — → 21 jun | Chica | Melodía |
 | **Vuelta a clases** | — → primera semana de septiembre (sur: primera de marzo) | Chica | Todas |
 
-Si dos fechas se tocan (Halloween y Día de Muertos, Navidad y Año Nuevo), la segunda
-toma el relevo el día que empieza; nunca hay dos temas encendidos a la vez.
+Nunca hay dos temas encendidos a la vez. Si dos fechas se tocan (Halloween y Día de
+Muertos, Navidad y Año Nuevo), la segunda toma el relevo el día que empieza; si se pisan
+(Año Nuevo Lunar y Carnaval en 2027), se ve la más corta en sus días y la otra antes y
+después. Un evento en curso siempre le gana a la decoración del que viene.
 
 ---
 

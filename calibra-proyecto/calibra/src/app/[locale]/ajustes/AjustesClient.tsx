@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { sonidoHabilitado, sonidoHabilitadoServerSnapshot, setSonidoHabilitado, subscribeSonido } from "@/lib/sonido";
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, setEfectosHabilitados, subscribeEfectos } from "@/lib/efectos";
+import { decoracionHabilitada, decoracionHabilitadaServerSnapshot, setDecoracionHabilitada, subscribeDecoracion } from "@/lib/decoracion";
 import ThemeToggle from "@/components/ThemeToggle";
 
 interface Props {
@@ -18,6 +19,7 @@ export default function AjustesClient({ userId, ocultarDobleONadaInicial }: Prop
   const [guardandoApuesta, setGuardandoApuesta] = useState(false);
   const sonido = useSyncExternalStore(subscribeSonido, sonidoHabilitado, sonidoHabilitadoServerSnapshot);
   const efectos = useSyncExternalStore(subscribeEfectos, efectosHabilitados, efectosHabilitadosServerSnapshot);
+  const decoracion = useSyncExternalStore(subscribeDecoracion, decoracionHabilitada, decoracionHabilitadaServerSnapshot);
 
   function toggleSonido() {
     setSonidoHabilitado(!sonido);
@@ -69,6 +71,20 @@ export default function AjustesClient({ userId, ocultarDobleONadaInicial }: Prop
           <span
             className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all ${efectos ? "left-6" : "left-1"}`}
           />
+        </button>
+      </section>
+
+      <section className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4">
+        <div>
+          <p className="font-display font-semibold text-foreground">{t("decoracion")}</p>
+          <p className="text-sm text-texto-secundario">{t("decoracionDescripcion")}</p>
+        </div>
+        <button
+          onClick={() => setDecoracionHabilitada(!decoracion)}
+          aria-pressed={decoracion}
+          className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${decoracion ? "bg-primario" : "bg-border"}`}
+        >
+          <span className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all ${decoracion ? "left-6" : "left-1"}`} />
         </button>
       </section>
 

@@ -67,7 +67,7 @@ export function BotonBrutal({
   href?: string;
 }) {
   const fondo = variante === "oro" ? "bg-[#FFC53D] text-[#1A1206]" : variante === "cometa" ? "bg-[#5DE4FF] text-[#04121A]" : "bg-[#6C4CF1] text-white";
-  const clase = `flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#05060F] px-5 py-3 font-display text-base font-bold ${fondo} shadow-[4px_4px_0_0_#05060F] transition-all enabled:hover:translate-x-[2px] enabled:hover:translate-y-[2px] enabled:hover:shadow-[2px_2px_0_0_#05060F] enabled:active:translate-x-[4px] enabled:active:translate-y-[4px] enabled:active:shadow-none disabled:cursor-not-allowed disabled:opacity-60`;
+  const clase = `boton-tema flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#05060F] px-5 py-3 font-display text-base font-bold ${fondo} shadow-[4px_4px_0_0_#05060F] transition-all enabled:hover:translate-x-[2px] enabled:hover:translate-y-[2px] enabled:hover:shadow-[2px_2px_0_0_#05060F] enabled:active:translate-x-[4px] enabled:active:translate-y-[4px] enabled:active:shadow-none disabled:cursor-not-allowed disabled:opacity-60`;
   if (href) {
     return (
       <Link href={href} className={`${clase} hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#05060F]`}>
