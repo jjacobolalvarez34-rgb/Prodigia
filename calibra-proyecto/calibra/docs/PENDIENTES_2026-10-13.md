@@ -241,3 +241,14 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 51. [ ] Evento de Halloween (31/10) con su colección y su paquete (PLAN_CAPSULAS_Y_EVENTOS.md).
 52. [ ] Resto del plan de economía: pack de inicio, fusión de cápsulas, prueba gratis de Pro, etiqueta «NUEVO», panel de economía.
 53. [ ] Pruebas: duelo en vivo con dos teléfonos; compra de un mundo suelto (falta PADDLE_PRODUCT_CONTENIDO).
+
+## Pedidos del 2026-10-16
+
+54. [ ] Play Store: para después (no ahora).
+55. [ ] Hacer 48 (explicaciones), 51 (Halloween) y 52 (resto de la economía).
+56. [ ] Plan de TODAS las festividades famosas internacionales, cada una como «tema» que no cambia la base de la app pero
+    comparte la dinámica de la fecha. Ejemplo Navidad: ciudades nevadas, copos cayendo, Santa o renos pasando, más regalos,
+    eventos especiales semanales con premios especiales; estética de la app (gorritos, bordes de caramelo en botones);
+    constelaciones y cápsulas con diseños y animaciones de la fecha. Planear y HACER cada una, prehechas y programadas
+    para activarse solas desde antes.
+57. [ ] Anuncios: alguien nuevo ve de golpe los ~12 anuncios que hay; no es la idea. Arreglarlo y mejorar su diseño.

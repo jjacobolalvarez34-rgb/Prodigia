@@ -1,9 +1,10 @@
 import { useId } from "react";
-import { ilustracionPaquete } from "@/lib/tienda/ilustracionesPaquetes";
+import { ilustracionPaquete, type Ilustracion } from "@/lib/tienda/ilustracionesPaquetes";
 
-// Dibujo propio de cada paquete de la tienda (mismos datos que la app).
-export default function IlustracionPaquete({ item, className = "h-16 w-16" }: { item: string; className?: string }) {
-  const il = ilustracionPaquete(item);
+// Dibujo propio de cada paquete de la tienda (mismos datos que la app). Con
+// `ilustracion` dibuja cualquier otra escena con el mismo formato (p. ej. los anuncios).
+export default function IlustracionPaquete({ item, ilustracion, className = "h-16 w-16" }: { item?: string; ilustracion?: Ilustracion; className?: string }) {
+  const il = ilustracion ?? ilustracionPaquete(item ?? "");
   const id = useId().replace(/:/g, "");
   return (
     <svg viewBox="0 0 64 64" className={`shrink-0 ${className}`} aria-hidden="true">

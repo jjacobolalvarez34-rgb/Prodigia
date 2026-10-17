@@ -963,7 +963,9 @@
         "evento": "Event"
       },
       "siguienteConCantidad": "Next ({n} more)",
-      "entendido": "Got it"
+      "entendido": "Got it",
+      "titulo": "What's new",
+      "siguiente": "Next"
     },
     "notificacionesDuelo": {
       "teRetaronADueloDe": "You've been challenged to a {operacion} duel",

@@ -1,4 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
+import { ILUSTRACION_ANUNCIO } from "@/lib/anuncios/ilustraciones";
+import IlustracionPaquete from "~/ui/recompensas/IlustracionPaquete";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -75,10 +77,15 @@ function TarjetaAnuncio({ anuncio, onAbrir }: { anuncio: Anuncio; onAbrir: () =>
           <Text style={styles.fecha}>{formatearFecha(anuncio.fecha)}</Text>
           {!anuncio.leido && <View style={[styles.punto, { backgroundColor: e.acento }]} />}
         </View>
-        <Text style={styles.anuncioTitulo}>{anuncio.titulo}</Text>
-        <Text style={styles.anuncioTexto} numberOfLines={abierto ? undefined : 3}>
-          {anuncio.descripcion}
-        </Text>
+        <View style={{ flexDirection: "row", gap: 12, alignItems: "flex-start" }}>
+          <IlustracionPaquete ilustracion={ILUSTRACION_ANUNCIO[anuncio.tipo] ?? ILUSTRACION_ANUNCIO.actualizacion} tam={58} />
+          <View style={{ flex: 1, gap: 4 }}>
+            <Text style={styles.anuncioTitulo}>{anuncio.titulo}</Text>
+            <Text style={styles.anuncioTexto} numberOfLines={abierto ? undefined : 3}>
+              {anuncio.descripcion}
+            </Text>
+          </View>
+        </View>
         {!abierto && anuncio.descripcion.length > 140 && <Text style={[styles.leerMas, { color: e.acento }]}>Leer más</Text>}
       </LinearGradient>
     </Pressable>

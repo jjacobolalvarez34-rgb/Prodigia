@@ -1,10 +1,11 @@
 import { useId } from "react";
 import Svg, { ClipPath, Defs, G, LinearGradient, Path, RadialGradient, Rect, Circle, Stop } from "react-native-svg";
-import { ilustracionPaquete } from "@/lib/tienda/ilustracionesPaquetes";
+import { ilustracionPaquete, type Ilustracion } from "@/lib/tienda/ilustracionesPaquetes";
 
-// Dibujo propio de cada paquete de la tienda (mismos datos que la web).
-export default function IlustracionPaquete({ item, tam = 64 }: { item: string; tam?: number }) {
-  const il = ilustracionPaquete(item);
+// Dibujo propio de cada paquete de la tienda (mismos datos que la web). Con
+// `ilustracion` dibuja cualquier otra escena del mismo formato (p. ej. los anuncios).
+export default function IlustracionPaquete({ item, ilustracion, tam = 64 }: { item?: string; ilustracion?: Ilustracion; tam?: number }) {
+  const il = ilustracion ?? ilustracionPaquete(item ?? "");
   const id = useId().replace(/:/g, "");
   return (
     <Svg width={tam} height={tam} viewBox="0 0 64 64">

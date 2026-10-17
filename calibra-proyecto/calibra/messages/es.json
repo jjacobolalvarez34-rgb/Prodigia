@@ -963,7 +963,9 @@
         "evento": "Evento"
       },
       "siguienteConCantidad": "Siguiente ({n} más)",
-      "entendido": "Entendido"
+      "entendido": "Entendido",
+      "titulo": "Novedades",
+      "siguiente": "Siguiente"
     },
     "notificacionesDuelo": {
       "teRetaronADueloDe": "Te retaron a un duelo de {operacion}",
