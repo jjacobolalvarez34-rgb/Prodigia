@@ -184,7 +184,9 @@ export const config = {
   // leerlo, y Search Console reportaba "no se encontró el archivo de
   // verificación en la ubicación esperada" pese a que el archivo
   // estaba bien puesto en public/.
+  // Y los videos y audios de public/ (2026-10-19): /videos/*.mp4 se redirigía a
+  // /es/videos/... (404) y el video de apertura de los eventos no cargaba en la web.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api|auth/callback|auth/confirm|data/|manifest\\.webmanifest|sw\\.js|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api|auth/callback|auth/confirm|data/|manifest\\.webmanifest|sw\\.js|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|html|mp4|webm|mp3|wav)$).*)",
   ],
 };
