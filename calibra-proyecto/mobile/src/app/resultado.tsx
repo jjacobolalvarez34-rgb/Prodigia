@@ -1,3 +1,6 @@
+import { Image } from "expo-image";
+import { celebracionDe } from "@/lib/temas/celebracion";
+import { useTemaHoy } from "~/lib/temporada";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter, type Href } from "expo-router";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
@@ -83,6 +86,8 @@ function Paso({ visible, children, indice }: { visible: boolean; children: React
 }
 
 export default function Resultado() {
+  const temaHoy = useTemaHoy();
+  const celebracion = celebracionDe(temaHoy);
   const router = useRouter();
   const pendientesRecompensas = usePendientes();
   const params = useLocalSearchParams<{ mundo?: string; tema?: string; datos?: string; repetir?: string }>();
@@ -104,7 +109,7 @@ export default function Resultado() {
   const precision = d.total > 0 ? d.correctos / d.total : 0;
   const subioMundo = d.nivelMundo != null && d.nivelMundoAnterior != null && d.nivelMundo > d.nivelMundoAnterior;
   const subioRacha = d.rachaDespues > d.rachaAntes;
-  const titulo = duelo?.resuelto ? (duelo.gane ? "¡Ganaste el duelo!" : duelo.empate ? "¡Empate!" : "Perdiste el duelo") : duelo ? "¡Terminaste tu parte!" : precision >= 0.9 ? "¡Sprint perfecto!" : precision >= 0.7 ? "¡Buen sprint!" : precision >= 0.4 ? "¡Bien jugado!" : "¡A seguir!";
+  const titulo = duelo?.resuelto ? (duelo.gane ? "¡Ganaste el duelo!" : duelo.empate ? "¡Empate!" : "Perdiste el duelo") : duelo ? "¡Terminaste tu parte!" : precision >= 0.9 ? (celebracion?.perfecta ?? "¡Sprint perfecto!") : precision >= 0.7 ? "¡Buen sprint!" : precision >= 0.4 ? "¡Bien jugado!" : "¡A seguir!";
   const ultimoPaso = PASOS_MS.length - 1;
 
   const esDuelo = !!d.duelo || !!d.dueloId;
@@ -188,6 +193,10 @@ export default function Resultado() {
                     {titulo}
                   </Texto>
                 </Animated.View>
+              )}
+              {/* Halloween: los esqueletos bailan en el resultado (WebP animado ya hecho). */}
+              {!duelo && celebracion && temaHoy?.tema.id === "halloween" && (
+                <Image source={require("../../assets/emotes/baile-esqueletos-grande.webp")} style={{ width: 280, height: 171 }} contentFit="contain" autoplay />
               )}
             </View>
             {/* En un duelo manda el versus (igual que ResultadoDueloBlock de la web): quién

@@ -84,3 +84,18 @@ export function faltaPara(momentoMs: number, ahora = Date.now()): string {
   const min = Math.floor((ms % 3_600_000) / 60_000);
   return dias > 0 ? `${dias} d ${horas} h` : `${horas} h ${min} min`;
 }
+
+// «Dar un dulce» (0292): una vez al día a un amigo; los dos ganan 1 ficha del evento.
+export async function darDulce(sb: SupabaseClient, amigo: string): Promise<{ evento: string; saldo: number }> {
+  const { data, error } = await sb.rpc("dar_dulce", { p_amigo: amigo });
+  if (error) throw error;
+  return (Array.isArray(data) ? data[0] : data) as { evento: string; saldo: number };
+}
+
+export function mensajeErrorDulce(e: unknown): string {
+  const m = (e as { message?: string } | null)?.message ?? "";
+  if (/ya diste/i.test(m)) return "Ya diste tu dulce de hoy. Mañana puedes dar otro.";
+  if (/solo puedes/i.test(m)) return "Solo puedes darle un dulce a un amigo.";
+  if (/no hay un evento/i.test(m)) return "Ahora no hay un evento abierto.";
+  return "No se pudo. Inténtalo de nuevo.";
+}

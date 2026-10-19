@@ -211,3 +211,13 @@ export const CELEBRACIONES: Record<IdTema, Celebracion> = {
     avisos: ["Vuelta a clases: esta semana las misiones son más fáciles.", "Tu racha cuenta doble esta semana.", "Último día de la semana de repaso."],
   },
 };
+
+// La celebración que se ve ahora: solo durante el evento (no en la decoración ni el cierre).
+export function celebracionDe(t: { tema: { id: IdTema }; fase: string } | null): Celebracion | null {
+  return t && t.fase === "evento" ? CELEBRACIONES[t.tema.id] : null;
+}
+
+// El saludo de la fecha con el nombre puesto.
+export function saludoDe(c: Celebracion | null, nombre: string): string | null {
+  return c ? c.saludo.replace("{nombre}", nombre) : null;
+}

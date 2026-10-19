@@ -1,3 +1,5 @@
+import { celebracionDe, saludoDe } from "@/lib/temas/celebracion";
+import { useTemaHoy } from "~/lib/temporada";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -31,6 +33,7 @@ import Texto from "~/ui/Texto";
 import { color, conAlfa, MUNDO_POR_SLUG, mundoDe } from "~/tema";
 
 export default function Hoy() {
+  const temaHoy = useTemaHoy();
   const router = useRouter();
   const { sesion } = useSesion();
   const userId = sesion?.user.id;
@@ -108,10 +111,13 @@ export default function Hoy() {
   const mundoContinuar = continuar ? MUNDO_POR_SLUG[continuar.mundo] : null;
   const finLiga = finDeSemanaUtc(ahora);
 
+  // Durante un evento, el saludo es el de la fecha (celebracion.ts).
+  const saludo = saludoDe(celebracionDe(temaHoy), nombre) ?? `Hola, ${nombre}`;
+
   let indice = 0;
   return (
     <PantallaPestana>
-      <Texto v="h1">Hola, {nombre}</Texto>
+      <Texto v="h1">{saludo}</Texto>
 
       {(red.sinRed || red.pendientes > 0) && (
         <Tarjeta indice={indice++} acento={color.racha} onPress={() => sincronizar()}>

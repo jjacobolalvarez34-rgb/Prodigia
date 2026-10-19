@@ -1,3 +1,5 @@
+import { celebracionDe } from "@/lib/temas/celebracion";
+import { useTemaHoy } from "~/lib/temporada";
 import { LinearGradient } from "expo-linear-gradient";
 import FondoCiudad from "./FondoCiudad";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
@@ -559,6 +561,8 @@ function Chispita({ i, total, radio, t }: { i: number; total: number; radio: num
 }
 
 export function Flotante({ puntos }: { puntos: number }) {
+  // Durante un evento, el «+N» toma el color de la fecha (celebracion.ts).
+  const colorPuntos = celebracionDe(useTemaHoy())?.acierto.colores[0] ?? color.logro;
   const intensidad = puntos >= 30 ? "grande" : puntos >= 18 ? "medio" : "chico";
   const escala = ESCALA_PUNTOS[intensidad];
   const t = useSharedValue(0);
@@ -579,7 +583,7 @@ export function Flotante({ puntos }: { puntos: number }) {
       ))}
       <Animated.View style={estilo}>
         {/* Inclinado 8° hacia la derecha, igual que la web. */}
-        <Texto style={{ fontFamily: fuente.display, fontSize: 21, color: color.logro, textShadowColor: "rgba(255,182,39,0.65)", textShadowRadius: 10, transform: [{ skewX: "-8deg" }] }}>+{puntos}</Texto>
+        <Texto style={{ fontFamily: fuente.display, fontSize: 21, color: colorPuntos, textShadowColor: conAlfa(colorPuntos, 0.65), textShadowRadius: 10, transform: [{ skewX: "-8deg" }] }}>+{puntos}</Texto>
       </Animated.View>
     </View>
   );

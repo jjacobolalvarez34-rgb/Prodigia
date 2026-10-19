@@ -1,3 +1,6 @@
+import { celebracionDe } from "@/lib/temas/celebracion";
+import { darDulce, mensajeErrorDulce } from "@/lib/temas/eventos";
+import { useTemaHoy } from "~/lib/temporada";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
@@ -23,6 +26,10 @@ import { color, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
 type Amistad = "ninguna" | "amigos" | "enviada" | "recibida";
 
 export default function Jugador() {
+  const temaHoy = useTemaHoy();
+  const celebracion = celebracionDe(temaHoy);
+  const [dulceDado, setDulceDado] = useState<string | null>(null);
+  const [dandoDulce, setDandoDulce] = useState(false);
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { sesion } = useSesion();
@@ -183,6 +190,39 @@ export default function Jugador() {
                 <Boton3D titulo="Hielo" tamano="sm" variante="secundario" icono={<IconoCopo tam={16} c="#BDEBFF" />} cargando={regalando} estilo={{ flex: 1 }} onPress={() => regalar("hielo")} />
                 <Boton3D titulo="Escudo" tamano="sm" variante="secundario" icono={<IconoEscudo tam={16} />} cargando={regalando} estilo={{ flex: 1 }} onPress={() => regalar("escudo")} />
               </View>
+            )}
+          </Tarjeta>
+        )}
+
+        {/* La acción de la fecha con los amigos (celebracion.ts / dar_dulce, 0292). */}
+        {amistad === "amigos" && celebracion?.amigos && (
+          <Tarjeta acento={temaHoy?.tema.acento} brillo={dulceDado ? 0 : 0.2}>
+            <Texto v="micro" c={temaHoy?.tema.acento}>
+              {temaHoy?.tema.nombre.toUpperCase()}
+            </Texto>
+            <Texto v="fuerte">{celebracion.amigos.accion}</Texto>
+            <Texto v="nota" tam={12}>
+              {dulceDado ?? celebracion.amigos.texto}
+            </Texto>
+            {!dulceDado && (
+              <Boton3D
+                titulo={celebracion.amigos.accion}
+                tamano="sm"
+                variante="logro"
+                cargando={dandoDulce}
+                estilo={{ marginTop: 10 }}
+                onPress={async () => {
+                  setDandoDulce(true);
+                  try {
+                    await darDulce(supabase, id);
+                    setDulceDado("¡Listo! Los dos ganaron 1 ficha del evento.");
+                  } catch (e) {
+                    setDulceDado(mensajeErrorDulce(e));
+                  } finally {
+                    setDandoDulce(false);
+                  }
+                }}
+              />
             )}
           </Tarjeta>
         )}
