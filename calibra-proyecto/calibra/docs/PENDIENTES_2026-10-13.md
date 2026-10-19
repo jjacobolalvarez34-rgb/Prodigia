@@ -271,3 +271,11 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 70. [ ] Las cápsulas nunca dan menos de 100 Chispas.
 71. [ ] Etiqueta «NUEVO».
 72. [ ] Explicaciones de cada pregunta (= 48).
+
+### Decisiones del 2026-10-18 (Gran Alineación)
+- Se mantiene: Exp ×2, Chispas ×2 al jugar, constelaciones ×2, logro «Testigo», avisos del día antes y de 10 min antes, sol dorado.
+- Nuevo: cartel con cuenta regresiva en Inicio desde 3 días antes; anuncio programado; capa dorada y banda con el tiempo que queda; insignia «×2» en la partida; widgets dorados; resumen al terminar.
+- Premios: **sello numerado** (por jugar al menos 1 partida) **y Cápsula de la Alineación** (por 3 partidas), además de una **meta de comunidad** (barra en vivo; si se llena, 300 Chispas a todos los que jugaron).
+- La hora se queda: 18:00 de Colombia (23:00 UTC), cada 28 días.
+- **Halloween empieza justo cuando termina la Alineación** (sábado 24/10, 21:00 Colombia).
+- Animación de apertura: **video renderizado de alta gama**. Con la app abierta entra con fundido; al abrir la app durante el evento, se ve el video en vez del menú. Primero la de la Alineación, para que el usuario la apruebe; las de los demás eventos quedan planeadas en docs/eventos/ANIMACIONES_EVENTOS.md.
