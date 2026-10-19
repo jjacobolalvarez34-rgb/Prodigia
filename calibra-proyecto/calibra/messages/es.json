@@ -4813,7 +4813,7 @@
         "titulo": "Fusionar cápsulas",
         "texto": "3 de {nivel} → {destino}",
         "tienes": "Tienes {n}",
-        "boton": "Fusionar · {n}",
+        "boton": "Fusionar · {n} Chispas",
         "confirmar": "Confirmar · {n} Chispas",
         "cancelar": "Cancelar",
         "como": "Junta 3 cápsulas del mismo nivel y paga unas Chispas para convertirlas en una del nivel siguiente: Bronce → Plata (50), Plata → Oro (150), Oro → Prisma (400). Las especiales (ciudad, colección, Pro, de Cometas y de la Alineación) no se fusionan.",
@@ -5553,5 +5553,37 @@
     "tuya": "¡Es tuya!",
     "nota": "Elige las piezas que quieras con tus {ficha} o con Cometas. Las fichas que sobren al terminar se cambian por {chispas} Chispas cada una. La colección vuelve el año que viene.",
     "irTienda": "Ir al Bazar"
+  },
+  "Alineacion": {
+    "eyebrow": "Gran Alineación #{n}",
+    "titulo": "La Gran Alineación",
+    "antes": "Las 15 ciudades amanecen juntas. Empieza en {tiempo}.",
+    "durante": "Las 15 ciudades amanecieron juntas. Quedan {tiempo}.",
+    "despues": "Así te fue en la Alineación.",
+    "bonos": "Exp ×2 · Chispas ×2 · Constelaciones ×2",
+    "cuando": "{fecha} · 3 horas",
+    "premios": "Premios",
+    "sello": "Sello «Testigo #{n}»",
+    "selloComo": "Juega 1 partida",
+    "capsula": "Cápsula de la Alineación",
+    "capsulaComo": "Juega {n} partidas",
+    "partidas": "{n}/{total} partidas",
+    "comunidad": "Meta de comunidad",
+    "comunidadComo": "Si entre todos llegamos, {n} Chispas para cada uno que jugó",
+    "comunidadProgreso": "{actual} de {meta} respuestas",
+    "comunidadLograda": "¡Meta lograda!",
+    "comunidadNo": "Esta vez no se llegó a la meta.",
+    "reclamar": "Reclamar {n} Chispas",
+    "reclamado": "Reclamado",
+    "jugar": "Jugar ahora",
+    "resumen": "{partidas} partidas · +{xp} Exp · +{chispas} Chispas",
+    "sinJugar": "No jugaste en esta Alineación. La próxima es en 28 días.",
+    "ganado": "Ganado",
+    "invitado": "Crea tu cuenta para ganar el sello y la cápsula.",
+    "x2": "Gran Alineación · Exp ×2",
+    "sellos": "Sellos de la Alineación"
+  },
+  "Comun": {
+    "nuevo": "NUEVO"
   }
 }

@@ -1,4 +1,5 @@
 import { getTranslations, getLocale } from "next-intl/server";
+import SellosAlineacion from "@/components/alineacion/SellosAlineacion";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import { ESTILO_MARCO_PERFIL, type Achievement, type TituloUsuario, type FondoPerfil } from "@/types/database";
@@ -511,6 +512,8 @@ export default async function PerfilPage() {
         )}
 
         <TitulosSection titulos={(titulosRows as TituloUsuario[]) ?? []} tituloActivo={profileFull?.titulo_activo ?? null} />
+
+        <SellosAlineacion userId={user.id} />
 
         <section>
           <h2 className="mb-4 font-display text-lg font-bold text-foreground">{t("logros")}</h2>

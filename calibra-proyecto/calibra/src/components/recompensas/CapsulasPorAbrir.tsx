@@ -9,6 +9,9 @@ import { coloresCapsula, type TipoCapsula } from "@/lib/recompensas/catalogo";
 import type { Capsula } from "@/lib/recompensas/api";
 import { agruparCapsulas, COLOR_RANGO, FUSION, fusionarCapsulas, fusionesPosibles, mensajeErrorFusion, rangoCapsula, type FusionPosible } from "@/lib/recompensas/fusion";
 import { DibujoCapsula } from "./AbrirCapsula";
+import EtiquetaNuevo from "@/components/EtiquetaNuevo";
+import { esNuevo } from "@/lib/recompensas/novedades";
+import { marcarNuevoVisto, useNuevoVisto } from "@/lib/recompensas/novedadesWeb";
 
 // Cápsulas por abrir (rehecho 2026-10-18, «mejora el apartado de las cápsulas»): juntas
 // por tipo con su contador, el rango de cada una (Bronce, Plata, Oro, Prisma o
@@ -32,6 +35,7 @@ export default function CapsulasPorAbrir({
   const [error, setError] = useState<string | null>(null);
   const [fusionada, setFusionada] = useState<{ capsula: Capsula; de: TipoCapsula[] } | null>(null);
   const [verComo, setVerComo] = useState(false);
+  const vistos = useNuevoVisto();
   const grupos = agruparCapsulas(capsulas);
   const fusiones = fusionesPosibles(capsulas);
 
@@ -73,6 +77,7 @@ export default function CapsulasPorAbrir({
             style={{ borderColor: `${color}99`, boxShadow: `0 0 0 1px ${color}22, 0 10px 30px -18px ${color}` }}
           >
             <span className="pointer-events-none absolute inset-0 opacity-60" style={{ background: `radial-gradient(120% 90% at 85% 50%, ${color}26, transparent 60%)` }} />
+            {esNuevo("fusion", vistos) && <EtiquetaNuevo className="absolute right-3 top-2" />}
             <div className="relative flex items-center">
               {f.ids.map((id, i) => {
                 const c = capsulas.find((x) => x.id === id);
@@ -115,7 +120,10 @@ export default function CapsulasPorAbrir({
               ) : (
                 <button
                   type="button"
-                  onClick={() => setConfirmando(f.nivel)}
+                  onClick={() => {
+                    setConfirmando(f.nivel);
+                    marcarNuevoVisto("fusion");
+                  }}
                   className="rounded-xl border-2 border-[#05060F] bg-white px-4 py-2 font-display text-sm font-bold text-[#05060F] shadow-[3px_3px_0_0_#05060F] transition-transform hover:-translate-y-0.5"
                 >
                   {t("fusion.boton", { n: FUSION[f.nivel].costo })}
@@ -148,10 +156,18 @@ export default function CapsulasPorAbrir({
               <span className="absolute left-2 top-2 rounded-full px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest" style={{ color, background: `${color}1f`, border: `1px solid ${color}55` }}>
                 {t(`rango.${rango}`)}
               </span>
+              {g.tipo === "alineacion" && esNuevo("capsula_alineacion", vistos) && <EtiquetaNuevo className="absolute bottom-24 right-2" />}
               {g.capsulas.length > 1 && (
                 <span className="absolute right-2 top-2 rounded-full bg-white px-2 py-0.5 font-display text-xs font-black text-[#05060F] shadow-[2px_2px_0_0_#05060F]">×{g.capsulas.length}</span>
               )}
-              <button type="button" onClick={() => onAbrir(primera)} className="relative transition-transform duration-200 group-hover:-translate-y-1">
+              <button
+                type="button"
+                onClick={() => {
+                  if (g.tipo === "alineacion") marcarNuevoVisto("capsula_alineacion");
+                  onAbrir(primera);
+                }}
+                className="relative transition-transform duration-200 group-hover:-translate-y-1"
+              >
                 <DibujoCapsula colores={colores} tam={58} />
               </button>
               <span className="relative text-center text-sm font-bold leading-tight text-foreground">{t(`nombres.${g.tipo}`)}</span>

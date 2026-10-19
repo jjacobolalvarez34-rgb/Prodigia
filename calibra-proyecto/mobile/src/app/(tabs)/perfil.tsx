@@ -9,6 +9,7 @@ import { URL_WEB } from "~/lib/entorno";
 import { recargarJugador, useJugador } from "~/lib/jugador";
 import { nivelesDeMundos } from "~/lib/mundos";
 import { useSesion } from "~/lib/sesion";
+import SellosAlineacion from "~/ui/alineacion/SellosAlineacion";
 import { supabase } from "~/lib/supabase";
 import Barra from "~/ui/Barra";
 import { IconoChispa, IconoCompartir, IconoDerecha, IconoEngranaje, IconoGrafico, IconoLapiz, IconoMochila, IconoTienda, IconoTrofeo } from "~/ui/Iconos";
@@ -122,6 +123,8 @@ export default function Perfil() {
           <Texto v="nota">Estás como invitado. Crea tu cuenta en la web para no perder tu racha ni tus Chispas.</Texto>
         </Tarjeta>
       )}
+
+      <SellosAlineacion userId={userId} />
 
       {favoritos.length > 0 && (
         <>

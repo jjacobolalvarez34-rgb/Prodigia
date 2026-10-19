@@ -23,6 +23,7 @@ import { useLiviano } from "~/lib/rendimiento";
 import { brillo, color, conAlfa, fuente, radio } from "~/tema";
 import Anillo from "./Anillo";
 import { tiempoEsperadoMs } from "@/lib/practica/formulas";
+import { alineacionEnCurso } from "@/lib/ciudades/cicloDia";
 import { supabase } from "~/lib/supabase";
 import { efectoDe, estelaDe } from "@/lib/recompensas/catalogo";
 import { usarAyudaPartida, useCosmeticos } from "~/lib/recompensas";
@@ -435,6 +436,8 @@ export function Cabecera({
   acento: string;
   corriendo: boolean;
 }) {
+  // Se mira al empezar la partida (dura un minuto).
+  const [enAlineacion] = useState(() => alineacionEnCurso(Date.now()) !== null);
   return (
     <View style={styles.cabecera}>
       <Pressable onPress={onSalir} hitSlop={12} style={styles.x} accessibilityLabel="Salir de la partida">
@@ -448,6 +451,12 @@ export function Cabecera({
           <Animated.View key={reloj.ganado.id} entering={FadeIn.duration(160)} exiting={FadeOut.duration(300)} style={styles.tiempoGanado} pointerEvents="none">
             <TiempoGanado segundos={reloj.ganado.segundos} />
           </Animated.View>
+        )}
+        {/* Gran Alineación: la partida cuenta doble (0259/0290). */}
+        {enAlineacion && (
+          <View style={styles.insigniaAlineacion} pointerEvents="none">
+            <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 9, letterSpacing: 1, color: "#1A1206" }}>ALINEACIÓN ×2</Texto>
+          </View>
         )}
       </View>
       <View style={{ width: 92, alignItems: "flex-end" }}>
@@ -810,6 +819,7 @@ export function BarraRival({
 }
 
 const styles = StyleSheet.create({
+  insigniaAlineacion: { position: "absolute", top: 54, alignSelf: "center", paddingHorizontal: 7, paddingVertical: 2, borderRadius: 999, backgroundColor: "#F2C14E", borderWidth: 1, borderColor: "#05060F", boxShadow: "0px 0px 10px rgba(242,193,78,0.7)" },
   cabecera: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingTop: 4, minHeight: 66 },
   tiempoGanado: { position: "absolute", left: 60, top: 18 },
   // Con uno de cada consumible no entran en una fila en pantallas angostas: bajan a una segunda.

@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import SellosAlineacion from "@/components/alineacion/SellosAlineacion";
 import { getTranslations, getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
@@ -249,6 +250,8 @@ export default async function PerfilPublicoPage({ params }: Props) {
             </div>
           </section>
         )}
+
+        <SellosAlineacion userId={userId} />
 
         <section>
           <h2 className="mb-4 font-display text-lg font-bold text-foreground">{t("logros")}</h2>

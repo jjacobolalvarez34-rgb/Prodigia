@@ -13,6 +13,7 @@ import { estadoRetosHoy } from "~/lib/retos";
 import { useSesion } from "~/lib/sesion";
 import RepararRacha from "~/ui/RepararRacha";
 import CartelTemporada from "~/ui/temas/CartelTemporada";
+import CartelAlineacion from "~/ui/alineacion/CartelAlineacion";
 import { sincronizar, useSinConexion } from "~/lib/sinConexion";
 import { mensajeError, supabase } from "~/lib/supabase";
 import Anillo from "~/ui/Anillo";
@@ -123,6 +124,7 @@ export default function Hoy() {
         </Tarjeta>
       )}
 
+      <CartelAlineacion />
       <CartelTemporada />
       {!esInvitado && <RepararRacha indice={indice++} />}
 

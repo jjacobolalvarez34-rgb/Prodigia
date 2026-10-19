@@ -134,7 +134,7 @@ export default function RecompensasClient({ invitado, plan }: { invitado: boolea
     if (c.tipo === "misiones") return t("detalle.misiones");
     if (c.tipo === "pro") return t("detalle.pro");
     if (c.tipo === "plata" || c.tipo === "oro" || c.tipo === "prisma") return t("detalle.fusion");
-    if (c.tipo === "alineacion") return t("detalle.alineacion", { n: (c.detalle as { numero?: number } | null)?.numero ?? 1 });
+    if (c.tipo === "alineacion") return t("detalle.alineacion", { n: c.detalle?.numero ?? 1 });
     if (c.tipo === "estelar" || c.tipo === "supernova") return t("detalle.comprada");
     return t("detalle.diaria");
   }

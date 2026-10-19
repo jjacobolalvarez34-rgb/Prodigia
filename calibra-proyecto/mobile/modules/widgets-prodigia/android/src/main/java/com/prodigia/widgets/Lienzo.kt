@@ -46,6 +46,7 @@ object Lienzo {
     "amor_amistad", "holi" -> c("#FF5D8F")
     "carnaval", "dia_tierra" -> c("#3DDC97")
     "pascua" -> c("#9BE7FF")
+    "alineacion" -> c("#F2C14E")
     else -> c("#7C5CFF")
   }
 
@@ -195,6 +196,20 @@ object Lienzo {
           corazon(canvas, e.x + e.ancho / 2f, piso - e.alto + 9f * u, 3.2f * u, c("#FF5D8F"))
         }
       }
+      "alineacion" -> {
+        // Los 15 soles alineados sobre la ciudad, cada uno del color de su ciudad.
+        val soles = intArrayOf(c("#60A5FA"), c("#4FE0F5"), c("#FFC247"), c("#9B85FF"), c("#2FD89B"), c("#3FC1D6"), c("#A8E84A"), c("#8A83FF"), c("#2DD4BF"), c("#E36BF2"), c("#F2C14E"), c("#F25C5C"), c("#E0607E"), c("#E08A5C"), c("#4ADE80"))
+        val y = piso - altoCiudad * 1.05f
+        p.color = conAlfa(c("#F2C14E"), 0.55f)
+        canvas.drawRect(w * 0.04f, y - 0.4f * u, w * 0.96f, y + 0.4f * u, p)
+        for ((i, col) in soles.withIndex()) {
+          val x = w * (0.06f + i * 0.88f / (soles.size - 1))
+          p.color = conAlfa(col, if ((i + cuadro) % 3 == 0) 0.45f else 0.3f)
+          canvas.drawCircle(x, y, 4.2f * u, p)
+          p.color = col
+          canvas.drawCircle(x, y, 1.9f * u, p)
+        }
+      }
       "diwali" -> {
         for ((i, e) in edificios.withIndex()) {
           val fx = e.x + e.ancho * 0.5f
@@ -228,9 +243,10 @@ object Lienzo {
       "amor_amistad" -> c("#FF5D8F")
       "anio_nuevo", "carnaval" -> c("#FFC53D")
       "diwali" -> c("#FFD36B")
+      "alineacion" -> c("#FFE08A")
       else -> return
     }
-    val sube = tema == "diwali" || tema == "amor_amistad" || tema == "halloween"
+    val sube = tema == "diwali" || tema == "amor_amistad" || tema == "halloween" || tema == "alineacion"
     val p = Paint(Paint.ANTI_ALIAS_FLAG)
     val azar = Azar(311)
     for (i in 0 until 9) {

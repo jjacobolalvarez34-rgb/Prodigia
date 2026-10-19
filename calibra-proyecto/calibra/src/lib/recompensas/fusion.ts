@@ -34,7 +34,8 @@ export function rangoCapsula(tipo: TipoCapsula): Rango {
 }
 
 export const NOMBRE_RANGO: Record<Rango, string> = { bronce: "Bronce", plata: "Plata", oro: "Oro", prisma: "Prisma", especial: "Especial" };
-export const COLOR_RANGO: Record<Rango, string> = { bronce: "#C8935A", plata: "#C9D3E6", oro: "#F2C14E", prisma: "#9BE7FF", especial: "#B07CFF" };
+// Legibles sobre fondo claro y oscuro.
+export const COLOR_RANGO: Record<Rango, string> = { bronce: "#B9773A", plata: "#8E9BB5", oro: "#D99A1A", prisma: "#2FB9D9", especial: "#9B6BFF" };
 const ORDEN_RANGO: Record<Rango, number> = { prisma: 0, especial: 1, oro: 2, plata: 3, bronce: 4 };
 
 // Las cápsulas por abrir, juntas por tipo (y ciudad): «×4» en vez de cuatro tarjetas.

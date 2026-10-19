@@ -48,7 +48,19 @@ object DatosWidgets {
   fun numero(n: Int): String = NumberFormat.getIntegerInstance(Locale("es")).format(n)
 
   // Festividad de hoy (día UTC, igual que src/lib/temas/calendario.ts).
+  // Gran Alineación (src/lib/ciudades/cicloDia.ts): cada 672 h desde el 24/10/2026 a
+  // las 23:00 UTC, durante 3 h. Le gana a cualquier festividad: el widget se pone dorado.
+  private const val PRIMERA_ALINEACION_MS = 1792882800000L
+  private const val CICLO_MS = 672L * 3_600_000L
+  private const val DURACION_MS = 3L * 3_600_000L
+
+  fun enAlineacion(ahora: Long = System.currentTimeMillis()): Boolean {
+    if (ahora < PRIMERA_ALINEACION_MS) return false
+    return (ahora - PRIMERA_ALINEACION_MS) % CICLO_MS < DURACION_MS
+  }
+
   fun temaDeHoy(d: JSONObject?): String? {
+    if (enAlineacion()) return "alineacion"
     val tramos = d?.optJSONArray("temas") ?: return null
     val formato = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     formato.timeZone = TimeZone.getTimeZone("UTC")

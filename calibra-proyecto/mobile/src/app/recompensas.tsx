@@ -85,7 +85,7 @@ function detalleCapsula(c: DatosCapsula): string {
   if (c.tipo === "misiones") return "Las 3 misiones de hoy";
   if (c.tipo === "pro") return "Cápsula semanal de Pro";
   if (c.tipo === "plata" || c.tipo === "oro" || c.tipo === "prisma") return "De una fusión";
-  if (c.tipo === "alineacion") return `Gran Alineación #${(c.detalle as { numero?: number } | null)?.numero ?? 1}`;
+  if (c.tipo === "alineacion") return `Gran Alineación #${c.detalle?.numero ?? 1}`;
   if (c.tipo === "estelar" || c.tipo === "supernova") return "Comprada con Cometas";
   return "Por jugar hoy";
 }

@@ -17,6 +17,7 @@ import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { calcularRachaDiaria, lunesDeEstaSemanaIso } from "@/lib/practica/racha";
 import RepararRacha from "@/components/RepararRacha";
 import CartelTemporada from "@/components/temas/CartelTemporada";
+import CartelAlineacion from "@/components/alineacion/CartelAlineacion";
 import IconoTrazo from "@/components/IconoTrazo";
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
 import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria, IconCalculia, IconCircuitia, IconEstadistica, IconNaipia, IconCodia, IconDinamia, IconVitalia } from "@/components/icons";
@@ -115,6 +116,7 @@ export default async function ProdigiaHomePage() {
           </div>
         </div>
 
+        <CartelAlineacion invitado={user.is_anonymous} />
         <CartelTemporada />
         {!user.is_anonymous && <RepararRacha />}
 

@@ -1,5 +1,8 @@
 "use client";
 
+import EtiquetaNuevo from "@/components/EtiquetaNuevo";
+import { esNuevo } from "@/lib/recompensas/novedades";
+import { marcarNuevoVisto, useNuevoVisto } from "@/lib/recompensas/novedadesWeb";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -146,6 +149,7 @@ interface Estado {
 
 export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetesConDinero?: boolean }) {
   const t = useTranslations("Recompensas.tienda");
+  const vistos = useNuevoVisto();
   // Tienda (solo lo que no tienes) o Inventario (todo lo tuyo); lo elige TiendaClient con ?modo=.
   const parametros = useSearchParams();
   const inventario = parametros.get("modo") === "inventario";
@@ -447,10 +451,12 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
               onClick={() => {
                 setElegido(it);
                 setConfirmar(false);
+                marcarNuevoVisto(it.item);
               }}
-              className={`flex flex-col items-center gap-1.5 rounded-2xl border-2 bg-surface p-3 text-center transition-transform hover:-translate-y-1 ${enUso ? "border-correcto" : ""} ${it.categoria === "paquete" ? "col-span-2 !flex-row !items-center gap-3 text-left" : ""}`}
+              className={`relative flex flex-col items-center gap-1.5 rounded-2xl border-2 bg-surface p-3 text-center transition-transform hover:-translate-y-1 ${enUso ? "border-correcto" : ""} ${it.categoria === "paquete" ? "col-span-2 !flex-row !items-center gap-3 text-left" : ""}`}
               style={enUso ? undefined : { borderColor: `${c}99` }}
             >
+              {!mio && esNuevo(it.item, vistos) && <EtiquetaNuevo />}
               {it.categoria === "paquete" ? (
                 <>
                   <IlustracionPaquete item={it.item} className="h-24 w-24 sm:h-28 sm:w-28" />

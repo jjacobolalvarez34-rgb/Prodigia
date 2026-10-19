@@ -386,7 +386,7 @@ export const CAPSULAS: Record<TipoCapsula, { nombre: string; colores: [string, s
   // De la fusión (0290): 3 del mismo nivel + Chispas → 1 del nivel siguiente.
   plata: { nombre: "Cápsula de plata", colores: ["#AEB9CF", "#F4F7FF"] },
   oro: { nombre: "Cápsula de oro", colores: ["#D99A2B", "#FFE9A8"] },
-  prisma: { nombre: "Cápsula prisma", colores: ["#8E6CFF", "#6FF0FF"] },
+  prisma: { nombre: "Cápsula prisma", colores: ["#FF6FD8", "#6FF0FF"] },
   // Por jugar 3 partidas durante la Gran Alineación (0290).
   alineacion: { nombre: "Cápsula de la Alineación", colores: ["#E8A317", "#FFF1C4"] },
 };

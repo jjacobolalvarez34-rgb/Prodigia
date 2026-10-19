@@ -4813,7 +4813,7 @@
         "titulo": "Fuse capsules",
         "texto": "3 {nivel} → {destino}",
         "tienes": "You have {n}",
-        "boton": "Fuse · {n}",
+        "boton": "Fuse · {n} Sparks",
         "confirmar": "Confirm · {n} Sparks",
         "cancelar": "Cancel",
         "como": "Combine 3 capsules of the same tier and pay some Sparks to turn them into one of the next tier: Bronze → Silver (50), Silver → Gold (150), Gold → Prism (400). Special ones (city, collection, Pro, Comet and Alignment) can't be fused.",
@@ -5553,5 +5553,37 @@
     "tuya": "It's yours!",
     "nota": "Pick the pieces you want with your {ficha} or with Comets. Leftover tokens become {chispas} Sparks each when it ends. The collection returns next year.",
     "irTienda": "Go to the Bazaar"
+  },
+  "Alineacion": {
+    "eyebrow": "Great Alignment #{n}",
+    "titulo": "The Great Alignment",
+    "antes": "All 15 cities rise together. Starts in {tiempo}.",
+    "durante": "All 15 cities rose together. {tiempo} left.",
+    "despues": "How your Alignment went.",
+    "bonos": "XP ×2 · Sparks ×2 · Constellations ×2",
+    "cuando": "{fecha} · 3 hours",
+    "premios": "Rewards",
+    "sello": "“Witness #{n}” seal",
+    "selloComo": "Play 1 game",
+    "capsula": "Alignment capsule",
+    "capsulaComo": "Play {n} games",
+    "partidas": "{n}/{total} games",
+    "comunidad": "Community goal",
+    "comunidadComo": "If we all get there, {n} Sparks for everyone who played",
+    "comunidadProgreso": "{actual} of {meta} answers",
+    "comunidadLograda": "Goal reached!",
+    "comunidadNo": "The goal wasn't reached this time.",
+    "reclamar": "Claim {n} Sparks",
+    "reclamado": "Claimed",
+    "jugar": "Play now",
+    "resumen": "{partidas} games · +{xp} XP · +{chispas} Sparks",
+    "sinJugar": "You didn't play in this Alignment. The next one is in 28 days.",
+    "ganado": "Earned",
+    "invitado": "Create your account to earn the seal and the capsule.",
+    "x2": "Great Alignment · XP ×2",
+    "sellos": "Alignment seals"
+  },
+  "Comun": {
+    "nuevo": "NEW"
   }
 }

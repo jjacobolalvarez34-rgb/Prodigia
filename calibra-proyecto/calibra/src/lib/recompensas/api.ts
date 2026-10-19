@@ -13,7 +13,7 @@ export interface Capsula {
   id: string;
   tipo: TipoCapsula;
   mundo: string | null;
-  detalle: { nivel?: number; dias?: number; puesto?: number; dominio?: boolean } | null;
+  detalle: { nivel?: number; dias?: number; puesto?: number; dominio?: boolean; numero?: number } | null;
   creada_at: string;
 }
 

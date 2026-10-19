@@ -985,3 +985,12 @@ html[data-borde="verde"] { --borde-tema: repeating-linear-gradient(90deg, #3DDC9
   100% { transform: translateY(-5px); opacity: 0; }
 }
 .llama-brasa { animation: llama-brasa 1.2s ease-out infinite; }
+
+/* Gran Alineación (CapaAlineacion): motas de luz de las 15 ciudades que suben despacio. */
+@keyframes alineacion-mota {
+  0% { transform: translateY(0); opacity: 0; }
+  12% { opacity: 0.85; }
+  80% { opacity: 0.5; }
+  100% { transform: translateY(-85vh); opacity: 0; }
+}
+.alineacion-mota { animation: alineacion-mota 12s linear infinite; }

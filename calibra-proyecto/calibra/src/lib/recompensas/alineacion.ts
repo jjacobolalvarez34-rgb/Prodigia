@@ -1,4 +1,4 @@
-import { alineacionEnCurso, DURACION_EVENTO_MS, PRIMERA_ALINEACION_MS, proximaAlineacion } from "@/lib/ciudades/cicloDia";
+import { alineacionEnCurso, DURACION_EVENTO_MS, faseDelDia, PRIMERA_ALINEACION_MS, proximaAlineacion } from "@/lib/ciudades/cicloDia";
 
 // Tipo mínimo del cliente: así sirve el de la web y el de la app.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -78,4 +78,31 @@ export function mensajeErrorAlineacion(e: unknown): string {
   if (/juega una partida/i.test(m)) return "Para este premio había que jugar una partida durante la Alineación.";
   if (/ya reclamaste/i.test(m)) return "Ya reclamaste este premio.";
   return "No se pudo. Inténtalo de nuevo.";
+}
+
+// Los 15 soles (uno por ciudad, con su neón), en el orden del ciclo: del día más
+// corto al más largo. Los usan el cartel de Inicio (web y app) y la capa dorada.
+export const SOLES: { slug: string; color: string }[] = [
+  { slug: "dinamia", color: "#60A5FA" },
+  { slug: "codia", color: "#4FE0F5" },
+  { slug: "circuitia", color: "#FFC247" },
+  { slug: "numeria", color: "#9B85FF" },
+  { slug: "enigmia", color: "#2FD89B" },
+  { slug: "geografia", color: "#3FC1D6" },
+  { slug: "trigonometria", color: "#A8E84A" },
+  { slug: "calculia", color: "#8A83FF" },
+  { slug: "estadistica", color: "#2DD4BF" },
+  { slug: "quimia", color: "#E36BF2" },
+  { slug: "melodia", color: "#F2C14E" },
+  { slug: "naipia", color: "#F25C5C" },
+  { slug: "anatomia", color: "#E0607E" },
+  { slug: "historia", color: "#E08A5C" },
+  { slug: "vitalia", color: "#4ADE80" },
+];
+
+// Altura del sol de una ciudad ahora: 0 en el horizonte (amanecer y atardecer), 1 al
+// mediodía, negativa de noche. En la Alineación todos están en 0: amanecen juntos.
+export function alturaSol(slug: string, ahoraMs: number): number {
+  const f = faseDelDia(slug, ahoraMs);
+  return f < 0.5 ? Math.sin(Math.PI * (f / 0.5)) : -Math.sin(Math.PI * ((f - 0.5) / 0.5));
 }

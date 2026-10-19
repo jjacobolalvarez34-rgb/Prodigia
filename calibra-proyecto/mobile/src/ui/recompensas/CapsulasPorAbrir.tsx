@@ -13,6 +13,9 @@ import Boton3D from "../Boton3D";
 import Texto from "../Texto";
 import { color, conAlfa, fuente } from "~/tema";
 import Capsula from "./Capsula";
+import EtiquetaNuevo from "../EtiquetaNuevo";
+import { esNuevo } from "@/lib/recompensas/novedades";
+import { marcarNuevoVisto, useNuevoVisto } from "~/lib/novedades";
 
 // Cápsulas por abrir (rehecho 2026-10-18, «mejora el apartado de las cápsulas», igual
 // que la web): juntas por tipo con su contador, el rango de cada una y, arriba, las
@@ -84,6 +87,7 @@ export default function CapsulasPorAbrir({ capsulas, detalle, onAbrir, onVer, on
   const [ocupado, setOcupado] = useState(false);
   const [verComo, setVerComo] = useState(false);
   const [fusionada, setFusionada] = useState<{ capsula: DatosCapsula; de: TipoCapsula[] } | null>(null);
+  const vistos = useNuevoVisto();
   const grupos = agruparCapsulas(capsulas);
   const fusiones = fusionesPosibles(capsulas);
 
@@ -119,6 +123,7 @@ export default function CapsulasPorAbrir({ capsulas, detalle, onAbrir, onVer, on
         return (
           <Animated.View key={f.nivel} entering={FadeInDown.duration(280)} style={[styles.fusion, { borderColor: conAlfa(tinta, 0.6), boxShadow: `0px 10px 28px ${conAlfa(tinta, 0.25)}` }]}>
             <LinearGradient colors={["transparent", conAlfa(tinta, 0.16)]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />
+            {esNuevo("fusion", vistos) && <EtiquetaNuevo estilo={{ top: 8, right: 10 }} />}
             <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 {f.ids.map((id, i) => {
@@ -153,7 +158,15 @@ export default function CapsulasPorAbrir({ capsulas, detalle, onAbrir, onVer, on
                 </View>
               </View>
             ) : (
-              <Boton3D titulo={`Fusionar · ${FUSION[f.nivel].costo} Chispas`} variante="secundario" tamano="sm" onPress={() => setConfirmando(f.nivel)} />
+              <Boton3D
+                titulo={`Fusionar · ${FUSION[f.nivel].costo} Chispas`}
+                variante="secundario"
+                tamano="sm"
+                onPress={() => {
+                  setConfirmando(f.nivel);
+                  marcarNuevoVisto("fusion");
+                }}
+              />
             )}
           </Animated.View>
         );
@@ -175,11 +188,13 @@ export default function CapsulasPorAbrir({ capsulas, detalle, onAbrir, onVer, on
               <Pressable
                 onPress={() => {
                   vibrar.medio();
+                  if (g.tipo === "alineacion") marcarNuevoVisto("capsula_alineacion");
                   onAbrir(primera);
                 }}
                 style={({ pressed }) => [styles.tarjeta, { borderColor: conAlfa(colores[0], 0.55) }, pressed && { transform: [{ scale: 0.96 }] }]}
               >
                 <LinearGradient colors={[conAlfa(colores[0], 0.22), "transparent"]} style={styles.brilloArriba} />
+                {g.tipo === "alineacion" && esNuevo("capsula_alineacion", vistos) && <EtiquetaNuevo estilo={{ top: 60, right: 4 }} />}
                 <View style={styles.filaChips}>
                   <View style={[styles.chip, { borderColor: conAlfa(tinta, 0.5), backgroundColor: conAlfa(tinta, 0.12) }]}>
                     <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 8.5, letterSpacing: 1.2, color: tinta }}>{NOMBRE_RANGO[rango].toUpperCase()}</Texto>

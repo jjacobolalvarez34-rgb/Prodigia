@@ -1,3 +1,6 @@
+import { esNuevo } from "@/lib/recompensas/novedades";
+import { marcarNuevoVisto, useNuevoVisto } from "~/lib/novedades";
+import EtiquetaNuevo from "~/ui/EtiquetaNuevo";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { msHastaFinDelEvento } from "@/lib/eventos/dobleExperiencia";
@@ -160,10 +163,13 @@ const TarjetaItem = memo(function TarjetaItem({ it, e, placa, ancho, onPress, de
   const cantidad = cantidadUtilidad(it, e);
   const oferta = precio < it.costoBase;
   const alto = rareza === "legendario" || rareza === "epico";
+  const vistos = useNuevoVisto();
+  const nuevo = !tiene && esNuevo(it.item, vistos);
   return (
     <Pressable
       onPress={() => {
         vibrar.seleccion();
+        marcarNuevoVisto(it.item);
         onPress(it);
       }}
       style={({ pressed }) => [
@@ -174,6 +180,7 @@ const TarjetaItem = memo(function TarjetaItem({ it, e, placa, ancho, onPress, de
       ]}
     >
       <LinearGradient colors={[conAlfa(c, rareza === "comun" ? 0.12 : 0.28), "rgba(18,23,42,0)"]} style={StyleSheet.absoluteFill} />
+      {nuevo && <EtiquetaNuevo estilo={{ top: 4, right: 4 }} />}
       <View style={styles.muestra}>
         <Muestra it={it} placa={placa} />
       </View>

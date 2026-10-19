@@ -13,6 +13,7 @@ import Barra from "~/ui/Barra";
 import Boton3D from "~/ui/Boton3D";
 import { IconoCompetir, IconoCopo, IconoEscudo, IconoMensaje, IconoRegalo } from "~/ui/Iconos";
 import { PantallaApilada, TituloSeccion } from "~/ui/Pantalla";
+import SellosAlineacion from "~/ui/alineacion/SellosAlineacion";
 import { PlacaCompleta } from "~/ui/placa/Placa";
 import RetarAmigo from "~/ui/RetarAmigo";
 import Tarjeta from "~/ui/Tarjeta";
@@ -204,6 +205,8 @@ export default function Jugador() {
             </View>
           ))}
         </View>
+
+        <SellosAlineacion userId={id} />
 
         {mundos.length > 0 && (
           <>
