@@ -261,3 +261,13 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 64. [x] App: más presencia para la racha de preguntas: desde 3 seguidas, la racha aparece grande en toda la pantalla, animada,
     como fuego, con el número que cambia, transparente de fondo (que se note pero no tape). O una idea mejor. → Hecho (2026-10-17): RachaDeFondo: desde 3 seguidas, llama enorme translúcida con el número; salta en cada acierto y se desvanece; más fuerte en 5, 10, 15…
 65. [x] Web: el sonido en PC nunca se ha reproducido.
+
+## Pedidos del 2026-10-18
+
+66. [ ] PRIMERO: definir de una vez la Gran Alineación (qué pasa, cómo se ve Prodigia, qué se gana). La primera es el sábado 24/10/2026 a las 18:00 de Colombia (23:00 UTC), 3 horas, y se repite cada 28 días.
+67. [ ] Fusión de cápsulas.
+68. [ ] Mejorar el apartado donde están las cápsulas.
+69. [ ] Bajar un poco el brillo del fondo cuando se abre una cápsula.
+70. [ ] Las cápsulas nunca dan menos de 100 Chispas.
+71. [ ] Etiqueta «NUEVO».
+72. [ ] Explicaciones de cada pregunta (= 48).
