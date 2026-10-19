@@ -15,6 +15,13 @@ const FUENTES = {
   acierto5: require("../../assets/sonidos/acierto5.wav"),
   acierto6: require("../../assets/sonidos/acierto6.wav"),
   acierto7: require("../../assets/sonidos/acierto7.wav"),
+  acierto8: require("../../assets/sonidos/acierto8.wav"),
+  acierto9: require("../../assets/sonidos/acierto9.wav"),
+  acierto10: require("../../assets/sonidos/acierto10.wav"),
+  acierto11: require("../../assets/sonidos/acierto11.wav"),
+  acierto12: require("../../assets/sonidos/acierto12.wav"),
+  acierto13: require("../../assets/sonidos/acierto13.wav"),
+  acierto14: require("../../assets/sonidos/acierto14.wav"),
   acierto_campanitas0: require("../../assets/sonidos/acierto_campanitas0.wav"),
   acierto_campanitas1: require("../../assets/sonidos/acierto_campanitas1.wav"),
   acierto_campanitas2: require("../../assets/sonidos/acierto_campanitas2.wav"),
@@ -23,6 +30,13 @@ const FUENTES = {
   acierto_campanitas5: require("../../assets/sonidos/acierto_campanitas5.wav"),
   acierto_campanitas6: require("../../assets/sonidos/acierto_campanitas6.wav"),
   acierto_campanitas7: require("../../assets/sonidos/acierto_campanitas7.wav"),
+  acierto_campanitas8: require("../../assets/sonidos/acierto_campanitas8.wav"),
+  acierto_campanitas9: require("../../assets/sonidos/acierto_campanitas9.wav"),
+  acierto_campanitas10: require("../../assets/sonidos/acierto_campanitas10.wav"),
+  acierto_campanitas11: require("../../assets/sonidos/acierto_campanitas11.wav"),
+  acierto_campanitas12: require("../../assets/sonidos/acierto_campanitas12.wav"),
+  acierto_campanitas13: require("../../assets/sonidos/acierto_campanitas13.wav"),
+  acierto_campanitas14: require("../../assets/sonidos/acierto_campanitas14.wav"),
   acierto_ochobits0: require("../../assets/sonidos/acierto_ochobits0.wav"),
   acierto_ochobits1: require("../../assets/sonidos/acierto_ochobits1.wav"),
   acierto_ochobits2: require("../../assets/sonidos/acierto_ochobits2.wav"),
@@ -31,6 +45,13 @@ const FUENTES = {
   acierto_ochobits5: require("../../assets/sonidos/acierto_ochobits5.wav"),
   acierto_ochobits6: require("../../assets/sonidos/acierto_ochobits6.wav"),
   acierto_ochobits7: require("../../assets/sonidos/acierto_ochobits7.wav"),
+  acierto_ochobits8: require("../../assets/sonidos/acierto_ochobits8.wav"),
+  acierto_ochobits9: require("../../assets/sonidos/acierto_ochobits9.wav"),
+  acierto_ochobits10: require("../../assets/sonidos/acierto_ochobits10.wav"),
+  acierto_ochobits11: require("../../assets/sonidos/acierto_ochobits11.wav"),
+  acierto_ochobits12: require("../../assets/sonidos/acierto_ochobits12.wav"),
+  acierto_ochobits13: require("../../assets/sonidos/acierto_ochobits13.wav"),
+  acierto_ochobits14: require("../../assets/sonidos/acierto_ochobits14.wav"),
   acierto_marimba0: require("../../assets/sonidos/acierto_marimba0.wav"),
   acierto_marimba1: require("../../assets/sonidos/acierto_marimba1.wav"),
   acierto_marimba2: require("../../assets/sonidos/acierto_marimba2.wav"),
@@ -39,6 +60,13 @@ const FUENTES = {
   acierto_marimba5: require("../../assets/sonidos/acierto_marimba5.wav"),
   acierto_marimba6: require("../../assets/sonidos/acierto_marimba6.wav"),
   acierto_marimba7: require("../../assets/sonidos/acierto_marimba7.wav"),
+  acierto_marimba8: require("../../assets/sonidos/acierto_marimba8.wav"),
+  acierto_marimba9: require("../../assets/sonidos/acierto_marimba9.wav"),
+  acierto_marimba10: require("../../assets/sonidos/acierto_marimba10.wav"),
+  acierto_marimba11: require("../../assets/sonidos/acierto_marimba11.wav"),
+  acierto_marimba12: require("../../assets/sonidos/acierto_marimba12.wav"),
+  acierto_marimba13: require("../../assets/sonidos/acierto_marimba13.wav"),
+  acierto_marimba14: require("../../assets/sonidos/acierto_marimba14.wav"),
   acierto_xilofono0: require("../../assets/sonidos/acierto_xilofono0.wav"),
   acierto_xilofono1: require("../../assets/sonidos/acierto_xilofono1.wav"),
   acierto_xilofono2: require("../../assets/sonidos/acierto_xilofono2.wav"),
@@ -47,6 +75,13 @@ const FUENTES = {
   acierto_xilofono5: require("../../assets/sonidos/acierto_xilofono5.wav"),
   acierto_xilofono6: require("../../assets/sonidos/acierto_xilofono6.wav"),
   acierto_xilofono7: require("../../assets/sonidos/acierto_xilofono7.wav"),
+  acierto_xilofono8: require("../../assets/sonidos/acierto_xilofono8.wav"),
+  acierto_xilofono9: require("../../assets/sonidos/acierto_xilofono9.wav"),
+  acierto_xilofono10: require("../../assets/sonidos/acierto_xilofono10.wav"),
+  acierto_xilofono11: require("../../assets/sonidos/acierto_xilofono11.wav"),
+  acierto_xilofono12: require("../../assets/sonidos/acierto_xilofono12.wav"),
+  acierto_xilofono13: require("../../assets/sonidos/acierto_xilofono13.wav"),
+  acierto_xilofono14: require("../../assets/sonidos/acierto_xilofono14.wav"),
   acierto_arcade0: require("../../assets/sonidos/acierto_arcade0.wav"),
   acierto_arcade1: require("../../assets/sonidos/acierto_arcade1.wav"),
   acierto_arcade2: require("../../assets/sonidos/acierto_arcade2.wav"),
@@ -55,6 +90,13 @@ const FUENTES = {
   acierto_arcade5: require("../../assets/sonidos/acierto_arcade5.wav"),
   acierto_arcade6: require("../../assets/sonidos/acierto_arcade6.wav"),
   acierto_arcade7: require("../../assets/sonidos/acierto_arcade7.wav"),
+  acierto_arcade8: require("../../assets/sonidos/acierto_arcade8.wav"),
+  acierto_arcade9: require("../../assets/sonidos/acierto_arcade9.wav"),
+  acierto_arcade10: require("../../assets/sonidos/acierto_arcade10.wav"),
+  acierto_arcade11: require("../../assets/sonidos/acierto_arcade11.wav"),
+  acierto_arcade12: require("../../assets/sonidos/acierto_arcade12.wav"),
+  acierto_arcade13: require("../../assets/sonidos/acierto_arcade13.wav"),
+  acierto_arcade14: require("../../assets/sonidos/acierto_arcade14.wav"),
   acierto_arpa0: require("../../assets/sonidos/acierto_arpa0.wav"),
   acierto_arpa1: require("../../assets/sonidos/acierto_arpa1.wav"),
   acierto_arpa2: require("../../assets/sonidos/acierto_arpa2.wav"),
@@ -63,6 +105,13 @@ const FUENTES = {
   acierto_arpa5: require("../../assets/sonidos/acierto_arpa5.wav"),
   acierto_arpa6: require("../../assets/sonidos/acierto_arpa6.wav"),
   acierto_arpa7: require("../../assets/sonidos/acierto_arpa7.wav"),
+  acierto_arpa8: require("../../assets/sonidos/acierto_arpa8.wav"),
+  acierto_arpa9: require("../../assets/sonidos/acierto_arpa9.wav"),
+  acierto_arpa10: require("../../assets/sonidos/acierto_arpa10.wav"),
+  acierto_arpa11: require("../../assets/sonidos/acierto_arpa11.wav"),
+  acierto_arpa12: require("../../assets/sonidos/acierto_arpa12.wav"),
+  acierto_arpa13: require("../../assets/sonidos/acierto_arpa13.wav"),
+  acierto_arpa14: require("../../assets/sonidos/acierto_arpa14.wav"),
   acierto_cristal0: require("../../assets/sonidos/acierto_cristal0.wav"),
   acierto_cristal1: require("../../assets/sonidos/acierto_cristal1.wav"),
   acierto_cristal2: require("../../assets/sonidos/acierto_cristal2.wav"),
@@ -71,6 +120,13 @@ const FUENTES = {
   acierto_cristal5: require("../../assets/sonidos/acierto_cristal5.wav"),
   acierto_cristal6: require("../../assets/sonidos/acierto_cristal6.wav"),
   acierto_cristal7: require("../../assets/sonidos/acierto_cristal7.wav"),
+  acierto_cristal8: require("../../assets/sonidos/acierto_cristal8.wav"),
+  acierto_cristal9: require("../../assets/sonidos/acierto_cristal9.wav"),
+  acierto_cristal10: require("../../assets/sonidos/acierto_cristal10.wav"),
+  acierto_cristal11: require("../../assets/sonidos/acierto_cristal11.wav"),
+  acierto_cristal12: require("../../assets/sonidos/acierto_cristal12.wav"),
+  acierto_cristal13: require("../../assets/sonidos/acierto_cristal13.wav"),
+  acierto_cristal14: require("../../assets/sonidos/acierto_cristal14.wav"),
   error: require("../../assets/sonidos/error.wav"),
   moneda: require("../../assets/sonidos/moneda.wav"),
   tecla: require("../../assets/sonidos/tecla.wav"),
@@ -155,7 +211,7 @@ export function sonar(nombre: Sonido) {
 }
 
 // El "tick" de acierto de la web (seno de 880 Hz) que sube por la escala mayor con
-// el combo: 8 alturas, de ×1 a ×8 o más.
+// el combo: 15 alturas (dos octavas), de ×1 a ×15, y luego alterna las dos últimas.
 // Paquete de sonido de acierto equipado en la tienda ("clasico" = el de siempre).
 let paqueteAcierto = "clasico";
 export function fijarPaqueteAcierto(paquete: string) {
@@ -163,7 +219,10 @@ export function fijarPaqueteAcierto(paquete: string) {
 }
 
 export function sonarAcierto(combo: number) {
-  const altura = Math.min(7, Math.max(0, combo - 1));
+  // 15 alturas (dos octavas); después alterna las dos más altas para que la racha
+  // larga nunca suene igual (2026-10-19).
+  const n = Math.max(0, combo - 1);
+  const altura = n <= 14 ? n : 14 - ((n - 14) % 2);
   const conPaquete = `acierto_${paqueteAcierto}${altura}`;
   sonar((paqueteAcierto !== "clasico" && conPaquete in FUENTES ? conPaquete : `acierto${altura}`) as Sonido);
 }

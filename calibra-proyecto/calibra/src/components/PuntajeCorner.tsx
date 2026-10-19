@@ -36,7 +36,8 @@ export default function PuntajeCorner({ total, intensidad }: Props) {
         className="font-display font-black"
         style={{ color: "#FFC53D", fontSize: 20 * escala }}
       >
-        +{total}
+        {/* Inclinado 8° hacia la derecha (2026-10-19): se lee como algo que salta, sin perder legibilidad. */}
+        <span className="inline-block" style={{ transform: "skewX(-8deg)" }}>+{total}</span>
       </motion.div>
       {particulas > 0 && (
         <div className="absolute left-1/2 top-1/2">

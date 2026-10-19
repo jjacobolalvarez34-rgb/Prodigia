@@ -578,7 +578,8 @@ export function Flotante({ puntos }: { puntos: number }) {
         <Chispita key={i} i={i} total={CHISPITAS[intensidad]} radio={20 + escala * 12} t={t} />
       ))}
       <Animated.View style={estilo}>
-        <Texto style={{ fontFamily: fuente.display, fontSize: 21, color: color.logro, textShadowColor: "rgba(255,182,39,0.65)", textShadowRadius: 10 }}>+{puntos}</Texto>
+        {/* Inclinado 8° hacia la derecha, igual que la web. */}
+        <Texto style={{ fontFamily: fuente.display, fontSize: 21, color: color.logro, textShadowColor: "rgba(255,182,39,0.65)", textShadowRadius: 10, transform: [{ skewX: "-8deg" }] }}>+{puntos}</Texto>
       </Animated.View>
     </View>
   );

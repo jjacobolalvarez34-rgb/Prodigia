@@ -41,7 +41,8 @@ def guardar(nombre,s,pico=0.7):
 for f in os.listdir(OUT):
     if f.endswith(".wav"): os.remove(os.path.join(OUT,f))
 # Acierto: el "tick" de la web (seno 880 Hz, 0,22 s) que sube por la escala mayor con el combo.
-escala=[0,2,4,5,7,9,11,12]
+# Dos octavas, 15 alturas (2026-10-19: con 8 la racha «dejaba de subir» en la novena).
+escala=[0,2,4,5,7,9,11,12,14,16,17,19,21,23,24]
 for i,st in enumerate(escala):
     guardar(f"acierto{i}",secuencia([(880*2**(st/12),0,0.22)]),0.6)
 # «Eh-ehhh» (pedido 2026-10-09): dos notas que caen, la segunda deslizándose.
@@ -72,7 +73,7 @@ guardar("pulso_fuerte",secuencia([(1568,0,.06,.16)]),0.7)
 guardar("pulso",secuencia([(1046.5,0,.06,.12)]),0.55)
 # Paquetes de sonido de acierto de la tienda (SONIDOS de calibra/src/lib/recompensas/
 # catalogo.ts, mismos números): (frecuencia relativa, inicio, duración, onda, volumen),
-# en las mismas 8 alturas que el acierto clásico.
+# en las mismas 15 alturas que el acierto clásico.
 PAQUETES={
     "campanitas":[(2,0,.6,"sine",.1),(5.4,0,.35,"sine",.03),(3,.07,.5,"sine",.06)],
     "ochobits":[(1,0,.07,"square",.06),(1.5,.06,.07,"square",.06),(2,.12,.1,"square",.06)],
@@ -86,7 +87,8 @@ PAQUETES={
 for nombre,notas in PAQUETES.items():
     for i,st in enumerate(escala):
         f=880*2**(st/12)
-        guardar(f"acierto_{nombre}{i}",secuencia([(f*r,ini,d,v,o) for r,ini,d,o,v in notas]),0.6)
+        # Lo que pase de 12 kHz baja una octava (en la segunda octava, «cristal» llegaba a 21 kHz).
+        guardar(f"acierto_{nombre}{i}",secuencia([(f*r if f*r<12000 else f*r/2,ini,d,v,o) for r,ini,d,o,v in notas]),0.6)
 print(sorted(os.listdir(OUT)))
 
 # Notas para el oído absoluto de Melodía: reproducirNotaMusical de la web

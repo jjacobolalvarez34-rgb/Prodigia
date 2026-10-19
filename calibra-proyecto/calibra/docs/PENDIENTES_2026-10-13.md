@@ -297,3 +297,18 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 
 81. [x] (hecho 2026-10-19, entra en el próximo APK) Cola de 5 s animada para el video de la Gran Alineación (pendiente: el usuario lo aprobará después; proyecto a medias en prodigia-marketing/videos/gran-alineacion, respaldo en D:/tmp-claude/respaldo-alineacion). RECORDÁRSELO.
 82. [x] (plan hecho en PLAN_FESTIVIDADES.md §6; falta construirlo) Planear la estética de CADA evento (grande o chico) para que TODO en la app celebre la fecha: botones, tarjetas, cápsulas, constelaciones, ciudad, carga, widgets, íconos, sonidos, textos. Escribirlo por evento en docs/eventos/PLAN_FESTIVIDADES.md y revisar qué falta de lo ya hecho (temas.ts). Pedido 2026-10-19.
+
+## Pedidos del 2026-10-19 (tarde)
+
+83. [ ] DISEÑAR TODO lo de los eventos antes de construir (sin videos todavía): carpetas con una imagen por cosa y un HTML que se vea exactamente como en la app, para que el usuario lo revise y apruebe. Cubre §6 de PLAN_FESTIVIDADES.md para los 16 eventos.
+84. [ ] «Paridad de eventos» (docs/eventos/PARIDAD_EVENTOS.md): la lista que TODO evento debe cumplir, como PARIDAD_MUNDOS.
+85. [ ] El evento se nota en las Rankeds y en el resto de secciones; minieventos dentro de cada evento.
+86. [ ] Notificaciones con la piel y el tono del evento.
+87. [ ] El apartado de Amigos también celebra el evento.
+88. [ ] Estadísticas (Pro): hoy se sienten inútiles. Rediseño «wow» que haga que Pro valga la pena.
+89. [~] (app hecho) El tono de la racha subía solo 8 veces: ahora 15 alturas (dos octavas) y luego alterna (app). La web tiene un solo tono: igualar.
+90. [ ] La fuente del «+N» al acertar: que se pueda cambiar con FUENTES DE PUNTOS en la tienda (cosmético nuevo).
+91. [ ] Más fuentes en la tienda (hay muy pocas), para el nombre y para los puntos.
+92. [x] (8°, web y app) Inclinación leve a la derecha de los puntos «+N» (decisión de Claude).
+93. [ ] Landing de la web y tutorial (primera vez) de la app: explicar las cápsulas y las constelaciones.
+94. [ ] Constelaciones: mejorar CÓMO SE VEN (no la pantalla donde están): calidad alta, «wow», pero ya hechas de antemano (imágenes o dibujos pre-renderizados) para que no pongan lenta la app.
