@@ -201,3 +201,147 @@ después. Un evento en curso siempre le gana a la decoración del que viene.
 | 3 | Día de Muertos y Diwali | Antes del 30 oct |
 | 4 | Viernes Estelar, **Navidad** completa y Año Nuevo | Antes del 26 nov |
 | 5 | El resto (Año Nuevo Lunar → Vuelta a clases), prehechos y programados | Antes de enero |
+
+---
+
+## 6. Que TODO celebre la fecha (pedido del 2026-10-19)
+
+Regla del usuario: **cada evento, grande o chico, se nota en toda la app**. No basta con
+partículas y un cartel: cada superficie trae algo de la fecha. Lo que cambia es **cuánto**
+según la escala. La base no cambia nunca: mismos mundos, mismas reglas, partidas legibles.
+
+### 6.1 Las superficies y cuánto cambian por escala
+
+Leyenda: ● completo · ◐ un detalle · — nada.
+
+| Superficie | Qué cambia | Grande | Media | Chica | Tienda |
+|---|---|---|---|---|---|
+| **Video de apertura** | Video de 10 s + 5 s de cola (ANIMACIONES_EVENTOS.md) | ● | ● | ◐ (5–6 s) | ● |
+| **Ícono de la app** | El ícono de la fecha (alias del launcher) | ● | ◐ | — | — |
+| **Widgets** | Acento, adornos de la ciudad y partículas | ● | ● | ◐ (acento) | — |
+| **Pantalla de carga** | La ciudad con sus adornos y el pasante; el logo con su detalle | ● | ● | ◐ | — |
+| **Inicio** | Cartel del evento, saludo de la fecha y la ciudad decorada | ● | ● | ● | ● |
+| **Ambiente** | Partículas por encima de todo (fuera de las partidas) | ● | ● | ◐ | — |
+| **Botones principales** | Borde de la fecha (caramelo, rangoli, corazones…) | ● | ● | ◐ | ◐ (solo Bazar) |
+| **Tarjetas** (mundos, misiones, ranking) | Una esquina con el adorno de la fecha | ● | ◐ | — | — |
+| **Avatar** | Accesorio (gorro, sombrero, corona, antifaz…) | ● | ● | ● | — |
+| **Logo del encabezado** | Su detalle (calabacita, pompón, π…) | ● | ● | ● | ◐ |
+| **Partida** | Solo detalles que no distraen: borde de la tarjeta de la pregunta, el «+N» y el estallido de acierto con los colores de la fecha y un sonido de acierto de temporada | ● | ◐ | ◐ (colores) | — |
+| **Resultado de la partida** | Fondo con la escena y las Fichas ganadas | ● | ● | ◐ | — |
+| **Cápsulas** | La piel de la fecha y la cápsula de temporada en el Bazar | ● | ● | ◐ | ● |
+| **Constelaciones** | Forma y color de las estrellas | ● | ● | ◐ | — |
+| **Perfil y Placa** | Sello o marco de la fecha visible si lo tienes | ● | ◐ | — | — |
+| **Bazar** | Puesto del evento, piel de noche, paquetes de temporada | ● | ● | ◐ | ● |
+| **Sonidos** | Clic, acierto y apertura de cápsulas con instrumento de la fecha (se apagan con el sonido) | ● | ◐ | — | — |
+| **Textos** | Saludo del día, botones con su palabra («¡Truco o trato!»), nombres de misiones | ● | ● | ◐ | ◐ |
+| **Avisos (notificaciones)** | El del inicio, el de mitad y el último día, con el tono de la fecha | ● | ● | ◐ (solo inicio) | ● |
+| **Chat y social** | Emote de la fecha disponible para todos mientras dura | ● | ◐ | — | — |
+| **Anuncio** | Tarjeta de novedades con su dibujo | ● | ● | ● | ● |
+
+### 6.2 Lo nuevo por evento (además de §3)
+
+- **Halloween (grande):**
+  - acierto con «crujido de hojas» y órgano suave;
+  - la tarjeta de la pregunta con telarañas en una esquina;
+  - el resultado con la luna y los esqueletos bailando si fue perfecta;
+  - saludo «Truco o trato, {nombre}»;
+  - emote ¡Buu! abierto para todos en el chat.
+- **Día de Muertos (media):**
+  - velas en las esquinas de las tarjetas de mundos;
+  - acierto con campanita;
+  - el resultado con papel picado;
+  - ícono con pétalo de cempasúchil;
+  - saludo «Hoy recordamos».
+- **Diwali (media):**
+  - cada acierto enciende una diya en la esquina de la pregunta (se ven las que llevas);
+  - acierto con campanita de templo;
+  - ícono con una diya.
+- **Viernes Estelar (tienda):**
+  - el Bazar entero de noche con estrellas fugaces;
+  - el botón del Bazar en la barra con un punto dorado;
+  - avisos con la cuenta regresiva de las ofertas.
+- **Navidad (grande):**
+  - acierto con cascabel y la apertura de cápsulas con celesta;
+  - la tarjeta de la pregunta con escarcha en el borde;
+  - el resultado con nieve y el árbol;
+  - saludo «Felices fiestas, {nombre}»;
+  - calendario de adviento en el Inicio;
+  - emote ¡Jo jo jo! para todos;
+  - widgets con nieve que cae.
+- **Año Nuevo (media):**
+  - cuenta regresiva en el encabezado el 31 desde las 23:00 (hora local);
+  - a las 00:00, fuegos en la pantalla en la que estés (fuera de partida);
+  - acierto con chispa de bengala.
+- **Año Nuevo Lunar (media):**
+  - sobres rojos en las tarjetas de misiones;
+  - acierto con gong pequeño;
+  - el dragón pasa por la pantalla de carga.
+- **Amor y Amistad (chica):**
+  - el botón «Regalar» resaltado en amigos;
+  - acierto con dos notas que se juntan;
+  - corazón en el logo.
+- **Carnaval (media):**
+  - acierto con golpe de tambor;
+  - serpentinas en el resultado;
+  - antifaz en el avatar;
+  - el Inicio con ritmo: el cartel late.
+- **Día de Pi (chica):**
+  - el reloj de las partidas del día marca 3:14;
+  - dígitos de π de fondo en el resultado;
+  - logo con π.
+- **Holi (chica):**
+  - cada acierto deja una mancha de color en el borde de la pantalla (se va sola);
+  - el resultado con polvo de colores.
+- **Pascua (media):**
+  - un huevo escondido en alguna pantalla por día (tocarlo da Fichas);
+  - acierto con «pop»;
+  - orejas de conejo.
+- **Noches de linternas (chica):**
+  - el Inicio con una linterna que sube;
+  - tono sereno, sin sonidos nuevos.
+- **Día de la Tierra (chica):**
+  - hojas en los botones;
+  - cada partida «riega» una planta en el Inicio que crece durante el día.
+- **Día de la Música (chica):**
+  - cada acierto suena como una nota de una melodía que se completa en la partida;
+  - pentagrama en los botones.
+- **Vuelta a clases (chica):**
+  - las tarjetas con renglones de cuaderno;
+  - acierto con «visto bueno» de lápiz;
+  - lápiz en la oreja del avatar.
+
+### 6.3 Qué ya está hecho y qué falta (revisión del 2026-10-19)
+
+**Hecho (motor común, sirve para todas):**
+- calendario y fases;
+- ambiente;
+- adornos de ciudad;
+- pasantes;
+- borde de botones;
+- accesorio del avatar;
+- cápsulas con piel;
+- constelaciones de temporada;
+- cartel y página del evento;
+- colección y Fichas (solo Halloween);
+- widgets de temporada;
+- íconos (los 16 hechos; activos Halloween y Navidad);
+- video de apertura (Alineación y Halloween);
+- paquetes de temporada (0291).
+
+**Falta:**
+1. Sonidos de temporada: acierto, clic y apertura.
+2. Tarjeta de la pregunta y estallido de acierto con la piel de la fecha.
+3. Resultado de la partida con la escena.
+4. Saludos y textos de la fecha (es/en).
+5. Esquinas de las tarjetas.
+6. Avisos del inicio, de mitad y del final.
+7. Emote abierto en el chat.
+8. Detalles propios de cada fecha (§6.2: adviento, cuenta regresiva, diyas, huevo escondido…).
+9. Colecciones de los demás eventos.
+10. Videos de los demás eventos.
+11. Íconos de las fechas medianas.
+
+**Orden sugerido:**
+1. Lo común (puntos 1 a 7), una vez para todas.
+2. Muertos (1/11) y Diwali (8/11).
+3. Navidad completa antes del 26/11.

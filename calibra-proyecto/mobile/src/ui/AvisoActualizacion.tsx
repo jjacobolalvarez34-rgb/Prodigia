@@ -10,8 +10,9 @@ import Logo from "./Logo";
 import Texto from "./Texto";
 
 // «Hay una nueva versión de Prodigia»: se revisa al abrir la app y al volver a ella
-// (como mucho cada 6 h). «Actualizar» baja el APK dentro de la app y abre el instalador.
-const CADA_MS = 6 * 60 * 60 * 1000;
+// (como mucho cada 30 min: con 6 h, una versión publicada con la app abierta no se
+// veía hasta muy tarde). «Actualizar» baja el APK dentro de la app y abre el instalador.
+const CADA_MS = 30 * 60 * 1000;
 
 export default function AvisoActualizacion() {
   const [nueva, setNueva] = useState<VersionNueva | null>(null);
