@@ -5581,7 +5581,10 @@
     "ganado": "Earned",
     "invitado": "Create your account to earn the seal and the capsule.",
     "x2": "Great Alignment · XP ×2",
-    "sellos": "Alignment seals"
+    "sellos": "Alignment seals",
+    "verVideo": "Watch the Alignment video",
+    "saltar": "Skip",
+    "activarSonido": "Turn on sound"
   },
   "Comun": {
     "nuevo": "NEW"

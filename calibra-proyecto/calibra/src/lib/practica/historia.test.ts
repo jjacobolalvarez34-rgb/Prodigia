@@ -165,9 +165,9 @@ describe("determinismo (reto diario) y firma pública", () => {
     expect(b.opciones.length).toBe(4);
   });
 
-  it("la firma pública se mantiene: (modo, nivel, usados?) -> {enunciado, opciones, respuesta, clave, dificultad}", () => {
+  it("la firma pública se mantiene: (modo, nivel, usados?) -> {enunciado, opciones, respuesta, clave, dificultad, pasos}", () => {
     const p = generarPreguntaHistoria("personajes", 3);
-    expect(Object.keys(p).sort()).toEqual(["clave", "dificultad", "enunciado", "opciones", "respuesta"]);
+    expect(Object.keys(p).sort()).toEqual(["clave", "dificultad", "enunciado", "opciones", "pasos", "respuesta"]);
     expect(NOMBRE_MODO_HISTORIA.causaefecto).toBe("Causa y efecto");
     // niveles fuera de rango o decimales no rompen
     for (const n of [-3, 0, 0.4, 5.6, 99, NaN]) if (!Number.isNaN(n)) expect(() => generarPreguntaHistoria("cronologia", n)).not.toThrow();

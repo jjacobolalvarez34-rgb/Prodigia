@@ -38,6 +38,7 @@ import PrimeraVez from "~/ui/PrimeraVez";
 import AvisoProTermino from "~/ui/AvisoProTermino";
 import CapaTemporada from "~/ui/temas/CapaTemporada";
 import CapaAlineacion from "~/ui/alineacion/CapaAlineacion";
+import VideoAlineacion from "~/ui/alineacion/VideoAlineacion";
 import { vigilarIconoTemporada } from "~/lib/iconoTemporada";
 import AvisoActualizacion from "~/ui/AvisoActualizacion";
 import { GlobosPorRuta } from "~/ui/GloboAyuda";
@@ -244,6 +245,8 @@ function Navegacion() {
       {!cargando && !cargaVisible && !segmentos.some((x) => PANTALLAS_DE_JUEGO.has(x)) && <CapaTemporada />}
       {/* Gran Alineación: el amanecer dorado, también fuera de las partidas. */}
       {!cargando && !cargaVisible && !segmentos.some((x) => PANTALLAS_DE_JUEGO.has(x)) && <CapaAlineacion />}
+      {/* Y su video de apertura: en lugar del menú al abrir, o con fundido si empieza con la app abierta. */}
+      {!cargando && !cargaVisible && terminos !== false && !segmentos.some((x) => PANTALLAS_DE_JUEGO.has(x)) && <VideoAlineacion />}
       {!cargando && userId && terminos && !cargaVisible && <AvisoProTermino />}
       {/* Nueva versión del APK (2026-10-14): se baja y se instala desde la app. */}
       {!cargando && !cargaVisible && <AvisoActualizacion />}

@@ -18,6 +18,7 @@ import {
   SOLES,
   type EstadoAlineacionServidor,
 } from "@/lib/recompensas/alineacion";
+import { repetirVideoAlineacion } from "./VideoAlineacion";
 
 // Cartel de la Gran Alineación en el Inicio (decisiones del 2026-10-18): desde 3 días
 // antes con la cuenta regresiva, durante las 3 horas con tu avance y la meta de
@@ -194,6 +195,11 @@ export default function CartelAlineacion({ invitado = false }: { invitado?: bool
             </div>
             {aviso && <p className="text-sm font-semibold text-error">{aviso}</p>}
           </>
+        )}
+        {(durante || despues) && (
+          <button type="button" onClick={repetirVideoAlineacion} className="self-start text-sm font-bold hover:underline" style={{ color: ORO }}>
+            ▶ {t("verVideo")}
+          </button>
         )}
       </div>
     </motion.section>

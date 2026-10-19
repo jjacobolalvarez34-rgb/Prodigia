@@ -5581,7 +5581,10 @@
     "ganado": "Ganado",
     "invitado": "Crea tu cuenta para ganar el sello y la cápsula.",
     "x2": "Gran Alineación · Exp ×2",
-    "sellos": "Sellos de la Alineación"
+    "sellos": "Sellos de la Alineación",
+    "verVideo": "Ver el video de la Alineación",
+    "saltar": "Saltar",
+    "activarSonido": "Activar sonido"
   },
   "Comun": {
     "nuevo": "NUEVO"

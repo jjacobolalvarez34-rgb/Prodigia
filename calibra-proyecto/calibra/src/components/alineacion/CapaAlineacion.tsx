@@ -9,7 +9,7 @@ import { SOLES } from "@/lib/recompensas/alineacion";
 // Durante la Gran Alineación, fuera de las partidas: la web se tiñe de amanecer. Un
 // resplandor dorado arriba y en el horizonte, y motas de luz de los colores de las 15
 // ciudades que suben despacio. Sutil: se nota sin tapar nada.
-const RUTAS_DE_JUEGO = /\/(practica|duelo|duelos\/|reto-|reto\/|zen|serie|diagnostico|partida|calibracion|sprint)/;
+export const RUTAS_DE_JUEGO = /\/(practica|duelo|duelos\/|reto-|reto\/|zen|serie|diagnostico|partida|calibracion|sprint)/;
 
 function suscribir(avisar: () => void) {
   const id = setInterval(avisar, 30_000);

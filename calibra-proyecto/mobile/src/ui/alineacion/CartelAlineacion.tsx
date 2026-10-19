@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { faltaPara } from "@/lib/temas/eventos";
@@ -18,6 +18,7 @@ import {
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, useJugador } from "~/lib/jugador";
 import { supabase } from "~/lib/supabase";
+import { repetirVideoAlineacion } from "~/lib/videoAlineacion";
 import { mostrarAviso } from "../Aviso";
 import Boton3D from "../Boton3D";
 import Texto from "../Texto";
@@ -176,6 +177,11 @@ export default function CartelAlineacion() {
             <Boton3D titulo={estado.premio_comunidad ? "Premio reclamado" : `Reclamar ${CHISPAS_COMUNIDAD} Chispas`} variante="secundario" deshabilitado={estado.premio_comunidad} cargando={ocupado} onPress={reclamar} />
           )}
         </>
+      )}
+      {(durante || despues) && (
+        <Pressable onPress={repetirVideoAlineacion} hitSlop={8} style={{ alignSelf: "flex-start" }} accessibilityRole="button">
+          <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 12.5, color: ORO }}>▶ Ver el video de la Alineación</Texto>
+        </Pressable>
       )}
       <View style={{ height: 70 }} />
     </Animated.View>

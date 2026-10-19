@@ -232,9 +232,10 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 
 ## Qué falta (revisión del 2026-10-16)
 
-48. [ ] Retroalimentación de cada pregunta (paso a paso / por qué): hoy solo la tienen los modos de Numeria (operaciones,
+48. [x] Retroalimentación de cada pregunta (paso a paso / por qué): hoy solo la tienen los modos de Numeria (operaciones,
     fracciones, decimales, potencias, álgebra, geometría). Faltan: Enigmia, Geografía, Quimia, Anatomía, Melodía, Trigonometría,
     Historia, Calculia, Circuitia, Estadística, Naipia, Codia, Dinamia y Vitalia (los runners mandan `pasos: []`).
+    → Hecho (2026-10-18): los 14 mundos explican cada pregunta en el repaso de errores, en web y app (ver 72).
 49. [ ] Cobros en la app con Google Play Billing (o RevenueCat) + verificación en el servidor y la versión de Play sin botones
     «pagar en la web» ni el permiso REQUEST_INSTALL_PACKAGES / aviso de APK (Play actualiza solo y no lo permite).
 50. [ ] Publicación en Play: AAB firmado, ficha, Data safety, clasificación de contenido, consentimiento de anuncios (UMP).
@@ -264,13 +265,13 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 
 ## Pedidos del 2026-10-18
 
-66. [ ] PRIMERO: definir de una vez la Gran Alineación (qué pasa, cómo se ve Prodigia, qué se gana). La primera es el sábado 24/10/2026 a las 18:00 de Colombia (23:00 UTC), 3 horas, y se repite cada 28 días.
-67. [ ] Fusión de cápsulas.
-68. [ ] Mejorar el apartado donde están las cápsulas.
-69. [ ] Bajar un poco el brillo del fondo cuando se abre una cápsula.
-70. [ ] Las cápsulas nunca dan menos de 100 Chispas.
-71. [ ] Etiqueta «NUEVO».
-72. [ ] Explicaciones de cada pregunta (= 48).
+66. [x] PRIMERO: definir de una vez la Gran Alineación (qué pasa, cómo se ve Prodigia, qué se gana). La primera es el sábado 24/10/2026 a las 18:00 de Colombia (23:00 UTC), 3 horas, y se repite cada 28 días.
+67. [x] Fusión de cápsulas. → 3 iguales suben de rango: bronce→plata (50 Chispas), plata→oro (150), oro→prisma (400); RPC fusionar_capsulas (0290).
+68. [x] Mejorar el apartado donde están las cápsulas. → Agrupadas por tipo con su rango y ×N, tarjeta de fusión y animación (web y app).
+69. [x] Bajar un poco el brillo del fondo cuando se abre una cápsula.
+70. [x] Las cápsulas nunca dan menos de 100 Chispas. → En contenido_capsula y al convertir un repetido (0290).
+71. [x] Etiqueta «NUEVO». → 21 días desde que sale cada cosa, hasta que la ves (src/lib/recompensas/novedades.ts); tienda y cápsulas.
+72. [x] Explicaciones de cada pregunta (= 48). → Cada mundo tiene su src/lib/<mundo>/pasos.ts (o los arma su generador); test en src/lib/practica/pasos.test.ts. Enigmia: los 40 acertijos de deducción del banco llevan su explicación escrita en src/lib/enigmia/pasos.ts (si se agregan más al banco, sumarla ahí; el test avisa).
 
 ### Decisiones del 2026-10-18 (Gran Alineación)
 - Se mantiene: Exp ×2, Chispas ×2 al jugar, constelaciones ×2, logro «Testigo», avisos del día antes y de 10 min antes, sol dorado.
@@ -279,3 +280,5 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 - La hora se queda: 18:00 de Colombia (23:00 UTC), cada 28 días.
 - **Halloween empieza justo cuando termina la Alineación** (sábado 24/10, 21:00 Colombia).
 - Animación de apertura: **video renderizado de alta gama**. Con la app abierta entra con fundido; al abrir la app durante el evento, se ve el video en vez del menú. Primero la de la Alineación, para que el usuario la apruebe; las de los demás eventos quedan planeadas en docs/eventos/ANIMACIONES_EVENTOS.md.
+- Video de la Alineación aprobado (2026-10-18) y conectado: app ui/alineacion/VideoAlineacion.tsx, web components/alineacion/VideoAlineacion.tsx (16:9 y 9:16 en public/videos). Una vez por alineación en cada dispositivo, se salta desde el primer segundo y se repite desde el cartel («Ver el video»).
+- **Antes del sábado 24/10 a las 18:00 de Colombia: correr las migraciones 0288, 0289 y 0290.**
