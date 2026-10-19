@@ -15,6 +15,7 @@
 // predicho. Los "quirks" (// de Python, coerción de JS, división entera
 // de Java) son casos curados y ejecutados, no rarezas oscuras.
 
+import { pasosCodia } from "@/lib/codia/pasos";
 import { ACCIONES_HUECO, ACCIONES_SINTAXIS, MARCA } from "@/lib/codia/catalogoSintaxis";
 import { conRngSembrado as conRngSembradoBase, elegir, mezclar, randomInt, azar } from "@/lib/codia/rng";
 import { ensamblar } from "@/lib/codia/render";
@@ -126,10 +127,15 @@ export function verificacionesCatalogoSintaxis(lang: Lenguaje): Verificacion[] {
 // ---------- API pública ----------
 export function generarProblemaCodia(modo: ModoCodia, nivel: number, lenguaje?: Lenguaje): ProblemaCodia {
   const lang = lenguaje ?? elegir(LENGUAJES);
-  if (modo === "sintaxis") return generarSintaxis(lang, bandaSintaxisNivel(nivel));
-  if (modo === "salida") return generarSalida(lang, bandaSalidaNivel(nivel));
-  if (modo === "error") return generarError(lang, bandaErrorNivel(nivel));
-  return generarEstructuras(lang, bandaEstructurasNivel(nivel));
+  const p =
+    modo === "sintaxis"
+      ? generarSintaxis(lang, bandaSintaxisNivel(nivel))
+      : modo === "salida"
+        ? generarSalida(lang, bandaSalidaNivel(nivel))
+        : modo === "error"
+          ? generarError(lang, bandaErrorNivel(nivel))
+          : generarEstructuras(lang, bandaEstructurasNivel(nivel));
+  return { ...p, pasos: pasosCodia(p) };
 }
 
 // Fragmento con número de línea a la izquierda (para las preguntas de

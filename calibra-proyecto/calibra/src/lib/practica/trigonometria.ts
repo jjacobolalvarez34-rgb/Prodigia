@@ -25,6 +25,7 @@
 // es EXACTAMENTE uno de los strings de `opciones`. "indefinido" es una palabra
 // y queda como texto plano. Las respuestas NUMÉRICAS (input) no llevan marcas.
 
+import { pasosTrigonometria } from "@/lib/trigonometria/pasos";
 import { activosEnNivel, type ModoTrigonometria } from "./trigonometriaEscala";
 import { conRngSembrado, elegirPonderado } from "./trigonometriaBase";
 import type { ProblemaTrigonometria } from "./trigonometriaTipos";
@@ -118,7 +119,8 @@ export interface ProblemaDetallado {
 // (lo usan los tests de la escala).
 export function generarProblemaTrigonometriaDetallado(modo: ModoTrigonometria, nivel: number): ProblemaDetallado {
   const activo = elegirPonderado(activosEnNivel(modo, nivel));
-  return { problema: GENERADORES_TRIGONOMETRIA[modo][activo.tipo](activo.dif), tipo: activo.tipo, dif: activo.dif };
+  const problema = GENERADORES_TRIGONOMETRIA[modo][activo.tipo](activo.dif);
+  return { problema: { ...problema, pasos: pasosTrigonometria(activo.tipo, problema) }, tipo: activo.tipo, dif: activo.dif };
 }
 
 export function generarProblemaTrigonometria(modo: ModoTrigonometria, nivel: number): ProblemaTrigonometria {

@@ -28,6 +28,7 @@ export const CODIA: MundoJugable = {
       entrada: { tipo: "opciones", opciones: p.opciones, respuesta: p.respuesta },
       visuales: p.codigo ? [{ tipo: "codigo", codigo: p.modo === "error" ? codigoConNumeros(p.codigo) : p.codigo, lenguaje: NOMBRE_LENGUAJE_CODIA[p.lenguaje] }] : undefined,
       clave: clave(p),
+      pasos: p.pasos,
     };
   },
 };

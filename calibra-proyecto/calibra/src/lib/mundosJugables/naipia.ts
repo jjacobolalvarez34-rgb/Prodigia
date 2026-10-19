@@ -45,6 +45,7 @@ export const NAIPIA: MundoJugable = {
       visuales: visuales.length > 0 ? visuales : undefined,
       memoria: p.memoria && cartas.length > 0 ? { tipo: "cartas", cartas, msPorCarta: p.memoria.msPorCarta } : undefined,
       clave: claveNaipia(p),
+      pasos: p.pasos,
     };
   },
 };

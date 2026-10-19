@@ -26,6 +26,7 @@ export const TRIGONOMETRIA: MundoJugable = {
           : { tipo: "opciones", opciones: p.opciones, respuesta: p.respuesta },
       visuales: p.triangulo ? [{ tipo: "triangulo", triangulo: p.triangulo }] : undefined,
       clave: clave(p),
+      pasos: p.pasos,
     };
   },
 };

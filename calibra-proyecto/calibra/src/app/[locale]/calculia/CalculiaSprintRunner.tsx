@@ -183,7 +183,7 @@ export default function CalculiaSprintRunner({
     let protegido = false;
     if (!correct) {
       if (problema) erroresRef.current.push(problema);
-      if (problema) anotarFalla({ enunciado: problema.enunciado, tuRespuesta: respuestaMostrada, correcta: String(problema.respuesta), pasos: [] });
+      if (problema) anotarFalla({ enunciado: problema.enunciado, tuRespuesta: respuestaMostrada, correcta: String(problema.respuesta), pasos: problema.pasos ?? [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

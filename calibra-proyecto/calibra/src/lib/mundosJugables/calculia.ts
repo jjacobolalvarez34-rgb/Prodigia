@@ -25,6 +25,7 @@ export const CALCULIA: MundoJugable = {
           ? { tipo: "numero", respuesta: p.respuesta, tolerancia: p.tolerancia, decimales: true, negativos: true }
           : { tipo: "opciones", opciones: p.opciones, respuesta: p.respuesta },
       clave: clave(p),
+      pasos: p.pasos,
     };
   },
 };

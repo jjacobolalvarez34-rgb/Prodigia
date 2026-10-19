@@ -52,6 +52,8 @@ export interface ProblemaCodia {
   opciones: string[];
   respuesta: string;
   verificacion: Verificacion;
+  // «Cómo se resuelve» (repaso de errores, 2026-10-18; src/lib/codia/pasos.ts).
+  pasos?: string[];
 }
 
 // Alias con el mismo espíritu que ProblemaCalculia (por si se lo usa genérico).

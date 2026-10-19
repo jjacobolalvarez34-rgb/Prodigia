@@ -46,6 +46,8 @@ interface ProblemaCircuitiaBase {
   topologia: NodoCircuito;
   vFuente: number;
   resaltarId?: string;
+  // «Cómo se resuelve» (repaso de errores, 2026-10-18). Lleva $…$ como el enunciado.
+  pasos?: string[];
 }
 
 export interface ProblemaCircuitiaNumero extends ProblemaCircuitiaBase {
@@ -198,6 +200,51 @@ function tolerancia(magnitud: "voltaje" | "corriente", respuesta: number): numbe
   return Math.max(0.005, Math.abs(respuesta) * 0.02);
 }
 
+// ---------- «Cómo se resuelve»: la ley de Ohm, en orden ----------
+const n2 = (x: number) => String(redondear2(x));
+// Corrientes intermedias con 4 decimales (con 2, «0,01 · 68» no daría lo que se ve).
+const n4 = (x: number) => String(Math.round(x * 10000) / 10000);
+const sumaTex = (rs: ResistorInfo[]) => rs.map((x) => x.ohmios).join(" + ");
+
+function pasosNumero(tipo: "serie" | "paralelo" | "mixto", resistores: ResistorInfo[], vFuente: number, target: ResistorInfo, magnitud: "voltaje" | "corriente"): string[] {
+  const R = idTex(target.id);
+  if (tipo === "serie") {
+    const req = resistores.reduce((a, x) => a + x.ohmios, 0);
+    const i = vFuente / req;
+    const pasos = [
+      `En serie las resistencias se suman: ${m(`R_{eq} = ${sumaTex(resistores)} = ${ohmiosTex(req)}`)}`,
+      `La corriente es la misma en todo el circuito: ${m(`I = \\frac{V}{R_{eq}} = \\frac{${vFuente}}{${req}} \\approx ${n4(i)}\\,\\text{A}`)}`,
+    ];
+    if (magnitud === "voltaje") pasos.push(`Voltaje sobre ${m(R)}: ${m(`V = I\\cdot R = ${n4(i)}\\cdot ${target.ohmios} \\approx ${n2(i * target.ohmios)}\\,\\text{V}`)}`);
+    return pasos;
+  }
+  if (tipo === "paralelo") {
+    const pasos = [`En paralelo cada rama recibe el voltaje completo de la fuente: sobre ${m(R)} hay ${m(voltiosTex(vFuente))}`];
+    if (magnitud === "corriente") pasos.push(`Corriente por ${m(R)}: ${m(`I = \\frac{V}{R} = \\frac{${vFuente}}{${target.ohmios}} \\approx ${n2(vFuente / target.ohmios)}\\,\\text{A}`)}`);
+    return pasos;
+  }
+  const paralelos = resistores.filter((x) => x.id.startsWith("Rp"));
+  const series = resistores.filter((x) => x.id.startsWith("Rs"));
+  const [a, b] = paralelos;
+  const rp = (a.ohmios * b.ohmios) / (a.ohmios + b.ohmios);
+  const req = series.reduce((acc, x) => acc + x.ohmios, 0) + rp;
+  const it = vFuente / req;
+  const pasos = [
+    `Primero el bloque en paralelo: ${m(`R_{p} = \\frac{${a.ohmios}\\cdot ${b.ohmios}}{${a.ohmios} + ${b.ohmios}} \\approx ${n2(rp)}\\,\\Omega`)}`,
+    `Súmale los de la rama en serie: ${m(`R_{eq} = ${series.map((x) => x.ohmios).join(" + ")} + ${n2(rp)} \\approx ${n2(req)}\\,\\Omega`)}`,
+    `Corriente total: ${m(`I = \\frac{${vFuente}}{${n2(req)}} \\approx ${n4(it)}\\,\\text{A}`)}`,
+  ];
+  if (target.id.startsWith("Rs")) {
+    if (magnitud === "corriente") pasos.push(`${m(R)} está en la rama en serie: le pasa toda la corriente, ${m(`${n4(it)} \\approx ${n2(it)}\\,\\text{A}`)}`);
+    else pasos.push(`${m(R)} está en serie: ${m(`V = I\\cdot R = ${n4(it)}\\cdot ${target.ohmios} \\approx ${n2(it * target.ohmios)}\\,\\text{V}`)}`);
+    return pasos;
+  }
+  const vp = it * rp;
+  pasos.push(`Voltaje sobre el bloque en paralelo (el mismo en sus dos ramas): ${m(`V_{p} = ${n4(it)}\\cdot ${n2(rp)} \\approx ${n2(vp)}\\,\\text{V}`)}`);
+  if (magnitud === "corriente") pasos.push(`Corriente por ${m(R)}: ${m(`I = \\frac{${n2(vp)}}{${target.ohmios}} \\approx ${n2(vp / target.ohmios)}\\,\\text{A}`)}`);
+  return pasos;
+}
+
 // ============================================================
 // Modos 1-3: serie / paralelo / mixto — siempre entrada numérica
 // (corriente en un punto o voltaje sobre un resistor), respuesta
@@ -232,6 +279,7 @@ function construirPreguntaNumero(tipo: "serie" | "paralelo" | "mixto", nivel: nu
     resaltarId: target.id,
     respuesta,
     tolerancia: tolerancia(magnitud, respuesta),
+    pasos: pasosNumero(tipo, resistores, vFuente, target, magnitud),
   };
 }
 
@@ -289,6 +337,19 @@ function construirPreguntaCualitativa(nivel: number): ProblemaCircuitiaOpciones 
   const magnitudTexto = magnitud === "corriente" ? "la corriente" : "el voltaje";
   const enunciado = `${describirTopologia(tipoBase, resistores)} Si ${m(idTex(idPerturbado.id))} (${m(ohmiosTex(idPerturbado.ohmios))}) ${cambio}, ¿qué le pasa a ${magnitudTexto} en ${m(idTex(idObjetivo.id))}? (fuente de ${m(voltiosTex(vFuente))})`;
 
+  // Se resuelve el circuito antes y después del cambio y se comparan los números.
+  const antes = resolverCircuito(topologia, vFuente).get(idObjetivo.id)?.[magnitud] ?? 0;
+  const despues = resolverCircuito(topologiaPerturbada, vFuente).get(idObjetivo.id)?.[magnitud] ?? 0;
+  const unidad = magnitud === "corriente" ? "\\text{A}" : "\\text{V}";
+  const regla =
+    tipoBase === "paralelo"
+      ? `En paralelo cada rama tiene el voltaje de la fuente y su corriente depende solo de su propia resistencia: cambiar ${m(idTex(idPerturbado.id))} no toca a ${m(idTex(idObjetivo.id))}`
+      : `Cambiar ${m(idTex(idPerturbado.id))} cambia la resistencia total y con ella la corriente que sale de la fuente (${m("I = V/R_{eq}")})`;
+  const pasos = [
+    regla,
+    `Antes del cambio, ${magnitudTexto} en ${m(idTex(idObjetivo.id))} es ${m(`${n2(antes)}\\,${unidad}`)}; después es ${m(`${n2(despues)}\\,${unidad}`)}`,
+    `Respuesta: ${respuesta.toLowerCase()}`,
+  ];
   return {
     modo: "cualitativo",
     entrada: "opciones",
@@ -298,6 +359,7 @@ function construirPreguntaCualitativa(nivel: number): ProblemaCircuitiaOpciones 
     resaltarId: idObjetivo.id,
     opciones,
     respuesta,
+    pasos,
   };
 }
 

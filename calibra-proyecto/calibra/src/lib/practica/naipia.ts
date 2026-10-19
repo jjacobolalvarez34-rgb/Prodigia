@@ -160,6 +160,8 @@ export interface ProblemaNaipia {
   // (la UI necesita las cartas para dibujarlas mientras están visibles) pero
   // el `enunciado` NUNCA lista la secuencia. Ausente = cartas visibles.
   memoria?: MemoriaNaipia;
+  // «Cómo se resuelve» (repaso de errores, 2026-10-18).
+  pasos?: string[];
 }
 
 export interface MemoriaNaipia {
@@ -362,6 +364,42 @@ function formatoMazos(n: number): string {
   return Number.isInteger(n) ? String(n) : String(n).replace(".", ",");
 }
 
+// ---------- «Cómo se resuelve» ----------
+
+// Con el signo menos tipográfico.
+const cs = (n: number) => conSigno(n).replace("-", "−");
+
+// Carta por carta con su valor y el conteo que se va acumulando.
+function pasosConteo(sistema: SistemaConteo, cartas: Carta[]): string[] {
+  let acumulado = 0;
+  const recorrido = cartas.map((c) => {
+    const v = valorDeCarta(sistema, c);
+    acumulado += v;
+    return `${cartaATexto(c)} ${cs(v)} → ${cs(acumulado)}`;
+  });
+  const valores = gruposDeSistema(sistema)
+    .map((g) => `${g.rangos.join(", ")} ${g.rangos.length === 1 ? "vale" : "valen"} ${cs(g.valor)}`)
+    .join("; ");
+  return [`En ${NOMBRE_MODO_NAIPIA[sistema]}: ${valores}`, `Carta por carta: ${recorrido.join(" · ")}`, `Conteo corriente final: ${cs(acumulado)}. (Truco: un +1 y un −1 se cancelan; cuenta por pares)`];
+}
+
+const EXPLICA_REGLA: Record<ReglaRedondeo, string> = {
+  cercano: "al entero más cercano",
+  truncar: "quitando los decimales (hacia cero)",
+  abajo: "hacia abajo (al entero menor)",
+};
+
+function pasosVerdadero(rc: number, medios: number, regla: ReglaRedondeo): string {
+  const mazos = medios / 2;
+  const cociente = Math.round((rc / mazos) * 100) / 100;
+  return `Conteo verdadero = ${cs(rc)} ÷ ${formatoMazos(mazos)} = ${String(cociente).replace(".", ",")}; redondeando ${EXPLICA_REGLA[regla]}: ${cs(divisionEntera(2 * rc, medios, regla))}`;
+}
+
+function pasosMazos(m: number, jugadas: number): string[] {
+  const rem = 52 * m - jugadas;
+  return [`Cartas que quedan: ${m} × 52 − ${jugadas} = ${rem}`, `En mazos: ${rem} ÷ 52 ≈ ${String(Math.round((rem / 52) * 100) / 100).replace(".", ",")}; al medio mazo más cercano: ${formatoMazos(mediosMazosRestantes(rem) / 2)}`];
+}
+
 // ---------- Modos por secuencia (Hi-Lo, KO, Hi-Opt II, Omega II) ----------
 
 function generarSecuencia(modo: SistemaConteo, nivel: number, opciones: OpcionesNaipia): ProblemaNaipia {
@@ -395,6 +433,7 @@ function generarSecuencia(modo: SistemaConteo, nivel: number, opciones: Opciones
       respuesta: total - corriente,
       tolerancia: 0,
       ...(memoria ? { memoria } : {}),
+      pasos: [...pasosConteo(modo, cartas), `Lo que queda = lo que suma el mazo entero − lo que ya salió: ${cs(total)} − (${cs(corriente)}) = ${cs(total - corriente)}`],
     };
   }
 
@@ -409,6 +448,7 @@ function generarSecuencia(modo: SistemaConteo, nivel: number, opciones: Opciones
     respuesta: corriente,
     tolerancia: 0,
     ...(memoria ? { memoria } : {}),
+    pasos: pasosConteo(modo, cartas),
   };
 }
 
@@ -480,6 +520,7 @@ function verdaderoDirecto(nivelBanda: number): ProblemaNaipia {
       entrada: "numero",
       respuesta: divisionEntera(num, medios, regla),
       tolerancia: 0,
+      pasos: [`El conteo verdadero ajusta el corriente a los mazos que quedan: más mazos, menos peso tiene cada carta`, pasosVerdadero(rc, medios, regla)],
     };
   }
 }
@@ -499,6 +540,7 @@ function estimarMazos(): ProblemaNaipia {
       entrada: "numero",
       respuesta: mediosMazosRestantes(rem) / 2,
       tolerancia: 0,
+      pasos: pasosMazos(m, jugadas),
     };
   }
 }
@@ -526,6 +568,7 @@ function verdaderoEnDosPasos(): ProblemaNaipia {
       entrada: "numero",
       respuesta: divisionEntera(num, medios, regla),
       tolerancia: 0,
+      pasos: [...pasosMazos(m, jugadas), pasosVerdadero(rc, medios, regla)],
     };
   }
 }

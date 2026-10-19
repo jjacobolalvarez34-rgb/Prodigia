@@ -26,6 +26,7 @@ export const CIRCUITIA: MundoJugable = {
           : { tipo: "opciones", opciones: p.opciones, respuesta: p.respuesta },
       visuales: [{ tipo: "circuito", topologia: p.topologia, vFuente: p.vFuente, resaltarId: p.resaltarId }],
       clave: clave(p),
+      pasos: p.pasos,
     };
   },
 };

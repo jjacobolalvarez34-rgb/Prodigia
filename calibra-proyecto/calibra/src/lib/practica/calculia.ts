@@ -41,6 +41,8 @@ export const NOMBRE_MODO_CALCULIA: Record<ModoCalculia, string> = {
 interface ProblemaCalculiaBase {
   modo: ModoCalculia;
   enunciado: string;
+  // «Cómo se resuelve» (repaso de errores, 2026-10-18). Lleva $…$ como el enunciado.
+  pasos?: string[];
 }
 
 export interface ProblemaCalculiaOpciones extends ProblemaCalculiaBase {
@@ -232,6 +234,12 @@ function derivadaPotencia(nivelEfectivo: number): ProblemaCalculiaOpciones {
     entrada: "opciones",
     enunciado: `Deriva ${m(`f(x) = ${termino(c, n)}`)} respecto de ${m("x")}.`,
     ...opcionesMath(correcta, [noDecrementaExponente, noMultiplicaPorN]),
+    pasos: [
+      `Regla de la potencia: ${m("(c\\cdot x^{n})' = c\\cdot n\\cdot x^{n-1}")}`,
+      `Baja el exponente y multiplícalo por el coeficiente: ${m(`${c}\\cdot ${n} = ${c * n}`)}`,
+      `Al exponente réstale 1: ${m(`${n} - 1 = ${n - 1}`)}`,
+      `Resultado: ${m(`f'(x) = ${correcta}`)}`,
+    ],
   };
 }
 
@@ -256,6 +264,12 @@ function derivadaProducto(nivelEfectivo: number): ProblemaCalculiaOpciones {
     entrada: "opciones",
     enunciado: `Deriva ${m(`f(x) = (${termino(a, p)})(${termino(b, q)})`)} respecto de ${m("x")} usando la regla del producto.`,
     ...opcionesMath(correcta, [multiplicaDerivadas, olvidaSegundoTermino]),
+    pasos: [
+      `Regla del producto: ${m("(u\\cdot v)' = u'\\cdot v + u\\cdot v'")}`,
+      `${m(`u = ${termino(a, p)},\\ u' = ${termino(a * p, p - 1)}`)} y ${m(`v = ${termino(b, q)},\\ v' = ${termino(b * q, q - 1)}`)}`,
+      `${m(`u'\\cdot v = ${termino(a * p * b, p + q - 1)}`)} y ${m(`u\\cdot v' = ${termino(a * b * q, p + q - 1)}`)}`,
+      `Suma los dos: ${m(`f'(x) = ${correcta}`)}`,
+    ],
   };
 }
 
@@ -281,6 +295,11 @@ function derivadaCociente(nivelEfectivo: number): ProblemaCalculiaOpciones {
     entrada: "opciones",
     enunciado: `Deriva ${m(`f(x) = \\frac{${termino(a, p)}}{${termino(b, q)}}`)} respecto de ${m("x")} usando la regla del cociente.`,
     ...opcionesMath(correcta, [signoInvertido, noDecrementaExponente]),
+    pasos: [
+      `Regla del cociente: ${m("\\left(\\frac{u}{v}\\right)' = \\frac{u'\\cdot v - u\\cdot v'}{v^{2}}")}. Aquí conviene simplificar antes (da lo mismo):`,
+      `${m(`\\frac{${termino(a, p)}}{${termino(b, q)}} = ${termino(k, p - q)}`)} (divide coeficientes y resta exponentes)`,
+      `Regla de la potencia: ${m(`(${termino(k, p - q)})' = ${correcta}`)}`,
+    ],
   };
 }
 
@@ -301,6 +320,11 @@ function derivadaCadena(nivelEfectivo: number): ProblemaCalculiaOpciones {
     entrada: "opciones",
     enunciado: `Deriva ${m(`f(x) = (${inner})^{${n}}`)} respecto de ${m("x")} usando la regla de la cadena.`,
     ...opcionesMath(correcta, [olvidaFactorInterno, noDecrementaExponente]),
+    pasos: [
+      `Regla de la cadena: deriva lo de afuera y multiplica por la derivada de lo de adentro`,
+      `Afuera (potencia): ${m(potenciaDeFactor(n, inner, n - 1))}. Adentro: ${m(`(${inner})' = ${a}`)}`,
+      `Multiplica: ${m(`${n}\\cdot ${a} = ${a * n}`)}, así que ${m(`f'(x) = ${correcta}`)}`,
+    ],
   };
 }
 
@@ -338,6 +362,12 @@ function integralPotencia(nivelEfectivo: number): ProblemaCalculiaOpciones {
     entrada: "opciones",
     enunciado: `Calcula ${m(`\\int ${integrando}\\,dx`)}.`,
     ...opcionesMath(correcta, [copiaIntegrando, noIncrementaExponente]),
+    pasos: [
+      `Regla de la potencia al integrar: ${m("\\int c\\cdot x^{n}\\,dx = \\frac{c}{n+1}x^{n+1} + C")}`,
+      `Sube el exponente: ${m(`${n} + 1 = ${n + 1}`)}`,
+      `Divide el coeficiente por el nuevo exponente: ${m(`${c} \\div ${n + 1} = ${k}`)}`,
+      `Resultado: ${m(correcta)}`,
+    ],
   };
 }
 
@@ -354,6 +384,10 @@ function integralLn(nivelEfectivo: number): ProblemaCalculiaOpciones {
     entrada: "opciones",
     enunciado: `Calcula ${m(`\\int \\frac{${k}}{x}\\,dx`)}.`,
     ...opcionesMath(correcta, [copiaIntegrando, olvidaCoeficiente]),
+    pasos: [
+      `${m("\\int \\frac{1}{x}\\,dx = \\ln|x| + C")} (porque la derivada de ${m("\\ln|x|")} es ${m("\\frac{1}{x}")})`,
+      `La constante ${m(`${k}`)} sale afuera: ${m(correcta)}`,
+    ],
   };
 }
 
@@ -374,6 +408,10 @@ function integralExponencial(nivelEfectivo: number): ProblemaCalculiaOpciones {
     // integrando ya viene sin coeficiente) — armarOpciones descarta el
     // duplicado solo, dejando 2 opciones reales en vez de 3.
     ...opcionesMath(correcta, [olvidaFactor, copiaIntegrando]),
+    pasos: [
+      `Al derivar ${m(`e^{${a}x}`)} sale un ${m(`${a}`)} de más (regla de la cadena). Al integrar hay que compensarlo dividiendo por ${m(`${a}`)}`,
+      `${m("\\int e^{ax}\\,dx = \\frac{1}{a}e^{ax} + C")}, con ${m(`a = ${a}`)}: ${m(correcta)}`,
+    ],
   };
 }
 
@@ -397,6 +435,7 @@ function integralTrig(nivelEfectivo: number): ProblemaCalculiaOpciones {
       entrada: "opciones",
       enunciado: `Calcula ${m(`\\int ${kTexto}\\cos(x)\\,dx`)}.`,
       ...opcionesMath(correcta, [errorDeSigno, copiaIntegrando]),
+      pasos: [`${m(`\\int \\cos(x)\\,dx = ${SEN}(x) + C`)}, porque ${m(`(${SEN}(x))' = \\cos(x)`)}`, `La constante sale afuera: ${m(correcta)}`],
     };
   }
   const correcta = `-${kTexto}\\cos(x) + C`;
@@ -407,6 +446,7 @@ function integralTrig(nivelEfectivo: number): ProblemaCalculiaOpciones {
     entrada: "opciones",
     enunciado: `Calcula ${m(`\\int ${kTexto}${SEN}(x)\\,dx`)}.`,
     ...opcionesMath(correcta, [errorDeSigno, copiaIntegrando]),
+    pasos: [`${m(`\\int ${SEN}(x)\\,dx = -\\cos(x) + C`)}, porque ${m(`(-\\cos(x))' = ${SEN}(x)`)} (ojo con el signo)`, `La constante sale afuera: ${m(correcta)}`],
   };
 }
 
@@ -433,6 +473,12 @@ function integralSustitucionSimple(nivelEfectivo: number): ProblemaCalculiaOpcio
     entrada: "opciones",
     enunciado: `Calcula ${m(`\\int ${integrando}\\,dx`)} usando sustitución ${m(`u = ${inner}`)}.`,
     ...opcionesMath(correcta, [olvidaFactor1SobreA, noIncrementaExponente]),
+    pasos: [
+      `${m(`u = ${inner}`)}, entonces ${m(`du = ${a}\\,dx`)}, o sea ${m(`dx = \\frac{du}{${a}}`)}`,
+      `La integral queda ${m(`\\int ${integrandoCoef}u^{${n}}\\cdot\\frac{du}{${a}} = \\int ${integrandoCoef / a}u^{${n}}\\,du`)}`,
+      `Potencia: ${m(`${integrandoCoef / a}\\cdot\\frac{u^{${n + 1}}}{${n + 1}} = ${termino(k, n + 1, "u")}`)}`,
+      `Vuelve a ${m("x")}: ${m(correcta)}`,
+    ],
   };
 }
 
@@ -487,6 +533,11 @@ function seriesSumaGeometrica(): ProblemaCalculiaNumero {
     enunciado: `Calcula la suma de la serie geométrica infinita con primer término ${m(`a = ${a}`)} y razón ${m(`r = ${formatoRazon(num, den)}`)}. Redondea a 2 decimales.`,
     respuesta: suma,
     tolerancia: 0.02,
+    pasos: [
+      `Si ${m("|r| < 1")}, la serie geométrica suma ${m("S = \\frac{a}{1 - r}")}`,
+      `${m(`1 - r = 1 - \\left(${formatoRazon(num, den)}\\right) = \\frac{${den - num}}{${den}}`)}`,
+      `${m(`S = ${a} \\div \\frac{${den - num}}{${den}} = \\frac{${a * den}}{${den - num}} \\approx ${suma}`)}`,
+    ],
   };
 }
 
@@ -507,6 +558,10 @@ function seriesClasificarGeometrica(): ProblemaCalculiaOpciones {
     enunciado: `¿La serie geométrica con razón ${m(`r = ${formatoRazon(signo * num, den)}`)} converge o diverge?`,
     opciones: mezclar(["Converge", "Diverge"]),
     respuesta,
+    pasos: [
+      `Una serie geométrica converge solo si ${m("|r| < 1")}`,
+      `${m(`|r| = \\frac{${num}}{${den}} = ${redondear2(Math.abs(r))}`)}: ${converge ? "es menor que 1, converge" : "no es menor que 1, diverge"}`,
+    ],
   };
 }
 
@@ -521,6 +576,7 @@ function seriesClasificarP(): ProblemaCalculiaOpciones {
     enunciado: `¿La serie p, ${m(`\\sum_{n=1}^{\\infty} \\frac{1}{n^{${p}}}`)}, converge o diverge?`,
     opciones: mezclar(["Converge", "Diverge"]),
     respuesta,
+    pasos: [`La serie ${m("\\sum \\frac{1}{n^{p}}")} converge solo si ${m("p > 1")}`, `Aquí ${m(`p = ${p}`)}: ${converge ? "es mayor que 1, converge" : p === 1 ? "es la serie armónica (p = 1), diverge" : "es menor que 1, diverge"}`],
   };
 }
 
@@ -537,6 +593,10 @@ function seriesCriterioDeLaRazon(): ProblemaCalculiaNumero {
     enunciado: `Para la sucesión ${m(`a_{n} = ${c}\\cdot\\left(${formatoRazon(num, den)}\\right)^{n}`)}, calcula el límite del criterio de la razón: ${m("\\lim_{n\\to\\infty} \\left|\\frac{a_{n+1}}{a_{n}}\\right|")}. Redondea a 2 decimales.`,
     respuesta: redondear2(Math.abs(r)),
     tolerancia: 0.01,
+    pasos: [
+      `${m(`\\frac{a_{n+1}}{a_{n}} = \\frac{${c}\\cdot r^{n+1}}{${c}\\cdot r^{n}} = r`)}: el ${m(`${c}`)} y las potencias se cancelan`,
+      `El límite es ${m(`|r| = \\left|${formatoRazon(num, den)}\\right| = ${redondear2(Math.abs(r))}`)}`,
+    ],
   };
 }
 
@@ -642,6 +702,11 @@ function multivariableParcial(nivelEfectivo: number): ProblemaCalculiaOpciones {
     entrada: "opciones",
     enunciado: `Calcula ${m(`\\frac{\\partial f}{\\partial ${variable}}`)} para ${m(`f(x, y) = ${original}`)} (trata ${m(otraVariable)} como constante).`,
     ...opcionesMath(correcta, [derivaAmbasVariables, olvidaOtraVariable]),
+    pasos: [
+      `${m(otraVariable)} es una constante: deriva cada término solo en ${m(variable)}, con la regla de la potencia`,
+      ...terminos.map((t, i) => `${m(termino2(t.coef, t.expX, t.expY))} → ${m(termino2(derivados[i].coef, derivados[i].expX, derivados[i].expY))}${(respectoDeX ? t.expX : t.expY) === 0 ? ` (no tiene ${variable}: es constante)` : ""}`),
+      `Resultado: ${m(`\\frac{\\partial f}{\\partial ${variable}} = ${correcta}`)}`,
+    ],
   };
 }
 
@@ -666,6 +731,11 @@ function multivariableEdoSeparable(nivelEfectivo: number): ProblemaCalculiaOpcio
     entrada: "opciones",
     enunciado: `Resuelve la EDO separable ${m(`\\frac{dy}{dx} = ${k}\\cdot x^{${n}}\\cdot y`)} (deja la solución en términos de la constante ${m("A")}). ¿Cuál es la solución general?`,
     ...opcionesMath(correcta, [olvidaDividirPorNMas1, noIncrementaExponente]),
+    pasos: [
+      `Separa variables: ${m(`\\frac{dy}{y} = ${k}x^{${n}}\\,dx`)}`,
+      `Integra los dos lados: ${m(`\\ln|y| = \\frac{${k}}{${n + 1}}x^{${n + 1}} + C = ${coefM === "-" ? "-" : coefM}x^{${n + 1}} + C`)}`,
+      `Despeja ${m("y")}: ${m(correcta)} (con ${m("A = e^{C}")})`,
+    ],
   };
 }
 

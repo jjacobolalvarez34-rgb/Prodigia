@@ -185,7 +185,7 @@ export default function CodiaSprintRunner({
     let protegido = false;
     if (!correct) {
       if (problema) erroresRef.current.push(problema);
-      if (problema) anotarFalla({ enunciado: problema.enunciado, tuRespuesta: respuestaMostrada, correcta: problema.respuesta.split("\n").join(" ↵ "), pasos: [] });
+      if (problema) anotarFalla({ enunciado: problema.enunciado, tuRespuesta: respuestaMostrada, correcta: problema.respuesta.split("\n").join(" ↵ "), pasos: problema.pasos ?? [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

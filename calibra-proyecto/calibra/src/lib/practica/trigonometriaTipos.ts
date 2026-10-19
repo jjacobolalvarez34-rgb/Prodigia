@@ -30,6 +30,8 @@ export interface TrianguloDiagrama {
 interface ProblemaBase {
   enunciado: string;
   triangulo?: TrianguloDiagrama;
+  // «Cómo se resuelve» (repaso de errores, 2026-10-18; src/lib/trigonometria/pasos.ts).
+  pasos?: string[];
 }
 
 export interface ProblemaTrigonometriaNumero extends ProblemaBase {
