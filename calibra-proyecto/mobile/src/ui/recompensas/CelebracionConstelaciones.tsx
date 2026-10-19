@@ -334,8 +334,10 @@ export default function CelebracionConstelaciones() {
       setI(i + 1);
       return;
     }
+    // Se recuerda como vista al instante (así no se repite aunque la base tarde) y se cierra.
+    const marcado = marcarConstelacionesVistas(supabase, lista);
     setLista([]);
-    await marcarConstelacionesVistas(supabase);
+    await marcado;
     recargarJugador();
     const { data } = await supabase.auth.getSession();
     if (data.session) recargarCosmeticos(data.session.user.id);

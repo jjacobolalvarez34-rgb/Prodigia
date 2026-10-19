@@ -6,7 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { COLOR_RAREZA, NOMBRE_RAREZA } from "@/lib/recompensas/catalogo";
 import { PARTICULAS } from "@/lib/temas/dibujos";
 import { CHISPAS_POR_FICHA, EXP_POR_FICHA, FICHAS_MAX_DIA } from "@/lib/temas/colecciones";
-import { canjearPieza, cerrarFichas, estadoEvento, eventoDeTema, faltaHasta, mensajeErrorEvento, type EstadoEvento } from "@/lib/temas/eventos";
+import { canjearPieza, cerrarFichas, estadoEvento, eventoDeTema, faltaHasta, faltaPara, mensajeErrorEvento, type EstadoEvento } from "@/lib/temas/eventos";
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, fijarCometas, useJugador } from "~/lib/jugador";
 import { recargarCosmeticos } from "~/lib/recompensas";
@@ -105,7 +105,7 @@ export default function Evento() {
           <View style={styles.reloj}>
             <Texto v="mono" tam={12}>
               {evento.estado === "proximo"
-                ? `Empieza en ${faltaHasta(new Date(Date.parse(`${evento.desde}T00:00:00Z`) - 1).toISOString().slice(0, 10))}`
+                ? `Empieza en ${faltaPara(evento.inicioMs)}`
                 : evento.estado === "abierto"
                   ? `Termina en ${faltaHasta(evento.hasta)}`
                   : "Terminó: cambia tus fichas"}

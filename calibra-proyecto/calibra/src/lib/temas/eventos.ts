@@ -2,6 +2,7 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SupabaseClient = { rpc: (fn: string, args?: Record<string, unknown>) => any };
 import { COLECCIONES, slugEvento, type Coleccion } from "./colecciones";
+import { inicioEventoMs } from "./calendario";
 import type { TemaActivo } from "./temas";
 
 // Evento de la festividad (0289): Fichas, colección y cierre. Web y app.
@@ -20,6 +21,8 @@ export interface EventoHoy {
   coleccion: Coleccion;
   desde: string;
   hasta: string;
+  // Momento exacto en que abre (después de una Gran Alineación, si la hay ese día).
+  inicioMs: number;
   // «proximo» en la decoración (todavía no se canjea), «abierto» durante el evento y
   // el día de cierre, «cierre» el día después (cambiar las Fichas que sobran).
   estado: "proximo" | "abierto" | "cierre";
@@ -34,6 +37,7 @@ export function eventoDeTema(t: TemaActivo | null): EventoHoy | null {
     coleccion,
     desde: t.hoy.rango.desde,
     hasta: t.hoy.rango.hasta,
+    inicioMs: inicioEventoMs(t.hoy.rango),
     estado: t.fase === "decoracion" ? "proximo" : t.fase === "evento" ? "abierto" : "cierre",
   };
 }
@@ -69,8 +73,12 @@ export function mensajeErrorEvento(e: unknown): string {
 
 // Tiempo que falta hasta el final de un día (UTC): «3 d 4 h» o «5 h 12 min».
 export function faltaHasta(isoDia: string, ahora = Date.now()): string {
-  const fin = Date.parse(`${isoDia}T23:59:59Z`);
-  const ms = Math.max(0, fin - ahora);
+  return faltaPara(Date.parse(`${isoDia}T23:59:59Z`), ahora);
+}
+
+// Tiempo que falta hasta un momento exacto, con el mismo formato.
+export function faltaPara(momentoMs: number, ahora = Date.now()): string {
+  const ms = Math.max(0, momentoMs - ahora);
   const dias = Math.floor(ms / 86_400_000);
   const horas = Math.floor((ms % 86_400_000) / 3_600_000);
   const min = Math.floor((ms % 3_600_000) / 60_000);

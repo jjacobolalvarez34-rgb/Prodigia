@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -35,6 +34,7 @@ import { misConstelaciones, type Constelacion as DatosConstelacion } from "@/lib
 import ContadorAlineacion from "@/components/recompensas/ContadorAlineacion";
 import Constelacion from "@/components/recompensas/Constelacion";
 import AbrirCapsula, { DibujoCapsula } from "@/components/recompensas/AbrirCapsula";
+import CapsulasPorAbrir from "@/components/recompensas/CapsulasPorAbrir";
 import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
 
 export default function RecompensasClient({ invitado, plan }: { invitado: boolean; plan: string }) {
@@ -133,6 +133,9 @@ export default function RecompensasClient({ invitado, plan }: { invitado: boolea
     if (c.tipo === "coleccion") return t("detalle.coleccion", { ciudad });
     if (c.tipo === "misiones") return t("detalle.misiones");
     if (c.tipo === "pro") return t("detalle.pro");
+    if (c.tipo === "plata" || c.tipo === "oro" || c.tipo === "prisma") return t("detalle.fusion");
+    if (c.tipo === "alineacion") return t("detalle.alineacion", { n: (c.detalle as { numero?: number } | null)?.numero ?? 1 });
+    if (c.tipo === "estelar" || c.tipo === "supernova") return t("detalle.comprada");
     return t("detalle.diaria");
   }
 
@@ -202,34 +205,15 @@ export default function RecompensasClient({ invitado, plan }: { invitado: boolea
         </section>
       )}
 
-      <section className="flex flex-col gap-3" hidden={(capsulas ?? []).length === 0}>
-        <h2 className="font-display text-lg font-bold text-foreground">{t("capsulas.titulo")}</h2>
-        {(capsulas ?? []).length === 0 ? null : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {(capsulas ?? []).map((c, i) => (
-              <motion.div key={c.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="flex flex-col items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setAbriendo(c)}
-                  className="flex w-full flex-col items-center gap-1 rounded-2xl border-2 bg-surface px-2 py-3 transition-transform hover:-translate-y-1"
-                  style={{ borderColor: `${coloresCapsula(c.tipo, c.mundo)[0]}aa` }}
-                >
-                  <DibujoCapsula colores={coloresCapsula(c.tipo, c.mundo)} tam={54} />
-                  <span className="text-center text-xs font-bold text-foreground">{t(`capsulas.nombres.${c.tipo}`)}</span>
-                  <span className="text-center text-[11px] text-texto-secundario">{detalle(c)}</span>
-                </button>
-                <button
-                  type="button"
-                  className="text-xs font-semibold text-primario hover:underline"
-                  onClick={async () => setVerContenido({ capsula: c, filas: await contenidoCapsula(createClient(), c.tipo) })}
-                >
-                  {t("capsulas.queSale")}
-                </button>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </section>
+      {(capsulas ?? []).length > 0 && (
+        <CapsulasPorAbrir
+          capsulas={capsulas ?? []}
+          detalle={detalle}
+          onAbrir={setAbriendo}
+          onVer={async (c) => setVerContenido({ capsula: c, filas: await contenidoCapsula(createClient(), c.tipo) })}
+          onCambio={() => void cargar()}
+        />
+      )}
 
       <section className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4">
         <h2 className="font-display text-lg font-bold text-foreground">{t("calendario.titulo")}</h2>

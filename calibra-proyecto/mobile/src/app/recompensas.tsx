@@ -52,6 +52,7 @@ import Hoja from "~/ui/Hoja";
 import { IconoCheck, IconoChispa, IconoCopo, IconoEscudo, IconoReloj } from "~/ui/Iconos";
 import { PantallaApilada, TituloSeccion, Vacio } from "~/ui/Pantalla";
 import AbrirCapsula from "~/ui/recompensas/AbrirCapsula";
+import CapsulasPorAbrir from "~/ui/recompensas/CapsulasPorAbrir";
 import Capsula from "~/ui/recompensas/Capsula";
 import CelebracionPremio from "~/ui/recompensas/CelebracionPremio";
 import ContadorAlineacion from "~/ui/ContadorAlineacion";
@@ -83,6 +84,9 @@ function detalleCapsula(c: DatosCapsula): string {
   if (c.tipo === "coleccion") return `Colección de ${ciudad}`;
   if (c.tipo === "misiones") return "Las 3 misiones de hoy";
   if (c.tipo === "pro") return "Cápsula semanal de Pro";
+  if (c.tipo === "plata" || c.tipo === "oro" || c.tipo === "prisma") return "De una fusión";
+  if (c.tipo === "alineacion") return `Gran Alineación #${(c.detalle as { numero?: number } | null)?.numero ?? 1}`;
+  if (c.tipo === "estelar" || c.tipo === "supernova") return "Comprada con Cometas";
   return "Por jugar hoy";
 }
 
@@ -228,34 +232,8 @@ export default function Recompensas() {
           </>
         )}
 
-        {(capsulas ?? []).length > 0 && <TituloSeccion>Cápsulas por abrir</TituloSeccion>}
-        {(capsulas ?? []).length === 0 ? null : (
-          <View style={styles.grilla}>
-            {(capsulas ?? []).map((c, i) => (
-              <Animated.View key={c.id} entering={FadeInDown.delay(i * 50).duration(260)} style={styles.celda}>
-                <Pressable
-                  onPress={() => {
-                    vibrar.medio();
-                    setAbriendo(c);
-                  }}
-                  style={({ pressed }) => [styles.capsula, { borderColor: conAlfa(coloresCapsula(c.tipo, c.mundo)[0], 0.7) }, pressed && { transform: [{ scale: 0.95 }] }]}
-                >
-                  <CapsulaQuieta tipo={c.tipo} mundo={c.mundo} />
-                  <Texto v="fuerte" tam={11.5} centro numberOfLines={2}>
-                    {CAPSULAS[c.tipo]?.nombre ?? "Cápsula"}
-                  </Texto>
-                  <Texto v="nota" tam={10.5} centro numberOfLines={1}>
-                    {detalleCapsula(c)}
-                  </Texto>
-                </Pressable>
-                <Pressable onPress={() => ver(c)} hitSlop={8}>
-                  <Texto v="nota" tam={11} c={color.primarioClaro} centro>
-                    ¿Qué puede salir?
-                  </Texto>
-                </Pressable>
-              </Animated.View>
-            ))}
-          </View>
+        {(capsulas ?? []).length > 0 && (
+          <CapsulasPorAbrir capsulas={capsulas ?? []} detalle={detalleCapsula} onAbrir={setAbriendo} onVer={ver} onCambio={() => void cargar()} />
         )}
 
         <TituloSeccion>Calendario de 7 días</TituloSeccion>

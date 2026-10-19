@@ -4795,7 +4795,32 @@
         "coleccion": "Cápsula de colección",
         "pro": "Cápsula Pro",
         "estelar": "Cápsula estelar",
-        "supernova": "Cápsula supernova"
+        "supernova": "Cápsula supernova",
+        "plata": "Cápsula de plata",
+        "oro": "Cápsula de oro",
+        "prisma": "Cápsula prisma",
+        "alineacion": "Cápsula de la Alineación"
+      },
+      "porAbrir": "{n} por abrir",
+      "rango": {
+        "bronce": "Bronce",
+        "plata": "Plata",
+        "oro": "Oro",
+        "prisma": "Prisma",
+        "especial": "Especial"
+      },
+      "fusion": {
+        "titulo": "Fusionar cápsulas",
+        "texto": "3 de {nivel} → {destino}",
+        "tienes": "Tienes {n}",
+        "boton": "Fusionar · {n}",
+        "confirmar": "Confirmar · {n} Chispas",
+        "cancelar": "Cancelar",
+        "como": "Junta 3 cápsulas del mismo nivel y paga unas Chispas para convertirlas en una del nivel siguiente: Bronce → Plata (50), Plata → Oro (150), Oro → Prisma (400). Las especiales (ciudad, colección, Pro, de Cometas y de la Alineación) no se fusionan.",
+        "lista": "¡Nueva {destino}!",
+        "abrirAhora": "Abrir ahora",
+        "guardar": "Guardar",
+        "comoFunciona": "¿Cómo funciona?"
       }
     },
     "calendario": {
@@ -4957,7 +4982,10 @@
       "coleccion": "Colección de {ciudad}",
       "misiones": "Las 3 misiones de hoy",
       "diaria": "Por jugar hoy",
-      "pro": "Cápsula semanal de Pro"
+      "pro": "Cápsula semanal de Pro",
+      "fusion": "De una fusión",
+      "alineacion": "Gran Alineación #{n}",
+      "comprada": "Comprada con Cometas"
     },
     "premios": {
       "chispas": "{min}–{max} Chispas",

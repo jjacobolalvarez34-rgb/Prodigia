@@ -14,7 +14,7 @@ import { COLOR_RAREZA } from "@/lib/recompensas/catalogo";
 import { refrescarCosmeticosWeb } from "@/lib/recompensas/cosmeticosWeb";
 import { PARTICULAS } from "@/lib/temas/dibujos";
 import { CHISPAS_POR_FICHA, EXP_POR_FICHA, FICHAS_MAX_DIA } from "@/lib/temas/colecciones";
-import { canjearPieza, cerrarFichas, estadoEvento, eventoDeTema, faltaHasta, mensajeErrorEvento, type EstadoEvento } from "@/lib/temas/eventos";
+import { canjearPieza, cerrarFichas, estadoEvento, eventoDeTema, faltaHasta, faltaPara, mensajeErrorEvento, type EstadoEvento } from "@/lib/temas/eventos";
 
 // Página del evento de la festividad (docs/eventos/PLAN_FESTIVIDADES.md capas 7 y 8):
 // cuántas Fichas llevas y cómo se ganan, la colección para elegir qué llevarte (con
@@ -106,7 +106,7 @@ export default function EventoClient({ invitado }: { invitado: boolean }) {
           {ahora != null && (
             <span className="w-fit rounded-full bg-white/10 px-3 py-1 font-mono text-xs font-bold tabular-nums">
               {evento.estado === "proximo"
-                ? t("empiezaEn", { tiempo: faltaHasta(new Date(Date.parse(`${evento.desde}T00:00:00Z`) - 1).toISOString().slice(0, 10), ahora) })
+                ? t("empiezaEn", { tiempo: faltaPara(evento.inicioMs, ahora) })
                 : evento.estado === "abierto"
                   ? t("terminaEn", { tiempo: faltaHasta(evento.hasta, ahora) })
                   : t("terminado")}

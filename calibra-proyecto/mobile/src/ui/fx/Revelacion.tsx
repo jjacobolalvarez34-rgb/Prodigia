@@ -212,8 +212,8 @@ export default function Revelacion({
       setFase("espera");
       valores.flota.set(withTiming(1, { duration: 500 }));
       valores.latido.set(withRepeat(withSequence(withTiming(1, { duration: 700, easing: Easing.inOut(Easing.quad) }), withTiming(0, { duration: 700, easing: Easing.inOut(Easing.quad) })), -1));
-      valores.opRayos.set(withTiming(0.28, { duration: 600 }));
-      valores.opHalo.set(withTiming(0.45, { duration: 600 }));
+      valores.opRayos.set(withTiming(0.2, { duration: 600 }));
+      valores.opHalo.set(withTiming(0.32, { duration: 600 }));
     });
     return () => {
       vivo = false;
@@ -228,7 +228,7 @@ export default function Revelacion({
     const dur = 250 + pasos * PASO_MS;
     valores.amplitud.set(withTiming(3 + p.nivel * 2.6, { duration: dur, easing: Easing.in(Easing.quad) }));
     valores.ranura.set(withTiming(1, { duration: dur, easing: Easing.in(Easing.cubic) }));
-    valores.opRayos.set(withTiming(0.5 + p.nivel * 0.08, { duration: dur }));
+    valores.opRayos.set(withTiming(0.32 + p.nivel * 0.06, { duration: dur }));
     valores.tFuga.set(0);
     valores.tFuga.set(withTiming(dur / 1000 + 1.2, { duration: dur + 1200, easing: Easing.linear }));
     for (let k = 1; k <= pasos; k++) {
@@ -257,7 +257,7 @@ export default function Revelacion({
     valores.latido.set(0);
     valores.amplitud.set(withTiming(0, { duration: 120 }));
     valores.flota.set(withTiming(0, { duration: 200 }));
-    valores.destello.set(withSequence(withTiming(p.nivel >= 3 ? 0.95 : 0.75, { duration: 70 }), withTiming(0, { duration: 420 }), ...(p.nivel >= 4 ? [withTiming(0.6, { duration: 80 }), withTiming(0, { duration: 500 })] : [])));
+    valores.destello.set(withSequence(withTiming(p.nivel >= 3 ? 0.62 : 0.45, { duration: 70 }), withTiming(0, { duration: 420 }), ...(p.nivel >= 4 ? [withTiming(0.4, { duration: 80 }), withTiming(0, { duration: 500 })] : [])));
     valores.abierta.set(withTiming(1, { duration: 520, easing: Easing.out(Easing.cubic) }));
     valores.ondaEstallido.set(0);
     valores.ondaEstallido.set(withTiming(1, { duration: 750, easing: Easing.linear }));
@@ -267,9 +267,10 @@ export default function Revelacion({
       valores.tLluvia.set(0);
       valores.tLluvia.set(withDelay(150, withTiming(5, { duration: 5000, easing: Easing.linear })));
     }
-    valores.opRayos.set(withSequence(withTiming(1, { duration: 200 }), withDelay(900, withTiming(0.72, { duration: 800 }))));
+    // Fondo más tenue (2026-10-18, «bájale un poco al brillo de fondo»): el premio manda.
+    valores.opRayos.set(withSequence(withTiming(0.7, { duration: 200 }), withDelay(900, withTiming(0.4, { duration: 800 }))));
     valores.escalaRayos.set(withSequence(withTiming(1.25, { duration: 260 }), withSpring(1, { damping: 8 })));
-    valores.opHalo.set(withSequence(withTiming(1, { duration: 120 }), withTiming(0.55, { duration: 900 })));
+    valores.opHalo.set(withSequence(withTiming(0.75, { duration: 120 }), withTiming(0.32, { duration: 900 })));
     valores.escalaHalo.set(withSequence(withTiming(2.1, { duration: 200 }), withSpring(1.3, { damping: 10 })));
     // El premio se monta después del pico del destello, cuando el teléfono ya está libre.
     despues(240, () => {

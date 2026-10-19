@@ -136,7 +136,8 @@ export function crearLienzoFx(canvas: HTMLCanvasElement): LienzoFx {
     if (haloAlfa > 0.01 && haloColor) {
       const r = haloR * (1 + haloGolpe * 0.45);
       ctx.globalCompositeOperation = "lighter";
-      ctx.globalAlpha = haloAlfa * (0.55 + haloGolpe * 0.45);
+      // Fondo más tenue (2026-10-18): el premio es lo que tiene que brillar.
+      ctx.globalAlpha = haloAlfa * (0.38 + haloGolpe * 0.35);
       ctx.drawImage(sprite(haloColor), haloX - r, haloY - r, r * 2, r * 2);
       ctx.globalCompositeOperation = "source-over";
     }
@@ -157,7 +158,7 @@ export function crearLienzoFx(canvas: HTMLCanvasElement): LienzoFx {
       ctx.translate(rayosX, rayosY);
       ctx.rotate(angulo);
       ctx.globalCompositeOperation = "lighter";
-      ctx.globalAlpha = rayosAlfa * 0.9;
+      ctx.globalAlpha = rayosAlfa * 0.58;
       ctx.fillStyle = rayosGrad;
       ctx.beginPath();
       for (let i = 0; i < 12; i++) {

@@ -4795,7 +4795,32 @@
         "coleccion": "Collection capsule",
         "pro": "Pro capsule",
         "estelar": "Star capsule",
-        "supernova": "Supernova capsule"
+        "supernova": "Supernova capsule",
+        "plata": "Silver capsule",
+        "oro": "Gold capsule",
+        "prisma": "Prism capsule",
+        "alineacion": "Alignment capsule"
+      },
+      "porAbrir": "{n} to open",
+      "rango": {
+        "bronce": "Bronze",
+        "plata": "Silver",
+        "oro": "Gold",
+        "prisma": "Prism",
+        "especial": "Special"
+      },
+      "fusion": {
+        "titulo": "Fuse capsules",
+        "texto": "3 {nivel} → {destino}",
+        "tienes": "You have {n}",
+        "boton": "Fuse · {n}",
+        "confirmar": "Confirm · {n} Sparks",
+        "cancelar": "Cancel",
+        "como": "Combine 3 capsules of the same tier and pay some Sparks to turn them into one of the next tier: Bronze → Silver (50), Silver → Gold (150), Gold → Prism (400). Special ones (city, collection, Pro, Comet and Alignment) can't be fused.",
+        "lista": "New {destino}!",
+        "abrirAhora": "Open now",
+        "guardar": "Keep it",
+        "comoFunciona": "How does it work?"
       }
     },
     "calendario": {
@@ -4957,7 +4982,10 @@
       "coleccion": "{ciudad} collection",
       "misiones": "Today's 3 missions",
       "diaria": "For playing today",
-      "pro": "Weekly Pro capsule"
+      "pro": "Weekly Pro capsule",
+      "fusion": "From a fusion",
+      "alineacion": "Great Alignment #{n}",
+      "comprada": "Bought with Comets"
     },
     "premios": {
       "chispas": "{min}–{max} Sparks",

@@ -5,6 +5,8 @@
 // dos eventos se pisan (Año Nuevo Lunar y Carnaval en 2027), se ve el que termina antes
 // en sus días y el otro antes y después; entre decoraciones, la del evento más próximo.
 
+import { DURACION_EVENTO_MS, proximaAlineacion } from "@/lib/ciudades/cicloDia";
+
 export type IdTema =
   | "halloween"
   | "muertos"
@@ -24,6 +26,17 @@ export type IdTema =
   | "vuelta_clases";
 
 export type FaseTema = "decoracion" | "evento" | "cierre";
+
+// Momento exacto en que abre un evento: el comienzo de su primer día (UTC), salvo que una
+// Gran Alineación lo cruce. Ningún evento abre durante la Alineación: abre cuando termina
+// (pedido 2026-10-18: Halloween 2026 empieza el sábado 24 a las 21:00 de Colombia).
+const VENTANA_ALINEACION_MS = 30 * 3_600_000;
+export function inicioEventoMs(r: Pick<RangoTema, "desde">): number {
+  const dia = Date.parse(`${r.desde}T00:00:00Z`);
+  const alineacion = proximaAlineacion(dia - DURACION_EVENTO_MS);
+  if (alineacion < dia + VENTANA_ALINEACION_MS) return Math.max(dia, alineacion + DURACION_EVENTO_MS);
+  return dia;
+}
 
 export interface RangoTema {
   id: IdTema;

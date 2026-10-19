@@ -115,12 +115,18 @@ export async function misConstelaciones(sb: SupabaseClient): Promise<Constelacio
   return error ? [] : filas<Constelacion>(data);
 }
 
+// Las que ya se celebraron en esta sesión (2026-10-18, «la constelación aparece dos
+// veces»): al cerrar la celebración se volvía a preguntar antes de que la base guardara
+// «vista», y la misma salía otra vez. Así nunca se repite, aunque la base tarde.
+const yaCelebradas = new Set<string>();
+
 export async function constelacionesPorVer(sb: SupabaseClient): Promise<ConstelacionCompletada[]> {
   const { data, error } = await sb.rpc("constelaciones_por_ver");
-  return error ? [] : filas<ConstelacionCompletada>(data);
+  return error ? [] : filas<ConstelacionCompletada>(data).filter((c) => !yaCelebradas.has(c.id));
 }
 
-export async function marcarConstelacionesVistas(sb: SupabaseClient): Promise<void> {
+export async function marcarConstelacionesVistas(sb: SupabaseClient, celebradas: ConstelacionCompletada[] = []): Promise<void> {
+  celebradas.forEach((c) => yaCelebradas.add(c.id));
   await sb.rpc("marcar_constelaciones_vistas");
 }
 

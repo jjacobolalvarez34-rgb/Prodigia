@@ -2,7 +2,8 @@ import { useRouter, type Href } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { eventoDeTema, faltaHasta } from "@/lib/temas/eventos";
+import { eventoDeTema, faltaHasta, faltaPara } from "@/lib/temas/eventos";
+import { inicioEventoMs } from "@/lib/temas/calendario";
 import { useTemaHoy } from "~/lib/temporada";
 import { fuente } from "~/tema";
 import Texto from "../Texto";
@@ -24,7 +25,7 @@ export default function CartelTemporada() {
   const decoracion = tema.fase === "decoracion";
   const frase = (decoracion ? tema.tema.frase.decoracion : "") || tema.tema.frase.evento;
   const reloj = decoracion
-    ? `Empieza en ${faltaHasta(new Date(Date.parse(`${tema.hoy.rango.desde}T00:00:00Z`) - 1).toISOString().slice(0, 10), ahora)}`
+    ? `Empieza en ${faltaPara(inicioEventoMs(tema.hoy.rango), ahora)}`
     : `Termina en ${faltaHasta(tema.hoy.rango.hasta, ahora)}`;
   return (
     <Pressable disabled={!evento} onPress={() => router.push("/evento" as Href)} style={({ pressed }) => [styles.caja, pressed && { transform: [{ scale: 0.98 }] }]}>

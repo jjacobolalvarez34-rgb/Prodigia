@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { pascua, rangosDelAnio, temaDeFecha } from "./calendario";
+import { inicioEventoMs, pascua, rangosDelAnio, temaDeFecha } from "./calendario";
+import { temaActivo } from "./temas";
 
 describe("calendario de festividades", () => {
   it("calcula la Pascua de cada año", () => {
@@ -45,5 +46,14 @@ describe("calendario de festividades", () => {
     const ids = rangosDelAnio(2027).map((r) => r.id);
     expect(ids).toContain("navidad");
     expect(ids).toContain("diwali");
+  });
+
+  it("ningún evento abre durante la Gran Alineación: Halloween 2026 abre al terminar (25/10 02:00 UTC)", () => {
+    expect(inicioEventoMs({ desde: "2026-10-24" })).toBe(Date.UTC(2026, 9, 25, 2));
+    // Un evento sin Alineación cerca abre a las 00:00 UTC de su primer día.
+    expect(inicioEventoMs({ desde: "2026-12-01" })).toBe(Date.UTC(2026, 11, 1));
+    // Antes de abrir sigue en decoración; después, en evento.
+    expect(temaActivo(Date.UTC(2026, 9, 24, 23, 30))?.fase).toBe("decoracion");
+    expect(temaActivo(Date.UTC(2026, 9, 25, 2, 1))?.fase).toBe("evento");
   });
 });

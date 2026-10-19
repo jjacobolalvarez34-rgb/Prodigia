@@ -365,7 +365,7 @@ export const COLOR_RAREZA: Record<Rareza, string> = { comun: "#8892B0", raro: "#
 export const NOMBRE_RAREZA: Record<Rareza, string> = { comun: "Común", raro: "Raro", epico: "Épico", legendario: "Legendario" };
 
 // ---------- Cápsulas ----------
-export type TipoCapsula = "diaria" | "misiones" | "racha" | "nivel" | "ciudad" | "liga" | "liga_bronce" | "liga_plata" | "liga_oro" | "coleccion" | "pro" | "estelar" | "supernova";
+export type TipoCapsula = "diaria" | "misiones" | "racha" | "nivel" | "ciudad" | "liga" | "liga_bronce" | "liga_plata" | "liga_oro" | "coleccion" | "pro" | "estelar" | "supernova" | "plata" | "oro" | "prisma" | "alineacion";
 
 export const CAPSULAS: Record<TipoCapsula, { nombre: string; colores: [string, string] }> = {
   diaria: { nombre: "Cápsula diaria", colores: ["#7C5CFF", "#FFC53D"] },
@@ -383,6 +383,12 @@ export const CAPSULAS: Record<TipoCapsula, { nombre: string; colores: [string, s
   // Con Cometas (0287): se compran y se abren al momento.
   estelar: { nombre: "Cápsula estelar", colores: ["#5DE4FF", "#B07CFF"] },
   supernova: { nombre: "Cápsula supernova", colores: ["#FFB627", "#FF5D8F"] },
+  // De la fusión (0290): 3 del mismo nivel + Chispas → 1 del nivel siguiente.
+  plata: { nombre: "Cápsula de plata", colores: ["#AEB9CF", "#F4F7FF"] },
+  oro: { nombre: "Cápsula de oro", colores: ["#D99A2B", "#FFE9A8"] },
+  prisma: { nombre: "Cápsula prisma", colores: ["#8E6CFF", "#6FF0FF"] },
+  // Por jugar 3 partidas durante la Gran Alineación (0290).
+  alineacion: { nombre: "Cápsula de la Alineación", colores: ["#E8A317", "#FFF1C4"] },
 };
 
 // Cápsulas que se compran con Cometas (precio real en comprar_capsula_con_cometas, 0287).

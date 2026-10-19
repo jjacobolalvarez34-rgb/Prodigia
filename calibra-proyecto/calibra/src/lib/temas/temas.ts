@@ -1,4 +1,4 @@
-import { hoyUtc, rangosDelAnio, temaDeFecha, type FaseTema, type IdTema, type TemaHoy } from "./calendario";
+import { hoyUtc, inicioEventoMs, rangosDelAnio, temaDeFecha, type FaseTema, type IdTema, type TemaHoy } from "./calendario";
 import type { AdornoCapsula, TipoAccesorio, TipoParticula, TipoPasante } from "./dibujos";
 
 // Ficha de cada festividad (docs/eventos/PLAN_FESTIVIDADES.md §3): qué capas usa y con
@@ -279,6 +279,11 @@ export function temaActivo(ahora = Date.now()): TemaActivo | null {
   }
   const hoy = temaDeFecha(hoyUtc(ahora));
   if (!hoy) return null;
+  // El primer día, hasta la hora exacta de apertura, sigue siendo decoración.
+  if (hoy.fase === "evento" && ahora < inicioEventoMs(hoy.rango)) {
+    const antes = { ...hoy, fase: "decoracion" as const };
+    return { tema: TEMAS[hoy.id], fase: "decoracion", hoy: antes };
+  }
   return { tema: TEMAS[hoy.id], fase: hoy.fase, hoy };
 }
 

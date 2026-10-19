@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { eventoDeTema, faltaHasta } from "@/lib/temas/eventos";
+import { eventoDeTema, faltaHasta, faltaPara } from "@/lib/temas/eventos";
+import { inicioEventoMs } from "@/lib/temas/calendario";
 import EscenaTema from "./EscenaTema";
 import { useTemaHoy } from "./useTemaHoy";
 
@@ -24,7 +25,7 @@ export default function CartelTemporada() {
   const evento = eventoDeTema(tema);
   const en = locale === "en";
   const frase = tema.fase === "decoracion" ? (en ? tema.tema.frase.decoracionEn : tema.tema.frase.decoracion) || (en ? tema.tema.frase.eventoEn : tema.tema.frase.evento) : en ? tema.tema.frase.eventoEn : tema.tema.frase.evento;
-  const reloj = ahora == null ? "" : tema.fase === "decoracion" ? t("empiezaEn", { tiempo: faltaHasta(new Date(Date.parse(`${tema.hoy.rango.desde}T00:00:00Z`) - 1).toISOString().slice(0, 10), ahora) }) : t("terminaEn", { tiempo: faltaHasta(tema.hoy.rango.hasta, ahora) });
+  const reloj = ahora == null ? "" : tema.fase === "decoracion" ? t("empiezaEn", { tiempo: faltaPara(inicioEventoMs(tema.hoy.rango), ahora) }) : t("terminaEn", { tiempo: faltaHasta(tema.hoy.rango.hasta, ahora) });
 
   const contenido = (
     <div className="relative flex min-h-[132px] overflow-hidden rounded-3xl border-2 border-[#05060F] text-white shadow-[6px_6px_0_0_#05060F]">

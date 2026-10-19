@@ -225,8 +225,10 @@ export default function CelebracionConstelaciones() {
       setI(i + 1);
       return;
     }
+    // Se recuerda como vista al instante (así no se repite aunque la base tarde) y se cierra.
+    const marcado = marcarConstelacionesVistas(createClient(), lista);
     setLista([]);
-    await marcarConstelacionesVistas(createClient());
+    await marcado;
     refrescarCosmeticosWeb();
   }
 

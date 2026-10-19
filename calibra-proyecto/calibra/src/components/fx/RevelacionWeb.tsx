@@ -137,14 +137,14 @@ export default function RevelacionWeb({
         controles.set({ x: 0, rotate: 0 });
         // 4) Estalla.
         const c = centro();
-        fxRef.current?.destello(nivel >= 3 ? 0.9 : 0.6);
+        fxRef.current?.destello(nivel >= 3 ? 0.6 : 0.42);
         fxRef.current?.onda(c.x, c.y, r.color, 600 + nivel * 120, 3 + nivel);
         fxRef.current?.explosion(c.x, c.y, [r.color, colores[0], colores[1], "#FFFFFF"], nivel);
         fxRef.current?.halo(r.color, c.x, c.y, 160 + nivel * 30);
         fxRef.current?.rayos(r.color, c.x, c.y);
         if (nivel === 4 && !reducir) {
           fxRef.current?.lluvia([r.color, "#FFFFFF", colores[0], colores[1]], 120);
-          timers.current.push(setTimeout(() => fxRef.current?.destello(0.7), 260));
+          timers.current.push(setTimeout(() => fxRef.current?.destello(0.45), 260));
         }
         reproducirTono("nivel_cuenta");
         setAbierta(true);
