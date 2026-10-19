@@ -24,6 +24,7 @@
 
 import type { ProblemaEstadistica, ProblemaEstadisticaNumero, ProblemaEstadisticaOpciones, ModoEstadistica, TipoProblemaEstadistica } from "@/lib/estadistica/tipos";
 import { generarGrafico } from "@/lib/estadistica/graficos";
+import * as P from "@/lib/estadistica/pasos";
 import {
   armarOpciones,
   azar,
@@ -65,7 +66,7 @@ export { conRngSembrado };
 
 type Params = Record<string, number | string>;
 
-function num(modo: ModoEstadistica, tipo: TipoProblemaEstadistica, enunciado: string, raw: number, opts?: { redondeada?: boolean; params?: Params }): ProblemaEstadisticaNumero {
+function num(modo: ModoEstadistica, tipo: TipoProblemaEstadistica, enunciado: string, raw: number, opts?: { redondeada?: boolean; params?: Params; pasos?: string[] }): ProblemaEstadisticaNumero {
   const respuesta = redondear2(raw);
   return {
     modo,
@@ -74,6 +75,7 @@ function num(modo: ModoEstadistica, tipo: TipoProblemaEstadistica, enunciado: st
     respuesta,
     tolerancia: opts?.redondeada ? 0.01 : Number.isInteger(respuesta) ? 0 : 0.005,
     detalle: { tipo, params: opts?.params },
+    pasos: opts?.pasos,
   };
 }
 
@@ -84,9 +86,10 @@ function opc(
   correcta: string,
   distractores: string[],
   params?: Params,
-  clave?: (op: string) => string
+  clave?: (op: string) => string,
+  pasos?: string[]
 ): ProblemaEstadisticaOpciones {
-  return { modo, entrada: "opciones", enunciado, opciones: armarOpciones(correcta, distractores, clave), respuesta: correcta, detalle: { tipo, params } };
+  return { modo, entrada: "opciones", enunciado, opciones: armarOpciones(correcta, distractores, clave), respuesta: correcta, detalle: { tipo, params }, pasos };
 }
 
 const conjunto = (datos: readonly number[]) => `{${fmtLista(datos)}}`;
@@ -168,7 +171,7 @@ function centralMedia(N: number): ProblemaEstadistica {
     else datos = Array.from({ length: elegir([5, 10]) }, () => randomInt(10, 200) / 10);
     const media = suma(datos) / datos.length;
     if (!tieneHasta2Decimales(media)) continue;
-    return num("central", "media", `Calcula la media de los datos ${conjunto(datos)}.`, media);
+    return num("central", "media", `Calcula la media de los datos ${conjunto(datos)}.`, media, { pasos: P.pasosMedia(datos) });
   }
 }
 
@@ -176,7 +179,7 @@ function centralMediana(N: number): ProblemaEstadistica {
   const decimales = N === 3 && azar() < 0.4;
   const n = N === 1 ? elegir([3, 5, 7]) : randomInt(4, 9);
   const datos = decimales ? Array.from({ length: n }, () => randomInt(10, 300) / 10) : enteros(n, 1, N === 1 ? 20 : 60);
-  return num("central", "mediana", `Calcula la mediana de los datos ${conjunto(datos)}.`, medianaOrdenada(ordenar(datos)));
+  return num("central", "mediana", `Calcula la mediana de los datos ${conjunto(datos)}.`, medianaOrdenada(ordenar(datos)), { pasos: P.pasosMediana(datos) });
 }
 
 // Moda única por construcción: la moda tiene c apariciones y los demás
@@ -187,14 +190,14 @@ function centralModa(N: number): ProblemaEstadistica {
   const c = randomInt(2, N === 1 ? 3 : 4);
   const conteos = valores.map((_, i) => (i === 0 ? c : randomInt(1, c - 1)));
   const datos = mezclar(valores.flatMap((v, i) => Array<number>(conteos[i]).fill(v)));
-  return num("central", "moda", `¿Cuál es la moda de los datos ${conjunto(datos)}?`, valores[0]);
+  return num("central", "moda", `¿Cuál es la moda de los datos ${conjunto(datos)}?`, valores[0], { pasos: P.pasosModa(datos) });
 }
 
 function centralRango(N: number): ProblemaEstadistica {
   for (;;) {
     const datos = enteros(randomInt(5, 8), 1, N === 1 ? 30 : 100);
     if (Math.max(...datos) === Math.min(...datos)) continue;
-    return num("central", "rango", `Calcula el rango (máximo − mínimo) de los datos ${conjunto(datos)}.`, Math.max(...datos) - Math.min(...datos));
+    return num("central", "rango", `Calcula el rango (máximo − mínimo) de los datos ${conjunto(datos)}.`, Math.max(...datos) - Math.min(...datos), { pasos: P.pasosRango(datos) });
   }
 }
 
@@ -204,7 +207,7 @@ function centralFrecuencias(): ProblemaEstadistica {
   const f = [1, 1, 1, 1];
   for (let i = 0; i < total - 4; i++) f[randomInt(0, 3)]++;
   const media = valores.reduce((a, v, i) => a + v * f[i], 0) / total;
-  return num("central", "media_frecuencias", `Una tabla de frecuencias tiene los valores ${conjunto(valores)} con frecuencias ${conjunto(f)}. Calcula la media.`, media);
+  return num("central", "media_frecuencias", `Una tabla de frecuencias tiene los valores ${conjunto(valores)} con frecuencias ${conjunto(f)}. Calcula la media.`, media, { pasos: P.pasosMediaFrecuencias(valores, f) });
 }
 
 function centralDatoFaltante(): ProblemaEstadistica {
@@ -213,7 +216,7 @@ function centralDatoFaltante(): ProblemaEstadistica {
   const datos = datosMediaEntera(n, media, 4, 1);
   const i = randomInt(0, n - 1);
   const conocidos = mezclar(datos.filter((_, j) => j !== i));
-  return num("central", "dato_faltante", `La media de ${n} datos es ${media}. Los otros ${n - 1} datos conocidos son ${conjunto(conocidos)}. ¿Cuál es el dato que falta?`, datos[i]);
+  return num("central", "dato_faltante", `La media de ${n} datos es ${media}. Los otros ${n - 1} datos conocidos son ${conjunto(conocidos)}. ¿Cuál es el dato que falta?`, datos[i], { pasos: P.pasosDatoFaltante(n, media, conocidos) });
 }
 
 function generarCentral(nivel: number): ProblemaEstadistica {
@@ -254,7 +257,7 @@ function dispersionIqr(N: number): ProblemaEstadistica {
     const datos = enteros(n, 1, 50);
     const { q1, q3 } = cuartilesMitades(datos);
     if (q3 === q1) continue;
-    return num("dispersion", "iqr", `${METODO_MITADES} Calcula el rango intercuartílico (${tex("Q_{3} - Q_{1}")}) de ${conjunto(datos)}.`, q3 - q1);
+    return num("dispersion", "iqr", `${METODO_MITADES} Calcula el rango intercuartílico (${tex("Q_{3} - Q_{1}")}) de ${conjunto(datos)}.`, q3 - q1, { pasos: P.pasosIqr(datos) });
   }
 }
 
@@ -262,30 +265,30 @@ function dispersionVarianzaPob(N: number): ProblemaEstadistica {
   const n = N === 3 ? 4 : elegir(N >= 5 ? [4, 5, 10] : [4, 5]);
   const datos = mezclar(datosMediaEntera(n, randomInt(6, 15), N >= 5 ? 6 : 4, 1));
   const varianza = sumaCuadrados(datos) / n;
-  return num("dispersion", "varianza_poblacional", `Calcula la varianza poblacional (${tex("\\sigma^{2}")}, se divide por ${tex("n")}) de los datos ${conjunto(datos)}.`, varianza);
+  return num("dispersion", "varianza_poblacional", `Calcula la varianza poblacional (${tex("\\sigma^{2}")}, se divide por ${tex("n")}) de los datos ${conjunto(datos)}.`, varianza, { pasos: P.pasosDispersion(datos, false, false) });
 }
 
 function dispersionDesvioPob(N: number): ProblemaEstadistica {
   if (N >= 6 && azar() < 0.5) {
     const n = elegir([5, 6, 8]);
     const datos = mezclar(datosMediaEntera(n, randomInt(8, 20), 5, 1));
-    return num("dispersion", "desvio_poblacional", `Calcula el desvío estándar poblacional (${tex("\\sigma")}, se divide por ${tex("n")}) de los datos ${conjunto(datos)}. Redondea a 2 decimales.`, Math.sqrt(sumaCuadrados(datos) / n), { redondeada: true });
+    return num("dispersion", "desvio_poblacional", `Calcula el desvío estándar poblacional (${tex("\\sigma")}, se divide por ${tex("n")}) de los datos ${conjunto(datos)}. Redondea a 2 decimales.`, Math.sqrt(sumaCuadrados(datos) / n), { redondeada: true, pasos: P.pasosDispersion(datos, false, true) });
   }
   const { datos, desvio } = datosDesvioEntero();
-  return num("dispersion", "desvio_poblacional", `Calcula el desvío estándar poblacional (${tex("\\sigma")}, se divide por ${tex("n")}) de los datos ${conjunto(datos)}.`, desvio);
+  return num("dispersion", "desvio_poblacional", `Calcula el desvío estándar poblacional (${tex("\\sigma")}, se divide por ${tex("n")}) de los datos ${conjunto(datos)}.`, desvio, { pasos: P.pasosDispersion(datos, false, true) });
 }
 
 function dispersionVarianzaMuestral(): ProblemaEstadistica {
   // n − 1 divide a 100 (2, 4, 5, 10): la varianza muestral queda con <= 2 decimales.
   const n = elegir([3, 5, 6, 11]);
   const datos = mezclar(datosMediaEntera(n, randomInt(6, 15), 5, 1));
-  return num("dispersion", "varianza_muestral", `Calcula la varianza muestral (${tex("s^{2}")}, se divide por ${tex("n - 1")}) de los datos ${conjunto(datos)}.`, sumaCuadrados(datos) / (n - 1));
+  return num("dispersion", "varianza_muestral", `Calcula la varianza muestral (${tex("s^{2}")}, se divide por ${tex("n - 1")}) de los datos ${conjunto(datos)}.`, sumaCuadrados(datos) / (n - 1), { pasos: P.pasosDispersion(datos, true, false) });
 }
 
 function dispersionDesvioMuestral(): ProblemaEstadistica {
   const n = elegir([5, 6]);
   const datos = mezclar(datosMediaEntera(n, randomInt(8, 20), 5, 1));
-  return num("dispersion", "desvio_muestral", `Calcula el desvío estándar muestral (${tex("s")}, se divide por ${tex("n - 1")}) de los datos ${conjunto(datos)}. Redondea a 2 decimales.`, Math.sqrt(sumaCuadrados(datos) / (n - 1)), { redondeada: true });
+  return num("dispersion", "desvio_muestral", `Calcula el desvío estándar muestral (${tex("s")}, se divide por ${tex("n - 1")}) de los datos ${conjunto(datos)}. Redondea a 2 decimales.`, Math.sqrt(sumaCuadrados(datos) / (n - 1)), { redondeada: true, pasos: P.pasosDispersion(datos, true, true) });
 }
 
 function dispersionTransformacion(): ProblemaEstadistica {
@@ -301,7 +304,7 @@ function dispersionTransformacion(): ProblemaEstadistica {
     pideVarianza ? "transformacion_varianza" : "transformacion_desvio",
     `Los datos ${conjunto(datos)} tienen varianza poblacional ${varianza} y desvío estándar poblacional ${desvio}. Si ${accion}, ¿cuál es la nueva ${nombre}?`,
     esperado,
-    { params: { op: suma_ ? "suma" : "multiplica", valor } }
+    { params: { op: suma_ ? "suma" : "multiplica", valor }, pasos: P.pasosTransformacion(suma_, valor, varianza, desvio, pideVarianza) }
   );
 }
 
@@ -389,9 +392,9 @@ function opcionesFraccion(correcta: Fraccion, distractores: Fraccion[]): { corre
   return { correcta: fmtFraccion(correcta), distractores: out };
 }
 
-function opcFraccion(tipo: TipoProblemaEstadistica, enunciado: string, correcta: Fraccion, distractores: Fraccion[], params?: Params): ProblemaEstadisticaOpciones {
+function opcFraccion(tipo: TipoProblemaEstadistica, enunciado: string, correcta: Fraccion, distractores: Fraccion[], params?: Params, pasos?: string[]): ProblemaEstadisticaOpciones {
   const o = opcionesFraccion(correcta, distractores);
-  const p = opc("probabilidad", tipo, enunciado, o.correcta, o.distractores, params, claveFraccion);
+  const p = opc("probabilidad", tipo, enunciado, o.correcta, o.distractores, params, claveFraccion, pasos);
   return { ...p, opciones: p.opciones.map(fraccionMath), respuesta: fraccionMath(p.respuesta) };
 }
 
@@ -404,7 +407,9 @@ function probSimple(): ProblemaEstadistica {
     "prob_simple",
     `${describirBolsa(b)} Se extrae una bola al azar. ¿Cuál es la probabilidad de que sea ${b.colores[i].sg}?`,
     fraccion(c, b.total),
-    [fraccion(b.cuentas[otro], b.total), fraccion(c, b.total - c), fraccion(b.total - c, b.total), fraccion(1, b.colores.length)]
+    [fraccion(b.cuentas[otro], b.total), fraccion(c, b.total - c), fraccion(b.total - c, b.total), fraccion(1, b.colores.length)],
+    undefined,
+    P.pasosProbSimple(c, b.total, `bolas ${b.colores[i].pl}`)
   );
 }
 
@@ -426,7 +431,13 @@ function probDado(): ProblemaEstadistica {
     "prob_dado",
     `Se lanza un dado justo de ${caras} caras (numeradas de 1 a ${caras}). ¿Cuál es la probabilidad de obtener ${p.txt}?`,
     fraccion(favorables, caras),
-    [fraccion(caras - favorables, caras), fraccion(favorables, caras - favorables || 1), fraccion(1, caras), fraccion(favorables + 1, caras)]
+    [fraccion(caras - favorables, caras), fraccion(favorables, caras - favorables || 1), fraccion(1, caras), fraccion(favorables + 1, caras)],
+    undefined,
+    P.pasosProbDado(
+      caras,
+      Array.from({ length: caras }, (_, k) => k + 1).filter(p.f),
+      p.txt
+    )
   );
 }
 
@@ -438,7 +449,9 @@ function probComplemento(): ProblemaEstadistica {
     "prob_complemento",
     `${describirBolsa(b)} Se extrae una bola al azar. ¿Cuál es la probabilidad de que NO sea ${b.colores[i].sg}?`,
     fraccion(b.total - c, b.total),
-    [fraccion(c, b.total), fraccion(b.total - c, c), fraccion(1, b.total)]
+    [fraccion(c, b.total), fraccion(b.total - c, c), fraccion(1, b.total)],
+    undefined,
+    P.pasosComplemento(c, b.total, b.colores[i].sg)
   );
 }
 
@@ -453,7 +466,9 @@ function probIndependientes(): ProblemaEstadistica {
     "prob_independientes",
     `${describirBolsa(b)} Se extrae una bola, se anota su color y se DEVUELVE a la bolsa; luego se extrae otra. ¿Cuál es la probabilidad de que la primera sea ${b.colores[i].sg} y la segunda sea ${b.colores[j].sg}?`,
     fraccion(ci * cj, T * T),
-    [fraccion(ci * (cj - (i === j ? 1 : 0)), T * (T - 1)), fraccion(ci + cj, 2 * T), fraccion(ci * cj, T * (T - 1)), fraccion(ci, T)]
+    [fraccion(ci * (cj - (i === j ? 1 : 0)), T * (T - 1)), fraccion(ci + cj, 2 * T), fraccion(ci * cj, T * (T - 1)), fraccion(ci, T)],
+    undefined,
+    P.pasosIndependientes(ci, cj, T, b.colores[i].sg, b.colores[j].sg)
   );
 }
 
@@ -478,7 +493,8 @@ function probCondicionalTabla(): ProblemaEstadistica {
       : `Si se elige al azar a uno de los que ${ctx.b}, ¿cuál es la probabilidad de que ${ctx.nomA}?`);
   const correcta = dadoA ? fraccion(ab, ab + anb) : fraccion(ab, ab + nab);
   const inversa = dadoA ? fraccion(ab, ab + nab) : fraccion(ab, ab + anb);
-  return opcFraccion("prob_condicional_tabla", enun, correcta, [inversa, fraccion(ab, N), fraccion(ab + nab, N), fraccion(ab + anb, N)], { dadoA: dadoA ? 1 : 0 });
+  const pasos = dadoA ? P.pasosCondicional(ab, ab + anb, ctx.a, ctx.b) : P.pasosCondicional(ab, ab + nab, ctx.b, ctx.a);
+  return opcFraccion("prob_condicional_tabla", enun, correcta, [inversa, fraccion(ab, N), fraccion(ab + nab, N), fraccion(ab + anb, N)], { dadoA: dadoA ? 1 : 0 }, pasos);
 }
 
 function probSinReposicion(): ProblemaEstadistica {
@@ -494,7 +510,8 @@ function probSinReposicion(): ProblemaEstadistica {
       `${base} ¿Cuál es la probabilidad de que ambas sean ${b.colores[0].pl}?`,
       fraccion(c0 * (c0 - 1), T * (T - 1)),
       [fraccion(c0 * c0, T * T), fraccion(c0 - 1, T - 1), fraccion(c0 * (c0 - 1), T * T)],
-      { variante }
+      { variante },
+      P.pasosSinReposicion("ambas", c0, c1, T, b.colores[0].sg, b.colores[1].sg)
     );
   }
   if (variante === "condicional") {
@@ -503,7 +520,8 @@ function probSinReposicion(): ProblemaEstadistica {
       `${base} Si la primera fue ${b.colores[0].sg}, ¿cuál es la probabilidad de que la segunda también sea ${b.colores[0].sg}?`,
       fraccion(c0 - 1, T - 1),
       [fraccion(c0, T), fraccion(c0 - 1, T), fraccion(c0, T - 1)],
-      { variante }
+      { variante },
+      P.pasosSinReposicion("condicional", c0, c1, T, b.colores[0].sg, b.colores[1].sg)
     );
   }
   return opcFraccion(
@@ -511,7 +529,8 @@ function probSinReposicion(): ProblemaEstadistica {
     `${base} ¿Cuál es la probabilidad de que la primera sea ${b.colores[0].sg} y la segunda ${b.colores[1].sg}?`,
     fraccion(c0 * c1, T * (T - 1)),
     [fraccion(c0 * c1, T * T), fraccion(c1, T - 1), fraccion(c0 * (c1 - 1), T * (T - 1))],
-    { variante }
+    { variante },
+    P.pasosSinReposicion("distintas", c0, c1, T, b.colores[0].sg, b.colores[1].sg)
   );
 }
 
@@ -531,7 +550,7 @@ function combinacionesDe(n: number, r: number): number {
 
 function probFactorial(N: number): ProblemaEstadistica {
   const n = randomInt(3, N >= 7 ? 8 : 7);
-  return num("probabilidad", "factorial", `Calcula ${tex(`${n}!`)} (${n} factorial).`, factorialDe(n));
+  return num("probabilidad", "factorial", `Calcula ${tex(`${n}!`)} (${n} factorial).`, factorialDe(n), { pasos: P.pasosFactorial(n) });
 }
 
 function probPermutaciones(): ProblemaEstadistica {
@@ -542,7 +561,7 @@ function probPermutaciones(): ProblemaEstadistica {
     `Hay ${n} libros distintos y se quieren ordenar ${r} de ellos en un estante (el orden importa). ¿Cuántas ordenaciones distintas hay?`,
     `Un club tiene ${n} socios y debe elegir ${r} cargos distintos (el orden importa). ¿De cuántas maneras se pueden asignar?`,
   ]);
-  return num("probabilidad", "permutaciones", ctx, permutacionesDe(n, r), { params: { n, r } });
+  return num("probabilidad", "permutaciones", ctx, permutacionesDe(n, r), { params: { n, r }, pasos: P.pasosPermutaciones(n, r) });
 }
 
 function probCombinaciones(): ProblemaEstadistica {
@@ -553,7 +572,7 @@ function probCombinaciones(): ProblemaEstadistica {
     `Una pizzería ofrece ${n} ingredientes y una pizza lleva ${r} distintos (el orden NO importa). ¿Cuántas pizzas diferentes se pueden armar?`,
     `De ${n} libros se eligen ${r} para llevarse de viaje (el orden NO importa). ¿De cuántas maneras se pueden elegir?`,
   ]);
-  return num("probabilidad", "combinaciones", ctx, combinacionesDe(n, r), { params: { n, r } });
+  return num("probabilidad", "combinaciones", ctx, combinacionesDe(n, r), { params: { n, r }, pasos: P.pasosCombinaciones(n, r) });
 }
 
 function probCombinatoria(): ProblemaEstadistica {
@@ -570,7 +589,8 @@ function probCombinatoria(): ProblemaEstadistica {
       `${base} ¿Cuál es la probabilidad de que las dos sean ${b.colores[0].pl}?`,
       fraccion(combinacionesDe(c0, 2), total2),
       [fraccion(c0 * c0, T * T), fraccion(c0 * (c0 - 1), T * T), fraccion(c0, T)],
-      { variante: "iguales" }
+      { variante: "iguales" },
+      P.pasosProbCombinatoria(true, c0, c1, T, b.colores[0].sg, b.colores[1].sg)
     );
   }
   return opcFraccion(
@@ -578,7 +598,8 @@ function probCombinatoria(): ProblemaEstadistica {
     `${base} ¿Cuál es la probabilidad de que una sea ${b.colores[0].sg} y la otra ${b.colores[1].sg}?`,
     fraccion(c0 * c1, total2),
     [fraccion(c0 * c1, T * T), fraccion(c0, T), fraccion(c0 * c1, total2 * 2)],
-    { variante: "mixtas" }
+    { variante: "mixtas" },
+    P.pasosProbCombinatoria(false, c0, c1, T, b.colores[0].sg, b.colores[1].sg)
   );
 }
 
@@ -635,7 +656,7 @@ function datosPercentil(): ProblemaEstadistica {
     "percentil",
     `${METODO_PERCENTIL} (${tex(`N = ${n}`)}). ¿Cuál es el percentil ${p} de ${conjunto(datos)}?`,
     ordenar(datos)[posicion - 1],
-    { params: { p, n } }
+    { params: { p, n }, pasos: P.pasosPercentil(datos, p) }
   );
 }
 
@@ -649,7 +670,7 @@ function datosRangoPercentil(): ProblemaEstadistica {
     "rango_percentil",
     `En el conjunto ${conjunto(datos)} (${tex(`N = ${n}`)} datos), ¿qué porcentaje de los datos es menor o igual que ${x}?`,
     (menoresOIguales * 100) / n,
-    { params: { x, n } }
+    { params: { x, n }, pasos: P.pasosRangoPercentil(datos, x) }
   );
 }
 
@@ -663,7 +684,7 @@ function datosZScore(): ProblemaEstadistica {
     if (!tieneHasta2Decimales(z)) continue;
     const x = mu + dif;
     if (x < 0) continue;
-    return num("datos", "z_score", `Un conjunto de datos tiene media ${tex(`\\mu = ${mu}`)} y desvío estándar ${tex(`\\sigma = ${sigma}`)}. ¿Cuál es el puntaje ${tex("z")} del valor ${tex(`x = ${x}`)}? (${tex("z = \\frac{x - \\mu}{\\sigma}")})`, z, { params: { mu, sigma, x } });
+    return num("datos", "z_score", `Un conjunto de datos tiene media ${tex(`\\mu = ${mu}`)} y desvío estándar ${tex(`\\sigma = ${sigma}`)}. ¿Cuál es el puntaje ${tex("z")} del valor ${tex(`x = ${x}`)}? (${tex("z = \\frac{x - \\mu}{\\sigma}")})`, z, { params: { mu, sigma, x }, pasos: P.pasosZ(mu, sigma, x) });
   }
 }
 
@@ -671,7 +692,7 @@ function datosZInverso(): ProblemaEstadistica {
   const sigma = elegir([2, 4, 6, 8, 10]);
   const mu = randomInt(40, 100);
   const z = elegir([-2, -1.5, -1, -0.5, 0.5, 1, 1.5, 2, 2.5]);
-  return num("datos", "z_inverso", `Un conjunto de datos tiene media ${tex(`\\mu = ${mu}`)} y desvío estándar ${tex(`\\sigma = ${sigma}`)}. ¿Qué valor ${tex("x")} tiene un puntaje ${tex(`z = ${z}`)}? (${tex("x = \\mu + z\\cdot\\sigma")})`, mu + z * sigma, { params: { mu, sigma, z } });
+  return num("datos", "z_inverso", `Un conjunto de datos tiene media ${tex(`\\mu = ${mu}`)} y desvío estándar ${tex(`\\sigma = ${sigma}`)}. ¿Qué valor ${tex("x")} tiene un puntaje ${tex(`z = ${z}`)}? (${tex("x = \\mu + z\\cdot\\sigma")})`, mu + z * sigma, { params: { mu, sigma, z }, pasos: P.pasosZInverso(mu, sigma, z) });
 }
 
 function datosZComparar(): ProblemaEstadistica {
@@ -691,7 +712,10 @@ function datosZComparar(): ProblemaEstadistica {
       "z_comparar",
       `En Matemática (${tex(`\\mu = ${mu1}`)}, ${tex(`\\sigma = ${s1}`)}) un estudiante sacó ${x1}; en Lengua (${tex(`\\mu = ${mu2}`)}, ${tex(`\\sigma = ${s2}`)}) sacó ${x2}. Comparando los puntajes ${tex("z")}, ¿en qué materia le fue relativamente mejor?`,
       correcta,
-      [correcta === "Matemática" ? "Lengua" : "Matemática", "Le fue igual en ambas", "No se puede comparar"]
+      [correcta === "Matemática" ? "Lengua" : "Matemática", "Le fue igual en ambas", "No se puede comparar"],
+      undefined,
+      undefined,
+      P.pasosZComparar(x1, mu1, s1, x2, mu2, s2, correcta)
     );
   }
 }
@@ -724,7 +748,9 @@ function datosReglaEmpirica(): ProblemaEstadistica {
     `Una variable tiene distribución normal con ${tex(`\\mu = ${mu}`)} y ${tex(`\\sigma = ${sigma}`)}. Según la regla empírica (68% a ${tex("\\pm 1\\sigma")}, 95% a ${tex("\\pm 2\\sigma")}, 99.7% a ${tex("\\pm 3\\sigma")}), ${pregunta}`,
     correcta,
     mezclar(pool.filter((p) => p !== correcta)).slice(0, 3),
-    { mu, sigma, k, variante }
+    { mu, sigma, k, variante },
+    undefined,
+    P.pasosReglaEmpirica(k, centro, variante === "entre", correcta)
   );
 }
 
@@ -759,7 +785,7 @@ function datosAtipicos(): ProblemaEstadistica {
   const atipicos = datos.filter((x) => x < inf || x > sup);
   const variante = elegir(["cantidad", "valor", "cerca"] as const);
   if (variante === "valor" && atipicos.length === 1) {
-    return num("datos", "atipicos_valor", `${METODO_ATIPICOS} En ${conjunto(datos)} hay exactamente un valor atípico. ¿Cuál es?`, atipicos[0]);
+    return num("datos", "atipicos_valor", `${METODO_ATIPICOS} En ${conjunto(datos)} hay exactamente un valor atípico. ¿Cuál es?`, atipicos[0], { pasos: P.pasosAtipicos(datos) });
   }
   if (variante === "cerca") {
     const arriba = azar() < 0.5;
@@ -768,10 +794,10 @@ function datosAtipicos(): ProblemaEstadistica {
       "atipicos_cerca",
       `${METODO_ATIPICOS} Para ${conjunto(datos)}, ¿cuánto vale el límite ${arriba ? `superior (${tex("Q_{3} + 1.5\\cdot\\text{IQR}")})` : `inferior (${tex("Q_{1} - 1.5\\cdot\\text{IQR}")})`} de la regla de atípicos?`,
       arriba ? sup : inf,
-      { params: { lado: arriba ? "superior" : "inferior" } }
+      { params: { lado: arriba ? "superior" : "inferior" }, pasos: P.pasosAtipicos(datos).slice(0, 3) }
     );
   }
-  return num("datos", "atipicos_cantidad", `${METODO_ATIPICOS} ¿Cuántos valores atípicos hay en ${conjunto(datos)}?`, atipicos.length);
+  return num("datos", "atipicos_cantidad", `${METODO_ATIPICOS} ¿Cuántos valores atípicos hay en ${conjunto(datos)}?`, atipicos.length, { pasos: P.pasosAtipicos(datos) });
 }
 
 // x = x0..x0+4 (x̄ entero, Sxx = 10): pendiente = Sxy/10 y demás
@@ -808,7 +834,10 @@ function datosCorrelacionSigno(): ProblemaEstadistica {
     "correlacion_signo",
     `Para los pares ${tex("(x, y)")} con ${tex("x")} = ${conjunto(xsDe(x0))} e ${tex("y")} = ${conjunto(ys)}, ¿cómo es la correlación lineal entre ${tex("x")} e ${tex("y")}?`,
     correcta,
-    ["Positiva", "Negativa", "Cero (no hay relación lineal)"].filter((o) => o !== correcta)
+    ["Positiva", "Negativa", "Cero (no hay relación lineal)"].filter((o) => o !== correcta),
+    undefined,
+    undefined,
+    P.pasosCorrelacionSigno(ys, correcta)
   );
 }
 
@@ -821,10 +850,10 @@ function datosRegresion(): ProblemaEstadistica {
   const a = ymedia - b * (x0 + 2);
   const intro = `Para los pares ${tex("(x, y)")} con ${tex("x")} = ${conjunto(xs)} e ${tex("y")} = ${conjunto(ys)}, la recta de mínimos cuadrados es ${tex("\\hat{y} = a + b\\cdot x")}.`;
   const variante = elegir(["pendiente", "intercepto", "prediccion"] as const);
-  if (variante === "pendiente") return num("datos", "regresion_pendiente", `${intro} ¿Cuánto vale la pendiente ${tex("b")}?`, b);
-  if (variante === "intercepto") return num("datos", "regresion_intercepto", `${intro} ¿Cuánto vale el intercepto ${tex("a")}?`, a);
+  if (variante === "pendiente") return num("datos", "regresion_pendiente", `${intro} ¿Cuánto vale la pendiente ${tex("b")}?`, b, { pasos: P.pasosRegresion(x0, ys, "pendiente") });
+  if (variante === "intercepto") return num("datos", "regresion_intercepto", `${intro} ¿Cuánto vale el intercepto ${tex("a")}?`, a, { pasos: P.pasosRegresion(x0, ys, "intercepto") });
   const xNuevo = x0 + randomInt(5, 7);
-  return num("datos", "regresion_prediccion", `${intro} ¿Qué valor predice la recta (${tex("\\hat{y}")}) para ${tex(`x = ${xNuevo}`)}?`, a + b * xNuevo, { params: { xNuevo } });
+  return num("datos", "regresion_prediccion", `${intro} ¿Qué valor predice la recta (${tex("\\hat{y}")}) para ${tex(`x = ${xNuevo}`)}?`, a + b * xNuevo, { params: { xNuevo }, pasos: P.pasosRegresion(x0, ys, "prediccion", xNuevo) });
 }
 
 let cacheYsR: number[][] | null = null;
@@ -860,7 +889,7 @@ function datosCorrelacionR(): ProblemaEstadistica {
   const ys = elegir(conjuntosYConRExacto());
   const T = 5 * ys.reduce((acc, y) => acc + y * y, 0) - suma(ys) ** 2;
   const r = sxyDe(ys) / Math.round(Math.sqrt(2 * T));
-  return num("datos", "correlacion_r", `Para los pares ${tex("(x, y)")} con ${tex("x")} = ${conjunto(xsDe(x0))} e ${tex("y")} = ${conjunto(ys)}, calcula el coeficiente de correlación de Pearson ${tex("r")}.`, r);
+  return num("datos", "correlacion_r", `Para los pares ${tex("(x, y)")} con ${tex("x")} = ${conjunto(xsDe(x0))} e ${tex("y")} = ${conjunto(ys)}, calcula el coeficiente de correlación de Pearson ${tex("r")}.`, r, { pasos: P.pasosCorrelacionR(ys) });
 }
 
 function generarDatos(nivel: number): ProblemaEstadistica {
@@ -902,7 +931,8 @@ function bandaGraficos(nivel: number): number {
 
 function generarGraficos(nivel: number): ProblemaEstadistica {
   const bruto = generarGrafico(bandaGraficos(nivel));
-  return { modo: "graficos", ...bruto } as ProblemaEstadistica;
+  const p = { modo: "graficos", ...bruto } as ProblemaEstadistica;
+  return { ...p, pasos: P.pasosGrafico(p.detalle.tipo, p.respuesta) };
 }
 
 // ============================================================

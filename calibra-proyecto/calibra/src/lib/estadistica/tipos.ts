@@ -131,6 +131,8 @@ interface ProblemaEstadisticaBase {
   detalle: DetalleEstadistica;
   // Solo modo "graficos": el gráfico a dibujar sobre el enunciado.
   grafico?: GraficoEstadistica;
+  // «Cómo se resuelve» (repaso de errores; src/lib/estadistica/pasos.ts).
+  pasos?: string[];
 }
 
 export interface ProblemaEstadisticaOpciones extends ProblemaEstadisticaBase {

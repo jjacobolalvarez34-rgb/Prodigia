@@ -25,6 +25,7 @@ export const ESTADISTICA: MundoJugable = {
           : { tipo: "opciones", opciones: p.opciones, respuesta: p.respuesta },
       visuales: p.grafico ? [{ tipo: "grafico", grafico: p.grafico }] : undefined,
       clave: claveEstadistica(p),
+      pasos: p.pasos,
     };
   },
 };
