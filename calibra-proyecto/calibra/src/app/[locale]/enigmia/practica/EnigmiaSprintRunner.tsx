@@ -1,5 +1,6 @@
 "use client";
 
+import { pasosEnigmia } from "@/lib/enigmia/pasos";
 import { useEffect, useRef, useState } from "react";
 import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
@@ -293,7 +294,7 @@ export default function EnigmiaSprintRunner({
     let protegido = false;
     if (!correct) {
       erroresRef.current.push(puzzle);
-      anotarFalla({ enunciado: puzzle.contenido.enunciado, tuRespuesta: opcion, correcta: puzzle.respuesta, pasos: [] });
+      anotarFalla({ enunciado: puzzle.contenido.enunciado, tuRespuesta: opcion, correcta: puzzle.respuesta, pasos: pasosEnigmia(puzzle) });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

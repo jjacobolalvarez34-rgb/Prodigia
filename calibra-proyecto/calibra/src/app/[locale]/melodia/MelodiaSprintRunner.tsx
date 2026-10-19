@@ -1,5 +1,6 @@
 "use client";
 
+import { pasosMelodia } from "@/lib/melodia/pasos";
 import { useEffect, useRef, useState } from "react";
 import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
@@ -194,7 +195,7 @@ export default function MelodiaSprintRunner({
     let protegido = false;
     if (!correct) {
       erroresRef.current.push(pregunta);
-      anotarFalla({ enunciado: pregunta.enunciado, tuRespuesta: opcion, correcta: pregunta.respuesta, pasos: [] });
+      anotarFalla({ enunciado: pregunta.enunciado, tuRespuesta: opcion, correcta: pregunta.respuesta, pasos: pasosMelodia(pregunta) });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

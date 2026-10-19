@@ -1,4 +1,11 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { generarAcertijoProcedural } from "@/lib/enigmia/generadores";
+import { pasosEnigmia } from "@/lib/enigmia/pasos";
+import { pasosMelodia } from "@/lib/melodia/pasos";
+import { generarPreguntaMelodia, MODOS_MELODIA } from "./melodia";
+import { generarPreguntaQuimia } from "./quimia";
+import { generarPreguntaOrganica } from "./quimicaOrganica";
 import { generarProblemaCalculia, type ModoCalculia } from "./calculia";
 import { generarProblemaCircuitia, type ModoCircuitia } from "./circuitia";
 import { generarProblemaCodia } from "./codia";
@@ -52,5 +59,44 @@ describe("pasos de cada mundo", () => {
         revisar(p.pasos, `vitalia ${modo} ${nivel}`);
         expect(p.pasos?.[0], `vitalia sin idea propia: ${p.detalle.tipo}`).not.toMatch(/^Piensa en la idea/);
       }
+  });
+
+  it("Quimia", () => {
+    for (const modo of ["simbolos", "formulas", "tabla", "nomenclatura"] as const)
+      for (let nivel = 1; nivel <= 10; nivel++) for (let i = 0; i < 15; i++) revisar(generarPreguntaQuimia(modo, nivel, new Set()).pasos, `quimia ${modo} ${nivel}`);
+    for (let nivel = 1; nivel <= 10; nivel++) for (let i = 0; i < 10; i++) revisar(generarPreguntaOrganica(nivel, new Set()).pasos, `quimia organica ${nivel}`);
+  });
+
+  it("Melodía", () => {
+    for (const modo of MODOS_MELODIA)
+      for (let nivel = 1; nivel <= 10; nivel++) for (let i = 0; i < 20; i++) {
+        const p = generarPreguntaMelodia(modo, nivel);
+        const pasos = pasosMelodia(p);
+        revisar(pasos, `melodia ${modo} ${nivel}`);
+        expect(pasos[0], `melodia sin explicación: ${p.enunciado}`).not.toMatch(/^Respuesta/);
+      }
+  });
+
+  it("Enigmia: el cómputo rehecho da la respuesta y cada serie dice su regla", () => {
+    for (const c of ["memoria", "patrones", "computacional"] as const)
+      for (let nivel = 1; nivel <= 10; nivel++) for (let i = 0; i < 20; i++) {
+        const p = generarAcertijoProcedural(c, nivel);
+        const pasos = pasosEnigmia(p);
+        revisar(pasos, `enigmia ${c} ${nivel}`);
+        expect(pasos.length, `enigmia sin explicación: ${p.contenido.enunciado}`).toBeGreaterThan(1);
+        if (c === "computacional" && !p.contenido.enunciado.includes("termine en")) expect(pasos.join(" ")).toMatch(new RegExp(`= ${p.respuesta}$`));
+        if (c === "patrones") expect(pasos[pasos.length - 1]).toMatch(new RegExp(`= ${p.respuesta}$`));
+      }
+  });
+
+  it("Enigmia: cada acertijo de deducción del banco tiene su explicación", () => {
+    const sql = ["0015_mundo_enigmia", "0020_enigmia_categorias", "0164_mas_acertijos_deduccion"].map((f) => readFileSync(`supabase/migrations/${f}.sql`, "utf8")).join("\n");
+    const filas = [...sql.matchAll(/\('deduccion', \d+, '(\{.*?\})', '/g)];
+    expect(filas.length).toBeGreaterThan(30);
+    for (const [, json] of filas) {
+      const contenido = JSON.parse(json.replace(/''/g, "'"));
+      const pasos = pasosEnigmia({ id: "x", tipo: "deduccion", dificultad: 1, contenido, respuesta: "?" });
+      expect(pasos.length, contenido.enunciado).toBeGreaterThan(1);
+    }
   });
 });

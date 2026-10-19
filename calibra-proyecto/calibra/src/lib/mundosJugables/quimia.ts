@@ -21,6 +21,7 @@ export const QUIMIA: MundoJugable = {
       entrada: { tipo: "opciones", opciones: p.opciones, respuesta: p.respuesta },
       visuales: p.diagramaId ? [{ tipo: "molecula", id: p.diagramaId }] : undefined,
       clave: p.clave,
+      pasos: p.pasos,
     };
   },
 };

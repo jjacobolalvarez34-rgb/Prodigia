@@ -1,3 +1,4 @@
+import { pasosOrganica } from "@/lib/quimia/pasos";
 import type { PreguntaQuimia, Rng } from "./quimia";
 
 // Sección 5, ítem 3: banco chico (no generación infinita, a propósito)
@@ -104,5 +105,6 @@ export function generarPreguntaOrganica(nivel: number, usados: Set<string>, rng:
     respuesta: c.nombre,
     clave: c.id,
     diagramaId: c.id,
+    pasos: pasosOrganica(c),
   };
 }

@@ -1,3 +1,4 @@
+import { pasosFormula, pasosNomenclatura, pasosSimbolo, pasosTabla } from "@/lib/quimia/pasos";
 // Banco de datos de Quimia — símbolos/nombres/números atómicos y
 // posición real en la tabla periódica (grupo IUPAC 1-18, período 1-7),
 // y fórmulas de compuestos cotidianos. Datos reales verificados, no
@@ -214,7 +215,11 @@ export interface PreguntaQuimia {
   // COMPUESTOS_ORGANICOS (quimicaOrganica.ts) cuya estructura hay que
   // dibujar arriba del enunciado. undefined en cualquier otro modo.
   diagramaId?: string;
+  // «Cómo se resuelve» (repaso de errores, 2026-10-18; src/lib/quimia/pasos.ts).
+  pasos?: string[];
 }
+
+const nombreDeSimbolo = (s: string): string | undefined => ELEMENTOS.find((e) => e.simbolo === s)?.nombre;
 
 export type Rng = () => number;
 
@@ -266,6 +271,7 @@ function generarPreguntaSimbolos(nivel: number, usados: Set<string>, rng: Rng): 
       opciones: opcionesConDistractores(el.nombre, ELEMENTOS.map((e) => e.nombre), rng),
       respuesta: el.nombre,
       clave: el.simbolo,
+      pasos: pasosSimbolo(el),
     };
   }
   return {
@@ -273,6 +279,7 @@ function generarPreguntaSimbolos(nivel: number, usados: Set<string>, rng: Rng): 
     opciones: opcionesConDistractores(el.simbolo, ELEMENTOS.map((e) => e.simbolo), rng),
     respuesta: el.simbolo,
     clave: el.simbolo,
+    pasos: pasosSimbolo(el),
   };
 }
 
@@ -285,6 +292,7 @@ function generarPreguntaFormulas(nivel: number, usados: Set<string>, rng: Rng): 
       opciones: opcionesConDistractores(c.nombre, COMPUESTOS.map((x) => x.nombre), rng),
       respuesta: c.nombre,
       clave: c.formula,
+      pasos: pasosFormula(c.formula, c.nombre, nombreDeSimbolo),
     };
   }
   return {
@@ -292,6 +300,7 @@ function generarPreguntaFormulas(nivel: number, usados: Set<string>, rng: Rng): 
     opciones: opcionesConDistractores(c.formula, COMPUESTOS.map((x) => x.formula), rng),
     respuesta: c.formula,
     clave: c.formula,
+    pasos: pasosFormula(c.formula, c.nombre, nombreDeSimbolo),
   };
 }
 
@@ -391,6 +400,7 @@ function generarPreguntaTabla(nivel: number, usados: Set<string>, rng: Rng): Pre
       opciones: opcionesConDistractores(String(el.numeroAtomico), otros, rng),
       respuesta: String(el.numeroAtomico),
       clave: el.simbolo,
+      pasos: pasosTabla(el, "z"),
     };
   }
 
@@ -405,6 +415,7 @@ function generarPreguntaTabla(nivel: number, usados: Set<string>, rng: Rng): Pre
       opciones: opcionesConDistractores(formatearOxidacion(el.estadoOxidacionComun), otros, rng),
       respuesta: formatearOxidacion(el.estadoOxidacionComun),
       clave: el.simbolo,
+      pasos: pasosTabla(el, "oxidacion", formatearOxidacion(el.estadoOxidacionComun), (ESTADOS_ALTERNATIVOS[el.simbolo] ?? []).map(formatearOxidacion)),
     };
   }
 
@@ -420,6 +431,7 @@ function generarPreguntaTabla(nivel: number, usados: Set<string>, rng: Rng): Pre
       opciones: opcionesConDistractores(String(el.periodo), PERIODOS_POSIBLES, rng),
       respuesta: String(el.periodo),
       clave: el.simbolo,
+      pasos: pasosTabla(el, "periodo"),
     };
   }
   return {
@@ -427,6 +439,7 @@ function generarPreguntaTabla(nivel: number, usados: Set<string>, rng: Rng): Pre
     opciones: opcionesConDistractores(String(el.grupo), GRUPOS_POSIBLES, rng),
     respuesta: String(el.grupo),
     clave: el.simbolo,
+    pasos: pasosTabla(el, "grupo"),
   };
 }
 
@@ -477,6 +490,7 @@ function generarPreguntaNomenclatura(nivel: number, usados: Set<string>, rng: Rn
       opciones: opcionesConDistractores(c.nombre, COMPUESTOS_NOMENCLATURA.map((x) => x.nombre), rng),
       respuesta: c.nombre,
       clave: c.formula,
+      pasos: pasosNomenclatura(c.formula, c.nombre, nombreDeSimbolo),
     };
   }
   return {
@@ -484,6 +498,7 @@ function generarPreguntaNomenclatura(nivel: number, usados: Set<string>, rng: Rn
     opciones: opcionesConDistractores(c.formula, COMPUESTOS_NOMENCLATURA.map((x) => x.formula), rng),
     respuesta: c.formula,
     clave: c.formula,
+    pasos: pasosNomenclatura(c.formula, c.nombre, nombreDeSimbolo),
   };
 }
 

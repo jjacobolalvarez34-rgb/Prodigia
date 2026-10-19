@@ -1,6 +1,7 @@
 // Melodía: los 7 modos de la web (MelodiaSprintRunner.tsx). Lectura dibuja las notas
 // en el pentagrama, Fundamentos la figura rítmica cuando la pregunta es "¿cómo se
 // llama esta figura?" Oído absoluto hace sonar la nota o el acorde (sin mostrarlos) y Tempo, un metrónomo.
+import { pasosMelodia } from "@/lib/melodia/pasos";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { frecuenciaDeNota, generarPreguntaMelodia, NOMBRE_MODO_MELODIA, type ModoMelodia, type PreguntaMelodia } from "@/lib/practica/melodia";
 import type { MundoJugable, Visual } from "./tipos";
@@ -33,6 +34,7 @@ export const MELODIA: MundoJugable = {
       entrada: { tipo: "opciones", opciones: p.opciones, respuesta: p.respuesta },
       visuales: visualDe(p),
       clave: clave(p),
+      pasos: pasosMelodia(p),
     };
   },
 };

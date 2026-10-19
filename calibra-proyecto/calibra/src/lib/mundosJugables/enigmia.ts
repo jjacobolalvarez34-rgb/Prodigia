@@ -3,6 +3,7 @@
 // deducción del banco de la base (logic_puzzles); cada categoría tiene su propio
 // nivel (logic_skill_levels) y se guarda con insertar_intento_logica. Los de
 // memoria muestran la secuencia (1,3 s + 0,55 s por elemento) con el reloj en pausa.
+import { pasosEnigmia } from "@/lib/enigmia/pasos";
 import { generarAcertijoProcedural, type CategoriaGenerada } from "@/lib/enigmia/generadores";
 import { elegirDelBanco } from "@/lib/enigmia/seleccionDificultad";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
@@ -62,6 +63,7 @@ export const ENIGMIA_BASE: MundoJugable = {
       clave: p.id,
       nivel: p.dificultad,
       datos: { puzzle_id: p.id, categoria },
+      pasos: pasosEnigmia(p),
     };
   },
   modoDePregunta: (p) => String(p.datos?.categoria ?? "patrones"),
