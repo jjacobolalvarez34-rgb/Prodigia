@@ -534,6 +534,18 @@
       "activoSufijo": " · activo",
       "sinDatos": "—",
       "duelosResumen": "{jugados} duelos jugados · {victorias} ganados · {derrotas} perdidos"
+    },
+    "editar": {
+      "boton": "Editar perfil",
+      "titulo": "Editar perfil",
+      "volver": "Volver al perfil",
+      "foto": "Foto",
+      "fotoAyuda": "PNG, JPG, WEBP o GIF. Si pesa mucho, se achica sola.",
+      "nombre": "Nombre",
+      "fondo": "Fondo del perfil",
+      "fondoAyuda": "Sube tu propia imagen o GIF.",
+      "fondoSinComprar": "El fondo con tu propia imagen se consigue en la Tienda.",
+      "aspecto": "Marcos, fondos y efectos: ir al Inventario"
     }
   },
   "Tienda": {

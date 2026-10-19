@@ -14,6 +14,8 @@ interface Props {
   nombre: string | null;
   avatarUrlInicial: string | null;
   marco?: string;
+  // En /perfil solo se muestra; se cambia desde /perfil/editar.
+  editable?: boolean;
 }
 
 const MAX_BYTES = 2 * 1024 * 1024;
@@ -24,7 +26,7 @@ const TIPOS_PERMITIDOS = new Set(["image/png", "image/jpeg", "image/webp", "imag
 // de Storage exige exactamente eso, no cualquier ruta. Siempre pisa el
 // mismo archivo (nombre fijo "foto"), así no hace falta borrar el
 // anterior a mano ni acumular basura.
-export default function SubirAvatar({ userId, nombre, avatarUrlInicial, marco = "ninguno" }: Props) {
+export default function SubirAvatar({ userId, nombre, avatarUrlInicial, marco = "ninguno", editable = true }: Props) {
   const t = useTranslations("Perfil");
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -111,7 +113,7 @@ export default function SubirAvatar({ userId, nombre, avatarUrlInicial, marco = 
       >
         <AvatarConMarco url={avatarUrl} nombre={nombre} marco={marco} size={64} />
       </GlareHover>
-      <div className="flex flex-col gap-1">
+      {editable && <div className="flex flex-col gap-1">
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
@@ -121,7 +123,7 @@ export default function SubirAvatar({ userId, nombre, avatarUrlInicial, marco = 
           {subiendo ? t("subirAvatar.subiendo") : avatarUrl ? t("subirAvatar.cambiarFoto") : t("subirAvatar.subirFoto")}
         </button>
         {error && <p className="text-xs text-error">{error}</p>}
-      </div>
+      </div>}
       <input
         ref={inputRef}
         type="file"

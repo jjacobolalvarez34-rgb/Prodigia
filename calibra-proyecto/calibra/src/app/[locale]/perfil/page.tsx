@@ -11,12 +11,8 @@ import FondoPerfilCapa, { tieneFondoPerfil } from "@/components/FondoPerfilCapa"
 import { MUNDOS_LANDING } from "@/lib/mundos";
 import NombreEditable from "./NombreEditable";
 import SubirAvatar from "./SubirAvatar";
-import SubirFondoPerfil from "./SubirFondoPerfil";
-import ColorNombrePicker from "./ColorNombrePicker";
-import BorrarCuenta from "./BorrarCuenta";
 import ConvertirCuenta from "@/components/ConvertirCuenta";
 import LogroMedalla from "@/components/LogroMedalla";
-import TitulosSection from "./TitulosSection";
 import EstandarteClan from "@/components/clanes/EstandarteClan";
 import { Link } from "@/i18n/navigation";
 import CiudadSkyline from "@/components/recompensas/CiudadSkyline";
@@ -264,18 +260,28 @@ export default async function PerfilPage() {
             <div className="h-20 w-full border-b border-dashed border-border bg-surface-2" />
           )}
           <div className="relative flex flex-col gap-4 px-6 py-6">
-          <SubirAvatar userId={user.id} nombre={profile.display_name} avatarUrlInicial={profileFull?.avatar_url ?? null} marco={marcoPerfil} />
-          {fondoPerfil === "personalizado" && <SubirFondoPerfil userId={user.id} urlInicial={fondoPerfilUrl} />}
+          {/* Pedido 2026-10-19: lo que se cambia va en /perfil/editar, no encima de todo. */}
+          <div className="flex items-start justify-between gap-3">
+            <SubirAvatar userId={user.id} nombre={profile.display_name} avatarUrlInicial={profileFull?.avatar_url ?? null} marco={marcoPerfil} editable={false} />
+            <Link
+              href="/perfil/editar"
+              className={`flex shrink-0 items-center gap-1.5 rounded-xl border-2 px-3 py-2 text-sm font-semibold transition-transform hover:-translate-y-0.5 ${claro ? "border-white/40 bg-black/30 text-white backdrop-blur-sm" : "border-border bg-surface-2 text-foreground"}`}
+            >
+              <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M13.5 3.5l3 3L7 16H4v-3z" />
+                <path d="M11.5 5.5l3 3" />
+              </svg>
+              {t("editar.boton")}
+            </Link>
+          </div>
           <NombreEditable
             nombreActual={profile.display_name}
             fuente={profileFull?.fuente_nombre ?? "default"}
             animacion={profileFull?.animacion_nombre ?? "ninguna"}
             claro={claro}
             color={profileFull?.color_nombre ?? null}
+            editable={false}
           />
-          {profileFull?.color_nombre_desbloqueado && (
-            <ColorNombrePicker colorActual={profileFull?.color_nombre ?? null} claro={claro} />
-          )}
           {(titulosRows as TituloUsuario[] | null)?.find((t) => t.slug === profileFull?.titulo_activo) && (
             <span className={`-mt-2 w-fit rounded-full px-3 py-1 text-xs font-semibold ${claro ? "bg-white/15 text-white" : "bg-primario/10 text-primario"}`}>
               {(titulosRows as TituloUsuario[]).find((t) => t.slug === profileFull?.titulo_activo)?.nombre}
@@ -511,8 +517,6 @@ export default async function PerfilPage() {
           </section>
         )}
 
-        <TitulosSection titulos={(titulosRows as TituloUsuario[]) ?? []} tituloActivo={profileFull?.titulo_activo ?? null} />
-
         <SellosAlineacion userId={user.id} />
 
         <section>
@@ -530,7 +534,6 @@ export default async function PerfilPage() {
           </div>
         </section>
 
-        <BorrarCuenta />
       </div>
     </>
   );

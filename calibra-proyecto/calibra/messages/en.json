@@ -534,6 +534,18 @@
       "activoSufijo": " · active",
       "sinDatos": "—",
       "duelosResumen": "{jugados} duels played · {victorias} won · {derrotas} lost"
+    },
+    "editar": {
+      "boton": "Edit profile",
+      "titulo": "Edit profile",
+      "volver": "Back to profile",
+      "foto": "Photo",
+      "fotoAyuda": "PNG, JPG, WEBP or GIF. If it's too heavy, it's shrunk for you.",
+      "nombre": "Name",
+      "fondo": "Profile background",
+      "fondoAyuda": "Upload your own image or GIF.",
+      "fondoSinComprar": "The custom image background is available in the Shop.",
+      "aspecto": "Frames, backgrounds and effects: go to Inventory"
     }
   },
   "Tienda": {

@@ -39,9 +39,11 @@ interface Props {
   claro?: boolean;
   // Pedido en vivo (2026-09-15): "cambiar el color del nombre".
   color?: string | null;
+  // En /perfil solo se muestra; se cambia desde /perfil/editar.
+  editable?: boolean;
 }
 
-export default function NombreEditable({ nombreActual, fuente, animacion, claro = false, color }: Props) {
+export default function NombreEditable({ nombreActual, fuente, animacion, claro = false, color, editable = true }: Props) {
   const t = useTranslations("Perfil");
   const router = useRouter();
   const [editando, setEditando] = useState(false);
@@ -109,12 +111,14 @@ export default function NombreEditable({ nombreActual, fuente, animacion, claro 
             {texto}
           </ScrollFloat>
         )}
-        <button
-          onClick={() => setEditando(true)}
-          className="text-xs font-medium text-primario hover:underline"
-        >
-          {t("nombreEditable.editar")}
-        </button>
+        {editable && (
+          <button
+            onClick={() => setEditando(true)}
+            className="text-xs font-medium text-primario hover:underline"
+          >
+            {t("nombreEditable.editar")}
+          </button>
+        )}
       </div>
     );
   }
