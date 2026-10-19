@@ -184,7 +184,7 @@ export default function AnatomiaSprintRunner({
     let protegido = false;
     if (!correct) {
       erroresRef.current.push(pregunta);
-      anotarFalla({ enunciado: pregunta.enunciado, tuRespuesta: pregunta.tipo === "click" ? (NOMBRE_POR_HUESO_CLICKEABLE[opcion] ?? opcion) : opcion, correcta: pregunta.respuesta, pasos: [] });
+      anotarFalla({ enunciado: pregunta.enunciado, tuRespuesta: pregunta.tipo === "click" ? (NOMBRE_POR_HUESO_CLICKEABLE[opcion] ?? opcion) : opcion, correcta: pregunta.respuesta, pasos: pregunta.pasos ?? [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

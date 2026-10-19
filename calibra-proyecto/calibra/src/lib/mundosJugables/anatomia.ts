@@ -18,6 +18,7 @@ export const ANATOMIA: MundoJugable = {
       enunciado: p.enunciado,
       entrada: p.tipo === "click" ? { tipo: "esqueleto", objetivo: p.objetivoHueso, respuesta: p.respuesta } : { tipo: "opciones", opciones: p.opciones, respuesta: p.respuesta },
       clave: p.clave,
+      pasos: p.pasos,
     };
   },
 };

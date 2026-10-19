@@ -16,6 +16,7 @@
 // API pública (sin cambios): generarPreguntaHistoria(modo, nivel, usados) y
 // conRngSembrado(rng, fn) para el reto diario: misma semilla, mismas preguntas.
 
+import { pasosHistoria } from "@/lib/historia/pasos";
 import { GENERADORES_CRONOLOGIA } from "./historiaCronologia";
 import { GENERADORES_PERSONAJES } from "./historiaPersonajes";
 import { GENERADORES_CAUSAS } from "./historiaCausas";
@@ -87,5 +88,6 @@ export function conRngSembrado<T>(rng: Rng, fn: () => T): T {
 }
 
 export function generarPreguntaHistoria(modo: ModoHistoria, nivel: number, usados: Set<string> = new Set()): PreguntaHistoria {
-  return generarDetallado(modo, nivel, usados, rngActual).pregunta;
+  const g = generarDetallado(modo, nivel, usados, rngActual);
+  return { ...g.pregunta, pasos: pasosHistoria(g) };
 }

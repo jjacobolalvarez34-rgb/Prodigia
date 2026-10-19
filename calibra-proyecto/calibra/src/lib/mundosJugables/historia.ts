@@ -12,6 +12,6 @@ export const HISTORIA: MundoJugable = {
   ],
   generar: (modo, nivel, usados) => {
     const p = generarPreguntaHistoria(modo as ModoHistoria, nivel, usados);
-    return { enunciado: p.enunciado, entrada: { tipo: "opciones", opciones: p.opciones, respuesta: p.respuesta }, clave: p.clave };
+    return { enunciado: p.enunciado, entrada: { tipo: "opciones", opciones: p.opciones, respuesta: p.respuesta }, clave: p.clave, pasos: p.pasos };
   },
 };

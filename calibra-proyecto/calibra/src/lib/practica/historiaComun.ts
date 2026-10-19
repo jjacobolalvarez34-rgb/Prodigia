@@ -22,6 +22,8 @@ export interface PreguntaHistoria {
   // 1 (muy conocido) a 10 (poco conocido): sale de la prominencia de los hechos y
   // personajes de la pregunta.
   dificultad: number;
+  // «Cómo se resuelve» (repaso de errores, 2026-10-18; src/lib/historia/pasos.ts).
+  pasos?: string[];
 }
 
 export type Rng = () => number;

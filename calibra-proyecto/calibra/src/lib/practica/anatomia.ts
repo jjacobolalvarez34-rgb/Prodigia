@@ -6,6 +6,7 @@
 // nunca un dato inventado — mismo criterio de honestidad de contenido
 // que el resto de la app.
 
+import { pasosAnatomia } from "@/lib/anatomia/pasos";
 import { formatosDe, type FormatoAnatomia } from "./anatomiaFormatos";
 
 export type ModoAnatomia = "oseo" | "muscular" | "organos" | "nervioso";
@@ -68,6 +69,8 @@ export interface PreguntaAnatomiaOpcion {
   clave: string;
   // "clasificacion" = "¿cuál de estas opciones es un músculo?"; el resto, ver anatomiaFormatos.ts.
   formato?: FormatoAnatomia;
+  // «Cómo se resuelve» (repaso de errores, 2026-10-18; src/lib/anatomia/pasos.ts).
+  pasos?: string[];
 }
 
 // Fase 2 ("identificación por ubicación directa"): en vez de elegir el
@@ -83,6 +86,7 @@ export interface PreguntaAnatomiaClick {
   objetivoHueso: string;
   respuesta: string;
   clave: string;
+  pasos?: string[];
 }
 
 export type PreguntaAnatomia = PreguntaAnatomiaOpcion | PreguntaAnatomiaClick;
@@ -194,6 +198,11 @@ function poolOtrosSistemas(modo: ModoAnatomia, dificil: boolean): string[] {
 // pedido original de Fase 2), aunque el término elegido SÍ tenga zona.
 
 export function generarPreguntaAnatomia(modo: ModoAnatomia, nivel: number, usados: Set<string>, rng: Rng = Math.random): PreguntaAnatomia {
+  const p = generarBase(modo, nivel, usados, rng);
+  return { ...p, pasos: pasosAnatomia(modo, p) };
+}
+
+function generarBase(modo: ModoAnatomia, nivel: number, usados: Set<string>, rng: Rng): PreguntaAnatomia {
   const band = banda(nivel);
   const esAlto = band >= 3 && modo !== "organos";
 
