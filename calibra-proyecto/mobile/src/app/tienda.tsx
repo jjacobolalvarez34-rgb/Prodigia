@@ -47,7 +47,7 @@ import { mostrarAviso } from "~/ui/Aviso";
 import Boton3D from "~/ui/Boton3D";
 import Confeti from "~/ui/Confeti";
 import Hoja from "~/ui/Hoja";
-import { IconoBombilla, IconoChispa, IconoCometa, IconoCopo, IconoDestello, IconoEscudo, IconoMochila, IconoRayo, IconoReloj, IconoRepetir } from "~/ui/Iconos";
+import { IconoBombilla, IconoChispa, IconoCometa, IconoCopo, IconoEscudo, IconoMochila, IconoRayo, IconoReloj, IconoRepetir } from "~/ui/Iconos";
 import NumeroAnimado from "~/ui/NumeroAnimado";
 import { BotonAtras, PantallaApilada } from "~/ui/Pantalla";
 import AvatarMarco from "~/ui/placa/AvatarMarco";
@@ -757,7 +757,7 @@ export default function Tienda() {
           )}
           {items.length === 0 && pestanaVista !== null && pestanaVista !== "temas" && pestanaVista !== "cometas" && (
             <View style={{ alignItems: "center", gap: 10, paddingHorizontal: 24, paddingTop: 30 }}>
-              {modo === "inventario" ? <IconoMochila tam={40} c={color.texto2} /> : <IconoDestello tam={40} c={color.logro} />}
+              {modo === "inventario" ? <IconoMochila tam={40} c={color.texto2} /> : <IconoChispa tam={40} c={color.logro} />}
               <Texto v="nota" centro>
                 {modo === "inventario" ? "Todavía no tienes nada de esta sección." : "Ya tienes todo lo de esta sección. Míralo en tu Inventario."}
               </Texto>

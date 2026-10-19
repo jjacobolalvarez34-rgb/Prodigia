@@ -1,3 +1,4 @@
+import Logo from "./Logo";
 import type { ReactNode } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -5,7 +6,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-na
 import { hayWidgets, URL_WEB } from "~/lib/entorno";
 import { anclarWidget } from "~/widgets/registro";
 import { color, radio, fuente } from "~/tema";
-import { IconoCastillo, IconoCompetir, IconoDestello, IconoDiana, IconoFiesta, IconoLibro, IconoMovil } from "./Iconos";
+import { IconoCastillo, IconoCompetir, IconoDiana, IconoFiesta, IconoLibro, IconoMovil } from "./Iconos";
 
 // Carrusel "Destacados" del inicio: las cosas de Prodigia que vale la pena probar,
 // cada una con la luz de su mundo. Lo que todavía no está en la app abre la web.
@@ -45,7 +46,7 @@ export default function Destacados({ novedades }: { novedades: NovedadDestacada[
         etiqueta: n.tipo === "evento" ? "EVENTO" : "NOVEDAD",
         titulo: n.titulo,
         texto: n.descripcion,
-        icono: n.tipo === "evento" ? <IconoFiesta tam={96} c="#FFB627" /> : <IconoDestello tam={96} c="#9B85FF" />,
+        icono: n.tipo === "evento" ? <IconoFiesta tam={96} c="#FFB627" /> : <Logo tam={96} />,
         colores: (n.tipo === "evento" ? ["#5A3A06", "#1A1206"] : ["#3B2C8F", "#140F33"]) as [string, string],
         acento: n.tipo === "evento" ? "#FFB627" : "#9B85FF",
         accion: () => router.push("/avisos"),

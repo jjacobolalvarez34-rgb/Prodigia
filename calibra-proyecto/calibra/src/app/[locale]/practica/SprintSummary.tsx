@@ -112,7 +112,7 @@ export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volv
           transition={{ duration: 0.4, ease: "backOut" }}
           className="rounded-full bg-logro/20 px-5 py-2 text-sm font-bold text-foreground"
         >
-          ✨ {t("partidaPerfecta")}
+          {t("partidaPerfecta")}
         </motion.div>
       )}
 

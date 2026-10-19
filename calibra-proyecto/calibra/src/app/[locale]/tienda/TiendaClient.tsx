@@ -1218,7 +1218,7 @@ function PaqueteMarcosMundo({
   if (yaCompleto) {
     return (
       <p className="rounded-xl border border-dashed border-[#F4E4C1]/30 px-3 py-2 text-sm text-[#F4E4C1]/60">
-        ✨ {t("paqueteMarcosMundoCompleto")}
+        {t("paqueteMarcosMundoCompleto")}
       </p>
     );
   }

@@ -224,7 +224,7 @@ export default function RecompensasClient({ invitado, plan }: { invitado: boolea
             return (
               <div key={p.dia} className={`flex flex-col items-center gap-1 rounded-xl border px-1 py-2 text-center ${hoy ? "border-logro bg-logro/10" : "border-border bg-surface-2"} ${hecho ? "opacity-55" : ""}`}>
                 <span className="text-[10px] font-bold uppercase text-texto-secundario">{t("calendario.dia", { n: p.dia })}</span>
-                <span className="text-lg">{hecho ? "✓" : p.premio === "chispas" ? "✦" : p.premio === "hielo" ? "🧊" : p.premio === "tiempo_extra" ? "⏱️" : "✨"}</span>
+                <span className="text-lg">{hecho ? "✓" : p.premio === "chispas" ? "✦" : p.premio === "hielo" ? "🧊" : p.premio === "tiempo_extra" ? "⏱️" : "★"}</span>
                 <span className="text-[10px] leading-tight text-texto-secundario">{t(`calendario.premio.${p.premio}`, { n: p.cantidad })}</span>
               </div>
             );

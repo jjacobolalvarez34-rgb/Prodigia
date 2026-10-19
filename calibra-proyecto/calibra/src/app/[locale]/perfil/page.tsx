@@ -334,7 +334,7 @@ export default async function PerfilPage() {
             href={profile.plan === "pro" ? "/perfil/estadisticas" : "/pro"}
             className="flex w-fit items-center gap-2 rounded-xl bg-primario px-4 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_color-mix(in_oklab,var(--primario)_55%,transparent)] transition-transform hover:-translate-y-0.5"
           >
-            {profile.plan === "pro" ? `📊 ${t("verEstadisticasAvanzadas")}` : `✨ ${t("hazteProLink")}`}
+            {profile.plan === "pro" ? t("verEstadisticasAvanzadas") : t("hazteProLink")}
           </Link>
           <Link
             href="/clanes"

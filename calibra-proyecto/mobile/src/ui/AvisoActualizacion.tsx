@@ -6,7 +6,7 @@ import { vibrar } from "~/lib/efectos";
 import { color, conAlfa } from "~/tema";
 import Barra from "./Barra";
 import Boton3D from "./Boton3D";
-import { IconoDestello } from "./Iconos";
+import Logo from "./Logo";
 import Texto from "./Texto";
 
 // «Hay una nueva versión de Prodigia»: se revisa al abrir la app y al volver a ella
@@ -50,7 +50,7 @@ export default function AvisoActualizacion() {
     <Animated.View entering={FadeIn.duration(250)} style={styles.fondo}>
       <Animated.View entering={FadeInDown.duration(350)} style={styles.tarjeta}>
         <View style={styles.icono}>
-          <IconoDestello tam={34} c={color.logro} />
+          <Logo tam={40} />
         </View>
         <Texto v="micro" c={color.logro} centro>
           ACTUALIZACIÓN
@@ -103,6 +103,6 @@ export default function AvisoActualizacion() {
 const styles = StyleSheet.create({
   fondo: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: conAlfa(color.bgHondo, 0.9), zIndex: 130, elevation: 130, justifyContent: "center", padding: 24 },
   tarjeta: { gap: 10, padding: 22, borderRadius: 24, borderWidth: 1, borderColor: conAlfa(color.logro, 0.45), backgroundColor: color.surface2 },
-  icono: { alignSelf: "center", width: 64, height: 64, borderRadius: 32, alignItems: "center", justifyContent: "center", backgroundColor: conAlfa(color.logro, 0.14) },
+  icono: { alignSelf: "center", width: 64, height: 64, borderRadius: 32, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(124,92,255,0.14)" },
   notas: { padding: 12, borderRadius: 14, backgroundColor: conAlfa(color.logro, 0.08) },
 });

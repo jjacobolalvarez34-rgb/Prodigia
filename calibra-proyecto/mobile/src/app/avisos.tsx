@@ -12,7 +12,7 @@ import { supabase } from "~/lib/supabase";
 import { actualizarWidgets } from "~/widgets/registro";
 import Boton3D from "~/ui/Boton3D";
 import { color, radio, fuente } from "~/tema";
-import { IconoCampana, IconoDestello, IconoEngranaje, IconoFiesta, IconoLlave, IconoMensaje } from "~/ui/Iconos";
+import { IconoCampana, IconoEngranaje, IconoFiesta, IconoLlave, IconoMensaje } from "~/ui/Iconos";
 
 type TipoAnuncio = "evento" | "actualizacion" | "arreglo";
 
@@ -71,7 +71,7 @@ function TarjetaAnuncio({ anuncio, onAbrir }: { anuncio: Anuncio; onAbrir: () =>
       <LinearGradient colors={[e.de, e.a]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.anuncio, { borderColor: anuncio.leido ? color.border : e.acento }]}>
         <View style={styles.anuncioCabecera}>
           <View style={[styles.chip, { backgroundColor: e.acento + "26", flexDirection: "row", alignItems: "center", gap: 5 }]}>
-            {e.icono === "evento" ? <IconoFiesta tam={13} c={e.acento} /> : e.icono === "novedad" ? <IconoDestello tam={13} c={e.acento} /> : <IconoLlave tam={13} c={e.acento} />}
+            {e.icono === "evento" ? <IconoFiesta tam={13} c={e.acento} /> : e.icono === "novedad" ? <IconoCampana tam={13} c={e.acento} /> : <IconoLlave tam={13} c={e.acento} />}
             <Text style={[styles.chipTexto, { color: e.acento }]}>{e.etiqueta}</Text>
           </View>
           <Text style={styles.fecha}>{formatearFecha(anuncio.fecha)}</Text>
