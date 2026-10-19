@@ -18,8 +18,18 @@ export default function EmotesDuelo() {
   const [enviado, setEnviado] = useState<{ valor: string; id: number } | null>(null);
   const r = recibido ? EMOTES[recibido.valor] : null;
   const yo = enviado ? EMOTES[enviado.valor] : null;
+  // Emote animado (el «Baile de esqueletos»): se ve en grande sobre el duelo.
+  const grande = (r?.animado && recibido) ? { animado: r.animado, id: `r${recibido.id}`, mio: false } : yo?.animado && enviado ? { animado: yo.animado, id: `y${enviado.id}`, mio: true } : null;
   return (
     <div className="flex flex-col gap-1.5">
+      <AnimatePresence>
+        {grande && (
+          <motion.div key={grande.id} initial={{ scale: 0.5, opacity: 0, y: 30 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ type: "spring", damping: 14 }} className="pointer-events-none fixed inset-x-0 top-1/3 z-50 flex justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`/emotes/${grande.animado}-grande.webp`} alt="" className={`w-[min(80vw,420px)] drop-shadow-[0_10px_30px_rgba(0,0,0,.6)] ${grande.mio ? "" : "-scale-x-100"}`} />
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="flex min-h-0 justify-between gap-2" aria-live="polite">
         <AnimatePresence>
           {r && (
@@ -54,7 +64,12 @@ export default function EmotesDuelo() {
               }}
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-primario/10 text-lg transition-transform hover:scale-110 disabled:opacity-40"
             >
-              {EMOTES[e].emoji}
+              {EMOTES[e].animado ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={`/emotes/${EMOTES[e].animado}-icono.png`} alt="" className="h-7 w-7 object-contain" />
+              ) : (
+                EMOTES[e].emoji
+              )}
             </button>
           ))}
       </div>

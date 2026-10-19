@@ -137,7 +137,8 @@ export const CELEBRACIONES: Record<IdTema, Celebracion> = {
     esquina: "estrella",
     acierto: { colores: ["#9B85FF", "#5DE4FF"], instrumento: "El de siempre" },
     perfecta: "Irracionalmente perfecta.",
-    minievento: { nombre: "3,14 minutos", texto: "Un reto de Numeria y Trigonometría de 3,14 minutos; el mejor puntaje gana el título «Irracional».", donde: "partida" },
+    // Pedido del usuario (2026-10-19): quien escriba más dígitos de π en 1 minuto, gana.
+    minievento: { nombre: "Dígitos de π", texto: "Escribe de memoria todos los dígitos de π que puedas en 1 minuto. El que más escriba gana el título «Irracional»; hay tabla del día.", donde: "partida" },
     ranked: null,
     amigos: null,
     avisos: ["Hoy es 3,14: el reto de π está abierto.", "Quedan horas para el reto de π.", "Último rato del día de π."],

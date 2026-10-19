@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import { StyleSheet, View } from "react-native";
 import { ciudadDe, efectoDe, EMOTES, estelaDe, particulasDe } from "@/lib/recompensas/catalogo";
 import { useJugador } from "~/lib/jugador";
@@ -48,6 +49,7 @@ export default function VistaCosmetico({ categoria, valor, tam = 56 }: { categor
       return <IconoNota tam={tam * 0.6} c={color.primarioClaro} />;
     case "emote": {
       const e = EMOTES[valor];
+      if (e?.animado === "baile-esqueletos") return <Image source={require("../../../assets/emotes/baile-esqueletos.webp")} style={{ width: tam * 1.3, height: tam * 0.8 }} contentFit="contain" autoplay />;
       return <Texto style={{ fontSize: tam * 0.6 }}>{e?.emoji ?? "💬"}</Texto>;
     }
     case "titulo":

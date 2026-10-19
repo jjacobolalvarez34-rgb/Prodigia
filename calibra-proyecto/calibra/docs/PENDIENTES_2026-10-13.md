@@ -312,3 +312,13 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 92. [x] (8°, web y app) Inclinación leve a la derecha de los puntos «+N» (decisión de Claude).
 93. [~] Landing de la web y tutorial (primera vez) de la app: explicar las cápsulas y las constelaciones. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html.
 94. [~] Constelaciones: mejorar CÓMO SE VEN (no la pantalla donde están): calidad alta, «wow», pero ya hechas de antemano (imágenes o dibujos pre-renderizados) para que no pongan lenta la app. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html.
+
+## Aprobación del 2026-10-19 (galería de diseño)
+
+95. [ ] El usuario APROBÓ todo el diseño de la galería (eventos, estadísticas Pro, fuentes, constelaciones, tutorial y landing). Construirlo en web y app.
+96. [ ] Halloween: en el resultado (y donde salga la escena), en vez de la bruja, 3 esqueletos bailando como el meme, animados. Y un EMOTE EXCLUSIVO «Baile de esqueletos» que se pueda usar en las Rankeds.
+97. [ ] Día de Pi: minievento «quien escriba más dígitos de π en 1 minuto gana» (título «Irracional», tabla del día).
+98. [ ] (IDEA, no segura todavía) Rankeds con TABLERO EN VIVO en vez de solo el fantasma: los dos jugadores a cada lado; al responder ves cuánto te demoraste tú y cuánto el rival; en las opciones aparece la que eligió el rival; la Exp de cada uno y quién va ganando. Más emoción y presión. Consultar antes de hacer.
+99. [ ] PLANEACIÓN pendiente: los CLANES (están abandonados).
+100. [ ] PLANEACIÓN pendiente: el FEED social.
+101. [ ] PLANEACIÓN pendiente: DOCENTES (el usuario ya tiene una solución en mente: preguntarle).

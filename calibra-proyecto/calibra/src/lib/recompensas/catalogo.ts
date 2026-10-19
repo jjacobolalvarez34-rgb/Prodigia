@@ -187,7 +187,7 @@ export const SONIDOS: Record<string, { nombre: string; notas: NotaSonido[] }> = 
 };
 
 // ---------- Emotes de duelo ----------
-export const EMOTES: Record<string, { emoji: string; texto: string }> = {
+export const EMOTES: Record<string, { emoji: string; texto: string; animado?: string }> = {
   bien_jugado: { emoji: "👏", texto: "¡Bien jugado!" },
   hola: { emoji: "👋", texto: "¡Hola!" },
   fuego: { emoji: "🔥", texto: "¡Qué ritmo!" },
@@ -198,7 +198,7 @@ export const EMOTES: Record<string, { emoji: string; texto: string }> = {
   corona: { emoji: "👑", texto: "¡Reinado!" },
   ...Object.fromEntries(CIUDADES.map((c) => [`ciudad_${c.slug}`, { emoji: c.emoji, texto: `¡Viva ${c.nombre}!` }])),
   ...Object.fromEntries(EMOTES_NUEVOS.map((e) => [e.valor, { emoji: e.emoji, texto: e.texto }])),
-  ...Object.fromEntries(EMOTES_EVENTO.map((e) => [e.valor, { emoji: e.emoji, texto: e.texto }])),
+  ...Object.fromEntries(EMOTES_EVENTO.map((e) => [e.valor, { emoji: e.emoji, texto: e.texto, animado: e.animado }])),
 };
 
 export const EMOTES_GRATIS = ["bien_jugado", "hola"];

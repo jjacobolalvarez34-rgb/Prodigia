@@ -26,7 +26,12 @@ export const EFECTOS_EVENTO: { valor: string; nombre: string; forma: "estrellas"
   { valor: "evento_fuego_fatuo", nombre: "Fuego fatuo", forma: "estrellas", colores: ["#3DDC97", "#7FF0C8", "#A794FF", "#FFFFFF"], rareza: "raro", precio: 1600 },
 ];
 
-export const EMOTES_EVENTO: { valor: string; emoji: string; texto: string; precio: number }[] = [{ valor: "evento_buu", emoji: "👻", texto: "¡Buu!", precio: 600 }];
+// `animado`: emote con animación ya hecha (public/emotes y mobile/assets/emotes: <animado>.webp,
+// <animado>-grande.webp y <animado>-icono.png). El «Baile de esqueletos» (0292) es exclusivo de Halloween.
+export const EMOTES_EVENTO: { valor: string; emoji: string; texto: string; precio: number; animado?: string }[] = [
+  { valor: "evento_buu", emoji: "👻", texto: "¡Buu!", precio: 600 },
+  { valor: "evento_esqueletos", emoji: "💀", texto: "¡A bailar!", precio: 3000, animado: "baile-esqueletos" },
+];
 
 export const TITULOS_EVENTO: { item: string; valor: string; nombre: string; rareza: Rareza; precio: number }[] = [
   { item: "titulo_evento_cazafantasmas", valor: "evento-cazafantasmas", nombre: "Cazafantasmas", rareza: "epico", precio: 3000 },
@@ -66,6 +71,7 @@ export const COLECCIONES: Partial<Record<IdTema, Coleccion>> = {
       { item: "titulo_evento_cazafantasmas", categoria: "titulo", valor: "evento-cazafantasmas", nombre: "Cazafantasmas", rareza: "epico", fichas: 24, cometas: 220 },
       { item: "marco_evento_calabaza", categoria: "marco", valor: "evento_calabaza", nombre: "Marco Calabaza", rareza: "epico", fichas: 30, cometas: 300 },
       { item: "marco_evento_esqueleto", categoria: "marco", valor: "evento_esqueleto", nombre: "Marco Esqueleto fosforescente", rareza: "legendario", fichas: 45, cometas: 600 },
+      { item: "emote_evento_esqueletos", categoria: "emote", valor: "evento_esqueletos", nombre: "Baile de esqueletos", rareza: "epico", fichas: 30, cometas: 300 },
     ],
   },
 };

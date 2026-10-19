@@ -48,6 +48,8 @@ export default function VistaCosmetico({ categoria, valor, tam = 56 }: { categor
     case "sonido":
       return <span style={{ fontSize: tam * 0.55 }}>🎵</span>;
     case "emote":
+      // eslint-disable-next-line @next/next/no-img-element
+      if (EMOTES[valor]?.animado) return <img src={`/emotes/${EMOTES[valor].animado}.webp`} alt="" style={{ width: tam * 1.3, height: tam * 0.8, objectFit: "contain" }} />;
       return <span style={{ fontSize: tam * 0.6 }}>{EMOTES[valor]?.emoji ?? "💬"}</span>;
     case "titulo":
       return <span className="rounded-md border border-logro px-2 py-1 text-[10px] font-bold tracking-wide text-logro">TÍTULO</span>;
