@@ -4811,7 +4811,8 @@
         "plata": "Cápsula de plata",
         "oro": "Cápsula de oro",
         "prisma": "Cápsula prisma",
-        "alineacion": "Cápsula de la Alineación"
+        "alineacion": "Cápsula de la Alineación",
+        "temporada": "Cápsula de temporada"
       },
       "porAbrir": "{n} por abrir",
       "rango": {
@@ -4997,7 +4998,8 @@
       "pro": "Cápsula semanal de Pro",
       "fusion": "De una fusión",
       "alineacion": "Gran Alineación #{n}",
-      "comprada": "Comprada con Cometas"
+      "comprada": "Comprada con Cometas",
+      "temporada": "De un paquete de temporada"
     },
     "premios": {
       "chispas": "{min}–{max} Chispas",
@@ -5007,7 +5009,8 @@
       "escudo": "1 escudo",
       "cosmetico": "Un cosmético {rareza}",
       "coleccion": "Una pieza de la colección de {ciudad} que te falte",
-      "marcoColeccion": "El marco de colección de {ciudad}"
+      "marcoColeccion": "El marco de colección de {ciudad}",
+      "pieza_evento": "Una pieza de la colección del evento que te falte"
     },
     "constelaciones": {
       "titulo": "Constelaciones",
@@ -5564,7 +5567,8 @@
     "coleccion": "La colección",
     "tuya": "¡Es tuya!",
     "nota": "Elige las piezas que quieras con tus {ficha} o con Cometas. Las fichas que sobren al terminar se cambian por {chispas} Chispas cada una. La colección vuelve el año que viene.",
-    "irTienda": "Ir al Bazar"
+    "irTienda": "Ir al Bazar",
+    "verVideo": "Ver el video del evento"
   },
   "Alineacion": {
     "eyebrow": "Gran Alineación #{n}",
@@ -5596,9 +5600,32 @@
     "sellos": "Sellos de la Alineación",
     "verVideo": "Ver el video de la Alineación",
     "saltar": "Saltar",
-    "activarSonido": "Activar sonido"
+    "activarSonido": "Activar sonido",
+    "video": "Video de apertura del evento"
   },
   "Comun": {
     "nuevo": "NUEVO"
+  },
+  "PaquetesCapsulas": {
+    "eyebrow": "Paquetes · con Cometas",
+    "titulo": "Paquetes de cápsulas",
+    "texto": "Más cápsulas por menos Cometas. Quedan en tus Recompensas para abrirlas cuando quieras, una por una.",
+    "temporada": "Solo durante el evento",
+    "hastaEl": "Hasta el {fecha}",
+    "nombres": {
+      "lote_estelar": "Lote Estelar",
+      "lote_supernova": "Lote Supernova",
+      "halloween_x1": "Cápsula de Halloween",
+      "halloween_x5": "Lote de Halloween"
+    },
+    "cantidad": "{n, plural, one {# cápsula} other {# cápsulas}}",
+    "ahorras": "Ahorras {n}",
+    "queSale": "¿Qué puede salir?",
+    "comprar": "Comprar",
+    "confirmar": "Confirmar por {n} Cometas",
+    "cancelar": "Cancelar",
+    "comprando": "Comprando…",
+    "listo": "¡Listo! {n, plural, one {Tu cápsula está} other {Tus # cápsulas están}} en Recompensas.",
+    "irRecompensas": "Ir a abrirlas"
   }
 }

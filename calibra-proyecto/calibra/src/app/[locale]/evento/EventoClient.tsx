@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { repetirVideo } from "@/components/VideoApertura";
+import { VIDEO_DE_TEMA } from "@/lib/temas/videosApertura";
 import { useLocale, useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
@@ -111,6 +113,11 @@ export default function EventoClient({ invitado }: { invitado: boolean }) {
                   ? t("terminaEn", { tiempo: faltaHasta(evento.hasta, ahora) })
                   : t("terminado")}
             </span>
+          )}
+          {evento.estado !== "proximo" && VIDEO_DE_TEMA[tema.tema.id] && (
+            <button type="button" onClick={() => repetirVideo(VIDEO_DE_TEMA[tema.tema.id])} className="w-fit text-sm font-bold hover:underline" style={{ color: tema.tema.acento }}>
+              ▶ {t("verVideo")}
+            </button>
           )}
         </div>
       </div>

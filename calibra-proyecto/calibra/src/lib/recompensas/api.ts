@@ -90,6 +90,8 @@ export function mensajeError(e: unknown): string {
   if (/no hay una racha/i.test(m)) return "No hay una racha para reparar.";
   if (/precio invalido/i.test(m)) return "El precio cambió. Vuelve a abrir la tienda.";
   if (/ya tienes/i.test(m)) return "Ya lo tienes.";
+  if (/ya no esta a la venta/i.test(m)) return "Este paquete ya no está a la venta: terminó el evento.";
+  if (/paquete invalido/i.test(m)) return "Ese paquete no existe. Vuelve a abrir la tienda.";
   if (/temporada/i.test(m)) return "Ese marco ya no está a la venta este mes.";
   if (/ya mandaste/i.test(m)) return "Ya mandaste tu regalo de hoy.";
   if (/juega una partida/i.test(m)) return "Juega una partida hoy para reclamarlo.";
@@ -141,6 +143,32 @@ export async function comprarCapsulaConCometas(sb: SupabaseClient, tipo: "estela
   const { data, error } = await sb.rpc("comprar_capsula_con_cometas", { p_tipo: tipo });
   if (error) throw error;
   return filas<{ id: string; cometas: number }>(data)[0];
+}
+
+// ---------- Paquetes de cápsulas con Cometas (0291) ----------
+export interface PaqueteCapsulas {
+  slug: string;
+  tipo: TipoCapsula;
+  cantidad: number;
+  cometas: number;
+  // Los de temporada: la fiesta, su evento y el último día a la venta.
+  tema: string | null;
+  evento: string | null;
+  hasta: string | null;
+}
+
+// Los paquetes a la venta ahora (sin la migración 0291: ninguno).
+export async function paquetesCapsulas(sb: SupabaseClient): Promise<PaqueteCapsulas[]> {
+  const { data, error } = await sb.rpc("paquetes_capsulas_disponibles");
+  if (error) return [];
+  return filas<PaqueteCapsulas>(data);
+}
+
+// Compra un paquete: las cápsulas quedan en Recompensas › Por abrir.
+export async function comprarPaqueteCapsulas(sb: SupabaseClient, slug: string): Promise<{ cantidad: number; cometas: number }> {
+  const { data, error } = await sb.rpc("comprar_paquete_capsulas", { p_slug: slug });
+  if (error) throw error;
+  return filas<{ cantidad: number; cometas: number }>(data)[0];
 }
 
 export interface RachaReparable {

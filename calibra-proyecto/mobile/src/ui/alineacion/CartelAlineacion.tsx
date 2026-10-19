@@ -18,7 +18,8 @@ import {
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, useJugador } from "~/lib/jugador";
 import { supabase } from "~/lib/supabase";
-import { repetirVideoAlineacion } from "~/lib/videoAlineacion";
+import { repetirVideo } from "~/lib/videoApertura";
+import { VIDEO_ALINEACION } from "@/lib/temas/videosApertura";
 import { mostrarAviso } from "../Aviso";
 import Boton3D from "../Boton3D";
 import Texto from "../Texto";
@@ -179,7 +180,7 @@ export default function CartelAlineacion() {
         </>
       )}
       {(durante || despues) && (
-        <Pressable onPress={repetirVideoAlineacion} hitSlop={8} style={{ alignSelf: "flex-start" }} accessibilityRole="button">
+        <Pressable onPress={() => repetirVideo(VIDEO_ALINEACION)} hitSlop={8} style={{ alignSelf: "flex-start" }} accessibilityRole="button">
           <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 12.5, color: ORO }}>▶ Ver el video de la Alineación</Texto>
         </Pressable>
       )}

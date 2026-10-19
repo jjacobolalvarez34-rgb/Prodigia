@@ -9,6 +9,8 @@
 import { COSTOS, PRECIO_LEGENDARIO_COMETAS, PRECIO_RAREZA_CHISPAS, SOLO_COMETAS } from "../tienda/costos";
 import { EFECTOS_NUEVOS, EMOTES_NUEVOS, ESTELAS_NUEVAS, filasCatalogoAmpliado, MARCOS_ESTILO, PAQUETES_NUEVOS, SONIDOS_NUEVOS } from "./catalogoAmpliado";
 import { EFECTOS_EVENTO, EMOTES_EVENTO, ESTELAS_EVENTO, MARCOS_EVENTO, piezasDeEventos } from "@/lib/temas/colecciones";
+import type { IdTema } from "@/lib/temas/calendario";
+import { TEMAS } from "@/lib/temas/temas";
 
 export type Rareza = "comun" | "raro" | "epico" | "legendario";
 
@@ -365,7 +367,7 @@ export const COLOR_RAREZA: Record<Rareza, string> = { comun: "#8892B0", raro: "#
 export const NOMBRE_RAREZA: Record<Rareza, string> = { comun: "Común", raro: "Raro", epico: "Épico", legendario: "Legendario" };
 
 // ---------- Cápsulas ----------
-export type TipoCapsula = "diaria" | "misiones" | "racha" | "nivel" | "ciudad" | "liga" | "liga_bronce" | "liga_plata" | "liga_oro" | "coleccion" | "pro" | "estelar" | "supernova" | "plata" | "oro" | "prisma" | "alineacion";
+export type TipoCapsula = "diaria" | "misiones" | "racha" | "nivel" | "ciudad" | "liga" | "liga_bronce" | "liga_plata" | "liga_oro" | "coleccion" | "pro" | "estelar" | "supernova" | "plata" | "oro" | "prisma" | "alineacion" | "temporada";
 
 export const CAPSULAS: Record<TipoCapsula, { nombre: string; colores: [string, string] }> = {
   diaria: { nombre: "Cápsula diaria", colores: ["#7C5CFF", "#FFC53D"] },
@@ -389,6 +391,9 @@ export const CAPSULAS: Record<TipoCapsula, { nombre: string; colores: [string, s
   prisma: { nombre: "Cápsula prisma", colores: ["#FF6FD8", "#6FF0FF"] },
   // Por jugar 3 partidas durante la Gran Alineación (0290).
   alineacion: { nombre: "Cápsula de la Alineación", colores: ["#E8A317", "#FFF1C4"] },
+  // De temporada (0291): se compran con Cometas mientras dura el evento; `mundo` guarda
+  // la fiesta (sus colores) y traen piezas de su colección.
+  temporada: { nombre: "Cápsula de temporada", colores: ["#FF8A1F", "#7C3AED"] },
 };
 
 // Cápsulas que se compran con Cometas (precio real en comprar_capsula_con_cometas, 0287).
@@ -401,6 +406,10 @@ export const CAPSULAS_CON_COMETAS: { tipo: "estelar" | "supernova"; costo: numbe
 export function coloresCapsula(tipo: TipoCapsula, mundo?: string | null): [string, string] {
   const c = ciudadDe(mundo);
   if (c && (tipo === "ciudad" || tipo === "coleccion")) return [c.color, tono(c.color, 0.55)];
+  if (tipo === "temporada" && mundo) {
+    const tema = TEMAS[mundo as IdTema];
+    if (tema) return tema.capsula?.colores ?? [tema.acento, tema.acento2];
+  }
   return CAPSULAS[tipo]?.colores ?? CAPSULAS.diaria.colores;
 }
 
@@ -413,6 +422,7 @@ export function textoPremio(premio: string, minimo: number, maximo: number, mund
   if (premio === "escudo") return "1 escudo";
   if (premio.startsWith("cosmetico_")) return `Un cosmético ${NOMBRE_RAREZA[premio.slice(10) as Rareza].toLowerCase()}`;
   if (premio === "coleccion") return c ? `Una pieza de la colección de ${c.nombre} que te falte` : "Una pieza de la colección de la ciudad";
+  if (premio === "pieza_evento") return "Una pieza de la colección del evento que te falte";
   if (premio === "marco_coleccion") return c ? `El marco de colección de ${c.nombre}` : "El marco de colección";
   return premio;
 }

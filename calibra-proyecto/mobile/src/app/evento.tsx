@@ -1,17 +1,19 @@
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLOR_RAREZA, NOMBRE_RAREZA } from "@/lib/recompensas/catalogo";
 import { PARTICULAS } from "@/lib/temas/dibujos";
 import { CHISPAS_POR_FICHA, EXP_POR_FICHA, FICHAS_MAX_DIA } from "@/lib/temas/colecciones";
 import { canjearPieza, cerrarFichas, estadoEvento, eventoDeTema, faltaHasta, faltaPara, mensajeErrorEvento, type EstadoEvento } from "@/lib/temas/eventos";
+import { VIDEO_DE_TEMA } from "@/lib/temas/videosApertura";
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, fijarCometas, useJugador } from "~/lib/jugador";
 import { recargarCosmeticos } from "~/lib/recompensas";
 import { useSesion } from "~/lib/sesion";
 import { supabase } from "~/lib/supabase";
+import { repetirVideo } from "~/lib/videoApertura";
 import { useTemaHoy } from "~/lib/temporada";
 import { mostrarAviso } from "~/ui/Aviso";
 import Boton3D from "~/ui/Boton3D";
@@ -111,6 +113,11 @@ export default function Evento() {
                   : "Terminó: cambia tus fichas"}
             </Texto>
           </View>
+          {evento.estado !== "proximo" && VIDEO_DE_TEMA[tema.tema.id] && (
+            <Pressable onPress={() => repetirVideo(VIDEO_DE_TEMA[tema.tema.id])} hitSlop={8} style={{ alignSelf: "flex-start", marginTop: 4 }} accessibilityRole="button">
+              <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 12.5, color: tema.tema.acento }}>▶ Ver el video del evento</Texto>
+            </Pressable>
+          )}
         </View>
       </View>
 

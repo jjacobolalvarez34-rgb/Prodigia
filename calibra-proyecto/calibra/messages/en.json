@@ -4811,7 +4811,8 @@
         "plata": "Silver capsule",
         "oro": "Gold capsule",
         "prisma": "Prism capsule",
-        "alineacion": "Alignment capsule"
+        "alineacion": "Alignment capsule",
+        "temporada": "Seasonal capsule"
       },
       "porAbrir": "{n} to open",
       "rango": {
@@ -4997,7 +4998,8 @@
       "pro": "Weekly Pro capsule",
       "fusion": "From a fusion",
       "alineacion": "Great Alignment #{n}",
-      "comprada": "Bought with Comets"
+      "comprada": "Bought with Comets",
+      "temporada": "From a seasonal bundle"
     },
     "premios": {
       "chispas": "{min}–{max} Sparks",
@@ -5007,7 +5009,8 @@
       "escudo": "1 shield",
       "cosmetico": "A {rareza} cosmetic",
       "coleccion": "A {ciudad} collection piece you don't have",
-      "marcoColeccion": "The {ciudad} collection frame"
+      "marcoColeccion": "The {ciudad} collection frame",
+      "pieza_evento": "An event collection piece you're missing"
     },
     "constelaciones": {
       "titulo": "Constellations",
@@ -5564,7 +5567,8 @@
     "coleccion": "The collection",
     "tuya": "It's yours!",
     "nota": "Pick the pieces you want with your {ficha} or with Comets. Leftover tokens become {chispas} Sparks each when it ends. The collection returns next year.",
-    "irTienda": "Go to the Bazaar"
+    "irTienda": "Go to the Bazaar",
+    "verVideo": "Watch the event video"
   },
   "Alineacion": {
     "eyebrow": "Great Alignment #{n}",
@@ -5596,9 +5600,32 @@
     "sellos": "Alignment seals",
     "verVideo": "Watch the Alignment video",
     "saltar": "Skip",
-    "activarSonido": "Turn on sound"
+    "activarSonido": "Turn on sound",
+    "video": "Event opening video"
   },
   "Comun": {
     "nuevo": "NEW"
+  },
+  "PaquetesCapsulas": {
+    "eyebrow": "Bundles · with Comets",
+    "titulo": "Capsule bundles",
+    "texto": "More capsules for fewer Comets. They wait in your Rewards so you can open them whenever you like, one by one.",
+    "temporada": "Event only",
+    "hastaEl": "Until {fecha}",
+    "nombres": {
+      "lote_estelar": "Stellar Bundle",
+      "lote_supernova": "Supernova Bundle",
+      "halloween_x1": "Halloween Capsule",
+      "halloween_x5": "Halloween Bundle"
+    },
+    "cantidad": "{n, plural, one {# capsule} other {# capsules}}",
+    "ahorras": "Save {n}",
+    "queSale": "What can you get?",
+    "comprar": "Buy",
+    "confirmar": "Confirm for {n} Comets",
+    "cancelar": "Cancel",
+    "comprando": "Buying…",
+    "listo": "Done! {n, plural, one {Your capsule is} other {Your # capsules are}} in Rewards.",
+    "irRecompensas": "Go open them"
   }
 }

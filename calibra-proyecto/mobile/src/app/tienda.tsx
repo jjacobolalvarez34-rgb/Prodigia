@@ -59,6 +59,7 @@ import VistaCosmetico from "~/ui/recompensas/VistaCosmetico";
 import IlustracionPaquete from "~/ui/recompensas/IlustracionPaquete";
 import { abrirCompraWeb, PaquetesMoneda } from "~/ui/pagos/Vitrina";
 import CapsulasCometas from "~/ui/pagos/CapsulasCometas";
+import PaquetesCapsulas from "~/ui/pagos/PaquetesCapsulas";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente } from "~/tema";
 import { FUENTE_FAMILIA } from "~/lib/placa";
@@ -647,6 +648,7 @@ export default function Tienda() {
               <Texto v="nota" tam={12}>
                 {monedaVista === "cometas" ? "La moneda premium: lo legendario, o cámbiala por Chispas." : "Para todo el Bazar: marcos, fondos, ayudas y mundos nuevos."} El pago se hace en la web, con Paddle, y llega a esta cuenta en segundos.
               </Texto>
+              <PaquetesCapsulas />
               <CapsulasCometas />
               <View style={styles.cometasCaja}>
                 <IconoCometa tam={52} />

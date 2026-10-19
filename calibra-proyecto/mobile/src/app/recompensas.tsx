@@ -87,6 +87,7 @@ function detalleCapsula(c: DatosCapsula): string {
   if (c.tipo === "plata" || c.tipo === "oro" || c.tipo === "prisma") return "De una fusión";
   if (c.tipo === "alineacion") return `Gran Alineación #${c.detalle?.numero ?? 1}`;
   if (c.tipo === "estelar" || c.tipo === "supernova") return "Comprada con Cometas";
+  if (c.tipo === "temporada") return "De un paquete de temporada";
   return "Por jugar hoy";
 }
 

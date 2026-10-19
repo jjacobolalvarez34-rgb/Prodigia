@@ -3,25 +3,28 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { useEffect, useRef, useState } from "react";
 import { Animated, BackHandler, Easing, Pressable, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { momentoAlineacion } from "@/lib/recompensas/alineacion";
+import { videoAperturaActual } from "@/lib/temas/videosApertura";
 import { leerAjustes } from "~/lib/ajustes";
-import { marcarVideoVisto, usePedidosVideo, videoVisto } from "~/lib/videoAlineacion";
-import Texto from "../Texto";
+import { marcarVideoVisto, usePedidoVideo, videoVisto } from "~/lib/videoApertura";
+import Texto from "./Texto";
 
-// Video de apertura de la Gran Alineación (aprobado el 2026-10-18; fuente en
-// prodigia-marketing/videos/gran-alineacion). Si la app se abre durante el evento, el
-// video sale en lugar del menú; si el evento empieza con la app abierta (fuera de una
-// partida), entra con un fundido. Una vez por alineación; se puede saltar desde el
-// primer segundo y, al terminar, el último cuadro se funde con la app.
-const VIDEO = require("../../../assets/videos/gran-alineacion.mp4");
+// Video de apertura de los eventos (Gran Alineación, Halloween…; cuál toca lo dice
+// videoAperturaActual). Si la app se abre durante el evento, el video sale en lugar
+// del menú; si el evento empieza con la app abierta (fuera de una partida), entra con
+// un fundido. Una vez por edición; se puede saltar desde el primer segundo. Los videos
+// terminan con ~5 s de la imagen final animada, y desde ahí se funden con la app.
+// Para sumar el de otra fiesta: su archivo acá y en VIDEO_DE_TEMA.
+const VIDEOS: Record<string, number> = {
+  "gran-alineacion": require("../../assets/videos/gran-alineacion.mp4"),
+};
 const ENTRADA_MS = 700;
 const SALIDA_MS = 650;
-const TOPE_MS = 16_000; // si el video no avisa que terminó, no queda trabado
+const TOPE_MS = 24_000; // si el video no avisa que terminó, no queda trabado
 
 // Solo la primera revisión de la sesión (al abrir la app) sale sin fundido.
 let primeraRevision = true;
 
-function Reproductor({ fundido, onFin }: { fundido: boolean; onFin: () => void }) {
+function Reproductor({ fuente, fundido, onFin }: { fuente: number; fundido: boolean; onFin: () => void }) {
   const insets = useSafeAreaInsets();
   const [opacidad] = useState(() => new Animated.Value(fundido ? 0 : 1));
   const [saltable, setSaltable] = useState(false);
@@ -31,7 +34,7 @@ function Reproductor({ fundido, onFin }: { fundido: boolean; onFin: () => void }
     finRef.current = onFin;
   }, [onFin]);
 
-  const player = useVideoPlayer(VIDEO, (p) => {
+  const player = useVideoPlayer(fuente, (p) => {
     p.loop = false;
     p.muted = !leerAjustes().sonido;
     p.play();
@@ -74,20 +77,20 @@ function Reproductor({ fundido, onFin }: { fundido: boolean; onFin: () => void }
   );
 }
 
-export default function VideoAlineacion() {
-  const [video, setVideo] = useState<{ numero: number; fundido: boolean; id: number } | null>(null);
-  const pedidos = usePedidosVideo();
-  const pedidosVistos = useRef(pedidos);
+export default function VideoApertura() {
+  const [video, setVideo] = useState<{ clave: string | null; archivo: string; fundido: boolean; id: number } | null>(null);
+  const pedido = usePedidoVideo();
+  const pedidoVisto = useRef(pedido.n);
 
   useEffect(() => {
     let vivo = true;
     function revisar() {
       const instantaneo = primeraRevision;
       primeraRevision = false;
-      const m = momentoAlineacion(Date.now());
-      if (m.momento !== "durante") return;
-      videoVisto(m.numero).then((visto) => {
-        if (vivo && !visto) setVideo((v) => v ?? { numero: m.numero, fundido: !instantaneo, id: Date.now() });
+      const v = videoAperturaActual();
+      if (!v || !VIDEOS[v.archivo]) return;
+      videoVisto(v.clave).then((visto) => {
+        if (vivo && !visto) setVideo((actual) => actual ?? { clave: v.clave, archivo: v.archivo, fundido: !instantaneo, id: Date.now() });
       });
     }
     revisar();
@@ -98,20 +101,23 @@ export default function VideoAlineacion() {
     };
   }, []);
 
-  // «Ver el video» desde el cartel del Inicio.
+  // «Ver el video» desde un cartel (no cuenta como visto).
   useEffect(() => {
-    if (pedidos === pedidosVistos.current) return;
-    pedidosVistos.current = pedidos;
-    setVideo({ numero: momentoAlineacion(Date.now()).numero, fundido: true, id: Date.now() });
-  }, [pedidos]);
+    if (pedido.n === pedidoVisto.current) return;
+    pedidoVisto.current = pedido.n;
+    const archivo = pedido.archivo ?? videoAperturaActual()?.archivo;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (archivo && VIDEOS[archivo]) setVideo({ clave: null, archivo, fundido: true, id: Date.now() });
+  }, [pedido]);
 
   if (!video) return null;
   return (
     <Reproductor
       key={video.id}
+      fuente={VIDEOS[video.archivo]}
       fundido={video.fundido}
       onFin={() => {
-        marcarVideoVisto(video.numero);
+        if (video.clave) marcarVideoVisto(video.clave);
         setVideo(null);
       }}
     />

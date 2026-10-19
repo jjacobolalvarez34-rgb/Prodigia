@@ -123,7 +123,8 @@ export default function RecompensasClient({ invitado, plan }: { invitado: boolea
 
   function detalle(c: Capsula): string {
     const d = c.detalle;
-    const ciudad = c.mundo ? tMundos(c.mundo) : "";
+    // En las de temporada `mundo` es la fiesta, no una ciudad.
+    const ciudad = c.mundo && c.tipo !== "temporada" ? tMundos(c.mundo) : "";
     if (c.tipo === "nivel" && d?.nivel) return t("detalle.nivel", { n: d.nivel });
     if (c.tipo === "racha" && d?.dias) return t("detalle.racha", { n: d.dias });
     if (c.tipo === "racha") return t("detalle.calendario");
@@ -136,6 +137,7 @@ export default function RecompensasClient({ invitado, plan }: { invitado: boolea
     if (c.tipo === "plata" || c.tipo === "oro" || c.tipo === "prisma") return t("detalle.fusion");
     if (c.tipo === "alineacion") return t("detalle.alineacion", { n: c.detalle?.numero ?? 1 });
     if (c.tipo === "estelar" || c.tipo === "supernova") return t("detalle.comprada");
+    if (c.tipo === "temporada") return t("detalle.temporada");
     return t("detalle.diaria");
   }
 

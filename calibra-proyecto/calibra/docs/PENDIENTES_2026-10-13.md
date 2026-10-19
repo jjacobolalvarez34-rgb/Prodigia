@@ -283,3 +283,15 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 - Animación de apertura: **video renderizado de alta gama**. Con la app abierta entra con fundido; al abrir la app durante el evento, se ve el video en vez del menú. Primero la de la Alineación, para que el usuario la apruebe; las de los demás eventos quedan planeadas en docs/eventos/ANIMACIONES_EVENTOS.md.
 - Video de la Alineación aprobado (2026-10-18) y conectado: app ui/alineacion/VideoAlineacion.tsx, web components/alineacion/VideoAlineacion.tsx (16:9 y 9:16 en public/videos). Una vez por alineación en cada dispositivo, se salta desde el primer segundo y se repite desde el cartel («Ver el video»).
 - **Antes del sábado 24/10 a las 18:00 de Colombia: correr las migraciones 0288, 0289 y 0290.**
+
+## Pedidos del 2026-10-19
+
+73. [x] La app 0.6 no avisaba de la 0.6.1: pedía /es/api/app/version (HTML). El servidor reescribe /es/api/* → /api/* (proxy.ts) y la app usa la ruta sin idioma. Lo mismo arregló el reto del finde.
+74. [x] La tienda de la web caía en «Algo no cargó bien» (portada sin puesto → DE_PESTANA[undefined]).
+75. [x] Un GIF pesado de fondo trababa la web: se achica en un Web Worker y en menos intentos (la app cede el turno entre cuadros).
+76. [x] Web: «Editar perfil» en su propia página (/perfil/editar).
+77. [x] Sin destellos (✨ / IconoDestello): el aviso de actualización lleva el logo.
+78. [x] Paquetes de cápsulas SOLO con Cometas (microtransacciones), también de temporada: migración 0291 (Lote Estelar 5×500, Lote Supernova 3×750, Cápsula de Halloween 150 y 5×600 mientras dura el evento; trae piezas de la colección). **Correr 0291 en Supabase.**
+79. [~] Video de Halloween: cuadros aprobados; la calabaza grande entra con su animación; todos los videos de evento llevan ~5 s finales animados (regla nueva). Reproductor genérico (VideoApertura) en web y app. Falta: integrar el render y compilar la 0.6.2.
+80. [x] Planeación de los videos de las demás festividades en docs/eventos/ANIMACIONES_EVENTOS.md (Muertos es el próximo: 1/11).
+
