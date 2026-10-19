@@ -3,7 +3,7 @@
 import { generarRetoFinde, sabadoAnterior, sabadoDelFinde } from "@/lib/retoFinde";
 import type { PreguntaRetoDiario } from "@/lib/retoDiario";
 import { placaBasica, type PlacaDatos } from "./placa";
-import { URL_WEB } from "./entorno";
+import { ORIGEN_WEB } from "./entorno";
 import { supabase } from "./supabase";
 
 export interface IntentoFinde {
@@ -79,7 +79,7 @@ export async function iniciarFinde(): Promise<{ intento: number; iniciadoAt: num
 // 2026-10-14: antes la base creía los aciertos que mandaba el teléfono).
 export async function terminarFinde(respuestas: string[]): Promise<ResultadoFinde> {
   const { data: s } = await supabase.auth.getSession();
-  const res = await fetch(`${URL_WEB}/api/reto-finde/terminar`, {
+  const res = await fetch(`${ORIGEN_WEB}/api/reto-finde/terminar`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${s.session?.access_token ?? ""}` },
     body: JSON.stringify({ respuestas }),

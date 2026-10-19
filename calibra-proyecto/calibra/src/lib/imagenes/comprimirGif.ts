@@ -14,6 +14,12 @@ import { applyPalette, GIFEncoder, quantize } from "gifenc";
 // reduce de tamaño promediando píxeles y se vuelve a codificar con su paleta. Si
 // todavía pesa mucho, se prueba con menos tamaño, menos colores y saltando cuadros
 // (sumando su duración, así la animación dura lo mismo).
+//
+// Arreglo del 2026-10-19 (un GIF pesado de fondo de perfil trabó la web hasta el aviso
+// «La página no responde»): después de cada intento se mide cuánto pesó y el siguiente
+// salta directo al tamaño que debería entrar (antes podían ser 7 codificaciones
+// completas), y el trabajo cede el turno cada ~30 ms para que la pantalla siga viva.
+// En la web además corre en un Web Worker (comprimirGif.worker.ts).
 
 export interface IntentoGif {
   escala: number;
@@ -89,7 +95,15 @@ export function reducir(origen: Uint8ClampedArray, w: number, h: number, nw: num
 
 type CuadroCrudo = Parameters<typeof decompressFrame>[0];
 
-function codificar(gif: ParsedGif, intento: IntentoGif): ResultadoGif {
+// Cede el turno al resto de la app si ya pasó un rato trabajando sin parar.
+let ultimoRespiro = 0;
+async function respirar() {
+  if (Date.now() - ultimoRespiro < 30) return;
+  await new Promise((ok) => setTimeout(ok, 0));
+  ultimoRespiro = Date.now();
+}
+
+async function codificar(gif: ParsedGif, intento: IntentoGif): Promise<ResultadoGif> {
   const W = gif.lsd.width;
   const H = gif.lsd.height;
   const nw = Math.max(1, Math.round(W * intento.escala));
@@ -115,8 +129,9 @@ function codificar(gif: ParsedGif, intento: IntentoGif): ResultadoGif {
     cuadros++;
   };
 
-  cuadrosCrudos.forEach((crudo, i) => {
-    const f = decompressFrame(crudo, gif.gct, true);
+  for (let i = 0; i < cuadrosCrudos.length; i++) {
+    await respirar();
+    const f = decompressFrame(cuadrosCrudos[i], gif.gct, true);
     const { left, top, width, height } = f.dims;
     const previo = f.disposalType === 3 ? lienzo.slice() : null;
     for (let y = 0; y < height; y++) {
@@ -146,19 +161,24 @@ function codificar(gif: ParsedGif, intento: IntentoGif): ResultadoGif {
     } else if (previo) {
       lienzo.set(previo);
     }
-  });
+  }
   if (pendiente) escribir(pendiente, acumulado);
   enc.finish();
   return { bytes: enc.bytes(), ancho: nw, alto: nh, cuadros, intento };
 }
 
 // null = no se pudo dejar debajo del límite ni con el intento más liviano.
-export function comprimirGif(entrada: ArrayBuffer, maxBytes: number, maxLado = 1080): ResultadoGif | null {
+export async function comprimirGif(entrada: ArrayBuffer, maxBytes: number, maxLado = 1080): Promise<ResultadoGif | null> {
+  ultimoRespiro = Date.now();
   const gif = parseGIF(entrada);
   if (!gif.frames.some((f) => "image" in f)) return null;
-  for (const intento of intentosGif(entrada.byteLength, maxBytes, gif.lsd.width, gif.lsd.height, maxLado)) {
-    const r = codificar(gif, intento);
+  // Techo de escala medido: el peso crece más o menos con el área (escala²).
+  let techo = Infinity;
+  for (const base of intentosGif(entrada.byteLength, maxBytes, gif.lsd.width, gif.lsd.height, maxLado)) {
+    const intento = { ...base, escala: Math.min(base.escala, techo) };
+    const r = await codificar(gif, intento);
     if (r.bytes.byteLength <= maxBytes) return r;
+    techo = intento.escala * Math.sqrt(maxBytes / r.bytes.byteLength) * 0.94;
   }
   return null;
 }

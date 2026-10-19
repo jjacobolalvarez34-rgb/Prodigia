@@ -7,13 +7,43 @@ import { comprimirGif } from "./comprimirGif";
 //   - PNG, JPG o WEBP: se redibuja más chico en un canvas y se guarda en WEBP (o
 //     JPG si el navegador no sabe hacer WEBP), bajando calidad y tamaño de a poco.
 // null = no se pudo dejar debajo del límite.
+
+// El GIF se achica en un Web Worker (2026-10-19: en el hilo de la página la trababa
+// hasta «La página no responde»). Si el navegador no puede crear el worker, se hace
+// acá mismo, que igual cede el turno entre cuadros.
+async function gifEnHiloAparte(bytes: ArrayBuffer, maxBytes: number, maxLado: number): Promise<ArrayBuffer | null> {
+  let worker: Worker | null = null;
+  try {
+    worker = new Worker(new URL("./comprimirGif.worker.ts", import.meta.url), { type: "module" });
+  } catch {
+    worker = null;
+  }
+  if (!worker) {
+    const r = await comprimirGif(bytes, maxBytes, maxLado);
+    return r ? (r.bytes.buffer.slice(r.bytes.byteOffset, r.bytes.byteOffset + r.bytes.byteLength) as ArrayBuffer) : null;
+  }
+  const w = worker;
+  return new Promise((ok) => {
+    w.onmessage = (e: MessageEvent<{ ok: boolean; bytes?: ArrayBuffer }>) => {
+      w.terminate();
+      ok(e.data.ok && e.data.bytes ? e.data.bytes : null);
+    };
+    w.onerror = () => {
+      w.terminate();
+      comprimirGif(bytes, maxBytes, maxLado).then((r) => ok(r ? (r.bytes.buffer.slice(r.bytes.byteOffset, r.bytes.byteOffset + r.bytes.byteLength) as ArrayBuffer) : null));
+    };
+    // Se manda una copia: si el worker falla, el original sigue sirviendo acá.
+    w.postMessage({ bytes: bytes.slice(0), maxBytes, maxLado });
+  });
+}
+
 export async function ajustarImagenAlLimite(file: File, maxBytes: number, maxLado: number): Promise<File | null> {
   if (file.size <= maxBytes) return file;
   const base = file.name.replace(/\.[^.]+$/, "") || "imagen";
 
   if (file.type === "image/gif") {
-    const r = comprimirGif(await file.arrayBuffer(), maxBytes, maxLado);
-    return r ? new File([r.bytes as BlobPart], `${base}.gif`, { type: "image/gif" }) : null;
+    const bytes = await gifEnHiloAparte(await file.arrayBuffer(), maxBytes, maxLado);
+    return bytes ? new File([bytes], `${base}.gif`, { type: "image/gif" }) : null;
   }
 
   const bitmap = await createImageBitmap(file);

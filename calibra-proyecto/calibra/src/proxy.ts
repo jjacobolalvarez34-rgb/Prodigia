@@ -49,6 +49,17 @@ function sinPrefijoLocale(pathname: string): string {
 // cualquier página arranque a renderizar — ninguna sección bloqueada puede
 // filtrar contenido real, sin importar qué haga la página en sí.
 export async function proxy(request: NextRequest) {
+  // Bug real (2026-10-19): la app pedía la API con el prefijo de idioma
+  // («/es/api/app/version», «/es/api/reto-finde/terminar»), recibía la página
+  // 404 en HTML y nunca avisaba de una versión nueva. Las apps ya instaladas
+  // (0.6.0 y 0.6.1) siguen pidiéndola así: se reescribe a «/api/...».
+  const api = /^\/[a-z]{2}(\/api\/.*)$/.exec(request.nextUrl.pathname);
+  if (api && hasLocale(routing.locales, request.nextUrl.pathname.slice(1, 3))) {
+    const url = request.nextUrl.clone();
+    url.pathname = api[1];
+    return NextResponse.rewrite(url);
+  }
+
   const intlResponse = intlMiddleware(request);
 
   // next-intl decidió redirigir (agregar/corregir el prefijo de idioma, o

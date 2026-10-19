@@ -34,11 +34,11 @@ function gifDePrueba(lado: number, cuadros: number, demoraMs: number): ArrayBuff
 const duracionTotal = (buf: ArrayBuffer) => decompressFrames(parseGIF(buf), true).reduce((s, f) => s + f.delay, 0);
 
 describe("comprimirGif", () => {
-  it("deja un GIF grande debajo del límite, sigue siendo un GIF animado válido y dura lo mismo", () => {
+  it("deja un GIF grande debajo del límite, sigue siendo un GIF animado válido y dura lo mismo", async () => {
     const original = gifDePrueba(320, 12, 100);
     const limite = Math.floor(original.byteLength / 4);
     expect(original.byteLength).toBeGreaterThan(limite);
-    const r = comprimirGif(original, limite)!;
+    const r = (await comprimirGif(original, limite))!;
     expect(r).not.toBeNull();
     expect(r.bytes.byteLength).toBeLessThanOrEqual(limite);
     const salida = r.bytes.buffer.slice(r.bytes.byteOffset, r.bytes.byteOffset + r.bytes.byteLength) as ArrayBuffer;
@@ -52,9 +52,9 @@ describe("comprimirGif", () => {
     expect(duracionTotal(salida)).toBe(duracionTotal(original));
   }, 60_000);
 
-  it("la transparencia sobrevive (el borde transparente sigue transparente)", () => {
+  it("la transparencia sobrevive (el borde transparente sigue transparente)", async () => {
     const original = gifDePrueba(120, 3, 200);
-    const r = comprimirGif(original, Math.floor(original.byteLength / 2))!;
+    const r = (await comprimirGif(original, Math.floor(original.byteLength / 2)))!;
     const salida = r.bytes.buffer.slice(r.bytes.byteOffset, r.bytes.byteOffset + r.bytes.byteLength) as ArrayBuffer;
     const primero = decompressFrames(parseGIF(salida), true)[0];
     expect(primero.patch[3]).toBe(0);

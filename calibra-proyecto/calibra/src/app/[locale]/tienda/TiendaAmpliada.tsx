@@ -294,6 +294,9 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
   }, [e, itemPedido, pedidoAbierto, pestanas]);
 
   const lista = useMemo(() => {
+    // En la portada del Bazar (sin puesto) no hay pestañas: antes esto filtraba con
+    // DE_PESTANA[undefined] y la tienda entera caía en «Algo no cargó bien» (2026-10-19).
+    if (!pestanaVista) return [];
     if (inventario) {
       // En el inventario, «Del mes» muestra todos los marcos de temporada que tengas.
       const filtro = pestanaVista === "temporada" ? (it: Item) => it.temporada != null : DE_PESTANA[pestanaVista];

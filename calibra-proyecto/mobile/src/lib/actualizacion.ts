@@ -5,7 +5,7 @@ import * as IntentLauncher from "expo-intent-launcher";
 import { Platform } from "react-native";
 import { URL_APK } from "@/lib/appAndroid";
 import { hayVersionNueva } from "@/lib/app/versiones";
-import { URL_WEB } from "./entorno";
+import { ORIGEN_WEB } from "./entorno";
 
 // «Hay una nueva versión de Prodigia» (2026-10-14). La última publicada la dice la web
 // (/api/app/version, el último release de GitHub). La app baja el APK ella misma, con
@@ -28,7 +28,7 @@ export function versionInstalada(): string | null {
 export async function buscarVersionNueva(): Promise<VersionNueva | null> {
   if (Platform.OS !== "android") return null;
   try {
-    const res = await fetch(`${URL_WEB}/api/app/version`);
+    const res = await fetch(`${ORIGEN_WEB}/api/app/version`);
     if (!res.ok) return null;
     const d = (await res.json()) as { version: string | null; notas?: string | null };
     if (!d.version || !hayVersionNueva(versionInstalada(), d.version)) return null;
@@ -63,4 +63,4 @@ export async function descargarEInstalar(version: string, alAvanzar: (fraccion: 
   });
 }
 
-export const URL_DESCARGA_WEB = `${URL_WEB}/api/app/descargar`;
+export const URL_DESCARGA_WEB = `${ORIGEN_WEB}/api/app/descargar`;

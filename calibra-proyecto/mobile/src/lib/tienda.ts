@@ -502,7 +502,7 @@ async function elegirImagen(maxBytes: number, maxLado: number): Promise<{ bytes:
   // Un respiro para que el aviso se dibuje antes del trabajo pesado.
   await new Promise((ok) => setTimeout(ok, 50));
   if (tipo === "image/gif") {
-    const g = comprimirGif(bytes, maxBytes, maxLado);
+    const g = await comprimirGif(bytes, maxBytes, maxLado);
     if (!g) throw new Error(`No pudimos achicar el GIF hasta ${limite}. Prueba con otro.`);
     return { bytes: g.bytes.buffer.slice(g.bytes.byteOffset, g.bytes.byteOffset + g.bytes.byteLength) as ArrayBuffer, ext: "gif", tipo: "image/gif" };
   }
