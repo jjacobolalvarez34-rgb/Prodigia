@@ -1,3 +1,4 @@
+import { pasosAvanzada, pasosMapa } from "@/lib/geografia/pasos";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { MAX_FALLAS_REPASO, type FallaRepaso } from "@/lib/practica/repaso";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -233,8 +234,18 @@ export default function SprintGeografia() {
       const avanzadaP = esPreguntaAvanzada(pregunta);
       fallosRef.current.push(
         avanzadaP
-          ? { enunciado: pregunta.pregunta, tuRespuesta: pregunta.opciones.find((o) => o.id === id)?.texto ?? null, correcta: pregunta.opciones.find((o) => o.id === pregunta.id)?.texto ?? pregunta.nombre, pasos: [] }
-          : { enunciado: `¿Dónde está ${pregunta.nombre}?`, tuRespuesta: nombrePais(continente, id) ?? null, correcta: pregunta.nombre, pasos: [`${pregunta.nombre} está en ${nombreContinente}. Búscalo en el mapa antes de tu próxima partida.`] }
+          ? {
+              enunciado: pregunta.pregunta,
+              tuRespuesta: pregunta.opciones.find((o) => o.id === id)?.texto ?? null,
+              correcta: pregunta.opciones.find((o) => o.id === pregunta.id)?.texto ?? pregunta.nombre,
+              pasos: pasosAvanzada(pregunta.pregunta, pregunta.opciones.find((o) => o.id === pregunta.id)?.texto ?? pregunta.nombre),
+            }
+          : {
+              enunciado: `¿Dónde está ${pregunta.nombre}?`,
+              tuRespuesta: nombrePais(continente, id) ?? null,
+              correcta: pregunta.nombre,
+              pasos: pasosMapa({ id: pregunta.id, nombre: pregunta.nombre }, id && nombrePais(continente, id) ? { id, nombre: nombrePais(continente, id)! } : null),
+            }
       );
     }
     setSeleccionId(id);

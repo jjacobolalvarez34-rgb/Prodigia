@@ -1,5 +1,6 @@
 "use client";
 
+import { pasosAvanzada, pasosMapa } from "@/lib/geografia/pasos";
 import { useEffect, useRef, useState } from "react";
 import { anotarFalla, reiniciarRepaso } from "@/lib/practica/repasoPartida";
 import { useTranslations } from "next-intl";
@@ -214,8 +215,18 @@ export default function GeografiaSprintRunner({
       erroresRef.current.push(pais);
       anotarFalla(
         esPreguntaAvanzada(pais)
-          ? { enunciado: pais.pregunta, tuRespuesta: pais.opciones.find((o) => o.id === id)?.texto ?? null, correcta: pais.opciones.find((o) => o.id === pais.id)?.texto ?? pais.nombre, pasos: [] }
-          : { enunciado: `¿Dónde está ${pais.nombre}?`, tuRespuesta: paises.find((x) => x.id === id)?.nombre ?? null, correcta: pais.nombre, pasos: [] }
+          ? {
+              enunciado: pais.pregunta,
+              tuRespuesta: pais.opciones.find((o) => o.id === id)?.texto ?? null,
+              correcta: pais.opciones.find((o) => o.id === pais.id)?.texto ?? pais.nombre,
+              pasos: pasosAvanzada(pais.pregunta, pais.opciones.find((o) => o.id === pais.id)?.texto ?? pais.nombre),
+            }
+          : {
+              enunciado: `¿Dónde está ${pais.nombre}?`,
+              tuRespuesta: paises.find((x) => x.id === id)?.nombre ?? null,
+              correcta: pais.nombre,
+              pasos: pasosMapa(pais, paises.find((x) => x.id === id) ?? null),
+            }
       );
       if (escudosRef.current > 0) {
         protegido = true;
