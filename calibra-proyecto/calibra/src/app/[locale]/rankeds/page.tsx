@@ -1,3 +1,4 @@
+import MinieventoRanked from "@/components/temas/MinieventoRanked";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
@@ -34,6 +35,9 @@ export default async function RankedsPage({ searchParams }: Props) {
   return (
     <>
       <Header autenticado />
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+        <MinieventoRanked />
+      </div>
       <RankedsClient
         miElo={profile.elo_rating ?? 800}
         miTituloNombre={miTituloNombre ?? null}

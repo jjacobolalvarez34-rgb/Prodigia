@@ -15,6 +15,7 @@ import EstandarteClan from "@/components/clanes/EstandarteClan";
 import FondoPerfilCapa, { tieneFondoPerfil } from "@/components/FondoPerfilCapa";
 import CiudadSkyline from "@/components/recompensas/CiudadSkyline";
 import RegalarAmigo from "@/components/recompensas/RegalarAmigo";
+import DulceAmigo from "@/components/temas/DulceAmigo";
 
 interface Props {
   params: Promise<{ userId: string }>;
@@ -265,6 +266,7 @@ export default async function PerfilPublicoPage({ params }: Props) {
         <div className="flex flex-col items-center gap-3">
           <AmistadBoton userId={perfil.id} estadoInicial={estadoAmistad} />
           {estadoAmistad === "amigos" && <RegalarAmigo amigoId={perfil.id} nombre={perfil.display_name ?? ""} />}
+          {estadoAmistad === "amigos" && <DulceAmigo amigoId={perfil.id} />}
           <ReportarBoton userId={perfil.id} />
         </div>
       </div>
