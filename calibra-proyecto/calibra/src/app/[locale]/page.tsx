@@ -23,7 +23,7 @@ import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
 import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria, IconCalculia, IconCircuitia, IconEstadistica, IconNaipia, IconCodia, IconDinamia, IconVitalia } from "@/components/icons";
 import { tieneMundo } from "@/lib/mundos/precios";
 import { sabadoDelFinde } from "@/lib/retoFinde";
-import Greeting from "./Greeting";
+import SaludoInicio from "./SaludoInicio";
 
 export async function generateMetadata(): Promise<Metadata> {
   // La metadata (título/descripción para redes sociales y buscadores)
@@ -108,7 +108,7 @@ export default async function ProdigiaHomePage() {
           <Avatar url={profile.avatar_url} nombre={profile.display_name} size={48} />
           <div>
             <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-              <Greeting />, {profile.display_name}
+              <SaludoInicio nombre={profile.display_name ?? ""} />
             </h1>
             <p className="mt-0.5 font-mono text-xs text-texto-secundario">
               {t("chispasTotales", { n: profile.puntos_total })}

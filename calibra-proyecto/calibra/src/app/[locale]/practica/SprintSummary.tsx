@@ -1,5 +1,7 @@
 "use client";
 
+import { useTemaHoy } from "@/components/temas/useTemaHoy";
+import { celebracionDe } from "@/lib/temas/celebracion";
 import { motion } from "framer-motion";
 import RepasoErrores from "@/components/practica/RepasoErrores";
 import { fallasDeLaPartida } from "@/lib/practica/repasoPartida";
@@ -90,6 +92,8 @@ function Comparacion({
 }
 
 export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volverHref = "/numeria" }: Props) {
+  const temaHoy = useTemaHoy();
+  const celebracion = celebracionDe(temaHoy);
   const t = useTranslations("Practica.resumen");
   const { sprint, historico } = resumen;
   const hayHistorial = historico.total > 0;
@@ -112,8 +116,13 @@ export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volv
           transition={{ duration: 0.4, ease: "backOut" }}
           className="rounded-full bg-logro/20 px-5 py-2 text-sm font-bold text-foreground"
         >
-          {t("partidaPerfecta")}
+          {celebracion?.perfecta ?? t("partidaPerfecta")}
         </motion.div>
+      )}
+      {/* Halloween: los esqueletos bailan en el resultado (WebP animado ya hecho). */}
+      {celebracion && temaHoy?.tema.id === "halloween" && !duelo && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src="/emotes/baile-esqueletos-grande.webp" alt="" className="w-72 max-w-full" />
       )}
 
       <ResultadoDueloBlock duelo={duelo} />

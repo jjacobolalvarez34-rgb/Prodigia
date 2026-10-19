@@ -1,3 +1,5 @@
+import { celebracionDe } from "@/lib/temas/celebracion";
+import { useTemaHoy } from "~/lib/temporada";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
@@ -204,6 +206,8 @@ function Podio({ filas, miId }: { filas: { placa: PlacaDatos; xp: number }[]; mi
 }
 
 export default function Competir() {
+  const temaHoy = useTemaHoy();
+  const minievento = celebracionDe(temaHoy)?.ranked ?? null;
   const router = useRouter();
   const params = useLocalSearchParams<{ seccion?: string }>();
   const { sesion } = useSesion();
@@ -305,6 +309,18 @@ export default function Competir() {
 
       {seccion === "rankeds" && (
         <>
+          {/* Minievento de la fecha en las Rankeds (celebracion.ts; los premios los da la base, 0292). */}
+          {minievento && temaHoy && (
+            <Tarjeta acento={temaHoy.tema.acento} brillo={0.22}>
+              <Texto v="micro" c={temaHoy.tema.acento}>
+                MINIEVENTO DE RANKEDS
+              </Texto>
+              <Texto v="h3">{minievento.nombre}</Texto>
+              <Texto v="nota" tam={12.5}>
+                {minievento.texto}
+              </Texto>
+            </Tarjeta>
+          )}
           <Pendientes lista={pendientes} onCambio={cargar} />
           <Tarjeta acento={rango.colorHex} brillo={0.18} estilo={{ alignItems: "center", paddingVertical: 18 }}>
             <InsigniaHeroe elo={elo} />

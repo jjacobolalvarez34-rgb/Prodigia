@@ -3,6 +3,8 @@
 import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, subscribeEfectos } from "@/lib/efectos";
+import { useTemaHoy } from "@/components/temas/useTemaHoy";
+import { celebracionDe } from "@/lib/temas/celebracion";
 
 export type IntensidadPuntaje = "chico" | "medio" | "grande";
 
@@ -20,6 +22,8 @@ const PARTICULAS: Record<IntensidadPuntaje, number> = { chico: 0, medio: 3, gran
 // desvanece rápido. La intensidad (tamaño, si dispara partículas)
 // escala con lo ganado en esa respuesta puntual.
 export default function PuntajeCorner({ total, intensidad }: Props) {
+  // Durante un evento, el «+N» y sus chispitas toman el color de la fecha.
+  const colorPuntos = celebracionDe(useTemaHoy())?.acierto.colores[0] ?? "#FFC53D";
   const efectos = useSyncExternalStore(subscribeEfectos, efectosHabilitados, efectosHabilitadosServerSnapshot);
   const escala = ESCALA[intensidad];
   // Las partículas son puramente decorativas (Fase P2) — el número en sí
@@ -34,7 +38,7 @@ export default function PuntajeCorner({ total, intensidad }: Props) {
         animate={{ opacity: [0, 1, 1, 0], scale: [0.4, escala, escala, escala * 0.9], y: [6, 0, 0, -8] }}
         transition={{ duration: 0.7, times: [0, 0.2, 0.7, 1], ease: "easeOut" }}
         className="font-display font-black"
-        style={{ color: "#FFC53D", fontSize: 20 * escala }}
+        style={{ color: colorPuntos, fontSize: 20 * escala }}
       >
         {/* Inclinado 8° hacia la derecha (2026-10-19): se lee como algo que salta, sin perder legibilidad. */}
         <span className="inline-block" style={{ transform: "skewX(-8deg)" }}>+{total}</span>
@@ -53,7 +57,7 @@ export default function PuntajeCorner({ total, intensidad }: Props) {
               }}
               transition={{ duration: 0.5, ease: "easeOut" }}
               className="absolute h-1 w-1 rounded-full"
-              style={{ background: "#FFC53D" }}
+              style={{ background: colorPuntos }}
             />
           ))}
         </div>
