@@ -322,3 +322,30 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 99. [ ] PLANEACIÓN pendiente: los CLANES (están abandonados).
 100. [ ] PLANEACIÓN pendiente: el FEED social.
 101. [ ] PLANEACIÓN pendiente: DOCENTES (el usuario ya tiene una solución en mente: preguntarle).
+
+## DÓNDE QUEDÓ (2026-10-19, tarde) — leer primero para seguir
+
+**Migraciones por correr en Supabase (en orden):** 0291 (paquetes de cápsulas con Cometas) y 0292 (Halloween en todo: noche del esqueleto, 3 Caramelos por ranked ganada, «Dar un dulce», emote «Baile de esqueletos»). La base tiene hasta la 0290.
+
+**Hecho y subido (web publicada en Vercel):** explicaciones de los 14 mundos; videos de la Alineación (15 s con cola) y Halloween en web y app (reproductor genérico VideoApertura); paquetes de cápsulas; editar perfil; arreglos de tienda, GIF y aviso de actualización; racha de 15 tonos; «+N» inclinado; paridad de eventos; celebracion.ts (datos de las 16 fechas); emote animado «Baile de esqueletos» (estilo del meme: en cuclillas, guantes blancos y zapatos negros) en duelos de web y app.
+
+**APK:** el último compilado es 0.6.2 (versionCode 8). Desde entonces hay cambios de app sin compilar (cola de la Alineación, aviso cada 30 min, racha de 15 tonos, «+N» inclinado, emote animado). Próximo: subir mobile/app.json a 0.6.3 / versionCode 9 y compilar: `powershell -NoProfile -ExecutionPolicy Bypass -File 'D:\android-build\compilar.ps1' > 'D:\android-build\compilar44.log'` (el APK sale en D:\Prodigia-APK\Prodigia.apk; luego crear el release v0.6.3 en GitHub). Tiene que salir ANTES del sábado 24/10 (Halloween).
+
+**Video de Navidad:** un agente lo está haciendo en D:\Repositorios\prodigia-marketing\videos\navidad\ (ver ENTREGA.md ahí cuando termine). Para integrarlo: copiar entregables a mobile/assets/videos/navidad.mp4 y calibra/public/videos/navidad(.mp4|-vertical.mp4|-poster.jpg|-vertical-poster.jpg), agregar `navidad: "navidad"` en VIDEO_DE_TEMA (src/lib/temas/videosApertura.ts) y su require en VIDEOS (mobile/src/ui/VideoApertura.tsx).
+
+**Lo que sigue, en orden (todo aprobado en la galería D:/Repositorios/prodigia-marketing/diseno/index.html):**
+1. Halloween (antes del 24/10), web y app, leyendo CELEBRACIONES (src/lib/temas/celebracion.ts) cuando el tema está en fase «evento»:
+   - Inicio: saludo («Truco o trato, {nombre}») en vez de «Hola, …» (app: mobile/src/app/(tabs)/index.tsx línea ~114; web: src/app/[locale]/page.tsx) y la palabra del botón principal.
+   - Esquinas con la partícula de la fecha en tarjetas de mundos y en la tarjeta de la pregunta.
+   - «+N» y estallido de acierto con C.acierto.colores (web PuntajeCorner/EfectoAciertoGlobal; app Flotante en ui/Sprint.tsx y el estallido Skia).
+   - Resultado de la partida: en Halloween, el «Baile de esqueletos» grande (public/emotes/baile-esqueletos-grande.webp / mobile/assets/emotes/…) y la frase de partida perfecta.
+   - Rankeds: cartel del minievento (C.ranked). Amigos: botón «Dar un dulce» (RPC dar_dulce, 0292).
+   - Avisos del evento (inicio, mitad, último día) con C.avisos.
+2. Estadísticas Pro rediseñadas (galería: estadisticas-pro) con RPCs nuevas (mejor hora, constancia 12 semanas, percentiles, temas débiles).
+3. Fuentes: 16 de nombre nuevas + cosmético nuevo «fuentes de puntos» (10 estilos; galería: fuentes).
+4. Constelaciones nuevas pre-pintadas (galería: constelaciones; el pintor está en calibra/zz-galeria/diseno.tsx → pintarConstelacion: exportar un PNG de fondo por ciudad + sprite de estrella).
+5. Tutorial de la app y landing: pasos de cápsulas y constelaciones (galería: tutorial-y-landing).
+6. El resto de eventos (Muertos 1/11 primero) y el minievento de π.
+7. Planeaciones pendientes: tablero en vivo de rankeds (idea, consultar), clanes, feed social, docentes.
+
+**Herramientas:** la galería se arma con `npx vite build --config zz-galeria/vite.config.mjs`, se sirve con `npx vite preview --config zz-galeria/vite.config.mjs --port 3458` y se captura con `node zz-galeria/diseno-captura.mjs <carpeta> <evento…>` (TEMP en D:). El baile: zz-galeria/esqueletos.html + esqueletos-render.mjs.
