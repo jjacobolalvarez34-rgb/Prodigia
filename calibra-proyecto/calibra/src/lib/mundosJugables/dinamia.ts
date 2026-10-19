@@ -26,6 +26,7 @@ export const DINAMIA: MundoJugable = {
           : { tipo: "opciones", opciones: p.opciones, respuesta: p.respuesta },
       visuales: p.diagrama ? [{ tipo: "dinamia", diagrama: p.diagrama }] : undefined,
       clave: claveDinamia(p),
+      pasos: p.pasos,
       solucion: p.entrada === "numero" ? String(p.respuesta).replace(".", ",") : undefined,
     };
   },

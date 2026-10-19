@@ -53,6 +53,8 @@ interface Base {
   enunciado: string;
   diagrama?: DiagramaDinamia;
   detalle: { tipo: TipoProblemaDinamia; params?: Record<string, number | string> };
+  // «Cómo se resuelve» (repaso de errores, 2026-10-18).
+  pasos?: string[];
 }
 
 export interface ProblemaDinamiaNumero extends Base {

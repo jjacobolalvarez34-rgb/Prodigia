@@ -21,6 +21,8 @@ export interface ProblemaMundoNuevo {
   tolerancia?: number;
   opciones?: string[];
   diagrama?: unknown;
+  // «Cómo se resuelve» (repaso de errores, 2026-10-18).
+  pasos?: string[];
 }
 
 export interface ConfigMundoNuevo {

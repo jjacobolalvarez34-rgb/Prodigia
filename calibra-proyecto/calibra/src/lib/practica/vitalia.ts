@@ -10,6 +10,7 @@
 // - Clasificación: los 5 reinos de colegio (Moneras, Protistas, Hongos,
 //   Plantas, Animales) y, en los niveles altos, los 3 dominios.
 
+import { pasosVitalia } from "@/lib/vitalia/pasos";
 import { armarOpciones, clamp, conRngSembrado, elegir, elegirPonderado, mezclar, randomInt } from "@/lib/estadistica/util";
 import { NOMBRE_ORGANELO, type FaseMitosis, type ModoVitalia, type Organelo, type ProblemaVitalia, type ProblemaVitaliaNumero, type ProblemaVitaliaOpciones, type DiagramaVitalia } from "@/lib/vitalia/tipos";
 
@@ -709,12 +710,9 @@ function deArticulo(nombre: string): string {
 }
 
 export function generarProblemaVitalia(modo: ModoVitalia, nivel: number): ProblemaVitalia {
-  if (modo === "celula") return celula(nivel);
-  if (modo === "procesos") return procesos(nivel);
-  if (modo === "genetica") return genetica(nivel);
-  if (modo === "sistemas") return sistemas(nivel);
-  if (modo === "reinos") return reinos(nivel);
-  return ecologia(nivel);
+  const p =
+    modo === "celula" ? celula(nivel) : modo === "procesos" ? procesos(nivel) : modo === "genetica" ? genetica(nivel) : modo === "sistemas" ? sistemas(nivel) : modo === "reinos" ? reinos(nivel) : ecologia(nivel);
+  return { ...p, pasos: pasosVitalia(p) };
 }
 
 export function claveVitalia(p: ProblemaVitalia): string {

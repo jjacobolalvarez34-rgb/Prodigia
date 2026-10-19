@@ -179,7 +179,7 @@ export default function SprintRunnerMundo({
     let protegido = false;
     if (!correct) {
       if (problema) erroresRef.current.push(problema);
-      if (problema) anotarFalla({ enunciado: problema.enunciado, tuRespuesta: respuestaMostrada, correcta: respuestaComoTexto(problema), pasos: [] });
+      if (problema) anotarFalla({ enunciado: problema.enunciado, tuRespuesta: respuestaMostrada, correcta: respuestaComoTexto(problema), pasos: problema.pasos ?? [] });
       if (escudosRef.current > 0) {
         protegido = true;
         escudosRef.current -= 1;

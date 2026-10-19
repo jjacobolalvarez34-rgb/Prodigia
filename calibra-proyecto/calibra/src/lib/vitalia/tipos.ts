@@ -67,6 +67,8 @@ interface Base {
   enunciado: string;
   diagrama?: DiagramaVitalia;
   detalle: { tipo: string };
+  // «Cómo se resuelve» (repaso de errores, 2026-10-18; src/lib/vitalia/pasos.ts).
+  pasos?: string[];
 }
 
 export interface ProblemaVitaliaNumero extends Base {

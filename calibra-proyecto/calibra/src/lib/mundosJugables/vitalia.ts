@@ -23,6 +23,7 @@ export const VITALIA: MundoJugable = {
       entrada: p.entrada === "numero" ? { tipo: "numero", respuesta: p.respuesta, tolerancia: p.tolerancia, decimales: true } : { tipo: "opciones", opciones: p.opciones, respuesta: p.respuesta },
       visuales: p.diagrama ? [{ tipo: "vitalia", diagrama: p.diagrama }] : undefined,
       clave: claveVitalia(p),
+      pasos: p.pasos,
     };
   },
 };

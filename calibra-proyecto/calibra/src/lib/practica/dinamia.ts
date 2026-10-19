@@ -49,7 +49,7 @@ function exacto1(n: number): boolean {
 
 type Params = Record<string, number | string>;
 
-function num(modo: ModoDinamia, tipo: string, enunciado: string, raw: number, opts?: { params?: Params; diagrama?: DiagramaDinamia }): ProblemaDinamiaNumero {
+function num(modo: ModoDinamia, tipo: string, enunciado: string, raw: number, opts?: { params?: Params; diagrama?: DiagramaDinamia; pasos?: string[] }): ProblemaDinamiaNumero {
   const limpio = exacto1(raw);
   const respuesta = Math.round(raw * 10 + (raw >= 0 ? 1e-9 : -1e-9)) / 10;
   return {
@@ -60,12 +60,20 @@ function num(modo: ModoDinamia, tipo: string, enunciado: string, raw: number, op
     tolerancia: limpio ? (Number.isInteger(respuesta) ? 0 : 0.01) : 0.051,
     diagrama: opts?.diagrama,
     detalle: { tipo, params: opts?.params },
+    pasos: opts?.pasos,
   };
 }
 
-function opc(modo: ModoDinamia, tipo: string, enunciado: string, correcta: string, distractores: string[], diagrama?: DiagramaDinamia): ProblemaDinamiaOpciones {
-  return { modo, entrada: "opciones", enunciado, opciones: armarOpciones(correcta, distractores).slice(0, 4), respuesta: correcta, diagrama, detalle: { tipo } };
+function opc(modo: ModoDinamia, tipo: string, enunciado: string, correcta: string, distractores: string[], diagrama?: DiagramaDinamia, pasos?: string[]): ProblemaDinamiaOpciones {
+  return { modo, entrada: "opciones", enunciado, opciones: armarOpciones(correcta, distractores).slice(0, 4), respuesta: correcta, diagrama, detalle: { tipo }, pasos };
 }
+
+// «Cómo se resuelve» de las preguntas de concepto (bancos): por qué es esa la respuesta.
+const POR_QUE_BANCO: Record<string, string> = {
+  fuerzas: "Cuenta cada cosa que toca al cuerpo (el piso da la normal, una cuerda da tensión, al deslizar aparece el rozamiento) y suma siempre el peso",
+  concepto: "La temperatura mide qué tan agitadas están las partículas; el calor es energía que pasa del cuerpo más caliente al más frío",
+  bernoulli: "Bernoulli: donde el fluido va más rápido, la presión es menor",
+};
 
 // Asegura que la correcta quede entre las 4 opciones (armarOpciones mezcla).
 function cuatro(p: ProblemaDinamiaOpciones): ProblemaDinamiaOpciones {
@@ -76,7 +84,7 @@ function cuatro(p: ProblemaDinamiaOpciones): ProblemaDinamiaOpciones {
 
 function preguntaBanco(modo: ModoDinamia, tipo: string, banco: readonly { q: string; ok: string; no: readonly string[] }[]): ProblemaDinamiaOpciones {
   const b = elegir(banco);
-  return cuatro(opc(modo, tipo, b.q, b.ok, mezclar(b.no).slice(0, 3)));
+  return cuatro(opc(modo, tipo, b.q, b.ok, mezclar(b.no).slice(0, 3), undefined, [POR_QUE_BANCO[tipo] ?? "Piensa en qué principio de la física explica la situación", `Respuesta: ${b.ok}`]));
 }
 
 // ============================================================
@@ -108,15 +116,15 @@ function cinematica(nivel: number): ProblemaDinamia {
       const v = randomInt(2, 30);
       const t = randomInt(2, 20);
       const que = elegir(["d", "t", "v"] as const);
-      if (que === "d") return num(M, "mru_d", `Un auto va a velocidad constante de ${v} m/s durante ${t} s. ¿Cuántos metros recorre?`, v * t);
-      if (que === "t") return num(M, "mru_t", `Una ciclista va a ${v} m/s constantes. ¿Cuántos segundos tarda en recorrer ${v * t} m?`, t);
-      return num(M, "mru_v", `Un tren recorre ${v * t} m en ${t} s a velocidad constante. ¿Cuál es su velocidad en m/s?`, v);
+      if (que === "d") return num(M, "mru_d", `Un auto va a velocidad constante de ${v} m/s durante ${t} s. ¿Cuántos metros recorre?`, v * t, { pasos: [`Velocidad constante: distancia = velocidad × tiempo`, `${v} × ${t} = ${v * t} m`] });
+      if (que === "t") return num(M, "mru_t", `Una ciclista va a ${v} m/s constantes. ¿Cuántos segundos tarda en recorrer ${v * t} m?`, t, { pasos: [`tiempo = distancia ÷ velocidad`, `${v * t} ÷ ${v} = ${t} s`] });
+      return num(M, "mru_v", `Un tren recorre ${v * t} m en ${t} s a velocidad constante. ¿Cuál es su velocidad en m/s?`, v, { pasos: [`velocidad = distancia ÷ tiempo`, `${v * t} ÷ ${t} = ${v} m/s`] });
     }
     case "kmh": {
       const ms = randomInt(1, 12) * 5;
       const kmh = ms * 3.6;
-      if (elegir([true, false])) return num(M, "kmh_ms", `Un auto va a ${f(kmh)} km/h. ¿Cuánto es eso en m/s?`, ms);
-      return num(M, "ms_kmh", `Un guepardo corre a ${ms} m/s. ¿Cuánto es eso en km/h?`, kmh);
+      if (elegir([true, false])) return num(M, "kmh_ms", `Un auto va a ${f(kmh)} km/h. ¿Cuánto es eso en m/s?`, ms, { pasos: [`De km/h a m/s se divide entre 3,6 (1 km = 1000 m y 1 h = 3600 s)`, `${f(kmh)} ÷ 3,6 = ${ms} m/s`] });
+      return num(M, "ms_kmh", `Un guepardo corre a ${ms} m/s. ¿Cuánto es eso en km/h?`, kmh, { pasos: [`De m/s a km/h se multiplica por 3,6`, `${ms} × 3,6 = ${f(kmh)} km/h`] });
     }
     case "encuentro": {
       const v1 = randomInt(5, 25);
@@ -124,12 +132,12 @@ function cinematica(nivel: number): ProblemaDinamia {
       const t = randomInt(4, 30);
       if (elegir([true, false])) {
         const d = (v1 + v2) * t;
-        return num(M, "encuentro", `Dos autos están a ${d} m y van uno hacia el otro, a ${v1} m/s y a ${v2} m/s. ¿A los cuántos segundos se encuentran?`, t);
+        return num(M, "encuentro", `Dos autos están a ${d} m y van uno hacia el otro, a ${v1} m/s y a ${v2} m/s. ¿A los cuántos segundos se encuentran?`, t, { pasos: [`Van uno hacia el otro: la distancia se achica a ${v1} + ${v2} = ${v1 + v2} m por segundo`, `tiempo = ${d} ÷ ${v1 + v2} = ${t} s`] });
       }
       const rapido = Math.max(v1, v2) + 2;
       const lento = Math.min(v1, v2);
       const d = (rapido - lento) * t;
-      return num(M, "persecucion", `Una moto a ${rapido} m/s persigue a un camión que va a ${lento} m/s y está ${d} m adelante. ¿Cuántos segundos tarda en alcanzarlo?`, t);
+      return num(M, "persecucion", `Una moto a ${rapido} m/s persigue a un camión que va a ${lento} m/s y está ${d} m adelante. ¿Cuántos segundos tarda en alcanzarlo?`, t, { pasos: [`Van en el mismo sentido: la moto descuenta ${rapido} − ${lento} = ${rapido - lento} m por segundo`, `tiempo = ${d} ÷ ${rapido - lento} = ${t} s`] });
     }
     case "grafica_xt": {
       const x0 = randomInt(0, 4) * 10;
@@ -139,39 +147,40 @@ function cinematica(nivel: number): ProblemaDinamia {
       if (x1 < 0) return cinematica(n);
       return num(M, "grafica_xt", `La gráfica muestra la posición de un móvil con el tiempo. ¿Cuál es su velocidad en m/s? (Si se mueve hacia atrás, es negativa.)`, v, {
         diagrama: { tipo: "grafica", eje: "x-t", puntos: [[0, x0], [T, x1]] },
+        pasos: [`En una gráfica posición-tiempo la velocidad es la pendiente: cambio de posición ÷ tiempo`, `(${x1} − ${x0}) ÷ ${T} = ${v} m/s`],
       });
     }
     case "mrua_v": {
       const v0 = randomInt(0, 20);
       const a = randomInt(1, 6);
       const t = randomInt(2, 12);
-      return num(M, "mrua_v", `Un auto sale con ${v0} m/s y acelera a ${a} m/s² durante ${t} s. ¿Qué velocidad tiene al final, en m/s?`, v0 + a * t);
+      return num(M, "mrua_v", `Un auto sale con ${v0} m/s y acelera a ${a} m/s² durante ${t} s. ¿Qué velocidad tiene al final, en m/s?`, v0 + a * t, { pasos: [`v = v₀ + a·t`, `${v0} + ${a} × ${t} = ${v0 + a * t} m/s`] });
     }
     case "mrua_d": {
       const v0 = randomInt(0, 15);
       const a = elegir([2, 4, 6]);
       const t = randomInt(2, 10);
-      return num(M, "mrua_d", `Una moto parte con ${v0} m/s y acelera a ${a} m/s² durante ${t} s. ¿Cuántos metros recorre en ese tiempo?`, v0 * t + 0.5 * a * t * t);
+      return num(M, "mrua_d", `Una moto parte con ${v0} m/s y acelera a ${a} m/s² durante ${t} s. ¿Cuántos metros recorre en ese tiempo?`, v0 * t + 0.5 * a * t * t, { pasos: [`d = v₀·t + ½·a·t²`, `${v0} × ${t} + ½ × ${a} × ${t}² = ${v0 * t} + ${f(0.5 * a * t * t)} = ${f(v0 * t + 0.5 * a * t * t)} m`] });
     }
     case "frenado": {
       const a = elegir([2, 4, 5, 8]);
       const t = randomInt(2, 8);
       const v0 = a * t;
-      if (elegir([true, false])) return num(M, "frenado_t", `Un auto va a ${v0} m/s y frena con ${a} m/s² de desaceleración. ¿Cuántos segundos tarda en detenerse?`, t);
-      return num(M, "frenado_d", `Un auto va a ${v0} m/s y frena con ${a} m/s² de desaceleración. ¿Cuántos metros recorre hasta detenerse?`, (v0 * v0) / (2 * a));
+      if (elegir([true, false])) return num(M, "frenado_t", `Un auto va a ${v0} m/s y frena con ${a} m/s² de desaceleración. ¿Cuántos segundos tarda en detenerse?`, t, { pasos: [`Pierde ${a} m/s cada segundo hasta llegar a 0`, `tiempo = ${v0} ÷ ${a} = ${t} s`] });
+      return num(M, "frenado_d", `Un auto va a ${v0} m/s y frena con ${a} m/s² de desaceleración. ¿Cuántos metros recorre hasta detenerse?`, (v0 * v0) / (2 * a), { pasos: [`Hasta frenar: d = v₀² ÷ (2·a)`, `${v0}² ÷ (2 × ${a}) = ${v0 * v0} ÷ ${2 * a} = ${f((v0 * v0) / (2 * a))} m`] });
     }
     case "caida": {
       const t = randomInt(1, 5);
-      if (elegir([true, false])) return num(M, "caida_h", `Sueltas una piedra desde un puente y tarda ${t} s en llegar al agua. ¿Desde qué altura cayó, en metros? ${textoG(g)}`, 0.5 * g * t * t);
-      return num(M, "caida_v", `Una pelota cae libre durante ${t} s. ¿Con qué velocidad llega al piso, en m/s? ${textoG(g)}`, g * t);
+      if (elegir([true, false])) return num(M, "caida_h", `Sueltas una piedra desde un puente y tarda ${t} s en llegar al agua. ¿Desde qué altura cayó, en metros? ${textoG(g)}`, 0.5 * g * t * t, { pasos: [`Caída libre desde el reposo: h = ½·g·t²`, `½ × ${f(g)} × ${t}² = ${f(0.5 * g * t * t)} m`] });
+      return num(M, "caida_v", `Una pelota cae libre durante ${t} s. ¿Con qué velocidad llega al piso, en m/s? ${textoG(g)}`, g * t, { pasos: [`Cae ganando g m/s cada segundo: v = g·t`, `${f(g)} × ${t} = ${f(g * t)} m/s`] });
     }
     case "vertical": {
       const k = randomInt(1, 4);
       const v0 = g * k;
       const que = elegir(["subida", "altura", "vuelo"] as const);
-      if (que === "subida") return num(M, "vertical_t", `Lanzas una pelota hacia arriba a ${f(v0)} m/s. ¿Cuántos segundos tarda en llegar a lo más alto? ${textoG(g)}`, k);
-      if (que === "vuelo") return num(M, "vertical_vuelo", `Lanzas una pelota hacia arriba a ${f(v0)} m/s y la atrapas a la misma altura. ¿Cuántos segundos estuvo en el aire? ${textoG(g)}`, 2 * k);
-      return num(M, "vertical_h", `Lanzas una pelota hacia arriba a ${f(v0)} m/s. ¿Qué altura máxima alcanza, en metros? ${textoG(g)}`, (v0 * v0) / (2 * g));
+      if (que === "subida") return num(M, "vertical_t", `Lanzas una pelota hacia arriba a ${f(v0)} m/s. ¿Cuántos segundos tarda en llegar a lo más alto? ${textoG(g)}`, k, { pasos: [`Sube perdiendo g m/s cada segundo hasta quedar en 0: t = v₀ ÷ g`, `${f(v0)} ÷ ${f(g)} = ${k} s`] });
+      if (que === "vuelo") return num(M, "vertical_vuelo", `Lanzas una pelota hacia arriba a ${f(v0)} m/s y la atrapas a la misma altura. ¿Cuántos segundos estuvo en el aire? ${textoG(g)}`, 2 * k, { pasos: [`Subir tarda v₀ ÷ g = ${f(v0)} ÷ ${f(g)} = ${k} s, y bajar tarda lo mismo`, `Total: 2 × ${k} = ${2 * k} s`] });
+      return num(M, "vertical_h", `Lanzas una pelota hacia arriba a ${f(v0)} m/s. ¿Qué altura máxima alcanza, en metros? ${textoG(g)}`, (v0 * v0) / (2 * g), { pasos: [`Altura máxima: h = v₀² ÷ (2·g)`, `${f(v0)}² ÷ (2 × ${f(g)}) = ${f((v0 * v0) / (2 * g))} m`] });
     }
     case "parabolico": {
       const ang = elegir([30, 45, 60]);
@@ -182,9 +191,11 @@ function cinematica(nivel: number): ProblemaDinamia {
       const T = (2 * vy) / gg;
       const que = elegir(["alcance", "tiempo", "altura"] as const);
       const base = `Lanzas una pelota a ${v0} m/s con un ángulo de ${ang}° sobre el piso (${DATO_TRIG[ang]}). Usa g = 10 m/s².`;
-      if (que === "tiempo") return num(M, "parabolico_t", `${base} ¿Cuántos segundos está en el aire?`, T);
-      if (que === "altura") return num(M, "parabolico_h", `${base} ¿Qué altura máxima alcanza, en metros?`, (vy * vy) / (2 * gg));
-      return num(M, "parabolico_r", `${base} ¿A cuántos metros cae (alcance)?`, vx * T);
+      const separa = `Separa la velocidad: vertical v_y = ${v0} × ${f(SEN[ang])} = ${f(vy)} m/s; horizontal v_x = ${v0} × ${f(COS[ang])} = ${f(vx)} m/s`;
+      const vuelo = `Tiempo en el aire: 2·v_y ÷ g = 2 × ${f(vy)} ÷ 10 = ${f(T)} s`;
+      if (que === "tiempo") return num(M, "parabolico_t", `${base} ¿Cuántos segundos está en el aire?`, T, { pasos: [separa, vuelo] });
+      if (que === "altura") return num(M, "parabolico_h", `${base} ¿Qué altura máxima alcanza, en metros?`, (vy * vy) / (2 * gg), { pasos: [separa, `Altura máxima: v_y² ÷ (2·g) = ${f(vy)}² ÷ 20 = ${f((vy * vy) / (2 * gg))} m`] });
+      return num(M, "parabolico_r", `${base} ¿A cuántos metros cae (alcance)?`, vx * T, { pasos: [separa, vuelo, `Alcance: v_x × tiempo = ${f(vx)} × ${f(T)} = ${f(vx * T)} m`] });
     }
     case "grafica_vt": {
       const v = elegir([4, 6, 8, 10]);
@@ -193,6 +204,7 @@ function cinematica(nivel: number): ProblemaDinamia {
       const d = 0.5 * v * t1 + v * (t2 - t1);
       return num(M, "grafica_vt", `La gráfica muestra la velocidad de un auto: acelera desde 0 y después sigue a velocidad constante. ¿Cuántos metros recorre en total? (La distancia es el área bajo la gráfica.)`, d, {
         diagrama: { tipo: "grafica", eje: "v-t", puntos: [[0, 0], [t1, v], [t2, v]] },
+        pasos: [`La distancia es el área bajo la gráfica: un triángulo (acelera) y un rectángulo (velocidad constante)`, `Triángulo: ½ × ${t1} × ${v} = ${f(0.5 * v * t1)}; rectángulo: ${t2 - t1} × ${v} = ${v * (t2 - t1)}`, `Total: ${f(d)} m`],
       });
     }
   }
@@ -243,13 +255,16 @@ function vectores(nivel: number): ProblemaDinamia {
   switch (tipo) {
     case "escalar": {
       const m = elegir(MAGNITUDES);
-      return opc(M, "escalar_vectorial", `¿${m.nombre[0].toUpperCase()}${m.nombre.slice(1)} es una magnitud escalar o vectorial?`, m.tipo, [m.tipo === "Escalar" ? "Vectorial" : "Escalar"]);
+      return opc(M, "escalar_vectorial", `¿${m.nombre[0].toUpperCase()}${m.nombre.slice(1)} es una magnitud escalar o vectorial?`, m.tipo, [m.tipo === "Escalar" ? "Vectorial" : "Escalar"], undefined, [
+        `Una magnitud es vectorial si para describirla hace falta una dirección (velocidad, fuerza, peso, aceleración, desplazamiento); si alcanza con un número y su unidad, es escalar`,
+        `Respuesta: ${m.tipo}`,
+      ]);
     }
     case "colineal": {
       const a = randomInt(2, 20);
       const b = randomInt(2, 20);
       if (a === b) return vectores(n);
-      return num(M, "colineal", `Sobre una caja tiran ${a} N hacia la derecha y ${b} N hacia la izquierda. ¿Cuál es la fuerza resultante, en N? (Hacia la derecha es positivo.)`, a - b);
+      return num(M, "colineal", `Sobre una caja tiran ${a} N hacia la derecha y ${b} N hacia la izquierda. ¿Cuál es la fuerza resultante, en N? (Hacia la derecha es positivo.)`, a - b, { pasos: [`Fuerzas en la misma línea y sentidos opuestos: se restan`, `${a} − ${b} = ${a - b} N`] });
     }
     case "cuadricula": {
       const [rx, ry, r] = elegir(TERNAS);
@@ -262,6 +277,7 @@ function vectores(nivel: number): ProblemaDinamia {
       if ((A.x === 0 && A.y === 0) || (B.x === 0 && B.y === 0)) return vectores(n);
       return num(M, "suma_modulo", `Suma los vectores A = (${A.x}, ${A.y}) y B = (${B.x}, ${B.y}). ¿Cuánto mide la resultante?`, r, {
         diagrama: { tipo: "vectores", vectores: [{ nombre: "A", ...A }, { nombre: "B", ...B }] },
+        pasos: [`Suma componente a componente: (${A.x} + ${B.x}, ${A.y} + ${B.y}) = (${A.x + B.x}, ${A.y + B.y})`, `Módulo (Pitágoras): √(${A.x + B.x}² + ${A.y + B.y}²) = √${(A.x + B.x) ** 2 + (A.y + B.y) ** 2} = ${r}`],
       });
     }
     case "componentes": {
@@ -269,7 +285,7 @@ function vectores(nivel: number): ProblemaDinamia {
       const ang = elegir([30, 45, 60]);
       const eje = elegir(["x", "y"] as const);
       const valor = eje === "x" ? F * COS[ang] : F * SEN[ang];
-      return num(M, `componente_${eje}`, `Una fuerza de ${F} N forma ${ang}° con el eje x (${DATO_TRIG[ang]}). ¿Cuánto vale su componente en ${eje}, en N?`, valor);
+      return num(M, `componente_${eje}`, `Una fuerza de ${F} N forma ${ang}° con el eje x (${DATO_TRIG[ang]}). ¿Cuánto vale su componente en ${eje}, en N?`, valor, { pasos: [eje === "x" ? `La componente en x usa el coseno: F·cos ${ang}°` : `La componente en y usa el seno: F·sen ${ang}°`, `${F} × ${f(eje === "x" ? COS[ang] : SEN[ang])} = ${f(valor)} N`] });
     }
     case "resta": {
       const [rx, ry, r] = elegir(TERNAS);
@@ -280,6 +296,7 @@ function vectores(nivel: number): ProblemaDinamia {
       if (B.x === 0 && B.y === 0) return vectores(n);
       return num(M, "resta_modulo", `Con A = (${A.x}, ${A.y}) y B = (${B.x}, ${B.y}), ¿cuánto mide A − B?`, r, {
         diagrama: { tipo: "vectores", vectores: [{ nombre: "A", ...A }, { nombre: "B", ...B }] },
+        pasos: [`Resta componente a componente: (${A.x} − (${B.x}), ${A.y} − (${B.y})) = (${A.x - B.x}, ${A.y - B.y})`, `Módulo: √(${A.x - B.x}² + ${A.y - B.y}²) = ${r}`],
       });
     }
     case "angulo": {
@@ -287,7 +304,10 @@ function vectores(nivel: number): ProblemaDinamia {
       const R = elegir([10, 20]);
       const x = R * COS[ang];
       const y = R * SEN[ang];
-      return opc(M, "angulo", `Un vector tiene componentes (${f(x)}, ${f(y)}). ¿Qué ángulo forma con el eje x? (${DATO_TRIG[ang]})`, `${ang}°`, ["30°", "45°", "60°", "90°"].filter((o) => o !== `${ang}°`));
+      return opc(M, "angulo", `Un vector tiene componentes (${f(x)}, ${f(y)}). ¿Qué ángulo forma con el eje x? (${DATO_TRIG[ang]})`, `${ang}°`, ["30°", "45°", "60°", "90°"].filter((o) => o !== `${ang}°`), undefined, [
+        `Módulo: √(${f(x)}² + ${f(y)}²) ≈ ${R}. El coseno del ángulo es x ÷ módulo = ${f(x)} ÷ ${R} = ${f(COS[ang])}`,
+        `Ese coseno corresponde a ${ang}°`,
+      ]);
     }
     case "equilibrante": {
       const F1 = { x: randomInt(-9, 9), y: randomInt(-9, 9) };
@@ -296,6 +316,7 @@ function vectores(nivel: number): ProblemaDinamia {
       const valor = -(F1[eje] + F2[eje]);
       return num(M, "equilibrante", `Sobre un cuerpo actúan F₁ = (${F1.x}, ${F1.y}) N y F₂ = (${F2.x}, ${F2.y}) N. ¿Cuánto vale la componente en ${eje} de la fuerza que lo deja en equilibrio?`, valor, {
         diagrama: { tipo: "vectores", vectores: [{ nombre: "F₁", ...F1 }, { nombre: "F₂", ...F2 }] },
+        pasos: [`La equilibrante anula la suma: es la resultante con el signo cambiado`, `En ${eje}: −(${F1[eje]} + ${F2[eje]}) = ${valor} N`],
       });
     }
     case "escalar_prod": {
@@ -303,8 +324,11 @@ function vectores(nivel: number): ProblemaDinamia {
       let B = { x: randomInt(-6, 6), y: randomInt(-6, 6) };
       if (elegir([true, false])) B = { x: -A.y * elegir([1, 2]), y: A.x * elegir([1, 2]) };
       const p = A.x * B.x + A.y * B.y;
-      if (elegir([true, false])) return num(M, "producto_escalar", `¿Cuánto vale el producto escalar A · B con A = (${A.x}, ${A.y}) y B = (${B.x}, ${B.y})?`, p);
-      return opc(M, "perpendiculares", `¿Son perpendiculares A = (${A.x}, ${A.y}) y B = (${B.x}, ${B.y})?`, p === 0 ? "Sí" : "No", [p === 0 ? "No" : "Sí"]);
+      if (elegir([true, false])) return num(M, "producto_escalar", `¿Cuánto vale el producto escalar A · B con A = (${A.x}, ${A.y}) y B = (${B.x}, ${B.y})?`, p, { pasos: [`A · B = Aₓ·Bₓ + A_y·B_y`, `${A.x} × ${B.x} + ${A.y} × ${B.y} = ${A.x * B.x} + ${A.y * B.y} = ${p}`] });
+      return opc(M, "perpendiculares", `¿Son perpendiculares A = (${A.x}, ${A.y}) y B = (${B.x}, ${B.y})?`, p === 0 ? "Sí" : "No", [p === 0 ? "No" : "Sí"], undefined, [
+        `Dos vectores son perpendiculares si su producto escalar da 0`,
+        `A · B = ${A.x} × ${B.x} + ${A.y} × ${B.y} = ${p} → ${p === 0 ? "sí son perpendiculares" : "no lo son"}`,
+      ]);
     }
   }
 }
@@ -355,68 +379,69 @@ function newton(nivel: number): ProblemaDinamia {
   switch (tipo) {
     case "ley": {
       const l = elegir(LEYES);
-      return cuatro(opc(M, "ley", l.q, l.ok, NOMBRES_LEYES.filter((x) => x !== l.ok)));
+      const porQue = l.ok.startsWith("Primera") ? "Inercia: un cuerpo sigue como estaba (quieto o en movimiento) si nada lo obliga a cambiar" : l.ok.startsWith("Segunda") ? "F = m · a: con la misma fuerza, más masa da menos aceleración; más fuerza, más aceleración" : "Acción y reacción: si empujas algo, ese algo te empuja a ti con la misma fuerza y en sentido contrario";
+      return cuatro(opc(M, "ley", l.q, l.ok, NOMBRES_LEYES.filter((x) => x !== l.ok), undefined, [porQue, `Respuesta: ${l.ok}`]));
     }
     case "peso": {
       const m = randomInt(1, 100);
-      if (elegir([true, false])) return num(M, "peso", `¿Cuánto pesa, en N, una persona de ${m} kg? ${textoG(g)}`, m * g);
-      return num(M, "masa", `Una caja pesa ${f(m * g)} N. ¿Cuál es su masa, en kg? ${textoG(g)}`, m);
+      if (elegir([true, false])) return num(M, "peso", `¿Cuánto pesa, en N, una persona de ${m} kg? ${textoG(g)}`, m * g, { pasos: [`Peso = masa × g`, `${m} × ${f(g)} = ${f(m * g)} N`] });
+      return num(M, "masa", `Una caja pesa ${f(m * g)} N. ¿Cuál es su masa, en kg? ${textoG(g)}`, m, { pasos: [`masa = peso ÷ g`, `${f(m * g)} ÷ ${f(g)} = ${m} kg`] });
     }
     case "fma": {
       const m = randomInt(1, 20);
       const a = randomInt(1, 10);
       const que = elegir(["F", "a", "m"] as const);
-      if (que === "F") return num(M, "fma_f", `¿Qué fuerza neta, en N, hace falta para acelerar ${m} kg a ${a} m/s²?`, m * a);
-      if (que === "a") return num(M, "fma_a", `Una fuerza neta de ${m * a} N actúa sobre ${m} kg. ¿Qué aceleración produce, en m/s²?`, a);
-      return num(M, "fma_m", `Una fuerza neta de ${m * a} N produce una aceleración de ${a} m/s². ¿Cuál es la masa, en kg?`, m);
+      if (que === "F") return num(M, "fma_f", `¿Qué fuerza neta, en N, hace falta para acelerar ${m} kg a ${a} m/s²?`, m * a, { pasos: [`F = m · a`, `${m} × ${a} = ${m * a} N`] });
+      if (que === "a") return num(M, "fma_a", `Una fuerza neta de ${m * a} N actúa sobre ${m} kg. ¿Qué aceleración produce, en m/s²?`, a, { pasos: [`a = F ÷ m`, `${m * a} ÷ ${m} = ${a} m/s²`] });
+      return num(M, "fma_m", `Una fuerza neta de ${m * a} N produce una aceleración de ${a} m/s². ¿Cuál es la masa, en kg?`, m, { pasos: [`m = F ÷ a`, `${m * a} ÷ ${a} = ${m} kg`] });
     }
     case "neta": {
       const m = randomInt(2, 10);
       const a = randomInt(1, 6);
       const roz = randomInt(2, 30);
-      return num(M, "neta", `Empujas una caja de ${m} kg con ${m * a + roz} N y el rozamiento la frena con ${roz} N. ¿Qué aceleración tiene, en m/s²?`, a);
+      return num(M, "neta", `Empujas una caja de ${m} kg con ${m * a + roz} N y el rozamiento la frena con ${roz} N. ¿Qué aceleración tiene, en m/s²?`, a, { pasos: [`Fuerza neta = empuje − rozamiento = ${m * a + roz} − ${roz} = ${m * a} N`, `a = F ÷ m = ${m * a} ÷ ${m} = ${a} m/s²`] });
     }
     case "rozamiento": {
       const m = randomInt(2, 20);
       const mu = elegir([0.1, 0.2, 0.25, 0.3, 0.4, 0.5]);
       const N = m * g;
-      if (elegir([true, false])) return num(M, "roce", `Una caja de ${m} kg se desliza sobre el piso con μ = ${f(mu)}. ¿Cuánto vale la fuerza de rozamiento, en N? ${textoG(g)}`, mu * N);
+      if (elegir([true, false])) return num(M, "roce", `Una caja de ${m} kg se desliza sobre el piso con μ = ${f(mu)}. ¿Cuánto vale la fuerza de rozamiento, en N? ${textoG(g)}`, mu * N, { pasos: [`Normal = peso = ${m} × ${f(g)} = ${f(N)} N`, `Rozamiento = μ × N = ${f(mu)} × ${f(N)} = ${f(mu * N)} N`] });
       const a = randomInt(1, 5);
       const F = m * a + mu * N;
-      return num(M, "roce_a", `Arrastras una caja de ${m} kg con ${f(F)} N sobre un piso con μ = ${f(mu)}. ¿Qué aceleración tiene, en m/s²? ${textoG(g)}`, a);
+      return num(M, "roce_a", `Arrastras una caja de ${m} kg con ${f(F)} N sobre un piso con μ = ${f(mu)}. ¿Qué aceleración tiene, en m/s²? ${textoG(g)}`, a, { pasos: [`Rozamiento = μ·m·g = ${f(mu)} × ${m} × ${f(g)} = ${f(mu * N)} N`, `Neta = ${f(F)} − ${f(mu * N)} = ${f(m * a)} N; a = ${f(m * a)} ÷ ${m} = ${a} m/s²`] });
     }
     case "fuerzas":
       return preguntaBanco(M, "fuerzas", FUERZAS);
     case "plano": {
       const ang = elegir([30, 45, 60]);
-      if (elegir([true, false]) || n < 8) return num(M, "plano", `Un bloque baja por una rampa sin rozamiento inclinada ${ang}° (${DATO_TRIG[ang]}). ¿Qué aceleración tiene, en m/s²? ${textoG(g)}`, g * SEN[ang]);
+      if (elegir([true, false]) || n < 8) return num(M, "plano", `Un bloque baja por una rampa sin rozamiento inclinada ${ang}° (${DATO_TRIG[ang]}). ¿Qué aceleración tiene, en m/s²? ${textoG(g)}`, g * SEN[ang], { pasos: [`En una rampa sin rozamiento, la parte del peso que empuja hacia abajo da a = g · sen θ`, `${f(g)} × ${f(SEN[ang])} = ${f(g * SEN[ang])} m/s²`] });
       const mu = elegir([0.1, 0.2, 0.3]);
-      return num(M, "plano_roce", `Un bloque baja por una rampa de ${ang}° con μ = ${f(mu)} (${DATO_TRIG[ang]}). ¿Qué aceleración tiene, en m/s²? ${textoG(g)}`, g * (SEN[ang] - mu * COS[ang]));
+      return num(M, "plano_roce", `Un bloque baja por una rampa de ${ang}° con μ = ${f(mu)} (${DATO_TRIG[ang]}). ¿Qué aceleración tiene, en m/s²? ${textoG(g)}`, g * (SEN[ang] - mu * COS[ang]), { pasos: [`Con rozamiento: a = g · (sen θ − μ · cos θ)`, `${f(g)} × (${f(SEN[ang])} − ${f(mu)} × ${f(COS[ang])}) = ${f(g * (SEN[ang] - mu * COS[ang]))} m/s²`] });
     }
     case "atwood": {
       const m2 = randomInt(1, 6);
       const m1 = m2 + randomInt(1, 6);
-      return num(M, "atwood", `Dos masas de ${m1} kg y ${m2} kg cuelgan de una polea, unidas por una cuerda. ¿Con qué aceleración se mueven, en m/s²? ${textoG(g)}`, ((m1 - m2) * g) / (m1 + m2));
+      return num(M, "atwood", `Dos masas de ${m1} kg y ${m2} kg cuelgan de una polea, unidas por una cuerda. ¿Con qué aceleración se mueven, en m/s²? ${textoG(g)}`, ((m1 - m2) * g) / (m1 + m2), { pasos: [`Máquina de Atwood: la diferencia de pesos mueve a las dos masas, a = (m₁ − m₂)·g ÷ (m₁ + m₂)`, `(${m1} − ${m2}) × ${f(g)} ÷ ${m1 + m2} = ${f(((m1 - m2) * g) / (m1 + m2))} m/s²`] });
     }
     case "bloques": {
       const m1 = randomInt(1, 8);
       const m2 = randomInt(1, 8);
       const a = randomInt(1, 5);
       const F = (m1 + m2) * a;
-      if (elegir([true, false])) return num(M, "bloques_a", `Empujas con ${F} N dos bloques juntos de ${m1} kg y ${m2} kg sobre hielo (sin rozamiento). ¿Qué aceleración tienen, en m/s²?`, a);
-      return num(M, "bloques_contacto", `Empujas con ${F} N dos bloques juntos de ${m1} kg (adelante, donde empujas) y ${m2} kg sobre hielo. ¿Con qué fuerza, en N, el primero empuja al segundo?`, m2 * a);
+      if (elegir([true, false])) return num(M, "bloques_a", `Empujas con ${F} N dos bloques juntos de ${m1} kg y ${m2} kg sobre hielo (sin rozamiento). ¿Qué aceleración tienen, en m/s²?`, a, { pasos: [`Se mueven juntos como una sola masa de ${m1} + ${m2} = ${m1 + m2} kg`, `a = ${F} ÷ ${m1 + m2} = ${a} m/s²`] });
+      return num(M, "bloques_contacto", `Empujas con ${F} N dos bloques juntos de ${m1} kg (adelante, donde empujas) y ${m2} kg sobre hielo. ¿Con qué fuerza, en N, el primero empuja al segundo?`, m2 * a, { pasos: [`Primero la aceleración del conjunto: ${F} ÷ ${m1 + m2} = ${a} m/s²`, `El segundo solo necesita la fuerza para acelerar su masa: ${m2} × ${a} = ${m2 * a} N`] });
     }
     case "centripeta": {
       if (elegir([true, false])) {
         const m = randomInt(1, 10);
         const v = randomInt(2, 10);
         const r = elegir([1, 2, 4, 5]);
-        return num(M, "centripeta", `Una piedra de ${m} kg gira atada a una cuerda de ${r} m a ${v} m/s. ¿Qué fuerza hacia el centro hace la cuerda, en N?`, (m * v * v) / r);
+        return num(M, "centripeta", `Una piedra de ${m} kg gira atada a una cuerda de ${r} m a ${v} m/s. ¿Qué fuerza hacia el centro hace la cuerda, en N?`, (m * v * v) / r, { pasos: [`Fuerza centrípeta: F = m · v² ÷ r`, `${m} × ${v}² ÷ ${r} = ${f((m * v * v) / r)} N`] });
       }
       const v = randomInt(2, 10) * 2;
       const mu = elegir([0.4, 0.5, 0.8]);
       const r = (v * v) / (mu * 10);
-      return num(M, "curva", `En una curva plana de ${f(r)} m de radio, el rozamiento con μ = ${f(mu)} sostiene al auto. ¿Cuál es la velocidad máxima sin derrapar, en m/s? Usa g = 10 m/s².`, v);
+      return num(M, "curva", `En una curva plana de ${f(r)} m de radio, el rozamiento con μ = ${f(mu)} sostiene al auto. ¿Cuál es la velocidad máxima sin derrapar, en m/s? Usa g = 10 m/s².`, v, { pasos: [`El rozamiento hace de fuerza centrípeta: μ·m·g = m·v² ÷ r, así que v = √(μ·g·r)`, `√(${f(mu)} × 10 × ${f(r)}) = √${f(mu * 10 * r)} = ${v} m/s`] });
     }
     case "gravitacion": {
       const casos = [
@@ -427,7 +452,12 @@ function newton(nivel: number): ProblemaDinamia {
         { q: "Si la distancia se triplica, la fuerza de gravedad…", ok: "Se divide entre 9" },
       ];
       const c = elegir(casos);
-      return cuatro(opc(M, "gravitacion", c.q, c.ok, ["Se duplica", "Se divide entre 4", "Se multiplica por 4", "Se divide entre 2", "Se divide entre 9", "No cambia"].filter((x) => x !== c.ok)));
+      return cuatro(
+        opc(M, "gravitacion", c.q, c.ok, ["Se duplica", "Se divide entre 4", "Se multiplica por 4", "Se divide entre 2", "Se divide entre 9", "No cambia"].filter((x) => x !== c.ok), undefined, [
+          `F = G·m₁·m₂ ÷ d²: es proporcional a cada masa y disminuye con el cuadrado de la distancia (doble distancia → ÷ 4; triple → ÷ 9)`,
+          `Respuesta: ${c.ok}`,
+        ])
+      );
     }
   }
 }
@@ -469,61 +499,61 @@ function energia(nivel: number): ProblemaDinamia {
   switch (tipo) {
     case "tipo": {
       const t = elegir(TIPOS_ENERGIA);
-      return cuatro(opc(M, "tipo_energia", t.q, t.ok, NOMBRES_ENERGIA.filter((x) => x !== t.ok)));
+      return cuatro(opc(M, "tipo_energia", t.q, t.ok, NOMBRES_ENERGIA.filter((x) => x !== t.ok), undefined, [`Cinética: por moverse. Potencial gravitatoria: por estar alto. Elástica: por estar estirado o comprimido. Química: guardada en sustancias. Térmica: por la temperatura`, `Respuesta: ${t.ok}`]));
     }
     case "ec": {
       const m = randomInt(1, 10) * 2;
       const v = randomInt(1, 12);
-      return num(M, "ec", `¿Cuánta energía cinética, en J, tiene una bici con su ciclista (${m} kg) a ${v} m/s?`, 0.5 * m * v * v);
+      return num(M, "ec", `¿Cuánta energía cinética, en J, tiene una bici con su ciclista (${m} kg) a ${v} m/s?`, 0.5 * m * v * v, { pasos: [`Energía cinética: Ec = ½ · m · v²`, `½ × ${m} × ${v}² = ${f(0.5 * m * v * v)} J`] });
     }
     case "ep": {
       const m = randomInt(1, 20);
       const h = randomInt(1, 30);
-      return num(M, "ep", `Subes una caja de ${m} kg a ${h} m de altura. ¿Cuánta energía potencial gana, en J? ${textoG(g)}`, m * g * h);
+      return num(M, "ep", `Subes una caja de ${m} kg a ${h} m de altura. ¿Cuánta energía potencial gana, en J? ${textoG(g)}`, m * g * h, { pasos: [`Energía potencial: Ep = m · g · h`, `${m} × ${f(g)} × ${h} = ${f(m * g * h)} J`] });
     }
     case "trabajo": {
       const F = randomInt(1, 20) * 10;
       const d = randomInt(1, 20);
       const ang = elegir([0, 60, 90, 180]);
       const factor = { 0: 1, 60: 0.5, 90: 0, 180: -1 }[ang]!;
-      return num(M, "trabajo", `Una fuerza de ${F} N mueve un objeto ${d} m y forma ${ang}° con el movimiento (cos ${ang}° = ${f(factor)}). ¿Cuánto trabajo hace, en J?`, F * d * factor);
+      return num(M, "trabajo", `Una fuerza de ${F} N mueve un objeto ${d} m y forma ${ang}° con el movimiento (cos ${ang}° = ${f(factor)}). ¿Cuánto trabajo hace, en J?`, F * d * factor, { pasos: [`Trabajo: W = F · d · cos θ (solo cuenta la parte de la fuerza en la dirección del movimiento)`, `${F} × ${d} × ${f(factor)} = ${f(F * d * factor)} J`] });
     }
     case "potencia": {
       const P = randomInt(1, 30) * 10;
       const t = randomInt(2, 20);
-      return num(M, "potencia", `Un motor hace ${P * t} J de trabajo en ${t} s. ¿Qué potencia tiene, en W?`, P);
+      return num(M, "potencia", `Un motor hace ${P * t} J de trabajo en ${t} s. ¿Qué potencia tiene, en W?`, P, { pasos: [`Potencia = trabajo ÷ tiempo`, `${P * t} ÷ ${t} = ${P} W`] });
     }
     case "kwh": {
       const k = randomInt(1, 9);
-      if (elegir([true, false])) return num(M, "kwh_mj", `Una estufa gasta ${k} kWh. ¿Cuántos megajulios (MJ) son? (1 kWh = 3,6 MJ)`, k * 3.6);
+      if (elegir([true, false])) return num(M, "kwh_mj", `Una estufa gasta ${k} kWh. ¿Cuántos megajulios (MJ) son? (1 kWh = 3,6 MJ)`, k * 3.6, { pasos: [`Cada kWh son 3,6 MJ`, `${k} × 3,6 = ${f(k * 3.6)} MJ`] });
       const P = randomInt(1, 20) * 100;
       const h = randomInt(1, 10);
-      return num(M, "kwh", `Un aparato de ${P} W está prendido ${h} horas. ¿Cuántos kWh consume?`, (P * h) / 1000);
+      return num(M, "kwh", `Un aparato de ${P} W está prendido ${h} horas. ¿Cuántos kWh consume?`, (P * h) / 1000, { pasos: [`Energía = potencia × tiempo: ${P} W × ${h} h = ${P * h} Wh`, `En kWh divide entre 1000: ${f((P * h) / 1000)} kWh`] });
     }
     case "caida": {
       const [h, v] = elegir([[5, 10], [20, 20], [45, 30], [1.8, 6], [3.2, 8], [80, 40]] as const);
-      return num(M, "conservacion_v", `Un niño baja por un tobogán de ${f(h)} m de altura sin rozamiento, partiendo del reposo. ¿Con qué velocidad llega abajo, en m/s? Usa g = 10 m/s².`, v);
+      return num(M, "conservacion_v", `Un niño baja por un tobogán de ${f(h)} m de altura sin rozamiento, partiendo del reposo. ¿Con qué velocidad llega abajo, en m/s? Usa g = 10 m/s².`, v, { pasos: [`Sin rozamiento, la energía potencial se vuelve cinética: m·g·h = ½·m·v² → v = √(2·g·h)`, `√(2 × 10 × ${f(h)}) = √${f(20 * h)} = ${v} m/s`] });
     }
     case "sube": {
       const v = randomInt(2, 20);
-      return num(M, "conservacion_h", `Una patineta sube una rampa a ${v} m/s, sin rozamiento. ¿Hasta qué altura llega, en metros? Usa g = 10 m/s².`, (v * v) / 20);
+      return num(M, "conservacion_h", `Una patineta sube una rampa a ${v} m/s, sin rozamiento. ¿Hasta qué altura llega, en metros? Usa g = 10 m/s².`, (v * v) / 20, { pasos: [`La energía cinética se vuelve potencial: ½·m·v² = m·g·h → h = v² ÷ (2·g)`, `${v}² ÷ 20 = ${f((v * v) / 20)} m`] });
     }
     case "perdida": {
       const m = randomInt(1, 10) * 2;
       const h = randomInt(2, 20);
       const v = randomInt(1, Math.floor(Math.sqrt(2 * g * h)) - 1);
-      return num(M, "perdida", `Un trineo de ${m} kg baja una colina de ${h} m partiendo del reposo y llega abajo a ${v} m/s. ¿Cuánta energía se convirtió en calor por el rozamiento, en J? ${textoG(g)}`, m * g * h - 0.5 * m * v * v);
+      return num(M, "perdida", `Un trineo de ${m} kg baja una colina de ${h} m partiendo del reposo y llega abajo a ${v} m/s. ¿Cuánta energía se convirtió en calor por el rozamiento, en J? ${textoG(g)}`, m * g * h - 0.5 * m * v * v, { pasos: [`Arriba tenía Ep = ${m} × ${f(g)} × ${h} = ${f(m * g * h)} J`, `Abajo tiene Ec = ½ × ${m} × ${v}² = ${f(0.5 * m * v * v)} J`, `Lo que falta se perdió en calor: ${f(m * g * h)} − ${f(0.5 * m * v * v)} = ${f(m * g * h - 0.5 * m * v * v)} J`] });
     }
     case "rendimiento": {
       const entra = randomInt(2, 20) * 100;
       const pct = elegir([20, 25, 30, 40, 50, 60, 75, 80, 90]);
-      return num(M, "rendimiento", `Un motor recibe ${entra} J y entrega ${(entra * pct) / 100} J de trabajo útil. ¿Cuál es su rendimiento, en %?`, pct);
+      return num(M, "rendimiento", `Un motor recibe ${entra} J y entrega ${(entra * pct) / 100} J de trabajo útil. ¿Cuál es su rendimiento, en %?`, pct, { pasos: [`Rendimiento = útil ÷ recibido × 100`, `${(entra * pct) / 100} ÷ ${entra} × 100 = ${pct} %`] });
     }
     case "resorte": {
       const k = randomInt(1, 20) * 50;
       const x = elegir([0.1, 0.2, 0.3, 0.4, 0.5]);
-      if (elegir([true, false])) return num(M, "hooke", `Un resorte de constante k = ${k} N/m se estira ${f(x)} m. ¿Con qué fuerza tira, en N?`, k * x);
-      return num(M, "ep_elastica", `Un resorte de k = ${k} N/m se comprime ${f(x)} m. ¿Cuánta energía guarda, en J?`, 0.5 * k * x * x);
+      if (elegir([true, false])) return num(M, "hooke", `Un resorte de constante k = ${k} N/m se estira ${f(x)} m. ¿Con qué fuerza tira, en N?`, k * x, { pasos: [`Ley de Hooke: F = k · x`, `${k} × ${f(x)} = ${f(k * x)} N`] });
+      return num(M, "ep_elastica", `Un resorte de k = ${k} N/m se comprime ${f(x)} m. ¿Cuánta energía guarda, en J?`, 0.5 * k * x * x, { pasos: [`Energía elástica: E = ½ · k · x²`, `½ × ${k} × ${f(x)}² = ${f(0.5 * k * x * x)} J`] });
     }
     case "choque": {
       const m1 = randomInt(1, 6);
@@ -531,10 +561,10 @@ function energia(nivel: number): ProblemaDinamia {
       const v1 = randomInt(2, 10);
       const v2 = elegir([0, 0, -randomInt(1, 5)]);
       const vf = (m1 * v1 + m2 * v2) / (m1 + m2);
-      if (elegir([true, false])) return num(M, "choque_plastico", `Un carrito de ${m1} kg a ${v1} m/s choca contra otro de ${m2} kg que va a ${v2} m/s (en sentido contrario si es negativo) y quedan pegados. ¿A qué velocidad siguen, en m/s?`, vf);
+      if (elegir([true, false])) return num(M, "choque_plastico", `Un carrito de ${m1} kg a ${v1} m/s choca contra otro de ${m2} kg que va a ${v2} m/s (en sentido contrario si es negativo) y quedan pegados. ¿A qué velocidad siguen, en m/s?`, vf, { pasos: [`Se conserva la cantidad de movimiento: m₁·v₁ + m₂·v₂ = (m₁ + m₂)·v`, `(${m1} × ${v1} + ${m2} × ${v2}) ÷ ${m1 + m2} = ${m1 * v1 + m2 * v2} ÷ ${m1 + m2} = ${f(vf)} m/s`] });
       const F = randomInt(1, 20) * 10;
       const t = elegir([0.1, 0.2, 0.5]);
-      return num(M, "impulso", `Pateas una pelota con ${F} N durante ${f(t)} s. ¿Qué impulso le das, en N·s?`, F * t);
+      return num(M, "impulso", `Pateas una pelota con ${F} N durante ${f(t)} s. ¿Qué impulso le das, en N·s?`, F * t, { pasos: [`Impulso = fuerza × tiempo`, `${F} × ${f(t)} = ${f(F * t)} N·s`] });
     }
   }
 }
@@ -581,13 +611,13 @@ function termo(nivel: number): ProblemaDinamia {
   switch (tipo) {
     case "kelvin": {
       const c = randomInt(-50, 120);
-      if (elegir([true, false])) return num(M, "c_k", `El agua de una olla está a ${c} °C. ¿Cuántos kelvin son? (Suma 273.)`, c + 273);
-      return num(M, "k_c", `Un gas está a ${c + 273} K. ¿Cuántos grados Celsius son? (Resta 273.)`, c);
+      if (elegir([true, false])) return num(M, "c_k", `El agua de una olla está a ${c} °C. ¿Cuántos kelvin son? (Suma 273.)`, c + 273, { pasos: [`K = °C + 273`, `${c} + 273 = ${c + 273} K`] });
+      return num(M, "k_c", `Un gas está a ${c + 273} K. ¿Cuántos grados Celsius son? (Resta 273.)`, c, { pasos: [`°C = K − 273`, `${c + 273} − 273 = ${c} °C`] });
     }
     case "fahrenheit": {
       const c = randomInt(-8, 20) * 5;
-      if (elegir([true, false])) return num(M, "c_f", `Hace ${c} °C. ¿Cuántos °F son? (°F = °C · 9/5 + 32)`, (c * 9) / 5 + 32);
-      return num(M, "f_c", `El termómetro marca ${(c * 9) / 5 + 32} °F. ¿Cuántos °C son? (°C = (°F − 32) · 5/9)`, c);
+      if (elegir([true, false])) return num(M, "c_f", `Hace ${c} °C. ¿Cuántos °F son? (°F = °C · 9/5 + 32)`, (c * 9) / 5 + 32, { pasos: [`°F = °C × 9/5 + 32`, `${c} × 9/5 + 32 = ${f((c * 9) / 5)} + 32 = ${f((c * 9) / 5 + 32)} °F`] });
+      return num(M, "f_c", `El termómetro marca ${(c * 9) / 5 + 32} °F. ¿Cuántos °C son? (°C = (°F − 32) · 5/9)`, c, { pasos: [`°C = (°F − 32) × 5/9`, `(${f((c * 9) / 5 + 32)} − 32) × 5/9 = ${c} °C`] });
     }
     case "concepto":
       return preguntaBanco(M, "concepto", CONCEPTOS_TERMO);
@@ -595,7 +625,7 @@ function termo(nivel: number): ProblemaDinamia {
       const s = elegir(SUSTANCIAS);
       const m = elegir([0.5, 1, 2, 3, 4, 5]);
       const dT = randomInt(1, 8) * 10;
-      return num(M, "calor", `¿Cuántos kJ hacen falta para calentar ${f(m)} kg de ${s.nombre} ${dT} °C? (c = ${s.c} J/(kg·°C); 1 kJ = 1000 J)`, (m * s.c * dT) / 1000);
+      return num(M, "calor", `¿Cuántos kJ hacen falta para calentar ${f(m)} kg de ${s.nombre} ${dT} °C? (c = ${s.c} J/(kg·°C); 1 kJ = 1000 J)`, (m * s.c * dT) / 1000, { pasos: [`Calor: Q = m · c · ΔT`, `${f(m)} × ${s.c} × ${dT} = ${f(m * s.c * dT)} J = ${f((m * s.c * dT) / 1000)} kJ`] });
     }
     case "mezcla": {
       const m1 = randomInt(1, 5);
@@ -603,51 +633,51 @@ function termo(nivel: number): ProblemaDinamia {
       const T1 = randomInt(1, 9) * 10;
       const T2 = randomInt(1, 9) * 10;
       if (T1 === T2) return termo(n);
-      return num(M, "mezcla", `Mezclas ${m1} kg de agua a ${T1} °C con ${m2} kg de agua a ${T2} °C. ¿A qué temperatura queda la mezcla, en °C? (Sin pérdidas.)`, (m1 * T1 + m2 * T2) / (m1 + m2));
+      return num(M, "mezcla", `Mezclas ${m1} kg de agua a ${T1} °C con ${m2} kg de agua a ${T2} °C. ¿A qué temperatura queda la mezcla, en °C? (Sin pérdidas.)`, (m1 * T1 + m2 * T2) / (m1 + m2), { pasos: [`Misma sustancia: la temperatura final es el promedio pesado por las masas`, `(${m1} × ${T1} + ${m2} × ${T2}) ÷ ${m1 + m2} = ${f((m1 * T1 + m2 * T2) / (m1 + m2))} °C`] });
     }
     case "latente": {
       const m = elegir([0.5, 1, 2, 3, 4]);
-      if (elegir([true, false])) return num(M, "fusion", `¿Cuántos kJ hacen falta para derretir ${f(m)} kg de hielo a 0 °C? (Calor latente de fusión = 334 kJ/kg)`, m * 334);
-      return num(M, "vaporizacion", `¿Cuántos kJ hacen falta para evaporar ${f(m)} kg de agua a 100 °C? (Calor latente de vaporización = 2260 kJ/kg)`, m * 2260);
+      if (elegir([true, false])) return num(M, "fusion", `¿Cuántos kJ hacen falta para derretir ${f(m)} kg de hielo a 0 °C? (Calor latente de fusión = 334 kJ/kg)`, m * 334, { pasos: [`Para cambiar de estado: Q = m · L (la temperatura no cambia mientras se derrite)`, `${f(m)} × 334 = ${f(m * 334)} kJ`] });
+      return num(M, "vaporizacion", `¿Cuántos kJ hacen falta para evaporar ${f(m)} kg de agua a 100 °C? (Calor latente de vaporización = 2260 kJ/kg)`, m * 2260, { pasos: [`Para cambiar de estado: Q = m · L`, `${f(m)} × 2260 = ${f(m * 2260)} kJ`] });
     }
     case "dilatacion": {
       const L = randomInt(1, 10) * 10;
       const dT = randomInt(1, 5) * 10;
-      return num(M, "dilatacion", `Un riel de acero de ${L} m se calienta ${dT} °C. ¿Cuántos milímetros se alarga? (α = 0,000012 por °C; ΔL = α · L · ΔT; 1 m = 1000 mm)`, 0.000012 * L * dT * 1000);
+      return num(M, "dilatacion", `Un riel de acero de ${L} m se calienta ${dT} °C. ¿Cuántos milímetros se alarga? (α = 0,000012 por °C; ΔL = α · L · ΔT; 1 m = 1000 mm)`, 0.000012 * L * dT * 1000, { pasos: [`ΔL = α · L · ΔT = 0,000012 × ${L} × ${dT} = ${f(0.000012 * L * dT, 4)} m`, `En milímetros: × 1000 = ${f(0.000012 * L * dT * 1000)} mm`] });
     }
     case "boyle": {
       const P1 = randomInt(1, 4);
       const V1 = randomInt(2, 12) * 2;
       const k = elegir([2, 4]);
-      if (elegir([true, false])) return num(M, "boyle", `Un gas ocupa ${V1} L a ${P1} atm. Si la temperatura no cambia y la presión sube a ${P1 * k} atm, ¿qué volumen ocupa, en L?`, V1 / k);
-      return num(M, "boyle_p", `Un gas ocupa ${V1} L a ${P1} atm. Si la temperatura no cambia y se expande a ${V1 * k} L, ¿qué presión tiene, en atm?`, P1 / k);
+      if (elegir([true, false])) return num(M, "boyle", `Un gas ocupa ${V1} L a ${P1} atm. Si la temperatura no cambia y la presión sube a ${P1 * k} atm, ¿qué volumen ocupa, en L?`, V1 / k, { pasos: [`Ley de Boyle (temperatura fija): P₁·V₁ = P₂·V₂`, `V₂ = ${P1} × ${V1} ÷ ${P1 * k} = ${f(V1 / k)} L`] });
+      return num(M, "boyle_p", `Un gas ocupa ${V1} L a ${P1} atm. Si la temperatura no cambia y se expande a ${V1 * k} L, ¿qué presión tiene, en atm?`, P1 / k, { pasos: [`Ley de Boyle (temperatura fija): P₁·V₁ = P₂·V₂`, `P₂ = ${P1} × ${V1} ÷ ${V1 * k} = ${f(P1 / k)} atm`] });
     }
     case "charles": {
       const T1c = elegir([27, 0, 77, 127]);
       const T1 = T1c + 273;
       const T2 = T1 * elegir([2, 1.5]);
       const V1 = randomInt(1, 10) * 2;
-      return num(M, "charles", `Un globo tiene ${V1} L a ${T1c} °C. Si la presión no cambia y se calienta hasta ${f(T2 - 273)} °C, ¿qué volumen tiene, en L? (Usa kelvin: K = °C + 273.)`, (V1 * T2) / T1);
+      return num(M, "charles", `Un globo tiene ${V1} L a ${T1c} °C. Si la presión no cambia y se calienta hasta ${f(T2 - 273)} °C, ¿qué volumen tiene, en L? (Usa kelvin: K = °C + 273.)`, (V1 * T2) / T1, { pasos: [`Ley de Charles (presión fija): V₁ ÷ T₁ = V₂ ÷ T₂, siempre en kelvin`, `T₁ = ${T1} K, T₂ = ${f(T2)} K → V₂ = ${V1} × ${f(T2)} ÷ ${T1} = ${f((V1 * T2) / T1)} L`] });
     }
     case "ideal": {
       const nmol = randomInt(1, 5);
       const T = elegir([273, 300, 400]);
       const V = randomInt(2, 20) * 2;
-      return num(M, "gas_ideal", `${nmol} mol de un gas ideal están a ${T} K en un recipiente de ${V} L. ¿Qué presión tienen, en atm? (P · V = n · R · T con R = 0,082 atm·L/(mol·K))`, (nmol * 0.082 * T) / V);
+      return num(M, "gas_ideal", `${nmol} mol de un gas ideal están a ${T} K en un recipiente de ${V} L. ¿Qué presión tienen, en atm? (P · V = n · R · T con R = 0,082 atm·L/(mol·K))`, (nmol * 0.082 * T) / V, { pasos: [`Despeja la presión: P = n · R · T ÷ V`, `${nmol} × 0,082 × ${T} ÷ ${V} = ${f((nmol * 0.082 * T) / V)} atm`] });
     }
     case "primera": {
       const Q = randomInt(1, 20) * 100;
       const W = randomInt(-5, 15) * 100;
-      return num(M, "primera_ley", `Un gas recibe ${Q} J de calor y hace ${W} J de trabajo sobre el exterior (si es negativo, recibe trabajo). ¿Cuánto cambia su energía interna, en J? (ΔU = Q − W)`, Q - W);
+      return num(M, "primera_ley", `Un gas recibe ${Q} J de calor y hace ${W} J de trabajo sobre el exterior (si es negativo, recibe trabajo). ¿Cuánto cambia su energía interna, en J? (ΔU = Q − W)`, Q - W, { pasos: [`Primera ley: ΔU = Q − W (el calor que entra menos el trabajo que hace)`, `${Q} − (${W}) = ${Q - W} J`] });
     }
     case "maquina": {
       if (elegir([true, false])) {
         const Qc = randomInt(2, 20) * 100;
         const pct = elegir([10, 20, 25, 30, 40]);
-        return num(M, "rendimiento_termico", `Una máquina térmica toma ${Qc} J del foco caliente y hace ${(Qc * pct) / 100} J de trabajo. ¿Cuál es su rendimiento, en %?`, pct);
+        return num(M, "rendimiento_termico", `Una máquina térmica toma ${Qc} J del foco caliente y hace ${(Qc * pct) / 100} J de trabajo. ¿Cuál es su rendimiento, en %?`, pct, { pasos: [`Rendimiento = trabajo ÷ calor recibido × 100`, `${(Qc * pct) / 100} ÷ ${Qc} × 100 = ${pct} %`] });
       }
       const [Tc, Tf] = elegir([[600, 300], [500, 300], [400, 300], [800, 200], [1000, 250]] as const);
-      return num(M, "carnot", `¿Cuál es el rendimiento máximo (de Carnot), en %, de una máquina que trabaja entre ${Tc} K y ${Tf} K? (η = 1 − Tfría / Tcaliente)`, (1 - Tf / Tc) * 100);
+      return num(M, "carnot", `¿Cuál es el rendimiento máximo (de Carnot), en %, de una máquina que trabaja entre ${Tc} K y ${Tf} K? (η = 1 − Tfría / Tcaliente)`, (1 - Tf / Tc) * 100, { pasos: [`Rendimiento de Carnot: η = 1 − T_fría ÷ T_caliente (en kelvin)`, `1 − ${Tf} ÷ ${Tc} = ${f(1 - Tf / Tc)} → ${f((1 - Tf / Tc) * 100)} %`] });
     }
   }
 }
@@ -697,57 +727,60 @@ function fluidos(nivel: number): ProblemaDinamia {
     case "densidad": {
       const V = elegir([0.5, 1, 2, 4, 5]);
       const rho = elegir([500, 800, 1000, 2700, 7800]);
-      return num(M, "densidad", `Un objeto de ${f(V * rho)} kg ocupa ${f(V)} m³. ¿Cuál es su densidad, en kg/m³?`, rho);
+      return num(M, "densidad", `Un objeto de ${f(V * rho)} kg ocupa ${f(V)} m³. ¿Cuál es su densidad, en kg/m³?`, rho, { pasos: [`Densidad = masa ÷ volumen`, `${f(V * rho)} ÷ ${f(V)} = ${rho} kg/m³`] });
     }
     case "flota": {
       const o = elegir(MATERIALES);
       const l = elegir(LIQUIDOS.filter((x) => Math.abs(x.rho - o.rho) > 30));
-      return opc(M, "flota", `Pones ${o.nombre} (${o.rho} kg/m³) en ${l.nombre} (${l.rho} kg/m³). ¿Qué pasa?`, o.rho < l.rho ? "Flota" : "Se hunde", [o.rho < l.rho ? "Se hunde" : "Flota"]);
+      return opc(M, "flota", `Pones ${o.nombre} (${o.rho} kg/m³) en ${l.nombre} (${l.rho} kg/m³). ¿Qué pasa?`, o.rho < l.rho ? "Flota" : "Se hunde", [o.rho < l.rho ? "Se hunde" : "Flota"], undefined, [
+        `Un objeto flota si es menos denso que el líquido y se hunde si es más denso`,
+        `${o.rho} kg/m³ ${o.rho < l.rho ? "<" : ">"} ${l.rho} kg/m³ → ${o.rho < l.rho ? "flota" : "se hunde"}`,
+      ]);
     }
     case "presion": {
       const A = elegir([0.01, 0.02, 0.05, 0.1, 0.5, 2]);
       const P = randomInt(1, 20) * 100;
-      return num(M, "presion", `Una caja apoya ${f(P * A)} N sobre ${f(A)} m². ¿Qué presión hace, en Pa (N/m²)?`, P);
+      return num(M, "presion", `Una caja apoya ${f(P * A)} N sobre ${f(A)} m². ¿Qué presión hace, en Pa (N/m²)?`, P, { pasos: [`Presión = fuerza ÷ área`, `${f(P * A)} ÷ ${f(A)} = ${P} Pa`] });
     }
     case "hidrostatica": {
       const h = randomInt(1, 40);
-      return num(M, "hidrostatica", `¿Cuánta presión hace el agua a ${h} m de profundidad, en kPa? (ρ = 1000 kg/m³; P = ρ · g · h; usa g = 10 m/s²; 1 kPa = 1000 Pa)`, h * 10);
+      return num(M, "hidrostatica", `¿Cuánta presión hace el agua a ${h} m de profundidad, en kPa? (ρ = 1000 kg/m³; P = ρ · g · h; usa g = 10 m/s²; 1 kPa = 1000 Pa)`, h * 10, { pasos: [`P = ρ · g · h = 1000 × 10 × ${h} = ${h * 10000} Pa`, `En kPa: ÷ 1000 = ${h * 10} kPa`] });
     }
     case "prensa": {
       const A1 = elegir([0.01, 0.02, 0.05]);
       const k = elegir([5, 10, 20, 50]);
       const F1 = randomInt(1, 20) * 10;
-      return num(M, "prensa", `En una prensa hidráulica empujas con ${F1} N el pistón chico de ${f(A1)} m². El grande mide ${f(A1 * k)} m². ¿Qué fuerza hace el grande, en N?`, F1 * k);
+      return num(M, "prensa", `En una prensa hidráulica empujas con ${F1} N el pistón chico de ${f(A1)} m². El grande mide ${f(A1 * k)} m². ¿Qué fuerza hace el grande, en N?`, F1 * k, { pasos: [`Pascal: la presión es la misma en los dos pistones, F₁ ÷ A₁ = F₂ ÷ A₂`, `El área grande es ${k} veces la chica, así que la fuerza también: ${F1} × ${k} = ${F1 * k} N`] });
     }
     case "absoluta": {
       const h = randomInt(1, 30);
-      return num(M, "absoluta", `Buceas a ${h} m de profundidad en agua dulce. ¿Cuál es la presión absoluta, en kPa? (Atmosférica = 101 kPa; el agua suma 10 kPa por metro.)`, 101 + 10 * h);
+      return num(M, "absoluta", `Buceas a ${h} m de profundidad en agua dulce. ¿Cuál es la presión absoluta, en kPa? (Atmosférica = 101 kPa; el agua suma 10 kPa por metro.)`, 101 + 10 * h, { pasos: [`Presión absoluta = atmosférica + la del agua`, `101 + 10 × ${h} = ${101 + 10 * h} kPa`] });
     }
     case "empuje": {
       const V = elegir([0.001, 0.002, 0.005, 0.01, 0.02]);
       const l = elegir(LIQUIDOS.filter((x) => x.rho < 2000));
-      return num(M, "empuje", `Un objeto de ${f(V * 1000)} L (${f(V, 3)} m³) está totalmente sumergido en ${l.nombre} (${l.rho} kg/m³). ¿Qué empuje recibe, en N? (E = ρ · g · V; usa g = 10 m/s²)`, l.rho * 10 * V);
+      return num(M, "empuje", `Un objeto de ${f(V * 1000)} L (${f(V, 3)} m³) está totalmente sumergido en ${l.nombre} (${l.rho} kg/m³). ¿Qué empuje recibe, en N? (E = ρ · g · V; usa g = 10 m/s²)`, l.rho * 10 * V, { pasos: [`Arquímedes: E = ρ_líquido · g · V_sumergido`, `${l.rho} × 10 × ${f(V, 3)} = ${f(l.rho * 10 * V)} N`] });
     }
     case "aparente": {
       const V = elegir([0.001, 0.002, 0.005]);
       const rho = elegir([2700, 7800, 8900]);
       const P = rho * 10 * V;
-      return num(M, "peso_aparente", `Una pieza metálica pesa ${f(P)} N en el aire y ocupa ${f(V * 1000)} L. ¿Cuánto pesa sumergida en agua, en N? (El agua empuja 10 N por cada litro sumergido.)`, P - 10 * V * 1000);
+      return num(M, "peso_aparente", `Una pieza metálica pesa ${f(P)} N en el aire y ocupa ${f(V * 1000)} L. ¿Cuánto pesa sumergida en agua, en N? (El agua empuja 10 N por cada litro sumergido.)`, P - 10 * V * 1000, { pasos: [`Empuje del agua: 10 × ${f(V * 1000)} L = ${f(10 * V * 1000)} N`, `Peso aparente = peso − empuje = ${f(P)} − ${f(10 * V * 1000)} = ${f(P - 10 * V * 1000)} N`] });
     }
     case "sumergida": {
       const o = elegir(MATERIALES.filter((x) => x.rho < 1000));
-      return num(M, "sumergida", `${o.nombre[0].toUpperCase()}${o.nombre.slice(1)} (${o.rho} kg/m³) flota en agua (1000 kg/m³). ¿Qué porcentaje de su volumen queda bajo el agua?`, (o.rho / 1000) * 100);
+      return num(M, "sumergida", `${o.nombre[0].toUpperCase()}${o.nombre.slice(1)} (${o.rho} kg/m³) flota en agua (1000 kg/m³). ¿Qué porcentaje de su volumen queda bajo el agua?`, (o.rho / 1000) * 100, { pasos: [`Al flotar, la parte sumergida es la densidad del objeto ÷ la del agua`, `${o.rho} ÷ 1000 = ${f(o.rho / 1000)} → ${f((o.rho / 1000) * 100)} %`] });
     }
     case "continuidad": {
       const v1 = randomInt(1, 6);
       const k = elegir([2, 3, 4]);
-      if (elegir([true, false])) return num(M, "continuidad", `El agua va a ${v1} m/s por un caño. Más adelante el caño se angosta a 1/${k} del área. ¿A qué velocidad va ahí, en m/s?`, v1 * k);
+      if (elegir([true, false])) return num(M, "continuidad", `El agua va a ${v1} m/s por un caño. Más adelante el caño se angosta a 1/${k} del área. ¿A qué velocidad va ahí, en m/s?`, v1 * k, { pasos: [`Continuidad: A₁·v₁ = A₂·v₂; si el área se divide entre ${k}, la velocidad se multiplica por ${k}`, `${v1} × ${k} = ${v1 * k} m/s`] });
       const A = elegir([0.01, 0.02, 0.05]);
-      return num(M, "caudal", `Por un caño de ${f(A)} m² el agua va a ${v1} m/s. ¿Qué caudal lleva, en litros por segundo? (Q = A · v; 1 m³ = 1000 L)`, A * v1 * 1000);
+      return num(M, "caudal", `Por un caño de ${f(A)} m² el agua va a ${v1} m/s. ¿Qué caudal lleva, en litros por segundo? (Q = A · v; 1 m³ = 1000 L)`, A * v1 * 1000, { pasos: [`Caudal Q = A · v = ${f(A)} × ${v1} = ${f(A * v1, 3)} m³/s`, `En litros: × 1000 = ${f(A * v1 * 1000)} L/s`] });
     }
     case "torricelli": {
       const [h, v] = elegir([[5, 10], [1.8, 6], [3.2, 8], [0.8, 4], [20, 20], [0.2, 2]] as const);
-      return num(M, "torricelli", `Un tanque abierto tiene un agujero ${f(h)} m por debajo de la superficie del agua. ¿A qué velocidad sale el chorro, en m/s? (v = √(2 · g · h); usa g = 10 m/s²)`, v);
+      return num(M, "torricelli", `Un tanque abierto tiene un agujero ${f(h)} m por debajo de la superficie del agua. ¿A qué velocidad sale el chorro, en m/s? (v = √(2 · g · h); usa g = 10 m/s²)`, v, { pasos: [`Torricelli: el agua sale como si cayera desde la superficie, v = √(2·g·h)`, `√(2 × 10 × ${f(h)}) = √${f(20 * h)} = ${v} m/s`] });
     }
     case "bernoulli":
       return preguntaBanco(M, "bernoulli", [

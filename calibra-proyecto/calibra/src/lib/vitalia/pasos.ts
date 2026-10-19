@@ -1,0 +1,70 @@
+import type { ProblemaVitalia } from "@/lib/practica/vitalia";
+
+// «Cómo se resuelve» de cada pregunta de Vitalia (pedido 2026-10-18): la idea de
+// biología que la responde y, al final, la respuesta. Para las de cálculo (cromosomas,
+// ATP, Punnett, Chargaff, 10 %), la cuenta con los números del enunciado.
+
+const IDEA: Record<string, string> = {
+  teoria: "Teoría celular: todos los seres vivos están hechos de células, la célula es la unidad básica de la vida y toda célula viene de otra célula",
+  funcion: "Cada organelo tiene un trabajo: el núcleo guarda el ADN, la mitocondria saca energía, el ribosoma fabrica proteínas, el cloroplasto hace la fotosíntesis…",
+  organelo_de: "Cada organelo tiene un trabajo: el núcleo guarda el ADN, la mitocondria saca energía, el ribosoma fabrica proteínas, el cloroplasto hace la fotosíntesis…",
+  senalar: "Fíjate en la forma: el núcleo es la esfera grande, las mitocondrias tienen pliegues adentro, los cloroplastos son verdes y la pared es el borde grueso de la vegetal",
+  animal_vegetal: "La célula vegetal tiene pared celular, cloroplastos y una vacuola central grande; la animal no tiene ninguna de las tres",
+  medios: "El agua pasa por ósmosis hacia donde hay más solutos: en un medio hipertónico la célula pierde agua; en uno hipotónico gana agua",
+  biomoleculas: "Carbohidratos: energía rápida. Lípidos: reserva de energía y membranas. Proteínas: estructura y enzimas. Ácidos nucleicos: la información genética",
+  foto_resp: "Fotosíntesis: CO₂ + agua + luz → glucosa + O₂ (en el cloroplasto). Respiración: glucosa + O₂ → CO₂ + agua + ATP (en la mitocondria)",
+  lugares: "La fotosíntesis ocurre en el cloroplasto; la respiración celular, en la mitocondria",
+  quien: "Las plantas, las algas y algunas bacterias hacen fotosíntesis; todos los seres vivos respiran",
+  fase_dibujo: "Profase: se condensan los cromosomas. Metafase: se alinean en el centro. Anafase: se separan hacia los polos. Telofase: se forman dos núcleos",
+  fase_texto: "Profase: se condensan los cromosomas. Metafase: se alinean en el centro. Anafase: se separan hacia los polos. Telofase: se forman dos núcleos",
+  orden: "El orden de la mitosis es Profase → Metafase → Anafase → Telofase (truco: «PMAT»)",
+  cromosomas_gameto: "Los gametos tienen la mitad de los cromosomas (n): 2n ÷ 2",
+  cromosomas_mitosis: "La mitosis hace copias idénticas: cada célula hija tiene los mismos cromosomas que la madre",
+  cromosomas_meiosis: "La meiosis tiene dos divisiones seguidas: de una célula salen 4, cada una con la mitad de los cromosomas",
+  ciclo: "Ciclo celular: interfase (G1, S donde se copia el ADN, G2) y después la mitosis",
+  atp_aerobica: "Con oxígeno, cada glucosa da unos 36 ATP: multiplica por la cantidad de glucosas",
+  atp_fermentacion: "Sin oxígeno (fermentación), cada glucosa da solo 2 ATP: multiplica por la cantidad de glucosas",
+  vocabulario: "Gen: un trozo de ADN con una instrucción. Alelo: cada versión de un gen. Homocigoto: dos alelos iguales; heterocigoto: dos distintos. Genotipo: los alelos; fenotipo: lo que se ve",
+  complementaria: "En el ADN, A se aparea con T y C con G: cambia cada base por su pareja",
+  transcripcion: "Al transcribir, el ARN copia la hebra con su pareja, pero en el ARN no hay T: va U (A→U, T→A, C→G, G→C)",
+  traduccion: "Lee el ARN de a tres letras (codones) y busca cada codón en la tabla: cada uno es un aminoácido",
+  punnett_dom: "Arma el cuadro de Punnett con los alelos de cada padre; basta un alelo dominante para que se vea el rasgo dominante",
+  punnett_rec: "Arma el cuadro de Punnett; el rasgo recesivo solo se ve con los dos alelos recesivos (aa)",
+  punnett_het: "Arma el cuadro de Punnett y cuenta las casillas con un alelo de cada tipo (Aa)",
+  dihibrido: "AaBb × AaBb da la proporción 9 : 3 : 3 : 1 (9 con los dos dominantes, 3 y 3 con uno, 1 con los dos recesivos)",
+  incompleta: "Dominancia incompleta: el heterocigoto es una mezcla (rosado). Rosada × rosada (Rr × Rr) da 1 RR : 2 Rr : 1 rr",
+  incompleta_pct: "Rosada × rosada (Rr × Rr) da 1 roja : 2 rosadas : 1 blanca: las rosadas son 2 de 4 = 50 %",
+  abo: "A y B son codominantes y O es recesivo: combina un alelo de la madre con uno del padre y mira qué grupo da cada par (AO → A, BO → B, AB → AB, OO → O)",
+  x_hijos: "Los varones reciben su X de la madre (del padre reciben la Y): el daltonismo del hijo depende solo de la madre",
+  x_hijas: "Las hijas reciben una X de cada padre: para ser daltónicas necesitan la X afectada de los dos",
+  x_portadoras: "Una hija es portadora si recibe una X afectada y una sana",
+  chargaff_T: "Regla de Chargaff: A = T y C = G. Si A es cierto %, T es el mismo %",
+  chargaff_G: "Regla de Chargaff: A = T y C = G, y todo suma 100 %. A + T = 2·A; lo que queda se reparte por igual entre G y C: (100 − 2·A) ÷ 2 = 50 − A",
+  chargaff_C: "Regla de Chargaff: A = T y C = G, y todo suma 100 %. A + T = 2·A; lo que queda se reparte por igual entre G y C: (100 − 2·A) ÷ 2 = 50 − A",
+  mutacion: "Una mutación es un cambio en el ADN: puede cambiar una base (sustitución), agregar o quitar bases (inserción o deleción, que corren la lectura)",
+  organismo: "Reinos: animales (se alimentan de otros y se mueven), plantas (hacen fotosíntesis), hongos (absorben materia en descomposición), protistas (casi todos unicelulares con núcleo) y moneras (bacterias, sin núcleo)",
+  rasgos: "Reinos: animales (se alimentan de otros y se mueven), plantas (hacen fotosíntesis), hongos (absorben materia en descomposición), protistas (casi todos unicelulares con núcleo) y moneras (bacterias, sin núcleo)",
+  vertebrados: "Peces: branquias y escamas. Anfibios: piel húmeda, metamorfosis. Reptiles: escamas secas, huevos con cáscara. Aves: plumas. Mamíferos: pelo y leche materna",
+  invertebrados: "Artrópodos: patas articuladas y exoesqueleto (insectos, arañas, crustáceos). Moluscos: cuerpo blando, muchos con concha. Anélidos: gusanos con anillos. Equinodermos: estrellas y erizos de mar",
+  plantas_hongos: "Las plantas hacen fotosíntesis y tienen pared de celulosa; los hongos no tienen clorofila, se alimentan absorbiendo y su pared es de quitina",
+  categorias: "De lo más amplio a lo más chico: Dominio → Reino → Filo → Clase → Orden → Familia → Género → Especie",
+  nombre_cientifico: "El nombre científico tiene dos palabras: el género con mayúscula y la especie en minúscula, en cursiva (como Homo sapiens)",
+  dominios: "Tres dominios: Bacteria y Archaea (sin núcleo) y Eukarya (con núcleo: animales, plantas, hongos y protistas)",
+  rol: "En una cadena alimentaria el primero es el productor (hace su alimento), después vienen los consumidores primarios, secundarios… y los descomponedores reciclan todo",
+  diez_por_ciento: "A cada nivel de la cadena pasa solo el 10 % de la energía: divide entre 10 por cada salto",
+  relaciones: "Mutualismo: ganan los dos. Comensalismo: uno gana y al otro le da igual. Parasitismo: uno gana y el otro pierde. Depredación: uno se come al otro. Competencia: los dos pierden",
+  ciclos: "En los ciclos de la materia (agua, carbono, nitrógeno) los elementos pasan del ambiente a los seres vivos y vuelven",
+  que_hace: "Digestivo: procesa el alimento. Respiratorio: intercambia gases. Circulatorio: lleva sangre a todo el cuerpo. Nervioso: controla y coordina. Excretor: filtra desechos. Locomotor: permite moverse",
+  digestion: "Boca (mastica y empieza a digerir almidón) → esófago → estómago (ácido y proteínas) → intestino delgado (absorbe nutrientes) → intestino grueso (absorbe agua)",
+  circulacion: "El corazón tiene 4 cavidades; las arterias sacan sangre del corazón, las venas la traen y los capilares hacen el intercambio. Circulación menor: corazón ↔ pulmones; mayor: corazón ↔ cuerpo",
+  rinon: "El riñón filtra la sangre en las nefronas: saca desechos (urea) y agua de más, que salen como orina",
+  hormonas: "Las glándulas mandan hormonas por la sangre: insulina (páncreas) baja el azúcar, adrenalina (suprarrenales) prepara para la acción, tiroxina (tiroides) regula el metabolismo",
+  defensas: "Primera barrera: piel y mucosas. Segunda: inflamación y glóbulos blancos que comen gérmenes. Tercera: anticuerpos específicos (y la memoria que dan las vacunas)",
+  nervioso: "La neurona recibe por las dendritas, conduce por el axón y pasa la señal en la sinapsis. Encéfalo y médula forman el sistema nervioso central",
+};
+
+export function pasosVitalia(p: ProblemaVitalia): string[] {
+  const idea = IDEA[p.detalle.tipo] ?? "Piensa en la idea de biología que está detrás de la pregunta";
+  const respuesta = p.entrada === "numero" ? String(p.respuesta).replace(".", ",") : p.respuesta;
+  return [idea, `Respuesta: ${respuesta}`];
+}

@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { generarProblemaCalculia, type ModoCalculia } from "./calculia";
 import { generarProblemaCircuitia, type ModoCircuitia } from "./circuitia";
 import { generarProblemaCodia } from "./codia";
+import { generarProblemaDinamia } from "./dinamia";
+import { generarProblemaVitalia } from "./vitalia";
 import { generarProblemaNaipia } from "./naipia";
 import { generarProblemaTrigonometria } from "./trigonometria";
 
@@ -36,5 +38,19 @@ describe("pasos de cada mundo", () => {
   it("Naipia", () => {
     for (const modo of ["hilo", "ko", "hiopt2", "omega2", "verdadero"] as const)
       for (let nivel = 1; nivel <= 10; nivel++) for (let i = 0; i < 10; i++) revisar(generarProblemaNaipia(modo, nivel).pasos, `naipia ${modo} ${nivel}`);
+  });
+
+  it("Dinamia", () => {
+    for (const modo of ["cinematica", "vectores", "newton", "energia", "termo", "fluidos"] as const)
+      for (let nivel = 1; nivel <= 10; nivel++) for (let i = 0; i < 15; i++) revisar(generarProblemaDinamia(modo, nivel).pasos, `dinamia ${modo} ${nivel}`);
+  });
+
+  it("Vitalia", () => {
+    for (const modo of ["celula", "procesos", "genetica", "sistemas", "reinos", "ecologia"] as const)
+      for (let nivel = 1; nivel <= 10; nivel++) for (let i = 0; i < 15; i++) {
+        const p = generarProblemaVitalia(modo, nivel);
+        revisar(p.pasos, `vitalia ${modo} ${nivel}`);
+        expect(p.pasos?.[0], `vitalia sin idea propia: ${p.detalle.tipo}`).not.toMatch(/^Piensa en la idea/);
+      }
   });
 });
