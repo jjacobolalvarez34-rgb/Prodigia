@@ -16,6 +16,7 @@ import Texto from "./Texto";
 // Para sumar el de otra fiesta: su archivo acá y en VIDEO_DE_TEMA.
 const VIDEOS: Record<string, number> = {
   "gran-alineacion": require("../../assets/videos/gran-alineacion.mp4"),
+  halloween: require("../../assets/videos/halloween.mp4"),
 };
 const ENTRADA_MS = 700;
 const SALIDA_MS = 650;
