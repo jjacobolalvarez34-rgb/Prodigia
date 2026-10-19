@@ -239,20 +239,21 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 49. [ ] Cobros en la app con Google Play Billing (o RevenueCat) + verificación en el servidor y la versión de Play sin botones
     «pagar en la web» ni el permiso REQUEST_INSTALL_PACKAGES / aviso de APK (Play actualiza solo y no lo permite).
 50. [ ] Publicación en Play: AAB firmado, ficha, Data safety, clasificación de contenido, consentimiento de anuncios (UMP).
-51. [ ] Evento de Halloween (31/10) con su colección y su paquete (PLAN_CAPSULAS_Y_EVENTOS.md).
+51. [x] Evento de Halloween (31/10) con su colección y su paquete (PLAN_CAPSULAS_Y_EVENTOS.md).
 52. [ ] Resto del plan de economía: pack de inicio, fusión de cápsulas, prueba gratis de Pro, etiqueta «NUEVO», panel de economía.
+    → Hechas la fusión y «NUEVO» (2026-10-18). Faltan: pack de inicio, prueba gratis de Pro (7 días) y panel de economía.
 53. [ ] Pruebas: duelo en vivo con dos teléfonos; compra de un mundo suelto (falta PADDLE_PRODUCT_CONTENIDO).
 
 ## Pedidos del 2026-10-16
 
 54. [ ] Play Store: para después (no ahora).
-55. [ ] Hacer 48 (explicaciones), 51 (Halloween) y 52 (resto de la economía).
+55. [x] Hacer 48 (explicaciones), 51 (Halloween) y 52 (resto de la economía).
 56. [ ] Plan de TODAS las festividades famosas internacionales, cada una como «tema» que no cambia la base de la app pero
     comparte la dinámica de la fecha. Ejemplo Navidad: ciudades nevadas, copos cayendo, Santa o renos pasando, más regalos,
     eventos especiales semanales con premios especiales; estética de la app (gorritos, bordes de caramelo en botones);
     constelaciones y cápsulas con diseños y animaciones de la fecha. Planear y HACER cada una, prehechas y programadas
     para activarse solas desde antes.
-57. [ ] Anuncios: alguien nuevo ve de golpe los ~12 anuncios que hay; no es la idea. Arreglarlo y mejorar su diseño.
+57. [x] Anuncios: alguien nuevo ve de golpe los ~12 anuncios que hay; no es la idea. Arreglarlo y mejorar su diseño.
 58. [x] Ícono de la app: fondo negro y logo más centrado, como el del APK viejo (el que solo envolvía la web): ese era más bonito. → Hecho (fondo #07080D, logo centrado; scripts/generar-iconos.mjs).
 59. [x] En festividades también cambian el ícono y los widgets. → Widgets hechos (2026-10-17): la app manda los tramos de festividades de los próximos 60 días y el widget elige la de hoy (acento, adornos de la ciudad, partículas). Ícono (2026-10-17): los 16 hechos en mobile/assets/iconos-temporada; por decisión del usuario solo cambia en Halloween y Navidad (alias del launcher, plugins/iconos-temporada.js; para sumar otra fiesta, agregarla ahí y en src/lib/iconoTemporada.ts y en ALIAS de WidgetsProdigiaModule.kt).
 60. [x] Widgets: más profundidad (y animación si se puede); hoy se ven feos. → Hecho (2026-10-17): fondo ilustrado nativo (cielo con resplandor y estrellas, ciudad en dos planos con ventanas), llama con brillo que respira y cajas de vidrio; 3 cuadros con fundido (ViewFlipper). Sin emojis. Ver modules/widgets-prodigia/android (Lienzo.kt).
