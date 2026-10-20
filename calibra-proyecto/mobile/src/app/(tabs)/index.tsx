@@ -132,6 +132,18 @@ export default function Hoy() {
 
       <CartelAlineacion />
       <CartelTemporada />
+      {celebracionDe(temaHoy)?.minievento && !["ranked", "amigos"].includes(celebracionDe(temaHoy)!.minievento.donde) && (
+        <Tarjeta indice={indice++} acento={temaHoy?.tema.acento} brillo={0.18} esquina>
+          <Texto v="micro" c={temaHoy?.tema.acento}>
+            MINIEVENTO
+          </Texto>
+          <Texto v="h3">{celebracionDe(temaHoy)!.minievento.nombre}</Texto>
+          <Texto v="nota" tam={12.5}>
+            {celebracionDe(temaHoy)!.minievento.texto}
+          </Texto>
+          {temaHoy?.tema.id === "dia_pi" && <Boton3D titulo="Jugar" tamano="sm" estilo={{ marginTop: 8 }} onPress={() => router.push("/pi")} />}
+        </Tarjeta>
+      )}
       {!esInvitado && <RepararRacha indice={indice++} />}
 
       {continuar && mundoContinuar && (

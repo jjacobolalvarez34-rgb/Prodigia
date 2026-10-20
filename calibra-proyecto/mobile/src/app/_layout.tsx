@@ -206,6 +206,7 @@ function Navegacion() {
             <Stack.Screen name="evento" />
             <Stack.Screen name="logros" />
             <Stack.Screen name="estadisticas" />
+            <Stack.Screen name="pi" />
             <Stack.Screen name="editar-placa" options={{ animation: "slide_from_bottom" }} />
             <Stack.Screen name="pro" options={{ animation: "slide_from_bottom" }} />
             <Stack.Screen name="jugador/[id]" />

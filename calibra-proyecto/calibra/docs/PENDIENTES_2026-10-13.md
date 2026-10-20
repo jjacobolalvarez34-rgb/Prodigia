@@ -317,7 +317,7 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 
 95. [ ] El usuario APROBÓ todo el diseño de la galería (eventos, estadísticas Pro, fuentes, constelaciones, tutorial y landing). Construirlo en web y app.
 96. [x] Halloween: en el resultado (y donde salga la escena), en vez de la bruja, 3 esqueletos bailando como el meme, animados. Y un EMOTE EXCLUSIVO «Baile de esqueletos» que se pueda usar en las Rankeds. → HECHO (2026-10-20). Baile de esqueletos (meme) en resultado y emote exclusivo (0292).
-97. [ ] Día de Pi: minievento «quien escriba más dígitos de π en 1 minuto gana» (título «Irracional», tabla del día).
+97. [x] Día de Pi: minievento «quien escriba más dígitos de π en 1 minuto gana» (título «Irracional», tabla del día). → HECHO (2026-10-20): /pi en la web y pantalla «pi» en la app (0295).
 98. [ ] (IDEA, no segura todavía) Rankeds con TABLERO EN VIVO en vez de solo el fantasma: los dos jugadores a cada lado; al responder ves cuánto te demoraste tú y cuánto el rival; en las opciones aparece la que eligió el rival; la Exp de cada uno y quién va ganando. Más emoción y presión. Consultar antes de hacer.
 99. [ ] PLANEACIÓN pendiente: los CLANES (están abandonados).
 100. [ ] PLANEACIÓN pendiente: el FEED social.
@@ -325,7 +325,7 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 
 ## DÓNDE QUEDÓ (2026-10-19, tarde) — leer primero para seguir
 
-**Migraciones por correr en Supabase (en orden):** 0291 (paquetes de cápsulas con Cometas), 0292 (Halloween en todo: noche del esqueleto, 3 Caramelos por ranked ganada, «Dar un dulce», emote «Baile de esqueletos»), 0293 (estadísticas Pro nuevas) y 0294 (fuentes nuevas: 16 de nombre y fuentes de puntos). La base tiene hasta la 0290.
+**Migraciones por correr en Supabase (en orden):** 0291 (paquetes de cápsulas con Cometas), 0292 (Halloween en todo: noche del esqueleto, 3 Caramelos por ranked ganada, «Dar un dulce», emote «Baile de esqueletos»), 0293 (estadísticas Pro nuevas) 0294 (fuentes nuevas: 16 de nombre y fuentes de puntos) y 0295 (dígitos de π). La base tiene hasta la 0290.
 
 **Hecho y subido (web publicada en Vercel):** explicaciones de los 14 mundos; videos de la Alineación (15 s con cola) y Halloween en web y app (reproductor genérico VideoApertura); paquetes de cápsulas; editar perfil; arreglos de tienda, GIF y aviso de actualización; racha de 15 tonos; «+N» inclinado; paridad de eventos; celebracion.ts (datos de las 16 fechas); emote animado «Baile de esqueletos» (estilo del meme: en cuclillas, guantes blancos y zapatos negros) en duelos de web y app.
 
