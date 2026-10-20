@@ -1,5 +1,6 @@
 "use client";
 
+import SeccionRecompensas from "./SeccionRecompensas";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
@@ -186,6 +187,8 @@ export default function VisitanteLanding() {
           ))}
         </div>
       </section>
+
+      <SeccionRecompensas />
     </div>
   );
 }

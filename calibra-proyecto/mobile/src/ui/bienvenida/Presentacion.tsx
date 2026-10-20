@@ -1,3 +1,6 @@
+import { coloresCapsula } from "@/lib/recompensas/catalogo";
+import Capsula from "../recompensas/Capsula";
+import Constelacion from "../recompensas/Constelacion";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useRef, useState } from "react";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
@@ -230,10 +233,39 @@ function EscenaCompetir() {
   );
 }
 
+// Las cápsulas (pendiente 93, diseño aprobado): de la diaria a la prisma, flotando.
+function EscenaCapsulas() {
+  const abierta = useSharedValue(0);
+  return (
+    <View style={{ height: 250, flexDirection: "row", alignItems: "flex-end", justifyContent: "center", gap: 6, paddingBottom: 30 }}>
+      {(["diaria", "plata", "oro", "prisma"] as const).map((t, i) => (
+        <Animated.View key={t} entering={FadeInLeft.delay(150 + i * 180).springify().damping(15)}>
+          <Flota amplitud={3 + i} duracion={1600 + i * 300}>
+            <Capsula abierta={abierta} colores={coloresCapsula(t, null)} tam={56 + i * 16} />
+          </Flota>
+        </Animated.View>
+      ))}
+    </View>
+  );
+}
+
+// Las constelaciones: el cielo de Quimia con la figura completa.
+function EscenaConstelaciones() {
+  return (
+    <View style={{ height: 250, alignItems: "center", justifyContent: "center" }}>
+      <Animated.View entering={FadeInLeft.delay(150).springify().damping(15)}>
+        <Constelacion mundo="quimia" estrellas={7} completa tam={210} radio={24} />
+      </Animated.View>
+    </View>
+  );
+}
+
 const ESCENAS = [
   { Dibujo: EscenaCiudades, titulo: "Una ciudad para cada forma de pensar", texto: "15 ciudades: cálculo, lógica, mapas, química, física, biología, música, código y más. Cada una con su propio día y su propia noche." },
   { Dibujo: EscenaPartida, titulo: "10 preguntas. 60 segundos.", texto: "Partidas cortas que se adaptan a tu nivel. En racha ganas segundos; si respondes rápido, ganas más Exp." },
   { Dibujo: EscenaPremios, titulo: "Juegas y ganas", texto: "Cada partida te da Exp y Chispas. Con las Chispas compras marcos, fondos y ayudas en la tienda." },
+  { Dibujo: EscenaCapsulas, titulo: "Las cápsulas", texto: "Premios sorpresa por jugar el día, cumplir las misiones o mantener tu racha. Siempre traen algo, y 3 iguales se fusionan en una mejor." },
+  { Dibujo: EscenaConstelaciones, titulo: "Las constelaciones", texto: "Cada ciudad tiene 7 estrellas en su cielo. Cada partida enciende una; con las 7, la figura se dibuja y te da su premio." },
   { Dibujo: EscenaCompetir, titulo: "Y cuando quieras, compite", texto: "Duelos en vivo con amigos, rankeds de Bronce a Prodigio, clanes y una liga cada semana." },
 ];
 
