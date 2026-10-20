@@ -17,6 +17,7 @@ import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { calcularRachaDiaria, lunesDeEstaSemanaIso } from "@/lib/practica/racha";
 import RepararRacha from "@/components/RepararRacha";
 import CartelTemporada from "@/components/temas/CartelTemporada";
+import MinieventoInicio from "@/components/temas/MinieventoInicio";
 import CartelAlineacion from "@/components/alineacion/CartelAlineacion";
 import IconoTrazo from "@/components/IconoTrazo";
 import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
@@ -118,6 +119,7 @@ export default async function ProdigiaHomePage() {
 
         <CartelAlineacion invitado={user.is_anonymous} />
         <CartelTemporada />
+        <MinieventoInicio />
         {!user.is_anonymous && <RepararRacha />}
 
         <section className="grid grid-cols-3 gap-3">
