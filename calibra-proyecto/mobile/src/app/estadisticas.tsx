@@ -1,3 +1,4 @@
+import PanelEstadisticasPro from "~/ui/estadisticas/PanelEstadisticasPro";
 import { useFocusEffect, useRouter, type Href } from "expo-router";
 import { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -147,6 +148,8 @@ export default function Estadisticas() {
 
   return (
     <PantallaApilada titulo="Estadísticas" subtitulo="Tu progreso, a fondo">
+      {/* Panel nuevo (0293); el detalle de siempre sigue debajo. */}
+      <PanelEstadisticasPro />
       {mundos.length === 0 ? (
         <Vacio titulo="Todavía no hay datos" texto="Juega unas partidas y aquí verás tu progreso." />
       ) : (
