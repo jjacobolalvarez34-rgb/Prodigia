@@ -1,3 +1,4 @@
+import PanelEstadisticasPro from "@/components/estadisticas/PanelEstadisticasPro";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
@@ -143,6 +144,9 @@ export default async function EstadisticasPage() {
           <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
           <p className="text-sm text-texto-secundario">{t("subtitulo")}</p>
         </div>
+
+        {/* Panel nuevo (0293). El detalle de siempre sigue debajo. */}
+        <PanelEstadisticasPro />
 
         {filas.length === 0 ? (
           <p className="rounded-2xl border border-border bg-surface px-6 py-8 text-center text-sm text-texto-secundario">
