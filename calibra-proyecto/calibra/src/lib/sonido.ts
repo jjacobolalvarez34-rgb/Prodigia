@@ -225,7 +225,18 @@ export type TipoTono = "correcto" | "error" | "nivel" | "nivel_cuenta" | "logro"
 // clinc-clinc corto tipo caja registradora, para la Tienda) y
 // "notificacion" (un ping breve de 2 notas, para la campanita de
 // Social). Respeta el mute de /ajustes y prefers-reduced-motion.
+// Racha de aciertos para el tono que sube (se reinicia al fallar o al cambiar de partida).
+const ESCALA_RACHA = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24];
+let combo = 0;
+let ultimoAcierto = 0;
+
 export function reproducirTono(tipo: TipoTono) {
+  if (tipo === "correcto") {
+    // Más de 2 minutos sin acertar = otra partida: vuelve a empezar desde abajo.
+    if (Date.now() - ultimoAcierto > 120_000) combo = 0;
+    combo++;
+    ultimoAcierto = Date.now();
+  } else if (tipo === "error" || tipo === "tiempo_fin") combo = 0;
   oyentesTono.forEach((o) => o(tipo));
   // Solo el ajuste de sonido decide (2026-10-16: «el sonido en PC nunca se ha
   // reproducido»): antes también lo apagaba «reducir movimiento» del sistema, que
@@ -239,7 +250,11 @@ export function reproducirTono(tipo: TipoTono) {
       if (p && paqueteAcierto !== "clasico") {
         reproducirSecuencia(p.notas.map((n) => ({ freq: 880 * n.rel, inicio: n.inicio, duracion: n.duracion, tipoOnda: n.onda, volumen: n.volumen })));
       } else {
-        reproducirSecuencia([{ freq: 880, inicio: 0, duracion: 0.22 }]);
+        // Sube por la escala mayor con la racha, 15 alturas (dos octavas) y luego
+        // alterna las dos más altas, igual que la app (2026-10-19).
+        const n = Math.max(0, combo - 1);
+        const altura = ESCALA_RACHA[n <= 14 ? n : 14 - ((n - 14) % 2)];
+        reproducirSecuencia([{ freq: 880 * Math.pow(2, altura / 12), inicio: 0, duracion: 0.22 }]);
       }
       // Durante un evento, el toque de la fecha (celebracion.ts «acierto.instrumento»;
       // los mismos parciales que los .wav de la app, mobile/scripts/generar-sonidos.py).

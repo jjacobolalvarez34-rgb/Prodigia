@@ -295,28 +295,28 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 79. [~] Video de Halloween: cuadros aprobados; la calabaza grande entra con su animación; todos los videos de evento llevan ~5 s finales animados (regla nueva). Reproductor genérico (VideoApertura) en web y app. Falta: integrar el render y compilar la 0.6.2.
 80. [x] Planeación de los videos de las demás festividades en docs/eventos/ANIMACIONES_EVENTOS.md (Muertos es el próximo: 1/11).
 
-81. [x] (hecho 2026-10-19, entra en el próximo APK) Cola de 5 s animada para el video de la Gran Alineación (pendiente: el usuario lo aprobará después; proyecto a medias en prodigia-marketing/videos/gran-alineacion, respaldo en D:/tmp-claude/respaldo-alineacion). RECORDÁRSELO.
+81. [x] (hecho 2026-10-19, entra en el próximo APK) Cola de 5 s animada para el video de la Gran Alineación (pendiente: el usuario lo aprobará después; proyecto a medias en prodigia-marketing/videos/gran-alineacion, respaldo en D:/tmp-claude/respaldo-alineacion). RECORDÁRSELO. → HECHO (2026-10-20).
 82. [x] (plan hecho en PLAN_FESTIVIDADES.md §6; falta construirlo) Planear la estética de CADA evento (grande o chico) para que TODO en la app celebre la fecha: botones, tarjetas, cápsulas, constelaciones, ciudad, carga, widgets, íconos, sonidos, textos. Escribirlo por evento en docs/eventos/PLAN_FESTIVIDADES.md y revisar qué falta de lo ya hecho (temas.ts). Pedido 2026-10-19.
 
 ## Pedidos del 2026-10-19 (tarde)
 
 83. [~] DISEÑAR TODO lo de los eventos antes de construir (sin videos todavía): carpetas con una imagen por cosa y un HTML que se vea exactamente como en la app, para que el usuario lo revise y apruebe. Cubre §6 de PLAN_FESTIVIDADES.md para los 16 eventos. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html.
 84. [x] «Paridad de eventos» (docs/eventos/PARIDAD_EVENTOS.md): la lista que TODO evento debe cumplir, como PARIDAD_MUNDOS.
-85. [~] El evento se nota en las Rankeds y en el resto de secciones; minieventos dentro de cada evento. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html.
-86. [~] Notificaciones con la piel y el tono del evento. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html.
-87. [~] El apartado de Amigos también celebra el evento. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html.
-88. [~] Estadísticas (Pro): hoy se sienten inútiles. Rediseño «wow» que haga que Pro valga la pena. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html.
-89. [~] (app hecho) El tono de la racha subía solo 8 veces: ahora 15 alturas (dos octavas) y luego alterna (app). La web tiene un solo tono: igualar.
-90. [~] La fuente del «+N» al acertar: que se pueda cambiar con FUENTES DE PUNTOS en la tienda (cosmético nuevo). → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html.
-91. [~] Más fuentes en la tienda (hay muy pocas), para el nombre y para los puntos. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html.
+85. [x] El evento se nota en las Rankeds y en el resto de secciones; minieventos dentro de cada evento. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html. → HECHO (2026-10-20). Rankeds: minievento de la fecha (Halloween: 3 Caramelos por ranked ganada).
+86. [x] Notificaciones con la piel y el tono del evento. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html. → HECHO (2026-10-20). App: 3 avisos locales por evento.
+87. [x] El apartado de Amigos también celebra el evento. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html. → HECHO (2026-10-20). «Dar un dulce» (0292), web y app.
+88. [x] Estadísticas (Pro): hoy se sienten inútiles. Rediseño «wow» que haga que Pro valga la pena. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html. → HECHO (2026-10-20). Panel nuevo en web y app (0293).
+89. [x] (app hecho) El tono de la racha subía solo 8 veces: ahora 15 alturas (dos octavas) y luego alterna (app). La web tiene un solo tono: igualar. → HECHO (2026-10-20). Web y app suben 15 notas.
+90. [x] La fuente del «+N» al acertar: que se pueda cambiar con FUENTES DE PUNTOS en la tienda (cosmético nuevo). → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html. → HECHO (2026-10-20). Fuentes de puntos (0294), web y app.
+91. [x] Más fuentes en la tienda (hay muy pocas), para el nombre y para los puntos. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html. → HECHO (2026-10-20). 16 fuentes de nombre (0294), web y app.
 92. [x] (8°, web y app) Inclinación leve a la derecha de los puntos «+N» (decisión de Claude).
-93. [~] Landing de la web y tutorial (primera vez) de la app: explicar las cápsulas y las constelaciones. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html.
-94. [~] Constelaciones: mejorar CÓMO SE VEN (no la pantalla donde están): calidad alta, «wow», pero ya hechas de antemano (imágenes o dibujos pre-renderizados) para que no pongan lenta la app. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html.
+93. [x] Landing de la web y tutorial (primera vez) de la app: explicar las cápsulas y las constelaciones. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html. → HECHO (2026-10-20). Landing y presentación de la app.
+94. [x] Constelaciones: mejorar CÓMO SE VEN (no la pantalla donde están): calidad alta, «wow», pero ya hechas de antemano (imágenes o dibujos pre-renderizados) para que no pongan lenta la app. → DISEÑADO (2026-10-19), esperando aprobación: D:/Repositorios/prodigia-marketing/diseno/index.html. → HECHO (2026-10-20). Cielos y estrellas pintados de antemano, web y app.
 
 ## Aprobación del 2026-10-19 (galería de diseño)
 
 95. [ ] El usuario APROBÓ todo el diseño de la galería (eventos, estadísticas Pro, fuentes, constelaciones, tutorial y landing). Construirlo en web y app.
-96. [ ] Halloween: en el resultado (y donde salga la escena), en vez de la bruja, 3 esqueletos bailando como el meme, animados. Y un EMOTE EXCLUSIVO «Baile de esqueletos» que se pueda usar en las Rankeds.
+96. [x] Halloween: en el resultado (y donde salga la escena), en vez de la bruja, 3 esqueletos bailando como el meme, animados. Y un EMOTE EXCLUSIVO «Baile de esqueletos» que se pueda usar en las Rankeds. → HECHO (2026-10-20). Baile de esqueletos (meme) en resultado y emote exclusivo (0292).
 97. [ ] Día de Pi: minievento «quien escriba más dígitos de π en 1 minuto gana» (título «Irracional», tabla del día).
 98. [ ] (IDEA, no segura todavía) Rankeds con TABLERO EN VIVO en vez de solo el fantasma: los dos jugadores a cada lado; al responder ves cuánto te demoraste tú y cuánto el rival; en las opciones aparece la que eligió el rival; la Exp de cada uno y quién va ganando. Más emoción y presión. Consultar antes de hacer.
 99. [ ] PLANEACIÓN pendiente: los CLANES (están abandonados).
@@ -325,7 +325,7 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 
 ## DÓNDE QUEDÓ (2026-10-19, tarde) — leer primero para seguir
 
-**Migraciones por correr en Supabase (en orden):** 0291 (paquetes de cápsulas con Cometas) y 0292 (Halloween en todo: noche del esqueleto, 3 Caramelos por ranked ganada, «Dar un dulce», emote «Baile de esqueletos»). La base tiene hasta la 0290.
+**Migraciones por correr en Supabase (en orden):** 0291 (paquetes de cápsulas con Cometas), 0292 (Halloween en todo: noche del esqueleto, 3 Caramelos por ranked ganada, «Dar un dulce», emote «Baile de esqueletos»), 0293 (estadísticas Pro nuevas) y 0294 (fuentes nuevas: 16 de nombre y fuentes de puntos). La base tiene hasta la 0290.
 
 **Hecho y subido (web publicada en Vercel):** explicaciones de los 14 mundos; videos de la Alineación (15 s con cola) y Halloween en web y app (reproductor genérico VideoApertura); paquetes de cápsulas; editar perfil; arreglos de tienda, GIF y aviso de actualización; racha de 15 tonos; «+N» inclinado; paridad de eventos; celebracion.ts (datos de las 16 fechas); emote animado «Baile de esqueletos» (estilo del meme: en cuclillas, guantes blancos y zapatos negros) en duelos de web y app.
 
