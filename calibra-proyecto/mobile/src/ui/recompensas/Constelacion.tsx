@@ -1,7 +1,8 @@
 import { useMemo } from "react";
 import { View } from "react-native";
 import Animated, { interpolate, useAnimatedProps, type SharedValue } from "react-native-reanimated";
-import Svg, { Circle, Defs, G, Line, Path, RadialGradient, Rect, Stop } from "react-native-svg";
+import Svg, { Circle, Defs, G, Image as ImagenSvg, Line, Path, RadialGradient, Rect, Stop } from "react-native-svg";
+import { Image } from "expo-image";
 import { PARTICULAS } from "@/lib/temas/dibujos";
 import { capaVisible } from "@/lib/temas/temas";
 import { useTemaHoy } from "~/lib/temporada";
@@ -50,6 +51,25 @@ function EstrellaTema({ p, tipo, c }: { p: [number, number]; tipo: keyof typeof 
   );
 }
 
+// Cielos y estrellas pintados de antemano (pendiente 94; zz-galeria/constelaciones-render).
+const PINTADAS: Record<string, { fondo: number; estrella: number }> = {
+  numeria: { fondo: require("../../../assets/constelaciones/fondo-numeria.jpg"), estrella: require("../../../assets/constelaciones/estrella-numeria.png") },
+  enigmia: { fondo: require("../../../assets/constelaciones/fondo-enigmia.jpg"), estrella: require("../../../assets/constelaciones/estrella-enigmia.png") },
+  geografia: { fondo: require("../../../assets/constelaciones/fondo-geografia.jpg"), estrella: require("../../../assets/constelaciones/estrella-geografia.png") },
+  quimia: { fondo: require("../../../assets/constelaciones/fondo-quimia.jpg"), estrella: require("../../../assets/constelaciones/estrella-quimia.png") },
+  anatomia: { fondo: require("../../../assets/constelaciones/fondo-anatomia.jpg"), estrella: require("../../../assets/constelaciones/estrella-anatomia.png") },
+  melodia: { fondo: require("../../../assets/constelaciones/fondo-melodia.jpg"), estrella: require("../../../assets/constelaciones/estrella-melodia.png") },
+  trigonometria: { fondo: require("../../../assets/constelaciones/fondo-trigonometria.jpg"), estrella: require("../../../assets/constelaciones/estrella-trigonometria.png") },
+  historia: { fondo: require("../../../assets/constelaciones/fondo-historia.jpg"), estrella: require("../../../assets/constelaciones/estrella-historia.png") },
+  calculia: { fondo: require("../../../assets/constelaciones/fondo-calculia.jpg"), estrella: require("../../../assets/constelaciones/estrella-calculia.png") },
+  circuitia: { fondo: require("../../../assets/constelaciones/fondo-circuitia.jpg"), estrella: require("../../../assets/constelaciones/estrella-circuitia.png") },
+  estadistica: { fondo: require("../../../assets/constelaciones/fondo-estadistica.jpg"), estrella: require("../../../assets/constelaciones/estrella-estadistica.png") },
+  naipia: { fondo: require("../../../assets/constelaciones/fondo-naipia.jpg"), estrella: require("../../../assets/constelaciones/estrella-naipia.png") },
+  codia: { fondo: require("../../../assets/constelaciones/fondo-codia.jpg"), estrella: require("../../../assets/constelaciones/estrella-codia.png") },
+  dinamia: { fondo: require("../../../assets/constelaciones/fondo-dinamia.jpg"), estrella: require("../../../assets/constelaciones/estrella-dinamia.png") },
+  vitalia: { fondo: require("../../../assets/constelaciones/fondo-vitalia.jpg"), estrella: require("../../../assets/constelaciones/estrella-vitalia.png") },
+};
+
 interface Props {
   mundo: string;
   estrellas: number;
@@ -71,9 +91,11 @@ export default function Constelacion({ mundo, estrellas, tam = 96, encendido, tr
   const fondo = oscurecer(m?.base ?? color.primarioBase, 0.22);
   const polvo = useMemo(() => polvoDeEstrellas(mundo), [mundo]);
   const id = `cielo-${mundo}`;
+  const pintada = PINTADAS[mundo];
 
   return (
-    <View style={{ width: tam, height: tam, borderRadius: radio, overflow: "hidden" }}>
+    <View style={{ width: tam, height: tam, borderRadius: radio, overflow: "hidden", backgroundColor: color.bgHondo }}>
+      {pintada && <Image source={pintada.fondo} style={{ position: "absolute", width: tam, height: tam }} contentFit="cover" />}
       <Svg width={tam} height={tam} viewBox="-6 -6 112 112">
         <Defs>
           <RadialGradient id={id} cx="50%" cy="35%" r="75%">
@@ -81,26 +103,35 @@ export default function Constelacion({ mundo, estrellas, tam = 96, encendido, tr
             <Stop offset="1" stopColor={color.bgHondo} />
           </RadialGradient>
         </Defs>
-        <Rect x={-6} y={-6} width={112} height={112} fill={`url(#${id})`} />
-        {polvo.map(([x, y, r], i) => (
-          <Circle key={i} cx={x} cy={y} r={r} fill="#FFFFFF" opacity={0.25} />
-        ))}
+        {!pintada && <Rect x={-6} y={-6} width={112} height={112} fill={`url(#${id})`} />}
+        {!pintada &&
+          polvo.map(([x, y, r], i) => (
+            <Circle key={i} cx={x} cy={y} r={r} fill="#FFFFFF" opacity={0.25} />
+          ))}
         {/* Guía tenue de la forma, para que se lea desde el principio. */}
-        {forma.lineas.map(([a, b], i) => (
-          <Line key={`g${i}`} x1={forma.puntos[a][0]} y1={forma.puntos[a][1]} x2={forma.puntos[b][0]} y2={forma.puntos[b][1]} stroke={brillo} strokeOpacity={completa ? 0.85 : 0.12} strokeWidth={completa ? 1.6 : 1} strokeDasharray={completa ? undefined : "2 3"} />
-        ))}
+        {forma.lineas.map(([a, b], i) =>
+          completa ? (
+            <G key={`g${i}`}>
+              <Line x1={forma.puntos[a][0]} y1={forma.puntos[a][1]} x2={forma.puntos[b][0]} y2={forma.puntos[b][1]} stroke={brillo} strokeOpacity={0.45} strokeWidth={3.4} strokeLinecap="round" />
+              <Line x1={forma.puntos[a][0]} y1={forma.puntos[a][1]} x2={forma.puntos[b][0]} y2={forma.puntos[b][1]} stroke="#FFFFFF" strokeOpacity={0.85} strokeWidth={0.9} strokeLinecap="round" />
+            </G>
+          ) : (
+            <Line key={`g${i}`} x1={forma.puntos[a][0]} y1={forma.puntos[a][1]} x2={forma.puntos[b][0]} y2={forma.puntos[b][1]} stroke="#FFFFFF" strokeOpacity={0.12} strokeWidth={0.8} strokeDasharray="2 3" />
+          )
+        )}
         {trazo && forma.lineas.map(([a, b], i) => <Trazo key={`t${i}`} a={forma.puntos[a]} b={forma.puntos[b]} i={i} total={forma.lineas.length} trazo={trazo} c={brillo} />)}
         {forma.puntos.map((p, i) =>
           encendido ? (
             <EstrellaQueSeEnciende key={i} p={p} i={i} encendido={encendido} c={brillo} />
           ) : i < estrellas || completa ? (
-            piel ? <EstrellaTema key={i} p={p} tipo={piel.estrella} c={brillo} /> : <Circle key={i} cx={p[0]} cy={p[1]} r={3.6} fill={brillo} />
+            piel ? <EstrellaTema key={i} p={p} tipo={piel.estrella} c={brillo} /> : pintada ? <ImagenSvg key={i} href={pintada.estrella} x={p[0] - 13} y={p[1] - 13} width={26} height={26} /> : <Circle key={i} cx={p[0]} cy={p[1]} r={3.6} fill={brillo} />
           ) : (
             <Circle key={i} cx={p[0]} cy={p[1]} r={2.4} fill="none" stroke={brillo} strokeOpacity={0.45} strokeWidth={1} />
           )
         )}
         {/* Halo de las encendidas. */}
         {!encendido &&
+          !pintada &&
           forma.puntos.map((p, i) => (i < estrellas || completa ? <Circle key={`h${i}`} cx={p[0]} cy={p[1]} r={7} fill={brillo} opacity={0.18} /> : null))}
       </Svg>
     </View>
