@@ -1,3 +1,5 @@
+import DibujoTema from "./temas/DibujoTema";
+import { PARTICULAS } from "@/lib/temas/dibujos";
 import { celebracionDe } from "@/lib/temas/celebracion";
 import { useTemaHoy } from "~/lib/temporada";
 import { LinearGradient } from "expo-linear-gradient";
@@ -526,6 +528,9 @@ export function TarjetaProblema({
   }, [enLlamas, rapido, giro]);
   const estiloGiro = useAnimatedStyle(() => ({ transform: [{ rotate: `${giro.value * 360}deg` }] }));
   const estilo = useAnimatedStyle(() => ({ transform: [{ scale: sello.value }, { translateX: sacudida.value }] }));
+  const temaFecha = useTemaHoy();
+  const esquina = celebracionDe(temaFecha)?.esquina ?? null;
+  const temaEsquina = temaFecha?.tema.acento;
   const colorEstado = feedback === "correcto" ? color.correcto : feedback === "incorrecto" ? color.error : acento;
   return (
     <Animated.View
@@ -538,6 +543,17 @@ export function TarjetaProblema({
         </Animated.View>
       )}
       <View style={styles.tarjeta}>{children}</View>
+      {/* Esquinas con la figura de la fecha durante un evento (PARIDAD_EVENTOS.md fila 6). */}
+      {esquina && (
+        <>
+          <View pointerEvents="none" style={[styles.esquina, { right: 10, transform: [{ rotate: "18deg" }] }]}>
+            <DibujoTema dibujo={PARTICULAS[esquina]} ancho={22} color={temaEsquina} />
+          </View>
+          <View pointerEvents="none" style={[styles.esquina, { left: 10, transform: [{ rotate: "-18deg" }] }]}>
+            <DibujoTema dibujo={PARTICULAS[esquina]} ancho={16} color={temaEsquina} />
+          </View>
+        </>
+      )}
       {disparo > 0 && <EfectoAcierto key={disparo} efecto={efecto} cantidad={liviano ? 7 : 12} />}
     </Animated.View>
   );
@@ -839,6 +855,7 @@ const styles = StyleSheet.create({
   puntoChico: { width: 7, height: 7, borderRadius: 4, backgroundColor: color.surface3 },
   escudos: { flexDirection: "row", gap: 3 },
   marco: { borderRadius: radio.sprint, borderWidth: 2, overflow: "hidden" },
+  esquina: { position: "absolute", top: 8, opacity: 0.9 },
   tarjeta: { backgroundColor: color.surface1, borderRadius: radio.sprint - 2, margin: 2, paddingVertical: 26, paddingHorizontal: 16, alignItems: "center", gap: 10 },
   flotante: { position: "absolute", top: 10, right: 16, alignItems: "center", justifyContent: "center" },
   chispita: { position: "absolute", width: 5, height: 5, borderRadius: 3, backgroundColor: color.logro, boxShadow: `0px 0px 6px ${color.logro}` },

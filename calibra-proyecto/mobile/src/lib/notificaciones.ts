@@ -1,3 +1,6 @@
+import { inicioEventoMs, rangosDelAnio } from "@/lib/temas/calendario";
+import { CELEBRACIONES } from "@/lib/temas/celebracion";
+import { TEMAS } from "@/lib/temas/temas";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { esAndroid, hayPushRemoto } from "./entorno";
@@ -164,6 +167,7 @@ export async function sincronizarAvisos() {
     // Se reintenta la próxima vez que se abra la app.
   }
   await programarAvisosAlineacion(prefs.categorias.includes("novedades"));
+  await programarAvisosEvento(prefs.categorias.includes("novedades"));
 }
 
 // Gran Alineación (PLAN_PRIMERA_VEZ_APP.md §6): aviso local el día anterior y 10
@@ -178,8 +182,8 @@ export async function programarAvisosAlineacion(activa: boolean) {
   const proxima = alineacionEnCurso(ahora) ? proximaAlineacion(ahora + DURACION_EVENTO_MS) : proximaAlineacion(ahora);
   const hora = new Date(proxima).toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" });
   const avisos = [
-    { id: IDS_ALINEACION[0], cuando: proxima - 24 * 3_600_000, titulo: "✦ Mañana: la Gran Alineación", cuerpo: `Las 15 ciudades amanecen juntas a las ${hora}. 3 horas de Exp doble y constelaciones con premio doble.` },
-    { id: IDS_ALINEACION[1], cuando: proxima - 10 * 60_000, titulo: "✦ En 10 minutos, la Gran Alineación", cuerpo: "Exp doble en todas las ciudades durante 3 horas. ¡Prepárate!" },
+    { id: IDS_ALINEACION[0], cuando: proxima - 24 * 3_600_000, titulo: "Mañana: la Gran Alineación", cuerpo: `Las 15 ciudades amanecen juntas a las ${hora}. 3 horas de Exp doble y constelaciones con premio doble.` },
+    { id: IDS_ALINEACION[1], cuando: proxima - 10 * 60_000, titulo: "En 10 minutos, la Gran Alineación", cuerpo: "Exp doble en todas las ciudades durante 3 horas. ¡Prepárate!" },
   ];
   for (const a of avisos) {
     const h = new Date(a.cuando).getHours();
@@ -192,6 +196,55 @@ export async function programarAvisosAlineacion(activa: boolean) {
   }
 }
 
+// Eventos de las festividades (PARIDAD_EVENTOS.md fila 16): 3 avisos locales con el
+// tono de la fecha (celebracion.ts): al empezar, a mitad y el último día. Nunca entre
+// las 21:00 y las 08:00: si cae ahí, sale a las 09:00.
+const IDS_EVENTO = ["evento-inicio", "evento-mitad", "evento-final"] as const;
+
+function horaDecente(ms: number): number {
+  const d = new Date(ms);
+  if (d.getHours() >= 21) {
+    d.setDate(d.getDate() + 1);
+    d.setHours(9, 0, 0, 0);
+  } else if (d.getHours() < 8) d.setHours(9, 0, 0, 0);
+  return d.getTime();
+}
+
+export async function programarAvisosEvento(activa: boolean) {
+  await Promise.all(IDS_EVENTO.map((id) => Notifications.cancelScheduledNotificationAsync(id).catch(() => undefined)));
+  if (!activa) return;
+  const ahora = Date.now();
+  const anio = new Date().getFullYear();
+  const r = [...rangosDelAnio(anio), ...rangosDelAnio(anio + 1)]
+    .filter((x) => new Date(`${x.hasta}T21:00:00`).getTime() > ahora)
+    .sort((a, b) => (a.desde < b.desde ? -1 : 1))[0];
+  if (!r) return;
+  const c = CELEBRACIONES[r.id];
+  const tema = TEMAS[r.id];
+  const inicio = horaDecente(inicioEventoMs(r));
+  const final = new Date(`${r.hasta}T12:00:00`).getTime();
+  const mitadDia = new Date((inicio + final) / 2);
+  mitadDia.setHours(12, 0, 0, 0);
+  const mitad = mitadDia.getTime();
+  // Los textos con datos de la partida ({n}, {puesto}…) no se pueden saber de antemano.
+  const texto = (t: string) => (t.includes("{") ? `${tema.frase.evento}: todavía estás a tiempo.` : t);
+  const avisos: [string, number, string][] = [
+    [IDS_EVENTO[0], inicio, texto(c.avisos[0])],
+    [IDS_EVENTO[1], mitad, texto(c.avisos[1])],
+    [IDS_EVENTO[2], final, texto(c.avisos[2])],
+  ];
+  for (const [id, cuando, cuerpo] of avisos) {
+    if (cuando <= ahora) continue;
+    // A mitad solo si el evento dura lo suficiente para que no se encime.
+    if (id === IDS_EVENTO[1] && (mitad - inicio < 86_400_000 || final - mitad < 86_400_000)) continue;
+    await Notifications.scheduleNotificationAsync({
+      identifier: id,
+      content: { title: tema.nombre, body: cuerpo, data: { tipo: "evento" }, color: tema.acento },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(cuando), channelId: "novedades" },
+    }).catch(() => undefined);
+  }
+}
+
 export async function cambiarCategoria(id: Categoria, activa: boolean): Promise<PreferenciasAvisos> {
   const prefs = await leerPreferencias();
   const categorias = activa ? Array.from(new Set([...prefs.categorias, id])) : prefs.categorias.filter((c) => c !== id);
@@ -199,7 +252,10 @@ export async function cambiarCategoria(id: Categoria, activa: boolean): Promise<
   await guardarPreferencias(nuevas);
   if (tokenRegistrado) {
     await supabase.rpc("actualizar_categorias_push", { p_token: tokenRegistrado, p_categorias: categorias });
-    if (id === "novedades") await programarAvisosAlineacion(activa);
+    if (id === "novedades") {
+      await programarAvisosAlineacion(activa);
+      await programarAvisosEvento(activa);
+    }
   } else {
     await sincronizarAvisos();
   }
