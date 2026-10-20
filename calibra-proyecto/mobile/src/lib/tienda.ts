@@ -32,7 +32,9 @@ export type Categoria =
   | "emote"
   | "ciudad_placa"
   | "titulo"
-  | "paquete";
+  | "paquete"
+  // Fuentes de puntos (0294): cómo se ve el «+N».
+  | "fuente_puntos";
 export type Rareza = "comun" | "raro" | "epico" | "legendario";
 
 export interface ItemTienda {
@@ -225,6 +227,8 @@ export interface EstadoTienda {
   tiemposExtra: number;
   fuente: string;
   fuentes: string[];
+  fuentePuntos: string;
+  fuentesPuntos: string[];
   marco: string;
   marcos: string[];
   animacion: string;
@@ -264,6 +268,9 @@ export async function cargarTienda(userId: string): Promise<EstadoTienda | null>
   ]);
   if (!p) return null;
   const f = p as Record<string, unknown>;
+  // Aparte: las fuentes de puntos llegan con 0294 (sin la migración, la tienda sigue andando).
+  const { data: filaPuntos } = await supabase.from("profiles").select("fuente_puntos, fuentes_puntos_desbloqueadas").eq("id", userId).maybeSingle();
+  const fp = filaPuntos as Record<string, unknown> | null;
   // Aparte: si la base todavía no tiene 0248, el resto de la tienda sigue andando.
   const [{ data: nuevos }, { data: titulos }, { data: activo }] = await Promise.all([
     supabase.from("profiles").select(COLUMNAS_COSMETICOS_NUEVOS).eq("id", userId).maybeSingle(),
@@ -280,6 +287,8 @@ export async function cargarTienda(userId: string): Promise<EstadoTienda | null>
     tiemposExtra: (f.tiempos_extra_disponibles as number) ?? 0,
     fuente: (f.fuente_nombre as string) ?? "default",
     fuentes: (f.fuentes_desbloqueadas as string[]) ?? [],
+    fuentePuntos: (fp?.fuente_puntos as string) ?? "clasica",
+    fuentesPuntos: (fp?.fuentes_puntos_desbloqueadas as string[]) ?? [],
     marco: (f.marco_perfil as string) ?? "ninguno",
     marcos: (f.marcos_desbloqueados as string[]) ?? [],
     animacion: (f.animacion_nombre as string) ?? "ninguna",
@@ -324,6 +333,8 @@ export function loTiene(it: ItemTienda, e: EstadoTienda): boolean {
       return e.marcos.includes(it.valor);
     case "fuente":
       return e.fuentes.includes(it.valor);
+    case "fuente_puntos":
+      return e.fuentesPuntos.includes(it.valor);
     case "animacion":
       return e.animaciones.includes(it.valor);
     case "fondo":
@@ -358,6 +369,8 @@ export function loUsa(it: ItemTienda, e: EstadoTienda): boolean {
       return e.marco === it.valor;
     case "fuente":
       return e.fuente === it.valor;
+    case "fuente_puntos":
+      return e.fuentePuntos === it.valor;
     case "animacion":
       return e.animacion === it.valor;
     case "fondo":
@@ -447,6 +460,9 @@ export async function equipar(it: ItemTienda | null, categoria: Categoria, valor
       return;
     case "ciudad_placa":
       await equiparCosmetico(supabase, "ciudad_placa", it?.valor ?? null);
+      return;
+    case "fuente_puntos":
+      await equiparCosmetico(supabase, "fuente_puntos", valor ?? "clasica");
       return;
     case "titulo":
       if (!valor) return;

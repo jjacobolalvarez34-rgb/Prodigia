@@ -38,6 +38,23 @@ export const FUENTE_FAMILIA: Record<string, string | undefined> = {
   futurista: "Orbitron_700Bold",
   urbana: "Anton_400Regular",
   elegante: "DancingScript_700Bold",
+  // Fuentes nuevas de la tienda (0294).
+  letrero: "Bungee",
+  retro: "Righteous",
+  deportiva: "RussoOne",
+  pixel: "PressStart2P",
+  neon: "Monoton",
+  cursiva_gruesa: "Lobster",
+  marcador: "PermanentMarker",
+  romana: "Cinzel",
+  comic: "Bangers",
+  redonda: "Fredoka",
+  espacial: "Audiowide",
+  estencil: "BlackOpsOne",
+  glitch: "RubikGlitch",
+  pantalla: "Silkscreen",
+  caricatura: "LuckiestGuy",
+  maquina: "SpecialElite",
 };
 
 // Los degradés de fondo de la web (FONDO_PERFIL_ESTILO) como lista de colores.

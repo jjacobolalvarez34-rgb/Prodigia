@@ -1,3 +1,4 @@
+import PuntosConFuente, { olvidarFuentePuntos } from "~/ui/PuntosConFuente";
 import { esNuevo } from "@/lib/recompensas/novedades";
 import { marcarNuevoVisto, useNuevoVisto } from "~/lib/novedades";
 import EtiquetaNuevo from "~/ui/EtiquetaNuevo";
@@ -72,7 +73,7 @@ type Pestana = "cometas" | "temas" | PuestoId;
 const PESTANAS: { id: Pestana; titulo: string }[] = [
   { id: "cometas", titulo: "Cometas" },
   ...PUESTOS.map((p) => ({ id: p.id as Pestana, titulo: p.nombre })),
-  { id: "temas", titulo: "Temas ✦" },
+  { id: "temas", titulo: "Temas" },
 ];
 const CATEGORIAS_DE: Record<Pestana, Categoria[]> = {
   cometas: [],
@@ -113,6 +114,8 @@ function Muestra({ it, placa }: { it: ItemTienda; placa: PlacaDatos }) {
       return <AvatarMarco url={placa.avatarUrl} nombre={placa.nombre} marco={it.valor} tam={50} animar={false} />;
     case "fuente":
       return <Texto style={{ fontFamily: FUENTE_FAMILIA[it.valor] ?? fuente.display, fontSize: 30, color: color.texto }}>Aa</Texto>;
+    case "fuente_puntos":
+      return <PuntosConFuente texto="+24" valor={it.valor} colorBase={color.logro} tam={26} />;
     case "animacion":
       return <NombreEstilizado texto={placa.nombre.slice(0, 9)} animacion={it.valor} fuente={placa.fuente} tam={16} />;
     case "fondo":
@@ -476,6 +479,7 @@ export default function Tienda() {
     setOcupado(true);
     try {
       await equipar(it, cat, ninguno);
+      if (cat === "fuente_puntos") olvidarFuentePuntos();
       sonar("boton");
       await Promise.all([cargar(), recargarJugador(), userId ? recargarCosmeticos(userId) : Promise.resolve()]);
       mostrarAviso(it ? `Ahora usas ${it.nombre}` : "Listo", "ok");
@@ -493,7 +497,7 @@ export default function Tienda() {
   const misCometas = resumen?.cometas ?? 0;
   const bloqueoNivel = elegido?.nivelMundo && (e.nivelesMundo[elegido.nivelMundo] ?? 0) < 40;
   const bloqueoPro = elegido?.soloPro && e.plan !== "pro";
-  const ninguno: Partial<Record<Categoria, string>> = { marco: "ninguno", marco_mundo: "ninguno", fuente: "default", animacion: "ninguna", fondo: "ninguno", galeria: "ninguno", estela: "clasica", efecto: "chispas", sonido: "clasico" };
+  const ninguno: Partial<Record<Categoria, string>> = { marco: "ninguno", marco_mundo: "ninguno", fuente: "default", animacion: "ninguna", fondo: "ninguno", galeria: "ninguno", estela: "clasica", efecto: "chispas", sonido: "clasico", fuente_puntos: "clasica" };
 
   const pestanas = modo === "inventario" ? PESTANAS.filter((p) => p.id !== "mercado" && p.id !== "temas" && p.id !== "cometas") : PESTANAS;
   const pestanaVista: Pestana | null =

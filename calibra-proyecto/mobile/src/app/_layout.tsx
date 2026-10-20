@@ -280,6 +280,23 @@ export default function RootLayout() {
     Orbitron_700Bold,
     Anton_400Regular,
     DancingScript_700Bold,
+    // Fuentes nuevas de la tienda (0294), de nombre y de puntos: mobile/assets/fonts.
+    Bungee: require("../../assets/fonts/Bungee.ttf"),
+    Righteous: require("../../assets/fonts/Righteous.ttf"),
+    RussoOne: require("../../assets/fonts/RussoOne.ttf"),
+    PressStart2P: require("../../assets/fonts/PressStart2P.ttf"),
+    Monoton: require("../../assets/fonts/Monoton.ttf"),
+    Lobster: require("../../assets/fonts/Lobster.ttf"),
+    PermanentMarker: require("../../assets/fonts/PermanentMarker.ttf"),
+    Cinzel: require("../../assets/fonts/Cinzel.ttf"),
+    Bangers: require("../../assets/fonts/Bangers.ttf"),
+    Fredoka: require("../../assets/fonts/Fredoka.ttf"),
+    Audiowide: require("../../assets/fonts/Audiowide.ttf"),
+    BlackOpsOne: require("../../assets/fonts/BlackOpsOne.ttf"),
+    RubikGlitch: require("../../assets/fonts/RubikGlitch.ttf"),
+    Silkscreen: require("../../assets/fonts/Silkscreen.ttf"),
+    LuckiestGuy: require("../../assets/fonts/LuckiestGuy.ttf"),
+    SpecialElite: require("../../assets/fonts/SpecialElite.ttf"),
   });
 
   return (

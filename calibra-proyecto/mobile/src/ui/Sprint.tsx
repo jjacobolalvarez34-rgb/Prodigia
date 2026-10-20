@@ -1,3 +1,4 @@
+import PuntosConFuente, { useFuentePuntos } from "./PuntosConFuente";
 import DibujoTema from "./temas/DibujoTema";
 import { PARTICULAS } from "@/lib/temas/dibujos";
 import { celebracionDe } from "@/lib/temas/celebracion";
@@ -579,6 +580,7 @@ function Chispita({ i, total, radio, t }: { i: number; total: number; radio: num
 export function Flotante({ puntos }: { puntos: number }) {
   // Durante un evento, el «+N» toma el color de la fecha (celebracion.ts).
   const colorPuntos = celebracionDe(useTemaHoy())?.acierto.colores[0] ?? color.logro;
+  const fuentePuntos = useFuentePuntos();
   const intensidad = puntos >= 30 ? "grande" : puntos >= 18 ? "medio" : "chico";
   const escala = ESCALA_PUNTOS[intensidad];
   const t = useSharedValue(0);
@@ -599,7 +601,7 @@ export function Flotante({ puntos }: { puntos: number }) {
       ))}
       <Animated.View style={estilo}>
         {/* Inclinado 8° hacia la derecha, igual que la web. */}
-        <Texto style={{ fontFamily: fuente.display, fontSize: 21, color: colorPuntos, textShadowColor: conAlfa(colorPuntos, 0.65), textShadowRadius: 10, transform: [{ skewX: "-8deg" }] }}>+{puntos}</Texto>
+        <PuntosConFuente texto={`+${puntos}`} valor={fuentePuntos} colorBase={colorPuntos} />
       </Animated.View>
     </View>
   );

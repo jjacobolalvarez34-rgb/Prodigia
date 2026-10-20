@@ -21,7 +21,7 @@ export const PUESTOS: Puesto[] = [
   { id: "pirotecnia", nombre: "Pirotecnia", que: "Estelas y efectos", categorias: ["estela", "efecto"], color: "#FF7A3D", oscuro: "#4A1A08" },
   { id: "musica", nombre: "Música", que: "Sonidos", categorias: ["sonido"], color: "#4FE0F5", oscuro: "#0B3A44" },
   { id: "arena", nombre: "Arena", que: "Emotes de duelo", categorias: ["emote"], color: "#B07CFF", oscuro: "#2C1A55" },
-  { id: "caligrafia", nombre: "Caligrafía", que: "Tu nombre y títulos", categorias: ["fuente", "animacion", "color", "titulo"], color: "#E8ECF8", oscuro: "#2A3152" },
+  { id: "caligrafia", nombre: "Caligrafía", que: "Tu nombre, tus puntos y títulos", categorias: ["fuente", "fuente_puntos", "animacion", "color", "titulo"], color: "#E8ECF8", oscuro: "#2A3152" },
   { id: "botica", nombre: "Botica", que: "Ayudas", categorias: ["utilidad"], color: "#3DDC97", oscuro: "#0D3A26" },
   { id: "mercado", nombre: "Mercado", que: "Paquetes", categorias: ["paquete"], color: "#5DE4FF", oscuro: "#0B2A3A" },
 ];
