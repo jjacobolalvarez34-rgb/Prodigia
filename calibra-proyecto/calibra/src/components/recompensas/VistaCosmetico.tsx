@@ -1,5 +1,6 @@
 "use client";
 
+import PuntosConFuente, { familiaFuenteNombre } from "./PuntosConFuente";
 import { ciudadDe, efectoDe, EMOTES, estelaDe, particulasDe } from "@/lib/recompensas/catalogo";
 import { FONDO_PERFIL_ESTILO, ESTILO_MARCO_PERFIL, type FondoPerfil } from "@/types/database";
 import AvatarConMarco from "@/components/AvatarConMarco";
@@ -51,6 +52,10 @@ export default function VistaCosmetico({ categoria, valor, tam = 56 }: { categor
       // eslint-disable-next-line @next/next/no-img-element
       if (EMOTES[valor]?.animado) return <img src={`/emotes/${EMOTES[valor].animado}.webp`} alt="" style={{ width: tam * 1.3, height: tam * 0.8, objectFit: "contain" }} />;
       return <span style={{ fontSize: tam * 0.6 }}>{EMOTES[valor]?.emoji ?? "💬"}</span>;
+    case "fuente":
+      return <span style={{ fontSize: tam * 0.42, fontFamily: familiaFuenteNombre(valor) }}>Aa</span>;
+    case "fuente_puntos":
+      return <PuntosConFuente texto="+24" valor={valor} tam={tam * 0.36} />;
     case "titulo":
       return <span className="rounded-md border border-logro px-2 py-1 text-[10px] font-bold tracking-wide text-logro">TÍTULO</span>;
     case "marco":

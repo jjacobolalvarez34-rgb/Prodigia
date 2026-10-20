@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, subscribeEfectos } from "@/lib/efectos";
 import { useTemaHoy } from "@/components/temas/useTemaHoy";
 import { celebracionDe } from "@/lib/temas/celebracion";
+import PuntosConFuente, { useFuentePuntos } from "@/components/recompensas/PuntosConFuente";
 
 export type IntensidadPuntaje = "chico" | "medio" | "grande";
 
@@ -24,6 +25,7 @@ const PARTICULAS: Record<IntensidadPuntaje, number> = { chico: 0, medio: 3, gran
 export default function PuntajeCorner({ total, intensidad }: Props) {
   // Durante un evento, el «+N» y sus chispitas toman el color de la fecha.
   const colorPuntos = celebracionDe(useTemaHoy())?.acierto.colores[0] ?? "#FFC53D";
+  const fuentePuntos = useFuentePuntos();
   const efectos = useSyncExternalStore(subscribeEfectos, efectosHabilitados, efectosHabilitadosServerSnapshot);
   const escala = ESCALA[intensidad];
   // Las partículas son puramente decorativas (Fase P2) — el número en sí
@@ -40,8 +42,8 @@ export default function PuntajeCorner({ total, intensidad }: Props) {
         className="font-display font-black"
         style={{ color: colorPuntos, fontSize: 20 * escala }}
       >
-        {/* Inclinado 8° hacia la derecha (2026-10-19): se lee como algo que salta, sin perder legibilidad. */}
-        <span className="inline-block" style={{ transform: "skewX(-8deg)" }}>+{total}</span>
+        {/* Inclinado 8° hacia la derecha, con la fuente de puntos equipada (0294). */}
+        <PuntosConFuente texto={`+${total}`} valor={fuentePuntos} colorBase={colorPuntos} tam={20 * escala} />
       </motion.div>
       {particulas > 0 && (
         <div className="absolute left-1/2 top-1/2">

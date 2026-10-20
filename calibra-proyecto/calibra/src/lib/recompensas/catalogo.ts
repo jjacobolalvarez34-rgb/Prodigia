@@ -247,7 +247,7 @@ export function degradeFondoCiudad(slug: string): string | null {
 }
 
 // ---------- Lo que se vende (espejo de catalogo_cosmeticos con vendible = true) ----------
-export type CategoriaNueva = "estela" | "efecto" | "sonido" | "emote" | "ciudad_placa" | "titulo" | "fondo" | "marco";
+export type CategoriaNueva = "estela" | "efecto" | "sonido" | "emote" | "ciudad_placa" | "titulo" | "fondo" | "marco" | "fuente" | "fuente_puntos";
 
 export interface ItemCatalogo {
   item: string;

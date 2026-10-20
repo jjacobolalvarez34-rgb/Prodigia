@@ -74,7 +74,7 @@ export const COLOR_DIAL_HEX: Record<ColorDial, string> = {
 // Fase 5 (mercado): tipografías comprables para el nombre de usuario —
 // el cosmético nuevo que reemplaza al dial en la vidriera de la tienda.
 // "default" = tipografía normal de la UI.
-export type FuenteNombre = "default" | "mono" | "serif" | "manuscrita" | "impacto" | "script" | "futurista" | "urbana" | "elegante";
+export type FuenteNombre = "default" | "mono" | "serif" | "manuscrita" | "impacto" | "script" | "futurista" | "urbana" | "elegante" | "letrero" | "retro" | "deportiva" | "pixel" | "neon" | "cursiva_gruesa" | "marcador" | "romana" | "comic" | "redonda" | "espacial" | "estencil" | "glitch" | "pantalla" | "caricatura" | "maquina";
 
 export const FUENTE_NOMBRE_CLASS: Record<FuenteNombre, string> = {
   default: "",
@@ -91,6 +91,23 @@ export const FUENTE_NOMBRE_CLASS: Record<FuenteNombre, string> = {
   // más prolija/elegante que Caveat, que es una manuscrita casual).
   urbana: "font-[family-name:var(--font-anton)]",
   elegante: "font-[family-name:var(--font-dancing-script)]",
+  // Fuentes nuevas de la tienda (0294).
+  letrero: "font-[family-name:var(--font-bungee)]",
+  retro: "font-[family-name:var(--font-righteous)]",
+  deportiva: "font-[family-name:var(--font-russo-one)]",
+  pixel: "font-[family-name:var(--font-press-start)]",
+  neon: "font-[family-name:var(--font-monoton)]",
+  cursiva_gruesa: "font-[family-name:var(--font-lobster)]",
+  marcador: "font-[family-name:var(--font-permanent-marker)]",
+  romana: "font-[family-name:var(--font-cinzel)]",
+  comic: "font-[family-name:var(--font-bangers)]",
+  redonda: "font-[family-name:var(--font-fredoka)]",
+  espacial: "font-[family-name:var(--font-audiowide)]",
+  estencil: "font-[family-name:var(--font-black-ops)]",
+  glitch: "font-[family-name:var(--font-rubik-glitch)]",
+  pantalla: "font-[family-name:var(--font-silkscreen)]",
+  caricatura: "font-[family-name:var(--font-luckiest-guy)]",
+  maquina: "font-[family-name:var(--font-special-elite)]",
 };
 
 // Fase 10 ("Tienda: animaciones y fondos"): animación CSS comprable

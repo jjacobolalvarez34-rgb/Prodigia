@@ -4930,7 +4930,9 @@
         "utilidades": "Ayudas",
         "pirotecnia": "Estelas y efectos",
         "musica": "Sonidos",
-        "titulos": "Títulos"
+        "titulos": "Títulos",
+        "nombre": "Nombre",
+        "puntos": "Puntos"
       },
       "comprar": "Comprar por {n}",
       "confirmar": "¿Seguro? Confirmar compra",

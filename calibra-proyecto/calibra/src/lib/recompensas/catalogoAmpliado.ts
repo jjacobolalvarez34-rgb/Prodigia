@@ -212,6 +212,49 @@ export const PAQUETES_NUEVOS: { item: string; nombre: string; items: string[]; p
 ];
 
 // Filas del catálogo (slug, categoría, valor, nombre, rareza, precio) de todo lo nuevo.
+// ---------- Fuentes (0294, diseño aprobado el 2026-10-19; galería «fuentes») ----------
+// Fuentes de nombre nuevas (se suman a las 9 de siempre). `familia` = la fuente de la
+// web (variable CSS de next/font en layout.tsx) y de la app (mobile/assets/fonts/<archivo>.ttf).
+export const FUENTES_NOMBRE_NUEVAS: { valor: string; nombre: string; familia: string; archivo: string; rareza: RarezaAmpliada; precio: number }[] = [
+  { valor: "letrero", nombre: "Letrero", familia: "--font-bungee", archivo: "Bungee", rareza: "comun", precio: 400 },
+  { valor: "retro", nombre: "Retro", familia: "--font-righteous", archivo: "Righteous", rareza: "comun", precio: 400 },
+  { valor: "deportiva", nombre: "Deportiva", familia: "--font-russo-one", archivo: "RussoOne", rareza: "comun", precio: 400 },
+  { valor: "pixel", nombre: "Pixel", familia: "--font-press-start", archivo: "PressStart2P", rareza: "comun", precio: 400 },
+  { valor: "neon", nombre: "Neón", familia: "--font-monoton", archivo: "Monoton", rareza: "comun", precio: 400 },
+  { valor: "cursiva_gruesa", nombre: "Cursiva gruesa", familia: "--font-lobster", archivo: "Lobster", rareza: "comun", precio: 400 },
+  { valor: "marcador", nombre: "Marcador", familia: "--font-permanent-marker", archivo: "PermanentMarker", rareza: "raro", precio: 700 },
+  { valor: "romana", nombre: "Romana", familia: "--font-cinzel", archivo: "Cinzel", rareza: "raro", precio: 700 },
+  { valor: "comic", nombre: "Cómic", familia: "--font-bangers", archivo: "Bangers", rareza: "raro", precio: 700 },
+  { valor: "redonda", nombre: "Redonda", familia: "--font-fredoka", archivo: "Fredoka", rareza: "raro", precio: 700 },
+  { valor: "espacial", nombre: "Espacial", familia: "--font-audiowide", archivo: "Audiowide", rareza: "raro", precio: 700 },
+  { valor: "estencil", nombre: "Esténcil", familia: "--font-black-ops", archivo: "BlackOpsOne", rareza: "raro", precio: 700 },
+  { valor: "glitch", nombre: "Glitch", familia: "--font-rubik-glitch", archivo: "RubikGlitch", rareza: "epico", precio: 1000 },
+  { valor: "pantalla", nombre: "Pantalla", familia: "--font-silkscreen", archivo: "Silkscreen", rareza: "epico", precio: 1000 },
+  { valor: "caricatura", nombre: "Caricatura", familia: "--font-luckiest-guy", archivo: "LuckiestGuy", rareza: "epico", precio: 1000 },
+  { valor: "maquina", nombre: "Máquina de escribir", familia: "--font-special-elite", archivo: "SpecialElite", rareza: "epico", precio: 1000 },
+];
+
+// Fuentes de puntos: cómo se ve el «+N» al acertar (cosmético nuevo). «clasica» es la
+// de siempre y la tiene todo el mundo. `estilo`: color, contorno, sombra o degradé.
+export interface EstiloPuntos {
+  color: string;
+  contorno?: string;
+  sombra?: string;
+  degrade?: [string, string, string];
+  brillo?: string;
+}
+export const FUENTES_PUNTOS: { valor: string; nombre: string; familia: string | null; archivo: string | null; estilo: EstiloPuntos; rareza: RarezaAmpliada; precio: number }[] = [
+  { valor: "arcade", nombre: "Arcade", familia: "--font-press-start", archivo: "PressStart2P", estilo: { color: "#5DE4FF", sombra: "#1B3A8F" }, rareza: "comun", precio: 300 },
+  { valor: "comic", nombre: "Cómic", familia: "--font-bangers", archivo: "Bangers", estilo: { color: "#FFE14D", contorno: "#1A1200" }, rareza: "comun", precio: 300 },
+  { valor: "pizarra", nombre: "Pizarra", familia: "--font-permanent-marker", archivo: "PermanentMarker", estilo: { color: "#F4F6FB" }, rareza: "comun", precio: 300 },
+  { valor: "caramelo", nombre: "Caramelo", familia: "--font-luckiest-guy", archivo: "LuckiestGuy", estilo: { color: "#FF5D8F", contorno: "#FFFFFF" }, rareza: "raro", precio: 600 },
+  { valor: "pixel", nombre: "Pixel", familia: "--font-silkscreen", archivo: "Silkscreen", estilo: { color: "#3DDC97", brillo: "#3DDC97" }, rareza: "raro", precio: 600 },
+  { valor: "neon", nombre: "Neón", familia: "--font-monoton", archivo: "Monoton", estilo: { color: "#FF6FD8", brillo: "#FF6FD8" }, rareza: "epico", precio: 1200 },
+  { valor: "fuego", nombre: "Fuego", familia: "--font-black-ops", archivo: "BlackOpsOne", estilo: { color: "#FF8A1F", degrade: ["#FFE08A", "#FF8A1F", "#E63946"], brillo: "#FF8A1F" }, rareza: "epico", precio: 1200 },
+  { valor: "glitch", nombre: "Glitch", familia: "--font-rubik-glitch", archivo: "RubikGlitch", estilo: { color: "#F4F6FB", sombra: "#FF5D5D" }, rareza: "epico", precio: 1200 },
+  { valor: "dorada", nombre: "Dorada", familia: "--font-cinzel", archivo: "Cinzel", estilo: { color: "#FFC53D", degrade: ["#FFF6D8", "#FFC53D", "#B8860B"], brillo: "#FFC53D" }, rareza: "legendario", precio: 6000 },
+];
+
 export function filasCatalogoAmpliado(): { item: string; categoria: string; valor: string; nombre: string; rareza: RarezaAmpliada; precio: number }[] {
   return [
     ...MARCOS_ESTILO.map((m) => ({ item: `marco_${m.slug}`, categoria: "marco", valor: m.slug, nombre: `Marco ${m.nombre}`, rareza: m.rareza, precio: m.precio })),
@@ -221,5 +264,7 @@ export function filasCatalogoAmpliado(): { item: string; categoria: string; valo
     ...SONIDOS_NUEVOS.map((s) => ({ item: `sonido_${s.valor}`, categoria: "sonido", valor: s.valor, nombre: `Sonido ${s.nombre}`, rareza: s.rareza, precio: s.precio })),
     ...EMOTES_NUEVOS.map((e) => ({ item: `emote_${e.valor}`, categoria: "emote", valor: e.valor, nombre: `${e.emoji} ${e.texto}`, rareza: (e.precio >= 900 ? "raro" : "comun") as RarezaAmpliada, precio: e.precio })),
     ...TITULOS_NUEVOS.map((t) => ({ item: t.item, categoria: "titulo", valor: t.valor, nombre: t.nombre, rareza: t.rareza, precio: t.precio })),
+    ...FUENTES_NOMBRE_NUEVAS.map((f) => ({ item: `fuente_${f.valor}`, categoria: "fuente", valor: f.valor, nombre: `Fuente ${f.nombre}`, rareza: f.rareza, precio: f.precio })),
+    ...FUENTES_PUNTOS.map((f) => ({ item: `puntos_${f.valor}`, categoria: "fuente_puntos", valor: f.valor, nombre: `Puntos ${f.nombre}`, rareza: f.rareza, precio: f.precio })),
   ];
 }

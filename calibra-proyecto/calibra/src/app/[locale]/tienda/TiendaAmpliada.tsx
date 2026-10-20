@@ -1,5 +1,6 @@
 "use client";
 
+import { olvidarFuentePuntos } from "@/components/recompensas/PuntosConFuente";
 import EtiquetaNuevo from "@/components/EtiquetaNuevo";
 import { esNuevo } from "@/lib/recompensas/novedades";
 import { marcarNuevoVisto, useNuevoVisto } from "@/lib/recompensas/novedadesWeb";
@@ -27,8 +28,8 @@ import { precioTexto, precioUsdPaquete, precioUsdParcial } from "@/lib/pagos/vit
 // revalida todo. Avisa la compra con el evento "prodigia:chispas" para que el saldo
 // de arriba (TiendaClient) se actualice.
 
-type Pestana = "paquetes" | "temas" | "marcos" | "partida" | "placa" | "duelos" | "temporada" | "utilidades" | "pirotecnia" | "musica" | "titulos";
-const PESTANAS: Pestana[] = ["paquetes", "temas", "marcos", "partida", "placa", "duelos", "temporada", "utilidades"];
+type Pestana = "paquetes" | "temas" | "marcos" | "partida" | "placa" | "duelos" | "temporada" | "utilidades" | "pirotecnia" | "musica" | "titulos" | "nombre" | "puntos";
+const PESTANAS: Pestana[] = ["paquetes", "temas", "marcos", "partida", "placa", "duelos", "temporada", "utilidades", "nombre", "puntos"];
 
 interface Item {
   item: string;
@@ -90,7 +91,7 @@ const PESTANAS_DE_PUESTO: Record<PuestoId, Pestana[]> = {
   pirotecnia: ["pirotecnia"],
   musica: ["musica"],
   arena: ["duelos"],
-  caligrafia: ["titulos"],
+  caligrafia: ["titulos", "nombre", "puntos"],
   botica: ["utilidades"],
   mercado: ["paquetes", "temas"],
 };
@@ -107,6 +108,8 @@ const DE_PESTANA: Record<Pestana, (it: Item) => boolean> = {
   duelos: (it) => it.categoria === "emote",
   temporada: (it) => it.temporada != null && it.temporada === temporadaActual(),
   utilidades: (it) => it.categoria === "utilidad",
+  nombre: (it) => it.categoria === "fuente",
+  puntos: (it) => it.categoria === "fuente_puntos",
 };
 
 // Miniatura de un tema (Próximamente): pantallita con sus colores, la forma de sus
@@ -145,6 +148,11 @@ interface Estado {
   hielos: number;
   chispas: number;
   cometas: number;
+  // Fuentes (0294): de nombre y de puntos.
+  fuentes: string[];
+  fuente: string;
+  fuentesPuntos: string[];
+  fuentePuntos: string;
 }
 
 export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetesConDinero?: boolean }) {
@@ -178,6 +186,9 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
     ]);
     // Aparte: si 0279 no se aplicó, la columna no existe y la tienda sigue andando.
     const { data: filaCometas } = await sb.from("profiles").select("cometas").eq("id", u.user.id).maybeSingle();
+    // Aparte también: las fuentes de puntos llegan con 0294.
+    const { data: filaFuentes } = await sb.from("profiles").select("fuente_nombre, fuentes_desbloqueadas, fuente_puntos, fuentes_puntos_desbloqueadas").eq("id", u.user.id).maybeSingle();
+    const ff = (filaFuentes ?? {}) as Record<string, unknown>;
     setPreciosPaq(await preciosPaquetesParaMi(sb));
     const b = (base ?? {}) as Record<string, unknown>;
     setE({
@@ -191,6 +202,10 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
       hielos: (b.hielos_disponibles as number) ?? 0,
       chispas: (b.puntos_total as number) ?? 0,
       cometas: (filaCometas as { cometas?: number } | null)?.cometas ?? 0,
+      fuentes: (ff.fuentes_desbloqueadas as string[]) ?? [],
+      fuente: (ff.fuente_nombre as string) ?? "default",
+      fuentesPuntos: (ff.fuentes_puntos_desbloqueadas as string[]) ?? [],
+      fuentePuntos: (ff.fuente_puntos as string) ?? "clasica",
     });
   }, []);
 
@@ -238,6 +253,10 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
           return e.marcos.includes(it.valor);
         case "fondo":
           return e.fondos.includes(it.valor);
+        case "fuente":
+          return e.fuentes.includes(it.valor);
+        case "fuente_puntos":
+          return e.fuentesPuntos.includes(it.valor);
         default:
           return false;
       }
@@ -266,6 +285,8 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
     if (it.categoria === "titulo") return e.tituloActivo === it.valor;
     if (it.categoria === "marco") return e.marco === it.valor;
     if (it.categoria === "fondo") return e.fondo === it.valor;
+    if (it.categoria === "fuente") return e.fuente === it.valor;
+    if (it.categoria === "fuente_puntos") return e.fuentePuntos === it.valor;
     return false;
   }
 
@@ -319,6 +340,10 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
       await equiparCosmetico(sb, it.categoria, quitar ? (it.categoria === "estela" ? "clasica" : it.categoria === "efecto" ? "chispas" : "clasico") : it.valor);
     } else if (it.categoria === "ciudad_placa") {
       await equiparCosmetico(sb, "ciudad_placa", quitar ? null : it.valor);
+    } else if (it.categoria === "fuente" || it.categoria === "fuente_puntos") {
+      await equiparCosmetico(sb, it.categoria, quitar ? (it.categoria === "fuente" ? "default" : "clasica") : it.valor);
+      olvidarFuentePuntos();
+      await cargar();
     } else if (it.categoria === "titulo") {
       const { error } = await sb.rpc("elegir_titulo_activo", { p_slug: it.valor });
       if (error) throw error;

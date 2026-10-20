@@ -265,7 +265,7 @@ export async function recibirRegalo(sb: SupabaseClient, id: string): Promise<voi
   if (error) throw error;
 }
 
-export type CategoriaEquipable = "estela" | "efecto" | "sonido" | "ciudad_placa";
+export type CategoriaEquipable = "estela" | "efecto" | "sonido" | "ciudad_placa" | "fuente" | "fuente_puntos";
 
 export async function equiparCosmetico(sb: SupabaseClient, categoria: CategoriaEquipable, valor: string | null): Promise<void> {
   const { error } = await sb.rpc("equipar_cosmetico", { p_categoria: categoria, p_valor: valor });

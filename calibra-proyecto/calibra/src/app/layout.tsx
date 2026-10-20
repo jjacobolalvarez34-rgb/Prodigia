@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono, Playfair_Display, Caveat, Bebas_Neue, Pacifico, Orbitron, Anton, Dancing_Script } from "next/font/google";
+import { Space_Grotesk, Inter, JetBrains_Mono, Playfair_Display, Caveat, Bebas_Neue, Pacifico, Orbitron, Anton, Dancing_Script, Bungee, Righteous, Russo_One, Press_Start_2P, Monoton, Lobster, Permanent_Marker, Cinzel, Bangers, Fredoka, Audiowide, Black_Ops_One, Rubik_Glitch, Silkscreen, Luckiest_Guy, Special_Elite } from "next/font/google";
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
@@ -100,6 +100,26 @@ const dancingScript = Dancing_Script({
   weight: ["600", "700"],
 });
 
+
+// Fuentes nuevas de la tienda (0294): de nombre y de puntos. Sin precarga: el navegador
+// solo baja la que se use.
+const bungee = Bungee({ variable: "--font-bungee", subsets: ["latin"], weight: ["400"], preload: false });
+const righteous = Righteous({ variable: "--font-righteous", subsets: ["latin"], weight: ["400"], preload: false });
+const russoOne = Russo_One({ variable: "--font-russo-one", subsets: ["latin"], weight: ["400"], preload: false });
+const pressStart = Press_Start_2P({ variable: "--font-press-start", subsets: ["latin"], weight: ["400"], preload: false });
+const monoton = Monoton({ variable: "--font-monoton", subsets: ["latin"], weight: ["400"], preload: false });
+const lobster = Lobster({ variable: "--font-lobster", subsets: ["latin"], weight: ["400"], preload: false });
+const permanentMarker = Permanent_Marker({ variable: "--font-permanent-marker", subsets: ["latin"], weight: ["400"], preload: false });
+const cinzel = Cinzel({ variable: "--font-cinzel", subsets: ["latin"], weight: ["700"], preload: false });
+const bangers = Bangers({ variable: "--font-bangers", subsets: ["latin"], weight: ["400"], preload: false });
+const fredoka = Fredoka({ variable: "--font-fredoka", subsets: ["latin"], weight: ["600"], preload: false });
+const audiowide = Audiowide({ variable: "--font-audiowide", subsets: ["latin"], weight: ["400"], preload: false });
+const blackOps = Black_Ops_One({ variable: "--font-black-ops", subsets: ["latin"], weight: ["400"], preload: false });
+const rubikGlitch = Rubik_Glitch({ variable: "--font-rubik-glitch", subsets: ["latin"], weight: ["400"], preload: false });
+const silkscreen = Silkscreen({ variable: "--font-silkscreen", subsets: ["latin"], weight: ["400"], preload: false });
+const luckiestGuy = Luckiest_Guy({ variable: "--font-luckiest-guy", subsets: ["latin"], weight: ["400"], preload: false });
+const specialElite = Special_Elite({ variable: "--font-special-elite", subsets: ["latin"], weight: ["400"], preload: false });
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Common.metadata");
   const locale = await getLocale();
@@ -174,7 +194,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable} ${caveat.variable} ${bebasNeue.variable} ${pacifico.variable} ${orbitron.variable} ${anton.variable} ${dancingScript.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} ${playfairDisplay.variable} ${caveat.variable} ${bebasNeue.variable} ${pacifico.variable} ${orbitron.variable} ${anton.variable} ${dancingScript.variable} ${bungee.variable} ${righteous.variable} ${russoOne.variable} ${pressStart.variable} ${monoton.variable} ${lobster.variable} ${permanentMarker.variable} ${cinzel.variable} ${bangers.variable} ${fredoka.variable} ${audiowide.variable} ${blackOps.variable} ${rubikGlitch.variable} ${silkscreen.variable} ${luckiestGuy.variable} ${specialElite.variable} h-full antialiased`}
     >
       <head>
         <Script id="theme-init" strategy="beforeInteractive">

@@ -4930,7 +4930,9 @@
         "utilidades": "Boosts",
         "pirotecnia": "Trails and effects",
         "musica": "Sounds",
-        "titulos": "Titles"
+        "titulos": "Titles",
+        "nombre": "Name",
+        "puntos": "Points"
       },
       "comprar": "Buy for {n}",
       "confirmar": "Sure? Confirm purchase",
