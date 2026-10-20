@@ -69,7 +69,7 @@ function TarjetaMundo({ mundo, tuyo, nivel, indice, recien, onPress }: { mundo: 
   }
   const doble = mundoDobleExperiencia() === mundo.slug;
   return (
-    <Tarjeta indice={indice} onPress={onPress} relleno={10} acento={doble ? color.logro : mundo.neon} brillo={doble ? 0.3 : 0.16}>
+    <Tarjeta indice={indice} onPress={onPress} relleno={10} acento={doble ? color.logro : mundo.neon} brillo={doble ? 0.3 : 0.16} esquina={indice % 3 === 0}>
       <Animated.View entering={recien ? FadeIn.duration(1200) : undefined}>
         <Ciudad semilla={mundo.slug} acento={mundo.neon} alto={128} densidad={Math.min(1.25, 0.8 + nivel / 100)} />
         {doble && (

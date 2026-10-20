@@ -1,3 +1,4 @@
+import { temaActivo } from "@/lib/temas/temas";
 import { SONIDOS } from "@/lib/recompensas/catalogo";
 
 const CLAVE = "prodigia-sonido";
@@ -198,6 +199,22 @@ export function probarPaqueteAcierto(paquete: string) {
   }
 }
 
+const parciales = (lista: [number, number, number, number?][]): Nota[] => lista.map(([freq, duracion, volumen, inicio]) => ({ freq, inicio: inicio ?? 0, duracion, volumen }));
+const TOQUES_TEMPORADA: Partial<Record<string, Nota[]>> = {
+  halloween: parciales([[220, 0.5, 0.06], [330, 0.5, 0.04], [440, 0.5, 0.025]]),
+  navidad: parciales([[2637, 0.3, 0.03], [3520, 0.3, 0.025], [4186, 0.25, 0.02], [5274, 0.2, 0.015]]),
+  muertos: parciales([[1046, 0.45, 0.05], [2114, 0.3, 0.015]]),
+  diwali: parciales([[880, 0.8, 0.045], [2429, 0.6, 0.02], [4752, 0.4, 0.01]]),
+  anio_nuevo: parciales([[3136, 0.2, 0.02], [4186, 0.15, 0.012, 0.05]]),
+  anio_nuevo_lunar: parciales([[196, 1, 0.06], [412, 0.8, 0.03], [647, 0.6, 0.015]]),
+  amor_amistad: parciales([[659, 0.35, 0.04], [784, 0.35, 0.04, 0.08]]),
+  carnaval: [{ freq: 140, freqFin: 60, inicio: 0, duracion: 0.25, volumen: 0.1 }],
+  holi: [{ freq: 110, freqFin: 70, inicio: 0, duracion: 0.3, volumen: 0.1 }],
+  pascua: [{ freq: 900, freqFin: 300, inicio: 0, duracion: 0.08, volumen: 0.08 }],
+  dia_musica: parciales([[523, 0.6, 0.05], [1046, 0.4, 0.015]]),
+  vuelta_clases: [{ freq: 2400, freqFin: 1800, inicio: 0, duracion: 0.05, volumen: 0.03, tipoOnda: "square" }],
+};
+
 export type TipoTono = "correcto" | "error" | "nivel" | "nivel_cuenta" | "logro" | "duelo_gano" | "duelo_perdio" | "compra" | "notificacion" | "cuenta" | "ya" | "tic" | "tic_urgente" | "tiempo_fin";
 
 // Tonos generados con Web Audio (sin archivos de audio con licencia):
@@ -224,6 +241,11 @@ export function reproducirTono(tipo: TipoTono) {
       } else {
         reproducirSecuencia([{ freq: 880, inicio: 0, duracion: 0.22 }]);
       }
+      // Durante un evento, el toque de la fecha (celebracion.ts «acierto.instrumento»;
+      // los mismos parciales que los .wav de la app, mobile/scripts/generar-sonidos.py).
+      const tema = temaActivo();
+      const toque = tema && tema.fase === "evento" ? TOQUES_TEMPORADA[tema.tema.id] : undefined;
+      if (toque) reproducirSecuencia(toque);
     } else if (tipo === "error") {
       // «Eh-ehhh»: dos notas que caen, la segunda deslizándose hacia abajo
       // (pedido 2026-10-09). Mismos números en mobile/scripts/generar-sonidos.py.

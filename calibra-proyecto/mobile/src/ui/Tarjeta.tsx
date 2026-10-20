@@ -1,3 +1,4 @@
+import EsquinaFecha from "./temas/EsquinaFecha";
 import { LinearGradient } from "expo-linear-gradient";
 import type { ReactNode } from "react";
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
@@ -21,9 +22,11 @@ interface Props {
   indice?: number;
   sinEntrada?: boolean;
   relleno?: number;
+  // Durante un evento, la figura de la fecha en la esquina (EsquinaFecha).
+  esquina?: boolean;
 }
 
-export default function Tarjeta({ children, acento, brillo = 0, onPress, estilo, indice = 0, sinEntrada, relleno = 14 }: Props) {
+export default function Tarjeta({ children, acento, brillo = 0, onPress, estilo, indice = 0, sinEntrada, relleno = 14, esquina }: Props) {
   const escala = useSharedValue(1);
   const liviano = useLiviano();
   const estiloEscala = useAnimatedStyle(() => ({ transform: [{ scale: escala.value }] }));
@@ -40,6 +43,7 @@ export default function Tarjeta({ children, acento, brillo = 0, onPress, estilo,
     >
       <LinearGradient colors={["rgba(255,255,255,0.055)", "rgba(255,255,255,0)"]} style={styles.vidrio} pointerEvents="none" />
       {children}
+      {esquina && <EsquinaFecha />}
     </View>
   );
 

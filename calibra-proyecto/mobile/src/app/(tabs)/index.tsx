@@ -135,7 +135,7 @@ export default function Hoy() {
       {!esInvitado && <RepararRacha indice={indice++} />}
 
       {continuar && mundoContinuar && (
-        <Tarjeta indice={indice++} relleno={0} acento={mundoContinuar.neon} brillo={0.18}>
+        <Tarjeta indice={indice++} relleno={0} acento={mundoContinuar.neon} brillo={0.18} esquina>
           <Ciudad semilla={mundoContinuar.slug} acento={mundoContinuar.neon} alto={84} radio={0} />
           <View style={{ padding: 14, gap: 10 }}>
             <View style={styles.entre}>
@@ -152,7 +152,7 @@ export default function Hoy() {
               </Texto>
             </View>
             <Barra valor={progreso?.avance ?? 0} acento={mundoContinuar.base} />
-            <Boton3D titulo="Jugar" acento={mundoContinuar.base} brillo onPress={() => router.push(continuar.ruta)} />
+            <Boton3D titulo={celebracionDe(temaHoy)?.boton ?? "Jugar"} acento={mundoContinuar.base} brillo onPress={() => router.push(continuar.ruta)} />
           </View>
         </Tarjeta>
       )}

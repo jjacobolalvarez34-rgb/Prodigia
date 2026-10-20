@@ -2,11 +2,24 @@
 // tonos que la web (src/lib/sonido.ts) sintetizados a archivo (assets/sonidos), sin
 // samples con licencia. Suenan por el volumen MULTIMEDIA, como un juego: con el
 // teléfono en silencio igual se oyen (pedido 2026-10-01); se apagan desde Ajustes.
+import { temaActivo } from "@/lib/temas/temas";
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from "expo-audio";
 import * as Haptics from "expo-haptics";
 import { leerAjustes } from "./ajustes";
 
 const FUENTES = {
+  temporada_halloween: require("../../assets/sonidos/temporada_halloween.wav"),
+  temporada_navidad: require("../../assets/sonidos/temporada_navidad.wav"),
+  temporada_muertos: require("../../assets/sonidos/temporada_muertos.wav"),
+  temporada_diwali: require("../../assets/sonidos/temporada_diwali.wav"),
+  temporada_anio_nuevo: require("../../assets/sonidos/temporada_anio_nuevo.wav"),
+  temporada_anio_nuevo_lunar: require("../../assets/sonidos/temporada_anio_nuevo_lunar.wav"),
+  temporada_amor_amistad: require("../../assets/sonidos/temporada_amor_amistad.wav"),
+  temporada_carnaval: require("../../assets/sonidos/temporada_carnaval.wav"),
+  temporada_holi: require("../../assets/sonidos/temporada_holi.wav"),
+  temporada_pascua: require("../../assets/sonidos/temporada_pascua.wav"),
+  temporada_dia_musica: require("../../assets/sonidos/temporada_dia_musica.wav"),
+  temporada_vuelta_clases: require("../../assets/sonidos/temporada_vuelta_clases.wav"),
   acierto0: require("../../assets/sonidos/acierto0.wav"),
   acierto1: require("../../assets/sonidos/acierto1.wav"),
   acierto2: require("../../assets/sonidos/acierto2.wav"),
@@ -225,6 +238,10 @@ export function sonarAcierto(combo: number) {
   const altura = n <= 14 ? n : 14 - ((n - 14) % 2);
   const conPaquete = `acierto_${paqueteAcierto}${altura}`;
   sonar((paqueteAcierto !== "clasico" && conPaquete in FUENTES ? conPaquete : `acierto${altura}`) as Sonido);
+  // Durante un evento, el toque de la fecha (celebracion.ts «acierto.instrumento»).
+  const tema = temaActivo();
+  const toque = tema && tema.fase === "evento" ? `temporada_${tema.tema.id}` : null;
+  if (toque && toque in FUENTES) sonar(toque as Sonido);
 }
 
 // Muestra de un paquete (en la tienda).

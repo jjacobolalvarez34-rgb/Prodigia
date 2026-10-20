@@ -3,6 +3,7 @@ import type { ReactElement } from "react";
 import { getTranslations } from "next-intl/server";
 import { mundoDobleExperiencia } from "@/lib/eventos/dobleExperiencia";
 import { IconCandado } from "@/components/icons";
+import EsquinaFecha from "@/components/temas/EsquinaFecha";
 
 interface Props {
   nombre: string;
@@ -69,6 +70,7 @@ export default async function WorldCard({ nombre, descripcion, Icono, href, colo
         background: `linear-gradient(120deg, ${colorHex}, color-mix(in oklab, ${colorHex} 55%, white))`,
       }}
     >
+      <EsquinaFecha />
       <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/15">
         <Icono className="h-5 w-5" />
       </span>

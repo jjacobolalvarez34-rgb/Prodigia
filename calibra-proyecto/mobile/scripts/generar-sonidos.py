@@ -105,3 +105,33 @@ for semitono in range(36,68):
     with wave.open(os.path.join(NOTAS,f"nota{semitono}.wav"),"wb") as w:
         w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
         w.writeframes((np.clip(s,-1,1)*32767).astype(np.int16).tobytes())
+
+# Toque de temporada (2026-10-19, celebracion.ts «acierto.instrumento»): se suma al
+# tick de acierto mientras dura el evento. Mismo diseño que TOQUES_TEMPORADA de la web
+# (calibra/src/lib/sonido.ts).
+def ruido(dur, vol, caida=30):
+    n=int(SR*dur); t=np.arange(n)/SR
+    return np.random.default_rng(7).uniform(-1,1,n)*vol*np.exp(-caida*t)
+def parcial(f, dur, vol, caida):
+    n=int(SR*dur); t=np.arange(n)/SR
+    return np.sin(2*np.pi*f*t)*vol*np.exp(-caida*t)*np.minimum(1,t/0.003)
+def mezcla(*ps):
+    L=max(len(p) for p in ps); s=np.zeros(L)
+    for p in ps: s[:len(p)]+=p
+    return s
+TOQUES={
+    "halloween": mezcla(parcial(220,.5,.08,6), parcial(330,.5,.05,6), parcial(440,.5,.03,7), ruido(.12,.05,40)),
+    "navidad": mezcla(*[parcial(f,.35,.04,14) for f in (2637,3520,4186,5274)], ruido(.18,.03,25)),
+    "muertos": mezcla(parcial(1046,.45,.07,9), parcial(2093*1.01,.3,.02,14)),
+    "diwali": mezcla(parcial(880,.8,.06,4), parcial(880*2.76,.6,.03,6), parcial(880*5.4,.4,.015,9)),
+    "anio_nuevo": mezcla(ruido(.25,.05,12), parcial(3136,.2,.02,20)),
+    "anio_nuevo_lunar": mezcla(parcial(196,1.0,.08,3), parcial(196*2.1,.8,.04,4), parcial(196*3.3,.6,.02,6)),
+    "amor_amistad": mezcla(parcial(659,.35,.05,8), np.concatenate([np.zeros(int(SR*.08)), parcial(784,.35,.05,8)])),
+    "carnaval": mezcla(np.sin(2*np.pi*np.cumsum(np.linspace(140,60,int(SR*.25)))/SR)*.12*np.exp(-14*np.arange(int(SR*.25))/SR), ruido(.06,.05,60)),
+    "holi": mezcla(np.sin(2*np.pi*np.cumsum(np.linspace(110,70,int(SR*.3)))/SR)*.12*np.exp(-10*np.arange(int(SR*.3))/SR)),
+    "pascua": np.sin(2*np.pi*np.cumsum(np.linspace(900,300,int(SR*.08)))/SR)*.1*np.exp(-30*np.arange(int(SR*.08))/SR),
+    "dia_musica": mezcla(parcial(523,.6,.06,5), parcial(1046,.4,.02,8)),
+    "vuelta_clases": ruido(.07,.06,70),
+}
+for nombre,s in TOQUES.items():
+    guardar(f"temporada_{nombre}", s, 0.5)
