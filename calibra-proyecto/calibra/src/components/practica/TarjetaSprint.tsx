@@ -2,6 +2,10 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import PuntajeCorner, { type IntensidadPuntaje } from "@/components/PuntajeCorner";
+import DibujoTema from "@/components/temas/DibujoTema";
+import { useTemaHoy } from "@/components/temas/useTemaHoy";
+import { celebracionDe } from "@/lib/temas/celebracion";
+import { PARTICULAS } from "@/lib/temas/dibujos";
 import RevelarRespuesta from "@/components/practica/RevelarRespuesta";
 
 export interface PuntajeTarjeta {
@@ -51,6 +55,9 @@ export default function TarjetaSprint({
   padding = "px-10 py-14",
   children,
 }: Props) {
+  // Esquinas con la figura de la fecha durante un evento (PARIDAD_EVENTOS.md fila 6).
+  const tema = useTemaHoy();
+  const esquina = celebracionDe(tema)?.esquina ?? null;
   return (
     <div className="relative w-full max-w-lg" style={{ minHeight }}>
       <AnimatePresence mode="popLayout">
@@ -81,6 +88,12 @@ export default function TarjetaSprint({
                   : "border-border"
             }`}
           >
+            {esquina && tema && (
+              <>
+                <DibujoTema dibujo={PARTICULAS[esquina]} color={tema.tema.acento} className="pointer-events-none absolute -right-2 -top-3 h-7 w-7 rotate-[18deg] drop-shadow" />
+                <DibujoTema dibujo={PARTICULAS[esquina]} color={tema.tema.acento} className="pointer-events-none absolute -left-1.5 -top-2.5 h-5 w-5 -rotate-[18deg] drop-shadow" />
+              </>
+            )}
             {feedback === "correcto" && puntaje && <PuntajeCorner total={puntaje.total} intensidad={puntaje.intensidad} />}
 
             {children}
