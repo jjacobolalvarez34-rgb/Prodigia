@@ -11,6 +11,7 @@ import { temaActivo } from "./temas";
 // Para sumar el de otra fiesta: agregarla acá y su archivo en VIDEOS de la app.
 export const VIDEO_DE_TEMA: Partial<Record<IdTema, string>> = {
   halloween: "halloween",
+  navidad: "navidad",
 };
 
 export const VIDEO_ALINEACION = "gran-alineacion";

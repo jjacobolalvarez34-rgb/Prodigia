@@ -17,6 +17,7 @@ import Texto from "./Texto";
 const VIDEOS: Record<string, number> = {
   "gran-alineacion": require("../../assets/videos/gran-alineacion.mp4"),
   halloween: require("../../assets/videos/halloween.mp4"),
+  navidad: require("../../assets/videos/navidad.mp4"),
 };
 const ENTRADA_MS = 700;
 const SALIDA_MS = 650;
