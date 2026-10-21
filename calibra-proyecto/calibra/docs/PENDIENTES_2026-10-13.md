@@ -373,3 +373,11 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
   Requiere migración: categoría `tema_app` en el catálogo (precio = precio de su rareza), `profiles.tema_app`, ramas en `_tiene_cosmetico`/`_dar_cosmetico`/`equipar_cosmetico` (basarse en la versión de 0294) y meterlos en `contenido_capsula` de las cápsulas elegidas.
 - **Tabla de cápsulas a modificar**: al meter los temas de la app en las cápsulas fuertes, la tabla «qué puedes obtener» cambia; actualizarla (y mostrarla en la app/web).
 - **Contadores con minutos y segundos**: el cartel del próximo evento (app `ui/temas/CartelTemporada.tsx`, `app/evento.tsx`, y su par en la web) solo dice «Empieza en 3 días». Ya calcula bien la hora real (`inicioEventoMs`: Halloween abre al terminar la Gran Alineación, sáb 24 21:00 Colombia), pero se confunde con la Alineación porque no se ve la hora. Hacer que TODOS los contadores muestren días, horas, minutos y, si se puede, segundos (hoy solo la Gran Alineación lo hace). Revisar `faltaPara`.
+
+### Pedidos 2026-10-21 (en curso)
+- **Fondos de los chats**: hoy son muy sencillos y feos; rediseñarlos (web y app).
+- **Clanes como territorios**: el mapa de clanes no debe ser una cuadrícula de cuadrados alineados, sino territorios orgánicos grandes y pequeños que se van generando cuando nace un clan nuevo.
+- **Chat entre personas**: poder invitar a duelo desde el chat; la invitación (enviada, aceptada, cancelada, vencida) aparece como mensaje dentro del chat.
+- **Compartir una partida**: compartir el resultado (y, si se puede, la repetición) de una partida; en el historial, tocar una partida y ver sus estadísticas. (Ojo: cambiará cuando se rediseñen los combates.)
+- **ELO de rankeds como Brawlhalla**: 500 inicial; 800 Bronce, 1100 Plata, 1400 Oro, 1700 Platino, 2000 Diamante; top 100 de jugadores = Prodigio. Hoy el ELO es muy bajo para eso.
+- **Temporadas de ranked**: definir cada cuánto acaban (¿cada Gran Alineación?) y al cerrar, un anuncio que entrega las recompensas de temporada: el emblema de la liga máxima con su «tier» por veces alcanzada (Diamante v1, v2, v3…), algún título y cápsulas.
