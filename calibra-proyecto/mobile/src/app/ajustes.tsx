@@ -19,9 +19,6 @@ import { mostrarAviso } from "~/ui/Aviso";
 import Boton3D from "~/ui/Boton3D";
 import ContrasenaRespaldo, { necesitaContrasenaRespaldo } from "~/ui/ContrasenaRespaldo";
 import { IconoDerecha } from "~/ui/Iconos";
-import { TEMAS } from "@/lib/temas/temas";
-import type { IdTema } from "@/lib/temas/calendario";
-import { temaEnVistaPrevia, verTema } from "~/lib/temporada";
 import { PantallaApilada, TituloSeccion } from "~/ui/Pantalla";
 import PreguntaEdad from "~/ui/PreguntaEdad";
 import Tarjeta from "~/ui/Tarjeta";
@@ -52,7 +49,6 @@ function Fila({ titulo, nota, derecha, onPress }: { titulo: string; nota?: strin
 }
 
 export default function Ajustes() {
-  const [vistaPrevia, setVistaPrevia] = useState<IdTema | null>(temaEnVistaPrevia());
   const router = useRouter();
   const { sesion } = useSesion();
   const ajustes = useAjustes();
@@ -114,25 +110,6 @@ export default function Ajustes() {
                 void actualizarWidgets();
               }} trackColor={{ true: color.primario, false: color.surface3 }} thumbColor="#fff" />}
         />
-        {ajustes.decoracion && (
-          <Fila
-            titulo="Ver una festividad"
-            nota="Vista previa de cada fiesta fuera de su fecha (toca para pasar a la siguiente)"
-            onPress={() => {
-              const lista = Object.keys(TEMAS) as IdTema[];
-              const actual = temaEnVistaPrevia();
-              const siguiente = actual === null ? lista[0] : lista.indexOf(actual) + 1 < lista.length ? lista[lista.indexOf(actual) + 1] : null;
-              verTema(siguiente);
-              setVistaPrevia(siguiente);
-              void actualizarWidgets();
-            }}
-            derecha={
-              <Texto v="fuerte" tam={13} c={color.primarioClaro}>
-                {vistaPrevia ? TEMAS[vistaPrevia].nombre : "La de hoy"}
-              </Texto>
-            }
-          />
-        )}
       </Tarjeta>
 
       <TituloSeccion>Avisos</TituloSeccion>

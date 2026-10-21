@@ -7,11 +7,12 @@ import type { IdTema } from "@/lib/temas/calendario";
 
 // La festividad de hoy en la web (src/lib/temas). Se calcula en el navegador (en el
 // servidor no hay tema: así el primer render es igual en los dos y no hay saltos) y se
-// revisa cada 10 minutos. Con ?tema=<id> en la dirección se puede ver cualquier tema
-// fuera de su fecha (vista previa); se recuerda en la pestaña.
+// revisa cada 10 minutos. Solo en desarrollo, ?tema=<id> muestra un tema fuera de su
+// fecha; en producción no hay forma de ver un evento antes de tiempo.
 const CLAVE_FORZADO = "prodigia-tema-forzado";
 
 function leerForzado(): IdTema | null {
+  if (process.env.NODE_ENV === "production") return null;
   try {
     const p = new URLSearchParams(window.location.search).get("tema");
     if (p === "ninguno") {

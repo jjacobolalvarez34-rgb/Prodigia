@@ -33,7 +33,8 @@ export function generarSql0289(): string {
   const marcos = [...listaDe0275("marco_perfil"), ...MARCOS_EVENTO.map((m) => m.slug)];
   const fondos = [...listaDe0275("fondo_perfil"), ...FONDOS_EVENTO.map((f) => f.valor)];
   const eventos = eventosProgramados();
-  const piezas = piezasDeEventos();
+  // Solo las piezas de 0289 (las que llegaron después tienen su propia migración).
+  const piezas = piezasDeEventos().filter((p) => !p.migracion);
   return `-- ============================================================
 -- Prodigia — Eventos de las festividades y la colección de Halloween (0289).
 --
@@ -118,7 +119,7 @@ ${eventos.map((e) => `  (${sql(e.slug)}, ${sql(e.tema)}, ${sql(e.desde)}, ${sql(
 on conflict (slug) do update set tema = excluded.tema, desde = excluded.desde, hasta = excluded.hasta, cierre = excluded.cierre;
 
 insert into public.eventos_piezas (evento, item, fichas, cometas) values
-${eventos.flatMap((e) => (COLECCIONES[e.tema]?.piezas ?? []).map((p) => `  (${sql(e.slug)}, ${sql(p.item)}, ${p.fichas}, ${p.cometas})`)).join(",\n")}
+${eventos.flatMap((e) => (COLECCIONES[e.tema]?.piezas ?? []).filter((p) => !p.migracion).map((p) => `  (${sql(e.slug)}, ${sql(p.item)}, ${p.fichas}, ${p.cometas})`)).join(",\n")}
 on conflict (evento, item) do update set fichas = excluded.fichas, cometas = excluded.cometas;
 
 -- Fichas ganadas: 1 cada ${EXP_POR_FICHA} de Exp por día del evento, hasta ${FICHAS_MAX_DIA} por día.

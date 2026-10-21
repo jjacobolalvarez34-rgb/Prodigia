@@ -9,7 +9,8 @@
 --      'fuente_puntos', columnas profiles.fuente_puntos ('clasica' = la de siempre) y
 --      profiles.fuentes_puntos_desbloqueadas. Se equipa con equipar_cosmetico.
 -- Mismos datos que FUENTES_NOMBRE_NUEVAS y FUENTES_PUNTOS de
--- src/lib/recompensas/catalogoAmpliado.ts. Requiere 0248. Idempotente.
+-- src/lib/recompensas/catalogoAmpliado.ts; el precio es el de su rareza (0280: 400, 1200, 3000
+-- o 6000). Requiere 0248. Idempotente.
 -- ============================================================
 
 alter table public.profiles add column if not exists fuente_puntos text not null default 'clasica';
@@ -31,24 +32,24 @@ insert into public.catalogo_cosmeticos (slug, categoria, valor, nombre, rareza, 
   ('fuente_pixel', 'fuente', 'pixel', 'Fuente Pixel', 'comun', 400, true, true, null, null),
   ('fuente_neon', 'fuente', 'neon', 'Fuente Neón', 'comun', 400, true, true, null, null),
   ('fuente_cursiva_gruesa', 'fuente', 'cursiva_gruesa', 'Fuente Cursiva gruesa', 'comun', 400, true, true, null, null),
-  ('fuente_marcador', 'fuente', 'marcador', 'Fuente Marcador', 'raro', 700, true, true, null, null),
-  ('fuente_romana', 'fuente', 'romana', 'Fuente Romana', 'raro', 700, true, true, null, null),
-  ('fuente_comic', 'fuente', 'comic', 'Fuente Cómic', 'raro', 700, true, true, null, null),
-  ('fuente_redonda', 'fuente', 'redonda', 'Fuente Redonda', 'raro', 700, true, true, null, null),
-  ('fuente_espacial', 'fuente', 'espacial', 'Fuente Espacial', 'raro', 700, true, true, null, null),
-  ('fuente_estencil', 'fuente', 'estencil', 'Fuente Esténcil', 'raro', 700, true, true, null, null),
-  ('fuente_glitch', 'fuente', 'glitch', 'Fuente Glitch', 'epico', 1000, true, true, null, null),
-  ('fuente_pantalla', 'fuente', 'pantalla', 'Fuente Pantalla', 'epico', 1000, true, true, null, null),
-  ('fuente_caricatura', 'fuente', 'caricatura', 'Fuente Caricatura', 'epico', 1000, true, true, null, null),
-  ('fuente_maquina', 'fuente', 'maquina', 'Fuente Máquina de escribir', 'epico', 1000, true, true, null, null),
-  ('puntos_arcade', 'fuente_puntos', 'arcade', 'Puntos Arcade', 'comun', 300, true, true, null, null),
-  ('puntos_comic', 'fuente_puntos', 'comic', 'Puntos Cómic', 'comun', 300, true, true, null, null),
-  ('puntos_pizarra', 'fuente_puntos', 'pizarra', 'Puntos Pizarra', 'comun', 300, true, true, null, null),
-  ('puntos_caramelo', 'fuente_puntos', 'caramelo', 'Puntos Caramelo', 'raro', 600, true, true, null, null),
-  ('puntos_pixel', 'fuente_puntos', 'pixel', 'Puntos Pixel', 'raro', 600, true, true, null, null),
-  ('puntos_neon', 'fuente_puntos', 'neon', 'Puntos Neón', 'epico', 1200, true, true, null, null),
-  ('puntos_fuego', 'fuente_puntos', 'fuego', 'Puntos Fuego', 'epico', 1200, true, true, null, null),
-  ('puntos_glitch', 'fuente_puntos', 'glitch', 'Puntos Glitch', 'epico', 1200, true, true, null, null),
+  ('fuente_marcador', 'fuente', 'marcador', 'Fuente Marcador', 'raro', 1200, true, true, null, null),
+  ('fuente_romana', 'fuente', 'romana', 'Fuente Romana', 'raro', 1200, true, true, null, null),
+  ('fuente_comic', 'fuente', 'comic', 'Fuente Cómic', 'raro', 1200, true, true, null, null),
+  ('fuente_redonda', 'fuente', 'redonda', 'Fuente Redonda', 'raro', 1200, true, true, null, null),
+  ('fuente_espacial', 'fuente', 'espacial', 'Fuente Espacial', 'raro', 1200, true, true, null, null),
+  ('fuente_estencil', 'fuente', 'estencil', 'Fuente Esténcil', 'raro', 1200, true, true, null, null),
+  ('fuente_glitch', 'fuente', 'glitch', 'Fuente Glitch', 'epico', 3000, true, true, null, null),
+  ('fuente_pantalla', 'fuente', 'pantalla', 'Fuente Pantalla', 'epico', 3000, true, true, null, null),
+  ('fuente_caricatura', 'fuente', 'caricatura', 'Fuente Caricatura', 'epico', 3000, true, true, null, null),
+  ('fuente_maquina', 'fuente', 'maquina', 'Fuente Máquina de escribir', 'epico', 3000, true, true, null, null),
+  ('puntos_arcade', 'fuente_puntos', 'arcade', 'Puntos Arcade', 'comun', 400, true, true, null, null),
+  ('puntos_comic', 'fuente_puntos', 'comic', 'Puntos Cómic', 'comun', 400, true, true, null, null),
+  ('puntos_pizarra', 'fuente_puntos', 'pizarra', 'Puntos Pizarra', 'comun', 400, true, true, null, null),
+  ('puntos_caramelo', 'fuente_puntos', 'caramelo', 'Puntos Caramelo', 'raro', 1200, true, true, null, null),
+  ('puntos_pixel', 'fuente_puntos', 'pixel', 'Puntos Pixel', 'raro', 1200, true, true, null, null),
+  ('puntos_neon', 'fuente_puntos', 'neon', 'Puntos Neón', 'epico', 3000, true, true, null, null),
+  ('puntos_fuego', 'fuente_puntos', 'fuego', 'Puntos Fuego', 'epico', 3000, true, true, null, null),
+  ('puntos_glitch', 'fuente_puntos', 'glitch', 'Puntos Glitch', 'epico', 3000, true, true, null, null),
   ('puntos_dorada', 'fuente_puntos', 'dorada', 'Puntos Dorada', 'legendario', 6000, true, true, null, null)
 on conflict (slug) do update set categoria = excluded.categoria, valor = excluded.valor, nombre = excluded.nombre, rareza = excluded.rareza, precio = excluded.precio, vendible = excluded.vendible, en_capsulas = excluded.en_capsulas;
 

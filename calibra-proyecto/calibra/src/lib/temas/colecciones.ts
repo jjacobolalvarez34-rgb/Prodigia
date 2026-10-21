@@ -45,6 +45,8 @@ export interface PiezaEvento {
   rareza: Rareza;
   fichas: number;
   cometas: number;
+  // Si la pieza llegó después (no está en 0289): la migración que la agrega.
+  migracion?: string;
 }
 
 export interface Coleccion {
@@ -71,7 +73,7 @@ export const COLECCIONES: Partial<Record<IdTema, Coleccion>> = {
       { item: "titulo_evento_cazafantasmas", categoria: "titulo", valor: "evento-cazafantasmas", nombre: "Cazafantasmas", rareza: "epico", fichas: 24, cometas: 220 },
       { item: "marco_evento_calabaza", categoria: "marco", valor: "evento_calabaza", nombre: "Marco Calabaza", rareza: "epico", fichas: 30, cometas: 300 },
       { item: "marco_evento_esqueleto", categoria: "marco", valor: "evento_esqueleto", nombre: "Marco Esqueleto fosforescente", rareza: "legendario", fichas: 45, cometas: 600 },
-      { item: "emote_evento_esqueletos", categoria: "emote", valor: "evento_esqueletos", nombre: "Baile de esqueletos", rareza: "epico", fichas: 30, cometas: 300 },
+      { item: "emote_evento_esqueletos", categoria: "emote", valor: "evento_esqueletos", nombre: "Baile de esqueletos", rareza: "epico", fichas: 30, cometas: 300, migracion: "0292" },
     ],
   },
 };

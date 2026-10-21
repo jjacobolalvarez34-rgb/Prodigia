@@ -6,7 +6,7 @@ import { useAjustes } from "./ajustes";
 
 // La festividad de hoy en la app (src/lib/temas, igual que la web). Se revisa al volver
 // a la app y cada 10 minutos. Con «Decoración de temporada» apagada no hay tema.
-// verTema(): vista previa de cualquier fiesta fuera de su fecha (desde Ajustes).
+// verTema(): vista previa de una fiesta fuera de su fecha (solo para pruebas; sin botón en la app).
 const oyentes = new Set<() => void>();
 let vistaPrevia: IdTema | null = null;
 
