@@ -12,6 +12,7 @@ import { temaActivo } from "./temas";
 export const VIDEO_DE_TEMA: Partial<Record<IdTema, string>> = {
   halloween: "halloween",
   navidad: "navidad",
+  viernes_estelar: "viernes-estelar",
 };
 
 export const VIDEO_ALINEACION = "gran-alineacion";

@@ -31,7 +31,7 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 | Corte feo de estrellas y cielo al terminar un sprint | HECHO | `mobile/src/ui/FondoCiudad.tsx`: un solo cielo de arriba abajo con la hora real de la ciudad; estrellas solo de noche; entrada más suave. |
 | Pantalla de carga temática | HECHO | App (`PantallaCarga`): colores, partículas, accesorio en el logo y nombre de la fiesta. Web (`loading.tsx` + `CargaTemporada.tsx`). Carga del final del sprint: partículas de la fecha. |
 | Líneas de las constelaciones completas más vistosas | HECHO | Rayo de luz en capas (halo, degradado, núcleo blanco) en web y app, y un pulso que recorre cada línea en la web. Revisado en imagen. Commit a930260. |
-| Videos de Muertos, Diwali, Viernes Estelar y Año Nuevo | EN CURSO | 4 agentes trabajando en `prodigia-marketing\videos\<evento>\`. Al terminar: copiarlos al repo, `VIDEO_DE_TEMA` y `VIDEOS`, y recompilar el APK. |
+| Videos de Muertos, Diwali, Viernes Estelar y Año Nuevo | EN CURSO | Viernes Estelar HECHO e integrado en web y app (falta compilar el APK para verlo en el teléfono). Los otros 3: agentes trabajando en `prodigia-marketing\videos\<evento>\`. Al terminar: copiarlos al repo, `VIDEO_DE_TEMA` y `VIDEOS`, y recompilar el APK. |
 | Bono de EXP: entender qué es, quizá mejorarlo, y explicarlo en tutorial y landing | FALTA | |
 | Temas de la app: comprarlos con Cometas o ganarlos en cápsulas fuertes | FALTA | Hoy los 13 de `src/lib/recompensas/temas.ts` solo dicen «Próximamente». Necesita migración. |
 | Temas de la app compatibles con los eventos | FALTA | Ir de a uno con cada capa de `src/lib/temas/temas.ts`. |
