@@ -1,13 +1,13 @@
 import { useRouter, type Href } from "expo-router";
-import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { eventoDeTema, faltaHasta, faltaPara } from "@/lib/temas/eventos";
+import { eventoDeTema, finDelDiaMs } from "@/lib/temas/eventos";
 import { inicioEventoMs } from "@/lib/temas/calendario";
 import { useTemaHoy } from "~/lib/temporada";
 import { fuente } from "~/tema";
 import Texto from "../Texto";
 import EscenaTema from "./EscenaTema";
+import RelojFalta from "./RelojFalta";
 
 // Cartel de la festividad en Hoy (igual que la web): nombre, frase de la fase y cuánto
 // falta; si la fiesta tiene colección, lleva a la pantalla del evento.
@@ -15,18 +15,10 @@ export default function CartelTemporada() {
   const router = useRouter();
   const tema = useTemaHoy();
   const { width } = useWindowDimensions();
-  const [ahora, setAhora] = useState(() => Date.now());
-  useEffect(() => {
-    const id = setInterval(() => setAhora(Date.now()), 60_000);
-    return () => clearInterval(id);
-  }, []);
   if (!tema || tema.tema.escala === "tienda") return null;
   const evento = eventoDeTema(tema);
   const decoracion = tema.fase === "decoracion";
   const frase = (decoracion ? tema.tema.frase.decoracion : "") || tema.tema.frase.evento;
-  const reloj = decoracion
-    ? `Empieza en ${faltaPara(inicioEventoMs(tema.hoy.rango), ahora)}`
-    : `Termina en ${faltaHasta(tema.hoy.rango.hasta, ahora)}`;
   return (
     <Pressable disabled={!evento} onPress={() => router.push("/evento" as Href)} style={({ pressed }) => [styles.caja, pressed && { transform: [{ scale: 0.98 }] }]}>
       <EscenaTema tema={tema.tema} ancho={width - 32} />
@@ -38,9 +30,11 @@ export default function CartelTemporada() {
           {frase}
         </Texto>
         <View style={styles.reloj}>
-          <Texto v="mono" tam={12}>
-            {reloj}
-          </Texto>
+          {decoracion ? (
+            <RelojFalta hasta={inicioEventoMs(tema.hoy.rango)} texto={(t) => `Empieza en ${t}`} />
+          ) : (
+            <RelojFalta hasta={finDelDiaMs(tema.hoy.rango.hasta)} texto={(t) => `Termina en ${t}`} />
+          )}
         </View>
       </View>
       {evento && !decoracion && (

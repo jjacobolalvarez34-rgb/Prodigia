@@ -6,8 +6,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { COLOR_RAREZA, NOMBRE_RAREZA } from "@/lib/recompensas/catalogo";
 import { PARTICULAS } from "@/lib/temas/dibujos";
 import { CHISPAS_POR_FICHA, EXP_POR_FICHA, FICHAS_MAX_DIA } from "@/lib/temas/colecciones";
-import { canjearPieza, cerrarFichas, estadoEvento, eventoDeTema, faltaHasta, faltaPara, mensajeErrorEvento, type EstadoEvento } from "@/lib/temas/eventos";
+import { canjearPieza, cerrarFichas, estadoEvento, eventoDeTema, finDelDiaMs, mensajeErrorEvento, type EstadoEvento } from "@/lib/temas/eventos";
 import { VIDEO_DE_TEMA } from "@/lib/temas/videosApertura";
+import RelojFalta from "~/ui/temas/RelojFalta";
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, fijarCometas, useJugador } from "~/lib/jugador";
 import { recargarCosmeticos } from "~/lib/recompensas";
@@ -105,13 +106,15 @@ export default function Evento() {
           <Texto style={{ fontFamily: fuente.display, fontSize: 30, color: color.texto }}>{tema.tema.nombre}</Texto>
           <Texto v="nota">{tema.tema.frase.evento}</Texto>
           <View style={styles.reloj}>
-            <Texto v="mono" tam={12}>
-              {evento.estado === "proximo"
-                ? `Empieza en ${faltaPara(evento.inicioMs)}`
-                : evento.estado === "abierto"
-                  ? `Termina en ${faltaHasta(evento.hasta)}`
-                  : "Terminó: cambia tus fichas"}
-            </Texto>
+            {evento.estado === "proximo" ? (
+              <RelojFalta hasta={evento.inicioMs} texto={(t) => `Empieza en ${t}`} />
+            ) : evento.estado === "abierto" ? (
+              <RelojFalta hasta={finDelDiaMs(evento.hasta)} texto={(t) => `Termina en ${t}`} />
+            ) : (
+              <Texto v="mono" tam={12}>
+                Terminó: cambia tus fichas
+              </Texto>
+            )}
           </View>
           {evento.estado !== "proximo" && VIDEO_DE_TEMA[tema.tema.id] && (
             <Pressable onPress={() => repetirVideo(VIDEO_DE_TEMA[tema.tema.id])} hitSlop={8} style={{ alignSelf: "flex-start", marginTop: 4 }} accessibilityRole="button">

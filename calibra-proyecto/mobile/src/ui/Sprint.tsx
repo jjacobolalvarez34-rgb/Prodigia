@@ -719,7 +719,7 @@ export function CartelFinal({ texto, nota, acento = color.primarioNeon, progreso
   const estiloLogo = useAnimatedStyle(() => ({ transform: [{ rotate: `${giro.value * 360}deg` }] }));
   const estiloTexto = useAnimatedStyle(() => ({ opacity: Math.min(1, entrada.value * 1.5), transform: [{ scale: 0.7 + entrada.value * 0.3 }] }));
   return (
-    <Animated.View entering={FadeIn.duration(220)} style={styles.cuenta} pointerEvents="none">
+    <Animated.View entering={FadeIn.duration(420)} style={styles.cuenta} pointerEvents="none">
       <FondoCiudad semilla={semilla} acento={acento} />
       <View style={{ alignItems: "center", gap: 18, marginBottom: 140 }}>
         <Animated.View style={estiloTexto}>

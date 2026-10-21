@@ -215,7 +215,7 @@ dinero falta crear PADDLE_PRODUCT_CONTENIDO (tabla de claves).
     **Regla al publicar:** el tag del release tiene que ser la versión del APK (app.json → `version`), con «v» adelante:
     el APK 0.5.0 se publica como **v0.5.0**. Si el tag es mayor que la versión de adentro, el aviso sale siempre.
     El aviso funciona desde el APK 0.5.0 en adelante (el 0.3.0/«v0.4.0» no lo tiene).
-45. [ ] La descarga del APK en el navegador se queda trabada al final (80 MB), con v0.3 y v0.4. Desde 0.5.0 la actualización se
+45. [x] La descarga del APK en el navegador se queda trabada al final (80 MB), con v0.3 y v0.4. Desde 0.5.0 la actualización se
     baja dentro de la app y no pasa por el navegador.
 
 

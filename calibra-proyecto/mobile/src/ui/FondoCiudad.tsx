@@ -2,14 +2,20 @@ import { useEffect, useMemo, useState } from "react";
 import { type LayoutChangeEvent, StyleSheet, View } from "react-native";
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from "react-native-svg";
+import { estadoCielo, faseDelDia } from "@/lib/ciudades/cicloDia";
 import { useAnimacionActiva, useLiviano } from "~/lib/rendimiento";
 import { conAlfa } from "~/tema";
 import Ciudad from "./Ciudad";
+import { ParticulasTema } from "./temas/CapaTemporada";
 
 // Fondo de las pantallas de carga (pedido 2026-10-13: «el fondo negro se ve simple»):
-// cielo de noche con estrellas, la ciudad grande con sus ventanas que titilan y lo que
-// pasa volando (aviones, pájaros, algún ovni, de Ciudad/Cielo), y abajo una carretera
-// con farolas y las líneas del medio corriendo. Es opaco: tapa lo que haya detrás.
+// el cielo de la ciudad, la ciudad grande con sus ventanas que titilan y lo que pasa
+// volando (aviones, pájaros, algún ovni, de Ciudad/Cielo), y abajo una carretera con
+// farolas y las líneas del medio corriendo. Es opaco: tapa lo que haya detrás.
+// 2026-10-21 («se corta muy feo»): antes el cielo de arriba era siempre de noche y la
+// ciudad traía su propio cielo (de día, un rectángulo celeste). Ahora el cielo es UNO
+// solo, de arriba abajo, con la hora real de esa ciudad; las estrellas se ven según
+// cuánto es de noche y la ciudad va sin cielo propio, así no hay costura.
 
 const ALTO_CARRETERA = 86;
 const SEPARACION_LINEAS = 46;
@@ -24,13 +30,23 @@ function armarEstrellas(ancho: number, alto: number) {
   return Array.from({ length: 46 }, () => ({ x: azar() * ancho, y: azar() * alto, r: 0.5 + azar() * 1.1, o: 0.25 + azar() * 0.6 }));
 }
 
-function Estrellas({ ancho, alto }: { ancho: number; alto: number }) {
-  const puntos = useMemo(() => armarEstrellas(ancho, alto), [ancho, alto]);
+// El cielo entero (de arriba hasta la carretera) con sus estrellas, que se apagan de día.
+function CieloCompleto({ ancho, alto, altoEstrellas, arriba, abajo, noche }: { ancho: number; alto: number; altoEstrellas: number; arriba: string; abajo: string; noche: number }) {
+  const puntos = useMemo(() => armarEstrellas(ancho, altoEstrellas), [ancho, altoEstrellas]);
+  const brillo = Math.max(0, (noche - 0.15) / 0.85);
   return (
     <Svg width={ancho} height={alto} style={StyleSheet.absoluteFill} pointerEvents="none">
-      {puntos.map((p, i) => (
-        <Circle key={i} cx={p.x} cy={p.y} r={p.r} fill="#FFFFFF" opacity={p.o} />
-      ))}
+      <Defs>
+        <LinearGradient id="cieloCarga" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor={arriba} />
+          <Stop offset="1" stopColor={abajo} />
+        </LinearGradient>
+      </Defs>
+      <Rect x={0} y={0} width={ancho} height={alto} fill="url(#cieloCarga)" />
+      {brillo > 0 &&
+        puntos.map((p, i) => (
+          <Circle key={i} cx={p.x} cy={p.y} r={p.r} fill="#FFFFFF" opacity={p.o * brillo} />
+        ))}
     </Svg>
   );
 }
@@ -86,6 +102,8 @@ export default function FondoCiudad({ semilla = "prodigia", acento }: { semilla?
   const activa = useAnimacionActiva();
   const liviano = useLiviano();
   const altoCiudad = Math.round(Math.min(320, tam.alto * 0.36));
+  // Con la hora real de la ciudad (cambia despacio: basta con calcularla al abrir).
+  const [cielo] = useState(() => estadoCielo(faseDelDia(semilla, Date.now())));
   return (
     <View
       style={[StyleSheet.absoluteFill, styles.base]}
@@ -97,14 +115,16 @@ export default function FondoCiudad({ semilla = "prodigia", acento }: { semilla?
     >
       {tam.ancho > 0 && (
         <>
-          <Estrellas ancho={tam.ancho} alto={tam.alto - altoCiudad - ALTO_CARRETERA} />
-          <View style={[styles.halo, { backgroundColor: conAlfa(acento, 0.16), boxShadow: `0px 0px 120px ${conAlfa(acento, 0.35)}` }]} />
+          <CieloCompleto ancho={tam.ancho} alto={tam.alto - ALTO_CARRETERA + 2} altoEstrellas={tam.alto - altoCiudad - ALTO_CARRETERA} arriba={cielo.arriba} abajo={cielo.abajo} noche={cielo.noche} />
+          <View style={[styles.halo, { backgroundColor: conAlfa(acento, 0.06 + 0.1 * cielo.noche), boxShadow: `0px 0px 120px ${conAlfa(acento, 0.1 + 0.25 * cielo.noche)}` }]} />
           <View style={{ position: "absolute", left: 0, right: 0, bottom: ALTO_CARRETERA }}>
-            <Ciudad semilla={semilla} acento={acento} alto={altoCiudad} radio={0} densidad={liviano ? 1 : 1.25} sinLuna />
+            <Ciudad semilla={semilla} acento={acento} alto={altoCiudad} radio={0} densidad={liviano ? 1 : 1.25} sinLuna sinCielo />
           </View>
           <View style={{ position: "absolute", left: 0, bottom: 0 }}>
             <Carretera ancho={tam.ancho} acento={acento} activa={activa} />
           </View>
+          {/* En las festividades, sus partículas también en la carga del final. */}
+          <ParticulasTema z={1} />
         </>
       )}
     </View>

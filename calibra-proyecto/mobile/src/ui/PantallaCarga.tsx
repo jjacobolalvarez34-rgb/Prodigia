@@ -3,9 +3,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Animated as AnimadoRN, Easing as EasingRN, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { BlendMode, Canvas, createPicture, PaintStyle, Picture, Skia, TileMode, useClock, type SkPaint, type SkPath } from "@shopify/react-native-skia";
 import Animated, { Easing, useAnimatedStyle, useDerivedValue, useSharedValue, withDelay, withRepeat, withSequence, withTiming, type SharedValue } from "react-native-reanimated";
+import { capaVisible } from "@/lib/temas/temas";
 import { useLiviano } from "~/lib/rendimiento";
-import { color, fuente, mono } from "~/tema";
+import { useTemaHoy } from "~/lib/temporada";
+import { color, conAlfa, fuente, mono } from "~/tema";
 import Logo from "./Logo";
+import AccesorioTemporada from "./temas/AccesorioTemporada";
+import { ParticulasTema } from "./temas/CapaTemporada";
 
 // Pantalla de carga al abrir la app (rehecha 2026-10-17: «se ve burda, saturada»).
 // Una sola escena, limpia: el espacio con estrellas que titilan y una nebulosa suave;
@@ -14,6 +18,9 @@ import Logo from "./Logo";
 // desplazan a distinta velocidad, así se siente profundidad. Todo el cielo y la ciudad
 // se dibujan en Skia, en el hilo de la interfaz. La barra muestra el progreso real
 // (lo mueve el layout a medida que termina cada paso) y debajo rota un consejo.
+// En las festividades (2026-10-21) el horizonte, la nebulosa y las ventanas toman los
+// colores de la fecha, caen sus partículas, el logo lleva su accesorio y bajo el lema
+// aparece el nombre de la fiesta.
 
 const TIPS = [
   "Por 11 con dos cifras: suma las cifras y ponla en el medio. 43 × 11 → 4 (4+3) 3 = 473.",
@@ -108,7 +115,7 @@ function pintura(colorHex: string, alfa = 1): SkPaint {
 }
 
 // ---------- Cielo y ciudad ----------
-function Escena({ ancho: W, alto: H, liviano }: { ancho: number; alto: number; liviano: boolean }) {
+function Escena({ ancho: W, alto: H, liviano, acento, acento2 }: { ancho: number; alto: number; liviano: boolean; acento: string | null; acento2: string | null }) {
   const reloj = useClock();
   const d = useMemo(() => {
     const horizonte = H * 0.8;
@@ -118,18 +125,18 @@ function Escena({ ancho: W, alto: H, liviano }: { ancho: number; alto: number; l
     const cerca = armarPlano(37, periodo, H * 0.045, H * 0.11, 26, 62, true, 3);
     const planos: Plano[] = [
       { ...lejos, periodo, base: horizonte + H * 0.02, velocidad: 6, relleno: pintura("#191640"), tintaA: "#FFD27A", tintaB: "#9BE7FF", conVentanas: false },
-      { ...medio, periodo, base: horizonte + H * 0.08, velocidad: 14, relleno: pintura("#11122C"), tintaA: "#FFD27A", tintaB: "#B9A8FF", conVentanas: true },
-      ...(liviano ? [] : [{ ...cerca, periodo, base: H + 2, velocidad: 28, relleno: pintura("#07081A"), tintaA: "#FFC36B", tintaB: "#9BE7FF", conVentanas: true }]),
+      { ...medio, periodo, base: horizonte + H * 0.08, velocidad: 14, relleno: pintura("#11122C"), tintaA: acento ?? "#FFD27A", tintaB: acento2 ?? "#B9A8FF", conVentanas: true },
+      ...(liviano ? [] : [{ ...cerca, periodo, base: H + 2, velocidad: 28, relleno: pintura("#07081A"), tintaA: acento ?? "#FFC36B", tintaB: acento2 ?? "#9BE7FF", conVentanas: true }]),
     ];
     // Cielo: del negro del espacio arriba a un violeta profundo en el horizonte.
     const cielo = Skia.Paint();
     cielo.setShader(Skia.Shader.MakeLinearGradient(Skia.Point(0, 0), Skia.Point(0, horizonte), [Skia.Color("#020309"), Skia.Color("#070A1C"), Skia.Color("#1A1442")], [0, 0.55, 1], TileMode.Clamp));
     const brilloHorizonte = Skia.Paint();
     brilloHorizonte.setBlendMode(BlendMode.Plus);
-    brilloHorizonte.setShader(Skia.Shader.MakeRadialGradient(Skia.Point(W / 2, horizonte), W * 0.9, [Skia.Color("rgba(124,92,255,0.38)"), Skia.Color("rgba(124,92,255,0.08)"), Skia.Color("rgba(124,92,255,0)")], [0, 0.45, 1], TileMode.Clamp));
+    brilloHorizonte.setShader(Skia.Shader.MakeRadialGradient(Skia.Point(W / 2, horizonte), W * 0.9, [Skia.Color(conAlfa(acento ?? "#7C5CFF", 0.38)), Skia.Color(conAlfa(acento ?? "#7C5CFF", 0.08)), Skia.Color(conAlfa(acento ?? "#7C5CFF", 0))], [0, 0.45, 1], TileMode.Clamp));
     const nebulosa = Skia.Paint();
     nebulosa.setBlendMode(BlendMode.Plus);
-    nebulosa.setShader(Skia.Shader.MakeRadialGradient(Skia.Point(W * 0.78, H * 0.14), W * 0.6, [Skia.Color("rgba(93,228,255,0.10)"), Skia.Color("rgba(167,148,255,0.06)"), Skia.Color("rgba(0,0,0,0)")], [0, 0.5, 1], TileMode.Clamp));
+    nebulosa.setShader(Skia.Shader.MakeRadialGradient(Skia.Point(W * 0.78, H * 0.14), W * 0.6, [Skia.Color(conAlfa(acento2 ?? "#5DE4FF", 0.1)), Skia.Color(conAlfa(acento2 ?? "#A794FF", 0.06)), Skia.Color("rgba(0,0,0,0)")], [0, 0.5, 1], TileMode.Clamp));
     const nebulosa2 = Skia.Paint();
     nebulosa2.setBlendMode(BlendMode.Plus);
     nebulosa2.setShader(Skia.Shader.MakeRadialGradient(Skia.Point(W * 0.12, H * 0.5), W * 0.55, [Skia.Color("rgba(255,93,143,0.07)"), Skia.Color("rgba(0,0,0,0)")], [0, 1], TileMode.Clamp));
@@ -145,7 +152,7 @@ function Escena({ ancho: W, alto: H, liviano }: { ancho: number; alto: number; l
     const ventana = pintura("#FFFFFF");
     const borde = pintura("#9B85FF", 0.45);
     return { horizonte, planos, cielo, brilloHorizonte, nebulosa, nebulosa2, bruma, estrellas, punto, halo, ventana, borde };
-  }, [W, H, liviano]);
+  }, [W, H, liviano, acento, acento2]);
 
   const dibujo = useDerivedValue(() => {
     const t = reloj.value / 1000;
@@ -262,6 +269,8 @@ interface Props {
 export default function PantallaCarga({ progreso, etapa, onTerminada }: Props) {
   const { width: W, height: H } = useWindowDimensions();
   const liviano = useLiviano();
+  const temaHoy = useTemaHoy();
+  const tema = temaHoy && capaVisible(temaHoy, "interfaz") ? temaHoy.tema : null;
   const barra = useState(() => new AnimadoRN.Value(0))[0];
   const salida = useState(() => new AnimadoRN.Value(1))[0];
   const tipOpacidad = useState(() => new AnimadoRN.Value(1))[0];
@@ -333,17 +342,22 @@ export default function PantallaCarga({ progreso, etapa, onTerminada }: Props) {
 
   return (
     <AnimadoRN.View style={[StyleSheet.absoluteFill, styles.pantalla, { opacity: salida }]} pointerEvents="none">
-      <Escena ancho={W} alto={H} liviano={liviano} />
+      <Escena ancho={W} alto={H} liviano={liviano} acento={tema?.acento ?? null} acento2={tema?.acento2 ?? null} />
+      <ParticulasTema z={1} />
       <EstelaLogo ancho={W} alto={H} caida={caida} onda={onda} />
 
       {/* Logo: cae desde arriba y queda flotando en el centro del cielo. */}
       <Animated.View style={[styles.logo, estiloLogo]}>
         <Animated.View style={[styles.halo, estiloHalo]} />
-        <Logo tam={140} />
+        <View>
+          <Logo tam={140} />
+          <AccesorioTemporada tam={140} />
+        </View>
       </Animated.View>
       <Animated.View style={[styles.nombre, { top: H * ALTURA_LOGO + 84 }, estiloNombre]}>
         <Text style={styles.marca}>Prodigia</Text>
         <Text style={styles.lema}>Tu cabeza, en modo juego.</Text>
+        {tema && <Text style={[styles.fiesta, { color: tema.acento }]}>{tema.nombre.toUpperCase()}</Text>}
       </Animated.View>
 
       {/* Abajo: un velo para que se lea sobre la ciudad, el progreso y un consejo. */}
@@ -357,7 +371,7 @@ export default function PantallaCarga({ progreso, etapa, onTerminada }: Props) {
         </View>
         <View style={styles.barraFondo} onLayout={(e) => setAnchoBarra(e.nativeEvent.layout.width)}>
           <AnimadoRN.View style={[styles.barraRelleno, { width: relleno }]}>
-            <LinearGradient colors={[color.primario, "#B79CFF", color.logro]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />
+            <LinearGradient colors={tema ? [tema.acento, tema.acento2, tema.acento] : [color.primario, "#B79CFF", color.logro]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />
             <Animated.View style={[styles.destello, estiloDestello]}>
               <LinearGradient colors={["rgba(255,255,255,0)", "rgba(255,255,255,0.75)", "rgba(255,255,255,0)"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />
             </Animated.View>
@@ -380,6 +394,7 @@ const styles = StyleSheet.create({
   nombre: { position: "absolute", left: 0, right: 0, alignItems: "center", gap: 2 },
   marca: { color: color.texto, fontSize: 36, fontFamily: fuente.display, letterSpacing: -0.5, textShadowColor: "rgba(124,92,255,0.6)", textShadowRadius: 18 },
   lema: { color: color.texto2, fontSize: 14 },
+  fiesta: { marginTop: 6, fontSize: 11, fontFamily: fuente.display, letterSpacing: 2.4 },
   velo: { position: "absolute", left: 0, right: 0, bottom: 0, height: 260 },
   abajo: { position: "absolute", left: 0, right: 0, bottom: 0, paddingHorizontal: 30, paddingBottom: 46, gap: 10 },
   filaProgreso: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", gap: 12 },

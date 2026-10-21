@@ -994,3 +994,35 @@ html[data-borde="verde"] { --borde-tema: repeating-linear-gradient(90deg, #3DDC9
   100% { transform: translateY(-85vh); opacity: 0; }
 }
 .alineacion-mota { animation: alineacion-mota 12s linear infinite; }
+
+/* Pantalla de carga en las festividades (CargaTemporada.tsx). */
+@keyframes carga-tema-cae {
+  from { transform: translate3d(0, -40px, 0) rotate(0deg); }
+  to { transform: translate3d(18px, 105vh, 0) rotate(300deg); }
+}
+@keyframes carga-tema-sube {
+  from { transform: translate3d(0, 105vh, 0); }
+  to { transform: translate3d(-14px, -40px, 0); }
+}
+@keyframes carga-tema-flota {
+  0%, 100% { transform: translate3d(0, 30vh, 0); }
+  50% { transform: translate3d(30px, 60vh, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*="carga-tema-"] { animation: none !important; }
+}
+
+/* Constelación completa: un pulso de luz recorre cada línea (Constelacion.tsx). */
+.constelacion-pulso {
+  opacity: 0.85;
+  animation: constelacion-pulso 3.2s linear infinite;
+}
+@keyframes constelacion-pulso {
+  from { stroke-dashoffset: 100; opacity: 0; }
+  15% { opacity: 0.85; }
+  85% { opacity: 0.85; }
+  to { stroke-dashoffset: 0; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .constelacion-pulso { animation: none; opacity: 0; }
+}

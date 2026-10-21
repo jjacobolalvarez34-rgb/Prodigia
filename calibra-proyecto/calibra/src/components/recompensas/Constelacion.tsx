@@ -49,6 +49,18 @@ export default function Constelacion({ mundo, estrellas, tam = 96, celebrar = fa
         <filter id={`${id}-brillo`} x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2.2" />
         </filter>
+        <filter id={`${id}-halo`} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3.4" />
+        </filter>
+        {/* Cada trazo es un rayo de luz: más blanco junto a las estrellas, del color de la
+            ciudad en el medio (2026-10-21: «las líneas siguen igual de sencillas»). */}
+        {forma.lineas.map(([a, b], i) => (
+          <linearGradient key={i} id={`${id}-rayo${i}`} gradientUnits="userSpaceOnUse" x1={forma.puntos[a][0]} y1={forma.puntos[a][1]} x2={forma.puntos[b][0]} y2={forma.puntos[b][1]}>
+            <stop offset="0" stopColor="#FFFFFF" />
+            <stop offset="0.5" stopColor={brillo} />
+            <stop offset="1" stopColor="#FFFFFF" />
+          </linearGradient>
+        ))}
       </defs>
       <rect x={-6} y={-6} width={112} height={112} fill={`url(#${id})`} />
       {/* Cielo pintado de antemano (pendiente 94): nebulosa de la ciudad y polvo de estrellas. */}
@@ -60,27 +72,42 @@ export default function Constelacion({ mundo, estrellas, tam = 96, celebrar = fa
       {forma.lineas.map(([a, b], i) => {
         const [x1, y1] = forma.puntos[a];
         const [x2, y2] = forma.puntos[b];
+        // Rayo: halo ancho y difuso, cuerpo con el degradado y núcleo blanco fino; encima
+        // un pulso de luz que recorre la línea de estrella a estrella.
+        const capas = [
+          { stroke: brillo, op: 0.38, ancho: 7, filtro: `url(#${id}-halo)` },
+          { stroke: `url(#${id}-rayo${i})`, op: 0.9, ancho: 2.4, filtro: `url(#${id}-brillo)` },
+          { stroke: `url(#${id}-rayo${i})`, op: 1, ancho: 1.6, filtro: undefined },
+          { stroke: "#FFFFFF", op: 0.95, ancho: 0.7, filtro: undefined },
+        ];
         if (celebrar)
           return (
-            <motion.line
-              key={i}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
-              stroke={brillo}
-              strokeWidth={1.6}
-              strokeLinecap="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 0.9 }}
-              transition={{ delay: 1.4 + (i * 1.1) / forma.lineas.length, duration: 1.1 / forma.lineas.length }}
-            />
+            <g key={i}>
+              {capas.map((c, k) => (
+                <motion.line
+                  key={k}
+                  x1={x1}
+                  y1={y1}
+                  x2={x2}
+                  y2={y2}
+                  stroke={c.stroke}
+                  strokeWidth={c.ancho}
+                  strokeLinecap="round"
+                  filter={c.filtro}
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: c.op }}
+                  transition={{ delay: 1.4 + (i * 1.1) / forma.lineas.length, duration: 1.1 / forma.lineas.length }}
+                />
+              ))}
+            </g>
           );
         if (completa)
           return (
             <g key={i}>
-              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={brillo} strokeOpacity={0.55} strokeWidth={3.2} strokeLinecap="round" filter={`url(#${id}-brillo)`} />
-              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#FFFFFF" strokeOpacity={0.85} strokeWidth={0.9} strokeLinecap="round" />
+              {capas.map((c, k) => (
+                <line key={k} x1={x1} y1={y1} x2={x2} y2={y2} stroke={c.stroke} strokeOpacity={c.op} strokeWidth={c.ancho} strokeLinecap="round" filter={c.filtro} />
+              ))}
+              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#FFFFFF" strokeWidth={1.6} strokeLinecap="round" pathLength={100} strokeDasharray="10 90" className="constelacion-pulso" style={{ animationDelay: `${-i * 0.7}s` }} />
             </g>
           );
         return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#FFFFFF" strokeOpacity={0.12} strokeWidth={0.8} strokeDasharray="2 3" />;

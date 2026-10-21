@@ -5,7 +5,7 @@ import type { AdornoCapsula, TipoAccesorio, TipoParticula, TipoPasante } from ".
 // qué colores. La web y la app leen esto mismo; cambiar una fiesta es cambiar sus datos.
 
 // Adornos de las ciudades (cada plataforma sabe dibujarlos sobre sus edificios).
-export type AdornoCiudad = "nieve_techos" | "luces" | "arbol" | "calabazas" | "luna_llena" | "papel_picado" | "faroles" | "corazones" | "serpentinas" | "diyas" | "huevos" | "plantas" | "fuegos" | "polvo_colores" | "linternas";
+export type AdornoCiudad = "nieve_techos" | "luces" | "arbol" | "calabazas" | "papel_picado" | "faroles" | "corazones" | "serpentinas" | "diyas" | "huevos" | "plantas" | "fuegos" | "polvo_colores" | "linternas";
 
 // Borde de los botones principales.
 export type BordeBoton = "caramelo" | "calabaza" | "dorado" | "corazones" | "rombos" | "papel_picado" | "verde";
@@ -48,7 +48,8 @@ export const TEMAS: Record<IdTema, Tema> = {
     acento: "#FF8A1F",
     acento2: "#7C3AED",
     particulas: { tipo: "hoja", colores: ["#E07A2E", "#B85C1E", "#FFB347"], movimiento: "cae", cantidad: 14 },
-    ciudad: ["calabazas", "luna_llena"],
+    // Sin luna llena fija (2026-10-21): quedaba quieta mientras el sol seguía su ciclo.
+    ciudad: ["calabazas"],
     pasante: "bruja",
     borde: "calabaza",
     accesorio: "sombrero_bruja",

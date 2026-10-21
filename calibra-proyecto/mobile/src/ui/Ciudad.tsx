@@ -12,7 +12,7 @@ import { useTemaHoy } from "~/lib/temporada";
 
 // "Cada mundo es una ciudad que se enciende de noche" (02-SISTEMA-VISUAL.md §1): el
 // skyline se arma con una semilla (siempre el mismo para cada mundo), con ventanas
-// encendidas en el neón del mundo y luna con halo. El dibujo es ESTÁTICO (un solo
+// encendidas en el neón del mundo y el sol o la luna en la hora de esa ciudad. El dibujo es ESTÁTICO (un solo
 // SVG que no se vuelve a pintar); lo que se mueve va encima en vistas aparte, en el
 // hilo nativo: ventanas que se prenden y apagan y, de vez en cuando, algo que
 // cruza el cielo (Cielo.tsx: avión, pájaros, ovni o el paquete de doble experiencia).
@@ -103,12 +103,14 @@ interface Props {
   densidad?: number;
   estilo?: StyleProp<ViewStyle>;
   sinLuna?: boolean;
+  // Sin cielo propio (transparente): lo pinta quien la contiene, como FondoCiudad.
+  sinCielo?: boolean;
   // Lista larga: menos cosas moviéndose.
   quieta?: boolean;
   sinAvion?: boolean;
 }
 
-function CiudadBase({ semilla, acento, alto = 96, apagada, radio = 14, densidad = 1, estilo, sinLuna, quieta, sinAvion }: Props) {
+function CiudadBase({ semilla, acento, alto = 96, apagada, radio = 14, densidad = 1, estilo, sinLuna, sinCielo, quieta, sinAvion }: Props) {
   const [ancho, setAncho] = useState(0);
   const activa = useAnimacionActiva();
   const liviano = useLiviano();
@@ -160,7 +162,7 @@ function CiudadBase({ semilla, acento, alto = 96, apagada, radio = 14, densidad 
   const id = `c${semilla.replace(/[^a-z0-9]/gi, "")}${apagada ? "o" : ""}`;
 
   return (
-    <View onLayout={(e: LayoutChangeEvent) => { const w = Math.round(e.nativeEvent.layout.width); if (w > 0 && w !== ancho) setAncho(w); }} style={[{ height: alto, borderRadius: radio, overflow: "hidden", backgroundColor: "#070913" }, estilo]}>
+    <View onLayout={(e: LayoutChangeEvent) => { const w = Math.round(e.nativeEvent.layout.width); if (w > 0 && w !== ancho) setAncho(w); }} style={[{ height: alto, borderRadius: radio, overflow: "hidden", backgroundColor: sinCielo ? "transparent" : "#070913" }, estilo]}>
       {ancho > 0 && (
         <>
           <Svg width={ancho} height={alto}>
@@ -182,14 +184,8 @@ function CiudadBase({ semilla, acento, alto = 96, apagada, radio = 14, densidad 
                 <Stop offset="1" stopColor="#FFB347" stopOpacity={0} />
               </RadialGradient>
             </Defs>
-            <Rect x={0} y={0} width={ancho} height={alto} fill={`url(#${id}cielo)`} />
-            <Rect x={0} y={0} width={ancho} height={alto} fill={`url(#${id}halo)`} />
-            {!sinLuna && apagada && (
-              <G>
-                <Circle cx={ancho - 30} cy={20} r={20} fill={`url(#${id}luna)`} />
-                <Circle cx={ancho - 30} cy={20} r={8} fill="#5A5F70" />
-              </G>
-            )}
+            {!sinCielo && <Rect x={0} y={0} width={ancho} height={alto} fill={`url(#${id}cielo)`} />}
+            {!sinCielo && <Rect x={0} y={0} width={ancho} height={alto} fill={`url(#${id}halo)`} />}
             {!sinLuna && cielo?.luna && (
               <G>
                 <Circle cx={cielo.luna.x * ancho} cy={cielo.luna.y * alto} r={20} fill={`url(#${id}luna)`} />

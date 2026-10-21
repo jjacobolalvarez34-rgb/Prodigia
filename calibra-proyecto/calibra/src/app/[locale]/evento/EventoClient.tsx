@@ -16,7 +16,8 @@ import { COLOR_RAREZA } from "@/lib/recompensas/catalogo";
 import { refrescarCosmeticosWeb } from "@/lib/recompensas/cosmeticosWeb";
 import { PARTICULAS } from "@/lib/temas/dibujos";
 import { CHISPAS_POR_FICHA, EXP_POR_FICHA, FICHAS_MAX_DIA } from "@/lib/temas/colecciones";
-import { canjearPieza, cerrarFichas, estadoEvento, eventoDeTema, faltaHasta, faltaPara, mensajeErrorEvento, type EstadoEvento } from "@/lib/temas/eventos";
+import { canjearPieza, cerrarFichas, estadoEvento, eventoDeTema, finDelDiaMs, mensajeErrorEvento, type EstadoEvento } from "@/lib/temas/eventos";
+import RelojFalta from "@/components/temas/RelojFalta";
 
 // Página del evento de la festividad (docs/eventos/PLAN_FESTIVIDADES.md capas 7 y 8):
 // cuántas Fichas llevas y cómo se ganan, la colección para elegir qué llevarte (con
@@ -31,7 +32,6 @@ export default function EventoClient({ invitado }: { invitado: boolean }) {
   const [estado, setEstado] = useState<EstadoEvento | null>(null);
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [aviso, setAviso] = useState<{ texto: string; error: boolean } | null>(null);
-  const [ahora, setAhora] = useState<number | null>(null);
 
   const cargar = useCallback(async () => {
     if (!evento || invitado) return;
@@ -43,12 +43,6 @@ export default function EventoClient({ invitado }: { invitado: boolean }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void cargar();
   }, [cargar]);
-  useEffect(() => {
-    const tic = () => setAhora(Date.now());
-    tic();
-    const id = setInterval(tic, 30_000);
-    return () => clearInterval(id);
-  }, []);
 
   if (!tema) return <p className="mx-auto max-w-md px-4 py-16 text-center text-texto-secundario">{t("sinEvento")}</p>;
   if (!evento) {
@@ -105,15 +99,15 @@ export default function EventoClient({ invitado }: { invitado: boolean }) {
           </span>
           <h1 className="font-display text-4xl font-black leading-none tracking-tight">{en ? tema.tema.nombreEn : tema.tema.nombre}</h1>
           <p className="max-w-lg text-sm text-white/80">{en ? tema.tema.frase.eventoEn : tema.tema.frase.evento}</p>
-          {ahora != null && (
-            <span className="w-fit rounded-full bg-white/10 px-3 py-1 font-mono text-xs font-bold tabular-nums">
-              {evento.estado === "proximo"
-                ? t("empiezaEn", { tiempo: faltaPara(evento.inicioMs, ahora) })
-                : evento.estado === "abierto"
-                  ? t("terminaEn", { tiempo: faltaHasta(evento.hasta, ahora) })
-                  : t("terminado")}
-            </span>
-          )}
+          <span className="w-fit rounded-full bg-white/10 px-3 py-1 font-mono text-xs font-bold tabular-nums empty:hidden">
+            {evento.estado === "proximo" ? (
+              <RelojFalta hasta={evento.inicioMs} texto={(tiempo) => t("empiezaEn", { tiempo })} />
+            ) : evento.estado === "abierto" ? (
+              <RelojFalta hasta={finDelDiaMs(evento.hasta)} texto={(tiempo) => t("terminaEn", { tiempo })} />
+            ) : (
+              t("terminado")
+            )}
+          </span>
           {evento.estado !== "proximo" && VIDEO_DE_TEMA[tema.tema.id] && (
             <button type="button" onClick={() => repetirVideo(VIDEO_DE_TEMA[tema.tema.id])} className="w-fit text-sm font-bold hover:underline" style={{ color: tema.tema.acento }}>
               ▶ {t("verVideo")}

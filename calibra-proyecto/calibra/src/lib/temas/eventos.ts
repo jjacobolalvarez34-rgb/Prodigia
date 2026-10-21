@@ -71,18 +71,29 @@ export function mensajeErrorEvento(e: unknown): string {
   return "No se pudo. Inténtalo de nuevo.";
 }
 
-// Tiempo que falta hasta el final de un día (UTC): «3 d 4 h» o «5 h 12 min».
-export function faltaHasta(isoDia: string, ahora = Date.now()): string {
-  return faltaPara(Date.parse(`${isoDia}T23:59:59Z`), ahora);
+// Final de un día (UTC), en ms: hasta cuándo dura el último día de un evento.
+export function finDelDiaMs(isoDia: string): number {
+  return Date.parse(`${isoDia}T23:59:59Z`);
 }
 
-// Tiempo que falta hasta un momento exacto, con el mismo formato.
+// Tiempo que falta hasta el final de un día (UTC), con el formato de faltaPara.
+export function faltaHasta(isoDia: string, ahora = Date.now()): string {
+  return faltaPara(finDelDiaMs(isoDia), ahora);
+}
+
+// Tiempo que falta hasta un momento exacto, hasta el segundo (pedido 2026-10-21: todos
+// los contadores como el de la Gran Alineación): «3 d 04 h 12 min 05 s», «12 min 05 s».
 export function faltaPara(momentoMs: number, ahora = Date.now()): string {
-  const ms = Math.max(0, momentoMs - ahora);
-  const dias = Math.floor(ms / 86_400_000);
-  const horas = Math.floor((ms % 86_400_000) / 3_600_000);
-  const min = Math.floor((ms % 3_600_000) / 60_000);
-  return dias > 0 ? `${dias} d ${horas} h` : `${horas} h ${min} min`;
+  const s = Math.max(0, Math.floor((momentoMs - ahora) / 1000));
+  const dias = Math.floor(s / 86_400);
+  const horas = Math.floor((s % 86_400) / 3_600);
+  const min = Math.floor((s % 3_600) / 60);
+  const seg = s % 60;
+  const dos = (n: number) => String(n).padStart(2, "0");
+  if (dias > 0) return `${dias} d ${dos(horas)} h ${dos(min)} min ${dos(seg)} s`;
+  if (horas > 0) return `${horas} h ${dos(min)} min ${dos(seg)} s`;
+  if (min > 0) return `${min} min ${dos(seg)} s`;
+  return `${seg} s`;
 }
 
 // «Dar un dulce» (0292): una vez al día a un amigo; los dos ganan 1 ficha del evento.

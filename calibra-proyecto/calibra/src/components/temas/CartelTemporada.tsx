@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { eventoDeTema, faltaHasta, faltaPara } from "@/lib/temas/eventos";
+import { eventoDeTema, finDelDiaMs } from "@/lib/temas/eventos";
+import RelojFalta from "./RelojFalta";
 import { inicioEventoMs } from "@/lib/temas/calendario";
 import EscenaTema from "./EscenaTema";
 import { useTemaHoy } from "./useTemaHoy";
@@ -14,18 +14,10 @@ export default function CartelTemporada() {
   const t = useTranslations("Evento");
   const locale = useLocale();
   const tema = useTemaHoy();
-  const [ahora, setAhora] = useState<number | null>(null);
-  useEffect(() => {
-    const tic = () => setAhora(Date.now());
-    tic();
-    const id = setInterval(tic, 60_000);
-    return () => clearInterval(id);
-  }, []);
   if (!tema || tema.tema.escala === "tienda") return null;
   const evento = eventoDeTema(tema);
   const en = locale === "en";
   const frase = tema.fase === "decoracion" ? (en ? tema.tema.frase.decoracionEn : tema.tema.frase.decoracion) || (en ? tema.tema.frase.eventoEn : tema.tema.frase.evento) : en ? tema.tema.frase.eventoEn : tema.tema.frase.evento;
-  const reloj = ahora == null ? "" : tema.fase === "decoracion" ? t("empiezaEn", { tiempo: faltaPara(inicioEventoMs(tema.hoy.rango), ahora) }) : t("terminaEn", { tiempo: faltaHasta(tema.hoy.rango.hasta, ahora) });
 
   const contenido = (
     <div className="relative flex min-h-[132px] overflow-hidden rounded-3xl border-2 border-[#05060F] text-white shadow-[6px_6px_0_0_#05060F]">
@@ -36,7 +28,13 @@ export default function CartelTemporada() {
         </span>
         <span className="font-display text-2xl font-bold leading-tight">{en ? tema.tema.nombreEn : tema.tema.nombre}</span>
         <span className="max-w-xs text-sm text-white/80">{frase}</span>
-        {reloj && <span className="mt-1 w-fit rounded-full bg-white/10 px-3 py-1 font-mono text-xs font-bold tabular-nums">{reloj}</span>}
+        <span className="mt-1 w-fit rounded-full bg-white/10 px-3 py-1 font-mono text-xs font-bold tabular-nums empty:hidden">
+          {tema.fase === "decoracion" ? (
+            <RelojFalta hasta={inicioEventoMs(tema.hoy.rango)} texto={(tiempo) => t("empiezaEn", { tiempo })} />
+          ) : (
+            <RelojFalta hasta={finDelDiaMs(tema.hoy.rango.hasta)} texto={(tiempo) => t("terminaEn", { tiempo })} />
+          )}
+        </span>
       </div>
       {evento && tema.fase !== "decoracion" && (
         <span className="relative mr-4 self-center rounded-xl border-2 border-[#05060F] px-4 py-2 font-display text-sm font-bold text-[#05060F] shadow-[3px_3px_0_0_#05060F]" style={{ background: tema.tema.acento }}>

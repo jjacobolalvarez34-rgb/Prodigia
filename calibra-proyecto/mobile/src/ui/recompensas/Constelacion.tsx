@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { View } from "react-native";
 import Animated, { interpolate, useAnimatedProps, type SharedValue } from "react-native-reanimated";
-import Svg, { Circle, Defs, G, Image as ImagenSvg, Line, Path, RadialGradient, Rect, Stop } from "react-native-svg";
+import Svg, { Circle, Defs, G, Image as ImagenSvg, Line, LinearGradient, Path, RadialGradient, Rect, Stop } from "react-native-svg";
 import { Image } from "expo-image";
 import { PARTICULAS } from "@/lib/temas/dibujos";
 import { capaVisible } from "@/lib/temas/temas";
@@ -19,15 +19,37 @@ function largo(a: [number, number], b: [number, number]) {
   return Math.hypot(a[0] - b[0], a[1] - b[1]);
 }
 
-function Trazo({ a, b, i, total, trazo, c }: { a: [number, number]; b: [number, number]; i: number; total: number; trazo: SharedValue<number>; c: string }) {
+// Rayo de luz entre dos estrellas (2026-10-21: «las líneas siguen igual de sencillas»):
+// halo ancho del color de la ciudad, cuerpo con degradado (blanco junto a las estrellas,
+// color en el medio) y núcleo blanco fino. Igual que la web.
+function capasRayo(c: string, rayo: string) {
+  return [
+    { stroke: c, op: 0.16, ancho: 9 },
+    { stroke: c, op: 0.32, ancho: 5 },
+    { stroke: `url(#${rayo})`, op: 0.95, ancho: 2.2 },
+    { stroke: "#FFFFFF", op: 0.95, ancho: 0.8 },
+  ];
+}
+
+function CapaTrazo({ a, b, i, total, trazo, capa }: { a: [number, number]; b: [number, number]; i: number; total: number; trazo: SharedValue<number>; capa: { stroke: string; op: number; ancho: number } }) {
   const L = largo(a, b);
   const props = useAnimatedProps(() => {
     const desde = i / total;
     const hasta = (i + 1) / total;
     const p = interpolate(trazo.value, [desde, hasta], [0, 1], "clamp");
-    return { strokeDashoffset: L * (1 - p), opacity: p > 0 ? 0.9 : 0 };
+    return { strokeDashoffset: L * (1 - p), opacity: p > 0 ? capa.op : 0 };
   });
-  return <LineaAnimada x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={c} strokeWidth={1.6} strokeLinecap="round" strokeDasharray={`${L} ${L}`} animatedProps={props} />;
+  return <LineaAnimada x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={capa.stroke} strokeWidth={capa.ancho} strokeLinecap="round" strokeDasharray={`${L} ${L}`} animatedProps={props} />;
+}
+
+function Trazo({ a, b, i, total, trazo, c, rayo }: { a: [number, number]; b: [number, number]; i: number; total: number; trazo: SharedValue<number>; c: string; rayo: string }) {
+  return (
+    <G>
+      {capasRayo(c, rayo).map((capa, k) => (
+        <CapaTrazo key={k} a={a} b={b} i={i} total={total} trazo={trazo} capa={capa} />
+      ))}
+    </G>
+  );
 }
 
 function EstrellaQueSeEnciende({ p, i, encendido, c }: { p: [number, number]; i: number; encendido: SharedValue<number>; c: string }) {
@@ -102,6 +124,13 @@ export default function Constelacion({ mundo, estrellas, tam = 96, encendido, tr
             <Stop offset="0" stopColor={fondo} />
             <Stop offset="1" stopColor={color.bgHondo} />
           </RadialGradient>
+          {forma.lineas.map(([a, b], i) => (
+            <LinearGradient key={i} id={`${id}rayo${i}`} gradientUnits="userSpaceOnUse" x1={forma.puntos[a][0]} y1={forma.puntos[a][1]} x2={forma.puntos[b][0]} y2={forma.puntos[b][1]}>
+              <Stop offset="0" stopColor="#FFFFFF" />
+              <Stop offset="0.5" stopColor={brillo} />
+              <Stop offset="1" stopColor="#FFFFFF" />
+            </LinearGradient>
+          ))}
         </Defs>
         {!pintada && <Rect x={-6} y={-6} width={112} height={112} fill={`url(#${id})`} />}
         {!pintada &&
@@ -112,14 +141,15 @@ export default function Constelacion({ mundo, estrellas, tam = 96, encendido, tr
         {forma.lineas.map(([a, b], i) =>
           completa ? (
             <G key={`g${i}`}>
-              <Line x1={forma.puntos[a][0]} y1={forma.puntos[a][1]} x2={forma.puntos[b][0]} y2={forma.puntos[b][1]} stroke={brillo} strokeOpacity={0.45} strokeWidth={3.4} strokeLinecap="round" />
-              <Line x1={forma.puntos[a][0]} y1={forma.puntos[a][1]} x2={forma.puntos[b][0]} y2={forma.puntos[b][1]} stroke="#FFFFFF" strokeOpacity={0.85} strokeWidth={0.9} strokeLinecap="round" />
+              {capasRayo(brillo, `${id}rayo${i}`).map((capa, k) => (
+                <Line key={k} x1={forma.puntos[a][0]} y1={forma.puntos[a][1]} x2={forma.puntos[b][0]} y2={forma.puntos[b][1]} stroke={capa.stroke} strokeOpacity={capa.op} strokeWidth={capa.ancho} strokeLinecap="round" />
+              ))}
             </G>
           ) : (
             <Line key={`g${i}`} x1={forma.puntos[a][0]} y1={forma.puntos[a][1]} x2={forma.puntos[b][0]} y2={forma.puntos[b][1]} stroke="#FFFFFF" strokeOpacity={0.12} strokeWidth={0.8} strokeDasharray="2 3" />
           )
         )}
-        {trazo && forma.lineas.map(([a, b], i) => <Trazo key={`t${i}`} a={forma.puntos[a]} b={forma.puntos[b]} i={i} total={forma.lineas.length} trazo={trazo} c={brillo} />)}
+        {trazo && forma.lineas.map(([a, b], i) => <Trazo key={`t${i}`} a={forma.puntos[a]} b={forma.puntos[b]} i={i} total={forma.lineas.length} trazo={trazo} c={brillo} rayo={`${id}rayo${i}`} />)}
         {forma.puntos.map((p, i) =>
           encendido ? (
             <EstrellaQueSeEnciende key={i} p={p} i={i} encendido={encendido} c={brillo} />

@@ -35,7 +35,15 @@ export default function CapaTemporada() {
   return <Lienzo clave={tema.tema.id} conPasante={capaVisible(tema, "pasante")} />;
 }
 
-function Lienzo({ clave, conPasante }: { clave: string; conPasante: boolean }) {
+// Solo las partículas de la fecha, dentro de otra pantalla (la de carga): `z` las deja
+// detrás del logo.
+export function ParticulasTema({ z = 1 }: { z?: number }) {
+  const tema = useTemaHoy();
+  if (!tema || !capaVisible(tema, "ambiente") || !tema.tema.particulas) return null;
+  return <Lienzo clave={tema.tema.id} conPasante={false} z={z} />;
+}
+
+function Lienzo({ clave, conPasante, z = 90 }: { clave: string; conPasante: boolean; z?: number }) {
   const { width: W, height: H } = useWindowDimensions();
   const liviano = useLiviano();
   const reloj = useClock();
@@ -120,7 +128,7 @@ function Lienzo({ clave, conPasante }: { clave: string; conPasante: boolean }) {
   });
 
   return (
-    <Canvas style={[StyleSheet.absoluteFill, { zIndex: 90, elevation: 90 }]} pointerEvents="none">
+    <Canvas style={[StyleSheet.absoluteFill, { zIndex: z, elevation: z }]} pointerEvents="none">
       <Picture picture={dibujo} />
     </Canvas>
   );

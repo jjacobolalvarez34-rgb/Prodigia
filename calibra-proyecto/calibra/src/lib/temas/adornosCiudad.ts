@@ -83,10 +83,6 @@ export function adornosCiudad(edificios: EdificioCiudad[], ancho: number, alto: 
         tallo += `M${n(x - 0.6 * k)} ${n(y - s * 0.95)}h${n(1.2 * k)}v${n(-s * 0.4)}h${n(-1.2 * k)}z`;
       }
       formas.push({ d: cuerpo, relleno: "#FF8A1F" }, { d: cara, relleno: "#FFE08A" }, { d: tallo, relleno: "#3A7D44" });
-    } else if (tipo === "luna_llena") {
-      const x = ancho * 0.82;
-      const y = alto * 0.22;
-      formas.push({ d: c(x, y, 16 * k), relleno: "#FFE9B8", opacidad: 0.18 }, { d: c(x, y, 10 * k), relleno: "#FFF1CF" }, { d: c(x - 3 * k, y - 2 * k, 2 * k) + c(x + 3 * k, y + 3 * k, 1.4 * k), relleno: "#E8D3A0", opacidad: 0.7 });
     } else if (tipo === "papel_picado" || tipo === "serpentinas" || tipo === "faroles" || tipo === "linternas") {
       const colores = tipo === "faroles" ? ["#E63946"] : tipo === "linternas" ? ["#FFB347"] : ["#FF5D8F", "#FF9F1C", "#3DDC97", "#A794FF", "#5DE4FF"];
       for (let i = 0; i + 2 < techos.length; i += 3) {
