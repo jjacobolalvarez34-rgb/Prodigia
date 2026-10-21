@@ -12,6 +12,7 @@ import { temaActivo } from "./temas";
 export const VIDEO_DE_TEMA: Partial<Record<IdTema, string>> = {
   halloween: "halloween",
   navidad: "navidad",
+  muertos: "muertos",
   anio_nuevo: "anio-nuevo",
   diwali: "diwali",
   viernes_estelar: "viernes-estelar",
