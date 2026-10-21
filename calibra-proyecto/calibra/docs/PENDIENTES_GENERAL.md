@@ -26,11 +26,11 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 | Pedido | Estado | Dónde quedó |
 |---|---|---|
 | Que nadie pueda ver un evento antes de su fecha | HECHO | Fila de Ajustes quitada; `?tema=` solo en desarrollo. Commit 8c1b442. |
-| Contadores hasta minutos y segundos (como la Gran Alineación) | HECHO (sin subir) | `faltaPara` en `src/lib/temas/eventos.ts`; reloj por segundo `RelojFalta` en web y app (cartel del evento y pantalla del evento). |
-| Quitar la luna fija de las ciudades | HECHO (sin subir) | Era el adorno «luna llena» de Halloween; quitado. También la luna gris fija de los mundos bloqueados. |
-| Corte feo de estrellas y cielo al terminar un sprint | HECHO (sin subir) | `mobile/src/ui/FondoCiudad.tsx`: un solo cielo de arriba abajo con la hora real de la ciudad; estrellas solo de noche; entrada más suave. |
-| Pantalla de carga temática | HECHO (sin subir) | App (`PantallaCarga`): colores, partículas, accesorio en el logo y nombre de la fiesta. Web (`loading.tsx` + `CargaTemporada.tsx`). Carga del final del sprint: partículas de la fecha. |
-| Líneas de las constelaciones completas más vistosas | EN CURSO | Rayo de luz en capas (halo, degradado, núcleo blanco) y un pulso que recorre cada línea en la web. Falta revisarlo en imagen. |
+| Contadores hasta minutos y segundos (como la Gran Alineación) | HECHO | `faltaPara` en `src/lib/temas/eventos.ts`; reloj por segundo `RelojFalta` en web y app (cartel del evento y pantalla del evento). |
+| Quitar la luna fija de las ciudades | HECHO | Era el adorno «luna llena» de Halloween; quitado. También la luna gris fija de los mundos bloqueados. |
+| Corte feo de estrellas y cielo al terminar un sprint | HECHO | `mobile/src/ui/FondoCiudad.tsx`: un solo cielo de arriba abajo con la hora real de la ciudad; estrellas solo de noche; entrada más suave. |
+| Pantalla de carga temática | HECHO | App (`PantallaCarga`): colores, partículas, accesorio en el logo y nombre de la fiesta. Web (`loading.tsx` + `CargaTemporada.tsx`). Carga del final del sprint: partículas de la fecha. |
+| Líneas de las constelaciones completas más vistosas | HECHO | Rayo de luz en capas (halo, degradado, núcleo blanco) en web y app, y un pulso que recorre cada línea en la web. Revisado en imagen. Commit a930260. |
 | Videos de Muertos, Diwali, Viernes Estelar y Año Nuevo | EN CURSO | 4 agentes trabajando en `prodigia-marketing\videos\<evento>\`. Al terminar: copiarlos al repo, `VIDEO_DE_TEMA` y `VIDEOS`, y recompilar el APK. |
 | Bono de EXP: entender qué es, quizá mejorarlo, y explicarlo en tutorial y landing | FALTA | |
 | Temas de la app: comprarlos con Cometas o ganarlos en cápsulas fuertes | FALTA | Hoy los 13 de `src/lib/recompensas/temas.ts` solo dicen «Próximamente». Necesita migración. |
