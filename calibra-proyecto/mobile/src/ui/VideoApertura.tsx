@@ -18,6 +18,7 @@ const VIDEOS: Record<string, number> = {
   "gran-alineacion": require("../../assets/videos/gran-alineacion.mp4"),
   halloween: require("../../assets/videos/halloween.mp4"),
   navidad: require("../../assets/videos/navidad.mp4"),
+  diwali: require("../../assets/videos/diwali.mp4"),
   "viernes-estelar": require("../../assets/videos/viernes-estelar.mp4"),
 };
 const ENTRADA_MS = 700;
