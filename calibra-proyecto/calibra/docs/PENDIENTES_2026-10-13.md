@@ -358,3 +358,7 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 - Ya no se pueden ver los eventos antes de tiempo: se quitó la fila «Ver una festividad» de Ajustes en la app y `?tema=` solo funciona en desarrollo.
 - Videos: Halloween y Navidad hechos e integrados. Muertos, Diwali, Viernes Estelar y Año Nuevo quedaron a medias por el límite (`prodigia-marketing\videos\<evento>\`); retomarlos, sumarlos a `VIDEO_DE_TEMA` y a `VIDEOS` (app) y recompilar.
 - Noviembre ya tiene sus fiestas en el calendario (Muertos 1-2, Diwali 8, Viernes Estelar). Les falta el video y, si se quiere, una colección propia como la de Halloween (requiere diseño).
+
+### PRIMERO MAÑANA (pedido 2026-10-20)
+- **Pantalla de carga temática**: en las festividades, la pantalla de carga (app y web) también tiene que llevar la temática del evento activo (colores, escena y dibujos de `src/lib/temas`), igual que el resto de la interfaz. Solo cuando la fiesta está en curso por calendario; nunca forzable desde la app (ver regla de no vista previa).
+- Recordatorio: migraciones 0292, 0293, 0294 y 0295 siguen sin correr (0291 ya está, verificado 2026-10-20). El APK 0.6.3 ya está listo en `D:\Prodigia-APK\Prodigia.apk`; falta el release v0.6.3.
