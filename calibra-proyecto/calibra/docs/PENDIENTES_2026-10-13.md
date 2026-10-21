@@ -351,3 +351,10 @@ recargas al cerrar) y la rareza sube por colores al tocarla. Cápsulas premium (
 7. Planeaciones pendientes: tablero en vivo de rankeds (idea, consultar), clanes, feed social, docentes.
 
 **Herramientas:** la galería se arma con `npx vite build --config zz-galeria/vite.config.mjs`, se sirve con `npx vite preview --config zz-galeria/vite.config.mjs --port 3458` y se captura con `node zz-galeria/diseno-captura.mjs <carpeta> <evento…>` (TEMP en D:). El baile: zz-galeria/esqueletos.html + esqueletos-render.mjs.
+
+### Actualización 2026-10-20
+- APK 0.6.3 lanzado en un proceso aparte (log `D:\android-build\compilar45.log`, sale en `D:\Prodigia-APK\Prodigia.apk`). Al terminar: release v0.6.3 en GitHub antes del sábado 24.
+- Migraciones por correr, en orden: 0291, 0292, 0293, 0294, 0295.
+- Ya no se pueden ver los eventos antes de tiempo: se quitó la fila «Ver una festividad» de Ajustes en la app y `?tema=` solo funciona en desarrollo.
+- Videos: Halloween y Navidad hechos e integrados. Muertos, Diwali, Viernes Estelar y Año Nuevo quedaron a medias por el límite (`prodigia-marketing\videos\<evento>\`); retomarlos, sumarlos a `VIDEO_DE_TEMA` y a `VIDEOS` (app) y recompilar.
+- Noviembre ya tiene sus fiestas en el calendario (Muertos 1-2, Diwali 8, Viernes Estelar). Les falta el video y, si se quiere, una colección propia como la de Halloween (requiere diseño).
