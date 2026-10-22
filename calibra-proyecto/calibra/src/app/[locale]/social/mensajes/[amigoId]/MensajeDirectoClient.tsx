@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Avatar from "@/components/Avatar";
 import ReportarBoton from "@/app/[locale]/perfil/[userId]/ReportarBoton";
@@ -9,7 +10,11 @@ import { IconResponder } from "@/components/icons";
 import { useMensajesNoLeidos } from "@/lib/mensajes/MensajesNoLeidos";
 import { recortar } from "@/lib/mensajes/util";
 import { fondoChatDe } from "@/lib/mensajes/fondosChat";
-import { ElegirFondoChat, estiloFondoChat } from "@/components/mensajes/FondoChat";
+import { ElegirFondoChat, useEstiloFondoChat } from "@/components/mensajes/FondoChat";
+import { IconoEspadas, PanelRetarEnChat, TarjetaRetoChat } from "@/components/mensajes/RetoChat";
+import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
+import type { ArithmeticProblemType } from "@/types/database";
+import { cargarRetosChat, hayRetoPendiente, mandarRetoAlChat, responderRetoChat, type AccionReto, type EstadoReto, type LlamarRpc, type RetoChat } from "@/lib/mensajes/retosChat";
 
 export interface MensajeDirecto {
   id: string;
@@ -26,6 +31,8 @@ export interface MensajeDirecto {
   // 0256: borrado por quien lo mandó (el texto llega como «Mensaje eliminado»;
   // el original queda guardado en la base).
   borrado?: boolean;
+  // 0298: el mensaje es un reto a duelo (llega así por el canal en vivo).
+  reto?: RetoChat;
 }
 
 interface Props {
@@ -81,6 +88,17 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
   const [fondo, setFondo] = useState<string | null>(null);
   const [eligiendoFondo, setEligiendoFondo] = useState(false);
   const tFondo = useTranslations("Social.mensajes.fondo");
+  const tReto = useTranslations("Social.mensajes.reto");
+  const router = useRouter();
+  const [cajaChatRef, estiloFondo] = useEstiloFondoChat<HTMLDivElement>(fondoChatDe(fondo));
+  // Retos a duelo dentro del chat (0298), por id de mensaje. Sin la migración
+  // queda vacío y los retos se ven como texto.
+  const [retos, setRetos] = useState<Record<string, RetoChat>>({});
+  const [retando, setRetando] = useState(false);
+  const [creandoReto, setCreandoReto] = useState(false);
+  const [retoOcupado, setRetoOcupado] = useState<string | null>(null);
+  const [ahora, setAhora] = useState(() => Date.now());
+  const rpc: LlamarRpc = (fn, args) => createClient().rpc(fn, args);
 
   // Abrir la conversación ya la marcó como leída en el servidor (mi_conversacion).
   useEffect(() => {
@@ -94,6 +112,12 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
     channel.on("broadcast", { event: "mensaje" }, ({ payload }) => {
       const m = payload as MensajeDirecto;
       setMensajes((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
+      const reto = m.reto;
+      if (reto) setRetos((prev) => ({ ...prev, [m.id]: reto }));
+    });
+    channel.on("broadcast", { event: "reto" }, ({ payload }) => {
+      const { mensajeId, estado } = payload as { mensajeId: string; estado: EstadoReto };
+      setRetos((prev) => (prev[mensajeId] ? { ...prev, [mensajeId]: { ...prev[mensajeId], estado } } : prev));
     });
     channel.on("broadcast", { event: "fondo" }, ({ payload }) => {
       setFondo((payload as { fondo: string | null }).fondo);
@@ -103,6 +127,7 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
     });
     channel.subscribe();
     supabase.rpc("fondo_chat", { p_amigo: amigoId }).then(({ data }) => setFondo((data as string | null) ?? null));
+    cargarRetosChat((fn, args) => supabase.rpc(fn, args), amigoId).then(setRetos);
 
     return () => {
       channelRef.current = null;
@@ -114,6 +139,75 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
   useEffect(() => {
     finRef.current?.scrollIntoView({ block: "end" });
   }, [mensajes.length]);
+
+  // Mientras haya un reto pendiente: la cuenta regresiva corre cada segundo y el
+  // estado se vuelve a pedir cada 8 s (por si se respondió desde el aviso flotante
+  // o la sala se cansó de esperar).
+  const pendiente = hayRetoPendiente(retos, ahora);
+  useEffect(() => {
+    if (!pendiente) return;
+    const tic = setInterval(() => setAhora(Date.now()), 1000);
+    const supabase = createClient();
+    const consulta = setInterval(() => {
+      cargarRetosChat((fn, args) => supabase.rpc(fn, args), amigoId).then((r) => {
+        if (Object.keys(r).length) setRetos(r);
+      });
+    }, 8000);
+    return () => {
+      clearInterval(tic);
+      clearInterval(consulta);
+    };
+  }, [pendiente, amigoId]);
+
+  function hrefDe(reto: RetoChat): string {
+    return hrefDuelo(reto.mundo as MundoDuelo, (reto.operationType as ArithmeticProblemType | null) ?? null, reto.duelId, reto.subTipo);
+  }
+
+  // Retar desde el chat: el mismo duelo que /api/amigos/retar; después el reto
+  // queda como mensaje y quien retó pasa a esperar en la sala.
+  async function retarDesdeChat(mundo: MundoDuelo, opcion: string) {
+    setError(null);
+    setCreandoReto(true);
+    const esNumeria = mundo === "numeria";
+    const res = await fetch("/api/amigos/retar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ friend_id: amigoId, mundo, operation_type: esNumeria ? opcion : null, sub_tipo: esNumeria ? null : opcion }),
+    });
+    const datos = (await res.json().catch(() => ({}))) as { duel_id?: string; error?: string };
+    if (!res.ok || !datos.duel_id) {
+      setCreandoReto(false);
+      setError(datos.error ?? tReto("errorCrear"));
+      return;
+    }
+    const duelId = datos.duel_id;
+    const msg = await mandarRetoAlChat(rpc, duelId);
+    if (msg) {
+      const reto: RetoChat = { mensajeId: msg.id, duelId, retadorId: miUserId, mundo, subTipo: esNumeria ? null : opcion, operationType: esNumeria ? opcion : null, estado: "pendiente", expiraAt: msg.expiraAt };
+      const nuevo: MensajeDirecto = { id: msg.id, remitente_id: miUserId, destinatario_id: amigoId, texto: msg.texto, leido: false, created_at: msg.createdAt, reto };
+      setMensajes((prev) => [...prev, nuevo]);
+      setRetos((prev) => ({ ...prev, [msg.id]: reto }));
+      await channelRef.current?.send({ type: "broadcast", event: "mensaje", payload: nuevo });
+      avisarDirecto(amigoId, msg.id, msg.texto);
+    }
+    router.push(hrefDuelo(mundo, esNumeria ? (opcion as ArithmeticProblemType) : null, duelId, esNumeria ? null : opcion));
+  }
+
+  async function responderReto(reto: RetoChat, accion: AccionReto) {
+    setRetoOcupado(reto.mensajeId);
+    setError(null);
+    try {
+      const estado = await responderRetoChat(rpc, reto.mensajeId, accion);
+      setRetos((prev) => ({ ...prev, [reto.mensajeId]: { ...reto, estado } }));
+      await channelRef.current?.send({ type: "broadcast", event: "reto", payload: { mensajeId: reto.mensajeId, estado } });
+      if (accion === "aceptar" && estado === "aceptada") router.push(hrefDe(reto));
+      else if (accion === "aceptar") setError(tReto(`estado.${estado}`));
+    } catch {
+      setError(tReto("errorResponder"));
+    } finally {
+      setRetoOcupado(null);
+    }
+  }
 
   function nombreDe(remitenteId: string | null | undefined): string {
     if (remitenteId === miUserId) return t("tu");
@@ -202,12 +296,35 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
         <h1 className="truncate font-display text-base font-bold text-foreground">{amigoNombre ?? tSocial("jugador")}</h1>
         <button
           type="button"
-          onClick={() => setEligiendoFondo((v) => !v)}
-          className="ml-auto rounded-full border border-border px-3 py-1 text-xs font-semibold text-texto-secundario hover:text-foreground"
+          onClick={() => {
+            setRetando((v) => !v);
+            setEligiendoFondo(false);
+          }}
+          className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-primario/50 bg-primario/10 px-3 py-1 text-xs font-semibold text-foreground hover:bg-primario/20"
         >
-          🎨 {tFondo("boton")}
+          <IconoEspadas className="h-3.5 w-3.5" />
+          {tReto("boton")}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setEligiendoFondo((v) => !v);
+            setRetando(false);
+          }}
+          className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs font-semibold text-texto-secundario hover:text-foreground"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden>
+            <path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5c0-4-4-7.4-9-7.4z" />
+            <circle cx="7.5" cy="11" r="1" fill="currentColor" />
+            <circle cx="10.5" cy="7" r="1" fill="currentColor" />
+            <circle cx="15" cy="7.5" r="1" fill="currentColor" />
+          </svg>
+          {tFondo("boton")}
         </button>
       </div>
+      {retando && (
+        <PanelRetarEnChat nombreAmigo={amigoNombre ?? tSocial("jugador")} creando={creandoReto} onElegir={retarDesdeChat} onCerrar={() => setRetando(false)} />
+      )}
       {eligiendoFondo && (
         <ElegirFondoChat
           amigoId={amigoId}
@@ -221,12 +338,29 @@ export default function MensajeDirectoClient({ amigoId, miUserId, amigoNombre, a
         />
       )}
 
-      <div className="flex min-h-[24rem] flex-1 flex-col gap-2.5 overflow-y-auto rounded-xl px-1 py-2" style={estiloFondoChat(fondoChatDe(fondo))}>
+      <div ref={cajaChatRef} className="flex min-h-[24rem] flex-1 flex-col gap-2.5 overflow-y-auto rounded-xl px-1 py-2" style={estiloFondo}>
         {mensajes.length === 0 ? (
           <p className="self-center rounded-full bg-surface px-3 py-1 text-center text-xs text-texto-secundario">{t("vacio")}</p>
         ) : (
           mensajes.map((m) => {
             const esMio = m.remitente_id === miUserId;
+            const reto = !m.borrado ? retos[m.id] : undefined;
+            if (reto) {
+              return (
+                <div key={m.id} id={`msg-${m.id}`} className={`flex ${esMio ? "justify-end" : "justify-start"}`}>
+                  <TarjetaRetoChat
+                    reto={reto}
+                    esMio={esMio}
+                    nombreAmigo={amigoNombre ?? tSocial("jugador")}
+                    ahora={ahora}
+                    ocupado={retoOcupado === m.id}
+                    hora={new Date(m.created_at).toLocaleTimeString(locale === "es" ? "es-AR" : "en-US", { hour: "2-digit", minute: "2-digit" })}
+                    onAccion={(accion) => responderReto(reto, accion)}
+                    onIrASala={() => router.push(hrefDe(reto))}
+                  />
+                </div>
+              );
+            }
             const acciones = (
               <span className="flex shrink-0 items-center gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
                 <button

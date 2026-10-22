@@ -34,7 +34,7 @@ const OPCIONES_FIJAS: Record<"numeria" | "geografia", { id: string; nombre: stri
 
 // Temas de cada ciudad jugable en la app: Numeria y Geografía tienen los suyos; el
 // resto sale del registro de mundos (sus modos).
-function opcionesDe(slug: MundoSlug): { id: string; nombre: string }[] {
+export function opcionesDe(slug: MundoSlug): { id: string; nombre: string }[] {
   if (slug === "numeria" || slug === "geografia") return OPCIONES_FIJAS[slug];
   return mundoJugable(slug)?.modos.map((m) => ({ id: m.id, nombre: m.nombre })) ?? [];
 }
@@ -55,7 +55,19 @@ function Opcion({ texto, activo, c, onPress }: { texto: string; activo: boolean;
   );
 }
 
-export default function RetarAmigo({ amigo, visible, onCerrar }: { amigo: PlacaDatos; visible: boolean; onCerrar: () => void }) {
+// onCreado (chat, 0298): se llama con el duelo ya creado, antes de ir a la sala,
+// para dejar el reto como mensaje en la conversación.
+export default function RetarAmigo({
+  amigo,
+  visible,
+  onCerrar,
+  onCreado,
+}: {
+  amigo: PlacaDatos;
+  visible: boolean;
+  onCerrar: () => void;
+  onCreado?: (duelId: string, mundo: MundoSlug, opcion: string) => Promise<void>;
+}) {
   const router = useRouter();
   const { sesion } = useSesion();
   const [mundo, setMundo] = useState<MundoSlug>("numeria");
@@ -68,6 +80,7 @@ export default function RetarAmigo({ amigo, visible, onCerrar }: { amigo: PlacaD
     setCreando(true);
     try {
       const id = await retarAmigo(sesion.user.id, amigo.id, mundo, opcion);
+      if (onCreado) await onCreado(id, mundo, opcion).catch(() => undefined);
       onCerrar();
       router.push({ pathname: "/duelo/[id]", params: { id } });
     } catch (e) {

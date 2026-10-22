@@ -1,6 +1,8 @@
 // Fondos de chat (0262): se compran una vez con Chispas y cualquiera de los dos
 // puede ponerle uno a la conversación; lo ven los dos, en la web y en la app.
 // Los precios tienen que coincidir con _precio_fondo_chat (lo comprueba el test).
+// El dibujo de cada fondo (una escena ilustrada) vive en dibujoFondosChat.ts; acá
+// `colores` queda como degradé de base mientras la escena se arma.
 
 export type PatronFondoChat = "estrellas" | "puntos" | "cuadricula" | "ondas" | null;
 

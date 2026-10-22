@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Alert, FlatList, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import Animated, { FadeInUp, ZoomIn } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -38,6 +38,9 @@ interface Props {
   soloFrases?: boolean;
   ocultarLibres?: boolean;
   pedirEdad?: () => void;
+  // Mensajes especiales (el reto a duelo del chat, 0298): si devuelve algo, se
+  // dibuja eso en lugar del globo.
+  especial?: (m: MensajeChat, mio: boolean) => ReactNode | null;
 }
 
 function hora(iso: string) {
@@ -45,7 +48,7 @@ function hora(iso: string) {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-export default function Chat({ mensajes, miId, mostrarAutor, enviar, borrar, vacio, soloFrases, ocultarLibres, pedirEdad }: Props) {
+export default function Chat({ mensajes, miId, mostrarAutor, enviar, borrar, vacio, soloFrases, ocultarLibres, pedirEdad, especial }: Props) {
   const insets = useSafeAreaInsets();
   const [texto, setTexto] = useState("");
   const [cita, setCita] = useState<MensajeChat | null>(null);
@@ -102,6 +105,8 @@ export default function Chat({ mensajes, miId, mostrarAutor, enviar, borrar, vac
         ref={lista}
         data={invertidos}
         inverted
+        // Los mensajes especiales (retos) cambian de estado sin que cambie la lista.
+        extraData={especial}
         keyExtractor={(m) => m.id}
         contentContainerStyle={{ padding: 14, gap: 8 }}
         ListEmptyComponent={
@@ -113,6 +118,14 @@ export default function Chat({ mensajes, miId, mostrarAutor, enviar, borrar, vac
           const mio = m.autorId === miId;
           const anterior = invertidos[index + 1];
           const agrupado = anterior && anterior.autorId === m.autorId;
+          const dibujoEspecial = !m.borrado && especial ? especial(m, mio) : null;
+          if (dibujoEspecial) {
+            return (
+              <Animated.View entering={index < 2 ? FadeInUp.duration(300) : undefined} style={[styles.filaMsg, mio ? { justifyContent: "flex-end" } : null]}>
+                {dibujoEspecial}
+              </Animated.View>
+            );
+          }
           return (
             <Animated.View entering={index < 2 ? FadeInUp.duration(300) : undefined} style={[styles.filaMsg, mio ? { justifyContent: "flex-end" } : null]}>
               {!mio && mostrarAutor && (

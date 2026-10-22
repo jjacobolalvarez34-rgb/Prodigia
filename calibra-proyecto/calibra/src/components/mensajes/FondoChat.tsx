@@ -1,26 +1,48 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type RefObject } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { FONDO_CHAT_POR_SLUG, FONDOS_CHAT, puntosPatron, type FondoChat } from "@/lib/mensajes/fondosChat";
+import { FONDO_CHAT_POR_SLUG, FONDOS_CHAT, type FondoChat } from "@/lib/mensajes/fondosChat";
+import { urlFondoChat } from "@/lib/mensajes/dibujoFondosChat";
 
-// Fondo de una conversación (0262), el mismo que dibuja la app.
-export function estiloFondoChat(fondo: FondoChat | null): CSSProperties | undefined {
+// Fondo de una conversación (0262): la misma escena ilustrada que dibuja la app
+// (lib/mensajes/dibujoFondosChat.ts), armada para el tamaño del lienzo.
+export function estiloFondoChat(fondo: FondoChat | null, ancho = 320, alto = 160): CSSProperties | undefined {
   if (!fondo) return undefined;
-  const capas = [`linear-gradient(170deg, ${fondo.colores.join(", ")})`];
-  const tinta = encodeURIComponent(fondo.tinta);
-  if (fondo.patron === "cuadricula") {
-    capas.unshift(`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M24 0H0V24' fill='none' stroke='${tinta}' stroke-opacity='.3' stroke-width='.6'/%3E%3C/svg%3E")`);
-  } else if (fondo.patron === "ondas") {
-    capas.unshift(`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40'%3E%3Cpath d='M0 20 Q10 14 20 20 T40 20 T60 20 T80 20' fill='none' stroke='${tinta}' stroke-opacity='.18' stroke-width='1.2'/%3E%3C/svg%3E")`);
-  } else if (fondo.patron) {
-    const puntos = puntosPatron(fondo.patron === "puntos" ? 70 : 46)
-      .map((p, i) => `%3Ccircle cx='${(p.x * 2).toFixed(1)}' cy='${(p.y * 2).toFixed(1)}' r='${(p.r * 2 * (fondo.patron === "puntos" ? 0.7 : 1)).toFixed(2)}' fill='${tinta}' fill-opacity='${fondo.patron === "puntos" ? 0.22 : (0.15 + (i % 4) * 0.12).toFixed(2)}'/%3E`)
-      .join("");
-    capas.unshift(`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E${puntos}%3C/svg%3E")`);
-  }
-  return { backgroundImage: capas.join(", "), backgroundSize: capas.length > 1 ? "auto, cover" : "cover" };
+  const url = urlFondoChat(fondo.slug, ancho, alto);
+  const respaldo = `linear-gradient(170deg, ${fondo.colores.join(", ")})`;
+  return {
+    backgroundColor: fondo.colores[fondo.colores.length - 1],
+    backgroundImage: url ? `${url}, ${respaldo}` : respaldo,
+    backgroundSize: "cover",
+    backgroundPosition: "center bottom",
+    backgroundRepeat: "no-repeat",
+  };
+}
+
+// Para el chat: mide la caja (redondeado a 40 px, así no se redibuja a cada
+// píxel) y devuelve el estilo con la escena de ese tamaño.
+export function useEstiloFondoChat<T extends HTMLElement>(fondo: FondoChat | null): [RefObject<T | null>, CSSProperties | undefined] {
+  const ref = useRef<T>(null);
+  const [tam, setTam] = useState<{ ancho: number; alto: number } | null>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const medir = () => {
+      const ancho = Math.max(40, Math.round(el.clientWidth / 40) * 40);
+      const alto = Math.max(40, Math.round(el.clientHeight / 40) * 40);
+      setTam((t) => (t && t.ancho === ancho && t.alto === alto ? t : { ancho, alto }));
+    };
+    medir();
+    const obs = new ResizeObserver(medir);
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  // El SVG pesa unos KB: se arma solo cuando cambia el fondo o el tamaño, no
+  // con cada tecla que se escribe en el chat.
+  const estilo = useMemo(() => estiloFondoChat(fondo, tam?.ancho ?? 640, tam?.alto ?? 480), [fondo, tam]);
+  return [ref, estilo];
 }
 
 export function ElegirFondoChat({ amigoId, nombreAmigo, actual, onPuesto, onCerrar }: { amigoId: string; nombreAmigo: string; actual: string | null; onPuesto: (slug: string | null) => void; onCerrar: () => void }) {
@@ -42,6 +64,7 @@ export function ElegirFondoChat({ amigoId, nombreAmigo, actual, onPuesto, onCerr
     });
   }, []);
 
+  const muestras = useMemo(() => Object.fromEntries(FONDOS_CHAT.map((f) => [f.slug, estiloFondoChat(f, 160, 84)])), []);
   const fondo = FONDO_CHAT_POR_SLUG[elegido];
   const loTengo = elegido === "ninguno" || mios.includes(elegido);
   const esActual = elegido === (actual ?? "ninguno");
@@ -88,7 +111,7 @@ export function ElegirFondoChat({ amigoId, nombreAmigo, actual, onPuesto, onCerr
               onClick={() => setElegido(f.slug)}
               className={`flex flex-col items-center gap-1 rounded-xl border-2 p-1.5 text-center ${elegido === f.slug ? "border-primario bg-primario/10" : "border-transparent"}`}
             >
-              <span className="block h-14 w-full rounded-lg border border-border bg-surface" style={estiloFondoChat(datos)} />
+              <span className="block h-14 w-full rounded-lg border border-border bg-surface" style={muestras[f.slug]} />
               <span className="text-xs font-semibold text-foreground">{datos?.nombre ?? t("sinFondo")}</span>
               <span className={`font-mono text-[11px] ${mio ? "text-correcto" : "text-logro"}`}>{f.slug === "ninguno" ? t("gratis") : mio ? `${t("tuyo")} ✓` : `⚡ ${datos?.precio}`}</span>
             </button>
