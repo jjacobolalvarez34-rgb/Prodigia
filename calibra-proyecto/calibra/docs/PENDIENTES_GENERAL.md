@@ -43,7 +43,7 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 | ELO de rankeds como Brawlhalla: 500 inicial; Bronce 800, Plata 1100, Oro 1400, Platino 1700, Diamante 2000; top 100 = Prodigio | HECHO (falta correr 0296) | Hierro 0–799 (se empieza en 500), Bronce 800, Plata 1100, Oro 1400, Platino 1700, Diamante 2000, Prodigio = top 100 con 2000 o más. Los jugadores actuales conservan su rango en la escala nueva; quien nunca jugó ranked queda en 500. Migración 0296. |
 | Temporadas de ranked: cada cuánto acaban y un anuncio con las recompensas (Diamante v1, v2, v3…, título, cápsulas) | HECHO (falta correr 0296) | Cada temporada termina en una Gran Alineación (28 días; la 1 termina el sábado 24). Al terminar sale un anuncio con el rango alcanzado y su tier v1, v2, v3…, título desde Oro y cápsulas (Hierro: liga; Bronce/Plata/Oro: liga de su color; Platino: oro + estelar; Diamante: oro + supernova; Prodigio: 2 supernova + prisma). En Rankeds se ve la temporada y cuánto le falta. |
 
-| Organizar todas las carpetas de Prodigia en D: (marketing, videos, renders, builds, capturas regadas) | FALTA | Pedido 2026-10-21. Antes de mover nada, hacer un inventario y proponerte la estructura. Ojo: `D:\Repositorios\Prodigia-build` es una copia limpia del repo solo para compilar el APK (se puede borrar después con `git worktree remove`). |
+| Organizar todas las carpetas de Prodigia en D: | TE TOCA DECIDIR | Inventario y propuesta en la sección 5 (abajo). No se movió ni borró nada. |
 | APK 0.6.4 (versionCode 10) | EN CURSO | Compilando aparte desde la copia limpia `D:\Repositorios\Prodigia-build` (log `D:\android-build\compilar47.log`), sin que el PC se suspenda; sale en `D:\Prodigia-APK\Prodigia.apk`. Trae TODO lo de esta tanda (incluye temas y el sonido de marca). Al terminar: release v0.6.4. |
 
 | Sonido de marca de Prodigia en la intro | HECHO | Suena con la caída del logo en la pantalla de carga de la app: un roce de aire, un golpe suave al asentarse y la firma sol-do-mi-re-SOL en campana con acorde. Respeta el ajuste de sonido. Conviene escucharlo. |
@@ -66,3 +66,22 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 
 - Los 4 videos ya están integrados. El APK 0.6.4 se compila con todo (ver arriba).
 
+## 5. Carpetas de Prodigia en D: (inventario del 2026-10-22, para decidir)
+
+Dónde está cada cosa hoy:
+
+| Carpeta | Qué es |
+|---|---|
+| `D:\Repositorios\Prodigia` | El código (web y app): el repo principal |
+| `D:\Repositorios\Prodigia-build` | Copia limpia para compilar el APK (git worktree con enlace a node_modules) |
+| `D:\Repositorios\Prodigia-web` | Repo de una web anterior (último cambio 10/10). Decidido: se queda donde está |
+| `D:\Repositorios\prodigia-marketing` | Marketing: videos de eventos, capturas, kit de marca, tandas de Instagram, diseño (no es repo) |
+| `D:\Prodigia-APK` | 5 APK (unos 393 MB) |
+| `D:\Prodigia-Documentos` | 2 PDF y una maqueta |
+| `D:ndroid-build` | Herramientas para compilar (JDK, SDK, Gradle), scripts y 38 registros viejos |
+| `D:	mp-claude`, `tmp-chrome`, `tmp-chrome2`, `tmp-pw`, `tmp-quimia2`, `npm-cache` + `.npm-cache` (repetidas), `D:\Temp` | Temporales de renders, capturas, pruebas y cachés |
+
+Propuesta (pendiente de tu decisión):
+1. Una sola carpeta `D:\Prodigia\` con `marketing\`, `apk\` (las viejas en `apknteriores\`), `documentos\` y `compilacion\` (herramientas y registros). El código se queda en `D:\Repositorios\Prodigia` (moverlo rompe VS Code, la memoria y los scripts). Al mover, actualizar las rutas de `compilar.ps1`, `compilar-limpio.ps1` y la memoria.
+2. Temporales: borrarlos, moverlos a `D:\Prodigia	emporales` o dejarlos.
+3. `Prodigia-build`: se puede quitar con `git worktree remove` cuando ya no haga falta compilar desde ahí.
