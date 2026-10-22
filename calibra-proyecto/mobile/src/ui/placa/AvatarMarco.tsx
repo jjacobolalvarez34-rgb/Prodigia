@@ -7,7 +7,7 @@ import { svgMarcoMundo } from "@/lib/recompensas/marcosMundo";
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 import { useAnimacionActiva } from "~/lib/rendimiento";
 import { infoMarco } from "~/lib/placa";
-import { aclarar, brillo, color, fuente, oscurecer } from "~/tema";
+import { aclarar, brillo, color, fuente, oscurecer, conAlfa, temaClaro } from "~/tema";
 import Texto from "../Texto";
 import AccesorioTemporada from "../temas/AccesorioTemporada";
 
@@ -26,7 +26,7 @@ interface Props {
 
 function Inicial({ nombre, tam }: { nombre: string; tam: number }) {
   return (
-    <LinearGradient colors={["#2A2150", color.surface1]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.relleno, { borderRadius: tam / 2 }]}>
+    <LinearGradient colors={[temaClaro ? conAlfa(color.primario, 0.3) : "#2A2150", color.surface1]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.relleno, { borderRadius: tam / 2 }]}>
       <Texto style={{ fontFamily: fuente.display, fontSize: Math.max(11, tam * 0.4), color: color.texto }}>{(nombre.trim()[0] ?? "?").toUpperCase()}</Texto>
     </LinearGradient>
   );

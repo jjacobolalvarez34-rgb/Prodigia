@@ -31,7 +31,7 @@ import Ciudad from "../Ciudad";
 import { IconoChispa, IconoLlama, IconoRayo, IconoReloj } from "../Iconos";
 import Logo from "../Logo";
 import NumeroAnimado from "../NumeroAnimado";
-import Texto from "../Texto";
+import Texto, { SobreOscuro } from "../Texto";
 
 // La presentación de Prodigia antes de la partida de prueba (igual que la landing
 // de la web, VisitanteLanding.tsx, pero con movimiento): cada escena se arma de a
@@ -340,14 +340,16 @@ function TarjetaMisteriosa({ m, i, onElegir }: { m: Mundo; i: number; onElegir: 
           </Flota>
           <Texto style={styles.interrogacion}>?</Texto>
           {revelada && (
-            <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(150)} style={styles.revelado}>
-              <Texto v="fuerte" tam={12.5} c="#fff" centro>
-                {m.nombre}
-              </Texto>
-              <Texto v="nota" tam={10.5} c="rgba(255,255,255,0.85)" centro>
-                {m.tema}
-              </Texto>
-            </Animated.View>
+            <SobreOscuro>
+              <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(150)} style={styles.revelado}>
+                <Texto v="fuerte" tam={12.5} c="#fff" centro>
+                  {m.nombre}
+                </Texto>
+                <Texto v="nota" tam={10.5} c="rgba(255,255,255,0.85)" centro>
+                  {m.tema}
+                </Texto>
+              </Animated.View>
+            </SobreOscuro>
           )}
         </LinearGradient>
       </Pressable>

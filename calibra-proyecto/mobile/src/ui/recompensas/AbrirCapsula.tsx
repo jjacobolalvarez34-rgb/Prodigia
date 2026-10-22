@@ -49,8 +49,10 @@ function Premio({ p }: { p: PremioCapsula }) {
   }
   const it = itemDe(p.slug);
   const rareza = (p.rareza ?? "raro") as Rareza;
-  const categoria = it?.categoria ?? (p.slug?.startsWith("marco_") ? "marco" : "titulo");
-  const valor = it?.valor ?? (p.slug?.replace(/^marco_/, "") ?? "");
+  // Un tema de la app (0297) llega con slug tema_<tema>.
+  const esTema = p.premio === "tema_app" || !!p.slug?.startsWith("tema_");
+  const categoria = it?.categoria ?? (esTema ? "tema" : p.slug?.startsWith("marco_") ? "marco" : "titulo");
+  const valor = it?.valor ?? (esTema ? p.slug?.replace(/^tema_/, "") : p.slug?.replace(/^marco_/, "")) ?? "";
   return (
     <View style={{ alignItems: "center", gap: 8 }}>
       <View style={[styles.icono, { borderColor: COLOR_RAREZA[rareza], boxShadow: `0px 0px 24px ${conAlfa(COLOR_RAREZA[rareza], 0.6)}` }]}>
@@ -61,7 +63,7 @@ function Premio({ p }: { p: PremioCapsula }) {
         {p.nombre}
       </Texto>
       <Texto v="nota" centro>
-        Ya es tuyo. Póntelo desde la tienda.
+        {esTema ? "Ya es tuyo. Póntelo en el Bazar › Temas." : "Ya es tuyo. Póntelo desde la tienda."}
       </Texto>
     </View>
   );

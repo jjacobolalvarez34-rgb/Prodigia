@@ -23,7 +23,7 @@ import { PantallaApilada } from "~/ui/Pantalla";
 import VistaCosmetico from "~/ui/recompensas/VistaCosmetico";
 import DibujoTema from "~/ui/temas/DibujoTema";
 import EscenaTema from "~/ui/temas/EscenaTema";
-import Texto from "~/ui/Texto";
+import Texto, { SobreOscuro } from "~/ui/Texto";
 import { color, fuente } from "~/tema";
 
 // Pantalla del evento de la festividad (igual que /evento en la web, 0289): Fichas y
@@ -98,31 +98,33 @@ export default function Evento() {
   return (
     <PantallaApilada titulo={tema.tema.nombre}>
       {/* Portada */}
-      <View style={styles.portada}>
-        <EscenaTema tema={tema.tema} ancho={width - 32} />
-        <LinearGradient colors={["transparent", "rgba(5,6,15,0.92)"]} style={StyleSheet.absoluteFill} />
-        <View style={{ gap: 4, padding: 18 }}>
-          <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 11, letterSpacing: 2.4, color: tema.tema.acento }}>{evento.estado === "proximo" ? "SE ACERCA" : "EVENTO"}</Texto>
-          <Texto style={{ fontFamily: fuente.display, fontSize: 30, color: color.texto }}>{tema.tema.nombre}</Texto>
-          <Texto v="nota">{tema.tema.frase.evento}</Texto>
-          <View style={styles.reloj}>
-            {evento.estado === "proximo" ? (
-              <RelojFalta hasta={evento.inicioMs} texto={(t) => `Empieza en ${t}`} />
-            ) : evento.estado === "abierto" ? (
-              <RelojFalta hasta={finDelDiaMs(evento.hasta)} texto={(t) => `Termina en ${t}`} />
-            ) : (
-              <Texto v="mono" tam={12}>
-                Terminó: cambia tus fichas
-              </Texto>
+      <SobreOscuro>
+        <View style={styles.portada}>
+          <EscenaTema tema={tema.tema} ancho={width - 32} />
+          <LinearGradient colors={["transparent", "rgba(5,6,15,0.92)"]} style={StyleSheet.absoluteFill} />
+          <View style={{ gap: 4, padding: 18 }}>
+            <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 11, letterSpacing: 2.4, color: tema.tema.acento }}>{evento.estado === "proximo" ? "SE ACERCA" : "EVENTO"}</Texto>
+            <Texto style={{ fontFamily: fuente.display, fontSize: 30, color: color.texto }}>{tema.tema.nombre}</Texto>
+            <Texto v="nota">{tema.tema.frase.evento}</Texto>
+            <View style={styles.reloj}>
+              {evento.estado === "proximo" ? (
+                <RelojFalta hasta={evento.inicioMs} texto={(t) => `Empieza en ${t}`} />
+              ) : evento.estado === "abierto" ? (
+                <RelojFalta hasta={finDelDiaMs(evento.hasta)} texto={(t) => `Termina en ${t}`} />
+              ) : (
+                <Texto v="mono" tam={12}>
+                  Terminó: cambia tus fichas
+                </Texto>
+              )}
+            </View>
+            {evento.estado !== "proximo" && VIDEO_DE_TEMA[tema.tema.id] && (
+              <Pressable onPress={() => repetirVideo(VIDEO_DE_TEMA[tema.tema.id])} hitSlop={8} style={{ alignSelf: "flex-start", marginTop: 4 }} accessibilityRole="button">
+                <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 12.5, color: tema.tema.acento }}>▶ Ver el video del evento</Texto>
+              </Pressable>
             )}
           </View>
-          {evento.estado !== "proximo" && VIDEO_DE_TEMA[tema.tema.id] && (
-            <Pressable onPress={() => repetirVideo(VIDEO_DE_TEMA[tema.tema.id])} hitSlop={8} style={{ alignSelf: "flex-start", marginTop: 4 }} accessibilityRole="button">
-              <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 12.5, color: tema.tema.acento }}>▶ Ver el video del evento</Texto>
-            </Pressable>
-          )}
         </View>
-      </View>
+      </SobreOscuro>
 
       {esInvitado ? (
         <Texto v="nota" centro>
@@ -131,18 +133,20 @@ export default function Evento() {
       ) : (
         <>
           {/* Fichas */}
-          <View style={styles.fichas}>
-            <View style={[styles.iconoFicha, { backgroundColor: `${tema.tema.acento}22` }]}>
-              <DibujoTema dibujo={ficha} ancho={42} />
+          <SobreOscuro>
+            <View style={styles.fichas}>
+              <View style={[styles.iconoFicha, { backgroundColor: `${tema.tema.acento}22` }]}>
+                <DibujoTema dibujo={ficha} ancho={42} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 11, letterSpacing: 1.6, color: tema.tema.acento }}>TUS {evento.coleccion.ficha.nombre.toUpperCase()}</Texto>
+                <Texto style={{ fontFamily: fuente.display, fontSize: 34, color: color.texto }}>{estado ? estado.saldo : "…"}</Texto>
+                <Texto v="nota" tam={12}>
+                  Se ganan jugando en cualquier mundo: 1 cada {EXP_POR_FICHA} de Exp, hasta {FICHAS_MAX_DIA} por día.
+                </Texto>
+              </View>
             </View>
-            <View style={{ flex: 1 }}>
-              <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 11, letterSpacing: 1.6, color: tema.tema.acento }}>TUS {evento.coleccion.ficha.nombre.toUpperCase()}</Texto>
-              <Texto style={{ fontFamily: fuente.display, fontSize: 34, color: color.texto }}>{estado ? estado.saldo : "…"}</Texto>
-              <Texto v="nota" tam={12}>
-                Se ganan jugando en cualquier mundo: 1 cada {EXP_POR_FICHA} de Exp, hasta {FICHAS_MAX_DIA} por día.
-              </Texto>
-            </View>
-          </View>
+          </SobreOscuro>
           {evento.estado === "cierre" && estado && !estado.cerrado && estado.saldo > 0 && (
             <Boton3D titulo={`Cambiar por ${(estado.saldo * CHISPAS_POR_FICHA).toLocaleString("es")} Chispas`} variante="logro" cargando={ocupado === "cerrar"} onPress={cerrar} />
           )}

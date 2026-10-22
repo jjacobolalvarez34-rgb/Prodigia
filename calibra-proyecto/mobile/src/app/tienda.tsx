@@ -12,7 +12,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { CATALOGO_NUEVO, diasHastaFinDeMes, temporadaActual as temporadaDelMes } from "@/lib/recompensas/catalogo";
 import { msHastaCambioDiario, PUESTOS, puestoDe, relojHasta, rotacionDelDia, type PuestoId } from "@/lib/tienda/bazar";
-import { TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
+import { precioTemaCometas, TEMA_CLASICO, TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
+import { comprarTemaApp, ponerTemaApp } from "@/lib/recompensas/api";
+import { guardarTema, sincronizarTemasApp, useTemasApp } from "~/lib/temaApp";
+import MiniTemaApp from "~/ui/temas/MiniTemaApp";
 import { probarPaqueteAcierto, sonar, vibrar } from "~/lib/efectos";
 import { recargarCosmeticos } from "~/lib/recompensas";
 import { fijarChispas, fijarCometas, recargarJugador, useJugador } from "~/lib/jugador";
@@ -20,7 +23,7 @@ import { CANJES_COMETAS, canjearCometas, CHISPAS_POR_COMETA } from "~/lib/cometa
 import { COLOR_COMETA } from "@/lib/recompensas/iconoCometa";
 import type { PlacaDatos } from "~/lib/placa";
 import { useSesion } from "~/lib/sesion";
-import { mensajeError } from "~/lib/supabase";
+import { mensajeError, supabase } from "~/lib/supabase";
 import {
   aLaVenta,
   CATALOGO,
@@ -62,7 +65,7 @@ import { abrirCompraWeb, PaquetesMoneda } from "~/ui/pagos/Vitrina";
 import CapsulasCometas from "~/ui/pagos/CapsulasCometas";
 import PaquetesCapsulas from "~/ui/pagos/PaquetesCapsulas";
 import Texto from "~/ui/Texto";
-import { brillo, color, conAlfa, fuente } from "~/tema";
+import { brillo, color, conAlfa, fuente, temaClaro } from "~/tema";
 import { FUENTE_FAMILIA } from "~/lib/placa";
 
 // Tienda A + C (2026-10-14, docs/rediseno/tienda.html): en Tienda, la portada muestra lo
@@ -237,31 +240,6 @@ const TarjetaItem = memo(function TarjetaItem({ it, e, placa, ancho, onPress, de
   );
 });
 
-// Miniatura de un tema (Próximamente): una pantallita con sus colores, la forma de
-// sus tarjetas y su botón. Los temas todavía no se venden.
-const MiniTema = memo(function MiniTema({ tema, ancho, alto }: { tema: TemaApp; ancho: number; alto: number }) {
-  const k = tema.colores;
-  const radio = Math.min(tema.radio, 6);
-  const tarjeta = (h: number) => (
-    <View style={{ height: h }}>
-      {tema.sombra === "dura" && <View style={{ position: "absolute", left: 2, top: 2, right: -2, bottom: -2, borderRadius: radio, backgroundColor: k.borde }} />}
-      <View style={{ flex: 1, borderRadius: radio, backgroundColor: k.tarjeta, borderWidth: tema.borde, borderColor: k.borde, padding: 4, gap: 3, justifyContent: "center" }}>
-        <View style={{ width: "62%", height: 3, borderRadius: 2, backgroundColor: k.texto, opacity: 0.85 }} />
-        <View style={{ width: "40%", height: 3, borderRadius: 2, backgroundColor: k.detalle }} />
-      </View>
-    </View>
-  );
-  return (
-    <View style={{ width: ancho, height: alto, borderRadius: 10, overflow: "hidden", backgroundColor: k.fondo, padding: 7, gap: 5 }}>
-      <View style={{ width: "48%", height: 5, borderRadius: 2, backgroundColor: k.texto === k.tarjeta ? k.borde : k.texto, opacity: 0.9 }} />
-      {tarjeta(alto * 0.24)}
-      {tarjeta(alto * 0.17)}
-      <View style={{ flex: 1 }} />
-      <View style={{ height: alto * 0.12, borderRadius: radio, backgroundColor: k.acento, borderWidth: tema.borde ? 1 : 0, borderColor: k.borde }} />
-    </View>
-  );
-});
-
 // Toldo de un puesto: rayas de sus dos colores.
 function Toldo({ claro, oscuro, alto = 12 }: { claro: string; oscuro: string; alto?: number }) {
   return (
@@ -366,7 +344,7 @@ function PortadaBazar({ catalogo, e, placa, ancho, onPress, onPuesto }: { catalo
       </View>
       <View style={[styles.fila, { gap: 8 }]}>
         <Boton3D titulo="Cometas" icono={<IconoCometa tam={16} />} variante="secundario" tamano="sm" estilo={{ flex: 1 }} onPress={() => onPuesto("cometas")} />
-        <Boton3D titulo="Temas ✦" variante="secundario" tamano="sm" estilo={{ flex: 1 }} onPress={() => onPuesto("temas")} />
+        <Boton3D titulo="Temas" variante="secundario" tamano="sm" estilo={{ flex: 1 }} onPress={() => onPuesto("temas")} />
       </View>
     </Animated.View>
   );
@@ -395,6 +373,9 @@ export default function Tienda() {
   const [canjePendiente, setCanjePendiente] = useState<number | null>(null);
   const [canjeando, setCanjeando] = useState(false);
   const [tema, setTema] = useState<TemaApp | null>(null);
+  // Temas de la app (0297): lo de la cuenta y el elegido ("clasico" = Noche de Prodigia).
+  const temas = useTemasApp();
+  const [temaElegido, setTemaElegido] = useState<TemaApp | "clasico" | null>(null);
   const anchoTarjeta = Math.floor((Dimensions.get("window").width - 32 - 20) / 3);
   const elegirItem = useCallback((it: ItemTienda) => {
     setElegido(it);
@@ -403,8 +384,51 @@ export default function Tienda() {
 
   const cargar = useCallback(async () => {
     if (!userId) return;
+    void sincronizarTemasApp(userId);
     setE(await cargarTienda(userId));
   }, [userId]);
+
+  async function comprarTema(tm: TemaApp) {
+    if (!confirmar) {
+      vibrar.medio();
+      setConfirmar(true);
+      return;
+    }
+    setOcupado(true);
+    try {
+      const r = await comprarTemaApp(supabase, tm.slug);
+      fijarCometas(r.cometas);
+      sonar("recompensa");
+      vibrar.exito();
+      setFestejo((n) => n + 1);
+      setConfirmar(false);
+      mostrarAviso(`¡El tema ${tm.nombre} es tuyo! Toca «Usar» para ponértelo.`, "logro");
+      if (userId) await sincronizarTemasApp(userId);
+    } catch (err) {
+      mostrarAviso(mensajeError(err), "error");
+    } finally {
+      setOcupado(false);
+    }
+  }
+
+  // Ponerse un tema: queda en la cuenta (también en la web) y en el teléfono; se ve
+  // al reiniciar la app (AvisoTemaApp lo ofrece en el momento).
+  async function ponerTema(tm: TemaApp | null) {
+    setOcupado(true);
+    try {
+      await ponerTemaApp(supabase, tm?.slug ?? TEMA_CLASICO);
+      sonar("boton");
+      setTemaElegido(null);
+      // Que la hoja termine de cerrarse antes de que aparezca la de reiniciar.
+      await new Promise((ok) => setTimeout(ok, 350));
+      guardarTema(tm?.slug ?? TEMA_CLASICO);
+      if (userId) await sincronizarTemasApp(userId);
+    } catch (err) {
+      mostrarAviso(mensajeError(err), "error");
+    } finally {
+      setOcupado(false);
+    }
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -499,7 +523,7 @@ export default function Tienda() {
   const bloqueoPro = elegido?.soloPro && e.plan !== "pro";
   const ninguno: Partial<Record<Categoria, string>> = { marco: "ninguno", marco_mundo: "ninguno", fuente: "default", animacion: "ninguna", fondo: "ninguno", galeria: "ninguno", estela: "clasica", efecto: "chispas", sonido: "clasico", fuente_puntos: "clasica" };
 
-  const pestanas = modo === "inventario" ? PESTANAS.filter((p) => p.id !== "mercado" && p.id !== "temas" && p.id !== "cometas") : PESTANAS;
+  const pestanas = modo === "inventario" ? PESTANAS.filter((p) => p.id !== "mercado" && (p.id !== "temas" || temas.disponible) && p.id !== "cometas") : PESTANAS;
   const pestanaVista: Pestana | null =
     modo === "inventario" ? (pestanas.some((p) => p.id === pestana) ? (pestana as Pestana) : pestanas[0].id) : pestana;
   const puestoVista = puestoDe(pestanaVista);
@@ -551,7 +575,7 @@ export default function Tienda() {
                 }}
                 style={({ pressed }) => [styles.oferta, pressed && { transform: [{ scale: 0.98 }] }]}
               >
-                <LinearGradient colors={["#0E3B2C", "#123F3A", "#171D34"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+                <LinearGradient colors={temaClaro ? [conAlfa(color.correcto, 0.2), color.surface1, color.surface1] : ["#0E3B2C", "#123F3A", "#171D34"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
                 <View style={styles.ofertaMuestra}>
                   <Muestra it={itemOferta} placa={placa} />
                 </View>
@@ -724,14 +748,15 @@ export default function Tienda() {
                 Consigues Cometas jugando (cada 10 niveles de cuenta, en la liga semanal, con logros y en el reto de fin de semana), con Prodigia Pro (300 al mes) o comprándolos en la web. Comprar desde la app llega con Google Play.
               </Texto>
             </Animated.View>
-          ) : pestanaVista === "temas" ? (
+          ) : pestanaVista === "temas" && !temas.disponible ? (
+            // Sin 0297 en la base: como antes, «Próximamente».
             <Animated.View key="temas" entering={FadeIn.duration(220)} style={{ paddingHorizontal: 16, paddingTop: 14, gap: 12 }}>
               <View style={styles.avisoTemas}>
                 <Texto v="micro" c={color.logro}>
                   Próximamente
                 </Texto>
                 <Texto v="h3">Cambia el aspecto de toda la app</Texto>
-                <Texto v="nota">Colores, letras, tarjetas y botones nuevos para todo Prodigia. Tus mundos, tu progreso y tus cosas quedan iguales.</Texto>
+                <Texto v="nota">Colores, tarjetas y botones nuevos para todo Prodigia. Tus mundos, tu progreso y tus cosas quedan iguales.</Texto>
               </View>
               <View style={[styles.grilla, { paddingHorizontal: 0, paddingTop: 0 }]}>
                 {TEMAS_APP.map((t) => (
@@ -743,7 +768,7 @@ export default function Tienda() {
                     }}
                     style={({ pressed }) => [styles.item, { width: anchoTarjeta, paddingTop: 8, borderColor: color.border }, { transform: [{ scale: pressed ? 0.95 : 1 }] }]}
                   >
-                    <MiniTema tema={t} ancho={anchoTarjeta - 16} alto={(anchoTarjeta - 16) * 1.3} />
+                    <MiniTemaApp tema={t} ancho={anchoTarjeta - 16} alto={(anchoTarjeta - 16) * 1.3} />
                     <Texto v="fuerte" tam={11.5} numberOfLines={1} centro>
                       {t.nombre}
                     </Texto>
@@ -752,6 +777,51 @@ export default function Tienda() {
                     </View>
                   </Pressable>
                 ))}
+              </View>
+            </Animated.View>
+          ) : pestanaVista === "temas" ? (
+            <Animated.View key={`temas-${modo}`} entering={FadeIn.duration(220)} style={{ paddingHorizontal: 16, paddingTop: 14, gap: 12 }}>
+              <View style={[styles.avisoTemas, { borderColor: conAlfa(color.primario, 0.35), backgroundColor: conAlfa(color.primario, 0.06) }]}>
+                <Texto v="h3">Temas de la app</Texto>
+                <Texto v="nota">Cambian los colores de toda la app: fondo, tarjetas, bordes, textos y botones. Tus mundos, tu progreso y tus cosas quedan iguales.</Texto>
+                <Texto v="nota" tam={12}>
+                  Se compran con Cometas o salen en las cápsulas prisma, supernova, de la Alineación y Pro.
+                </Texto>
+              </View>
+              <View style={[styles.grilla, { paddingHorizontal: 0, paddingTop: 0 }]}>
+                {[null, ...TEMAS_APP.filter((t) => modo !== "inventario" || temas.mios.includes(t.slug))].map((t) => {
+                  const slug = t?.slug ?? TEMA_CLASICO;
+                  const enUso = temas.puesto === slug || (!t && !TEMAS_APP.some((x) => x.slug === temas.puesto));
+                  const mio = !t || temas.mios.includes(slug);
+                  return (
+                    <Pressable
+                      key={slug}
+                      onPress={() => {
+                        vibrar.seleccion();
+                        setConfirmar(false);
+                        setTemaElegido(t ?? "clasico");
+                      }}
+                      style={({ pressed }) => [styles.item, { width: anchoTarjeta, paddingTop: 8, borderColor: enUso ? color.correcto : t ? conAlfa(COLOR_RAREZA[t.rareza], 0.6) : color.border }, { transform: [{ scale: pressed ? 0.95 : 1 }] }]}
+                    >
+                      <MiniTemaApp tema={t} ancho={anchoTarjeta - 16} alto={(anchoTarjeta - 16) * 1.3} />
+                      <Texto v="fuerte" tam={11.5} numberOfLines={1} centro>
+                        {t ? t.nombre : "Noche de Prodigia"}
+                      </Texto>
+                      {enUso ? (
+                        <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 9.5, letterSpacing: 0.8, color: color.correcto }}>EN USO</Texto>
+                      ) : mio ? (
+                        <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 9.5, letterSpacing: 0.8, color: color.primarioNeon }}>{t ? "TUYO" : "GRATIS"}</Texto>
+                      ) : (
+                        <View style={styles.precio}>
+                          <IconoCometa tam={12} />
+                          <Texto v="mono" tam={11}>
+                            {t ? precioTemaCometas(t) : 0}
+                          </Texto>
+                        </View>
+                      )}
+                    </Pressable>
+                  );
+                })}
               </View>
             </Animated.View>
           ) : (
@@ -968,7 +1038,7 @@ export default function Tienda() {
         {tema && (
           <>
             <View style={{ flexDirection: "row", gap: 14, alignItems: "center" }}>
-              <MiniTema tema={tema} ancho={96} alto={128} />
+              <MiniTemaApp tema={tema} ancho={96} alto={128} />
               <View style={{ flex: 1, gap: 4 }}>
                 <Texto v="micro" c={color.logro}>
                   Tema · Próximamente
@@ -986,6 +1056,63 @@ export default function Tienda() {
             <Boton3D titulo="Muy pronto" variante="secundario" deshabilitado onPress={() => {}} />
           </>
         )}
+      </Hoja>
+      <Hoja visible={!!temaElegido} onCerrar={() => setTemaElegido(null)}>
+        {temaElegido &&
+          (() => {
+            const t = temaElegido === "clasico" ? null : temaElegido;
+            const slug = t?.slug ?? TEMA_CLASICO;
+            const mio = !t || temas.mios.includes(slug);
+            const enUso = temas.puesto === slug || (!t && !TEMAS_APP.some((x) => x.slug === temas.puesto));
+            const precioTema = t ? precioTemaCometas(t) : 0;
+            return (
+              <>
+                <View style={{ flexDirection: "row", gap: 14, alignItems: "center" }}>
+                  <MiniTemaApp tema={t} ancho={96} alto={128} />
+                  <View style={{ flex: 1, gap: 4 }}>
+                    <Texto v="micro" c={t ? COLOR_RAREZA[t.rareza] : color.texto2}>
+                      Tema · {t ? NOMBRE_RAREZA[t.rareza] : "Gratis"}
+                    </Texto>
+                    <Texto v="h2">{t ? t.nombre : "Noche de Prodigia"}</Texto>
+                    {t && (
+                      <Texto v="nota" tam={12}>
+                        Inspirado en: {t.inspiracion}
+                      </Texto>
+                    )}
+                  </View>
+                </View>
+                <Texto v="nota">{t ? t.descripcion : "El tema de siempre. Siempre gratis."}</Texto>
+                <Texto v="nota" tam={12}>
+                  Cambia solo cómo se ve la app: tus mundos, tu progreso y tus cosas quedan iguales. Para ponérselo, Prodigia se reinicia unos segundos.
+                </Texto>
+                {!mio && (
+                  <Texto v="nota" tam={12}>
+                    También puede salir en las cápsulas prisma, supernova, de la Alineación y Pro.
+                  </Texto>
+                )}
+                {mio ? (
+                  <>
+                    <Boton3D titulo={enUso ? "En uso" : "Usar"} brillo={!enUso} deshabilitado={enUso} cargando={ocupado} onPress={() => ponerTema(t)} />
+                    {enUso && t && <Boton3D titulo="Volver al de siempre" variante="secundario" tamano="sm" deshabilitado={ocupado} onPress={() => ponerTema(null)} />}
+                  </>
+                ) : (
+                  <>
+                    <Boton3D
+                      titulo={confirmar ? "¿Seguro? Confirmar compra" : `Comprar por ${precioTema.toLocaleString("es")} Cometas`}
+                      icono={<IconoCometa tam={16} />}
+                      variante="logro"
+                      deshabilitado={misCometas < precioTema}
+                      cargando={ocupado}
+                      onPress={() => t && comprarTema(t)}
+                    />
+                    <Texto v="nota" centro tam={12}>
+                      {misCometas < precioTema ? `Te faltan ${(precioTema - misCometas).toLocaleString("es")} Cometas` : `Te quedarán ${(misCometas - precioTema).toLocaleString("es")} Cometas`}
+                    </Texto>
+                  </>
+                )}
+              </>
+            );
+          })()}
       </Hoja>
       {festejo > 0 && <Confeti key={festejo} cantidad={36} />}
     </View>

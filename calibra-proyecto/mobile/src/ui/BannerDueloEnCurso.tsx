@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { buscarDueloEnCurso, type ClienteMinimo, type DueloEnCurso } from "@/lib/duelos/enCurso";
 import { vibrar } from "~/lib/efectos";
 import { supabase } from "~/lib/supabase";
-import Texto from "~/ui/Texto";
+import Texto, { SobreOscuro } from "~/ui/Texto";
 import { fuente } from "~/tema";
 
 // Reconexión (pedido 2026-10-14: «si me salgo de la app en un duelo y vuelvo al
@@ -44,23 +44,25 @@ export default function BannerDueloEnCurso({ userId, segmentos }: { userId: stri
 
   if (!duelo || enPartida) return null;
   return (
-    <Animated.View entering={FadeInDown.duration(260)} exiting={FadeOutDown} style={[styles.caja, { bottom: insets.bottom + 86 }]}>
-      <View style={styles.punto} />
-      <Texto v="fuerte" style={{ flex: 1, color: "#fff" }}>
-        Tienes un duelo en curso. ¡Tu rival te espera!
-      </Texto>
-      <Pressable
-        onPress={() => {
-          vibrar.medio();
-          setDuelo(null);
-          if (duelo.serieId) router.push({ pathname: "/duelo/serie/[id]", params: { id: duelo.serieId } });
-          else router.push({ pathname: "/duelo/[id]", params: { id: duelo.id } });
-        }}
-        style={styles.boton}
-      >
-        <Texto style={{ fontFamily: fuente.display, color: "#fff", fontSize: 13 }}>Volver</Texto>
-      </Pressable>
-    </Animated.View>
+    <SobreOscuro>
+      <Animated.View entering={FadeInDown.duration(260)} exiting={FadeOutDown} style={[styles.caja, { bottom: insets.bottom + 86 }]}>
+        <View style={styles.punto} />
+        <Texto v="fuerte" style={{ flex: 1, color: "#fff" }}>
+          Tienes un duelo en curso. ¡Tu rival te espera!
+        </Texto>
+        <Pressable
+          onPress={() => {
+            vibrar.medio();
+            setDuelo(null);
+            if (duelo.serieId) router.push({ pathname: "/duelo/serie/[id]", params: { id: duelo.serieId } });
+            else router.push({ pathname: "/duelo/[id]", params: { id: duelo.id } });
+          }}
+          style={styles.boton}
+        >
+          <Texto style={{ fontFamily: fuente.display, color: "#fff", fontSize: 13 }}>Volver</Texto>
+        </Pressable>
+      </Animated.View>
+    </SobreOscuro>
   );
 }
 

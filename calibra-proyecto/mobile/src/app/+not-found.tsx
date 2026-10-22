@@ -8,7 +8,7 @@ import { textosDe } from "~/lib/textosWeb";
 import { useAnimacionActiva } from "~/lib/rendimiento";
 import Boton3D from "~/ui/Boton3D";
 import Ciudad from "~/ui/Ciudad";
-import Texto from "~/ui/Texto";
+import Texto, { SobreOscuro } from "~/ui/Texto";
 import { color, fuente } from "~/tema";
 
 // 404 de Prodigia (igual que PaginaNoEncontrada.tsx de la web): una ciudad de
@@ -50,58 +50,60 @@ export default function NoEncontrada() {
   const estiloRayo = useAnimatedStyle(() => ({ opacity: rayo.value }));
 
   return (
-    <View style={styles.pantalla}>
-      {ESTRELLAS.map((e, i) => (
-        <Estrella key={i} {...e} />
-      ))}
-      <SafeAreaView style={styles.contenido}>
-        <View style={styles.escena}>
-          <Animated.View style={[styles.rayo, estiloRayo]}>
-            <Svg width={180} height={180} viewBox="0 0 100 100">
-              <Defs>
-                <LinearGradient id="rayo404" x1="0" y1="0" x2="0" y2="1">
-                  <Stop offset="0" stopColor="#7CFFB2" stopOpacity={0.55} />
-                  <Stop offset="1" stopColor="#7CFFB2" stopOpacity={0.04} />
-                </LinearGradient>
-              </Defs>
-              <Polygon points="38,0 62,0 100,100 0,100" fill="url(#rayo404)" />
-            </Svg>
-          </Animated.View>
-          <Animated.View style={[styles.ovni, estiloOvni]}>
-            <Svg width={160} height={94} viewBox="0 0 120 70">
-              <Ellipse cx={60} cy={26} rx={22} ry={18} fill="#9BE7FF" fillOpacity={0.85} />
-              <Ellipse cx={54} cy={20} rx={7} ry={5} fill="#ffffff" fillOpacity={0.6} />
-              <Ellipse cx={60} cy={38} rx={56} ry={14} fill="#B8C2DA" />
-              <Ellipse cx={60} cy={42} rx={40} ry={6} fill="#7C86A2" />
-              {[24, 42, 60, 78, 96].map((cx, i) => (
-                <Circle key={cx} cx={cx} cy={38} r={3.2} fill={i % 2 ? color.logro : "#7CFFB2"} />
-              ))}
-            </Svg>
-          </Animated.View>
-          <View style={styles.numeros}>
-            <Texto style={[styles.numero, { color: color.primarioClaro, textShadowColor: color.primario }]}>4</Texto>
-            <Animated.View style={estiloCero}>
-              <Texto style={[styles.numero, { color: "#7CFFB2", textShadowColor: "#7CFFB2" }]}>0</Texto>
+    <SobreOscuro>
+      <View style={styles.pantalla}>
+        {ESTRELLAS.map((e, i) => (
+          <Estrella key={i} {...e} />
+        ))}
+        <SafeAreaView style={styles.contenido}>
+          <View style={styles.escena}>
+            <Animated.View style={[styles.rayo, estiloRayo]}>
+              <Svg width={180} height={180} viewBox="0 0 100 100">
+                <Defs>
+                  <LinearGradient id="rayo404" x1="0" y1="0" x2="0" y2="1">
+                    <Stop offset="0" stopColor="#7CFFB2" stopOpacity={0.55} />
+                    <Stop offset="1" stopColor="#7CFFB2" stopOpacity={0.04} />
+                  </LinearGradient>
+                </Defs>
+                <Polygon points="38,0 62,0 100,100 0,100" fill="url(#rayo404)" />
+              </Svg>
             </Animated.View>
-            <Texto style={[styles.numero, { color: color.logro, textShadowColor: color.logro }]}>4</Texto>
+            <Animated.View style={[styles.ovni, estiloOvni]}>
+              <Svg width={160} height={94} viewBox="0 0 120 70">
+                <Ellipse cx={60} cy={26} rx={22} ry={18} fill="#9BE7FF" fillOpacity={0.85} />
+                <Ellipse cx={54} cy={20} rx={7} ry={5} fill="#ffffff" fillOpacity={0.6} />
+                <Ellipse cx={60} cy={38} rx={56} ry={14} fill="#B8C2DA" />
+                <Ellipse cx={60} cy={42} rx={40} ry={6} fill="#7C86A2" />
+                {[24, 42, 60, 78, 96].map((cx, i) => (
+                  <Circle key={cx} cx={cx} cy={38} r={3.2} fill={i % 2 ? color.logro : "#7CFFB2"} />
+                ))}
+              </Svg>
+            </Animated.View>
+            <View style={styles.numeros}>
+              <Texto style={[styles.numero, { color: color.primarioClaro, textShadowColor: color.primario }]}>4</Texto>
+              <Animated.View style={estiloCero}>
+                <Texto style={[styles.numero, { color: "#7CFFB2", textShadowColor: "#7CFFB2" }]}>0</Texto>
+              </Animated.View>
+              <Texto style={[styles.numero, { color: color.logro, textShadowColor: color.logro }]}>4</Texto>
+            </View>
           </View>
+          <View style={{ alignItems: "center", gap: 8, paddingHorizontal: 24 }}>
+            <Texto v="h1" centro>
+              {t("titulo")}
+            </Texto>
+            <Texto v="nota" centro>
+              {t("descripcion")}
+            </Texto>
+          </View>
+          <View style={{ alignSelf: "stretch", gap: 10, paddingHorizontal: 24, marginTop: 8 }}>
+            <Boton3D titulo={t("inicio")} brillo onPress={() => router.replace("/")} />
+          </View>
+        </SafeAreaView>
+        <View style={styles.ciudad} pointerEvents="none">
+          <Ciudad semilla="numeria" acento={color.primario} alto={120} radio={0} sinLuna />
         </View>
-        <View style={{ alignItems: "center", gap: 8, paddingHorizontal: 24 }}>
-          <Texto v="h1" centro>
-            {t("titulo")}
-          </Texto>
-          <Texto v="nota" centro>
-            {t("descripcion")}
-          </Texto>
-        </View>
-        <View style={{ alignSelf: "stretch", gap: 10, paddingHorizontal: 24, marginTop: 8 }}>
-          <Boton3D titulo={t("inicio")} brillo onPress={() => router.replace("/")} />
-        </View>
-      </SafeAreaView>
-      <View style={styles.ciudad} pointerEvents="none">
-        <Ciudad semilla="numeria" acento={color.primario} alto={120} radio={0} sinLuna />
       </View>
-    </View>
+    </SobreOscuro>
   );
 }
 

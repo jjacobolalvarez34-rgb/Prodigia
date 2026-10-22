@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { hayWidgets, URL_WEB } from "~/lib/entorno";
 import { anclarWidget } from "~/widgets/registro";
-import { color, radio, fuente } from "~/tema";
+import { color, radio, fuente, COLOR_NOCHE } from "~/tema";
 import { IconoCastillo, IconoCompetir, IconoDiana, IconoFiesta, IconoLibro, IconoMovil } from "./Iconos";
 
 // Carrusel "Destacados" del inicio: las cosas de Prodigia que vale la pena probar,
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   iconoCaja: { position: "absolute", right: -6, bottom: -18, opacity: 0.16 },
   iconoTexto: { fontSize: 96, color: "#FFFFFF" },
   etiqueta: { fontSize: 11, fontFamily: fuente.display, letterSpacing: 1 },
-  titulo: { color: color.texto, fontSize: 19, fontFamily: fuente.display, lineHeight: 24, paddingRight: 28 },
+  titulo: { color: COLOR_NOCHE.texto, fontSize: 19, fontFamily: fuente.display, lineHeight: 24, paddingRight: 28 },
   texto: { fontFamily: fuente.cuerpo, color: "#C8CEE0", fontSize: 13, lineHeight: 18, paddingRight: 32 },
   ir: { position: "absolute", right: 14, top: 14, width: 28, height: 28, borderRadius: 14, alignItems: "center", justifyContent: "center" },
   irTexto: { color: "#0B0712", fontSize: 20, fontFamily: fuente.display, lineHeight: 22 },

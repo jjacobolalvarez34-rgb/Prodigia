@@ -7,6 +7,7 @@ import { svgDeDibujo } from "@/lib/temas/svg";
 import { capaVisible } from "@/lib/temas/temas";
 import { useLiviano } from "~/lib/rendimiento";
 import { useTemaHoy } from "~/lib/temporada";
+import { temaClaro } from "~/tema";
 
 // Ambiente de la festividad en la app (igual que la web, docs/eventos/PLAN_FESTIVIDADES.md
 // capas 1 y 3): copos, hojas, corazones… que caen o suben suaves por encima de todo, y
@@ -72,6 +73,9 @@ function Lienzo({ clave, conPasante, z = 90 }: { clave: string; conPasante: bool
       img: Math.floor(azar() * Math.max(1, imgs.length)),
     }));
     const pintura = Skia.Paint();
+    // Temas de la app de fondo claro (0297): un contorno suave para que la nieve blanca
+    // o las chispas doradas se sigan viendo.
+    if (temaClaro) pintura.setImageFilter(Skia.ImageFilter.MakeDropShadow(0, 0, 1.5, 1.5, Skia.Color("rgba(20,16,40,0.6)"), null));
     return { imgs, pasante, particulas, pintura, movimiento: spec.movimiento, gira: spec.tipo !== "farol" && spec.tipo !== "linterna" };
     // La clave (el tema) decide cuándo rearmar.
     // eslint-disable-next-line react-hooks/exhaustive-deps

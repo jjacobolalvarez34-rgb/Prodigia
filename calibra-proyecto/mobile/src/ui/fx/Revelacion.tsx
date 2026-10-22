@@ -7,7 +7,7 @@ import { precargarSonidos, sonar, vibrar, type Sonido } from "~/lib/efectos";
 import { useLiviano } from "~/lib/rendimiento";
 import { color } from "~/tema";
 import Boton3D from "../Boton3D";
-import Texto from "../Texto";
+import Texto, { SobreOscuro } from "../Texto";
 import { CuerpoCapsula, Destello, Halo, Onda, Particulas, Rayos, tonoHex, type ColorVivo } from "./capas";
 import { crearExplosion, crearLluvia, type Particula } from "./particulas";
 
@@ -300,50 +300,52 @@ export default function Revelacion({
   }
 
   return (
-    <Animated.View entering={FadeIn.duration(250)} exiting={FadeOut.duration(220)} style={styles.capa}>
-      <EscenaCapsula W={W} H={H} CX={CX} CY={CY} colores={colores} colorFinal={colorFinal} colorVivo={colorVivo} nivel={nivel} liviano={liviano} v={valores} polvo={polvo} fuga={fuga} explosion={explosion} lluvia={lluvia} />
+    <SobreOscuro>
+      <Animated.View entering={FadeIn.duration(250)} exiting={FadeOut.duration(220)} style={styles.capa}>
+        <EscenaCapsula W={W} H={H} CX={CX} CY={CY} colores={colores} colorFinal={colorFinal} colorVivo={colorVivo} nivel={nivel} liviano={liviano} v={valores} polvo={polvo} fuga={fuga} explosion={explosion} lluvia={lluvia} />
 
-      {(fase === "cae" || fase === "espera" || fase === "carga") && (
-        <Animated.View entering={FadeInDown.duration(320)} exiting={FadeOut.duration(150)} style={[styles.cabecera, { top: CY - 210 }]} pointerEvents="none">
-          {etiqueta ? (
-            <Texto v="micro" c={tonoHex(colores[1], 0.3)} centro>
-              {etiqueta}
+        {(fase === "cae" || fase === "espera" || fase === "carga") && (
+          <Animated.View entering={FadeInDown.duration(320)} exiting={FadeOut.duration(150)} style={[styles.cabecera, { top: CY - 210 }]} pointerEvents="none">
+            {etiqueta ? (
+              <Texto v="micro" c={tonoHex(colores[1], 0.3)} centro>
+                {etiqueta}
+              </Texto>
+            ) : null}
+            <Texto v="h2" centro>
+              {titulo}
             </Texto>
-          ) : null}
-          <Texto v="h2" centro>
-            {titulo}
-          </Texto>
-        </Animated.View>
-      )}
-
-      <Pressable onPress={tocar} disabled={fase !== "espera"} style={[styles.toque, { left: CX - 100, top: CY - 120 }]} accessibilityRole="button" accessibilityLabel="Abrir la cápsula" />
-
-      {fase === "espera" && (
-        <Animated.View entering={FadeIn.delay(100).duration(300)} exiting={FadeOut.duration(120)} style={[styles.cabecera, { top: CY + 128 }]} pointerEvents="none">
-          <Texto v="fuerte" c={color.logro} centro>
-            ¡Tócala para abrirla!
-          </Texto>
-        </Animated.View>
-      )}
-
-      {fase === "error" && (
-        <View style={[styles.premio, { top: CY - 96 }]}>
-          <Texto v="h3" centro>
-            No se pudo abrir ahora. Inténtalo de nuevo con conexión.
-          </Texto>
-          <Boton3D titulo="Cerrar" onPress={onCerrar} estilo={{ alignSelf: "stretch", marginTop: 18 }} />
-        </View>
-      )}
-
-      {verPremio && premio && (
-        <View style={[styles.premio, { top: CY - 96 }]}>
-          <Animated.View style={[{ alignItems: "center", alignSelf: "stretch" }, estiloCarta]}>{premio.contenido}</Animated.View>
-          <Animated.View entering={FadeInDown.delay(650).duration(300)} style={{ alignSelf: "stretch", marginTop: 18 }}>
-            <Boton3D titulo={textoBoton} brillo onPress={onCerrar} />
           </Animated.View>
-        </View>
-      )}
-    </Animated.View>
+        )}
+
+        <Pressable onPress={tocar} disabled={fase !== "espera"} style={[styles.toque, { left: CX - 100, top: CY - 120 }]} accessibilityRole="button" accessibilityLabel="Abrir la cápsula" />
+
+        {fase === "espera" && (
+          <Animated.View entering={FadeIn.delay(100).duration(300)} exiting={FadeOut.duration(120)} style={[styles.cabecera, { top: CY + 128 }]} pointerEvents="none">
+            <Texto v="fuerte" c={color.logro} centro>
+              ¡Tócala para abrirla!
+            </Texto>
+          </Animated.View>
+        )}
+
+        {fase === "error" && (
+          <View style={[styles.premio, { top: CY - 96 }]}>
+            <Texto v="h3" centro>
+              No se pudo abrir ahora. Inténtalo de nuevo con conexión.
+            </Texto>
+            <Boton3D titulo="Cerrar" onPress={onCerrar} estilo={{ alignSelf: "stretch", marginTop: 18 }} />
+          </View>
+        )}
+
+        {verPremio && premio && (
+          <View style={[styles.premio, { top: CY - 96 }]}>
+            <Animated.View style={[{ alignItems: "center", alignSelf: "stretch" }, estiloCarta]}>{premio.contenido}</Animated.View>
+            <Animated.View entering={FadeInDown.delay(650).duration(300)} style={{ alignSelf: "stretch", marginTop: 18 }}>
+              <Boton3D titulo={textoBoton} brillo onPress={onCerrar} />
+            </Animated.View>
+          </View>
+        )}
+      </Animated.View>
+    </SobreOscuro>
   );
 }
 

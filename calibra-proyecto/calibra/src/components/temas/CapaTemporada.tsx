@@ -168,5 +168,5 @@ function Lienzo({ tema }: { tema: TemaActivo }) {
     };
   }, [tema]);
 
-  return <canvas ref={ref} className="pointer-events-none fixed inset-0 z-[45] h-full w-full" aria-hidden="true" />;
+  return <canvas ref={ref} className="particula-tema pointer-events-none fixed inset-0 z-[45] h-full w-full" aria-hidden="true" />;
 }

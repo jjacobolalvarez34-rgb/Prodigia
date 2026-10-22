@@ -6,7 +6,7 @@ import Svg, { Line, Polyline } from "react-native-svg";
 import { ciudadDe } from "@/lib/recompensas/catalogo";
 import { constancia, estadisticasPro, mejorHora, precisionDe, tendencia, textoConstancia, type EstadisticasPro } from "@/lib/estadisticasPro";
 import { supabase } from "~/lib/supabase";
-import { color, fuente } from "~/tema";
+import { color, fuente, conAlfa, temaClaro } from "~/tema";
 import Boton3D from "../Boton3D";
 import Tarjeta from "../Tarjeta";
 import Texto from "../Texto";
@@ -60,7 +60,7 @@ export default function PanelEstadisticasPro() {
   return (
     <View style={{ gap: 12 }}>
       <View style={styles.heroe}>
-        <LinearGradient colors={["#2A1F66", "#12172A"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={temaClaro ? [conAlfa(color.primario, 0.22), color.surface1] : ["#2A1F66", "#12172A"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
         <Texto v="micro" c="#B9A8FF">
           ÍNDICE PRODIGIA · ESTA SEMANA
         </Texto>
@@ -98,7 +98,7 @@ export default function PanelEstadisticasPro() {
           {Array.from({ length: 12 }, (_, c) => (
             <View key={c} style={{ flex: 1, gap: 3 }}>
               {dias.slice(c * 7, c * 7 + 7).map((n, f) => (
-                <View key={f} style={{ aspectRatio: 1, borderRadius: 3, backgroundColor: n === 0 ? "#171D34" : ESCALA[Math.min(4, Math.floor(n / 15))] }} />
+                <View key={f} style={{ aspectRatio: 1, borderRadius: 3, backgroundColor: n === 0 ? color.surface2 : ESCALA[Math.min(4, Math.floor(n / 15))] }} />
               ))}
             </View>
           ))}
@@ -132,7 +132,7 @@ export default function PanelEstadisticasPro() {
                     {c?.nombre ?? m.mundo}
                   </Texto>
                 </View>
-                <View style={{ flex: 1, height: 10, borderRadius: 4, backgroundColor: "#171D34" }}>
+                <View style={{ flex: 1, height: 10, borderRadius: 4, backgroundColor: color.surface2 }}>
                   <View style={{ width: `${p}%`, height: "100%", borderRadius: 4, backgroundColor: color.primario }} />
                 </View>
                 <Texto v="mono" tam={11} c={color.texto2}>
@@ -149,7 +149,7 @@ export default function PanelEstadisticasPro() {
         <Seccion titulo="Tu progreso" sub="Precisión semanal">
           <Svg viewBox="-6 -6 312 116" style={{ width: "100%", height: 110 }}>
             {[60, 80, 100].map((g) => (
-              <Line key={g} x1={0} x2={300} y1={100 - (g - 40) * 1.6} y2={100 - (g - 40) * 1.6} stroke="#232B47" strokeWidth={1} />
+              <Line key={g} x1={0} x2={300} y1={100 - (g - 40) * 1.6} y2={100 - (g - 40) * 1.6} stroke={color.border} strokeWidth={1} />
             ))}
             <Polyline points={pts} fill="none" stroke="#9B85FF" strokeWidth={2} strokeLinejoin="round" />
           </Svg>
@@ -182,7 +182,7 @@ export default function PanelEstadisticasPro() {
             [e.records.mejor_dia ? `${e.records.mejor_dia.precision} %` : "—", "mejor día"],
             [e.records.elo != null ? String(e.records.elo) : "—", "ELO"],
           ].map(([n, t]) => (
-            <View key={t} style={[styles.mini, { backgroundColor: "#171D34" }]}>
+            <View key={t} style={[styles.mini, { backgroundColor: color.surface2 }]}>
               <Texto v="mono" tam={16}>
                 {n}
               </Texto>
@@ -201,5 +201,5 @@ const styles = StyleSheet.create({
   heroe: { borderRadius: 22, padding: 18, overflow: "hidden", borderWidth: 1, borderColor: "rgba(124,92,255,0.5)", gap: 4 },
   mini: { flex: 1, borderRadius: 12, padding: 10, backgroundColor: "rgba(0,0,0,0.25)" },
   analisis: { borderRadius: 12, borderWidth: 1, borderColor: "rgba(124,92,255,0.35)", backgroundColor: "rgba(124,92,255,0.12)", paddingHorizontal: 10, paddingVertical: 8 },
-  debil: { flexDirection: "row", alignItems: "center", gap: 10, borderRadius: 14, backgroundColor: "#171D34", padding: 12 },
+  debil: { flexDirection: "row", alignItems: "center", gap: 10, borderRadius: 14, backgroundColor: color.surface2, padding: 12 },
 });

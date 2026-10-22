@@ -53,6 +53,8 @@ import { IconoCheck, IconoChispa, IconoCopo, IconoEscudo, IconoReloj } from "~/u
 import { PantallaApilada, TituloSeccion, Vacio } from "~/ui/Pantalla";
 import AbrirCapsula from "~/ui/recompensas/AbrirCapsula";
 import CapsulasPorAbrir from "~/ui/recompensas/CapsulasPorAbrir";
+import GuiaCapsulas from "~/ui/recompensas/GuiaCapsulas";
+import { COMO_SE_CONSIGUE } from "@/lib/recompensas/contenidoCapsulas";
 import Capsula from "~/ui/recompensas/Capsula";
 import CelebracionPremio from "~/ui/recompensas/CelebracionPremio";
 import ContadorAlineacion from "~/ui/ContadorAlineacion";
@@ -104,6 +106,7 @@ export default function Recompensas() {
   const [colecciones, setColecciones] = useState<PiezaColeccion[]>([]);
   const [constelaciones, setConstelaciones] = useState<DatosConstelacion[]>([]);
   const [verComo, setVerComo] = useState(false);
+  const [verGuia, setVerGuia] = useState(false);
   const [abriendo, setAbriendo] = useState<DatosCapsula | null>(null);
   // Premio reclamado (calendario o misión) que se está celebrando.
   const [celebrando, setCelebrando] = useState<{ tipo: "calendario"; dia: number; premio: string; cantidad: number } | { tipo: "mision"; chispas: number; completas: boolean } | null>(null);
@@ -236,6 +239,8 @@ export default function Recompensas() {
         {(capsulas ?? []).length > 0 && (
           <CapsulasPorAbrir capsulas={capsulas ?? []} detalle={detalleCapsula} onAbrir={setAbriendo} onVer={ver} onCambio={() => void cargar()} />
         )}
+        {/* Qué trae cada cápsula y cómo se consigue (0297). */}
+        <Boton3D titulo="¿Qué trae cada cápsula?" variante="secundario" tamano="sm" onPress={() => setVerGuia(true)} />
 
         <TituloSeccion>Calendario de 7 días</TituloSeccion>
         <Tarjeta>
@@ -412,6 +417,9 @@ export default function Recompensas() {
         {verContenido && (
           <View style={{ gap: 10 }}>
             <Texto v="h2">{CAPSULAS[verContenido.capsula.tipo]?.nombre}</Texto>
+            <Texto v="nota" tam={12}>
+              {COMO_SE_CONSIGUE[verContenido.capsula.tipo]}
+            </Texto>
             <Texto v="nota">Qué puede salir y con qué probabilidad. Si sale algo que ya tienes, se convierte en Chispas. Cada 10 cápsulas sin nada raro, la siguiente trae uno seguro.</Texto>
             {verContenido.filas.map((f) => (
               <View key={f.premio} style={styles.fila}>
@@ -427,6 +435,7 @@ export default function Recompensas() {
         )}
       </Hoja>
 
+      <GuiaCapsulas visible={verGuia} onCerrar={() => setVerGuia(false)} />
       <Hoja visible={verComo} onCerrar={() => setVerComo(false)}>
         <View style={{ gap: 10 }}>
           <Texto v="h2">Constelaciones</Texto>

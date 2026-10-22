@@ -5,7 +5,8 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
 import { ALTO_MAPA, ANCHO_MAPA, mapaDe, paisEnPunto, type Continente } from "~/lib/geografia";
-import { color, fuente } from "~/tema";
+import { color, fuente, COLOR_NOCHE } from "~/tema";
+import { SobreOscuro } from "~/ui/Texto";
 
 // Mapa de Geografía de la app. Mismo mapa real que la web, con:
 // - pellizco para acercar/alejar (centrado donde están los dedos) y botones + / − / ⟲;
@@ -171,43 +172,45 @@ export default function MapaGeografia({ continente, acento, objetivoId, seleccio
   });
 
   return (
-    <View style={styles.marco} onLayout={(e: LayoutChangeEvent) => setAncho(e.nativeEvent.layout.width)}>
-      {ancho > 0 && (
-        <GestureDetector gesture={gestos}>
-          <View style={{ width: ancho, height: alto, overflow: "hidden" }}>
-            <Animated.View style={[{ width: ancho, height: alto }, estiloMapa]}>
-              <Svg width={ancho} height={alto} viewBox={`0 0 ${ANCHO_MAPA} ${ALTO_MAPA}`}>
-                {formas.map((f) => (
-                  <Path key={f.id} d={f.d} fill={f.relleno} stroke={BORDE} strokeWidth={trazo} />
-                ))}
-              </Svg>
-            </Animated.View>
-            <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, estiloNitido]}>
-              <Svg width={ancho} height={alto} viewBox={`${vbX} ${vbY} ${ANCHO_MAPA / base.s} ${ALTO_MAPA / base.s}`}>
-                {formas.map((f) => (
-                  <Path key={f.id} d={f.d} fill={f.relleno} stroke={BORDE} strokeWidth={trazo} />
-                ))}
-              </Svg>
-            </Animated.View>
-          </View>
-        </GestureDetector>
-      )}
+    <SobreOscuro>
+      <View style={styles.marco} onLayout={(e: LayoutChangeEvent) => setAncho(e.nativeEvent.layout.width)}>
+        {ancho > 0 && (
+          <GestureDetector gesture={gestos}>
+            <View style={{ width: ancho, height: alto, overflow: "hidden" }}>
+              <Animated.View style={[{ width: ancho, height: alto }, estiloMapa]}>
+                <Svg width={ancho} height={alto} viewBox={`0 0 ${ANCHO_MAPA} ${ALTO_MAPA}`}>
+                  {formas.map((f) => (
+                    <Path key={f.id} d={f.d} fill={f.relleno} stroke={BORDE} strokeWidth={trazo} />
+                  ))}
+                </Svg>
+              </Animated.View>
+              <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, estiloNitido]}>
+                <Svg width={ancho} height={alto} viewBox={`${vbX} ${vbY} ${ANCHO_MAPA / base.s} ${ALTO_MAPA / base.s}`}>
+                  {formas.map((f) => (
+                    <Path key={f.id} d={f.d} fill={f.relleno} stroke={BORDE} strokeWidth={trazo} />
+                  ))}
+                </Svg>
+              </Animated.View>
+            </View>
+          </GestureDetector>
+        )}
 
-      <View style={styles.controles}>
-        <Pressable onPress={() => zoomBoton(1.6)} style={[styles.boton, { borderColor: acento + "88" }]} accessibilityLabel="Acercar">
-          <Text style={styles.botonTexto}>+</Text>
-        </Pressable>
-        <Pressable onPress={() => zoomBoton(1 / 1.6)} style={[styles.boton, { borderColor: acento + "88" }]} accessibilityLabel="Alejar">
-          <Text style={styles.botonTexto}>−</Text>
-        </Pressable>
-        <Pressable onPress={reiniciar} style={[styles.boton, { borderColor: acento + "88" }]} accessibilityLabel="Ver el mapa completo">
-          <Text style={[styles.botonTexto, { fontSize: 16 }]}>⟲</Text>
-        </Pressable>
+        <View style={styles.controles}>
+          <Pressable onPress={() => zoomBoton(1.6)} style={[styles.boton, { borderColor: acento + "88" }]} accessibilityLabel="Acercar">
+            <Text style={styles.botonTexto}>+</Text>
+          </Pressable>
+          <Pressable onPress={() => zoomBoton(1 / 1.6)} style={[styles.boton, { borderColor: acento + "88" }]} accessibilityLabel="Alejar">
+            <Text style={styles.botonTexto}>−</Text>
+          </Pressable>
+          <Pressable onPress={reiniciar} style={[styles.boton, { borderColor: acento + "88" }]} accessibilityLabel="Ver el mapa completo">
+            <Text style={[styles.botonTexto, { fontSize: 16 }]}>⟲</Text>
+          </Pressable>
+        </View>
+        <Text style={styles.ayuda} pointerEvents="none">
+          Pellizca para acercar · arrastra para mover
+        </Text>
       </View>
-      <Text style={styles.ayuda} pointerEvents="none">
-        Pellizca para acercar · arrastra para mover
-      </Text>
-    </View>
+    </SobreOscuro>
   );
 }
 
@@ -223,6 +226,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  botonTexto: { color: color.texto, fontSize: 20, fontFamily: fuente.display, lineHeight: 22 },
-  ayuda: { position: "absolute", bottom: 6, left: 0, right: 0, textAlign: "center", color: color.texto2, fontSize: 11 },
+  botonTexto: { color: COLOR_NOCHE.texto, fontSize: 20, fontFamily: fuente.display, lineHeight: 22 },
+  ayuda: { position: "absolute", bottom: 6, left: 0, right: 0, textAlign: "center", color: COLOR_NOCHE.texto2, fontSize: 11 },
 });

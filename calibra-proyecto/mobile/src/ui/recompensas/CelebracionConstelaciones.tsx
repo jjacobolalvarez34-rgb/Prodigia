@@ -11,13 +11,13 @@ import { recargarJugador } from "~/lib/jugador";
 import { leerAvisoConstelaciones, limpiarAvisoConstelaciones, recargarCosmeticos, suscribirAvisoConstelaciones } from "~/lib/recompensas";
 import { useLiviano } from "~/lib/rendimiento";
 import { supabase } from "~/lib/supabase";
-import { color, conAlfa, fuente, mundoDe } from "~/tema";
+import { color, conAlfa, fuente, mundoDe, COLOR_NOCHE } from "~/tema";
 import Boton3D from "../Boton3D";
 import { Destello, Halo, Onda, Particulas, Rayos, tonoHex } from "../fx/capas";
 import { crearExplosion } from "../fx/particulas";
 import { IconoBombilla, IconoChispa, IconoCopo, IconoEstrellaFugaz, IconoLuna, IconoPieza, IconoPlaneta, IconoReloj } from "../Iconos";
 import NumeroAnimado from "../NumeroAnimado";
-import Texto from "../Texto";
+import Texto, { SobreOscuro } from "../Texto";
 import Constelacion from "./Constelacion";
 import VistaCosmetico from "./VistaCosmetico";
 
@@ -344,14 +344,16 @@ export default function CelebracionConstelaciones() {
   }
 
   return (
-    <Animated.View entering={FadeIn.duration(300)} style={styles.fondo}>
-      <Una key={actual.id} c={actual} onSeguir={seguir} ultima={i === lista.length - 1} />
-    </Animated.View>
+    <SobreOscuro>
+      <Animated.View entering={FadeIn.duration(300)} style={styles.fondo}>
+        <Una key={actual.id} c={actual} onSeguir={seguir} ultima={i === lista.length - 1} />
+      </Animated.View>
+    </SobreOscuro>
   );
 }
 
 const styles = StyleSheet.create({
-  fondo: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: conAlfa(color.bgHondo, 0.97), zIndex: 125, elevation: 125 },
+  fondo: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: conAlfa(COLOR_NOCHE.bgHondo, 0.97), zIndex: 125, elevation: 125 },
   cielo: { position: "absolute", left: 0, alignItems: "center" },
   centro: { position: "absolute", left: 24, right: 24, alignItems: "center" },
   premio: { alignItems: "center", gap: 6 },

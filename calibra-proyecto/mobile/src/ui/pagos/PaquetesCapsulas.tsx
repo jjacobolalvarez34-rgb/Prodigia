@@ -7,7 +7,7 @@ import { vibrar } from "~/lib/efectos";
 import { fijarCometas } from "~/lib/jugador";
 import { comprarPaqueteCapsulas, contenidoCapsula, mensajeError, paquetesCapsulas, recargarPendientes, type ContenidoCapsula, type PaqueteCapsulas as Paquete } from "~/lib/recompensas";
 import { supabase } from "~/lib/supabase";
-import { color } from "~/tema";
+import { color, conAlfa, temaClaro } from "~/tema";
 import { mostrarAviso } from "../Aviso";
 import Boton3D from "../Boton3D";
 import { IconoCometa } from "../Iconos";
@@ -58,7 +58,7 @@ function Tarjeta({ p, unidad, contenido, ocupado, onComprar }: { p: Paquete; uni
   const ahorro = unidad != null && p.cantidad > 1 ? unidad * p.cantidad - p.cometas : 0;
   const total = contenido.reduce((a, f) => a + f.peso, 0);
   return (
-    <View style={[styles.tarjeta, p.tema ? { borderColor: `${colores[0]}88`, backgroundColor: "#1A1424" } : null]}>
+    <View style={[styles.tarjeta, p.tema ? { borderColor: `${colores[0]}88`, backgroundColor: temaClaro ? conAlfa(colores[0], 0.1) : "#1A1424" } : null]}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
         <Pila colores={colores} n={p.cantidad} />
         <View style={{ flex: 1, gap: 3 }}>
@@ -188,7 +188,7 @@ export default function PaquetesCapsulas() {
 }
 
 const styles = StyleSheet.create({
-  tarjeta: { gap: 10, padding: 14, borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)", backgroundColor: "#12172A" },
+  tarjeta: { gap: 10, padding: 14, borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)", backgroundColor: color.surface1 },
   pila: { width: 100, height: 78, alignItems: "center", justifyContent: "flex-end" },
   cuantas: { position: "absolute", top: -2, right: -2, zIndex: 10, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8, borderWidth: 2, borderColor: "#05060F", backgroundColor: "#fff" },
   etiqueta: { alignSelf: "flex-start", paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },

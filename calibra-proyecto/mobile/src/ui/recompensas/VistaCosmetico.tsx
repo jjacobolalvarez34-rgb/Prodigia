@@ -8,6 +8,8 @@ import { IconoLlama, IconoNota } from "../Iconos";
 import AvatarMarco from "../placa/AvatarMarco";
 import FondoPlaca from "../placa/FondoPlaca";
 import Texto from "../Texto";
+import MiniTemaApp from "../temas/MiniTemaApp";
+import { temaAppDe } from "@/lib/recompensas/temas";
 
 // Muestra chica de un cosmético de las categorías nuevas (tienda, cápsulas y
 // colecciones): la llama con la estela, el estallido del efecto, el emote, etc.
@@ -77,6 +79,8 @@ export default function VistaCosmetico({ categoria, valor, tam = 56 }: { categor
         </View>
       );
     }
+    case "tema":
+      return <MiniTemaApp tema={temaAppDe(valor)} ancho={Math.round(tam * 0.8)} alto={Math.round(tam * 1.04)} />;
     default:
       return null;
   }

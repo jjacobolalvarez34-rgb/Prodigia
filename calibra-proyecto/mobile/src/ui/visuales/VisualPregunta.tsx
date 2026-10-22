@@ -2,7 +2,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import type { Visual } from "~/lib/mundosJugables/tipos";
 import { color, fuente } from "~/tema";
 import Pentagrama, { FiguraRitmicaIcono } from "../Pentagrama";
-import Texto from "../Texto";
+import Texto, { SobreOscuro } from "../Texto";
 import Carta from "./Carta";
 import Circuito from "./Circuito";
 import GraficoEstadistica from "./GraficoEstadistica";
@@ -37,12 +37,14 @@ export default function VisualPregunta({ visual, acento }: { visual: Visual; ace
       return <GraficoEstadistica grafico={visual.grafico} acento={acento} />;
     case "codigo":
       return (
-        <View style={styles.codigo}>
-          <Texto style={styles.lenguaje}>{visual.lenguaje}</Texto>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <Texto style={styles.textoCodigo}>{visual.codigo}</Texto>
-          </ScrollView>
-        </View>
+        <SobreOscuro>
+          <View style={styles.codigo}>
+            <Texto style={styles.lenguaje}>{visual.lenguaje}</Texto>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <Texto style={styles.textoCodigo}>{visual.codigo}</Texto>
+            </ScrollView>
+          </View>
+        </SobreOscuro>
       );
     case "tabla":
       return (

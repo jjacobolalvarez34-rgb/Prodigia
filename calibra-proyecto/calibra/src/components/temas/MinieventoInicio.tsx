@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { Link } from "@/i18n/navigation";
 import { useTemaHoy } from "./useTemaHoy";
 import { celebracionDe } from "@/lib/temas/celebracion";
@@ -15,7 +16,7 @@ export default function MinieventoInicio() {
   const ruta = PANTALLA[tema.tema.id];
   return (
     <div className="flex flex-col gap-2 rounded-2xl border-2 px-5 py-4" style={{ borderColor: `${tema.tema.acento}88`, background: `linear-gradient(120deg, ${tema.tema.acento}1f, transparent 70%)` }}>
-      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: tema.tema.acento }}>
+      <p className="texto-acento font-mono text-[11px] font-bold uppercase tracking-[0.2em]" style={{ "--acento": tema.tema.acento } as CSSProperties}>
         Minievento
       </p>
       <p className="font-display text-lg font-bold text-foreground">{m.nombre}</p>

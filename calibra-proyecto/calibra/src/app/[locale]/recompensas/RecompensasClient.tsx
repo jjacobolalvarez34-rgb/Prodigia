@@ -36,6 +36,7 @@ import Constelacion from "@/components/recompensas/Constelacion";
 import AbrirCapsula, { DibujoCapsula } from "@/components/recompensas/AbrirCapsula";
 import CapsulasPorAbrir from "@/components/recompensas/CapsulasPorAbrir";
 import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
+import GuiaCapsulas from "@/components/recompensas/GuiaCapsulas";
 
 export default function RecompensasClient({ invitado, plan }: { invitado: boolean; plan: string }) {
   const t = useTranslations("Recompensas");
@@ -50,6 +51,7 @@ export default function RecompensasClient({ invitado, plan }: { invitado: boolea
   const [abriendo, setAbriendo] = useState<Capsula | null>(null);
   const [verContenido, setVerContenido] = useState<{ capsula: Capsula; filas: ContenidoCapsula[] } | null>(null);
   const [verCiudad, setVerCiudad] = useState<string | null>(null);
+  const [verGuia, setVerGuia] = useState(false);
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const [sinBase, setSinBase] = useState(false);
@@ -216,6 +218,11 @@ export default function RecompensasClient({ invitado, plan }: { invitado: boolea
           onCambio={() => void cargar()}
         />
       )}
+      {/* Qué trae cada cápsula y cómo se consigue (0297). */}
+      <button type="button" onClick={() => setVerGuia(true)} className="-mt-2 self-start rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold text-foreground hover:border-primario">
+        {t("capsulas.guia.boton")}
+      </button>
+      {verGuia && <GuiaCapsulas onCerrar={() => setVerGuia(false)} />}
 
       <section className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4">
         <h2 className="font-display text-lg font-bold text-foreground">{t("calendario.titulo")}</h2>
@@ -377,6 +384,7 @@ export default function RecompensasClient({ invitado, plan }: { invitado: boolea
         <div className="fixed inset-0 z-[95] flex items-end justify-center bg-black/60 p-4 sm:items-center" onClick={() => setVerContenido(null)} role="dialog" aria-modal="true">
           <div className="w-full max-w-md rounded-3xl border border-border bg-surface p-5" onClick={(e) => e.stopPropagation()}>
             <h3 className="font-display text-xl font-bold text-foreground">{t(`capsulas.nombres.${verContenido.capsula.tipo}`)}</h3>
+            <p className="mt-1 text-xs text-texto-secundario">{t(`capsulas.guia.como.${verContenido.capsula.tipo}`)}</p>
             <p className="mt-1 text-sm text-texto-secundario">{t("capsulas.probabilidades")}</p>
             <ul className="mt-3 flex flex-col gap-2">
               {verContenido.filas.map((f) => (

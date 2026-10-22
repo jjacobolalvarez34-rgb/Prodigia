@@ -11,7 +11,7 @@ import { useSesion } from "~/lib/sesion";
 import { supabase } from "~/lib/supabase";
 import { actualizarWidgets } from "~/widgets/registro";
 import Boton3D from "~/ui/Boton3D";
-import { color, radio, fuente } from "~/tema";
+import { color, radio, fuente, conAlfa, temaClaro } from "~/tema";
 import { IconoCampana, IconoEngranaje, IconoFiesta, IconoLlave, IconoMensaje } from "~/ui/Iconos";
 
 type TipoAnuncio = "evento" | "actualizacion" | "arreglo";
@@ -68,7 +68,7 @@ function TarjetaAnuncio({ anuncio, onAbrir }: { anuncio: Anuncio; onAbrir: () =>
       }}
       style={({ pressed }) => [pressed && { transform: [{ scale: 0.985 }] }]}
     >
-      <LinearGradient colors={[e.de, e.a]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.anuncio, { borderColor: anuncio.leido ? color.border : e.acento }]}>
+      <LinearGradient colors={temaClaro ? [conAlfa(e.acento, 0.16), color.surface1] : [e.de, e.a]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.anuncio, { borderColor: anuncio.leido ? color.border : e.acento }]}>
         <View style={styles.anuncioCabecera}>
           <View style={[styles.chip, { backgroundColor: e.acento + "26", flexDirection: "row", alignItems: "center", gap: 5 }]}>
             {e.icono === "evento" ? <IconoFiesta tam={13} c={e.acento} /> : e.icono === "novedad" ? <IconoCampana tam={13} c={e.acento} /> : <IconoLlave tam={13} c={e.acento} />}
@@ -145,7 +145,7 @@ export default function Avisos() {
 
       <ScrollView contentContainerStyle={styles.contenido} refreshControl={<RefreshControl refreshing={cargando} onRefresh={cargar} tintColor={color.primario} />}>
         {!permiso && !esInvitado && (
-          <LinearGradient colors={["#2A1F5C", "#12172A"]} style={styles.permiso}>
+          <LinearGradient colors={temaClaro ? [conAlfa(color.primario, 0.16), color.surface1] : ["#2A1F5C", "#12172A"]} style={styles.permiso}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
               <IconoCampana tam={20} c={color.texto} />
               <Text style={styles.permisoTitulo}>Activa los avisos</Text>
@@ -165,7 +165,7 @@ export default function Avisos() {
             <Text style={styles.seccion}>Mensajes</Text>
             <Pressable onPress={() => router.push({ pathname: "/social", params: { seccion: "amigos" } })}>
               <LinearGradient
-                colors={resumen && resumen.mensajesSinLeer > 0 ? ["#3B2C8F", "#1B1440"] : ["#171D34", "#12172A"]}
+                colors={resumen && resumen.mensajesSinLeer > 0 ? (temaClaro ? [conAlfa(color.primario, 0.3), color.surface1] : ["#3B2C8F", "#1B1440"]) : [color.surface2, color.surface1]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.mensajes}

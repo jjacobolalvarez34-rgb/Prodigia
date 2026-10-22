@@ -31,8 +31,10 @@ function Premio({ p }: { p: PremioCapsula }) {
   }
   const it = CATALOGO_NUEVO.find((x) => x.item === p.slug);
   const rareza = (p.rareza ?? "raro") as Rareza;
-  const categoria = it?.categoria ?? (p.slug?.startsWith("marco_") ? "marco" : "titulo");
-  const valor = it?.valor ?? p.slug?.replace(/^marco_/, "") ?? "";
+  // Un tema de la app (0297) llega con slug tema_<tema>.
+  const esTema = p.premio === "tema_app" || !!p.slug?.startsWith("tema_");
+  const categoria = it?.categoria ?? (esTema ? "tema" : p.slug?.startsWith("marco_") ? "marco" : "titulo");
+  const valor = it?.valor ?? (esTema ? p.slug?.replace(/^tema_/, "") : p.slug?.replace(/^marco_/, "")) ?? "";
   return (
     <div className="flex flex-col items-center gap-2">
       <span className="flex h-24 w-24 items-center justify-center rounded-3xl border-2 bg-surface-2" style={{ borderColor: COLOR_RAREZA[rareza], boxShadow: `0 0 24px ${COLOR_RAREZA[rareza]}88` }}>
@@ -42,7 +44,7 @@ function Premio({ p }: { p: PremioCapsula }) {
         {t(`tienda.rareza.${rareza}`).toUpperCase()}
       </span>
       <p className="font-display text-2xl font-bold text-foreground">{p.nombre}</p>
-      <p className="text-sm text-texto-secundario">{t("capsulas.esTuyo")}</p>
+      <p className="text-sm text-texto-secundario">{esTema ? t("capsulas.temaTuyo") : t("capsulas.esTuyo")}</p>
     </div>
   );
 }

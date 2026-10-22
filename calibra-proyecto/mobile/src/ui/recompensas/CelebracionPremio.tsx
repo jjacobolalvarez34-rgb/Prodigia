@@ -9,7 +9,7 @@ import Boton3D from "../Boton3D";
 import { Destello, Halo, Onda, Particulas, Rayos, tonoHex } from "../fx/capas";
 import { crearExplosion } from "../fx/particulas";
 import NumeroAnimado from "../NumeroAnimado";
-import Texto from "../Texto";
+import Texto, { SobreOscuro } from "../Texto";
 
 // Celebración al reclamar un premio (día del calendario, misión): el ícono del
 // premio aparece de golpe con destello, onda, partículas y rayos girando detrás,
@@ -68,50 +68,52 @@ export default function CelebracionPremio({
   }, [grande, destello, onda, tExplosion, opRayos, escalaRayos, opHalo, escalaHalo]);
 
   return (
-    <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.capa}>
-      <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
-        <Rayos cx={CX} cy={CY} radio={Math.max(W, H) * 0.6} color={colorPremio} opacidad={opRayos} escala={escalaRayos} reloj={reloj} cantidad={grande ? 16 : 12} />
-        <Halo cx={CX} cy={CY} radio={130} color={colorPremio} opacidad={opHalo} escala={escalaHalo} />
-        <Onda cx={CX} cy={CY} desde={30} hasta={Math.max(W, H) * 0.5} color={colorPremio} avance={onda} />
-        <Particulas lista={explosion} tiempo={tExplosion} cx={CX} cy={CY} ancho={W} alto={H} brillo={!liviano} />
-        <Destello ancho={W} alto={H} opacidad={destello} />
-      </Canvas>
-      <View style={[styles.contenido, { top: CY - 70 }]}>
-        <Animated.View entering={ZoomIn.springify().damping(8).stiffness(160)} style={[styles.icono, { borderColor: colorPremio, boxShadow: `0px 0px 34px ${colorPremio}` }]}>
-          {icono}
-        </Animated.View>
-        <Animated.View entering={FadeInDown.delay(200).duration(320)} style={{ alignItems: "center", gap: 4, marginTop: 18 }}>
-          {etiqueta ? (
-            <Texto v="micro" c={tonoHex(colorPremio, 0.2)} centro>
-              {etiqueta}
-            </Texto>
-          ) : null}
-          <Texto v="h2" centro>
-            {titulo}
-          </Texto>
-        </Animated.View>
-        {cantidad != null && cantidad > 0 && (
-          <Animated.View entering={FadeInDown.delay(320).duration(320)} style={styles.cantidad}>
-            <NumeroAnimado valor={cantidad} desde={0} prefijo="+" v="mono" c={colorPremio} duracion={1000} estilo={{ fontSize: 34, fontFamily: fuente.display }} onTic={() => sonar("moneda")} />
-            {sufijo ? (
-              <Texto v="fuerte" c={colorPremio}>
-                {sufijo}
+    <SobreOscuro>
+      <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.capa}>
+        <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
+          <Rayos cx={CX} cy={CY} radio={Math.max(W, H) * 0.6} color={colorPremio} opacidad={opRayos} escala={escalaRayos} reloj={reloj} cantidad={grande ? 16 : 12} />
+          <Halo cx={CX} cy={CY} radio={130} color={colorPremio} opacidad={opHalo} escala={escalaHalo} />
+          <Onda cx={CX} cy={CY} desde={30} hasta={Math.max(W, H) * 0.5} color={colorPremio} avance={onda} />
+          <Particulas lista={explosion} tiempo={tExplosion} cx={CX} cy={CY} ancho={W} alto={H} brillo={!liviano} />
+          <Destello ancho={W} alto={H} opacidad={destello} />
+        </Canvas>
+        <View style={[styles.contenido, { top: CY - 70 }]}>
+          <Animated.View entering={ZoomIn.springify().damping(8).stiffness(160)} style={[styles.icono, { borderColor: colorPremio, boxShadow: `0px 0px 34px ${colorPremio}` }]}>
+            {icono}
+          </Animated.View>
+          <Animated.View entering={FadeInDown.delay(200).duration(320)} style={{ alignItems: "center", gap: 4, marginTop: 18 }}>
+            {etiqueta ? (
+              <Texto v="micro" c={tonoHex(colorPremio, 0.2)} centro>
+                {etiqueta}
               </Texto>
             ) : null}
-          </Animated.View>
-        )}
-        {nota ? (
-          <Animated.View entering={FadeIn.delay(500).duration(300)}>
-            <Texto v="nota" centro>
-              {nota}
+            <Texto v="h2" centro>
+              {titulo}
             </Texto>
           </Animated.View>
-        ) : null}
-        <Animated.View entering={FadeInDown.delay(700).duration(300)} style={{ alignSelf: "stretch", marginTop: 20 }}>
-          <Boton3D titulo="¡Genial!" brillo onPress={onCerrar} />
-        </Animated.View>
-      </View>
-    </Animated.View>
+          {cantidad != null && cantidad > 0 && (
+            <Animated.View entering={FadeInDown.delay(320).duration(320)} style={styles.cantidad}>
+              <NumeroAnimado valor={cantidad} desde={0} prefijo="+" v="mono" c={colorPremio} duracion={1000} estilo={{ fontSize: 34, fontFamily: fuente.display }} onTic={() => sonar("moneda")} />
+              {sufijo ? (
+                <Texto v="fuerte" c={colorPremio}>
+                  {sufijo}
+                </Texto>
+              ) : null}
+            </Animated.View>
+          )}
+          {nota ? (
+            <Animated.View entering={FadeIn.delay(500).duration(300)}>
+              <Texto v="nota" centro>
+                {nota}
+              </Texto>
+            </Animated.View>
+          ) : null}
+          <Animated.View entering={FadeInDown.delay(700).duration(300)} style={{ alignSelf: "stretch", marginTop: 20 }}>
+            <Boton3D titulo="¡Genial!" brillo onPress={onCerrar} />
+          </Animated.View>
+        </View>
+      </Animated.View>
+    </SobreOscuro>
   );
 }
 

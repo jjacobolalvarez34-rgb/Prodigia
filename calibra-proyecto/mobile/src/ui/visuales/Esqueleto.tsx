@@ -5,7 +5,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-na
 import Svg, { G, Path } from "react-native-svg";
 import { vibrar } from "~/lib/efectos";
 import { color } from "~/tema";
-import Texto from "../Texto";
+import Texto, { SobreOscuro } from "../Texto";
 import datos from "~/lib/datos/esqueleto.json";
 
 // Anatomía, modo óseo: el esqueleto de la web (dominio público, LadyofHats) con cada
@@ -80,75 +80,77 @@ export default function Esqueleto({ objetivo, respondido, seleccion, onElegir }:
   }
 
   return (
-    <View style={styles.marco} onLayout={(e: LayoutChangeEvent) => setAncho(e.nativeEvent.layout.width)}>
-      {ancho > 0 && (
-        <GestureDetector gesture={gestos}>
-          <Animated.View style={[{ width: ancho, height: alto }, estilo]}>
-            <Svg width={ancho} height={alto} viewBox={`0 0 ${VB_W} ${VB_H}`}>
-              {grupos.map((g, i) => (
-                <G
-                  key={i}
-                  onPress={
-                    g.hueso && !respondido
-                      ? () => {
-                          vibrar.seleccion();
-                          onElegir(g.hueso!);
-                        }
-                      : undefined
-                  }
-                >
-                  {g.trazos.map((t, j) => {
-                    const c = pintar(t, g.hueso);
-                    return <Path key={j} d={t.d} fill={c.f ?? "none"} stroke={c.s ?? "none"} strokeWidth={t.w} transform={t.t} />;
-                  })}
-                </G>
-              ))}
-            </Svg>
-          </Animated.View>
-        </GestureDetector>
-      )}
-      <View style={styles.controles}>
-        <Pressable
-          style={styles.boton}
-          accessibilityLabel="Acercar"
-          onPress={() => {
-            vibrar.seleccion();
-            escala.set(withTiming(Math.min(5, escala.value + 0.75), { duration: 200 }));
-          }}
-        >
-          <Texto v="fuerte">＋</Texto>
-        </Pressable>
-        <Pressable
-          style={styles.boton}
-          accessibilityLabel="Alejar"
-          onPress={() => {
-            vibrar.seleccion();
-            const nueva = Math.max(1, escala.value - 0.75);
-            escala.set(withTiming(nueva, { duration: 200 }));
-            if (nueva === 1) {
-              tx.set(withTiming(0, { duration: 200 }));
-              ty.set(withTiming(0, { duration: 200 }));
-            }
-          }}
-        >
-          <Texto v="fuerte">－</Texto>
-        </Pressable>
-        <Pressable
-          style={styles.boton}
-          accessibilityLabel="Volver al tamaño original"
-          onPress={() => {
-            escala.set(withTiming(1, { duration: 220 }));
-            tx.set(withTiming(0, { duration: 220 }));
-            ty.set(withTiming(0, { duration: 220 }));
-          }}
-        >
-          <Texto v="fuerte">⟲</Texto>
-        </Pressable>
+    <SobreOscuro>
+      <View style={styles.marco} onLayout={(e: LayoutChangeEvent) => setAncho(e.nativeEvent.layout.width)}>
+        {ancho > 0 && (
+          <GestureDetector gesture={gestos}>
+            <Animated.View style={[{ width: ancho, height: alto }, estilo]}>
+              <Svg width={ancho} height={alto} viewBox={`0 0 ${VB_W} ${VB_H}`}>
+                {grupos.map((g, i) => (
+                  <G
+                    key={i}
+                    onPress={
+                      g.hueso && !respondido
+                        ? () => {
+                            vibrar.seleccion();
+                            onElegir(g.hueso!);
+                          }
+                        : undefined
+                    }
+                  >
+                    {g.trazos.map((t, j) => {
+                      const c = pintar(t, g.hueso);
+                      return <Path key={j} d={t.d} fill={c.f ?? "none"} stroke={c.s ?? "none"} strokeWidth={t.w} transform={t.t} />;
+                    })}
+                  </G>
+                ))}
+              </Svg>
+            </Animated.View>
+          </GestureDetector>
+        )}
+        <View style={styles.controles}>
+          <Pressable
+            style={styles.boton}
+            accessibilityLabel="Acercar"
+            onPress={() => {
+              vibrar.seleccion();
+              escala.set(withTiming(Math.min(5, escala.value + 0.75), { duration: 200 }));
+            }}
+          >
+            <Texto v="fuerte">＋</Texto>
+          </Pressable>
+          <Pressable
+            style={styles.boton}
+            accessibilityLabel="Alejar"
+            onPress={() => {
+              vibrar.seleccion();
+              const nueva = Math.max(1, escala.value - 0.75);
+              escala.set(withTiming(nueva, { duration: 200 }));
+              if (nueva === 1) {
+                tx.set(withTiming(0, { duration: 200 }));
+                ty.set(withTiming(0, { duration: 200 }));
+              }
+            }}
+          >
+            <Texto v="fuerte">－</Texto>
+          </Pressable>
+          <Pressable
+            style={styles.boton}
+            accessibilityLabel="Volver al tamaño original"
+            onPress={() => {
+              escala.set(withTiming(1, { duration: 220 }));
+              tx.set(withTiming(0, { duration: 220 }));
+              ty.set(withTiming(0, { duration: 220 }));
+            }}
+          >
+            <Texto v="fuerte">⟲</Texto>
+          </Pressable>
+        </View>
+        <Texto v="nota" tam={11} centro style={styles.ayuda}>
+          Toca el hueso · pellizca o usa + y − para acercar · arrastra para moverte
+        </Texto>
       </View>
-      <Texto v="nota" tam={11} centro style={styles.ayuda}>
-        Toca el hueso · pellizca o usa + y − para acercar · arrastra para moverte
-      </Texto>
-    </View>
+    </SobreOscuro>
   );
 }
 

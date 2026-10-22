@@ -159,11 +159,13 @@ const FUENTES = {
   tic: require("../../assets/sonidos/tic.wav"),
   tic_urgente: require("../../assets/sonidos/tic_urgente.wav"),
   tiempo_fin: require("../../assets/sonidos/tiempo_fin.wav"),
+  // Sonido de marca (2026-10-22): roce, golpe y la firma sol-do-mi-re-SOL.
+  marca: require("../../assets/sonidos/marca.wav"),
 } as const;
 
 export type Sonido = keyof typeof FUENTES;
 
-const VOLUMEN: Partial<Record<Sonido, number>> = { tecla: 0.5, boton: 0.6, moneda: 0.6, swoosh: 0.6 };
+const VOLUMEN: Partial<Record<Sonido, number>> = { tecla: 0.5, boton: 0.6, moneda: 0.6, swoosh: 0.6, marca: 0.9 };
 
 const reproductores = new Map<Sonido, AudioPlayer>();
 let modoListo = false;
@@ -205,6 +207,18 @@ const ultimoSonido = new Map<Sonido, number>();
 let arranqueTerminado = false;
 export function habilitarSonidos() {
   arranqueTerminado = true;
+}
+
+// El sonido de Prodigia con la caída del logo en la pantalla de carga: es lo único
+// que suena antes de habilitarSonidos(), y respeta el ajuste de sonido.
+export function sonarMarca() {
+  if (!leerAjustes().sonido) return;
+  if (!modoListo) {
+    modoListo = true;
+    setAudioModeAsync({ playsInSilentMode: true, interruptionMode: "mixWithOthers", shouldPlayInBackground: false }).catch(() => {});
+  }
+  const p = reproductor("marca");
+  p?.play();
 }
 
 export function sonar(nombre: Sonido) {

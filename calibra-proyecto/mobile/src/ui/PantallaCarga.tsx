@@ -4,9 +4,11 @@ import { Animated as AnimadoRN, Easing as EasingRN, StyleSheet, Text, useWindowD
 import { BlendMode, Canvas, createPicture, PaintStyle, Picture, Skia, TileMode, useClock, type SkPaint, type SkPath } from "@shopify/react-native-skia";
 import Animated, { Easing, useAnimatedStyle, useDerivedValue, useSharedValue, withDelay, withRepeat, withSequence, withTiming, type SharedValue } from "react-native-reanimated";
 import { capaVisible } from "@/lib/temas/temas";
+import { sonarMarca } from "~/lib/efectos";
 import { useLiviano } from "~/lib/rendimiento";
 import { useTemaHoy } from "~/lib/temporada";
-import { color, conAlfa, fuente, mono } from "~/tema";
+// Siempre de noche (la ciudad y su cielo): los colores de siempre, con cualquier tema.
+import { COLOR_NOCHE as color, conAlfa, fuente, mono } from "~/tema";
 import Logo from "./Logo";
 import AccesorioTemporada from "./temas/AccesorioTemporada";
 import { ParticulasTema } from "./temas/CapaTemporada";
@@ -286,6 +288,8 @@ export default function PantallaCarga({ progreso, etapa, onTerminada }: Props) {
   const nombre = useSharedValue(0);
   const destello = useSharedValue(0);
   useEffect(() => {
+    // El sonido de marca va sincronizado con la caída: el golpe cae cuando el logo se asienta.
+    sonarMarca();
     caida.set(withTiming(1, { duration: CAIDA_MS, easing: Easing.linear }));
     onda.set(withDelay(CAIDA_MS * 0.82, withTiming(1, { duration: 900, easing: Easing.out(Easing.cubic) })));
     nombre.set(withDelay(CAIDA_MS * 0.75, withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) })));

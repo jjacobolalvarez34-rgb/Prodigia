@@ -20,7 +20,7 @@ import Texto from "~/ui/Texto";
 import { textoConFormulas } from "~/ui/TextoMate";
 import TextoLatex from "~/ui/TextoLatex";
 import VisualLeccion from "~/ui/aprender/VisualLeccion";
-import { brillo, color, conAlfa, fuente, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
+import { brillo, color, conAlfa, fuente, MUNDO_POR_SLUG, type MundoSlug, temaClaro } from "~/tema";
 
 // Una lección de Aprender (LeccionClient.tsx y Leccion<Mundo>Client.tsx de la web):
 // presentación → explicación (pasos con sus visuales animados) → práctica (solo en
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   medalla: { width: 96, height: 96, borderRadius: 48, borderWidth: 3, alignItems: "center", justifyContent: "center", backgroundColor: color.surface1 },
   contenido: { padding: 16, gap: 16, paddingBottom: 40 },
   paso: { flexDirection: "row", gap: 10, padding: 14, borderRadius: 16, borderLeftWidth: 3, backgroundColor: color.surface1 },
-  codigo: { borderRadius: 12, borderWidth: 1, borderColor: color.border, backgroundColor: "#0B0F1E", padding: 10 },
+  codigo: { borderRadius: 12, borderWidth: 1, borderColor: color.border, backgroundColor: temaClaro ? color.surface2 : "#0B0F1E", padding: 10 },
   salida: { borderStyle: "dashed" },
   textoCodigo: { fontFamily: fuente.monoMedio, fontSize: 13, lineHeight: 19, color: color.texto },
   puntos: { flexDirection: "row", gap: 6, alignSelf: "center" },

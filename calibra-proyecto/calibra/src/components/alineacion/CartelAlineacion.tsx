@@ -94,9 +94,6 @@ export default function CartelAlineacion({ invitado = false }: { invitado?: bool
   const despues = m.momento === "despues";
   const fecha = new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", hour: "numeric", minute: "2-digit" }).format(new Date(m.inicio));
   const partidas = estado?.partidas ?? 0;
-  const meta = estado?.comunidad_meta ?? 0;
-  const actual = estado?.comunidad_respuestas ?? 0;
-  const pct = meta > 0 ? Math.min(1, actual / meta) : 0;
 
   async function reclamar() {
     setOcupado(true);
@@ -164,26 +161,15 @@ export default function CartelAlineacion({ invitado = false }: { invitado?: bool
               <div className="flex flex-col gap-1.5 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">{t("comunidad")}</span>
                 <span className="text-xs text-white/75">{t("comunidadComo", { n: CHISPAS_COMUNIDAD })}</span>
-                {(durante || despues) && meta > 0 && (
-                  <>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-                      <motion.div className="h-full rounded-full" style={{ background: `linear-gradient(90deg, #E8A317, ${ORO})` }} initial={{ width: 0 }} animate={{ width: `${pct * 100}%` }} transition={{ duration: 0.8 }} />
-                    </div>
-                    <span className="font-mono text-[11px] text-white/60">
-                      {estado?.comunidad_lograda ? t("comunidadLograda") : t("comunidadProgreso", { actual: actual.toLocaleString(locale), meta: meta.toLocaleString(locale) })}
-                    </span>
-                  </>
-                )}
               </div>
             </div>
-            {despues && !estado?.comunidad_lograda && estado && <p className="text-xs text-white/55">{t("comunidadNo")}</p>}
             <div className="flex flex-wrap gap-2">
               {durante && (
                 <Link href="/practica" className="rounded-xl border-2 border-[#05060F] px-5 py-2.5 font-display text-sm font-bold text-[#1A1206] shadow-[3px_3px_0_0_#05060F] transition-transform hover:-translate-y-0.5" style={{ background: `linear-gradient(180deg, #FFE08A, ${ORO})` }}>
                   {t("jugar")}
                 </Link>
               )}
-              {estado?.comunidad_lograda && partidas > 0 && (
+              {(durante || despues) && estado && (
                 <button
                   type="button"
                   onClick={reclamar}

@@ -5,7 +5,8 @@ import { StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type Te
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming, type SharedValue } from "react-native-reanimated";
 import { useAnimacionActiva } from "~/lib/rendimiento";
 import { FUENTE_FAMILIA } from "~/lib/placa";
-import { color as colores, fuente as fuentes } from "~/tema";
+import { color as colores, COLOR_NOCHE, fuente as fuentes } from "~/tema";
+import { useSobreOscuro } from "../Texto";
 
 // El nombre del jugador con la fuente, el color y la animación que compró en la
 // tienda (las 10 de la web: NombreConFuente.tsx + globals.css). Shuffle y decrypted
@@ -215,7 +216,9 @@ function NombreRevuelto({ texto, estiloTexto, base, modo }: { texto: string; est
 
 export default function NombreEstilizado({ texto, fuente = "default", animacion = "ninguna", color, tam = 18, animar = false, estilo, lineas = 1, ligero = false }: Props) {
   const familia = FUENTE_FAMILIA[fuente] ?? fuentes.display;
-  const base = color ?? colores.texto;
+  // Sobre la Placa (siempre oscura) el nombre va claro también con un tema claro.
+  const sobreOscuro = useSobreOscuro();
+  const base = color ?? (sobreOscuro ? COLOR_NOCHE.texto : colores.texto);
   const estiloTexto = useMemo<StyleProp<TextStyle>>(
     () => [{ fontFamily: familia, fontSize: tam, lineHeight: Math.round(tam * 1.25), color: base, includeFontPadding: false }, fuente === "impacto" || fuente === "urbana" ? { letterSpacing: 0.8 } : null, estilo],
     [familia, tam, base, fuente, estilo]

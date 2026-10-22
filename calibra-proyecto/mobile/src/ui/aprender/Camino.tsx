@@ -5,7 +5,7 @@ import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect,
 import type { GrupoLecciones, NodoLeccion } from "~/lib/aprender";
 import { vibrar } from "~/lib/efectos";
 import { useAnimacionActiva, useLiviano } from "~/lib/rendimiento";
-import { brillo, color, conAlfa, fuente, type Mundo } from "~/tema";
+import { brillo, color, conAlfa, fuente, type Mundo, temaClaro } from "~/tema";
 import { IconoCandado, IconoCheck } from "../Iconos";
 import Texto from "../Texto";
 import { textoConFormulas } from "../TextoMate";
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   pin: { position: "absolute", top: -34, alignItems: "center" },
   globo: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
   punta: { width: 0, height: 0, borderLeftWidth: 6, borderRightWidth: 6, borderTopWidth: 7, borderLeftColor: "transparent", borderRightColor: "transparent" },
-  etiqueta: { marginTop: 6, maxWidth: 140, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 10, backgroundColor: "rgba(12,16,32,0.92)", borderWidth: 1, borderColor: color.border },
-  cartel: { position: "absolute", alignSelf: "center", left: "50%", marginLeft: -95, width: 190, paddingVertical: 7, paddingHorizontal: 10, borderRadius: 12, borderWidth: 1.5, backgroundColor: "#141A33", gap: 1 },
+  etiqueta: { marginTop: 6, maxWidth: 140, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 10, backgroundColor: temaClaro ? conAlfa(color.surface1, 0.95) : "rgba(12,16,32,0.92)", borderWidth: 1, borderColor: color.border },
+  cartel: { position: "absolute", alignSelf: "center", left: "50%", marginLeft: -95, width: 190, paddingVertical: 7, paddingHorizontal: 10, borderRadius: 12, borderWidth: 1.5, backgroundColor: temaClaro ? color.surface2 : "#141A33", gap: 1 },
   meta: { position: "absolute", left: 0, right: 0, alignItems: "center" },
 });

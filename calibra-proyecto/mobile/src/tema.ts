@@ -1,7 +1,10 @@
+import { File, Paths } from "expo-file-system";
+import { TEMA_CLASICO, tokensTema } from "@/lib/recompensas/temas";
+
 // Tokens de "Noche de Prodigia" (docs/app-nativa/02-SISTEMA-VISUAL.md §2-4 y
 // maquetas-android.html). Cuando exista packages/tokens, estos valores salen de ahí
 // y los comparte la web.
-export const color = {
+export const COLOR_NOCHE = {
   bg: "#090C14",
   bgHondo: "#05070D",
   surface1: "#12172A",
@@ -21,6 +24,56 @@ export const color = {
   error: "#FF5D5D",
   racha: "#FF8A3D",
 } as const;
+
+// ---------- Tema de la app (0297) ----------
+// Los colores viven en StyleSheet.create a nivel de módulo en toda la app, así que el
+// tema se decide UNA vez, al arrancar, antes de que se evalúe cualquier pantalla: este
+// módulo lee de forma síncrona el archivo que deja lib/temaApp.ts (expo-file-system,
+// sin dependencias nuevas) y arma `color` con esa paleta. Cambiar de tema reinicia la
+// app (reloadAppAsync) o se aplica la próxima vez que se abre. Sin archivo, sin tema
+// o ante cualquier error, `color` es exactamente COLOR_NOCHE, el de siempre.
+export const ARCHIVO_TEMA_APP = "tema-app.json";
+
+function temaGuardadoAlAbrir(): string {
+  try {
+    const f = new File(Paths.document, ARCHIVO_TEMA_APP);
+    if (!f.exists) return TEMA_CLASICO;
+    const j = JSON.parse(f.textSync()) as { slug?: unknown };
+    return typeof j.slug === "string" ? j.slug : TEMA_CLASICO;
+  } catch {
+    return TEMA_CLASICO;
+  }
+}
+
+const tokens = tokensTema(temaGuardadoAlAbrir());
+
+// El tema con el que arrancó la app ('clasico' si no hay ninguno).
+export const TEMA_APP_ACTIVO: string = tokens?.slug ?? TEMA_CLASICO;
+// Fondo claro: el texto pasa a oscuro (ver ui/Texto.tsx y SobreOscuro).
+export const temaClaro: boolean = !!tokens?.claro;
+
+export const color: { readonly [K in keyof typeof COLOR_NOCHE]: string } = tokens
+  ? {
+      bg: tokens.fondo,
+      bgHondo: tokens.fondoHondo,
+      surface1: tokens.superficie,
+      surface2: tokens.superficie2,
+      surface3: tokens.superficie3,
+      border: tokens.borde,
+      texto: tokens.texto,
+      texto2: tokens.texto2,
+      primario: tokens.primario,
+      primarioNeon: tokens.primarioNeon,
+      primarioBase: tokens.primario,
+      primarioLabio: tokens.primarioLabio,
+      primarioClaro: tokens.primarioClaro,
+      logro: tokens.logro,
+      logroLabio: tokens.logroLabio,
+      correcto: tokens.correcto,
+      error: tokens.error,
+      racha: tokens.racha,
+    }
+  : COLOR_NOCHE;
 
 export const espacio = { xs: 4, s: 8, m: 12, l: 16, xl: 20, xxl: 24, xxxl: 32 } as const;
 export const radio = { chip: 12, boton: 16, tarjeta: 20, sprint: 28 } as const;

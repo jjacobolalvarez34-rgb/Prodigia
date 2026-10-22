@@ -6,6 +6,8 @@ import { FONDO_PERFIL_ESTILO, ESTILO_MARCO_PERFIL, type FondoPerfil } from "@/ty
 import AvatarConMarco from "@/components/AvatarConMarco";
 import CiudadSkyline from "./CiudadSkyline";
 import LlamaDibujo from "@/components/LlamaDibujo";
+import MiniTemaApp from "./MiniTemaApp";
+import { temaAppDe } from "@/lib/recompensas/temas";
 
 // Muestra chica de un cosmético de las categorías nuevas (tienda, cápsulas y
 // colecciones). Mismo criterio que VistaCosmetico de la app.
@@ -70,6 +72,8 @@ export default function VistaCosmetico({ categoria, valor, tam = 56 }: { categor
       const c = ciudadDe(valor);
       return c ? <CiudadSkyline ciudad={c.slug} alto={tam} ancho={tam * 1.4} redondeado /> : null;
     }
+    case "tema":
+      return <MiniTemaApp tema={temaAppDe(valor)} ancho={Math.round(tam * 0.8)} />;
     default:
       return null;
   }

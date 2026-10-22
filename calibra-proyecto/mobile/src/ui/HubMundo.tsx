@@ -8,7 +8,7 @@ import { vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
 import { progresoMundo, type ProgresoMundo } from "~/lib/mundos";
 import { useSesion } from "~/lib/sesion";
-import { brillo, color, conAlfa, fuente, type Mundo } from "~/tema";
+import { brillo, color, conAlfa, fuente, type Mundo, COLOR_NOCHE } from "~/tema";
 import Anillo from "./Anillo";
 import Barra from "./Barra";
 import Ciudad from "./Ciudad";
@@ -17,7 +17,7 @@ import { IconoCandado, IconoParacaidas, IconoZen } from "./Iconos";
 import { BotonAtras } from "./Pantalla";
 import Segmentos from "./Segmentos";
 import Tarjeta from "./Tarjeta";
-import Texto from "./Texto";
+import Texto, { SobreOscuro } from "./Texto";
 import PestanaAprender from "./aprender/PestanaAprender";
 
 // Hub de un mundo (03-PANTALLAS §4.5): la ciudad encendida arriba con el nivel del
@@ -87,40 +87,42 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
   return (
     <SafeAreaView style={styles.pantalla} edges={["top"]}>
       <ScrollView contentContainerStyle={{ paddingBottom: 28 }} showsVerticalScrollIndicator={false}>
-        <View>
-          <Ciudad semilla={mundo.slug} acento={mundo.neon} alto={190} radio={0} densidad={1.15} />
-          <View style={StyleSheet.absoluteFill} pointerEvents="none">
-            <Glifos glifos={mundo.glifos} acento={mundo.neon} cantidad={6} opacidad={0.14} />
+        <SobreOscuro>
+          <View>
+            <Ciudad semilla={mundo.slug} acento={mundo.neon} alto={190} radio={0} densidad={1.15} />
+            <View style={StyleSheet.absoluteFill} pointerEvents="none">
+              <Glifos glifos={mundo.glifos} acento={mundo.neon} cantidad={6} opacidad={0.14} />
+            </View>
+            <View style={styles.atras}>
+              <BotonAtras />
+            </View>
+            {/* Modo Zen: practicar sin reloj, con tema y dificultad a elección (docs/PLAN_MODO_SIN_RELOJ.md).
+                Solo en mundos tuyos (revisión 2026-10-14: se podía usar sin tener el mundo). */}
+            {!bloqueado && (
+            <Pressable
+              onPress={() => {
+                vibrar.seleccion();
+                router.push(`/zen/${mundo.slug}` as Href);
+              }}
+              style={({ pressed }) => [styles.zen, { borderColor: conAlfa(mundo.neon, 0.6) }, pressed && { transform: [{ scale: 0.95 }] }]}
+              accessibilityRole="button"
+              accessibilityLabel="Modo Zen: practicar sin reloj"
+              hitSlop={6}
+            >
+              <IconoZen tam={14} c={COLOR_NOCHE.texto} />
+              <Texto style={{ fontFamily: fuente.cuerpoFuerte, fontSize: 12, color: color.texto }}>Modo Zen</Texto>
+            </Pressable>
+            )}
+            <View style={styles.titulo}>
+              <Texto style={{ fontFamily: fuente.display, fontSize: 30, letterSpacing: 2, color: color.texto, textShadowColor: mundo.neon, textShadowRadius: 16 }}>
+                {mundo.nombre.toUpperCase()}
+              </Texto>
+              <Texto v="mono" tam={20} c={mundo.neon}>
+                Nv {progreso?.nivel ?? 1}
+              </Texto>
+            </View>
           </View>
-          <View style={styles.atras}>
-            <BotonAtras />
-          </View>
-          {/* Modo Zen: practicar sin reloj, con tema y dificultad a elección (docs/PLAN_MODO_SIN_RELOJ.md).
-              Solo en mundos tuyos (revisión 2026-10-14: se podía usar sin tener el mundo). */}
-          {!bloqueado && (
-          <Pressable
-            onPress={() => {
-              vibrar.seleccion();
-              router.push(`/zen/${mundo.slug}` as Href);
-            }}
-            style={({ pressed }) => [styles.zen, { borderColor: conAlfa(mundo.neon, 0.6) }, pressed && { transform: [{ scale: 0.95 }] }]}
-            accessibilityRole="button"
-            accessibilityLabel="Modo Zen: practicar sin reloj"
-            hitSlop={6}
-          >
-            <IconoZen tam={14} c={color.texto} />
-            <Texto style={{ fontFamily: fuente.cuerpoFuerte, fontSize: 12, color: color.texto }}>Modo Zen</Texto>
-          </Pressable>
-          )}
-          <View style={styles.titulo}>
-            <Texto style={{ fontFamily: fuente.display, fontSize: 30, letterSpacing: 2, color: color.texto, textShadowColor: mundo.neon, textShadowRadius: 16 }}>
-              {mundo.nombre.toUpperCase()}
-            </Texto>
-            <Texto v="mono" tam={20} c={mundo.neon}>
-              Nv {progreso?.nivel ?? 1}
-            </Texto>
-          </View>
-        </View>
+        </SobreOscuro>
         <View style={styles.contenido}>
           <Barra valor={progreso?.avance ?? 0} acento={mundo.base} alto={9} />
           <Texto v="nota" tam={12}>

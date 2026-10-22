@@ -113,6 +113,6 @@ export default function CapsulasCometas() {
 }
 
 const styles = StyleSheet.create({
-  tarjeta: { flexDirection: "row", alignItems: "center", gap: 14, padding: 14, borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)", backgroundColor: "#12172A" },
+  tarjeta: { flexDirection: "row", alignItems: "center", gap: 14, padding: 14, borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)", backgroundColor: color.surface1 },
   fila: { flexDirection: "row", justifyContent: "space-between" },
 });

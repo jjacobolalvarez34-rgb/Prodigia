@@ -10,7 +10,8 @@ type SupabaseClient = { rpc: (fn: string, args?: Record<string, unknown>) => any
 // a cada uno que jugó, si entre todos se llega).
 
 export const PARTIDAS_PARA_CAPSULA = 3;
-export const CHISPAS_COMUNIDAD = 300;
+// Regalo de la Gran Alineación para todos (0301, pedido 2026-10-22): sin meta ni partida.
+export const CHISPAS_COMUNIDAD = 3000;
 // El cartel aparece en Inicio desde 3 días antes.
 export const AVISO_PREVIO_MS = 3 * 86_400_000;
 

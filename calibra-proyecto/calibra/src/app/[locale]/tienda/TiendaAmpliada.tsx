@@ -11,11 +11,13 @@ import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { probarPaqueteAcierto, reproducirTono } from "@/lib/sonido";
 import { CATALOGO_NUEVO, COLOR_RAREZA, diasHastaFinDeMes, PAQUETES, temporadaActual, UTILIDADES_NUEVAS, type Rareza } from "@/lib/recompensas/catalogo";
-import { cosmeticosDesdeFila, COLUMNAS_COSMETICOS_NUEVOS, equiparCosmetico, mensajeError, preciosPaquetesParaMi, type CosmeticosNuevos } from "@/lib/recompensas/api";
+import { comprarTemaApp, cosmeticosDesdeFila, COLUMNAS_COSMETICOS_NUEVOS, equiparCosmetico, estadoTemasApp, mensajeError, ponerTemaApp, preciosPaquetesParaMi, SIN_TEMAS_APP, type CosmeticosNuevos, type EstadoTemasApp } from "@/lib/recompensas/api";
 import { refrescarCosmeticosWeb } from "@/lib/recompensas/cosmeticosWeb";
 import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
 import IconoCometa from "@/components/IconoCometa";
-import { TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
+import { precioTemaCometas, TEMA_CLASICO, TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
+import { aplicarTemaAppWeb } from "@/lib/recompensas/temaAppWeb";
+import MiniTemaApp from "@/components/recompensas/MiniTemaApp";
 import { puestoDe, type PuestoId } from "@/lib/tienda/bazar";
 import IlustracionPaquete from "@/components/tienda/IlustracionPaquete";
 import IconoTrazo from "@/components/IconoTrazo";
@@ -112,31 +114,6 @@ const DE_PESTANA: Record<Pestana, (it: Item) => boolean> = {
   puntos: (it) => it.categoria === "fuente_puntos",
 };
 
-// Miniatura de un tema (Próximamente): pantallita con sus colores, la forma de sus
-// tarjetas y su botón. Igual que en el Bazar de la app.
-function MiniTema({ tema, grande = false }: { tema: TemaApp; grande?: boolean }) {
-  const k = tema.colores;
-  const radio = Math.min(tema.radio, 6);
-  const tarjeta = (alto: string) => (
-    <span className="relative block" style={{ height: alto }}>
-      {tema.sombra === "dura" && <span className="absolute inset-0 translate-x-[2px] translate-y-[2px]" style={{ borderRadius: radio, background: k.borde }} />}
-      <span className="relative flex h-full flex-col justify-center gap-[3px] p-1" style={{ borderRadius: radio, background: k.tarjeta, border: `${tema.borde}px solid ${k.borde}` }}>
-        <span className="block h-[3px] w-[62%] rounded-sm opacity-85" style={{ background: k.texto }} />
-        <span className="block h-[3px] w-[40%] rounded-sm" style={{ background: k.detalle }} />
-      </span>
-    </span>
-  );
-  return (
-    <span className={`flex flex-col gap-1.5 overflow-hidden rounded-xl p-2 ${grande ? "h-32 w-24" : "aspect-[10/13] w-full"}`} style={{ background: k.fondo }} aria-hidden="true">
-      <span className="block h-[5px] w-[48%] rounded-sm" style={{ background: k.texto === k.tarjeta ? k.borde : k.texto }} />
-      {tarjeta("24%")}
-      {tarjeta("17%")}
-      <span className="flex-1" />
-      <span className="block h-[12%]" style={{ borderRadius: radio, background: k.acento, border: tema.borde ? `1px solid ${k.borde}` : undefined }} />
-    </span>
-  );
-}
-
 interface Estado {
   cos: CosmeticosNuevos;
   titulos: string[];
@@ -153,6 +130,8 @@ interface Estado {
   fuente: string;
   fuentesPuntos: string[];
   fuentePuntos: string;
+  // Temas de la app (0297); sin la migración, disponible = false.
+  temas: EstadoTemasApp;
 }
 
 export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetesConDinero?: boolean }) {
@@ -166,6 +145,8 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
   const itemPedido = parametros.get("item");
   const [pestana, setPestana] = useState<Pestana>("paquetes");
   const [tema, setTema] = useState<TemaApp | null>(null);
+  // Tema elegido cuando ya se venden (0297); "clasico" = Noche de Prodigia.
+  const [temaElegido, setTemaElegido] = useState<TemaApp | "clasico" | null>(null);
   const [e, setE] = useState<Estado | null>(null);
   const [elegido, setElegido] = useState<Item | null>(null);
   const [confirmar, setConfirmar] = useState(false);
@@ -190,6 +171,7 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
     const { data: filaFuentes } = await sb.from("profiles").select("fuente_nombre, fuentes_desbloqueadas, fuente_puntos, fuentes_puntos_desbloqueadas").eq("id", u.user.id).maybeSingle();
     const ff = (filaFuentes ?? {}) as Record<string, unknown>;
     setPreciosPaq(await preciosPaquetesParaMi(sb));
+    const temas = await estadoTemasApp(sb, u.user.id).catch(() => SIN_TEMAS_APP);
     const b = (base ?? {}) as Record<string, unknown>;
     setE({
       cos: cosmeticosDesdeFila(nuevos as Record<string, unknown> | null),
@@ -206,6 +188,7 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
       fuente: (ff.fuente_nombre as string) ?? "default",
       fuentesPuntos: (ff.fuentes_puntos_desbloqueadas as string[]) ?? [],
       fuentePuntos: (ff.fuente_puntos as string) ?? "clasica",
+      temas,
     });
   }, []);
 
@@ -298,7 +281,9 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
     return null;
   }
 
-  const pestanas = useMemo(() => (inventario ? PESTANAS.filter((p) => p !== "paquetes" && p !== "temas") : puesto ? PESTANAS_DE_PUESTO[puesto] : []), [inventario, puesto]);
+  // En el Inventario, los temas aparecen cuando ya se pueden tener (0297).
+  const temasDisponibles = !!e?.temas.disponible;
+  const pestanas = useMemo(() => (inventario ? PESTANAS.filter((p) => p !== "paquetes" && (p !== "temas" || temasDisponibles)) : puesto ? PESTANAS_DE_PUESTO[puesto] : []), [inventario, puesto, temasDisponibles]);
   const pestanaVista = pestanas.includes(pestana) ? pestana : pestanas[0];
   const [pedidoAbierto, setPedidoAbierto] = useState<string | null>(null);
   useEffect(() => {
@@ -381,6 +366,42 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
     }
   }
 
+  async function comprarTema(tm: TemaApp) {
+    if (!e) return;
+    if (!confirmar) {
+      setConfirmar(true);
+      return;
+    }
+    setOcupado(true);
+    try {
+      const { cometas } = await comprarTemaApp(createClient(), tm.slug);
+      reproducirTono("compra");
+      window.dispatchEvent(new CustomEvent("prodigia:cometas", { detail: cometas }));
+      avisar(t("comprado", { nombre: tm.nombre }));
+      setConfirmar(false);
+      await cargar();
+    } catch (err) {
+      avisar(mensajeError(err));
+    } finally {
+      setOcupado(false);
+    }
+  }
+
+  // Poner un tema se ve al instante en la web (variables de color en <html>).
+  async function ponerTema(tm: TemaApp | null) {
+    setOcupado(true);
+    try {
+      await ponerTemaApp(createClient(), tm?.slug ?? TEMA_CLASICO);
+      aplicarTemaAppWeb(tm?.slug ?? null);
+      avisar(t("temas.puesto", { nombre: tm ? tm.nombre : t("temas.clasico") }));
+      await cargar();
+    } catch (err) {
+      avisar(mensajeError(err));
+    } finally {
+      setOcupado(false);
+    }
+  }
+
   // En la portada (sin puesto) la tienda ampliada no se muestra: está repartida en los puestos.
   if (pestanas.length === 0) return null;
 
@@ -403,8 +424,9 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
         ))}
       </div>
       {!inventario && pestanaVista === "temporada" && <p className="text-sm font-semibold text-racha">{t("quedanDias", { n: diasHastaFinDeMes() })}</p>}
-      {!inventario && pestanaVista === "temas" && (
+      {pestanaVista === "temas" && e && !e.temas.disponible && !inventario && (
         <>
+          {/* Sin 0297 en la base: como antes, «Próximamente». */}
           <div className="rounded-2xl border border-logro/35 bg-logro/5 p-4">
             <p className="text-[11px] font-bold uppercase tracking-wider text-logro">{t("temas.pronto")}</p>
             <p className="font-display text-lg font-bold text-foreground">{t("temas.titulo")}</p>
@@ -413,7 +435,7 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
             {TEMAS_APP.map((tm) => (
               <button key={tm.slug} type="button" onClick={() => setTema(tm)} className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-surface p-2 text-center transition-transform hover:-translate-y-1">
-                <MiniTema tema={tm} />
+                <MiniTemaApp tema={tm} />
                 <span className="text-xs font-bold text-foreground">{tm.nombre}</span>
                 <span className="rounded-full border border-logro/50 px-2 py-0.5 text-[9px] font-bold tracking-wider text-logro">{t("temas.etiqueta")}</span>
               </button>
@@ -421,11 +443,52 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
           </div>
         </>
       )}
+      {pestanaVista === "temas" && e?.temas.disponible && (
+        <>
+          <div className="rounded-2xl border border-primario/35 bg-primario/5 p-4">
+            <p className="font-display text-lg font-bold text-foreground">{t("temas.aLaVenta")}</p>
+            <p className="text-sm text-texto-secundario">{t("temas.subVenta")}</p>
+            <p className="mt-1 text-xs text-texto-secundario">{t("temas.comoConseguir")}</p>
+          </div>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+            {[null, ...TEMAS_APP.filter((tm) => !inventario || e.temas.mios.includes(tm.slug))].map((tm) => {
+              const slug = tm?.slug ?? TEMA_CLASICO;
+              const enUso = e.temas.puesto === slug || (!tm && !TEMAS_APP.some((x) => x.slug === e.temas.puesto));
+              const mio = !tm || e.temas.mios.includes(slug);
+              const c = tm ? COLOR_RAREZA[tm.rareza] : undefined;
+              return (
+                <button
+                  key={slug}
+                  type="button"
+                  onClick={() => {
+                    setTemaElegido(tm ?? "clasico");
+                    setConfirmar(false);
+                  }}
+                  className={`flex flex-col items-center gap-1.5 rounded-2xl border-2 bg-surface p-2 text-center transition-transform hover:-translate-y-1 ${enUso ? "border-correcto" : "border-border"}`}
+                  style={enUso || !c ? undefined : { borderColor: `${c}99` }}
+                >
+                  <MiniTemaApp tema={tm} />
+                  <span className="text-xs font-bold text-foreground">{tm ? tm.nombre : t("temas.clasico")}</span>
+                  {enUso ? (
+                    <span className="text-[10px] font-bold text-correcto">{t("enUso").toUpperCase()}</span>
+                  ) : mio ? (
+                    <span className="text-[10px] font-bold text-primario">{tm ? t("tuyo").toUpperCase() : t("temas.gratis")}</span>
+                  ) : (
+                    <span className="flex items-center gap-1 rounded-full border border-[#5DE4FF]/50 bg-surface-2 px-2 py-0.5 font-mono text-[11px] text-foreground">
+                      <IconoCometa className="h-3 w-3" /> {tm ? precioTemaCometas(tm) : 0}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
       {tema && (
         <div className="fixed inset-0 z-[95] flex items-end justify-center bg-black/60 p-4 sm:items-center" onClick={() => setTema(null)} role="dialog" aria-modal="true">
           <div className="flex w-full max-w-md flex-col gap-3 rounded-3xl border border-border bg-surface p-5" onClick={(ev) => ev.stopPropagation()}>
             <div className="flex items-center gap-4">
-              <MiniTema tema={tema} grande />
+              <MiniTemaApp tema={tema} ancho={96} />
               <div className="min-w-0">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-logro">{t("temas.etiquetaLarga")}</span>
                 <p className="font-display text-xl font-bold text-foreground">{tema.nombre}</p>
@@ -438,6 +501,52 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
               {t("temas.boton")}
             </button>
           </div>
+        </div>
+      )}
+      {temaElegido && e && (
+        <div className="fixed inset-0 z-[95] flex items-end justify-center bg-black/60 p-4 sm:items-center" onClick={() => setTemaElegido(null)} role="dialog" aria-modal="true">
+          {(() => {
+            const tm = temaElegido === "clasico" ? null : temaElegido;
+            const slug = tm?.slug ?? TEMA_CLASICO;
+            const mio = !tm || e.temas.mios.includes(slug);
+            const enUso = e.temas.puesto === slug || (!tm && !TEMAS_APP.some((x) => x.slug === e.temas.puesto));
+            const precio = tm ? precioTemaCometas(tm) : 0;
+            return (
+              <div className="flex w-full max-w-md flex-col gap-3 rounded-3xl border border-border bg-surface p-5" onClick={(ev) => ev.stopPropagation()}>
+                <div className="flex items-center gap-4">
+                  <MiniTemaApp tema={tm} ancho={96} />
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider" style={tm ? { color: COLOR_RAREZA[tm.rareza] } : undefined}>
+                      {t("temas.etiquetaTema")} · {tm ? t(`rareza.${tm.rareza}`) : t("temas.gratis")}
+                    </span>
+                    <p className="font-display text-xl font-bold text-foreground">{tm ? tm.nombre : t("temas.clasico")}</p>
+                    {tm && <p className="text-xs text-texto-secundario">{t("temas.inspiracion", { x: tm.inspiracion })}</p>}
+                  </div>
+                </div>
+                <p className="text-sm text-foreground">{tm ? tm.descripcion : t("temas.clasicoDesc")}</p>
+                <p className="text-xs text-texto-secundario">{t("temas.nota")}</p>
+                {!mio && <p className="text-xs text-texto-secundario">{t("temas.enCapsulas")}</p>}
+                {mio ? (
+                  <button type="button" disabled={ocupado || enUso} onClick={() => ponerTema(tm)} className="rounded-full bg-primario px-6 py-3 font-display font-bold text-white disabled:opacity-60">
+                    {enUso ? t("enUso") : t("usar")}
+                  </button>
+                ) : (
+                  <>
+                    <button type="button" disabled={ocupado || e.cometas < precio} onClick={() => tm && comprarTema(tm)} className="flex items-center justify-center gap-2 rounded-full bg-[#5DE4FF] px-6 py-3 font-display font-bold text-[#06202A] disabled:opacity-50">
+                      <IconoCometa className="h-5 w-5" />
+                      {confirmar ? t("confirmar") : t("comprarCometas", { n: precio.toLocaleString() })}
+                    </button>
+                    {e.cometas < precio && <p className="text-center text-xs text-texto-secundario">{t("teFaltanCometas", { n: (precio - e.cometas).toLocaleString() })}</p>}
+                  </>
+                )}
+                {mio && enUso && tm && (
+                  <button type="button" disabled={ocupado} onClick={() => ponerTema(null)} className="rounded-full border border-border px-6 py-2 text-sm font-semibold text-foreground disabled:opacity-60">
+                    {t("temas.volverClasico")}
+                  </button>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
       {lista.length === 0 && pestanaVista !== "temas" && (

@@ -10,6 +10,8 @@ import EfectoAciertoGlobal from "@/components/recompensas/EfectoAciertoGlobal";
 import NotificacionesDuelo from "@/components/NotificacionesDuelo";
 import AnunciosModal from "@/components/AnunciosModal";
 import AplicarTema from "@/components/temas/AplicarTema";
+import AplicarTemaApp from "@/components/temas/AplicarTemaApp";
+import { SCRIPT_TEMA_APP } from "@/lib/recompensas/temaAppScript";
 import CapaTemporada from "@/components/temas/CapaTemporada";
 import InsigniaAlineacion from "@/components/alineacion/InsigniaAlineacion";
 import CapaAlineacion from "@/components/alineacion/CapaAlineacion";
@@ -199,7 +201,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       <head>
         <Script id="theme-init" strategy="beforeInteractive">
-          {THEME_INIT_SCRIPT}
+          {THEME_INIT_SCRIPT + SCRIPT_TEMA_APP}
         </Script>
       </head>
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
@@ -215,6 +217,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <EfectoAciertoGlobal />
             <AnunciosModal />
             <AplicarTema />
+            <AplicarTemaApp />
             <CapaTemporada />
             <InsigniaAlineacion />
             <CapaAlineacion />

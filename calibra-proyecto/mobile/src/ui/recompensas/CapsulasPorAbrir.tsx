@@ -10,7 +10,7 @@ import { fijarChispas } from "~/lib/jugador";
 import { supabase } from "~/lib/supabase";
 import { mostrarAviso } from "../Aviso";
 import Boton3D from "../Boton3D";
-import Texto from "../Texto";
+import Texto, { SobreOscuro } from "../Texto";
 import { color, conAlfa, fuente } from "~/tema";
 import Capsula from "./Capsula";
 import EtiquetaNuevo from "../EtiquetaNuevo";
@@ -42,31 +42,33 @@ function Fusion({ de, nueva, onGuardar, onAbrir }: { de: TipoCapsula[]; nueva: T
   }, [junta, luz]);
   const estiloLuz = useAnimatedStyle(() => ({ opacity: luz.value, transform: [{ scale: 0.4 + luz.value * 1.2 }] }));
   return (
-    <View style={styles.velo}>
-      <View style={styles.escena}>
-        {de.map((tipo, i) => (
-          <Pieza key={i} i={i} tipo={tipo} junta={junta} />
-        ))}
-        <Animated.View style={[styles.luz, { backgroundColor: conAlfa(tinta, 0.55), boxShadow: `0px 0px 80px ${tinta}` }, estiloLuz]} />
-        <Animated.View entering={ZoomIn.delay(800).springify().damping(9)}>
-          <CapsulaQuieta tipo={nueva} mundo={null} tam={120} />
+    <SobreOscuro>
+      <View style={styles.velo}>
+        <View style={styles.escena}>
+          {de.map((tipo, i) => (
+            <Pieza key={i} i={i} tipo={tipo} junta={junta} />
+          ))}
+          <Animated.View style={[styles.luz, { backgroundColor: conAlfa(tinta, 0.55), boxShadow: `0px 0px 80px ${tinta}` }, estiloLuz]} />
+          <Animated.View entering={ZoomIn.delay(800).springify().damping(9)}>
+            <CapsulaQuieta tipo={nueva} mundo={null} tam={120} />
+          </Animated.View>
+        </View>
+        <Animated.View entering={FadeInDown.delay(1100).duration(320)} style={{ alignItems: "center", gap: 4 }}>
+          <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 11, letterSpacing: 2.2, color: tinta }}>{NOMBRE_RANGO[rangoCapsula(nueva)].toUpperCase()}</Texto>
+          <Texto v="h1" centro>
+            ¡Nueva {CAPSULAS[nueva].nombre.replace("Cápsula ", "cápsula ")}!
+          </Texto>
+        </Animated.View>
+        <Animated.View entering={FadeIn.delay(1300)} style={{ flexDirection: "row", gap: 10, alignSelf: "stretch" }}>
+          <View style={{ flex: 1 }}>
+            <Boton3D titulo="Guardar" variante="secundario" onPress={onGuardar} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Boton3D titulo="Abrir ahora" variante="logro" onPress={onAbrir} />
+          </View>
         </Animated.View>
       </View>
-      <Animated.View entering={FadeInDown.delay(1100).duration(320)} style={{ alignItems: "center", gap: 4 }}>
-        <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 11, letterSpacing: 2.2, color: tinta }}>{NOMBRE_RANGO[rangoCapsula(nueva)].toUpperCase()}</Texto>
-        <Texto v="h1" centro>
-          ¡Nueva {CAPSULAS[nueva].nombre.replace("Cápsula ", "cápsula ")}!
-        </Texto>
-      </Animated.View>
-      <Animated.View entering={FadeIn.delay(1300)} style={{ flexDirection: "row", gap: 10, alignSelf: "stretch" }}>
-        <View style={{ flex: 1 }}>
-          <Boton3D titulo="Guardar" variante="secundario" onPress={onGuardar} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <Boton3D titulo="Abrir ahora" variante="logro" onPress={onAbrir} />
-        </View>
-      </Animated.View>
-    </View>
+    </SobreOscuro>
   );
 }
 
@@ -121,54 +123,56 @@ export default function CapsulasPorAbrir({ capsulas, detalle, onAbrir, onVer, on
         const tinta = COLOR_RANGO[rangoCapsula(f.destino)];
         const nivel = NOMBRE_RANGO[rangoCapsula(capsulas.find((c) => c.id === f.ids[0])?.tipo ?? "diaria")];
         return (
-          <Animated.View key={f.nivel} entering={FadeInDown.duration(280)} style={[styles.fusion, { borderColor: conAlfa(tinta, 0.6), boxShadow: `0px 10px 28px ${conAlfa(tinta, 0.25)}` }]}>
-            <LinearGradient colors={["transparent", conAlfa(tinta, 0.16)]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />
-            {esNuevo("fusion", vistos) && <EtiquetaNuevo estilo={{ top: 8, right: 10 }} />}
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                {f.ids.map((id, i) => {
-                  const c = capsulas.find((x) => x.id === id);
-                  return (
-                    <View key={id} style={{ marginLeft: i === 0 ? 0 : -14, zIndex: 3 - i }}>
-                      <CapsulaQuieta tipo={c?.tipo ?? "diaria"} mundo={c?.mundo ?? null} tam={30} />
-                    </View>
-                  );
-                })}
-                <Texto style={{ marginHorizontal: 6, color: tinta, fontFamily: fuente.display, fontSize: 18 }}>→</Texto>
-                <CapsulaQuieta tipo={f.destino} mundo={null} tam={40} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Texto v="fuerte" tam={14}>
-                  3 de {nivel} → {CAPSULAS[f.destino].nombre}
-                </Texto>
-                <Pressable onPress={() => setVerComo((v) => !v)} hitSlop={6}>
-                  <Texto v="nota" tam={12}>
-                    Tienes {f.cuantas} · <Texto tam={12} c={color.primarioClaro}>¿Cómo funciona?</Texto>
-                  </Texto>
-                </Pressable>
-              </View>
-            </View>
-            {confirmando === f.nivel ? (
-              <View style={{ flexDirection: "row", gap: 8 }}>
+          <SobreOscuro key={f.nivel}>
+            <Animated.View entering={FadeInDown.duration(280)} style={[styles.fusion, { borderColor: conAlfa(tinta, 0.6), boxShadow: `0px 10px 28px ${conAlfa(tinta, 0.25)}` }]}>
+              <LinearGradient colors={["transparent", conAlfa(tinta, 0.16)]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />
+              {esNuevo("fusion", vistos) && <EtiquetaNuevo estilo={{ top: 8, right: 10 }} />}
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  {f.ids.map((id, i) => {
+                    const c = capsulas.find((x) => x.id === id);
+                    return (
+                      <View key={id} style={{ marginLeft: i === 0 ? 0 : -14, zIndex: 3 - i }}>
+                        <CapsulaQuieta tipo={c?.tipo ?? "diaria"} mundo={c?.mundo ?? null} tam={30} />
+                      </View>
+                    );
+                  })}
+                  <Texto style={{ marginHorizontal: 6, color: tinta, fontFamily: fuente.display, fontSize: 18 }}>→</Texto>
+                  <CapsulaQuieta tipo={f.destino} mundo={null} tam={40} />
+                </View>
                 <View style={{ flex: 1 }}>
-                  <Boton3D titulo="Cancelar" variante="secundario" tamano="sm" deshabilitado={ocupado} onPress={() => setConfirmando(null)} />
-                </View>
-                <View style={{ flex: 1.4 }}>
-                  <Boton3D titulo={`Confirmar · ${f.costo} Chispas`} variante="logro" tamano="sm" cargando={ocupado} onPress={() => fusionar(f)} />
+                  <Texto v="fuerte" tam={14}>
+                    3 de {nivel} → {CAPSULAS[f.destino].nombre}
+                  </Texto>
+                  <Pressable onPress={() => setVerComo((v) => !v)} hitSlop={6}>
+                    <Texto v="nota" tam={12}>
+                      Tienes {f.cuantas} · <Texto tam={12} c={color.primarioClaro}>¿Cómo funciona?</Texto>
+                    </Texto>
+                  </Pressable>
                 </View>
               </View>
-            ) : (
-              <Boton3D
-                titulo={`Fusionar · ${FUSION[f.nivel].costo} Chispas`}
-                variante="secundario"
-                tamano="sm"
-                onPress={() => {
-                  setConfirmando(f.nivel);
-                  marcarNuevoVisto("fusion");
-                }}
-              />
-            )}
-          </Animated.View>
+              {confirmando === f.nivel ? (
+                <View style={{ flexDirection: "row", gap: 8 }}>
+                  <View style={{ flex: 1 }}>
+                    <Boton3D titulo="Cancelar" variante="secundario" tamano="sm" deshabilitado={ocupado} onPress={() => setConfirmando(null)} />
+                  </View>
+                  <View style={{ flex: 1.4 }}>
+                    <Boton3D titulo={`Confirmar · ${f.costo} Chispas`} variante="logro" tamano="sm" cargando={ocupado} onPress={() => fusionar(f)} />
+                  </View>
+                </View>
+              ) : (
+                <Boton3D
+                  titulo={`Fusionar · ${FUSION[f.nivel].costo} Chispas`}
+                  variante="secundario"
+                  tamano="sm"
+                  onPress={() => {
+                    setConfirmando(f.nivel);
+                    marcarNuevoVisto("fusion");
+                  }}
+                />
+              )}
+            </Animated.View>
+          </SobreOscuro>
         );
       })}
       {verComo && (

@@ -37,6 +37,7 @@ import PantallaCarga from "~/ui/PantallaCarga";
 import AnuncioTemporada from "~/ui/rankeds/AnuncioTemporada";
 import PrimeraVez from "~/ui/PrimeraVez";
 import AvisoProTermino from "~/ui/AvisoProTermino";
+import AvisoTemaApp from "~/ui/temas/AvisoTemaApp";
 import CapaTemporada from "~/ui/temas/CapaTemporada";
 import CapaAlineacion from "~/ui/alineacion/CapaAlineacion";
 import VideoApertura from "~/ui/VideoApertura";
@@ -46,12 +47,14 @@ import { GlobosPorRuta } from "~/ui/GloboAyuda";
 import CelebracionConstelaciones from "~/ui/recompensas/CelebracionConstelaciones";
 import BannerDueloEnCurso from "~/ui/BannerDueloEnCurso";
 import BienvenidaPro from "~/ui/BienvenidaPro";
-import { color, MUNDOS } from "~/tema";
+import { color, MUNDOS, temaClaro } from "~/tema";
 
 SplashScreen.preventAutoHideAsync();
 
 const tema = {
   ...DarkTheme,
+  // Temas de la app de fondo claro (0297).
+  dark: !temaClaro,
   colors: { ...DarkTheme.colors, background: color.bg, card: color.bg, text: color.texto, border: color.border, primary: color.primario },
 };
 
@@ -251,6 +254,7 @@ function Navegacion() {
       {/* Videos de apertura de los eventos: en lugar del menú al abrir, o con fundido si empiezan con la app abierta. */}
       {!cargando && !cargaVisible && terminos !== false && !segmentos.some((x) => PANTALLAS_DE_JUEGO.has(x)) && <VideoApertura />}
       {!cargando && userId && terminos && !cargaVisible && <AvisoProTermino />}
+      {!cargando && userId && terminos && !cargaVisible && <AvisoTemaApp />}
       {/* Fin de temporada de rankeds (0296): el rango alcanzado y sus recompensas. */}
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && !segmentos.some((x) => PANTALLAS_DE_JUEGO.has(x)) && <AnuncioTemporada />}
       {/* Nueva versión del APK (2026-10-14): se baja y se instala desde la app. */}
@@ -308,7 +312,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: color.bg }}>
       <ThemeProvider value={tema}>
         <ProveedorSesion>
-          <StatusBar style="light" />
+          <StatusBar style={temaClaro ? "dark" : "light"} />
           {(fuentesListas || errorFuentes) && <Navegacion />}
         </ProveedorSesion>
       </ThemeProvider>

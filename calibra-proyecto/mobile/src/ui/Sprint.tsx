@@ -25,7 +25,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { sonar, vibrar } from "~/lib/efectos";
 import { useLiviano } from "~/lib/rendimiento";
-import { brillo, color, conAlfa, fuente, radio } from "~/tema";
+import { brillo, color, conAlfa, fuente, radio, oscurecer, temaClaro } from "~/tema";
 import Anillo from "./Anillo";
 import { tiempoEsperadoMs } from "@/lib/practica/formulas";
 import { alineacionEnCurso } from "@/lib/ciudades/cicloDia";
@@ -35,7 +35,7 @@ import { usarAyudaPartida, useCosmeticos } from "~/lib/recompensas";
 import { IconoBombilla, IconoCerrar, IconoCompetir, IconoCopo, IconoEscudo, IconoFantasma, IconoLlama, IconoReloj, IconoRepetir } from "./Iconos";
 import EfectoAcierto from "./recompensas/EfectoAcierto";
 import Logo from "./Logo";
-import Texto from "./Texto";
+import Texto, { SobreOscuro } from "./Texto";
 
 // Piezas del sprint (02-SISTEMA-VISUAL.md §7.2 y §9). Reglas de rendimiento: el
 // reloj corre en el hilo nativo (el anillo no hace redibujar la pantalla) y solo la
@@ -645,22 +645,24 @@ export function CuentaInicio({ acento, onListo }: { acento: string; onListo: () 
   const texto = PASOS[paso];
   const numero = /^\d$/.test(texto);
   return (
-    <Animated.View exiting={FadeOut.duration(180)} style={styles.cuenta} pointerEvents="none">
-      <Animated.View key={texto} entering={ZoomIn.duration(240)}>
-        <Texto
-          style={{
-            fontFamily: numero ? fuente.mono : fuente.display,
-            fontSize: numero ? 110 : 40,
-            color: texto === "¡Ya!" ? color.logro : numero ? acento : color.texto,
-            textShadowColor: acento,
-            textShadowRadius: 26,
-            textAlign: "center",
-          }}
-        >
-          {texto}
-        </Texto>
+    <SobreOscuro>
+      <Animated.View exiting={FadeOut.duration(180)} style={styles.cuenta} pointerEvents="none">
+        <Animated.View key={texto} entering={ZoomIn.duration(240)}>
+          <Texto
+            style={{
+              fontFamily: numero ? fuente.mono : fuente.display,
+              fontSize: numero ? 110 : 40,
+              color: texto === "¡Ya!" ? color.logro : numero ? acento : color.texto,
+              textShadowColor: acento,
+              textShadowRadius: 26,
+              textAlign: "center",
+            }}
+          >
+            {texto}
+          </Texto>
+        </Animated.View>
       </Animated.View>
-    </Animated.View>
+    </SobreOscuro>
   );
 }
 
@@ -719,21 +721,23 @@ export function CartelFinal({ texto, nota, acento = color.primarioNeon, progreso
   const estiloLogo = useAnimatedStyle(() => ({ transform: [{ rotate: `${giro.value * 360}deg` }] }));
   const estiloTexto = useAnimatedStyle(() => ({ opacity: Math.min(1, entrada.value * 1.5), transform: [{ scale: 0.7 + entrada.value * 0.3 }] }));
   return (
-    <Animated.View entering={FadeIn.duration(420)} style={styles.cuenta} pointerEvents="none">
-      <FondoCiudad semilla={semilla} acento={acento} />
-      <View style={{ alignItems: "center", gap: 18, marginBottom: 140 }}>
-        <Animated.View style={estiloTexto}>
-          <Texto style={{ fontFamily: fuente.display, fontSize: 50, color: color.texto, textShadowColor: acento, textShadowRadius: 18 }}>{texto}</Texto>
-        </Animated.View>
-        <Animated.View style={[{ boxShadow: brillo(acento, 30, 0.35), borderRadius: 50 }, estiloLogo]}>
-          <Logo tam={78} />
-        </Animated.View>
-        <Porcentaje progreso={progreso} acento={acento} />
-        <Texto v="nota" centro>
-          {nota}
-        </Texto>
-      </View>
-    </Animated.View>
+    <SobreOscuro>
+      <Animated.View entering={FadeIn.duration(420)} style={styles.cuenta} pointerEvents="none">
+        <FondoCiudad semilla={semilla} acento={acento} />
+        <View style={{ alignItems: "center", gap: 18, marginBottom: 140 }}>
+          <Animated.View style={estiloTexto}>
+            <Texto style={{ fontFamily: fuente.display, fontSize: 50, color: color.texto, textShadowColor: acento, textShadowRadius: 18 }}>{texto}</Texto>
+          </Animated.View>
+          <Animated.View style={[{ boxShadow: brillo(acento, 30, 0.35), borderRadius: 50 }, estiloLogo]}>
+            <Logo tam={78} />
+          </Animated.View>
+          <Porcentaje progreso={progreso} acento={acento} />
+          <Texto v="nota" centro>
+            {nota}
+          </Texto>
+        </View>
+      </Animated.View>
+    </SobreOscuro>
   );
 }
 
@@ -865,7 +869,7 @@ const styles = StyleSheet.create({
   rellenoFinal: { height: 8, borderRadius: 4 },
   cuenta: { position: "absolute", left: 0, right: 0, top: 0, bottom: 0, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(5,7,13,0.78)", zIndex: 50 },
   filaTeclas: { flexDirection: "row", gap: 8 },
-  teclaBase: { flex: 1, height: 60, borderRadius: 14, backgroundColor: "#080B17" },
+  teclaBase: { flex: 1, height: 60, borderRadius: 14, backgroundColor: temaClaro ? oscurecer(color.surface3, 0.78) : "#080B17" },
   tecla: { height: 56, borderRadius: 14, backgroundColor: color.surface2, borderWidth: 1, borderColor: color.border, alignItems: "center", justifyContent: "center" },
   rival: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginHorizontal: 18, marginTop: 8, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 12, backgroundColor: conAlfa(color.error, 0.08), borderWidth: 1, borderColor: conAlfa(color.error, 0.3) },
 });

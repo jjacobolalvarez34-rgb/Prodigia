@@ -5,7 +5,7 @@ import { eventoDeTema, finDelDiaMs } from "@/lib/temas/eventos";
 import { inicioEventoMs } from "@/lib/temas/calendario";
 import { useTemaHoy } from "~/lib/temporada";
 import { fuente } from "~/tema";
-import Texto from "../Texto";
+import Texto, { SobreOscuro } from "../Texto";
 import EscenaTema from "./EscenaTema";
 import RelojFalta from "./RelojFalta";
 
@@ -20,29 +20,31 @@ export default function CartelTemporada() {
   const decoracion = tema.fase === "decoracion";
   const frase = (decoracion ? tema.tema.frase.decoracion : "") || tema.tema.frase.evento;
   return (
-    <Pressable disabled={!evento} onPress={() => router.push("/evento" as Href)} style={({ pressed }) => [styles.caja, pressed && { transform: [{ scale: 0.98 }] }]}>
-      <EscenaTema tema={tema.tema} ancho={width - 32} />
-      <LinearGradient colors={["rgba(5,6,15,0.9)", "rgba(5,6,15,0.5)", "transparent"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />
-      <View style={styles.texto}>
-        <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 11, letterSpacing: 2.2, color: tema.tema.acento }}>{decoracion ? "SE ACERCA" : "EVENTO"}</Texto>
-        <Texto v="h2">{tema.tema.nombre}</Texto>
-        <Texto v="nota" tam={12.5} style={{ maxWidth: 230 }}>
-          {frase}
-        </Texto>
-        <View style={styles.reloj}>
-          {decoracion ? (
-            <RelojFalta hasta={inicioEventoMs(tema.hoy.rango)} texto={(t) => `Empieza en ${t}`} />
-          ) : (
-            <RelojFalta hasta={finDelDiaMs(tema.hoy.rango.hasta)} texto={(t) => `Termina en ${t}`} />
-          )}
+    <SobreOscuro>
+      <Pressable disabled={!evento} onPress={() => router.push("/evento" as Href)} style={({ pressed }) => [styles.caja, pressed && { transform: [{ scale: 0.98 }] }]}>
+        <EscenaTema tema={tema.tema} ancho={width - 32} />
+        <LinearGradient colors={["rgba(5,6,15,0.9)", "rgba(5,6,15,0.5)", "transparent"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />
+        <View style={styles.texto}>
+          <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 11, letterSpacing: 2.2, color: tema.tema.acento }}>{decoracion ? "SE ACERCA" : "EVENTO"}</Texto>
+          <Texto v="h2">{tema.tema.nombre}</Texto>
+          <Texto v="nota" tam={12.5} style={{ maxWidth: 230 }}>
+            {frase}
+          </Texto>
+          <View style={styles.reloj}>
+            {decoracion ? (
+              <RelojFalta hasta={inicioEventoMs(tema.hoy.rango)} texto={(t) => `Empieza en ${t}`} />
+            ) : (
+              <RelojFalta hasta={finDelDiaMs(tema.hoy.rango.hasta)} texto={(t) => `Termina en ${t}`} />
+            )}
+          </View>
         </View>
-      </View>
-      {evento && !decoracion && (
-        <View style={[styles.boton, { backgroundColor: tema.tema.acento }]}>
-          <Texto style={{ fontFamily: fuente.display, fontSize: 13, color: "#05060F" }}>Ver</Texto>
-        </View>
-      )}
-    </Pressable>
+        {evento && !decoracion && (
+          <View style={[styles.boton, { backgroundColor: tema.tema.acento }]}>
+            <Texto style={{ fontFamily: fuente.display, fontSize: 13, color: "#05060F" }}>Ver</Texto>
+          </View>
+        )}
+      </Pressable>
+    </SobreOscuro>
   );
 }
 

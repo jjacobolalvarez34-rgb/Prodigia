@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStore, type CSSProperties } from "react";
 import { useLocale } from "next-intl";
 import { PARTICULAS } from "@/lib/temas/dibujos";
 import { capaVisible } from "@/lib/temas/temas";
@@ -36,7 +36,7 @@ export function ParticulasCarga() {
             key={i}
             dibujo={dibujo}
             color={spec.colores[i % spec.colores.length]}
-            className="absolute"
+            className="particula-tema absolute"
             style={{ left: `${x}%`, top: 0, width: tam, height: tam, opacity: 0.55 + ((i * 3) % 4) / 10, animation: `${anim} ${dur}s linear ${-((i * 1.3) % dur)}s infinite` }}
           />
         );
@@ -50,7 +50,7 @@ export function NombreTemaCarga() {
   const en = useLocale() === "en";
   if (!tema || !capaVisible(tema, "interfaz")) return null;
   return (
-    <span className="font-mono text-xs font-bold uppercase tracking-[0.25em]" style={{ color: tema.tema.acento }}>
+    <span className="texto-acento font-mono text-xs font-bold uppercase tracking-[0.25em]" style={{ "--acento": tema.tema.acento } as CSSProperties}>
       {en ? tema.tema.nombreEn : tema.tema.nombre}
     </span>
   );

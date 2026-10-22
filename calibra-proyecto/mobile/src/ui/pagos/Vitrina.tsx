@@ -10,8 +10,8 @@ import { COLOR_COMETA } from "@/lib/recompensas/iconoCometa";
 import { vibrar } from "~/lib/efectos";
 import { URL_WEB } from "~/lib/entorno";
 import { IconoChispa, IconoCometa, IconoTrazo } from "~/ui/Iconos";
-import Texto from "~/ui/Texto";
-import { color, fuente } from "~/tema";
+import Texto, { SobreOscuro } from "~/ui/Texto";
+import { color, fuente, conAlfa, temaClaro } from "~/tema";
 
 // Rediseño de pagos en la app (2026-10-14), igual que la web (components/pagos/Vitrina):
 // tarjetas grandes, precio fuerte, checks y botones con sombra desplazada. La app todavía
@@ -89,7 +89,7 @@ export function PaquetesMoneda({ tipo, ancho }: { tipo: "cometas" | "chispas"; a
         const sello = destacado ? "Más elegido" : p === mejor ? "Mejor valor" : null;
         return (
           <Animated.View key={p} entering={FadeInDown.delay(i * 90).duration(380)} style={{ width: anchoTarjeta }}>
-            <View style={[styles.tarjeta, { borderColor: destacado ? acento : "rgba(244,228,193,0.25)", boxShadow: destacado ? `5px 5px 0px ${acento}` : `4px 4px 0px ${NEGRO}` }, destacado && { backgroundColor: "#211A4A" }]}>
+            <View style={[styles.tarjeta, { borderColor: destacado ? acento : "rgba(244,228,193,0.25)", boxShadow: destacado ? `5px 5px 0px ${acento}` : `4px 4px 0px ${NEGRO}` }, destacado && { backgroundColor: temaClaro ? conAlfa(acento, 0.14) : "#211A4A" }]}>
               {sello && <Sello texto={sello} fondo={acento} />}
               <IlustracionMoneda tipo={tipo} nivel={i} tam={anchoTarjeta * 0.62} />
               <View style={{ alignItems: "center" }}>
@@ -168,9 +168,11 @@ export function PlanesPro() {
         return (
           <Animated.View key={p.producto} entering={FadeInDown.delay(150 + i * 140).duration(420)}>
             {p.destacado ? (
-              <LinearGradient colors={["#3B2C8F", "#2A1F5C", "#12172A"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.plan, { boxShadow: `7px 7px 0px ${ORO}` }]}>
-                {contenido}
-              </LinearGradient>
+              <SobreOscuro>
+                <LinearGradient colors={["#3B2C8F", "#2A1F5C", "#12172A"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.plan, { boxShadow: `7px 7px 0px ${ORO}` }]}>
+                  {contenido}
+                </LinearGradient>
+              </SobreOscuro>
             ) : (
               <View style={[styles.plan, { backgroundColor: "#F4E4C1", boxShadow: `7px 7px 0px ${NEGRO}` }]}>{contenido}</View>
             )}
@@ -190,7 +192,7 @@ const styles = StyleSheet.create({
   boton: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, paddingVertical: 12, paddingHorizontal: 14, borderRadius: 12, borderWidth: 2, borderColor: NEGRO },
   sello: { position: "absolute", top: -12, right: 12, zIndex: 2, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, borderWidth: 2, borderColor: NEGRO, transform: [{ rotate: "4deg" }], boxShadow: `2px 2px 0px ${NEGRO}` },
   grilla: { flexDirection: "row", flexWrap: "wrap", gap: 12, rowGap: 18 },
-  tarjeta: { gap: 8, padding: 12, paddingTop: 16, borderRadius: 18, borderWidth: 2, backgroundColor: "#12172A" },
+  tarjeta: { gap: 8, padding: 12, paddingTop: 16, borderRadius: 18, borderWidth: 2, backgroundColor: color.surface1 },
   plan: { gap: 14, padding: 20, borderRadius: 24, borderWidth: 2, borderColor: NEGRO },
   planCabecera: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   check: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: NEGRO, alignItems: "center", justifyContent: "center" },

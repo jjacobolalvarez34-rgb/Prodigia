@@ -4,6 +4,7 @@ import * as api from "@/lib/recompensas/api";
 import type { CosmeticosNuevos, Pendientes } from "@/lib/recompensas/api";
 import { fijarPaqueteAcierto } from "./efectos";
 import { supabase } from "./supabase";
+import { sincronizarTemasApp } from "./temaApp";
 
 // Recompensas y cosméticos nuevos en la app: las mismas llamadas que la web
 // (@/lib/recompensas/api, reglas en 0248/0249) con el cliente de la app, más un
@@ -60,6 +61,8 @@ export function fijarCosmeticos(c: Partial<CosmeticosNuevos>) {
 // Lo equipado. Si la base todavía no tiene 0248 (o no hay red) queda lo último sabido.
 export async function recargarCosmeticos(userId: string): Promise<void> {
   const clave = `prodigia:copia:cosmeticos:${userId}`;
+  // Temas de la app (0297): cuáles tienes y si el puesto cambió en otro lado.
+  void sincronizarTemasApp(userId).catch(() => undefined);
   try {
     const { data, error } = await supabase.from("profiles").select(api.COLUMNAS_COSMETICOS_NUEVOS).eq("id", userId).maybeSingle();
     if (error || !data) throw error ?? new Error("sin datos");

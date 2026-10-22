@@ -10,7 +10,7 @@ import { MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
 import Barra from "../Barra";
 import Ciudad from "../Ciudad";
 import { IconoChispa } from "../Iconos";
-import Texto from "../Texto";
+import Texto, { SobreOscuro } from "../Texto";
 import AvatarMarco from "./AvatarMarco";
 import FondoPlaca from "./FondoPlaca";
 import InsigniaRango from "./InsigniaRango";
@@ -64,64 +64,66 @@ export function PlacaCompleta({ placa, extra, estilo }: { placa: PlacaDatos; ext
   const div = divisionDeElo(placa.elo);
   const esGif = placa.fondo === "personalizado" && !!placa.fondoUrl && /\.(gif|webp)(\?|$)/i.test(placa.fondoUrl);
   return (
-    <Animated.View entering={FadeInDown.duration(300)} style={[styles.completa, { borderColor: marco, boxShadow: brillo(marco, 28, 0.32) }, estilo]}>
-      <FondoPlaca fondo={placa.fondo} url={placa.fondoUrl} acento={marco} />
-      <CiudadPlaca ciudad={placa.ciudad} alto={110} />
-      {esGif && (
-        <View style={styles.gif}>
-          <Texto style={{ fontFamily: fuente.mono, fontSize: 9, color: "#fff", letterSpacing: 1 }}>GIF</Texto>
-        </View>
-      )}
-      <View style={styles.completaIn}>
-        <AvatarMarco url={placa.avatarUrl} nombre={placa.nombre} marco={placa.marco} tam={78} />
-        <View style={{ marginTop: 34, gap: 8 }}>
-          <NombreEstilizado texto={placa.nombre} fuente={placa.fuente} animacion={placa.animacion} color={placa.colorNombre} tam={28} animar />
-          {placa.titulo ? (
-            <View style={styles.chipTitulo}>
-              <Texto v="fuerte" tam={11}>
-                «{placa.titulo}»
-              </Texto>
-            </View>
-          ) : null}
-          <View style={styles.filaDatos}>
-            <Texto v="fuerte" tam={13} c={rango.colorHex}>
-              ☆ {div.nombre}
-            </Texto>
-            <Texto v="mono" tam={12}>
-              {placa.elo} ELO
-            </Texto>
-            <View style={styles.filaChispas}>
-              <IconoChispa tam={14} />
-              <Texto v="mono" tam={12}>
-                {placa.chispas.toLocaleString("es")}
-              </Texto>
-            </View>
+    <SobreOscuro>
+      <Animated.View entering={FadeInDown.duration(300)} style={[styles.completa, { borderColor: marco, boxShadow: brillo(marco, 28, 0.32) }, estilo]}>
+        <FondoPlaca fondo={placa.fondo} url={placa.fondoUrl} acento={marco} />
+        <CiudadPlaca ciudad={placa.ciudad} alto={110} />
+        {esGif && (
+          <View style={styles.gif}>
+            <Texto style={{ fontFamily: fuente.mono, fontSize: 9, color: "#fff", letterSpacing: 1 }}>GIF</Texto>
           </View>
-          <View style={styles.vidrio}>
-            <View style={styles.entre}>
-              <Texto v="h3">Nivel {placa.nivel}</Texto>
-              {extra?.xpNivel ? (
-                <Texto v="mono" tam={11}>
-                  {extra.xpNivel.actual.toLocaleString("es")}/{extra.xpNivel.requerido.toLocaleString("es")} XP
+        )}
+        <View style={styles.completaIn}>
+          <AvatarMarco url={placa.avatarUrl} nombre={placa.nombre} marco={placa.marco} tam={78} />
+          <View style={{ marginTop: 34, gap: 8 }}>
+            <NombreEstilizado texto={placa.nombre} fuente={placa.fuente} animacion={placa.animacion} color={placa.colorNombre} tam={28} animar />
+            {placa.titulo ? (
+              <View style={styles.chipTitulo}>
+                <Texto v="fuerte" tam={11}>
+                  «{placa.titulo}»
                 </Texto>
-              ) : null}
+              </View>
+            ) : null}
+            <View style={styles.filaDatos}>
+              <Texto v="fuerte" tam={13} c={rango.colorHex}>
+                ☆ {div.nombre}
+              </Texto>
+              <Texto v="mono" tam={12}>
+                {placa.elo} ELO
+              </Texto>
+              <View style={styles.filaChispas}>
+                <IconoChispa tam={14} />
+                <Texto v="mono" tam={12}>
+                  {placa.chispas.toLocaleString("es")}
+                </Texto>
+              </View>
             </View>
-            <Barra
-              valor={extra?.xpNivel ? extra.xpNivel.actual / Math.max(1, extra.xpNivel.requerido) : 0}
-              colores={["#FFFFFF", "#FFFFFF"]}
-              fondo="rgba(255,255,255,0.15)"
-              alto={6}
-              estilo={{ marginVertical: 7 }}
-            />
-            <Texto v="nota" c="#CFD5E6">
-              {extra?.xpHistorica != null ? `${extra.xpHistorica.toLocaleString("es")} XP histórica` : "XP histórica"}
-              {extra?.posicion ? ` · #${extra.posicion.pos} de ${extra.posicion.total}` : ""}
-            </Texto>
+            <View style={styles.vidrio}>
+              <View style={styles.entre}>
+                <Texto v="h3">Nivel {placa.nivel}</Texto>
+                {extra?.xpNivel ? (
+                  <Texto v="mono" tam={11}>
+                    {extra.xpNivel.actual.toLocaleString("es")}/{extra.xpNivel.requerido.toLocaleString("es")} XP
+                  </Texto>
+                ) : null}
+              </View>
+              <Barra
+                valor={extra?.xpNivel ? extra.xpNivel.actual / Math.max(1, extra.xpNivel.requerido) : 0}
+                colores={["#FFFFFF", "#FFFFFF"]}
+                fondo="rgba(255,255,255,0.15)"
+                alto={6}
+                estilo={{ marginVertical: 7 }}
+              />
+              <Texto v="nota" c="#CFD5E6">
+                {extra?.xpHistorica != null ? `${extra.xpHistorica.toLocaleString("es")} XP histórica` : "XP histórica"}
+                {extra?.posicion ? ` · #${extra.posicion.pos} de ${extra.posicion.total}` : ""}
+              </Texto>
+            </View>
+            {placa.clan ? <Estandarte clan={placa.clan} /> : null}
           </View>
-          {placa.clan ? <Estandarte clan={placa.clan} /> : null}
         </View>
-      </View>
-    </Animated.View>
+      </Animated.View>
+    </SobreOscuro>
   );
 }
 
@@ -131,27 +133,29 @@ export function PlacaTarjeta({ placa, onPress, pie, indice = 0 }: { placa: Placa
   const marco = colorMarco(placa);
   const rango = rangoDeElo(placa.elo);
   return (
-    <Animated.View entering={FadeInDown.delay(indice * 60).duration(300)} style={{ flex: 1 }}>
-      <Pressable
-        onPress={() => {
-          vibrar.seleccion();
-          if (onPress) onPress();
-          else router.push({ pathname: "/jugador/[id]", params: { id: placa.id } });
-        }}
-        style={({ pressed }) => [styles.tarjeta, { borderColor: marco, transform: [{ scale: pressed ? 0.97 : 1 }] }]}
-      >
-        <FondoPlaca fondo={placa.fondo} url={placa.fondoUrl} acento={marco} animar={false} />
-        <CiudadPlaca ciudad={placa.ciudad} alto={56} quieta />
-        <View style={styles.tarjetaIn}>
-          <AvatarMarco url={placa.avatarUrl} nombre={placa.nombre} marco={placa.marco} tam={46} animar={false} />
-          <NombreEstilizado texto={placa.nombre} fuente={placa.fuente} animacion={placa.animacion} color={placa.colorNombre} tam={15} estilo={{ textAlign: "center" }} ligero />
-          <Texto v="nota" tam={11} c="#D6DBEA" numberOfLines={1}>
-            {rango.nombre} · Nv {placa.nivel}
-          </Texto>
-          {pie}
-        </View>
-      </Pressable>
-    </Animated.View>
+    <SobreOscuro>
+      <Animated.View entering={FadeInDown.delay(indice * 60).duration(300)} style={{ flex: 1 }}>
+        <Pressable
+          onPress={() => {
+            vibrar.seleccion();
+            if (onPress) onPress();
+            else router.push({ pathname: "/jugador/[id]", params: { id: placa.id } });
+          }}
+          style={({ pressed }) => [styles.tarjeta, { borderColor: marco, transform: [{ scale: pressed ? 0.97 : 1 }] }]}
+        >
+          <FondoPlaca fondo={placa.fondo} url={placa.fondoUrl} acento={marco} animar={false} />
+          <CiudadPlaca ciudad={placa.ciudad} alto={56} quieta />
+          <View style={styles.tarjetaIn}>
+            <AvatarMarco url={placa.avatarUrl} nombre={placa.nombre} marco={placa.marco} tam={46} animar={false} />
+            <NombreEstilizado texto={placa.nombre} fuente={placa.fuente} animacion={placa.animacion} color={placa.colorNombre} tam={15} estilo={{ textAlign: "center" }} ligero />
+            <Texto v="nota" tam={11} c="#D6DBEA" numberOfLines={1}>
+              {rango.nombre} · Nv {placa.nivel}
+            </Texto>
+            {pie}
+          </View>
+        </Pressable>
+      </Animated.View>
+    </SobreOscuro>
   );
 }
 
@@ -216,25 +220,27 @@ export function PlacaVS({ placa, lado }: { placa: PlacaDatos; lado: "yo" | "riva
   const div = divisionDeElo(placa.elo);
   const acento = lado === "yo" ? color.primarioNeon : color.error;
   return (
-    <View style={[styles.vs, { flexDirection: lado === "yo" ? "row" : "row-reverse", borderColor: conAlfa(acento, 0.6), boxShadow: brillo(acento, 28, 0.28) }]}>
-      <FondoPlaca fondo={placa.fondo} url={placa.fondoUrl} acento={acento} />
-      <AvatarMarco url={placa.avatarUrl} nombre={placa.nombre} marco={placa.marco} tam={56} />
-      <View style={{ flex: 1, alignItems: lado === "yo" ? "flex-start" : "flex-end", gap: 2 }}>
-        <NombreEstilizado texto={placa.nombre} fuente={placa.fuente} animacion={placa.animacion} color={placa.colorNombre} tam={18} animar />
-        {placa.titulo ? (
-          <Texto v="nota" tam={11}>
-            «{placa.titulo}»
+    <SobreOscuro>
+      <View style={[styles.vs, { flexDirection: lado === "yo" ? "row" : "row-reverse", borderColor: conAlfa(acento, 0.6), boxShadow: brillo(acento, 28, 0.28) }]}>
+        <FondoPlaca fondo={placa.fondo} url={placa.fondoUrl} acento={acento} />
+        <AvatarMarco url={placa.avatarUrl} nombre={placa.nombre} marco={placa.marco} tam={56} />
+        <View style={{ flex: 1, alignItems: lado === "yo" ? "flex-start" : "flex-end", gap: 2 }}>
+          <NombreEstilizado texto={placa.nombre} fuente={placa.fuente} animacion={placa.animacion} color={placa.colorNombre} tam={18} animar />
+          {placa.titulo ? (
+            <Texto v="nota" tam={11}>
+              «{placa.titulo}»
+            </Texto>
+          ) : null}
+          <Texto v="nota">
+            {div.nombre} ·{" "}
+            <Texto v="mono" tam={13}>
+              {placa.elo}
+            </Texto>
           </Texto>
-        ) : null}
-        <Texto v="nota">
-          {div.nombre} ·{" "}
-          <Texto v="mono" tam={13}>
-            {placa.elo}
-          </Texto>
-        </Texto>
+        </View>
+        <InsigniaRango elo={placa.elo} tam={50} />
       </View>
-      <InsigniaRango elo={placa.elo} tam={50} />
-    </View>
+    </SobreOscuro>
   );
 }
 

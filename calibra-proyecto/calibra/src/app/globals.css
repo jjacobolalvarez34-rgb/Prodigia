@@ -1026,3 +1026,46 @@ html[data-borde="verde"] { --borde-tema: repeating-linear-gradient(90deg, #3DDC9
 @media (prefers-reduced-motion: reduce) {
   .constelacion-pulso { animation: none; opacity: 0; }
 }
+
+/* Temas de la app (0297, src/lib/recompensas/temas.ts). AplicarTemaApp pone sus colores
+   inline en <html> (ganan al modo claro/oscuro) y marca data-tema-app, más
+   data-tema-claro si el fondo es claro. Sin tema no aplica nada de esto. */
+html[data-tema-app] { color-scheme: dark; }
+html[data-tema-app][data-tema-claro] { color-scheme: light; }
+/* Los acentos usados como texto van en su "tinta": el mismo tono, ajustado para
+   leerse sobre las tarjetas del tema. */
+html[data-tema-app] :is([class~="text-logro"], [class*=" text-logro/"], [class^="text-logro/"]) { color: var(--tinta-logro); }
+html[data-tema-app] :is([class~="text-primario"], [class*=" text-primario/"], [class^="text-primario/"]) { color: var(--tinta-primario); }
+html[data-tema-app] :is([class~="text-correcto"], [class*=" text-correcto/"], [class^="text-correcto/"]) { color: var(--tinta-correcto); }
+html[data-tema-app] :is([class~="text-error"], [class*=" text-error/"], [class^="text-error/"]) { color: var(--tinta-error); }
+html[data-tema-app] :is([class~="text-racha"], [class*=" text-racha/"], [class^="text-racha/"]) { color: var(--tinta-racha); }
+/* Paneles que son oscuros a propósito (carteles de evento, escenas, tarjetas con su
+   propio fondo fijo): adentro vuelve la tinta clara de siempre, también en los temas
+   claros. */
+html[data-tema-claro] :is([class*="bg-[#0"], [class*="bg-[#1"], [class~="bg-black"], [class*="from-[#0"], [class*="from-[#1"]) {
+  --foreground: #f4f6fb;
+  --texto-secundario: #8892b0;
+  --tinta-logro: #ffb627;
+  --tinta-primario: #9b85ff;
+  --tinta-correcto: #3ddc97;
+  --tinta-error: #ff5d5d;
+  --tinta-racha: #ff8a3d;
+}
+/* …y si adentro de algo oscuro (o de un velo de modal) vuelve una tarjeta del tema, vuelve
+   su tinta. */
+html[data-tema-claro] :is([class~="bg-surface"], [class~="bg-surface-2"], [class~="bg-background"], [class*="bg-surface/"], [class*="bg-surface-2/"], [class*="bg-background/"]) {
+  --foreground: var(--tema-texto);
+  --texto-secundario: var(--tema-texto2);
+  --tinta-logro: var(--tema-tinta-logro);
+  --tinta-primario: var(--tema-tinta-primario);
+  --tinta-correcto: var(--tema-tinta-correcto);
+  --tinta-error: var(--tema-tinta-error);
+  --tinta-racha: var(--tema-tinta-racha);
+}
+/* Acentos de las festividades usados como texto sobre la app (texto-acento con
+   --acento): en los temas claros se oscurecen lo justo para leerse. */
+.texto-acento { color: var(--acento); }
+html[data-tema-claro] .texto-acento { color: color-mix(in oklab, var(--acento) 50%, var(--foreground)); }
+/* Partículas de las festividades sobre fondos claros: un contorno suave para que la
+   nieve blanca o las chispas doradas se sigan viendo. */
+html[data-tema-claro] .particula-tema { filter: drop-shadow(0 0 1.5px rgba(20, 16, 40, 0.6)); }

@@ -11,6 +11,7 @@ import { EFECTOS_NUEVOS, EMOTES_NUEVOS, ESTELAS_NUEVAS, filasCatalogoAmpliado, f
 import { EFECTOS_EVENTO, EMOTES_EVENTO, ESTELAS_EVENTO, MARCOS_EVENTO, piezasDeEventos } from "@/lib/temas/colecciones";
 import type { IdTema } from "@/lib/temas/calendario";
 import { TEMAS } from "@/lib/temas/temas";
+import { temaAppDe } from "./temas";
 
 export type Rareza = "comun" | "raro" | "epico" | "legendario";
 
@@ -425,6 +426,7 @@ export function textoPremio(premio: string, minimo: number, maximo: number, mund
   if (premio.startsWith("cosmetico_")) return `Un cosmético ${NOMBRE_RAREZA[premio.slice(10) as Rareza].toLowerCase()}`;
   if (premio === "coleccion") return c ? `Una pieza de la colección de ${c.nombre} que te falte` : "Una pieza de la colección de la ciudad";
   if (premio === "pieza_evento") return "Una pieza de la colección del evento que te falte";
+  if (premio === "tema_app") return "Un tema de la app que no tengas";
   if (premio === "marco_coleccion") return c ? `El marco de colección de ${c.nombre}` : "El marco de colección";
   return premio;
 }
@@ -477,5 +479,8 @@ export const COMETAS_DIA_7 = 10;
 
 // Nombre de un cosmético por su slug (catálogo nuevo o de antes).
 export function nombreCosmetico(slug: string): string {
+  // Temas de la app (0297): no están en el catálogo de la tienda.
+  const tema = slug.startsWith("tema_") ? temaAppDe(slug.slice(5)) : null;
+  if (tema) return `Tema ${tema.nombre}`;
   return CATALOGO_NUEVO.find((i) => i.item === slug)?.nombre ?? slug.replace(/_/g, " ");
 }

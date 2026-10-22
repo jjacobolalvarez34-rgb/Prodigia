@@ -28,7 +28,7 @@ import Boton3D from "~/ui/Boton3D";
 import Glifos from "~/ui/Glifos";
 import { PlacaVS } from "~/ui/placa/Placa";
 import Texto from "~/ui/Texto";
-import { color, fuente, MUNDO_POR_SLUG } from "~/tema";
+import { color, fuente, MUNDO_POR_SLUG, conAlfa, temaClaro } from "~/tema";
 
 const OPERACION: Record<string, string> = { suma: "Suma", resta: "Resta", multiplicacion: "Multiplicación", division: "División" };
 const CONTINENTE: Record<string, string> = { america: "América", europa: "Europa", africa: "África", asia_oceania: "Asia y Oceanía" };
@@ -197,7 +197,7 @@ export default function Duelo() {
 
   return (
     <View style={styles.pantalla}>
-      <LinearGradient colors={["#1A1540", color.bg, color.bgHondo]} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[temaClaro ? conAlfa(color.primario, 0.22) : "#1A1540", color.bg, color.bgHondo]} style={StyleSheet.absoluteFill} />
       <Glifos glifos={m?.glifos ?? ["×", "✦"]} acento={m?.neon ?? color.primario} cantidad={10} />
       <SafeAreaView style={{ flex: 1, justifyContent: "space-between" }}>
         <View style={{ alignItems: "center", paddingTop: 10, gap: 2 }}>

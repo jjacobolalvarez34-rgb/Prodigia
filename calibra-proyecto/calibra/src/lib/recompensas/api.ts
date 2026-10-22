@@ -89,6 +89,8 @@ export function mensajeError(e: unknown): string {
   if (/ya reparaste/i.test(m)) return "Ya reparaste una racha esta semana.";
   if (/no hay una racha/i.test(m)) return "No hay una racha para reparar.";
   if (/precio invalido/i.test(m)) return "El precio cambió. Vuelve a abrir la tienda.";
+  if (/tema no desbloqueado/i.test(m)) return "Todavía no tienes ese tema.";
+  if (/tema invalido|tema no esta a la venta/i.test(m)) return "Ese tema todavía no está a la venta.";
   if (/ya tienes/i.test(m)) return "Ya lo tienes.";
   if (/ya no esta a la venta/i.test(m)) return "Este paquete ya no está a la venta: terminó el evento.";
   if (/paquete invalido/i.test(m)) return "Ese paquete no existe. Vuelve a abrir la tienda.";
@@ -265,7 +267,7 @@ export async function recibirRegalo(sb: SupabaseClient, id: string): Promise<voi
   if (error) throw error;
 }
 
-export type CategoriaEquipable = "estela" | "efecto" | "sonido" | "ciudad_placa" | "fuente" | "fuente_puntos";
+export type CategoriaEquipable = "estela" | "efecto" | "sonido" | "ciudad_placa" | "fuente" | "fuente_puntos" | "tema";
 
 export async function equiparCosmetico(sb: SupabaseClient, categoria: CategoriaEquipable, valor: string | null): Promise<void> {
   const { error } = await sb.rpc("equipar_cosmetico", { p_categoria: categoria, p_valor: valor });
@@ -315,4 +317,32 @@ export function cosmeticosDesdeFila(f: Record<string, unknown> | null | undefine
 export async function cargarCosmeticosNuevos(sb: SupabaseClient, userId: string): Promise<CosmeticosNuevos> {
   const { data } = await sb.from("profiles").select(COLUMNAS_COSMETICOS_NUEVOS).eq("id", userId).maybeSingle();
   return cosmeticosDesdeFila(data as Record<string, unknown> | null);
+}
+
+// ---------- Temas de la app (0297) ----------
+export interface EstadoTemasApp {
+  // false si la base todavía no tiene 0297: los temas siguen como «Próximamente».
+  disponible: boolean;
+  // El puesto ('clasico' = Noche de Prodigia).
+  puesto: string;
+  mios: string[];
+}
+
+export const SIN_TEMAS_APP: EstadoTemasApp = { disponible: false, puesto: "clasico", mios: [] };
+
+export async function estadoTemasApp(sb: SupabaseClient, userId: string): Promise<EstadoTemasApp> {
+  const { data, error } = await sb.from("profiles").select("tema_app, temas_app_desbloqueados").eq("id", userId).maybeSingle();
+  if (error || !data) return SIN_TEMAS_APP;
+  const f = data as { tema_app?: string | null; temas_app_desbloqueados?: string[] | null };
+  return { disponible: true, puesto: f.tema_app ?? "clasico", mios: f.temas_app_desbloqueados ?? [] };
+}
+
+export async function comprarTemaApp(sb: SupabaseClient, slug: string): Promise<{ cometas: number }> {
+  const { data, error } = await sb.rpc("comprar_tema_app", { p_tema: slug });
+  if (error) throw error;
+  return filas<{ cometas: number }>(data)[0];
+}
+
+export async function ponerTemaApp(sb: SupabaseClient, slug: string): Promise<void> {
+  await equiparCosmetico(sb, "tema", slug);
 }
