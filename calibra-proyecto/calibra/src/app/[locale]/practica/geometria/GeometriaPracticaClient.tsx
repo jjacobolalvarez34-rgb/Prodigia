@@ -168,7 +168,7 @@ export default function GeometriaPracticaClient({ nivelPorTipo, escudosExtra, hi
           <p className="text-sm text-texto-secundario">{t("resumen.ningunaFallada")} 🎯</p>
         )}
 
-        <BotonesFinPartida onOtraVez={() => setFase("inicio")} volverHref="/numeria" />
+        <BotonesFinPartida onOtraVez={() => setFase("inicio")} volverHref="/numeria" compartir={resumen ? { mundo: "numeria", desde: startedAtIso || null, sprint: resumen.sprint } : null} />
       </div>
     );
   }

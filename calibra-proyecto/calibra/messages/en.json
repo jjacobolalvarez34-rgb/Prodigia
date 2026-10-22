@@ -4880,6 +4880,40 @@
         "abrirAhora": "Open now",
         "guardar": "Keep it",
         "comoFunciona": "How does it work?"
+      },
+      "temaTuyo": "It's yours. Put it on in the Bazaar › Market › Themes.",
+      "guia": {
+        "boton": "What's in each capsule?",
+        "titulo": "What's in each capsule",
+        "conTema": "It can bring an app theme. If you already have them all, it turns into Sparks.",
+        "nota": "These are the odds the server uses when you open each capsule. If you get something you already have, it turns into Sparks. After 10 capsules without anything rare, the next one brings one for sure.",
+        "grupos": {
+          "jugando": "Playing",
+          "liga": "League and ranked",
+          "fusion": "Fusion",
+          "cometas": "With Comets",
+          "pro": "Prodigia Pro"
+        },
+        "como": {
+          "diaria": "With your first game of the day (and one more a day by watching an ad).",
+          "misiones": "By claiming the day's 3 missions.",
+          "racha": "Every 7 days in a row meeting your daily goal.",
+          "nivel": "Every time you level up your account.",
+          "ciudad": "When you reach levels 10, 20, 30… in a world and when you master it.",
+          "liga": "Finishing the weekly league outside the top 50, or the ranked season in Iron.",
+          "liga_bronce": "Finishing the weekly league in the top 50, or the ranked season in Bronze.",
+          "liga_plata": "Finishing the weekly league in the top 10, or the ranked season in Silver.",
+          "liga_oro": "Finishing the weekly league in the top 3, or the ranked season in Gold or higher.",
+          "coleccion": "By completing a city's collection.",
+          "pro": "With Prodigia Pro: 2 every week.",
+          "estelar": "With Comets (120, or 5 for 500), or finishing the ranked season in Platinum.",
+          "supernova": "With Comets (300, or 3 for 750), or finishing the ranked season in Diamond or Prodigy.",
+          "plata": "By fusing 3 level-1 capsules (daily, missions, level or league) and 50 Sparks.",
+          "oro": "By fusing 3 level-2 capsules (streak, Bronze league or silver) and 150 Sparks.",
+          "prisma": "By fusing 3 level-3 capsules (Silver league or gold) and 400 Sparks, or finishing the ranked season in Prodigy.",
+          "alineacion": "By playing 3 games during the Great Alignment.",
+          "temporada": "With Comets while an event lasts (for example, Halloween)."
+        }
       }
     },
     "calendario": {
@@ -5022,7 +5056,17 @@
         "etiquetaLarga": "Theme · Coming soon",
         "inspiracion": "Inspired by: {x}",
         "nota": "It only changes how Prodigia looks: your worlds, progress and items stay the same.",
-        "boton": "Coming soon"
+        "boton": "Coming soon",
+        "aLaVenta": "App themes",
+        "subVenta": "They change the colors of the whole app: background, cards, borders, text and buttons. Your worlds, progress and items stay the same.",
+        "comoConseguir": "Buy them with Comets or find them in prism, supernova, Alignment and Pro capsules.",
+        "clasico": "Prodigia Night",
+        "clasicoDesc": "The usual theme. Always free.",
+        "etiquetaTema": "Theme",
+        "puesto": "You're now using the {nombre} theme.",
+        "volverClasico": "Back to the usual one",
+        "enCapsulas": "It can also come in prism, supernova, Alignment and Pro capsules.",
+        "gratis": "FREE"
       },
       "comprarCometas": "Buy for {n} Comets",
       "teFaltanCometas": "You need {n} more Comets",
@@ -5058,7 +5102,10 @@
       "cosmetico": "A {rareza} cosmetic",
       "coleccion": "A {ciudad} collection piece you don't have",
       "marcoColeccion": "The {ciudad} collection frame",
-      "pieza_evento": "An event collection piece you're missing"
+      "pieza_evento": "An event collection piece you're missing",
+      "tema_app": "An app theme you don't have",
+      "coleccionSin": "A piece of the city's collection you're missing",
+      "marcoColeccionSin": "The city's animated collection frame"
     },
     "constelaciones": {
       "titulo": "Constellations",

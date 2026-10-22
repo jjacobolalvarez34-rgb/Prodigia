@@ -11,6 +11,7 @@ import type { Problem } from "@/lib/practica/problems";
 import { estadoResumenPartida } from "@/lib/practica/resumenPartida";
 import { IconCheck } from "@/components/icons";
 import BotonesFinPartida from "@/components/BotonesFinPartida";
+import type { DatosFinPartida } from "@/lib/partidas/compartir";
 import LogroBanner from "@/components/LogroBanner";
 import ApuestaResultado from "@/components/ApuestaResultado";
 import NivelMundoSubio, { type NivelMundoInfo } from "@/components/NivelMundoSubio";
@@ -60,6 +61,7 @@ interface Props {
   duelo?: ResultadoDuelo | null;
   onOtraVez: () => void;
   volverHref?: string;
+  compartir?: DatosFinPartida | null;
 }
 
 function pct(x: number | null): string {
@@ -91,7 +93,7 @@ function Comparacion({
   );
 }
 
-export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volverHref = "/numeria" }: Props) {
+export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volverHref = "/numeria", compartir }: Props) {
   const temaHoy = useTemaHoy();
   const celebracion = celebracionDe(temaHoy);
   const t = useTranslations("Practica.resumen");
@@ -182,7 +184,7 @@ export default function SprintSummary({ resumen, errores, duelo, onOtraVez, volv
         <p className="text-sm text-texto-secundario">{t("ningunoFallado")} 🎯</p>
       )}
 
-      <BotonesFinPartida onOtraVez={onOtraVez} volverHref={volverHref} />
+      <BotonesFinPartida onOtraVez={onOtraVez} volverHref={volverHref} compartir={compartir} />
     </div>
   );
 }

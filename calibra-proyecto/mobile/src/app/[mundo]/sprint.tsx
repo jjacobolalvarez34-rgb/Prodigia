@@ -227,7 +227,7 @@ export default function SprintMundo() {
           mundo: def.slug,
           tema: def.modos.find((m) => m.id === modoRef.current)?.nombre ?? "",
           repetir: dueloId ? "" : JSON.stringify({ pathname: "/[mundo]/sprint", params: { mundo: def.slug, modo: modoRef.current, filtro: params.filtro ?? "" } }),
-          datos: JSON.stringify({ ...r, xp: xpRef.current, correctos, total: tot, tiempoMs: Math.min(duracion, Date.now() - inicioRef.current), duelo: resultadoDuelo, dueloId, rival: duelo?.rivalNombre ?? null, fallos: fallosRef.current }),
+          datos: JSON.stringify({ ...r, xp: xpRef.current, correctos, total: tot, tiempoMs: Math.min(duracion, Date.now() - inicioRef.current), duelo: resultadoDuelo, dueloId, rival: duelo?.rivalNombre ?? null, fallos: fallosRef.current, respuestas: respuestasRef.current }),
         },
       });
     } catch (e) {

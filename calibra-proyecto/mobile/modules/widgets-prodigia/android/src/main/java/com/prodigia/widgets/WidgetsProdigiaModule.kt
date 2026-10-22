@@ -1,8 +1,11 @@
 package com.prodigia.widgets
 
 import android.appwidget.AppWidgetManager
+import android.content.ClipData
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.content.pm.PackageManager
 import android.os.Build
 import expo.modules.kotlin.exception.Exceptions
@@ -62,6 +65,29 @@ class WidgetsProdigiaModule : Module() {
       if (!manager.isRequestPinAppWidgetSupported) return@Function false
       val clase = if (tipo == "Racha") WidgetRacha::class.java else WidgetProgreso::class.java
       manager.requestPinAppWidget(ComponentName(context, clase), null, null)
+    }
+
+    // Compartir una imagen (la tarjeta del resultado de una partida) con el menú
+    // del sistema. `uri` es un content:// (FileSystem.getContentUriAsync): se da
+    // permiso de lectura a la app elegida. Share de React Native solo manda texto.
+    Function("compartirImagen") { uri: String, texto: String, titulo: String ->
+      val imagen = Uri.parse(uri)
+      val envio = Intent(Intent.ACTION_SEND).apply {
+        type = "image/png"
+        putExtra(Intent.EXTRA_STREAM, imagen)
+        if (texto.isNotEmpty()) putExtra(Intent.EXTRA_TEXT, texto)
+        clipData = ClipData.newRawUri("", imagen)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+      }
+      val selector = Intent.createChooser(envio, titulo).apply { addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+      val actividad = appContext.currentActivity
+      if (actividad != null) {
+        actividad.startActivity(selector)
+      } else {
+        selector.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(selector)
+      }
+      true
     }
   }
 }

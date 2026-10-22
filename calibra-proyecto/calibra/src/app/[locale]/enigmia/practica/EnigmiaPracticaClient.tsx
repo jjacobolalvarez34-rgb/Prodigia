@@ -328,6 +328,7 @@ export default function EnigmiaPracticaClient({
         )}
 
         <BotonesFinPartida
+          compartir={resumen ? { mundo: "enigmia", desde: startedAtIso || null, sprint: resumen.partida, duelId: duelo?.duelId ?? null, duelo: resultadoDuelo, rivalNombre: duelo?.rivalNombre ?? null } : null}
           onOtraVez={duelo ? () => router.push("/rankeds?tab=buscar") : () => setFase("inicio")}
           volverHref={duelo ? "/rankeds" : "/enigmia"}
           colorHex="#0E9F6E"

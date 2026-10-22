@@ -54,7 +54,7 @@ function conIntl(locale: "es" | "en", hijo: React.ReactElement): string {
 const AMIGO_COMPLETO: Amigo = {
   friend_id: "11111111-1111-1111-1111-111111111111",
   display_name: "Ada Lovelace",
-  elo_rating: 1450,
+  elo_rating: 1850,
   avatar_url: null,
   marco_perfil: "numeria",
   fondo_perfil: "dorado",
@@ -111,7 +111,7 @@ describe("PlacaAmigo — render", () => {
     expect(html).toContain("Ada Lovelace");
     expect(html).toContain("Bautismo de Fuego");
     // RangoBadge (mostrarElo=false por defecto, mismo criterio que en
-    // /perfil/[userId]) no imprime el ELO crudo — 1450 cae en Platino.
+    // /perfil/[userId]) no imprime el ELO crudo — 1850 cae en Platino (escala de 0296).
     expect(html).toContain("Platino");
     expect(html).toContain("marco_numeria.svg");
   });

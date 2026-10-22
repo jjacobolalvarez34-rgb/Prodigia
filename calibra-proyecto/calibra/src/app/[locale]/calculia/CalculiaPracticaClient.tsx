@@ -277,6 +277,7 @@ export default function CalculiaPracticaClient({ modo, nivelInicial, escudosExtr
         )}
 
         <BotonesFinPartida
+          compartir={resumen ? { mundo: "calculia", desde: startedAtIso || null, sprint: resumen.sprint, duelId: duelo?.duelId ?? null, duelo: resultadoDuelo, rivalNombre: duelo?.rivalNombre ?? null } : null}
           onOtraVez={duelo ? () => router.push("/rankeds?tab=buscar") : () => setFase("inicio")}
           volverHref={duelo ? "/rankeds" : "/calculia"}
           colorHex={COLOR_CALCULIA}

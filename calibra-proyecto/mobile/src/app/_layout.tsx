@@ -220,6 +220,7 @@ function Navegacion() {
             <Stack.Screen name="duelo/buscar" options={{ gestureEnabled: false, animation: "fade" }} />
             <Stack.Screen name="duelo/[id]" options={{ gestureEnabled: false, animation: "fade" }} />
             <Stack.Screen name="duelo/serie/[id]" />
+            <Stack.Screen name="historial/[id]" />
             <Stack.Screen name="reto/[tipo]" options={{ gestureEnabled: false, animation: "fade" }} />
             <Stack.Screen name="numeria/index" />
             <Stack.Screen name="numeria/sprint" options={{ gestureEnabled: false, animation: "fade" }} />

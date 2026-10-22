@@ -289,6 +289,7 @@ export default function PracticaClient({
         // fines de navegación.
         onOtraVez={duelo ? () => router.push("/rankeds?tab=buscar") : () => setFase("seleccion")}
         volverHref={duelo ? "/rankeds" : undefined}
+        compartir={{ mundo: "numeria", desde: startedAtIso || null, sprint: resumen.sprint, duelId: duelo?.duelId ?? null, duelo: resultadoDuelo, rivalNombre: duelo?.rivalNombre ?? null }}
       />
     );
   }

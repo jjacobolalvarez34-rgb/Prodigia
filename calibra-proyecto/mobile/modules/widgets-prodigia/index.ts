@@ -8,6 +8,7 @@ interface ModuloWidgets {
   anclar(tipo: string): boolean;
   iconoActual?(): string;
   cambiarIcono?(nombre: string): boolean;
+  compartirImagen?(uri: string, texto: string, titulo: string): boolean;
 }
 
 const nativo = requireOptionalNativeModule<ModuloWidgets>("WidgetsProdigia");
@@ -29,4 +30,15 @@ export function iconoActualNativo(): string | null {
 
 export function cambiarIconoNativo(nombre: string): boolean {
   return nativo?.cambiarIcono ? nativo.cambiarIcono(nombre) : false;
+}
+
+// Compartir una imagen con el menú de Android (APK desde 2026-10-21). En un APK
+// anterior la función no existe: devuelve false y la app comparte solo el texto.
+export function compartirImagenNativo(uri: string, texto: string, titulo: string): boolean {
+  if (!nativo?.compartirImagen) return false;
+  try {
+    return nativo.compartirImagen(uri, texto, titulo);
+  } catch {
+    return false;
+  }
 }

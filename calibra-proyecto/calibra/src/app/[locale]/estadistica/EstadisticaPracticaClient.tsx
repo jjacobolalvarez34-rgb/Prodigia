@@ -275,6 +275,7 @@ export default function EstadisticaPracticaClient({ modo, nivelInicial, escudosE
         )}
 
         <BotonesFinPartida
+          compartir={resumen ? { mundo: "estadistica", desde: startedAtIso || null, sprint: resumen.sprint, duelId: duelo?.duelId ?? null, duelo: resultadoDuelo, rivalNombre: duelo?.rivalNombre ?? null } : null}
           onOtraVez={duelo ? () => router.push("/rankeds?tab=buscar") : () => setFase("inicio")}
           volverHref={duelo ? "/rankeds" : "/estadistica"}
           colorHex={COLOR_ESTADISTICA}

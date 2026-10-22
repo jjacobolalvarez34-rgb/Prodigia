@@ -9,7 +9,7 @@ import Animated, { Easing, FadeIn, FadeInDown, useAnimatedStyle, useSharedValue,
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { ResultadoDuelo } from "~/lib/competir";
 import { sonar, vibrar } from "~/lib/efectos";
-import { recargarJugador } from "~/lib/jugador";
+import { recargarJugador, useJugador } from "~/lib/jugador";
 import { anuncioEntrePartidas, contarPartida } from "~/lib/publicidad";
 import { totalPendientes, usePendientes } from "~/lib/recompensas";
 import type { ResultadoPartida } from "~/lib/partida";
@@ -27,10 +27,13 @@ import NumeroAnimado from "~/ui/NumeroAnimado";
 import RepasoErrores from "~/ui/RepasoErrores";
 import Tarjeta from "~/ui/Tarjeta";
 import type { FallaRepaso } from "@/lib/practica/repaso";
+import { compartirFinPartida } from "@/lib/partidas/compartir";
+import type { RespuestaPartida } from "@/lib/partidas/estadisticas";
+import CompartirPartida from "~/ui/CompartirPartida";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
 
-type Datos = ResultadoPartida & { xp: number; correctos: number; total: number; tiempoMs?: number; duelo?: ResultadoDuelo | null; dueloId?: string | null; rival?: string | null; fallos?: FallaRepaso[] };
+type Datos = ResultadoPartida & { xp: number; correctos: number; total: number; tiempoMs?: number; duelo?: ResultadoDuelo | null; dueloId?: string | null; rival?: string | null; fallos?: FallaRepaso[]; respuestas?: RespuestaPartida[] };
 
 const TEMAS: Record<string, string> = {
   suma: "Suma",
@@ -90,6 +93,7 @@ export default function Resultado() {
   const celebracion = celebracionDe(temaHoy);
   const router = useRouter();
   const pendientesRecompensas = usePendientes();
+  const { placa } = useJugador();
   const params = useLocalSearchParams<{ mundo?: string; tema?: string; datos?: string; repetir?: string }>();
   const mundo = MUNDO_POR_SLUG[(params.mundo ?? "numeria") as MundoSlug] ?? MUNDO_POR_SLUG.numeria;
   const [d] = useState(() => JSON.parse(params.datos ?? "{}") as Datos);
@@ -169,6 +173,21 @@ export default function Resultado() {
   const seg = (ms: number | null | undefined) => (ms == null ? "—" : `${(ms / 1000).toFixed(1)}s`);
   const pct = (p: number | null | undefined) => (p == null ? "—" : `${Math.round(p * 100)}%`);
   const aciertosDe = (p: number | null | undefined) => (p == null ? "—" : `${Math.round(p * d.total)}/${d.total}`);
+  // Compartir (2026-10-21): la tarjeta sale de lo que esta pantalla ya tiene.
+  const compartir = useMemo(
+    () =>
+      compartirFinPartida({
+        mundo: mundo.slug,
+        desde: null,
+        sprint: { total: d.total, correctos: d.correctos, xpGanado: d.xp, avgTimeMs: null },
+        respuestas: d.respuestas ?? null,
+        nombre: placa?.nombre ?? null,
+        duelId: d.dueloId ?? null,
+        duelo,
+        rivalNombre: d.rival ?? null,
+      }),
+    [mundo.slug, d, placa?.nombre, duelo]
+  );
 
   return (
     <SafeAreaView style={styles.pantalla}>
@@ -417,6 +436,7 @@ export default function Resultado() {
             ) : (
               <Boton3D titulo="Otra partida" acento={mundo.base} brillo onPress={() => salir(() => (params.repetir ? router.replace(JSON.parse(params.repetir)) : router.back()))} />
             )}
+            <CompartirPartida origen={compartir.origen} tarjeta={compartir.tarjeta} acento={mundo.base} />
             {!duelo && (
               <Pressable onPress={() => salir(() => router.dismissTo(`/${mundo.slug}` as "/numeria"))} hitSlop={10}>
                 <Texto v="nota" centro>

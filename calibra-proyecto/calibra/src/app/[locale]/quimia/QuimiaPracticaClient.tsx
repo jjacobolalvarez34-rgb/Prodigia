@@ -298,6 +298,7 @@ export default function QuimiaPracticaClient({ modo, nivelInicial, escudosExtra,
         )}
 
         <BotonesFinPartida
+          compartir={resumen ? { mundo: "quimia", desde: startedAtIso || null, sprint: resumen.sprint, duelId: duelo?.duelId ?? null, duelo: resultadoDuelo, rivalNombre: duelo?.rivalNombre ?? null } : null}
           onOtraVez={duelo ? () => router.push("/rankeds?tab=buscar") : () => setFase("inicio")}
           volverHref={duelo ? "/rankeds" : "/quimia"}
           colorHex={COLOR_QUIMIA}

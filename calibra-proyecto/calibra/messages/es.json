@@ -4880,6 +4880,40 @@
         "abrirAhora": "Abrir ahora",
         "guardar": "Guardar",
         "comoFunciona": "¿Cómo funciona?"
+      },
+      "temaTuyo": "Es tuyo. Póntelo en el Bazar › Mercado › Temas.",
+      "guia": {
+        "boton": "¿Qué trae cada cápsula?",
+        "titulo": "Qué trae cada cápsula",
+        "conTema": "Puede traer un tema de la app. Si ya los tienes todos, se convierte en Chispas.",
+        "nota": "Los porcentajes son los que usa el servidor al abrir cada cápsula. Si sale algo que ya tienes, se convierte en Chispas. Cada 10 cápsulas sin nada raro, la siguiente trae uno seguro.",
+        "grupos": {
+          "jugando": "Jugando",
+          "liga": "Liga y rankeds",
+          "fusion": "Fusión",
+          "cometas": "Con Cometas",
+          "pro": "Prodigia Pro"
+        },
+        "como": {
+          "diaria": "Con tu primera partida del día (y una más al día viendo un anuncio).",
+          "misiones": "Al reclamar las 3 misiones del día.",
+          "racha": "Cada 7 días seguidos cumpliendo tu meta diaria.",
+          "nivel": "Cada vez que subes de nivel de cuenta.",
+          "ciudad": "Al llegar a los niveles 10, 20, 30… de un mundo y al dominarlo.",
+          "liga": "Al cerrar la liga semanal fuera del top 50, o la temporada de rankeds en Hierro.",
+          "liga_bronce": "Al cerrar la liga semanal en el top 50, o la temporada de rankeds en Bronce.",
+          "liga_plata": "Al cerrar la liga semanal en el top 10, o la temporada de rankeds en Plata.",
+          "liga_oro": "Al cerrar la liga semanal en el top 3, o la temporada de rankeds en Oro o más.",
+          "coleccion": "Al completar la colección de una ciudad.",
+          "pro": "Con Prodigia Pro: 2 cada semana.",
+          "estelar": "Con Cometas (120, o 5 por 500), o al cerrar la temporada de rankeds en Platino.",
+          "supernova": "Con Cometas (300, o 3 por 750), o al cerrar la temporada de rankeds en Diamante o Prodigio.",
+          "plata": "Fusionando 3 cápsulas de nivel 1 (diaria, misiones, nivel o liga) y 50 Chispas.",
+          "oro": "Fusionando 3 cápsulas de nivel 2 (racha, liga Bronce o plata) y 150 Chispas.",
+          "prisma": "Fusionando 3 cápsulas de nivel 3 (liga Plata u oro) y 400 Chispas, o al cerrar la temporada de rankeds en Prodigio.",
+          "alineacion": "Jugando 3 partidas durante la Gran Alineación.",
+          "temporada": "Con Cometas mientras dura un evento (por ejemplo, Halloween)."
+        }
       }
     },
     "calendario": {
@@ -5022,7 +5056,17 @@
         "etiquetaLarga": "Tema · Próximamente",
         "inspiracion": "Inspirado en: {x}",
         "nota": "Cambia solo cómo se ve Prodigia: tus mundos, tu progreso y tus cosas quedan iguales.",
-        "boton": "Muy pronto"
+        "boton": "Muy pronto",
+        "aLaVenta": "Temas de la app",
+        "subVenta": "Cambian los colores de toda la app: fondo, tarjetas, bordes, textos y botones. Tus mundos, tu progreso y tus cosas quedan iguales.",
+        "comoConseguir": "Se compran con Cometas o salen en las cápsulas prisma, supernova, de la Alineación y Pro.",
+        "clasico": "Noche de Prodigia",
+        "clasicoDesc": "El tema de siempre. Siempre gratis.",
+        "etiquetaTema": "Tema",
+        "puesto": "Ahora usas el tema {nombre}.",
+        "volverClasico": "Volver al de siempre",
+        "enCapsulas": "También puede salir en las cápsulas prisma, supernova, de la Alineación y Pro.",
+        "gratis": "GRATIS"
       },
       "comprarCometas": "Comprar por {n} Cometas",
       "teFaltanCometas": "Te faltan {n} Cometas",
@@ -5058,7 +5102,10 @@
       "cosmetico": "Un cosmético {rareza}",
       "coleccion": "Una pieza de la colección de {ciudad} que te falte",
       "marcoColeccion": "El marco de colección de {ciudad}",
-      "pieza_evento": "Una pieza de la colección del evento que te falte"
+      "pieza_evento": "Una pieza de la colección del evento que te falte",
+      "tema_app": "Un tema de la app que no tengas",
+      "coleccionSin": "Una pieza de la colección de la ciudad que te falte",
+      "marcoColeccionSin": "El marco animado de colección de la ciudad"
     },
     "constelaciones": {
       "titulo": "Constelaciones",

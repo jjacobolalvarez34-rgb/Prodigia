@@ -107,26 +107,30 @@ function InsigniaHeroe({ elo }: { elo: number }) {
 }
 
 function FilaDuelo({ h, indice }: { h: FilaHistorial; indice: number }) {
+  const router = useRouter();
   const m = mundoDe(h.mundo);
   const signo = h.empate ? "=" : h.gane ? "✓" : "✗";
   const c = h.empate ? color.texto2 : h.gane ? color.correcto : color.error;
   return (
-    <Animated.View entering={FadeInDown.delay(indice * 40)} style={styles.filaDuelo}>
-      <Texto v="mono" c={c} style={{ width: 18 }}>
-        {signo}
-      </Texto>
-      <View style={{ flex: 1 }}>
-        <Texto v="fuerte" tam={14} numberOfLines={1}>
-          {h.rival_nombre ?? "Jugador"}
-          {h.rival_es_bot ? " · bot" : ""}
+    <Animated.View entering={FadeInDown.delay(indice * 40)}>
+      {/* Tocar un duelo abre su detalle (2026-10-21): estadísticas, repetición y compartir. */}
+      <Pressable onPress={() => router.push({ pathname: "/historial/[id]", params: { id: h.duel_id } })} style={({ pressed }) => [styles.filaDuelo, pressed && { opacity: 0.6 }]}>
+        <Texto v="mono" c={c} style={{ width: 18 }}>
+          {signo}
         </Texto>
-        <Texto v="nota" tam={11}>
-          {m?.nombre ?? h.mundo} · {h.clasificatorio ? "Ranked" : "Casual"}
+        <View style={{ flex: 1 }}>
+          <Texto v="fuerte" tam={14} numberOfLines={1}>
+            {h.rival_nombre ?? "Jugador"}
+            {h.rival_es_bot ? " · bot" : ""}
+          </Texto>
+          <Texto v="nota" tam={11}>
+            {m?.nombre ?? h.mundo} · {h.clasificatorio ? "Ranked" : "Casual"}
+          </Texto>
+        </View>
+        <Texto v="mono" tam={13} c={c}>
+          {h.mi_puntaje}–{h.rival_puntaje}
         </Texto>
-      </View>
-      <Texto v="mono" tam={13} c={c}>
-        {h.mi_puntaje}–{h.rival_puntaje}
-      </Texto>
+      </Pressable>
     </Animated.View>
   );
 }

@@ -316,6 +316,7 @@ export default function GeografiaPracticaClient({ continente, nivelInicial, escu
         )}
 
         <BotonesFinPartida
+          compartir={resumen ? { mundo: "geografia", desde: startedAtIso || null, sprint: resumen.sprint, duelId: duelo?.duelId ?? null, duelo: resultadoDuelo, rivalNombre: duelo?.rivalNombre ?? null } : null}
           onOtraVez={duelo ? () => router.push("/rankeds?tab=buscar") : () => setFase("inicio")}
           volverHref={duelo ? "/rankeds" : "/geografia"}
           colorHex={COLOR_GEOGRAFIA}

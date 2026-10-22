@@ -275,6 +275,7 @@ export default function NaipiaPracticaClient({ modo, nivelInicial, escudosExtra,
         )}
 
         <BotonesFinPartida
+          compartir={resumen ? { mundo: "naipia", desde: startedAtIso || null, sprint: resumen.sprint, duelId: duelo?.duelId ?? null, duelo: resultadoDuelo, rivalNombre: duelo?.rivalNombre ?? null } : null}
           onOtraVez={duelo ? () => router.push("/rankeds?tab=buscar") : () => setFase("inicio")}
           volverHref={duelo ? "/rankeds" : "/naipia"}
           colorHex={COLOR_NAIPIA}
