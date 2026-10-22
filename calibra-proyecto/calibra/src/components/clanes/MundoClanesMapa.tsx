@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { tierCiudadDeNivel } from "@/lib/clanes/tierCiudad";
+import { ESTILO_MAPA, calcularTerritorios } from "@/lib/clanes/territorios";
 import EscenaCiudad, { type MiembroCasa } from "./EscenaCiudad";
 import EstandarteClan from "./EstandarteClan";
+import MapaTerritorios, { type TextosMapa } from "./MapaTerritorios";
 
 export interface ParcelaClan {
   clan_id: string;
@@ -15,6 +16,7 @@ export interface ParcelaClan {
   nivel_clan: number;
   cantidad_miembros: number;
   capacidad: number;
+  creado_at?: string | null;
   imagen_url: string | null;
 }
 
@@ -23,12 +25,11 @@ interface ClanPublico extends ParcelaClan {
   guerras_ganadas: number;
 }
 
-const ZOOM_MIN = 0.6;
-const ZOOM_MAX = 2;
-const COLUMNAS = 6;
-const ANCHO_PARCELA = 168;
-const ALTO_PARCELA = 128;
-const GAP = 20;
+const ZOOM_MIN = 0.7;
+const ZOOM_MAX = 6;
+const ZOOM_MI_CLAN = 2.2;
+/** Píxeles por unidad del mapa por debajo de los cuales los nombres no se leen. */
+const ESCALA_LEGIBLE = 0.55;
 // Fase 8 (auditoría 2026-08-25 — "clickear una parcela no abre la
 // ciudad"): causa real, mismo patrón que el bug viejo de GlareHover —
 // onPointerDown arrancaba el arrastre y llamaba setPointerCapture()
@@ -36,20 +37,29 @@ const GAP = 20;
 // real en el mouse/dedo casi nunca tiene cero movimiento entre down y
 // up (tiembla un par de píxeles) — eso ya alcanzaba para: (a)
 // capturar el puntero en el contenedor de pan/zoom en vez de dejarlo
-// en el <button> de la parcela, y (b) mover `offset` un pelo durante
-// el gesto, lo que varios navegadores toman como "fue un drag, no un
-// click" y cancelan el evento click sintético del botón. Con un piso
-// de movimiento real antes de considerar que empezó un arrastre (y
-// setPointerCapture recién ahí, no en el pointerdown), un click
-// genuino nunca dispara nada de esto — llega intacto al botón.
+// en el territorio, y (b) mover `offset` un pelo durante el gesto, lo
+// que varios navegadores toman como "fue un drag, no un click" y
+// cancelan el evento click sintético. Con un piso de movimiento real
+// antes de considerar que empezó un arrastre (y setPointerCapture
+// recién ahí, no en el pointerdown), un click genuino nunca dispara
+// nada de esto — llega intacto al territorio.
 const UMBRAL_ARRASTRE_PX = 6;
 
-// Fase 7 ("Mundo de Clanes"): mapa pan/zoom sin librería externa (mismo
-// criterio que el resto del proyecto — TextType.tsx se portó a mano en
-// vez de sumar una dependencia) — arrastre con Pointer Events + escala
-// vía rueda del mouse o los botones +/-. Una parcela por clan, en
-// grilla, en orden de creación (mapa_clanes() ya la devuelve ordenada).
-export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] }) {
+// Mundo de Clanes como mapa de territorios (pedido del 2026-10-21): cada clan es
+// una región irregular cuyo tamaño sale de sus miembros y su nivel; los clanes
+// nuevos fundan su territorio en la frontera (geometría en
+// lib/clanes/territorios.ts, la misma que dibuja la app). Pan/zoom sin librería
+// externa: arrastre con Pointer Events + escala con la rueda o los botones.
+export default function MundoClanesMapa({
+  parcelas,
+  miClanId = null,
+  ahora,
+}: {
+  parcelas: ParcelaClan[];
+  miClanId?: string | null;
+  /** Momento del servidor para marcar territorios recién fundados. */
+  ahora: number;
+}) {
   const t = useTranslations("Clanes.mapa");
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -67,6 +77,18 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
   const [miembrosClan, setMiembrosClan] = useState<MiembroCasa[]>([]);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
 
+  const mapa = useMemo(() => calcularTerritorios(parcelas), [parcelas]);
+  const miTerritorio = miClanId ? (mapa.territorios.find((x) => x.clan_id === miClanId) ?? null) : null;
+  const textos = useMemo<TextosMapa>(
+    () => ({
+      tuClan: t("tuClan"),
+      nuevo: t("nuevo"),
+      detalle: (c) => `${t("nivelAbrev", { nivel: c.nivel_clan })} · ${c.cantidad_miembros}`,
+      territorioDe: (c) => t("territorioDe", { nombre: c.nombre }),
+    }),
+    [t],
+  );
+
   function onPointerDown(e: React.PointerEvent) {
     punteroAbajoRef.current = true;
     arrastreConfirmadoRef.current = false;
@@ -74,7 +96,7 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
     ultimoPunto.current = { x: e.clientX, y: e.clientY };
     // Nada de setPointerCapture ni setArrastrando(true) todavía — recién
     // cuando se confirma un movimiento real (onPointerMove de abajo). Un
-    // click sobre una parcela nunca debe pasar por acá.
+    // click sobre un territorio nunca debe pasar por acá.
   }
 
   function onPointerMove(e: React.PointerEvent) {
@@ -105,7 +127,43 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
 
   function onWheel(e: React.WheelEvent) {
     e.preventDefault();
-    setZoom((z) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z - e.deltaY * 0.001)));
+    setZoom((z) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z * (1 - e.deltaY * 0.0012))));
+  }
+
+  // Desplazamiento que deja el centro de mi territorio en el medio del contenedor.
+  function offsetHaciaMiClan(el: HTMLDivElement, z: number) {
+    if (!miTerritorio) return { x: 0, y: 0 };
+    // El SVG se ajusta al contenedor ("meet"): de unidades del mapa a píxeles.
+    const { width: W, height: H } = el.getBoundingClientRect();
+    const { minX, minY, ancho, alto } = mapa.caja;
+    const f = Math.min(W / ancho, H / alto);
+    const lx = (W - ancho * f) / 2 + (miTerritorio.centro.x - minX) * f;
+    const ly = (H - alto * f) / 2 + (miTerritorio.centro.y - minY) * f;
+    return { x: -z * (lx - W / 2), y: -z * (ly - H / 2) };
+  }
+
+  function irAMiClan() {
+    const el = contenedorRef.current;
+    if (!el || !miTerritorio) return;
+    const z = Math.max(zoom, ZOOM_MI_CLAN);
+    setZoom(z);
+    setOffset(offsetHaciaMiClan(el, z));
+  }
+
+  // Encuadre inicial (una sola vez, al montar el contenedor): con muchos clanes el
+  // mapa entero queda chico, así que se acerca hasta una escala legible y, si hace
+  // falta acercar, se centra en mi clan.
+  const encuadradoRef = useRef(false);
+  function montarContenedor(el: HTMLDivElement | null) {
+    contenedorRef.current = el;
+    if (!el || encuadradoRef.current || mapa.territorios.length === 0) return;
+    encuadradoRef.current = true;
+    const { width: W, height: H } = el.getBoundingClientRect();
+    const f = Math.min(W / mapa.caja.ancho, H / mapa.caja.alto);
+    if (!(f > 0) || f >= ESCALA_LEGIBLE) return;
+    const z = Math.min(ZOOM_MAX, ESCALA_LEGIBLE / f);
+    setZoom(z);
+    setOffset(offsetHaciaMiClan(el, z));
   }
 
   async function abrirClan(clanId: string) {
@@ -114,13 +172,8 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
     try {
       const supabase = createClient();
       // Fase 4 (bug "la ciudad del clan no carga ni las casas por
-      // miembro"): antes acá solo se pedía ver_clan_publico — la lista
-      // de miembros nunca se cargaba, así que EscenaCiudad nunca tenía
-      // nada que dibujar aparte del tier. miembros_de_clan() ya existe
-      // (se usa hoy para MI propio clan en ClanesClient.tsx) y no tiene
-      // ningún chequeo de "eres miembro de este clan" — ya es de lectura
-      // pública para cualquier clan_id, solo nunca se había llamado
-      // desde el mapa.
+      // miembro"): miembros_de_clan() es de lectura pública para cualquier
+      // clan_id, así que el panel puede mostrar las casas de cada miembro.
       const [{ data }, { data: miembrosData }] = await Promise.all([
         supabase.rpc("ver_clan_publico", { p_clan_id: clanId }),
         supabase.rpc("miembros_de_clan", { p_clan_id: clanId }),
@@ -133,20 +186,30 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
     }
   }
 
+  const botonRedondo =
+    "flex h-8 min-w-8 items-center justify-center rounded-full border border-border px-2 text-sm font-bold text-foreground hover:bg-surface-2";
+
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-xs text-texto-secundario">{t("ayuda")}</p>
         <div className="flex items-center gap-1.5">
+          {miTerritorio && (
+            <button onClick={irAMiClan} className={`${botonRedondo} text-xs`}>
+              {t("irAMiClan")}
+            </button>
+          )}
           <button
-            onClick={() => setZoom((z) => Math.max(ZOOM_MIN, z - 0.2))}
-            className="flex h-7 w-7 items-center justify-center rounded-full border border-border text-sm font-bold text-foreground hover:bg-surface-2"
+            onClick={() => setZoom((z) => Math.max(ZOOM_MIN, z / 1.3))}
+            aria-label={t("alejar")}
+            className={botonRedondo}
           >
             −
           </button>
           <button
-            onClick={() => setZoom((z) => Math.min(ZOOM_MAX, z + 0.2))}
-            className="flex h-7 w-7 items-center justify-center rounded-full border border-border text-sm font-bold text-foreground hover:bg-surface-2"
+            onClick={() => setZoom((z) => Math.min(ZOOM_MAX, z * 1.3))}
+            aria-label={t("acercar")}
+            className={botonRedondo}
           >
             +
           </button>
@@ -154,33 +217,35 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
       </div>
 
       <div
-        ref={contenedorRef}
+        ref={montarContenedor}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerLeave={onPointerUp}
         onWheel={onWheel}
-        className="relative h-[420px] w-full touch-none overflow-hidden rounded-2xl border border-border bg-surface-2 [cursor:grab] active:[cursor:grabbing]"
+        className="relative h-[460px] w-full touch-none overflow-hidden rounded-2xl border border-border sm:h-[560px] [cursor:grab] active:[cursor:grabbing]"
+        style={{ background: ESTILO_MAPA.mar }}
       >
-        <div
-          className="absolute left-1/2 top-1/2"
-          style={{
-            transform: `translate(-50%, -50%) translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
-            transition: arrastrando ? "none" : "transform 0.15s ease-out",
-          }}
-        >
+        {parcelas.length > 0 ? (
           <div
-            className="grid"
-            style={{ gridTemplateColumns: `repeat(${COLUMNAS}, ${ANCHO_PARCELA}px)`, gap: `${GAP}px` }}
+            className="absolute inset-0"
+            style={{
+              transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
+              transition: arrastrando ? "none" : "transform 0.2s ease-out",
+            }}
           >
-            {parcelas.map((p) => (
-              <ParcelaTile key={p.clan_id} parcela={p} onClick={() => abrirClan(p.clan_id)} />
-            ))}
+            <MapaTerritorios
+              mapa={mapa}
+              clanes={parcelas}
+              miClanId={miClanId}
+              elegidoId={seleccionado?.clan_id ?? null}
+              ahora={ahora}
+              textos={textos}
+              onElegir={abrirClan}
+            />
           </div>
-        </div>
-
-        {parcelas.length === 0 && (
-          <p className="absolute inset-0 flex items-center justify-center text-sm text-texto-secundario">
+        ) : (
+          <p className="absolute inset-0 flex items-center justify-center text-sm" style={{ color: ESTILO_MAPA.textoSuave }}>
             {t("vacio")}
           </p>
         )}
@@ -195,31 +260,6 @@ export default function MundoClanesMapa({ parcelas }: { parcelas: ParcelaClan[] 
         />
       )}
     </div>
-  );
-}
-
-function ParcelaTile({ parcela, onClick }: { parcela: ParcelaClan; onClick: () => void }) {
-  const t = useTranslations("Clanes.mapa");
-  const tier = tierCiudadDeNivel(parcela.nivel_clan);
-  const llena = parcela.cantidad_miembros >= parcela.capacidad;
-  return (
-    <button
-      onClick={onClick}
-      style={{ width: ANCHO_PARCELA, height: ALTO_PARCELA, borderColor: parcela.color_estandarte }}
-      className="group relative flex flex-col overflow-hidden rounded-xl border-2 bg-surface text-left shadow-sm transition-transform hover:z-10 hover:scale-[1.04]"
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element -- miniatura estática, sin animaciones por perf con muchas parcelas */}
-      <img src={tier.imagen} alt="" className="h-16 w-full object-cover" draggable={false} />
-      <div className="flex flex-1 flex-col justify-center gap-0.5 px-2 py-1">
-        <p className="truncate text-xs font-bold text-foreground">
-          {parcela.nombre} {parcela.tag && <span className="text-texto-secundario">[{parcela.tag}]</span>}
-        </p>
-        <p className="text-[10px] text-texto-secundario">
-          {t("nivelAbrev", { nivel: parcela.nivel_clan })} · {parcela.cantidad_miembros}/{parcela.capacidad}
-          {llena && ` · ${t("lleno")}`}
-        </p>
-      </div>
-    </button>
   );
 }
 

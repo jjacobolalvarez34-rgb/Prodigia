@@ -122,7 +122,7 @@ export default function VistaClan({ datos, miId, noLeidosClan, invitaciones, onC
               Explora
             </Texto>
             <Texto v="h2">Mundo de clanes</Texto>
-            <Texto v="nota">Un mapa nocturno con la ciudad de cada clan. Toca una para conocerla o pedir unirte.</Texto>
+            <Texto v="nota">Cada clan es un territorio que crece con sus miembros. Toca uno para conocerlo o pedir unirte.</Texto>
           </View>
         </Tarjeta>
         <TituloSeccion>Buscar un clan</TituloSeccion>

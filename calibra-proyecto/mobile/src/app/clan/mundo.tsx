@@ -1,10 +1,19 @@
+import {
+  ESTILO_MAPA,
+  PATH_BANDERIN,
+  calcularTerritorios,
+  coloresTerritorio,
+  esTerritorioNuevo,
+  etiquetaTerritorio,
+  territorioEnPunto,
+} from "@/lib/clanes/territorios";
 import { useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { FadeIn, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Svg, { Rect } from "react-native-svg";
+import Svg, { Circle, Defs, G, Path, Pattern, RadialGradient, Rect, Stop, Text as SvgText } from "react-native-svg";
 import { mapaClanes, tierDe, unirseAClan, type ClanMapa } from "~/lib/clanes";
 import { sonar, vibrar } from "~/lib/efectos";
 import { mensajeError, supabase } from "~/lib/supabase";
@@ -16,53 +25,160 @@ import { BotonAtras } from "~/ui/Pantalla";
 import Texto from "~/ui/Texto";
 import { color, conAlfa, fuente } from "~/tema";
 
-// Mundo de clanes (maqueta 11): un mapa nocturno con una parcela por clan; la altura
-// de la ciudad muestra su nivel y el banderín su color. Arrastrar y pellizcar para
-// moverse; tocar una parcela abre su resumen. Toque y arrastre son gestos separados
-// (lección del bug de la web: un arrastre nunca abre una parcela).
+// Mundo de clanes como mapa de territorios (pedido del 2026-10-21): cada clan es una
+// región irregular que crece con sus miembros y su nivel, y cada clan nuevo funda su
+// territorio en la frontera. La geometría es la de la web (@/lib/clanes/territorios),
+// así que el mapa se ve igual en los dos lados. Arrastrar y pellizcar para moverse;
+// tocar un territorio abre su resumen. Toque y arrastre son gestos separados (lección
+// del bug de la web: un arrastre nunca abre un clan).
 
-const COLUMNAS = 3;
-const ANCHO_P = 104;
-const ALTO_P = 96;
-const HUECO = 14;
 type Filtro = "todos" | "lugar" | "nivel" | "mio";
+const ALTO_CABECERA = 120;
+const ZOOM_MIN = 0.6;
+const ZOOM_MAX = 5;
+/** Píxeles por unidad del mapa por debajo de los cuales los nombres no se leen. */
+const ESCALA_LEGIBLE = 0.6;
 
-function Parcela({ c, mio, elegido }: { c: ClanMapa; mio: boolean; elegido: boolean }) {
-  const tier = tierDe(c.nivel_clan).tier;
-  const edificios = useMemo(() => {
-    let s = c.clan_id.split("").reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) % 9973, 7);
-    const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
-    const lista: { x: number; w: number; h: number }[] = [];
-    let x = 4;
-    while (x < ANCHO_P - 12) {
-      const w = 8 + Math.round(r() * 6);
-      lista.push({ x, w, h: 10 + r() * (12 + tier * 9) });
-      x += w + 3;
-    }
-    return lista;
-  }, [c.clan_id, tier]);
+type Mapa = ReturnType<typeof calcularTerritorios>;
+
+const DibujoMapa = memo(function DibujoMapa({
+  mapa,
+  clanes,
+  escalaBase,
+  miClan,
+  elegido,
+  atenuados,
+  ahora,
+}: {
+  mapa: Mapa;
+  clanes: Map<string, ClanMapa>;
+  escalaBase: number;
+  miClan: string | null;
+  elegido: string | null;
+  atenuados: Set<string>;
+  ahora: number;
+}) {
+  const { minX, minY, ancho, alto } = mapa.caja;
+  const destacados = mapa.territorios.filter((t) => t.clan_id === miClan || t.clan_id === elegido);
   return (
-    <View style={[styles.parcela, mio && { borderColor: color.racha, borderWidth: 2, boxShadow: `0px 0px 18px ${conAlfa(color.racha, 0.5)}` }, elegido && { borderColor: "#fff" }]}>
-      <Svg width={ANCHO_P} height={ALTO_P - 18} style={{ position: "absolute", bottom: 18 }}>
-        {edificios.map((e, i) => (
-          <Rect key={i} x={e.x} y={ALTO_P - 18 - e.h} width={e.w} height={e.h} rx={1.5} fill="#0B0F1F" />
+    <Svg width={ancho * escalaBase} height={alto * escalaBase} viewBox={`${minX} ${minY} ${ancho} ${alto}`}>
+      <Defs>
+        <RadialGradient id="tc-mar" cx="50%" cy="45%" r="60%">
+          <Stop offset="0%" stopColor={ESTILO_MAPA.marClaro} />
+          <Stop offset="100%" stopColor={ESTILO_MAPA.mar} />
+        </RadialGradient>
+        <Pattern id="tc-olas" width={46} height={26} patternUnits="userSpaceOnUse">
+          <Path d="M2 8q5-4 10 0t10 0M25 20q5-4 10 0t10 0" fill="none" stroke={ESTILO_MAPA.olas} strokeOpacity={0.09} strokeWidth={1.1} strokeLinecap="round" />
+        </Pattern>
+        <Pattern id="tc-textura" width={9} height={9} patternUnits="userSpaceOnUse" patternTransform="rotate(28)">
+          <Circle cx={2} cy={2} r={0.8} fill="#FFFFFF" fillOpacity={0.09} />
+          <Path d="M5 6.5h3" stroke="#000000" strokeOpacity={0.12} strokeWidth={0.8} strokeLinecap="round" />
+        </Pattern>
+        <RadialGradient id="tc-relieve" cx="42%" cy="36%" r="70%">
+          <Stop offset="0%" stopColor="#FFFFFF" stopOpacity={0.24} />
+          <Stop offset="55%" stopColor="#FFFFFF" stopOpacity={0} />
+          <Stop offset="100%" stopColor="#000000" stopOpacity={0.34} />
+        </RadialGradient>
+      </Defs>
+
+      <Rect x={minX} y={minY} width={ancho} height={alto} fill="url(#tc-mar)" />
+      <Rect x={minX} y={minY} width={ancho} height={alto} fill="url(#tc-olas)" />
+
+      {/* Bajíos alrededor de la costa y sombra del relieve. */}
+      <G fill="none" stroke={ESTILO_MAPA.bajio} strokeLinejoin="round">
+        {mapa.territorios.map((t) => (
+          <Path key={`b1${t.clan_id}`} d={t.d} strokeWidth={22} strokeOpacity={0.07} />
         ))}
-        {edificios.flatMap((e, i) =>
-          Array.from({ length: Math.floor(e.h / 7) }, (_, j) => (
-            <Rect key={`${i}-${j}`} x={e.x + 2} y={ALTO_P - 18 - e.h + 3 + j * 7} width={2} height={2.5} fill={c.color_estandarte} opacity={(i + j) % 3 === 0 ? 0.25 : 0.9} />
-          ))
-        )}
-      </Svg>
-      <View style={{ position: "absolute", top: 6, left: 6 }}>
-        <Bandera c={c.color_estandarte} ancho={10} alto={16} quieta />
-      </View>
-      <View style={styles.pie}>
-        <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 9, color: color.texto }} numberOfLines={1}>
-          [{c.tag ?? c.nombre.slice(0, 3)}]
-        </Texto>
-        <Texto style={{ fontFamily: fuente.mono, fontSize: 9, color: c.color_estandarte }}>Nv {c.nivel_clan}</Texto>
-      </View>
-    </View>
+        {mapa.territorios.map((t) => (
+          <Path key={`b2${t.clan_id}`} d={t.d} strokeWidth={9} strokeOpacity={0.12} />
+        ))}
+      </G>
+      <G fill="#000000" fillOpacity={0.42} transform="translate(0 5)">
+        {mapa.territorios.map((t) => (
+          <Path key={t.clan_id} d={t.d} />
+        ))}
+      </G>
+
+      {mapa.territorios.map((t) => {
+        const c = clanes.get(t.clan_id);
+        if (!c || !t.d) return null;
+        const col = coloresTerritorio(c.color_estandarte);
+        const nuevo = esTerritorioNuevo(c.creado_at, ahora) && c.clan_id !== miClan;
+        return (
+          <G key={t.clan_id}>
+            <Path d={t.d} fill={col.suelo} />
+            <Path d={t.d} fill="url(#tc-textura)" />
+            <Path d={t.d} fill="url(#tc-relieve)" />
+            <Path d={t.d} fill="none" stroke={col.borde} strokeWidth={1.8} strokeLinejoin="round" />
+            <Path d={t.d} fill="none" stroke={col.luz} strokeOpacity={0.22} strokeWidth={0.7} strokeLinejoin="round" />
+            {nuevo && <Path d={t.d} fill="none" stroke={col.luz} strokeWidth={1.4} strokeDasharray="5 4" strokeOpacity={0.8} />}
+            {atenuados.has(t.clan_id) && <Path d={t.d} fill={ESTILO_MAPA.mar} fillOpacity={0.62} />}
+          </G>
+        );
+      })}
+
+      {destacados.map((t) => {
+        const c = t.clan_id === elegido ? ESTILO_MAPA.elegido : ESTILO_MAPA.miClan;
+        return (
+          <G key={`d${t.clan_id}`} fill="none" strokeLinejoin="round">
+            <Path d={t.d} stroke={c} strokeWidth={9} strokeOpacity={0.3} />
+            <Path d={t.d} stroke={c} strokeWidth={2.6} />
+          </G>
+        );
+      })}
+
+      {mapa.territorios.map((t) => {
+        const c = clanes.get(t.clan_id);
+        if (!c) return null;
+        const col = coloresTerritorio(c.color_estandarte);
+        const mio = c.clan_id === miClan;
+        const nuevo = esTerritorioNuevo(c.creado_at, ahora);
+        const et = etiquetaTerritorio(c.nombre, c.tag, t.radioInterior);
+        const { x, y } = t.centro;
+        const altoB = et.tam * 1.25;
+        const anchoB = (altoB * 22) / 34;
+        const yNombre = et.conDetalle ? y + et.tam * 0.55 : y + et.tam * 0.35;
+        const sobre = mio ? "TU CLAN" : nuevo ? "NUEVO" : null;
+        const apagado = atenuados.has(t.clan_id);
+        return (
+          <G key={`e${t.clan_id}`} opacity={apagado ? 0.45 : 1}>
+            {et.conDetalle && (
+              <G transform={`translate(${x - anchoB / 2} ${y - et.tam * 1.15}) scale(${anchoB / 22} ${altoB / 34})`}>
+                <Path d={PATH_BANDERIN} fill={col.color} stroke={ESTILO_MAPA.contornoTexto} strokeWidth={2.4} strokeLinejoin="round" />
+                <Path d="M0 0H22V9H0Z" fill="#FFFFFF" opacity={0.2} />
+              </G>
+            )}
+            {sobre && et.conDetalle && (
+              <Etiqueta x={x} y={y - et.tam * 1.45} tam={et.tam * 0.55} c={mio ? ESTILO_MAPA.miClan : col.luz} f={fuente.mono} trazo={et.tam * 0.2}>
+                {sobre}
+              </Etiqueta>
+            )}
+            <Etiqueta x={x} y={yNombre} tam={et.tam} c={ESTILO_MAPA.texto} f={fuente.display} trazo={et.tam * 0.26}>
+              {et.texto}
+            </Etiqueta>
+            {et.conDetalle && (
+              <Etiqueta x={x} y={yNombre + et.tam * 0.95} tam={et.tam * 0.6} c={ESTILO_MAPA.textoSuave} f={fuente.cuerpoBold} trazo={et.tam * 0.2}>
+                {`Nv ${c.nivel_clan} · ${c.cantidad_miembros}`}
+              </Etiqueta>
+            )}
+          </G>
+        );
+      })}
+    </Svg>
+  );
+});
+
+// Texto con contorno oscuro para que se lea sobre cualquier color de territorio.
+function Etiqueta({ x, y, tam, c, f, trazo, children }: { x: number; y: number; tam: number; c: string; f: string; trazo: number; children: string }) {
+  return (
+    <>
+      <SvgText x={x} y={y} fontSize={tam} fontFamily={f} textAnchor="middle" fill={ESTILO_MAPA.contornoTexto} stroke={ESTILO_MAPA.contornoTexto} strokeWidth={trazo} strokeLinejoin="round" strokeOpacity={0.85}>
+        {children}
+      </SvgText>
+      <SvgText x={x} y={y} fontSize={tam} fontFamily={f} textAnchor="middle" fill={c}>
+        {children}
+      </SvgText>
+    </>
   );
 }
 
@@ -74,6 +190,7 @@ export default function MundoClanes() {
   const [filtro, setFiltro] = useState<Filtro>("todos");
   const [elegido, setElegido] = useState<ClanMapa | null>(null);
   const [uniendo, setUniendo] = useState(false);
+  const [ahora] = useState(() => Date.now());
 
   const escala = useSharedValue(1);
   const tx = useSharedValue(0);
@@ -85,34 +202,42 @@ export default function MundoClanes() {
     supabase.rpc("mi_clan").then(({ data }) => setMiClan((data as { clan_id: string }[] | null)?.[0]?.clan_id ?? null));
   }, []);
 
-  const lista = useMemo(() => {
-    let l = clanes.slice();
-    if (filtro === "lugar") l = l.filter((c) => c.cantidad_miembros < c.capacidad);
-    if (filtro === "nivel") l = l.sort((a, b) => b.nivel_clan - a.nivel_clan);
-    if (filtro === "mio") l = l.filter((c) => c.clan_id === miClan);
-    return l;
+  // El mapa se calcula con todos los clanes (los filtros solo atenúan, no mueven fronteras).
+  const mapa = useMemo(() => calcularTerritorios(clanes), [clanes]);
+  const porId = useMemo(() => new Map(clanes.map((c) => [c.clan_id, c])), [clanes]);
+  const atenuados = useMemo(() => {
+    if (filtro === "todos") return new Set<string>();
+    let visibles: ClanMapa[] = clanes;
+    if (filtro === "lugar") visibles = clanes.filter((c) => c.cantidad_miembros < c.capacidad);
+    if (filtro === "nivel") visibles = clanes.slice().sort((a, b) => b.nivel_clan - a.nivel_clan || b.cantidad_miembros - a.cantidad_miembros).slice(0, 10);
+    if (filtro === "mio") visibles = clanes.filter((c) => c.clan_id === miClan);
+    const ids = new Set(visibles.map((c) => c.clan_id));
+    return new Set(clanes.filter((c) => !ids.has(c.clan_id)).map((c) => c.clan_id));
   }, [clanes, filtro, miClan]);
 
-  const filas = Math.ceil(lista.length / COLUMNAS);
-  const anchoMapa = COLUMNAS * (ANCHO_P + HUECO) + HUECO;
-  const altoMapa = Math.max(height, filas * (ALTO_P + HUECO) + 300);
+  // Escala inicial: que el mapa entero quepa en la pantalla, sin que los nombres queden diminutos.
+  const centroY = (height + ALTO_CABECERA) / 2;
+  const escalaBase = Math.min(1.6, Math.max(ESCALA_LEGIBLE, Math.min((width - 24) / mapa.caja.ancho, (height - ALTO_CABECERA - 40) / mapa.caja.alto)));
+  const W = mapa.caja.ancho * escalaBase;
+  const H = mapa.caja.alto * escalaBase;
 
-  function posicion(i: number) {
-    return { x: HUECO + (i % COLUMNAS) * (ANCHO_P + HUECO), y: 170 + Math.floor(i / COLUMNAS) * (ALTO_P + HUECO) };
-  }
+  // Si el mapa no entra entero en la pantalla, se abre centrado en mi clan.
+  const miTerritorio = miClan ? mapa.territorios.find((x) => x.clan_id === miClan) : undefined;
+  const desbordado = W > width || H > height - ALTO_CABECERA;
+  const centroMio = miTerritorio
+    ? { x: (miTerritorio.centro.x - mapa.caja.minX) * escalaBase - W / 2, y: (miTerritorio.centro.y - mapa.caja.minY) * escalaBase - H / 2 }
+    : null;
 
   function tocar(x: number, y: number) {
-    // De la pantalla al mapa: la escala se aplica alrededor del centro de la vista.
+    // De la pantalla al mapa: la escala se aplica alrededor del centro del dibujo.
     const s = escala.get();
-    const mx = width / 2 + (x - tx.get() - width / 2) / s - (width - anchoMapa) / 2;
-    const my = altoMapa / 2 + (y - ty.get() - altoMapa / 2) / s;
-    const i = lista.findIndex((_, k) => {
-      const p = posicion(k);
-      return mx >= p.x && mx <= p.x + ANCHO_P && my >= p.y && my <= p.y + ALTO_P;
-    });
-    if (i >= 0) {
+    const lx = (x - (width / 2 + tx.get())) / s + W / 2;
+    const ly = (y - (centroY + ty.get())) / s + H / 2;
+    const t = territorioEnPunto(mapa, { x: lx / escalaBase + mapa.caja.minX, y: ly / escalaBase + mapa.caja.minY });
+    const c = t ? porId.get(t.clan_id) : null;
+    if (c) {
       vibrar.seleccion();
-      setElegido(lista[i]);
+      setElegido(c);
     }
   }
 
@@ -121,7 +246,7 @@ export default function MundoClanes() {
       inicio.value = { e: escala.value, x: tx.value, y: ty.value };
     })
     .onUpdate((e) => {
-      escala.value = Math.min(3, Math.max(0.6, inicio.value.e * e.scale));
+      escala.value = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, inicio.value.e * e.scale));
     });
   const arrastre = Gesture.Pan()
     .minDistance(6)
@@ -139,47 +264,41 @@ export default function MundoClanes() {
     });
   const gestos = Gesture.Race(Gesture.Simultaneous(pellizco, arrastre), toque);
 
+  useEffect(() => {
+    if (!desbordado || !centroMio) return;
+    tx.set(-centroMio.x);
+    ty.set(-centroMio.y);
+    // Solo al llegar los datos (o cambiar de clan), no en cada render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [desbordado, miTerritorio?.clan_id]);
+
   const estiloMapa = useAnimatedStyle(() => ({ transform: [{ translateX: tx.value }, { translateY: ty.value }, { scale: escala.value }] }));
 
   function centrarEnMiClan() {
-    const i = lista.findIndex((c) => c.clan_id === miClan);
-    escala.set(withSpring(1.4));
-    if (i < 0) {
+    const t = mapa.territorios.find((x) => x.clan_id === miClan);
+    const s = Math.max(1.8, escala.get());
+    escala.set(withSpring(s));
+    if (!t) {
       tx.set(withTiming(0));
       ty.set(withTiming(0));
       return;
     }
-    const p = posicion(i);
-    const px = p.x + ANCHO_P / 2 + (width - anchoMapa) / 2;
-    const py = p.y + ALTO_P / 2;
-    tx.set(withSpring(width / 2 - width / 2 - (px - width / 2) * 1.4));
-    ty.set(withSpring(height / 2 - altoMapa / 2 - (py - altoMapa / 2) * 1.4));
+    const dx = (t.centro.x - mapa.caja.minX) * escalaBase - W / 2;
+    const dy = (t.centro.y - mapa.caja.minY) * escalaBase - H / 2;
+    tx.set(withSpring(-s * dx));
+    ty.set(withSpring(-s * dy));
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#070A14" }}>
+    <View style={{ flex: 1, backgroundColor: ESTILO_MAPA.mar }}>
       <GestureDetector gesture={gestos}>
-        <Animated.View style={[{ width, height: altoMapa }, estiloMapa]}>
-          <Svg width={width} height={altoMapa} style={StyleSheet.absoluteFill}>
-            {Array.from({ length: Math.ceil(altoMapa / 34) }, (_, i) => (
-              <Rect key={`h${i}`} x={0} y={i * 34} width={width} height={1} fill="rgba(124,92,255,0.07)" />
-            ))}
-            {Array.from({ length: Math.ceil(width / 34) }, (_, i) => (
-              <Rect key={`v${i}`} x={i * 34} y={0} width={1} height={altoMapa} fill="rgba(124,92,255,0.07)" />
-            ))}
-            <Rect x={-20} y={altoMapa * 0.55} width={width + 40} height={26} rx={13} fill="#16406B" opacity={0.7} transform={`rotate(-8 ${width / 2} ${altoMapa * 0.55})`} />
-          </Svg>
-          <View style={{ position: "absolute", left: (width - anchoMapa) / 2, top: 0, width: anchoMapa }}>
-            {lista.map((c, i) => {
-              const p = posicion(i);
-              return (
-                <Animated.View key={c.clan_id} entering={FadeIn.delay(Math.min(i, 20) * 40)} style={{ position: "absolute", left: p.x, top: p.y }}>
-                  <Parcela c={c} mio={c.clan_id === miClan} elegido={elegido?.clan_id === c.clan_id} />
-                </Animated.View>
-              );
-            })}
-          </View>
-        </Animated.View>
+        <View style={StyleSheet.absoluteFill}>
+          {clanes.length > 0 && (
+            <Animated.View entering={FadeIn.duration(500)} style={[{ position: "absolute", left: (width - W) / 2, top: centroY - H / 2, width: W, height: H }, estiloMapa]}>
+              <DibujoMapa mapa={mapa} clanes={porId} escalaBase={escalaBase} miClan={miClan} elegido={elegido?.clan_id ?? null} atenuados={atenuados} ahora={ahora} />
+            </Animated.View>
+          )}
+        </View>
       </GestureDetector>
 
       <SafeAreaView edges={["top"]} style={styles.arriba} pointerEvents="box-none">
@@ -188,7 +307,7 @@ export default function MundoClanes() {
           <View>
             <Texto v="h3">Mundo de clanes</Texto>
             <Texto v="nota" tam={11}>
-              {clanes.length} clanes · pellizca para acercar
+              {clanes.length} territorios · pellizca para acercar
             </Texto>
           </View>
         </View>
@@ -201,17 +320,24 @@ export default function MundoClanes() {
               ["mio", "Mi clan"],
             ] as [Filtro, string][]
           ).map(([id, t]) => (
-            <Pressable key={id} onPress={() => setFiltro(id)} style={[styles.chip, filtro === id && { backgroundColor: color.surface3, borderColor: conAlfa(color.primario, 0.5) }]}>
+            <Pressable
+              key={id}
+              onPress={() => {
+                setFiltro(id);
+                if (id === "mio") centrarEnMiClan();
+              }}
+              style={[styles.chip, filtro === id && { backgroundColor: color.surface3, borderColor: conAlfa(color.primario, 0.5) }]}
+            >
               <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 11, color: filtro === id ? color.texto : color.texto2 }}>{t}</Texto>
             </Pressable>
           ))}
         </View>
       </SafeAreaView>
       <View style={styles.zoom}>
-        <Pressable style={styles.zoomBoton} onPress={() => escala.set(withSpring(Math.min(3, escala.get() * 1.4)))}>
+        <Pressable style={styles.zoomBoton} onPress={() => escala.set(withSpring(Math.min(ZOOM_MAX, escala.get() * 1.4)))}>
           <Texto v="h3">+</Texto>
         </Pressable>
-        <Pressable style={styles.zoomBoton} onPress={() => escala.set(withSpring(Math.max(0.6, escala.get() / 1.4)))}>
+        <Pressable style={styles.zoomBoton} onPress={() => escala.set(withSpring(Math.max(ZOOM_MIN, escala.get() / 1.4)))}>
           <Texto v="h3">−</Texto>
         </Pressable>
         <Pressable style={styles.zoomBoton} onPress={centrarEnMiClan}>
@@ -276,7 +402,5 @@ const styles = StyleSheet.create({
   chip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, borderWidth: 1, borderColor: color.border, backgroundColor: color.surface1 },
   zoom: { position: "absolute", right: 12, top: 170, gap: 6 },
   zoomBoton: { width: 38, height: 38, borderRadius: 11, backgroundColor: "rgba(18,23,42,0.92)", borderWidth: 1, borderColor: color.border, alignItems: "center", justifyContent: "center" },
-  parcela: { width: ANCHO_P, height: ALTO_P, borderRadius: 14, backgroundColor: "rgba(18,23,42,0.88)", borderWidth: 1, borderColor: color.border, overflow: "hidden" },
-  pie: { position: "absolute", left: 0, right: 0, bottom: 0, height: 18, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 6, backgroundColor: "rgba(0,0,0,0.45)" },
   fila: { flexDirection: "row", alignItems: "center", gap: 10 },
 });

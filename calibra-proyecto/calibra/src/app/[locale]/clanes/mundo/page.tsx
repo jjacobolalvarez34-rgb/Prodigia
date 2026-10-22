@@ -6,6 +6,12 @@ import Header from "@/components/Header";
 import BotonEnlace from "@/components/BotonEnlace";
 import MundoClanesMapa, { type ParcelaClan } from "@/components/clanes/MundoClanesMapa";
 
+// Fuera del componente: el servidor fija "ahora" una vez y el cliente lo recibe
+// tal cual (marca los territorios recién fundados sin desfasar la hidratación).
+function momentoActual() {
+  return Date.now();
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Clanes.mundo.metadata");
   return { title: t("title"), description: t("description") };
@@ -18,7 +24,8 @@ export default async function MundoClanesPage() {
   const tBloqueos = await getTranslations("Bloqueos.invitado.secciones");
   bloquearInvitado(user, tBloqueos("clanes"));
 
-  const { data } = await supabase.rpc("mapa_clanes");
+  const [{ data }, { data: miClan }] = await Promise.all([supabase.rpc("mapa_clanes"), supabase.rpc("mi_clan")]);
+  const miClanId = (miClan as { clan_id: string }[] | null)?.[0]?.clan_id ?? null;
 
   return (
     <>
@@ -31,7 +38,7 @@ export default async function MundoClanesPage() {
           <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
           <p className="mt-1 text-sm text-texto-secundario">{t("subtitulo")}</p>
         </div>
-        <MundoClanesMapa parcelas={(data as ParcelaClan[] | null) ?? []} />
+        <MundoClanesMapa parcelas={(data as ParcelaClan[] | null) ?? []} miClanId={miClanId} ahora={momentoActual()} />
       </div>
     </>
   );
