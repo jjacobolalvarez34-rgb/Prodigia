@@ -54,7 +54,7 @@ export interface StatsCasual {
 // Mundos que se pueden jugar en un duelo DENTRO de la app. El resto de las ciudades
 // se juega en la web hasta que lleguen a la app.
 export const MUNDOS_DUELO_APP: MundoSlug[] = MUNDOS.filter((m) => m.enApp).map((m) => m.slug);
-export const ELO_SOLO_TODAS = 1300; // Platino+: solo "todas las ciudades" (buscar_rival_duelo, 0078)
+export const ELO_SOLO_TODAS = 1700; // Platino+: solo "todas las ciudades" (buscar_rival_duelo, 0078; escala nueva 0296)
 export const NIVEL_MINIMO_RANKEDS = 5;
 
 export async function cargarCompetitivo() {

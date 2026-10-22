@@ -430,18 +430,36 @@ export interface RangoElo {
   degradado?: [string, string];
 }
 
+// Escala como Brawlhalla (0296, pedido 2026-10-21): se empieza en 500 (Hierro);
+// Bronce 800, Plata 1100, Oro 1400, Platino 1700, Diamante 2000. Prodigio no es un
+// umbral fijo: es estar entre los 100 mejores con 2000 o más (umbral_prodigio() en la
+// base). Su `min` (2300) solo sirve para dibujar las divisiones de Diamante.
 export const RANGOS_ELO: RangoElo[] = [
-  { slug: "bronce", nombre: "Bronce", min: 0, colorHex: "#B08D57" },
-  { slug: "plata", nombre: "Plata", min: 900, colorHex: "#B8C4D9" },
-  { slug: "oro", nombre: "Oro", min: 1100, colorHex: "#E8B34D" },
-  { slug: "platino", nombre: "Platino", min: 1300, colorHex: "#5FBFA8" },
-  { slug: "diamante", nombre: "Diamante", min: 1500, colorHex: "#5DC8F5" },
-  { slug: "prodigio", nombre: "Prodigio", min: 1700, colorHex: "#FFC53D", degradado: ["#A794FF", "#FFC53D"] },
+  { slug: "hierro", nombre: "Hierro", min: 0, colorHex: "#8A93A6" },
+  { slug: "bronce", nombre: "Bronce", min: 800, colorHex: "#B08D57" },
+  { slug: "plata", nombre: "Plata", min: 1100, colorHex: "#B8C4D9" },
+  { slug: "oro", nombre: "Oro", min: 1400, colorHex: "#E8B34D" },
+  { slug: "platino", nombre: "Platino", min: 1700, colorHex: "#5FBFA8" },
+  { slug: "diamante", nombre: "Diamante", min: 2000, colorHex: "#5DC8F5" },
+  { slug: "prodigio", nombre: "Prodigio", min: 2300, colorHex: "#FFC53D", degradado: ["#A794FF", "#FFC53D"] },
 ];
 
-export function rangoDeElo(elo: number): RangoElo {
-  return [...RANGOS_ELO].reverse().find((r) => elo >= r.min) ?? RANGOS_ELO[0];
+export const ELO_INICIAL = 500;
+
+// Corte de Prodigio (ELO del jugador número 100). Lo fija la web y la app al arrancar
+// con umbral_prodigio(); mientras no se sepa, nadie se muestra como Prodigio.
+let umbralProdigio = Number.POSITIVE_INFINITY;
+export function fijarUmbralProdigio(n: number | null | undefined) {
+  if (typeof n === "number" && Number.isFinite(n)) umbralProdigio = Math.max(2000, n);
 }
+
+export function rangoDeElo(elo: number): RangoElo {
+  if (elo >= 2000 && elo >= umbralProdigio) return RANGOS_ELO[RANGOS_ELO.length - 1];
+  return [...RANGOS_ELO].reverse().find((r) => r.slug !== "prodigio" && elo >= r.min) ?? RANGOS_ELO[0];
+}
+
+// Marcos de perfil que se venden en la tienda: uno por rango, sin Hierro.
+export const RANGOS_CON_MARCO = RANGOS_ELO.filter((r) => r.slug !== "hierro");
 
 export function rangoDeSlug(slug: string): RangoElo | undefined {
   return RANGOS_ELO.find((r) => r.slug === slug);

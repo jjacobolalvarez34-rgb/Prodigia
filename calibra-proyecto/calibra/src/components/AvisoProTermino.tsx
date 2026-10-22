@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
+import Logo from "@/components/Logo";
 
 // «Tu Prodigia Pro terminó» (0276), igual que AvisoProTermino de la app. Mismo
 // auto-montaje que AnunciosModal: revisar_mi_pro apaga Pro si venció y dice si
@@ -50,7 +51,9 @@ export default function AvisoProTermino() {
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             className="relative z-[70] w-full max-w-sm rounded-3xl border border-logro/40 bg-surface px-6 py-7 text-center shadow-2xl"
           >
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-logro/15 text-3xl">✦</div>
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-logro/15">
+              <Logo size={44} />
+            </div>
             <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-logro">Prodigia Pro</p>
             <h2 className="mt-1 font-display text-xl font-bold text-foreground">{t("titulo")}</h2>
             <p className="mt-2 text-sm leading-relaxed text-texto-secundario">{t("texto")}</p>

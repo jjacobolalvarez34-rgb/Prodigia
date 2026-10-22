@@ -15,6 +15,7 @@ import InsigniaAlineacion from "@/components/alineacion/InsigniaAlineacion";
 import CapaAlineacion from "@/components/alineacion/CapaAlineacion";
 import VideoApertura from "@/components/VideoApertura";
 import AvisoProTermino from "@/components/AvisoProTermino";
+import AnuncioTemporada from "@/components/rankeds/AnuncioTemporada";
 import PublicidadWeb from "@/components/PublicidadWeb";
 import StickerApp from "@/components/descargarApp/StickerApp";
 import RegistrarServiceWorker from "@/components/RegistrarServiceWorker";
@@ -219,6 +220,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <CapaAlineacion />
             <VideoApertura />
             <AvisoProTermino />
+            <AnuncioTemporada />
             <PublicidadWeb />
             <StickerApp />
             <RegistrarServiceWorker />

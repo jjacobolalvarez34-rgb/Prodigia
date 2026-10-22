@@ -63,6 +63,7 @@
       "description": "Tu competitivo en Prodigia: ELO, historial y matchmaking de duelos."
     },
     "rangos": {
+      "hierro": "Hierro",
       "bronce": "Bronce",
       "plata": "Plata",
       "oro": "Oro",
@@ -181,6 +182,20 @@
       "titulo": "Rankeds se desbloquea en nivel {nivel}",
       "mensaje": "Estás en nivel <n>{nivelActual}</n> de cuenta — te {faltan, plural, one {falta} other {faltan}} <f>{faltan} {faltan, plural, one {nivel} other {niveles}}</f> más. Sigue jugando para ganar Experiencia y subir de nivel.",
       "seguirPracticando": "Seguir practicando"
+    },
+    "temporada": {
+      "fin": "Fin de la temporada {numero}",
+      "llegaste": "Llegaste a {rango}",
+      "primeraVez": "Primera vez en este rango",
+      "veces": "{veces} temporadas en este rango o más",
+      "eloMax": "ELO máximo {elo}",
+      "titulo": "Título",
+      "reclamar": "Reclamar recompensas",
+      "reclamando": "Entregando…",
+      "error": "No se pudo. Inténtalo de nuevo.",
+      "actual": "Temporada {numero}",
+      "terminaEn": "Termina en {tiempo}, con la Gran Alineación",
+      "mejor": "Tu mejor temporada: {rango} {tier}"
     }
   },
   "Social": {
@@ -343,6 +358,31 @@
         "faltan": "Te faltan {n} Chispas.",
         "sinChispas": "Te faltan Chispas para este fondo. Juega unas partidas y vuelve.",
         "cerrar": "Cerrar"
+      },
+      "reto": {
+        "boton": "Retar a duelo",
+        "panelTitulo": "Retar a {nombre}",
+        "panelExplicacion": "Elige ciudad y tema. El reto aparece en este chat y {nombre} tiene 2 minutos para aceptarlo; mientras, tú esperas en la sala del duelo.",
+        "cerrar": "Cerrar",
+        "creando": "Creando el duelo…",
+        "titulo": "Reto a duelo",
+        "teReto": "{nombre} te retó",
+        "retaste": "Retaste a {nombre}",
+        "vence": "Vence en {tiempo}",
+        "esperando": "Esperando a {nombre}. Si sales de la sala, el reto se cancela.",
+        "aceptar": "Aceptar",
+        "rechazar": "Rechazar",
+        "cancelar": "Cancelar reto",
+        "irSala": "Ir a la sala",
+        "errorCrear": "No se pudo crear el duelo.",
+        "errorResponder": "No se pudo responder el reto. Inténtalo de nuevo.",
+        "estado": {
+          "pendiente": "Esperando respuesta",
+          "aceptada": "Aceptado",
+          "rechazada": "Rechazado",
+          "cancelada": "Cancelado",
+          "vencida": "Venció sin respuesta"
+        }
       }
     }
   },
@@ -1979,11 +2019,11 @@
     "mundo": {
       "metadata": {
         "title": "Mundo de Clanes",
-        "description": "El mapa de todos los clanes de Prodigia — una parcela por clan, ordenadas por antigüedad."
+        "description": "El mapa de todos los clanes de Prodigia: cada clan es un territorio que crece con sus miembros y su nivel."
       },
       "volver": "← Volver a Clanes",
       "titulo": "Mundo de Clanes",
-      "subtitulo": "Una parcela por clan, en el orden en que se fundaron. Haz click para entrar a su ciudad."
+      "subtitulo": "Cada clan es un territorio: crece con sus miembros y su nivel, y cada clan nuevo funda el suyo en la frontera. Toca uno para conocerlo."
     },
     "chat": {
       "titulo": "Chat del clan",
@@ -2009,7 +2049,7 @@
       "ariaLabel": "Estandarte de clan, nivel {nivel}"
     },
     "mapa": {
-      "ayuda": "Arrastra para moverte por el mapa — rueda o los botones para acercar.",
+      "ayuda": "Arrastra para moverte por el mapa; acerca con la rueda o los botones.",
       "cargando": "Cargando…",
       "vacio": "Todavía no hay clanes fundados.",
       "nivelAbrev": "Nv. {nivel}",
@@ -2017,7 +2057,13 @@
       "cerrarInfo": "Cerrar información del clan",
       "nivel": "Nivel {nivel}",
       "miembrosCapacidad": "{cantidad}/{capacidad} miembros",
-      "guerrasGanadas": "{n} {n, plural, one {guerra ganada} other {guerras ganadas}}"
+      "guerrasGanadas": "{n} {n, plural, one {guerra ganada} other {guerras ganadas}}",
+      "tuClan": "Tu clan",
+      "nuevo": "Nuevo",
+      "irAMiClan": "Ir a mi clan",
+      "acercar": "Acercar",
+      "alejar": "Alejar",
+      "territorioDe": "Territorio de {nombre}"
     },
     "subirImagen": {
       "errorTipo": "Tiene que ser una imagen (PNG, JPG, WEBP o GIF).",
@@ -5629,5 +5675,81 @@
     "comprando": "Comprando…",
     "listo": "¡Listo! {n, plural, one {Tu cápsula está} other {Tus # cápsulas están}} en Recompensas.",
     "irRecompensas": "Ir a abrirlas"
+  },
+  "Partidas": {
+    "compartir": "Compartir",
+    "compartirResultado": "Compartir resultado",
+    "preparando": "Preparando la imagen…",
+    "compartirImagen": "Compartir imagen",
+    "descargar": "Descargar imagen",
+    "copiarEnlace": "Copiar enlace",
+    "copiarTexto": "Copiar texto",
+    "copiado": "Copiado",
+    "descargada": "Imagen descargada",
+    "sinEnlace": "Por ahora se comparte solo la imagen, sin enlace.",
+    "errorImagen": "No se pudo preparar la imagen. Inténtalo de nuevo.",
+    "cerrar": "Cerrar",
+    "vistaPrevia": "Vista previa de la tarjeta",
+    "mensaje": {
+      "sprint": "Hice {aciertos} en {mundo} en Prodigia. ¿Me superas?",
+      "victoria": "Le gané a {rival} en {mundo} en Prodigia ({mio} a {suyo}). ¿Te animas?",
+      "derrota": "Duelo contra {rival} en {mundo} en Prodigia ({mio} a {suyo}). La próxima es mía.",
+      "empate": "Empaté con {rival} en {mundo} en Prodigia ({mio} a {suyo}).",
+      "pendiente": "Jugué un duelo contra {rival} en {mundo} en Prodigia."
+    },
+    "tarjeta": {
+      "partida": "Partida",
+      "ranked": "Duelo ranked",
+      "casual": "Duelo casual",
+      "victoria": "Victoria",
+      "derrota": "Derrota",
+      "empate": "Empate",
+      "pendiente": "Esperando al rival",
+      "aciertos": "aciertos",
+      "precision": "precisión",
+      "tiempoProm": "tiempo prom.",
+      "exp": "Exp",
+      "racha": "racha máx.",
+      "tu": "Tú",
+      "rival": "Rival",
+      "porPregunta": "Pregunta por pregunta",
+      "pie": "Aprende jugando en Prodigia"
+    },
+    "detalle": {
+      "titulo": "Detalle del duelo",
+      "volver": "Volver a Rankeds",
+      "noEncontrado": "No encontramos ese duelo en tu historial.",
+      "verDetalle": "Ver el detalle",
+      "tu": "Tú",
+      "aciertos": "Aciertos",
+      "errores": "Errores",
+      "precision": "Precisión",
+      "rachaMax": "Racha máxima",
+      "tiempoProm": "Tiempo promedio",
+      "masRapida": "Más rápida",
+      "masLenta": "Más lenta",
+      "exp": "Exp ganada",
+      "porPregunta": "Pregunta por pregunta",
+      "pregunta": "Pregunta {n}",
+      "acierto": "Acierto",
+      "error": "Error",
+      "sinDetalle": "Este duelo no guardó el detalle de cada pregunta: solo los totales.",
+      "rivalSinJugar": "Tu rival todavía no termina su parte.",
+      "repeticion": "Repetición",
+      "verRepeticion": "Ver repetición",
+      "pausar": "Pausar",
+      "seguir": "Seguir",
+      "otraVez": "Otra vez",
+      "notaElo": "El cambio de ELO se ve al terminar el duelo; el historial no lo guarda."
+    },
+    "publica": {
+      "titulo": "{nombre} en Prodigia",
+      "jugador": "Un jugador",
+      "descripcionSprint": "{aciertos} en {mundo}. Aprende jugando en Prodigia.",
+      "descripcionDuelo": "{nombre} contra {rival} en {mundo}. Aprende jugando en Prodigia.",
+      "cta": "Jugar en Prodigia",
+      "noExiste": "Esta partida no existe o ya no está disponible.",
+      "volverInicio": "Ir a Prodigia"
+    }
   }
 }

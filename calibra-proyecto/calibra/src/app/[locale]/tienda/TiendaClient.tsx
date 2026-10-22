@@ -5,7 +5,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
-  RANGOS_ELO,
+  RANGOS_CON_MARCO,
   FUENTE_NOMBRE_CLASS,
   ANIMACION_NOMBRE_CLASS,
   FONDO_PERFIL_ESTILO,
@@ -31,7 +31,7 @@ import type { NombreTrazo } from "@/lib/iconosTrazo";
 
 // Fase 7: reusa la paleta de rangos de Rankeds (RANGOS_ELO) en vez de
 // inventar colores nuevos — 6 marcos, uno por rango real.
-const MARCOS_COMPRABLES = RANGOS_ELO.map((r) => ({
+const MARCOS_COMPRABLES = RANGOS_CON_MARCO.map((r) => ({
   marco: r.slug,
   item: `marco_${r.slug}` as ItemComprable,
   colorHex: r.colorHex,

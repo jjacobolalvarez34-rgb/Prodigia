@@ -20,11 +20,12 @@ function dibujar(p: Pieza, i: number) {
   }
 }
 
-export default function InsigniaRango({ elo, className = "h-16 w-16", titulo }: { elo: number; className?: string; titulo?: string }) {
+// `slug`: dibuja un rango dado (con todo encendido), sin ELO; lo usa el anuncio de temporada.
+export default function InsigniaRango({ elo, className = "h-16 w-16", titulo, slug }: { elo: number; className?: string; titulo?: string; slug?: string }) {
   const rango = rangoDeElo(elo);
   return (
     <svg viewBox="0 0 100 100" className={`shrink-0 ${className}`} role={titulo ? "img" : undefined} aria-label={titulo} aria-hidden={titulo ? undefined : true}>
-      {piezasInsigniaTorres(rango.slug, indiceDivision(elo)).map(dibujar)}
+      {(slug ? piezasInsigniaTorres(slug, 2) : piezasInsigniaTorres(rango.slug, indiceDivision(elo))).map(dibujar)}
     </svg>
   );
 }

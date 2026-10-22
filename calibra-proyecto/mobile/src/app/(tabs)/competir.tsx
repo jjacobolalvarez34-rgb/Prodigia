@@ -23,6 +23,7 @@ import { vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
 import { divisionDeElo, rangoDeElo, type PlacaDatos } from "~/lib/placa";
 import InsigniaRango from "~/ui/placa/InsigniaRango";
+import TemporadaActual from "~/ui/rankeds/TemporadaActual";
 import { claveDe } from "~/lib/retos";
 import { useSesion } from "~/lib/sesion";
 import { escucharPresencia } from "~/lib/social";
@@ -309,6 +310,8 @@ export default function Competir() {
 
       {seccion === "rankeds" && (
         <>
+          {/* Temporada en curso (0296): termina con la próxima Gran Alineación. */}
+          {!esInvitado && <TemporadaActual userId={userId ?? null} />}
           {/* Minievento de la fecha en las Rankeds (celebracion.ts; los premios los da la base, 0292). */}
           {minievento && temaHoy && (
             <Tarjeta acento={temaHoy.tema.acento} brillo={0.22}>

@@ -34,6 +34,7 @@ import AvisoDuelo from "~/ui/AvisoDuelo";
 import AceptarTerminos, { registrarAceptacionEnLaCuenta, terminosAceptadosEnEsteTelefono } from "~/ui/AceptarTerminos";
 import IntroMarca, { INTRO_ACTIVA } from "~/ui/IntroMarca";
 import PantallaCarga from "~/ui/PantallaCarga";
+import AnuncioTemporada from "~/ui/rankeds/AnuncioTemporada";
 import PrimeraVez from "~/ui/PrimeraVez";
 import AvisoProTermino from "~/ui/AvisoProTermino";
 import CapaTemporada from "~/ui/temas/CapaTemporada";
@@ -249,6 +250,8 @@ function Navegacion() {
       {/* Videos de apertura de los eventos: en lugar del menú al abrir, o con fundido si empiezan con la app abierta. */}
       {!cargando && !cargaVisible && terminos !== false && !segmentos.some((x) => PANTALLAS_DE_JUEGO.has(x)) && <VideoApertura />}
       {!cargando && userId && terminos && !cargaVisible && <AvisoProTermino />}
+      {/* Fin de temporada de rankeds (0296): el rango alcanzado y sus recompensas. */}
+      {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && !segmentos.some((x) => PANTALLAS_DE_JUEGO.has(x)) && <AnuncioTemporada />}
       {/* Nueva versión del APK (2026-10-14): se baja y se instala desde la app. */}
       {!cargando && !cargaVisible && <AvisoActualizacion />}
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <BienvenidaPro userId={userId} />}

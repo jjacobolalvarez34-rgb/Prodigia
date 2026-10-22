@@ -11,7 +11,7 @@ import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiari
 import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
 import { COLUMNAS_COSMETICOS_NUEVOS, cosmeticosDesdeFila, equiparCosmetico, preciosPaquetesParaMi, type CosmeticosNuevos } from "@/lib/recompensas/api";
 import { CATALOGO_NUEVO, MARCOS_ESPECIALES, PAQUETES, precioEnCometas, temporadaActual, UTILIDADES_NUEVAS, type Rareza as RarezaNueva } from "@/lib/recompensas/catalogo";
-import { MARCOS_MUNDO, MARCOS_NEON, RANGOS_ELO } from "@/types/database";
+import { MARCOS_MUNDO, MARCOS_NEON, RANGOS_CON_MARCO } from "@/types/database";
 import { supabase } from "./supabase";
 
 export { COSTOS, type ItemComprable };
@@ -87,7 +87,7 @@ export const CATALOGO: ItemTienda[] = [
   { item: "boost", nombre: "Boost de Chispas", descripcion: "×1,5 Chispas en tu próxima partida, en cualquier mundo.", categoria: "utilidad", valor: "boost", costoBase: COSTOS.boost },
   { item: "hielo", nombre: "Hielo", descripcion: "Detiene el reloj 10 segundos en una partida. No vale en duelos.", categoria: "utilidad", valor: "hielo", costoBase: COSTOS.hielo },
   { item: "tiempo_extra", nombre: "+3 segundos", descripcion: "Suma 3 segundos al reloj de una partida. No vale en duelos.", categoria: "utilidad", valor: "tiempo_extra", costoBase: COSTOS.tiempo_extra },
-  ...RANGOS_ELO.map((r) => ({
+  ...RANGOS_CON_MARCO.map((r) => ({
     item: `marco_${r.slug}` as ItemComprable,
     nombre: `Marco ${r.nombre}`,
     categoria: "marco" as const,

@@ -11,6 +11,8 @@ import { rangoDeElo } from "~/lib/placa";
 interface Props {
   elo: number;
   tam?: number;
+  // Un rango dado (con todo encendido), sin ELO: el anuncio de temporada.
+  slug?: string;
 }
 
 function dibujar(p: Pieza, i: number) {
@@ -28,8 +30,8 @@ function dibujar(p: Pieza, i: number) {
   }
 }
 
-function InsigniaRango({ elo, tam = 46 }: Props) {
-  const piezas = piezasInsigniaTorres(rangoDeElo(elo).slug, indiceDivision(elo));
+function InsigniaRango({ elo, tam = 46, slug }: Props) {
+  const piezas = slug ? piezasInsigniaTorres(slug, 2) : piezasInsigniaTorres(rangoDeElo(elo).slug, indiceDivision(elo));
   return (
     <View style={{ width: tam, height: tam }} accessibilityRole="image" accessibilityLabel={`Rango ${rangoDeElo(elo).nombre}`}>
       <Svg width={tam} height={tam} viewBox="0 0 100 100">

@@ -4,6 +4,7 @@ import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { cerrarAvisoProTermino, useJugador } from "~/lib/jugador";
 import { color, conAlfa } from "~/tema";
 import Boton3D from "./Boton3D";
+import Logo from "./Logo";
 import Texto from "./Texto";
 
 // «Tu Prodigia Pro terminó» (0276), igual que AvisoProTermino de la web: sale una
@@ -17,9 +18,9 @@ export default function AvisoProTermino() {
   return (
     <Animated.View entering={FadeIn.duration(250)} style={styles.fondo}>
       <Animated.View entering={FadeInDown.duration(350)} style={styles.tarjeta}>
-        <Texto tam={40} centro>
-          ✦
-        </Texto>
+        <View style={{ alignSelf: "center" }}>
+          <Logo tam={52} />
+        </View>
         <Texto v="micro" c={color.logro} centro>
           PRODIGIA PRO
         </Texto>

@@ -8,6 +8,7 @@ import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { ArithmeticProblemType } from "@/types/database";
 import RangoBadge from "@/components/RangoBadge";
+import TemporadaActual from "@/components/rankeds/TemporadaActual";
 import InsigniaRango from "@/components/InsigniaRango";
 import GlareHover from "@/components/reactbits/GlareHover";
 import BorderGlow from "@/components/reactbits/BorderGlow";
@@ -282,6 +283,8 @@ function MiCompetitivo({
     <div className="flex flex-col gap-5">
       <DuelosPendientes pendientes={pendientes} />
 
+      <TemporadaActual />
+
       <AvisoPrimeraVez avisoKey="rangos-intro" texto={t("rangosIntro")}>
         <div className="flex flex-col items-center gap-1 rounded-2xl border-2 border-primario/30 bg-primario/5 px-6 py-6 text-center">
           {/* Insignia del rango: las Torres (2026-10-12), que reemplazan a los estandartes PNG. */}
@@ -316,9 +319,10 @@ function MiCompetitivo({
           </p>
         ) : (
           historial.map((h) => (
-            <div
+            <Link
               key={h.duel_id}
-              className={`flex items-center justify-between rounded-xl border px-4 py-3 ${
+              href={`/rankeds/duelo/${h.duel_id}`}
+              className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-colors hover:border-primario/40 ${
                 h.empate
                   ? "border-border bg-surface"
                   : h.gane
@@ -352,7 +356,7 @@ function MiCompetitivo({
               <span className="font-mono text-xs text-texto-secundario">
                 {h.mi_puntaje} - {h.rival_puntaje}
               </span>
-            </div>
+            </Link>
           ))
         )}
       </div>
@@ -403,11 +407,11 @@ function BuscarPartida({
     { id: "aleatorio", nombre: t("todasLasCiudades"), descripcion: t("ciudades.aleatorio") },
   ];
   // Fase 7 (Rankeds: Platino+ solo "todas las ciudades"): desde Platino
-  // (ELO >= 1300, ver RANGOS_ELO en types/database.ts) hacia arriba, la
+  // (ELO >= 1700 desde 0296, ver RANGOS_ELO en types/database.ts) hacia arriba, la
   // clasificatoria ya no deja elegir una ciudad puntual — arranca
   // directo en "aleatorio" en vez de "numeria". Validado también
   // server-side en buscar_rival_duelo (0078), esto es solo la UI.
-  const rangoAlto = miElo >= 1300;
+  const rangoAlto = miElo >= 1700;
   // ?modo=casual: viene de «Otra partida» de una serie casual.
   const modoInicial = useSearchParams().get("modo") === "casual" ? "casual" : "clasificatoria";
   const [modoClasificacion, setModoClasificacion] = useState<"clasificatoria" | "casual">(modoInicial);

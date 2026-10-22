@@ -2,7 +2,7 @@ import { RANGOS_ELO, rangoDeElo } from "@/types/database";
 
 // Insignia de rango «Torres» (elegida el 2026-10-12, maqueta en
 // docs/rediseno/insignias.html): tu rango es una ciudad que crece dentro de un arco.
-// Bronce es una casa; Plata, un edificio; Oro, dos con antena; Platino, tres;
+// Hierro es una choza (0296); Bronce, una casa; Plata, un edificio; Oro, dos con antena; Platino, tres;
 // Diamante, un rascacielos de cristal, y Prodigio, el horizonte con luna sobre
 // violeta. Cada división enciende más pisos: III un tercio, II dos tercios, I todos.
 //
@@ -26,6 +26,7 @@ interface PaletaRango {
 }
 
 export const PALETA_TORRES: Record<string, PaletaRango> = {
+  hierro: { claro: "#D3D8E2", base: "#8A93A6", oscuro: "#4A5163", cielo: "#0E1228", suelo: "#4A5163", cuerpo: "#4A5163" },
   bronce: { claro: "#E9B886", base: "#B47A44", oscuro: "#6B4220", cielo: "#0E1228", suelo: "#6B4220", cuerpo: "#6B4220" },
   plata: { claro: "#F3F6FB", base: "#B7C3D8", oscuro: "#68768F", cielo: "#0E1228", suelo: "#68768F", cuerpo: "#68768F" },
   oro: { claro: "#FFE6A0", base: "#E8B34D", oscuro: "#9A6612", cielo: "#0E1228", suelo: "#9A6612", cuerpo: "#9A6612" },
@@ -43,6 +44,7 @@ interface Edificio {
 }
 
 const EDIFICIOS: Record<string, Edificio[]> = {
+  hierro: [{ x: 40, w: 20, h: 14, columnas: 1, techo: "pico" }],
   bronce: [{ x: 36, w: 28, h: 24, columnas: 2, techo: "pico" }],
   plata: [{ x: 34, w: 32, h: 38, columnas: 3 }],
   oro: [

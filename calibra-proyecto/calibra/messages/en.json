@@ -63,6 +63,7 @@
       "description": "Your competitive scene in Prodigia: ELO, history, and duel matchmaking."
     },
     "rangos": {
+      "hierro": "Iron",
       "bronce": "Bronze",
       "plata": "Silver",
       "oro": "Gold",
@@ -181,6 +182,20 @@
       "titulo": "Rankeds unlocks at level {nivel}",
       "mensaje": "You're at account level <n>{nivelActual}</n> — you need <f>{faltan} more {faltan, plural, one {level} other {levels}}</f>. Keep playing to earn Experience and level up.",
       "seguirPracticando": "Keep practicing"
+    },
+    "temporada": {
+      "fin": "Season {numero} is over",
+      "llegaste": "You reached {rango}",
+      "primeraVez": "First time at this rank",
+      "veces": "{veces} seasons at this rank or higher",
+      "eloMax": "Peak ELO {elo}",
+      "titulo": "Title",
+      "reclamar": "Claim rewards",
+      "reclamando": "Delivering…",
+      "error": "Something went wrong. Try again.",
+      "actual": "Season {numero}",
+      "terminaEn": "Ends in {tiempo}, with the Great Alignment",
+      "mejor": "Your best season: {rango} {tier}"
     }
   },
   "Social": {
@@ -343,6 +358,31 @@
         "faltan": "You need {n} more Sparks.",
         "sinChispas": "You need more Sparks for this background. Play a few games and come back.",
         "cerrar": "Close"
+      },
+      "reto": {
+        "boton": "Challenge to a duel",
+        "panelTitulo": "Challenge {nombre}",
+        "panelExplicacion": "Pick a city and a topic. The challenge shows up in this chat and {nombre} has 2 minutes to accept it; meanwhile you wait in the duel room.",
+        "cerrar": "Close",
+        "creando": "Creating the duel…",
+        "titulo": "Duel challenge",
+        "teReto": "{nombre} challenged you",
+        "retaste": "You challenged {nombre}",
+        "vence": "Expires in {tiempo}",
+        "esperando": "Waiting for {nombre}. If you leave the room, the challenge is cancelled.",
+        "aceptar": "Accept",
+        "rechazar": "Decline",
+        "cancelar": "Cancel challenge",
+        "irSala": "Go to the room",
+        "errorCrear": "The duel couldn't be created.",
+        "errorResponder": "Couldn't answer the challenge. Try again.",
+        "estado": {
+          "pendiente": "Waiting for an answer",
+          "aceptada": "Accepted",
+          "rechazada": "Declined",
+          "cancelada": "Cancelled",
+          "vencida": "Expired unanswered"
+        }
       }
     }
   },
@@ -1979,11 +2019,11 @@
     "mundo": {
       "metadata": {
         "title": "World of Clans",
-        "description": "The map of every clan in Prodigia — one plot per clan, ordered by age."
+        "description": "The map of every clan in Prodigia: each clan is a territory that grows with its members and level."
       },
       "volver": "← Back to Clans",
       "titulo": "World of Clans",
-      "subtitulo": "One plot per clan, in the order they were founded. Click to enter its city."
+      "subtitulo": "Each clan is a territory: it grows with its members and level, and every new clan claims its own on the frontier. Tap one to get to know it."
     },
     "chat": {
       "titulo": "Clan chat",
@@ -2009,7 +2049,7 @@
       "ariaLabel": "Clan banner, level {nivel}"
     },
     "mapa": {
-      "ayuda": "Drag to move around the map — scroll or use the buttons to zoom.",
+      "ayuda": "Drag to move around the map; zoom with the scroll wheel or the buttons.",
       "cargando": "Loading…",
       "vacio": "No clans have been founded yet.",
       "nivelAbrev": "Lv. {nivel}",
@@ -2017,7 +2057,13 @@
       "cerrarInfo": "Close clan information",
       "nivel": "Level {nivel}",
       "miembrosCapacidad": "{cantidad}/{capacidad} members",
-      "guerrasGanadas": "{n} {n, plural, one {war won} other {wars won}}"
+      "guerrasGanadas": "{n} {n, plural, one {war won} other {wars won}}",
+      "tuClan": "Your clan",
+      "nuevo": "New",
+      "irAMiClan": "Go to my clan",
+      "acercar": "Zoom in",
+      "alejar": "Zoom out",
+      "territorioDe": "Territory of {nombre}"
     },
     "subirImagen": {
       "errorTipo": "It must be an image (PNG, JPG, WEBP, or GIF).",
@@ -5629,5 +5675,81 @@
     "comprando": "Buying…",
     "listo": "Done! {n, plural, one {Your capsule is} other {Your # capsules are}} in Rewards.",
     "irRecompensas": "Go open them"
+  },
+  "Partidas": {
+    "compartir": "Share",
+    "compartirResultado": "Share result",
+    "preparando": "Preparing the image…",
+    "compartirImagen": "Share image",
+    "descargar": "Download image",
+    "copiarEnlace": "Copy link",
+    "copiarTexto": "Copy text",
+    "copiado": "Copied",
+    "descargada": "Image downloaded",
+    "sinEnlace": "For now only the image is shared, without a link.",
+    "errorImagen": "Couldn't prepare the image. Please try again.",
+    "cerrar": "Close",
+    "vistaPrevia": "Card preview",
+    "mensaje": {
+      "sprint": "I got {aciertos} in {mundo} on Prodigia. Can you beat me?",
+      "victoria": "I beat {rival} in {mundo} on Prodigia ({mio} to {suyo}). Up for it?",
+      "derrota": "Duel against {rival} in {mundo} on Prodigia ({mio} to {suyo}). Next one's mine.",
+      "empate": "I tied with {rival} in {mundo} on Prodigia ({mio} to {suyo}).",
+      "pendiente": "I played a duel against {rival} in {mundo} on Prodigia."
+    },
+    "tarjeta": {
+      "partida": "Game",
+      "ranked": "Ranked duel",
+      "casual": "Casual duel",
+      "victoria": "Victory",
+      "derrota": "Defeat",
+      "empate": "Draw",
+      "pendiente": "Waiting for opponent",
+      "aciertos": "correct",
+      "precision": "accuracy",
+      "tiempoProm": "avg. time",
+      "exp": "XP",
+      "racha": "best streak",
+      "tu": "You",
+      "rival": "Opponent",
+      "porPregunta": "Question by question",
+      "pie": "Learn by playing on Prodigia"
+    },
+    "detalle": {
+      "titulo": "Duel details",
+      "volver": "Back to Ranked",
+      "noEncontrado": "We couldn't find that duel in your history.",
+      "verDetalle": "See details",
+      "tu": "You",
+      "aciertos": "Correct",
+      "errores": "Mistakes",
+      "precision": "Accuracy",
+      "rachaMax": "Best streak",
+      "tiempoProm": "Average time",
+      "masRapida": "Fastest",
+      "masLenta": "Slowest",
+      "exp": "XP earned",
+      "porPregunta": "Question by question",
+      "pregunta": "Question {n}",
+      "acierto": "Correct",
+      "error": "Wrong",
+      "sinDetalle": "This duel didn't save each question's details: only the totals.",
+      "rivalSinJugar": "Your opponent hasn't finished yet.",
+      "repeticion": "Replay",
+      "verRepeticion": "Watch replay",
+      "pausar": "Pause",
+      "seguir": "Resume",
+      "otraVez": "Again",
+      "notaElo": "The ELO change shows when the duel ends; the history doesn't keep it."
+    },
+    "publica": {
+      "titulo": "{nombre} on Prodigia",
+      "jugador": "A player",
+      "descripcionSprint": "{aciertos} in {mundo}. Learn by playing on Prodigia.",
+      "descripcionDuelo": "{nombre} vs {rival} in {mundo}. Learn by playing on Prodigia.",
+      "cta": "Play Prodigia",
+      "noExiste": "This game doesn't exist or is no longer available.",
+      "volverInicio": "Go to Prodigia"
+    }
   }
 }

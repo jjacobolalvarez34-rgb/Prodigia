@@ -64,12 +64,12 @@ export async function pistaSprint(evento: EventoSprint) {
 
 // ---------- Globos de cada sección ----------
 export const GLOBOS = {
-  mundos: { titulo: "Las 15 ciudades", texto: "Cada una tiene su propio día y su propia noche. Toca una para practicar o aprender." },
+  mundos: { titulo: "Las 15 ciudades", texto: "Cada una tiene su propio día y su propia noche. Cada día, la del paquete en paracaídas da el doble de Exp. Toca una para practicar o aprender." },
   mundo: { titulo: "Practicar y Aprender", texto: "Practicar: partidas de 60 segundos que se adaptan a ti. Aprender: técnicas cortas para resolver más rápido." },
   competir: { titulo: "Competir", texto: "Rankeds contra gente de tu nivel: ganar sube tu ELO, de Bronce a Prodigio. También hay casuales y la liga de la semana." },
   social: { titulo: "Social", texto: "Agrega amigos para retarlos en vivo y únete a un clan para sumar puntos juntos." },
   tienda: { titulo: "La tienda", texto: "Gasta tus Chispas en marcos, fondos, fuentes y ayudas para las partidas. Se ganan jugando." },
-  recompensas: { titulo: "Recompensas", texto: "Cada partida enciende estrellas en su ciudad. Con 7, la constelación se dibuja y te da su premio." },
+  recompensas: { titulo: "Recompensas", texto: "Cada partida enciende estrellas en su ciudad. Con 7, la constelación se dibuja y te da su premio: si allí es de noche, con 20 % más Chispas, y en la Gran Alineación, el doble." },
   resultado: { titulo: "Tu resultado", texto: "Exp: sube tu nivel y el de la ciudad. Chispas: la moneda del juego. Racha: juega cada día para que crezca." },
   perfil: { titulo: "Tu perfil", texto: "Tu placa la ven todos: personalízala. Aquí también están tus logros y estadísticas." },
 } as const;
