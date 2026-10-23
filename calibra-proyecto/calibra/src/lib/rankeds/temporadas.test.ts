@@ -3,8 +3,8 @@ import { fijarUmbralProdigio, rangoDeElo } from "@/types/database";
 import { capsulasAgrupadas, finTemporadaMs, temporadaRankedDe, tierTemporada } from "./temporadas";
 
 describe("temporadas de rankeds", () => {
-  it("la temporada 1 termina con la primera Gran Alineación y cada una dura 28 días", () => {
-    const fin1 = Date.UTC(2026, 9, 24, 23, 0, 0);
+  it("la temporada 1 termina al acabar la primera Gran Alineación y cada una dura 28 días", () => {
+    const fin1 = Date.UTC(2026, 9, 25, 2, 0, 0);
     expect(temporadaRankedDe(fin1 - 1)).toBe(1);
     expect(temporadaRankedDe(fin1)).toBe(2);
     expect(finTemporadaMs(1)).toBe(fin1);

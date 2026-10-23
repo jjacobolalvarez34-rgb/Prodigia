@@ -194,7 +194,8 @@
       "reclamando": "Delivering…",
       "error": "Something went wrong. Try again.",
       "actual": "Season {numero}",
-      "terminaEn": "Ends in {tiempo}, with the Great Alignment",
+      "terminaEn": "Ends in {tiempo}, when the Great Alignment ends",
+      "alineacion": "During the Great Alignment, wins are worth double ELO and losses half. When the new season starts, players above Gold drop a little.",
       "mejor": "Your best season: {rango} {tier}"
     }
   },

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import InsigniaRango from "@/components/InsigniaRango";
 import { createClient } from "@/lib/supabase/client";
-import { capsulasAgrupadas, cargarUmbralProdigio, nombreRango, reclamarTemporadaRanked, recompensaTemporadaPendiente, tierTemporada, type RecompensaTemporada } from "@/lib/rankeds/temporadas";
+import { aplicarMiReinicioTemporada, capsulasAgrupadas, cargarUmbralProdigio, nombreRango, reclamarTemporadaRanked, recompensaTemporadaPendiente, tierTemporada, type RecompensaTemporada } from "@/lib/rankeds/temporadas";
 import { rangoDeSlug } from "@/types/database";
 
 // Fin de temporada de rankeds (0296), igual que la app: al terminar una temporada
@@ -24,6 +24,7 @@ export default function AnuncioTemporada() {
     void cargarUmbralProdigio(supabase);
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!activo || !user || user.is_anonymous) return;
+      await aplicarMiReinicioTemporada(supabase).catch(() => undefined);
       const r = await recompensaTemporadaPendiente(supabase);
       if (activo) setRecompensa(r);
     });

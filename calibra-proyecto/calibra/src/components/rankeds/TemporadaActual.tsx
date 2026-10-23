@@ -29,6 +29,7 @@ export default function TemporadaActual() {
       <span className="font-mono text-sm tabular-nums text-foreground">
         <RelojFalta hasta={finTemporadaMs(n)} texto={(tiempo) => t("terminaEn", { tiempo })} />
       </span>
+      <span className="text-xs text-texto-secundario">{t("alineacion")}</span>
       {mejor && <span className="text-sm text-texto-secundario">{t("mejor", { rango: nombreRango(mejor.rango), tier: tierTemporada(mejor.veces) })}</span>}
     </div>
   );

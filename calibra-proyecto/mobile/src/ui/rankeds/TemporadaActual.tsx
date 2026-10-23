@@ -21,7 +21,10 @@ export default function TemporadaActual({ userId }: { userId: string | null }) {
       <Texto v="micro" c={ORO}>
         TEMPORADA {n}
       </Texto>
-      <RelojFalta hasta={finTemporadaMs(n)} texto={(t) => `Termina en ${t}, con la Gran Alineación`} />
+      <RelojFalta hasta={finTemporadaMs(n)} texto={(t) => `Termina en ${t}, al acabar la Gran Alineación`} />
+      <Texto v="nota" tam={12}>
+        En la Gran Alineación, ganar vale el doble de ELO y perder, la mitad. Al empezar la temporada nueva, quien pasó de Oro baja un poco.
+      </Texto>
       {mejor && (
         <Texto v="nota" tam={12.5}>
           Tu mejor temporada: {nombreRango(mejor.rango)} {tierTemporada(mejor.veces)}

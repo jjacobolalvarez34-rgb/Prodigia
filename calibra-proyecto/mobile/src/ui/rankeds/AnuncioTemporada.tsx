@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
-import { capsulasAgrupadas, cargarUmbralProdigio, nombreRango, reclamarTemporadaRanked, recompensaTemporadaPendiente, tierTemporada, type RecompensaTemporada } from "@/lib/rankeds/temporadas";
+import { aplicarMiReinicioTemporada, capsulasAgrupadas, cargarUmbralProdigio, nombreRango, reclamarTemporadaRanked, recompensaTemporadaPendiente, tierTemporada, type RecompensaTemporada } from "@/lib/rankeds/temporadas";
 import { rangoDeSlug } from "@/types/database";
 import { sonar, vibrar } from "~/lib/efectos";
 import { supabase } from "~/lib/supabase";
@@ -21,7 +21,10 @@ export default function AnuncioTemporada() {
   useEffect(() => {
     let activo = true;
     void cargarUmbralProdigio(supabase);
-    recompensaTemporadaPendiente(supabase).then((r) => activo && setRecompensa(r));
+    aplicarMiReinicioTemporada(supabase)
+      .catch(() => undefined)
+      .then(() => recompensaTemporadaPendiente(supabase))
+      .then((r) => activo && setRecompensa(r));
     return () => {
       activo = false;
     };

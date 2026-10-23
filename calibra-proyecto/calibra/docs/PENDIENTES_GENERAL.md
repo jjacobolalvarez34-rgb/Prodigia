@@ -7,7 +7,7 @@ entre paréntesis es su línea o su número allí).
 Estados: **HECHO** · **EN CURSO** (lo estoy haciendo ahora) · **FALTA** (todavía no se
 empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de construir).
 
-Última actualización: 2026-10-21.
+Última actualización: 2026-10-23.
 
 ---
 
@@ -15,8 +15,8 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 
 | Qué | Estado | Nota |
 |---|---|---|
-| Correr las migraciones **0292, 0293, 0294, 0295, 0296, 0297, 0298, 0300 y 0301** en Supabase, en orden (no hay 0299) | TE TOCA | 0291 ya está (verificado el 2026-10-20). **0292 antes del sábado 24 a las 21:00 Colombia**: sin ella falla Halloween. |
-| Release **v0.6.3** en GitHub con `D:\Prodigia-APK\Prodigia.apk` | TE TOCA | El APK ya está listo (2026-10-20, 21:44). Antes del sábado 24. |
+| Correr la migración **0302** en Supabase (y la 0303 si sale de las cápsulas) | TE TOCA | Hasta la 0301 ya están todas (verificado el 2026-10-23). |
+| Cambiar el nombre que sale al entrar con Google («Acceder a yawsx…supabase.co») | TE TOCA | Ver la nota «Nombre en el acceso con Google» en la sección 2b. |
 | Productos de Cometas en Paddle (6) | TE TOCA | Cuando la app esté completa. |
 | Google Play: cobros, publicación, ficha (49, 50, 54) | TE TOCA | Para después. |
 | Prueba de duelo en vivo con dos teléfonos (53) | TE TOCA | |
@@ -33,21 +33,40 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 | Líneas de las constelaciones completas más vistosas | HECHO | Rayo de luz en capas (halo, degradado, núcleo blanco) en web y app, y un pulso que recorre cada línea en la web. Revisado en imagen. Commit a930260. |
 | Videos de Muertos, Diwali, Viernes Estelar y Año Nuevo | HECHO | Los 6 videos de evento (Halloween, Navidad, Muertos, Diwali, Viernes Estelar, Año Nuevo) están en la web y la app. Para el teléfono falta el APK nuevo. Conviene escuchar el audio (los agentes solo midieron niveles). |
 | Bono de EXP: entender qué es, quizá mejorarlo, y explicarlo en tutorial y landing | HECHO | Son dos bonos: la ciudad del paquete en paracaídas da doble Exp ese día, y una constelación completada de noche da 20 % más Chispas (el doble en la Gran Alineación). Explicados en la landing y en el tutorial de la app (la web ya lo tenía en las constelaciones). Si quieres cambiar el bono por otra cosa, lo conversamos. |
-| Temas de la app: comprarlos con Cometas o ganarlos en cápsulas fuertes | HECHO (falta correr 0297) | 12 temas: comunes 200 Cometas, raros 350, épicos 500, legendarios 750 (Noche de Prodigia gratis). Salen en Pro, Supernova, Prisma y Alineación. En la web se aplican al instante; en la app al reiniciar (hay botón «Ponérmelo ahora»). Cambian los colores, no las letras ni las formas (eso sería otra fase). Conviene revisar en el teléfono Imprenta y Mesa de cartas (temas claros). |
+| Temas de la app: comprarlos con Cometas o ganarlos en cápsulas fuertes | HECHO | 12 temas: comunes 200 Cometas, raros 350, épicos 500, legendarios 750 (Noche de Prodigia gratis). Salen en Pro, Supernova, Prisma y Alineación. En la web se aplican al instante; en la app al reiniciar (hay botón «Ponérmelo ahora»). Cambian los colores, no las letras ni las formas (eso sería otra fase). Conviene revisar en el teléfono Imprenta y Mesa de cartas (temas claros). |
 | Temas de la app compatibles con los eventos | HECHO | Revisado capa por capa: cartel, escenas y constelaciones siguen oscuros; acentos de la fiesta se oscurecen en temas claros; partículas con contorno para verse sobre fondos claros. |
 | Tabla «qué puedes obtener» de cada cápsula | HECHO | «¿Qué trae cada cápsula?» en Recompensas (web y app), con porcentajes, cantidades y cómo se consigue cada una; un test la compara con la base. |
 | Fondos de los chats más bonitos | HECHO | 8 escenas ilustradas (cuaderno, noche estrellada, océano, bosque, atardecer, aurora, ciudad de neón, galaxia), el mismo dibujo en web y app. Commit fd0cbfa1. |
 | Clanes como territorios orgánicos (no cuadrícula) que crecen con cada clan nuevo | HECHO | Cada clan es una región irregular, más grande según miembros y nivel; el mundo es una isla; un clan nuevo funda su territorio en la frontera y solo cambian sus vecinos. Tu clan con borde dorado, «NUEVO» los de menos de 7 días, botón «Ir a mi clan». Sin migración. |
-| Invitar a duelo desde el chat; la invitación (enviada, aceptada, cancelada) como mensaje | HECHO (falta correr 0298) | Botón «Retar a duelo» en el chat; el reto queda como tarjeta con su estado en vivo (enviado, aceptado, rechazado, cancelado, vencido) y botones para responder. Sin la 0298 el reto funciona pero no aparece la tarjeta. No probado con dos personas reales. |
-| Compartir el resultado (o la repetición) de una partida; en el historial, tocar y ver sus estadísticas | HECHO (falta correr 0300 y el APK) | Tocar un duelo del historial abre su detalle: estadísticas tuyas y del rival, pregunta por pregunta y una repetición al ritmo real. Botón «Compartir» con tarjeta-imagen en los resultados y el detalle, y enlace público /partida/<id>. La repetición no muestra las preguntas (no se guardan; queda para el combate nuevo) ni el cambio de ELO por duelo. La imagen en la app necesita el APK nuevo. |
-| ELO de rankeds como Brawlhalla: 500 inicial; Bronce 800, Plata 1100, Oro 1400, Platino 1700, Diamante 2000; top 100 = Prodigio | HECHO (falta correr 0296) | Hierro 0–799 (se empieza en 500), Bronce 800, Plata 1100, Oro 1400, Platino 1700, Diamante 2000, Prodigio = top 100 con 2000 o más. Los jugadores actuales conservan su rango en la escala nueva; quien nunca jugó ranked queda en 500. Migración 0296. |
-| Temporadas de ranked: cada cuánto acaban y un anuncio con las recompensas (Diamante v1, v2, v3…, título, cápsulas) | HECHO (falta correr 0296) | Cada temporada termina en una Gran Alineación (28 días; la 1 termina el sábado 24). Al terminar sale un anuncio con el rango alcanzado y su tier v1, v2, v3…, título desde Oro y cápsulas (Hierro: liga; Bronce/Plata/Oro: liga de su color; Platino: oro + estelar; Diamante: oro + supernova; Prodigio: 2 supernova + prisma). En Rankeds se ve la temporada y cuánto le falta. |
+| Invitar a duelo desde el chat; la invitación (enviada, aceptada, cancelada) como mensaje | HECHO | Botón «Retar a duelo» en el chat; el reto queda como tarjeta con su estado en vivo (enviado, aceptado, rechazado, cancelado, vencido) y botones para responder. Sin la 0298 el reto funciona pero no aparece la tarjeta. No probado con dos personas reales. |
+| Compartir el resultado (o la repetición) de una partida; en el historial, tocar y ver sus estadísticas | HECHO | Tocar un duelo del historial abre su detalle: estadísticas tuyas y del rival, pregunta por pregunta y una repetición al ritmo real. Botón «Compartir» con tarjeta-imagen en los resultados y el detalle, y enlace público /partida/<id>. La repetición no muestra las preguntas (no se guardan; queda para el combate nuevo) ni el cambio de ELO por duelo. La imagen en la app necesita el APK nuevo. |
+| ELO de rankeds como Brawlhalla: 500 inicial; Bronce 800, Plata 1100, Oro 1400, Platino 1700, Diamante 2000; top 100 = Prodigio | HECHO | Hierro 0–799 (se empieza en 500), Bronce 800, Plata 1100, Oro 1400, Platino 1700, Diamante 2000, Prodigio = top 100 con 2000 o más. Los jugadores actuales conservan su rango en la escala nueva; quien nunca jugó ranked queda en 500. Migración 0296. |
+| Temporadas de ranked: cada cuánto acaban y un anuncio con las recompensas (Diamante v1, v2, v3…, título, cápsulas) | HECHO | Cada temporada termina en una Gran Alineación (28 días; la 1 termina el sábado 24). Al terminar sale un anuncio con el rango alcanzado y su tier v1, v2, v3…, título desde Oro y cápsulas (Hierro: liga; Bronce/Plata/Oro: liga de su color; Platino: oro + estelar; Diamante: oro + supernova; Prodigio: 2 supernova + prisma). En Rankeds se ve la temporada y cuánto le falta. |
 
 | Organizar todas las carpetas de Prodigia en D: | TE TOCA DECIDIR | Inventario y propuesta en la sección 5 (abajo). No se movió ni borró nada. |
-| APK 0.6.4 (versionCode 10) | EN CURSO | Compilando aparte desde la copia limpia `D:\Repositorios\Prodigia-build` (log `D:\android-build\compilar47.log`), sin que el PC se suspenda; sale en `D:\Prodigia-APK\Prodigia.apk`. Trae TODO lo de esta tanda (incluye temas y el sonido de marca). Al terminar: release v0.6.4. |
+| APK 0.6.4 (versionCode 10) | HECHO | Compilado el 2026-10-22 y publicado como v0.6.4. |
 
 | Sonido de marca de Prodigia en la intro | HECHO | Suena con la caída del logo en la pantalla de carga de la app: un roce de aire, un golpe suave al asentarse y la firma sol-do-mi-re-SOL en campana con acorde. Respeta el ajuste de sonido. Conviene escucharlo. |
-| La Gran Alineación da 3000 Chispas para todos | HECHO (falta correr 0301) | Regalo para cada jugador, sin meta ni partida; se reclama desde que empieza una Alineación hasta la siguiente. |
+| La Gran Alineación da 3000 Chispas para todos | HECHO | Regalo para cada jugador, sin meta ni partida; se reclama desde que empieza una Alineación hasta la siguiente. |
+
+## 2b. Pedidos del 2026-10-23
+
+| Pedido | Estado | Dónde quedó |
+|---|---|---|
+| Gran Alineación: ganar vale ×2 de ELO y perder ½; luego se reinicia la temporada | HECHO (falta correr 0302) | Durante las 3 horas de la Alineación. La temporada ahora termina al ACABAR la Alineación. Reinicio suave decidido: solo por encima de Oro (1400) se recorta un cuarto de lo que pasa de 1400 (Diamante 2000 → 1850; 2300 → 2075; Platino 1700 → 1625); nadie baja de Oro. Limitación: la pantalla de resultado del duelo todavía muestra el cambio normal (el ×2 se aplica al guardar). |
+| Bots también en Platino y Diamante | HECHO (falta correr 0302) | El bot aparece a los 30 s en cualquier rango; los 6 bots más altos pasan a 1720–2240. |
+| «Llegaste a Diamante» y «Prodigio» falsos al terminar Numeria | HECHO (falta correr 0302) | Eran los logros de rango con la escala vieja (1500/1700). Pasan a la nueva; Prodigio = top 100. La 0302 quita los dos que se dieron mal (solo a tu cuenta) y descuenta sus 80 Cometas. |
+| Nombre en el acceso con Google | TE TOCA | Ver la nota de abajo. |
+| Abrir una cápsula y salir antes de verla | EN CURSO | |
+| Animación al comprar una cápsula queda detrás de los botones | EN CURSO | |
+| En la tienda de temas, mostrar Cometas (no Chispas) arriba a la derecha | EN CURSO | |
+| Modo zen: estadísticas al final (promedio por respuesta, corrección de cada fallada) y personalización (dificultad, temas específicos) | EN CURSO | |
+| Numeria, decimales «conversión» repite la misma pregunta; revisar variedad y dificultad de todos los modos de Numeria | EN CURSO | |
+| Auditoría de toda la base de preguntas de las 15 ciudades | FALTA (después) | El plan queda en `docs/AUDITORIA_PREGUNTAS.md`. |
+
+**Nombre en el acceso con Google.** Google muestra el dominio de Supabase porque la app de Google no tiene la marca verificada. Dos caminos (los haces tú):
+1. Gratis: en Google Cloud Console → Google Auth Platform → *Branding*, pon nombre «Prodigia», logo, página de inicio, política de privacidad y términos (las de la web), y en *Authorized domains* el dominio de la web; luego *Verify branding*. Google revisa en unos días y desde ahí sale «Prodigia».
+2. De pago: dominio propio en Supabase (por ejemplo `auth.tudominio.com`, complemento del plan Pro); el acceso mostraría ese dominio en vez de `yawsx…supabase.co`.
 
 ## 3. Pendientes de antes que siguen abiertos
 

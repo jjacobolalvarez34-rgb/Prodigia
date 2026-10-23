@@ -6,9 +6,10 @@ import { fijarUmbralProdigio, rangoDeSlug } from "@/types/database";
 type SupabaseClient = { rpc: (fn: string, args?: Record<string, unknown>) => any };
 
 // Temporadas de rankeds (0296, pedido 2026-10-21): una por cada Gran Alineación.
-// La temporada n termina con la Alineación número n (cada 28 días desde el sábado
-// 24/10/2026 a las 23:00 UTC). Mismas cuentas que temporada_ranked_de() de la base.
-export const FIN_TEMPORADA_1_MS = Date.UTC(2026, 9, 24, 23, 0, 0);
+// La temporada n termina al ACABAR la Alineación número n (0302: sus 3 horas, que
+// valen doble, son el cierre). La primera: 25/10/2026 02:00 UTC; después cada 28 días.
+// Mismas cuentas que temporada_ranked_de() de la base.
+export const FIN_TEMPORADA_1_MS = Date.UTC(2026, 9, 25, 2, 0, 0);
 export const DURACION_TEMPORADA_MS = 28 * 86_400_000;
 
 export function temporadaRankedDe(ms: number): number {
@@ -67,6 +68,12 @@ export async function mejorTemporadaRanked(sb: SupabaseClient, userId: string): 
   if (error) return null;
   const fila = (Array.isArray(data) ? data[0] : data) as { rango: string | null; veces: number } | undefined;
   return fila?.rango ? { rango: fila.rango, veces: fila.veces } : null;
+}
+
+// Reinicio suave de la temporada nueva (0302) para mí, por si pg_cron no lo hizo
+// todavía; idempotente. Sin la migración, no hace nada.
+export async function aplicarMiReinicioTemporada(sb: SupabaseClient): Promise<void> {
+  await sb.rpc("aplicar_mi_reinicio_temporada");
 }
 
 // El corte de Prodigio (top 100) para que rangoDeElo lo sepa. Una vez por arranque.

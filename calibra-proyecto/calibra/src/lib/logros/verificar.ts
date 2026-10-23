@@ -104,9 +104,15 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
   // Fase 12 (Rankeds): rango alcanzado — se compara directo contra
   // profiles.elo_rating, no hace falta guardar nada aparte.
   let eloActual = 0;
-  if (tiposNecesarios.has("elo_minimo")) {
+  if (tiposNecesarios.has("elo_minimo") || tiposNecesarios.has("rango_prodigio")) {
     const { data: perfilElo } = await supabase.from("profiles").select("elo_rating").eq("id", userId).single();
     eloActual = perfilElo?.elo_rating ?? 0;
+  }
+  // Prodigio (0302): estar en el top 100 con 2000 o más (umbral_prodigio() de la base).
+  let umbralProdigio = Number.POSITIVE_INFINITY;
+  if (tiposNecesarios.has("rango_prodigio")) {
+    const { data: umbral } = await supabase.rpc("umbral_prodigio");
+    if (typeof umbral === "number") umbralProdigio = umbral;
   }
 
   // Racha de duelos ganados SEGUIDOS, contando desde el más reciente
@@ -606,6 +612,7 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     else if (tipo === "reto_semanal_total") cumplido = retoSemanalTotal >= valor;
     else if (tipo === "racha_retos_semanales") cumplido = rachaRetosSemanales >= valor;
     else if (tipo === "elo_minimo") cumplido = eloActual >= valor;
+    else if (tipo === "rango_prodigio") cumplido = eloActual >= umbralProdigio;
     else if (tipo === "racha_duelos_ganados") cumplido = rachaDuelosGanados >= valor;
     else if (tipo === "quimia_problemas_totales") cumplido = quimiaProblemasTotales >= valor;
     else if (tipo === "quimia_modos_variados") cumplido = quimiaModosVariados >= valor;

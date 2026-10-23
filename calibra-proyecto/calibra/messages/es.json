@@ -194,7 +194,8 @@
       "reclamando": "Entregando…",
       "error": "No se pudo. Inténtalo de nuevo.",
       "actual": "Temporada {numero}",
-      "terminaEn": "Termina en {tiempo}, con la Gran Alineación",
+      "terminaEn": "Termina en {tiempo}, al acabar la Gran Alineación",
+      "alineacion": "En la Gran Alineación, ganar vale el doble de ELO y perder, la mitad. Al empezar la temporada nueva, quien pasó de Oro baja un poco.",
       "mejor": "Tu mejor temporada: {rango} {tier}"
     }
   },
