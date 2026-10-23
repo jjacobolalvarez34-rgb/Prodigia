@@ -1,5 +1,6 @@
 import { memo, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
+import { Modal, Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Canvas, Group, interpolateColors, Oval, RadialGradient, Skia, useClock, vec } from "@shopify/react-native-skia";
 import Animated, { cancelAnimation, Easing, FadeIn, FadeInDown, FadeOut, useAnimatedStyle, useDerivedValue, useSharedValue, withDelay, withRepeat, withSequence, withSpring, withTiming, type SharedValue } from "react-native-reanimated";
 import { COLOR_RAREZA } from "@/lib/recompensas/catalogo";
@@ -7,6 +8,7 @@ import { precargarSonidos, sonar, vibrar, type Sonido } from "~/lib/efectos";
 import { useLiviano } from "~/lib/rendimiento";
 import { color } from "~/tema";
 import Boton3D from "../Boton3D";
+import { IconoCerrar } from "../Iconos";
 import Texto, { SobreOscuro } from "../Texto";
 import { CuerpoCapsula, Destello, Halo, Onda, Particulas, Rayos, tonoHex, type ColorVivo } from "./capas";
 import { crearExplosion, crearLluvia, type Particula } from "./particulas";
@@ -24,6 +26,14 @@ import { crearExplosion, crearLluvia, type Particula } from "./particulas";
 // no hay espera de red), los sonidos se cargan antes, los efectos no usan desenfoques
 // en vivo, todo se anima en el hilo de la interfaz y la escena no se vuelve a armar
 // con cada cambio de estado.
+//
+// 2026-10-23 («¿y si le doy a abrir pero me salgo antes?» y «la animación queda
+// detrás de los botones» en la tienda): el premio se pide AL TOCARLA (si te vas o la
+// cierras antes, la cápsula sigue cerrada; la espera de red la tapa el primer
+// temblor), y la escena va en un Modal a pantalla completa: dentro del ScrollView de
+// la tienda el «absoluteFill» solo cubría su caja y lo de abajo quedaba encima.
+// El botón Atrás de Android cierra antes de tocarla (si se puede), espera durante el
+// suspenso y cierra con el premio o el error a la vista.
 
 export interface PremioRevelado {
   // Color de la rareza (o del premio) y nivel de emoción: 1 común … 4 legendario.
@@ -105,6 +115,8 @@ export default function Revelacion({
   titulo,
   abrir,
   textoBoton = "¡Genial!",
+  cerrable = false,
+  onVisto,
   onCerrar,
 }: {
   colores: [string, string];
@@ -112,9 +124,14 @@ export default function Revelacion({
   titulo: string;
   abrir: () => Promise<PremioRevelado>;
   textoBoton?: string;
+  // Se puede cerrar (× y Atrás) antes de tocarla: todavía no se pidió nada.
+  cerrable?: boolean;
+  // Cuando el premio ya está a la vista.
+  onVisto?: () => void;
   onCerrar: () => void;
 }) {
   const { width: W, height: H } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const liviano = useLiviano();
   const CX = W / 2;
   const CY = H * 0.42;
@@ -124,7 +141,17 @@ export default function Revelacion({
   const [verPremio, setVerPremio] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const despues = (ms: number, f: () => void) => timers.current.push(setTimeout(f, ms));
-  useEffect(() => () => timers.current.forEach(clearTimeout), []);
+  // El premio se pide una sola vez, al tocarla.
+  const pedido = useRef(false);
+  const montado = useRef(true);
+  useEffect(() => {
+    const lista = timers.current;
+    montado.current = true;
+    return () => {
+      montado.current = false;
+      lista.forEach(clearTimeout);
+    };
+  }, []);
 
   const caida = useSharedValue(-H * 0.75);
   const giro = useSharedValue(-0.25);
@@ -181,20 +208,8 @@ export default function Revelacion({
   );
   const lluvia = useMemo(() => (nivel >= 4 ? crearLluvia(W, liviano ? 30 : 70, [colorFinal, "#FFFFFF", colores[0], colores[1], "#34D399"]) : []), [nivel, W, liviano, colorFinal, colores]);
 
-  // El premio se pide apenas aparece la cápsula: al tocarla ya está (sin espera de red).
-  const [pedido] = useState(() => abrir());
-
   useEffect(() => {
     precargarSonidos(SONIDOS);
-    let vivo = true;
-    pedido.then(
-      (p) => {
-        if (!vivo) return;
-        setPremio(p);
-        escalera.set([colores[1], ...ESCALERA.slice(0, p.nivel - 1), p.color]);
-      },
-      () => undefined
-    );
     // 1) Cae y rebota.
     sonar("swoosh");
     valores.caida.set(withSpring(0, { damping: 9, stiffness: 120, mass: 1.1 }));
@@ -215,9 +230,6 @@ export default function Revelacion({
       valores.opRayos.set(withTiming(0.2, { duration: 600 }));
       valores.opHalo.set(withTiming(0.32, { duration: 600 }));
     });
-    return () => {
-      vivo = false;
-    };
     // Solo al montar: la escena corre una vez.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -276,31 +288,46 @@ export default function Revelacion({
     despues(240, () => {
       setFase("premio");
       setVerPremio(true);
+      onVisto?.();
       carta.set(withSpring(1, { damping: 13, stiffness: 120 }));
     });
     despues(700, () => sonar("recompensa"));
   }
 
   async function tocar() {
-    if (fase !== "espera") return;
+    if (fase !== "espera" || pedido.current) return;
+    pedido.current = true;
     setFase("carga");
     vibrar.fuerte();
     sonar("combo");
+    // Este primer temblor tapa la espera de red.
     valores.amplitud.set(withTiming(3, { duration: 300 }));
     valores.ranura.set(withTiming(0.35, { duration: 500 }));
+    let p: PremioRevelado;
     try {
-      // Casi siempre ya llegó (se pidió al aparecer la cápsula).
-      const p = await pedido;
-      cargar(p);
+      p = await abrir();
     } catch {
+      if (!montado.current) return;
       valores.amplitud.set(withTiming(0, { duration: 150 }));
       valores.ranura.set(withTiming(0, { duration: 300 }));
       setFase("error");
+      return;
     }
+    // Si se fue en medio, el premio igual quedó en su cuenta (y anotado para mostrárselo).
+    if (!montado.current) return;
+    setPremio(p);
+    escalera.set([colores[1], ...ESCALERA.slice(0, p.nivel - 1), p.color]);
+    cargar(p);
+  }
+
+  const puedeCerrarYa = cerrable && (fase === "cae" || fase === "espera");
+  function atras() {
+    if (puedeCerrarYa || fase === "premio" || fase === "error") onCerrar();
   }
 
   return (
-    <SobreOscuro>
+    <Modal visible transparent animationType="none" statusBarTranslucent onRequestClose={atras}>
+      <SobreOscuro>
       <Animated.View entering={FadeIn.duration(250)} exiting={FadeOut.duration(220)} style={styles.capa}>
         <EscenaCapsula W={W} H={H} CX={CX} CY={CY} colores={colores} colorFinal={colorFinal} colorVivo={colorVivo} nivel={nivel} liviano={liviano} v={valores} polvo={polvo} fuga={fuga} explosion={explosion} lluvia={lluvia} />
 
@@ -344,8 +371,17 @@ export default function Revelacion({
             </Animated.View>
           </View>
         )}
+
+        {puedeCerrarYa && (
+          <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(120)} style={[styles.cerrar, { top: insets.top + 12 }]}>
+            <Pressable onPress={onCerrar} hitSlop={10} accessibilityRole="button" accessibilityLabel="Cerrar sin abrir" style={styles.cerrarBoton}>
+              <IconoCerrar tam={20} c="rgba(255,255,255,0.8)" />
+            </Pressable>
+          </Animated.View>
+        )}
       </Animated.View>
-    </SobreOscuro>
+      </SobreOscuro>
+    </Modal>
   );
 }
 
@@ -354,4 +390,6 @@ const styles = StyleSheet.create({
   cabecera: { position: "absolute", left: 24, right: 24, alignItems: "center", gap: 4 },
   toque: { position: "absolute", width: 200, height: 240 },
   premio: { position: "absolute", left: "7%", right: "7%", alignItems: "center" },
+  cerrar: { position: "absolute", right: 16 },
+  cerrarBoton: { width: 40, height: 40, borderRadius: 20, borderWidth: 1, borderColor: "rgba(255,255,255,0.22)", alignItems: "center", justifyContent: "center" },
 });

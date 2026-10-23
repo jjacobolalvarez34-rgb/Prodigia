@@ -547,10 +547,18 @@ export default function Tienda() {
               {modo === "inventario" ? "Todo lo tuyo: toca algo para usarlo" : "Cosméticos y ayudas para tus partidas"}
             </Texto>
           </View>
-          <View style={styles.saldo}>
-            <IconoChispa tam={18} />
-            <NumeroAnimado valor={e.chispas} v="mono" onTic={() => sonar("moneda")} />
-          </View>
+          {pestanaVista === "temas" ? (
+            // Los temas se compran con Cometas: arriba a la derecha, ese saldo (no el de Chispas).
+            <View key="saldo-cometas" style={[styles.saldo, { borderColor: conAlfa(COLOR_COMETA, 0.5) }]} accessibilityLabel={`Tus Cometas: ${cometas}`}>
+              <IconoCometa tam={18} />
+              <NumeroAnimado valor={cometas} v="mono" onTic={() => sonar("moneda")} />
+            </View>
+          ) : (
+            <View key="saldo-chispas" style={styles.saldo}>
+              <IconoChispa tam={18} />
+              <NumeroAnimado valor={e.chispas} v="mono" onTic={() => sonar("moneda")} />
+            </View>
+          )}
         </View>
         <ScrollView stickyHeaderIndices={[1]} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
           <View style={{ paddingHorizontal: 16, paddingTop: 6, paddingBottom: 12, gap: 12 }}>

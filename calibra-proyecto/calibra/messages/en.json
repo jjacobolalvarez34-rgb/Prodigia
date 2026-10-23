@@ -4836,6 +4836,7 @@
       "probabilidades": "What can come out and the odds. If you get something you already own, it turns into Sparks. After 10 capsules with nothing rare, the next one has one for sure.",
       "tocaParaAbrir": "Tap it to open it!",
       "abriendo": "Opening…",
+      "sinVer": "You didn't get to see what you got",
       "genial": "Awesome!",
       "yaTenias": "You already had {nombre}: it turned into Sparks.",
       "esTuyo": "It's yours. Equip it from the shop.",
@@ -5402,8 +5403,8 @@
     "boton": "Zen mode",
     "botonTitulo": "Practice with no timer, with the topic and difficulty you want",
     "titulo": "Zen mode",
-    "explicacion": "10 questions, no timer. If you miss one, you can try again or see the answer, and hints are free. No Sparks: it's for practice, and it counts for your streak.",
-    "tema": "Topic",
+    "explicacion": "No timer, at your own pace. If you miss one, you can try again or see the answer, and hints are free. No Sparks: it's for practice, and it counts for your streak.",
+    "tema": "Topics",
     "mezcla": "Mix",
     "dificultad": "Difficulty",
     "nivel": "Level {n}",
@@ -5438,9 +5439,118 @@
     "repasar": "To review",
     "otraVez": "Again",
     "subirNivel": "Go to level {n}",
-    "cambiar": "Change topic or difficulty",
+    "cambiar": "Change topics or difficulty",
     "contrarreloj": "Try it against the clock",
-    "escuchar": "Listen"
+    "escuchar": "Listen",
+    "temasAyuda": "Pick one or several: questions are shared among them.",
+    "elegidos": "{n} of {total}",
+    "todos": "Select all",
+    "todosLosTemas": "All topics",
+    "temasN": "{n, plural, one {# topic} other {# topics}}",
+    "grupos": {
+      "aritmetica": "Arithmetic",
+      "geometria": "Geometry",
+      "fracciones": "Fractions",
+      "decimales": "Decimals",
+      "potencias": "Powers",
+      "algebra": "Algebra"
+    },
+    "subtemas": {
+      "suma": "Addition",
+      "resta": "Subtraction",
+      "multiplicacion": "Multiplication",
+      "division": "Division",
+      "perimetro": "Perimeter",
+      "area": "Area",
+      "angulos": "Angles",
+      "ternas": "Triples",
+      "simplificar": "Simplify",
+      "comparar": "Compare",
+      "sumar": "Add",
+      "convertir": "Convert",
+      "porcentaje": "Percentage",
+      "redondear": "Round",
+      "potencia": "Powers",
+      "raiz": "Roots",
+      "notacion": "Notation",
+      "evaluar": "Evaluate",
+      "un-paso": "One step",
+      "dos-pasos": "Two steps"
+    },
+    "opcionesDe": "{mundo} options",
+    "opciones": {
+      "negativos": {
+        "nombre": "Subtractions with negative results",
+        "detalle": "8 − 13 = −5"
+      },
+      "inverso": {
+        "nombre": "The missing factor",
+        "detalle": "7 × ? = 56"
+      },
+      "grandes": {
+        "nombre": "Bigger numbers",
+        "detalle": "Additions and multiplications one step higher"
+      },
+      "preguntas": {
+        "nombre": "Question type",
+        "valores": {
+          "nivel": "By level",
+          "mapa": "Map only",
+          "mixto": "Map and places",
+          "lugares": "Places only"
+        },
+        "ayuda": {
+          "nivel": "The country map; from level 8 famous places show up too.",
+          "mapa": "Always tap the country on the map.",
+          "mixto": "Half map, half famous places (cities, rivers, landmarks).",
+          "lugares": "Only multiple-choice questions about famous places."
+        }
+      },
+      "filtro": {
+        "nombre": "Language",
+        "valores": {
+          "todos": "All"
+        }
+      }
+    },
+    "modoNivel": {
+      "fijo": "One level",
+      "rango": "Ramp up"
+    },
+    "desdeHasta": "Level {min} → {max}",
+    "rangoTexto": "Starts at level {min} and slowly climbs to {max}.",
+    "rangoElegir": "Tap two levels: where it starts and how high it goes.",
+    "usarMiNivel": "Use my level ({n})",
+    "numerosTitulo": "Numbers at this difficulty",
+    "preguntas": "Questions",
+    "preguntasAyuda": "All of them count for your streak.",
+    "recordamos": "We'll remember your choice for next time.",
+    "tuSesion": "Your session",
+    "niveles": "Levels {min}–{max}",
+    "stats": {
+      "precision": "Accuracy",
+      "alPrimero": "First try",
+      "rachaMax": "Best streak",
+      "promedio": "Average per answer",
+      "masRapida": "Fastest",
+      "masLenta": "Slowest"
+    },
+    "deTotal": "{n} of {total}",
+    "alSegundoN": "+{n} on the second try",
+    "seguidas": "{n, plural, one {right answer in a row} other {right answers in a row}}",
+    "tiempoTotal": "{t} in total",
+    "enPregunta": "Question {n}",
+    "ritmo": "Your pace",
+    "ritmoAyuda": "Each bar is a question: the taller, the longer it took you.",
+    "promedioLinea": "average {t}",
+    "pistasUsadas": "{n, plural, =0 {No hints} one {# hint used} other {# hints used}}",
+    "leyenda": {
+      "primero": "First try",
+      "segundo": "Second try",
+      "fallada": "Missed"
+    },
+    "sinErrores": "Nothing missed: nothing to review.",
+    "subirRango": "Go up one level ({min}–{max})"
   },
   "RepasoErrores": {
     "titulo": "Review your mistakes",

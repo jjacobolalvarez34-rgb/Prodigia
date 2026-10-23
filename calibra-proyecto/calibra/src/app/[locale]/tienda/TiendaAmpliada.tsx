@@ -136,6 +136,7 @@ interface Estado {
 
 export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetesConDinero?: boolean }) {
   const t = useTranslations("Recompensas.tienda");
+  const tCometas = useTranslations("Cometas");
   const vistos = useNuevoVisto();
   // Tienda (solo lo que no tienes) o Inventario (todo lo tuyo); lo elige TiendaClient con ?modo=.
   const parametros = useSearchParams();
@@ -446,7 +447,17 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
       {pestanaVista === "temas" && e?.temas.disponible && (
         <>
           <div className="rounded-2xl border border-primario/35 bg-primario/5 p-4">
-            <p className="font-display text-lg font-bold text-foreground">{t("temas.aLaVenta")}</p>
+            <div className="flex items-start justify-between gap-3">
+              <p className="font-display text-lg font-bold text-foreground">{t("temas.aLaVenta")}</p>
+              {/* Los temas se compran con Cometas: arriba a la derecha, ese saldo (no el de Chispas). */}
+              {!inventario && (
+                <span title={tCometas("tusCometas")} className="flex shrink-0 items-center gap-1.5 rounded-full border border-[#5DE4FF]/50 bg-surface-2 px-3 py-1 font-mono text-sm font-bold text-foreground">
+                  <IconoCometa className="h-4 w-4" />
+                  <span className="sr-only">{tCometas("tusCometas")}:</span>
+                  {e.cometas.toLocaleString()}
+                </span>
+              )}
+            </div>
             <p className="text-sm text-texto-secundario">{t("temas.subVenta")}</p>
             <p className="mt-1 text-xs text-texto-secundario">{t("temas.comoConseguir")}</p>
           </div>

@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { CAPSULAS, CATALOGO_NUEVO, ciudadDe, COLOR_RAREZA, coloresCapsula, NOMBRE_RAREZA, type Rareza } from "@/lib/recompensas/catalogo";
 import { sonar } from "~/lib/efectos";
 import { fijarChispas, recargarJugador } from "~/lib/jugador";
-import { abrirCapsula, recargarCosmeticos, recargarPendientes, type Capsula as DatosCapsula, type PremioCapsula } from "~/lib/recompensas";
+import type { PremioGuardado } from "@/lib/recompensas/capsulasSinVer";
+import { marcarAbriendo, marcarVista } from "~/lib/capsulasSinVer";
+import { abrirCapsula, recargarCosmeticos, recargarPendientes, type Capsula as DatosCapsula } from "~/lib/recompensas";
 import { supabase } from "~/lib/supabase";
 import { color, conAlfa, fuente } from "~/tema";
 import Revelacion, { type PremioRevelado } from "../fx/Revelacion";
@@ -15,12 +17,17 @@ import VistaCosmetico from "./VistaCosmetico";
 // Abrir una cápsula: la escena (caída, suspenso, estallido) es fx/Revelacion; acá
 // solo se pide el premio a la base (abrir_capsula, 0249) y se arma cómo se ve.
 // Cuanto más raro el premio, más dura el suspenso y más grande la explosión.
+//
+// 2026-10-23: el premio se pide al tocarla y, justo antes, la cápsula se anota en el
+// teléfono (~/lib/capsulasSinVer); se borra al ver el premio. Si el jugador se va en
+// medio, al volver a Recompensas se le muestra lo que le salió (`guardado`: la misma
+// escena, sin pedir nada a la base).
 
 function itemDe(slug: string | null) {
   return slug ? CATALOGO_NUEVO.find((x) => x.item === slug) ?? null : null;
 }
 
-function Premio({ p }: { p: PremioCapsula }) {
+function Premio({ p }: { p: PremioGuardado }) {
   if (p.premio === "chispas" || p.convertido) {
     return (
       <View style={{ alignItems: "center", gap: 6 }}>
@@ -73,7 +80,7 @@ const NIVEL_RAREZA: Record<Rareza, PremioRevelado["nivel"]> = { comun: 1, raro: 
 
 // Color y emoción de cada premio: los cosméticos según su rareza; las Chispas
 // según cuántas son.
-function revelado(p: PremioCapsula): Omit<PremioRevelado, "contenido"> {
+function revelado(p: PremioGuardado): Omit<PremioRevelado, "contenido"> {
   if (p.premio === "chispas" || p.convertido) return { color: color.logro, nivel: p.cantidad >= 150 ? 3 : p.cantidad >= 60 ? 2 : 1 };
   if (p.premio === "hielo") return { color: "#7FD8FF", nivel: 1 };
   if (p.premio === "escudo") return { color: "#4FE0F5", nivel: 2 };
@@ -93,20 +100,39 @@ async function recargarTodo(chispas: number | null) {
   recargarJugador();
 }
 
-export default function AbrirCapsula({ capsula, onCerrar }: { capsula: DatosCapsula; onCerrar: () => void }) {
+export default function AbrirCapsula({
+  capsula,
+  guardado,
+  onCerrar,
+}: {
+  capsula: DatosCapsula;
+  // Premio que ya salió y no se llegó a ver (capsulasSinVer): se muestra sin abrir nada.
+  guardado?: PremioGuardado;
+  // abierta = false si se cerró antes de tocarla (sigue en «Por abrir»).
+  onCerrar: (abierta: boolean) => void;
+}) {
   const nombre = CAPSULAS[capsula.tipo]?.nombre ?? "Cápsula";
   const ciudad = ciudadDe(capsula.mundo);
   const [chispas, setChispas] = useState<number | null>(null);
+  const pedida = useRef(false);
   return (
     <Revelacion
       colores={coloresCapsula(capsula.tipo, capsula.mundo)}
       etiqueta={ciudad ? `${nombre} · ${ciudad.nombre}` : nombre}
-      titulo="Te espera un premio"
+      titulo={guardado ? "No alcanzaste a ver lo que te salió" : "Te espera un premio"}
+      // Antes de tocarla no se pidió nada: se puede cerrar y queda en «Por abrir».
+      // Una ya abierta sin ver no se cierra hasta verla (si no, volvería a aparecer).
+      cerrable={!guardado}
+      onVisto={() => marcarVista(capsula.id)}
       onCerrar={() => {
-        void recargarTodo(chispas);
-        onCerrar();
+        const abierta = pedida.current || !!guardado;
+        if (abierta) void recargarTodo(chispas);
+        onCerrar(abierta);
       }}
       abrir={async () => {
+        if (guardado) return { ...revelado(guardado), contenido: <Premio p={guardado} /> };
+        pedida.current = true;
+        await marcarAbriendo(capsula.id);
         const r = await abrirCapsula(supabase, capsula.id);
         setChispas(r.puntos_total);
         return { ...revelado(r), contenido: <Premio p={r} /> };

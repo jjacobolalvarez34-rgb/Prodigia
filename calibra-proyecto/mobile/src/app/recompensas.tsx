@@ -52,6 +52,7 @@ import Hoja from "~/ui/Hoja";
 import { IconoCheck, IconoChispa, IconoCopo, IconoEscudo, IconoReloj } from "~/ui/Iconos";
 import { PantallaApilada, TituloSeccion, Vacio } from "~/ui/Pantalla";
 import AbrirCapsula from "~/ui/recompensas/AbrirCapsula";
+import CapsulasSinVer from "~/ui/recompensas/CapsulasSinVer";
 import CapsulasPorAbrir from "~/ui/recompensas/CapsulasPorAbrir";
 import GuiaCapsulas from "~/ui/recompensas/GuiaCapsulas";
 import { COMO_SE_CONSIGUE } from "@/lib/recompensas/contenidoCapsulas";
@@ -525,6 +526,8 @@ export default function Recompensas() {
           }}
         />
       )}
+      {/* Lo que salió de una cápsula y no se llegó a ver (te fuiste en medio). */}
+      {!esInvitado && <CapsulasSinVer pausado={!!abriendo} onCerrar={() => void cargar()} />}
     </View>
   );
 }

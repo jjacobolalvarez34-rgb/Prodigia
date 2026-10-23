@@ -19,6 +19,8 @@ export default function CapsulaNivel({ nivel, bonus, onCerrar }: { nivel: number
       etiqueta="¡Subiste de nivel!"
       titulo="Te llegó una cápsula"
       textoBoton="¡Continuar!"
+      // Las Chispas ya están acreditadas: se puede cerrar (× o Atrás) sin tocarla.
+      cerrable
       onCerrar={onCerrar}
       abrir={async () => ({
         color: "#FFC53D",

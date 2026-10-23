@@ -34,6 +34,7 @@ import { misConstelaciones, type Constelacion as DatosConstelacion } from "@/lib
 import ContadorAlineacion from "@/components/recompensas/ContadorAlineacion";
 import Constelacion from "@/components/recompensas/Constelacion";
 import AbrirCapsula, { DibujoCapsula } from "@/components/recompensas/AbrirCapsula";
+import CapsulasSinVer from "@/components/recompensas/CapsulasSinVer";
 import CapsulasPorAbrir from "@/components/recompensas/CapsulasPorAbrir";
 import VistaCosmetico from "@/components/recompensas/VistaCosmetico";
 import GuiaCapsulas from "@/components/recompensas/GuiaCapsulas";
@@ -440,6 +441,8 @@ export default function RecompensasClient({ invitado, plan }: { invitado: boolea
           }}
         />
       )}
+      {/* Lo que salió de una cápsula y no se llegó a ver (te fuiste en medio). */}
+      {!invitado && <CapsulasSinVer pausado={!!abriendo} onCerrar={() => void cargar()} />}
 
       {aviso && (
         <div className="fixed bottom-6 left-1/2 z-[110] -translate-x-1/2 rounded-full bg-foreground px-5 py-2 text-sm font-semibold text-background shadow-lg" role="status">

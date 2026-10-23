@@ -4836,6 +4836,7 @@
       "probabilidades": "Qué puede salir y con qué probabilidad. Si sale algo que ya tienes, se convierte en Chispas. Cada 10 cápsulas sin nada raro, la siguiente trae uno seguro.",
       "tocaParaAbrir": "¡Tócala para abrirla!",
       "abriendo": "Abriendo…",
+      "sinVer": "No alcanzaste a ver lo que te salió",
       "genial": "¡Genial!",
       "yaTenias": "Ya tenías {nombre}: se convirtió en Chispas.",
       "esTuyo": "Ya es tuyo. Póntelo desde la tienda.",
@@ -5402,8 +5403,8 @@
     "boton": "Modo Zen",
     "botonTitulo": "Practicar sin reloj, con el tema y la dificultad que quieras",
     "titulo": "Modo Zen",
-    "explicacion": "10 preguntas sin reloj. Si fallas, puedes intentar otra vez o ver la respuesta, y las pistas son gratis. No da Chispas: es para practicar, y cuenta para tu racha.",
-    "tema": "Tema",
+    "explicacion": "Sin reloj, a tu ritmo. Si fallas, puedes intentar otra vez o ver la respuesta, y las pistas son gratis. No da Chispas: es para practicar, y cuenta para tu racha.",
+    "tema": "Temas",
     "mezcla": "Mezcla",
     "dificultad": "Dificultad",
     "nivel": "Nivel {n}",
@@ -5438,9 +5439,118 @@
     "repasar": "Para repasar",
     "otraVez": "Otra vez",
     "subirNivel": "Subir a nivel {n}",
-    "cambiar": "Cambiar tema o dificultad",
+    "cambiar": "Cambiar temas o dificultad",
     "contrarreloj": "Probar en contrarreloj",
-    "escuchar": "Escuchar"
+    "escuchar": "Escuchar",
+    "temasAyuda": "Elige uno o varios: las preguntas se reparten entre ellos.",
+    "elegidos": "{n} de {total}",
+    "todos": "Elegir todos",
+    "todosLosTemas": "Todos los temas",
+    "temasN": "{n, plural, one {# tema} other {# temas}}",
+    "grupos": {
+      "aritmetica": "Aritmética",
+      "geometria": "Geometría",
+      "fracciones": "Fracciones",
+      "decimales": "Decimales",
+      "potencias": "Potencias",
+      "algebra": "Álgebra"
+    },
+    "subtemas": {
+      "suma": "Suma",
+      "resta": "Resta",
+      "multiplicacion": "Multiplicación",
+      "division": "División",
+      "perimetro": "Perímetro",
+      "area": "Área",
+      "angulos": "Ángulos",
+      "ternas": "Ternas",
+      "simplificar": "Simplificar",
+      "comparar": "Comparar",
+      "sumar": "Sumar",
+      "convertir": "Convertir",
+      "porcentaje": "Porcentaje",
+      "redondear": "Redondear",
+      "potencia": "Potencias",
+      "raiz": "Raíces",
+      "notacion": "Notación",
+      "evaluar": "Evaluar",
+      "un-paso": "Un paso",
+      "dos-pasos": "Dos pasos"
+    },
+    "opcionesDe": "Opciones de {mundo}",
+    "opciones": {
+      "negativos": {
+        "nombre": "Restas con resultado negativo",
+        "detalle": "8 − 13 = −5"
+      },
+      "inverso": {
+        "nombre": "El factor que falta",
+        "detalle": "7 × ? = 56"
+      },
+      "grandes": {
+        "nombre": "Números más grandes",
+        "detalle": "Sumas y multiplicaciones un escalón más arriba"
+      },
+      "preguntas": {
+        "nombre": "Tipo de pregunta",
+        "valores": {
+          "nivel": "Según el nivel",
+          "mapa": "Solo el mapa",
+          "mixto": "Mapa y lugares",
+          "lugares": "Solo lugares"
+        },
+        "ayuda": {
+          "nivel": "El mapa de países; desde el nivel 8 también aparecen lugares famosos.",
+          "mapa": "Siempre tocar el país en el mapa.",
+          "mixto": "Mitad mapa, mitad lugares famosos (ciudades, ríos, monumentos).",
+          "lugares": "Solo preguntas de lugares famosos, con opciones."
+        }
+      },
+      "filtro": {
+        "nombre": "Lenguaje",
+        "valores": {
+          "todos": "Todos"
+        }
+      }
+    },
+    "modoNivel": {
+      "fijo": "Un nivel",
+      "rango": "Que vaya subiendo"
+    },
+    "desdeHasta": "Nivel {min} → {max}",
+    "rangoTexto": "Empieza en el nivel {min} y sube poco a poco hasta el {max}.",
+    "rangoElegir": "Toca dos niveles: dónde empieza y hasta dónde sube.",
+    "usarMiNivel": "Usar mi nivel ({n})",
+    "numerosTitulo": "Números con esta dificultad",
+    "preguntas": "Preguntas",
+    "preguntasAyuda": "Todas cuentan para tu racha.",
+    "recordamos": "Guardamos tu elección para la próxima vez.",
+    "tuSesion": "Tu sesión",
+    "niveles": "Niveles {min}–{max}",
+    "stats": {
+      "precision": "Precisión",
+      "alPrimero": "Al primer intento",
+      "rachaMax": "Mejor racha",
+      "promedio": "Promedio por respuesta",
+      "masRapida": "Más rápida",
+      "masLenta": "Más lenta"
+    },
+    "deTotal": "{n} de {total}",
+    "alSegundoN": "+{n} al segundo intento",
+    "seguidas": "{n, plural, one {acierto seguido} other {aciertos seguidos}}",
+    "tiempoTotal": "En total, {t}",
+    "enPregunta": "Pregunta {n}",
+    "ritmo": "Tu ritmo",
+    "ritmoAyuda": "Cada barra es una pregunta: cuanto más alta, más tiempo te tomó.",
+    "promedioLinea": "promedio {t}",
+    "pistasUsadas": "{n, plural, =0 {Sin pistas} one {# pista usada} other {# pistas usadas}}",
+    "leyenda": {
+      "primero": "Al primer intento",
+      "segundo": "Al segundo intento",
+      "fallada": "Fallada"
+    },
+    "sinErrores": "Ninguna fallada: no hay nada que repasar.",
+    "subirRango": "Subir un nivel ({min}–{max})"
   },
   "RepasoErrores": {
     "titulo": "Repasa tus errores",

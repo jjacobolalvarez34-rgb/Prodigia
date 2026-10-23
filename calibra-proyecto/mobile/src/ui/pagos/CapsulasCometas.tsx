@@ -7,6 +7,7 @@ import { fijarCometas } from "~/lib/jugador";
 import { useRouter } from "expo-router";
 import { comprarCapsulaConCometas, contenidoCapsula, mensajeError, recargarPendientes, type Capsula as DatosCapsula, type ContenidoCapsula } from "~/lib/recompensas";
 import AbrirCapsula from "../recompensas/AbrirCapsula";
+import CapsulasSinVer from "../recompensas/CapsulasSinVer";
 import { supabase } from "~/lib/supabase";
 import { color } from "~/tema";
 import { mostrarAviso } from "../Aviso";
@@ -99,7 +100,21 @@ export default function CapsulasCometas() {
       {CAPSULAS_CON_COMETAS.map((c) => (
         <Tarjeta key={c.tipo} tipo={c.tipo} costo={c.costo} contenido={contenido[c.tipo] ?? []} ocupado={ocupado === c.tipo} onComprar={(abrirYa) => comprar(c.tipo, abrirYa)} />
       ))}
-      {abriendo && <AbrirCapsula capsula={abriendo} onCerrar={() => setAbriendo(null)} />}
+      {/* «Abrir ya»: la escena va en un Modal a pantalla completa (fx/Revelacion). */}
+      {abriendo && (
+        <AbrirCapsula
+          capsula={abriendo}
+          onCerrar={(abierta) => {
+            // Cerrada sin tocarla: quedó guardada en Recompensas, como «Guardar».
+            if (!abierta) {
+              setGuardada(CAPSULAS[abriendo.tipo]?.nombre ?? "Cápsula");
+              recargarPendientes();
+            }
+            setAbriendo(null);
+          }}
+        />
+      )}
+      <CapsulasSinVer pausado={!!abriendo} />
       {guardada && (
         <View style={{ gap: 8 }}>
           <Texto v="fuerte" c={color.correcto} centro>

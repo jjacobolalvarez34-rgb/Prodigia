@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { motion, useAnimationControls, useReducedMotion } from "framer-motion";
 import { reproducirNotaMusical, reproducirTono } from "@/lib/sonido";
 import { COLOR_RAREZA } from "@/lib/recompensas/catalogo";
@@ -19,6 +20,12 @@ import { crearLienzoFx, type LienzoFx } from "./lienzoFx";
 // apenas aparece la cápsula, así al tocarla no hay espera de red; la rareza SUBE por
 // colores escalón por escalón con una nota más aguda cada vez; el premio entra girando
 // como una carta, y los efectos estampan brillos ya dibujados (lienzoFx).
+//
+// 2026-10-23 («¿y si le doy a abrir pero me salgo antes?»): el premio se pide AL
+// TOCARLA, no al aparecer: si te vas (o la cierras con la ×) antes de tocarla, la
+// cápsula sigue cerrada en «Por abrir». La espera de red queda tapada por el primer
+// temblor. Y la escena va en un portal sobre <body>: dentro de la tienda quedaba
+// detrás de los botones (un padre con transform le cambiaba el «fixed»).
 
 export interface PremioRevelado {
   color: string;
@@ -40,7 +47,9 @@ export default function RevelacionWeb({
   textoTocar,
   textoBoton,
   textoError,
+  textoCerrar,
   abrir,
+  onVisto,
   onCerrar,
 }: {
   colores: [string, string];
@@ -49,7 +58,11 @@ export default function RevelacionWeb({
   textoTocar: string;
   textoBoton: string;
   textoError: string;
+  // Con texto, se puede cerrar (× y Esc) antes de tocarla: todavía no se pidió nada.
+  textoCerrar?: string;
   abrir: () => Promise<PremioRevelado>;
+  // Cuando el premio ya está a la vista.
+  onVisto?: () => void;
   onCerrar: () => void;
 }) {
   // Con «reducir movimiento» del sistema (Windows lo activa con «mejor rendimiento»)
@@ -65,8 +78,10 @@ export default function RevelacionWeb({
   const [premio, setPremio] = useState<PremioRevelado | null>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const [colorGlow, setColorGlow] = useState(colores[1]);
-  // El premio se pide al aparecer la cápsula: al tocarla ya está.
-  const [pedido] = useState(() => abrir());
+  // El premio se pide una sola vez, al tocarla (ver arriba).
+  const pedido = useRef(false);
+  const montado = useRef(true);
+  const cerrable = !!textoCerrar && (fase === "cae" || fase === "espera");
 
   const centro = () => {
     const r = capsulaRef.current?.getBoundingClientRect();
@@ -86,25 +101,45 @@ export default function RevelacionWeb({
       fxRef.current?.halo(colores[0].slice(0, 7), c.x, c.y, 150);
       setFase("espera");
     });
+    montado.current = true;
     return () => {
+      montado.current = false;
       lista.forEach(clearTimeout);
       fxRef.current?.detener();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Esc: cierra antes de tocarla (si se puede) o con el premio / el error a la vista.
+  useEffect(() => {
+    function tecla(ev: KeyboardEvent) {
+      if (ev.key !== "Escape") return;
+      if (cerrable || fase === "premio" || fase === "error") onCerrar();
+    }
+    window.addEventListener("keydown", tecla);
+    return () => window.removeEventListener("keydown", tecla);
+  }, [cerrable, fase, onCerrar]);
+
   async function tocar() {
-    if (fase !== "espera") return;
+    if (fase !== "espera" || pedido.current) return;
+    pedido.current = true;
     setFase("carga");
     reproducirTono("cuenta");
     fxRef.current?.rayos(null);
+    // Mientras llega el premio, un temblor suave (tapa la espera de red).
+    if (!reducir) controles.start({ x: [0, -3, 3, -3, 3, 0], rotate: [0, -1, 1, -1, 1, 0], transition: { duration: 0.3, repeat: Infinity } });
     let r: PremioRevelado;
     try {
-      r = await pedido;
+      r = await abrir();
     } catch {
+      if (!montado.current) return;
+      controles.stop();
+      controles.set({ x: 0, rotate: 0 });
       setFase("error");
       return;
     }
+    // Si se fue en medio, el premio igual quedó en su cuenta (y anotado para mostrárselo).
+    if (!montado.current) return;
     const nivel = r.nivel;
     const escalones = [...ESCALERA.slice(0, nivel - 1), r.color];
     const dur = 250 + escalones.length * PASO_MS;
@@ -149,14 +184,33 @@ export default function RevelacionWeb({
         reproducirTono("nivel_cuenta");
         setAbierta(true);
         setPremio(r);
-        timers.current.push(setTimeout(() => setFase("premio"), 380));
+        timers.current.push(
+          setTimeout(() => {
+            setFase("premio");
+            onVisto?.();
+          }, 380)
+        );
       }, dur)
     );
   }
 
-  return (
-    <div className="fixed inset-0 z-[100] overflow-hidden bg-[#05070D]/95" role="dialog" aria-modal="true" aria-label={titulo}>
+  const escena = (
+    <div className="fixed inset-0 z-[200] overflow-hidden bg-[#05070D]/95" role="dialog" aria-modal="true" aria-label={titulo}>
       <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true" />
+      {cerrable && (
+        <button
+          type="button"
+          onClick={onCerrar}
+          aria-label={textoCerrar}
+          title={textoCerrar}
+          className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white/70 transition-colors hover:border-white/50 hover:text-white"
+          style={{ marginTop: "env(safe-area-inset-top, 0px)" }}
+        >
+          <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" fill="none" />
+          </svg>
+        </button>
+      )}
       <div className="relative flex h-full flex-col items-center justify-center gap-6 px-6 text-center">
         {fase !== "premio" && (
           <div>
@@ -210,4 +264,6 @@ export default function RevelacionWeb({
       </div>
     </div>
   );
+  // En un portal sobre <body>: ningún padre (transform, overflow, z-index) la tapa.
+  return typeof document === "undefined" ? escena : createPortal(escena, document.body);
 }

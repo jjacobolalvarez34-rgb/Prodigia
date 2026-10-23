@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import IconoCometa from "@/components/IconoCometa";
 import { Link } from "@/i18n/navigation";
 import AbrirCapsula from "@/components/recompensas/AbrirCapsula";
+import CapsulasSinVer from "@/components/recompensas/CapsulasSinVer";
 import { DibujoCapsula } from "@/components/recompensas/DibujoCapsula";
 import { createClient } from "@/lib/supabase/client";
 import { comprarCapsulaConCometas, contenidoCapsula, mensajeError, type Capsula, type ContenidoCapsula } from "@/lib/recompensas/api";
@@ -99,7 +100,18 @@ export default function CapsulasCometas() {
         })}
       </div>
       {error && <p className="text-sm font-semibold text-[#FF8A8A]">{error}</p>}
-      {abriendo && <AbrirCapsula capsula={abriendo} onCerrar={() => setAbriendo(null)} />}
+      {/* «Abrir ya»: la escena va en un portal a pantalla completa (RevelacionWeb). */}
+      {abriendo && (
+        <AbrirCapsula
+          capsula={abriendo}
+          onCerrar={(abierta) => {
+            // Cerrada sin tocarla: quedó guardada en Recompensas, como «Guardar».
+            if (!abierta) setGuardada(tNombre(abriendo.tipo));
+            setAbriendo(null);
+          }}
+        />
+      )}
+      <CapsulasSinVer pausado={!!abriendo} />
       {guardada && (
         <p className="text-sm font-semibold text-[#3DDC97]">
           {t("guardada", { nombre: guardada })}{" "}
