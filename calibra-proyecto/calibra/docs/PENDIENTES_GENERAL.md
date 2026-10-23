@@ -17,7 +17,7 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 |---|---|---|
 | Correr la migración **0302** en Supabase (y la 0303 si sale de las cápsulas) | TE TOCA | Hasta la 0301 ya están todas (verificado el 2026-10-23). |
 | Cambiar el nombre que sale al entrar con Google («Acceder a yawsx…supabase.co») | TE TOCA | Ver la nota «Nombre en el acceso con Google» en la sección 2b. |
-| Productos de Cometas en Paddle (6) | TE TOCA | Cuando la app esté completa. |
+| Paddle: pasar del sandbox al real (productos, claves, webhook, Vercel) | TE TOCA (HOY, antes de la publicidad) | Guía paso a paso en la sección 2b: «Paddle: pasar del sandbox al real». |
 | Google Play: cobros, publicación, ficha (49, 50, 54) | TE TOCA | Para después. |
 | Prueba de duelo en vivo con dos teléfonos (53) | TE TOCA | |
 
@@ -67,6 +67,18 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 **Nombre en el acceso con Google.** Google muestra el dominio de Supabase porque la app de Google no tiene la marca verificada. Dos caminos (los haces tú):
 1. Gratis: en Google Cloud Console → Google Auth Platform → *Branding*, pon nombre «Prodigia», logo, página de inicio, política de privacidad y términos (las de la web), y en *Authorized domains* el dominio de la web; luego *Verify branding*. Google revisa en unos días y desde ahí sale «Prodigia».
 2. De pago: dominio propio en Supabase (por ejemplo `auth.tudominio.com`, complemento del plan Pro); el acceso mostraría ese dominio en vez de `yawsx…supabase.co`.
+
+**Paddle: pasar del sandbox al real (2026-10-23).** Hoy la web publicada cobra en SANDBOX (pruebas): tiene todas las variables de precios del sandbox, y le falta `PADDLE_PRODUCT_CONTENIDO` (sin él no se puede comprar un mundo suelto ni los paquetes de cosméticos). Los productos del sandbox NO se copian al real: hay que crearlos otra vez en la cuenta real (vendors.paddle.com, no sandbox-vendors).
+1. Cuenta real aprobada: verificación de identidad/empresa y aprobación del dominio de la web (piden precios visibles, términos, privacidad y política de reembolso). Puede tardar días: hasta que esté aprobada, nadie puede pagar de verdad.
+2. Crear en el Catalog real (precios en USD, como en `src/lib/pagos/productos.ts`):
+   - Pro mensual 4,99 (suscripción mensual) y Pro anual 39,99 (suscripción anual).
+   - Chispas: 1000 → 1,99 · 2500 → 3,99 · 6000 → 7,99 · 15000 → 14,99.
+   - Cometas: 100 → 0,99 · 550 → 4,99 · 1200 → 9,99 · 2600 → 19,99 · 7000 → 49,99.
+   - Un producto «Contenido de Prodigia» SIN precio fijo (el código arma el precio de cada mundo suelto, 2,99, y de cada paquete): su id va en `PADDLE_PRODUCT_CONTENIDO`.
+3. En la cuenta real: API key (empieza con `pdl_live_`), client-side token (empieza con `live_`) y un webhook (Notification destination) a `https://<dominio de la web>/api/webhooks/paddle` con los eventos `transaction.completed`, `subscription.created` y `subscription.updated`; copiar su secreto.
+4. En Vercel → Settings → Environment Variables (Production), reemplazar: `PADDLE_API_KEY`, `NEXT_PUBLIC_PADDLE_CLIENT_TOKEN`, `PADDLE_WEBHOOK_SECRET`, `PADDLE_PRICE_PRO_MENSUAL`, `PADDLE_PRICE_PRO_ANUAL`, los 4 `PADDLE_PRICE_CHISPAS_*`, los 5 `PADDLE_PRICE_COMETAS_*`, y agregar `PADDLE_PRODUCT_CONTENIDO`. Después, *Redeploy*. El código se pasa solo a real por el prefijo de las claves (no hay que tocar código).
+5. Comprobar en `https://<dominio>/api/pagos/estado` que diga `"sandbox": false` y todas las variables en `true`, y hacer una compra real chica (Cometas 100 a 0,99) y reembolsarla.
+Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_PUBLIC_PAGOS_HABILITADOS` en `false` para que nadie intente pagar en sandbox.
 
 ## 3. Pendientes de antes que siguen abiertos
 
