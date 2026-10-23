@@ -57,9 +57,9 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 | Bots también en Platino y Diamante | HECHO (falta correr 0302) | El bot aparece a los 30 s en cualquier rango; los 6 bots más altos pasan a 1720–2240. |
 | «Llegaste a Diamante» y «Prodigio» falsos al terminar Numeria | HECHO (falta correr 0302) | Eran los logros de rango con la escala vieja (1500/1700). Pasan a la nueva; Prodigio = top 100. La 0302 quita los dos que se dieron mal (solo a tu cuenta) y descuenta sus 80 Cometas. |
 | Nombre en el acceso con Google | TE TOCA | Ver la nota de abajo. |
-| Abrir una cápsula y salir antes de verla | EN CURSO | |
-| Animación al comprar una cápsula queda detrás de los botones | EN CURSO | |
-| En la tienda de temas, mostrar Cometas (no Chispas) arriba a la derecha | EN CURSO | |
+| Abrir una cápsula y salir antes de verla | HECHO | El premio ya no se pide al aparecer la cápsula sino al tocarla; si sales antes, sigue cerrada. Si sales a mitad del suspenso, al volver a Recompensas o a la tienda se te muestra lo que salió (en el mismo aparato). Nunca se pierde ni se abre dos veces. |
+| Animación al comprar una cápsula queda detrás de los botones | HECHO | App: la escena va en un Modal de pantalla completa. Web: se monta por encima de todo (portal). |
+| En la tienda de temas, mostrar Cometas (no Chispas) arriba a la derecha | HECHO | App y web. |
 | Modo zen: estadísticas al final (promedio por respuesta, corrección de cada fallada) y personalización (dificultad, temas específicos) | EN CURSO | |
 | Numeria, decimales «conversión» repite la misma pregunta; revisar variedad y dificultad de todos los modos de Numeria | EN CURSO | |
 | Auditoría de toda la base de preguntas de las 15 ciudades | FALTA (después) | El plan queda en `docs/AUDITORIA_PREGUNTAS.md`. |
