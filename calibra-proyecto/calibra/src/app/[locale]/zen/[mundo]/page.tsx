@@ -8,6 +8,7 @@ import { redirect } from "@/i18n/navigation";
 import { requireUsuario } from "@/lib/auth/guard";
 import { MUNDOS_LANDING } from "@/lib/mundos";
 import { createClient } from "@/lib/supabase/server";
+import { problemTypeDeTema } from "@/lib/zen/config";
 import { temasZen } from "@/lib/zen/preguntas";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; mundo: string }> }): Promise<Metadata> {
@@ -34,12 +35,17 @@ export default async function ZenPage({ params }: { params: Promise<{ locale: st
 
   // Nivel actual de cada modo (la dificultad arranca ahí) y, en Enigmia, el banco
   // de acertijos de deducción.
+  // Los niveles quedan por id de tema (en Numeria, «seccion:tipo»).
+  const temaPorTipo = new Map(temasZen(mundo).map((t) => [problemTypeDeTema(mundo, t.id), t.id]));
   const [{ data: filas }, banco] = await Promise.all([
-    supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", user.id).like("problem_type", `${mundo}_%`),
+    supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", user.id).in("problem_type", [...temaPorTipo.keys()]),
     mundo === "enigmia" ? supabase.from("logic_puzzles").select("id, tipo, dificultad, contenido, respuesta").then((r) => r.data ?? []) : Promise.resolve(null),
   ]);
   const niveles: Record<string, number> = {};
-  for (const f of filas ?? []) niveles[f.problem_type.slice(mundo.length + 1)] = f.nivel;
+  for (const f of filas ?? []) {
+    const tema = temaPorTipo.get(f.problem_type);
+    if (tema) niveles[tema] = f.nivel;
+  }
 
   return (
     <>

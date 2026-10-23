@@ -61,8 +61,8 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 | Animación al comprar una cápsula queda detrás de los botones | HECHO | App: la escena va en un Modal de pantalla completa. Web: se monta por encima de todo (portal). |
 | En la tienda de temas, mostrar Cometas (no Chispas) arriba a la derecha | HECHO | App y web. |
 | Modo zen: estadísticas al final (promedio por respuesta, corrección de cada fallada) y personalización (dificultad, temas específicos) | EN CURSO | |
-| Numeria, decimales «conversión» repite la misma pregunta; revisar variedad y dificultad de todos los modos de Numeria | EN CURSO | |
-| Auditoría de toda la base de preguntas de las 15 ciudades | FALTA (después) | El plan queda en `docs/AUDITORIA_PREGUNTAS.md`. |
+| Numeria, decimales «conversión» repite la misma pregunta; revisar variedad y dificultad de todos los modos de Numeria | HECHO | Causa: en nivel 1-2 el generador solo podía dar «1/2 a decimal». Ahora 41+ preguntas por nivel y la dificultad sube de verdad (periódicos en 7-10). También arreglados porcentaje, redondeo, multiplicación/división, fracciones, geometría y potencias. Un test vigila la variedad. |
+| Auditoría de toda la base de preguntas de las 15 ciudades | FALTA (después) | Plan y primera medición en `docs/AUDITORIA_PREGUNTAS.md`. Graves: Vitalia (6-7 preguntas en nivel 1-2), Melodía (oído absoluto 4), Anatomía (niveles 7 y 9 iguales), Trigonometría (razones 8 en nivel 1). Siguiente: arreglar esos 4 en ese orden. |
 
 **Nombre en el acceso con Google.** Google muestra el dominio de Supabase porque la app de Google no tiene la marca verificada. Dos caminos (los haces tú):
 1. Gratis: en Google Cloud Console → Google Auth Platform → *Branding*, pon nombre «Prodigia», logo, página de inicio, política de privacidad y términos (las de la web), y en *Authorized domains* el dominio de la web; luego *Verify branding*. Google revisa en unos días y desde ahí sale «Prodigia».

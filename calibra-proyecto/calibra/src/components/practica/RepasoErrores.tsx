@@ -9,13 +9,13 @@ import type { FallaRepaso } from "@/lib/practica/repaso";
 // Repaso de errores al terminar una partida (pedido 2026-10-12, igual que en la app):
 // cada pregunta fallada se toca y se abre con lo que contestaste, la respuesta correcta
 // y cómo se resuelve paso a paso. Los pasos los arma el generador de cada pregunta.
-export default function RepasoErrores({ fallos, colorHex = "var(--primario)" }: { fallos: FallaRepaso[]; colorHex?: string }) {
+export default function RepasoErrores({ fallos, colorHex = "var(--primario)", className = "" }: { fallos: FallaRepaso[]; colorHex?: string; className?: string }) {
   const t = useTranslations("RepasoErrores");
   const [abierto, setAbierto] = useState<number | null>(null);
   if (fallos.length === 0) return null;
 
   return (
-    <div className="w-full max-w-md rounded-2xl border border-border bg-surface px-4 py-4 shadow-sm">
+    <div className={`w-full max-w-md rounded-2xl border border-border bg-surface px-4 py-4 shadow-sm ${className}`}>
       <p className="font-display text-sm font-semibold text-foreground">{t("titulo")}</p>
       <p className="mb-2 text-xs text-texto-secundario">{t("sub")}</p>
       <ul className="flex flex-col">
