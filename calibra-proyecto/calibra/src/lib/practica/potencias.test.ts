@@ -18,15 +18,18 @@ describe("potencias: variedad por nivel", () => {
     expect(vistos.size).toBeGreaterThanOrEqual(6);
   });
 
-  it("cada banda incluye los pares de las anteriores y suma nuevos", () => {
+  it("cada banda suma pares nuevos y las altas dejan de preguntar lo más fácil (auditoría 2026-10-23)", () => {
     const clave = (p: { base: number; exp: number }) => `${p.base}^${p.exp}`;
     let previo = new Set<string>();
     for (const nivel of [1, 3, 5, 7, 9]) {
       const actual = new Set(paresPotencia(nivel).map(clave));
-      for (const c of previo) expect(actual.has(c), `${c} en nivel ${nivel}`).toBe(true);
-      expect(actual.size).toBeGreaterThan(previo.size);
+      expect([...actual].filter((c) => !previo.has(c)).length, `nivel ${nivel}`).toBeGreaterThanOrEqual(5);
+      expect(actual.size).toBeGreaterThanOrEqual(previo.size);
       previo = actual;
     }
+    const alto = new Set(paresPotencia(10).map(clave));
+    for (const facil of ["2^2", "3^2", "5^2"]) expect(alto.has(facil), facil).toBe(false);
+    expect(paresPotencia(1).length).toBeGreaterThanOrEqual(16);
   });
 
   it("la respuesta siempre es base^exponente y cabe en un entero cómodo", () => {

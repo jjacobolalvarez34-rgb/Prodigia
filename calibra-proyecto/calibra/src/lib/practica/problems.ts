@@ -33,8 +33,12 @@ function banda(nivel: number): number {
 // Solo se extiende el techo de la ÚLTIMA banda; 0-3 quedan intactas.
 const SUMA_RESTA_MIN = [1, 1, 1, 1, 1000];
 const SUMA_RESTA_MAX = [9, 50, 99, 999, 99999];
+// Auditoría de variedad 2026-10-23 (docs/AUDITORIA_PREGUNTAS.md): la banda 0
+// (nivel 1-2) era 2..5 × 2..5 — 16 multiplicaciones (y 16 divisiones) posibles,
+// así que en una partida de 10 se repetían seguido. Ahora el primer factor llega
+// a 9 (tablas del 2 al 5 completas): 32 combinaciones.
 const FACTOR_1_MIN = [2, 2, 2, 2, 15];
-const FACTOR_1 = [5, 9, 12, 20, 300];
+const FACTOR_1 = [9, 9, 12, 20, 300];
 const FACTOR_2_MIN = [2, 2, 2, 2, 12];
 const FACTOR_2 = [5, 9, 12, 12, 150];
 
@@ -99,6 +103,35 @@ function generarDivision(nivel: number, rng?: () => number): Problem {
     symbol: "÷",
     answer: cociente,
   };
+}
+
+// Rango de los números que salen en un nivel (y con un modificador), para
+// mostrarlo antes de jugar (Modo Zen): suma y resta usan el mismo rango para los
+// dos números; la multiplicación, un rango por factor; la división, el del
+// divisor y el del cociente. Lee las MISMAS tablas que los generadores.
+export interface RangoOperandos {
+  a: [number, number];
+  b: [number, number];
+}
+
+export function rangoOperandos(problemType: ArithmeticProblemType, nivel: number, modifier?: ModifierSlug): RangoOperandos {
+  switch (problemType) {
+    case "suma":
+    case "resta": {
+      const i = problemType === "suma" ? bandaConModifier(nivel, modifier) : banda(nivel);
+      const r: [number, number] = [SUMA_RESTA_MIN[i], SUMA_RESTA_MAX[i]];
+      return { a: r, b: r };
+    }
+    case "multiplicacion": {
+      const i = bandaConModifier(nivel, modifier);
+      return { a: [FACTOR_1_MIN[i], FACTOR_1[i]], b: [FACTOR_2_MIN[i], FACTOR_2[i]] };
+    }
+    case "division": {
+      const i = banda(nivel);
+      // a = divisor, b = cociente (el dividendo es su producto).
+      return { a: [FACTOR_2_MIN[i], FACTOR_2[i]], b: [FACTOR_1_MIN[i], FACTOR_1[i]] };
+    }
+  }
 }
 
 export function formatearProblema(p: Problem): string {

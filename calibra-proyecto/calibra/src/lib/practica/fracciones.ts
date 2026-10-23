@@ -38,12 +38,18 @@ function banda(nivel: number): number {
   return Math.min(4, Math.floor((nivel - 1) / 2));
 }
 
-const DEN_BASE = [4, 6, 8, 10, 12];
-const FACTOR_MAX = [2, 3, 3, 4, 5];
+// Auditoría de variedad 2026-10-23 (docs/AUDITORIA_PREGUNTAS.md): la banda 0
+// usaba denominadores 2..4 (cinco fracciones: 1/2, 1/3, 2/3, 1/4, 3/4) y factor
+// 2..3, así que «simplificar» tenía 10 preguntas posibles en nivel 1-2 y
+// comparar/sumar unas 24. Ahora el denominador mínimo también sube con el nivel
+// (en nivel alto ya no salen medios ni tercios) y el factor llega más lejos.
+const DEN_MIN = [2, 2, 3, 4, 5];
+const DEN_BASE = [6, 8, 10, 12, 15];
+const FACTOR_MAX = [5, 6, 7, 9, 10];
 
 function fraccionSimplificadaAleatoria(nivel: number): [number, number] {
   const i = banda(nivel);
-  const den = randomInt(2, DEN_BASE[i]);
+  const den = randomInt(DEN_MIN[i], DEN_BASE[i]);
   const num = randomInt(1, den - 1);
   const d = mcd(num, den);
   return [num / d, den / d];
@@ -52,7 +58,7 @@ function fraccionSimplificadaAleatoria(nivel: number): [number, number] {
 function generarSimplificar(nivel: number): ProblemaFraccion {
   const i = banda(nivel);
   const [n0, d0] = fraccionSimplificadaAleatoria(nivel);
-  const factor = randomInt(2, FACTOR_MAX[i] + 1);
+  const factor = randomInt(2, FACTOR_MAX[i]);
   return {
     tipo: "simplificar",
     nivel,
