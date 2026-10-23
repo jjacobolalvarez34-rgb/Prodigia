@@ -44,7 +44,7 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 | Temporadas de ranked: cada cuánto acaban y un anuncio con las recompensas (Diamante v1, v2, v3…, título, cápsulas) | HECHO | Cada temporada termina en una Gran Alineación (28 días; la 1 termina el sábado 24). Al terminar sale un anuncio con el rango alcanzado y su tier v1, v2, v3…, título desde Oro y cápsulas (Hierro: liga; Bronce/Plata/Oro: liga de su color; Platino: oro + estelar; Diamante: oro + supernova; Prodigio: 2 supernova + prisma). En Rankeds se ve la temporada y cuánto le falta. |
 
 | Organizar todas las carpetas de Prodigia en D: | TE TOCA DECIDIR | Inventario y propuesta en la sección 5 (abajo). No se movió ni borró nada. |
-| APK 0.6.4 (versionCode 10) | HECHO | Compilado el 2026-10-22 y publicado como v0.6.4. |
+| APK 0.6.5 (versionCode 11) | EN CURSO | Compilando aparte desde `D:\Repositorios\Prodigia-build` (log `D:\android-build\compilar48.log`). Trae todo lo del 2026-10-23. Al terminar: release v0.6.5. |
 
 | Sonido de marca de Prodigia en la intro | HECHO | Suena con la caída del logo en la pantalla de carga de la app: un roce de aire, un golpe suave al asentarse y la firma sol-do-mi-re-SOL en campana con acorde. Respeta el ajuste de sonido. Conviene escucharlo. |
 | La Gran Alineación da 3000 Chispas para todos | HECHO | Regalo para cada jugador, sin meta ni partida; se reclama desde que empieza una Alineación hasta la siguiente. |
@@ -60,7 +60,7 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 | Abrir una cápsula y salir antes de verla | HECHO | El premio ya no se pide al aparecer la cápsula sino al tocarla; si sales antes, sigue cerrada. Si sales a mitad del suspenso, al volver a Recompensas o a la tienda se te muestra lo que salió (en el mismo aparato). Nunca se pierde ni se abre dos veces. |
 | Animación al comprar una cápsula queda detrás de los botones | HECHO | App: la escena va en un Modal de pantalla completa. Web: se monta por encima de todo (portal). |
 | En la tienda de temas, mostrar Cometas (no Chispas) arriba a la derecha | HECHO | App y web. |
-| Modo zen: estadísticas al final (promedio por respuesta, corrección de cada fallada) y personalización (dificultad, temas específicos) | EN CURSO | |
+| Modo zen: estadísticas al final (promedio por respuesta, corrección de cada fallada) y personalización (dificultad, temas específicos) | HECHO | Final con precisión, primer intento, racha, promedio, más rápida/lenta, ritmo por pregunta y repaso de cada error con su solución. Antes: temas, un nivel o rango que sube, 10/15/20 preguntas, opciones de Numeria, Geografía y Codia; se recuerda la configuración. |
 | Numeria, decimales «conversión» repite la misma pregunta; revisar variedad y dificultad de todos los modos de Numeria | HECHO | Causa: en nivel 1-2 el generador solo podía dar «1/2 a decimal». Ahora 41+ preguntas por nivel y la dificultad sube de verdad (periódicos en 7-10). También arreglados porcentaje, redondeo, multiplicación/división, fracciones, geometría y potencias. Un test vigila la variedad. |
 | Auditoría de toda la base de preguntas de las 15 ciudades | FALTA (después) | Plan y primera medición en `docs/AUDITORIA_PREGUNTAS.md`. Graves: Vitalia (6-7 preguntas en nivel 1-2), Melodía (oído absoluto 4), Anatomía (niveles 7 y 9 iguales), Trigonometría (razones 8 en nivel 1). Siguiente: arreglar esos 4 en ese orden. |
 
