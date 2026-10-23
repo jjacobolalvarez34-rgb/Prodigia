@@ -44,7 +44,7 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 | Temporadas de ranked: cada cuánto acaban y un anuncio con las recompensas (Diamante v1, v2, v3…, título, cápsulas) | HECHO | Cada temporada termina en una Gran Alineación (28 días; la 1 termina el sábado 24). Al terminar sale un anuncio con el rango alcanzado y su tier v1, v2, v3…, título desde Oro y cápsulas (Hierro: liga; Bronce/Plata/Oro: liga de su color; Platino: oro + estelar; Diamante: oro + supernova; Prodigio: 2 supernova + prisma). En Rankeds se ve la temporada y cuánto le falta. |
 
 | Organizar todas las carpetas de Prodigia en D: | TE TOCA DECIDIR | Inventario y propuesta en la sección 5 (abajo). No se movió ni borró nada. |
-| APK 0.6.5 (versionCode 11) | EN CURSO | Compilando aparte desde `D:\Repositorios\Prodigia-build` (log `D:\android-build\compilar48.log`). Trae todo lo del 2026-10-23. Al terminar: release v0.6.5. |
+| APK 0.6.5 (versionCode 11) | EN CURSO | Compilando aparte desde `D:\Repositorios\Prodigia-build` (log `D:\android-build\compilar49.log`). Trae todo lo del 2026-10-23. Al terminar: release v0.6.5. |
 
 | Sonido de marca de Prodigia en la intro | HECHO | Suena con la caída del logo en la pantalla de carga de la app: un roce de aire, un golpe suave al asentarse y la firma sol-do-mi-re-SOL en campana con acorde. Respeta el ajuste de sonido. Conviene escucharlo. |
 | La Gran Alineación da 3000 Chispas para todos | HECHO | Regalo para cada jugador, sin meta ni partida; se reclama desde que empieza una Alineación hasta la siguiente. |
