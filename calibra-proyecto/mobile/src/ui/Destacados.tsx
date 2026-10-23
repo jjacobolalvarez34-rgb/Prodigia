@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { hayWidgets, URL_WEB } from "~/lib/entorno";
 import { anclarWidget } from "~/widgets/registro";
-import { color, radio, fuente, COLOR_NOCHE } from "~/tema";
+import { radio, fuente, COLOR_NOCHE } from "~/tema";
 import { IconoCastillo, IconoCompetir, IconoDiana, IconoFiesta, IconoLibro, IconoMovil } from "./Iconos";
 
 // Carrusel "Destacados" del inicio: las cosas de Prodigia que vale la pena probar,

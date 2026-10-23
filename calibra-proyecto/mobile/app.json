@@ -2,7 +2,7 @@
   "expo": {
     "name": "Prodigia",
     "slug": "prodigia",
-    "version": "0.6.4",
+    "version": "0.6.5",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "prodigia",
@@ -14,7 +14,7 @@
     },
     "android": {
       "package": "com.prodigia.app",
-      "versionCode": 10,
+      "versionCode": 11,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#07080D",
