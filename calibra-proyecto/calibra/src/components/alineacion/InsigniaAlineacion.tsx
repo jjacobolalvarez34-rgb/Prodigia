@@ -4,16 +4,15 @@ import { useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { alineacionEnCurso } from "@/lib/ciudades/cicloDia";
+import { relojEventos } from "@/components/temas/relojEventos";
 
 // Durante la Gran Alineación, en las partidas: una insignia dorada arriba que recuerda
 // que todo cuenta doble (Exp, Chispas y constelaciones; 0259/0290).
 // Las mismas rutas de juego que CapaTemporada, más los sprints.
 const RUTAS_DE_JUEGO = /\/(practica|duelo|duelos\/|reto-|reto\/|zen|serie|diagnostico|partida|calibracion|sprint)/;
 
-function suscribir(avisar: () => void) {
-  const id = setInterval(avisar, 30_000);
-  return () => clearInterval(id);
-}
+// Aparece y se va en el instante exacto (relojEventos), también en medio de una partida.
+const suscribir = relojEventos.suscribir;
 const enCurso = () => alineacionEnCurso(Date.now()) !== null;
 const nunca = () => false;
 

@@ -4,14 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import { Animated, BackHandler, Easing, Pressable, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { videoAperturaActual } from "@/lib/temas/videosApertura";
+import { useRouter, useSegments } from "expo-router";
 import { leerAjustes } from "~/lib/ajustes";
+import { enInicio, noInterrumpir } from "~/lib/pantallasDeJuego";
+import { useRelojEventos } from "~/lib/relojEventos";
 import { marcarVideoVisto, usePedidoVideo, videoVisto } from "~/lib/videoApertura";
 import Texto from "./Texto";
 
 // Video de apertura de los eventos (Gran Alineación, Halloween…; cuál toca lo dice
 // videoAperturaActual). Si la app se abre durante el evento, el video sale en lugar
-// del menú; si el evento empieza con la app abierta (fuera de una partida), entra con
-// un fundido. Una vez por edición; se puede saltar desde el primer segundo. Los videos
+// del menú; si el evento empieza con la app abierta, entra con un fundido en el instante
+// exacto (relojEventos) y la app vuelve al Inicio por debajo; en una partida se espera a
+// que salga del resultado. Una vez por edición; se puede saltar desde el primer segundo. Los videos
 // terminan con ~5 s de la imagen final animada, y desde ahí se funden con la app.
 // Para sumar el de otra fiesta: su archivo acá y en VIDEO_DE_TEMA.
 const VIDEOS: Record<string, number> = {
@@ -84,36 +88,55 @@ function Reproductor({ fuente, fundido, onFin }: { fuente: number; fundido: bool
 }
 
 export default function VideoApertura() {
-  const [video, setVideo] = useState<{ clave: string | null; archivo: string; fundido: boolean; id: number } | null>(null);
+  const router = useRouter();
+  const segmentos = useSegments();
+  const esperar = noInterrumpir(segmentos);
+  const segmentosRef = useRef<readonly string[]>(segmentos);
+  useEffect(() => {
+    segmentosRef.current = segmentos;
+  }, [segmentos]);
+  const reloj = useRelojEventos();
+  const [video, setVideo] = useState<{ clave: string | null; archivo: string; fundido: boolean; alInicio: boolean; id: number } | null>(null);
   const pedido = usePedidoVideo();
   const pedidoVisto = useRef(pedido.n);
 
+  // Eventos en vivo (2026-10-28): se revisa al montar (abrir la app), en el instante de
+  // cada momento clave y al volver al frente (relojEventos), y al salir de una partida.
+  // En una partida, su resultado o una lección no se interrumpe: se espera a que salga.
   useEffect(() => {
+    if (esperar) return;
     let vivo = true;
-    function revisar() {
-      const instantaneo = primeraRevision;
-      primeraRevision = false;
-      const v = videoAperturaActual();
-      if (!v || !VIDEOS[v.archivo]) return;
-      videoVisto(v.clave).then((visto) => {
-        if (vivo && !visto) setVideo((actual) => actual ?? { clave: v.clave, archivo: v.archivo, fundido: !instantaneo, id: Date.now() });
-      });
-    }
-    revisar();
-    const id = setInterval(revisar, 30_000);
+    const instantaneo = primeraRevision;
+    primeraRevision = false;
+    const v = videoAperturaActual(Date.now(), { temas: leerAjustes().decoracion });
+    if (!v || !VIDEOS[v.archivo]) return;
+    videoVisto(v.clave).then((visto) => {
+      if (vivo && !visto) setVideo((actual) => actual ?? { clave: v.clave, archivo: v.archivo, fundido: !instantaneo, alInicio: !instantaneo, id: Date.now() });
+    });
     return () => {
       vivo = false;
-      clearInterval(id);
     };
-  }, []);
+  }, [reloj, esperar]);
+
+  // Con el video ya en pantalla (tapado el fundido), la app vuelve al Inicio por debajo:
+  // al terminar, se ve todo actualizado ahí.
+  useEffect(() => {
+    if (!video?.alInicio) return;
+    const t = setTimeout(() => {
+      if (enInicio(segmentosRef.current)) return;
+      if (router.canDismiss()) router.dismissAll();
+      router.navigate("/");
+    }, ENTRADA_MS);
+    return () => clearTimeout(t);
+  }, [video, router]);
 
   // «Ver el video» desde un cartel (no cuenta como visto).
   useEffect(() => {
     if (pedido.n === pedidoVisto.current) return;
     pedidoVisto.current = pedido.n;
-    const archivo = pedido.archivo ?? videoAperturaActual()?.archivo;
+    const archivo = pedido.archivo ?? videoAperturaActual(Date.now(), { temas: leerAjustes().decoracion })?.archivo;
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (archivo && VIDEOS[archivo]) setVideo({ clave: null, archivo, fundido: true, id: Date.now() });
+    if (archivo && VIDEOS[archivo]) setVideo({ clave: null, archivo, fundido: true, alInicio: false, id: Date.now() });
   }, [pedido]);
 
   if (!video) return null;

@@ -5,16 +5,15 @@ import { usePathname } from "next/navigation";
 import { alineacionEnCurso } from "@/lib/ciudades/cicloDia";
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, subscribeEfectos } from "@/lib/efectos";
 import { SOLES } from "@/lib/recompensas/alineacion";
+import { relojEventos } from "@/components/temas/relojEventos";
 
 // Durante la Gran Alineación, fuera de las partidas: la web se tiñe de amanecer. Un
 // resplandor dorado arriba y en el horizonte, y motas de luz de los colores de las 15
 // ciudades que suben despacio. Sutil: se nota sin tapar nada.
 export const RUTAS_DE_JUEGO = /\/(practica|duelo|duelos\/|reto-|reto\/|zen|serie|diagnostico|partida|calibracion|sprint)/;
 
-function suscribir(avisar: () => void) {
-  const id = setInterval(avisar, 30_000);
-  return () => clearInterval(id);
-}
+// Se enciende y se apaga en el instante exacto (relojEventos), no cada tantos segundos.
+const suscribir = relojEventos.suscribir;
 const enCurso = () => alineacionEnCurso(Date.now()) !== null;
 const nunca = () => false;
 

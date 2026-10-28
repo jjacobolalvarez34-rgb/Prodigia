@@ -8,6 +8,7 @@ import { alineacionEnCurso, estadoCielo, faseDelDia } from "@/lib/ciudades/ciclo
 import Cielo from "./Cielo";
 import { adornosCiudad } from "@/lib/temas/adornosCiudad";
 import { capaVisible } from "@/lib/temas/temas";
+import { relojEventos } from "~/lib/relojEventos";
 import { useTemaHoy } from "~/lib/temporada";
 
 // "Cada mundo es una ciudad que se enciende de noche" (02-SISTEMA-VISUAL.md §1): el
@@ -121,6 +122,8 @@ function CiudadBase({ semilla, acento, alto = 96, apagada, radio = 14, densidad 
     const id = setInterval(() => setAhora(Date.now()), 60_000);
     return () => clearInterval(id);
   }, [activa, apagada]);
+  // Eventos en vivo: la Gran Alineación entra y sale en el instante exacto (relojEventos).
+  useEffect(() => relojEventos.suscribir(() => setAhora(Date.now())), []);
   const cielo = apagada ? null : estadoCielo(faseDelDia(semilla, ahora));
   const alineacion = !apagada && alineacionEnCurso(ahora) !== null;
   const noche = cielo ? cielo.noche : 1;

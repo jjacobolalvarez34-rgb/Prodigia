@@ -21,6 +21,7 @@ import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { cargarAjustes } from "~/lib/ajustes";
+import { PANTALLAS_DE_JUEGO } from "~/lib/pantallasDeJuego";
 import { habilitarSonidos, prepararSonidos } from "~/lib/efectos";
 import { precargarAprender } from "~/lib/aprender";
 import { cargarJugadorGuardado, leerJugador, limpiarJugador, recargarJugador } from "~/lib/jugador";
@@ -251,8 +252,9 @@ function Navegacion() {
       {!cargando && !cargaVisible && !segmentos.some((x) => PANTALLAS_DE_JUEGO.has(x)) && <CapaTemporada />}
       {/* Gran Alineación: el amanecer dorado, también fuera de las partidas. */}
       {!cargando && !cargaVisible && !segmentos.some((x) => PANTALLAS_DE_JUEGO.has(x)) && <CapaAlineacion />}
-      {/* Videos de apertura de los eventos: en lugar del menú al abrir, o con fundido si empiezan con la app abierta. */}
-      {!cargando && !cargaVisible && terminos !== false && !segmentos.some((x) => PANTALLAS_DE_JUEGO.has(x)) && <VideoApertura />}
+      {/* Videos de apertura de los eventos: en lugar del menú al abrir, o con fundido en el instante en que empiezan
+          (en una partida espera a que termine; ver VideoApertura y lib/pantallasDeJuego). */}
+      {!cargando && !cargaVisible && terminos !== false && <VideoApertura />}
       {!cargando && userId && terminos && !cargaVisible && <AvisoProTermino />}
       {!cargando && userId && terminos && !cargaVisible && <AvisoTemaApp />}
       {/* Fin de temporada de rankeds (0296): el rango alcanzado y sus recompensas. */}
@@ -267,8 +269,6 @@ function Navegacion() {
   );
 }
 
-// Pantallas de juego: ahí no va la decoración de temporada.
-const PANTALLAS_DE_JUEGO = new Set(["sprint", "duelo", "reto", "zen", "diagnostico", "reto-finde"]);
 
 export default function RootLayout() {
   // Fuentes de la marca + las 8 fuentes de nombre de la tienda (empaquetadas: la

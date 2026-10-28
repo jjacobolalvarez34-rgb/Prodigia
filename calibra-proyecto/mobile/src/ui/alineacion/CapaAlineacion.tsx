@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withTiming } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { alineacionEnCurso } from "@/lib/ciudades/cicloDia";
 import { SOLES } from "@/lib/recompensas/alineacion";
+import { relojEventos } from "~/lib/relojEventos";
 import { useAnimacionActiva, useLiviano } from "~/lib/rendimiento";
 
 // Durante la Gran Alineación, fuera de las partidas (igual que la web): la app se tiñe
@@ -26,14 +27,13 @@ function Mota({ i, color, alto, ancho }: { i: number; color: string; alto: numbe
   return <Animated.View style={[{ position: "absolute", bottom: 0, left: ancho * (0.04 + ((i * 61) % 92) / 100), width: tam, height: tam, borderRadius: tam, backgroundColor: color, boxShadow: `0px 0px 8px ${color}` }, estilo]} />;
 }
 
+const enCurso = () => alineacionEnCurso(Date.now()) !== null;
+
 export default function CapaAlineacion() {
   const { width, height } = useWindowDimensions();
   const liviano = useLiviano();
-  const [activa, setActiva] = useState(() => alineacionEnCurso(Date.now()) !== null);
-  useEffect(() => {
-    const id = setInterval(() => setActiva(alineacionEnCurso(Date.now()) !== null), 30_000);
-    return () => clearInterval(id);
-  }, []);
+  // Se enciende y se apaga en el instante exacto (relojEventos), no cada tantos segundos.
+  const activa = useSyncExternalStore(relojEventos.suscribir, enCurso, enCurso);
   if (!activa) return null;
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>

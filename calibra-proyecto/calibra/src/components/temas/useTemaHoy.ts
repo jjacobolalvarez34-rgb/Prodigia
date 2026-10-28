@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { forzarTema, temaActivo, type TemaActivo } from "@/lib/temas/temas";
 import { TEMAS } from "@/lib/temas/temas";
 import type { IdTema } from "@/lib/temas/calendario";
+import { relojEventos } from "./relojEventos";
 
 // La festividad de hoy en la web (src/lib/temas). Se calcula en el navegador (en el
 // servidor no hay tema: así el primer render es igual en los dos y no hay saltos) y se
-// revisa cada 10 minutos. Solo en desarrollo, ?tema=<id> muestra un tema fuera de su
+// recalcula en el instante exacto en que cambia algo (relojEventos: empieza o termina una
+// fase, al volver a la pestaña), no cada tantos minutos. Solo en desarrollo, ?tema=<id> muestra un tema fuera de su
 // fecha; en producción no hay forma de ver un evento antes de tiempo.
 const CLAVE_FORZADO = "prodigia-tema-forzado";
 
@@ -35,11 +37,12 @@ export function useTemaHoy(): TemaActivo | null {
   useEffect(() => {
     const calcular = () => {
       forzarTema(leerForzado());
-      setTema(temaActivo());
+      const nuevo = temaActivo();
+      // Mientras no cambie nada se queda el mismo objeto (así no se repinta todo de balde).
+      setTema((antes) => (antes?.tema.id === nuevo?.tema.id && antes?.fase === nuevo?.fase && antes?.hoy.rango.desde === nuevo?.hoy.rango.desde ? antes : nuevo));
     };
     calcular();
-    const id = setInterval(calcular, 10 * 60_000);
-    return () => clearInterval(id);
+    return relojEventos.suscribir(calcular);
   }, []);
   return tema;
 }

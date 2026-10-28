@@ -26,9 +26,12 @@ export interface VideoApertura {
   archivo: string;
 }
 
-export function videoAperturaActual(ahora = Date.now()): VideoApertura | null {
+// «temas: false» (la «Decoración de temporada» apagada): sin videos de festividades; la
+// Gran Alineación no es decoración y sigue teniendo el suyo.
+export function videoAperturaActual(ahora = Date.now(), opciones: { temas?: boolean } = {}): VideoApertura | null {
   const m = momentoAlineacion(ahora);
   if (m.momento === "durante") return { clave: `alineacion-${m.numero}`, archivo: VIDEO_ALINEACION };
+  if (opciones.temas === false) return null;
   // Basta con que la fecha esté en su fase de evento (no hace falta que tenga colección).
   const t = temaActivo(ahora);
   const archivo = t ? VIDEO_DE_TEMA[t.tema.id] : undefined;
