@@ -95,6 +95,7 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
 | Clanes: planeación completa (99) | IDEA | Lo de los territorios (arriba) es parte de esto. |
 | Feed social (100) | IDEA | |
 | Docentes (101) | IDEA | Tienes una solución en mente: contármela. |
+| Graphify (github.com/Graphify-Labs/graphify): mapa consultable del repo (código, SQL, docs) | IDEA | Visto el 2026-10-28. Ayudaría a ubicar la última versión de cada función SQL y el impacto de cambios grandes, y a dar contexto a los agentes. No hace falta todavía: probarla si el proyecto crece tanto que cueste ubicarse. Ojo: los documentos/PDF se mandan al modelo o a una API externa. |
 
 ## 4. Al final de esta tanda
 
