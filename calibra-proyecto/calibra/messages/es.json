@@ -1999,6 +1999,18 @@
     "guerraSemana": "Guerra de clanes — esta semana",
     "rankingVacio": "Todavía ningún clan sumó Experiencia esta semana — sé el primero.",
     "expSemana": "{n} Exp",
+    "guerra": {
+      "titulo": "Guerra de clanes",
+      "cierra": "Cierra en {tiempo}",
+      "persigue": "Tu clan va #{puesto} de {total}: le faltan {n} Exp para pasar a {rival}.",
+      "lidera": "Tu clan va #1 de {total}, {n} Exp por delante de {rival}. Que no los alcancen.",
+      "solo": "Tu clan va #1: ningún otro clan suma Exp esta semana.",
+      "sinExp": "Tu clan todavía no suma Exp esta semana. {rival} lidera con {n} Exp: una partida y entran a la tabla.",
+      "sinExpVacio": "Ningún clan suma Exp todavía esta semana: una partida y tu clan va primero.",
+      "como": "Suma toda la Exp que ganan los miembros de lunes a domingo. Al cerrar, el clan con más Exp gana la guerra.",
+      "ganoTuClan": "Tu clan ganó la guerra de la semana pasada con {n} Exp.",
+      "ganoOtro": "La semana pasada ganó {clan} con {n} Exp."
+    },
     "sinClan": {
       "buscarTitulo": "Buscar un clan",
       "buscarPlaceholder": "Buscar clan por nombre...",
@@ -5917,5 +5929,17 @@
       "noExiste": "Esta partida no existe o ya no está disponible.",
       "volverInicio": "Ir a Prodigia"
     }
+  },
+  "LeccionQuiz": {
+    "progreso": "{bien} de {total} bien",
+    "bien": "¡Correcto!",
+    "mal": "No es esa. Prueba otra.",
+    "revisala": "Revisa esta de nuevo.",
+    "terminar": "Terminar lección",
+    "faltan": "{faltan, plural, one {Falta # pregunta} other {Faltan # preguntas}}",
+    "completada": "Lección completada",
+    "guardando": "Guardando tu avance...",
+    "errorGuardar": "No se pudo guardar tu avance.",
+    "reintentar": "Reintentar"
   }
 }

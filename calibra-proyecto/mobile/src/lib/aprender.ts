@@ -168,6 +168,8 @@ export interface ResultadoLeccion {
   aprobado: boolean;
   incorrectas: number[];
   logros: { nombre: string; descripcion: string }[];
+  // Logros que se terminan de contar después de devolver (ver completarLeccion).
+  logrosPendientes?: Promise<{ nombre: string; descripcion: string }[]>;
 }
 
 // Completar una lección: la base valida el quiz y el plan (completar_leccion, 0246).
@@ -195,14 +197,20 @@ export async function completarLeccion(mundo: MundoSlug, leccion: NodoLeccion, r
   }
   const fila = (data as { aprobado: boolean; incorrectas: number[] | null }[] | null)?.[0];
   if (!fila?.aprobado) return { aprobado: false, incorrectas: fila?.incorrectas ?? [], logros: [] };
-  let logros: ResultadoLeccion["logros"] = [];
-  const { data: sesion } = await supabase.auth.getSession();
-  const uid = sesion.session?.user.id;
-  if (uid) {
-    logros = (await verificarLogros(supabase as unknown as ClienteWeb, uid).catch(() => [])).map((l) => ({ nombre: l.nombre, descripcion: l.descripcion }));
-    await verificarTitulos(supabase as unknown as ClienteWeb, uid).catch(() => []);
-  }
-  return { aprobado: true, incorrectas: [], logros };
+  // Carga rápida (docs/avance/CLASES_CALIFICACION.md): la lección ya quedó guardada;
+  // logros y títulos se cuentan en segundo plano y los logros llegan por la promesa
+  // (antes el festejo esperaba las decenas de consultas de verificarLogros/Títulos).
+  const logrosPendientes = (async (): Promise<ResultadoLeccion["logros"]> => {
+    const { data: sesion } = await supabase.auth.getSession();
+    const uid = sesion.session?.user.id;
+    if (!uid) return [];
+    const [logros] = await Promise.all([
+      verificarLogros(supabase as unknown as ClienteWeb, uid).catch(() => []),
+      verificarTitulos(supabase as unknown as ClienteWeb, uid).catch(() => []),
+    ]);
+    return logros.map((l) => ({ nombre: l.nombre, descripcion: l.descripcion }));
+  })().catch(() => []);
+  return { aprobado: true, incorrectas: [], logros: [], logrosPendientes };
 }
 
 // Descarga en segundo plano el camino de los 13 mundos (con el contenido completo de

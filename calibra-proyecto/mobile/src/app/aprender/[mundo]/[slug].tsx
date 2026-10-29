@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Alert, BackHandler, Pressable, ScrollView, StyleSheet, View } from "react-native";
-import Animated, { FadeIn, FadeInDown, FadeInRight, ZoomIn } from "react-native-reanimated";
+import Animated, { FadeIn, FadeInDown, FadeInRight, Keyframe, ZoomIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { agruparVisualesPorPaso, visualesDeContenido } from "@/lib/aprender/visuales";
 import { generarProblemaTecnica, type Problem } from "@/lib/practica/problems";
@@ -10,7 +10,6 @@ import { sonar, vibrar } from "~/lib/efectos";
 import { recargarJugador, useJugador } from "~/lib/jugador";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError } from "~/lib/supabase";
-import { mostrarAviso } from "~/ui/Aviso";
 import Boton3D from "~/ui/Boton3D";
 import Confeti from "~/ui/Confeti";
 import Glifos from "~/ui/Glifos";
@@ -19,6 +18,7 @@ import { Teclado } from "~/ui/Sprint";
 import Texto from "~/ui/Texto";
 import { textoConFormulas } from "~/ui/TextoMate";
 import TextoLatex from "~/ui/TextoLatex";
+import QuizLeccion from "~/ui/aprender/QuizLeccion";
 import VisualLeccion from "~/ui/aprender/VisualLeccion";
 import { brillo, color, conAlfa, fuente, MUNDO_POR_SLUG, type MundoSlug, temaClaro } from "~/tema";
 
@@ -29,6 +29,15 @@ import { brillo, color, conAlfa, fuente, MUNDO_POR_SLUG, type MundoSlug, temaCla
 // se valida acá y se sube después.
 
 type Fase = "presentacion" | "explicacion" | "practica" | "quiz" | "celebracion";
+type Guardado = "guardando" | "listo" | "error";
+
+// Onda que se abre detrás del sello de «completado».
+const ONDA = new Keyframe({
+  0: { opacity: 0.7, transform: [{ scale: 0.7 }] },
+  100: { opacity: 0, transform: [{ scale: 1.7 }] },
+})
+  .duration(900)
+  .delay(250);
 const PROBLEMAS_PRACTICA = 4;
 // Las mismas excepciones que la web: estas técnicas de Numeria no tienen práctica.
 const SIN_PRACTICA_NUMERIA = new Set([
@@ -75,9 +84,10 @@ export default function PantallaLeccion() {
   const [nodo, setNodo] = useState<NodoLeccion | null | undefined>(undefined);
   const [siguiente, setSiguiente] = useState<NodoLeccion | null>(null);
   const [fase, setFase] = useState<Fase>("presentacion");
-  const [respuestas, setRespuestas] = useState<string[]>([]);
   const [incorrectas, setIncorrectas] = useState<number[] | null>(null);
-  const [enviando, setEnviando] = useState(false);
+  const [guardado, setGuardado] = useState<Guardado>("listo");
+  const [errorGuardado, setErrorGuardado] = useState("");
+  const [ultimas, setUltimas] = useState<string[] | null>(null);
   const [logros, setLogros] = useState<{ nombre: string; descripcion: string }[]>([]);
   const [sinConexion, setSinConexion] = useState(false);
   // Práctica (Numeria)
@@ -93,7 +103,6 @@ export default function PantallaLeccion() {
       const i = lista.findIndex((n) => n.slug === slug);
       const n = i >= 0 ? lista[i] : null;
       setNodo(n && n.estado !== "bloqueado" ? n : null);
-      setRespuestas((n?.contenido.quiz ?? []).map(() => ""));
       setSiguiente(lista.slice(i + 1).find((x) => x.requierePro === n?.requierePro) ?? null);
     });
   }, [userId, mundo, slug, plan]);
@@ -117,29 +126,42 @@ export default function PantallaLeccion() {
     return () => sub.remove();
   }, [fase, router]);
 
-  async function terminar(r: string[] | null) {
+  // Carga rápida (docs/avance/CLASES_CALIFICACION.md): el festejo entra al
+  // instante (el quiz ya se calificó pregunta por pregunta) y el guardado sigue
+  // debajo; los logros aparecen cuando terminan de contarse. Si la base rechaza
+  // el quiz (contenido desfasado) se vuelve a él; si falla, se ofrece reintentar.
+  async function guardar(r: string[] | null) {
     if (!nodo || !mundo) return;
-    setEnviando(true);
-    setIncorrectas(null);
+    setGuardado("guardando");
     try {
       const res = await completarLeccion(mundo.slug, nodo, r);
       if (!res.aprobado) {
         setIncorrectas(res.incorrectas);
+        setGuardado("listo");
+        setFase("quiz");
         sonar("error");
         vibrar.error();
         return;
       }
-      setLogros(res.logros);
       setSinConexion(!!res.sinConexion);
-      sonar("logro");
-      vibrar.exito();
-      setFase("celebracion");
+      setGuardado("listo");
       recargarJugador();
+      res.logrosPendientes?.then((l) => {
+        if (l.length > 0) setLogros(l);
+      });
     } catch (e) {
-      mostrarAviso(mensajeError(e), "error");
-    } finally {
-      setEnviando(false);
+      setErrorGuardado(mensajeError(e));
+      setGuardado("error");
     }
+  }
+
+  function terminar(r: string[] | null) {
+    setUltimas(r);
+    setIncorrectas(null);
+    sonar("logro");
+    vibrar.exito();
+    setFase("celebracion");
+    void guardar(r);
   }
 
   function despuesDeExplicar() {
@@ -242,7 +264,6 @@ export default function PantallaLeccion() {
             titulo={conPractica ? "A practicar" : quiz.length > 0 ? "Ir al quiz" : "Marcar como aprendida"}
             acento={mundo.base}
             brillo
-            cargando={enviando}
             onPress={despuesDeExplicar}
             estilo={{ marginTop: 8 }}
           />
@@ -285,61 +306,46 @@ export default function PantallaLeccion() {
 
       {fase === "quiz" && (
         <ScrollView key="q" contentContainerStyle={styles.contenido}>
-          <Texto v="h2">Quiz</Texto>
-          <Texto v="nota">Responde todas para completar la lección.</Texto>
-          {quiz.map((q, qi) => {
-            const mal = incorrectas?.includes(qi) ?? false;
-            return (
-              <Animated.View key={qi} entering={FadeInDown.delay(qi * 80).duration(300)} style={[styles.pregunta, mal && { borderColor: color.error }]}>
-                <TextoLatex v="fuerte" texto={`${qi + 1}. ${q.pregunta}`} />
-                {q.opciones.map((op) => {
-                  const elegida = respuestas[qi] === op;
-                  return (
-                    <Pressable
-                      key={op}
-                      onPress={() => {
-                        vibrar.seleccion();
-                        setRespuestas((prev) => prev.map((v, i) => (i === qi ? op : v)));
-                      }}
-                      style={({ pressed }) => [
-                        styles.opcion,
-                        elegida && { borderColor: mal ? color.error : mundo.neon, backgroundColor: conAlfa(mal ? color.error : mundo.neon, 0.14) },
-                        pressed && { transform: [{ scale: 0.98 }] },
-                      ]}
-                    >
-                      <TextoLatex v="cuerpo" texto={op} />
-                    </Pressable>
-                  );
-                })}
-                {mal && (
-                  <TextoLatex v="nota" c={color.error} texto={`No es esa.${q.explicacion ? ` ${q.explicacion}` : ""}`} />
-                )}
-              </Animated.View>
-            );
-          })}
-          <Boton3D
-            titulo="Enviar respuestas"
-            acento={mundo.base}
-            brillo
-            cargando={enviando}
-            deshabilitado={respuestas.some((r) => r === "")}
-            onPress={() => terminar(respuestas)}
-          />
+          <QuizLeccion quiz={quiz} acento={mundo.neon} base={mundo.base} incorrectasServidor={incorrectas} onTerminar={terminar} />
         </ScrollView>
       )}
 
       {fase === "celebracion" && (
         <Animated.View key="c" entering={FadeIn.duration(300)} style={[styles.centro, { flex: 1, padding: 24, gap: 14 }]}>
           <Confeti cantidad={50} />
-          <Animated.View entering={ZoomIn.springify().damping(9)} style={[styles.medalla, { backgroundColor: mundo.base, borderColor: color.logro, boxShadow: brillo(color.logro, 36, 0.6) }]}>
-            <Texto style={{ fontFamily: fuente.display, fontSize: 34, color: "#fff" }}>✓</Texto>
+          <View style={styles.sello}>
+            <Animated.View entering={ONDA} style={[styles.onda, { borderColor: mundo.neon }]} />
+            <Animated.View entering={ZoomIn.springify().damping(9)} style={[styles.medalla, { backgroundColor: mundo.base, borderColor: color.logro, boxShadow: brillo(color.logro, 36, 0.6) }]}>
+              <Animated.View entering={ZoomIn.delay(260).springify().damping(10)}>
+                <Texto style={{ fontFamily: fuente.display, fontSize: 34, color: "#fff" }}>✓</Texto>
+              </Animated.View>
+            </Animated.View>
+          </View>
+          <Animated.View entering={FadeInDown.delay(300).duration(380)} style={{ alignItems: "center", gap: 6 }}>
+            <Texto v="h1" centro>
+              ¡Lección completada!
+            </Texto>
+            <Texto v="cuerpo" c={color.texto2} centro>
+              {textoConFormulas(nodo.nombre)}
+            </Texto>
           </Animated.View>
-          <Texto v="h1" centro>
-            ¡Lección completada!
-          </Texto>
-          <Texto v="cuerpo" c={color.texto2} centro>
-            {textoConFormulas(nodo.nombre)}
-          </Texto>
+          {guardado === "guardando" && (
+            <Animated.View entering={FadeIn.delay(400).duration(250)}>
+              <Texto v="nota" centro>
+                Guardando tu avance...
+              </Texto>
+            </Animated.View>
+          )}
+          {guardado === "error" && (
+            <Animated.View entering={FadeIn.duration(250)} style={styles.error}>
+              <Texto v="nota" c={color.error} centro>
+                No se pudo guardar tu avance. {errorGuardado}
+              </Texto>
+              <Pressable onPress={() => void guardar(ultimas)} hitSlop={8}>
+                <Texto v="fuerte">Reintentar</Texto>
+              </Pressable>
+            </Animated.View>
+          )}
           {sinConexion && (
             <Texto v="nota" centro>
               La completaste sin conexión: se guarda en tu cuenta cuando vuelva internet.
@@ -353,17 +359,18 @@ export default function PantallaLeccion() {
               <Texto v="fuerte">{l.nombre}</Texto>
             </Animated.View>
           ))}
-          <View style={{ alignSelf: "stretch", gap: 10, marginTop: 8 }}>
+          <Animated.View entering={FadeInDown.delay(480).duration(380)} style={{ alignSelf: "stretch", gap: 10, marginTop: 8 }}>
             {siguiente && siguiente.estado !== "completado" && !siguiente.bloqueadoPorPlan && (
               <Boton3D
                 titulo={`Siguiente: ${textoConFormulas(siguiente.nombre)}`}
                 acento={mundo.base}
                 brillo
+                cargando={guardado === "guardando"}
                 onPress={() => router.replace({ pathname: "/aprender/[mundo]/[slug]", params: { mundo: mundo.slug, slug: siguiente.slug } })}
               />
             )}
             <Boton3D titulo="Volver al camino" variante="secundario" onPress={() => router.back()} />
-          </View>
+          </Animated.View>
         </Animated.View>
       )}
     </SafeAreaView>
@@ -384,7 +391,8 @@ const styles = StyleSheet.create({
   puntos: { flexDirection: "row", gap: 6, alignSelf: "center" },
   puntoPractica: { width: 26, height: 6, borderRadius: 3, backgroundColor: color.surface3 },
   tarjetaPractica: { alignItems: "center", gap: 14, paddingVertical: 34, borderRadius: 26, borderWidth: 2, backgroundColor: color.surface1 },
-  pregunta: { gap: 8, padding: 14, borderRadius: 18, borderWidth: 1, borderColor: color.border, backgroundColor: color.surface1 },
-  opcion: { paddingHorizontal: 14, paddingVertical: 12, borderRadius: 14, borderWidth: 2, borderColor: color.border, backgroundColor: color.bg },
+  sello: { width: 120, height: 120, alignItems: "center", justifyContent: "center" },
+  onda: { position: "absolute", width: 110, height: 110, borderRadius: 55, borderWidth: 2 },
+  error: { alignSelf: "stretch", alignItems: "center", gap: 6, padding: 12, borderRadius: 16, borderWidth: 1, borderColor: conAlfa(color.error, 0.4), backgroundColor: conAlfa(color.error, 0.08) },
   logro: { alignSelf: "stretch", alignItems: "center", gap: 2, padding: 12, borderRadius: 16, borderWidth: 1, borderColor: conAlfa(color.logro, 0.5), backgroundColor: conAlfa(color.logro, 0.1) },
 });

@@ -1999,6 +1999,18 @@
     "guerraSemana": "Clan war — this week",
     "rankingVacio": "No clan has earned Experience this week yet — be the first.",
     "expSemana": "{n} Exp",
+    "guerra": {
+      "titulo": "Clan war",
+      "cierra": "Ends in {tiempo}",
+      "persigue": "Your clan is #{puesto} of {total}: {n} Exp to overtake {rival}.",
+      "lidera": "Your clan is #1 of {total}, {n} Exp ahead of {rival}. Hold the lead.",
+      "solo": "Your clan is #1: no other clan has earned Exp this week.",
+      "sinExp": "Your clan hasn't earned Exp this week yet. {rival} leads with {n} Exp: one game puts you on the board.",
+      "sinExpVacio": "No clan has earned Exp this week yet: one game and your clan takes the lead.",
+      "como": "Every Exp your members earn from Monday to Sunday counts. When it closes, the clan with the most Exp wins the war.",
+      "ganoTuClan": "Your clan won last week's war with {n} Exp.",
+      "ganoOtro": "Last week {clan} won with {n} Exp."
+    },
     "sinClan": {
       "buscarTitulo": "Search for a clan",
       "buscarPlaceholder": "Search clan by name...",
@@ -5917,5 +5929,17 @@
       "noExiste": "This game doesn't exist or is no longer available.",
       "volverInicio": "Go to Prodigia"
     }
+  },
+  "LeccionQuiz": {
+    "progreso": "{bien} of {total} right",
+    "bien": "Correct!",
+    "mal": "Not that one. Try another.",
+    "revisala": "Check this one again.",
+    "terminar": "Finish lesson",
+    "faltan": "{faltan, plural, one {# question left} other {# questions left}}",
+    "completada": "Lesson complete",
+    "guardando": "Saving your progress...",
+    "errorGuardar": "Your progress couldn't be saved.",
+    "reintentar": "Try again"
   }
 }

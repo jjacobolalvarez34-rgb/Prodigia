@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import type { TechniqueQuizPregunta } from "@/types/database";
 import { verificarLogros } from "@/lib/logros/verificar";
 import { verificarTitulos } from "@/lib/titulos/verificar";
@@ -44,11 +44,22 @@ export async function POST(request: Request) {
 
   const body = (await request.json()) as Body;
 
-  const { data: tecnica, error: tecnicaError } = await supabase
-    .from("logic_techniques")
-    .select("id, requiere_pro, contenido, contenido_en")
-    .eq("id", body.technique_id)
-    .maybeSingle();
+  // Carga rápida (2026-10-29, docs/avance/CLASES_CALIFICACION.md): la lección, el
+  // plan y el progreso previo se leen juntos (antes, en serie).
+  const [{ data: tecnica, error: tecnicaError }, { data: profile }, { data: progresoActual }] = await Promise.all([
+    supabase
+      .from("logic_techniques")
+      .select("id, requiere_pro, contenido, contenido_en")
+      .eq("id", body.technique_id)
+      .maybeSingle(),
+    supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle(),
+    supabase
+      .from("logic_technique_progress")
+      .select("intentos")
+      .eq("user_id", user.id)
+      .eq("technique_id", body.technique_id)
+      .maybeSingle(),
+  ]);
 
   if (tecnicaError) {
     return respuestaError("enigmia/completar-leccion:tecnica", tecnicaError);
@@ -64,8 +75,6 @@ export async function POST(request: Request) {
 
   if (quiz.length > 0) {
     if (tecnica.requiere_pro) {
-      const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
-
       if (profile?.plan !== "pro") {
         return NextResponse.json({ error: "Esta lección requiere plan Pro" }, { status: 403 });
       }
@@ -85,13 +94,6 @@ export async function POST(request: Request) {
     }
   }
 
-  const { data: progresoActual } = await supabase
-    .from("logic_technique_progress")
-    .select("intentos")
-    .eq("user_id", user.id)
-    .eq("technique_id", body.technique_id)
-    .maybeSingle();
-
   const { error } = await supabase.from("logic_technique_progress").upsert(
     {
       user_id: user.id,
@@ -107,7 +109,8 @@ export async function POST(request: Request) {
     return respuestaError("enigmia/completar-leccion", error);
   }
 
+  // Los títulos no se ven en el festejo: se revisan después de responder.
   const logrosNuevos = await verificarLogros(supabase, user.id);
-  await verificarTitulos(supabase, user.id);
+  after(() => verificarTitulos(supabase, user.id).then(() => undefined, () => undefined));
   return NextResponse.json({ ok: true, logrosNuevos });
 }

@@ -7,14 +7,14 @@ import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import type { NodoCaminoCodia } from "@/lib/codia/path";
 import { hrefVolverAAprender } from "@/lib/aprender/clases";
-import type { Achievement } from "@/types/database";
-import LogroBanner from "@/components/LogroBanner";
-import MathText from "@/components/MathText";
 import TextoConCodigo from "@/components/codia/TextoConCodigo";
 import CuerpoLeccionCodia from "@/components/codia/CuerpoLeccionCodia";
 import { visualesDeContenido } from "@/lib/aprender/visuales";
 import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
 import { COLOR_CODIA } from "../../colores";
+import QuizLeccion from "@/components/aprender/QuizLeccion";
+import CelebracionLeccion from "@/components/aprender/CelebracionLeccion";
+import { useCompletarLeccion } from "@/components/aprender/useCompletarLeccion";
 
 type Fase = "explicacion" | "ejemplo" | "quiz" | "celebracion";
 
@@ -39,7 +39,6 @@ export default function LeccionCodiaClient({ nodo }: Props) {
   const router = useRouter();
   const [fase, setFase] = useState<Fase>("explicacion");
   const [pasoIdx, setPasoIdx] = useState(0);
-  const [logrosNuevos, setLogrosNuevos] = useState<Achievement[]>([]);
 
   // Pedido 2026-09-24: salir por el Header a mitad de una lección (ya viste
   // el ejemplo o estás en el quiz) pide confirmación — en "explicacion"
@@ -57,51 +56,13 @@ export default function LeccionCodiaClient({ nodo }: Props) {
   const quiz = useMemo(() => nodo.contenido.quiz ?? [], [nodo.contenido.quiz]);
   const tieneQuiz = quiz.length > 0;
 
-  const [respuestas, setRespuestas] = useState<string[]>(() => quiz.map(() => ""));
-  const [enviandoQuiz, setEnviandoQuiz] = useState(false);
-  const [resultadoQuiz, setResultadoQuiz] = useState<{ incorrectas: number[] } | null>(null);
-
-  async function completarLeccion(respuestasEnviadas?: string[]) {
-    try {
-      const res = await fetch("/api/aprender/completar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          respuestasEnviadas
-            ? { technique_id: nodo.id, respuestas: respuestasEnviadas }
-            : { technique_id: nodo.id }
-        ),
-      });
-      const data = await res.json();
-      // Las técnicas rápidas (sin quiz) siempre devuelven ok:true sin
-      // `aprobado` — solo el curso Pro con quiz puede devolver
-      // ok:false/aprobado:false cuando alguna respuesta está mal, y en
-      // ese caso NO se debe festejar ni marcar dominado.
-      if (data.ok === false || data.aprobado === false) {
-        setResultadoQuiz({ incorrectas: Array.isArray(data.incorrectas) ? data.incorrectas : [] });
-        setEnviandoQuiz(false);
-        return;
-      }
-      if (Array.isArray(data.logrosNuevos)) setLogrosNuevos(data.logrosNuevos);
-    } catch {
-      // Si falla el guardado de una técnica rápida (sin quiz), igual
-      // mostramos la celebración — mismo comportamiento de siempre. Un
-      // quiz Pro que falla de red no debería festejar sin confirmación
-      // del server, así que ahí SÍ se corta acá.
-      if (respuestasEnviadas) {
-        setEnviandoQuiz(false);
-        return;
-      }
-    }
-    setEnviandoQuiz(false);
-    setFase("celebracion");
-  }
-
-  async function enviarQuiz() {
-    setEnviandoQuiz(true);
-    setResultadoQuiz(null);
-    await completarLeccion(respuestas);
-  }
+  const { completar, reintentar, estado: estadoGuardado, logros, incorrectas } = useCompletarLeccion({
+    techniqueId: nodo.id,
+    alCelebrar: () => setFase("celebracion"),
+    alRechazar: () => setFase("quiz"),
+    // Que el camino de Aprender se recalcule al volver (Router Cache de Next).
+    alGuardar: () => router.refresh(),
+  });
 
   return (
     <div className="mx-auto flex w-full max-w-lg flex-1 flex-col justify-center gap-8 px-4 py-16">
@@ -135,7 +96,7 @@ export default function LeccionCodiaClient({ nodo }: Props) {
                 <h1 className="text-center font-display text-xl font-bold tracking-tight text-foreground">{nodo.nombre}</h1>
                 <CuerpoLeccionCodia pasos={pasos} visuales={visuales} />
                 <button
-                  onClick={() => (tieneQuiz ? setFase("quiz") : completarLeccion())}
+                  onClick={() => (tieneQuiz ? setFase("quiz") : completar())}
                   className="rounded-xl px-4 py-3 font-display font-semibold text-white"
                   style={{ background: COLOR_CODIA }}
                 >
@@ -191,7 +152,7 @@ export default function LeccionCodiaClient({ nodo }: Props) {
                 </button>
               ) : (
                 <button
-                  onClick={() => completarLeccion()}
+                  onClick={() => completar()}
                   className="flex-1 rounded-xl px-4 py-3 font-display font-semibold text-white"
                   style={{ background: COLOR_CODIA }}
                 >
@@ -205,96 +166,40 @@ export default function LeccionCodiaClient({ nodo }: Props) {
         )}
 
         {fase === "quiz" && (
-          <motion.div key="quiz" {...transicion} className="flex flex-col gap-6">
-            <div>
-              <h1 className="font-display text-xl font-bold tracking-tight text-foreground">{t("quizTitulo")}</h1>
-              <p className="mt-1 text-sm text-texto-secundario">{t("quizSubtitulo")}</p>
-            </div>
-            <div className="flex flex-col gap-4">
-              {quiz.map((pregunta, qi) => {
-                const estaMal = resultadoQuiz?.incorrectas.includes(qi) ?? false;
-                return (
-                  <div key={qi} className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">
-                    <div className="flex gap-1.5 text-sm font-semibold text-foreground">
-                      <span>{qi + 1}.</span>
-                      <div className="min-w-0 flex-1">
-                        <TextoConCodigo texto={pregunta.pregunta} />
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      {pregunta.opciones.map((opcion) => {
-                        const seleccionada = respuestas[qi] === opcion;
-                        return (
-                          <button
-                            key={opcion}
-                            type="button"
-                            onClick={() =>
-                              setRespuestas((prev) => prev.map((v, i) => (i === qi ? opcion : v)))
-                            }
-                            className={`rounded-xl border-2 px-4 py-2.5 text-left text-sm font-medium transition-colors ${
-                              seleccionada && estaMal
-                                ? "border-error bg-error/10 text-error"
-                                : seleccionada
-                                  ? "border-logro/50 bg-logro/10 text-foreground"
-                                  : "border-border bg-background text-foreground"
-                            }`}
-                          >
-                            <span className="whitespace-pre-wrap font-mono text-[13px]">
-                              <MathText texto={opcion} />
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {estaMal && (
-                      <p className="text-xs font-medium text-error">
-                        {t("respuestaIncorrecta")}
-                        {pregunta.explicacion ? ` — ${pregunta.explicacion}` : ""}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            <button
-              onClick={enviarQuiz}
-              disabled={enviandoQuiz || respuestas.some((r) => !r)}
-              className="rounded-xl px-4 py-3 font-display font-semibold text-white disabled:opacity-50"
-              style={{ background: COLOR_CODIA }}
-            >
-              {enviandoQuiz ? t("enviando") : t("enviarRespuestas")}
-            </button>
-            {resultadoQuiz && (
-              <p className="text-center text-sm text-texto-secundario">{t("reintentaCuandoQuieras")}</p>
-            )}
+          <motion.div key="quiz" {...transicion}>
+            <QuizLeccion
+              quiz={quiz}
+              titulo={t("quizTitulo")}
+              subtitulo={t("quizSubtitulo")}
+              colorHex={COLOR_CODIA}
+              incorrectasServidor={incorrectas}
+              onTerminar={(r) => completar(r)}
+            />
           </motion.div>
         )}
 
         {fase === "celebracion" && (
-          <motion.div
-            key="celebracion"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col items-center gap-5 text-center"
-          >
-            <span className="text-5xl">🎉</span>
-            <h1 className="font-display text-2xl font-black tracking-tight text-foreground">
-              {t("completaste", { nombre: nodo.nombre })}
-            </h1>
-            <LogroBanner logros={logrosNuevos} />
-            <div className="mt-2 flex w-full flex-col gap-3">
-              <button
-                onClick={() => router.push(hrefVolverAAprender("/codia/aprender", nodo.requierePro))}
-                className="rounded-xl px-4 py-3 font-display font-semibold text-white"
-                style={{ background: COLOR_CODIA }}
-              >
-                {t("volverAAprender")}
-              </button>
-              <Link href="/codia/practica" className="text-sm font-medium hover:underline" style={{ color: COLOR_CODIA }}>
-                {t("irAPracticar")}
-              </Link>
-            </div>
+          <motion.div key="celebracion" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
+            <CelebracionLeccion
+              titulo={t("completaste", { nombre: nodo.nombre })}
+              colorHex={COLOR_CODIA}
+              logros={logros}
+              estado={estadoGuardado}
+              onReintentar={reintentar}
+            >
+              <div className="mt-2 flex w-full flex-col gap-3">
+                <button
+                  onClick={() => router.push(hrefVolverAAprender("/codia/aprender", nodo.requierePro))}
+                  className="rounded-xl px-4 py-3 font-display font-semibold text-white"
+                  style={{ background: COLOR_CODIA }}
+                >
+                  {t("volverAAprender")}
+                </button>
+                <Link href="/codia/practica" className="text-sm font-medium hover:underline" style={{ color: COLOR_CODIA }}>
+                  {t("irAPracticar")}
+                </Link>
+              </div>
+            </CelebracionLeccion>
           </motion.div>
         )}
       </AnimatePresence>

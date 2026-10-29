@@ -7,8 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { NodoCaminoNumeria } from "@/lib/aprender/pathClases";
 import { hrefVolverAAprender } from "@/lib/aprender/clases";
 import { generarProblemaTecnica, type Problem } from "@/lib/practica/problems";
-import type { Achievement } from "@/types/database";
-import LogroBanner from "@/components/LogroBanner";
 import MathText from "@/components/MathText";
 import Boton from "@/components/Boton";
 import CuerpoVisual from "@/components/aprender/CuerpoVisual";
@@ -16,6 +14,9 @@ import { REGISTRO_VISUALES_NUMERIA } from "@/components/numeria/visuales/registr
 import { visualesDeContenido } from "@/lib/aprender/visuales";
 import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
 import BotonEnlace from "@/components/BotonEnlace";
+import QuizLeccion from "@/components/aprender/QuizLeccion";
+import CelebracionLeccion from "@/components/aprender/CelebracionLeccion";
+import { useCompletarLeccion } from "@/components/aprender/useCompletarLeccion";
 
 type Fase = "explicacion" | "ejemplo" | "practica" | "quiz" | "celebracion";
 
@@ -58,7 +59,6 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
   const [problema, setProblema] = useState<Problem | null>(null);
   const [respuesta, setRespuesta] = useState("");
   const [feedback, setFeedback] = useState<"idle" | "correcto" | "incorrecto">("idle");
-  const [logrosNuevos, setLogrosNuevos] = useState<Achievement[]>([]);
 
   const pasos = nodo.contenido.pasos;
   const esFraccion = SLUGS_FRACCIONES.has(nodo.slug);
@@ -79,9 +79,13 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
   const quiz = useMemo(() => nodo.contenido.quiz ?? [], [nodo.contenido.quiz]);
   const tieneQuiz = quiz.length > 0;
 
-  const [respuestas, setRespuestas] = useState<string[]>(() => quiz.map(() => ""));
-  const [enviandoQuiz, setEnviandoQuiz] = useState(false);
-  const [resultadoQuiz, setResultadoQuiz] = useState<{ incorrectas: number[] } | null>(null);
+  const { completar, reintentar, estado: estadoGuardado, logros, incorrectas } = useCompletarLeccion({
+    techniqueId: nodo.id,
+    alCelebrar: () => setFase("celebracion"),
+    alRechazar: () => setFase("quiz"),
+    // Que el camino de Aprender se recalcule al volver (Router Cache de Next).
+    alGuardar: () => router.refresh(),
+  });
 
   // Pedido 2026-09-24: salir por el Header a mitad de una lección (ya
   // viste el ejemplo, estás practicando o en el quiz) pide confirmación —
@@ -97,58 +101,6 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
     setFase("practica");
   }
 
-  async function completarLeccion(respuestasEnviadas?: string[]) {
-    try {
-      const res = await fetch("/api/aprender/completar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          respuestasEnviadas
-            ? { technique_id: nodo.id, respuestas: respuestasEnviadas }
-            : { technique_id: nodo.id }
-        ),
-      });
-      const data = await res.json();
-      if (data.ok === false || data.aprobado === false) {
-        setResultadoQuiz({ incorrectas: Array.isArray(data.incorrectas) ? data.incorrectas : [] });
-        setEnviandoQuiz(false);
-        return;
-      }
-      if (Array.isArray(data.logrosNuevos)) setLogrosNuevos(data.logrosNuevos);
-      // Fase 8 (auditoría de estabilización, 2026-08-30 — "después de
-      // completar la 2da lección, el resto queda con candado
-      // permanentemente"): confirmado jugando con la cuenta QA que
-      // obtenerCamino()/technique_progress se actualizan bien server-side
-      // — el candado "permanente" era el Router Cache de cliente de
-      // Next.js: al volver a /aprender con router.push (navegación
-      // client-side), Next podía reusar el árbol de Server Components ya
-      // cacheado de esa ruta (con el estado viejo, techniques 3+ todavía
-      // bloqueadas) en vez de pedirlo de nuevo — se sentía "permanente"
-      // porque cualquier vuelta a /aprender pisaba la misma caché stale,
-      // no porque los datos reales estuvieran mal. router.refresh()
-      // invalida esa caché así la siguiente vez que se visite /aprender
-      // trae el camino recalculado de verdad.
-      router.refresh();
-    } catch {
-      // Si falla el guardado, igual mostramos la celebración: no vale la
-      // pena trabar al usuario por un error de red puntual acá. Un quiz
-      // que falla de red no debería festejar sin confirmación del
-      // server, así que ahí sí se corta.
-      if (respuestasEnviadas) {
-        setEnviandoQuiz(false);
-        return;
-      }
-    }
-    setEnviandoQuiz(false);
-    setFase("celebracion");
-  }
-
-  async function enviarQuiz() {
-    setEnviandoQuiz(true);
-    setResultadoQuiz(null);
-    await completarLeccion(respuestas);
-  }
-
   function handleResponder(e: React.FormEvent) {
     e.preventDefault();
     if (!problema || feedback !== "idle" || respuesta === "") return;
@@ -157,7 +109,7 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
     setTimeout(() => {
       const siguiente = problemaIdx + 1;
       if (siguiente >= PROBLEMAS_PRACTICA) {
-        completarLeccion();
+        completar();
       } else {
         setProblemaIdx(siguiente);
         setProblema(generarProblemaTecnica(nodo.slug));
@@ -221,7 +173,7 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
                       {t("continuarAlQuiz")}
                     </Boton>
                   ) : saltaPractica ? (
-                    <Boton className="flex-1" onClick={() => completarLeccion()}>
+                    <Boton className="flex-1" onClick={() => completar()}>
                       {t("marcarComoAprendida")}
                     </Boton>
                   ) : (
@@ -233,7 +185,7 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
               </>
             )}
             {esVisual && (
-              <Boton onClick={() => (tieneQuiz ? setFase("quiz") : completarLeccion())}>
+              <Boton onClick={() => (tieneQuiz ? setFase("quiz") : completar())}>
                 {tieneQuiz ? t("continuarAlQuiz") : t("marcarComoAprendida")}
               </Boton>
             )}
@@ -298,96 +250,47 @@ export default function LeccionClient({ nodo, desbloquea }: Props) {
         )}
 
         {fase === "quiz" && (
-          <motion.div key="quiz" {...transicion} className="flex flex-col gap-6">
-            <div>
-              <h1 className="font-display text-xl font-bold tracking-tight text-foreground">{t("quizTitulo")}</h1>
-              <p className="mt-1 text-sm text-texto-secundario">{t("quizSubtitulo")}</p>
-            </div>
-            <div className="flex flex-col gap-4">
-              {quiz.map((pregunta, qi) => {
-                const estaMal = resultadoQuiz?.incorrectas.includes(qi) ?? false;
-                return (
-                  <div key={qi} className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">
-                    <p className="text-sm font-semibold text-foreground">
-                      {qi + 1}. <MathText texto={pregunta.pregunta} />
-                    </p>
-                    <div className="flex flex-col gap-2">
-                      {pregunta.opciones.map((opcion) => {
-                        const seleccionada = respuestas[qi] === opcion;
-                        return (
-                          <button
-                            key={opcion}
-                            type="button"
-                            onClick={() => setRespuestas((prev) => prev.map((v, i) => (i === qi ? opcion : v)))}
-                            className={`rounded-xl border-2 px-4 py-2.5 text-left text-sm font-medium transition-colors ${
-                              seleccionada && estaMal
-                                ? "border-error bg-error/10 text-error"
-                                : seleccionada
-                                  ? "border-logro/50 bg-logro/10 text-foreground"
-                                  : "border-border bg-background text-foreground"
-                            }`}
-                          >
-                            <MathText texto={opcion} />
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {estaMal && (
-                      <p className="text-xs font-medium text-error">
-                        {t("respuestaIncorrecta")}
-                        {pregunta.explicacion ? ` — ${pregunta.explicacion}` : ""}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            <Boton
-              className="w-full"
-              onClick={enviarQuiz}
-              disabled={enviandoQuiz || respuestas.some((r) => !r)}
-              cargando={enviandoQuiz}
-            >
-              {enviandoQuiz ? t("enviando") : t("enviarRespuestas")}
-            </Boton>
-            {resultadoQuiz && <p className="text-center text-sm text-texto-secundario">{t("reintentaCuandoQuieras")}</p>}
+          <motion.div key="quiz" {...transicion}>
+            <QuizLeccion
+              quiz={quiz}
+              titulo={t("quizTitulo")}
+              subtitulo={t("quizSubtitulo")}
+              incorrectasServidor={incorrectas}
+              onTerminar={(r) => completar(r)}
+            />
           </motion.div>
         )}
 
         {fase === "celebracion" && (
-          <motion.div
-            key="celebracion"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col items-center gap-5 text-center"
-          >
-            <span className="text-5xl">🎉</span>
-            <h1 className="font-display text-2xl font-black tracking-tight text-foreground">
-              {t("completaste", { nombre: nodo.nombre })}
-            </h1>
-            {desbloquea.length > 0 && (
-              <div className="flex flex-col items-center gap-2">
-                <p className="text-sm text-texto-secundario">{t("desbloqueasteEnPracticar")}</p>
-                {desbloquea.map((m) => (
-                  <span
-                    key={m.nombre}
-                    className="rounded-full bg-logro/15 px-4 py-1.5 text-sm font-medium text-foreground"
-                  >
-                    {m.nombre}
-                  </span>
-                ))}
+          <motion.div key="celebracion" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
+            <CelebracionLeccion
+              titulo={t("completaste", { nombre: nodo.nombre })}
+              logros={logros}
+              estado={estadoGuardado}
+              onReintentar={reintentar}
+            >
+              {desbloquea.length > 0 && (
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-sm text-texto-secundario">{t("desbloqueasteEnPracticar")}</p>
+                  {desbloquea.map((m) => (
+                    <span
+                      key={m.nombre}
+                      className="rounded-full bg-logro/15 px-4 py-1.5 text-sm font-medium text-foreground"
+                    >
+                      {m.nombre}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="mt-2 flex w-full flex-col gap-3">
+                <Boton atras onClick={() => router.push(hrefVolverAAprender("/aprender", nodo.requierePro))}>{t("volverAAprender")}</Boton>
+                {/* Primero se elige la habilidad (tema) y recién ahí el sub-tema:
+                    /practica/temas, no directo al selector de operaciones. */}
+                <BotonEnlace href="/practica/temas" variante="secundario">
+                  {t("irAPracticar")}
+                </BotonEnlace>
               </div>
-            )}
-            <LogroBanner logros={logrosNuevos} />
-            <div className="mt-2 flex w-full flex-col gap-3">
-              <Boton atras onClick={() => router.push(hrefVolverAAprender("/aprender", nodo.requierePro))}>{t("volverAAprender")}</Boton>
-              {/* Primero se elige la habilidad (tema) y recién ahí el sub-tema:
-                  /practica/temas, no directo al selector de operaciones. */}
-              <BotonEnlace href="/practica/temas" variante="secundario">
-                {t("irAPracticar")}
-              </BotonEnlace>
-            </div>
+            </CelebracionLeccion>
           </motion.div>
         )}
       </AnimatePresence>

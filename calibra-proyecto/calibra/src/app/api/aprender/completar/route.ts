@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import type { Modifier, TechniqueQuizPregunta } from "@/types/database";
 import { verificarLogros } from "@/lib/logros/verificar";
 import { verificarTitulos } from "@/lib/titulos/verificar";
@@ -49,11 +49,22 @@ export async function POST(request: Request) {
 
   const body = (await request.json()) as Body;
 
-  const { data: tecnica, error: tecnicaError } = await supabase
-    .from("techniques")
-    .select("id, requiere_pro, contenido, contenido_en")
-    .eq("id", body.technique_id)
-    .maybeSingle();
+  // Carga rápida (2026-10-29, docs/avance/CLASES_CALIFICACION.md): la lección, el
+  // plan y el progreso previo se leen juntos (antes, tres idas y vueltas en serie).
+  const [{ data: tecnica, error: tecnicaError }, { data: profile }, { data: progresoActual }] = await Promise.all([
+    supabase
+      .from("techniques")
+      .select("id, requiere_pro, contenido, contenido_en")
+      .eq("id", body.technique_id)
+      .maybeSingle(),
+    supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle(),
+    supabase
+      .from("technique_progress")
+      .select("intentos")
+      .eq("user_id", user.id)
+      .eq("technique_id", body.technique_id)
+      .maybeSingle(),
+  ]);
 
   if (tecnicaError) {
     return respuestaError("aprender/completar:tecnica", tecnicaError);
@@ -69,8 +80,6 @@ export async function POST(request: Request) {
 
   if (quiz.length > 0) {
     if (tecnica.requiere_pro) {
-      const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
-
       if (profile?.plan !== "pro") {
         return NextResponse.json({ error: "Esta lección requiere plan Pro" }, { status: 403 });
       }
@@ -90,51 +99,48 @@ export async function POST(request: Request) {
     }
   }
 
-  const { data: progresoActual } = await supabase
-    .from("technique_progress")
-    .select("intentos")
-    .eq("user_id", user.id)
-    .eq("technique_id", body.technique_id)
-    .maybeSingle();
-
-  const { error: progresoError } = await supabase.from("technique_progress").upsert(
-    {
-      user_id: user.id,
-      technique_id: body.technique_id,
-      dominado: true,
-      intentos: (progresoActual?.intentos ?? 0) + 1,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "user_id,technique_id" }
-  );
+  // El progreso y los modificadores asociados van juntos; los desbloqueos se
+  // guardan en una sola inserción (antes, una por modificador).
+  const [{ error: progresoError }, { data: relaciones, error: relacionesError }] = await Promise.all([
+    supabase.from("technique_progress").upsert(
+      {
+        user_id: user.id,
+        technique_id: body.technique_id,
+        dominado: true,
+        intentos: (progresoActual?.intentos ?? 0) + 1,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,technique_id" }
+    ),
+    supabase
+      .from("technique_modifiers")
+      .select("modifier_id, modifiers(id, problem_type, slug, nombre, descripcion)")
+      .eq("technique_id", body.technique_id),
+  ]);
 
   if (progresoError) {
     return respuestaError("aprender/completar:progreso", progresoError);
   }
-
-  const { data: relaciones, error: relacionesError } = await supabase
-    .from("technique_modifiers")
-    .select("modifier_id, modifiers(id, problem_type, slug, nombre, descripcion)")
-    .eq("technique_id", body.technique_id);
-
   if (relacionesError) {
     return respuestaError("aprender/completar:relaciones", relacionesError);
   }
 
   const modificadoresDesbloqueados: Modifier[] = [];
   for (const rel of relaciones ?? []) {
-    await supabase
-      .from("unlocked_modifiers")
-      .upsert(
-        { user_id: user.id, modifier_id: rel.modifier_id },
-        { onConflict: "user_id,modifier_id", ignoreDuplicates: true }
-      );
     const modifier = rel.modifiers as unknown as Modifier | null;
     if (modifier) modificadoresDesbloqueados.push(modifier);
   }
+  if ((relaciones ?? []).length > 0) {
+    await supabase.from("unlocked_modifiers").upsert(
+      (relaciones ?? []).map((rel) => ({ user_id: user.id, modifier_id: rel.modifier_id })),
+      { onConflict: "user_id,modifier_id", ignoreDuplicates: true }
+    );
+  }
 
+  // Los logros se muestran en el festejo (llegan con fundido si tardan); los
+  // títulos no se ven acá, así que se revisan después de responder.
   const logrosNuevos = await verificarLogros(supabase, user.id);
-  await verificarTitulos(supabase, user.id);
+  after(() => verificarTitulos(supabase, user.id).then(() => undefined, () => undefined));
 
   return NextResponse.json({ ok: true, modificadoresDesbloqueados, logrosNuevos });
 }
