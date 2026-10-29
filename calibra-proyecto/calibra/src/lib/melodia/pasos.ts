@@ -8,6 +8,7 @@ import {
   LETRAS,
   nombreNota,
   NOMBRE_FIGURA,
+  notaDesdeSemitonoAbsoluto,
   semitonoAbsoluto,
   TEMPOS_ITALIANOS,
   type FiguraRitmica,
@@ -100,11 +101,13 @@ function pasosTempoTexto(p: PreguntaMelodia): string[] | null {
     const t = TEMPOS_ITALIANOS.find((x) => x.nombre === termino);
     if (t) return [`${t.nombre} = «${t.significa.toLowerCase()}», más o menos de ${t.min} a ${t.max} BPM`];
   }
-  if (/más rápido/.test(e)) {
+  if (/más (rápido|lento)/.test(e)) {
     const ordenados = TEMPOS_ITALIANOS.filter((t) => p.opciones.includes(t.nombre));
-    return [`De lento a rápido: ${ordenados.map((t) => `${t.nombre} (${t.min}–${t.max})`).join(" < ")}`, `El más rápido es ${p.respuesta}`];
+    return [`De lento a rápido: ${ordenados.map((t) => `${t.nombre} (${t.min}–${t.max})`).join(" < ")}`, `El más ${/más lento/.test(e) ? "lento" : "rápido"} es ${p.respuesta}`];
   }
   if (/60 BPM/.test(e)) return ["BPM son «beats per minute»: pulsos por minuto", "60 BPM = 60 pulsos en un minuto, uno por segundo"];
+  const cuenta = /A (\d+) BPM, ¿cuántos pulsos suenan en (\d+) segundos/.exec(e);
+  if (cuenta) return [`${cuenta[1]} BPM = ${cuenta[1]} pulsos en 60 segundos`, `En ${cuenta[2]} segundos: ${cuenta[1]} × ${cuenta[2]} ÷ 60 = ${p.respuesta}`];
   const bpm = /A (\d+) BPM/.exec(e);
   if (bpm) {
     const f = figuraDe(/dura una (.+)\?/.exec(e)?.[1] ?? "");
@@ -138,12 +141,34 @@ export function pasosMelodia(p: PreguntaMelodia): string[] {
       const caracter = d[0] === 4 && d[1] === 3 ? "mayor: suena luminoso, estable" : d[0] === 3 && d[1] === 4 ? "menor: suena más oscuro, triste" : d[0] === 3 ? "disminuido: tenso, inestable" : "aumentado: suena suspendido, como sin resolver";
       return [...pasosAcorde(p.acorde, r).slice(0, 2), `El acorde ${caracter}`, `Respuesta: ${r}`];
     }
+    if (/En qué octava/.test(p.enunciado)) {
+      const escalera = [3, 4, 5, 6].map((o) => `${nombreSinOctava(p.nota)}${o} ≈ ${Math.round(frecuenciaDeNota({ ...p.nota, octava: o }))} Hz`).join(", ");
+      return [`Cada octava duplica la frecuencia: ${escalera}`, "Compara con referencias que conoces: el do central (Do4 ≈ 262 Hz) y el La de afinar (La4 = 440 Hz)", `Sonó ${r}`];
+    }
     return [`Sonó ${r} (${Math.round(frecuenciaDeNota(p.nota))} Hz)`, "Referencias para el oído: La4 = 440 Hz (el tono de afinar) y Do4 ≈ 262 Hz (el do central); cada octava duplica la frecuencia"];
   }
   if (p.tipo === "pentagrama") {
     if (p.modo === "lectura") {
-      const n = p.notas[0];
-      return [`En clave de sol, las líneas de abajo hacia arriba son Mi4, Sol4, Si4, Re5 y Fa5 (y los espacios Fa4, La4, Do5, Mi5)`, `Esta nota está ${lugarEnPentagrama(n)}: es ${r}`];
+      const n = p.notas.find((x) => nombreNota(x) === r) ?? p.notas[0];
+      const pasos = [`En clave de sol, las líneas de abajo hacia arriba son Mi4, Sol4, Si4, Re5 y Fa5 (y los espacios Fa4, La4, Do5, Mi5)`];
+      if (/más aguda/.test(p.enunciado)) pasos.push("La más aguda es la que está más arriba en el pentagrama");
+      if (/más grave/.test(p.enunciado)) pasos.push("La más grave es la que está más abajo en el pentagrama");
+      if (/de izquierda a derecha/.test(p.enunciado)) pasos.push("Cuenta las notas de izquierda a derecha hasta llegar a la pedida");
+      pasos.push(`Esa nota está ${lugarEnPentagrama(n)}: es ${r}`);
+      return pasos;
+    }
+    if (p.modo === "alteraciones" && /semitonos hay/.test(p.enunciado)) {
+      const [a, c] = p.notas;
+      const desde = semitonoAbsoluto(a);
+      const camino = Array.from({ length: semitonoAbsoluto(c) - desde + 1 }, (_, i) => nombreSinOctava(notaDesdeSemitonoAbsoluto(desde + i, a.alteracion === "bemol")));
+      return [`Cuenta las teclas (blancas y negras) desde ${nombreNota(a)} hasta ${nombreNota(c)}: ${camino.join(" → ")}`, `Son ${camino.length - 1} pasos de un semitono: ${r}`];
+    }
+    if (p.modo === "alteraciones" && /enarmónico/.test(p.enunciado)) {
+      return ["Un enarmónico suena igual pero se escribe con otra letra: el ♯ de una nota es el ♭ de la siguiente (Do♯ = Re♭, Fa♯ = Sol♭)", "Entre Mi-Fa y Si-Do no hay tecla negra: Mi♯ = Fa, Fa♭ = Mi, Si♯ = Do y Do♭ = Si", `${nombreNota(p.notas[0])} suena igual que ${r}`];
+    }
+    const paso = /un (semitono|tono) .* más (arriba|abajo)/.exec(p.enunciado);
+    if (p.modo === "alteraciones" && paso) {
+      return [`La nota marcada es ${nombreNota(p.notas[0])}`, "Entre Mi-Fa y Si-Do hay un semitono; entre las demás notas vecinas, un tono (con una tecla negra en medio)", `${paso[1] === "semitono" ? "Un semitono" : "Un tono"} más ${paso[2]}: ${r}`];
     }
     if (p.modo === "alteraciones") {
       const n = p.notas[0];
@@ -165,6 +190,24 @@ export function pasosMelodia(p: PreguntaMelodia): string[] {
     const chica = PLURALES.find(([pl]) => pl === caben[1])?.[1];
     const grande = figuraDe(caben[2]);
     if (chica && grande) return [`En negras: la ${NOMBRE_FIGURA[grande].toLowerCase()} vale ${coma(DURACION_FIGURA[grande])} y la ${NOMBRE_FIGURA[chica].toLowerCase()} ${coma(DURACION_FIGURA[chica])}`, `${coma(DURACION_FIGURA[grande])} ÷ ${coma(DURACION_FIGURA[chica])} = ${r}`];
+  }
+  // Fundamentos (auditoría 2026-10-29): comparar, notas vecinas, sumar figuras y completar compases.
+  const valor = (f: FiguraRitmica) => `${NOMBRE_FIGURA[f].toLowerCase()} = ${coma(DURACION_FIGURA[f])}`;
+  const comparar = /¿Qué figura dura (?:más|menos): la (.+) o la (.+)\?/.exec(p.enunciado);
+  if (comparar) {
+    const fs = [figuraDe(comparar[1]), figuraDe(comparar[2])].filter((f): f is FiguraRitmica => Boolean(f));
+    return [`En negras: ${fs.map(valor).join("; ")}`, `Respuesta: ${r}`];
+  }
+  if (/escala Do, Re, Mi|notas por la escala/.test(p.enunciado)) {
+    return ["El orden de las notas es Do, Re, Mi, Fa, Sol, La, Si y vuelve a empezar (después de Si viene Do)", "Cuenta un paso por nota, sin contar la nota de partida", `Llegas a ${r}`];
+  }
+  if (/dura lo mismo que|completa el compás/.test(p.enunciado)) {
+    const cifra = /compás de (\d)\/4/.exec(p.enunciado);
+    const pasos = ["Pasa todo a negras: redonda 4, blanca 2, negra 1, corchea ½, semicorchea ¼, fusa ⅛, semifusa 1/16; el puntillo suma la mitad (blanca con puntillo 3, negra con puntillo 1,5)"];
+    if (cifra) pasos.push(`Un compás de ${cifra[1]}/4 tiene ${cifra[1]} negras: resta lo que ya hay y busca la figura que vale lo que falta`);
+    else pasos.push("Suma lo que valen las figuras y busca una sola figura con ese valor");
+    pasos.push(`Respuesta: ${r}`);
+    return pasos;
   }
   if (/cifrado/.test(p.enunciado)) {
     return [`El cifrado americano usa letras empezando por La: ${["La", "Si", "Do", "Re", "Mi", "Fa", "Sol"].map((l) => `${l} = ${LETRA_A_CIFRADO[l as (typeof LETRAS)[number]]}`).join(", ")}`, `Respuesta: ${r}`];

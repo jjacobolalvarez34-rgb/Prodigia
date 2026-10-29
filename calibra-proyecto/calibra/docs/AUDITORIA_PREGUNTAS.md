@@ -38,6 +38,9 @@ los mundos con el mismo criterio, y trae la primera medición.
   umbrales. Misma forma de correrlo con `AUDITAR_VARIEDAD=1`. Tarda ~1-2 min.
 - `src/lib/practica/variedadAuditoria2.test.ts`: **con umbrales** para Anatomía (4 modos), Trigonometría
   (4 modos), Codia sintaxis (4 lenguajes), Calculia derivadas, Historia fechas y Geografía (mapa). Ver §6.
+- `src/lib/practica/variedadVitaliaMelodia.test.ts`: **con umbrales** para Vitalia (6 modos) y Melodía
+  (7 modos), con **clave estricta**: enunciado + respuesta + lo dibujado o lo que suena, **sin las
+  opciones** (barajar distractores sobre la misma pregunta no es variedad real). Ver §7.
 - Cuando un mundo quede arreglado, se le agregan sus umbrales (igual que Numeria) para que el test lo
   vigile.
 
@@ -173,9 +176,9 @@ midió solo en el modo mapa (las preguntas avanzadas de opciones son un banco ap
 
 ### Hallazgos, por prioridad (sin arreglar todavía)
 
-1. **Vitalia** — célula, procesos y genética tienen **6-7 preguntas** en nivel 1-2 (procesos, 29 hasta
+1. ~~**Vitalia**~~ (arreglado, §7) — célula, procesos y genética tienen **6-7 preguntas** en nivel 1-2 (procesos, 29 hasta
    nivel 4): mismo patrón que el bug de Decimales. Revisar la banda 0 de `src/lib/practica/vitalia.ts`.
-2. **Melodía** — oído absoluto **4** preguntas en nivel 1-2 (20 en 3-4); fundamentos 14; alteraciones
+2. ~~**Melodía**~~ (arreglado, §7) — oído absoluto **4** preguntas en nivel 1-2 (20 en 3-4); fundamentos 14; alteraciones
    cae a **28 fijas desde el nivel 5** (los niveles altos tienen menos variedad que los bajos).
 3. ~~**Anatomía**~~ (arreglado, §6) — meseta del **100 % de N7 a N9** en los 4 modos (hipótesis: el nivel se topa en 7 o
    las bandas 7-10 usan el mismo banco); óseo con 23-30 en niveles 3-6.
@@ -187,7 +190,7 @@ midió solo en el modo mapa (las preguntas avanzadas de opciones son un banco ap
    filtro `|dificultad − nivel| ≤ 3` deja pocos países. No es generable: o se ensancha la ventana o
    se mezclan más preguntas avanzadas en los niveles extremos. Medir también las preguntas avanzadas.
 9. **Quimia · orgánica** — meseta 52 % entre N3 y N5 (leve).
-10. Vigilar: Melodía escalas/tempo (40-60, solapamiento 29-44 %), Vitalia ecología (solapamiento 46 %).
+10. ~~Vigilar: Melodía escalas/tempo (40-60, solapamiento 29-44 %), Vitalia ecología (solapamiento 46 %).~~ (§7)
 
 Sin problemas de variedad: Circuitia, Estadística, Naipia, Codia (salida, error, estructuras),
 Dinamia, Historia (cronología, personajes, causa-efecto), Enigmia (generados), Quimia (resto).
@@ -230,3 +233,50 @@ Trigonometría, Calculia y Codia siguen verificadas por sus oráculos (recalcula
 
 Pendiente de esta tanda: Calculia integrales (~40 en niveles 1-4); Geografía, sumar países al mapa (SVG) en
 América y Europa; medir también las preguntas avanzadas de Geografía.
+
+## 7. Vitalia y Melodía (hecho el 2026-10-29)
+
+Detalle y avance: `docs/avance/AUDITORIA_VITALIA_MELODIA.md`. Test con umbrales (30 distintas por nivel,
+solapamiento ≤ 50 %, meseta < 50 %): `variedadVitaliaMelodia.test.ts`, con **clave estricta sin opciones**.
+Con esa clave la primera medición (§5) resultó optimista: Alteraciones tenía 28 preguntas reales en todos
+los niveles (los 140-160 de nivel 1-4 eran opciones de relleno al azar); Lectura, 6-14; Tempo, 17-23;
+Sistemas, 7; Reinos y Ecología, 16.
+
+Causas:
+
+- **Vitalia**: `elegirPonderado` solo tenía nivel mínimo; en nivel 1-2 quedaba UN tipo por modo (teoría
+  7, foto/respiración 6, vocabulario 6, sistemas 7) y los básicos seguían saliendo en nivel 10. Ahora
+  `elegirTipo` usa ventanas [desde, hasta] por tipo, las tablas crecieron y hay tipos calculados nuevos
+  (microscopio, cubo superficie/volumen, ósmosis con %, difusión, divisiones, ecuación de la fotosíntesis,
+  ATP mixto, pulso, gasto cardíaco, densidad, captura-recaptura, 10 % inverso).
+- **Melodía**: bandas con 2-7 elementos (fundamentos 2 figuras + 3 notas; oído 4/5/7 notas; lectura 6
+  notas) y alteraciones con 28 notas fijas. Ahora cada banda mezcla formas propias: fundamentos (comparar
+  figuras, notas vecinas, sumar figuras, completar un compás), alteraciones (semitono/tono arriba-abajo,
+  enarmónicos, semitonos entre dos notas; los distractores nunca suenan igual que la respuesta), oído
+  (más notas por banda, opciones que se acercan, «¿en qué octava?», acordes en dos octavas), lectura
+  (la más aguda/grave/la n-ésima de 3-5 notas), tempo (BPM variable con opciones a su alrededor, «más
+  lento», pulsos en N segundos) y escalas desde notas alteradas en niveles 7-10.
+
+Distintas por nivel, clave estricta (antes → después):
+
+| Modo | Mín antes | Mín después | N1 después | N10 después | Solap. después | Meseta después |
+|---|---:|---:|---:|---:|---:|---:|
+| vitalia · celula | 7 | 52 | 52 | 112 | 0 % | 2 % |
+| vitalia · procesos | 6 | 38 | 39 | 100 | 0 % | 4 % |
+| vitalia · genetica | 6 | 103 | 108 | 112 | 0 % | 3 % |
+| vitalia · sistemas | 7 | 50 | 68 | 56 | 0 % | 6 % |
+| vitalia · reinos | 16 | 38 | 39 | 62 | 0 % | 2 % |
+| vitalia · ecologia | 16 | 38 | 38 | 102 | 0 % | 2 % |
+| melodia · fundamentos | 5 | 49 | 49 | 106 | 0 % | 3 % |
+| melodia · lectura | 6 | 120 | 120 | 159 | 0 % | 2 % |
+| melodia · alteraciones | 28 (igual en los 10) | 44 | 45 | 123 | 0 % | 3 % |
+| melodia · escalas | 42 | 43 | 44 | 111 | 23 % | 1 % |
+| melodia · acordes | 43 | 41 | 43 | 66 | 0 % | 5 % |
+| melodia · oido_absoluto | 4 | 33 | 35 | 63 | 13 % | 5 % |
+| melodia · tempo | 17 | 42 | 42 | 71 | 41 % | 2 % |
+
+Correctitud: `vitalia.test.ts` recalcula desde el enunciado todas las cuentas nuevas y comprueba que los
+tipos básicos no salen en nivel 10 ni los avanzados en nivel 1; `melodia.test.ts` recalcula las formas
+nuevas (semitonos con `semitonoAbsoluto`, enarmónicos, nota más aguda/grave/n-ésima, suma y resta de
+figuras, notas vecinas, pulsos en N segundos) y que ningún distractor suene igual que la respuesta.
+Los tests de lecciones de Melodía (lo preguntado está enseñado) y de «cómo se resuelve» siguen en verde.

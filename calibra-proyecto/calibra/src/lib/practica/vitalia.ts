@@ -43,6 +43,20 @@ function deTabla(modo: ModoVitalia, tipo: string, tabla: readonly Item[], diagra
   return opc(modo, tipo, it.q, it.ok, otras, diagrama);
 }
 
+// Tipo de pregunta por nivel (auditoría 2026-10-29): cada tipo vive en una
+// ventana [desde, hasta] de niveles. Antes solo había «desde» y en nivel 1-2 quedaba
+// UN tipo (6-7 preguntas); y los básicos seguían saliendo en nivel 10. Los tipos que
+// recién se abren pesan el doble (igual que elegirPonderado).
+function elegirTipo<T extends string>(entradas: ReadonlyArray<readonly [T, number, number]>, nivel: number): T {
+  const enVentana = entradas.filter(([, desde, hasta]) => nivel >= desde && nivel <= hasta).map(([t, desde]) => [t, desde] as const);
+  return elegirPonderado(enVentana, nivel);
+}
+
+// 1,5 → "1,5" (coma decimal, como el resto de la app).
+function coma(n: number): string {
+  return String(n).replace(".", ",");
+}
+
 // ============================================================
 // 1) La célula
 // ============================================================
@@ -70,7 +84,25 @@ const TEORIA_CELULAR: Item[] = [
   { q: "Las células de una levadura, un hongo, son…", ok: "Eucariotas", no: ["Procariotas", "Bacterias", "Virus"] },
   { q: "Una ameba está formada por…", ok: "Una sola célula", no: ["Muchas células", "Ninguna célula", "Dos células"] },
   { q: "Un árbol es un ser…", ok: "Pluricelular", no: ["Unicelular", "Procariota", "Sin células"] },
+  { q: "¿Cuál es la unidad más pequeña que está viva?", ok: "La célula", no: ["El átomo", "El órgano", "El tejido"] },
+  { q: "Un grupo de células parecidas que trabajan juntas forma…", ok: "Un tejido", no: ["Un organelo", "Una molécula", "Un ecosistema"] },
+  { q: "¿Con qué instrumento se descubrieron las células?", ok: "El microscopio", no: ["El telescopio", "La lupa de mano solamente", "El termómetro"] },
+  { q: "Una bacteria, ¿tiene ADN?", ok: "Sí, suelto en el citoplasma", no: ["No, nunca", "Sí, dentro de un núcleo", "Solo cuando se divide"] },
 ];
+const CELULA_ANIMAL_VEGETAL: Item[] = [
+  { q: "Una célula tiene pared celular, cloroplastos y una vacuola grande. Es…", ok: "Vegetal", no: ["Animal", "Bacteriana", "De un hongo"] },
+  { q: "Una célula no tiene pared ni cloroplastos y tiene muchas vacuolas chicas. Es…", ok: "Animal", no: ["Vegetal", "Bacteriana", "De un alga"] },
+  { q: "¿Qué parte tiene la célula vegetal y NO la animal?", ok: "Cloroplastos", no: ["Núcleo", "Mitocondrias", "Ribosomas"] },
+  { q: "¿Qué parte tienen TANTO la célula animal como la vegetal?", ok: "Mitocondrias", no: ["Pared celular", "Cloroplastos", "Una vacuola central grande"] },
+  { q: "¿Qué parte da a la célula vegetal su forma rígida, casi cuadrada?", ok: "La pared celular", no: ["El núcleo", "La mitocondria", "El ribosoma"] },
+  { q: "¿Por qué las hojas son verdes?", ok: "Sus células tienen cloroplastos con clorofila", no: ["Sus células no tienen núcleo", "Tienen mucha agua", "Sus células son animales"] },
+];
+// Objetivos del microscopio escolar y tamaños de células reales para el
+// cálculo de tamaño real (aumento total = ocular × objetivo).
+const OCULARES = [5, 10, 15, 20];
+const OBJETIVOS = [4, 10, 40, 100];
+// Lado de una célula cúbica (µm) con 6/L exacto a ≤ 2 decimales.
+const LADOS_CUBO = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 24, 25, 30];
 
 const MEDIOS: Item[] = [
   { q: "Una célula animal entra en un medio hipotónico (con menos sal que ella). ¿Qué le pasa?", ok: "Entra agua y se hincha", no: ["Sale agua y se arruga", "No cambia", "Pierde el núcleo"] },
@@ -90,24 +122,71 @@ const BIOMOLECULAS: Item[] = [
   { q: "Las enzimas, que aceleran las reacciones de la célula, son…", ok: "Proteínas", no: ["Grasas", "Azúcares", "Minerales"] },
   { q: "Si una enzima se calienta demasiado…", ok: "Se deforma y deja de funcionar", no: ["Trabaja más rápido para siempre", "Se convierte en grasa", "Se divide en dos enzimas"] },
   { q: "¿Qué biomolécula da energía rápida a la célula?", ok: "Los carbohidratos", no: ["Los ácidos nucleicos", "Las vitaminas", "El agua"] },
+  { q: "¿Qué biomolécula forma la doble capa de la membrana celular?", ok: "Los fosfolípidos", no: ["El almidón", "El ADN", "La celulosa"] },
+  { q: "¿De qué está hecha la pared de la célula vegetal?", ok: "Celulosa", no: ["Quitina", "Colesterol", "Queratina"] },
+  { q: "¿Qué azúcar guardan los animales en el hígado y los músculos?", ok: "Glucógeno", no: ["Almidón", "Celulosa", "Sacarosa"] },
+  { q: "¿Qué azúcar de reserva guardan las plantas, por ejemplo en la papa?", ok: "Almidón", no: ["Glucógeno", "Quitina", "Lactosa"] },
+  { q: "¿Qué ácido nucleico lleva la copia de un gen desde el núcleo al ribosoma?", ok: "El ARN mensajero", no: ["El ADN", "El ATP", "La glucosa"] },
+  { q: "¿Qué molécula es la «moneda de energía» que gasta la célula?", ok: "El ATP", no: ["El ADN", "El agua", "El colesterol"] },
 ];
 
 function celula(nivel: number): ProblemaVitalia {
   const n = clamp(nivel, 1, 10);
   const M: ModoVitalia = "celula";
-  const tipo = elegirPonderado(
+  const tipo = elegirTipo(
     [
-      ["teoria", 1],
-      ["funcion", 3],
-      ["organelo_de", 3],
-      ["senalar", 5],
-      ["animal_vegetal", 5],
-      ["medios", 7],
-      ["biomoleculas", 9],
+      ["teoria", 1, 4],
+      ["funcion", 1, 6],
+      ["organelo_de", 1, 6],
+      ["animal_vegetal", 1, 4],
+      ["senalar", 1, 8],
+      ["microscopio", 3, 8],
+      ["medios", 5, 10],
+      ["medio_conc", 5, 10],
+      ["biomoleculas", 7, 10],
+      ["sup_vol", 7, 10],
+      ["difusion", 7, 10],
     ] as const,
     n
   );
   switch (tipo) {
+    case "microscopio": {
+      const oc = elegir(OCULARES);
+      const ob = elegir(OBJETIVOS);
+      const aumento = oc * ob;
+      if (n <= 4 || elegir([true, false])) return num(M, "microscopio_aumento", `Un microscopio tiene un ocular de ${oc}× y un objetivo de ${ob}×. ¿Cuál es el aumento total?`, aumento);
+      // Tamaño real (µm) = tamaño en la imagen (mm) × 1000 ÷ aumento, entero.
+      const posibles = Array.from({ length: 30 }, (_, i) => i + 1).filter((mm) => (mm * 1000) % aumento === 0 && (mm * 1000) / aumento <= 500);
+      if (posibles.length === 0) return num(M, "microscopio_aumento", `Un microscopio tiene un ocular de ${oc}× y un objetivo de ${ob}×. ¿Cuál es el aumento total?`, aumento);
+      const mm = elegir(posibles);
+      return num(M, "microscopio_tamano", `Con un aumento total de ${aumento}×, una célula se ve de ${mm} mm en la imagen. ¿Cuánto mide en realidad, en micrómetros (µm)? (1 mm = 1000 µm)`, (mm * 1000) / aumento);
+    }
+    case "medio_conc": {
+      // Concentración de sal dentro de la célula y en el medio (en décimas de %).
+      const dentro = elegir([7, 8, 9, 10, 11]);
+      const medio = elegir([0, 2, 3, 5, dentro, dentro, 15, 20, 30, 35]);
+      const animal = elegir([true, false]);
+      const ser = animal ? "Un glóbulo rojo" : "Una célula de una hoja";
+      const ok = medio < dentro ? (animal ? "Entra agua y se hincha (puede estallar)" : "Entra agua y queda firme (turgente)") : medio > dentro ? (animal ? "Sale agua y se arruga" : "Sale agua y la membrana se despega de la pared (plasmólisis)") : "No cambia: entra y sale la misma agua";
+      const todas = animal
+        ? ["Entra agua y se hincha (puede estallar)", "Sale agua y se arruga", "No cambia: entra y sale la misma agua", "Entra sal y pierde el núcleo"]
+        : ["Entra agua y queda firme (turgente)", "Sale agua y la membrana se despega de la pared (plasmólisis)", "No cambia: entra y sale la misma agua", "Pierde la pared celular"];
+      return opc(M, "medio_conc", `${ser} tiene ${coma(dentro / 10)} % de sal por dentro y se pone en agua con ${coma(medio / 10)} % de sal. ¿Qué le pasa?`, ok, todas.filter((x) => x !== ok));
+    }
+    case "sup_vol": {
+      const L = elegir(LADOS_CUBO);
+      const que = elegir(["superficie", "volumen", "relacion"] as const);
+      if (que === "superficie") return num(M, "sup_superficie", `Una célula con forma de cubo mide ${L} µm de lado. ¿Cuánta superficie de membrana tiene, en µm²? (6 caras de L × L)`, 6 * L * L);
+      if (que === "volumen") return num(M, "sup_volumen", `Una célula con forma de cubo mide ${L} µm de lado. ¿Cuál es su volumen, en µm³?`, L * L * L);
+      return num(M, "sup_relacion", `Una célula con forma de cubo mide ${L} µm de lado. ¿Cuál es su relación superficie ÷ volumen?`, (6 * L * L) / (L * L * L));
+    }
+    case "difusion": {
+      const sustancia = elegir(["glucosa", "oxígeno", "dióxido de carbono", "urea"]);
+      const dentro = randomInt(1, 12) * 5;
+      const fuera = elegir([dentro, randomInt(1, 12) * 5, randomInt(1, 12) * 5]);
+      const ok = fuera > dentro ? "Entra a la célula" : fuera < dentro ? "Sale de la célula" : "No hay movimiento neto";
+      return opc(M, "difusion", `Dentro de una célula hay ${dentro} unidades de ${sustancia} por litro y afuera hay ${fuera}. Por difusión, sin gastar energía, ¿hacia dónde va la ${sustancia}?`.replace("la oxígeno", "el oxígeno").replace("la dióxido", "el dióxido"), ok, ["Entra a la célula", "Sale de la célula", "No hay movimiento neto", "Solo se mueve gastando ATP"].filter((x) => x !== ok));
+    }
     case "teoria":
       return deTabla(M, "teoria", TEORIA_CELULAR);
     case "funcion": {
@@ -127,12 +206,7 @@ function celula(nivel: number): ProblemaVitalia {
     case "animal_vegetal": {
       const variante = elegir(["animal", "vegetal"] as const);
       if (elegir([true, false])) return opc(M, "animal_vegetal", "¿Esta célula es animal o vegetal?", variante === "animal" ? "Animal" : "Vegetal", [variante === "animal" ? "Vegetal" : "Animal", "Bacteriana"], { tipo: "celula", variante });
-      return deTabla(M, "animal_vegetal", [
-        { q: "Una célula tiene pared celular, cloroplastos y una vacuola grande. Es…", ok: "Vegetal", no: ["Animal", "Bacteriana", "De un hongo"] },
-        { q: "Una célula no tiene pared ni cloroplastos y tiene muchas vacuolas chicas. Es…", ok: "Animal", no: ["Vegetal", "Bacteriana", "De un alga"] },
-        { q: "¿Qué parte tiene la célula vegetal y NO la animal?", ok: "Cloroplastos", no: ["Núcleo", "Mitocondrias", "Ribosomas"] },
-        { q: "¿Qué parte tienen TANTO la célula animal como la vegetal?", ok: "Mitocondrias", no: ["Pared celular", "Cloroplastos", "Una vacuola central grande"] },
-      ]);
+      return deTabla(M, "animal_vegetal", CELULA_ANIMAL_VEGETAL);
     }
     case "medios":
       return deTabla(M, "medios", MEDIOS);
@@ -152,13 +226,27 @@ const FOTO_RESP: Item[] = [
   { q: "La respiración celular usa glucosa y oxígeno. ¿Qué libera?", ok: "Dióxido de carbono, agua y energía (ATP)", no: ["Oxígeno y glucosa", "Solo oxígeno", "Luz y calor"] },
   { q: "¿Qué energía usa la fotosíntesis?", ok: "La luz", no: ["El calor de la tierra", "La electricidad", "El sonido"] },
   { q: "¿Qué necesita la fotosíntesis para funcionar?", ok: "Agua, dióxido de carbono y luz", no: ["Oxígeno y glucosa", "Agua y oxígeno", "Glucosa y luz"] },
+  { q: "¿Qué pigmento verde atrapa la luz para la fotosíntesis?", ok: "La clorofila", no: ["La hemoglobina", "La melanina", "La queratina"] },
+  { q: "¿Por qué parte de la planta entra el dióxido de carbono?", ok: "Por los estomas de las hojas", no: ["Por las raíces", "Por las flores", "Por el tallo leñoso"] },
+  { q: "¿Por dónde toma la planta casi toda el agua?", ok: "Por las raíces", no: ["Por las flores", "Por los estomas", "Por las semillas"] },
+  { q: "¿Qué seres vivos hacen respiración celular?", ok: "Todos: plantas, animales, hongos y bacterias", no: ["Solo los animales", "Solo los que tienen pulmones", "Solo las plantas de noche"] },
+  { q: "¿Para qué respira la célula?", ok: "Para sacar energía (ATP) de la glucosa", no: ["Para fabricar glucosa", "Para hacer fotosíntesis", "Para guardar oxígeno"] },
+  { q: "De noche, sin luz, una planta…", ok: "Solo respira: toma oxígeno y suelta dióxido de carbono", no: ["Sigue haciendo fotosíntesis igual", "Deja de estar viva", "Suelta más oxígeno que de día"] },
+  { q: "¿Qué gas necesita la respiración celular?", ok: "Oxígeno", no: ["Dióxido de carbono", "Nitrógeno", "Helio"] },
+  { q: "Si una planta pasa días a oscuras, ¿qué no puede hacer?", ok: "Fotosíntesis", no: ["Respirar", "Tener células", "Guardar agua"] },
 ];
+// Quién hace fotosíntesis: las preguntas se arman con un ser de cada lista.
+const HACEN_FOTO = ["Un alga", "Una cianobacteria", "Un helecho", "Un musgo", "Un pino", "Un rosal", "Una planta de maíz", "Un cactus", "Un girasol"];
+const NO_HACEN_FOTO = ["Un champiñón", "Una levadura", "Una vaca", "Una ameba", "Un perro", "El moho del pan", "Una lombriz", "Un tiburón"];
 const LUGARES: Item[] = [
   { q: "¿Dónde ocurre la fotosíntesis?", ok: "En los cloroplastos" },
   { q: "¿Dónde ocurre la respiración celular con oxígeno?", ok: "En las mitocondrias" },
   { q: "¿Dónde ocurre la glucólisis, el primer paso para romper la glucosa?", ok: "En el citoplasma" },
   { q: "¿Dónde se copia el ADN antes de dividirse una célula eucariota?", ok: "En el núcleo" },
   { q: "¿Dónde se fabrican las proteínas?", ok: "En los ribosomas" },
+  { q: "¿Dónde ocurre la fermentación?", ok: "En el citoplasma" },
+  { q: "¿Dónde se guarda la información para fabricar las proteínas?", ok: "En el núcleo" },
+  { q: "¿Dónde se fabrica el ATP cuando hay oxígeno?", ok: "En las mitocondrias" },
 ];
 const QUIEN_FOTO: Item[] = [
   { q: "¿Cuál de estos seres hace fotosíntesis?", ok: "Un alga", no: ["Un hongo", "Una vaca", "Una ameba"] },
@@ -179,6 +267,9 @@ const ESPECIES: { nombre: string; dosN: number }[] = [
   { nombre: "el maíz", dosN: 20 },
   { nombre: "el chimpancé", dosN: 48 },
   { nombre: "el arroz", dosN: 24 },
+  { nombre: "el caballo", dosN: 64 },
+  { nombre: "la gallina", dosN: 78 },
+  { nombre: "el ratón", dosN: 40 },
 ];
 const CICLO: Item[] = [
   { q: "¿En qué fase del ciclo celular se copia el ADN?", ok: "Fase S", no: ["Fase G1", "Fase G2", "Mitosis"] },
@@ -193,17 +284,19 @@ const CICLO: Item[] = [
 function procesos(nivel: number): ProblemaVitalia {
   const n = clamp(nivel, 1, 10);
   const M: ModoVitalia = "procesos";
-  const tipo = elegirPonderado(
+  const tipo = elegirTipo(
     [
-      ["foto_resp", 1],
-      ["lugares", 3],
-      ["quien", 3],
-      ["fase_dibujo", 5],
-      ["fase_texto", 5],
-      ["orden", 6],
-      ["cromosomas", 7],
-      ["ciclo", 8],
-      ["atp", 9],
+      ["foto_resp", 1, 4],
+      ["lugares", 1, 6],
+      ["quien", 1, 4],
+      ["fase_dibujo", 3, 8],
+      ["fase_texto", 3, 8],
+      ["orden", 5, 8],
+      ["cromosomas", 5, 10],
+      ["ciclo", 5, 10],
+      ["divisiones", 7, 10],
+      ["atp", 7, 10],
+      ["ecuacion", 7, 10],
     ] as const,
     n
   );
@@ -212,8 +305,34 @@ function procesos(nivel: number): ProblemaVitalia {
       return deTabla(M, "foto_resp", FOTO_RESP);
     case "lugares":
       return deTabla(M, "lugares", LUGARES);
-    case "quien":
-      return deTabla(M, "quien", QUIEN_FOTO);
+    case "quien": {
+      if (elegir([true, false, false])) return deTabla(M, "quien", QUIEN_FOTO);
+      if (elegir([true, false])) {
+        const ok = elegir(HACEN_FOTO);
+        return opc(M, "quien", "¿Cuál de estos seres hace fotosíntesis?", ok, mezclar(NO_HACEN_FOTO).slice(0, 3));
+      }
+      const ok = elegir(NO_HACEN_FOTO);
+      return opc(M, "quien", "¿Cuál de estos seres NO hace fotosíntesis?", ok, mezclar(HACEN_FOTO).slice(0, 3));
+    }
+    case "divisiones": {
+      if (elegir([true, false])) {
+        const k = randomInt(2, 8);
+        return num(M, "divisiones_mitosis", `Una célula se divide por mitosis y cada célula hija vuelve a dividirse, ${k} veces seguidas en total. ¿Cuántas células hay al final?`, 2 ** k);
+      }
+      const cada = elegir([20, 30]);
+      const horas = randomInt(1, cada === 20 ? 3 : 4);
+      const veces = (horas * 60) / cada;
+      return num(M, "divisiones_bacteria", `Una bacteria se divide en dos cada ${cada} minutos. Si empiezas con una sola, ¿cuántas bacterias hay después de ${horas} ${horas === 1 ? "hora" : "horas"}?`, 2 ** veces);
+    }
+    case "ecuacion": {
+      // 6 CO₂ + 6 H₂O → C₆H₁₂O₆ + 6 O₂ (y la respiración, al revés).
+      const k = randomInt(2, 12);
+      const que = elegir(["o2_foto", "co2_foto", "co2_resp", "glucosa"] as const);
+      if (que === "o2_foto") return num(M, "ecuacion", `La fotosíntesis es 6 CO₂ + 6 H₂O → C₆H₁₂O₆ + 6 O₂. ¿Cuántas moléculas de oxígeno se liberan al fabricar ${k} glucosas?`, 6 * k);
+      if (que === "co2_foto") return num(M, "ecuacion", `La fotosíntesis es 6 CO₂ + 6 H₂O → C₆H₁₂O₆ + 6 O₂. ¿Cuántas moléculas de CO₂ hacen falta para fabricar ${k} glucosas?`, 6 * k);
+      if (que === "co2_resp") return num(M, "ecuacion", `La respiración es C₆H₁₂O₆ + 6 O₂ → 6 CO₂ + 6 H₂O. ¿Cuántas moléculas de CO₂ salen al quemar ${k} glucosas?`, 6 * k);
+      return num(M, "ecuacion", `La fotosíntesis es 6 CO₂ + 6 H₂O → C₆H₁₂O₆ + 6 O₂. Con ${6 * k} moléculas de CO₂ (y agua de sobra), ¿cuántas glucosas se pueden fabricar?`, k);
+    }
     case "fase_dibujo": {
       const f = elegir(FASES);
       return opc(M, "fase_dibujo", "¿En qué fase de la mitosis está esta célula?", f.nombre, FASES.filter((x) => x !== f).map((x) => x.nombre), { tipo: "division", fase: f.fase });
@@ -233,7 +352,8 @@ function procesos(nivel: number): ProblemaVitalia {
     }
     case "cromosomas": {
       const e = elegir(ESPECIES);
-      const que = elegir(["gameto", "mitosis", "meiosis"] as const);
+      const que = elegir(["gameto", "mitosis", "meiosis", "meiosis_n"] as const);
+      if (que === "meiosis_n") return num(M, "cromosomas_gameto", `Una célula ${deArticulo(e.nombre)} con ${e.dosN} cromosomas termina la meiosis. ¿Cuántos cromosomas tiene cada célula que se forma?`, e.dosN / 2);
       if (que === "gameto") return num(M, "cromosomas_gameto", `Las células del cuerpo ${deArticulo(e.nombre)} tienen ${e.dosN} cromosomas (2n). ¿Cuántos tiene un gameto (óvulo o espermatozoide)?`, e.dosN / 2);
       if (que === "mitosis") return num(M, "cromosomas_mitosis", `Una célula ${deArticulo(e.nombre)} con ${e.dosN} cromosomas hace mitosis. ¿Cuántos cromosomas tiene cada célula hija?`, e.dosN);
       return num(M, "cromosomas_meiosis", `Una célula ${deArticulo(e.nombre)} con ${e.dosN} cromosomas termina la meiosis. ¿Cuántas células se forman?`, 4);
@@ -241,7 +361,11 @@ function procesos(nivel: number): ProblemaVitalia {
     case "ciclo":
       return deTabla(M, "ciclo", CICLO);
     case "atp": {
-      const g = randomInt(2, 9);
+      const g = randomInt(2, n >= 9 ? 20 : 9);
+      if (n >= 9 && elegir([true, false])) {
+        const sin = randomInt(2, 12);
+        return num(M, "atp_mezcla", `Una célula quema ${g} glucosas con oxígeno (unos 36 ATP cada una) y ${sin} sin oxígeno, por fermentación (2 ATP cada una). ¿Cuántos ATP obtiene en total?`, g * 36 + sin * 2);
+      }
       if (elegir([true, false])) return num(M, "atp_aerobica", `La respiración con oxígeno da unos 36 ATP por cada glucosa. ¿Cuántos ATP dan ${g} glucosas?`, g * 36);
       return num(M, "atp_fermentacion", `La fermentación da solo 2 ATP por cada glucosa. ¿Cuántos ATP dan ${g} glucosas?`, g * 2);
     }
@@ -327,6 +451,14 @@ const VOCABULARIO: Item[] = [
   { q: "La combinación de alelos de un individuo (por ejemplo, Aa) se llama…", ok: "Genotipo", no: ["Fenotipo", "Gen", "Gameto"] },
   { q: "Cada versión distinta de un mismo gen se llama…", ok: "Alelo", no: ["Cromosoma", "Codón", "Nucleótido"] },
   { q: "Un alelo que se nota aunque haya una sola copia es…", ok: "Dominante", no: ["Recesivo", "Mutante", "Neutro"] },
+  { q: "Un alelo que solo se nota si hay dos copias es…", ok: "Recesivo", no: ["Dominante", "Codominante", "Mutante"] },
+  { q: "¿Qué genotipo es homocigoto dominante?", ok: "AA", no: ["Aa", "aa", "a"] },
+  { q: "Un trozo de ADN con la instrucción para fabricar una proteína se llama…", ok: "Gen", no: ["Alelo", "Cromosoma", "Gameto"] },
+  { q: "¿Dónde está guardado el ADN en una célula humana?", ok: "En el núcleo", no: ["En la membrana", "En los ribosomas", "En la vacuola"] },
+  { q: "¿Qué forma tiene la molécula de ADN?", ok: "Una doble hélice", no: ["Un círculo simple", "Una esfera", "Una sola hebra recta"] },
+  { q: "¿Cuántos cromosomas tiene una célula del cuerpo humano?", ok: "46", no: ["23", "48", "92"] },
+  { q: "¿Cuántas «letras» (bases) distintas tiene el ADN?", ok: "4", no: ["2", "20", "64"] },
+  { q: "¿Quién descubrió las leyes de la herencia cruzando arvejas?", ok: "Gregor Mendel", no: ["Charles Darwin", "Louis Pasteur", "Robert Hooke"] },
 ];
 const MUTACIONES: Item[] = [
   { q: "Una letra del ADN cambia por otra (ATG → ACG). Es una mutación por…", ok: "Sustitución", no: ["Inserción", "Deleción", "Duplicación del cromosoma"] },
@@ -337,19 +469,19 @@ const MUTACIONES: Item[] = [
 function genetica(nivel: number): ProblemaVitalia {
   const n = clamp(nivel, 1, 10);
   const M: ModoVitalia = "genetica";
-  const tipo = elegirPonderado(
+  const tipo = elegirTipo(
     [
-      ["vocabulario", 1],
-      ["complementaria", 3],
-      ["transcripcion", 4],
-      ["traduccion", 5],
-      ["punnett", 5],
-      ["dihibrido", 7],
-      ["incompleta", 7],
-      ["abo", 8],
-      ["ligado_x", 9],
-      ["chargaff", 9],
-      ["mutacion", 9],
+      ["vocabulario", 1, 4],
+      ["complementaria", 1, 6],
+      ["transcripcion", 3, 8],
+      ["traduccion", 5, 10],
+      ["punnett", 5, 10],
+      ["dihibrido", 7, 10],
+      ["incompleta", 7, 10],
+      ["abo", 7, 10],
+      ["ligado_x", 9, 10],
+      ["chargaff", 7, 10],
+      ["mutacion", 7, 10],
     ] as const,
     n
   );
@@ -357,7 +489,8 @@ function genetica(nivel: number): ProblemaVitalia {
     case "vocabulario":
       return deTabla(M, "vocabulario", VOCABULARIO);
     case "complementaria": {
-      const h = hebra(6 + (n > 3 ? 3 : 0));
+      // Nivel 1-2: hebras de 4-5 bases; sube hasta 9.
+      const h = hebra(n <= 2 ? randomInt(4, 5) : n <= 4 ? randomInt(6, 7) : randomInt(8, 9));
       const ok = [...h].map((b) => COMPLEMENTO[b]).join("");
       const conU = [...h].map((b) => A_ARN[b]).join("");
       const alReves = [...ok].reverse().join("");
@@ -458,6 +591,26 @@ const QUE_HACE: Item[] = [
   { q: "¿Qué sistema manda mensajes con hormonas?", ok: "Endocrino" },
   { q: "¿Qué sistema defiende al cuerpo de microbios?", ok: "Inmune" },
   { q: "¿Qué sistema manda mensajes rápidos con impulsos eléctricos?", ok: "Nervioso" },
+  { q: "Corres y respiras más rápido. ¿Qué sistema trabaja más para darte oxígeno?", ok: "Respiratorio" },
+  { q: "Tienes fiebre por una infección. ¿Qué sistema está peleando contra el microbio?", ok: "Inmune" },
+  { q: "Orinas más después de tomar mucha agua. ¿Qué sistema saca el agua de más?", ok: "Excretor (urinario)" },
+  { q: "Sientes el corazón latir fuerte después de subir una escalera. ¿Qué sistema es?", ok: "Circulatorio" },
+  { q: "Retiras la mano de algo caliente antes de pensarlo. ¿Qué sistema lo hace?", ok: "Nervioso" },
+  { q: "Creces durante la adolescencia por señales que van por la sangre. ¿Qué sistema las manda?", ok: "Endocrino" },
+  { q: "Después de comer, tu cuerpo convierte el pan en azúcar que puede absorber. ¿Qué sistema lo hace?", ok: "Digestivo" },
+];
+// Nutrientes y hábitos (niveles 1-4): cómo usa el cuerpo lo que come y respira.
+const NUTRICION: Item[] = [
+  { q: "¿Qué nutriente usa el cuerpo sobre todo para crecer y reparar tejidos?", ok: "Proteínas", no: ["Azúcares", "Agua", "Fibra"] },
+  { q: "¿Qué nutriente da energía rápida, como el pan y el arroz?", ok: "Carbohidratos", no: ["Proteínas", "Vitaminas", "Minerales"] },
+  { q: "¿Qué mineral hace fuertes el esqueleto y los dientes?", ok: "Calcio", no: ["Sodio", "Yodo", "Flúor del aire"] },
+  { q: "¿Qué mineral forma parte de la hemoglobina, que lleva el oxígeno en la sangre?", ok: "Hierro", no: ["Calcio", "Potasio", "Zinc"] },
+  { q: "La fibra de las verduras ayuda sobre todo a…", ok: "Que el intestino funcione bien", no: ["Fabricar músculos", "Llevar oxígeno", "Ver de noche"] },
+  { q: "¿Qué vitamina fabrica la piel con la luz del sol?", ok: "Vitamina D", no: ["Vitamina C", "Vitamina A", "Vitamina B12"] },
+  { q: "¿Qué gas sale del cuerpo cuando exhalas, como desecho?", ok: "Dióxido de carbono", no: ["Oxígeno puro", "Nitrógeno nuevo", "Hidrógeno"] },
+  { q: "¿Por qué se acelera el pulso al hacer ejercicio?", ok: "Los músculos necesitan más oxígeno y glucosa", no: ["Para enfriar la sangre", "Porque se acaban los glóbulos rojos", "Para digerir más rápido"] },
+  { q: "¿Qué parte de la sangre lleva el oxígeno?", ok: "Los glóbulos rojos", no: ["Las plaquetas", "Los glóbulos blancos", "El plasma solo"] },
+  { q: "¿Qué parte de la sangre defiende de los microbios?", ok: "Los glóbulos blancos", no: ["Los glóbulos rojos", "Las plaquetas", "El agua del plasma"] },
 ];
 const DIGESTION: Item[] = [
   { q: "¿Dónde empieza la digestión del almidón (el pan, la papa)?", ok: "En la boca, con la saliva", no: ["En el estómago", "En el intestino grueso", "En el hígado"] },
@@ -511,19 +664,33 @@ const NERVIOSO: Item[] = [
 function sistemas(nivel: number): ProblemaVitalia {
   const n = clamp(nivel, 1, 10);
   const M: ModoVitalia = "sistemas";
-  const tipo = elegirPonderado(
+  const tipo = elegirTipo(
     [
-      ["que_hace", 1],
-      ["digestion", 3],
-      ["circulacion", 5],
-      ["rinon", 7],
-      ["hormonas", 7],
-      ["defensas", 9],
-      ["nervioso", 9],
+      ["que_hace", 1, 4],
+      ["nutricion", 1, 4],
+      ["pulso", 1, 6],
+      ["digestion", 1, 6],
+      ["circulacion", 3, 10],
+      ["rinon", 5, 10],
+      ["hormonas", 5, 10],
+      ["defensas", 7, 10],
+      ["nervioso", 7, 10],
+      ["gasto", 7, 10],
     ] as const,
     n
   );
-  const tablas = { que_hace: QUE_HACE, digestion: DIGESTION, circulacion: CIRCULACION, rinon: RINON, hormonas: HORMONAS, defensas: DEFENSAS, nervioso: NERVIOSO };
+  if (tipo === "pulso") {
+    const s = elegir([10, 15, 20, 30]);
+    const latidos = randomInt(Math.ceil((55 * s) / 60), Math.floor((110 * s) / 60));
+    return num(M, "pulso", `Cuentas ${latidos} latidos de tu corazón en ${s} segundos. ¿Cuántas pulsaciones por minuto son?`, (latidos * 60) / s);
+  }
+  if (tipo === "gasto") {
+    const f = randomInt(12, 20) * 5;
+    const v = randomInt(12, 16) * 5;
+    if (elegir([true, false])) return num(M, "gasto", `El corazón late ${f} veces por minuto y en cada latido bombea ${v} mL de sangre. ¿Cuántos mL bombea por minuto?`, f * v);
+    return num(M, "gasto", `El corazón bombea ${miles(f * v)} mL de sangre por minuto, ${v} mL en cada latido. ¿Cuántas veces late por minuto?`, f);
+  }
+  const tablas = { que_hace: QUE_HACE, nutricion: NUTRICION, digestion: DIGESTION, circulacion: CIRCULACION, rinon: RINON, hormonas: HORMONAS, defensas: DEFENSAS, nervioso: NERVIOSO };
   return deTabla(M, tipo, tablas[tipo]);
 }
 
@@ -549,6 +716,13 @@ const ORGANISMOS: { nombre: string; reino: keyof typeof REINO }[] = [
   { nombre: "un paramecio", reino: "protista" },
   { nombre: "la bacteria Escherichia coli", reino: "monera" },
   { nombre: "una cianobacteria", reino: "monera" },
+  { nombre: "una medusa", reino: "animal" },
+  { nombre: "una mariposa", reino: "animal" },
+  { nombre: "un cactus", reino: "planta" },
+  { nombre: "un roble", reino: "planta" },
+  { nombre: "una seta venenosa", reino: "hongo" },
+  { nombre: "un alga parda gigante", reino: "protista" },
+  { nombre: "la bacteria del yogur", reino: "monera" },
 ];
 const RASGOS_REINO: Item[] = [
   { q: "Células sin núcleo, una sola célula. ¿Qué reino es?", ok: REINO.monera },
@@ -581,6 +755,14 @@ const INVERTEBRADOS: { nombre: string; grupo: string }[] = [
   { nombre: "la lombriz de tierra", grupo: "Anélidos" },
   { nombre: "la medusa", grupo: "Cnidarios" },
   { nombre: "la estrella de mar", grupo: "Equinodermos" },
+  { nombre: "el erizo de mar", grupo: "Equinodermos" },
+  { nombre: "la hormiga", grupo: "Artrópodos" },
+  { nombre: "el ciempiés", grupo: "Artrópodos" },
+  { nombre: "el calamar", grupo: "Moluscos" },
+  { nombre: "la almeja", grupo: "Moluscos" },
+  { nombre: "la sanguijuela", grupo: "Anélidos" },
+  { nombre: "el coral", grupo: "Cnidarios" },
+  { nombre: "la anémona de mar", grupo: "Cnidarios" },
 ];
 const PLANTAS_HONGOS: Item[] = [
   { q: "El musgo no tiene vasos para llevar agua. ¿A qué grupo pertenece?", ok: "Briofitas", no: ["Helechos", "Gimnospermas", "Angiospermas"] },
@@ -596,21 +778,40 @@ const DOMINIOS: Item[] = [
   { q: "Una bacteria del suelo pertenece al dominio…", ok: "Bacteria", no: ["Archaea", "Eukarya", "Animalia"] },
   { q: "Un microbio que vive en aguas termales hirviendo, sin núcleo y distinto de las bacterias, es del dominio…", ok: "Archaea", no: ["Bacteria", "Eukarya", "Fungi"] },
   { q: "Un ser humano, un hongo y una planta son del dominio…", ok: "Eukarya", no: ["Bacteria", "Archaea", "Monera"] },
+  { q: "¿Qué tienen en común los dominios Bacteria y Archaea?", ok: "Sus células no tienen núcleo", no: ["Hacen todos fotosíntesis", "Son pluricelulares", "Tienen pared de celulosa"] },
+  { q: "Una ameba y un paramecio son del dominio…", ok: "Eukarya", no: ["Bacteria", "Archaea", "Protista"] },
+  { q: "Un microbio del intestino de una vaca que produce metano, sin núcleo y que no es bacteria, es del dominio…", ok: "Archaea", no: ["Bacteria", "Eukarya", "Fungi"] },
+  { q: "¿Cuántos dominios hay en la clasificación actual de los seres vivos?", ok: "3", no: ["2", "5", "8"] },
 ];
+// Nombres científicos (género + especie) para preguntar cuál está bien escrito.
+const ESPECIES_CIENTIFICAS = [
+  ["Homo", "sapiens"],
+  ["Canis", "lupus"],
+  ["Felis", "catus"],
+  ["Zea", "mays"],
+  ["Panthera", "leo"],
+  ["Panthera", "tigris"],
+  ["Equus", "caballus"],
+  ["Bos", "taurus"],
+  ["Gallus", "gallus"],
+  ["Musca", "domestica"],
+  ["Oryza", "sativa"],
+  ["Escherichia", "coli"],
+] as const;
 
 function reinos(nivel: number): ProblemaVitalia {
   const n = clamp(nivel, 1, 10);
   const M: ModoVitalia = "reinos";
-  const tipo = elegirPonderado(
+  const tipo = elegirTipo(
     [
-      ["organismo", 1],
-      ["rasgos", 3],
-      ["vertebrados", 5],
-      ["invertebrados", 6],
-      ["plantas_hongos", 7],
-      ["categorias", 9],
-      ["nombre_cientifico", 9],
-      ["dominios", 9],
+      ["organismo", 1, 4],
+      ["rasgos", 1, 6],
+      ["vertebrados", 1, 8],
+      ["invertebrados", 3, 8],
+      ["plantas_hongos", 5, 10],
+      ["categorias", 7, 10],
+      ["nombre_cientifico", 7, 10],
+      ["dominios", 7, 10],
     ] as const,
     n
   );
@@ -632,11 +833,21 @@ function reinos(nivel: number): ProblemaVitalia {
     case "plantas_hongos":
       return deTabla(M, "plantas_hongos", PLANTAS_HONGOS);
     case "categorias": {
+      if (elegir([true, false])) {
+        // ¿Cuál agrupa a más seres vivos? (la más amplia de dos categorías)
+        const [a, b] = mezclar(CATEGORIAS.map((_, k) => k)).slice(0, 2);
+        const ok = CATEGORIAS[Math.min(a, b)];
+        return opc(M, "categorias", `¿Qué categoría agrupa a más seres vivos: «${CATEGORIAS[a]}» o «${CATEGORIAS[b]}»?`, ok, [CATEGORIAS[Math.max(a, b)], "Las dos agrupan los mismos", "Depende del ser vivo"]);
+      }
+      if (elegir([true, false])) {
+        const i = randomInt(1, CATEGORIAS.length - 1);
+        return opc(M, "categorias", `En la clasificación, ¿qué categoría va justo antes de «${CATEGORIAS[i]}» (de lo más amplio a lo más chico)?`, CATEGORIAS[i - 1], CATEGORIAS.filter((_, k) => k !== i - 1 && k !== i));
+      }
       const i = randomInt(0, CATEGORIAS.length - 2);
       return opc(M, "categorias", `En la clasificación, ¿qué categoría va justo después de «${CATEGORIAS[i]}» (de lo más amplio a lo más chico)?`, CATEGORIAS[i + 1], CATEGORIAS.filter((_, k) => k !== i + 1 && k !== i));
     }
     case "nombre_cientifico": {
-      const [g, e] = elegir([["Homo", "sapiens"], ["Canis", "lupus"], ["Felis", "catus"], ["Zea", "mays"], ["Panthera", "leo"]] as const);
+      const [g, e] = elegir(ESPECIES_CIENTIFICAS);
       const ok = `${g} ${e}`;
       return opc(M, "nombre_cientifico", "¿Cuál está bien escrito como nombre científico (y va en cursiva)?", ok, [`${g.toLowerCase()} ${e}`, `${g} ${e[0].toUpperCase()}${e.slice(1)}`, `${g.toUpperCase()} ${e.toUpperCase()}`, `${e} ${g}`]);
     }
@@ -654,6 +865,10 @@ const CADENAS: { eslabones: string[] }[] = [
   { eslabones: ["las algas", "el pez pequeño", "la foca", "el tiburón"] },
   { eslabones: ["el maíz", "el saltamontes", "la rana", "la serpiente"] },
   { eslabones: ["las hojas", "la oruga", "el pájaro", "el halcón"] },
+  { eslabones: ["el fitoplancton", "el krill", "el pingüino", "la orca"] },
+  { eslabones: ["el trigo", "el ratón", "la culebra", "el búho"] },
+  { eslabones: ["las bellotas", "la ardilla", "el zorro", "el lobo"] },
+  { eslabones: ["el néctar de las flores", "la abeja", "la araña", "la lagartija"] },
 ];
 const ROL = ["Productor", "Consumidor primario", "Consumidor secundario", "Consumidor terciario"];
 const RELACIONES: Item[] = [
@@ -662,6 +877,11 @@ const RELACIONES: Item[] = [
   { q: "La rémora come las sobras del tiburón, que ni gana ni pierde. Es…", ok: "Comensalismo" },
   { q: "Dos leones pelean por la misma presa. Es…", ok: "Competencia" },
   { q: "El búho caza al ratón y se lo come. Es…", ok: "Depredación" },
+  { q: "El pez payaso vive entre los tentáculos de la anémona, que lo protege, y él la limpia. Es…", ok: "Mutualismo" },
+  { q: "La tenia vive en el intestino de una persona y se alimenta de lo que ella come. Es…", ok: "Parasitismo" },
+  { q: "Una orquídea crece sobre la rama de un árbol para tener luz, sin dañarlo. Es…", ok: "Comensalismo" },
+  { q: "Dos plantas vecinas se disputan la misma luz y la misma agua. Es…", ok: "Competencia" },
+  { q: "El guepardo persigue y atrapa a una gacela. Es…", ok: "Depredación" },
 ];
 const CICLOS: Item[] = [
   { q: "¿Qué proceso saca dióxido de carbono del aire?", ok: "La fotosíntesis", no: ["La respiración", "Quemar combustibles", "La descomposición"] },
@@ -669,17 +889,25 @@ const CICLOS: Item[] = [
   { q: "El vapor de agua se enfría en el cielo y forma nubes. Es la…", ok: "Condensación", no: ["Evaporación", "Precipitación", "Infiltración"] },
   { q: "El sol calienta el mar y el agua sube como vapor. Es la…", ok: "Evaporación", no: ["Condensación", "Precipitación", "Transpiración del suelo"] },
   { q: "¿Quiénes devuelven al suelo los nutrientes de los seres muertos?", ok: "Los descomponedores (hongos y bacterias)", no: ["Los productores", "Los consumidores primarios", "Los depredadores"] },
+  { q: "¿Qué seres convierten el nitrógeno del aire en nitratos que las plantas pueden usar?", ok: "Bacterias fijadoras de nitrógeno", no: ["Los hongos de sombrero", "Los animales herbívoros", "Las algas del mar"] },
+  { q: "Quemar petróleo y carbón agrega al aire sobre todo…", ok: "Dióxido de carbono", no: ["Oxígeno", "Nitrógeno", "Vapor de agua solamente"] },
+  { q: "El agua que se filtra en el suelo y llega a las napas subterráneas. Es la…", ok: "Infiltración", no: ["Evaporación", "Condensación", "Transpiración"] },
+  { q: "Las plantas sueltan vapor de agua por sus hojas. Es la…", ok: "Transpiración", no: ["Precipitación", "Infiltración", "Condensación"] },
+  { q: "El aumento de dióxido de carbono en el aire refuerza…", ok: "El efecto invernadero y el calentamiento global", no: ["La capa de ozono", "La fotosíntesis de noche", "El enfriamiento de los océanos"] },
+  { q: "¿Cómo pasa el nitrógeno de las plantas a los animales?", ok: "Cuando los animales comen plantas", no: ["Respirando aire", "Tomando agua de lluvia", "Con la luz del sol"] },
 ];
 
 function ecologia(nivel: number): ProblemaVitalia {
   const n = clamp(nivel, 1, 10);
   const M: ModoVitalia = "ecologia";
-  const tipo = elegirPonderado(
+  const tipo = elegirTipo(
     [
-      ["rol", 1],
-      ["diez", 5],
-      ["relaciones", 6],
-      ["ciclos", 8],
+      ["rol", 1, 6],
+      ["relaciones", 1, 8],
+      ["diez", 5, 10],
+      ["ciclos", 7, 10],
+      ["recaptura", 7, 10],
+      ["densidad", 3, 8],
     ] as const,
     n
   );
@@ -693,7 +921,26 @@ function ecologia(nivel: number): ProblemaVitalia {
       const base = elegir([1000, 10000, 20000, 50000, 100000]);
       const nivelT = randomInt(2, 4);
       const nombre = ["", "", "los consumidores primarios", "los consumidores secundarios", "los consumidores terciarios"][nivelT];
+      if (n >= 7 && elegir([true, false])) {
+        const llega = elegir([10, 20, 50, 100, 200, 500]);
+        return num(M, "diez_inverso", `Si a cada nivel de la cadena pasa solo el 10 % de la energía, ¿cuántas kcal tienen que tener los productores para que lleguen ${llega} kcal a ${nombre}?`, llega * 10 ** (nivelT - 1));
+      }
       return num(M, "diez_por_ciento", `Los productores de un ecosistema tienen ${miles(base)} kcal. Si a cada nivel pasa solo el 10 %, ¿cuántas kcal llegan a ${nombre}?`, base / 10 ** (nivelT - 1));
+    }
+    case "densidad": {
+      const area = elegir([10, 20, 25, 50, 100]);
+      const d = randomInt(2, 12);
+      const ser = elegir(["margaritas", "caracoles", "hormigueros", "tréboles", "lombrices"]);
+      return num(M, "densidad", `En un terreno de ${area} m² se cuentan ${d * area} ${ser}. ¿Cuál es la densidad de población, en ${ser} por m²?`, d);
+    }
+    case "recaptura": {
+      // Captura y recaptura (Lincoln-Petersen): N = marcados × capturados ÷ recapturados marcados.
+      const marcados = randomInt(4, 12) * 5;
+      const recap = randomInt(2, 10);
+      const factor = randomInt(2, 8);
+      const capturados = recap * factor;
+      const animal = elegir(["peces", "ratones", "mariposas", "escarabajos", "ranas"]);
+      return num(M, "recaptura", `Para contar ${animal} de un lugar, se marcan ${marcados} y se sueltan. Días después se capturan ${capturados} y ${recap} tienen marca. ¿Cuántos ${animal} hay en total, aproximadamente?`, (marcados * capturados) / recap);
     }
     case "relaciones":
       return deTabla(M, "relaciones", RELACIONES);

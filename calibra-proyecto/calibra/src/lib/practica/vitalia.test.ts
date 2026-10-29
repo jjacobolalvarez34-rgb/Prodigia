@@ -68,6 +68,49 @@ describe("generador de Vitalia", () => {
     }
   });
 
+  // Auditoría 2026-10-29: las preguntas calculadas nuevas se recalculan desde el enunciado.
+  it("las cuentas nuevas (microscopio, cubo, divisiones, ecuación, pulso, ecología) coinciden con el enunciado", () => {
+    const nums = (e: string) => [...e.replace(/(\d)\.(\d{3})/g, "$1$2").matchAll(/\d+(?:,\d+)?/g)].map((m) => Number(m[0].replace(",", ".")));
+    const vistos = new Set<string>();
+    for (const p of lista) {
+      const t = p.detalle.tipo;
+      const x = nums(p.enunciado.replace(/[₀-₉]/g, "").replace(/µm²|µm³/g, ""));
+      let esperado: number | string | undefined;
+      if (t === "microscopio_aumento") esperado = x[0] * x[1];
+      if (t === "microscopio_tamano") esperado = (x[1] * 1000) / x[0];
+      if (t === "sup_superficie") esperado = 6 * x[0] ** 2;
+      if (t === "sup_volumen") esperado = x[0] ** 3;
+      if (t === "sup_relacion") esperado = 6 / x[0];
+      if (t === "divisiones_mitosis") esperado = 2 ** x[0];
+      if (t === "divisiones_bacteria") esperado = 2 ** ((x[1] * 60) / x[0]);
+      if (t === "pulso") esperado = (x[0] * 60) / x[1];
+      if (t === "atp_mezcla") esperado = x[0] * 36 + x[2] * 2;
+      if (t === "densidad") esperado = x[1] / x[0];
+      if (t === "recaptura") esperado = (x[0] * x[1]) / x[2];
+      if (t === "diez_inverso") esperado = x[1] * 10 ** (/terciarios/.test(p.enunciado) ? 3 : /secundarios/.test(p.enunciado) ? 2 : 1);
+      if (t === "gasto") esperado = /por minuto\?$/.test(p.enunciado) && /late \d+ veces/.test(p.enunciado) ? x[0] * x[1] : x[0] / x[1];
+      if (t === "ecuacion") {
+        const k = x[x.length - 1];
+        esperado = /Con \d+ moléculas/.test(p.enunciado) ? nums(p.enunciado.match(/Con (\d+)/)![0])[0] / 6 : 6 * k;
+      }
+      if (t === "medio_conc") esperado = x[0] === x[1] ? "No cambia: entra y sale la misma agua" : x[1] < x[0] ? (p.enunciado.startsWith("Un glóbulo") ? "Entra agua y se hincha (puede estallar)" : "Entra agua y queda firme (turgente)") : p.enunciado.startsWith("Un glóbulo") ? "Sale agua y se arruga" : "Sale agua y la membrana se despega de la pared (plasmólisis)";
+      if (t === "difusion") esperado = x[1] > x[0] ? "Entra a la célula" : x[1] < x[0] ? "Sale de la célula" : "No hay movimiento neto";
+      if (esperado === undefined) continue;
+      vistos.add(t);
+      if (typeof esperado === "number") expect(p.respuesta, `${t}: ${p.enunciado}`).toBeCloseTo(esperado, 6);
+      else expect(p.respuesta, `${t}: ${p.enunciado}`).toBe(esperado);
+    }
+    expect(vistos.size).toBeGreaterThanOrEqual(15);
+  });
+
+  it("los tipos básicos no salen en nivel 10 y los avanzados no salen en nivel 1 (la dificultad sube)", () => {
+    const tiposEn = (nivel: number) => new Set(lista.filter((_, i) => Math.floor(i / VUELTAS) % 10 === nivel - 1).map((p) => p.detalle.tipo));
+    const n1 = tiposEn(1);
+    const n10 = tiposEn(10);
+    for (const t of ["teoria", "vocabulario", "foto_resp", "que_hace", "organismo"]) expect(n10.has(t), t).toBe(false);
+    for (const t of ["recaptura", "abo", "biomoleculas", "atp_mezcla", "gasto", "categorias"]) expect(n1.has(t), t).toBe(false);
+  });
+
   it("grupos ABO de los hijos", () => {
     expect([...gruposHijos(["A", "O"], ["B", "O"])].sort()).toEqual(["A", "AB", "B", "O"]);
     expect([...gruposHijos(["O", "O"], ["O", "O"])]).toEqual(["O"]);

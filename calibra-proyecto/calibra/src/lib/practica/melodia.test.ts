@@ -94,3 +94,125 @@ describe("enunciados en español neutro (auditoría de Aprender de Melodía)", (
     expect(vistos.size).toBeGreaterThanOrEqual(6);
   });
 });
+
+// Auditoría de variedad 2026-10-29: las formas nuevas de pregunta se recalculan
+// desde lo que ve el jugador (el enunciado y las notas dibujadas o la que suena).
+describe("formas nuevas: la respuesta se recalcula desde el enunciado", () => {
+  function parsear(nombre: string): NotaMusical {
+    const m = /^(Do|Re|Mi|Fa|Sol|La|Si)([♯♭]?)(-?[0-9]+)$/.exec(nombre);
+    if (!m) throw new Error(`nota ilegible: ${nombre}`);
+    return { letra: m[1] as NotaMusical["letra"], octava: Number(m[3]), alteracion: m[2] === "♯" ? "sostenido" : m[2] === "♭" ? "bemol" : null };
+  }
+  const nombre = (n: NotaMusical) => `${n.letra}${n.alteracion === "sostenido" ? "♯" : n.alteracion === "bemol" ? "♭" : ""}${n.octava}`;
+  const altura = (n: NotaMusical) => n.octava * 7 + LETRAS.indexOf(n.letra);
+  const DUR: Record<string, number> = { redonda: 4, blanca: 2, negra: 1, corchea: 0.5, semicorchea: 0.25, fusa: 0.125, semifusa: 0.0625, "blanca con puntillo": 3, "negra con puntillo": 1.5 };
+  const PLURAL: Record<string, string> = { redondas: "redonda", blancas: "blanca", negras: "negra", corcheas: "corchea", semicorcheas: "semicorchea", fusas: "fusa", semifusas: "semifusa" };
+  const NUM: Record<string, number> = { una: 1, dos: 2, tres: 3, cuatro: 4 };
+  // «una blanca, dos negras y una negra con puntillo» → suma en negras.
+  function sumaTexto(t: string): number {
+    return t.split(/, | y /).reduce((acc, parte) => {
+      const m = /^(una|dos|tres|cuatro) (.+)$/.exec(parte.trim())!;
+      const [primera, ...resto] = m[2].split(" ");
+      const fig = [PLURAL[primera] ?? primera, ...resto].join(" ");
+      expect(DUR[fig], fig).toBeDefined();
+      return acc + NUM[m[1]] * DUR[fig];
+    }, 0);
+  }
+  const muestras = (modo: (typeof MODOS_MELODIA)[number]) => Array.from({ length: 10 }, (_, k) => Array.from({ length: 150 }, () => generarPreguntaMelodia(modo, k + 1))).flat();
+
+  it("alteraciones: nombrar, semitono/tono, enarmónico y distancia", () => {
+    const formas = new Set<string>();
+    for (const p of muestras("alteraciones")) {
+      if (p.tipo !== "pentagrama") throw new Error("alteraciones sin pentagrama");
+      const r = p.respuesta;
+      const base = p.notas[0];
+      if (/semitonos hay/.test(p.enunciado)) {
+        formas.add("distancia");
+        expect(Number(r)).toBe(semitonoAbsoluto(p.notas[1]) - semitonoAbsoluto(base));
+      } else if (/enarmónico/.test(p.enunciado)) {
+        formas.add("enarmonico");
+        expect(semitonoAbsoluto(parsear(r)), p.enunciado + nombre(base)).toBe(semitonoAbsoluto(base));
+        expect(parsear(r).letra).not.toBe(base.letra);
+      } else if (/más (arriba|abajo) que esta/.test(p.enunciado)) {
+        formas.add("paso");
+        const d = (/un semitono/.test(p.enunciado) ? 1 : 2) * (/arriba/.test(p.enunciado) ? 1 : -1);
+        expect(semitonoAbsoluto(parsear(r)) - semitonoAbsoluto(base), `${nombre(base)} → ${r}`).toBe(d);
+      } else {
+        formas.add("nombrar");
+        expect(r).toBe(nombre(base));
+      }
+      // Ningún distractor suena igual que la respuesta, salvo el enarmónico a propósito de «nombrar».
+      if (!/marcada/.test(p.enunciado) && !/semitonos hay/.test(p.enunciado)) {
+        for (const o of p.opciones) if (o !== r) expect(semitonoAbsoluto(parsear(o)), `${p.enunciado} ${o} vs ${r}`).not.toBe(semitonoAbsoluto(parsear(r)));
+      }
+    }
+    expect(formas.size).toBe(4);
+  });
+
+  it("oído absoluto: la respuesta es la nota que suena (y en «¿en qué octava?», su letra)", () => {
+    for (const p of muestras("oido_absoluto")) {
+      if (p.tipo !== "audio" || p.acorde) continue;
+      expect(p.respuesta).toBe(nombre(p.nota));
+      const letra = /Suena un (.+)\. ¿En qué octava/.exec(p.enunciado)?.[1];
+      if (letra) for (const o of p.opciones) expect(o.replace(/\d+$/, "")).toBe(letra);
+      else for (const o of p.opciones) if (o !== p.respuesta) expect(semitonoAbsoluto(parsear(o))).not.toBe(semitonoAbsoluto(p.nota));
+    }
+  });
+
+  it("lectura: la más aguda, la más grave y la que va en cierto lugar", () => {
+    const ordinales = ["primera", "segunda", "tercera", "cuarta", "quinta"];
+    for (const p of muestras("lectura")) {
+      if (p.tipo !== "pentagrama") throw new Error("lectura sin pentagrama");
+      const alturas = p.notas.map(altura);
+      if (/más aguda/.test(p.enunciado)) expect(p.respuesta).toBe(nombre(p.notas[alturas.indexOf(Math.max(...alturas))]));
+      else if (/más grave/.test(p.enunciado)) expect(p.respuesta).toBe(nombre(p.notas[alturas.indexOf(Math.min(...alturas))]));
+      else if (/de izquierda a derecha/.test(p.enunciado)) expect(p.respuesta).toBe(nombre(p.notas[ordinales.findIndex((o) => p.enunciado.includes(`la ${o} `))]));
+      else expect(p.respuesta).toBe(nombre(p.notas[0]));
+      expect(new Set(p.notas.map(altura)).size).toBe(p.notas.length);
+    }
+  });
+
+  it("fundamentos: comparar, notas vecinas, sumar figuras y completar compases", () => {
+    const formas = new Set<string>();
+    for (const p of muestras("fundamentos")) {
+      const e = p.enunciado;
+      const r = p.respuesta.toLowerCase();
+      const comparar = /dura (más|menos): la (.+) o la (.+)\?/.exec(e);
+      if (comparar) {
+        formas.add("comparar");
+        const [a, b] = [DUR[comparar[2]], DUR[comparar[3]]];
+        expect(r).toBe((a > b) === (comparar[1] === "más") ? comparar[2] : comparar[3]);
+      }
+      const suma = /dura lo mismo que (.+) juntas\?/.exec(e);
+      if (suma) {
+        formas.add("suma");
+        expect(DUR[r], e).toBe(sumaTexto(suma[1]));
+      }
+      const completar = /compás de (\d)\/4 ya hay (.+)\. ¿Qué figura/.exec(e);
+      if (completar) {
+        formas.add("completar");
+        expect(DUR[r], e).toBe(Number(completar[1]) - sumaTexto(completar[2]));
+      }
+      const vecina = /justo (después|antes) de (\w+)\?/.exec(e);
+      const contar = /Desde (\w+), (subiendo|bajando) (\d) notas/.exec(e);
+      if (vecina || contar) {
+        formas.add("vecina");
+        const desde = LETRAS.indexOf((vecina?.[2] ?? contar![1]) as NotaMusical["letra"]);
+        const d = vecina ? (vecina[1] === "después" ? 1 : -1) : Number(contar![3]) * (contar![2] === "subiendo" ? 1 : -1);
+        expect(p.respuesta, e).toBe(LETRAS[(((desde + d) % 7) + 7) % 7]);
+      }
+    }
+    expect(formas.size).toBe(4);
+  });
+
+  it("tempo: pulsos en tantos segundos y opciones de BPM alrededor del pulso", () => {
+    for (const p of muestras("tempo")) {
+      const m = /A (\d+) BPM, ¿cuántos pulsos suenan en (\d+) segundos/.exec(p.enunciado);
+      if (m) expect(Number(p.respuesta)).toBe((Number(m[1]) * Number(m[2])) / 60);
+      if (p.tipo === "pulso") {
+        expect(p.respuesta).toBe(`${p.bpm} BPM`);
+        for (const o of p.opciones) expect(Number(o.replace(" BPM", ""))).toBeGreaterThanOrEqual(40);
+      }
+    }
+  });
+});
