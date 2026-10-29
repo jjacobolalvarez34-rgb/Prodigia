@@ -83,6 +83,23 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 5. Comprobar en `https://<dominio>/api/pagos/estado` que diga `"sandbox": false` y todas las variables en `true`, y hacer una compra real chica (Cometas 100 a 0,99) y reembolsarla.
 Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_PUBLIC_PAGOS_HABILITADOS` en `false` para que nadie intente pagar en sandbox.
 
+## 2c. Pedidos del 2026-10-29 (en este orden)
+
+| Pedido | Estado | Nota |
+|---|---|---|
+| Graphify: instalarlo y armar el mapa del repo para gastar menos tokens | EN CURSO | Primero que todo (pedido explícito). |
+| Auditoría de preguntas de las 15 ciudades (empezar por Vitalia, Melodía, Anatomía, Trigonometría) | FALTA | Plan y medición en `docs/AUDITORIA_PREGUNTAS.md`. |
+| Colecciones propias de los demás eventos (como Halloween) | FALTA | Después de la auditoría. Requiere diseño. |
+| Minieventos propios de cada fiesta | FALTA | Después de las colecciones. |
+| Pack de inicio: planearlo | FALTA | Solo el plan por ahora. |
+| Prueba gratis de Pro con tickets: al empezar tienes 3 tickets; cada clase Pro consume 1; al acabarse, «para continuar compra Pro» | FALTA | Idea del usuario. |
+| Clases y técnicas: carga lenta a veces; calificar respuesta por respuesta (bien/mal) para que puedan corregir antes de enviar; buena transición | FALTA | Muy importante para el usuario. |
+| App: a veces al abrirla aparece en Numeria (sin razón) | FALTA | Bug. |
+| Cambiar ligeramente el tono morado «de IA» del fondo de la app y la web | FALTA (anotado) | Solo piel visual; proponer tonos antes. |
+| Duelo casual que se lee como reto | FALTA | Retomar (estaba a medias). |
+| Revisar si la guerra de clanes es evidente en la web y la app (poca actividad) | FALTA | |
+| Paddle al real | ESPERA | El usuario lo hará cuando todo esté completo. |
+
 ## 3. Pendientes de antes que siguen abiertos
 
 | Qué | Estado | Nota |
