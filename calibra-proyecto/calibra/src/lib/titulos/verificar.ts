@@ -31,18 +31,21 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
 
   const tiposNecesarios = new Set(pendientes.map((t) => t.criterio.tipo));
   const hoyIso = new Date().toISOString().slice(0, 10);
+  // Cada métrica se pide en paralelo (2026-10-28): antes iban de a una y alargaban
+  // el cierre de partida.
+  const tareas: Promise<void>[] = [];
 
   let partidasTotales = 0;
-  if (tiposNecesarios.has("partidas_totales")) {
+  if (tiposNecesarios.has("partidas_totales")) tareas.push((async () => {
     const [{ count: attemptsCount }, { count: logicCount }] = await Promise.all([
       supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", userId),
       supabase.from("logic_attempts").select("id", { count: "exact", head: true }).eq("user_id", userId),
     ]);
     partidasTotales = Math.floor(((attemptsCount ?? 0) + (logicCount ?? 0)) / 10);
-  }
+  })());
 
   let precisionSemana: number | null = null;
-  if (tiposNecesarios.has("precision_semana")) {
+  if (tiposNecesarios.has("precision_semana")) tareas.push((async () => {
     const inicioSemana = new Date();
     const dia = inicioSemana.getDay();
     const diffAlLunes = dia === 0 ? 6 : dia - 1;
@@ -56,26 +59,26 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
     if (attemptsSemana && attemptsSemana.length >= 20) {
       precisionSemana = attemptsSemana.filter((a) => a.correct).length / attemptsSemana.length;
     }
-  }
+  })());
 
   let duelosGanados = 0;
-  if (tiposNecesarios.has("duelos_ganados")) {
+  if (tiposNecesarios.has("duelos_ganados")) tareas.push((async () => {
     const { count } = await supabase.from("duels").select("id", { count: "exact", head: true }).eq("ganador_id", userId);
     duelosGanados = count ?? 0;
-  }
+  })());
 
   let duelosJugados = 0;
-  if (tiposNecesarios.has("duelos_jugados")) {
+  if (tiposNecesarios.has("duelos_jugados")) tareas.push((async () => {
     const { count } = await supabase
       .from("duels")
       .select("id", { count: "exact", head: true })
       .or(`retador_id.eq.${userId},retado_id.eq.${userId}`)
       .eq("estado", "completado");
     duelosJugados = count ?? 0;
-  }
+  })());
 
   let rachaDuelosGanados = 0;
-  if (tiposNecesarios.has("racha_duelos_ganados")) {
+  if (tiposNecesarios.has("racha_duelos_ganados")) tareas.push((async () => {
     const { data: duelosRows } = await supabase
       .from("duels")
       .select("ganador_id, creado_at")
@@ -87,10 +90,10 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
       if (d.ganador_id === userId) rachaDuelosGanados++;
       else break;
     }
-  }
+  })());
 
   let rachaDias = 0;
-  if (tiposNecesarios.has("racha_dias")) {
+  if (tiposNecesarios.has("racha_dias")) tareas.push((async () => {
     const { data: dailyRows } = await supabase
       .from("daily_progress")
       .select("fecha, meta_alcanzada")
@@ -98,10 +101,10 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
       .order("fecha", { ascending: false })
       .limit(400);
     rachaDias = calcularRachaDiaria(dailyRows ?? [], hoyIso);
-  }
+  })());
 
   let rachaRetosDiarios = 0;
-  if (tiposNecesarios.has("racha_retos_diarios")) {
+  if (tiposNecesarios.has("racha_retos_diarios")) tareas.push((async () => {
     const { data: retoRows } = await supabase
       .from("retos_diarios_completados")
       .select("fecha")
@@ -112,29 +115,29 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
       (retoRows ?? []).map((r) => ({ fecha: r.fecha, meta_alcanzada: true })),
       hoyIso
     );
-  }
+  })());
 
   let mundosExplorados = 0;
-  if (tiposNecesarios.has("mundos_explorados")) {
+  if (tiposNecesarios.has("mundos_explorados")) tareas.push((async () => {
     const { data: worldRows } = await supabase.from("world_progress").select("world").eq("user_id", userId).gt("puntos_mundo", 0);
     mundosExplorados = new Set((worldRows ?? []).map((r) => r.world)).size;
-  }
+  })());
 
   let esEmbajador = false;
-  if (tiposNecesarios.has("embajador")) {
+  if (tiposNecesarios.has("embajador")) tareas.push((async () => {
     const { count } = await supabase
       .from("duel_invites")
       .select("id", { count: "exact", head: true })
       .eq("creador_id", userId)
       .eq("estado", "usada");
     esEmbajador = (count ?? 0) > 0;
-  }
+  })());
 
   let chispasBalance = 0;
-  if (tiposNecesarios.has("chispas_balance")) {
+  if (tiposNecesarios.has("chispas_balance")) tareas.push((async () => {
     const { data: perfil } = await supabase.from("profiles").select("puntos_total").eq("id", userId).single();
     chispasBalance = perfil?.puntos_total ?? 0;
-  }
+  })());
 
   // ---------- Trastienda (M3, 0123) ----------
   // Solo se leen las tablas nuevas si algún título pendiente las necesita.
@@ -152,7 +155,7 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
     tiposNecesarios.has("trastienda_apuestas_totales") ||
     tiposNecesarios.has("trastienda_payout_total") ||
     tiposNecesarios.has("trastienda_neto_positivo");
-  if (taNecesario) {
+  if (taNecesario) tareas.push((async () => {
     const { data: apuestas } = await supabase
       .from("trastienda_apuestas")
       .select("estado, resultado_final, monto, multiplier, payout")
@@ -174,13 +177,13 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
         break; // una perdida corta la racha
       }
     }
-  }
+  })());
 
   let tpGanadas = 0;
   let tpRachaGanadas = 0;
   const tpNecesario =
     tiposNecesarios.has("trastienda_predicciones_ganadas") || tiposNecesarios.has("trastienda_predicciones_racha");
-  if (tpNecesario) {
+  if (tpNecesario) tareas.push((async () => {
     const { data: predicciones } = await supabase
       .from("trastienda_predicciones_ranking")
       .select("estado")
@@ -195,7 +198,7 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
         break; // acertar es el estado que corta; las pendientes quedan al final
       }
     }
-  }
+  })());
 
   // mundo_completado y aprender_completo se calculan por mundo, solo
   // para los mundos que realmente hacen falta (no los 4 siempre).
@@ -203,7 +206,7 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
     pendientes.filter((t) => t.criterio.tipo === "mundo_completado").map((t) => (t.criterio as { mundo: string }).mundo)
   );
   const mundoCompletado = new Map<string, boolean>();
-  for (const mundo of mundosCompletadoNecesarios) {
+  for (const mundo of mundosCompletadoNecesarios) tareas.push((async () => {
     if (mundo === "numeria") {
       const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", TIPOS_NUMERIA);
       mundoCompletado.set(mundo, (rows ?? []).length === TIPOS_NUMERIA.length && (rows ?? []).every((r) => r.nivel >= 10));
@@ -255,13 +258,13 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
       const { data: rows } = await supabase.from("skill_levels").select("problem_type, nivel").eq("user_id", userId).in("problem_type", tipos);
       mundoCompletado.set(mundo, (rows ?? []).length === tipos.length && (rows ?? []).every((r) => r.nivel >= 10));
     }
-  }
+  })());
 
   const aprenderCompletoNecesarios = new Set(
     pendientes.filter((t) => t.criterio.tipo === "aprender_completo").map((t) => (t.criterio as { mundo: string }).mundo)
   );
   const aprenderCompleto = new Map<string, boolean>();
-  for (const mundo of aprenderCompletoNecesarios) {
+  for (const mundo of aprenderCompletoNecesarios) tareas.push((async () => {
     if (mundo === "enigmia") {
       const [{ count: total }, { count: dominadas }] = await Promise.all([
         supabase.from("logic_techniques").select("id", { count: "exact", head: true }),
@@ -274,7 +277,7 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
       const idsDelMundo = (tecnicasDelMundo ?? []).map((t) => t.id);
       if (idsDelMundo.length === 0) {
         aprenderCompleto.set(mundo, false);
-        continue;
+        return;
       }
       const { count: dominadas } = await supabase
         .from("technique_progress")
@@ -284,7 +287,9 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
         .in("technique_id", idsDelMundo);
       aprenderCompleto.set(mundo, (dominadas ?? 0) >= idsDelMundo.length);
     }
-  }
+  })());
+
+  await Promise.all(tareas);
 
   const desbloqueadosAhora: TituloCatalogo[] = [];
   for (const t of pendientes) {
@@ -323,15 +328,18 @@ export async function verificarTitulos(supabase: SupabaseClient, userId: string)
   // que pasar a `desbloquear_titulo_propio` (sin p_user_id, siempre
   // auth.uid() del lado del servidor) no cambia el comportamiento real
   // — solo saca la posibilidad de mandar un id ajeno.
-  for (const t of desbloqueadosAhora) {
-    await supabase.rpc("desbloquear_titulo_propio", { p_slug: t.slug, p_nombre: t.nombre, p_origen: t.categoria });
-    // Grupo B, Fase 2: completar un mundo (mismo criterio que el
-    // título "Maestro de X") también otorga el marco temático de ese
-    // mundo, gratis — ver 0104_marcos_tematicos_mundo.sql.
-    if (t.criterio.tipo === "mundo_completado") {
-      await supabase.rpc("otorgar_marco_mundo_propio", { p_mundo: t.criterio.mundo });
-    }
-  }
+  // Cada título es independiente de los demás: se otorgan en paralelo (2026-10-28).
+  await Promise.all(
+    desbloqueadosAhora.map(async (t) => {
+      await supabase.rpc("desbloquear_titulo_propio", { p_slug: t.slug, p_nombre: t.nombre, p_origen: t.categoria });
+      // Grupo B, Fase 2: completar un mundo (mismo criterio que el
+      // título "Maestro de X") también otorga el marco temático de ese
+      // mundo, gratis — ver 0104_marcos_tematicos_mundo.sql.
+      if (t.criterio.tipo === "mundo_completado") {
+        await supabase.rpc("otorgar_marco_mundo_propio", { p_mundo: t.criterio.mundo });
+      }
+    })
+  );
 
   return desbloqueadosAhora;
 }

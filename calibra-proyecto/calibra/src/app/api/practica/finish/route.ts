@@ -148,15 +148,33 @@ export async function POST(request: Request) {
   }
   const startedAtIso = startedAt.toISOString();
 
-  const { data: sprintRows, error: sprintError } = await supabase
-    .from("attempts")
-    .select("correct, time_ms, xp, problem_type")
-    .eq("user_id", user.id)
-    .gte("created_at", startedAtIso);
+  // Cierre rápido (2026-10-28): lo que no depende entre sí va en paralelo. Antes eran
+  // ~15 idas y vueltas en serie (más 50-70 de logros y títulos) y la pantalla de carga
+  // del final se hacía eterna. Orden real que se respeta:
+  //   1. las 3 lecturas previas (sprint, historial, días anteriores);
+  //   2. registrar_xp_diario -> consumir_boost (el registro lee el boost)  ||
+  //      duelo casual -> registrar_progreso_mundo -> hito del feed;
+  //   3. logros || títulos || cápsulas || apuesta (necesitan el día y el mundo ya sumados).
+  const [sprintRes, histRes, histDailyRes] = await Promise.all([
+    supabase.from("attempts").select("correct, time_ms, xp, problem_type").eq("user_id", user.id).gte("created_at", startedAtIso),
+    // Historial previo a este sprint. Cap defensivo: no hace falta traer
+    // millones de filas para calcular un promedio en una app de práctica.
+    supabase.from("attempts").select("correct, time_ms").eq("user_id", user.id).lt("created_at", startedAtIso).limit(5000),
+    supabase.from("daily_progress").select("xp_ganado").eq("user_id", user.id).lt("fecha", startedAtIso.slice(0, 10)),
+  ]);
 
-  if (sprintError) {
-    return respuestaError("practica/finish:sprint", sprintError);
+  if (sprintRes.error) {
+    return respuestaError("practica/finish:sprint", sprintRes.error);
   }
+  if (histRes.error) {
+    return respuestaError("practica/finish:hist", histRes.error);
+  }
+  if (histDailyRes.error) {
+    return respuestaError("practica/finish:histDaily", histDailyRes.error);
+  }
+  const sprintRows = sprintRes.data;
+  const histRows = histRes.data;
+  const histDaily = histDailyRes.data;
 
   // max(...) por las dudas de que total_problemas venga mal formado o
   // más chico que lo realmente respondido — nunca debería recortar
@@ -166,118 +184,104 @@ export async function POST(request: Request) {
   const sprintXp = sprintRows.reduce((acc, r) => acc + r.xp, 0);
   const sprintAvgTimeMs = promedio(sprintRows.map((r) => r.time_ms));
 
-  // Historial previo a este sprint. Cap defensivo: no hace falta traer
-  // millones de filas para calcular un promedio en una app de práctica.
-  const { data: histRows, error: histError } = await supabase
-    .from("attempts")
-    .select("correct, time_ms")
-    .eq("user_id", user.id)
-    .lt("created_at", startedAtIso)
-    .limit(5000);
-
-  if (histError) {
-    return respuestaError("practica/finish:hist", histError);
-  }
-
   const histTotal = histRows.length;
   const histCorrectos = histRows.filter((r) => r.correct).length;
   const histAvgTimeMs = promedio(histRows.map((r) => r.time_ms));
 
-  const { data: histDaily, error: histDailyError } = await supabase
-    .from("daily_progress")
-    .select("xp_ganado")
-    .eq("user_id", user.id)
-    .lt("fecha", startedAtIso.slice(0, 10));
-
-  if (histDailyError) {
-    return respuestaError("practica/finish:histDaily", histDailyError);
-  }
-
   const avgXpDiarioHistorico = promedio(histDaily.map((d) => d.xp_ganado));
 
-  const { data: registroRows, error: registroError } = await supabase.rpc(
-    "registrar_xp_diario",
-    { p_xp: sprintXp }
-  );
+  // Rama A: XP del día. El boost comprado en la tienda (si estaba activo) ya se
+  // aplicó partida por partida en /api/attempts y registrar_xp_diario lo lee —
+  // recién después de registrar lo apagamos.
+  const ramaRegistro = (async () => {
+    const r = await supabase.rpc("registrar_xp_diario", { p_xp: sprintXp });
+    if (!r.error) await supabase.rpc("consumir_boost_pendiente");
+    return r;
+  })();
+
+  // Rama B: nivel de mundo (no depende del XP del día; sale de los intentos reales).
+  const ramaMundo = (async () => {
+    let mundo = mundoDeProblemType(sprintRows[0]?.problem_type);
+
+    // Duelo casual en un mundo no comprado: no suma nivel de mundo (ver
+    // comentario de duel_id en FinishBody). Se resuelve SIEMPRE contra la
+    // fila real de `duels`, nunca contra lo que mande el body — así un
+    // cliente no puede mentir "es ranked" para esquivar esta regla.
+    if (mundo && body.duel_id) {
+      const { data: duelRow } = await supabase
+        .from("duels")
+        .select("mundo, clasificatorio, retador_id, retado_id")
+        .eq("id", body.duel_id)
+        .maybeSingle();
+
+      const esParticipante = !!duelRow && (duelRow.retador_id === user.id || duelRow.retado_id === user.id);
+      if (duelRow && esParticipante && !duelRow.clasificatorio) {
+        const { data: miProfile } = await supabase
+          .from("profiles")
+          .select("plan, mundos_desbloqueados")
+          .eq("id", user.id)
+          .single();
+        if (!tieneMundo(miProfile, duelRow.mundo)) {
+          mundo = null;
+        }
+      }
+    }
+
+    let nivelMundo: RegistrarPuntosMundoResult | null = null;
+    if (mundo && sprintXp > 0) {
+      const { data: mundoRows } = await supabase.rpc("registrar_progreso_mundo", { p_world: mundo, p_puntos: sprintXp });
+      nivelMundo = (mundoRows as RegistrarPuntosMundoResult[] | null)?.[0] ?? null;
+
+      // Fase 5 del feed: hito de nivel de mundo, no cada nivel — cada 5
+      // (1→5 no cuenta como hito, recién cruzar a un múltiplo de 5 sí).
+      // El "cruzar" (no solo "es múltiplo de 5") importa por si algún día
+      // el nivel pudiera saltar más de uno de una vez.
+      if (
+        nivelMundo &&
+        nivelMundo.nivel_mundo_out > nivelMundo.nivel_anterior &&
+        Math.floor(nivelMundo.nivel_mundo_out / 5) > Math.floor(nivelMundo.nivel_anterior / 5)
+      ) {
+        await supabase.from("feed_posts").insert({
+          user_id: user.id,
+          tipo: "nivel_mundo",
+          mundo,
+          nivel_mundo_valor: nivelMundo.nivel_mundo_out,
+        });
+      }
+    }
+    return { mundo, nivelMundo };
+  })();
+
+  const [{ data: registroRows, error: registroError }, { mundo, nivelMundo }] = await Promise.all([ramaRegistro, ramaMundo]);
 
   if (registroError) {
     return respuestaError("practica/finish:registro", registroError);
   }
 
-  // El boost comprado en la tienda (si estaba activo) ya se aplicó
-  // partida por partida en /api/attempts — recién ahora que la partida
-  // terminó lo apagamos.
-  await supabase.rpc("consumir_boost_pendiente");
-
   const registro = (registroRows as RegistrarXpDiarioResult[])[0];
 
-  let mundo = mundoDeProblemType(sprintRows[0]?.problem_type);
-
-  // Duelo casual en un mundo no comprado: no suma nivel de mundo (ver
-  // comentario de duel_id en FinishBody). Se resuelve SIEMPRE contra la
-  // fila real de `duels`, nunca contra lo que mande el body — así un
-  // cliente no puede mentir "es ranked" para esquivar esta regla.
-  if (mundo && body.duel_id) {
-    const { data: duelRow } = await supabase
-      .from("duels")
-      .select("mundo, clasificatorio, retador_id, retado_id")
-      .eq("id", body.duel_id)
-      .maybeSingle();
-
-    const esParticipante = !!duelRow && (duelRow.retador_id === user.id || duelRow.retado_id === user.id);
-    if (duelRow && esParticipante && !duelRow.clasificatorio) {
-      const { data: miProfile } = await supabase
-        .from("profiles")
-        .select("plan, mundos_desbloqueados")
-        .eq("id", user.id)
-        .single();
-      if (!tieneMundo(miProfile, duelRow.mundo)) {
-        mundo = null;
-      }
-    }
-  }
-
-  let nivelMundo: RegistrarPuntosMundoResult | null = null;
-  if (mundo && sprintXp > 0) {
-    const { data: mundoRows } = await supabase.rpc("registrar_progreso_mundo", { p_world: mundo, p_puntos: sprintXp });
-    nivelMundo = (mundoRows as RegistrarPuntosMundoResult[] | null)?.[0] ?? null;
-
-    // Fase 5 del feed: hito de nivel de mundo, no cada nivel — cada 5
-    // (1→5 no cuenta como hito, recién cruzar a un múltiplo de 5 sí).
-    // El "cruzar" (no solo "es múltiplo de 5") importa por si algún día
-    // el nivel pudiera saltar más de uno de una vez.
-    if (
-      nivelMundo &&
-      nivelMundo.nivel_mundo_out > nivelMundo.nivel_anterior &&
-      Math.floor(nivelMundo.nivel_mundo_out / 5) > Math.floor(nivelMundo.nivel_anterior / 5)
-    ) {
-      await supabase.from("feed_posts").insert({
-        user_id: user.id,
-        tipo: "nivel_mundo",
-        mundo,
-        nivel_mundo_valor: nivelMundo.nivel_mundo_out,
-      });
-    }
-  }
-
-  const logrosNuevos = await verificarLogros(supabase, user.id);
-  await verificarTitulos(supabase, user.id);
-
-  // Cápsulas (diaria, de nivel, de ciudad…): las otorga la base (0249); si todavía
-  // no está aplicada, no pasa nada.
-  await supabase.rpc("capsulas_pro_semana");
-  const { data: recompensasRows } = await supabase.rpc("revisar_recompensas");
-  const recompensas = (recompensasRows as { nuevas: number; pendientes: number }[] | null)?.[0] ?? null;
-
-  const sprintPrecision = precision(sprintTotal, sprintCorrectos);
+  // Ronda 3, todo junto. Cápsulas (diaria, de nivel, de ciudad…): las otorga la base
+  // (0249); si todavía no está aplicada, no pasa nada.
   // SEG-02 (migración 0241): resolver_apuesta_si_activa ya NO recibe la
   // precisión del cliente — la calcula ella misma con los attempts reales
   // desde que se hizo la apuesta, así que se llama siempre, sin condicionar
   // a si este sprint puntual tuvo intentos.
+  const [logrosNuevos, , recompensas, apuestaRes] = await Promise.all([
+    verificarLogros(supabase, user.id),
+    verificarTitulos(supabase, user.id),
+    (async () => {
+      await supabase.rpc("capsulas_pro_semana");
+      const { data: recompensasRows } = await supabase.rpc("revisar_recompensas");
+      return (recompensasRows as { nuevas: number; pendientes: number }[] | null)?.[0] ?? null;
+    })(),
+    supabase.rpc("resolver_apuesta_si_activa"),
+  ]);
+
   let apuesta = null;
-  const { data: apuestaRows } = await supabase.rpc("resolver_apuesta_si_activa");
-  const filaApuesta = (apuestaRows as Array<Record<string, unknown>> | null)?.[0];
+  const filaApuesta = (apuestaRes.data as Array<Record<string, unknown>> | null)?.[0];
   if (filaApuesta?.resuelta) apuesta = filaApuesta;
+
+  const sprintPrecision = precision(sprintTotal, sprintCorrectos);
 
   return NextResponse.json({
     sprint: {

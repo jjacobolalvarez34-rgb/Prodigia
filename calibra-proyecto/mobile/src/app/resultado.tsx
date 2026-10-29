@@ -12,7 +12,7 @@ import { sonar, vibrar } from "~/lib/efectos";
 import { recargarJugador, useJugador } from "~/lib/jugador";
 import { anuncioEntrePartidas, contarPartida } from "~/lib/publicidad";
 import { totalPendientes, usePendientes } from "~/lib/recompensas";
-import type { ResultadoPartida } from "~/lib/partida";
+import { useExtrasPartida, type ResultadoPartida } from "~/lib/partida";
 import Anillo from "~/ui/Anillo";
 import Barra from "~/ui/Barra";
 import Boton3D from "~/ui/Boton3D";
@@ -98,6 +98,11 @@ export default function Resultado() {
   const mundo = MUNDO_POR_SLUG[(params.mundo ?? "numeria") as MundoSlug] ?? MUNDO_POR_SLUG.numeria;
   const [d] = useState(() => JSON.parse(params.datos ?? "{}") as Datos);
   const [paso, setPaso] = useState(0);
+  // Los logros se terminan de contar con esta pantalla abierta (cierre rápido, 2026-10-28):
+  // llegan antes de su paso casi siempre y, si no, aparecen suaves cuando estén.
+  const extras = useExtrasPartida(d.cierreId);
+  const logros = d.logros?.length ? d.logros : extras.logros;
+  const sonoLogro = useRef(false);
   // El duelo puede resolverse con la pantalla abierta (el rival termina después).
   const [duelo, setDuelo] = useState<ResultadoDuelo | null>(d.duelo ?? null);
   // Después de un duelo se vuelve a Competir (o a Social si fue con un amigo), no a la ciudad.
@@ -146,11 +151,16 @@ export default function Resultado() {
       sonar("racha");
       vibrar.exito();
     }
-    if (paso === 5 && d.logros?.length && !d.nivelCuentaSubio) {
+  }, [paso]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Logro: suena al llegar a su paso, o cuando llega si el paso ya pasó.
+  useEffect(() => {
+    if (paso >= 5 && logros.length > 0 && !d.nivelCuentaSubio && !sonoLogro.current) {
+      sonoLogro.current = true;
       sonar("logro");
       vibrar.fuerte();
     }
-  }, [paso]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [paso, logros.length, d.nivelCuentaSubio]);
 
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -401,23 +411,25 @@ export default function Resultado() {
                   </View>
                 </Tarjeta>
               )}
-              {(d.logros ?? []).map((l) => (
-                <Tarjeta key={l.nombre} sinEntrada acento={color.logro} brillo={0.3}>
-                  <View style={styles.fila}>
-                    <Animated.View entering={ZoomIn.duration(320)} style={styles.medalla}>
-                      <IconoCheck tam={20} c="#3A2600" />
-                    </Animated.View>
-                    <View style={{ flex: 1 }}>
-                      <Texto v="micro" c={color.logro}>
-                        Logro desbloqueado
-                      </Texto>
-                      <Texto v="h3">{l.nombre}</Texto>
-                      <Texto v="nota" tam={12}>
-                        {l.descripcion}
-                      </Texto>
+              {logros.map((l) => (
+                <Animated.View key={l.nombre} entering={FadeIn.duration(350)}>
+                  <Tarjeta sinEntrada acento={color.logro} brillo={0.3}>
+                    <View style={styles.fila}>
+                      <Animated.View entering={ZoomIn.duration(320)} style={styles.medalla}>
+                        <IconoCheck tam={20} c="#3A2600" />
+                      </Animated.View>
+                      <View style={{ flex: 1 }}>
+                        <Texto v="micro" c={color.logro}>
+                          Logro desbloqueado
+                        </Texto>
+                        <Texto v="h3">{l.nombre}</Texto>
+                        <Texto v="nota" tam={12}>
+                          {l.descripcion}
+                        </Texto>
+                      </View>
                     </View>
-                  </View>
-                </Tarjeta>
+                  </Tarjeta>
+                </Animated.View>
               ))}
             </View>
           </Paso>

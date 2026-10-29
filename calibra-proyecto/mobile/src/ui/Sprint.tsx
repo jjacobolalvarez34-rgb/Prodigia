@@ -708,6 +708,10 @@ function Porcentaje({ progreso, acento }: { progreso: number; acento: string }) 
   );
 }
 
+// Lo mínimo que se ve el cartel del final antes de ir al resultado (2026-10-28): antes
+// eran 1,1 s fijos sumados a un cierre lento; ahora alcanza para leer "¡Listo!".
+export const MIN_CARTEL_FINAL_MS = 450;
+
 // Pantalla de carga del final (partida o reto): opaca, con la ciudad de fondo (2026-10-13),
 // para que no se vea la pregunta por debajo. `semilla`: la ciudad que se dibuja.
 export function CartelFinal({ texto, nota, acento = color.primarioNeon, progreso = 0, semilla = "prodigia" }: { texto: string; nota: string; acento?: string; progreso?: number; semilla?: string }) {
@@ -722,7 +726,7 @@ export function CartelFinal({ texto, nota, acento = color.primarioNeon, progreso
   const estiloTexto = useAnimatedStyle(() => ({ opacity: Math.min(1, entrada.value * 1.5), transform: [{ scale: 0.7 + entrada.value * 0.3 }] }));
   return (
     <SobreOscuro>
-      <Animated.View entering={FadeIn.duration(420)} style={styles.cuenta} pointerEvents="none">
+      <Animated.View entering={FadeIn.duration(220)} style={styles.cuenta} pointerEvents="none">
         <FondoCiudad semilla={semilla} acento={acento} />
         <View style={{ alignItems: "center", gap: 18, marginBottom: 140 }}>
           <Animated.View style={estiloTexto}>

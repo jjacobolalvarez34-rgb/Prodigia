@@ -67,98 +67,108 @@ export async function POST(request: Request) {
   }
   const startedAtIso = startedAt.toISOString();
 
-  const { data: partidaRows, error: partidaError } = await supabase
-    .from("logic_attempts")
-    .select("correct, time_ms, xp")
-    .eq("user_id", user.id)
-    .gte("created_at", startedAtIso);
+  // Cierre rápido (2026-10-28): lo independiente va en paralelo. Antes eran ~10 idas
+  // y vueltas en serie (más las de logros y títulos) antes de mostrar el resumen.
+  //   1. partida || historial;
+  //   2. registrar_xp_diario -> consumir_boost (el registro lee el boost)  ||
+  //      duelo casual -> registrar_progreso_mundo -> hito del feed;
+  //   3. logros || títulos || apuesta (necesitan el día y el mundo ya sumados).
+  const [partidaRes, histRes] = await Promise.all([
+    supabase.from("logic_attempts").select("correct, time_ms, xp").eq("user_id", user.id).gte("created_at", startedAtIso),
+    supabase.from("logic_attempts").select("correct, time_ms").eq("user_id", user.id).lt("created_at", startedAtIso).limit(5000),
+  ]);
 
-  if (partidaError) {
-    return respuestaError("enigmia/finish:partida", partidaError);
+  if (partidaRes.error) {
+    return respuestaError("enigmia/finish:partida", partidaRes.error);
   }
+  const partidaRows = partidaRes.data;
+  const histRows = histRes.data;
 
   const total = Math.max(partidaRows.length, body.total_problemas || 0);
   const correctos = partidaRows.filter((r) => r.correct).length;
   const xpGanado = partidaRows.reduce((acc, r) => acc + r.xp, 0);
   const avgTimeMs = promedio(partidaRows.map((r) => r.time_ms));
 
-  const { data: histRows } = await supabase
-    .from("logic_attempts")
-    .select("correct, time_ms")
-    .eq("user_id", user.id)
-    .lt("created_at", startedAtIso)
-    .limit(5000);
-
   const histTotal = histRows?.length ?? 0;
   const histCorrectos = (histRows ?? []).filter((r) => r.correct).length;
   const histAvgTimeMs = promedio((histRows ?? []).map((r) => r.time_ms));
 
-const { data: registroRows, error: registroError } = await supabase.rpc("registrar_xp_diario", {
-    p_xp: xpGanado,
-  });
+  // Rama A: XP del día; el boost se apaga recién después de registrar (lo lee).
+  const ramaRegistro = (async () => {
+    const r = await supabase.rpc("registrar_xp_diario", { p_xp: xpGanado });
+    if (!r.error) await supabase.rpc("consumir_boost_pendiente");
+    return r;
+  })();
+
+  // Rama B: nivel de mundo, siempre "enigmia" acá — a diferencia de
+  // /api/practica/finish no hace falta derivar el mundo del problem_type
+  // (Fase DD2). No depende del XP del día: sale de los intentos reales.
+  const ramaMundo = (async () => {
+    let sumaNivelMundo = true;
+    if (body.duel_id) {
+      const { data: duelRow } = await supabase
+        .from("duels")
+        .select("clasificatorio, retador_id, retado_id")
+        .eq("id", body.duel_id)
+        .maybeSingle();
+      const esParticipante = !!duelRow && (duelRow.retador_id === user.id || duelRow.retado_id === user.id);
+      if (duelRow && esParticipante && !duelRow.clasificatorio) {
+        const { data: miProfile } = await supabase
+          .from("profiles")
+          .select("plan, mundos_desbloqueados")
+          .eq("id", user.id)
+          .single();
+        if (!tieneMundo(miProfile, "enigmia")) {
+          sumaNivelMundo = false;
+        }
+      }
+    }
+
+    let nivelMundo: RegistrarPuntosMundoResult | null = null;
+    if (xpGanado > 0 && sumaNivelMundo) {
+      const { data: mundoRows } = await supabase.rpc("registrar_progreso_mundo", { p_world: "enigmia", p_puntos: xpGanado });
+      nivelMundo = (mundoRows as RegistrarPuntosMundoResult[] | null)?.[0] ?? null;
+
+      // Auditoría de paridad (Fase 1, 2026-08-27): a diferencia de
+      // /api/practica/finish, este endpoint nunca publicaba el hito de
+      // "subiste de nivel de mundo" en el feed — mismo criterio que ahí,
+      // cada 5 niveles, solo al CRUZAR el múltiplo (no en cada nivel).
+      if (
+        nivelMundo &&
+        nivelMundo.nivel_mundo_out > nivelMundo.nivel_anterior &&
+        Math.floor(nivelMundo.nivel_mundo_out / 5) > Math.floor(nivelMundo.nivel_anterior / 5)
+      ) {
+        await supabase.from("feed_posts").insert({
+          user_id: user.id,
+          tipo: "nivel_mundo",
+          mundo: "enigmia",
+          nivel_mundo_valor: nivelMundo.nivel_mundo_out,
+        });
+      }
+    }
+    return nivelMundo;
+  })();
+
+  const [{ data: registroRows, error: registroError }, nivelMundo] = await Promise.all([ramaRegistro, ramaMundo]);
 
   if (registroError) {
     return respuestaError("enigmia/finish:registro", registroError);
   }
 
-  await supabase.rpc("consumir_boost_pendiente");
-
   const registro = (registroRows as RegistrarXpDiarioResult[])[0];
 
-  // Fase DD2: nivel de mundo, siempre "enigmia" acá — a diferencia de
-  // /api/practica/finish no hace falta derivar el mundo del problem_type.
-  let sumaNivelMundo = true;
-  if (body.duel_id) {
-    const { data: duelRow } = await supabase
-      .from("duels")
-      .select("clasificatorio, retador_id, retado_id")
-      .eq("id", body.duel_id)
-      .maybeSingle();
-    const esParticipante = !!duelRow && (duelRow.retador_id === user.id || duelRow.retado_id === user.id);
-    if (duelRow && esParticipante && !duelRow.clasificatorio) {
-      const { data: miProfile } = await supabase
-        .from("profiles")
-        .select("plan, mundos_desbloqueados")
-        .eq("id", user.id)
-        .single();
-      if (!tieneMundo(miProfile, "enigmia")) {
-        sumaNivelMundo = false;
-      }
-    }
-  }
-
-  let nivelMundo: RegistrarPuntosMundoResult | null = null;
-  if (xpGanado > 0 && sumaNivelMundo) {
-    const { data: mundoRows } = await supabase.rpc("registrar_progreso_mundo", { p_world: "enigmia", p_puntos: xpGanado });
-    nivelMundo = (mundoRows as RegistrarPuntosMundoResult[] | null)?.[0] ?? null;
-
-    // Auditoría de paridad (Fase 1, 2026-08-27): a diferencia de
-    // /api/practica/finish, este endpoint nunca publicaba el hito de
-    // "subiste de nivel de mundo" en el feed — mismo criterio que ahí,
-    // cada 5 niveles, solo al CRUZAR el múltiplo (no en cada nivel).
-    if (
-      nivelMundo &&
-      nivelMundo.nivel_mundo_out > nivelMundo.nivel_anterior &&
-      Math.floor(nivelMundo.nivel_mundo_out / 5) > Math.floor(nivelMundo.nivel_anterior / 5)
-    ) {
-      await supabase.from("feed_posts").insert({
-        user_id: user.id,
-        tipo: "nivel_mundo",
-        mundo: "enigmia",
-        nivel_mundo_valor: nivelMundo.nivel_mundo_out,
-      });
-    }
-  }
-
-  const logrosNuevos = await verificarLogros(supabase, user.id);
-  await verificarTitulos(supabase, user.id);
-
-  const partidaPrecision = precision(total, correctos);
   // SEG-02 (migración 0241): resolver_apuesta_si_activa ya NO recibe la
   // precisión del cliente — la calcula ella misma con los attempts/
-  // logic_attempts reales desde que se hizo la apuesta.
+  // logic_attempts reales desde que se hizo la apuesta. Logros, títulos y
+  // apuesta no dependen entre sí: van en paralelo (cierre rápido, 2026-10-28).
+  const [logrosNuevos, , { data: apuestaRows }] = await Promise.all([
+    verificarLogros(supabase, user.id),
+    verificarTitulos(supabase, user.id),
+    supabase.rpc("resolver_apuesta_si_activa"),
+  ]);
+
+  const partidaPrecision = precision(total, correctos);
   let apuesta = null;
-  const { data: apuestaRows } = await supabase.rpc("resolver_apuesta_si_activa");
   const filaApuesta = (apuestaRows as Array<Record<string, unknown>> | null)?.[0];
   if (filaApuesta?.resuelta) apuesta = filaApuesta;
 

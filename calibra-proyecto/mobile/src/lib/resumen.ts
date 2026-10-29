@@ -38,13 +38,32 @@ function hoyEnBase(): string {
 // Racha de días: se deriva de daily_progress, igual que la web (calcularRachaDiaria).
 // profiles.streak_dias no la escribe nada en la base y siempre valía 0 (2026-10-12).
 export async function rachaDelJugador(userId: string): Promise<number> {
+  return rachaDeFilas(await filasRacha(userId));
+}
+
+export interface FilaRacha {
+  fecha: string;
+  meta_alcanzada: boolean;
+  congelado: boolean;
+}
+
+// Los últimos 60 días de daily_progress, para calcular la racha sin volver a pedirlos.
+export async function filasRacha(userId: string): Promise<FilaRacha[]> {
   const { data } = await supabase
     .from("daily_progress")
     .select("fecha, meta_alcanzada, congelado")
     .eq("user_id", userId)
     .order("fecha", { ascending: false })
     .limit(60);
-  return calcularRachaDiaria((data as { fecha: string; meta_alcanzada: boolean; congelado: boolean | null }[] | null)?.map((d) => ({ ...d, congelado: !!d.congelado })) ?? [], hoyEnBase());
+  return (data as { fecha: string; meta_alcanzada: boolean; congelado: boolean | null }[] | null)?.map((d) => ({ ...d, congelado: !!d.congelado })) ?? [];
+}
+
+// `metaHoy`: la meta de hoy recién alcanzada (lo que devuelve registrar_xp_diario), para
+// saber la racha de después de una partida sin pedir las filas otra vez.
+export function rachaDeFilas(filas: FilaRacha[], metaHoy = false): number {
+  const hoy = hoyEnBase();
+  const conHoy = metaHoy ? [...filas.filter((f) => f.fecha !== hoy), { fecha: hoy, meta_alcanzada: true, congelado: filas.find((f) => f.fecha === hoy)?.congelado ?? false }] : filas;
+  return calcularRachaDiaria(conHoy, hoy);
 }
 
 // Consulta todo en paralelo. Las RPC de mensajes (0198/0224) y novedades (0065) se

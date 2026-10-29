@@ -16,7 +16,7 @@ import { useSesion } from "~/lib/sesion";
 import { mensajeError, supabase } from "~/lib/supabase";
 import Glifos from "~/ui/Glifos";
 import RachaDeFondo from "~/ui/RachaDeFondo";
-import { animarAcierto, animarError, BarraRival, Cabecera, CartelFinal, Consumibles, CuentaInicio, Flotante, opcionesADescartar, Progreso, TarjetaProblema, useConsumibles, useReloj, useSalida } from "~/ui/Sprint";
+import { animarAcierto, animarError, BarraRival, Cabecera, CartelFinal, Consumibles, CuentaInicio, Flotante, MIN_CARTEL_FINAL_MS, opcionesADescartar, Progreso, TarjetaProblema, useConsumibles, useReloj, useSalida } from "~/ui/Sprint";
 import { CuerpoPregunta, esRespuestaCorrecta, OpcionesPregunta, TecladoPregunta, type Feedback } from "~/ui/PreguntaVista";
 import Texto from "~/ui/Texto";
 import { color, MUNDO_POR_SLUG, type MundoSlug } from "~/tema";
@@ -195,10 +195,13 @@ export default function SprintMundo() {
     vibrar.exito();
     salir();
     setProgresoFinal(0.25);
-    const minimo = new Promise((r) => setTimeout(r, 1100));
-    await Promise.allSettled(pendientesRef.current);
-    setProgresoFinal(0.55);
+    // Cierre rápido (2026-10-28): el cartel queda lo justo para leerse y el cierre
+    // devuelve apenas está lo esencial; logros, cápsulas y demás se cuentan con el
+    // resultado ya en pantalla (ver cerrarPartida).
+    const minimo = new Promise((r) => setTimeout(r, MIN_CARTEL_FINAL_MS));
+    const subidos = Promise.allSettled(pendientesRef.current).then(() => setProgresoFinal(0.55));
     if (demo) {
+      await subidos;
       cerrarPartida(xpRef.current, def.slug).catch(() => undefined);
       await minimo;
       setProgresoFinal(1);
@@ -206,15 +209,17 @@ export default function SprintMundo() {
       return;
     }
     try {
-      const r = await cerrarPartida(xpRef.current, def.slug, dueloId ?? undefined);
-      setProgresoFinal(0.85);
       const correctos = respuestasRef.current.filter((x) => x.correct).length;
       const tot = Math.max(total, respuestasRef.current.length);
-      let resultadoDuelo = null;
-      if (dueloId && duelo) {
-        const tiempos = respuestasRef.current.map((x) => x.timeMs);
-        resultadoDuelo = await registrarResultadoDuelo(dueloId, correctos / tot, tiempos.length ? tiempos.reduce((a, b) => a + b, 0) / tiempos.length : 0, xpRef.current, respuestasRef.current);
-      }
+      const tiempos = respuestasRef.current.map((x) => x.timeMs);
+      // El resultado del duelo no depende del cierre: van juntos.
+      const [r, resultadoDuelo] = await Promise.all([
+        cerrarPartida(() => xpRef.current, def.slug, dueloId ?? undefined, subidos).then((x) => {
+          setProgresoFinal(0.85);
+          return x;
+        }),
+        dueloId && duelo ? subidos.then(() => registrarResultadoDuelo(dueloId, correctos / tot, tiempos.length ? tiempos.reduce((a, b) => a + b, 0) / tiempos.length : 0, xpRef.current, respuestasRef.current)) : Promise.resolve(null),
+      ]);
       await minimo;
       setProgresoFinal(1);
       if (dueloId && duelo?.serieId) {

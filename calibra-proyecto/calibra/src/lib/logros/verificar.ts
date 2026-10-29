@@ -17,12 +17,15 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
   const pendientes = (achievements ?? []).filter((a) => !idsDesbloqueados.has(a.id)) as Achievement[];
   if (pendientes.length === 0) return [];
 
-  // Solo se calculan las métricas que realmente hacen falta, una vez.
+  // Solo se calculan las métricas que realmente hacen falta, una vez, y todas en
+  // paralelo (2026-10-28): antes iban de a una y con 40-50 tipos pendientes el cierre
+  // de partida esperaba decenas de idas y vueltas a la base.
+  const tareas: Promise<void>[] = [];
   const tiposNecesarios = new Set(pendientes.map((a) => a.criterio.tipo));
   const hoyIso = new Date().toISOString().slice(0, 10);
 
   let rachaDias = 0;
-  if (tiposNecesarios.has("racha_dias")) {
+  if (tiposNecesarios.has("racha_dias")) tareas.push((async () => {
     const { data: dailyRows } = await supabase
       .from("daily_progress")
       .select("fecha, meta_alcanzada")
@@ -30,19 +33,19 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .order("fecha", { ascending: false })
       .limit(120);
     rachaDias = calcularRachaDiaria(dailyRows ?? [], hoyIso);
-  }
+  })());
 
   let problemasTotales = 0;
-  if (tiposNecesarios.has("problemas_totales")) {
+  if (tiposNecesarios.has("problemas_totales")) tareas.push((async () => {
     const { count } = await supabase
       .from("attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId);
     problemasTotales = count ?? 0;
-  }
+  })());
 
   let precisionSemana: number | null = null;
-  if (tiposNecesarios.has("precision_semana")) {
+  if (tiposNecesarios.has("precision_semana")) tareas.push((async () => {
     const inicioSemana = new Date();
     const dia = inicioSemana.getDay();
     const diffAlLunes = dia === 0 ? 6 : dia - 1;
@@ -60,67 +63,67 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
     if (attemptsSemana && attemptsSemana.length >= 20) {
       precisionSemana = attemptsSemana.filter((a) => a.correct).length / attemptsSemana.length;
     }
-  }
+  })());
 
   let tecnicasDominadas = 0;
-  if (tiposNecesarios.has("tecnicas_dominadas")) {
+  if (tiposNecesarios.has("tecnicas_dominadas")) tareas.push((async () => {
     const { count } = await supabase
       .from("technique_progress")
       .select("technique_id", { count: "exact", head: true })
       .eq("user_id", userId)
       .eq("dominado", true);
     tecnicasDominadas = count ?? 0;
-  }
+  })());
 
   let logicaProblemasTotales = 0;
-  if (tiposNecesarios.has("logica_problemas_totales")) {
+  if (tiposNecesarios.has("logica_problemas_totales")) tareas.push((async () => {
     const { count } = await supabase
       .from("logic_attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId);
     logicaProblemasTotales = count ?? 0;
-  }
+  })());
 
   let logicaTecnicasDominadas = 0;
-  if (tiposNecesarios.has("logica_tecnicas_dominadas")) {
+  if (tiposNecesarios.has("logica_tecnicas_dominadas")) tareas.push((async () => {
     const { count } = await supabase
       .from("logic_technique_progress")
       .select("technique_id", { count: "exact", head: true })
       .eq("user_id", userId)
       .eq("dominado", true);
     logicaTecnicasDominadas = count ?? 0;
-  }
+  })());
 
   let duelosGanados = 0;
-  if (tiposNecesarios.has("duelos_ganados")) {
+  if (tiposNecesarios.has("duelos_ganados")) tareas.push((async () => {
     const { count } = await supabase
       .from("duels")
       .select("id", { count: "exact", head: true })
       .eq("ganador_id", userId)
       .eq("clasificatorio", true);
     duelosGanados = count ?? 0;
-  }
+  })());
 
   // Fase 12 (Rankeds): rango alcanzado — se compara directo contra
   // profiles.elo_rating, no hace falta guardar nada aparte.
   let eloActual = 0;
-  if (tiposNecesarios.has("elo_minimo") || tiposNecesarios.has("rango_prodigio")) {
+  if (tiposNecesarios.has("elo_minimo") || tiposNecesarios.has("rango_prodigio")) tareas.push((async () => {
     const { data: perfilElo } = await supabase.from("profiles").select("elo_rating").eq("id", userId).single();
     eloActual = perfilElo?.elo_rating ?? 0;
-  }
+  })());
   // Prodigio (0302): estar en el top 100 con 2000 o más (umbral_prodigio() de la base).
   let umbralProdigio = Number.POSITIVE_INFINITY;
-  if (tiposNecesarios.has("rango_prodigio")) {
+  if (tiposNecesarios.has("rango_prodigio")) tareas.push((async () => {
     const { data: umbral } = await supabase.rpc("umbral_prodigio");
     if (typeof umbral === "number") umbralProdigio = umbral;
-  }
+  })());
 
   // Racha de duelos ganados SEGUIDOS, contando desde el más reciente
   // hacia atrás — se corta apenas aparece uno que no fue victoria
   // (derrota o empate). No distingue mundo/modo a propósito: "3
   // seguidas" es sobre duelos en general, no por ciudad.
   let rachaDuelosGanados = 0;
-  if (tiposNecesarios.has("racha_duelos_ganados")) {
+  if (tiposNecesarios.has("racha_duelos_ganados")) tareas.push((async () => {
     const { data: duelosRows } = await supabase
       .from("duels")
       .select("ganador_id, creado_at")
@@ -133,7 +136,7 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       if (d.ganador_id === userId) rachaDuelosGanados++;
       else break;
     }
-  }
+  })());
 
   // Sección 5 (auditoría de variedad): "quimia_problemas_totales" y
   // "quimia_modos_variados" cuentan sobre los 5 modos (los 2 nuevos
@@ -144,27 +147,27 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
   const TIPOS_QUIMIA = ["quimia_simbolos", "quimia_formulas", "quimia_tabla", "quimia_nomenclatura", "quimia_organica"];
 
   let quimiaProblemasTotales = 0;
-  if (tiposNecesarios.has("quimia_problemas_totales")) {
+  if (tiposNecesarios.has("quimia_problemas_totales")) tareas.push((async () => {
     const { count } = await supabase
       .from("attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
       .in("problem_type", TIPOS_QUIMIA);
     quimiaProblemasTotales = count ?? 0;
-  }
+  })());
 
   let quimiaModosVariados = 0;
-  if (tiposNecesarios.has("quimia_modos_variados")) {
+  if (tiposNecesarios.has("quimia_modos_variados")) tareas.push((async () => {
     const { data: quimiaRows } = await supabase
       .from("attempts")
       .select("problem_type")
       .eq("user_id", userId)
       .in("problem_type", TIPOS_QUIMIA);
     quimiaModosVariados = new Set((quimiaRows ?? []).map((r) => r.problem_type)).size;
-  }
+  })());
 
   let quimiaNivelMundo = 0;
-  if (tiposNecesarios.has("quimia_nivel_mundo")) {
+  if (tiposNecesarios.has("quimia_nivel_mundo")) tareas.push((async () => {
     const { data: worldRow } = await supabase
       .from("world_progress")
       .select("nivel_mundo")
@@ -172,34 +175,34 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .eq("world", "quimia")
       .maybeSingle();
     quimiaNivelMundo = worldRow?.nivel_mundo ?? 0;
-  }
+  })());
 
   // Auditoría de mundo nuevo (2026-08-23): Anatomía nunca tuvo criterios
   // propios acá, a diferencia de Quimia — mismo patrón, sus 4 modos.
   const TIPOS_ANATOMIA = ["anatomia_oseo", "anatomia_muscular", "anatomia_organos", "anatomia_nervioso"];
 
   let anatomiaProblemasTotales = 0;
-  if (tiposNecesarios.has("anatomia_problemas_totales")) {
+  if (tiposNecesarios.has("anatomia_problemas_totales")) tareas.push((async () => {
     const { count } = await supabase
       .from("attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
       .in("problem_type", TIPOS_ANATOMIA);
     anatomiaProblemasTotales = count ?? 0;
-  }
+  })());
 
   let anatomiaModosVariados = 0;
-  if (tiposNecesarios.has("anatomia_modos_variados")) {
+  if (tiposNecesarios.has("anatomia_modos_variados")) tareas.push((async () => {
     const { data: anatomiaRows } = await supabase
       .from("attempts")
       .select("problem_type")
       .eq("user_id", userId)
       .in("problem_type", TIPOS_ANATOMIA);
     anatomiaModosVariados = new Set((anatomiaRows ?? []).map((r) => r.problem_type)).size;
-  }
+  })());
 
   let anatomiaNivelMundo = 0;
-  if (tiposNecesarios.has("anatomia_nivel_mundo")) {
+  if (tiposNecesarios.has("anatomia_nivel_mundo")) tareas.push((async () => {
     const { data: worldRow } = await supabase
       .from("world_progress")
       .select("nivel_mundo")
@@ -207,33 +210,33 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .eq("world", "anatomia")
       .maybeSingle();
     anatomiaNivelMundo = worldRow?.nivel_mundo ?? 0;
-  }
+  })());
 
   // Mundo Melodía (Fase 1, 2026-08-24): mismo patrón que Anatomía, sus 5 modos.
   const TIPOS_MELODIA = ["melodia_fundamentos", "melodia_lectura", "melodia_alteraciones", "melodia_escalas", "melodia_acordes", "melodia_oido_absoluto", "melodia_tempo"];
 
   let melodiaProblemasTotales = 0;
-  if (tiposNecesarios.has("melodia_problemas_totales")) {
+  if (tiposNecesarios.has("melodia_problemas_totales")) tareas.push((async () => {
     const { count } = await supabase
       .from("attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
       .in("problem_type", TIPOS_MELODIA);
     melodiaProblemasTotales = count ?? 0;
-  }
+  })());
 
   let melodiaModosVariados = 0;
-  if (tiposNecesarios.has("melodia_modos_variados")) {
+  if (tiposNecesarios.has("melodia_modos_variados")) tareas.push((async () => {
     const { data: melodiaRows } = await supabase
       .from("attempts")
       .select("problem_type")
       .eq("user_id", userId)
       .in("problem_type", TIPOS_MELODIA);
     melodiaModosVariados = new Set((melodiaRows ?? []).map((r) => r.problem_type)).size;
-  }
+  })());
 
   let melodiaNivelMundo = 0;
-  if (tiposNecesarios.has("melodia_nivel_mundo")) {
+  if (tiposNecesarios.has("melodia_nivel_mundo")) tareas.push((async () => {
     const { data: worldRow } = await supabase
       .from("world_progress")
       .select("nivel_mundo")
@@ -241,33 +244,33 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .eq("world", "melodia")
       .maybeSingle();
     melodiaNivelMundo = worldRow?.nivel_mundo ?? 0;
-  }
+  })());
 
   // Mundo Trigonometría — mismo patrón que Melodía, sus 4 modos.
   const TIPOS_TRIGONOMETRIA = ["trigonometria_razones", "trigonometria_circulo", "trigonometria_identidades", "trigonometria_leyes"];
 
   let trigonometriaProblemasTotales = 0;
-  if (tiposNecesarios.has("trigonometria_problemas_totales")) {
+  if (tiposNecesarios.has("trigonometria_problemas_totales")) tareas.push((async () => {
     const { count } = await supabase
       .from("attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
       .in("problem_type", TIPOS_TRIGONOMETRIA);
     trigonometriaProblemasTotales = count ?? 0;
-  }
+  })());
 
   let trigonometriaModosVariados = 0;
-  if (tiposNecesarios.has("trigonometria_modos_variados")) {
+  if (tiposNecesarios.has("trigonometria_modos_variados")) tareas.push((async () => {
     const { data: trigonometriaRows } = await supabase
       .from("attempts")
       .select("problem_type")
       .eq("user_id", userId)
       .in("problem_type", TIPOS_TRIGONOMETRIA);
     trigonometriaModosVariados = new Set((trigonometriaRows ?? []).map((r) => r.problem_type)).size;
-  }
+  })());
 
   let trigonometriaNivelMundo = 0;
-  if (tiposNecesarios.has("trigonometria_nivel_mundo")) {
+  if (tiposNecesarios.has("trigonometria_nivel_mundo")) tareas.push((async () => {
     const { data: worldRow } = await supabase
       .from("world_progress")
       .select("nivel_mundo")
@@ -275,33 +278,33 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .eq("world", "trigonometria")
       .maybeSingle();
     trigonometriaNivelMundo = worldRow?.nivel_mundo ?? 0;
-  }
+  })());
 
   // Mundo Historia — mismo patrón que Trigonometría, sus 4 modos.
   const TIPOS_HISTORIA = ["historia_cronologia", "historia_personajes", "historia_causaefecto", "historia_fechas"];
 
   let historiaProblemasTotales = 0;
-  if (tiposNecesarios.has("historia_problemas_totales")) {
+  if (tiposNecesarios.has("historia_problemas_totales")) tareas.push((async () => {
     const { count } = await supabase
       .from("attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
       .in("problem_type", TIPOS_HISTORIA);
     historiaProblemasTotales = count ?? 0;
-  }
+  })());
 
   let historiaModosVariados = 0;
-  if (tiposNecesarios.has("historia_modos_variados")) {
+  if (tiposNecesarios.has("historia_modos_variados")) tareas.push((async () => {
     const { data: historiaRows } = await supabase
       .from("attempts")
       .select("problem_type")
       .eq("user_id", userId)
       .in("problem_type", TIPOS_HISTORIA);
     historiaModosVariados = new Set((historiaRows ?? []).map((r) => r.problem_type)).size;
-  }
+  })());
 
   let historiaNivelMundo = 0;
-  if (tiposNecesarios.has("historia_nivel_mundo")) {
+  if (tiposNecesarios.has("historia_nivel_mundo")) tareas.push((async () => {
     const { data: worldRow } = await supabase
       .from("world_progress")
       .select("nivel_mundo")
@@ -309,33 +312,33 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .eq("world", "historia")
       .maybeSingle();
     historiaNivelMundo = worldRow?.nivel_mundo ?? 0;
-  }
+  })());
 
   // Mundo Calculia — mismo patrón que Historia, sus 4 modos.
   const TIPOS_CALCULIA = ["calculia_derivadas", "calculia_integrales", "calculia_series", "calculia_multivariable"];
 
   let calculiaProblemasTotales = 0;
-  if (tiposNecesarios.has("calculia_problemas_totales")) {
+  if (tiposNecesarios.has("calculia_problemas_totales")) tareas.push((async () => {
     const { count } = await supabase
       .from("attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
       .in("problem_type", TIPOS_CALCULIA);
     calculiaProblemasTotales = count ?? 0;
-  }
+  })());
 
   let calculiaModosVariados = 0;
-  if (tiposNecesarios.has("calculia_modos_variados")) {
+  if (tiposNecesarios.has("calculia_modos_variados")) tareas.push((async () => {
     const { data: calculiaRows } = await supabase
       .from("attempts")
       .select("problem_type")
       .eq("user_id", userId)
       .in("problem_type", TIPOS_CALCULIA);
     calculiaModosVariados = new Set((calculiaRows ?? []).map((r) => r.problem_type)).size;
-  }
+  })());
 
   let calculiaNivelMundo = 0;
-  if (tiposNecesarios.has("calculia_nivel_mundo")) {
+  if (tiposNecesarios.has("calculia_nivel_mundo")) tareas.push((async () => {
     const { data: worldRow } = await supabase
       .from("world_progress")
       .select("nivel_mundo")
@@ -343,33 +346,33 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .eq("world", "calculia")
       .maybeSingle();
     calculiaNivelMundo = worldRow?.nivel_mundo ?? 0;
-  }
+  })());
 
   // Mundo Circuitia — mismo patrón que Calculia, sus 4 modos.
   const TIPOS_CIRCUITIA = ["circuitia_serie", "circuitia_paralelo", "circuitia_mixto", "circuitia_cualitativo"];
 
   let circuitiaProblemasTotales = 0;
-  if (tiposNecesarios.has("circuitia_problemas_totales")) {
+  if (tiposNecesarios.has("circuitia_problemas_totales")) tareas.push((async () => {
     const { count } = await supabase
       .from("attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
       .in("problem_type", TIPOS_CIRCUITIA);
     circuitiaProblemasTotales = count ?? 0;
-  }
+  })());
 
   let circuitiaModosVariados = 0;
-  if (tiposNecesarios.has("circuitia_modos_variados")) {
+  if (tiposNecesarios.has("circuitia_modos_variados")) tareas.push((async () => {
     const { data: circuitiaRows } = await supabase
       .from("attempts")
       .select("problem_type")
       .eq("user_id", userId)
       .in("problem_type", TIPOS_CIRCUITIA);
     circuitiaModosVariados = new Set((circuitiaRows ?? []).map((r) => r.problem_type)).size;
-  }
+  })());
 
   let circuitiaNivelMundo = 0;
-  if (tiposNecesarios.has("circuitia_nivel_mundo")) {
+  if (tiposNecesarios.has("circuitia_nivel_mundo")) tareas.push((async () => {
     const { data: worldRow } = await supabase
       .from("world_progress")
       .select("nivel_mundo")
@@ -377,33 +380,33 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .eq("world", "circuitia")
       .maybeSingle();
     circuitiaNivelMundo = worldRow?.nivel_mundo ?? 0;
-  }
+  })());
 
   // Mundo Estadistica — mismo patrón que Circuitia, sus 5 modos.
   const TIPOS_ESTADISTICA = ["estadistica_central", "estadistica_dispersion", "estadistica_probabilidad", "estadistica_datos", "estadistica_graficos"];
 
   let estadisticaProblemasTotales = 0;
-  if (tiposNecesarios.has("estadistica_problemas_totales")) {
+  if (tiposNecesarios.has("estadistica_problemas_totales")) tareas.push((async () => {
     const { count } = await supabase
       .from("attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
       .in("problem_type", TIPOS_ESTADISTICA);
     estadisticaProblemasTotales = count ?? 0;
-  }
+  })());
 
   let estadisticaModosVariados = 0;
-  if (tiposNecesarios.has("estadistica_modos_variados")) {
+  if (tiposNecesarios.has("estadistica_modos_variados")) tareas.push((async () => {
     const { data: estadisticaRows } = await supabase
       .from("attempts")
       .select("problem_type")
       .eq("user_id", userId)
       .in("problem_type", TIPOS_ESTADISTICA);
     estadisticaModosVariados = new Set((estadisticaRows ?? []).map((r) => r.problem_type)).size;
-  }
+  })());
 
   let estadisticaNivelMundo = 0;
-  if (tiposNecesarios.has("estadistica_nivel_mundo")) {
+  if (tiposNecesarios.has("estadistica_nivel_mundo")) tareas.push((async () => {
     const { data: worldRow } = await supabase
       .from("world_progress")
       .select("nivel_mundo")
@@ -411,33 +414,33 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .eq("world", "estadistica")
       .maybeSingle();
     estadisticaNivelMundo = worldRow?.nivel_mundo ?? 0;
-  }
+  })());
 
   // Mundo Naipia — mismo patrón que Circuitia, sus 5 modos.
   const TIPOS_NAIPIA = ["naipia_hilo", "naipia_ko", "naipia_hiopt2", "naipia_omega2", "naipia_verdadero"];
 
   let naipiaProblemasTotales = 0;
-  if (tiposNecesarios.has("naipia_problemas_totales")) {
+  if (tiposNecesarios.has("naipia_problemas_totales")) tareas.push((async () => {
     const { count } = await supabase
       .from("attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
       .in("problem_type", TIPOS_NAIPIA);
     naipiaProblemasTotales = count ?? 0;
-  }
+  })());
 
   let naipiaModosVariados = 0;
-  if (tiposNecesarios.has("naipia_modos_variados")) {
+  if (tiposNecesarios.has("naipia_modos_variados")) tareas.push((async () => {
     const { data: naipiaRows } = await supabase
       .from("attempts")
       .select("problem_type")
       .eq("user_id", userId)
       .in("problem_type", TIPOS_NAIPIA);
     naipiaModosVariados = new Set((naipiaRows ?? []).map((r) => r.problem_type)).size;
-  }
+  })());
 
   let naipiaNivelMundo = 0;
-  if (tiposNecesarios.has("naipia_nivel_mundo")) {
+  if (tiposNecesarios.has("naipia_nivel_mundo")) tareas.push((async () => {
     const { data: worldRow } = await supabase
       .from("world_progress")
       .select("nivel_mundo")
@@ -445,33 +448,33 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .eq("world", "naipia")
       .maybeSingle();
     naipiaNivelMundo = worldRow?.nivel_mundo ?? 0;
-  }
+  })());
 
   // Mundo Codia — mismo patrón que Circuitia, sus 4 modos.
   const TIPOS_CODIA = ["codia_sintaxis", "codia_salida", "codia_error", "codia_estructuras"];
 
   let codiaProblemasTotales = 0;
-  if (tiposNecesarios.has("codia_problemas_totales")) {
+  if (tiposNecesarios.has("codia_problemas_totales")) tareas.push((async () => {
     const { count } = await supabase
       .from("attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
       .in("problem_type", TIPOS_CODIA);
     codiaProblemasTotales = count ?? 0;
-  }
+  })());
 
   let codiaModosVariados = 0;
-  if (tiposNecesarios.has("codia_modos_variados")) {
+  if (tiposNecesarios.has("codia_modos_variados")) tareas.push((async () => {
     const { data: codiaRows } = await supabase
       .from("attempts")
       .select("problem_type")
       .eq("user_id", userId)
       .in("problem_type", TIPOS_CODIA);
     codiaModosVariados = new Set((codiaRows ?? []).map((r) => r.problem_type)).size;
-  }
+  })());
 
   let codiaNivelMundo = 0;
-  if (tiposNecesarios.has("codia_nivel_mundo")) {
+  if (tiposNecesarios.has("codia_nivel_mundo")) tareas.push((async () => {
     const { data: worldRow } = await supabase
       .from("world_progress")
       .select("nivel_mundo")
@@ -479,7 +482,7 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .eq("world", "codia")
       .maybeSingle();
     codiaNivelMundo = worldRow?.nivel_mundo ?? 0;
-  }
+  })());
 
   // Mundos 14-15 (Dinamia y Vitalia, 0263): los mismos 3 logros que Codia, con sus 6 modos.
   const TIPOS_MUNDO_NUEVO: Record<"dinamia" | "vitalia", string[]> = {
@@ -488,22 +491,22 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
   };
   const mundoNuevo: Record<string, number> = {};
   for (const m of ["dinamia", "vitalia"] as const) {
-    if (tiposNecesarios.has(`${m}_problemas_totales`)) {
+    if (tiposNecesarios.has(`${m}_problemas_totales`)) tareas.push((async () => {
       const { count } = await supabase.from("attempts").select("id", { count: "exact", head: true }).eq("user_id", userId).in("problem_type", TIPOS_MUNDO_NUEVO[m]);
       mundoNuevo[`${m}_problemas_totales`] = count ?? 0;
-    }
-    if (tiposNecesarios.has(`${m}_modos_variados`)) {
+    })());
+    if (tiposNecesarios.has(`${m}_modos_variados`)) tareas.push((async () => {
       const { data: rows } = await supabase.from("attempts").select("problem_type").eq("user_id", userId).in("problem_type", TIPOS_MUNDO_NUEVO[m]);
       mundoNuevo[`${m}_modos_variados`] = new Set((rows ?? []).map((r) => r.problem_type)).size;
-    }
-    if (tiposNecesarios.has(`${m}_nivel_mundo`)) {
+    })());
+    if (tiposNecesarios.has(`${m}_nivel_mundo`)) tareas.push((async () => {
       const { data: worldRow } = await supabase.from("world_progress").select("nivel_mundo").eq("user_id", userId).eq("world", m).maybeSingle();
       mundoNuevo[`${m}_nivel_mundo`] = worldRow?.nivel_mundo ?? 0;
-    }
+    })());
   }
 
   let rachaRetosDiarios = 0;
-  if (tiposNecesarios.has("racha_retos_diarios")) {
+  if (tiposNecesarios.has("racha_retos_diarios")) tareas.push((async () => {
     const { data: retoRows } = await supabase
       .from("retos_diarios_completados")
       .select("fecha")
@@ -514,28 +517,28 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       (retoRows ?? []).map((r) => ({ fecha: r.fecha, meta_alcanzada: true })),
       hoyIso
     );
-  }
+  })());
 
   let retoDiarioTotal = 0;
-  if (tiposNecesarios.has("reto_diario_total")) {
+  if (tiposNecesarios.has("reto_diario_total")) tareas.push((async () => {
     const { count } = await supabase
       .from("retos_diarios_completados")
       .select("fecha", { count: "exact", head: true })
       .eq("user_id", userId);
     retoDiarioTotal = count ?? 0;
-  }
+  })());
 
   let retoSemanalTotal = 0;
-  if (tiposNecesarios.has("reto_semanal_total")) {
+  if (tiposNecesarios.has("reto_semanal_total")) tareas.push((async () => {
     const { count } = await supabase
       .from("retos_semanales_completados")
       .select("semana_inicio", { count: "exact", head: true })
       .eq("user_id", userId);
     retoSemanalTotal = count ?? 0;
-  }
+  })());
 
   let rachaRetosSemanales = 0;
-  if (tiposNecesarios.has("racha_retos_semanales")) {
+  if (tiposNecesarios.has("racha_retos_semanales")) tareas.push((async () => {
     const hoy = new Date(`${hoyIso}T00:00:00Z`);
     const dia = hoy.getUTCDay();
     const diffAlLunes = dia === 0 ? 6 : dia - 1;
@@ -549,7 +552,7 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .order("semana_inicio", { ascending: false })
       .limit(60);
     rachaRetosSemanales = calcularRachaSemanal((semanaRows ?? []).map((r) => r.semana_inicio), semanaActualIso);
-  }
+  })());
 
   // Sección 9: "mundo completado" — nivel 10 en TODOS los temas de ese
   // mundo. Mismo criterio que usa verificarTitulos para "Maestro de
@@ -560,13 +563,13 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
   const TIPOS_QUIMIA_MUNDO = ["quimia_simbolos", "quimia_formulas", "quimia_tabla"];
 
   let numeriaCompletado = false;
-  if (tiposNecesarios.has("mundo_completado_numeria")) {
+  if (tiposNecesarios.has("mundo_completado_numeria")) tareas.push((async () => {
     const { data: rows } = await supabase.from("skill_levels").select("nivel").eq("user_id", userId).in("problem_type", TIPOS_NUMERIA);
     numeriaCompletado = (rows ?? []).length === TIPOS_NUMERIA.length && (rows ?? []).every((r) => r.nivel >= 10);
-  }
+  })());
 
   let geografiaCompletado = false;
-  if (tiposNecesarios.has("mundo_completado_geografia")) {
+  if (tiposNecesarios.has("mundo_completado_geografia")) tareas.push((async () => {
     // Geografía calibra por continente desde
     // 0207_geografia_niveles_por_continente.sql (américa/europa/áfrica/
     // asia_oceania) — "completado" exige nivel 10 en los 4, mismo
@@ -578,23 +581,25 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       .eq("user_id", userId)
       .in("problem_type", ["geografia_america", "geografia_europa", "geografia_africa", "geografia_asia_oceania"]);
     geografiaCompletado = (rows ?? []).length === 4 && (rows ?? []).every((r) => r.nivel >= 10);
-  }
+  })());
 
   let quimiaCompletado = false;
-  if (tiposNecesarios.has("mundo_completado_quimia")) {
+  if (tiposNecesarios.has("mundo_completado_quimia")) tareas.push((async () => {
     const { data: rows } = await supabase.from("skill_levels").select("nivel").eq("user_id", userId).in("problem_type", TIPOS_QUIMIA_MUNDO);
     quimiaCompletado = (rows ?? []).length === TIPOS_QUIMIA_MUNDO.length && (rows ?? []).every((r) => r.nivel >= 10);
-  }
+  })());
 
   let enigmiaCompletado = false;
-  if (tiposNecesarios.has("mundo_completado_enigmia")) {
+  if (tiposNecesarios.has("mundo_completado_enigmia")) tareas.push((async () => {
     // Enigmia calibra por categoría desde 0205_enigmia_niveles_por_categoria.sql
     // (memoria/patrones/deduccion/computacional) — "completado" ahora
     // exige nivel 10 en las 4, mismo criterio que ya usan Quimia/Anatomía/
     // Melodía con sus propios sub-tipos de skill_levels.
     const { data: rows } = await supabase.from("logic_skill_levels").select("nivel").eq("user_id", userId);
     enigmiaCompletado = (rows ?? []).length === 4 && (rows ?? []).every((r) => r.nivel >= 10);
-  }
+  })());
+
+  await Promise.all(tareas);
 
   const desbloqueadosAhora: Achievement[] = [];
   for (const a of pendientes) {
@@ -658,7 +663,8 @@ export async function verificarLogros(supabase: SupabaseClient, userId: string):
       desbloqueadosAhora.map((a) => ({ user_id: userId, achievement_id: a.id }))
     );
     // Cada medalla nueva genera su propia tarjeta en el feed — auto-generada,
-    // el usuario no escribe nada.
+    // el usuario no escribe nada. Va después: la política de feed_posts (0102)
+    // exige que la fila de user_achievements ya exista.
     await supabase.from("feed_posts").insert(
       desbloqueadosAhora.map((a) => ({ user_id: userId, tipo: "logro", achievement_id: a.id }))
     );
