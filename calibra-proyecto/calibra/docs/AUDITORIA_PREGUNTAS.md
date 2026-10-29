@@ -36,6 +36,8 @@ los mundos con el mismo criterio, y trae la primera medición.
 - `src/lib/practica/variedadMundos.test.ts`: los 13 adaptadores compartidos
   (`src/lib/mundosJugables`, todos sus modos y filtros) y Geografía (mapa). **Solo reporta**, sin
   umbrales. Misma forma de correrlo con `AUDITAR_VARIEDAD=1`. Tarda ~1-2 min.
+- `src/lib/practica/variedadAuditoria2.test.ts`: **con umbrales** para Anatomía (4 modos), Trigonometría
+  (4 modos), Codia sintaxis (4 lenguajes), Calculia derivadas, Historia fechas y Geografía (mapa). Ver §6.
 - Cuando un mundo quede arreglado, se le agregan sus umbrales (igual que Numeria) para que el test lo
   vigile.
 
@@ -175,13 +177,13 @@ midió solo en el modo mapa (las preguntas avanzadas de opciones son un banco ap
    nivel 4): mismo patrón que el bug de Decimales. Revisar la banda 0 de `src/lib/practica/vitalia.ts`.
 2. **Melodía** — oído absoluto **4** preguntas en nivel 1-2 (20 en 3-4); fundamentos 14; alteraciones
    cae a **28 fijas desde el nivel 5** (los niveles altos tienen menos variedad que los bajos).
-3. **Anatomía** — meseta del **100 % de N7 a N9** en los 4 modos (hipótesis: el nivel se topa en 7 o
+3. ~~**Anatomía**~~ (arreglado, §6) — meseta del **100 % de N7 a N9** en los 4 modos (hipótesis: el nivel se topa en 7 o
    las bandas 7-10 usan el mismo banco); óseo con 23-30 en niveles 3-6.
-4. **Trigonometría** — razones **8** en nivel 1; identidades baja a **19-27 en niveles 9-10**.
-5. **Codia · sintaxis** — 14 por lenguaje en nivel 1 (28 en nivel 2, ~40 tope): banco de sintaxis chico.
-6. **Calculia** — derivadas 24 en nivel 1; integrales ~40 en niveles 1-4 con 25 % de solapamiento.
-7. **Historia · fechas** — 29 en nivel 1.
-8. **Geografía (mapa)** — 9-26 países por nivel en América/Europa y en los extremos de Asia/África: el
+4. ~~**Trigonometría**~~ (arreglado, §6) — razones **8** en nivel 1; identidades baja a **19-27 en niveles 9-10**.
+5. ~~**Codia · sintaxis**~~ (arreglado, §6) — 14 por lenguaje en nivel 1 (28 en nivel 2, ~40 tope): banco de sintaxis chico.
+6. **Calculia** — ~~derivadas 24 en nivel 1~~ (arreglado, §6); integrales (pendiente) ~40 en niveles 1-4 con 25 % de solapamiento.
+7. ~~**Historia · fechas**~~ (arreglado, §6) — 29 en nivel 1.
+8. **Geografía (mapa)** — (mitigado, §6) 9-26 países por nivel en América/Europa y en los extremos de Asia/África: el
    filtro `|dificultad − nivel| ≤ 3` deja pocos países. No es generable: o se ensancha la ventana o
    se mezclan más preguntas avanzadas en los niveles extremos. Medir también las preguntas avanzadas.
 9. **Quimia · orgánica** — meseta 52 % entre N3 y N5 (leve).
@@ -201,3 +203,30 @@ Dinamia, Historia (cronología, personajes, causa-efecto), Enigmia (generados), 
 - **Repetición entre partidas**: hoy el deduplicador vive solo dentro de una partida; si un banco es
   chico, el jugador ve lo mismo partida tras partida. Opción a evaluar: recordar las últimas claves
   vistas por modo (por jugador, en el cliente) y evitarlas.
+
+## 6. Anatomía, Trigonometría y hallazgos medios (hecho el 2026-10-29)
+
+Detalle y avance: `docs/avance/AUDITORIA_ANATOMIA_TRIGO.md`. Vigilado por `variedadAuditoria2.test.ts`
+(mínimo 30 por nivel, solapamiento 1↔10 ≤ 50 %, meseta < 50 %; Geografía: mínimo 18 y solapamiento ≤ 65 %).
+
+| Modo | Mín antes | Mín después | Meseta antes | Meseta después | Causa → arreglo |
+|---|---:|---:|---:|---:|---|
+| anatomía · óseo | **23** | 94 | **100 %** | 21 % | `banda()` llega a 4 pero el generador solo miraba `banda >= 3` (N7-8 = N9-10); en N3-6 había un único formato (clic sobre 9 huesos). → Bandas propias (`formatosOseo`) con descripción → hueso, forma (largo/corto/plano…), cantidades, partes del hueso, axial/apendicular, suturas y articulaciones, y el quiz de Técnicas (N3-6) y de Clases (N7-10). |
+| anatomía · muscular | 144 | 128 | **100 %** | 20 % | Ídem (`formatosDe` igual en bandas 3 y 4). → Banda 4 sin clasificación: origen/inserción, pared abdominal, tendón de Aquiles; antagonistas de rodilla y tobillo, tipos de músculo y número de cabezas en la banda 2-3. |
+| anatomía · órganos | 141 | 114 | **100 %** | 32 % | Ídem. → Partes de la sangre, lóbulos del pulmón, vesícula biliar y el quiz de las lecciones. |
+| anatomía · nervioso | 72 | 73 | **100 %** | 28 % | Ídem. → Lóbulos del cerebro, nervios espinales (8-12-5-5-1 = 31), raíces dorsal/ventral, tipos de neurona, nervio vago. |
+| trigonometría · razones | **8** | 47 | 0 % | 1 % | Nivel 1: 2 ternas × solo el ángulo A × sen/cos. → 3 ternas, al doble o no, ángulos A y B. |
+| trigonometría · identidades | **19** (N10) | 72 (N9), 78 (N10) | 0 % | 0 % | `sumaConTernas` daba siempre las mismas 2 preguntas (3-4-5 con 5-12-13) y en N10 solo quedaban las equivalencias del banco. → Dos ternas cualesquiera, cada ángulo dado por seno o coseno, resta desde N10; `suma-diferencia` sigue activo en N10. Oráculo del test ampliado a A − B. |
+| codia · sintaxis (cada lenguaje) | **14** | 58-62 | 6-8 % | 3-7 % | 3 acciones de nivel 1 con 4 distractores fijos. → 2 acciones nuevas (sumar e imprimir, booleano) y 2 distractores más por acción, todo verificado ejecutando en los 4 lenguajes (`codia.test.ts`). Solapamiento 1↔10: 31-37 % → 38-46 %. |
+| calculia · derivadas | **24** | 123 | 1 % | 1 % | Nivel 1 solo `c·xⁿ` (12 coeficientes × 2 exponentes). → Derivada de una suma con constante (todos los niveles); verificada por diferencia central en `calculia.test.ts`. |
+| historia · fechas | **29** | 51 | 0 % | 0 % | Nivel 1 solo «¿en qué época?». → «¿En qué siglo?» desde el nivel 1 (peso 3, con los hechos más conocidos). |
+| geografía · mapa (América / Europa) | **9-10** | 18 | 10 % | 9-12 % | `|dificultad − nivel| ≤ 3` sobre ≈ 27 países. → La ventana se ensancha hasta 18 candidatos y cada país pesa 1 / (1 + distancia): los del nivel salen más. Solapamiento 1↔10: 0 % → 50-61 % (inevitable con 27 países; el arreglo de fondo es sumar países al mapa). |
+| geografía · mapa (África / Asia-Oceanía) | 11-12 | 20-23 | 6 % | 5-17 % | Ídem. Solapamiento 0 %. |
+
+Correctitud: Anatomía tiene un test nuevo que comprueba que cada respuesta de los bancos nuevos aparece en
+el texto de las lecciones de su sistema (y el quiz de las lecciones se usa tal cual, con su explicación como
+«Cómo se resuelve»), que la forma de cada hueso coincide con la lección y que N9 ≠ N7 con la misma semilla.
+Trigonometría, Calculia y Codia siguen verificadas por sus oráculos (recalculan desde el enunciado o ejecutan).
+
+Pendiente de esta tanda: Calculia integrales (~40 en niveles 1-4); Geografía, sumar países al mapa (SVG) en
+América y Europa; medir también las preguntas avanzadas de Geografía.

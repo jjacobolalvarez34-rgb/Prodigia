@@ -206,11 +206,30 @@ export const IDS_POR_CONTINENTE: Record<Continente, Set<string>> = {
   asia_oceania: IDS_ASIA_OCEANIA,
 };
 
-// Banda ancha (±3) porque el dataset es chico — con ±1 quedarían muy
-// pocas opciones para elegir al azar en los niveles extremos.
+// Banda ancha (±3) porque el dataset es chico. Auditoría de variedad 2026-10-29: en
+// América y Europa (≈ 27 países cada uno) esa ventana dejaba 9-20 países por nivel y
+// en los extremos se repetían mucho. Ahora la ventana se ensancha hasta tener al menos
+// MIN_CANDIDATOS_MAPA países, y cada país pesa según lo cerca que está su dificultad
+// del nivel (1 / (1 + distancia)): los del nivel siguen saliendo más, así que la
+// dificultad se nota igual.
+export const MIN_CANDIDATOS_MAPA = 18;
+
 export function elegirPaisAleatorio(paises: PaisAmerica[], nivel: number, usados: Set<string>): PaisAmerica | null {
-  const candidatos = paises.filter((p) => Math.abs(p.dificultad - nivel) <= 3 && !usados.has(p.id));
-  const pool = candidatos.length > 0 ? candidatos : paises.filter((p) => !usados.has(p.id));
-  const poolFinal = pool.length > 0 ? pool : paises;
-  return poolFinal[Math.floor(Math.random() * poolFinal.length)] ?? null;
+  const libres = paises.filter((p) => !usados.has(p.id));
+  const base = libres.length > 0 ? libres : paises;
+  if (base.length === 0) return null;
+  const minimo = Math.min(MIN_CANDIDATOS_MAPA, base.length);
+  let radio = 3;
+  let candidatos = base.filter((p) => Math.abs(p.dificultad - nivel) <= radio);
+  while (candidatos.length < minimo && radio < 10) {
+    radio++;
+    candidatos = base.filter((p) => Math.abs(p.dificultad - nivel) <= radio);
+  }
+  const pesos = candidatos.map((p) => 1 / (1 + Math.abs(p.dificultad - nivel)));
+  let x = Math.random() * pesos.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < candidatos.length; i++) {
+    x -= pesos[i];
+    if (x < 0) return candidatos[i];
+  }
+  return candidatos[candidatos.length - 1] ?? null;
 }

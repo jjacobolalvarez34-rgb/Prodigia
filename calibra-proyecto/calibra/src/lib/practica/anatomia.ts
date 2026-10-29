@@ -6,8 +6,9 @@
 // nunca un dato inventado — mismo criterio de honestidad de contenido
 // que el resto de la app.
 
-import { pasosAnatomia } from "@/lib/anatomia/pasos";
-import { formatosDe, type FormatoAnatomia } from "./anatomiaFormatos";
+import { DESCRIPCION_HUESO, pasosAnatomia } from "@/lib/anatomia/pasos";
+import { formatosDe, type FormatoAnatomia, type PreguntaFormato } from "./anatomiaFormatos";
+import { descripcionAHueso, GEN, quizClases, quizTecnicas } from "./anatomiaFormatosExtra";
 
 export type ModoAnatomia = "oseo" | "muscular" | "organos" | "nervioso";
 
@@ -199,7 +200,29 @@ function poolOtrosSistemas(modo: ModoAnatomia, dificil: boolean): string[] {
 
 export function generarPreguntaAnatomia(modo: ModoAnatomia, nivel: number, usados: Set<string>, rng: Rng = Math.random): PreguntaAnatomia {
   const p = generarBase(modo, nivel, usados, rng);
-  return { ...p, pasos: pasosAnatomia(modo, p) };
+  return { ...p, pasos: p.pasos ?? pasosAnatomia(modo, p) };
+}
+
+type GeneradorFormato = (usados: Set<string>, rng: Rng) => PreguntaFormato;
+
+const DESCRIPCION_BAJO = descripcionAHueso(DESCRIPCION_HUESO, OSEO_BAJO);
+const DESCRIPCION_ALTO = descripcionAHueso(DESCRIPCION_HUESO, OSEO_ALTO);
+
+// Formatos del modo óseo por banda (0 = nivel 1-2 … 4 = nivel 9-10). El término (clic o
+// clasificación) sigue saliendo en todas las bandas; en la 4 sale menos.
+function formatosOseo(band: number): (GeneradorFormato | null)[] {
+  switch (Math.min(band, 4)) {
+    case 0:
+      return [null, null, DESCRIPCION_BAJO];
+    case 1:
+      return [null, null, DESCRIPCION_BAJO, GEN.formaDeHueso, quizTecnicas("oseo")];
+    case 2:
+      return [DESCRIPCION_BAJO, null, GEN.formaDeHueso, GEN.huesoDeForma, GEN.cantidadesOseoMedio, GEN.huesoPorDentro, quizTecnicas("oseo"), null];
+    case 3:
+      return [null, DESCRIPCION_ALTO, GEN.esqueletoAxial, GEN.cantidadesOseoMedio, quizClases("oseo"), null, GEN.huesoDeForma];
+    default:
+      return [DESCRIPCION_ALTO, GEN.cantidadesOseoAlto, GEN.oseoExperto, null, quizClases("oseo"), GEN.oseoExperto, GEN.huesoPorDentro];
+  }
 }
 
 function generarBase(modo: ModoAnatomia, nivel: number, usados: Set<string>, rng: Rng): PreguntaAnatomia {
@@ -207,6 +230,13 @@ function generarBase(modo: ModoAnatomia, nivel: number, usados: Set<string>, rng
   const esAlto = band >= 3 && modo !== "organos";
 
   if (modo === "oseo") {
+    // Auditoría de variedad 2026-10-29: además del término (clic en el esqueleto o
+    // clasificación), cada banda mezcla formatos propios sacados de las lecciones; antes
+    // los niveles 3-6 tenían un solo formato (~25 preguntas) y 7-8 = 9-10.
+    // `null` = el término de siempre (abajo).
+    const extra = formatosOseo(band);
+    const f = extra[Math.floor(rng() * extra.length)];
+    if (f) return { tipo: "opcion", ...f(usados, rng) };
     const pool = band < 3 ? OSEO_BAJO : OSEO_ALTO;
     const disponibles = pool.filter((x) => !usados.has(x));
     const correcta = elegir(disponibles.length > 0 ? disponibles : pool, rng);

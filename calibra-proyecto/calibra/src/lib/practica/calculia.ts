@@ -243,6 +243,35 @@ function derivadaPotencia(nivelEfectivo: number): ProblemaCalculiaOpciones {
   };
 }
 
+// Suma de términos (auditoría de variedad 2026-10-29: el nivel 1 solo tenía c·x^n,
+// 24 preguntas en total). f(x) = c1·x^n1 + c2·x^n2 (+ k): se deriva término a término
+// y la constante desaparece. Distractores reales: dejar la constante, no bajar los
+// exponentes y no multiplicar por el exponente.
+function derivadaSuma(nivelEfectivo: number): ProblemaCalculiaOpciones {
+  const n1 = randomInt(2, 2 + nivelEfectivo);
+  const n2 = randomInt(1, n1 - 1);
+  const c1 = randomIntNoCero(6);
+  const c2 = randomIntNoCero(9);
+  const k = randomInt(-9, 9);
+  const f = unirTerminos([termino(c1, n1), termino(c2, n2), termino(k, 0)]);
+  const derivados = [termino(c1 * n1, n1 - 1), termino(c2 * n2, n2 - 1)];
+  const correcta = unirTerminos(derivados);
+  const dejaConstante = unirTerminos([...derivados, termino(k === 0 ? 1 : k, 0)]);
+  const noDecrementa = unirTerminos([termino(c1 * n1, n1), termino(c2 * n2, n2)]);
+  const noMultiplica = unirTerminos([termino(c1, n1 - 1), termino(c2, n2 - 1)]);
+  return {
+    modo: "derivadas",
+    entrada: "opciones",
+    enunciado: `Deriva ${m(`f(x) = ${f}`)} respecto de ${m("x")}.`,
+    ...opcionesMath(correcta, [dejaConstante, noDecrementa, noMultiplica]),
+    pasos: [
+      `La derivada de una suma es la suma de las derivadas; la de una constante es 0`,
+      `${m(`(${termino(c1, n1)})' = ${derivados[0]}`)} y ${m(`(${termino(c2, n2)})' = ${derivados[1]}`)}`,
+      `Resultado: ${m(`f'(x) = ${correcta}`)}`,
+    ],
+  };
+}
+
 // Producto de 2 monomios chicos: f(x) = (a·x^p)(b·x^q). Se resuelve por
 // regla del producto, pero el resultado correcto coincide (por
 // construcción matemática real, no por atajo) con aplicar la potencia
@@ -330,11 +359,12 @@ function derivadaCadena(nivelEfectivo: number): ProblemaCalculiaOpciones {
 
 function generarDerivadas(nivel: number): ProblemaCalculiaOpciones {
   const nivelEfectivo = bandaDerivadasNivel(nivel);
-  const tipos: Array<"potencia" | "producto" | "cadena" | "cociente"> = ["potencia"];
+  const tipos: Array<"potencia" | "suma" | "producto" | "cadena" | "cociente"> = ["potencia", "suma"];
   if (nivelEfectivo >= 2) tipos.push("producto", "cadena");
   if (nivelEfectivo >= 3) tipos.push("cociente");
   const tipo = tipos[randomInt(0, tipos.length - 1)];
   if (tipo === "potencia") return derivadaPotencia(nivelEfectivo);
+  if (tipo === "suma") return derivadaSuma(nivelEfectivo);
   if (tipo === "producto") return derivadaProducto(nivelEfectivo);
   if (tipo === "cociente") return derivadaCociente(nivelEfectivo);
   return derivadaCadena(nivelEfectivo);

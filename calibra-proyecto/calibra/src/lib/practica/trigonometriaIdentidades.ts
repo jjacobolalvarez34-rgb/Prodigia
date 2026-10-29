@@ -265,7 +265,7 @@ export function generarDobleDado(dif: number): ProblemaTrigonometriaOpciones {
 const PARES_SUMA: [number, number][] = [[45, 30], [30, 45], [60, 45], [45, 60], [60, 30], [30, 60]];
 
 export function generarSumaDiferencia(dif: number): ProblemaTrigonometriaOpciones {
-  if (dif >= 2) return sumaConTernas();
+  if (dif >= 2) return sumaConTernas(dif);
   const fn = dif === 0 ? elegir<"sen" | "cos">(["sen", "cos"]) : elegir<"sen" | "cos" | "tan">(["sen", "cos", "tan"]);
   // Nunca se suma 90° (tan 90° no existe y la cuenta sería trivial), y solo se resta cuando A > B (con A + B ≠ 90°: 1 − tan A · tan B sería 0).
   const candidatos = PARES_SUMA.flatMap(([p, q]) => {
@@ -315,30 +315,49 @@ export function generarSumaDiferencia(dif: number): ProblemaTrigonometriaOpcione
   );
 }
 
-// A y B agudos con sen A = a/z y cos B = c/w (ternas): sen(A + B) o cos(A + B).
-function sumaConTernas(): ProblemaTrigonometriaOpciones {
-  const [x, y, z] = TERNAS[0]; // 3-4-5
-  const [u, v, w] = TERNAS[1]; // 5-12-13
-  // A: sen A = x/z, cos A = y/z ; B: sen B = u/w, cos B = v/w
-  const sinRaiz = azar() < 0.5;
-  if (sinRaiz) {
-    // sen(A + B) = (3/5)(12/13) + (4/5)(5/13) = 56/65
-    const num = x * v + y * u;
-    return resultado(
-      `Sean ${m("A")} y ${m("B")} ángulos agudos con ${m(`${SEN}(A)=\\frac{${x}}{${z}}`)} y ${m(`\\cos(B)=\\frac{${v}}{${w}}`)}. ¿Cuánto vale ${m(`${SEN}(A+B)`)}?`,
-      opFr(num, z * w),
-      [opFr(x * v - y * u, z * w), opFr(x * v, z * w), opFr(x * u + y * v, z * w), opFr(x + u, z + w)],
-      [opFr(y * v - x * u, z * w), opFr(x * y, z * w)]
-    );
-  }
-  // cos(A + B) = (4/5)(12/13) − (3/5)(5/13) = 33/65
-  const num = y * v - x * u;
+// A y B agudos dados por una razón racional (ternas): sen(A ± B) o cos(A ± B).
+// Auditoría de variedad 2026-10-29: antes eran SIEMPRE las mismas dos preguntas
+// (3-4-5 con 5-12-13, sen y cos de A + B); ahora dos ternas cualesquiera, cada
+// ángulo dado por su seno o por su coseno, y desde dif 3 también la resta.
+function sumaConTernas(dif: number): ProblemaTrigonometriaOpciones {
+  const [t1, t2] = mezclarTernas();
+  const [p, q] = azar() < 0.5 ? [t1[0], t1[1]] : [t1[1], t1[0]];
+  const [r, s] = azar() < 0.5 ? [t2[0], t2[1]] : [t2[1], t2[0]];
+  const z = t1[2];
+  const w = t2[2];
+  // A: sen A = p/z, cos A = q/z. B: sen B = r/w, cos B = s/w (los dos agudos).
+  const datoA = azar() < 0.5 ? `${SEN}(A)=\\frac{${p}}{${z}}` : `\\cos(A)=\\frac{${q}}{${z}}`;
+  const datoB = azar() < 0.5 ? `\\cos(B)=\\frac{${s}}{${w}}` : `${SEN}(B)=\\frac{${r}}{${w}}`;
+  const suma = dif < 3 || azar() < 0.5;
+  const fn = elegir<"sen" | "cos">(["sen", "cos"]);
+  const d = z * w;
+  // sen(A ± B) = sA·cB ± cA·sB ; cos(A ± B) = cA·cB ∓ sA·sB
+  const senMas = p * s + q * r;
+  const senMenos = p * s - q * r;
+  const cosMas = q * s - p * r;
+  const cosMenos = q * s + p * r;
+  const num = fn === "sen" ? (suma ? senMas : senMenos) : suma ? cosMas : cosMenos;
+  // Errores típicos: el signo del medio cambiado, la fórmula de la otra función, un solo producto, sumar fracciones «de a pedazos».
+  const pref = [
+    opFr(fn === "sen" ? (suma ? senMenos : senMas) : suma ? cosMenos : cosMas, d),
+    opFr(fn === "sen" ? (suma ? cosMas : cosMenos) : suma ? senMas : senMenos, d),
+    opFr(fn === "sen" ? p * s : q * s, d),
+    opFr(fn === "sen" ? p + r : q + s, z + w),
+  ];
+  const signo = suma ? "+" : "-";
   return resultado(
-    `Sean ${m("A")} y ${m("B")} ángulos agudos con ${m(`${SEN}(A)=\\frac{${x}}{${z}}`)} y ${m(`\\cos(B)=\\frac{${v}}{${w}}`)}. ¿Cuánto vale ${m("\\cos(A+B)")}?`,
-    opFr(num, z * w),
-    [opFr(y * v + x * u, z * w), opFr(y * v, z * w), opFr(x * v + y * u, z * w), opFr(y + v, z + w)],
-    [opFr(x * v - y * u, z * w), opFr(x * u, z * w)]
+    `Sean ${m("A")} y ${m("B")} ángulos agudos con ${m(datoA)} y ${m(datoB)}. ¿Cuánto vale ${m(`${fn === "sen" ? SEN : "\\cos"}(A${signo}B)`)}?`,
+    opFr(num, d),
+    pref,
+    [opFr(p * r, d), opFr(q * r, d), opFr(-num, d)]
   );
+}
+
+function mezclarTernas(): [[number, number, number], [number, number, number]] {
+  const i = Math.floor(azar() * TERNAS.length);
+  let j = Math.floor(azar() * (TERNAS.length - 1));
+  if (j >= i) j++;
+  return [TERNAS[i], TERNAS[j]];
 }
 
 // ---------- equivalente / equivalente-doble ----------

@@ -205,9 +205,10 @@ describe("Calculia — generarProblemaCalculia('derivadas', nivel)", () => {
         }
       } else if ((mm = /^Deriva f\(x\) = (.+) respecto de x\.$/.exec(enunciado))) {
         const [, fTexto] = mm;
-        const f = (x: number) => evalMonoX(fTexto, x);
+        // Un monomio o una suma de términos (con constante): se evalúan como polinomio.
+        const f = (x: number) => evalPolyXY(fTexto, x, 0);
         for (const x of X_MUESTRAS) {
-          expectClose(evalShapeA(respuesta, x), centralDiff(f, x));
+          expectClose(evalPolyXY(respuesta, x, 0), centralDiff(f, x));
         }
       } else {
         throw new Error(`enunciado de derivadas sin patrón reconocido: "${enunciado}"`);

@@ -38,6 +38,8 @@ const SINTAXIS: Record<string, Tema> = {
   "declarar-entero": t("declarar-entero", "declarar una variable entera", /(?:^|\n)\s*(?:int|let|const) \w+(?:: number)? = \d|(?:^|\n)\w+ = \d/),
   "declarar-texto": t("declarar-texto", "declarar una variable de texto", /String \w+ = "|(?:const|let) \w+(?:: string)? = "|\w+ = "/),
   imprimir: t("imprimir", "imprimir por pantalla", /print\(|System\.out\.println|console\.log/),
+  "sumar-imprimir": t("sumar-imprimir", "imprimir el resultado de una suma", /(?:print|println|console\.log)\(\w+ \+ |(?:^|\n)\s*\w+ = \w+ \+ \d/),
+  "declarar-booleano": t("declarar-booleano", "declarar una variable booleana", /boolean \w+ = |: boolean = |(?:^|\n)\s*\w+ = (?:True|False)\b/),
   "si-igual": t("si-igual", "un if que compara con ==", /if \(?\w+ (?:%\s*\d+ )?(?:==|===) /),
   comentario: t("comentario", "comentarios (# en Python, // en los demás)", /comentario|(?:^|\n)\s*# \w|(?:^|\n)\s*\/\/ \w/),
   lista: t("lista", "crear una lista o arreglo", /\[4, 8, 15\]|\{4, 8, 15\}/),

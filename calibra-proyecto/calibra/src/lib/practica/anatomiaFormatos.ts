@@ -22,6 +22,7 @@ import {
   PARES_CRANEALES,
   ETIQUETA_TIPO_PAR,
 } from "@/lib/anatomia/datos";
+import { GEN, quizClases, quizTecnicas } from "./anatomiaFormatosExtra";
 import type { EtapaFlujoAnatomia } from "@/lib/anatomia/visuales";
 
 export type Rng = () => number;
@@ -43,7 +44,16 @@ export type FormatoAnatomia =
   | "par_por_numero"
   | "numero_de_par"
   | "par_por_funcion"
-  | "tipo_de_par";
+  | "tipo_de_par"
+  // Auditoría de variedad 2026-10-29 (anatomiaFormatosExtra.ts).
+  | "descripcion_hueso"
+  | "forma_hueso"
+  | "hueso_de_forma"
+  | "esqueleto_axial"
+  | "cantidad"
+  | "origen_insercion"
+  | "dato"
+  | "leccion";
 
 export interface PreguntaFormato {
   enunciado: string;
@@ -51,6 +61,8 @@ export interface PreguntaFormato {
   respuesta: string;
   clave: string;
   formato: FormatoAnatomia;
+  // Si el formato trae su propio «Cómo se resuelve» (los de anatomiaFormatosExtra.ts).
+  pasos?: string[];
 }
 
 // ---------- Utilidades ----------
@@ -409,31 +421,57 @@ function tipoDePar(usados: Set<string>, rng: Rng): PreguntaFormato {
 
 type Generador = (usados: Set<string>, rng: Rng) => PreguntaFormato;
 
-// banda: 0 (nivel 1-2) … 4 (nivel 9-10). `null` en la primera posición = el formato
-// de clasificación de siempre (lo arma anatomia.ts); va primero a propósito.
+// banda: 0 (nivel 1-2) … 4 (nivel 9-10). `null` = el formato de clasificación de
+// siempre (lo arma anatomia.ts). Auditoría 2026-10-29: cada banda tiene su propia
+// lista (antes la 3 y la 4 eran idénticas: los niveles 7-8 y 9-10 daban lo mismo); la
+// banda 4 deja la clasificación y suma los datos de las Clases (los más difíciles).
 export function formatosDe(modo: "muscular" | "organos" | "nervioso", banda: number): (Generador | null)[] {
-  const alto = banda >= 3;
+  const contraccion: Generador = (u, r) => flujo(RECORRIDOS_MUSCULO, u, r);
+  const flujoOrganos: Generador = (u, r) => flujo(RECORRIDOS_ORGANOS.filter((x) => x.id !== "sangre"), u, r);
+  const flujoTodos: Generador = (u, r) => flujo(RECORRIDOS_ORGANOS, u, r);
+  const flujoNervioso: Generador = (u, r) => flujo(RECORRIDOS_NERVIOSO, u, r);
   if (modo === "muscular") {
-    if (!alto) {
-      const lista: (Generador | null)[] = [null, (u, r) => funcionAMusculo(false, u, r), (u, r) => musculoAFuncion(false, u, r), regionMusculo];
-      if (banda >= 1) lista.push(vistaMusculo, antagonista);
-      if (banda >= 2) lista.push((u, r) => flujo(RECORRIDOS_MUSCULO, u, r));
-      return lista;
+    const fmBajo: Generador = (u, r) => funcionAMusculo(false, u, r);
+    const mfBajo: Generador = (u, r) => musculoAFuncion(false, u, r);
+    const fmAlto: Generador = (u, r) => funcionAMusculo(true, u, r);
+    const mfAlto: Generador = (u, r) => musculoAFuncion(true, u, r);
+    switch (Math.min(banda, 4)) {
+      case 0:
+        return [null, fmBajo, mfBajo, regionMusculo];
+      case 1:
+        return [null, fmBajo, mfBajo, regionMusculo, vistaMusculo, antagonista, quizTecnicas("muscular")];
+      case 2:
+        return [mfBajo, regionMusculo, vistaMusculo, GEN.muscularMedio, contraccion, quizTecnicas("muscular"), fmBajo, null];
+      case 3:
+        return [null, fmAlto, mfAlto, nervioDeMusculo, contraccion, GEN.muscularMedio, quizClases("muscular")];
+      default:
+        return [GEN.origenInsercion, mfAlto, nervioDeMusculo, GEN.muscularExperto, quizClases("muscular"), fmAlto, GEN.origenInsercion];
     }
-    return [null, (u, r) => funcionAMusculo(true, u, r), (u, r) => musculoAFuncion(true, u, r), nervioDeMusculo, (u, r) => flujo(RECORRIDOS_MUSCULO, u, r)];
   }
   if (modo === "organos") {
-    const lista: (Generador | null)[] = [null, funcionAOrgano, cavidadDeOrgano];
-    if (banda >= 1) lista.push(organoEnCavidad);
-    if (banda >= 2) lista.push((u, r) => flujo(RECORRIDOS_ORGANOS.filter((x) => x.id !== "sangre"), u, r));
-    if (banda >= 3) lista.push((u, r) => flujo(RECORRIDOS_ORGANOS, u, r));
-    return lista;
+    switch (Math.min(banda, 4)) {
+      case 0:
+        return [null, funcionAOrgano, cavidadDeOrgano];
+      case 1:
+        return [null, funcionAOrgano, cavidadDeOrgano, organoEnCavidad, quizTecnicas("organos")];
+      case 2:
+        return [funcionAOrgano, organoEnCavidad, flujoOrganos, GEN.organosMedio, quizTecnicas("organos"), cavidadDeOrgano, null];
+      case 3:
+        return [null, flujoTodos, GEN.organosMedio, quizClases("organos"), funcionAOrgano, organoEnCavidad];
+      default:
+        return [flujoTodos, quizClases("organos"), GEN.organosMedio, quizClases("organos"), flujoTodos, funcionAOrgano];
+    }
   }
-  if (!alto) {
-    const lista: (Generador | null)[] = [null, encefalo];
-    if (banda >= 1) lista.push(neurona);
-    if (banda >= 2) lista.push((u, r) => flujo(RECORRIDOS_NERVIOSO, u, r));
-    return lista;
+  switch (Math.min(banda, 4)) {
+    case 0:
+      return [null, encefalo];
+    case 1:
+      return [null, encefalo, neurona, quizTecnicas("nervioso")];
+    case 2:
+      return [encefalo, neurona, flujoNervioso, GEN.nerviosoMedio, quizTecnicas("nervioso"), null];
+    case 3:
+      return [null, parPorNumero, numeroDePar, parPorFuncion, tipoDePar, flujoNervioso, GEN.nerviosoMedio];
+    default:
+      return [parPorFuncion, tipoDePar, GEN.nerviosoExperto, quizClases("nervioso"), numeroDePar, flujoNervioso, quizClases("nervioso")];
   }
-  return [null, parPorNumero, numeroDePar, parPorFuncion, tipoDePar, (u, r) => flujo(RECORRIDOS_NERVIOSO, u, r)];
 }

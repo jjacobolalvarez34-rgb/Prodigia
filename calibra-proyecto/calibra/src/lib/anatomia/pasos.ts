@@ -6,7 +6,8 @@ import type { ModoAnatomia, PreguntaAnatomia } from "@/lib/practica/anatomia";
 // preguntó, con los mismos datos de las lecciones (músculos, cavidades, recorridos y
 // pares craneales); los huesos, con su ubicación.
 
-const HUESO: Record<string, string> = {
+// También lo usa la práctica («¿Qué hueso o parte del esqueleto es …?»).
+export const DESCRIPCION_HUESO: Record<string, string> = {
   Fémur: "el hueso del muslo, entre la cadera y la rodilla: el más largo del cuerpo",
   Húmero: "el hueso del brazo, entre el hombro y el codo",
   Tibia: "el hueso grueso de la pierna, adelante y del lado de adentro (la canilla)",
@@ -81,7 +82,7 @@ function par(nombre: string): string | null {
 }
 
 function describir(t: string, modo: ModoAnatomia): string {
-  if (modo === "oseo" && HUESO[t]) return `${t}: ${HUESO[t]}`;
+  if (modo === "oseo" && DESCRIPCION_HUESO[t]) return `${t}: ${DESCRIPCION_HUESO[t]}`;
   if (modo === "muscular") return musculo(t) ?? t;
   if (modo === "organos" && ORGANO[t]) {
     const cav = CAVIDADES.find((c) => c.organos.includes(t));

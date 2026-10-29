@@ -37,10 +37,10 @@ export const ACCIONES_SINTAXIS: AccionSintaxis[] = [
     nivel: 1,
     accion: "declara una variable x con el valor 5",
     casos: {
-      python: { ok: "x = 5", malas: ["int x = 5", "let x = 5", "x := 5", "5 = x"], post: ["print(x)"], stdout: "5" },
-      java: { ok: "int x = 5;", malas: ["x = 5;", "int x = 5", "integer x = 5;", "let x = 5;"], post: ["System.out.println(x);"], stdout: "5" },
-      javascript: { ok: "let x = 5;", malas: ["int x = 5;", "let x := 5;", "let 5x = 5;", "x = int 5;"], post: ["console.log(x);"], stdout: "5" },
-      typescript: { ok: "let x: number = 5;", malas: ["int x = 5;", "let x: int = 5;", 'let x: number = "5";', "number x = 5;"], post: ["console.log(x);"], stdout: "5" },
+      python: { ok: "x = 5", malas: ["int x = 5", "let x = 5", "x := 5", "5 = x", "x == 5", "var x = 5"], post: ["print(x)"], stdout: "5" },
+      java: { ok: "int x = 5;", malas: ["x = 5;", "int x = 5", "integer x = 5;", "let x = 5;", "int x == 5;", "var x := 5;"], post: ["System.out.println(x);"], stdout: "5" },
+      javascript: { ok: "let x = 5;", malas: ["int x = 5;", "let x := 5;", "let 5x = 5;", "x = int 5;", "let x == 5;", "x := 5;"], post: ["console.log(x);"], stdout: "5" },
+      typescript: { ok: "let x: number = 5;", malas: ["int x = 5;", "let x: int = 5;", 'let x: number = "5";', "number x = 5;", "let x: number == 5;", "let x number = 5;"], post: ["console.log(x);"], stdout: "5" },
     },
   },
   {
@@ -48,10 +48,10 @@ export const ACCIONES_SINTAXIS: AccionSintaxis[] = [
     nivel: 1,
     accion: "guarda el texto Hola en una variable llamada saludo",
     casos: {
-      python: { ok: 'saludo = "Hola"', malas: ["saludo = Hola", 'saludo = "Hola', 'String saludo = "Hola"', 'saludo := "Hola"'], post: ["print(saludo)"], stdout: "Hola" },
-      java: { ok: 'String saludo = "Hola";', malas: ['string saludo = "Hola";', "String saludo = 'Hola';", "String saludo = Hola;", 'String saludo = "Hola"'], post: ["System.out.println(saludo);"], stdout: "Hola" },
-      javascript: { ok: 'let saludo = "Hola";', malas: ["let saludo = Hola;", 'let saludo = "Hola;', 'string saludo = "Hola";', `let saludo = 'Hola";`], post: ["console.log(saludo);"], stdout: "Hola" },
-      typescript: { ok: 'let saludo: string = "Hola";', malas: ["let saludo: string = 5;", "let saludo: string = Hola;", 'string saludo = "Hola";', 'let saludo: text = "Hola";'], post: ["console.log(saludo);"], stdout: "Hola" },
+      python: { ok: 'saludo = "Hola"', malas: ["saludo = Hola", 'saludo = "Hola', 'String saludo = "Hola"', 'saludo := "Hola"', "saludo = (Hola)", 'saludo == "Hola"'], post: ["print(saludo)"], stdout: "Hola" },
+      java: { ok: 'String saludo = "Hola";', malas: ['string saludo = "Hola";', "String saludo = 'Hola';", "String saludo = Hola;", 'String saludo = "Hola"', 'String saludo == "Hola";', 'String saludo = "Hola"";'], post: ["System.out.println(saludo);"], stdout: "Hola" },
+      javascript: { ok: 'let saludo = "Hola";', malas: ["let saludo = Hola;", 'let saludo = "Hola;', 'string saludo = "Hola";', `let saludo = 'Hola";`, 'let saludo == "Hola";', 'let "saludo" = "Hola";'], post: ["console.log(saludo);"], stdout: "Hola" },
+      typescript: { ok: 'let saludo: string = "Hola";', malas: ["let saludo: string = 5;", "let saludo: string = Hola;", 'string saludo = "Hola";', 'let saludo: text = "Hola";', 'let saludo: string == "Hola";', "let saludo: String = Hola;"], post: ["console.log(saludo);"], stdout: "Hola" },
     },
   },
   {
@@ -59,10 +59,34 @@ export const ACCIONES_SINTAXIS: AccionSintaxis[] = [
     nivel: 1,
     accion: "imprime el texto Hola",
     casos: {
-      python: { ok: 'print("Hola")', malas: ['print "Hola"', 'Print("Hola")', 'echo("Hola")', 'print("Hola"'], stdout: "Hola" },
-      java: { ok: 'System.out.println("Hola");', malas: ['System.out.println("Hola")', 'system.out.println("Hola");', 'System.out.println("Hola);', 'Console.log("Hola");'], stdout: "Hola" },
-      javascript: { ok: 'console.log("Hola");', malas: ['console.print("Hola");', 'Console.log("Hola");', 'console.log("Hola";', 'log.console("Hola");'], stdout: "Hola" },
-      typescript: { ok: 'console.log("Hola");', malas: ['console.print("Hola");', 'Console.log("Hola");', 'console.log("Hola";', "console.log(Hola);"], stdout: "Hola" },
+      python: { ok: 'print("Hola")', malas: ['print "Hola"', 'Print("Hola")', 'echo("Hola")', 'print("Hola"', "print(Hola)", 'printf("Hola")'], stdout: "Hola" },
+      java: { ok: 'System.out.println("Hola");', malas: ['System.out.println("Hola")', 'system.out.println("Hola");', 'System.out.println("Hola);', 'Console.log("Hola");', 'System.out.printline("Hola");', 'System.println("Hola");'], stdout: "Hola" },
+      javascript: { ok: 'console.log("Hola");', malas: ['console.print("Hola");', 'Console.log("Hola");', 'console.log("Hola";', 'log.console("Hola");', "console.log(Hola);", 'print("Hola");'], stdout: "Hola" },
+      typescript: { ok: 'console.log("Hola");', malas: ['console.print("Hola");', 'Console.log("Hola");', 'console.log("Hola";', "console.log(Hola);", 'console.Log("Hola");', 'console.write("Hola");'], stdout: "Hola" },
+    },
+  },
+  // Auditoría de variedad 2026-10-29: el nivel 1 tenía 3 acciones con 4 distractores
+  // fijos (14 preguntas por lenguaje). Se suman estas dos y 2 distractores más por acción.
+  {
+    id: "sumar-imprimir",
+    nivel: 1,
+    accion: "imprime el resultado de sumar 2 y 3",
+    casos: {
+      python: { ok: "print(2 + 3)", malas: ['print("2 + 3")', "print(2 + 3", "print 2 + 3", "print(2 +)", "print(sum 2, 3)", "print(2 plus 3)"], stdout: "5" },
+      java: { ok: "System.out.println(2 + 3);", malas: ['System.out.println("2 + 3");', "System.out.println(2 + 3)", "System.out.println(2 +);", "System.out.println(sum(2, 3));", "System.out.println(2 plus 3);", "system.out.println(2 + 3);"], stdout: "5" },
+      javascript: { ok: "console.log(2 + 3);", malas: ['console.log("2 + 3");', "console.log(2 +);", "console.log(2 plus 3);", "console.log(sum(2, 3));", "console.log(2 + 3;", "Console.log(2 + 3);"], stdout: "5" },
+      typescript: { ok: "console.log(2 + 3);", malas: ['console.log("2 + 3");', "console.log(2 +);", "console.log(2 plus 3);", "console.log(sum(2, 3));", "console.log(2 + 3;", "Console.log(2 + 3);"], stdout: "5" },
+    },
+  },
+  {
+    id: "declarar-booleano",
+    nivel: 1,
+    accion: "guarda el valor verdadero en una variable llamada listo",
+    casos: {
+      python: { ok: "listo = True", malas: ["listo = true", "bool listo = True", "listo := True", "listo = TRUE", "let listo = True", "listo = Verdadero"], post: ["print(listo)"], stdout: "True" },
+      java: { ok: "boolean listo = true;", malas: ["bool listo = true;", "boolean listo = True;", 'Boolean listo = "true";', "boolean listo = 1;", "boolean listo := true;", "boolean listo = true"], post: ["System.out.println(listo);"], stdout: "true" },
+      javascript: { ok: "let listo = true;", malas: ["let listo = True;", "bool listo = true;", "let listo := true;", "let listo = TRUE;", "boolean listo = true;", "let listo == true;"], post: ["console.log(listo);"], stdout: "true" },
+      typescript: { ok: "let listo: boolean = true;", malas: ["let listo: bool = true;", "let listo: boolean = True;", 'let listo: boolean = "true";', "boolean listo = true;", "let listo: boolean = 1;", "let listo: Boolean := true;"], post: ["console.log(listo);"], stdout: "true" },
     },
   },
   {

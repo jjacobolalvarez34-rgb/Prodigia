@@ -65,7 +65,7 @@ export const ESCALA_HISTORIA: Record<ModoHistoria, TipoEscala[]> = {
   ],
   fechas: [
     { tipo: "epoca", desde: 1, pesos: [7, 6, 3, 1], conceptos: ["epocas-historicas"], descripcion: "en qué época ocurrió un hecho (periodización escolar)" },
-    { tipo: "siglo", desde: 2, pesos: [4, 6, 6, 5, 3, 2], conceptos: ["siglos", "anio-antes-de-cristo"], descripcion: "en qué siglo ocurrió un hecho" },
+    { tipo: "siglo", desde: 1, pesos: [3, 4, 6, 6, 5, 3, 2], conceptos: ["siglos", "anio-antes-de-cristo"], descripcion: "en qué siglo ocurrió un hecho (desde el nivel 1 con los hechos más conocidos: auditoría de variedad 2026-10-29)" },
     { tipo: "decada", desde: 4, pesos: [3, 5, 5, 4, 2], conceptos: ["siglos"], descripcion: "en qué década ocurrió un hecho de fecha exacta" },
     { tipo: "anio", desde: 6, pesos: [3, 5, 6, 7, 7], conceptos: ["anio-antes-de-cristo"], descripcion: "en qué año ocurrió un hecho de fecha exacta, con años cercanos como distractores" },
   ],

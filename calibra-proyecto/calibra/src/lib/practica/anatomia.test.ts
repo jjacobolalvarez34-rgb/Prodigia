@@ -14,6 +14,20 @@ import {
 import { detectarVoseo } from "@/lib/texto/espanolNeutro";
 import { CAVIDADES, PARES_CRANEALES } from "@/lib/anatomia/datos";
 import { MUSCULOS } from "./anatomiaFormatos";
+import { CLASES_ANATOMIA, TECNICAS_ANATOMIA } from "@/lib/anatomia/lecciones";
+import {
+  CANTIDADES_OSEO_ALTO,
+  CANTIDADES_OSEO_MEDIO,
+  FORMA_HUESO,
+  HUESO_POR_DENTRO,
+  MUSCULAR_EXPERTO,
+  MUSCULAR_MEDIO,
+  NERVIOSO_EXPERTO,
+  NERVIOSO_MEDIO,
+  ORGANOS_MEDIO,
+  OSEO_EXPERTO,
+  type DatoAnatomia,
+} from "./anatomiaFormatosExtra";
 
 // Auditoría de contenido de Anatomía (2026-09-23). Tres errores reales de
 // datos encontrados y corregidos en el generador:
@@ -88,7 +102,7 @@ describe("Anatomía práctica: una sola respuesta correcta por pregunta", () => 
         for (let i = 0; i < 40; i++) {
           const q = generarPreguntaAnatomia(modo, nivel, new Set(), semilla(i + 7));
           // "¿Sensitivo, motor o mixto?" tiene 3 opciones porque solo hay 3 tipos.
-          if (q.tipo === "opcion") expect(q.opciones, `${modo} n${nivel}`).toHaveLength(q.formato === "tipo_de_par" ? 3 : 4);
+          if (q.tipo === "opcion") expect(q.opciones, `${modo} n${nivel}`).toHaveLength(q.formato === "tipo_de_par" ? 3 : q.formato === "leccion" || q.formato === "dato" ? q.opciones.length : 4);
         }
       }
     }
@@ -97,7 +111,7 @@ describe("Anatomía práctica: una sola respuesta correcta por pregunta", () => 
 
 describe("Anatomía práctica: enunciados precisos y en español neutro", () => {
   it("el músculo de nivel alto ya no se llama 'de la cara' (incluye occipital y platisma)", () => {
-    const q = generarPreguntaAnatomia("muscular", 9, new Set(), () => 0.1);
+    const q = generarPreguntaAnatomia("muscular", 7, new Set(), () => 0.1);
     expect(q.enunciado).toContain("cabeza o del cuello");
     expect(q.enunciado).not.toContain("de la cara");
   });
@@ -188,6 +202,85 @@ describe("Anatomía práctica: variedad de formatos", () => {
           expect(detectarVoseo(q.enunciado), q.enunciado).toEqual([]);
         }
       }
+    }
+  });
+});
+
+// Auditoría de variedad 2026-10-29: los bancos nuevos (anatomiaFormatosExtra.ts) solo
+// usan datos de las lecciones. Cada respuesta tiene que aparecer en el texto de las
+// lecciones de su sistema, y el quiz de las lecciones se usa tal cual.
+describe("Anatomía práctica: los formatos nuevos salen de las lecciones", () => {
+  const norm = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const textoDe = (grupo: ModoAnatomia) =>
+    norm(
+      [...TECNICAS_ANATOMIA, ...CLASES_ANATOMIA]
+        .filter((l) => l.grupo === grupo)
+        .map((l) => [l.nombre, l.descripcion, ...l.pasos, ...l.quiz.flatMap((q) => [q.pregunta, q.respuesta, q.explicacion]), JSON.stringify(l.visuales)].join(" "))
+        .join(" ")
+    );
+  const enLecciones = (texto: string, r: string) => {
+    const n = norm(r);
+    if (texto.includes(n)) return true;
+    // Respuestas compuestas («Neuronas motoras», «Frontal y parietales»): cada palabra con contenido.
+    return n.split(/[^a-zñ0-9]+/).filter((p) => p.length >= 4 || /^\d+$/.test(p)).every((p) => texto.includes(p.replace(/s$/, "")));
+  };
+  const BANCOS: [ModoAnatomia, DatoAnatomia[]][] = [
+    ["oseo", CANTIDADES_OSEO_MEDIO],
+    ["oseo", CANTIDADES_OSEO_ALTO],
+    ["oseo", HUESO_POR_DENTRO],
+    ["oseo", OSEO_EXPERTO],
+    ["muscular", MUSCULAR_MEDIO],
+    ["muscular", MUSCULAR_EXPERTO],
+    ["organos", ORGANOS_MEDIO],
+    ["nervioso", NERVIOSO_MEDIO],
+    ["nervioso", NERVIOSO_EXPERTO],
+  ];
+
+  it("cada respuesta de los bancos está enseñada en una lección del sistema y no es también una alternativa", () => {
+    for (const [grupo, banco] of BANCOS) {
+      const texto = textoDe(grupo);
+      for (const d of banco) {
+        expect(enLecciones(texto, d.r), `${grupo}: «${d.r}» (${d.e})`).toBe(true);
+        expect(d.alt.filter((a) => a !== d.r).length, d.e).toBeGreaterThanOrEqual(2);
+        expect(new Set(banco.map((x) => x.e)).size).toBe(banco.length);
+      }
+    }
+    const oseo = textoDe("oseo");
+    for (const h of FORMA_HUESO) expect(enLecciones(oseo, h.nombre), h.nombre).toBe(true);
+  });
+
+  it("las preguntas de los formatos nuevos tienen la respuesta entre las opciones, sin repetidas, y pasos propios", () => {
+    for (const modo of MODOS) {
+      for (let nivel = 1; nivel <= 10; nivel++) {
+        for (let i = 0; i < 200; i++) {
+          const q = generarPreguntaAnatomia(modo, nivel, new Set(), semilla(nivel * 4243 + i));
+          if (q.tipo !== "opcion") continue;
+          expect(q.opciones, q.enunciado).toContain(q.respuesta);
+          expect(new Set(q.opciones).size, q.enunciado).toBe(q.opciones.length);
+          expect(q.opciones.length, q.enunciado).toBeGreaterThanOrEqual(3);
+          expect(q.pasos?.length ?? 0, q.enunciado).toBeGreaterThan(0);
+          if (q.formato === "forma_hueso") {
+            const h = FORMA_HUESO.find((x) => q.enunciado.includes(` ${x.nombre.toLowerCase()}?`))!;
+            expect(h.forma, q.enunciado).toBe(q.respuesta);
+          }
+          if (q.formato === "hueso_de_forma") {
+            const forma = /es (\w+)\?$/.exec(q.enunciado)![1];
+            for (const o of q.opciones) expect(FORMA_HUESO.find((h) => h.nombre === o)!.forma.toLowerCase() === forma, `${q.enunciado} ${o}`).toBe(o === q.respuesta);
+          }
+        }
+      }
+    }
+  });
+
+  it("los niveles 9-10 ya no son iguales a los 7-8 (misma semilla)", () => {
+    for (const modo of MODOS) {
+      let iguales = 0;
+      for (let i = 0; i < 100; i++) {
+        const a = generarPreguntaAnatomia(modo, 7, new Set(), semilla(i + 9000));
+        const b = generarPreguntaAnatomia(modo, 9, new Set(), semilla(i + 9000));
+        if (a.enunciado === b.enunciado && a.respuesta === b.respuesta) iguales++;
+      }
+      expect(iguales, modo).toBeLessThan(50);
     }
   });
 });

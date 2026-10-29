@@ -109,13 +109,16 @@ const PIDE_GRADOS = "Da el ángulo en grados, redondeado a 1 decimal.";
 
 // ---------- razon-ternas: sen/cos/tan de A o de B con los tres lados ----------
 export function generarRazonTernas(dif: number): ProblemaTrigonometriaNumero {
-  const banco = dif === 0 ? TERNAS_PITAGORICAS.slice(0, 2) : TERNAS_PITAGORICAS;
+  // Auditoría de variedad 2026-10-29: el nivel 1 tenía 8 preguntas en total (2 ternas,
+  // solo el ángulo A). Ahora: 3 ternas chicas, también al doble (6-8-10, 10-24-26…) y
+  // los dos ángulos agudos; sigue pidiendo solo sen y cos (la tangente llega en nivel 2).
+  const banco = dif === 0 ? TERNAS_PITAGORICAS.slice(0, 3) : TERNAS_PITAGORICAS;
   const [x, y, z] = elegir(banco);
-  const factor = dif >= 2 ? randomInt(1, 3) : 1;
+  const factor = dif >= 2 ? randomInt(1, 3) : dif === 0 ? randomInt(1, 2) : 1;
   const [a, b] = azar() < 0.5 ? [x * factor, y * factor] : [y * factor, x * factor];
   const c = z * factor;
   const r = rectanguloDeCatetos(a, b);
-  const vertice: Vertice = dif === 0 ? "A" : elegir<Vertice>(["A", "B"]);
+  const vertice: Vertice = elegir<Vertice>(["A", "B"]);
   const fn: FnRazon = dif === 0 ? elegir<FnRazon>(["sen", "cos"]) : elegir<FnRazon>(["sen", "cos", "tan"]);
   return {
     modo: "razones",

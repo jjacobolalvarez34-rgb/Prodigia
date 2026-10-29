@@ -447,12 +447,12 @@ function oraculoOpciones(p: ProblemaTrigonometria, tipo: string): number | "inde
     return grados(anguloDeFuncion(nombreFn(compl[3]), v));
   }
 
-  // Sean A y B agudos con sen(A) = a y cos(B) = b: fn(A + B)
-  const suma = new RegExp(String.raw`\$${FN}\(A\)=\\frac\{(\d+)\}\{(\d+)\}\$ y \$${FN}\(B\)=\\frac\{(\d+)\}\{(\d+)\}\$\. ¿Cuánto vale \$${FN}\(A\+B\)\$`).exec(e);
+  // Sean A y B agudos con fn(A) = a y gn(B) = b: fn(A ± B)
+  const suma = new RegExp(String.raw`\$${FN}\(A\)=\\frac\{(\d+)\}\{(\d+)\}\$ y \$${FN}\(B\)=\\frac\{(\d+)\}\{(\d+)\}\$\. ¿Cuánto vale \$${FN}\(A([+-])B\)\$`).exec(e);
   if (suma) {
     const A = anguloDeFuncion(nombreFn(suma[1]), Number(suma[2]) / Number(suma[3]));
     const B = anguloDeFuncion(nombreFn(suma[4]), Number(suma[5]) / Number(suma[6]));
-    return fnNum(nombreFn(suma[7]), A + B);
+    return fnNum(nombreFn(suma[7]), suma[8] === "+" ? A + B : A - B);
   }
 
   // cociente: Si sen θ = A y cos θ = B, ¿cuánto vale tan θ / cot θ?

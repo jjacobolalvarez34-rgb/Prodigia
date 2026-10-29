@@ -60,7 +60,7 @@ export const ESCALA_TRIGONOMETRIA: Record<ModoTrigonometria, TipoEscala[]> = {
     { tipo: "reciprocas-id", desde: 3, pesos: [3, 2, 1], conceptos: ["identidad-reciproca"], descripcion: "identidades recíprocas: cosec, sec, cot" },
     { tipo: "doble", desde: 4, pesos: [5, 5, 2], conceptos: ["angulo-doble"], descripcion: "ángulo doble con θ notable: sen 2θ, cos 2θ y tan 2θ" },
     { tipo: "doble-dado", desde: 5, pesos: [2, 5, 5, 1], conceptos: ["angulo-doble"], descripcion: "ángulo doble dado sen θ (ternas): sen 2θ, cos 2θ, tan 2θ" },
-    { tipo: "suma-diferencia", desde: 7, pesos: [5, 5, 1], conceptos: ["suma-diferencia"], descripcion: "suma y diferencia de ángulos con notables (sen 75°, cos 15°...) y con ternas" },
+    { tipo: "suma-diferencia", desde: 7, pesos: [5, 5, 3, 3], conceptos: ["suma-diferencia"], descripcion: "suma y diferencia de ángulos con notables (sen 75°, cos 15°...) y, en 9-10, con dos ternas (en 10 también la resta)" },
     { tipo: "equivalente", desde: 8, pesos: [2, 5, 4], conceptos: ["verificar-identidad", "simplificar-expresion"], descripcion: "elegir la expresión equivalente / simplificar (recíprocas, cociente, pitagóricas)" },
     { tipo: "equivalente-doble", desde: 9, pesos: [3, 5], conceptos: ["verificar-identidad", "simplificar-expresion", "angulo-doble"], descripcion: "expresiones equivalentes con ángulo doble y pitagóricas combinadas" },
   ],
