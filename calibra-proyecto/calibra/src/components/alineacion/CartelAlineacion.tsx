@@ -19,15 +19,23 @@ import {
   type EstadoAlineacionServidor,
 } from "@/lib/recompensas/alineacion";
 import { repetirVideo } from "@/components/VideoApertura";
+import { relojEventos } from "@/components/temas/relojEventos";
 import { VIDEO_ALINEACION } from "@/lib/temas/videosApertura";
+import CartelPlegable, { faltaCorto } from "@/components/temas/CartelPlegable";
 
 // Cartel de la Gran Alineación en el Inicio (decisiones del 2026-10-18): desde 3 días
 // antes con la cuenta regresiva, durante las 3 horas con tu avance y la meta de
 // comunidad, y 3 días después con el resumen y el premio de comunidad. Los 15 soles
 // están a la altura real de su día en cada ciudad: se ve cómo se van alineando.
+// Empieza minimizado en una franja (CartelPlegable) que avisa si hay premio por reclamar.
 function suscribir(avisar: () => void) {
   const id = setInterval(avisar, 15_000);
-  return () => clearInterval(id);
+  // Eventos en vivo: además, en el instante exacto de cada cambio de fase.
+  const soltar = relojEventos.suscribir(avisar);
+  return () => {
+    clearInterval(id);
+    soltar();
+  };
 }
 const ahoraRedondeado = () => Math.floor(Date.now() / 15_000) * 15_000;
 const sinHora = () => 0;
@@ -67,6 +75,7 @@ function Soles({ ahora, alineados }: { ahora: number; alineados: boolean }) {
 
 export default function CartelAlineacion({ invitado = false }: { invitado?: boolean }) {
   const t = useTranslations("Alineacion");
+  const tc = useTranslations("Carteles");
   const locale = useLocale();
   const ahora = useSyncExternalStore(suscribir, ahoraRedondeado, sinHora);
   const [estado, setEstado] = useState<EstadoAlineacionServidor | null>(null);
@@ -110,86 +119,118 @@ export default function CartelAlineacion({ invitado = false }: { invitado?: bool
     }
   }
 
+  const pendiente = !invitado && (durante || despues) && !!estado && !estado.premio_comunidad;
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-3xl border text-white"
-      style={{
-        borderColor: durante ? `${ORO}aa` : "rgba(255,255,255,0.12)",
-        background: durante ? "radial-gradient(120% 90% at 50% 105%, #6b3c0e 0%, #2a1631 38%, #0a0b16 72%)" : "linear-gradient(170deg, #12122a 0%, #07080d 75%)",
-        boxShadow: durante ? "0 0 40px -10px rgba(242,193,78,0.45)" : undefined,
+    <CartelPlegable
+      id={`alineacion-${m.numero}`}
+      franja={{
+        icono: <SolesMini alineados={durante || despues} />,
+        eyebrow: t("eyebrow", { n: m.numero }),
+        titulo: t("titulo"),
+        detalle: durante ? tc("quedan", { tiempo: faltaCorto(faltaPara(m.fin, ahora)) }) : despues ? tc("terminada") : tc("empiezaEn", { tiempo: faltaCorto(faltaPara(m.inicio, ahora)) }),
+        acento: ORO,
+        fondo: durante ? "radial-gradient(120% 220% at 50% 130%, #6b3c0e 0%, #2a1631 45%, #0a0b16 80%)" : "linear-gradient(100deg, #12122a 0%, #07080d 80%)",
+        borde: durante ? `${ORO}aa` : "#05060F",
+        sombra: durante ? "0 0 26px -6px rgba(242,193,78,0.5), 4px 4px 0 0 #05060F" : undefined,
+        pendiente: pendiente ? tc("premio") : null,
       }}
     >
-      <Soles ahora={ahora} alineados={durante || despues} />
-      <div className="relative flex flex-col gap-4 p-5 pb-28">
-        <div className="flex flex-col gap-1.5">
-          <span className="font-mono text-[11px] font-bold uppercase tracking-[0.28em]" style={{ color: ORO }}>
-            {t("eyebrow", { n: m.numero })}
-          </span>
-          <h2 className="font-display text-3xl font-black leading-none tracking-tight" style={{ color: MARFIL }}>
-            {t("titulo")}
-          </h2>
-          <p className="text-sm text-white/70">
-            {durante ? t("durante", { tiempo: faltaPara(m.fin, ahora) }) : despues ? t("despues") : t("antes", { tiempo: faltaPara(m.inicio, ahora) })}
-          </p>
-          {!despues && (
-            <p className="text-xs font-semibold tracking-wide" style={{ color: `${MARFIL}cc` }}>
-              {t("bonos")} <span className="text-white/40">·</span> <span className="text-white/55">{t("cuando", { fecha })}</span>
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden rounded-3xl border text-white"
+        style={{
+          borderColor: durante ? `${ORO}aa` : "rgba(255,255,255,0.12)",
+          background: durante ? "radial-gradient(120% 90% at 50% 105%, #6b3c0e 0%, #2a1631 38%, #0a0b16 72%)" : "linear-gradient(170deg, #12122a 0%, #07080d 75%)",
+          boxShadow: durante ? "0 0 40px -10px rgba(242,193,78,0.45)" : undefined,
+        }}
+      >
+        <Soles ahora={ahora} alineados={durante || despues} />
+        <div className="relative flex flex-col gap-4 p-5 pb-28">
+          <div className="flex flex-col gap-1.5">
+            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.28em]" style={{ color: ORO }}>
+              {t("eyebrow", { n: m.numero })}
+            </span>
+            <h2 className="font-display text-3xl font-black leading-none tracking-tight" style={{ color: MARFIL }}>
+              {t("titulo")}
+            </h2>
+            <p className="text-sm text-white/70">
+              {durante ? t("durante", { tiempo: faltaPara(m.fin, ahora) }) : despues ? t("despues") : t("antes", { tiempo: faltaPara(m.inicio, ahora) })}
             </p>
-          )}
-        </div>
-
-        {invitado ? (
-          <p className="text-sm text-white/70">{t("invitado")}</p>
-        ) : (
-          <>
-            {despues && (
-              <p className="font-mono text-sm font-bold" style={{ color: MARFIL }}>
-                {partidas > 0 ? t("resumen", { partidas, xp: estado?.xp ?? 0, chispas: estado?.chispas ?? 0 }) : t("sinJugar")}
+            {!despues && (
+              <p className="text-xs font-semibold tracking-wide" style={{ color: `${MARFIL}cc` }}>
+                {t("bonos")} <span className="text-white/40">·</span> <span className="text-white/55">{t("cuando", { fecha })}</span>
               </p>
             )}
-            <div className="grid gap-2 sm:grid-cols-3">
-              <Premio titulo={t("sello", { n: m.numero })} como={t("selloComo")} hecho={!!estado?.sello} etiquetaHecho={t("ganado")} progreso={Math.min(1, partidas)} />
-              <Premio
-                titulo={t("capsula")}
-                como={durante ? t("partidas", { n: Math.min(partidas, PARTIDAS_PARA_CAPSULA), total: PARTIDAS_PARA_CAPSULA }) : t("capsulaComo", { n: PARTIDAS_PARA_CAPSULA })}
-                hecho={!!estado?.capsula}
-                etiquetaHecho={t("ganado")}
-                progreso={Math.min(1, partidas / PARTIDAS_PARA_CAPSULA)}
-              />
-              <div className="flex flex-col gap-1.5 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">{t("comunidad")}</span>
-                <span className="text-xs text-white/75">{t("comunidadComo", { n: CHISPAS_COMUNIDAD })}</span>
+          </div>
+
+          {invitado ? (
+            <p className="text-sm text-white/70">{t("invitado")}</p>
+          ) : (
+            <>
+              {despues && (
+                <p className="font-mono text-sm font-bold" style={{ color: MARFIL }}>
+                  {partidas > 0 ? t("resumen", { partidas, xp: estado?.xp ?? 0, chispas: estado?.chispas ?? 0 }) : t("sinJugar")}
+                </p>
+              )}
+              <div className="grid gap-2 sm:grid-cols-3">
+                <Premio titulo={t("sello", { n: m.numero })} como={t("selloComo")} hecho={!!estado?.sello} etiquetaHecho={t("ganado")} progreso={Math.min(1, partidas)} />
+                <Premio
+                  titulo={t("capsula")}
+                  como={durante ? t("partidas", { n: Math.min(partidas, PARTIDAS_PARA_CAPSULA), total: PARTIDAS_PARA_CAPSULA }) : t("capsulaComo", { n: PARTIDAS_PARA_CAPSULA })}
+                  hecho={!!estado?.capsula}
+                  etiquetaHecho={t("ganado")}
+                  progreso={Math.min(1, partidas / PARTIDAS_PARA_CAPSULA)}
+                />
+                <div className="flex flex-col gap-1.5 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-white/55">{t("comunidad")}</span>
+                  <span className="text-xs text-white/75">{t("comunidadComo", { n: CHISPAS_COMUNIDAD })}</span>
+                </div>
               </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {durante && (
-                <Link href="/practica" className="rounded-xl border-2 border-[#05060F] px-5 py-2.5 font-display text-sm font-bold text-[#1A1206] shadow-[3px_3px_0_0_#05060F] transition-transform hover:-translate-y-0.5" style={{ background: `linear-gradient(180deg, #FFE08A, ${ORO})` }}>
-                  {t("jugar")}
-                </Link>
-              )}
-              {(durante || despues) && estado && (
-                <button
-                  type="button"
-                  onClick={reclamar}
-                  disabled={ocupado || estado.premio_comunidad}
-                  className="rounded-xl border-2 border-[#05060F] bg-white px-5 py-2.5 font-display text-sm font-bold text-[#05060F] shadow-[3px_3px_0_0_#05060F] disabled:opacity-60"
-                >
-                  {estado.premio_comunidad ? t("reclamado") : t("reclamar", { n: CHISPAS_COMUNIDAD })}
-                </button>
-              )}
-            </div>
-            {aviso && <p className="text-sm font-semibold text-error">{aviso}</p>}
-          </>
-        )}
-        {(durante || despues) && (
-          <button type="button" onClick={() => repetirVideo(VIDEO_ALINEACION)} className="self-start text-sm font-bold hover:underline" style={{ color: ORO }}>
-            ▶ {t("verVideo")}
-          </button>
-        )}
-      </div>
-    </motion.section>
+              <div className="flex flex-wrap gap-2">
+                {durante && (
+                  <Link href="/practica" className="rounded-xl border-2 border-[#05060F] px-5 py-2.5 font-display text-sm font-bold text-[#1A1206] shadow-[3px_3px_0_0_#05060F] transition-transform hover:-translate-y-0.5" style={{ background: `linear-gradient(180deg, #FFE08A, ${ORO})` }}>
+                    {t("jugar")}
+                  </Link>
+                )}
+                {(durante || despues) && estado && (
+                  <button
+                    type="button"
+                    onClick={reclamar}
+                    disabled={ocupado || estado.premio_comunidad}
+                    className="rounded-xl border-2 border-[#05060F] bg-white px-5 py-2.5 font-display text-sm font-bold text-[#05060F] shadow-[3px_3px_0_0_#05060F] disabled:opacity-60"
+                  >
+                    {estado.premio_comunidad ? t("reclamado") : t("reclamar", { n: CHISPAS_COMUNIDAD })}
+                  </button>
+                )}
+              </div>
+              {aviso && <p className="text-sm font-semibold text-error">{aviso}</p>}
+            </>
+          )}
+          {(durante || despues) && (
+            <button type="button" onClick={() => repetirVideo(VIDEO_ALINEACION)} className="self-start text-sm font-bold hover:underline" style={{ color: ORO }}>
+              ▶ {t("verVideo")}
+            </button>
+          )}
+        </div>
+      </motion.section>
+    </CartelPlegable>
+  );
+}
+
+// Los 15 soles en fila para la franja minimizada: alineados durante y después.
+function SolesMini({ alineados }: { alineados: boolean }) {
+  return (
+    <span className="relative block h-8 w-9" aria-hidden="true">
+      <span className="absolute inset-x-0 top-1/2 h-px" style={{ background: alineados ? ORO : "rgba(255,255,255,0.2)" }} />
+      {SOLES.map((s, i) => (
+        <span
+          key={s.slug}
+          className="absolute h-[4px] w-[4px] rounded-full"
+          style={{ left: `${4 + (i * 92) / (SOLES.length - 1)}%`, top: `calc(50% - 2px + ${alineados ? 0 : Math.round(Math.sin(i * 1.7) * 9)}px)`, marginLeft: -2, background: s.color, boxShadow: `0 0 5px ${s.color}` }}
+        />
+      ))}
+    </span>
   );
 }
 

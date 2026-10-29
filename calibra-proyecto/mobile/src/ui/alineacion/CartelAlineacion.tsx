@@ -18,9 +18,11 @@ import {
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, useJugador } from "~/lib/jugador";
 import { supabase } from "~/lib/supabase";
+import { relojEventos } from "~/lib/relojEventos";
 import { repetirVideo } from "~/lib/videoApertura";
 import { VIDEO_ALINEACION } from "@/lib/temas/videosApertura";
 import { mostrarAviso } from "../Aviso";
+import CartelPlegable, { faltaCorto } from "../temas/CartelPlegable";
 import Boton3D from "../Boton3D";
 import Texto, { SobreOscuro } from "../Texto";
 import { color, fuente } from "~/tema";
@@ -28,7 +30,8 @@ import { color, fuente } from "~/tema";
 // Cartel de la Gran Alineación en el Inicio (igual que la web, decisiones del
 // 2026-10-18): desde 3 días antes con la cuenta regresiva, durante las 3 horas con tu
 // avance y la meta de comunidad, y 3 días después con el resumen y el premio de
-// comunidad. Los 15 soles están a la altura real de su día en cada ciudad.
+// comunidad. Los 15 soles están a la altura real de su día en cada ciudad. Empieza
+// minimizado en una franja (CartelPlegable) que avisa si hay premio por reclamar.
 const ORO = "#F2C14E";
 const MARFIL = "#F6EFE2";
 
@@ -95,6 +98,15 @@ export default function CartelAlineacion() {
     if (esInvitado) return;
     setEstado(await estadoAlineacionServidor(supabase));
   }, [esInvitado]);
+  // Eventos en vivo: cambia de fase en el instante exacto (relojEventos) y trae el estado nuevo.
+  useEffect(
+    () =>
+      relojEventos.suscribir(() => {
+        setAhora(Date.now());
+        void cargar();
+      }),
+    [cargar]
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -123,56 +135,100 @@ export default function CartelAlineacion() {
     }
   }
 
+  const pendiente = !esInvitado && (durante || despues) && !!estado && !estado.premio_comunidad;
   return (
-    <SobreOscuro>
-      <Animated.View entering={FadeInDown.duration(320)} onLayout={(e) => setAncho(e.nativeEvent.layout.width)} style={[styles.cartel, durante && { borderColor: "rgba(242,193,78,0.7)", boxShadow: "0px 0px 30px rgba(242,193,78,0.35)" }]}>
-        <LinearGradient colors={durante ? ["#0a0b16", "#2a1631", "#6b3c0e"] : ["#12122a", "#07080d"]} locations={durante ? [0.25, 0.65, 1] : undefined} style={StyleSheet.absoluteFill} />
-        {ancho > 0 && <Soles ahora={ahora} alineados={durante || despues} ancho={ancho} />}
-        <View style={{ gap: 6 }}>
-          <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 11, letterSpacing: 2.8, color: ORO }}>GRAN ALINEACIÓN #{m.numero}</Texto>
-          <Texto style={{ fontFamily: fuente.display, fontSize: 28, color: MARFIL, lineHeight: 32 }}>La Gran Alineación</Texto>
-          <Texto style={{ fontSize: 13.5, color: "rgba(255,255,255,0.72)" }}>
-            {durante ? `Las 15 ciudades amanecieron juntas. Quedan ${faltaPara(m.fin, ahora)}.` : despues ? "Así te fue en la Alineación." : `Las 15 ciudades amanecen juntas. Empieza en ${faltaPara(m.inicio, ahora)}.`}
+    <CartelPlegable
+      id={`alineacion-${m.numero}`}
+      franja={{
+        icono: <SolesMini alineados={durante || despues} />,
+        eyebrow: `Gran Alineación #${m.numero}`,
+        titulo: "La Gran Alineación",
+        detalle: (
+          <Texto v="mono" tam={11.5}>
+            {durante ? `Quedan ${faltaCorto(faltaPara(m.fin, ahora))}` : despues ? "Terminó" : `En ${faltaCorto(faltaPara(m.inicio, ahora))}`}
           </Texto>
-          {!despues && (
-            <Texto style={{ fontSize: 12, color: "rgba(246,239,226,0.8)", fontFamily: fuente.cuerpoBold }}>
-              Exp ×2 · Chispas ×2 · Constelaciones ×2
-              <Texto style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}> · {fecha} · 3 horas</Texto>
+        ),
+        acento: ORO,
+        colores: durante ? ["#2a1631", "#0a0b16", "#6b3c0e"] : ["#12122a", "#07080d"],
+        borde: durante ? "rgba(242,193,78,0.7)" : "#05060F",
+        sombra: durante ? "0px 0px 22px rgba(242,193,78,0.4)" : undefined,
+        pendiente: pendiente ? "Premio" : null,
+      }}
+    >
+      <SobreOscuro>
+        <Animated.View entering={FadeInDown.duration(320)} onLayout={(e) => setAncho(e.nativeEvent.layout.width)} style={[styles.cartel, durante && { borderColor: "rgba(242,193,78,0.7)", boxShadow: "0px 0px 30px rgba(242,193,78,0.35)" }]}>
+          <LinearGradient colors={durante ? ["#0a0b16", "#2a1631", "#6b3c0e"] : ["#12122a", "#07080d"]} locations={durante ? [0.25, 0.65, 1] : undefined} style={StyleSheet.absoluteFill} />
+          {ancho > 0 && <Soles ahora={ahora} alineados={durante || despues} ancho={ancho} />}
+          <View style={{ gap: 6 }}>
+            <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 11, letterSpacing: 2.8, color: ORO }}>GRAN ALINEACIÓN #{m.numero}</Texto>
+            <Texto style={{ fontFamily: fuente.display, fontSize: 28, color: MARFIL, lineHeight: 32 }}>La Gran Alineación</Texto>
+            <Texto style={{ fontSize: 13.5, color: "rgba(255,255,255,0.72)" }}>
+              {durante ? `Las 15 ciudades amanecieron juntas. Quedan ${faltaPara(m.fin, ahora)}.` : despues ? "Así te fue en la Alineación." : `Las 15 ciudades amanecen juntas. Empieza en ${faltaPara(m.inicio, ahora)}.`}
             </Texto>
-          )}
-        </View>
-
-        {esInvitado ? (
-          <Texto style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>Crea tu cuenta para ganar el sello y la cápsula.</Texto>
-        ) : (
-          <>
-            {despues && (
-              <Texto v="mono" tam={13} c={MARFIL}>
-                {partidas > 0 ? `${partidas} partidas · +${estado?.xp ?? 0} Exp · +${estado?.chispas ?? 0} Chispas` : "No jugaste en esta Alineación. La próxima es en 28 días."}
+            {!despues && (
+              <Texto style={{ fontSize: 12, color: "rgba(246,239,226,0.8)", fontFamily: fuente.cuerpoBold }}>
+                Exp ×2 · Chispas ×2 · Constelaciones ×2
+                <Texto style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}> · {fecha} · 3 horas</Texto>
               </Texto>
             )}
-            <View style={{ flexDirection: "row", gap: 8 }}>
-              <Premio titulo={`Sello «Testigo #${m.numero}»`} como="Juega 1 partida" hecho={!!estado?.sello} progreso={Math.min(1, partidas)} />
-              <Premio titulo="Cápsula de la Alineación" como={durante ? `${Math.min(partidas, PARTIDAS_PARA_CAPSULA)}/${PARTIDAS_PARA_CAPSULA} partidas` : `Juega ${PARTIDAS_PARA_CAPSULA} partidas`} hecho={!!estado?.capsula} progreso={Math.min(1, partidas / PARTIDAS_PARA_CAPSULA)} />
-            </View>
-            <View style={styles.comunidad}>
-              <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 10.5, letterSpacing: 1.4, color: "rgba(255,255,255,0.55)" }}>REGALO PARA TODOS</Texto>
-              <Texto style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>{CHISPAS_COMUNIDAD} Chispas para cada jugador, por la Gran Alineación. Se reclaman hasta la próxima.</Texto>
-            </View>
-            {durante && <Boton3D titulo="Jugar ahora" variante="logro" onPress={() => router.push("/mundos")} />}
-            {(durante || despues) && estado && (
-              <Boton3D titulo={estado.premio_comunidad ? "Premio reclamado" : `Reclamar ${CHISPAS_COMUNIDAD} Chispas`} variante="secundario" deshabilitado={estado.premio_comunidad} cargando={ocupado} onPress={reclamar} />
-            )}
-          </>
-        )}
-        {(durante || despues) && (
-          <Pressable onPress={() => repetirVideo(VIDEO_ALINEACION)} hitSlop={8} style={{ alignSelf: "flex-start" }} accessibilityRole="button">
-            <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 12.5, color: ORO }}>▶ Ver el video de la Alineación</Texto>
-          </Pressable>
-        )}
-        <View style={{ height: 70 }} />
-      </Animated.View>
-    </SobreOscuro>
+          </View>
+
+          {esInvitado ? (
+            <Texto style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>Crea tu cuenta para ganar el sello y la cápsula.</Texto>
+          ) : (
+            <>
+              {despues && (
+                <Texto v="mono" tam={13} c={MARFIL}>
+                  {partidas > 0 ? `${partidas} partidas · +${estado?.xp ?? 0} Exp · +${estado?.chispas ?? 0} Chispas` : "No jugaste en esta Alineación. La próxima es en 28 días."}
+                </Texto>
+              )}
+              <View style={{ flexDirection: "row", gap: 8 }}>
+                <Premio titulo={`Sello «Testigo #${m.numero}»`} como="Juega 1 partida" hecho={!!estado?.sello} progreso={Math.min(1, partidas)} />
+                <Premio titulo="Cápsula de la Alineación" como={durante ? `${Math.min(partidas, PARTIDAS_PARA_CAPSULA)}/${PARTIDAS_PARA_CAPSULA} partidas` : `Juega ${PARTIDAS_PARA_CAPSULA} partidas`} hecho={!!estado?.capsula} progreso={Math.min(1, partidas / PARTIDAS_PARA_CAPSULA)} />
+              </View>
+              <View style={styles.comunidad}>
+                <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 10.5, letterSpacing: 1.4, color: "rgba(255,255,255,0.55)" }}>REGALO PARA TODOS</Texto>
+                <Texto style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>{CHISPAS_COMUNIDAD} Chispas para cada jugador, por la Gran Alineación. Se reclaman hasta la próxima.</Texto>
+              </View>
+              {durante && <Boton3D titulo="Jugar ahora" variante="logro" onPress={() => router.push("/mundos")} />}
+              {(durante || despues) && estado && (
+                <Boton3D titulo={estado.premio_comunidad ? "Premio reclamado" : `Reclamar ${CHISPAS_COMUNIDAD} Chispas`} variante="secundario" deshabilitado={estado.premio_comunidad} cargando={ocupado} onPress={reclamar} />
+              )}
+            </>
+          )}
+          {(durante || despues) && (
+            <Pressable onPress={() => repetirVideo(VIDEO_ALINEACION)} hitSlop={8} style={{ alignSelf: "flex-start" }} accessibilityRole="button">
+              <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 12.5, color: ORO }}>▶ Ver el video de la Alineación</Texto>
+            </Pressable>
+          )}
+          <View style={{ height: 70 }} />
+        </Animated.View>
+      </SobreOscuro>
+    </CartelPlegable>
+  );
+}
+
+// Los 15 soles en fila para la franja minimizada: alineados durante y después.
+function SolesMini({ alineados }: { alineados: boolean }) {
+  return (
+    <View pointerEvents="none" style={{ width: 34, height: 30 }}>
+      <View style={{ position: "absolute", left: 0, right: 0, top: 15, height: 1, backgroundColor: alineados ? ORO : "rgba(255,255,255,0.2)" }} />
+      {SOLES.map((s, i) => (
+        <View
+          key={s.slug}
+          style={{
+            position: "absolute",
+            left: 1 + (i * 28) / (SOLES.length - 1),
+            top: 13 + (alineados ? 0 : Math.round(Math.sin(i * 1.7) * 9)),
+            width: 4,
+            height: 4,
+            borderRadius: 2,
+            backgroundColor: s.color,
+            boxShadow: `0px 0px 5px ${s.color}`,
+          }}
+        />
+      ))}
+    </View>
   );
 }
 

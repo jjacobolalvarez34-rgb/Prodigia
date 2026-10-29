@@ -5809,6 +5809,14 @@
     "activarSonido": "Activar sonido",
     "video": "Video de apertura del evento"
   },
+  "Carteles": {
+    "abrir": "Toca para ver el cartel",
+    "minimizar": "Minimizar",
+    "premio": "Premio",
+    "quedan": "Quedan {tiempo}",
+    "terminada": "Terminó",
+    "empiezaEn": "En {tiempo}"
+  },
   "Comun": {
     "nuevo": "NUEVO"
   },

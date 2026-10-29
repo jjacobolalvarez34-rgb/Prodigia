@@ -5809,6 +5809,14 @@
     "activarSonido": "Turn on sound",
     "video": "Event opening video"
   },
+  "Carteles": {
+    "abrir": "Tap to open the banner",
+    "minimizar": "Minimize",
+    "premio": "Reward",
+    "quedan": "{tiempo} left",
+    "terminada": "Over",
+    "empiezaEn": "In {tiempo}"
+  },
   "Comun": {
     "nuevo": "NEW"
   },

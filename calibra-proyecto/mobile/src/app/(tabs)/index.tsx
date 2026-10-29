@@ -16,6 +16,8 @@ import { useSesion } from "~/lib/sesion";
 import RepararRacha from "~/ui/RepararRacha";
 import CartelTemporada from "~/ui/temas/CartelTemporada";
 import CartelAlineacion from "~/ui/alineacion/CartelAlineacion";
+import CartelPlegable from "~/ui/temas/CartelPlegable";
+import IconoEvento from "~/ui/temas/IconoEvento";
 import { sincronizar, useSinConexion } from "~/lib/sinConexion";
 import { mensajeError, supabase } from "~/lib/supabase";
 import Anillo from "~/ui/Anillo";
@@ -132,17 +134,29 @@ export default function Hoy() {
 
       <CartelAlineacion />
       <CartelTemporada />
-      {celebracionDe(temaHoy)?.minievento && !["ranked", "amigos"].includes(celebracionDe(temaHoy)!.minievento.donde) && (
-        <Tarjeta indice={indice++} acento={temaHoy?.tema.acento} brillo={0.18} esquina>
-          <Texto v="micro" c={temaHoy?.tema.acento}>
-            MINIEVENTO
-          </Texto>
-          <Texto v="h3">{celebracionDe(temaHoy)!.minievento.nombre}</Texto>
-          <Texto v="nota" tam={12.5}>
-            {celebracionDe(temaHoy)!.minievento.texto}
-          </Texto>
-          {temaHoy?.tema.id === "dia_pi" && <Boton3D titulo="Jugar" tamano="sm" estilo={{ marginTop: 8 }} onPress={() => router.push("/pi")} />}
-        </Tarjeta>
+      {temaHoy && celebracionDe(temaHoy)?.minievento && !["ranked", "amigos"].includes(celebracionDe(temaHoy)!.minievento.donde) && (
+        // Minimizado en una franja como los carteles de evento (CartelPlegable).
+        <CartelPlegable
+          id={`mini-${temaHoy.tema.id}-${temaHoy.hoy.rango.desde}`}
+          franja={{
+            icono: <IconoEvento tema={temaHoy.tema} />,
+            eyebrow: "Minievento",
+            titulo: celebracionDe(temaHoy)!.minievento.nombre,
+            acento: temaHoy.tema.acento,
+            colores: [`${temaHoy.tema.acento}40`, "#0B0A1A"],
+          }}
+        >
+          <Tarjeta indice={indice++} acento={temaHoy.tema.acento} brillo={0.18} esquina>
+            <Texto v="micro" c={temaHoy.tema.acento}>
+              MINIEVENTO
+            </Texto>
+            <Texto v="h3">{celebracionDe(temaHoy)!.minievento.nombre}</Texto>
+            <Texto v="nota" tam={12.5} style={{ marginRight: 34 }}>
+              {celebracionDe(temaHoy)!.minievento.texto}
+            </Texto>
+            {temaHoy.tema.id === "dia_pi" && <Boton3D titulo="Jugar" tamano="sm" estilo={{ marginTop: 8 }} onPress={() => router.push("/pi")} />}
+          </Tarjeta>
+        </CartelPlegable>
       )}
       {!esInvitado && <RepararRacha indice={indice++} />}
 
