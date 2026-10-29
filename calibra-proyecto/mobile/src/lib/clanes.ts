@@ -2,6 +2,7 @@
 // perezoso de la guerra, misión semanal de 3000 Exp con su botón de reclamar,
 // miembros, rival de la semana, chat y mundo de clanes).
 import { tierCiudadDeNivel } from "@/lib/clanes/tierCiudad";
+import { estadoGuerra, type EstadoGuerra, type UltimaGuerra } from "@/lib/clanes/guerra";
 import { urlAbsoluta } from "./entorno";
 import { supabase } from "./supabase";
 
@@ -20,6 +21,7 @@ export interface MiClan {
   nivel_clan: number;
   imagen_url: string | null;
   xp_acumulado_historico: number;
+  guerras_ganadas?: number;
 }
 
 export interface Miembro {
@@ -68,6 +70,17 @@ export interface DatosClan {
   rival: RivalClan | null;
   xpNivel: { desde: number; hasta: number } | null;
   ranking: ClanRanking[];
+  // Guerra semanal siempre visible (2026-10-29): puesto, rival y cierre.
+  guerra: EstadoGuerra | null;
+  // Ganador de la semana pasada (0306; null sin la migración o si nadie sumó Exp).
+  ultimaGuerra: UltimaGuerra | null;
+}
+
+async function cargarUltimaGuerra(): Promise<UltimaGuerra | null> {
+  const { data, error } = await supabase.rpc("ultima_guerra_clanes");
+  if (error) return null;
+  const f = (data as UltimaGuerra[] | null)?.[0];
+  return f ? { ...f, xp_semana: Number(f.xp_semana) } : null;
 }
 
 export async function cargarMiClan(): Promise<DatosClan> {
@@ -75,15 +88,16 @@ export async function cargarMiClan(): Promise<DatosClan> {
   const [{ data: filas }, { data: ranking }] = await Promise.all([supabase.rpc("mi_clan"), supabase.rpc("ranking_clanes_semanal")]);
   const clan = (filas as MiClan[] | null)?.[0] ?? null;
   const rankingLista = ((ranking as ClanRanking[] | null) ?? []).map((r) => ({ ...r, xp_semana: Number(r.xp_semana), cantidad_miembros: Number(r.cantidad_miembros) }));
-  if (!clan) return { clan: null, miembros: [], mision: null, rival: null, xpNivel: null, ranking: rankingLista };
+  if (!clan) return { clan: null, miembros: [], mision: null, rival: null, xpNivel: null, ranking: rankingLista, guerra: null, ultimaGuerra: null };
 
   await supabase.rpc("asegurar_mision_semanal", { p_clan_id: clan.clan_id });
-  const [{ data: miembros }, { data: mision }, { data: rival }, { data: desde }, { data: hasta }] = await Promise.all([
+  const [{ data: miembros }, { data: mision }, { data: rival }, { data: desde }, { data: hasta }, ultimaGuerra] = await Promise.all([
     supabase.rpc("miembros_de_clan", { p_clan_id: clan.clan_id }),
     supabase.rpc("mision_actual_de_clan", { p_clan_id: clan.clan_id }),
     supabase.rpc("rival_de_clan", { p_clan_id: clan.clan_id }),
     supabase.rpc("xp_requerido_nivel_clan", { p_nivel: clan.nivel_clan }),
     supabase.rpc("xp_requerido_nivel_clan", { p_nivel: clan.nivel_clan + 1 }),
+    cargarUltimaGuerra(),
   ]);
   return {
     clan: { ...clan, cantidad_miembros: Number(clan.cantidad_miembros), xp_acumulado_historico: Number(clan.xp_acumulado_historico ?? 0) },
@@ -95,6 +109,8 @@ export async function cargarMiClan(): Promise<DatosClan> {
     })(),
     xpNivel: desde != null && hasta != null ? { desde: Number(desde), hasta: Number(hasta) } : null,
     ranking: rankingLista,
+    guerra: estadoGuerra(rankingLista, clan.clan_id),
+    ultimaGuerra,
   };
 }
 

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { BackHandler, StyleSheet, View } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { marcarBuscandoDuelo } from "@/lib/duelos/emparejamiento";
+import { anotarDueloEmparejado, marcarBuscandoDuelo } from "@/lib/duelos/emparejamiento";
 import { cancelarBusqueda, duelosPendientesPrevios, pasoBusqueda } from "~/lib/competir";
 import { sonar, vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
@@ -60,6 +60,8 @@ export default function BuscarDuelo() {
           const p = await pasoBusqueda(sesion.user.id, mundo, esRanked, inicio, conocidos);
           if (cancelado.current) return;
           if (p.encontrado && p.duelId) {
+            // Su INSERT por Realtime puede llegar después: no es un «te retaron».
+            anotarDueloEmparejado(p.duelId);
             sonar("swoosh");
             vibrar.fuerte();
             router.replace({ pathname: "/duelo/[id]", params: { id: p.duelId } });

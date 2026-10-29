@@ -13,6 +13,7 @@ import { Pacifico_400Regular } from "@expo-google-fonts/pacifico/400Regular";
 import { PlayfairDisplay_700Bold } from "@expo-google-fonts/playfair-display/700Bold";
 import { SpaceGrotesk_600SemiBold } from "@expo-google-fonts/space-grotesk/600SemiBold";
 import { SpaceGrotesk_700Bold } from "@expo-google-fonts/space-grotesk/700Bold";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from "expo-font";
 import * as Notifications from "expo-notifications";
 import { DarkTheme, Stack, ThemeProvider, useRouter, useSegments, type Href } from "expo-router";
@@ -61,19 +62,47 @@ const tema = {
 
 // Al tocar un aviso (con la app abierta, en segundo plano o cerrada) se abre la
 // pantalla que corresponde.
+//
+// Arreglo «la app se abre sola en Numeria» (2026-10-29): Android guarda el ÚLTIMO
+// aviso tocado mientras vive el proceso, y useLastNotificationResponse lo devuelve
+// otra vez cada vez que este componente se vuelve a montar (salir con «atrás» y
+// volver a entrar, recrear la actividad...). Como el ref se perdía al desmontar, el
+// recordatorio de racha («60 segundos de Numeria») volvía a abrir Numeria sin que
+// tocaras nada. Ahora cada aviso se atiende UNA sola vez: se recuerda su id (en
+// memoria y en el teléfono) y se borra la respuesta guardada después de usarla.
+const CLAVE_AVISO_ATENDIDO = "prodigia.avisoAtendido";
+let avisoAtendido: string | null = null;
+// Un aviso que llegó hace más de un día ya no lleva a ningún lado (queda el Inicio).
+const AVISO_VIGENTE_MS = 24 * 60 * 60 * 1000;
+
 function AbrirDesdeAviso() {
   const router = useRouter();
   const { sesion } = useSesion();
   const respuesta = Notifications.useLastNotificationResponse();
-  const atendidaRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!respuesta || !sesion) return;
-    const id = respuesta.notification.request.identifier;
-    if (atendidaRef.current === id) return;
-    atendidaRef.current = id;
-    const ruta = rutaDeAviso(respuesta.notification.request.content.data as Record<string, unknown>);
-    if (ruta !== "/") router.push(ruta as Href);
+    // El recordatorio diario repite su identifier: la fecha distingue cada toque.
+    const id = `${respuesta.notification.request.identifier}|${respuesta.notification.date}`;
+    if (avisoAtendido === id) return;
+    avisoAtendido = id;
+    const data = respuesta.notification.request.content.data as Record<string, unknown>;
+    (async () => {
+      const guardado = await AsyncStorage.getItem(CLAVE_AVISO_ATENDIDO).catch(() => null);
+      try {
+        Notifications.clearLastNotificationResponse();
+      } catch {
+        // Versiones viejas del módulo nativo: basta con el id recordado.
+      }
+      if (guardado === id) return;
+      await AsyncStorage.setItem(CLAVE_AVISO_ATENDIDO, id).catch(() => {});
+      // notification.date: cuándo llegó (en ms; algunos sistemas lo dan en segundos).
+      const fecha = respuesta.notification.date;
+      const llego = fecha && fecha < 1e12 ? fecha * 1000 : fecha;
+      if (llego && Date.now() - llego > AVISO_VIGENTE_MS) return;
+      const ruta = rutaDeAviso(data);
+      if (ruta !== "/") router.push(ruta as Href);
+    })();
   }, [respuesta, sesion, router]);
 
   return null;

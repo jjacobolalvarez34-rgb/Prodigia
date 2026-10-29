@@ -1,3 +1,4 @@
+import { fraseGuerra, textoCierreGuerra } from "@/lib/clanes/guerra";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Pressable, StyleSheet, TextInput, View } from "react-native";
@@ -21,7 +22,7 @@ import Barra from "../Barra";
 import Boton3D from "../Boton3D";
 import Ciudad from "../Ciudad";
 import Confeti from "../Confeti";
-import { IconoBuscar, IconoChispa, IconoMapa, IconoMensaje } from "../Iconos";
+import { IconoBuscar, IconoChispa, IconoCompetir, IconoMapa, IconoMensaje } from "../Iconos";
 import { TituloSeccion, Vacio } from "../Pantalla";
 import AvatarMarco from "../placa/AvatarMarco";
 import Tarjeta from "../Tarjeta";
@@ -53,7 +54,7 @@ export default function VistaClan({ datos, miId, noLeidosClan, invitaciones, onC
   const [consulta, setConsulta] = useState("");
   const [resultados, setResultados] = useState<Awaited<ReturnType<typeof buscarClanes>>>([]);
   const [uniendo, setUniendo] = useState<string | null>(null);
-  const { clan, miembros, mision, rival, xpNivel, ranking } = datos;
+  const { clan, miembros, mision, xpNivel, ranking, guerra, ultimaGuerra } = datos;
 
   async function reclamar() {
     setReclamando(true);
@@ -163,7 +164,7 @@ export default function VistaClan({ datos, miId, noLeidosClan, invitaciones, onC
   const avanceNivel = xpNivel ? (clan.xp_acumulado_historico - xpNivel.desde) / Math.max(1, xpNivel.hasta - xpNivel.desde) : 0;
   const yo = miembros.find((m) => m.user_id === miId);
   const puedoGestionar = yo?.rol === "fundador";
-  const totalGuerra = rival ? rival.mi_xp_semana + rival.xp_semana : 0;
+  const totalGuerra = guerra?.rival ? guerra.miXp + guerra.rival.xp_semana : 0;
 
   return (
     <>
@@ -185,6 +186,7 @@ export default function VistaClan({ datos, miId, noLeidosClan, invitaciones, onC
             </Texto>
             <Texto v="nota" c="#FFD7B5">
               {tier.nombre} · Nivel {clan.nivel_clan} · {clan.cantidad_miembros}/20
+              {clan.guerras_ganadas ? ` · ${clan.guerras_ganadas} ${clan.guerras_ganadas === 1 ? "guerra ganada" : "guerras ganadas"}` : ""}
             </Texto>
           </View>
         </View>
@@ -206,24 +208,49 @@ export default function VistaClan({ datos, miId, noLeidosClan, invitaciones, onC
         <Barra valor={avanceNivel} colores={["#C2410C", "#FF8A3D"]} estilo={{ marginTop: 8 }} />
       </Tarjeta>
 
-      {rival && (
-        <Tarjeta indice={2} relleno={12}>
-          <Texto v="micro" style={{ marginBottom: 8 }}>
-            Guerra de la semana
-          </Texto>
+      {/* Guerra de la semana: SIEMPRE visible (antes solo con un clan justo arriba;
+          los lunes, o si ibas primero, no se veía nada). 2026-10-29. */}
+      {guerra && (
+        <Tarjeta indice={2} relleno={12} acento={guerra.situacion === "lidera" || guerra.situacion === "solo" ? color.logro : clan.color_estandarte} brillo={0.15}>
           <View style={styles.entre}>
-            <Texto v="fuerte" tam={12} c={clan.color_estandarte}>
-              [{clan.tag ?? clan.nombre.slice(0, 3)}] {rival.mi_xp_semana.toLocaleString("es")}
-            </Texto>
-            <Texto v="nota">vs</Texto>
-            <Texto v="fuerte" tam={12} c={rival.color_estandarte}>
-              {rival.xp_semana.toLocaleString("es")} [{rival.tag ?? rival.nombre.slice(0, 3)}]
+            <View style={styles.fila}>
+              <IconoCompetir tam={14} c={clan.color_estandarte} />
+              <Texto v="micro">Guerra de clanes</Texto>
+            </View>
+            <Texto v="mono" tam={11} c={color.texto2}>
+              Cierra en {textoCierreGuerra(guerra.cierraMs)}
             </Texto>
           </View>
-          <View style={styles.barraGuerra}>
-            <Barra valor={1} colores={[clan.color_estandarte, clan.color_estandarte]} alto={10} estilo={{ flex: Math.max(0.05, totalGuerra ? rival.mi_xp_semana / totalGuerra : 0.5), borderRadius: 0 }} />
-            <Barra valor={1} colores={[rival.color_estandarte, rival.color_estandarte]} alto={10} sinDestello estilo={{ flex: Math.max(0.05, totalGuerra ? rival.xp_semana / totalGuerra : 0.5), borderRadius: 0 }} />
-          </View>
+          {guerra.rival && (
+            <>
+              <View style={[styles.entre, { marginTop: 8 }]}>
+                <Texto v="fuerte" tam={12} c={clan.color_estandarte}>
+                  [{clan.tag ?? clan.nombre.slice(0, 3)}] {guerra.miXp.toLocaleString("es")}
+                </Texto>
+                <Texto v="nota">vs</Texto>
+                <Texto v="fuerte" tam={12} c={guerra.rival.color_estandarte}>
+                  {guerra.rival.xp_semana.toLocaleString("es")} [{guerra.rival.tag ?? guerra.rival.nombre.slice(0, 3)}]
+                </Texto>
+              </View>
+              <View style={styles.barraGuerra}>
+                <Barra valor={1} colores={[clan.color_estandarte, clan.color_estandarte]} alto={10} estilo={{ flex: Math.max(0.05, totalGuerra ? guerra.miXp / totalGuerra : 0.5), borderRadius: 0 }} />
+                <Barra valor={1} colores={[guerra.rival.color_estandarte, guerra.rival.color_estandarte]} alto={10} sinDestello estilo={{ flex: Math.max(0.05, totalGuerra ? guerra.rival.xp_semana / totalGuerra : 0.5), borderRadius: 0 }} />
+              </View>
+            </>
+          )}
+          <Texto v="nota" tam={12} style={{ marginTop: 8 }}>
+            {fraseGuerra(guerra)}
+          </Texto>
+          <Texto v="nota" tam={11} c={color.texto2} style={{ marginTop: 4 }}>
+            Toda la Exp que ganan los miembros esta semana suma. El clan con más Exp el domingo gana la guerra.
+          </Texto>
+          {ultimaGuerra && (
+            <Texto v="nota" tam={12} c={ultimaGuerra.clan_id === clan.clan_id ? color.logro : color.texto2} style={{ marginTop: 8 }}>
+              {ultimaGuerra.clan_id === clan.clan_id
+                ? `Tu clan ganó la guerra de la semana pasada con ${ultimaGuerra.xp_semana.toLocaleString("es")} Exp`
+                : `La semana pasada ganó ${ultimaGuerra.nombre}${ultimaGuerra.tag ? ` [${ultimaGuerra.tag}]` : ""} con ${ultimaGuerra.xp_semana.toLocaleString("es")} Exp`}
+            </Texto>
+          )}
         </Tarjeta>
       )}
 

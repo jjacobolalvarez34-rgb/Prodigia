@@ -14,7 +14,7 @@ import GlareHover from "@/components/reactbits/GlareHover";
 import BorderGlow from "@/components/reactbits/BorderGlow";
 import Boton from "@/components/Boton";
 import { COLOR_MUNDO, hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
-import { desdeConMargen, dueloNuevo, marcarBuscandoDuelo } from "@/lib/duelos/emparejamiento";
+import { anotarDueloEmparejado, desdeConMargen, dueloNuevo, marcarBuscandoDuelo } from "@/lib/duelos/emparejamiento";
 import { formatoRestante, useRetosPendientes, type RetoPendienteBase } from "@/app/[locale]/social/useRetosPendientes";
 import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { useConteoUsuariosEnLinea } from "@/lib/presencia/useConteoUsuariosEnLinea";
@@ -472,6 +472,8 @@ function BuscarPartida({
   }, []);
 
   function irAlDuelo(mundoEncontrado: MundoDuelo, duelId: string) {
+    // Es el duelo del emparejamiento: su INSERT por Realtime no es un «te retaron».
+    anotarDueloEmparejado(duelId);
     // La operación de Numeria ya no se elige a mano — sale sorteada del
     // lado del servidor al crear el duelo (ver buscar_rival_duelo) y
     // /practica la lee de ahí, no de la URL.

@@ -5,6 +5,7 @@ import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { cargarMiClan, reclamarMision, type Mision } from "~/lib/clanes";
+import { fraseGuerra, textoCierreGuerra, type EstadoGuerra } from "@/lib/clanes/guerra";
 import { textoVence, cargarCompetitivo, finDeSemanaUtc, rankingSemanal, rechazarDuelo, textoFaltan, type DueloPendiente } from "~/lib/competir";
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, recargarJugador, useJugador } from "~/lib/jugador";
@@ -45,6 +46,7 @@ export default function Hoy() {
   const [progreso, setProgreso] = useState<ProgresoMundo | null>(null);
   const [retos, setRetos] = useState<{ diario: number | null; semanal: number | null } | null>(null);
   const [mision, setMision] = useState<{ clanId: string; tag: string | null; m: Mision } | null>(null);
+  const [guerra, setGuerra] = useState<{ color: string; e: EstadoGuerra } | null>(null);
   const [liga, setLiga] = useState<{ puesto: number; total: number } | null>(null);
   const [pendientes, setPendientes] = useState<DueloPendiente[]>([]);
   const [novedades, setNovedades] = useState<NovedadDestacada[]>([]);
@@ -66,7 +68,10 @@ export default function Hoy() {
     if (!esInvitado) {
       tareas.push(
         estadoRetosHoy(userId).then(setRetos),
-        cargarMiClan().then((d) => setMision(d.clan && d.mision ? { clanId: d.clan.clan_id, tag: d.clan.tag, m: d.mision } : null)),
+        cargarMiClan().then((d) => {
+          setMision(d.clan && d.mision ? { clanId: d.clan.clan_id, tag: d.clan.tag, m: d.mision } : null);
+          setGuerra(d.clan && d.guerra ? { color: d.clan.color_estandarte, e: d.guerra } : null);
+        }),
         rankingSemanal(null, false).then((r) => {
           const i = r.findIndex((f) => f.placa.id === userId);
           setLiga(i >= 0 ? { puesto: i + 1, total: r.length } : { puesto: 0, total: r.length });
@@ -349,6 +354,24 @@ export default function Hoy() {
               Recompensa reclamada ✓
             </Texto>
           ) : null}
+        </Tarjeta>
+      )}
+
+      {/* Guerra de clanes en el Inicio (2026-10-29): antes solo se veía dentro del clan. */}
+      {guerra && (
+        <Tarjeta indice={indice++} acento={guerra.color} onPress={() => router.push({ pathname: "/social", params: { seccion: "clan" } })}>
+          <View style={styles.entre}>
+            <View style={{ flex: 1 }}>
+              <Texto v="h3">Guerra de clanes {guerra.e.puesto > 0 ? `· #${guerra.e.puesto} de ${guerra.e.total}` : ""}</Texto>
+              <Texto v="nota">{fraseGuerra(guerra.e)}</Texto>
+              <Texto v="nota" c={color.texto2}>
+                Cierra en {textoCierreGuerra(guerra.e.cierraMs, ahora.getTime())}
+              </Texto>
+            </View>
+            <Texto v="mono" c={color.primarioClaro}>
+              →
+            </Texto>
+          </View>
         </Tarjeta>
       )}
 

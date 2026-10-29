@@ -24,6 +24,8 @@ interface WebhookDuel {
   mundo?: string | null;
   id: string;
   estado?: string | null;
+  // 0307: true si lo creó el emparejamiento (buscar_rival_duelo), no un reto.
+  emparejado?: boolean | null;
 }
 
 export default async function handler(req: Request): Promise<Response> {
@@ -67,6 +69,14 @@ export default async function handler(req: Request): Promise<Response> {
   }
   if (duelo.estado && duelo.estado !== "pendiente") {
     return new Response(JSON.stringify({ ok: true, ignorado: "no pendiente" }), {
+      headers: corsHeaders,
+    });
+  }
+
+  // Duelo casual o rankeds del emparejamiento: el que esperaba ya entra solo; un
+  // «te retaron» ahí lo confundía (2026-10-29).
+  if (duelo.emparejado === true) {
+    return new Response(JSON.stringify({ ok: true, ignorado: "emparejamiento" }), {
       headers: corsHeaders,
     });
   }

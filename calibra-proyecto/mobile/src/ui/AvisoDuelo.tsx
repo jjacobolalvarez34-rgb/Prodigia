@@ -1,5 +1,5 @@
 import * as Notifications from "expo-notifications";
-import { estaBuscandoDuelo } from "@/lib/duelos/emparejamiento";
+import { esDueloEmparejado } from "@/lib/duelos/emparejamiento";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -55,10 +55,10 @@ export default function AvisoDuelo({ userId }: { userId: string }) {
     const canal = supabase
       .channel(`retos-a:${userId}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "duels", filter: `retado_id=eq.${userId}` }, async (payload) => {
-        const fila = payload.new as { id: string; mundo: string; retador_id: string; estado: string };
+        const fila = payload.new as { id: string; mundo: string; retador_id: string; estado: string; emparejado?: boolean | null };
         if (fila.estado !== "pendiente") return;
-        // Buscando rival: es el duelo del emparejamiento y la búsqueda entra sola.
-        if (estaBuscandoDuelo()) return;
+        // Duelo del emparejamiento (casual o rankeds), no un reto: la búsqueda entra sola.
+        if (esDueloEmparejado(fila)) return;
         const { data } = await supabase.from("profiles").select("display_name, avatar_url").eq("id", fila.retador_id).maybeSingle();
         const p = data as { display_name: string | null; avatar_url: string | null } | null;
         const nuevo: Reto = { duelId: fila.id, mundo: fila.mundo, retadorNombre: p?.display_name ?? "Alguien", retadorAvatar: p?.avatar_url ?? null };

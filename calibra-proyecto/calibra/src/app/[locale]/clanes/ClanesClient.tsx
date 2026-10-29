@@ -13,6 +13,7 @@ import ChatDeClan from "@/components/clanes/ChatDeClan";
 import SubirImagenClan from "@/components/clanes/SubirImagenClan";
 import InvitarAAmigos from "@/components/clanes/InvitarAAmigos";
 import CountdownSemanal from "@/components/CountdownSemanal";
+import { estadoGuerra, textoCierreGuerra, type EstadoGuerra, type UltimaGuerra } from "@/lib/clanes/guerra";
 
 type Rol = "fundador" | "guia" | "miembro";
 
@@ -90,7 +91,7 @@ interface Props {
   miembrosIniciales: Miembro[];
   misionInicial: Mision | null;
   rankingInicial: ClanRanking[];
-  rivalInicial: RivalClan | null;
+  ultimaGuerra: UltimaGuerra | null;
   miUserId: string;
   misChispas: number;
 }
@@ -100,7 +101,7 @@ export default function ClanesClient({
   miembrosIniciales,
   misionInicial,
   rankingInicial,
-  rivalInicial,
+  ultimaGuerra,
   miUserId,
   misChispas,
 }: Props) {
@@ -110,7 +111,6 @@ export default function ClanesClient({
   const [miClan, setMiClan] = useState(miClanInicial);
   const [miembros, setMiembros] = useState(miembrosIniciales);
   const [mision, setMision] = useState(misionInicial);
-  const [rival, setRival] = useState(rivalInicial);
   const [ranking] = useState(rankingInicial);
   const [chispas, setChispas] = useState(misChispas);
   const [cargando, setCargando] = useState(false);
@@ -123,18 +123,15 @@ export default function ClanesClient({
     setMiClan(fila);
     if (fila) {
       await supabase.rpc("asegurar_mision_semanal", { p_clan_id: fila.clan_id });
-      const [{ data: miembrosRows }, { data: misionRows }, { data: rivalRows }] = await Promise.all([
+      const [{ data: miembrosRows }, { data: misionRows }] = await Promise.all([
         supabase.rpc("miembros_de_clan", { p_clan_id: fila.clan_id }),
         supabase.rpc("mision_actual_de_clan", { p_clan_id: fila.clan_id }),
-        supabase.rpc("rival_de_clan", { p_clan_id: fila.clan_id }),
       ]);
       setMiembros((miembrosRows as Miembro[] | null) ?? []);
       setMision((misionRows as Mision[] | null)?.[0] ?? null);
-      setRival((rivalRows as RivalClan[] | null)?.[0] ?? null);
     } else {
       setMiembros([]);
       setMision(null);
-      setRival(null);
     }
     const { data: perfil } = await supabase.from("profiles").select("puntos_total").eq("id", miUserId).single();
     if (perfil) setChispas(perfil.puntos_total);
@@ -202,7 +199,8 @@ export default function ClanesClient({
           clan={miClan}
           miembros={miembros}
           mision={mision}
-          rival={rival}
+          guerra={estadoGuerra(ranking, miClan.clan_id)}
+          ultimaGuerra={ultimaGuerra}
           miUserId={miUserId}
           onSalir={salirDelClan}
           onCambiarRol={cambiarRol}
@@ -258,7 +256,8 @@ function MiClanView({
   clan,
   miembros,
   mision,
-  rival,
+  guerra,
+  ultimaGuerra,
   miUserId,
   onSalir,
   onCambiarRol,
@@ -270,7 +269,8 @@ function MiClanView({
   clan: MiClan;
   miembros: Miembro[];
   mision: Mision | null;
-  rival: RivalClan | null;
+  guerra: EstadoGuerra;
+  ultimaGuerra: UltimaGuerra | null;
   miUserId: string;
   onSalir: () => void;
   onCambiarRol: (userId: string, nuevoRol: "guia" | "miembro") => void;
@@ -364,21 +364,9 @@ function MiClanView({
         {t("verMundo")}
       </Link>
 
-      {rival && (
-        <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-5 py-4">
-          <div className="flex-1 text-center">
-            <p className="text-xs uppercase tracking-wide text-texto-secundario">{t("tuClan")}</p>
-            <p className="font-mono text-lg font-bold text-foreground">{rival.mi_xp_semana}</p>
-          </div>
-          <span className="text-xs font-semibold uppercase text-texto-secundario">{t("vs")}</span>
-          <div className="flex-1 text-center">
-            <p className="truncate text-xs uppercase tracking-wide text-texto-secundario">
-              {rival.nombre} {rival.tag && `[${rival.tag}]`}
-            </p>
-            <p className="font-mono text-lg font-bold text-foreground">{rival.xp_semana}</p>
-          </div>
-        </div>
-      )}
+      {/* Guerra de clanes SIEMPRE visible (2026-10-29): antes solo aparecía con un
+          clan justo por encima; si ibas primero o tu clan aún no sumaba Exp no se veía. */}
+      <CartelGuerra clan={clan} guerra={guerra} ultimaGuerra={ultimaGuerra} />
 
       {mision && (
         <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4">
@@ -618,5 +606,67 @@ function SinClanView({
         )}
       </div>
     </section>
+  );
+}
+
+function CartelGuerra({ clan, guerra, ultimaGuerra }: { clan: MiClan; guerra: EstadoGuerra; ultimaGuerra: UltimaGuerra | null }) {
+  const t = useTranslations("Clanes.guerra");
+  const [ahora, setAhora] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setAhora(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+  const rival = guerra.rival;
+  const nombreRival = rival ? (rival.tag ? `[${rival.tag}]` : rival.nombre) : "";
+  const total = rival ? guerra.miXp + rival.xp_semana : 0;
+  const miPct = total > 0 ? Math.max(5, Math.min(95, Math.round((guerra.miXp / total) * 100))) : 50;
+  const n = (x: number) => x.toLocaleString();
+  const frase =
+    guerra.situacion === "persigue"
+      ? t("persigue", { puesto: guerra.puesto, total: guerra.total, n: n(guerra.diferencia), rival: nombreRival })
+      : guerra.situacion === "lidera"
+        ? t("lidera", { total: guerra.total, n: n(guerra.diferencia), rival: nombreRival })
+        : guerra.situacion === "solo"
+          ? t("solo")
+          : rival
+            ? t("sinExp", { rival: nombreRival, n: n(rival.xp_semana) })
+            : t("sinExpVacio");
+  const vaGanando = guerra.situacion === "lidera" || guerra.situacion === "solo";
+  return (
+    <div
+      className="flex flex-col gap-3 rounded-2xl border-2 bg-surface px-5 py-4"
+      style={{ borderColor: vaGanando ? "var(--logro, #FFB627)" : `${clan.color_estandarte}77` }}
+    >
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground">{t("titulo")}</h3>
+        <span className="font-mono text-xs text-texto-secundario">{t("cierra", { tiempo: textoCierreGuerra(guerra.cierraMs, ahora) })}</span>
+      </div>
+      {rival && (
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between gap-3 text-sm font-bold">
+            <span className="font-mono" style={{ color: clan.color_estandarte }}>
+              {clan.tag ? `[${clan.tag}]` : clan.nombre} {n(guerra.miXp)}
+            </span>
+            <span className="text-xs font-semibold uppercase text-texto-secundario">vs</span>
+            <span className="truncate font-mono" style={{ color: rival.color_estandarte }}>
+              {n(rival.xp_semana)} {nombreRival}
+            </span>
+          </div>
+          <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-foreground/10">
+            <div className="h-full transition-all" style={{ width: `${miPct}%`, background: clan.color_estandarte }} />
+            <div className="h-full flex-1" style={{ background: rival.color_estandarte }} />
+          </div>
+        </div>
+      )}
+      <p className="text-sm text-foreground">{frase}</p>
+      <p className="text-xs text-texto-secundario">{t("como")}</p>
+      {ultimaGuerra && (
+        <p className={`text-xs font-semibold ${ultimaGuerra.clan_id === clan.clan_id ? "text-logro" : "text-texto-secundario"}`}>
+          {ultimaGuerra.clan_id === clan.clan_id
+            ? t("ganoTuClan", { n: n(Number(ultimaGuerra.xp_semana)) })
+            : t("ganoOtro", { clan: ultimaGuerra.tag ? `${ultimaGuerra.nombre} [${ultimaGuerra.tag}]` : ultimaGuerra.nombre, n: n(Number(ultimaGuerra.xp_semana)) })}
+        </p>
+      )}
+    </div>
   );
 }

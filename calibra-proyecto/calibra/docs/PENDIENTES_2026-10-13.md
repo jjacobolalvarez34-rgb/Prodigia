@@ -6,6 +6,8 @@ Lista completa para no perder nada. Se marca cada punto al terminarlo.
    lo aceptaba y se trababa. Arreglado en 87f8a9f: la búsqueda encuentra el duelo sin depender del
    reloj del dispositivo y el aviso no sale mientras buscas. **Falta probarlo con dos dispositivos**
    (no se puede desde el entorno de desarrollo). La app necesita APK nuevo.
+   2026-10-29: cerrados los huecos que quedaban (aviso por Realtime que llegaba tarde, push de notify-duelo,
+   rondas de serie): ver docs/avance/BUGS_2026-10-29.md; requiere 0307 y redesplegar notify-duelo.
 2. [x] **«Olvidé mi contraseña».** Código: ruta nueva `/auth/confirmar` (token_hash, sirve desde
    cualquier dispositivo) y la app ya manda a dónde volver. **Falta configurar Supabase** (abajo).
 3. [x] **Compra de Pro no dio Pro.** Lo más probable: claves de precios cruzadas en Vercel (Pro

@@ -1,4 +1,5 @@
 import { inicioEventoMs, rangosDelAnio } from "@/lib/temas/calendario";
+import { esDueloEmparejado } from "@/lib/duelos/emparejamiento";
 import { CELEBRACIONES } from "@/lib/temas/celebracion";
 import { TEMAS } from "@/lib/temas/temas";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -89,12 +90,18 @@ async function guardarPreferencias(p: PreferenciasAvisos) {
 // genera la propia app (AvisoDuelo.tsx, `local`) ya se ve como tarjeta dentro de la
 // app: ese solo queda en la barra de notificaciones, sin banner repetido.
 Notifications.setNotificationHandler({
-  handleNotification: async (n) => ({
-    shouldShowBanner: n.request.content.data?.local !== true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
+  handleNotification: async (n) => {
+    const data = n.request.content.data as Record<string, unknown> | undefined;
+    // El push de «te retaron» del duelo que acabas de encontrar buscando rival (casual
+    // o rankeds) no es un reto: con la app abierta no se muestra (2026-10-29).
+    const delEmparejamiento = data?.tipo === "duelo" && typeof data.duelId === "string" && esDueloEmparejado({ id: data.duelId });
+    return {
+      shouldShowBanner: data?.local !== true && !delEmparejamiento,
+      shouldShowList: !delEmparejamiento,
+      shouldPlaySound: !delEmparejamiento,
+      shouldSetBadge: !delEmparejamiento,
+    };
+  },
 });
 
 // Un canal de Android por categoría: el sistema deja silenciar cada uno por separado

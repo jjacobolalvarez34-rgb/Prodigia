@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import type { UltimaGuerra } from "@/lib/clanes/guerra";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
-import ClanesClient, { type MiClan, type ClanRanking, type Miembro, type Mision, type RivalClan } from "./ClanesClient";
+import ClanesClient, { type MiClan, type ClanRanking, type Miembro, type Mision } from "./ClanesClient";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Clanes.metadata");
@@ -29,20 +30,22 @@ export default async function ClanesPage() {
 
   let miembros: Miembro[] = [];
   let mision: Mision | null = null;
-  let rival: RivalClan | null = null;
   if (miClan) {
     await supabase.rpc("asegurar_mision_semanal", { p_clan_id: miClan.clan_id });
-    const [{ data: miembrosRows }, { data: misionRows }, { data: rivalRows }] = await Promise.all([
+    const [{ data: miembrosRows }, { data: misionRows }] = await Promise.all([
       supabase.rpc("miembros_de_clan", { p_clan_id: miClan.clan_id }),
       supabase.rpc("mision_actual_de_clan", { p_clan_id: miClan.clan_id }),
-      supabase.rpc("rival_de_clan", { p_clan_id: miClan.clan_id }),
     ]);
     miembros = (miembrosRows as Miembro[] | null) ?? [];
     mision = (misionRows as Mision[] | null)?.[0] ?? null;
-    rival = (rivalRows as RivalClan[] | null)?.[0] ?? null;
   }
 
-  const { data: rankingRows } = await supabase.rpc("ranking_clanes_semanal");
+  const [{ data: rankingRows }, { data: ultimaRows, error: errorUltima }] = await Promise.all([
+    supabase.rpc("ranking_clanes_semanal"),
+    // 0306: ganador de la semana pasada (sin la migración, simplemente no hay cartel).
+    supabase.rpc("ultima_guerra_clanes"),
+  ]);
+  const ultimaGuerra = errorUltima ? null : ((ultimaRows as UltimaGuerra[] | null)?.[0] ?? null);
 
   return (
     <>
@@ -52,7 +55,7 @@ export default async function ClanesPage() {
         miembrosIniciales={miembros}
         misionInicial={mision}
         rankingInicial={(rankingRows as ClanRanking[] | null) ?? []}
-        rivalInicial={rival}
+        ultimaGuerra={ultimaGuerra}
         miUserId={user.id}
         misChispas={profileFull?.puntos_total ?? 0}
       />

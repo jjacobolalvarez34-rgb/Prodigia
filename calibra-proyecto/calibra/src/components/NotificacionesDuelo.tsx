@@ -10,7 +10,7 @@ import type { ArithmeticProblemType } from "@/types/database";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 import { useEtiquetasDuelo } from "@/components/duelos/SelectorMundoDuelo";
 import { reproducirTono } from "@/lib/sonido";
-import { estaBuscandoDuelo } from "@/lib/duelos/emparejamiento";
+import { esDueloEmparejado } from "@/lib/duelos/emparejamiento";
 
 interface Aviso {
   id: string;
@@ -66,9 +66,10 @@ export default function NotificacionesDuelo() {
           "postgres_changes",
           { event: "INSERT", schema: "public", table: "duels", filter: `retado_id=eq.${uid}` },
           (payload) => {
-            const fila = payload.new as { id: string; mundo: MundoDuelo; operation_type: ArithmeticProblemType | null; sub_tipo: string | null };
-            // Buscando rival: este duelo es el del emparejamiento y la búsqueda entra sola.
-            if (estaBuscandoDuelo()) return;
+            const fila = payload.new as { id: string; mundo: MundoDuelo; operation_type: ArithmeticProblemType | null; sub_tipo: string | null; estado?: string; emparejado?: boolean | null };
+            if (fila.estado && fila.estado !== "pendiente") return;
+            // Duelo del emparejamiento (casual o rankeds), no un reto: la búsqueda entra sola.
+            if (esDueloEmparejado(fila)) return;
             reproducirTono("logro");
             const id = `${fila.id}-${idRef.current++}`;
             setAvisos((prev) => [...prev, { id, duelId: fila.id, mundo: fila.mundo, operacion: fila.operation_type, subTipo: fila.sub_tipo }]);
