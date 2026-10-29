@@ -9,7 +9,7 @@
 // (resultados, series, etc.).
 
 import { createSupabaseAdmin, enviarPushATokens } from "../_shared/fcm.ts";
-import { tokensDe, webhookAutorizado } from "../_shared/avisos.ts";
+import { NOMBRE_MUNDO, tokensDe, webhookAutorizado } from "../_shared/avisos.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -94,11 +94,12 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
 
-  const nombreRival = (rival as { display_name?: string } | undefined)?.display_name ?? "Un rival";
+  const nombreRival = (rival as { display_name?: string } | undefined)?.display_name ?? "Alguien";
+  const mundo = duelo.mundo ? NOMBRE_MUNDO[duelo.mundo] : undefined;
 
   const enviados = await enviarPushATokens(supabase, tokens, {
-    titulo: "⚔️ Te retaron a un duelo",
-    cuerpo: `${nombreRival} te desafió. ¿Aceptas?`,
+    titulo: `${nombreRival} te retó a un duelo`,
+    cuerpo: mundo ? `Duelo en ${mundo}. Acepta y demuestra quién es más rápido.` : "Acepta y demuestra quién es más rápido.",
     prioridad: "high",
     canal: "duelos",
     etiqueta: `duelo-${duelo.id}`,

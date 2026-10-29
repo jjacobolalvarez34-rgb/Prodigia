@@ -77,12 +77,51 @@ export async function reservarEnvio(
   return true;
 }
 
-// Horario silencioso por defecto 21:00-08:00 (§5). La zona sale del secret
-// ZONA_HORARIA (por defecto la de Colombia, donde está la mayoría de usuarios hoy).
-export function enHorarioSilencioso(fecha = new Date()): boolean {
-  const zona = Deno.env.get("ZONA_HORARIA") ?? "America/Bogota";
-  const hora = Number(new Intl.DateTimeFormat("en-US", { hour: "numeric", hourCycle: "h23", timeZone: zona }).format(fecha));
+// Zona por defecto: el secret ZONA_HORARIA (por defecto la de Colombia, donde está
+// la mayoría de usuarios hoy). Cada dispositivo puede tener la suya (0308).
+export function zonaPorDefecto(): string {
+  return Deno.env.get("ZONA_HORARIA") ?? "America/Bogota";
+}
+
+// Hora (0-23) en esa zona; si la zona no es válida, la de por defecto.
+export function horaEn(zona: string | null | undefined, fecha = new Date()): number {
+  const formato = (z: string) => Number(new Intl.DateTimeFormat("en-US", { hour: "numeric", hourCycle: "h23", timeZone: z }).format(fecha));
+  try {
+    return formato(zona || zonaPorDefecto());
+  } catch {
+    return formato(zonaPorDefecto());
+  }
+}
+
+// Horario silencioso por defecto 21:00-08:00 (§5).
+export function enHorarioSilencioso(fecha = new Date(), zona?: string | null): boolean {
+  const hora = horaEn(zona, fecha);
   return hora >= 21 || hora < 8;
+}
+
+// Nombre de cada ciudad para los textos (mismos de mobile/src/tema.ts).
+export const NOMBRE_MUNDO: Record<string, string> = {
+  numeria: "Numeria",
+  enigmia: "Enigmia",
+  geografia: "Geografía",
+  quimia: "Quimia",
+  anatomia: "Anatomía",
+  melodia: "Melodía",
+  trigonometria: "Trigonometría",
+  historia: "Historia",
+  calculia: "Calculia",
+  circuitia: "Circuitia",
+  estadistica: "Estadística",
+  naipia: "Naipia",
+  codia: "Codia",
+  dinamia: "Dinamia",
+  vitalia: "Vitalia",
+};
+
+// Primer nombre corto para personalizar (sin nombres larguísimos en el título).
+export function primerNombre(nombre: string | null | undefined): string | null {
+  const n = (nombre ?? "").trim().split(/\s+/)[0];
+  return n && n.length <= 18 ? n : null;
 }
 
 // Tope global de 2 avisos de retención por día (racha + novedades).

@@ -9,16 +9,42 @@ import {
   CATEGORIAS,
   cambiarCategoria,
   cambiarRecordatorio,
+  cambiarTipoLocal,
   HORAS_RECORDATORIO,
   leerPreferencias,
+  MAX_LOCALES_POR_DIA,
   permisoConcedido,
+  TIPOS_LOCALES,
   type PreferenciasAvisos,
 } from "~/lib/notificaciones";
 import { useSesion } from "~/lib/sesion";
 import { anclarWidget } from "~/widgets/registro";
 import Boton3D from "~/ui/Boton3D";
 import { color, radio, fuente } from "~/tema";
-import { IconoAlarma, IconoCompetir, IconoFiesta, IconoLlama, IconoMensaje } from "~/ui/Iconos";
+import { IconoAlarma, IconoCampana, IconoCompetir, IconoEscudo, IconoFiesta, IconoLlama, IconoMensaje, IconoPlaneta, IconoRegalo, IconoTrofeo } from "~/ui/Iconos";
+
+function IconoTipo({ icono, c }: { icono: string; c: string }) {
+  switch (icono) {
+    case "mensaje":
+      return <IconoMensaje tam={22} c={c} />;
+    case "duelo":
+      return <IconoCompetir tam={22} c={c} />;
+    case "racha":
+      return <IconoLlama tam={22} />;
+    case "alineacion":
+      return <IconoPlaneta tam={22} c={c} />;
+    case "evento":
+      return <IconoFiesta tam={22} c={c} />;
+    case "temporada":
+      return <IconoTrofeo tam={22} c={c} />;
+    case "guerra":
+      return <IconoEscudo tam={22} c={c} />;
+    case "regalo":
+      return <IconoRegalo tam={22} c={c} />;
+    default:
+      return <IconoCampana tam={22} c={c} />;
+  }
+}
 
 const WIDGETS: { nombre: "Racha" | "Progreso"; titulo: string; texto: string; imagen: number }[] = [
   { nombre: "Racha", titulo: "Racha", texto: "Chico (2×2): tu racha y tus Chispas.", imagen: require("../../assets/widgets/racha.png") },
@@ -63,13 +89,13 @@ export default function AjustesAvisos() {
           </View>
         )}
 
-        <Text style={styles.seccion}>Qué quieres recibir</Text>
-        {esInvitado && <Text style={styles.nota}>Con una cuenta de invitado solo funciona el recordatorio de práctica. Crea tu cuenta para recibir mensajes y duelos.</Text>}
+        <Text style={styles.seccion}>De otras personas</Text>
+        {esInvitado && <Text style={styles.nota}>Con una cuenta de invitado no llegan mensajes ni retos. Crea tu cuenta para recibirlos.</Text>}
         <View style={styles.tarjeta}>
-          {CATEGORIAS.map((c, i) => (
+          {CATEGORIAS.filter((c) => c.id === "mensajes" || c.id === "duelos").map((c, i) => (
             <View key={c.id} style={[styles.fila, i > 0 && styles.separador]}>
               <View style={styles.iconoCaja}>
-                {c.icono === "mensaje" ? <IconoMensaje tam={22} c={c.color} /> : c.icono === "duelo" ? <IconoCompetir tam={22} c={c.color} /> : c.icono === "racha" ? <IconoLlama tam={22} /> : <IconoFiesta tam={22} c={c.color} />}
+                <IconoTipo icono={c.icono} c={c.color} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.nombre}>{c.nombre}</Text>
@@ -86,6 +112,39 @@ export default function AjustesAvisos() {
           ))}
         </View>
 
+        <Text style={styles.seccion}>Tu juego</Text>
+        <View style={styles.tarjeta}>
+          {[
+            ...CATEGORIAS.filter((c) => c.id === "racha").map((c) => ({ ...c, local: false, conCuenta: false })),
+            ...TIPOS_LOCALES.map((t) => ({ ...t, local: true })),
+            ...CATEGORIAS.filter((c) => c.id === "novedades").map((c) => ({ ...c, local: false, conCuenta: true })),
+          ].map((t, i) => {
+            const activo = t.local ? prefs.locales.includes(t.id as (typeof TIPOS_LOCALES)[number]["id"]) : prefs.categorias.includes(t.id as (typeof CATEGORIAS)[number]["id"]);
+            const bloqueado = esInvitado && t.conCuenta;
+            return (
+              <View key={t.id} style={[styles.fila, i > 0 && styles.separador, bloqueado && { opacity: 0.5 }]}>
+                <View style={styles.iconoCaja}>
+                  <IconoTipo icono={t.icono} c={t.color} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.nombre}>{t.nombre}</Text>
+                  <Text style={styles.descripcion}>{t.descripcion}</Text>
+                </View>
+                <Switch
+                  value={activo && !bloqueado}
+                  disabled={bloqueado}
+                  onValueChange={async (v) => {
+                    if (v && !(await permisoConcedido()) && !(await activarAvisos())) return;
+                    setPrefs(t.local ? await cambiarTipoLocal(t.id as (typeof TIPOS_LOCALES)[number]["id"], v) : await cambiarCategoria(t.id as (typeof CATEGORIAS)[number]["id"], v));
+                  }}
+                  trackColor={{ true: t.color, false: color.surface3 }}
+                  thumbColor={color.texto}
+                />
+              </View>
+            );
+          })}
+        </View>
+
         <Text style={styles.seccion}>Recordatorio de práctica</Text>
         <View style={styles.tarjeta}>
           <View style={styles.fila}>
@@ -94,7 +153,7 @@ export default function AjustesAvisos() {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.nombre}>Recordatorio diario</Text>
-              <Text style={styles.descripcion}>Un aviso por día a la hora que elijas para jugar tu sprint.</Text>
+              <Text style={styles.descripcion}>Un aviso por día a la hora que elijas, con una ciudad distinta cada vez. Si ya jugaste hoy, hoy no sale.</Text>
             </View>
             <Switch
               value={prefs.recordatorio.activo}
@@ -123,7 +182,7 @@ export default function AjustesAvisos() {
             </View>
           )}
         </View>
-        <Text style={styles.nota}>Nunca te avisamos entre las 21:00 y las 08:00, y como mucho mandamos 2 recordatorios o novedades por día.</Text>
+        <Text style={styles.nota}>{`Nunca te avisamos entre las 21:00 y las 08:00 de tu teléfono. Como mucho ${MAX_LOCALES_POR_DIA} avisos de juego por día (los más importantes) y 2 del servidor; los mensajes y retos de tus amigos llegan aparte.`}</Text>
 
         {esAndroid && (
           <>

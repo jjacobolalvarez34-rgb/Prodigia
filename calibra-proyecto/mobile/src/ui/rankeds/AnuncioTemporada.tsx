@@ -4,6 +4,7 @@ import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
 import { aplicarMiReinicioTemporada, capsulasAgrupadas, cargarUmbralProdigio, nombreRango, reclamarTemporadaRanked, recompensaTemporadaPendiente, tierTemporada, type RecompensaTemporada } from "@/lib/rankeds/temporadas";
 import { rangoDeSlug } from "@/types/database";
 import { sonar, vibrar } from "~/lib/efectos";
+import { actualizarContextoAvisos } from "~/lib/notificaciones";
 import { supabase } from "~/lib/supabase";
 import { color, conAlfa, fuente } from "~/tema";
 import Boton3D from "../Boton3D";
@@ -24,7 +25,11 @@ export default function AnuncioTemporada() {
     aplicarMiReinicioTemporada(supabase)
       .catch(() => undefined)
       .then(() => recompensaTemporadaPendiente(supabase))
-      .then((r) => activo && setRecompensa(r));
+      .then((r) => {
+        // Si queda sin reclamar, un recordatorio mañana (notificaciones.ts).
+        actualizarContextoAvisos({ temporadaPendiente: !!r });
+        if (activo) setRecompensa(r);
+      });
     return () => {
       activo = false;
     };
@@ -40,6 +45,7 @@ export default function AnuncioTemporada() {
     setError(false);
     try {
       await reclamarTemporadaRanked(supabase, recompensa.temporada);
+      actualizarContextoAvisos({ temporadaPendiente: false });
       vibrar.exito();
       sonar("logro");
       setRecompensa(await recompensaTemporadaPendiente(supabase));

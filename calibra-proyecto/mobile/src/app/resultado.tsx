@@ -25,6 +25,7 @@ import { IconoCheck, IconoChispa, IconoCometa, IconoLlama, IconoRegalo } from "~
 import { COLOR_COMETA } from "@/lib/recompensas/iconoCometa";
 import NumeroAnimado from "~/ui/NumeroAnimado";
 import RepasoErrores from "~/ui/RepasoErrores";
+import PedirAvisos from "~/ui/PedirAvisos";
 import Tarjeta from "~/ui/Tarjeta";
 import type { FallaRepaso } from "@/lib/practica/repaso";
 import { compartirFinPartida } from "@/lib/partidas/compartir";
@@ -93,7 +94,7 @@ export default function Resultado() {
   const celebracion = celebracionDe(temaHoy);
   const router = useRouter();
   const pendientesRecompensas = usePendientes();
-  const { placa } = useJugador();
+  const { placa, resumen: resumenJugador } = useJugador();
   const params = useLocalSearchParams<{ mundo?: string; tema?: string; datos?: string; repetir?: string }>();
   const mundo = MUNDO_POR_SLUG[(params.mundo ?? "numeria") as MundoSlug] ?? MUNDO_POR_SLUG.numeria;
   const [d] = useState(() => JSON.parse(params.datos ?? "{}") as Datos);
@@ -438,6 +439,8 @@ export default function Resultado() {
               <RepasoErrores fallos={d.fallos ?? []} acento={mundo.neon} />
             </Animated.View>
           )}
+          {/* Una sola vez: el permiso de avisos, ya con una partida jugada. */}
+          {paso >= ultimoPaso && <PedirAvisos racha={resumenJugador?.racha ?? 0} />}
       </ScrollView>
 
       <View style={styles.pie}>

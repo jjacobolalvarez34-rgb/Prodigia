@@ -32,10 +32,12 @@ async function avisoEnLaBarra(r: Reto) {
     const prefs = await leerPreferencias();
     if (!prefs.categorias.includes("duelos") || !(await permisoConcedido())) return;
     const m = mundoDe(r.mundo);
+    // Mismo id por duelo: si el reto llega dos veces, queda un solo aviso.
     await Notifications.scheduleNotificationAsync({
+      identifier: `duelo-${r.duelId}`,
       content: {
-        title: `⚔️ ${r.retadorNombre} te retó a un duelo`,
-        body: `${m?.nombre ?? "Duelo"} · Toca para aceptarlo`,
+        title: `${r.retadorNombre} te retó a un duelo`,
+        body: m ? `Duelo en ${m.nombre}. Toca para aceptarlo antes de que se vaya.` : "Toca para aceptarlo antes de que se vaya.",
         data: { tipo: "duelo", duelId: r.duelId, local: true },
         color: "#FF5D5D",
       },

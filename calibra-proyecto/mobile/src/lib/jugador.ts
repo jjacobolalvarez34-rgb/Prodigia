@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSyncExternalStore } from "react";
+import { actualizarContextoAvisos, limpiarContextoAvisos } from "./notificaciones";
 import { cargarMiPlaca, type PlacaDatos } from "./placa";
 import { recargarCosmeticos, recargarPendientes } from "./recompensas";
 import { cargarResumen, type Resumen } from "./resumen";
@@ -76,9 +77,22 @@ export async function recargarJugador(): Promise<void> {
     emitir();
     if (p) AsyncStorage.setItem(`prodigia:copia:jugador:${user.id}`, JSON.stringify(estado)).catch(() => undefined);
     actualizarWidgets(estado.resumen);
+    // Avisos locales personalizados (notificaciones.ts): se rearman con la racha, si
+    // ya jugaste hoy, tu clan y lo que tengas por reclamar.
+    const r = estado.resumen;
+    actualizarContextoAvisos({
+      nombre: r?.nombre ?? estado.placa?.nombre ?? null,
+      racha: r?.racha ?? 0,
+      jugoHoy: !!r && r.metaDiaria > 0 && r.xpHoy >= r.metaDiaria,
+      esInvitado: !!user.is_anonymous,
+      clan: estado.placa?.clan?.nombre ?? null,
+      mundos: estado.mundos,
+    });
     if (!user.is_anonymous) {
       recargarCosmeticos(user.id);
-      recargarPendientes();
+      recargarPendientes()
+        .then((p) => actualizarContextoAvisos({ capsulas: p.capsulas, regalos: p.regalos, misiones: p.misiones, calendario: p.calendario }))
+        .catch(() => undefined);
     }
   })().finally(() => {
     enCurso = null;
@@ -108,6 +122,7 @@ export async function cerrarAvisoProTermino() {
 
 export function limpiarJugador() {
   estado = { placa: null, resumen: null, plan: "free", mundos: [], esInvitado: false };
+  limpiarContextoAvisos();
   emitir();
 }
 

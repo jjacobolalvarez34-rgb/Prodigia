@@ -28,7 +28,8 @@ interface WebhookAnuncio {
   activo?: boolean;
 }
 
-const ICONO: Record<WebhookAnuncio["tipo"], string> = { evento: "🎉", actualizacion: "✨", arreglo: "🔧" };
+// Sin emojis en el título (regla de estilo): el canal ya pone el color de Prodigia.
+const ETIQUETA: Record<WebhookAnuncio["tipo"], string> = { evento: "Evento", actualizacion: "Novedad", arreglo: "Arreglo" };
 
 export default async function handler(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -65,7 +66,7 @@ export default async function handler(req: Request): Promise<Response> {
     const puede = await reservarEnvio(supabase, userId, "retencion", { maxPorDia: MAX_RETENCION_POR_DIA });
     if (!puede) continue;
     enviados += await enviarPushATokens(supabase, tokens, {
-      titulo: `${ICONO[a.tipo]} ${a.titulo}`,
+      titulo: a.titulo.length > 60 ? `${ETIQUETA[a.tipo]}: ${a.titulo.slice(0, 57)}…` : a.titulo,
       cuerpo: descripcion,
       prioridad: "normal",
       canal: "novedades",

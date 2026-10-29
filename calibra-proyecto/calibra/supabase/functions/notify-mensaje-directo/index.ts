@@ -43,7 +43,7 @@ export default async function handler(req: Request): Promise<Response> {
   const preview = texto.length > 80 ? `${texto.slice(0, 80)}…` : texto;
 
   const enviados = await enviarPushATokens(supabase, tokens, {
-    titulo: `💬 ${nombre}`,
+    titulo: nombre,
     cuerpo: preview || "Te mandó un mensaje.",
     prioridad: "high",
     canal: "mensajes",
