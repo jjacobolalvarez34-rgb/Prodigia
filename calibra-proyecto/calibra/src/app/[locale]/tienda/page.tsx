@@ -12,6 +12,7 @@ import CapsulasCometas from "@/components/tienda/CapsulasCometas";
 import PaquetesCapsulas from "@/components/tienda/PaquetesCapsulas";
 import { productosConPrecio } from "@/lib/pagos/paddle";
 import { PRODUCTOS } from "@/lib/pagos/productos";
+import HuevoEscondido from "@/components/temas/minieventos/HuevoEscondido";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Tienda.metadata");
@@ -46,6 +47,7 @@ export default async function TiendaPage() {
   return (
     <>
       <Header autenticado invitado={user.is_anonymous} />
+      <HuevoEscondido lugar="tienda" />
       <TiendaClient
         puntosIniciales={profile?.puntos_total ?? 0}
         escudosIniciales={profile?.escudos_extra_pendientes ?? 0}

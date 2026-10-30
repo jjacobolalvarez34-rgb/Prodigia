@@ -1,3 +1,4 @@
+import type { IdTema } from "./calendario";
 import { COLECCIONES } from "./colecciones";
 import type { Dibujo } from "./dibujos";
 import type { FormaIlustracion } from "@/lib/tienda/ilustracionesPaquetes";
@@ -324,8 +325,305 @@ export async function reclamarRetoComunidad(sb: SupabaseClient): Promise<void> {
   if (error) throw error;
 }
 
+// ---------- Fiestas de febrero a septiembre (0311) ----------
+// Metas de aciertos: una tabla genérica (minievento_metas, generada desde acá). Cada una
+// se reclama una vez (por día si `porDia`); cuentan los aciertos desde que abrió el
+// evento (o de hoy), en cualquier mundo o solo en `mundo`. Las usan:
+//   - Año Nuevo Lunar «Sobres rojos»: 3 sobres por día, con 5, 15 y 30 aciertos del día.
+//   - Carnaval «Comparsa»: aciertos de Melodía del evento (20, 50 y 100); hay tabla.
+//   - Holi «Ciudad de colores»: 60 aciertos del evento pintan la ciudad entera.
+//   - Día de la Música «Melodía al doble»: 16 aciertos de Melodía tocan la melodía.
+//   - Vuelta a clases «Semana de repaso»: 10 aciertos del día llenan una página.
+export interface MetaMinievento {
+  tema: IdTema;
+  clave: string;
+  mundo: string | null;
+  porDia: boolean;
+  meta: number;
+  fichas: number;
+}
+
+export const METAS_MINIEVENTOS: MetaMinievento[] = [
+  { tema: "anio_nuevo_lunar", clave: "sobre1", mundo: null, porDia: true, meta: 5, fichas: 2 },
+  { tema: "anio_nuevo_lunar", clave: "sobre2", mundo: null, porDia: true, meta: 15, fichas: 3 },
+  { tema: "anio_nuevo_lunar", clave: "sobre3", mundo: null, porDia: true, meta: 30, fichas: 4 },
+  { tema: "carnaval", clave: "comparsa1", mundo: "melodia", porDia: false, meta: 20, fichas: 3 },
+  { tema: "carnaval", clave: "comparsa2", mundo: "melodia", porDia: false, meta: 50, fichas: 4 },
+  { tema: "carnaval", clave: "comparsa3", mundo: "melodia", porDia: false, meta: 100, fichas: 6 },
+  { tema: "holi", clave: "colores", mundo: null, porDia: false, meta: 60, fichas: 8 },
+  { tema: "dia_musica", clave: "melodia", mundo: "melodia", porDia: true, meta: 16, fichas: 6 },
+  { tema: "vuelta_clases", clave: "pagina", mundo: null, porDia: true, meta: 10, fichas: 3 },
+];
+
+export function metasDe(tema: IdTema): MetaMinievento[] {
+  return METAS_MINIEVENTOS.filter((m) => m.tema === tema);
+}
+
+// La clave con la que la base guarda el premio de una meta (minievento_premios).
+export function clavePremioMeta(m: MetaMinievento, dia: string): string {
+  return m.porDia ? `meta:${m.clave}:${dia}` : `meta:${m.clave}`;
+}
+
+export interface ProgresoMinievento {
+  evento: string;
+  hoy: number;
+  total: number;
+}
+
+// Tus aciertos de hoy y del evento (en el mundo de sus metas). null si la base todavía no
+// tiene el minievento o no hay evento abierto.
+export async function progresoMinievento(sb: SupabaseClient, tema: IdTema): Promise<ProgresoMinievento | null> {
+  const { data, error } = await sb.rpc("progreso_minievento", { p_tema: tema });
+  if (error) return null;
+  return ((Array.isArray(data) ? data[0] : data) as ProgresoMinievento | undefined) ?? null;
+}
+
+export interface PremioMinievento {
+  clave: string;
+  fichas: number;
+}
+
+export async function premiosMinievento(sb: SupabaseClient, evento: string): Promise<PremioMinievento[] | null> {
+  const { data, error } = await sb.from("minievento_premios").select("clave, fichas").eq("evento", evento);
+  if (error) return null;
+  return (data ?? []) as PremioMinievento[];
+}
+
+export async function reclamarMetaMinievento(sb: SupabaseClient, tema: IdTema, clave: string): Promise<{ fichas: number; saldo: number }> {
+  const { data, error } = await sb.rpc("reclamar_meta_minievento", { p_tema: tema, p_clave: clave });
+  if (error) throw error;
+  return (Array.isArray(data) ? data[0] : data) as { fichas: number; saldo: number };
+}
+
+// ¿Ya cobraste esta meta (hoy, si es por día)?
+export function metaCobrada(m: MetaMinievento, premios: PremioMinievento[], dia: string): boolean {
+  return premios.some((x) => x.clave === clavePremioMeta(m, dia));
+}
+
+// Las metas que ya alcanzaste y todavía no cobraste.
+export function metasPorCobrar(tema: IdTema, p: ProgresoMinievento, premios: PremioMinievento[], dia: string): MetaMinievento[] {
+  return metasDe(tema).filter((m) => (m.porDia ? p.hoy : p.total) >= m.meta && !metaCobrada(m, premios, dia));
+}
+
+// Carnaval: un bailarín por cada 10 aciertos de Melodía (hasta 10).
+export const ACIERTOS_POR_BAILARIN = 10;
+
+export interface FilaComparsa {
+  nombre: string;
+  aciertos: number;
+  yo: boolean;
+}
+
+export async function tablaComparsa(sb: SupabaseClient): Promise<FilaComparsa[] | null> {
+  const { data, error } = await sb.rpc("tabla_comparsa");
+  if (error) return null;
+  return (data ?? []) as FilaComparsa[];
+}
+
+// ---------- Amor y amistad: Dúo de la amistad ----------
+// Un duelo amistoso (no ranked) terminado con un amigo durante el evento: los dos ganan
+// Fichas, una vez por amigo y hasta DUO_MAX_AMIGOS amigos.
+export const FICHAS_POR_DUO = 3;
+export const DUO_MAX_AMIGOS = 5;
+
+export interface DuoAmistad {
+  amigo_id: string;
+  nombre: string;
+  fichas: number;
+}
+
+export async function duoAmistad(sb: SupabaseClient): Promise<DuoAmistad[] | null> {
+  const { data, error } = await sb.rpc("duo_amistad");
+  if (error) return null;
+  return (data ?? []) as DuoAmistad[];
+}
+
+// ---------- Pregunta del día (Noches de linternas) ----------
+export const FICHAS_POR_PREGUNTA = 4;
+
+export interface PreguntaDia {
+  tema: string;
+  temaEn: string;
+  pregunta: string;
+  preguntaEn: string;
+  // La correcta es siempre la primera; se muestran mezcladas (ordenOpcionesOfrenda).
+  opciones: [string, string, string, string];
+  opcionesEn: [string, string, string, string];
+  dato: string;
+  datoEn: string;
+}
+
+// Noches de luna: la luna y los números, con calma (una por noche).
+export const PREGUNTAS_LUNA: PreguntaDia[] = [
+  {
+    tema: "Fases de la luna",
+    temaEn: "Moon phases",
+    pregunta: "¿Cuántos días tarda la luna en pasar de una luna nueva a la siguiente, más o menos?",
+    preguntaEn: "About how many days does the moon take to go from one new moon to the next?",
+    opciones: ["29,5 días", "7 días", "15 días", "365 días"],
+    opcionesEn: ["29.5 days", "7 days", "15 days", "365 days"],
+    dato: "Es el mes sinódico. Por eso los calendarios lunares tienen meses de 29 o 30 días.",
+    datoEn: "It's the synodic month. That's why lunar calendars have 29- or 30-day months.",
+  },
+  {
+    tema: "Las cuatro fases",
+    temaEn: "The four phases",
+    pregunta: "El ciclo dura 29,5 días y tiene 4 fases principales. ¿Cuántos días pasan, más o menos, entre una fase y la siguiente?",
+    preguntaEn: "The cycle lasts 29.5 days and has 4 main phases. About how many days pass between one phase and the next?",
+    opciones: ["7,4 días", "4 días", "10 días", "14,7 días"],
+    opcionesEn: ["7.4 days", "4 days", "10 days", "14.7 days"],
+    dato: "29,5 ÷ 4 ≈ 7,4. Por eso la semana de 7 días se parece tanto a un cuarto de luna.",
+    datoEn: "29.5 ÷ 4 ≈ 7.4. That's why a 7-day week is so close to a quarter moon.",
+  },
+  {
+    tema: "Probabilidad",
+    temaEn: "Probability",
+    pregunta: "En un mes de 30 noches hay 1 noche de luna llena. ¿Qué probabilidad hay de que una noche al azar sea de luna llena?",
+    preguntaEn: "In a 30-night month there is 1 full-moon night. What's the probability that a random night is a full moon?",
+    opciones: ["1/30", "1/2", "1/4", "1/12"],
+    opcionesEn: ["1/30", "1/2", "1/4", "1/12"],
+    dato: "Casos favorables entre casos posibles: 1 de 30, un poco más de 3 %.",
+    datoEn: "Favorable cases over possible cases: 1 out of 30, a little over 3%.",
+  },
+  {
+    tema: "La cara oculta",
+    temaEn: "The far side",
+    pregunta: "¿Por qué desde la Tierra vemos siempre la misma cara de la luna?",
+    preguntaEn: "Why do we always see the same side of the moon from Earth?",
+    opciones: ["Gira sobre sí misma en el mismo tiempo que tarda en dar la vuelta a la Tierra", "Porque no gira", "Porque la Tierra la tapa", "Porque la otra cara no refleja luz"],
+    opcionesEn: ["It spins once in the same time it takes to orbit Earth", "Because it doesn't spin", "Because Earth blocks it", "Because the other side doesn't reflect light"],
+    dato: "Se llama rotación sincrónica. La cara oculta recibe sol igual que la otra.",
+    datoEn: "It's called synchronous rotation. The far side gets as much sunlight as the near side.",
+  },
+  {
+    tema: "Promedio",
+    temaEn: "Average",
+    pregunta: "Tres noches se ven 4, 6 y 8 linternas en el cielo. ¿Cuál es el promedio?",
+    preguntaEn: "Over three nights, 4, 6 and 8 lanterns are seen in the sky. What's the average?",
+    opciones: ["6", "18", "8", "5"],
+    opcionesEn: ["6", "18", "8", "5"],
+    dato: "Se suman (18) y se divide entre la cantidad de noches (3).",
+    datoEn: "Add them (18) and divide by the number of nights (3).",
+  },
+  {
+    tema: "Distancia",
+    temaEn: "Distance",
+    pregunta: "¿A qué distancia aproximada está la luna de la Tierra?",
+    preguntaEn: "Roughly how far is the moon from Earth?",
+    opciones: ["384 000 km", "3 840 km", "38 millones de km", "150 millones de km"],
+    opcionesEn: ["384,000 km", "3,840 km", "38 million km", "150 million km"],
+    dato: "Su luz tarda poco más de 1 segundo en llegarnos; la del Sol, unos 8 minutos.",
+    datoEn: "Its light takes just over 1 second to reach us; the Sun's, about 8 minutes.",
+  },
+  {
+    tema: "Mareas",
+    temaEn: "Tides",
+    pregunta: "¿Qué causa principalmente las mareas del mar?",
+    preguntaEn: "What mainly causes ocean tides?",
+    opciones: ["La gravedad de la luna", "El viento", "La lluvia", "La rotación del Sol"],
+    opcionesEn: ["The moon's gravity", "The wind", "The rain", "The Sun's rotation"],
+    dato: "Hay dos mareas altas por día, porque la luna estira el agua de los dos lados de la Tierra.",
+    datoEn: "There are two high tides a day, because the moon pulls the water on both sides of Earth.",
+  },
+];
+
+export function preguntaLunaDe(iso: string): PreguntaDia {
+  const n = PREGUNTAS_LUNA.length;
+  return PREGUNTAS_LUNA[((diasDesdeEpoca(iso) % n) + n) % n];
+}
+
+export interface RespuestaDia {
+  dia: string;
+  opcion: number;
+  acierto: boolean;
+}
+
+export async function respuestasPreguntaDia(sb: SupabaseClient, evento: string): Promise<RespuestaDia[] | null> {
+  const { data, error } = await sb.from("pregunta_dia_respuestas").select("dia, opcion, acierto").eq("evento", evento);
+  if (error) return null;
+  return (data ?? []) as RespuestaDia[];
+}
+
+export async function responderPreguntaDia(sb: SupabaseClient, tema: IdTema, opcion: number): Promise<{ acierto: boolean; aciertos: number; saldo: number }> {
+  const { data, error } = await sb.rpc("responder_pregunta_dia", { p_tema: tema, p_opcion: opcion });
+  if (error) throw error;
+  return (Array.isArray(data) ? data[0] : data) as { acierto: boolean; aciertos: number; saldo: number };
+}
+
+// ---------- Día de π: Fichas por dígitos ----------
+// Con tu mejor marca del día en «Dígitos de π» (0295): cada meta, una vez.
+export const METAS_PI: { digitos: number; fichas: number }[] = [
+  { digitos: 10, fichas: 2 },
+  { digitos: 20, fichas: 3 },
+  { digitos: 31, fichas: 4 },
+];
+
+export async function premiosDigitosPi(sb: SupabaseClient): Promise<{ evento: string; mejor: number; fichas: number } | null> {
+  const { data, error } = await sb.rpc("premios_digitos_pi");
+  if (error) return null;
+  return ((Array.isArray(data) ? data[0] : data) as { evento: string; mejor: number; fichas: number } | undefined) ?? null;
+}
+
+// ---------- Pascua: Huevos escondidos ----------
+// Un huevo por día del evento, cada día en otra pantalla (en este orden). La base sabe el
+// mismo orden y solo acepta el de hoy en su lugar.
+export type LugarHuevo = "tienda" | "perfil" | "recompensas" | "evento";
+export const LUGARES_HUEVOS: LugarHuevo[] = ["tienda", "perfil", "recompensas", "evento"];
+export const FICHAS_POR_HUEVO = 4;
+export const FICHAS_TODOS_HUEVOS = 6;
+
+export const PISTAS_HUEVOS: Record<LugarHuevo, { es: string; en: string }> = {
+  tienda: { es: "Pista: donde se compran cosas.", en: "Hint: where things are bought." },
+  perfil: { es: "Pista: donde está tu placa.", en: "Hint: where your plaque is." },
+  recompensas: { es: "Pista: donde se abren las cápsulas.", en: "Hint: where capsules are opened." },
+  evento: { es: "Pista: junto a la colección de Pascua.", en: "Hint: next to the Easter collection." },
+};
+
+// El lugar del huevo de un día del evento (null fuera de sus días).
+export function lugarHuevoDe(desde: string, dia: string): LugarHuevo | null {
+  const i = Math.round((Date.parse(`${dia}T00:00:00Z`) - Date.parse(`${desde}T00:00:00Z`)) / DIA_MS);
+  return LUGARES_HUEVOS[i] ?? null;
+}
+
+export async function encontrarHuevo(sb: SupabaseClient, lugar: LugarHuevo): Promise<{ fichas: number; encontrados: number; saldo: number }> {
+  const { data, error } = await sb.rpc("encontrar_huevo", { p_lugar: lugar });
+  if (error) throw error;
+  return (Array.isArray(data) ? data[0] : data) as { fichas: number; encontrados: number; saldo: number };
+}
+
+// ---------- Día de la Tierra: Bosque compartido ----------
+// Cada ACIERTOS_POR_ARBOL aciertos de toda la comunidad plantan un árbol; con
+// META_BOSQUE árboles, los que plantaron al menos uno reciben FICHAS_BOSQUE.
+export const ACIERTOS_POR_ARBOL = 5;
+export const META_BOSQUE = 400;
+export const FICHAS_BOSQUE = 6;
+
+export interface BosqueCompartido {
+  evento: string;
+  arboles: number;
+  meta: number;
+  mios: number;
+  reclamado: boolean;
+}
+
+export async function bosqueCompartido(sb: SupabaseClient): Promise<BosqueCompartido | null> {
+  const { data, error } = await sb.rpc("bosque_compartido");
+  if (error) return null;
+  return ((Array.isArray(data) ? data[0] : data) as BosqueCompartido | undefined) ?? null;
+}
+
+export async function reclamarBosque(sb: SupabaseClient): Promise<void> {
+  const { error } = await sb.rpc("reclamar_bosque");
+  if (error) throw error;
+}
+
 export function mensajeErrorMinievento(e: unknown, en = false): string {
   const m = (e as { message?: string } | null)?.message ?? "";
+  if (/aun no llegas/i.test(m)) return en ? "You haven't reached that goal yet." : "Todavía no llegas a esa meta.";
+  if (/ya tienes este premio/i.test(m)) return en ? "You already got this reward." : "Ya tienes este premio.";
+  if (/ya encontraste/i.test(m)) return en ? "You already found today's egg." : "Ya encontraste el huevo de hoy.";
+  if (/aqui no hay/i.test(m)) return en ? "There's no egg here today." : "Hoy no hay ningún huevo aquí.";
+  if (/planta al menos/i.test(m)) return en ? "Plant at least one tree to get the reward." : "Planta al menos un árbol para recibir el premio.";
   if (/no autenticado/i.test(m)) return en ? "Create your account to play the mini-event." : "Crea tu cuenta para jugar el minievento.";
   if (/ya respondiste/i.test(m)) return en ? "You already answered today's question." : "Ya respondiste la pregunta de hoy.";
   if (/ya abriste/i.test(m)) return en ? "You already opened today's door." : "Ya abriste la casilla de hoy.";

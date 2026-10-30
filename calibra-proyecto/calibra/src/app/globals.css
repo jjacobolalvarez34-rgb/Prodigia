@@ -1021,6 +1021,107 @@ html[data-borde="verde"] { --borde-tema: repeating-linear-gradient(90deg, #3DDC9
   --mn-glow: rgba(255, 243, 176, 0.65);
   --mn-glow-suave: rgba(42, 31, 92, 0.5);
 }
+/* Fiestas de febrero a septiembre (colecciones.ts, 0311). */
+.marco-evento-farol {
+  --mn-color: #e63946;
+  --mn-glow: rgba(255, 197, 61, 0.6);
+  --mn-glow-suave: rgba(164, 22, 26, 0.4);
+}
+.marco-evento-dragon {
+  --mn-color: #ffc53d;
+  --mn-glow: rgba(230, 57, 70, 0.6);
+  --mn-glow-suave: rgba(255, 243, 176, 0.4);
+}
+.marco-evento-cupido {
+  --mn-color: #ff5d8f;
+  --mn-glow: rgba(255, 179, 199, 0.6);
+  --mn-glow-suave: rgba(255, 255, 255, 0.4);
+}
+.marco-evento-lazo {
+  --mn-color: #ff5d8f;
+  --mn-glow: rgba(167, 148, 255, 0.6);
+  --mn-glow-suave: rgba(255, 197, 61, 0.4);
+}
+.marco-evento-antifaz {
+  --mn-color: #7c5cff;
+  --mn-glow: rgba(255, 197, 61, 0.6);
+  --mn-glow-suave: rgba(61, 220, 151, 0.4);
+}
+.marco-evento-carnaval {
+  --mn-color: #3ddc97;
+  --mn-glow: rgba(255, 197, 61, 0.6);
+  --mn-glow-suave: rgba(255, 93, 143, 0.4);
+}
+.marco-evento-linterna {
+  --mn-color: #ffb347;
+  --mn-glow: rgba(255, 217, 138, 0.6);
+  --mn-glow-suave: rgba(61, 220, 151, 0.4);
+}
+.marco-evento-luna {
+  --mn-color: #fff3c4;
+  --mn-glow: rgba(255, 197, 61, 0.6);
+  --mn-glow-suave: rgba(61, 220, 151, 0.4);
+}
+.marco-evento-pi {
+  --mn-color: #9b85ff;
+  --mn-glow: rgba(93, 228, 255, 0.6);
+  --mn-glow-suave: rgba(255, 255, 255, 0.4);
+}
+.marco-evento-espiral {
+  --mn-color: #5de4ff;
+  --mn-glow: rgba(155, 133, 255, 0.6);
+  --mn-glow-suave: rgba(255, 197, 61, 0.4);
+}
+.marco-evento-gulal {
+  --mn-color: #ff5d8f;
+  --mn-glow: rgba(61, 220, 151, 0.6);
+  --mn-glow-suave: rgba(255, 197, 61, 0.4);
+}
+.marco-evento-holi {
+  --mn-color: #ff5d8f;
+  --mn-glow: rgba(255, 197, 61, 0.6);
+  --mn-glow-suave: rgba(79, 224, 245, 0.4);
+}
+.marco-evento-huevo {
+  --mn-color: #9be7ff;
+  --mn-glow: rgba(255, 179, 199, 0.6);
+  --mn-glow-suave: rgba(255, 211, 107, 0.4);
+}
+.marco-evento-conejo {
+  --mn-color: #ffffff;
+  --mn-glow: rgba(255, 179, 199, 0.6);
+  --mn-glow-suave: rgba(61, 220, 151, 0.4);
+}
+.marco-evento-hoja {
+  --mn-color: #3ddc97;
+  --mn-glow: rgba(31, 138, 91, 0.6);
+  --mn-glow-suave: rgba(184, 245, 208, 0.4);
+}
+.marco-evento-planeta {
+  --mn-color: #4fe0f5;
+  --mn-glow: rgba(61, 220, 151, 0.6);
+  --mn-glow-suave: rgba(255, 255, 255, 0.4);
+}
+.marco-evento-vinilo {
+  --mn-color: #a794ff;
+  --mn-glow: rgba(255, 197, 61, 0.6);
+  --mn-glow-suave: rgba(26, 20, 48, 0.4);
+}
+.marco-evento-pentagrama {
+  --mn-color: #ffc53d;
+  --mn-glow: rgba(167, 148, 255, 0.6);
+  --mn-glow-suave: rgba(255, 243, 176, 0.4);
+}
+.marco-evento-cuaderno {
+  --mn-color: #5de4ff;
+  --mn-glow: rgba(255, 255, 255, 0.6);
+  --mn-glow-suave: rgba(255, 93, 143, 0.4);
+}
+.marco-evento-birrete {
+  --mn-color: #ffc53d;
+  --mn-glow: rgba(93, 228, 255, 0.6);
+  --mn-glow-suave: rgba(255, 243, 176, 0.4);
+}
 
 /* La llama de la racha (LlamaDibujo, src/lib/fx/llama.ts TITILEO): respira y se mece desde la base. */
 @keyframes llama-titila {

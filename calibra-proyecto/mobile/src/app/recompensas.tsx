@@ -64,6 +64,7 @@ import VistaCosmetico from "~/ui/recompensas/VistaCosmetico";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
 import { color, conAlfa, fuente, mundoDe } from "~/tema";
+import HuevoEscondido from "~/ui/temas/minieventos/HuevoEscondido";
 
 // Recompensas (docs/economy/PROPUESTA_TIENDA_Y_RECOMPENSAS.md, igual que
 // /recompensas en la web): constelaciones de las 15 ciudades (0259, en vez de las
@@ -411,6 +412,7 @@ export default function Recompensas() {
             );
           })}
         </View>
+        <HuevoEscondido lugar="recompensas" />
         <View style={{ height: 20 }} />
       </PantallaApilada>
 

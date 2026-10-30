@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import RecompensasClient from "./RecompensasClient";
+import HuevoEscondido from "@/components/temas/minieventos/HuevoEscondido";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Recompensas.metadata");
@@ -19,6 +20,7 @@ export default async function RecompensasPage() {
   return (
     <>
       <Header autenticado invitado={user.is_anonymous} />
+      <HuevoEscondido lugar="recompensas" />
       <RecompensasClient invitado={!!user.is_anonymous} plan={profile.plan} />
     </>
   );

@@ -107,15 +107,15 @@ export function rangosDelAnio(anio: number): RangoTema[] {
   const p = pascua(anio);
   const lista: RangoTema[] = [
     rango("anio_nuevo", f(anio - 1, "12-31"), f(anio, "01-02"), 4, true),
-    rango("dia_pi", f(anio, "03-14"), f(anio, "03-14"), 0),
-    rango("dia_tierra", f(anio, "04-22"), f(anio, "04-22"), 0),
-    rango("dia_musica", f(anio, "06-21"), f(anio, "06-21"), 0),
-    rango("amor_amistad", f(anio, "02-12"), f(anio, "02-15"), 3),
-    rango("carnaval", mover(p, -50), mover(p, -47), 3),
+    rango("dia_pi", f(anio, "03-14"), f(anio, "03-14"), 0, true),
+    rango("dia_tierra", f(anio, "04-22"), f(anio, "04-22"), 0, true),
+    rango("dia_musica", f(anio, "06-21"), f(anio, "06-21"), 0, true),
+    rango("amor_amistad", f(anio, "02-12"), f(anio, "02-15"), 3, true),
+    rango("carnaval", mover(p, -50), mover(p, -47), 3, true),
     rango("pascua", mover(p, -2), mover(p, 1), 5, true),
-    rango("vuelta_clases", f(anio, "09-01"), f(anio, "09-07"), 0),
+    rango("vuelta_clases", f(anio, "09-01"), f(anio, "09-07"), 0, true),
     rango("halloween", f(anio, "10-24"), f(anio, "10-31"), 4, true),
-    // Con día de cierre (0309): tiene colección y Fichas para canjear.
+    // Con día de cierre (0309 y 0311): toda fiesta con colección tiene un día para canjear.
     rango("muertos", f(anio, "11-01"), f(anio, "11-02"), 0, true),
     rango("viernes_estelar", mover(cuartoJuevesNoviembre(anio), 1), mover(cuartoJuevesNoviembre(anio), 4), 0, true),
     rango("navidad", f(anio, "12-01"), f(anio, "12-26"), 5, true),
@@ -125,10 +125,10 @@ export function rangosDelAnio(anio: number): RangoTema[] {
     const fecha = LUNARES[id][anio];
     if (fecha) lista.push(rango(id, f(anio, fecha), mover(f(anio, fecha), dias - 1), deco, cierre));
   };
-  lunar("anio_nuevo_lunar", 7, 3);
+  lunar("anio_nuevo_lunar", 7, 3, true);
   lunar("diwali", 5, 2, true);
-  lunar("holi", 2, 2);
-  lunar("linternas", 3, 0);
+  lunar("holi", 2, 2, true);
+  lunar("linternas", 3, 0, true);
   return lista;
 }
 

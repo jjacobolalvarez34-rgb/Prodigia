@@ -16,6 +16,7 @@ import LogroMedalla from "@/components/LogroMedalla";
 import EstandarteClan from "@/components/clanes/EstandarteClan";
 import { Link } from "@/i18n/navigation";
 import CiudadSkyline from "@/components/recompensas/CiudadSkyline";
+import HuevoEscondido from "@/components/temas/minieventos/HuevoEscondido";
 
 interface FilaAfinidad {
   mundo: string;
@@ -246,6 +247,7 @@ export default async function PerfilPage() {
   return (
     <>
       <Header autenticado invitado={user.is_anonymous} />
+      <HuevoEscondido lugar="perfil" />
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
         <section
           className={`relative overflow-hidden rounded-2xl border-2 shadow-sm transition-colors ${claro ? "" : "bg-surface"} ${ESTILO_MARCO_PERFIL[marcoPerfil] ?? ESTILO_MARCO_PERFIL.ninguno}`}

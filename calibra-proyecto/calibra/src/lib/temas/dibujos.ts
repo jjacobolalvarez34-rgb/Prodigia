@@ -48,7 +48,16 @@ export type TipoParticula =
   | "diya"
   | "estrella_fugaz"
   | "regalo"
-  | "campana";
+  | "campana"
+  // Fichas de las fiestas de febrero a septiembre (0311).
+  | "moneda"
+  | "carta"
+  | "mascara"
+  | "luna"
+  | "pi"
+  | "gulal"
+  | "semilla"
+  | "lapiz";
 
 // Flor de cempasúchil: dos coronas de pétalos redondos y el centro.
 function flor(x: number, y: number, r: number, n: number): string {
@@ -216,6 +225,96 @@ export const PARTICULAS: Record<TipoParticula, Dibujo> = {
       { d: "M5 23h22v2H5z", relleno: "#E8A317" },
       { d: circulo(16, 27, 2.6), relleno: "#A794FF" },
       { d: "M16 1.5v2.8", trazo: "#E8A317", ancho: 2 },
+    ],
+  },
+  // Moneda de la suerte con el agujero cuadrado y su cordón rojo (Año Nuevo Lunar).
+  moneda: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: "M16 2v4M16 26v4", trazo: "#E63946", ancho: 2 },
+      { d: circulo(16, 16, 11), relleno: "#FFC53D" },
+      { d: circulo(16, 16, 8.4), trazo: "#E8A317", ancho: 1.2 },
+      { d: "M13 13h6v6h-6z", relleno: "#7A1010" },
+      { d: "M9 11.5c1-2 2.4-3.2 4-3.8", trazo: "#FFF3B0", ancho: 1.4, opacidad: 0.8 },
+    ],
+  },
+  // Carta cerrada con un corazón de lacre (Amor y amistad).
+  carta: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: "M4 9h24v16H4z", relleno: "#FFF1F5" },
+      { d: "M4 9l12 9 12-9", trazo: "#FFB3C7", ancho: 1.6 },
+      { d: "M4 25l9-7.5M28 25l-9-7.5", trazo: "#FFB3C7", ancho: 1.2, opacidad: 0.8 },
+      { d: "M16 22.5c-3.6-2.6-4.6-4.5-3.6-6 .8-1.1 2.6-1.1 3.6.4 1-1.5 2.8-1.5 3.6-.4 1 1.5 0 3.4-3.6 6z", relleno: "#FF5D8F" },
+    ],
+  },
+  // Antifaz de carnaval con plumas (Carnaval).
+  mascara: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: "M20 12c1-5 4-8 8-9-1 4-3 7-6 9.5z", relleno: "#3DDC97" },
+      { d: "M22.5 13c2.5-3 5-4 7.5-4-2 3-4 4.5-6.5 5.5z", relleno: "#FFC53D" },
+      { d: "M3 15c3-3 7-3.5 13-1.5 6-2 10-1.5 13 1.5-1 5-4 8-8 8-3 0-4-2-5-3-1 1-2 3-5 3-4 0-7-3-8-8z", relleno: "#7C5CFF" },
+      { d: elipse(10.5, 17, 3, 2) + elipse(21.5, 17, 3, 2), relleno: "#1A0B2E" },
+      { d: "M5 14.5c2-1.5 5-2 8-1", trazo: "#FFC53D", ancho: 1.2, opacidad: 0.9 },
+    ],
+  },
+  // Luna creciente con una estrellita (Noches de linternas).
+  luna: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: "M19 4a12 12 0 1 0 9 19.5A10 10 0 0 1 19 4z", relleno: "#FFF3C4" },
+      { d: "M12 9c-2 2-3 4.5-3 7", trazo: "#FFFFFF", ancho: 1.4, opacidad: 0.6 },
+      { d: estrella(24, 9, 3.2), relleno: "#3DDC97" },
+    ],
+  },
+  // La letra π, gruesa (Día de π).
+  pi: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: circulo(16, 16, 13), relleno: "#2A1F5C" },
+      { d: "M8 11c1.5-1.6 3-2 5-2h12", trazo: "#9B85FF", ancho: 3, opacidad: 1 },
+      { d: "M13 9.5c0 6-1 10.5-3.5 13.5M20 9.5v10c0 2.5 1 3.5 3.5 3", trazo: "#5DE4FF", ancho: 3 },
+    ],
+  },
+  // Cuenco de gulal con polvo de color (Holi).
+  gulal: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: circulo(11, 13, 5) + circulo(19, 11, 5.5), relleno: "#FF5D8F", opacidad: 0.9 },
+      { d: circulo(23, 15, 4.5), relleno: "#3DDC97", opacidad: 0.9 },
+      { d: circulo(15, 15, 4), relleno: "#FFC53D", opacidad: 0.95 },
+      { d: "M3 16h26c-1 7-6 11-13 11S4 23 3 16z", relleno: "#C2410C" },
+      { d: "M6 18.5h20", trazo: "#FFC53D", ancho: 1.2, opacidad: 0.8 },
+    ],
+  },
+  // Brote con dos hojas saliendo de la tierra (Día de la Tierra).
+  semilla: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: "M16 26V14", trazo: "#1F8A5B", ancho: 2.2 },
+      { d: "M16 16c-1-5-5-8-11-8 0 6 4 9 11 8z", relleno: "#3DDC97" },
+      { d: "M16 13c1-5 5-8 11-8 0 6-4 9-11 8z", relleno: "#7FF0C8" },
+      { d: "M6 26c3-2.5 6.5-3 10-3s7 .5 10 3z", relleno: "#7A4A1E" },
+    ],
+  },
+  // Lápiz amarillo con goma rosa (Vuelta a clases).
+  lapiz: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: "M21 4l7 7-14 14-7-7z", relleno: "#FFC53D" },
+      { d: "M7 18l7 7-9 2z", relleno: "#F4D9A8" },
+      { d: "M5 25.5l1.5-1.5 1.5 1.5-2.5.7z", relleno: "#3B2A1A" },
+      { d: "M21 4l3-3 7 7-3 3z", relleno: "#FF5D8F" },
+      { d: "M19 6l7 7", trazo: "#E8A317", ancho: 1.2 },
     ],
   },
 };

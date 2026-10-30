@@ -18,6 +18,7 @@ import { PlacaCompleta, type ExtraCompleta } from "~/ui/placa/Placa";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
 import { color, conAlfa, fuente, MUNDOS } from "~/tema";
+import HuevoEscondido from "~/ui/temas/minieventos/HuevoEscondido";
 
 function BotonIcono({ children, onPress, etiqueta }: { children: ReactNode; onPress: () => void; etiqueta: string }) {
   return (
@@ -179,6 +180,7 @@ export default function Perfil() {
         />
         <Item indice={3} titulo="Ajustes y cuenta" icono={<IconoEngranaje tam={18} c={color.texto2} />} onPress={() => router.push("/ajustes")} />
       </Tarjeta>
+      <HuevoEscondido lugar="perfil" />
     </PantallaPestana>
   );
 }

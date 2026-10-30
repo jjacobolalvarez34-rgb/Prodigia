@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import EventoClient from "./EventoClient";
+import HuevoEscondido from "@/components/temas/minieventos/HuevoEscondido";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Evento");
@@ -17,6 +18,7 @@ export default async function EventoPage() {
   return (
     <>
       <Header autenticado invitado={user.is_anonymous} />
+      <HuevoEscondido lugar="evento" />
       <EventoClient invitado={!!user.is_anonymous} />
     </>
   );

@@ -68,6 +68,7 @@ import { EstrellaEnBazar } from "~/ui/temas/minieventos/EstrellaFugaz";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente, temaClaro } from "~/tema";
 import { FUENTE_FAMILIA } from "~/lib/placa";
+import HuevoEscondido from "~/ui/temas/minieventos/HuevoEscondido";
 
 // Tienda A + C (2026-10-14, docs/rediseno/tienda.html): en Tienda, la portada muestra lo
 // del día (rotación y oferta) y la calle con sus puestos; cada puesto es una grilla con
@@ -1124,6 +1125,7 @@ export default function Tienda() {
             );
           })()}
       </Hoja>
+      <HuevoEscondido lugar="tienda" flotante />
       {festejo > 0 && <Confeti key={festejo} cantidad={36} />}
     </View>
   );

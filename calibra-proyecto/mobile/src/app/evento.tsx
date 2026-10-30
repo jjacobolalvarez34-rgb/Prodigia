@@ -27,6 +27,7 @@ import DibujoTema from "~/ui/temas/DibujoTema";
 import EscenaTema from "~/ui/temas/EscenaTema";
 import Texto, { SobreOscuro } from "~/ui/Texto";
 import { color, fuente } from "~/tema";
+import HuevoEscondido from "~/ui/temas/minieventos/HuevoEscondido";
 
 // Pantalla del evento de la festividad (igual que /evento en la web, 0289): Fichas y
 // cómo se ganan, la colección para elegir qué llevarse (Fichas o Cometas) y el cierre.
@@ -225,6 +226,7 @@ export default function Evento() {
           </Texto>
         </>
       )}
+      <HuevoEscondido lugar="evento" />
     </PantallaApilada>
   );
 }
