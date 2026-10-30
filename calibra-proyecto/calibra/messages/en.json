@@ -5941,5 +5941,50 @@
     "guardando": "Saving your progress...",
     "errorGuardar": "Your progress couldn't be saved.",
     "reintentar": "Try again"
+  },
+  "Minieventos": {
+    "ofrenda": {
+      "velas": "Candles: {n} of {total}",
+      "acierto": "You lit a candle! +{fichas} {ficha}",
+      "fallo": "This time the candle didn't light.",
+      "respuesta": "The answer: {texto}",
+      "manana": "Tomorrow there's another question and another candle.",
+      "ultima": "That was the last question of the ofrenda."
+    },
+    "lamparas": {
+      "encendidas": "{n} of {meta} lamps lit",
+      "texto": "Every correct answer in any world lights one.",
+      "lograda": "Your whole city is glowing! +{fichas} {ficha}",
+      "jugar": "Play"
+    },
+    "estrella": {
+      "cayo": "A shooting star fell!",
+      "oferta": "{pieza} at half price",
+      "quedan": "{tiempo} left",
+      "sin": "No star is falling right now. Every day a surprise deal falls for 2 hours: come back later.",
+      "ver": "See the deal",
+      "precioOferta": "Shooting star"
+    },
+    "adviento": {
+      "abrir": "Open door {dia}",
+      "fichas": "Door {dia}: +{n} {ficha}",
+      "capsula": "Door {dia}: an event capsule (it's in Rewards)",
+      "domingo": "Sundays bring a capsule",
+      "termino": "The calendar ended on the 24th.",
+      "vuelve": "Another door opens tomorrow."
+    },
+    "reto": {
+      "progreso": "{total} of {meta} operations today",
+      "texto": "Solve operations in Numeria: everyone's count.",
+      "logrado": "The community did it!",
+      "reclamar": "Get my capsule",
+      "reclamado": "You already have today's capsule (it's in Rewards).",
+      "jugar": "Play Numeria"
+    },
+    "cierrePendiente": {
+      "titulo": "You have {n} {ficha} left from {evento}",
+      "texto": "Trade them for {chispas} Sparks before they're gone.",
+      "boton": "Trade for {chispas} Sparks"
+    }
   }
 }

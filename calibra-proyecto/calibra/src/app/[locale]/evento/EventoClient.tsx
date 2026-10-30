@@ -18,6 +18,8 @@ import { PARTICULAS } from "@/lib/temas/dibujos";
 import { CHISPAS_POR_FICHA, EXP_POR_FICHA, FICHAS_MAX_DIA } from "@/lib/temas/colecciones";
 import { canjearPieza, cerrarFichas, estadoEvento, eventoDeTema, finDelDiaMs, mensajeErrorEvento, type EstadoEvento } from "@/lib/temas/eventos";
 import RelojFalta from "@/components/temas/RelojFalta";
+import CierrePendiente from "@/components/temas/CierrePendiente";
+import { useOfertaEstelar } from "@/components/temas/minieventos/EstrellaFugaz";
 
 // Página del evento de la festividad (docs/eventos/PLAN_FESTIVIDADES.md capas 7 y 8):
 // cuántas Fichas llevas y cómo se ganan, la colección para elegir qué llevarte (con
@@ -29,6 +31,9 @@ export default function EventoClient({ invitado }: { invitado: boolean }) {
   const en = locale === "en";
   const tema = useTemaHoy();
   const evento = eventoDeTema(tema);
+  // Viernes Estelar: la pieza de la Estrella fugaz, a mitad de precio mientras cae.
+  const oferta = useOfertaEstelar(tema?.tema.id === "viernes_estelar" && evento?.estado === "abierto" ? evento.desde : null);
+  const tEstrella = useTranslations("Minieventos.estrella");
   const [estado, setEstado] = useState<EstadoEvento | null>(null);
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [aviso, setAviso] = useState<{ texto: string; error: boolean } | null>(null);
@@ -44,12 +49,20 @@ export default function EventoClient({ invitado }: { invitado: boolean }) {
     void cargar();
   }, [cargar]);
 
-  if (!tema) return <p className="mx-auto max-w-md px-4 py-16 text-center text-texto-secundario">{t("sinEvento")}</p>;
+  if (!tema) {
+    return (
+      <div className="mx-auto flex max-w-xl flex-col gap-6 px-4 py-16">
+        <p className="text-center text-texto-secundario">{t("sinEvento")}</p>
+        {!invitado && <CierrePendiente actual={null} />}
+      </div>
+    );
+  }
   if (!evento) {
     return (
       <div className="mx-auto flex max-w-md flex-col items-center gap-4 px-4 py-16 text-center">
         <p className="font-display text-2xl font-bold">{en ? tema.tema.nombreEn : tema.tema.nombre}</p>
         <p className="text-texto-secundario">{en ? tema.tema.frase.eventoEn : tema.tema.frase.evento}</p>
+        {!invitado && <CierrePendiente actual={null} />}
       </div>
     );
   }
@@ -120,6 +133,7 @@ export default function EventoClient({ invitado }: { invitado: boolean }) {
         <p className="rounded-2xl border border-border bg-surface px-5 py-4 text-sm text-texto-secundario">{t("invitado")}</p>
       ) : (
         <>
+          <CierrePendiente actual={evento.slug} />
           {/* Fichas */}
           <section className="flex flex-wrap items-center gap-5 rounded-3xl border-2 border-[#05060F] bg-[#0B1022] p-5 text-white shadow-[4px_4px_0_0_#05060F]">
             <span className="flex h-16 w-16 items-center justify-center rounded-2xl" style={{ background: `${tema.tema.acento}22` }}>
@@ -153,7 +167,10 @@ export default function EventoClient({ invitado }: { invitado: boolean }) {
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {evento.coleccion.piezas.map((p, i) => {
                 const tuya = estado?.piezas.includes(p.item);
-                const alcanza = (estado?.saldo ?? 0) >= p.fichas;
+                const enOferta = oferta?.item === p.item ? oferta : null;
+                const fichas = enOferta?.fichas ?? p.fichas;
+                const cometas = enOferta?.cometas ?? p.cometas;
+                const alcanza = (estado?.saldo ?? 0) >= fichas;
                 return (
                   <motion.div
                     key={p.item}
@@ -170,6 +187,7 @@ export default function EventoClient({ invitado }: { invitado: boolean }) {
                       {tRareza(p.rareza)}
                     </span>
                     <span className="min-h-[2.5rem] text-sm font-bold text-foreground">{p.nombre}</span>
+                    {enOferta && !tuya && <span className="rounded-full bg-[#5DE4FF] px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-[#05060F]">{tEstrella("precioOferta")} · −50 %</span>}
                     {tuya ? (
                       <span className="text-sm font-bold text-correcto">{t("tuya")}</span>
                     ) : (
@@ -182,7 +200,7 @@ export default function EventoClient({ invitado }: { invitado: boolean }) {
                           style={{ background: tema.tema.acento }}
                         >
                           <DibujoTema dibujo={ficha} className="h-4 w-4" />
-                          {p.fichas}
+                          {fichas}
                         </button>
                         <button
                           type="button"
@@ -190,7 +208,7 @@ export default function EventoClient({ invitado }: { invitado: boolean }) {
                           onClick={() => canjear(p.item, true)}
                           className="flex items-center justify-center gap-1.5 rounded-xl border border-white/20 px-3 py-1.5 text-xs font-bold text-foreground disabled:opacity-45"
                         >
-                          <IconoCometa className="h-3.5 w-3.5" /> {p.cometas}
+                          <IconoCometa className="h-3.5 w-3.5" /> {cometas}
                         </button>
                       </div>
                     )}

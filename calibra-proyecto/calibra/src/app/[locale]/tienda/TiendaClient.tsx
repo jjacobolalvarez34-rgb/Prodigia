@@ -24,6 +24,7 @@ import { obtenerDescuentoDelDia, precioConDescuento } from "@/lib/descuentoDiari
 import { COSTOS, type ItemComprable } from "@/lib/tienda/costos";
 import { reproducirTono } from "@/lib/sonido";
 import PortadaBazar, { CabeceraPuesto } from "@/components/tienda/PortadaBazar";
+import { EstrellaEnBazar } from "@/components/temas/minieventos/EstrellaFugaz";
 import { puestoDe, type PuestoId } from "@/lib/tienda/bazar";
 import { precioEnCometas } from "@/lib/recompensas/catalogo";
 import IconoTrazo from "@/components/IconoTrazo";
@@ -474,6 +475,7 @@ export default function TiendaClient({
           ))}
         </div>
 
+        {portada && <EstrellaEnBazar />}
         {portada && (
           <PortadaBazar
             oferta={<OfertaDelDia oferta={oferta} nombre={NOMBRES_ITEM[oferta.item as ItemComprable]} />}

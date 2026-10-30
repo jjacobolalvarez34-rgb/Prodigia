@@ -2,7 +2,7 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SupabaseClient = { rpc: (fn: string, args?: Record<string, unknown>) => any };
 import { COLECCIONES, slugEvento, type Coleccion } from "./colecciones";
-import { inicioEventoMs } from "./calendario";
+import { hoyUtc, inicioEventoMs, rangosDelAnio } from "./calendario";
 import type { TemaActivo } from "./temas";
 
 // Evento de la festividad (0289): Fichas, colección y cierre. Web y app.
@@ -109,4 +109,17 @@ export function mensajeErrorDulce(e: unknown): string {
   if (/solo puedes/i.test(m)) return "Solo puedes darle un dulce a un amigo.";
   if (/no hay un evento/i.test(m)) return "Ahora no hay un evento abierto.";
   return "No se pudo. Inténtalo de nuevo.";
+}
+
+// Eventos con colección que ya terminaron hace poco (hasta 14 días) y que no son el de
+// hoy: si su día de cierre quedó tapado por otra fiesta (Halloween cierra el 1 de
+// noviembre, que es Día de Muertos), las Fichas que sobran se cambian desde acá.
+export function eventosPorCerrar(actual: string | null, ahora = Date.now()): { slug: string; coleccion: Coleccion; hasta: string }[] {
+  const hoy = hoyUtc(ahora);
+  const limite = hoyUtc(ahora - 14 * 86_400_000);
+  const anio = Number(hoy.slice(0, 4));
+  return [...rangosDelAnio(anio - 1), ...rangosDelAnio(anio)]
+    .filter((r) => COLECCIONES[r.id] && r.hasta < hoy && r.hasta >= limite)
+    .map((r) => ({ slug: slugEvento(r.id, r.desde), coleccion: COLECCIONES[r.id]!, hasta: r.hasta }))
+    .filter((e, i, lista) => e.slug !== actual && lista.findIndex((x) => x.slug === e.slug) === i);
 }

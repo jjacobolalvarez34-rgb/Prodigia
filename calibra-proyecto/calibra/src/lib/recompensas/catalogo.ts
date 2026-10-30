@@ -112,7 +112,7 @@ export const EFECTOS: Record<string, Efecto> = {
   estrellas: { nombre: "Estrellas", forma: "estrellas", colores: ["#FFC53D", "#FFF3B0", "#FFFFFF"] },
   ...Object.fromEntries(CIUDADES.map((c) => [`ciudad_${c.slug}`, { nombre: `Destellos de ${c.nombre}`, forma: "glifo" as const, colores: [c.color, tono(c.color, 0.5)], glifo: c.glifo }])),
   ...Object.fromEntries(EFECTOS_NUEVOS.map((e) => [e.valor, { nombre: e.nombre, forma: e.forma, colores: e.colores, glifo: e.glifo }])),
-  ...Object.fromEntries(EFECTOS_EVENTO.map((e) => [e.valor, { nombre: e.nombre, forma: e.forma, colores: e.colores }])),
+  ...Object.fromEntries(EFECTOS_EVENTO.map((e) => [e.valor, { nombre: e.nombre, forma: e.forma, colores: e.colores, glifo: e.glifo }])),
 };
 
 export function efectoDe(valor: string | null | undefined): Efecto {

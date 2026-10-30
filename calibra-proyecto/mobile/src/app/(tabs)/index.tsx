@@ -2,7 +2,7 @@ import { celebracionDe, saludoDe } from "@/lib/temas/celebracion";
 import { useTemaHoy } from "~/lib/temporada";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { cargarMiClan, reclamarMision, type Mision } from "~/lib/clanes";
 import { fraseGuerra, textoCierreGuerra, type EstadoGuerra } from "@/lib/clanes/guerra";
@@ -33,10 +33,12 @@ import { PantallaPestana, TituloSeccion } from "~/ui/Pantalla";
 import PrimerosPasos from "~/ui/PrimerosPasos";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
+import MinieventoFiesta from "~/ui/temas/minieventos/MinieventoFiesta";
 import { color, conAlfa, MUNDO_POR_SLUG, mundoDe } from "~/tema";
 
 export default function Hoy() {
   const temaHoy = useTemaHoy();
+  const { width } = useWindowDimensions();
   const router = useRouter();
   const { sesion } = useSesion();
   const userId = sesion?.user.id;
@@ -159,6 +161,7 @@ export default function Hoy() {
             <Texto v="nota" tam={12.5} style={{ marginRight: 34 }}>
               {celebracionDe(temaHoy)!.minievento.texto}
             </Texto>
+            <MinieventoFiesta tema={temaHoy} ancho={width - 60} />
             {temaHoy.tema.id === "dia_pi" && <Boton3D titulo="Jugar" tamano="sm" estilo={{ marginTop: 8 }} onPress={() => router.push("/pi")} />}
           </Tarjeta>
         </CartelPlegable>

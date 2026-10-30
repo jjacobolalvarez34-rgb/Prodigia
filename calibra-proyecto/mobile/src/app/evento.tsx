@@ -9,6 +9,8 @@ import { CHISPAS_POR_FICHA, EXP_POR_FICHA, FICHAS_MAX_DIA } from "@/lib/temas/co
 import { canjearPieza, cerrarFichas, estadoEvento, eventoDeTema, finDelDiaMs, mensajeErrorEvento, type EstadoEvento } from "@/lib/temas/eventos";
 import { VIDEO_DE_TEMA } from "@/lib/temas/videosApertura";
 import RelojFalta from "~/ui/temas/RelojFalta";
+import CierrePendiente from "~/ui/temas/CierrePendiente";
+import { useOfertaEstelar } from "~/ui/temas/minieventos/EstrellaFugaz";
 import { sonar, vibrar } from "~/lib/efectos";
 import { fijarChispas, fijarCometas, useJugador } from "~/lib/jugador";
 import { recargarCosmeticos } from "~/lib/recompensas";
@@ -31,6 +33,8 @@ import { color, fuente } from "~/tema";
 export default function Evento() {
   const tema = useTemaHoy();
   const evento = eventoDeTema(tema);
+  // Viernes Estelar: la pieza de la Estrella fugaz, a mitad de precio mientras cae.
+  const oferta = useOfertaEstelar(tema?.tema.id === "viernes_estelar" && evento?.estado === "abierto" ? evento.desde : null);
   const { width } = useWindowDimensions();
   const { sesion } = useSesion();
   const { esInvitado } = useJugador();
@@ -54,6 +58,7 @@ export default function Evento() {
         <Texto v="nota" centro>
           Ahora no hay ninguna festividad con evento en curso.
         </Texto>
+        {!esInvitado && <CierrePendiente actual={null} />}
       </PantallaApilada>
     );
   }
@@ -132,6 +137,7 @@ export default function Evento() {
         </Texto>
       ) : (
         <>
+          <CierrePendiente actual={evento.slug} />
           {/* Fichas */}
           <SobreOscuro>
             <View style={styles.fichas}>
@@ -166,7 +172,10 @@ export default function Evento() {
           <View style={styles.grilla}>
             {evento.coleccion.piezas.map((p, i) => {
               const tuya = estado?.piezas.includes(p.item);
-              const alcanza = (estado?.saldo ?? 0) >= p.fichas;
+              const enOferta = oferta?.item === p.item ? oferta : null;
+              const fichas = enOferta?.fichas ?? p.fichas;
+              const cometas = enOferta?.cometas ?? p.cometas;
+              const alcanza = (estado?.saldo ?? 0) >= fichas;
               return (
                 <Animated.View key={p.item} entering={FadeInDown.delay(i * 60).duration(320)} style={[styles.pieza, { width: anchoPieza, borderColor: tuya ? color.correcto : `${COLOR_RAREZA[p.rareza]}88` }]}>
                   <View style={{ height: 76, justifyContent: "center" }}>
@@ -176,6 +185,11 @@ export default function Evento() {
                   <Texto v="fuerte" tam={13} centro numberOfLines={2} style={{ minHeight: 34 }}>
                     {p.nombre}
                   </Texto>
+                  {enOferta && !tuya && (
+                    <View style={styles.oferta}>
+                      <Texto style={{ fontFamily: fuente.cuerpoBold, fontSize: 9.5, letterSpacing: 1, color: "#05060F" }}>ESTRELLA FUGAZ · −50 %</Texto>
+                    </View>
+                  )}
                   {tuya ? (
                     <Texto v="fuerte" c={color.correcto}>
                       ¡Es tuya!
@@ -183,7 +197,7 @@ export default function Evento() {
                   ) : (
                     <View style={{ alignSelf: "stretch", gap: 6 }}>
                       <Boton3D
-                        titulo={String(p.fichas)}
+                        titulo={String(fichas)}
                         icono={<DibujoTema dibujo={ficha} ancho={16} />}
                         tamano="sm"
                         acento={tema.tema.acento}
@@ -192,7 +206,7 @@ export default function Evento() {
                         onPress={() => canjear(p.item, false)}
                       />
                       <Boton3D
-                        titulo={String(p.cometas)}
+                        titulo={String(cometas)}
                         icono={<IconoCometa tam={14} />}
                         variante="secundario"
                         tamano="sm"
@@ -222,5 +236,6 @@ const styles = StyleSheet.create({
   iconoFicha: { width: 62, height: 62, borderRadius: 16, alignItems: "center", justifyContent: "center" },
   entre: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
   grilla: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
+  oferta: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: "#5DE4FF" },
   pieza: { alignItems: "center", gap: 6, padding: 12, borderRadius: 18, borderWidth: 2, backgroundColor: color.surface1 },
 });

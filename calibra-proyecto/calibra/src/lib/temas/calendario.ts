@@ -106,7 +106,7 @@ function rango(id: IdTema, desde: string, hasta: string, diasDecoracion: number,
 export function rangosDelAnio(anio: number): RangoTema[] {
   const p = pascua(anio);
   const lista: RangoTema[] = [
-    rango("anio_nuevo", f(anio - 1, "12-31"), f(anio, "01-02"), 4),
+    rango("anio_nuevo", f(anio - 1, "12-31"), f(anio, "01-02"), 4, true),
     rango("dia_pi", f(anio, "03-14"), f(anio, "03-14"), 0),
     rango("dia_tierra", f(anio, "04-22"), f(anio, "04-22"), 0),
     rango("dia_musica", f(anio, "06-21"), f(anio, "06-21"), 0),
@@ -115,17 +115,18 @@ export function rangosDelAnio(anio: number): RangoTema[] {
     rango("pascua", mover(p, -2), mover(p, 1), 5, true),
     rango("vuelta_clases", f(anio, "09-01"), f(anio, "09-07"), 0),
     rango("halloween", f(anio, "10-24"), f(anio, "10-31"), 4, true),
-    rango("muertos", f(anio, "11-01"), f(anio, "11-02"), 0),
-    rango("viernes_estelar", mover(cuartoJuevesNoviembre(anio), 1), mover(cuartoJuevesNoviembre(anio), 4), 0),
+    // Con día de cierre (0309): tiene colección y Fichas para canjear.
+    rango("muertos", f(anio, "11-01"), f(anio, "11-02"), 0, true),
+    rango("viernes_estelar", mover(cuartoJuevesNoviembre(anio), 1), mover(cuartoJuevesNoviembre(anio), 4), 0, true),
     rango("navidad", f(anio, "12-01"), f(anio, "12-26"), 5, true),
-    rango("anio_nuevo", f(anio, "12-31"), f(anio + 1, "01-02"), 4),
+    rango("anio_nuevo", f(anio, "12-31"), f(anio + 1, "01-02"), 4, true),
   ];
-  const lunar = (id: keyof typeof LUNARES, dias: number, deco: number) => {
+  const lunar = (id: keyof typeof LUNARES, dias: number, deco: number, cierre = false) => {
     const fecha = LUNARES[id][anio];
-    if (fecha) lista.push(rango(id, f(anio, fecha), mover(f(anio, fecha), dias - 1), deco));
+    if (fecha) lista.push(rango(id, f(anio, fecha), mover(f(anio, fecha), dias - 1), deco, cierre));
   };
   lunar("anio_nuevo_lunar", 7, 3);
-  lunar("diwali", 5, 2);
+  lunar("diwali", 5, 2, true);
   lunar("holi", 2, 2);
   lunar("linternas", 3, 0);
   return lista;

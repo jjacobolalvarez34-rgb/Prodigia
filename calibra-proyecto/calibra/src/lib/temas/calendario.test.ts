@@ -15,7 +15,9 @@ describe("calendario de festividades", () => {
     expect(temaDeFecha("2026-10-24")).toMatchObject({ id: "halloween", fase: "evento" });
     expect(temaDeFecha("2026-10-31")).toMatchObject({ id: "halloween", fase: "evento" });
     expect(temaDeFecha("2026-11-01")).toMatchObject({ id: "muertos", fase: "evento" });
-    expect(temaDeFecha("2026-11-03")).toBeNull();
+    // Día de Muertos tiene colección (0309): el 3 es su día de cierre; el 4, nada.
+    expect(temaDeFecha("2026-11-03")).toMatchObject({ id: "muertos", fase: "cierre" });
+    expect(temaDeFecha("2026-11-04")).toBeNull();
   });
 
   it("Diwali 2026 entra después de Muertos; Navidad y Año Nuevo se pasan la posta", () => {

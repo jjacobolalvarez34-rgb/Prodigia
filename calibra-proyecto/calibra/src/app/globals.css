@@ -970,6 +970,57 @@ html[data-borde="verde"] { --borde-tema: repeating-linear-gradient(90deg, #3DDC9
   --mn-glow: rgba(61, 220, 151, 0.65);
   --mn-glow-suave: rgba(184, 255, 217, 0.35);
 }
+/* Fiestas de noviembre a enero (colecciones.ts, 0309). */
+.marco-evento-papel-picado {
+  --mn-color: #ff5d8f;
+  --mn-glow: rgba(255, 159, 28, 0.6);
+  --mn-glow-suave: rgba(61, 220, 151, 0.35);
+}
+.marco-evento-calavera {
+  --mn-color: #ffffff;
+  --mn-glow: rgba(255, 93, 143, 0.6);
+  --mn-glow-suave: rgba(79, 224, 245, 0.4);
+}
+.marco-evento-diya {
+  --mn-color: #ffc53d;
+  --mn-glow: rgba(255, 122, 26, 0.6);
+  --mn-glow-suave: rgba(255, 243, 176, 0.35);
+}
+.marco-evento-rangoli {
+  --mn-color: #ff5d8f;
+  --mn-glow: rgba(255, 197, 61, 0.6);
+  --mn-glow-suave: rgba(124, 92, 255, 0.4);
+}
+.marco-evento-cometa {
+  --mn-color: #5de4ff;
+  --mn-glow: rgba(93, 228, 255, 0.6);
+  --mn-glow-suave: rgba(255, 197, 61, 0.35);
+}
+.marco-evento-constelacion {
+  --mn-color: #ffc53d;
+  --mn-glow: rgba(93, 228, 255, 0.6);
+  --mn-glow-suave: rgba(176, 124, 255, 0.4);
+}
+.marco-evento-baston {
+  --mn-color: #e63946;
+  --mn-glow: rgba(230, 57, 70, 0.55);
+  --mn-glow-suave: rgba(255, 255, 255, 0.4);
+}
+.marco-evento-luces {
+  --mn-color: #3ddc97;
+  --mn-glow: rgba(230, 57, 70, 0.6);
+  --mn-glow-suave: rgba(255, 197, 61, 0.4);
+}
+.marco-evento-fuegos {
+  --mn-color: #ffc53d;
+  --mn-glow: rgba(167, 148, 255, 0.6);
+  --mn-glow-suave: rgba(255, 93, 143, 0.35);
+}
+.marco-evento-medianoche {
+  --mn-color: #ffc53d;
+  --mn-glow: rgba(255, 243, 176, 0.65);
+  --mn-glow-suave: rgba(42, 31, 92, 0.5);
+}
 
 /* La llama de la racha (LlamaDibujo, src/lib/fx/llama.ts TITILEO): respira y se mece desde la base. */
 @keyframes llama-titila {

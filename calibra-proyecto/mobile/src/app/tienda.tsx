@@ -64,6 +64,7 @@ import IlustracionPaquete from "~/ui/recompensas/IlustracionPaquete";
 import { abrirCompraWeb, PaquetesMoneda } from "~/ui/pagos/Vitrina";
 import CapsulasCometas from "~/ui/pagos/CapsulasCometas";
 import PaquetesCapsulas from "~/ui/pagos/PaquetesCapsulas";
+import { EstrellaEnBazar } from "~/ui/temas/minieventos/EstrellaFugaz";
 import Texto from "~/ui/Texto";
 import { brillo, color, conAlfa, fuente, temaClaro } from "~/tema";
 import { FUENTE_FAMILIA } from "~/lib/placa";
@@ -264,6 +265,7 @@ function PortadaBazar({ catalogo, e, placa, ancho, onPress, onPuesto }: { catalo
   const anchoPuesto = Math.floor((Dimensions.get("window").width - 32 - 16) / 3);
   return (
     <Animated.View entering={FadeIn.duration(220)} style={{ paddingHorizontal: 16, paddingTop: 12, gap: 14 }}>
+      <EstrellaEnBazar />
       <View style={styles.hoy}>
         <LinearGradient colors={[conAlfa(color.logro, 0.22), "rgba(18,23,42,0)"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
         <View style={[styles.fila, { justifyContent: "space-between" }]}>

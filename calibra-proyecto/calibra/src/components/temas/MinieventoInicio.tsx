@@ -6,6 +6,7 @@ import { useTemaHoy } from "./useTemaHoy";
 import { celebracionDe } from "@/lib/temas/celebracion";
 import CartelPlegable from "./CartelPlegable";
 import IconoEvento from "./IconoEvento";
+import MinieventoFiesta from "./minieventos/MinieventoFiesta";
 
 // El minievento de la fecha en el Inicio (celebracion.ts). Los que se juegan en una
 // pantalla propia (el de π) llevan su botón. Empieza minimizado (CartelPlegable).
@@ -33,6 +34,7 @@ export default function MinieventoInicio() {
         </p>
         <p className="font-display text-lg font-bold text-foreground">{m.nombre}</p>
         <p className="text-sm text-texto-secundario">{m.texto}</p>
+        <MinieventoFiesta tema={tema} />
         {ruta && (
           <Link href={ruta} className="w-fit rounded-xl border-2 border-[#05060F] px-4 py-2 font-display text-sm font-bold text-[#120A00] shadow-[3px_3px_0_0_#05060F]" style={{ background: tema.tema.acento }}>
             Jugar

@@ -26,7 +26,39 @@ function elipse(x: number, y: number, rx: number, ry: number): string {
 const CORAZON = "M16 28C6 21 3 15 6 10c2-4 8-4 10 1 2-5 8-5 10-1 3 5 0 11-10 18z";
 
 // ---------- Partículas (32 × 32) ----------
-export type TipoParticula = "nieve" | "hoja" | "murcielago" | "petalo" | "corazon" | "linterna" | "farol" | "confeti" | "chispa" | "polvo" | "nota" | "estrella" | "huevo" | "caramelo" | "dulce";
+export type TipoParticula =
+  | "nieve"
+  | "hoja"
+  | "murcielago"
+  | "petalo"
+  | "corazon"
+  | "linterna"
+  | "farol"
+  | "confeti"
+  | "chispa"
+  | "polvo"
+  | "nota"
+  | "estrella"
+  | "huevo"
+  | "caramelo"
+  | "dulce"
+  // Fichas de las colecciones de las fiestas (colecciones.ts, 0309).
+  | "cempasuchil"
+  | "vela"
+  | "diya"
+  | "estrella_fugaz"
+  | "regalo"
+  | "campana";
+
+// Flor de cempasúchil: dos coronas de pétalos redondos y el centro.
+function flor(x: number, y: number, r: number, n: number): string {
+  let d = "";
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2;
+    d += circulo(+(x + Math.cos(a) * r).toFixed(2), +(y + Math.sin(a) * r).toFixed(2), +(r * 0.62).toFixed(2));
+  }
+  return d;
+}
 
 export const PARTICULAS: Record<TipoParticula, Dibujo> = {
   nieve: {
@@ -114,6 +146,76 @@ export const PARTICULAS: Record<TipoParticula, Dibujo> = {
     formas: [
       { d: "M20 6a5 5 0 0 0-10 0v20", trazo: "#FFFFFF", ancho: 4.5 },
       { d: "M11 9l4-2.5M11 14l4-2.5M11 19l4-2.5M11 24l4-2.5M15.5 3.5l3 1.5", trazo: "#E63946", ancho: 2.2 },
+    ],
+  },
+  // Flor de cempasúchil (las fichas de Día de Muertos).
+  cempasuchil: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: flor(16, 16, 9, 10), relleno: "#FF8A00" },
+      { d: flor(16, 16, 5.5, 8), relleno: "#FFB627" },
+      { d: circulo(16, 16, 3.6), relleno: "#C2410C" },
+      { d: circulo(14.8, 14.8, 1.2), relleno: "#FFE08A", opacidad: 0.8 },
+    ],
+  },
+  // Vela encendida de la ofrenda.
+  vela: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: "M11 14h10v15H11z", relleno: "#F4EAD5" },
+      { d: "M11 14h10v3H11z", relleno: "#E3D3B0" },
+      { d: "M16 3c3 4 4 6.5 2.6 8.6-.7 1-1.7 1.4-2.6 1.4s-1.9-.4-2.6-1.4C12 9.5 13 7 16 3z", relleno: "#FF9F1C" },
+      { d: "M16 7c1.4 2 1.8 3.2 1.1 4.3-.3.4-.7.6-1.1.6s-.8-.2-1.1-.6c-.7-1.1-.3-2.3 1.1-4.3z", relleno: "#FFE08A" },
+      { d: "M16 12.5v1.5", trazo: "#3B2A1A", ancho: 1 },
+    ],
+  },
+  // Diya: lámpara de barro con su llama (las fichas de Diwali).
+  diya: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: "M4 18c3 7 21 7 24 0z", relleno: "#C2410C" },
+      { d: "M6 19.5c4 3.6 16 3.6 20 0", trazo: "#FFC53D", ancho: 1.4 },
+      { d: "M11 26h10l-1.5 2.5h-7z", relleno: "#9A3412" },
+      { d: "M16 5c3.2 4 4 7 2.4 9.6-.6.9-1.5 1.4-2.4 1.4s-1.8-.5-2.4-1.4C12 12 12.8 9 16 5z", relleno: "#FFB627" },
+      { d: "M16 9.5c1.3 1.8 1.6 3 1 4-.2.4-.6.6-1 .6s-.8-.2-1-.6c-.6-1-.3-2.2 1-4z", relleno: "#FFF3B0" },
+    ],
+  },
+  // Estrella fugaz con su estela (las fichas del Viernes Estelar).
+  estrella_fugaz: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: "M3 27L17 13", trazo: "#5DE4FF", ancho: 2.6, opacidad: 0.55 },
+      { d: "M7 28.5L18 17.5M2 23l11-11", trazo: "#5DE4FF", ancho: 1.2, opacidad: 0.4 },
+      { d: estrella(21, 11, 9), relleno: "#FFC53D" },
+      { d: estrella(21, 11, 3.6), relleno: "#FFFFFF" },
+    ],
+  },
+  // Regalo con moño (las fichas de Navidad).
+  regalo: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: "M5 14h22v14H5z", relleno: "#E63946" },
+      { d: "M4 10h24v5H4z", relleno: "#C1121F" },
+      { d: "M14 10h4v18h-4z", relleno: "#FFC53D" },
+      { d: "M16 10c-3-5-9-6-9-2.5 0 2 4 2.5 9 2.5M16 10c3-5 9-6 9-2.5 0 2-4 2.5-9 2.5", trazo: "#FFC53D", ancho: 2 },
+      { d: "M6 16h3v10H6z", relleno: "#FFFFFF", opacidad: 0.2 },
+    ],
+  },
+  // Campana dorada de las doce (las fichas de Año Nuevo).
+  campana: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: "M16 4c-5 0-8 4-8 9v6l-3 4h22l-3-4v-6c0-5-3-9-8-9z", relleno: "#FFC53D" },
+      { d: "M11 9c1-2 2.5-3 4-3.2", trazo: "#FFF3B0", ancho: 1.6, opacidad: 0.8 },
+      { d: "M5 23h22v2H5z", relleno: "#E8A317" },
+      { d: circulo(16, 27, 2.6), relleno: "#A794FF" },
+      { d: "M16 1.5v2.8", trazo: "#E8A317", ancho: 2 },
     ],
   },
 };

@@ -2,8 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { CATALOGO_NUEVO } from "@/lib/recompensas/catalogo";
-import { rangosDelAnio } from "./calendario";
+import { inicioEventoMs, rangosDelAnio } from "./calendario";
 import { CHISPAS_POR_FICHA, COLECCIONES, EXP_POR_FICHA, FICHAS_MAX_DIA, FONDOS_EVENTO, MARCOS_EVENTO, piezasDeEventos, slugEvento } from "./colecciones";
+import { ofertasEstelaresDe } from "./minieventos";
 import { TEMAS } from "./temas";
 
 // La migración 0289 (motor de eventos y colección de Halloween) se GENERA desde
@@ -20,18 +21,36 @@ function listaDe0275(columna: "marco_perfil" | "fondo_perfil"): string[] {
   return m![1].split(",").map((x) => x.trim().replace(/^'|'$/g, ""));
 }
 
-// Eventos programados: los de este año y el que viene que tienen colección.
-function eventosProgramados() {
+// Eventos programados: los de este año y el que viene que tienen colección. `migracion`:
+// solo los de las colecciones de esa migración (sin ella, los de 0289).
+function eventosProgramados(migracion?: string) {
   return [2026, 2027].flatMap((anio) =>
     rangosDelAnio(anio)
-      .filter((r) => COLECCIONES[r.id] && r.desde.startsWith(String(anio)))
-      .map((r) => ({ slug: slugEvento(r.id, r.desde), tema: r.id, desde: r.desde, hasta: r.hasta, cierre: new Date(Date.parse(`${r.hasta}T00:00:00Z`) + 86_400_000).toISOString().slice(0, 10) }))
+      .filter((r) => COLECCIONES[r.id] && COLECCIONES[r.id]!.migracion === migracion && r.desde.startsWith(String(anio)))
+      .map((r) => ({
+        slug: slugEvento(r.id, r.desde),
+        tema: r.id,
+        desde: r.desde,
+        hasta: r.hasta,
+        cierre: new Date(Date.parse(`${r.hasta}T00:00:00Z`) + 86_400_000).toISOString().slice(0, 10),
+        inicio: new Date(inicioEventoMs(r)).toISOString().replace("T", " ").replace(".000Z", "+00"),
+      }))
   );
 }
 
+function anuncioDe(e: ReturnType<typeof eventosProgramados>[number]): string {
+  const t = TEMAS[e.tema];
+  const c = COLECCIONES[e.tema]!;
+  const titulo = `Evento: ${t.nombre}`;
+  const texto = `${t.frase.evento}. Juega en cualquier mundo para ganar ${c.ficha.nombre} y elige qué piezas de la colección llevarte (también se pueden comprar con Cometas). Hasta el ${e.hasta.slice(8, 10)}/${e.hasta.slice(5, 7)}.`;
+  return `insert into public.anuncios (tipo, titulo, descripcion, fecha)
+select 'evento', ${sql(titulo)}, ${sql(texto)}, ${sql(e.desde)}
+where not exists (select 1 from public.anuncios a where a.titulo = ${sql(titulo)} and a.fecha = ${sql(e.desde)});`;
+}
+
 export function generarSql0289(): string {
-  const marcos = [...listaDe0275("marco_perfil"), ...MARCOS_EVENTO.map((m) => m.slug)];
-  const fondos = [...listaDe0275("fondo_perfil"), ...FONDOS_EVENTO.map((f) => f.valor)];
+  const marcos = [...listaDe0275("marco_perfil"), ...MARCOS_EVENTO.filter((m) => !m.migracion).map((m) => m.slug)];
+  const fondos = [...listaDe0275("fondo_perfil"), ...FONDOS_EVENTO.filter((f) => !f.migracion).map((f) => f.valor)];
   const eventos = eventosProgramados();
   // Solo las piezas de 0289 (las que llegaron después tienen su propia migración).
   const piezas = piezasDeEventos().filter((p) => !p.migracion);
@@ -301,20 +320,55 @@ revoke execute on function public.anuncios_recientes(integer) from public, anon;
 grant execute on function public.anuncios_recientes(integer) to authenticated;
 
 -- El anuncio de cada evento, programado para el día que empieza (una vez por evento).
-${eventos
-  .map((e) => {
-    const t = TEMAS[e.tema];
-    const c = COLECCIONES[e.tema]!;
-    const titulo = `Evento: ${t.nombre}`;
-    const texto = `${t.frase.evento}. Juega en cualquier mundo para ganar ${c.ficha.nombre} y elige qué piezas de la colección llevarte (también se pueden comprar con Cometas). Hasta el ${e.hasta.slice(8, 10)}/${e.hasta.slice(5, 7)}.`;
-    return `insert into public.anuncios (tipo, titulo, descripcion, fecha)
-select 'evento', ${sql(titulo)}, ${sql(texto)}, ${sql(e.desde)}
-where not exists (select 1 from public.anuncios a where a.titulo = ${sql(titulo)} and a.fecha = ${sql(e.desde)});`;
-  })
-  .join("\n")}
+${eventos.map(anuncioDe).join("\n")}
 
 notify pgrst, 'reload schema';
 `;
+}
+
+// La parte de datos de 0309 (colecciones de las fiestas de noviembre a enero) también se
+// genera: va entre las marcas «generado» del archivo; el resto (minieventos) es a mano.
+const ARCHIVO_0309 = path.join(MIGRACIONES, "0309_colecciones_fiestas.sql");
+const INICIO_GEN = "-- >>> generado desde src/lib/temas/colecciones.ts y minieventos.ts (eventos.test.ts) >>>";
+const FIN_GEN = "-- <<< generado <<<";
+
+export function generarDatos0309(): string {
+  // La restricción de profiles: la de 0289 más los marcos y fondos nuevos.
+  const marcos = [...listaDe0275("marco_perfil"), ...MARCOS_EVENTO.map((m) => m.slug)];
+  const fondos = [...listaDe0275("fondo_perfil"), ...FONDOS_EVENTO.map((f) => f.valor)];
+  const piezas = piezasDeEventos().filter((p) => p.migracion === "0309");
+  const eventos = eventosProgramados("0309");
+  const ofertas = eventos
+    .filter((e) => e.tema === "viernes_estelar")
+    .flatMap((e) => ofertasEstelaresDe(e.desde).map((o) => ({ ...o, evento: e.slug })));
+  const ts = (ms: number) => new Date(ms).toISOString().replace("T", " ").replace(".000Z", "+00");
+  return `${INICIO_GEN}
+alter table public.profiles drop constraint if exists profiles_marco_perfil_check;
+alter table public.profiles add constraint profiles_marco_perfil_check
+  check (marco_perfil in (${marcos.map(sql).join(", ")}));
+
+alter table public.profiles drop constraint if exists profiles_fondo_perfil_check;
+alter table public.profiles add constraint profiles_fondo_perfil_check
+  check (fondo_perfil in (${fondos.map(sql).join(", ")}));
+
+insert into public.catalogo_cosmeticos (slug, categoria, valor, nombre, rareza, precio, vendible, en_capsulas, mundo, temporada) values
+${piezas.map((p) => `  (${sql(p.item)}, ${sql(p.categoria)}, ${sql(p.valor)}, ${sql(p.nombre)}, ${sql(p.rareza)}, ${({ comun: 400, raro: 1200, epico: 3000, legendario: 6000 } as const)[p.rareza]}, false, false, null, null)`).join(",\n")}
+on conflict (slug) do update set categoria = excluded.categoria, valor = excluded.valor, nombre = excluded.nombre, rareza = excluded.rareza, precio = excluded.precio, vendible = excluded.vendible, en_capsulas = excluded.en_capsulas;
+
+insert into public.eventos (slug, tema, desde, hasta, cierre, inicio) values
+${eventos.map((e) => `  (${sql(e.slug)}, ${sql(e.tema)}, ${sql(e.desde)}, ${sql(e.hasta)}, ${sql(e.cierre)}, ${sql(e.inicio)})`).join(",\n")}
+on conflict (slug) do update set tema = excluded.tema, desde = excluded.desde, hasta = excluded.hasta, cierre = excluded.cierre, inicio = excluded.inicio;
+
+insert into public.eventos_piezas (evento, item, fichas, cometas) values
+${eventos.flatMap((e) => (COLECCIONES[e.tema]?.piezas ?? []).map((p) => `  (${sql(e.slug)}, ${sql(p.item)}, ${p.fichas}, ${p.cometas})`)).join(",\n")}
+on conflict (evento, item) do update set fichas = excluded.fichas, cometas = excluded.cometas;
+
+insert into public.eventos_ofertas (evento, item, desde, hasta, fichas, cometas) values
+${ofertas.map((o) => `  (${sql(o.evento)}, ${sql(o.item)}, ${sql(ts(o.desdeMs))}, ${sql(ts(o.hastaMs))}, ${o.fichas}, ${o.cometas})`).join(",\n")}
+on conflict (evento, desde) do update set item = excluded.item, hasta = excluded.hasta, fichas = excluded.fichas, cometas = excluded.cometas;
+
+${eventos.map(anuncioDe).join("\n")}
+${FIN_GEN}`;
 }
 
 describe("eventos y colecciones", () => {
@@ -322,6 +376,32 @@ describe("eventos y colecciones", () => {
     const esperado = generarSql0289();
     if (process.env.EVENTOS_ESCRIBIR_SQL) fs.writeFileSync(ARCHIVO, esperado);
     expect(fs.readFileSync(ARCHIVO, "utf8")).toBe(esperado);
+  });
+
+  it("la parte generada de 0309 es la que sale de los datos", () => {
+    const esperado = generarDatos0309();
+    const texto = fs.readFileSync(ARCHIVO_0309, "utf8");
+    const a = texto.indexOf(INICIO_GEN);
+    const b = texto.indexOf(FIN_GEN);
+    expect(a, "faltan las marcas de lo generado en 0309").toBeGreaterThanOrEqual(0);
+    const actual = texto.slice(a, b + FIN_GEN.length);
+    if (process.env.EVENTOS_ESCRIBIR_SQL) fs.writeFileSync(ARCHIVO_0309, texto.replace(actual, esperado));
+    else expect(actual).toBe(esperado);
+  });
+
+  it("las fiestas de noviembre a enero tienen colección y quedan programadas", () => {
+    const datos = generarDatos0309();
+    for (const tema of ["muertos", "diwali", "viernes_estelar", "navidad", "anio_nuevo"] as const) {
+      const c = COLECCIONES[tema]!;
+      expect(c.migracion).toBe("0309");
+      expect(c.piezas.length).toBeGreaterThanOrEqual(6);
+      expect(c.piezas.every((p) => p.migracion === "0309")).toBe(true);
+    }
+    expect(datos).toContain("('muertos-2026', 'muertos', '2026-11-01', '2026-11-02', '2026-11-03'");
+    expect(datos).toContain("('navidad-2026', 'navidad', '2026-12-01', '2026-12-26', '2026-12-27'");
+    expect(datos).toContain("('anio_nuevo-2026', 'anio_nuevo', '2026-12-31', '2027-01-02', '2027-01-03'");
+    // 0289 sigue igual: no trae nada de 0309.
+    expect(generarSql0289()).not.toContain("muertos");
   });
 
   it("cada pieza de evento está en el catálogo (para el inventario) y no se vende en el Bazar", () => {

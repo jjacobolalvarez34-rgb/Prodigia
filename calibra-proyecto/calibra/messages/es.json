@@ -5941,5 +5941,50 @@
     "guardando": "Guardando tu avance...",
     "errorGuardar": "No se pudo guardar tu avance.",
     "reintentar": "Reintentar"
+  },
+  "Minieventos": {
+    "ofrenda": {
+      "velas": "Velas: {n} de {total}",
+      "acierto": "¡Encendiste una vela! +{fichas} {ficha}",
+      "fallo": "Esta vez la vela no se encendió.",
+      "respuesta": "La respuesta: {texto}",
+      "manana": "Mañana hay otra pregunta y otra vela.",
+      "ultima": "Fue la última pregunta de la ofrenda."
+    },
+    "lamparas": {
+      "encendidas": "{n} de {meta} lámparas encendidas",
+      "texto": "Cada acierto en cualquier mundo enciende una.",
+      "lograda": "¡Tu ciudad entera brilla! +{fichas} {ficha}",
+      "jugar": "Jugar"
+    },
+    "estrella": {
+      "cayo": "¡Cayó una estrella fugaz!",
+      "oferta": "{pieza} a mitad de precio",
+      "quedan": "Quedan {tiempo}",
+      "sin": "Ahora no está cayendo ninguna. Cada día cae una oferta sorpresa por 2 horas: vuelve más tarde.",
+      "ver": "Ver la oferta",
+      "precioOferta": "Estrella fugaz"
+    },
+    "adviento": {
+      "abrir": "Abrir la casilla {dia}",
+      "fichas": "Casilla {dia}: +{n} {ficha}",
+      "capsula": "Casilla {dia}: una cápsula del evento (está en Recompensas)",
+      "domingo": "Los domingos, cápsula",
+      "termino": "El calendario terminó el 24.",
+      "vuelve": "Mañana se abre otra casilla."
+    },
+    "reto": {
+      "progreso": "{total} de {meta} operaciones hoy",
+      "texto": "Resuelve operaciones en Numeria: cuentan las de toda la comunidad.",
+      "logrado": "¡La comunidad lo logró!",
+      "reclamar": "Recibir mi cápsula",
+      "reclamado": "Ya tienes la cápsula de hoy (está en Recompensas).",
+      "jugar": "Jugar Numeria"
+    },
+    "cierrePendiente": {
+      "titulo": "Te quedaron {n} {ficha} de {evento}",
+      "texto": "Cámbialas por {chispas} Chispas antes de que se pierdan.",
+      "boton": "Cambiar por {chispas} Chispas"
+    }
   }
 }
