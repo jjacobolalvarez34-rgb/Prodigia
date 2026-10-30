@@ -32,6 +32,7 @@ update public.achievements set criterio = '{"tipo": "rango_prodigio"}', descripc
 do $$
 declare
   r record;
+  v_descuento integer;
 begin
   for r in
     select ua.user_id, ua.achievement_id, cm.cantidad
@@ -44,8 +45,10 @@ begin
       and pr.elo_rating < case a.slug when 'rango-plata' then 1100 when 'rango-oro' then 1400 when 'rango-platino' then 1700 else 2000 end
   loop
     delete from public.user_achievements ua where ua.user_id = r.user_id and ua.achievement_id = r.achievement_id;
-    if coalesce(r.cantidad, 0) > 0 then
-      perform public._dar_cometas(r.user_id, -r.cantidad, 'correccion', 'correccion:logro:' || r.achievement_id);
+    -- Solo lo que todavía tenga (si ya las gastó, no se deja el saldo en negativo).
+    v_descuento := least(coalesce(r.cantidad, 0), (select greatest(pr2.cometas, 0) from public.profiles pr2 where pr2.id = r.user_id));
+    if v_descuento > 0 then
+      perform public._dar_cometas(r.user_id, -v_descuento, 'correccion', 'correccion:logro:' || r.achievement_id);
     end if;
   end loop;
 end;
