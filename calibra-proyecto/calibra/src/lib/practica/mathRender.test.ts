@@ -98,7 +98,7 @@ describe("render de fórmulas de práctica (KaTeX + MathText)", () => {
     for (const mundo of ["calculia", "circuitia", "estadistica", "trigonometria", "potencias", "algebra", "decimales"]) {
       const enunciados = muestras.filter((m) => m.mundo === mundo).map((m) => m.textos[0]);
       const conMath = enunciados.filter((e) => /\$[^$]+\$/.test(e)).length;
-      const minimo = { estadistica: 0.3, potencias: 0.5, decimales: 0.2 }[mundo] ?? 0.95; // potencias/decimales/estadística tienen tipos solo-texto
+      const minimo = { estadistica: 0.3, potencias: 0.5, decimales: 0.1 }[mundo] ?? 0.95; // potencias/decimales/estadística tienen tipos solo-texto (decimales: desde la auditoría de 2026-10-23 tiene más porcentajes y redondeos en texto)
       expect(conMath / enunciados.length, mundo).toBeGreaterThanOrEqual(minimo);
     }
   });

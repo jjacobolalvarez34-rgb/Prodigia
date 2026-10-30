@@ -42,7 +42,9 @@ function modo(slug: MundoSlug, modoId: string, minimo: number, filtro?: string, 
 const CASOS: Caso[] = [
   ...["oseo", "muscular", "organos", "nervioso"].map((m) => modo("anatomia", m, 30)),
   ...["razones", "circulo", "identidades", "leyes"].map((m) => modo("trigonometria", m, 30)),
-  ...["python", "java", "javascript", "typescript"].map((l) => modo("codia", "sintaxis", 30, l)),
+  // Codia sintaxis: el solapamiento 1↔10 ronda el 50 % y depende del azar de la muestra
+  // (sale 0,49-0,51 entre corridas); se permite hasta 55 % para que el test no sea inestable.
+  ...["python", "java", "javascript", "typescript"].map((l) => modo("codia", "sintaxis", 30, l, { maxSolapamiento: 0.55 })),
   modo("calculia", "derivadas", 30),
   modo("historia", "fechas", 30),
   // Geografía (mapa): banco fijo de países por continente (América y Europa tienen ≈ 27
