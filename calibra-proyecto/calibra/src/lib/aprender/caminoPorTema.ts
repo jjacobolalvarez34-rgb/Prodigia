@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { NodoCaminoConClases, NodoEstado } from "@/lib/aprender/clases";
 import { GRUPOS_APRENDER } from "@/lib/aprender/grupos";
 import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
+import { conTicketsPro } from "@/lib/aprender/ticketsPro";
 
 // Camino de Aprender (Técnicas | Clases) con desbloqueo por tema, el mismo que
 // tienen Estadística o Codia (ver src/lib/estadistica/path.ts), escrito una sola
@@ -95,7 +96,7 @@ export async function obtenerCaminoPorTema(mundo: string, supabase: SupabaseClie
     supabase.from("technique_progress").select("technique_id, dominado").eq("user_id", userId),
   ]);
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
-  return calcularCaminoPorTema(mundo, localizarFilas(filas, locale) as FilaLeccion[], dominadas, esPro);
+  return conTicketsPro(supabase, userId, esPro, calcularCaminoPorTema(mundo, localizarFilas(filas, locale) as FilaLeccion[], dominadas, esPro));
 }
 
 export const obtenerCaminoDinamia = (sb: SupabaseClient, userId: string, esPro: boolean) => obtenerCaminoPorTema("dinamia", sb, userId, esPro);

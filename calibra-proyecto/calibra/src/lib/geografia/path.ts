@@ -5,6 +5,7 @@ import type { NodoEstado } from "@/lib/aprender/clases";
 import type { Continente } from "@/lib/practica/geografia";
 import { TECNICAS_GEOGRAFIA, TECNICAS_GENERALES_GEOGRAFIA, CLASES_GEOGRAFIA } from "@/lib/geografia/lecciones";
 import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
+import { conTicketsPro } from "@/lib/aprender/ticketsPro";
 
 export type { NodoEstado };
 
@@ -175,5 +176,5 @@ export async function obtenerCaminoGeografia(
   const nodosRapidas = calcularNodos(rapidas, dominadas, false, esPro, undefined);
   const nodosClases = calcularNodos(clases, dominadas, true, esPro, previewGlobalId);
 
-  return [...nodosRapidas, ...nodosClases];
+  return conTicketsPro(supabase, userId, esPro, [...nodosRapidas, ...nodosClases]);
 }

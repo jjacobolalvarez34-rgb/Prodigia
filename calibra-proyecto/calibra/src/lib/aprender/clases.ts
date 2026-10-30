@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { TechniqueQuizPregunta } from "@/types/database";
 import type { VisualLeccion } from "@/lib/aprender/visuales";
 import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
+import { conTicketsPro } from "@/lib/aprender/ticketsPro";
 
 // Infraestructura compartida de la pestaña "Clases" de Aprender (fila 22
 // de docs/PARIDAD_MUNDOS.md). Cada mundo tiene, dentro de la misma tabla
@@ -133,7 +134,7 @@ export async function obtenerCaminoConClases(
     };
   });
 
-  return [...nodosRapidas, ...nodosClases];
+  return conTicketsPro(supabase, userId, esPro, [...nodosRapidas, ...nodosClases]);
 }
 
 // Parte un camino ya resuelto en las dos pestañas. `hayClases` es false

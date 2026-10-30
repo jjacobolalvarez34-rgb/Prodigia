@@ -6,6 +6,7 @@ import type { UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import { TECNICAS_TRIGONOMETRIA, CLASES_TRIGONOMETRIA } from "@/lib/trigonometria/lecciones";
 import { ORDEN_GRUPOS_TRIGONOMETRIA, type GrupoTrigonometria } from "@/lib/trigonometria/bloques";
 import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
+import { conTicketsPro } from "@/lib/aprender/ticketsPro";
 
 export type { NodoEstado, GrupoTrigonometria };
 export { ORDEN_GRUPOS_TRIGONOMETRIA };
@@ -170,7 +171,7 @@ export async function obtenerCaminoTrigonometria(supabase: SupabaseClient, userI
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
-  return calcularCaminoTrigonometria(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro);
+  return conTicketsPro(supabase, userId, esPro, calcularCaminoTrigonometria(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro));
 }
 
 // Arma las "unidades" del sidebar y del camino de Aprender (una por bloque con

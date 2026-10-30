@@ -1,10 +1,12 @@
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useRouter, type Href } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { cargarCamino, type CaminoMundo, type NodoLeccion } from "~/lib/aprender";
 import { useJugador } from "~/lib/jugador";
 import { useSesion } from "~/lib/sesion";
+import { supabase } from "~/lib/supabase";
+import { leerTicketsPro } from "@/lib/aprender/ticketsPro";
 import { color, conAlfa, type Mundo } from "~/tema";
 import { mostrarAviso } from "../Aviso";
 import Barra from "../Barra";
@@ -26,15 +28,22 @@ export default function PestanaAprender({ mundo }: { mundo: Mundo }) {
   const [camino, setCamino] = useState<CaminoMundo | null | undefined>(undefined);
   const [pestana, setPestana] = useState<"tecnicas" | "clases">("tecnicas");
 
+  const [tickets, setTickets] = useState<number | null>(null);
+
   useFocusEffect(
     useCallback(() => {
       if (userId) cargarCamino(mundo.slug, userId, esPro).then(setCamino);
+      if (userId && !esPro) leerTicketsPro(supabase as never, userId).then(setTickets);
     }, [userId, mundo.slug, esPro])
   );
 
   function abrir(n: NodoLeccion) {
     if (n.bloqueadoPorPlan) {
-      router.push("/pro");
+      // Prueba con tickets (0310): la clase bloqueada ofrece gastar un ticket.
+      const q = Object.entries({ id: n.id, nombre: n.nombre, mundo: mundo.slug, slug: n.slug })
+        .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+        .join("&");
+      router.push(`/clase-pro?${q}` as Href);
       return;
     }
     if (n.estado === "bloqueado") {
@@ -87,6 +96,15 @@ export default function PestanaAprender({ mundo }: { mundo: Mundo }) {
         <View style={[styles.pro, { borderColor: conAlfa(color.logro, 0.5) }]}>
           <Texto v="fuerte">Clases paso a paso, con ejemplos resueltos y quiz</Texto>
           <Texto v="nota">La primera es gratis. Todas las demás vienen con Prodigia Pro.</Texto>
+          {tickets !== null && (
+            <Texto v="fuerte" c={color.logro}>
+              {tickets === 0
+                ? "Para continuar, hazte Pro"
+                : tickets === 1
+                  ? "Te queda 1 ticket para probar una clase Pro"
+                  : `Te quedan ${tickets} tickets para probar clases Pro`}
+            </Texto>
+          )}
           <Boton3D titulo="Ver Prodigia Pro" variante="pro" tamano="sm" onPress={() => router.push("/pro")} />
         </View>
       )}

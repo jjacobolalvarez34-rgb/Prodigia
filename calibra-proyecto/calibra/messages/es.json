@@ -5981,10 +5981,87 @@
       "reclamado": "Ya tienes la cápsula de hoy (está en Recompensas).",
       "jugar": "Jugar Numeria"
     },
+    "sobres": {
+      "hoy": "Hoy llevas {n} aciertos",
+      "abrir": "Abrir",
+      "abierto": "+{n} {ficha}",
+      "falta": "{n} aciertos"
+    },
+    "duo": {
+      "texto": "Juega un duelo amistoso con un amigo: cuando termine, los dos ganan {fichas} {ficha}.",
+      "lista": "Dúos: {n} de {max}",
+      "amigo": "{nombre}: +{fichas} {ficha}",
+      "ir": "Ir a Amigos",
+      "completo": "¡Completaste los {max} dúos!"
+    },
+    "comparsa": {
+      "progreso": "{n} aciertos de Melodía · {bailarines} bailarines",
+      "meta": "{meta} aciertos",
+      "tabla": "Tabla de la comparsa",
+      "vacia": "Todavía nadie salió a bailar.",
+      "jugar": "Jugar Melodía"
+    },
+    "luna": {
+      "linternas": "Linternas: {n} de {total}",
+      "acierto": "¡Subió una linterna! +{fichas} {ficha}",
+      "fallo": "Esta noche la linterna no subió.",
+      "respuesta": "La respuesta: {texto}",
+      "manana": "Mañana hay otra pregunta.",
+      "ultima": "Fue la última noche de linternas."
+    },
+    "pi": {
+      "mejor": "Tu mejor marca de hoy: {n} dígitos",
+      "meta": "{digitos} dígitos",
+      "ganadas": "Llevas {n} {ficha} del reto"
+    },
+    "holi": {
+      "progreso": "{n} de {meta} aciertos",
+      "texto": "Cada acierto en cualquier mundo tiñe tu ciudad.",
+      "lograda": "¡Tu ciudad quedó llena de color! +{fichas} {ficha}"
+    },
+    "huevos": {
+      "encontrados": "Huevos: {n} de {total}",
+      "hoyListo": "Ya encontraste el de hoy. Mañana se esconde otro.",
+      "todos": "¡Los encontraste todos! +{fichas} {ficha} de premio",
+      "encontraste": "¡Encontraste un huevo! +{fichas} {ficha}",
+      "aria": "Un huevo de Pascua escondido"
+    },
+    "bosque": {
+      "arboles": "{n} de {meta} árboles",
+      "mios": "Tú plantaste {n}",
+      "texto": "Cada 5 aciertos de cualquiera plantan un árbol.",
+      "logrado": "¡El bosque está completo!",
+      "reclamar": "Recibir {fichas} {ficha}",
+      "reclamado": "Ya recibiste tus {ficha}.",
+      "jugar": "Jugar"
+    },
+    "musica": {
+      "notas": "{n} de {total} notas",
+      "texto": "Cada acierto en Melodía toca una nota.",
+      "completa": "¡Tocaste la melodía completa! +{fichas} {ficha}",
+      "jugar": "Jugar Melodía"
+    },
+    "repaso": {
+      "paginas": "Páginas: {n} de {total}",
+      "hoy": "Hoy: {n} de {meta} aciertos",
+      "llena": "Página de hoy llena: +{fichas} {ficha}",
+      "jugar": "Jugar"
+    },
     "cierrePendiente": {
       "titulo": "Te quedaron {n} {ficha} de {evento}",
       "texto": "Cámbialas por {chispas} Chispas antes de que se pierdan.",
       "boton": "Cambiar por {chispas} Chispas"
     }
+  },
+  "TicketsPro": {
+    "claseProEtiqueta": "Clase Pro",
+    "quedan": "{n, plural, =0 {No te quedan tickets de prueba} one {Te queda # ticket de prueba} other {Te quedan # tickets de prueba}}",
+    "explicacion": "Usa un ticket para abrir esta clase gratis. Queda abierta para ti para siempre.",
+    "usar": "Usar 1 ticket",
+    "verPro": "O hazte Pro y ábrelas todas",
+    "sinTickets": "Para continuar, hazte Pro",
+    "hazteProCta": "Hazte Pro",
+    "avisoAprender": "{n, plural, one {Te queda # ticket para probar una clase Pro} other {Te quedan # tickets para probar clases Pro}}",
+    "error": "No se pudo usar el ticket. Inténtalo de nuevo."
   }
 }

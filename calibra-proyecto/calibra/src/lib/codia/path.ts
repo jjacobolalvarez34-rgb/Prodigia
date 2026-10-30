@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { GRUPOS_APRENDER, type PestanaGrupos } from "@/lib/aprender/grupos";
 import type { NodoCaminoConClases, NodoEstado } from "@/lib/aprender/clases";
 import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
+import { conTicketsPro } from "@/lib/aprender/ticketsPro";
 
 export type { NodoEstado };
 
@@ -151,5 +152,5 @@ export async function obtenerCaminoCodia(supabase: SupabaseClient, userId: strin
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
-  return calcularCaminoCodia(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro);
+  return conTicketsPro(supabase, userId, esPro, calcularCaminoCodia(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro));
 }

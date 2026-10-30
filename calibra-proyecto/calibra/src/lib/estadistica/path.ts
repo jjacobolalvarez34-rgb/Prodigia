@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { NodoCaminoConClases, NodoEstado } from "@/lib/aprender/clases";
 import { GRUPOS_APRENDER } from "@/lib/aprender/grupos";
 import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
+import { conTicketsPro } from "@/lib/aprender/ticketsPro";
 
 export type { NodoEstado };
 
@@ -138,5 +139,5 @@ export async function obtenerCaminoEstadistica(supabase: SupabaseClient, userId:
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
-  return calcularCaminoEstadistica(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro);
+  return conTicketsPro(supabase, userId, esPro, calcularCaminoEstadistica(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro));
 }

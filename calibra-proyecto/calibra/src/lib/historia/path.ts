@@ -6,6 +6,7 @@ import type { UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import { TECNICAS_HISTORIA, CLASES_HISTORIA } from "@/lib/historia/lecciones";
 import { ORDEN_GRUPOS_HISTORIA, type GrupoHistoria } from "@/lib/historia/bloques";
 import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
+import { conTicketsPro } from "@/lib/aprender/ticketsPro";
 
 export type { NodoEstado, GrupoHistoria };
 export { ORDEN_GRUPOS_HISTORIA };
@@ -169,7 +170,7 @@ export async function obtenerCaminoHistoria(supabase: SupabaseClient, userId: st
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
-  return calcularCaminoHistoria(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro);
+  return conTicketsPro(supabase, userId, esPro, calcularCaminoHistoria(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro));
 }
 
 // Arma las «unidades» del sidebar y del camino de Aprender (una por época con

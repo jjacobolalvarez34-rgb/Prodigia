@@ -3,6 +3,7 @@ import { esDueloEmparejado } from "@/lib/duelos/emparejamiento";
 import { finSemanaGuerraMs } from "@/lib/clanes/guerra";
 import { finTemporadaMs, temporadaRankedDe } from "@/lib/rankeds/temporadas";
 import { CELEBRACIONES } from "@/lib/temas/celebracion";
+import { hoyUtcIso, mundoDobleExperiencia } from "@/lib/eventos/dobleExperiencia";
 import { TEMAS } from "@/lib/temas/temas";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
@@ -16,8 +17,9 @@ import { MUNDO_POR_SLUG, MUNDOS, type MundoSlug } from "~/tema";
 //   - Push del servidor (Edge Functions de calibra/supabase/functions) por
 //     categoría: mensajes, duelos, racha en peligro y novedades.
 //   - Avisos locales que programa el propio teléfono con un planificador único
-//     (replanificarAvisos): recordatorio, Gran Alineación, festividades, temporada
-//     de rankeds, guerra de clanes y recompensas por reclamar. Se vuelven a armar
+//     (replanificarAvisos): recordatorio, Gran Alineación, ciudad de doble Exp del
+//     día, festividades, temporada de rankeds, guerra de clanes y recompensas por
+//     reclamar. Se vuelven a armar
 //     cada vez que cambia el estado del jugador (después de cada partida, al abrir).
 //
 // Reglas: cada tipo se puede apagar; nada entre las 21:00 y las 08:00 de este
@@ -27,9 +29,9 @@ import { MUNDO_POR_SLUG, MUNDOS, type MundoSlug } from "~/tema";
 // Categorías del servidor (device_push_tokens.categorias, 0243).
 export type Categoria = "mensajes" | "duelos" | "racha" | "novedades";
 // Tipos que programa el teléfono.
-export type TipoLocal = "alineacion" | "evento" | "temporada" | "guerra" | "regalos";
+export type TipoLocal = "alineacion" | "dobleExp" | "evento" | "temporada" | "guerra" | "regalos";
 
-type Icono = "mensaje" | "duelo" | "racha" | "novedad" | "alineacion" | "evento" | "temporada" | "guerra" | "regalo";
+type Icono = "mensaje" | "duelo" | "racha" | "novedad" | "alineacion" | "dobleExp" | "evento" | "temporada" | "guerra" | "regalo";
 
 export interface TipoAviso {
   id: Categoria | TipoLocal;
@@ -78,6 +80,7 @@ export const CATEGORIAS: { id: Categoria; nombre: string; descripcion: string; i
 
 export const TIPOS_LOCALES: (TipoAviso & { id: TipoLocal })[] = [
   { id: "alineacion", nombre: "Gran Alineación", descripcion: "Una hora antes y cuando empieza: 3 horas de Exp doble en las 15 ciudades.", icono: "alineacion", color: "#FFB627", conCuenta: false },
+  { id: "dobleExp", nombre: "Ciudad de doble Exp", descripcion: "Cuando la ciudad del paquete en paracaídas (Exp doble todo el día) es una de las tuyas.", icono: "dobleExp", color: "#4FD1C5", conCuenta: false },
   { id: "evento", nombre: "Festividades", descripcion: "Cuando abre un evento (Halloween, Navidad…), a mitad y el último día.", icono: "evento", color: "#FF6FB5", conCuenta: false },
   { id: "temporada", nombre: "Temporada de rankeds", descripcion: "El día antes del cierre y si te queda una recompensa por reclamar.", icono: "temporada", color: "#E8B34D", conCuenta: true },
   { id: "guerra", nombre: "Guerra de clanes", descripcion: "Las últimas 3 horas de la guerra semanal y cuando sale el resultado.", icono: "guerra", color: "#3FB88B", conCuenta: true },
@@ -89,15 +92,17 @@ export interface PreferenciasAvisos {
   locales: TipoLocal[];
   recordatorio: { activo: boolean; hora: number };
   permisoPedido: boolean;
+  dobleExpConocido?: boolean;
 }
 
 const CLAVE = "prodigia:avisos";
-const TODOS_LOCALES: TipoLocal[] = ["alineacion", "evento", "temporada", "guerra", "regalos"];
+const TODOS_LOCALES: TipoLocal[] = ["alineacion", "dobleExp", "evento", "temporada", "guerra", "regalos"];
 const PREFERENCIAS_INICIALES: PreferenciasAvisos = {
   categorias: ["mensajes", "duelos", "racha", "novedades"],
   locales: TODOS_LOCALES,
   recordatorio: { activo: false, hora: 18 },
   permisoPedido: false,
+  dobleExpConocido: true,
 };
 
 // Horas permitidas para el recordatorio: fuera del horario silencioso 21:00-08:00.
@@ -119,6 +124,10 @@ export async function leerPreferencias(): Promise<PreferenciasAvisos> {
     if (!guardadas.locales && guardadas.categorias && !guardadas.categorias.includes("novedades")) {
       prefs.locales = TODOS_LOCALES.filter((t) => t !== "alineacion" && t !== "evento");
     }
+    // Preferencias de antes del aviso de doble Exp: llega encendido (después se
+    // respeta lo que elija el jugador).
+    if (!guardadas.dobleExpConocido && !prefs.locales.includes("dobleExp")) prefs.locales = [...prefs.locales, "dobleExp"];
+    prefs.dobleExpConocido = true;
     return prefs;
   } catch {
     return PREFERENCIAS_INICIALES;
@@ -501,6 +510,36 @@ function alineacion(prefs: PreferenciasAvisos, c: ContextoAvisos, ahora: number)
   return lista.filter((a) => decente(a.cuando));
 }
 
+// Ciudad de doble Exp del día (src/lib/eventos/dobleExperiencia.ts, el paquete en
+// paracaídas): cada día UTC una ciudad da el doble de Exp. Se avisa a las 12:30 de
+// hoy y de los 2 días siguientes, solo si esa ciudad es una de las del jugador y
+// está en la app; hoy no, si ya cumpliste la meta. Va después de la racha y la
+// Alineación en el tope diario.
+function dobleExp(prefs: PreferenciasAvisos, c: ContextoAvisos, ahora: number): Candidato[] {
+  if (!prefs.locales.includes("dobleExp")) return [];
+  const lista: Candidato[] = [];
+  const nombre = primerNombre(c.nombre);
+  for (let k = 0; k < 3; k++) {
+    if (k === 0 && c.jugoHoy) continue;
+    const cuando = enDiaLocal(ahora, k, 12, 30);
+    const slug = mundoDobleExperiencia(hoyUtcIso(new Date(cuando)));
+    const m = MUNDO_POR_SLUG[slug as MundoSlug];
+    if (!m?.enApp) continue;
+    if (c.mundos.length > 0 && !c.mundos.includes(slug) && slug !== "numeria") continue;
+    // Que al evento le queden al menos 2 horas (el día del evento termina a la medianoche UTC).
+    const finDiaUtc = (Math.floor(cuando / DIA_MS) + 1) * DIA_MS;
+    if (finDiaUtc - cuando < 2 * HORA_MS) continue;
+    const variantes: [string, string][] = [
+      [`Hoy ${m.nombre} da Exp doble`, `${nombre ? `${nombre}, cayó` : "Cayó"} el paquete en paracaídas: todas las partidas en ${m.nombre} valen el doble hasta el final del día.`],
+      [`Exp doble en ${m.nombre}`, "Un sprint ahí hoy cuenta por dos. Mañana le toca a otra ciudad."],
+      [`El paquete cayó en ${m.nombre}`, `Cada partida en ${m.nombre} da el doble de Exp, solo por hoy.`],
+    ];
+    const [titulo, cuerpo] = variantes[numeroDia(cuando) % variantes.length];
+    lista.push({ id: `${PREFIJO}doble-exp-${k}`, cuando, titulo, cuerpo, ruta: `/${slug}`, tipo: "doble_exp", canal: "novedades", color: "#4FD1C5", prioridad: 5 });
+  }
+  return lista;
+}
+
 // Festividades (PARIDAD_EVENTOS.md fila 16): al empezar, a mitad y el último día,
 // con el tono de la fecha (celebracion.ts). Si cae de noche, sale a las 9:00. Nunca
 // antes de que empiece (sin vistas previas de eventos).
@@ -670,6 +709,7 @@ async function planificar() {
     ...recordatorios(prefs, c, ahora),
     ...rachaLocal(prefs, c, ahora),
     ...alineacion(prefs, c, ahora),
+    ...dobleExp(prefs, c, ahora),
     ...evento(prefs, ahora),
     ...temporada(prefs, c, ahora),
     ...guerra(prefs, c, ahora),
@@ -696,7 +736,7 @@ export function rutaDeAviso(data: Record<string, unknown> | undefined): string {
   if (tipo === "clan_mensaje") return "/clan/chat";
   if (tipo === "duelo" && typeof data?.duelId === "string") return `/duelo/${data.duelId}`;
   if (tipo === "anuncio") return "/avisos";
-  if (tipo === "alineacion") return "/mundos";
+  if (tipo === "alineacion" || tipo === "doble_exp") return "/mundos";
   if (tipo === "evento") return "/evento";
   return "/";
 }

@@ -5,6 +5,7 @@ import type { NodoEstado } from "@/lib/aprender/clases";
 import { ORDEN_GRUPOS_ANATOMIA, type GrupoAnatomia } from "@/lib/anatomia/grupos";
 import { TECNICAS_ANATOMIA, CLASES_ANATOMIA } from "@/lib/anatomia/lecciones";
 import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
+import { conTicketsPro } from "@/lib/aprender/ticketsPro";
 
 export type { NodoEstado, GrupoAnatomia };
 export { ORDEN_GRUPOS_ANATOMIA };
@@ -165,5 +166,5 @@ export async function obtenerCaminoAnatomia(supabase: SupabaseClient, userId: st
 
   const previewGlobalId = clases[0]?.id;
 
-  return [...calcularNodos(rapidas, dominadas, false, esPro, undefined), ...calcularNodos(clases, dominadas, true, esPro, previewGlobalId)];
+  return conTicketsPro(supabase, userId, esPro, [...calcularNodos(rapidas, dominadas, false, esPro, undefined), ...calcularNodos(clases, dominadas, true, esPro, previewGlobalId)]);
 }

@@ -5,6 +5,7 @@ import type { NodoEstado } from "@/lib/aprender/clases";
 import { ORDEN_GRUPOS_MELODIA, type GrupoMelodia } from "@/lib/melodia/grupos";
 import { TECNICAS_MELODIA, CLASES_MELODIA } from "@/lib/melodia/lecciones";
 import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
+import { conTicketsPro } from "@/lib/aprender/ticketsPro";
 
 export type { NodoEstado, GrupoMelodia };
 export { ORDEN_GRUPOS_MELODIA };
@@ -165,5 +166,5 @@ export async function obtenerCaminoMelodia(supabase: SupabaseClient, userId: str
 
   const previewGlobalId = clases[0]?.id;
 
-  return [...calcularNodos(rapidas, dominadas, false, esPro, undefined), ...calcularNodos(clases, dominadas, true, esPro, previewGlobalId)];
+  return conTicketsPro(supabase, userId, esPro, [...calcularNodos(rapidas, dominadas, false, esPro, undefined), ...calcularNodos(clases, dominadas, true, esPro, previewGlobalId)]);
 }

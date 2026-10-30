@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useCallback, useId, useRef } from "react";
+import { useState, useCallback, useEffect, useId, useRef } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { leerTicketsPro } from "@/lib/aprender/ticketsPro";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { PestanaAprender } from "@/lib/aprender/clases";
@@ -58,6 +60,24 @@ export default function AprenderTabs({
   const hayClases = !!clases && clases.some((u) => u.nodos.length > 0);
   const [activa, setActiva] = useState<PestanaAprender>(hayClases ? defaultTab : "tecnicas");
   const refs = useRef<Record<PestanaAprender, HTMLButtonElement | null>>({ tecnicas: null, clases: null });
+  const tTickets = useTranslations("TicketsPro");
+  // Prueba con tickets (0310): cuántos quedan; null si la base aún no los tiene.
+  const [tickets, setTickets] = useState<number | null>(null);
+  useEffect(() => {
+    if (esPro || !hayClases) return;
+    let vivo = true;
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data }) => {
+      const uid = data.session?.user.id;
+      if (!uid) return;
+      leerTicketsPro(supabase, uid).then((n) => {
+        if (vivo) setTickets(n);
+      });
+    });
+    return () => {
+      vivo = false;
+    };
+  }, [esPro, hayClases]);
 
   const seleccionar = useCallback((tab: PestanaAprender) => {
     setActiva(tab);
@@ -177,7 +197,14 @@ export default function AprenderTabs({
               background: `color-mix(in oklab, ${colorHex} 8%, transparent)`,
             }}
           >
-            <p className="text-foreground">{t("avisoPro")}</p>
+            <div className="flex flex-col gap-0.5">
+              <p className="text-foreground">{t("avisoPro")}</p>
+              {tickets !== null && (
+                <p className="font-semibold" style={{ color: colorHex }}>
+                  {tTickets(tickets > 0 ? "avisoAprender" : "sinTickets", { n: tickets })}
+                </p>
+              )}
+            </div>
             <Link href={proHref} className="font-semibold hover:underline" style={{ color: colorHex }}>
               {t("avisoProCta")}
             </Link>

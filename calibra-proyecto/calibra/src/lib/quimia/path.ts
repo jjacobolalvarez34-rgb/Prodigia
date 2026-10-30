@@ -5,6 +5,7 @@ import type { NodoEstado } from "@/lib/aprender/clases";
 import { TECNICAS_QUIMIA, CLASES_QUIMIA } from "@/lib/quimia/lecciones";
 import { ORDEN_GRUPOS_QUIMIA, type GrupoQuimia } from "@/lib/quimia/grupos";
 import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
+import { conTicketsPro } from "@/lib/aprender/ticketsPro";
 
 export type { NodoEstado, GrupoQuimia };
 export { ORDEN_GRUPOS_QUIMIA };
@@ -165,5 +166,5 @@ export async function obtenerCaminoQuimia(supabase: SupabaseClient, userId: stri
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
-  return calcularCaminoQuimia(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro);
+  return conTicketsPro(supabase, userId, esPro, calcularCaminoQuimia(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro));
 }

@@ -5981,10 +5981,87 @@
       "reclamado": "You already have today's capsule (it's in Rewards).",
       "jugar": "Play Numeria"
     },
+    "sobres": {
+      "hoy": "{n} correct answers today",
+      "abrir": "Open",
+      "abierto": "+{n} {ficha}",
+      "falta": "{n} correct"
+    },
+    "duo": {
+      "texto": "Play a friendly duel with a friend: when it ends, you both get {fichas} {ficha}.",
+      "lista": "Duos: {n} of {max}",
+      "amigo": "{nombre}: +{fichas} {ficha}",
+      "ir": "Go to Friends",
+      "completo": "You completed all {max} duos!"
+    },
+    "comparsa": {
+      "progreso": "{n} correct in Melodía · {bailarines} dancers",
+      "meta": "{meta} correct",
+      "tabla": "Parade leaderboard",
+      "vacia": "Nobody has started dancing yet.",
+      "jugar": "Play Melodía"
+    },
+    "luna": {
+      "linternas": "Lanterns: {n} of {total}",
+      "acierto": "A lantern rose! +{fichas} {ficha}",
+      "fallo": "Tonight the lantern didn't rise.",
+      "respuesta": "The answer: {texto}",
+      "manana": "There's another question tomorrow.",
+      "ultima": "That was the last lantern night."
+    },
+    "pi": {
+      "mejor": "Your best today: {n} digits",
+      "meta": "{digitos} digits",
+      "ganadas": "{n} {ficha} earned from the challenge"
+    },
+    "holi": {
+      "progreso": "{n} of {meta} correct",
+      "texto": "Every correct answer in any world paints your city.",
+      "lograda": "Your city is full of color! +{fichas} {ficha}"
+    },
+    "huevos": {
+      "encontrados": "Eggs: {n} of {total}",
+      "hoyListo": "You already found today's. Another one hides tomorrow.",
+      "todos": "You found them all! +{fichas} {ficha} bonus",
+      "encontraste": "You found an egg! +{fichas} {ficha}",
+      "aria": "A hidden Easter egg"
+    },
+    "bosque": {
+      "arboles": "{n} of {meta} trees",
+      "mios": "You planted {n}",
+      "texto": "Every 5 correct answers from anyone plant a tree.",
+      "logrado": "The forest is complete!",
+      "reclamar": "Get {fichas} {ficha}",
+      "reclamado": "You already got your {ficha}.",
+      "jugar": "Play"
+    },
+    "musica": {
+      "notas": "{n} of {total} notes",
+      "texto": "Every correct answer in Melodía plays a note.",
+      "completa": "You played the whole melody! +{fichas} {ficha}",
+      "jugar": "Play Melodía"
+    },
+    "repaso": {
+      "paginas": "Pages: {n} of {total}",
+      "hoy": "Today: {n} of {meta} correct",
+      "llena": "Today's page is full: +{fichas} {ficha}",
+      "jugar": "Play"
+    },
     "cierrePendiente": {
       "titulo": "You have {n} {ficha} left from {evento}",
       "texto": "Trade them for {chispas} Sparks before they're gone.",
       "boton": "Trade for {chispas} Sparks"
     }
+  },
+  "TicketsPro": {
+    "claseProEtiqueta": "Pro class",
+    "quedan": "{n, plural, =0 {You have no trial tickets left} one {You have # trial ticket left} other {You have # trial tickets left}}",
+    "explicacion": "Use a ticket to open this class for free. It stays open for you forever.",
+    "usar": "Use 1 ticket",
+    "verPro": "Or go Pro and open them all",
+    "sinTickets": "To continue, go Pro",
+    "hazteProCta": "Go Pro",
+    "avisoAprender": "{n, plural, one {You have # ticket left to try a Pro class} other {You have # tickets left to try Pro classes}}",
+    "error": "Couldn't use the ticket. Please try again."
   }
 }

@@ -5,6 +5,7 @@ import { verificarLogros } from "@/lib/logros/verificar";
 import { verificarTitulos } from "@/lib/titulos/verificar";
 import { respuestaError } from "@/lib/api/respuestaError";
 import { respuestaCorrecta } from "@/lib/i18n-lecciones/localizar";
+import { clasesConTicket } from "@/lib/aprender/ticketsPro";
 
 interface Body {
   technique_id: string;
@@ -79,10 +80,9 @@ export async function POST(request: Request) {
   const quizEn = (tecnica.contenido_en as { quiz?: TechniqueQuizPregunta[] } | null)?.quiz ?? null;
 
   if (quiz.length > 0) {
-    if (tecnica.requiere_pro) {
-      if (profile?.plan !== "pro") {
-        return NextResponse.json({ error: "Esta lección requiere plan Pro" }, { status: 403 });
-      }
+    // Prueba con tickets (0310): una clase abierta con ticket vale como Pro.
+    if (tecnica.requiere_pro && profile?.plan !== "pro" && !(await clasesConTicket(supabase, user.id)).has(tecnica.id)) {
+      return NextResponse.json({ error: "Esta lección requiere plan Pro" }, { status: 403 });
     }
 
     const respuestas = body.respuestas;

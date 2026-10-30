@@ -3,6 +3,7 @@ import type { TechniqueQuizPregunta, CategoriaEnigmia } from "@/types/database";
 import type { VisualLeccion } from "@/lib/aprender/visuales";
 import type { NodoEstado } from "@/lib/aprender/clases";
 import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
+import { conTicketsPro } from "@/lib/aprender/ticketsPro";
 
 // Enigmia tiene 4 categorías en un solo camino (como los 9 temas de
 // Numeria) — no calza en obtenerCaminoConClases (src/lib/aprender/clases.ts,
@@ -135,5 +136,5 @@ export async function obtenerCaminoConClasesEnigmia(
   const nodosRapidas = calcularNodos(rapidas, dominadas, false, esPro, undefined);
   const nodosClases = calcularNodos(clases, dominadas, true, esPro, previewGlobalId);
 
-  return [...nodosRapidas, ...nodosClases];
+  return conTicketsPro(supabase, userId, esPro, [...nodosRapidas, ...nodosClases]);
 }

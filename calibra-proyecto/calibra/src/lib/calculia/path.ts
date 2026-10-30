@@ -6,6 +6,7 @@ import type { UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import { TECNICAS_CALCULIA, CLASES_CALCULIA } from "@/lib/calculia/lecciones";
 import { ORDEN_GRUPOS_CALCULIA, type GrupoCalculia } from "@/lib/calculia/bloques";
 import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
+import { conTicketsPro } from "@/lib/aprender/ticketsPro";
 
 export type { NodoEstado, GrupoCalculia };
 export { ORDEN_GRUPOS_CALCULIA };
@@ -170,7 +171,7 @@ export async function obtenerCaminoCalculia(supabase: SupabaseClient, userId: st
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
-  return calcularCaminoCalculia(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro);
+  return conTicketsPro(supabase, userId, esPro, calcularCaminoCalculia(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro));
 }
 
 // Arma las "unidades" del sidebar y del camino de Aprender (una por tema con

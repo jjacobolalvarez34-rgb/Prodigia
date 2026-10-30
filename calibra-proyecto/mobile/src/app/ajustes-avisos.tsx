@@ -21,7 +21,7 @@ import { useSesion } from "~/lib/sesion";
 import { anclarWidget } from "~/widgets/registro";
 import Boton3D from "~/ui/Boton3D";
 import { color, radio, fuente } from "~/tema";
-import { IconoAlarma, IconoCampana, IconoCompetir, IconoEscudo, IconoFiesta, IconoLlama, IconoMensaje, IconoPlaneta, IconoRegalo, IconoTrofeo } from "~/ui/Iconos";
+import { IconoAlarma, IconoCampana, IconoCompetir, IconoEscudo, IconoFiesta, IconoLlama, IconoMensaje, IconoParacaidas, IconoPlaneta, IconoRegalo, IconoTrofeo } from "~/ui/Iconos";
 
 function IconoTipo({ icono, c }: { icono: string; c: string }) {
   switch (icono) {
@@ -33,6 +33,8 @@ function IconoTipo({ icono, c }: { icono: string; c: string }) {
       return <IconoLlama tam={22} />;
     case "alineacion":
       return <IconoPlaneta tam={22} c={c} />;
+    case "dobleExp":
+      return <IconoParacaidas tam={22} c={c} />;
     case "evento":
       return <IconoFiesta tam={22} c={c} />;
     case "temporada":

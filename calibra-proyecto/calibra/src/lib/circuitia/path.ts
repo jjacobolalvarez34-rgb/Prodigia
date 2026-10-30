@@ -3,6 +3,7 @@ import type { NodoCaminoConClases, NodoEstado } from "@/lib/aprender/clases";
 import type { UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import { GRUPOS_CIRCUITIA, grupoDeSlug, posicionDeGrupo, type PestanaCircuitia } from "./grupos";
 import { localeServidor, localizarFilas } from "@/lib/i18n-lecciones/localizar";
+import { conTicketsPro } from "@/lib/aprender/ticketsPro";
 
 export type { NodoEstado };
 
@@ -131,7 +132,7 @@ export async function obtenerCaminoCircuitia(supabase: SupabaseClient, userId: s
   ]);
 
   const dominadas = new Set((progreso ?? []).filter((p) => p.dominado).map((p) => p.technique_id as string));
-  return calcularCaminoCircuitia(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro);
+  return conTicketsPro(supabase, userId, esPro, calcularCaminoCircuitia(localizarFilas(tecnicas, locale) as FilaTechnique[], dominadas, esPro));
 }
 
 // Arma las «unidades» del sidebar y del camino de una pestaña (una por tema con

@@ -131,8 +131,11 @@ function Nodo({
     </motion.div>
   );
 
+  // Prueba con tickets (0310): la clase bloqueada por plan abre /clase-pro, que
+  // ofrece gastar un ticket o, sin tickets (o sin la migración), lleva a Pro.
   if (nodo.estado === "bloqueado" && nodo.ctaPro) {
-    return <Link href={nodo.ctaPro.href}>{circulo}</Link>;
+    const params = new URLSearchParams({ id: nodo.id, ir: `${basePath}/${nodo.slug}`, pro: nodo.ctaPro.href });
+    return <Link href={`/clase-pro?${params.toString()}`}>{circulo}</Link>;
   }
 
   if (nodo.estado === "bloqueado") {
