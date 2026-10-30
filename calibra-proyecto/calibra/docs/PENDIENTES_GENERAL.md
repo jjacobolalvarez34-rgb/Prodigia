@@ -15,7 +15,8 @@ empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de
 
 | Qué | Estado | Nota |
 |---|---|---|
-| Correr la migración **0302** en Supabase (y la 0303 si sale de las cápsulas) | TE TOCA | Hasta la 0301 ya están todas (verificado el 2026-10-23). |
+| Migraciones | HECHO | El usuario corrió todas hasta la 0311 (2026-10-30). Funciones de avisos desplegadas y cron de racha-en-riesgo cada hora. |
+| Vercel no publica desde el 2026-10-28 | TE TOCA | Los push llegan a GitHub pero Vercel no los recibe (sin estado en los commits). Publicar a mano (Create New → Deployment → main) y reconectar GitHub en Settings → Git. |
 | Cambiar el nombre que sale al entrar con Google («Acceder a yawsx…supabase.co») | TE TOCA | Ver la nota «Nombre en el acceso con Google» en la sección 2b. |
 | Paddle: pasar del sandbox al real (productos, claves, webhook, Vercel) | TE TOCA (HOY, antes de la publicidad) | Guía paso a paso en la sección 2b: «Paddle: pasar del sandbox al real». |
 | Google Play: cobros, publicación, ficha (49, 50, 54) | TE TOCA | Para después. |
@@ -99,6 +100,14 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
 | Duelo casual que se lee como reto | FALTA | Retomar (estaba a medias). |
 | Revisar si la guerra de clanes es evidente en la web y la app (poca actividad) | FALTA | |
 | Paddle al real | ESPERA | El usuario lo hará cuando todo esté completo. |
+
+## 2d. Pedidos del 2026-10-30
+
+| Pedido | Estado | Nota |
+|---|---|---|
+| Revisar a fondo las rankeds: el usuario encontró muchísimos errores que se suponían arreglados | FALTA (prioridad) | Ya con todo el SQL corrido (hasta 0311) y el APK 0.6.8. Pedirle la lista de lo que vio (capturas o descripción) y revisar contra 0296, 0302 y 0304: ELO y rangos nuevos, ×2/½ de la Alineación, reinicio suave, bots, logros de rango, anuncio de temporada. Ojo: la web publicada está vieja (Vercel sin publicar desde el 28), puede explicar parte de lo que se ve en la web. |
+| Editor de placa en la web | HECHO | Vista previa en vivo y ocho pestañas. Commit 94bfda6b. |
+| APK 0.6.8 (versionCode 14) | HECHO | Compilado el 2026-10-30 a las 15:20 en `D:\Prodigia-APK\Prodigia.apk`. |
 
 ## 3. Pendientes de antes que siguen abiertos
 
