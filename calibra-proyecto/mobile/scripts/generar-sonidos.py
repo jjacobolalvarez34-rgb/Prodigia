@@ -38,8 +38,9 @@ def guardar(nombre,s,pico=0.7):
     with wave.open(os.path.join(OUT,nombre+".wav"),"wb") as w:
         w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
         w.writeframes((np.clip(s,-1,1)*32767).astype(np.int16).tobytes())
+# marca.wav y jugar.wav salen de generar-sonidos-marca.py: no se borran.
 for f in os.listdir(OUT):
-    if f.endswith(".wav"): os.remove(os.path.join(OUT,f))
+    if f.endswith(".wav") and f not in ("marca.wav","jugar.wav"): os.remove(os.path.join(OUT,f))
 # Acierto: el "tick" de la web (seno 880 Hz, 0,22 s) que sube por la escala mayor con el combo.
 # Dos octavas, 15 alturas (2026-10-19: con 8 la racha «dejaba de subir» en la novena).
 escala=[0,2,4,5,7,9,11,12,14,16,17,19,21,23,24]

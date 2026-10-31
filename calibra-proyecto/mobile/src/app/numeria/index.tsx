@@ -71,7 +71,7 @@ export default function HubNumeria() {
             deshabilitado={!niveles || temasLibres.length === 0}
             onPress={() => jugar(temasLibres.map((t) => t.id))}
           />
-          <Boton3D titulo="Jugar" acento={NUMERIA.base} brillo estilo={{ flex: 1.5 }} deshabilitado={!niveles || elegidosAhora.length === 0} onPress={() => jugar(elegidosAhora)} />
+          <Boton3D titulo="Jugar" acento={NUMERIA.base} brillo sonido="jugar" estilo={{ flex: 1.5 }} deshabilitado={!niveles || elegidosAhora.length === 0} onPress={() => jugar(elegidosAhora)} />
         </View>
       }
     >

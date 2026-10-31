@@ -161,11 +161,13 @@ const FUENTES = {
   tiempo_fin: require("../../assets/sonidos/tiempo_fin.wav"),
   // Sonido de marca (2026-10-22): roce, golpe y la firma sol-do-mi-re-SOL.
   marca: require("../../assets/sonidos/marca.wav"),
+  // Al tocar «Jugar» (2026-10-30): golpe hondo que abre la partida.
+  jugar: require("../../assets/sonidos/jugar.wav"),
 } as const;
 
 export type Sonido = keyof typeof FUENTES;
 
-const VOLUMEN: Partial<Record<Sonido, number>> = { tecla: 0.5, boton: 0.6, moneda: 0.6, swoosh: 0.6, marca: 0.9 };
+const VOLUMEN: Partial<Record<Sonido, number>> = { tecla: 0.5, boton: 0.6, moneda: 0.6, swoosh: 0.6, marca: 0.9, jugar: 0.9 };
 
 const reproductores = new Map<Sonido, AudioPlayer>();
 let modoListo = false;
@@ -190,7 +192,7 @@ export function prepararSonidos() {
     modoListo = true;
     setAudioModeAsync({ playsInSilentMode: true, interruptionMode: "mixWithOthers", shouldPlayInBackground: false }).catch(() => {});
   }
-  (["acierto0", "acierto1", "acierto2", "acierto3", "error", "moneda", "tecla", "boton", "cuenta", "ya"] as Sonido[]).forEach(reproductor);
+  (["acierto0", "acierto1", "acierto2", "acierto3", "error", "moneda", "tecla", "boton", "cuenta", "ya", "jugar"] as Sonido[]).forEach(reproductor);
 }
 
 // Carga antes los sonidos de una escena (cápsulas, cinemáticas): crear el reproductor

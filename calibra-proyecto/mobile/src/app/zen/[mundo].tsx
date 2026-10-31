@@ -512,7 +512,7 @@ export default function Zen() {
           </View>
         </Tarjeta>
 
-        <Boton3D titulo="Jugar en Zen" icono={<IconoZen tam={18} c="#fff" />} acento={mundo.base} brillo onPress={empezar} deshabilitado={contexto === undefined} estilo={{ marginTop: 4 }} />
+        <Boton3D titulo="Jugar en Zen" icono={<IconoZen tam={18} c="#fff" />} acento={mundo.base} brillo sonido="jugar" onPress={empezar} deshabilitado={contexto === undefined} estilo={{ marginTop: 4 }} />
         <Texto v="nota" tam={11.5} centro>
           Guardamos tu elección para la próxima vez.
         </Texto>
@@ -618,7 +618,7 @@ export default function Zen() {
           </View>
         )}
 
-        <Boton3D titulo="Otra vez" acento={mundo.base} brillo onPress={empezar} />
+        <Boton3D titulo="Otra vez" acento={mundo.base} brillo sonido="jugar" onPress={empezar} />
         {config.nivelMax < 10 && (
           <Boton3D
             titulo={config.nivelMax > config.nivelMin ? `Subir un nivel (${config.nivelMin + 1}–${config.nivelMax + 1})` : `Subir a nivel ${config.nivelMin + 1}`}

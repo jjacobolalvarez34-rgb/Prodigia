@@ -162,7 +162,7 @@ export default function Hoy() {
               {celebracionDe(temaHoy)!.minievento.texto}
             </Texto>
             <MinieventoFiesta tema={temaHoy} ancho={width - 60} />
-            {temaHoy.tema.id === "dia_pi" && <Boton3D titulo="Jugar" tamano="sm" estilo={{ marginTop: 8 }} onPress={() => router.push("/pi")} />}
+            {temaHoy.tema.id === "dia_pi" && <Boton3D titulo="Jugar" tamano="sm" sonido="jugar" estilo={{ marginTop: 8 }} onPress={() => router.push("/pi")} />}
           </Tarjeta>
         </CartelPlegable>
       )}
@@ -186,7 +186,7 @@ export default function Hoy() {
               </Texto>
             </View>
             <Barra valor={progreso?.avance ?? 0} acento={mundoContinuar.base} />
-            <Boton3D titulo={celebracionDe(temaHoy)?.boton ?? "Jugar"} acento={mundoContinuar.base} brillo onPress={() => router.push(continuar.ruta)} />
+            <Boton3D titulo={celebracionDe(temaHoy)?.boton ?? "Jugar"} acento={mundoContinuar.base} brillo sonido="jugar" onPress={() => router.push(continuar.ruta)} />
           </View>
         </Tarjeta>
       )}

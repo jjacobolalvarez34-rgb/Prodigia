@@ -1,6 +1,7 @@
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
+import { sonar } from "~/lib/efectos";
 import { cargarNivelesGeografia, CONTINENTES, type Continente } from "~/lib/geografia";
 import { useSesion } from "~/lib/sesion";
 import HubMundo, { TarjetaTema } from "~/ui/HubMundo";
@@ -32,7 +33,10 @@ export default function HubGeografia() {
               indice={fila + i}
               mundo={GEOGRAFIA}
               tema={{ id: c.id, nombre: c.nombre, simbolo: c.glifo, nivel: niveles?.[c.id] ?? null, nota: "Toca para jugar" }}
-              onPress={() => router.push({ pathname: "/geografia/sprint", params: { continente: c.id } })}
+              onPress={() => {
+                sonar("jugar");
+                router.push({ pathname: "/geografia/sprint", params: { continente: c.id } });
+              }}
             />
           ))}
         </View>

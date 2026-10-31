@@ -2,7 +2,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { faltaDiagnostico } from "~/lib/diagnostico";
-import { vibrar } from "~/lib/efectos";
+import { sonar, vibrar } from "~/lib/efectos";
 import { cargarNivelesMundo, mundoJugable } from "~/lib/mundosJugables";
 import { useSesion } from "~/lib/sesion";
 import HubMundo, { TarjetaTema } from "~/ui/HubMundo";
@@ -66,7 +66,10 @@ export default function HubCiudad() {
               indice={fila * 2 + i}
               mundo={mundo}
               tema={{ id: m.id, nombre: m.nombre, simbolo: m.simbolo, nivel: niveles?.[m.id] ?? null, nota: m.descripcion }}
-              onPress={() => router.push({ pathname: "/[mundo]/sprint", params: { mundo: def.slug, modo: m.id, filtro } })}
+              onPress={() => {
+                sonar("jugar");
+                router.push({ pathname: "/[mundo]/sprint", params: { mundo: def.slug, modo: m.id, filtro } });
+              }}
             />
           ))}
           {def.modos.slice(fila * 2, fila * 2 + 2).length === 1 && <View style={{ flex: 1 }} />}

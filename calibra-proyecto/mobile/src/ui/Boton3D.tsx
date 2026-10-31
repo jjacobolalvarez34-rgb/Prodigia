@@ -4,7 +4,7 @@ import { ActivityIndicator, Pressable, StyleSheet, View, type StyleProp, type Vi
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
 import { colorSolidoPrimario, paradasPrimario } from "@/lib/degradeBoton";
-import { sonar, vibrar } from "~/lib/efectos";
+import { sonar, vibrar, type Sonido } from "~/lib/efectos";
 import { useAnimacionActiva, useLiviano } from "~/lib/rendimiento";
 import { color, conAlfa, fuente } from "~/tema";
 import Texto from "./Texto";
@@ -30,6 +30,8 @@ interface Props {
   brillo?: boolean;
   estilo?: StyleProp<ViewStyle>;
   silencioso?: boolean;
+  // Sonido al tocar (por defecto el clic de botón; «jugar» en los botones que abren una partida).
+  sonido?: Sonido;
 }
 
 const ALTO = { md: 52, sm: 40 } as const;
@@ -54,6 +56,7 @@ export default function Boton3D({
   brillo,
   estilo,
   silencioso,
+  sonido = "boton",
 }: Props) {
   const inactivo = !!(deshabilitado || cargando);
   const activa = useAnimacionActiva();
@@ -135,7 +138,7 @@ export default function Boton3D({
         onPressOut={() => escala.set(withSpring(1, { damping: 10, stiffness: 320 }))}
         onPress={() => {
           vibrar.ligero();
-          if (!silencioso) sonar("boton");
+          if (!silencioso) sonar(sonido);
           onPress();
         }}
         accessibilityRole="button"
