@@ -1,8 +1,9 @@
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { Alert, Pressable, StyleSheet, Switch, View } from "react-native";
+import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet, Switch, View } from "react-native";
 import { useEffect, useState, type ReactNode } from "react";
+import { consultarVersionNueva, mostrarActualizacion, versionInstalada } from "~/lib/actualizacion";
 import { verTutorialOtraVez } from "~/lib/bienvenida";
 import { cambiarAjuste, useAjustes } from "~/lib/ajustes";
 import { cargarEstadoEdad, desbloquearJugador, limpiarEstadoEdad, misBloqueados, useEdad, type Bloqueado } from "~/lib/edad";
@@ -60,6 +61,19 @@ export default function Ajustes() {
     cargarEstadoEdad();
     misBloqueados().then(setBloqueados);
   }, []);
+  // «Buscar actualizaciones» (2026-10-30, mientras la app se reparte como APK): si hay
+  // una versión nueva abre el mismo aviso que sale solo al abrir la app.
+  const [buscando, setBuscando] = useState<"quieto" | "buscando" | "al-dia" | "error">("quieto");
+  async function buscarActualizacion() {
+    setBuscando("buscando");
+    try {
+      const nueva = await consultarVersionNueva();
+      setBuscando(nueva ? "quieto" : "al-dia");
+      if (nueva) mostrarActualizacion(nueva);
+    } catch {
+      setBuscando("error");
+    }
+  }
   async function salir() {
     Alert.alert("¿Cerrar sesión?", "Tu progreso queda guardado en tu cuenta.", [
       { text: "Cancelar", style: "cancel" },
@@ -124,6 +138,28 @@ export default function Ajustes() {
           }}
         />
       </Tarjeta>
+
+      {Platform.OS === "android" && (
+        <>
+          <TituloSeccion>Aplicación</TituloSeccion>
+          <Tarjeta relleno={4}>
+            <Fila
+              titulo="Buscar actualizaciones"
+              nota={
+                buscando === "buscando"
+                  ? "Revisando…"
+                  : buscando === "al-dia"
+                    ? `Tienes la última versión (${versionInstalada() ?? ""})`
+                    : buscando === "error"
+                      ? "No se pudo revisar. Mira tu conexión e inténtalo otra vez."
+                      : `Tienes la versión ${versionInstalada() ?? ""}`
+              }
+              derecha={buscando === "buscando" ? <ActivityIndicator color={color.primarioClaro} /> : undefined}
+              onPress={buscando === "buscando" ? undefined : buscarActualizacion}
+            />
+          </Tarjeta>
+        </>
+      )}
 
       <TituloSeccion>Seguridad</TituloSeccion>
       <Tarjeta relleno={4}>

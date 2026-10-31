@@ -28,16 +28,34 @@ export function versionInstalada(): string | null {
 export async function buscarVersionNueva(): Promise<VersionNueva | null> {
   if (Platform.OS !== "android") return null;
   try {
-    const res = await fetch(`${ORIGEN_WEB}/api/app/version`);
-    if (!res.ok) return null;
-    const d = (await res.json()) as { version: string | null; notas?: string | null };
-    if (!d.version || !hayVersionNueva(versionInstalada(), d.version)) return null;
+    const nueva = await consultarVersionNueva();
+    if (!nueva) return null;
     const pospuesta = JSON.parse((await AsyncStorage.getItem(CLAVE_POSPONER)) ?? "null") as { version: string; hasta: number } | null;
-    if (pospuesta && pospuesta.version === d.version && pospuesta.hasta > Date.now()) return null;
-    return { version: d.version, notas: d.notas ?? null };
+    if (pospuesta && pospuesta.version === nueva.version && pospuesta.hasta > Date.now()) return null;
+    return nueva;
   } catch {
     return null;
   }
+}
+
+// «Buscar actualizaciones» de Ajustes (2026-10-30): sin mirar si se pospuso, y lanza
+// el error si no hay conexión (para decir «no se pudo revisar» y no «estás al día»).
+export async function consultarVersionNueva(): Promise<VersionNueva | null> {
+  const res = await fetch(`${ORIGEN_WEB}/api/app/version`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const d = (await res.json()) as { version: string | null; notas?: string | null };
+  if (!d.version || !hayVersionNueva(versionInstalada(), d.version)) return null;
+  return { version: d.version, notas: d.notas ?? null };
+}
+
+// Ajustes le pide al aviso de actualización (montado en _layout) que se muestre.
+const oyentes = new Set<(v: VersionNueva) => void>();
+export function alPedirActualizacion(fn: (v: VersionNueva) => void): () => void {
+  oyentes.add(fn);
+  return () => oyentes.delete(fn);
+}
+export function mostrarActualizacion(v: VersionNueva): void {
+  oyentes.forEach((fn) => fn(v));
 }
 
 export async function posponer(version: string): Promise<void> {

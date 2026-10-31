@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AppState, Linking, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
-import { buscarVersionNueva, descargarEInstalar, posponer, URL_DESCARGA_WEB, versionInstalada, type VersionNueva } from "~/lib/actualizacion";
+import { alPedirActualizacion, buscarVersionNueva, descargarEInstalar, posponer, URL_DESCARGA_WEB, versionInstalada, type VersionNueva } from "~/lib/actualizacion";
 import { vibrar } from "~/lib/efectos";
 import { color, conAlfa } from "~/tema";
 import Barra from "./Barra";
@@ -28,7 +28,11 @@ export default function AvisoActualizacion() {
     };
     revisar();
     const sub = AppState.addEventListener("change", (estado) => estado === "active" && revisar());
-    return () => sub.remove();
+    const quitar = alPedirActualizacion(setNueva);
+    return () => {
+      sub.remove();
+      quitar();
+    };
   }, []);
 
   if (!nueva) return null;
