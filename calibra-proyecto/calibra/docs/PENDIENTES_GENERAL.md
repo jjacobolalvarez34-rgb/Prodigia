@@ -7,7 +7,7 @@ entre paréntesis es su línea o su número allí).
 Estados: **HECHO** · **EN CURSO** (lo estoy haciendo ahora) · **FALTA** (todavía no se
 empezó) · **TE TOCA** (lo haces tú) · **IDEA** (hay que conversarlo antes de construir).
 
-Última actualización: 2026-10-23.
+Última actualización: 2026-10-30.
 
 ---
 
@@ -88,17 +88,17 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
 
 | Pedido | Estado | Nota |
 |---|---|---|
-| Graphify: instalarlo y armar el mapa del repo para gastar menos tokens | EN CURSO | Primero que todo (pedido explícito). |
-| Auditoría de preguntas de las 15 ciudades (empezar por Vitalia, Melodía, Anatomía, Trigonometría) | FALTA | Plan y medición en `docs/AUDITORIA_PREGUNTAS.md`. |
-| Colecciones propias de los demás eventos (como Halloween) | FALTA | Después de la auditoría. Requiere diseño. |
-| Minieventos propios de cada fiesta | FALTA | Después de las colecciones. |
-| Pack de inicio: planearlo | FALTA | Solo el plan por ahora. |
-| Prueba gratis de Pro con tickets: al empezar tienes 3 tickets; cada clase Pro consume 1; al acabarse, «para continuar compra Pro» | FALTA | Idea del usuario. |
-| Clases y técnicas: carga lenta a veces; calificar respuesta por respuesta (bien/mal) para que puedan corregir antes de enviar; buena transición | FALTA | Muy importante para el usuario. |
-| App: a veces al abrirla aparece en Numeria (sin razón) | FALTA | Bug. |
+| Graphify: instalarlo y armar el mapa del repo para gastar menos tokens | HECHO | `graphify-out/` (ignorado por git). |
+| Auditoría de preguntas de las 15 ciudades (empezar por Vitalia, Melodía, Anatomía, Trigonometría) | HECHO (graves) | Los 4 graves arreglados (commits 86ea8bf1, 8a3fb62a). Queda: integrales de Calculia, más países en mapas, Geografía avanzada. |
+| Colecciones propias de los demás eventos (como Halloween) | HECHO | 0309 y 0311 (las 15 fiestas). |
+| Minieventos propios de cada fiesta | HECHO | Con las colecciones (0309, 0311). |
+| Pack de inicio: planearlo | HECHO (plan) | Falta decidir y construir. |
+| Prueba gratis de Pro con tickets: al empezar tienes 3 tickets; cada clase Pro consume 1; al acabarse, «para continuar compra Pro» | HECHO | 0310. |
+| Clases y técnicas: carga lenta a veces; calificar respuesta por respuesta (bien/mal) para que puedan corregir antes de enviar; buena transición | HECHO | Commit 9d146c4d. |
+| App: a veces al abrirla aparece en Numeria (sin razón) | HECHO | Commit 476be0e1. |
 | Cambiar ligeramente el tono morado «de IA» del fondo de la app y la web | FALTA (anotado) | Solo piel visual; proponer tonos antes. |
-| Duelo casual que se lee como reto | FALTA | Retomar (estaba a medias). |
-| Revisar si la guerra de clanes es evidente en la web y la app (poca actividad) | FALTA | |
+| Duelo casual que se lee como reto | HECHO | 0307 y notify-duelo. |
+| Revisar si la guerra de clanes es evidente en la web y la app (poca actividad) | HECHO | 0306: visible siempre, con el ganador de la semana pasada. |
 | Paddle al real | ESPERA | El usuario lo hará cuando todo esté completo. |
 
 ## 2d. Pedidos del 2026-10-30
@@ -113,10 +113,10 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
 
 | Qué | Estado | Nota |
 |---|---|---|
-| Colecciones propias para los demás eventos (como la de Halloween) | FALTA | Requiere diseño antes. |
-| Minieventos propios de cada fiesta (los de `celebracion.ts`) | FALTA | Halloween y Día de π ya están. |
+| Colecciones propias para los demás eventos (como la de Halloween) | HECHO | Ver 2c. |
+| Minieventos propios de cada fiesta (los de `celebracion.ts`) | HECHO | Ver 2c. |
 | Resto del plan de economía: pack de inicio, prueba gratis de Pro, etiqueta «NUEVO», panel de economía (52) | FALTA | La fusión de cápsulas ya está. |
-| Duelo casual leído como reto (1) | EN CURSO | Ver detalle en el archivo viejo. |
+| Duelo casual leído como reto (1) | HECHO | Ver 2c. |
 | Tablero en vivo en las rankeds (98) | IDEA | |
 | Clanes: planeación completa (99) | IDEA | Lo de los territorios (arriba) es parte de esto. |
 | Feed social (100) | IDEA | |
