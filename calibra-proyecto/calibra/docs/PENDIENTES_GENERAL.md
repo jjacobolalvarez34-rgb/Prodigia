@@ -106,6 +106,11 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
 | Pedido | Estado | Nota |
 |---|---|---|
 | Revisar a fondo las rankeds: el usuario encontró muchísimos errores que se suponían arreglados | FALTA (prioridad) | Ya con todo el SQL corrido (hasta 0311) y el APK 0.6.8. Pedirle la lista de lo que vio (capturas o descripción) y revisar contra 0296, 0302 y 0304: ELO y rangos nuevos, ×2/½ de la Alineación, reinicio suave, bots, logros de rango, anuncio de temporada. Ojo: la web publicada está vieja (Vercel sin publicar desde el 28), puede explicar parte de lo que se ve en la web. |
+| Rankeds: ronda que acababa por tiempo no registraba el duelo y salía el resumen normal (app) | HECHO | Commit 2bea2659. También 5 s de resumen entre rondas y 3 s en la ciudad nueva (app y web), y puntajes por ronda en el final de la serie. |
+| Rankeds: podio / pantalla dividida al final (duelo y serie) con el porqué ganaste; revisar letras, bordes y transiciones de esos resúmenes para que se vean de juego, no «de IA», y fluidos | FALTA (2026-11-02) | Pedido del usuario. |
+| Rankeds: choque de placas con corte diagonal como en el video de presentación de las rankeds | FALTA (2026-11-02) | El usuario lo recuerda del video de marketing; hoy la app solo hace entrar las placas con «VS». |
+| Rankeds: reconexión como chess.com (al volver sigues donde ibas, no repites preguntas; tiempo de gracia para reconectar y si no, victoria al rival) | FALTA (2026-11-02) | Hoy al reconectar se responden las preguntas de nuevo. |
+| Rankeds: tras desconectarse, la partida ya terminada sigue apareciendo «en curso» | FALTA (2026-11-02) | Bug. Revisar BannerDueloEnCurso (web y app) y duelos que quedan `pendiente` (ej. serie b355250c ronda 2). |
 | Editor de placa en la web | HECHO | Vista previa en vivo y ocho pestañas. Commit 94bfda6b. |
 | APK 0.6.8 (versionCode 14) | HECHO | Compilado el 2026-10-30 a las 15:20 en `D:\Prodigia-APK\Prodigia.apk`. |
 
