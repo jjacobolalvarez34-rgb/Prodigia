@@ -18,7 +18,7 @@ import Barra from "~/ui/Barra";
 import Boton3D from "~/ui/Boton3D";
 import CapsulaNivel from "~/ui/CapsulaNivel";
 import ComparativaDuelo from "~/ui/ComparativaDuelo";
-import ResultadoVersus from "~/ui/ResultadoVersus";
+import ResultadoVersus, { motivoVersus } from "~/ui/ResultadoVersus";
 import Ciudad from "~/ui/Ciudad";
 import Confeti from "~/ui/Confeti";
 import { IconoCheck, IconoChispa, IconoCometa, IconoLlama, IconoRegalo } from "~/ui/Iconos";
@@ -184,6 +184,10 @@ export default function Resultado() {
   const seg = (ms: number | null | undefined) => (ms == null ? "—" : `${(ms / 1000).toFixed(1)}s`);
   const pct = (p: number | null | undefined) => (p == null ? "—" : `${Math.round(p * 100)}%`);
   const aciertosDe = (p: number | null | undefined) => (p == null ? "—" : `${Math.round(p * d.total)}/${d.total}`);
+  const numAciertos = (p: number | null | undefined) => (p == null ? null : Math.round(p * d.total));
+  // Quién gana cada fila de la comparación (más es mejor, salvo el tiempo).
+  const mejorDe = (mio: number | null | undefined, suyo: number | null | undefined, masEsMejor: boolean): "mio" | "suyo" | null =>
+    mio == null || suyo == null || mio === suyo ? null : mio > suyo === masEsMejor ? "mio" : "suyo";
   // Compartir (2026-10-21): la tarjeta sale de lo que esta pantalla ya tiene.
   const compartir = useMemo(
     () =>
@@ -239,17 +243,25 @@ export default function Resultado() {
                     empate={!!duelo.empate}
                     rival={rival}
                     linea={duelo.empate ? `Empataste con ${rival}` : duelo.gane ? `Le ganaste a ${rival}` : `Esta vez ganó ${rival}`}
-                    marcador={duelo.mi_puntaje != null && duelo.rival_puntaje != null ? `${duelo.mi_puntaje} – ${duelo.rival_puntaje}` : undefined}
+                    puntajes={[duelo.mi_puntaje ?? null, duelo.rival_puntaje ?? null]}
+                    motivo={motivoVersus({
+                      gane: !!duelo.gane,
+                      empate: !!duelo.empate,
+                      rival,
+                      aciertos: [numAciertos(duelo.mi_precision), numAciertos(duelo.rival_precision)],
+                      tiempos: [duelo.mi_tiempo_promedio ?? null, duelo.rival_tiempo_promedio ?? null],
+                    })}
                     eloAnterior={duelo.clasificatorio !== false ? duelo.elo_anterior : null}
                     eloNuevo={duelo.clasificatorio !== false ? duelo.elo_nuevo : null}
                     desglose={
                       duelo.mi_precision != null || duelo.rival_precision != null
                         ? [
-                            { etiqueta: "aciertos", mio: aciertosDe(duelo.mi_precision), suyo: aciertosDe(duelo.rival_precision) },
-                            { etiqueta: "precisión", mio: pct(duelo.mi_precision), suyo: pct(duelo.rival_precision) },
+                            { etiqueta: "aciertos", mio: aciertosDe(duelo.mi_precision), suyo: aciertosDe(duelo.rival_precision), mejor: mejorDe(duelo.mi_precision, duelo.rival_precision, true) },
+                            { etiqueta: "precisión", mio: pct(duelo.mi_precision), suyo: pct(duelo.rival_precision), mejor: mejorDe(duelo.mi_precision, duelo.rival_precision, true) },
                             ...(duelo.mi_tiempo_promedio != null || duelo.rival_tiempo_promedio != null
-                              ? [{ etiqueta: "tiempo prom.", mio: seg(duelo.mi_tiempo_promedio), suyo: seg(duelo.rival_tiempo_promedio) }]
+                              ? [{ etiqueta: "tiempo por respuesta", mio: seg(duelo.mi_tiempo_promedio), suyo: seg(duelo.rival_tiempo_promedio), mejor: mejorDe(duelo.mi_tiempo_promedio, duelo.rival_tiempo_promedio, false) }]
                               : []),
+                            { etiqueta: "puntaje", mio: String(duelo.mi_puntaje ?? "—"), suyo: String(duelo.rival_puntaje ?? "—"), mejor: mejorDe(duelo.mi_puntaje, duelo.rival_puntaje, true) },
                           ]
                         : undefined
                     }

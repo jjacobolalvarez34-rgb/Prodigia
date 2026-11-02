@@ -224,14 +224,23 @@ export default function Serie() {
             empate={final.empate}
             rival={oponente}
             linea={final.empate ? `Empataste la serie con ${oponente}` : final.gane ? `Le ganaste la serie a ${oponente}` : `${oponente} ganó la serie`}
-            marcador={`${final.victorias_propias} – ${final.victorias_rival}`}
+            puntajes={[final.victorias_propias, final.victorias_rival]}
+            motivo={
+              final.empate
+                ? "Las rondas quedaron parejas."
+                : `${final.gane ? "Ganaste" : `${oponente} ganó`} ${Math.max(final.victorias_propias, final.victorias_rival)} de ${rondas.filter((r) => r.estado === "completado").length} rondas.`
+            }
             eloAnterior={ranked ? final.elo_anterior : null}
             eloNuevo={ranked ? final.elo_nuevo : null}
             desglose={[
               ...rondas
                 .filter((r) => r.estado === "completado")
-                .map((r) => ({ etiqueta: `Ronda ${r.ronda_numero} · ${nombreDe(r.mundo)}`, mio: String(r.mi_puntaje ?? 0), suyo: String(r.rival_puntaje ?? 0) })),
-              { etiqueta: "Rondas ganadas", mio: String(final.victorias_propias), suyo: String(final.victorias_rival) },
+                .map((r) => ({
+                  etiqueta: `Ronda ${r.ronda_numero} · ${nombreDe(r.mundo)}`,
+                  mio: String(r.mi_puntaje ?? 0),
+                  suyo: String(r.rival_puntaje ?? 0),
+                  mejor: r.empate_ronda ? null : r.gane_ronda ? ("mio" as const) : ("suyo" as const),
+                })),
             ]}
           />
           {listaRondas}

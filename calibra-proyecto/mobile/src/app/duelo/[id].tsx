@@ -3,13 +3,13 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, BackHandler, StyleSheet, useWindowDimensions, View } from "react-native";
+import Svg, { Defs, LinearGradient as Degradado, Line, Polygon, Stop } from "react-native-svg";
 import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
   withSequence,
-  withSpring,
   withTiming,
   ZoomIn,
 } from "react-native-reanimated";
@@ -21,7 +21,7 @@ import { sonar, vibrar } from "~/lib/efectos";
 import { URL_WEB } from "~/lib/entorno";
 import { useJugador } from "~/lib/jugador";
 import { leerProgresoDuelo } from "~/lib/progresoDuelo";
-import { cargarPlacaPublica, placaBasica, type PlacaDatos } from "~/lib/placa";
+import { cargarPlacaPublica, placaBasica, rangoDeElo, type PlacaDatos } from "~/lib/placa";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError } from "~/lib/supabase";
 import { mostrarAviso } from "~/ui/Aviso";
@@ -54,7 +54,7 @@ function irAlSprint(info: InfoDuelo, router: ReturnType<typeof useRouter>) {
 export default function Duelo() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const { sesion } = useSesion();
   const miId = sesion?.user.id ?? null;
   const { placa: miPlaca } = useJugador();
@@ -100,24 +100,29 @@ export default function Duelo() {
     onEmpezar: empezar,
   });
 
-  // Placas que entran y chocan.
-  const izq = useSharedValue(-width);
-  const der = useSharedValue(width);
+  // Choque (como el video de las rankeds, 2026-11-02): las dos mitades del fondo,
+  // cortadas en diagonal y con el color del rango de cada uno, se cierran de golpe
+  // desde arriba y abajo; el VS cae grande y girado, destello, y entran las placas.
+  const arriba = useSharedValue(-height);
+  const abajo = useSharedValue(height);
   const vs = useSharedValue(0);
   const flash = useSharedValue(0);
+  const placas = useSharedValue(0);
   useEffect(() => {
     if (!listo) return;
     sonar("swoosh");
-    izq.set(withSpring(0, { damping: 11, stiffness: 120 }));
-    der.set(withDelay(120, withSpring(0, { damping: 11, stiffness: 120 })));
-    vs.set(withDelay(650, withSequence(withTiming(1.25, { duration: 220, easing: Easing.out(Easing.back(2)) }), withSpring(1, { damping: 8 }))));
-    flash.set(withDelay(620, withSequence(withTiming(1, { duration: 80 }), withTiming(0, { duration: 420 }))));
+    const golpe = { duration: 450, easing: Easing.out(Easing.exp) };
+    arriba.set(withTiming(0, golpe));
+    abajo.set(withTiming(0, golpe));
+    vs.set(withTiming(1, { duration: 350, easing: Easing.in(Easing.poly(4)) }));
+    flash.set(withDelay(350, withSequence(withTiming(0.85, { duration: 60 }), withTiming(0, { duration: 450 }))));
+    placas.set(withDelay(300, withTiming(1, { duration: 500, easing: Easing.out(Easing.exp) })));
     const t = setTimeout(() => {
       vibrar.fuerte();
-      sonar("combo");
-    }, 640);
+      sonar("jugar");
+    }, 350);
     return () => clearTimeout(t);
-  }, [listo, izq, der, vs, flash]);
+  }, [listo, arriba, abajo, vs, flash, placas]);
 
   useEffect(() => {
     if (segundos != null && segundos !== ultimaCuenta.current && segundos > 0 && segundos <= 3) {
@@ -127,10 +132,11 @@ export default function Duelo() {
     }
   }, [segundos]);
 
-  const estiloIzq = useAnimatedStyle(() => ({ transform: [{ translateX: izq.value }] }));
-  const estiloDer = useAnimatedStyle(() => ({ transform: [{ translateX: der.value }] }));
-  const estiloVs = useAnimatedStyle(() => ({ opacity: vs.value > 0 ? 1 : 0, transform: [{ scale: vs.value }, { rotate: "-8deg" }] }));
+  const estiloArriba = useAnimatedStyle(() => ({ transform: [{ translateY: arriba.value }] }));
+  const estiloAbajo = useAnimatedStyle(() => ({ transform: [{ translateY: abajo.value }] }));
+  const estiloVs = useAnimatedStyle(() => ({ opacity: vs.value, transform: [{ scale: 3 - 2 * vs.value }, { rotate: `${-12 * (1 - vs.value)}deg` }] }));
   const estiloFlash = useAnimatedStyle(() => ({ opacity: flash.value }));
+  const estiloPlacas = useAnimatedStyle(() => ({ opacity: placas.value, transform: [{ scale: 0.85 + 0.15 * placas.value }] }));
 
   function rendirse() {
     if (!info) return;
@@ -206,34 +212,67 @@ export default function Duelo() {
     );
   }
 
+  // Mitades del fondo: la del rival arriba, la tuya abajo, con el corte en diagonal.
+  const altoMitad = height * 0.58;
+  const colorRival = rival ? rangoDeElo(rival.elo).colorHex : color.error;
+  const colorMio = miPlaca ? rangoDeElo(miPlaca.elo).colorHex : color.primario;
+
   return (
     <View style={styles.pantalla}>
       <LinearGradient colors={[temaClaro ? conAlfa(color.primario, 0.22) : "#1A1540", color.bg, color.bgHondo]} style={StyleSheet.absoluteFill} />
-      <Glifos glifos={m?.glifos ?? ["×", "✦"]} acento={m?.neon ?? color.primario} cantidad={10} />
+      {listo && (
+        <>
+          <Animated.View pointerEvents="none" style={[styles.mitad, { top: 0, height: altoMitad }, estiloArriba]}>
+            <Svg width={width} height={altoMitad}>
+              <Defs>
+                <Degradado id="rival" x1="1" y1="0" x2="0" y2="1">
+                  <Stop offset="0" stopColor={colorRival} stopOpacity={0.55} />
+                  <Stop offset="1" stopColor={color.bgHondo} stopOpacity={0.9} />
+                </Degradado>
+              </Defs>
+              <Polygon points={`0,0 ${width},0 ${width},${altoMitad * 0.8} 0,${altoMitad}`} fill="url(#rival)" />
+              <Line x1={0} y1={altoMitad} x2={width} y2={altoMitad * 0.8} stroke="#FFFFFF" strokeOpacity={0.55} strokeWidth={2} />
+            </Svg>
+          </Animated.View>
+          <Animated.View pointerEvents="none" style={[styles.mitad, { bottom: 0, height: altoMitad }, estiloAbajo]}>
+            <Svg width={width} height={altoMitad}>
+              <Defs>
+                <Degradado id="mio" x1="0" y1="1" x2="1" y2="0">
+                  <Stop offset="0" stopColor={colorMio} stopOpacity={0.55} />
+                  <Stop offset="1" stopColor={color.bgHondo} stopOpacity={0.9} />
+                </Degradado>
+              </Defs>
+              <Polygon points={`0,${altoMitad * 0.2} ${width},0 ${width},${altoMitad} 0,${altoMitad}`} fill="url(#mio)" />
+              <Line x1={0} y1={altoMitad * 0.2} x2={width} y2={0} stroke="#FFFFFF" strokeOpacity={0.55} strokeWidth={2} />
+            </Svg>
+          </Animated.View>
+        </>
+      )}
+      <Glifos glifos={m?.glifos ?? ["×", "✦"]} acento={m?.neon ?? color.primario} cantidad={8} />
       <SafeAreaView style={{ flex: 1, justifyContent: "space-between" }}>
         <View style={{ alignItems: "center", paddingTop: 10, gap: 2 }}>
-          <Texto v="micro" c={m?.neon}>
+          <Texto v="micro" c="#FFFFFF">
             {info?.clasificatorio ? "Rankeds" : "Duelo"} · {m?.nombre ?? ""} {info?.serieId ? `· Ronda ${info.rondaNumero} de ${info.rondaTotal}` : ""}
           </Texto>
           <Texto v="h3">{tema}</Texto>
         </View>
 
-        <View style={{ gap: 18, paddingHorizontal: 16 }}>
-          {miPlaca && (
-            <Animated.View style={estiloIzq}>
-              <PlacaVS placa={miPlaca} lado="yo" />
-            </Animated.View>
-          )}
-          <Animated.View style={[{ alignSelf: "center" }, estiloVs]}>
-            <Texto style={{ fontFamily: fuente.display, fontSize: 58, lineHeight: 64, color: color.logro, textShadowColor: color.primario, textShadowRadius: 22, fontStyle: "italic" }}>VS</Texto>
-          </Animated.View>
+        <View style={{ flex: 1, justifyContent: "space-evenly", paddingHorizontal: 16 }}>
           {rival && (
-            <Animated.View style={estiloDer}>
+            <Animated.View style={estiloPlacas}>
               <PlacaVS placa={rival} lado="rival" />
             </Animated.View>
           )}
+          <Animated.View style={[{ alignSelf: "center" }, estiloVs]}>
+            <Texto style={styles.vs}>VS</Texto>
+          </Animated.View>
+          {miPlaca && (
+            <Animated.View style={estiloPlacas}>
+              <PlacaVS placa={miPlaca} lado="yo" />
+            </Animated.View>
+          )}
           {info?.rivalYaJugo && (
-            <Texto v="nota" centro>
+            <Texto v="nota" centro c="#FFFFFF">
               Corres contra el registro exacto de {info.rivalNombre}
             </Texto>
           )}
@@ -282,6 +321,8 @@ export default function Duelo() {
 
 const styles = StyleSheet.create({
   pantalla: { flex: 1, backgroundColor: color.bgHondo },
+  mitad: { position: "absolute", left: 0, right: 0 },
+  vs: { fontFamily: fuente.display, fontSize: 84, lineHeight: 92, color: "#FFFFFF", fontStyle: "italic", letterSpacing: -3, textShadowColor: "rgba(255,197,61,0.7)", textShadowRadius: 28 },
   fila: { flexDirection: "row", alignItems: "center", gap: 8 },
   punto: { width: 9, height: 9, borderRadius: 5 },
 });
