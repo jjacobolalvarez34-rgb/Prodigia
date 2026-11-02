@@ -19,6 +19,7 @@ import FiguraRitmicaIcono from "@/components/melodia/FiguraRitmicaIcono";
 import BotonEscucharNota from "@/components/melodia/BotonEscucharNota";
 import BotonPulso from "@/components/melodia/BotonPulso";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
+import { guardarAvanceDuelo, leerAvanceDuelo } from "@/lib/duelos/reanudar";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
@@ -81,14 +82,16 @@ export default function MelodiaSprintRunner({
   // Pista y segunda oportunidad de la tienda (0248).
   const ayudas = useAyudasPartida(!duelId);
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
-  const correctosRef = useRef(0);
+  // Reconexión (2026-11-02): al retomar la ronda, los contadores siguen donde iban.
+  const [avanceInicial] = useState(() => leerAvanceDuelo(duelId));
+  const correctosRef = useRef(avanceInicial?.correctos ?? 0);
   const [pregunta, setPregunta] = useState<PreguntaMelodia | null>(null);
   const [cardKey, setCardKey] = useState(0);
   const [seleccion, setSeleccion] = useState<string | null>(null);
   const [respondido, setRespondido] = useState(false);
   const [puntaje, setPuntaje] = useState<PuntajeTarjeta | null>(null);
-  const [xpSprint, setXpSprint] = useState(0);
-  const [respondidos, setRespondidos] = useState(0);
+  const [xpSprint, setXpSprint] = useState(avanceInicial?.xp ?? 0);
+  const [respondidos, setRespondidos] = useState(avanceInicial?.respondidos ?? 0);
   const [remainingMs, setRemainingMs] = useState(duracionMs);
   const [nivel, setNivel] = useState(nivelForzado ?? nivelInicial);
   const [escudos, setEscudos] = useState(escudosIniciales);
@@ -241,6 +244,7 @@ export default function MelodiaSprintRunner({
       submittingRef.current = false;
       const sig = respondidos + 1;
       setRespondidos(sig);
+      guardarAvanceDuelo(duelId, { respondidos: sig, correctos: correctosRef.current, xp: xpSprint });
       if (finishedRef.current) return;
       if (sig >= totalPreguntas) terminar();
       else siguiente();

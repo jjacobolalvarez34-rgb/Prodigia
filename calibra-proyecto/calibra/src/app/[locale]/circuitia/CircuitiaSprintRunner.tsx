@@ -15,6 +15,7 @@ import MathText from "@/components/MathText";
 import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/TarjetaSprint";
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
+import { guardarAvanceDuelo, leerAvanceDuelo } from "@/lib/duelos/reanudar";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
@@ -78,7 +79,9 @@ export default function CircuitiaSprintRunner({
   // Pista y segunda oportunidad de la tienda (0248).
   const ayudas = useAyudasPartida(!duelId);
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
-  const correctosRef = useRef(0);
+  // Reconexión (2026-11-02): al retomar la ronda, los contadores siguen donde iban.
+  const [avanceInicial] = useState(() => leerAvanceDuelo(duelId));
+  const correctosRef = useRef(avanceInicial?.correctos ?? 0);
   const [problema, setProblema] = useState<ProblemaCircuitia | null>(null);
   const [cardKey, setCardKey] = useState(0);
   const [respuestaTexto, setRespuestaTexto] = useState("");
@@ -87,8 +90,8 @@ export default function CircuitiaSprintRunner({
   const [feedback, setFeedback] = useState<"idle" | "correcto" | "incorrecto">("idle");
   const [miRespuestaTexto, setMiRespuestaTexto] = useState("");
   const [puntaje, setPuntaje] = useState<PuntajeTarjeta | null>(null);
-  const [xpSprint, setXpSprint] = useState(0);
-  const [respondidos, setRespondidos] = useState(0);
+  const [xpSprint, setXpSprint] = useState(avanceInicial?.xp ?? 0);
+  const [respondidos, setRespondidos] = useState(avanceInicial?.respondidos ?? 0);
   const [remainingMs, setRemainingMs] = useState(duracionMs);
   const [nivel, setNivel] = useState(nivelForzado ?? nivelInicial);
   const [escudos, setEscudos] = useState(escudosIniciales);
@@ -229,6 +232,7 @@ export default function CircuitiaSprintRunner({
       submittingRef.current = false;
       const sig = respondidos + 1;
       setRespondidos(sig);
+      guardarAvanceDuelo(duelId, { respondidos: sig, correctos: correctosRef.current, xp: xpSprint });
       if (finishedRef.current) return;
       if (sig >= totalPreguntas) terminar();
       else siguiente();

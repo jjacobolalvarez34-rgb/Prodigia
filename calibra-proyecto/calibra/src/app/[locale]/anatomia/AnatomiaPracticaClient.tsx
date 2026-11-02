@@ -3,7 +3,7 @@
 import ConCuentaRegresiva from "@/components/CuentaRegresivaInicio";
 import RepasoErrores from "@/components/practica/RepasoErrores";
 import { fallasDeLaPartida } from "@/lib/practica/repasoPartida";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { obtenerHoraServidor } from "@/lib/practica/horaServidor";
@@ -21,6 +21,7 @@ import ChispasGanadasNota from "@/components/ChispasGanadasNota";
 import ResultadoDueloBlock, { type ResultadoDuelo } from "@/components/duelos/ResultadoDueloBlock";
 import SalaEsperaDuelo from "@/components/duelos/SalaEsperaDuelo";
 import { useArranqueSincronizado } from "@/lib/duelos/useArranqueSincronizado";
+import { borrarDueloGuardado, guardarInicioDuelo, leerInicioDuelo, perfDesdeEpoch } from "@/lib/duelos/reanudar";
 import { useDeteccionAbandono } from "@/lib/duelos/useDeteccionAbandono";
 import { rendirseDuelo } from "@/lib/duelos/rendirse";
 import { useRegistrarGuardiaSalida } from "@/lib/navegacion/guardiaSalida";
@@ -74,8 +75,23 @@ export default function AnatomiaPracticaClient({ modo, nivelInicial, escudosExtr
   const [error, setError] = useState<string | null>(null);
   const [resultadoDuelo, setResultadoDuelo] = useState<ResultadoDuelo | null>(null);
 
+  // Reconexión (2026-11-02, como chess.com): si esta ronda ya había empezado en este
+  // navegador, se retoma sin VS ni cuenta, con el reloj desde el arranque original.
+  const [reanudando, setReanudando] = useState(false);
+  useEffect(() => {
+    const previo = leerInicioDuelo(duelo?.duelId);
+    if (!previo) return;
+    // localStorage solo existe en el navegador: se lee al montar.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setReanudando(true);
+    setStartedAtIso(previo.iso);
+    setStartedAtPerf(perfDesdeEpoch(previo.epoch));
+    setFase("sprint");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const { estado: estadoArranque, segundos: segundosVs, rivalPresente, empezarAhora } = useArranqueSincronizado({
-    duelId: duelo?.duelId,
+    duelId: reanudando ? null : duelo?.duelId,
     miUserId,
     rivalId: duelo?.rivalId,
     rivalEsBot: duelo?.rivalEsBot,
@@ -83,17 +99,25 @@ export default function AnatomiaPracticaClient({ modo, nivelInicial, escudosExtr
   });
 
   function iniciar() {
-    setStartedAtIso(new Date().toISOString());
+    const isoInicio = new Date().toISOString();
+    setStartedAtIso(isoInicio);
+    guardarInicioDuelo(duelo?.duelId, isoInicio);
     // Bug de reloj de navegador (2026-09-14, ver src/app/api/hora-servidor/route.ts) —
     // se pide la hora real del servidor en paralelo, sin bloquear el arranque,
     // y reemplaza este valor optimista apenas responde.
-    obtenerHoraServidor().then((h) => { if (h) setStartedAtIso(h); });
+    obtenerHoraServidor().then((h) => {
+      if (h) {
+        setStartedAtIso(h);
+        guardarInicioDuelo(duelo?.duelId, h);
+      }
+    });
     setStartedAtPerf(performance.now());
     setResumen(null);
     setFase("sprint");
   }
 
   async function handleFinish(erroresPartida: PreguntaAnatomia[]) {
+    borrarDueloGuardado(duelo?.duelId);
     setErrores(erroresPartida);
     setFase("finalizando");
     try {

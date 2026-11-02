@@ -14,6 +14,7 @@ import TarjetaSprint, { type PuntajeTarjeta } from "@/components/practica/Tarjet
 import BarraTiempo from "@/components/practica/BarraTiempo";
 import EsqueletoClickeable from "@/components/anatomia/EsqueletoClickeable";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
+import { guardarAvanceDuelo, leerAvanceDuelo } from "@/lib/duelos/reanudar";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
@@ -74,8 +75,10 @@ export default function AnatomiaSprintRunner({
   const [seleccion, setSeleccion] = useState<string | null>(null);
   const [respondido, setRespondido] = useState(false);
   const [puntaje, setPuntaje] = useState<PuntajeTarjeta | null>(null);
-  const [xpSprint, setXpSprint] = useState(0);
-  const [respondidos, setRespondidos] = useState(0);
+  // Reconexión (2026-11-02): al retomar la ronda, los contadores siguen donde iban.
+  const [avanceInicial] = useState(() => leerAvanceDuelo(duelId));
+  const [xpSprint, setXpSprint] = useState(avanceInicial?.xp ?? 0);
+  const [respondidos, setRespondidos] = useState(avanceInicial?.respondidos ?? 0);
   const [remainingMs, setRemainingMs] = useState(duracionMs);
   const [nivel, setNivel] = useState(nivelForzado ?? nivelInicial);
   const [escudos, setEscudos] = useState(escudosIniciales);
@@ -85,7 +88,7 @@ export default function AnatomiaSprintRunner({
     useBonusTiempo(duracionMs);
 
   const nivelRef = useRef(nivelForzado ?? nivelInicial);
-  const correctosRef = useRef(0);
+  const correctosRef = useRef(avanceInicial?.correctos ?? 0);
   const escudosRef = useRef(escudosIniciales);
   const usadosRef = useRef<Set<string>>(new Set());
   const erroresRef = useRef<PreguntaAnatomia[]>([]);
@@ -233,6 +236,7 @@ export default function AnatomiaSprintRunner({
       submittingRef.current = false;
       const sig = respondidos + 1;
       setRespondidos(sig);
+      guardarAvanceDuelo(duelId, { respondidos: sig, correctos: correctosRef.current, xp: xpSprint });
       if (finishedRef.current) return;
       if (sig >= totalPreguntas) terminar();
       else siguiente();

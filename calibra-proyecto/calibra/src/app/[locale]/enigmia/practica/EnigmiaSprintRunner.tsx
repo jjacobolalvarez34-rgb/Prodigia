@@ -18,6 +18,7 @@ import { generarAcertijoProcedural, type CategoriaGenerada } from "@/lib/enigmia
 import { elegirDelBanco } from "@/lib/enigmia/seleccionDificultad";
 import { generarSinRepetir } from "@/lib/practica/generarUnico";
 import { useProgresoEnVivo } from "@/lib/duelos/useProgresoEnVivo";
+import { guardarAvanceDuelo, leerAvanceDuelo } from "@/lib/duelos/reanudar";
 import ProgresoRivalEnVivo from "@/components/duelos/ProgresoRivalEnVivo";
 import { useRachaCombo } from "@/lib/practica/useRachaCombo";
 import ConsumiblesPartida, { type TipoUso } from "@/components/ConsumiblesPartida";
@@ -132,7 +133,9 @@ export default function EnigmiaSprintRunner({
   // Pista y segunda oportunidad de la tienda (0248).
   const ayudas = useAyudasPartida(!duelId);
   const { rival: rivalEnVivo, emitirProgreso } = useProgresoEnVivo({ duelId, miUserId });
-  const correctosRef = useRef(0);
+  // Reconexión (2026-11-02): al retomar la ronda, los contadores siguen donde iban.
+  const [avanceInicial] = useState(() => leerAvanceDuelo(duelId));
+  const correctosRef = useRef(avanceInicial?.correctos ?? 0);
   const [puzzle, setPuzzle] = useState<LogicPuzzle | null>(null);
   const [cardKey, setCardKey] = useState(0);
   // Fase W2: si el acertijo trae `secuencia` (Memoria), arranca oculto
@@ -142,8 +145,8 @@ export default function EnigmiaSprintRunner({
   const [seleccion, setSeleccion] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<"idle" | "correcto" | "incorrecto">("idle");
   const [puntaje, setPuntaje] = useState<PuntajeTarjeta | null>(null);
-  const [xpSprint, setXpSprint] = useState(0);
-  const [respondidos, setRespondidos] = useState(0);
+  const [xpSprint, setXpSprint] = useState(avanceInicial?.xp ?? 0);
+  const [respondidos, setRespondidos] = useState(avanceInicial?.respondidos ?? 0);
   const [remainingMs, setRemainingMs] = useState(duracionMs);
   // Nivel MOSTRADO en el dial: siempre el de la categoría del acertijo
   // que está en pantalla (se actualiza en siguiente() y otra vez al
@@ -358,6 +361,7 @@ export default function EnigmiaSprintRunner({
       submittingRef.current = false;
       const sig = respondidos + 1;
       setRespondidos(sig);
+      guardarAvanceDuelo(duelId, { respondidos: sig, correctos: correctosRef.current, xp: xpSprint });
       if (finishedRef.current) return;
       if (sig >= totalPreguntas) {
         terminar();
