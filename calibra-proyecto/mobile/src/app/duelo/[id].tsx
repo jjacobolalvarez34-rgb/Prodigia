@@ -20,6 +20,7 @@ import { useArranqueSincronizado } from "~/lib/duelos";
 import { sonar, vibrar } from "~/lib/efectos";
 import { URL_WEB } from "~/lib/entorno";
 import { useJugador } from "~/lib/jugador";
+import { leerProgresoDuelo } from "~/lib/progresoDuelo";
 import { cargarPlacaPublica, placaBasica, type PlacaDatos } from "~/lib/placa";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError } from "~/lib/supabase";
@@ -43,6 +44,11 @@ function NumeroCuenta({ n }: { n: number }) {
   );
 }
 
+function irAlSprint(info: InfoDuelo, router: ReturnType<typeof useRouter>) {
+  if (info.mundo === "numeria" || info.mundo === "geografia") router.replace({ pathname: info.mundo === "geografia" ? "/geografia/sprint" : "/numeria/sprint", params: { duelo: info.duelId } });
+  else router.replace({ pathname: "/[mundo]/sprint", params: { mundo: info.mundo, duelo: info.duelId } });
+}
+
 // Pantalla VS (02-SISTEMA-VISUAL.md §7.2): las dos Placas entran desde los lados,
 // chocan en el centro, destello, y la cuenta 3-2-1 sincronizada con el rival.
 export default function Duelo() {
@@ -64,11 +70,17 @@ export default function Duelo() {
         setError("Este reto ya no está disponible. Los duelos son en vivo: se cancelan si nadie los acepta en 2 minutos.");
         return;
       }
+      // Reconexión (2026-11-02): si ya ibas a mitad de esta ronda, de vuelta a la
+      // partida sin pasar otra vez por el VS ni la cuenta.
+      if (d.estado === "pendiente" && (await leerProgresoDuelo(d.duelId))) {
+        irAlSprint(d, router);
+        return;
+      }
       setInfo(d);
       const p = d.rivalEsBot ? null : await cargarPlacaPublica(d.rivalId);
       setRival(p ?? placaBasica(d.rivalId, d.rivalNombre, { elo: d.rivalElo, titulo: d.rivalTitulo }));
     });
-  }, [id, miId]);
+  }, [id, miId, router]);
 
   const enApp = !!info && (MUNDOS_DUELO_APP as string[]).includes(info.mundo);
   const listo = !!info && info.estado === "pendiente" && enApp && !!rival;
@@ -77,8 +89,7 @@ export default function Duelo() {
     if (!info) return;
     sonar("ya");
     vibrar.fuerte();
-    if (info.mundo === "numeria" || info.mundo === "geografia") router.replace({ pathname: info.mundo === "geografia" ? "/geografia/sprint" : "/numeria/sprint", params: { duelo: info.duelId } });
-    else router.replace({ pathname: "/[mundo]/sprint", params: { mundo: info.mundo, duelo: info.duelId } });
+    irAlSprint(info, router);
   }, [info, router]);
 
   const { estado, segundos, rivalPresente, preguntar, seguirEsperando } = useArranqueSincronizado({

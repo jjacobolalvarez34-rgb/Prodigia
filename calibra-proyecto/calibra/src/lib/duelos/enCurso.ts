@@ -49,9 +49,14 @@ export async function buscarDueloEnCurso(sb: ClienteMinimo, userId: string): Pro
     .from("duels")
     .select("id, mundo, serie_id, operation_type, sub_tipo")
     .eq("estado", "pendiente")
+    // Una serie decidida 2-0 deja su tercera ronda pendiente sin jugarse: no es una
+    // partida en curso (2026-11-02: aparecía el aviso con la serie ya terminada).
+    .eq("serie_finalizada", false)
     .or(`retador_id.eq.${userId},retado_id.eq.${userId}`)
     .gte("creado_at", desde)
     .order("creado_at", { ascending: false })
+    // Las rondas de una serie se crean juntas: primero la que toca jugar.
+    .order("ronda_numero", { ascending: true })
     .limit(5);
   const duelos = (data ?? []) as FilaDuelo[];
   if (duelos.length === 0) return null;

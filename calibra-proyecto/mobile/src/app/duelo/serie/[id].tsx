@@ -2,7 +2,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, FadeInDown, FadeOut } from "react-native-reanimated";
-import { estadoSerie, type RondaSerie } from "~/lib/competir";
+import { cerrarDueloPorAusencia, estadoSerie, GRACIA_RECONEXION_MS, type RondaSerie } from "~/lib/competir";
 import { sonar, vibrar } from "~/lib/efectos";
 import { recargarJugador } from "~/lib/jugador";
 import Boton3D from "~/ui/Boton3D";
@@ -98,10 +98,23 @@ export default function Serie() {
   const [enPantalla, setEnPantalla] = useState(true);
   const [rondaLista, setRondaLista] = useState<string | null>(null);
   const festejado = useRef(false);
+  // Desde cuándo esperamos a que el rival juegue cada ronda (reconexión, 0312).
+  const esperandoDesde = useRef(new Map<string, number>());
 
   const cargar = useCallback(async () => {
     if (!id) return null;
-    const r = await estadoSerie(id);
+    let r = await estadoSerie(id);
+    // Si el rival se desconectó y no vuelve en el tiempo de gracia, la ronda se
+    // cierra a tu favor (como chess.com) y la serie sigue.
+    const ahora = Date.now();
+    let cerro = false;
+    for (const ronda of r.rondas) {
+      if (ronda.estado !== "pendiente" || !ronda.yo_jugue || ronda.rival_jugo || ronda.serie_finalizada) continue;
+      const desde = esperandoDesde.current.get(ronda.duel_id) ?? ahora;
+      esperandoDesde.current.set(ronda.duel_id, desde);
+      if (ahora - desde > GRACIA_RECONEXION_MS + 5_000) cerro = (await cerrarDueloPorAusencia(ronda.duel_id).catch(() => false)) || cerro;
+    }
+    if (cerro) r = await estadoSerie(id);
     setRondas([...r.rondas].sort((a, b) => a.ronda_numero - b.ronda_numero));
     setFinal(r.final);
     setRanked(r.clasificatorio);
@@ -244,7 +257,7 @@ export default function Serie() {
           <View style={styles.esperando}>
             <ActivityIndicator color={color.primarioClaro} />
             <Texto v="nota" centro style={{ flex: 1 }}>
-              Esperando a que {oponente} termine su ronda. El resultado aparece solo.
+              Esperando a que {oponente} termine su ronda. El resultado aparece solo; si se desconectó y no vuelve en {GRACIA_RECONEXION_MS / 60_000} minutos, la ronda es tuya.
             </Texto>
           </View>
         )}

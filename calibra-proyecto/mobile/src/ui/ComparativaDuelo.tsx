@@ -2,7 +2,7 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
-import type { FilaHistorial, ResultadoDuelo } from "~/lib/competir";
+import { cerrarDueloPorAusencia, GRACIA_RECONEXION_MS, type FilaHistorial, type ResultadoDuelo } from "~/lib/competir";
 import { sonar, vibrar } from "~/lib/efectos";
 import { supabase } from "~/lib/supabase";
 import { color, conAlfa } from "~/tema";
@@ -15,7 +15,7 @@ import Texto from "./Texto";
 // vivo con un amigo), muestra su avance en vivo y, cuando termina, el resultado:
 // quién ganó y el puntaje de cada uno.
 const CADA_MS = 3000;
-const ESPERA_MAX_MS = 4 * 60_000;
+const ESPERA_MAX_MS = 5 * 60_000;
 
 export default function ComparativaDuelo({
   duelId,
@@ -57,6 +57,8 @@ export default function ComparativaDuelo({
         clearInterval(t);
         return;
       }
+      // Si el rival no vuelve en el tiempo de gracia, se cierra el duelo a tu favor.
+      if (Date.now() - inicio > GRACIA_RECONEXION_MS + 5_000) await cerrarDueloPorAusencia(duelId).catch(() => false);
       const { data } = await supabase.rpc("mi_historial_duelos", { p_limite: 10 });
       const f = ((data as FilaHistorial[] | null) ?? []).find((x) => x.duel_id === duelId);
       if (!f) return;
@@ -87,7 +89,7 @@ export default function ComparativaDuelo({
           <ActivityIndicator color={acento} />
           <View style={{ flex: 1 }}>
             <Texto v="h3">{agotado ? `${nombre} todavía no termina` : `Esperando a ${nombre}…`}</Texto>
-            <Texto v="nota">{agotado ? "Te avisamos el resultado apenas termine." : "Apenas termine, aquí ves quién ganó."}</Texto>
+            <Texto v="nota">{agotado ? "Te avisamos el resultado apenas termine." : `Apenas termine, aquí ves quién ganó. Si se desconectó y no vuelve en ${GRACIA_RECONEXION_MS / 60_000} minutos, ganas tú.`}</Texto>
           </View>
         </View>
         {rivalVa && !agotado && (

@@ -5,6 +5,7 @@ import Animated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { buscarDueloEnCurso, type ClienteMinimo, type DueloEnCurso } from "@/lib/duelos/enCurso";
 import { vibrar } from "~/lib/efectos";
+import { leerProgresoDuelo } from "~/lib/progresoDuelo";
 import { supabase } from "~/lib/supabase";
 import Texto, { SobreOscuro } from "~/ui/Texto";
 import { fuente } from "~/tema";
@@ -51,10 +52,11 @@ export default function BannerDueloEnCurso({ userId, segmentos }: { userId: stri
           Tienes un duelo en curso. ¡Tu rival te espera!
         </Texto>
         <Pressable
-          onPress={() => {
+          onPress={async () => {
             vibrar.medio();
             setDuelo(null);
-            if (duelo.serieId) router.push({ pathname: "/duelo/serie/[id]", params: { id: duelo.serieId } });
+            // Con la ronda a medias, directo a la partida (reconexión); si no, a la serie.
+            if (duelo.serieId && !(await leerProgresoDuelo(duelo.id))) router.push({ pathname: "/duelo/serie/[id]", params: { id: duelo.serieId } });
             else router.push({ pathname: "/duelo/[id]", params: { id: duelo.id } });
           }}
           style={styles.boton}

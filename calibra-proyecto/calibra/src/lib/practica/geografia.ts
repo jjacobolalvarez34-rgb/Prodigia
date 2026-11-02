@@ -214,7 +214,8 @@ export const IDS_POR_CONTINENTE: Record<Continente, Set<string>> = {
 // dificultad se nota igual.
 export const MIN_CANDIDATOS_MAPA = 18;
 
-export function elegirPaisAleatorio(paises: PaisAmerica[], nivel: number, usados: Set<string>): PaisAmerica | null {
+// `rng`: en un duelo, la semilla del duelo (los dos ven los mismos países).
+export function elegirPaisAleatorio(paises: PaisAmerica[], nivel: number, usados: Set<string>, rng: () => number = Math.random): PaisAmerica | null {
   const libres = paises.filter((p) => !usados.has(p.id));
   const base = libres.length > 0 ? libres : paises;
   if (base.length === 0) return null;
@@ -226,7 +227,7 @@ export function elegirPaisAleatorio(paises: PaisAmerica[], nivel: number, usados
     candidatos = base.filter((p) => Math.abs(p.dificultad - nivel) <= radio);
   }
   const pesos = candidatos.map((p) => 1 / (1 + Math.abs(p.dificultad - nivel)));
-  let x = Math.random() * pesos.reduce((a, b) => a + b, 0);
+  let x = rng() * pesos.reduce((a, b) => a + b, 0);
   for (let i = 0; i < candidatos.length; i++) {
     x -= pesos[i];
     if (x < 0) return candidatos[i];

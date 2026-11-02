@@ -8,6 +8,7 @@ import { mulberry32 } from "@/lib/rng";
 import { pistaSprint } from "~/lib/ayudas";
 import { obtenerDuelo, registrarResultadoDuelo, type InfoDuelo } from "~/lib/competir";
 import { useProgresoEnVivo } from "~/lib/duelos";
+import { borrarProgresoDuelo, guardarProgresoDuelo, leerProgresoDuelo, restanteAhora } from "~/lib/progresoDuelo";
 import { sonar, sonarAcierto, vibrar } from "~/lib/efectos";
 import {
   cargarNivelesNumeria,
@@ -141,8 +142,24 @@ export default function Sprint() {
         escudosRef.current = extra + (seccionRef.current === "aritmetica" ? 0 : ESCUDOS_BASE_AVANZADOS);
         setEscudos(escudosRef.current);
       }
+      const previo = dueloId ? await leerProgresoDuelo(dueloId) : null;
       if (cancelado) return;
       nivelesRef.current = niveles;
+      if (previo && previo.respuestas.length > 0) {
+        // Reconexión: se regeneran los problemas ya respondidos (misma semilla) para
+        // seguir en el siguiente, con el reloj que siguió corriendo afuera.
+        previo.respuestas.forEach(() => siguiente());
+        respuestasRef.current = previo.respuestas;
+        xpRef.current = previo.xp;
+        comboRef.current = previo.combo;
+        fallosRef.current = (previo.extra as FallaRepaso[] | undefined) ?? [];
+        setResultados(previo.resultados);
+        setCombo(previo.combo);
+        setProblema(siguiente());
+        setListo(true);
+        reanudar(previo.respuestas.length >= TOTAL ? 0 : restanteAhora(previo));
+        return;
+      }
       setProblema(siguiente());
       setListo(true);
       // En duelo la cuenta ya pasó en la pantalla VS.
@@ -153,6 +170,18 @@ export default function Sprint() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [miId]);
+
+  // Reconexión: sigue el reloj con lo que le quedaba (en 0, la ronda se cierra al instante).
+  function reanudar(restanteMs: number) {
+    const ahora = Date.now();
+    inicioRef.current = ahora - (duracionPartida - restanteMs);
+    mostradoEnRef.current = ahora;
+    setInicio(inicioRef.current);
+  }
+
+  function guardarProgreso() {
+    if (dueloId) guardarProgresoDuelo(dueloId, { respuestas: respuestasRef.current, resultados: respuestasRef.current.map((x) => x.correct), xp: xpRef.current, combo: comboRef.current, restanteMs: reloj.restante(), extra: fallosRef.current });
+  }
 
   function arrancar() {
     const ahora = Date.now();
@@ -186,7 +215,7 @@ export default function Sprint() {
 
   function confirmarSalida() {
     if (terminadoRef.current) return;
-    Alert.alert("¿Salir de la partida?", dueloId ? "Si sales, el duelo queda sin tu resultado." : "Lo que ya respondiste queda guardado, pero la partida no se cierra ni suma al día.", [
+    Alert.alert("¿Salir de la partida?", dueloId ? "El reloj sigue corriendo. Si vuelves antes de que se acabe, sigues donde ibas; si no, la ronda se cierra con lo que respondiste." : "Lo que ya respondiste queda guardado, pero la partida no se cierra ni suma al día.", [
       { text: "Seguir jugando", style: "cancel" },
       {
         text: "Salir",
@@ -234,6 +263,7 @@ export default function Sprint() {
       ]);
       await minimo;
       setProgresoFinal(1);
+      if (dueloId) borrarProgresoDuelo(dueloId);
       if (dueloId && duelo?.serieId) {
         router.replace({ pathname: "/duelo/serie/[id]", params: { id: duelo.serieId } });
         return;
@@ -317,12 +347,15 @@ export default function Sprint() {
       setEscudos(escudosRef.current);
     }
     emitir({ respondidos: respuestasRef.current.length, correctos: respuestasRef.current.filter((x) => x.correct).length, racha: comboRef.current });
+    guardarProgreso();
 
     const actual = problema;
     const guardado = guardarIntentoNumeria(actual, correcto, timeMs, protegido)
       .then((res) => {
         if (res.xp > 0) {
           xpRef.current += res.xp;
+          // El puntaje del duelo es la Exp: se guarda también al llegar.
+          if (!terminadoRef.current) guardarProgreso();
           const fid = ++flotanteId.current;
           setFlotantes((f) => [...f, { id: fid, puntos: res.xp }]);
           setTimeout(() => setFlotantes((f) => f.filter((x) => x.id !== fid)), 1100);

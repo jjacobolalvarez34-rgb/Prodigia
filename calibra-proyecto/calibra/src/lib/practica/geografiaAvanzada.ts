@@ -106,10 +106,10 @@ export const PREGUNTAS_AVANZADAS_POR_CONTINENTE: Record<Continente, PreguntaAvan
 export const NIVEL_MINIMO_AVANZADO = 8;
 export const PROBABILIDAD_AVANZADO = 0.4;
 
-function mezclar<T>(arr: T[]): T[] {
+function mezclar<T>(arr: T[], rng: () => number): T[] {
   const copia = [...arr];
   for (let i = copia.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rng() * (i + 1));
     [copia[i], copia[j]] = [copia[j], copia[i]];
   }
   return copia;
@@ -118,11 +118,11 @@ function mezclar<T>(arr: T[]): T[] {
 // `armar()` deja siempre la respuesta correcta en el índice 0 — acá se
 // devuelve una COPIA con las opciones mezcladas (nunca el objeto del
 // banco original), así el botón correcto no cae siempre primero.
-export function elegirPreguntaAvanzada(continente: Continente, usadas: Set<string>): PreguntaAvanzada | null {
+export function elegirPreguntaAvanzada(continente: Continente, usadas: Set<string>, rng: () => number = Math.random): PreguntaAvanzada | null {
   const banco = PREGUNTAS_AVANZADAS_POR_CONTINENTE[continente];
   const candidatas = banco.filter((p) => !usadas.has(p.id));
   const pool = candidatas.length > 0 ? candidatas : banco;
-  const elegida = pool[Math.floor(Math.random() * pool.length)];
+  const elegida = pool[Math.floor(rng() * pool.length)];
   if (!elegida) return null;
-  return { ...elegida, opciones: mezclar(elegida.opciones) };
+  return { ...elegida, opciones: mezclar(elegida.opciones, rng) };
 }

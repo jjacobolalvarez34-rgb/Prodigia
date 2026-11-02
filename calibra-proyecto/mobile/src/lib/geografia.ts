@@ -45,12 +45,14 @@ export function esPreguntaAvanzada(p: Pregunta): p is PreguntaAvanzada {
 
 // Mismo sorteo que la web: en calibración alta a veces sale una pregunta de texto
 // (ciudades, ríos, puntos de referencia) en vez del mapa.
-export function siguientePregunta(continente: Continente, nivel: number, usados: Set<string>): Pregunta | null {
-  if (nivel >= NIVEL_MINIMO_AVANZADO && Math.random() < PROBABILIDAD_AVANZADO) {
-    const avanzada = elegirPreguntaAvanzada(continente, usados);
+// En un duelo `rng` es la semilla del duelo: los dos jugadores ven las mismas preguntas
+// en el mismo orden (2026-11-02; antes cada uno sacaba las suyas al azar).
+export function siguientePregunta(continente: Continente, nivel: number, usados: Set<string>, rng: () => number = Math.random): Pregunta | null {
+  if (nivel >= NIVEL_MINIMO_AVANZADO && rng() < PROBABILIDAD_AVANZADO) {
+    const avanzada = elegirPreguntaAvanzada(continente, usados, rng);
     if (avanzada) return avanzada;
   }
-  return elegirPaisAleatorio(PAISES_POR_CONTINENTE[continente], nivel, usados);
+  return elegirPaisAleatorio(PAISES_POR_CONTINENTE[continente], nivel, usados, rng);
 }
 
 export function nombrePais(continente: Continente, id: string): string | null {

@@ -6,7 +6,9 @@ import { ActivityIndicator, Alert, BackHandler, Pressable, ScrollView, StyleShee
 import Animated, { FadeInDown, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { obtenerDuelo, registrarResultadoDuelo, type InfoDuelo } from "~/lib/competir";
+import { mulberry32 } from "@/lib/rng";
 import { useProgresoEnVivo } from "~/lib/duelos";
+import { borrarProgresoDuelo, guardarProgresoDuelo, leerProgresoDuelo, restanteAhora } from "~/lib/progresoDuelo";
 import { sonar, sonarAcierto, vibrar } from "~/lib/efectos";
 import {
   cargarNivelesGeografia,
@@ -68,6 +70,9 @@ export default function SprintGeografia() {
 
   const continenteRef = useRef(continente);
   const nivelRef = useRef(1);
+  // En duelo, la semilla del duelo: los dos ven los mismos países en el mismo orden.
+  const rngRef = useRef<(() => number) | undefined>(undefined);
+  const nivelDueloRef = useRef<number | null>(null);
   const escudosRef = useRef(ESCUDOS_POR_PARTIDA);
   const usadosRef = useRef(new Set<string>());
   const inicioRef = useRef(0);
@@ -88,7 +93,7 @@ export default function SprintGeografia() {
   const [ocultas, setOcultas] = useState<Set<string>>(() => new Set());
 
   function nuevaPregunta() {
-    const p = siguientePregunta(continenteRef.current, nivelRef.current, usadosRef.current);
+    const p = siguientePregunta(continenteRef.current, nivelDueloRef.current ?? nivelRef.current, usadosRef.current, rngRef.current);
     if (p) usadosRef.current.add(p.id);
     setPregunta(p);
     setOcultas(new Set());
@@ -108,6 +113,10 @@ export default function SprintGeografia() {
           return;
         }
         setDuelo(d);
+        rngRef.current = mulberry32(d.semilla);
+        // La base no guarda nivel de Geografía en el duelo: los dos lo sacan del ELO
+        // promedio (500 → 1, Diamante 2000 → 10), así juegan los mismos países.
+        nivelDueloRef.current = Math.max(1, Math.min(10, Math.round(1 + ((d.miElo + d.rivalElo) / 2 - 500) / 165)));
         const c = (d.subTipo as Continente | null) ?? "america";
         continenteRef.current = c;
         setContinente(c);
@@ -115,6 +124,26 @@ export default function SprintGeografia() {
       const niveles = await cargarNivelesGeografia(miId);
       if (cancelado) return;
       nivelRef.current = niveles[continenteRef.current];
+      const previo = dueloId ? await leerProgresoDuelo(dueloId) : null;
+      if (cancelado) return;
+      if (previo && previo.respuestas.length > 0) {
+        // Reconexión: se regeneran las preguntas ya respondidas (misma semilla) para
+        // seguir en la siguiente.
+        const extra = (previo.extra ?? {}) as { fallos?: FallaRepaso[] };
+        previo.respuestas.forEach(() => {
+          const p = siguientePregunta(continenteRef.current, nivelDueloRef.current ?? nivelRef.current, usadosRef.current, rngRef.current);
+          if (p) usadosRef.current.add(p.id);
+        });
+        respuestasRef.current = previo.respuestas;
+        xpRef.current = previo.xp;
+        comboRef.current = previo.combo;
+        fallosRef.current = extra.fallos ?? [];
+        setResultados(previo.resultados);
+        setCombo(previo.combo);
+        nuevaPregunta();
+        reanudar(previo.respuestas.length >= PREGUNTAS_POR_PARTIDA ? 0 : restanteAhora(previo));
+        return;
+      }
       nuevaPregunta();
       // En duelo la cuenta ya pasó en la pantalla VS.
       if (dueloId) arrancar();
@@ -124,6 +153,18 @@ export default function SprintGeografia() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [miId]);
+
+  // Reconexión: sigue el reloj con lo que le quedaba (en 0, la ronda se cierra al instante).
+  function reanudar(restanteMs: number) {
+    const ahora = Date.now();
+    inicioRef.current = ahora - (duracionPartida - restanteMs);
+    mostradaEnRef.current = ahora;
+    setInicio(inicioRef.current);
+  }
+
+  function guardarProgreso() {
+    if (dueloId) guardarProgresoDuelo(dueloId, { respuestas: respuestasRef.current, resultados: respuestasRef.current.map((x) => x.correct), xp: xpRef.current, combo: comboRef.current, restanteMs: reloj.restante(), extra: { fallos: fallosRef.current } });
+  }
 
   function arrancar() {
     const ahora = Date.now();
@@ -156,7 +197,7 @@ export default function SprintGeografia() {
 
   function confirmarSalida() {
     if (terminadoRef.current) return;
-    Alert.alert("¿Salir de la partida?", dueloId ? "Si sales, el duelo queda sin tu resultado." : "Lo que ya respondiste queda guardado, pero la partida no se cierra ni suma al día.", [
+    Alert.alert("¿Salir de la partida?", dueloId ? "El reloj sigue corriendo. Si vuelves antes de que se acabe, sigues donde ibas; si no, la ronda se cierra con lo que respondiste." : "Lo que ya respondiste queda guardado, pero la partida no se cierra ni suma al día.", [
       { text: "Seguir jugando", style: "cancel" },
       {
         text: "Salir",
@@ -204,6 +245,7 @@ export default function SprintGeografia() {
       ]);
       await minimo;
       setProgresoFinal(1);
+      if (dueloId) borrarProgresoDuelo(dueloId);
       if (dueloId && duelo?.serieId) {
         router.replace({ pathname: "/duelo/serie/[id]", params: { id: duelo.serieId } });
         return;
@@ -279,6 +321,7 @@ export default function SprintGeografia() {
       animarError(sacudida);
     }
     emitir({ respondidos: respuestasRef.current.length, correctos: respuestasRef.current.filter((x) => x.correct).length, racha: comboRef.current });
+    guardarProgreso();
 
     // Igual que la web: los primeros 2 errores de la partida no bajan el nivel.
     let protegido = false;
@@ -292,6 +335,8 @@ export default function SprintGeografia() {
       .then((res) => {
         if (res.xp > 0) {
           xpRef.current += res.xp;
+          // El puntaje del duelo es la Exp: se guarda también al llegar.
+          if (!terminadoRef.current) guardarProgreso();
           const fid = ++flotanteId.current;
           setFlotantes((f) => [...f, { id: fid, puntos: res.xp }]);
           setTimeout(() => setFlotantes((f) => f.filter((x) => x.id !== fid)), 1200);

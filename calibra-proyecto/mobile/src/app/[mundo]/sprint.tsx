@@ -12,6 +12,7 @@ import { useProgresoEnVivo } from "~/lib/duelos";
 import { sonar, sonarAcierto, vibrar } from "~/lib/efectos";
 import { cargarNivelesMundo, mundoJugable, problemTypeDe, type PreguntaMundo } from "~/lib/mundosJugables";
 import { cerrarPartida, guardarIntentoTipo } from "~/lib/partida";
+import { borrarProgresoDuelo, guardarProgresoDuelo, leerProgresoDuelo, restanteAhora } from "~/lib/progresoDuelo";
 import { useSesion } from "~/lib/sesion";
 import { mensajeError, supabase } from "~/lib/supabase";
 import Glifos from "~/ui/Glifos";
@@ -88,11 +89,16 @@ export default function SprintMundo() {
     return nivelForzadoRef.current ?? nivelesRef.current[m] ?? 1;
   }
 
-  function nuevaPregunta() {
-    if (!def) return;
-    const p = def.generar(modoRef.current, nivelPara(modoRef.current), usadosRef.current, contextoRef.current, rngRef.current, params.filtro || undefined, nivelForzadoRef.current == null ? nivelesRef.current : undefined);
+  function generarSiguiente() {
+    const p = def!.generar(modoRef.current, nivelPara(modoRef.current), usadosRef.current, contextoRef.current, rngRef.current, params.filtro || undefined, nivelForzadoRef.current == null ? nivelesRef.current : undefined);
     usadosRef.current.add(p.clave);
     if (usadosRef.current.size > 300) usadosRef.current = new Set();
+    return p;
+  }
+
+  function nuevaPregunta() {
+    if (!def) return;
+    const p = generarSiguiente();
     const modoP = def.modoDePregunta ? def.modoDePregunta(p, modoRef.current) : modoRef.current;
     setNivelVisible(p.nivel ?? nivelPara(modoP));
     setPregunta(p);
@@ -137,16 +143,39 @@ export default function SprintMundo() {
         escudosRef.current = (def.escudosBase ?? 2) + extra;
         setEscudos(escudosRef.current);
       }
+      const previo = dueloId ? await leerProgresoDuelo(dueloId) : null;
       if (cancelado) return;
       setListo(true);
-      nuevaPregunta();
-      if (dueloId) arrancar();
+      if (previo && previo.respuestas.length > 0) {
+        // Reconexión: se regeneran las preguntas ya respondidas (misma semilla) para
+        // seguir en la siguiente, con el reloj que siguió corriendo afuera.
+        previo.respuestas.forEach(() => generarSiguiente());
+        respuestasRef.current = previo.respuestas;
+        xpRef.current = previo.xp;
+        comboRef.current = previo.combo;
+        fallosRef.current = (previo.extra as FallaRepaso[] | undefined) ?? [];
+        setResultados(previo.resultados);
+        setCombo(previo.combo);
+        nuevaPregunta();
+        reanudar(previo.respuestas.length >= total ? 0 : restanteAhora(previo));
+      } else {
+        nuevaPregunta();
+        if (dueloId) arrancar();
+      }
     })();
     return () => {
       cancelado = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [miId]);
+
+  // Sigue el reloj con lo que le quedaba (si quedó en 0, se cierra la ronda al instante).
+  function reanudar(restanteMs: number) {
+    const ahora = Date.now();
+    inicioRef.current = ahora - (duracion - restanteMs);
+    mostradoEnRef.current = ahora;
+    setInicio(inicioRef.current);
+  }
 
   function arrancar() {
     const ahora = Date.now();
@@ -180,7 +209,7 @@ export default function SprintMundo() {
 
   function confirmarSalida() {
     if (terminadoRef.current) return;
-    Alert.alert("¿Salir de la partida?", dueloId ? "Si sales, el duelo queda sin tu resultado." : "Lo que ya respondiste queda guardado, pero la partida no se cierra ni suma al día.", [
+    Alert.alert("¿Salir de la partida?", dueloId ? "El reloj sigue corriendo. Si vuelves antes de que se acabe, sigues donde ibas; si no, la ronda se cierra con lo que respondiste." : "Lo que ya respondiste queda guardado, pero la partida no se cierra ni suma al día.", [
       { text: "Seguir jugando", style: "cancel" },
       {
         text: "Salir",
@@ -228,6 +257,7 @@ export default function SprintMundo() {
       ]);
       await minimo;
       setProgresoFinal(1);
+      if (dueloId) borrarProgresoDuelo(dueloId);
       if (dueloId && duelo?.serieId) {
         router.replace({ pathname: "/duelo/serie/[id]", params: { id: duelo.serieId } });
         return;
@@ -244,6 +274,10 @@ export default function SprintMundo() {
     } catch (e) {
       Alert.alert("No se pudo cerrar la partida", mensajeError(e), [{ text: "Volver", onPress: () => router.back() }]);
     }
+  }
+
+  function guardarProgreso() {
+    if (dueloId) guardarProgresoDuelo(dueloId, { respuestas: respuestasRef.current, resultados: respuestasRef.current.map((x) => x.correct), xp: xpRef.current, combo: comboRef.current, restanteMs: reloj.restante(), extra: fallosRef.current });
   }
 
   function responder(valor: string) {
@@ -302,11 +336,14 @@ export default function SprintMundo() {
       setEscudos(escudosRef.current);
     }
     emitir({ respondidos: respuestasRef.current.length, correctos: respuestasRef.current.filter((x) => x.correct).length, racha: comboRef.current });
+    guardarProgreso();
 
     const guardado = (def.guardar ? def.guardar(pregunta, modoP, nivel, correcto, timeMs, protegido) : guardarIntentoTipo(problemTypeDe(def, modoP), nivel, correcto, timeMs, protegido))
       .then((res) => {
         if (res.xp > 0) {
           xpRef.current += res.xp;
+          // El puntaje del duelo es la Exp: se guarda también al llegar.
+          if (!terminadoRef.current) guardarProgreso();
           const fid = ++flotanteId.current;
           setFlotantes((f) => [...f, { id: fid, puntos: res.xp }]);
           setTimeout(() => setFlotantes((f) => f.filter((x) => x.id !== fid)), 1100);

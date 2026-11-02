@@ -60,6 +60,7 @@ function TagClanDeBots() {
 }
 
 const POLL_MS = 3000;
+const GRACIA_RECONEXION_MS = 3 * 60_000;
 // Mismos hex que Header.tsx (colorDelMundo) y RankedsClient.tsx.
 const COLOR_MUNDO: Record<MundoDuelo, string> = {
   numeria: "#6C4CF1",
@@ -244,6 +245,7 @@ export default function SerieDueloClient({
     cancelarRef.current = false;
     const supabase = createClient();
 
+    const esperandoDesde = new Map<string, number>();
     async function ciclo() {
       while (!cancelarRef.current) {
         const resFinal = await fetch("/api/duelos/finalizar-serie", {
@@ -262,7 +264,18 @@ export default function SerieDueloClient({
 
         const { data } = await supabase.rpc("estado_serie_duelo", { p_serie_id: serieId });
         if (cancelarRef.current) return;
-        if (data) setRondas(data as FilaRondaSerie[]);
+        if (data) {
+          setRondas(data as FilaRondaSerie[]);
+          // Reconexión (0312): si el rival se desconectó y no vuelve en 3 min desde que
+          // terminaste tu ronda, la ronda se cierra a tu favor y la serie sigue.
+          const ahora = Date.now();
+          for (const r of data as FilaRondaSerie[]) {
+            if (r.estado !== "pendiente" || !r.yo_jugue || r.rival_jugo) continue;
+            const desde = esperandoDesde.get(r.duel_id) ?? ahora;
+            esperandoDesde.set(r.duel_id, desde);
+            if (ahora - desde > GRACIA_RECONEXION_MS + 5_000) await supabase.rpc("cerrar_duelo_por_ausencia", { p_duel_id: r.duel_id });
+          }
+        }
 
         await new Promise((resolve) => setTimeout(resolve, POLL_MS));
       }

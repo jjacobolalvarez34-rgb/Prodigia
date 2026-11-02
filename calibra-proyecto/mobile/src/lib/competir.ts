@@ -206,6 +206,14 @@ export async function registrarResultadoDuelo(duelId: string, precision: number,
   return (data as ResultadoDuelo[])[0];
 }
 
+// Reconexión (0312): pasados 3 min desde tu resultado, si el rival no volvió se cierra
+// el duelo y gana quien jugó. Antes de tiempo la base lo rechaza (devuelve false).
+export const GRACIA_RECONEXION_MS = 3 * 60_000;
+export async function cerrarDueloPorAusencia(duelId: string): Promise<boolean> {
+  const { error } = await supabase.rpc("cerrar_duelo_por_ausencia", { p_duel_id: duelId });
+  return !error;
+}
+
 export async function rendirseDuelo(duelId: string) {
   const { data, error } = await supabase.rpc("rendirse_duelo", { p_duel_id: duelId });
   if (error) throw error;
