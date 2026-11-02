@@ -162,9 +162,15 @@ export default function Sprint() {
     if (!dueloId) pistaSprint("inicio");
   }
 
+  // Siempre el terminar del último render (2026-11-02): con useCallback([]) quedaba el
+  // del primero, con el duelo todavía en null, y si la ronda acababa por tiempo el
+  // resultado del duelo no se registraba y salía el resumen normal en vez de la serie.
+  const terminarRef = useRef(terminar);
+  useEffect(() => {
+    terminarRef.current = terminar;
+  });
   const alAcabarElTiempo = useCallback(() => {
-    if (!ocupadoRef.current) terminar("tiempo");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!ocupadoRef.current) void terminarRef.current("tiempo");
   }, []);
   const reloj = useReloj(inicio, duracionPartida, alAcabarElTiempo, final !== null);
   const consumibles = useConsumibles(!dueloId && inicio != null);

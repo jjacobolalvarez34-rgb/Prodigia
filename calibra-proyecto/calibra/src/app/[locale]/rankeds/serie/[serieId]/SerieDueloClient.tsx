@@ -85,7 +85,7 @@ const COLOR_MUNDO: Record<MundoDuelo, string> = {
 const TT_TYPING_MS = 60;
 const TT_DELETING_MS = 40;
 const TT_PAUSE_MS = 500;
-const TT_BUFFER_MS = 300;
+const TT_BUFFER_MS = 3000; // 3 s en la ciudad nueva antes de entrar (2026-11-02)
 // Fase 5 (auditoría de estabilización, 2026-08-30 — "el overlay tapa
 // las estadísticas antes de poder leerlas"): antes la ceremonia de
 // TextType arrancaba apenas se detectaba la próxima ronda, tapando a
@@ -94,7 +94,7 @@ const TT_BUFFER_MS = 300;
 // leerla. Este piso de lectura corre ANTES de montar el overlay —
 // durante esos ms la lista de rondas queda a la vista, sin nada
 // encima.
-const LECTURA_RESULTADO_MS = 3500;
+const LECTURA_RESULTADO_MS = 5000;
 
 function duracionTransicionMs(mundoAnterior: string | null, mundoSiguiente: string): number {
   const siguiente = mundoSiguiente.length * TT_TYPING_MS;

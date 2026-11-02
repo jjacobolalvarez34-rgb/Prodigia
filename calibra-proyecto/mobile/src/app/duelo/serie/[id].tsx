@@ -15,16 +15,17 @@ import { color, fuente, MUNDO_POR_SLUG } from "~/tema";
 import { IconoCerrar, IconoCheck, IconoIgual, IconoReloj } from "~/ui/Iconos";
 
 // Serie "todas las ciudades" (mejor de 3), igual que SerieDueloClient de la web:
-// se actualiza sola cada 3 s, deja leer el resultado de la ronda (3,5 s), muestra
-// la transición "siguiente ciudad" y entra sola a la próxima ronda. No hay botón
+// se actualiza sola cada 3 s, deja leer el resultado de la ronda (5 s), muestra
+// la transición "siguiente ciudad", se queda 3 s en la ciudad nueva y entra sola a
+// la próxima ronda (orden pedido el 2026-11-02). No hay botón
 // para jugar la ronda. Al terminar, el resultado del versus y el ELO (la base lo
 // aplica una sola vez, al cerrar la serie).
 const CADA_MS = 3000;
-const LECTURA_RESULTADO_MS = 3500;
+const LECTURA_RESULTADO_MS = 5000;
 const ESCRIBIR_MS = 60;
 const BORRAR_MS = 40;
 const PAUSA_MS = 500;
-const COLCHON_MS = 300;
+const COLCHON_MS = 3000;
 
 type Final = Awaited<ReturnType<typeof estadoSerie>>["final"];
 
@@ -213,6 +214,12 @@ export default function Serie() {
             marcador={`${final.victorias_propias} – ${final.victorias_rival}`}
             eloAnterior={ranked ? final.elo_anterior : null}
             eloNuevo={ranked ? final.elo_nuevo : null}
+            desglose={[
+              ...rondas
+                .filter((r) => r.estado === "completado")
+                .map((r) => ({ etiqueta: `Ronda ${r.ronda_numero} · ${nombreDe(r.mundo)}`, mio: String(r.mi_puntaje ?? 0), suyo: String(r.rival_puntaje ?? 0) })),
+              { etiqueta: "Rondas ganadas", mio: String(final.victorias_propias), suyo: String(final.victorias_rival) },
+            ]}
           />
           {listaRondas}
           <Boton3D titulo="Otra partida" brillo onPress={() => (ranked ? router.replace({ pathname: "/duelo/buscar", params: { mundo: "aleatorio", ranked: "1" } }) : router.replace({ pathname: "/(tabs)/competir", params: { seccion: "casual" } }))} />
