@@ -9,6 +9,7 @@ import GestoLogo from "@/components/GestoLogo";
 import RangoBadge from "@/components/RangoBadge";
 import { rangoDeElo } from "@/types/database";
 import { reproducirTono } from "@/lib/sonido";
+import PodioDuelo, { mejorDe } from "@/components/duelos/PodioDuelo";
 
 export interface ResultadoDuelo {
   resuelto: boolean;
@@ -48,35 +49,6 @@ function TagClanDeBots() {
 
 interface Props {
   duelo: ResultadoDuelo | null | undefined;
-}
-
-function BarraComparacion({ miPuntaje, rivalPuntaje }: { miPuntaje: number; rivalPuntaje: number }) {
-  const t = useTranslations("Duelos.resultado");
-  const max = Math.max(miPuntaje, rivalPuntaje, 1);
-  return (
-    <div className="mt-3 flex w-full max-w-xs flex-col gap-2">
-      <FilaBarra label={t("tu")} valor={miPuntaje} max={max} color="var(--primario)" />
-      <FilaBarra label={t("rival")} valor={rivalPuntaje} max={max} color="var(--texto-secundario)" />
-    </div>
-  );
-}
-
-function FilaBarra({ label, valor, max, color }: { label: string; valor: number; max: number; color: string }) {
-  return (
-    <div className="flex items-center gap-2 text-xs">
-      <span className="w-10 shrink-0 text-texto-secundario">{label}</span>
-      <div className="h-2 flex-1 overflow-hidden rounded-full bg-foreground/10">
-        <motion.div
-          className="h-full rounded-full"
-          style={{ background: color }}
-          initial={{ width: 0 }}
-          animate={{ width: `${(valor / max) * 100}%` }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        />
-      </div>
-      <span className="w-8 shrink-0 text-right font-mono font-semibold text-foreground">{valor}</span>
-    </div>
-  );
 }
 
 // Fase 3 (tratamiento tetr.io): el ELO es "el resultado que más
@@ -142,6 +114,47 @@ function DesgloseCompleto({ duelo }: { duelo: ResultadoDuelo }) {
   );
 }
 
+// Podio (2026-11-02, igual que la app): pedestales, por qué ganó quien ganó y la
+// comparación fila por fila con lo mejor resaltado.
+function PodioDe({ duelo }: { duelo: ResultadoDuelo }) {
+  const t = useTranslations("Duelos.resultado");
+  const rival = duelo.oponente_nombre ?? t("rivalPorDefecto");
+  const num = (p: number | null | undefined) => (p == null ? null : Math.round(p * TOTAL_PREGUNTAS));
+  const a1 = num(duelo.mi_precision);
+  const a2 = num(duelo.rival_precision);
+  const t1 = duelo.mi_tiempo_promedio ?? null;
+  const t2 = duelo.rival_tiempo_promedio ?? null;
+  let motivo: string;
+  if (duelo.empate) motivo = t("motivoEmpate");
+  else if (a1 != null && a2 != null && a1 !== a2) motivo = duelo.gane ? t("motivoAciertosTu", { n: Math.abs(a1 - a2) }) : t("motivoAciertosRival", { n: Math.abs(a1 - a2), rival });
+  else if (t1 != null && t2 != null && Math.abs(t1 - t2) >= 100) {
+    const s = (Math.abs(t1 - t2) / 1000).toFixed(1);
+    motivo = duelo.gane ? t("motivoRapidoTu", { s }) : t("motivoRapidoRival", { s, rival });
+  } else motivo = duelo.gane ? t("motivoDificilTu") : t("motivoDificilRival", { rival });
+  const hayDesglose = duelo.mi_precision != null || duelo.rival_precision != null;
+  return (
+    <div className="mt-4 flex w-full justify-center">
+      <PodioDuelo
+        gane={duelo.gane}
+        empate={duelo.empate}
+        rival={rival}
+        puntajes={[duelo.mi_puntaje ?? null, duelo.rival_puntaje ?? null]}
+        motivo={motivo}
+        filas={
+          hayDesglose
+            ? [
+                { etiqueta: t("aciertos"), mio: aciertos(duelo.mi_precision), suyo: aciertos(duelo.rival_precision), mejor: mejorDe(duelo.mi_precision, duelo.rival_precision, true) },
+                { etiqueta: t("precision"), mio: pct(duelo.mi_precision), suyo: pct(duelo.rival_precision), mejor: mejorDe(duelo.mi_precision, duelo.rival_precision, true) },
+                { etiqueta: t("tiempoRespuesta"), mio: segundos(t1), suyo: segundos(t2), mejor: mejorDe(t1, t2, false) },
+                { etiqueta: t("puntaje"), mio: String(duelo.mi_puntaje ?? "—"), suyo: String(duelo.rival_puntaje ?? "—"), mejor: mejorDe(duelo.mi_puntaje, duelo.rival_puntaje, true) },
+              ]
+            : undefined
+        }
+      />
+    </div>
+  );
+}
+
 // Fase 7: pantalla de resultado de duelo mejorada — comparativa lado a
 // lado, el cambio de ELO animado (cuenta desde el anterior, no un
 // "+14" estático), y si el cambio de ELO cruza un umbral de rango, una
@@ -181,7 +194,6 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
   const rangoNuevo = rangoDeElo(duelo.elo_nuevo);
   const conElo = duelo.clasificatorio !== false;
   const subioDeRango = conElo && duelo.gane && rangoNuevo.slug !== rangoAnterior.slug;
-  const hayPuntajes = duelo.mi_puntaje != null && duelo.rival_puntaje != null;
 
   if (duelo.empate) {
     return (
@@ -191,13 +203,12 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
           {t("empataronCon", { oponente: duelo.oponente_nombre ?? t("rivalPorDefecto") })}
           {duelo.oponente_es_bot && <TagClanDeBots />}
         </p>
+        <PodioDe duelo={duelo} />
         {conElo && (
           <div className="mt-3">
             <BloqueElo anterior={duelo.elo_anterior} nuevo={duelo.elo_nuevo} />
           </div>
         )}
-        <DesgloseCompleto duelo={duelo} />
-        {hayPuntajes && !duelo.mi_precision && <BarraComparacion miPuntaje={duelo.mi_puntaje!} rivalPuntaje={duelo.rival_puntaje!} />}
         {duelo.oponente_id && !duelo.oponente_es_bot && (
           <Link href={`/perfil/${duelo.oponente_id}`} className="mt-3 block text-xs font-semibold text-primario hover:underline">
             {t("verPerfil")}
@@ -223,13 +234,12 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
           {t("leGanasteA", { oponente: duelo.oponente_nombre ?? t("rivalPorDefecto") })}
           {duelo.oponente_es_bot && <TagClanDeBots />}
         </p>
+        <PodioDe duelo={duelo} />
         {conElo && (
           <div className="mt-3">
             <BloqueElo anterior={duelo.elo_anterior} nuevo={duelo.elo_nuevo} />
           </div>
         )}
-        <DesgloseCompleto duelo={duelo} />
-        {hayPuntajes && !duelo.mi_precision && <BarraComparacion miPuntaje={duelo.mi_puntaje!} rivalPuntaje={duelo.rival_puntaje!} />}
         {subioDeRango && (
           <motion.div
             initial={{ opacity: 0, y: 8, scale: 0.9 }}
@@ -260,13 +270,12 @@ export default function ResultadoDueloBlock({ duelo }: Props) {
         {t("estaVezGano", { oponente: duelo.oponente_nombre ?? t("rivalPorDefecto") })}
         {duelo.oponente_es_bot && <TagClanDeBots />}
       </p>
+      <PodioDe duelo={duelo} />
       {conElo && (
         <div className="mt-3">
           <BloqueElo anterior={duelo.elo_anterior} nuevo={duelo.elo_nuevo} />
         </div>
       )}
-      <DesgloseCompleto duelo={duelo} />
-      {hayPuntajes && !duelo.mi_precision && <BarraComparacion miPuntaje={duelo.mi_puntaje!} rivalPuntaje={duelo.rival_puntaje!} />}
       <div className="mt-3 flex items-center gap-3">
         {duelo.oponente_id && !duelo.oponente_es_bot && (
           <Link href={`/perfil/${duelo.oponente_id}`} className="text-xs font-semibold text-primario hover:underline">

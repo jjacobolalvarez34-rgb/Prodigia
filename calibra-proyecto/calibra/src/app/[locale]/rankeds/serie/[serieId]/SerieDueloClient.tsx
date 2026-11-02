@@ -14,6 +14,7 @@ import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 import type { Achievement } from "@/types/database";
 import TextType from "@/components/reactbits/TextType";
 import BotonEnlace from "@/components/BotonEnlace";
+import PodioDuelo from "@/components/duelos/PodioDuelo";
 
 export interface FilaRondaSerie {
   duel_id: string;
@@ -172,6 +173,7 @@ export default function SerieDueloClient({
 }) {
   const t = useTranslations("Rankeds");
   const tMundos = useTranslations("Mundos.nombres");
+  const tRes = useTranslations("Duelos.resultado");
   const router = useRouter();
   const [rondas, setRondas] = useState(rondasIniciales);
   const [resultadoFinal, setResultadoFinal] = useState<ResultadoFinal | null>(null);
@@ -329,9 +331,31 @@ export default function SerieDueloClient({
                 : t("serieDuelo.perdisteSerie", { oponente: oponenteNombre })}
             {resultadoFinal.oponente_es_bot && <TagClanDeBots />}
           </p>
-          <p className="font-mono text-2xl font-bold text-foreground">
-            {resultadoFinal.victorias_propias} - {resultadoFinal.victorias_rival}
-          </p>
+          {/* Podio (2026-11-02, igual que la app): rondas ganadas en cada pedestal y la
+              comparación ronda por ronda. */}
+          <div className="mt-3 flex w-full justify-center">
+            <PodioDuelo
+              gane={resultadoFinal.gane}
+              empate={resultadoFinal.empate}
+              rival={oponenteNombre}
+              puntajes={[resultadoFinal.victorias_propias, resultadoFinal.victorias_rival]}
+              motivo={
+                resultadoFinal.empate
+                  ? tRes("motivoSerieEmpate")
+                  : resultadoFinal.gane
+                    ? tRes("motivoSerieTu", { n: resultadoFinal.victorias_propias, total: rondas.filter((r) => r.estado === "completado").length })
+                    : tRes("motivoSerieRival", { n: resultadoFinal.victorias_rival, total: rondas.filter((r) => r.estado === "completado").length, rival: oponenteNombre })
+              }
+              filas={rondas
+                .filter((r) => r.estado === "completado")
+                .map((r) => ({
+                  etiqueta: tRes("ronda", { n: r.ronda_numero, mundo: tMundos(r.mundo) }),
+                  mio: String(r.mi_puntaje ?? 0),
+                  suyo: String(r.rival_puntaje ?? 0),
+                  mejor: r.empate_ronda ? null : r.gane_ronda ? ("mio" as const) : ("suyo" as const),
+                }))}
+            />
+          </div>
           {resultadoFinal.elo_anterior !== null && resultadoFinal.elo_nuevo !== null && (
             <div className="mt-2 flex flex-col items-center gap-0.5">
               <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-texto-secundario">{t("serieDuelo.elo")}</span>
