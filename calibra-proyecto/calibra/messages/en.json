@@ -5877,6 +5877,7 @@
     "evento": "Event",
     "verEvento": "See the event",
     "empiezaEn": "Starts in {tiempo}",
+    "termino": "The event is over",
     "terminaEn": "Ends in {tiempo}",
     "terminado": "It's over: trade your tokens",
     "invitado": "Create your account to earn tokens and collect pieces.",

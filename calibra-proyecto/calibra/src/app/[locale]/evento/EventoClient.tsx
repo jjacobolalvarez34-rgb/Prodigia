@@ -116,7 +116,7 @@ export default function EventoClient({ invitado }: { invitado: boolean }) {
             {evento.estado === "proximo" ? (
               <RelojFalta hasta={evento.inicioMs} texto={(tiempo) => t("empiezaEn", { tiempo })} />
             ) : evento.estado === "abierto" ? (
-              <RelojFalta hasta={finDelDiaMs(evento.hasta)} texto={(tiempo) => t("terminaEn", { tiempo })} />
+              <RelojFalta hasta={finDelDiaMs(evento.hasta)} texto={(tiempo) => t("terminaEn", { tiempo })} alTerminar={t("termino")} />
             ) : (
               t("terminado")
             )}

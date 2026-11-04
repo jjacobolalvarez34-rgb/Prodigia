@@ -1,7 +1,8 @@
 import { useRouter, type Href } from "expo-router";
 import { Pressable, StyleSheet, useWindowDimensions, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { eventoDeTema, finDelDiaMs } from "@/lib/temas/eventos";
+import { useEffect, useState } from "react";
+import { AVISO_FIN_EVENTO_MS, cartelEventoVisible, eventoDeTema, finDelDiaMs } from "@/lib/temas/eventos";
 import { inicioEventoMs } from "@/lib/temas/calendario";
 import { useTemaHoy } from "~/lib/temporada";
 import { fuente } from "~/tema";
@@ -18,7 +19,16 @@ export default function CartelTemporada() {
   const router = useRouter();
   const tema = useTemaHoy();
   const { width } = useWindowDimensions();
+  // «El evento terminó» 12 h y luego se va (el tema del día no cambia en ese momento).
+  const [, setTic] = useState(0);
+  const hasta = tema && tema.fase !== "decoracion" ? tema.hoy.rango.hasta : null;
+  useEffect(() => {
+    if (!hasta || !cartelEventoVisible(hasta)) return;
+    const id = setTimeout(() => setTic((n) => n + 1), finDelDiaMs(hasta) + AVISO_FIN_EVENTO_MS - Date.now() + 1000);
+    return () => clearTimeout(id);
+  }, [hasta]);
   if (!tema || tema.tema.escala === "tienda") return null;
+  if (hasta && !cartelEventoVisible(hasta)) return null;
   const evento = eventoDeTema(tema);
   const decoracion = tema.fase === "decoracion";
   const frase = (decoracion ? tema.tema.frase.decoracion : "") || tema.tema.frase.evento;
@@ -29,7 +39,7 @@ export default function CartelTemporada() {
         icono: <IconoEvento tema={tema.tema} />,
         eyebrow: decoracion ? "Se acerca" : "Evento",
         titulo: tema.tema.nombre,
-        detalle: decoracion ? <RelojFalta hasta={inicioEventoMs(tema.hoy.rango)} texto={(t) => `En ${faltaCorto(t)}`} tam={11.5} /> : <RelojFalta hasta={finDelDiaMs(tema.hoy.rango.hasta)} texto={(t) => `Termina en ${faltaCorto(t)}`} tam={11.5} />,
+        detalle: decoracion ? <RelojFalta hasta={inicioEventoMs(tema.hoy.rango)} texto={(t) => `En ${faltaCorto(t)}`} tam={11.5} /> : <RelojFalta hasta={finDelDiaMs(tema.hoy.rango.hasta)} texto={(t) => `Termina en ${faltaCorto(t)}`} alTerminar="Terminó" tam={11.5} />,
         acento: tema.tema.acento,
         colores: [`${tema.tema.acento2}55`, "#0B0A1A", `${tema.tema.acento}44`],
       }}
@@ -48,7 +58,7 @@ export default function CartelTemporada() {
               {decoracion ? (
                 <RelojFalta hasta={inicioEventoMs(tema.hoy.rango)} texto={(t) => `Empieza en ${t}`} />
               ) : (
-                <RelojFalta hasta={finDelDiaMs(tema.hoy.rango.hasta)} texto={(t) => `Termina en ${t}`} />
+                <RelojFalta hasta={finDelDiaMs(tema.hoy.rango.hasta)} texto={(t) => `Termina en ${t}`} alTerminar="El evento terminó" />
               )}
             </View>
           </View>

@@ -5877,6 +5877,7 @@
     "evento": "Evento",
     "verEvento": "Ver el evento",
     "empiezaEn": "Empieza en {tiempo}",
+    "termino": "El evento terminó",
     "terminaEn": "Termina en {tiempo}",
     "terminado": "Terminó: cambia tus fichas",
     "invitado": "Crea tu cuenta para ganar fichas y llevarte piezas de la colección.",

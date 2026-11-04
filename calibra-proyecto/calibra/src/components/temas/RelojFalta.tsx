@@ -5,7 +5,7 @@ import { faltaPara } from "@/lib/temas/eventos";
 
 // Cuenta regresiva que se actualiza cada segundo por su cuenta (así el cartel que la
 // contiene no se vuelve a pintar entero). En el servidor no muestra nada: sin saltos.
-export default function RelojFalta({ hasta, texto }: { hasta: number; texto: (tiempo: string) => string }) {
+export default function RelojFalta({ hasta, texto, alTerminar }: { hasta: number; texto: (tiempo: string) => string; alTerminar?: string }) {
   const [ahora, setAhora] = useState<number | null>(null);
   useEffect(() => {
     const tic = () => setAhora(Date.now());
@@ -14,5 +14,6 @@ export default function RelojFalta({ hasta, texto }: { hasta: number; texto: (ti
     return () => clearInterval(id);
   }, []);
   if (ahora == null) return null;
+  if (alTerminar && ahora >= hasta) return <>{alTerminar}</>;
   return <>{texto(faltaPara(hasta, ahora))}</>;
 }

@@ -2,7 +2,8 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { eventoDeTema, finDelDiaMs } from "@/lib/temas/eventos";
+import { useEffect, useState } from "react";
+import { AVISO_FIN_EVENTO_MS, cartelEventoVisible, eventoDeTema, finDelDiaMs } from "@/lib/temas/eventos";
 import RelojFalta from "./RelojFalta";
 import { inicioEventoMs } from "@/lib/temas/calendario";
 import EscenaTema from "./EscenaTema";
@@ -17,7 +18,16 @@ export default function CartelTemporada() {
   const t = useTranslations("Evento");
   const locale = useLocale();
   const tema = useTemaHoy();
+  // Se esconde solo a las 12 h del final (el tema del día no cambia en ese momento).
+  const [, setTic] = useState(0);
+  const hasta = tema && tema.fase !== "decoracion" ? tema.hoy.rango.hasta : null;
+  useEffect(() => {
+    if (!hasta || !cartelEventoVisible(hasta)) return;
+    const id = setTimeout(() => setTic((n) => n + 1), finDelDiaMs(hasta) + AVISO_FIN_EVENTO_MS - Date.now() + 1000);
+    return () => clearTimeout(id);
+  }, [hasta]);
   if (!tema || tema.tema.escala === "tienda") return null;
+  if (hasta && !cartelEventoVisible(hasta)) return null;
   const evento = eventoDeTema(tema);
   const en = locale === "en";
   const frase = tema.fase === "decoracion" ? (en ? tema.tema.frase.decoracionEn : tema.tema.frase.decoracion) || (en ? tema.tema.frase.eventoEn : tema.tema.frase.evento) : en ? tema.tema.frase.eventoEn : tema.tema.frase.evento;
@@ -26,7 +36,7 @@ export default function CartelTemporada() {
     tema.fase === "decoracion" ? (
       <RelojFalta hasta={inicioEventoMs(tema.hoy.rango)} texto={(tiempo) => t("empiezaEn", { tiempo })} />
     ) : (
-      <RelojFalta hasta={finDelDiaMs(tema.hoy.rango.hasta)} texto={(tiempo) => t("terminaEn", { tiempo })} />
+      <RelojFalta hasta={finDelDiaMs(tema.hoy.rango.hasta)} texto={(tiempo) => t("terminaEn", { tiempo })} alTerminar={t("termino")} />
     );
 
   const contenido = (
@@ -60,7 +70,7 @@ export default function CartelTemporada() {
           tema.fase === "decoracion" ? (
             <RelojFalta hasta={inicioEventoMs(tema.hoy.rango)} texto={(tiempo) => t("empiezaEn", { tiempo: faltaCorto(tiempo) })} />
           ) : (
-            <RelojFalta hasta={finDelDiaMs(tema.hoy.rango.hasta)} texto={(tiempo) => t("terminaEn", { tiempo: faltaCorto(tiempo) })} />
+            <RelojFalta hasta={finDelDiaMs(tema.hoy.rango.hasta)} texto={(tiempo) => t("terminaEn", { tiempo: faltaCorto(tiempo) })} alTerminar={t("termino")} />
           ),
         acento: tema.tema.acento,
         fondo: `radial-gradient(90% 160% at 0% 50%, ${tema.tema.acento2}55 0%, transparent 60%), radial-gradient(80% 180% at 100% 50%, ${tema.tema.acento}40 0%, transparent 65%), #0B0A1A`,

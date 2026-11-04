@@ -4,7 +4,7 @@ import Texto from "~/ui/Texto";
 
 // Cuenta regresiva que se actualiza cada segundo por su cuenta (así el cartel que la
 // contiene, con su escena, no se vuelve a pintar entero).
-export default function RelojFalta({ hasta, texto, tam = 12 }: { hasta: number; texto: (tiempo: string) => string; tam?: number }) {
+export default function RelojFalta({ hasta, texto, tam = 12, alTerminar }: { hasta: number; texto: (tiempo: string) => string; tam?: number; alTerminar?: string }) {
   const [ahora, setAhora] = useState(() => Date.now());
   useEffect(() => {
     const id = setInterval(() => setAhora(Date.now()), 1000);
@@ -12,7 +12,7 @@ export default function RelojFalta({ hasta, texto, tam = 12 }: { hasta: number; 
   }, []);
   return (
     <Texto v="mono" tam={tam}>
-      {texto(faltaPara(hasta, ahora))}
+      {alTerminar && ahora >= hasta ? alTerminar : texto(faltaPara(hasta, ahora))}
     </Texto>
   );
 }

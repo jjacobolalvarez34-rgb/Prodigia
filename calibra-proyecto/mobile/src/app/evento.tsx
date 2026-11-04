@@ -116,7 +116,7 @@ export default function Evento() {
               {evento.estado === "proximo" ? (
                 <RelojFalta hasta={evento.inicioMs} texto={(t) => `Empieza en ${t}`} />
               ) : evento.estado === "abierto" ? (
-                <RelojFalta hasta={finDelDiaMs(evento.hasta)} texto={(t) => `Termina en ${t}`} />
+                <RelojFalta hasta={finDelDiaMs(evento.hasta)} texto={(t) => `Termina en ${t}`} alTerminar="El evento terminó" />
               ) : (
                 <Texto v="mono" tam={12}>
                   Terminó: cambia tus fichas

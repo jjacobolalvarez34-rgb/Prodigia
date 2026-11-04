@@ -72,6 +72,14 @@ export function mensajeErrorEvento(e: unknown): string {
 }
 
 // Final de un día (UTC), en ms: hasta cuándo dura el último día de un evento.
+// Al terminar un evento (2026-11-03): el cartel dice «El evento terminó» durante 12 h y
+// después se va. Antes, el día de cierre (para canjear) seguía mostrando «Termina en 0
+// segundos» todo el día.
+export const AVISO_FIN_EVENTO_MS = 12 * 3_600_000;
+export function cartelEventoVisible(hastaIso: string, ahora = Date.now()): boolean {
+  return ahora < finDelDiaMs(hastaIso) + AVISO_FIN_EVENTO_MS;
+}
+
 export function finDelDiaMs(isoDia: string): number {
   return Date.parse(`${isoDia}T23:59:59Z`);
 }
