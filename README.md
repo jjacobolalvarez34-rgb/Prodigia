@@ -116,3 +116,26 @@ línea.
 Desplegado en Vercel, conectado a este repositorio. Variables de entorno
 configuradas en el dashboard de Vercel (mismas que `.env.local`). No
 anunciado públicamente todavía — en fase de prueba con un grupo cerrado.
+## Carpetas
+
+Todo lo de Prodigia vive dentro de esta carpeta (ordenado el 2026-11-04). Solo el
+código se versiona; lo demás está en `.gitignore`.
+
+| Carpeta | Qué hay |
+|---|---|
+| `calibra-proyecto/` | El código: la web (`calibra/`) y la app (`mobile/`). |
+| `Prodigia-github/` | Clon viejo del mismo repo de GitHub (último cambio 2026-09-10); no se usa. |
+| `marketing/` | Videos de eventos, capturas, kit de marca, tandas de Instagram y diseño. |
+| `apk/` | Los APK compilados (`Prodigia.apk` es el último). |
+| `documentos/` | PDF y maquetas. |
+| `compilacion/android/` | JDK, SDK de Android, scripts `compilar-limpio.ps1` y `compilar.ps1`, y `registros/` de cada compilación. |
+| `compilacion/copia/` | Copia limpia del repo (git worktree) desde la que se compila el APK. |
+| `compilacion/ms-playwright/` | Navegadores de Playwright para las capturas (`PLAYWRIGHT_BROWSERS_PATH`). |
+| `temporales/` | Temporales y cachés de compilaciones, renders y capturas; se pueden borrar. |
+
+La caché de Gradle sigue en `D:\android-build\gradle-home` hasta poder moverla
+(estaba en uso). Compilar el APK sin depender de la terminal:
+
+```powershell
+Start-Process powershell -WindowStyle Hidden -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-Command','& ''D:\Repositorios\Prodigia\compilacion\android\compilar-limpio.ps1'' *> ''D:\Repositorios\Prodigia\compilacion\android\registros\compilarNN.log'''
+```

@@ -54,7 +54,7 @@ dinámico, que dé emoción.
 - **Cómo se hacen:**
   - Con HyperFrames: canvas dibujado a mano y controlado por el tiempo, con GSAP y fuentes
     locales.
-  - El proyecto de cada video queda en `D:\Repositorios\prodigia-marketing\videos\<evento>\`.
+  - El proyecto de cada video queda en `D:\Repositorios\Prodigia\marketing\videos\<evento>\`.
   - Antes de renderizar se aprueban 6 a 8 cuadros clave.
 - **Ojo con las fechas:** el video va dentro del APK. Tiene que estar en una versión
   publicada antes de que empiece el evento; en la web basta con subirlo.

@@ -116,7 +116,7 @@ La web lee `calibra/.env.local` y la app `mobile/.env.local`; ninguna se sube al
 | Tipos y lint de la web | `calibra/` | `npx tsc --noEmit` y `npm run lint` |
 | App con Expo Go | `mobile/` | `npx expo start` y escanear el QR (sin widgets ni módulos nativos nuevos) |
 | Tipos, lint y paridad de la app | `mobile/` | `npx tsc --noEmit`, `npx eslint src`, `npm run paridad` |
-| APK local | cualquier lado | `powershell -NoProfile -ExecutionPolicy Bypass -File D:\android-build\compilar.ps1 *> D:\android-build\compilarN.log`; deja `D:\Prodigia-APK\Prodigia.apk` |
+| APK local | cualquier lado | `powershell -NoProfile -ExecutionPolicy Bypass -File D:\Repositorios\Prodigia\compilacion\android\compilar.ps1 *> D:\Repositorios\Prodigia\compilacion\android\registros\compilarN.log`; deja `D:\Repositorios\Prodigia\apk\Prodigia.apk` |
 | APK en la nube (EAS) | `mobile/` | `npx eas-cli@latest build -p android --profile preview` |
 
 Un detalle curioso: los tests de las lecciones también escriben SQL. Por ejemplo, `QUIMIA_ESCRIBIR_SQL=1 npx vitest run src/lib/quimia/lecciones` regenera la migración con el contenido de las lecciones de Quimia; sin la variable, el test solo comprueba que la migración coincide con el código.
@@ -513,7 +513,7 @@ Producción está en Vercel, en `https://prodigia-sandy.vercel.app`. El código 
 ### La app (APK)
 
 1. **Subir la versión** en `mobile/app.json`: `version` (la que se ve, por ejemplo `0.2.0`) y `android.versionCode` (un entero que siempre crece; Android no instala encima un número menor).
-2. **Compilar.** En esta máquina, con `D:\android-build\compilar.ps1` (unos 10 a 60 minutos): hace `expo prebuild --clean`, compila en release para `arm64-v8a` y deja `D:\Prodigia-APK\Prodigia.apk`. Otra opción es la nube de Expo (EAS). La carpeta `mobile/android/` se regenera cada vez: no se edita a mano, la configuración nativa va en `app.json`.
+2. **Compilar.** En esta máquina, con `D:\Repositorios\Prodigia\compilacion\android\compilar.ps1` (unos 10 a 60 minutos; `compilar-limpio.ps1` compila desde la copia limpia `compilacion\copia`): hace `expo prebuild --clean`, compila en release para `arm64-v8a` y deja `D:\Repositorios\Prodigia\apk\Prodigia.apk`. Otra opción es la nube de Expo (EAS). La carpeta `mobile/android/` se regenera cada vez: no se edita a mano, la configuración nativa va en `app.json`.
 3. **Publicar en GitHub Releases** con el archivo llamado exactamente `Prodigia.apk`, sin marcar pre-release y marcado como «latest». La web descarga siempre desde `releases/latest/download/Prodigia.apk` (configurado en `calibra/src/lib/appAndroid.ts`, que pasa por la ruta `/api/app/descargar`).
 4. **Actualizar la web**: el número de versión y los MB en `APP_ANDROID` (`appAndroid.ts`).
 

@@ -17,3 +17,11 @@ page.html
 
 .DS_Store
 Thumbs.db
+
+# Carpetas de Prodigia que viven dentro del repo pero no se versionan (2026-11-04):
+# material pesado, binarios y herramientas. Ver README.md, «Carpetas».
+/marketing/
+/apk/
+/documentos/
+/compilacion/
+/temporales/

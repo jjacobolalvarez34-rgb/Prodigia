@@ -133,22 +133,14 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
 
 - Los 4 videos ya están integrados. El APK 0.6.4 se compila con todo (ver arriba).
 
-## 5. Carpetas de Prodigia en D: (inventario del 2026-10-22, para decidir)
+## 5. Carpetas de Prodigia (HECHO el 2026-11-04)
 
-Dónde está cada cosa hoy:
+Todo quedó dentro de `D:\Repositorios\Prodigia` (pedido del usuario: «dentro del repo que
+quede todo»): `marketing\`, `apk\`, `documentos\`, `compilacion\android\` (JDK, SDK,
+scripts y `registros\`), `compilacion\copia\` (la copia limpia para compilar, git worktree),
+`compilacion\ms-playwright\` y `temporales\`. Ninguna se versiona (`.gitignore`); el detalle
+está en el `README.md` de la raíz. `Prodigia-web` se quedó donde estaba (decisión anterior).
 
-| Carpeta | Qué es |
-|---|---|
-| `D:\Repositorios\Prodigia` | El código (web y app): el repo principal |
-| `D:\Repositorios\Prodigia-build` | Copia limpia para compilar el APK (git worktree con enlace a node_modules) |
-| `D:\Repositorios\Prodigia-web` | Repo de una web anterior (último cambio 10/10). Decidido: se queda donde está |
-| `D:\Repositorios\prodigia-marketing` | Marketing: videos de eventos, capturas, kit de marca, tandas de Instagram, diseño (no es repo) |
-| `D:\Prodigia-APK` | 5 APK (unos 393 MB) |
-| `D:\Prodigia-Documentos` | 2 PDF y una maqueta |
-| `D:ndroid-build` | Herramientas para compilar (JDK, SDK, Gradle), scripts y 38 registros viejos |
-| `D:	mp-claude`, `tmp-chrome`, `tmp-chrome2`, `tmp-pw`, `tmp-quimia2`, `npm-cache` + `.npm-cache` (repetidas), `D:\Temp` | Temporales de renders, capturas, pruebas y cachés |
-
-Propuesta (pendiente de tu decisión):
-1. Una sola carpeta `D:\Prodigia\` con `marketing\`, `apk\` (las viejas en `apknteriores\`), `documentos\` y `compilacion\` (herramientas y registros). El código se queda en `D:\Repositorios\Prodigia` (moverlo rompe VS Code, la memoria y los scripts). Al mover, actualizar las rutas de `compilar.ps1`, `compilar-limpio.ps1` y la memoria.
-2. Temporales: borrarlos, moverlos a `D:\Prodigia	emporales` o dejarlos.
-3. `Prodigia-build`: se puede quitar con `git worktree remove` cuando ya no haga falta compilar desde ahí.
+Quedan fuera: la caché de Gradle (`D:\android-build\gradle-home`, estaba en uso; los
+scripts la siguen usando ahí hasta moverla) y `D:\Temp` (temporales mezclados con otras
+cosas del PC).
