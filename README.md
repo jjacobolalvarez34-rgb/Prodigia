@@ -129,7 +129,7 @@ código se versiona; lo demás está en `.gitignore`.
 | `apk/` | Los APK compilados (`Prodigia.apk` es el último). |
 | `documentos/` | PDF y maquetas. |
 | `compilacion/android/` | JDK, SDK de Android, scripts `compilar-limpio.ps1` y `compilar.ps1`, y `registros/` de cada compilación. |
-| `compilacion/copia/` | Copia limpia del repo (git worktree) desde la que se compila el APK. |
+| `copia/` | Copia limpia del repo (git worktree) desde la que se compila el APK. Ruta corta a propósito: más larga, la compilación de C++ pasa el límite de 260 caracteres de Windows. |
 | `compilacion/ms-playwright/` | Navegadores de Playwright para las capturas (`PLAYWRIGHT_BROWSERS_PATH`). |
 | `temporales/` | Temporales y cachés de compilaciones, renders y capturas; se pueden borrar. |
 
