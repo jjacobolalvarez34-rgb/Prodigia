@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prodigia · Marcos animados, bordes y tienda rotativa</title>
+<style>
+  :root { --bg: #070A14; --s1: #10152A; --s2: #171D34; --linea: #262E4D; --texto: #E8ECF8; --texto2: #8892B0; --logro: #FFB627; --primario: #7C5CFF; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--texto); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; padding: 40px 20px 80px; }
+  h1 { font-size: 34px; margin: 0 0 6px; letter-spacing: -0.5px; }
+  h2 { font-size: 24px; margin: 56px 0 8px; }
+  h3 { font-size: 16px; margin: 0 0 4px; }
+  p.lead { color: var(--texto2); max-width: 720px; margin: 0 0 8px; }
+  .nota { color: var(--texto2); font-size: 13.5px; }
+  .eti { display: inline-block; font: 700 11px/1 ui-monospace, monospace; letter-spacing: .14em; text-transform: uppercase; padding: 5px 9px; border-radius: 999px; }
+  .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; margin-top: 18px; }
+  .tarjeta { background: var(--s1); border: 1px solid var(--linea); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+  .tarjeta canvas { width: 200px; height: 200px; }
+  .tarjeta p { margin: 0; color: var(--texto2); font-size: 13px; }
+  .r-comun { background: #8892B033; color: #C7CEE6; } .r-raro { background: #4FE0F533; color: #4FE0F5; } .r-epico { background: #B07CFF33; color: #C9A6FF; } .r-legendario { background: #FFB62733; color: #FFB627; }
+  table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  th { color: var(--texto2); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .08em; }
+  .tabla { overflow-x: auto; }
+  /* Placa: marco (en el avatar) y borde (en la tarjeta) por separado */
+  .placas { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-top: 18px; }
+  .placa { position: relative; border-radius: 20px; padding: 16px; display: flex; gap: 14px; align-items: center; background: linear-gradient(135deg, #1B1440, #0B1022); min-height: 104px; }
+  .placa .av { position: relative; width: 72px; height: 72px; flex: none; }
+  .placa .av canvas { position: absolute; inset: -22px; width: 116px; height: 116px; }
+  .placa .av .cara { position: absolute; inset: 0; border-radius: 50%; background: linear-gradient(135deg, #7C5CFF, #22D3EE); display: grid; place-items: center; font: 800 26px system-ui; color: #fff; }
+  .placa b { display: block; font-size: 17px; } .placa span { color: var(--texto2); font-size: 13px; }
+  .b-rango { border: 2.5px solid #4FE0F5; }
+  .b-neon { border: 2.5px solid transparent; background: linear-gradient(135deg, #1B1440, #0B1022) padding-box, conic-gradient(from var(--g, 0deg), #FF00E5, #00F0FF, #FFEA00, #FF00E5) border-box; animation: giro 4s linear infinite; }
+  .b-rayas { border: 3px solid transparent; background: linear-gradient(135deg, #1B1440, #0B1022) padding-box, repeating-linear-gradient(45deg, #FF5D8F 0 10px, #FF9F1C 10px 20px, #3DDC97 20px 30px, #A794FF 30px 40px) border-box; }
+  .b-oro { border: 2.5px solid transparent; background: linear-gradient(135deg, #1B1440, #0B1022) padding-box, linear-gradient(110deg, #B8860B, #FFE08A 30%, #FFF6D8 45%, #FFC53D 60%, #B8860B) border-box; background-size: 100% 100%, 250% 100%; animation: brillo 3s linear infinite; }
+  @property --g { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+  @keyframes giro { to { --g: 360deg; } }
+  @keyframes brillo { from { background-position: 0 0, 0 0; } to { background-position: 0 0, -250% 0; } }
+  /* Tienda */
+  .tienda { background: var(--s1); border: 1px solid var(--linea); border-radius: 20px; padding: 18px; margin-top: 18px; }
+  .tienda .cab { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .reloj { font: 700 15px ui-monospace, monospace; color: var(--logro); }
+  .estantes { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+  .slot { border-radius: 14px; padding: 12px; background: var(--s2); border: 1.5px solid var(--linea); min-height: 92px; display: flex; flex-direction: column; justify-content: space-between; }
+  .slot.raro { border-color: #4FE0F566; } .slot.epico { border-color: #B07CFF77; } .slot.legendario { border-color: #FFB627; box-shadow: 0 0 22px #FFB62733; grid-column: span 2; }
+  .slot .eti { align-self: flex-start; }
+  .slot small { color: var(--texto2); } .slot .precio { font: 700 13px ui-monospace, monospace; }
+  .ref { columns: 2 300px; column-gap: 28px; margin-top: 12px; }
+  .ref div { break-inside: avoid; margin-bottom: 14px; }
+  .ref b { color: var(--texto); } .ref p { margin: 2px 0 0; color: var(--texto2); font-size: 13.5px; }
+  ol li, ul li { margin-bottom: 6px; }
+  code { font: 13px ui-monospace, monospace; background: var(--s2); padding: 1px 6px; border-radius: 6px; }
+</style>
+</head>
+<body>
+<main>
+  <span class="eti r-legendario">Propuesta · 2026-11-05 · para decidir</span>
+  <h1>Marcos animados, bordes y tienda rotativa</h1>
+  <p class="lead">Hoy los 22 marcos de la tienda son el mismo aro de colores girando: «Fénix» y «Lava» solo cambian de color, no tienen fuego. Esta página muestra cómo se verían marcos que sí son lo que dicen, cómo separar marco y borde, y cómo hacer que la tienda cambie cada día. Todo lo animado de abajo es un prototipo real, no una imagen.</p>
+
+  <h2>1. Marcos que son lo que dicen</h2>
+  <p class="lead">Cada marco vive alrededor del avatar y puede salirse del círculo (las llamas suben, los cristales sobresalen), como las decoraciones de avatar de Discord o los marcos animados de Steam. La idea es que se reconozca a primera vista en una fila de amigos.</p>
+  <div class="rejilla" id="marcos"></div>
+
+  <h2>2. Marco y borde, por separado</h2>
+  <p class="lead">Hoy el marco hace dos cosas a la vez: pinta el aro del avatar y tiñe el borde de la Placa. Por eso chocan: un marco de fuego con el borde azul de tu rango, o un borde que cambia sin que lo pidas. La propuesta:</p>
+  <div class="tabla"><table>
+    <tr><th>Pieza</th><th>Dónde va</th><th>Qué puede ser</th><th>Cómo se consigue</th></tr>
+    <tr><td><b>Marco</b></td><td>Alrededor del avatar, en todas partes (Placa, amigos, chat, duelos, rankings)</td><td>Animado y con forma: fuego, hielo, rayos, corona, enredadera…</td><td>Tienda rotativa, cápsulas, eventos, mundo nivel 40</td></tr>
+    <tr><td><b>Borde</b></td><td>Solo el contorno de la Placa</td><td>Línea sólida, degradé que gira, rayas del evento, oro que brilla</td><td>El de tu rango es gratis y automático; los demás en la tienda (Caligrafía o Estudio)</td></tr>
+  </table></div>
+  <p class="nota">Ejemplos: el mismo avatar con marcos y bordes combinados libremente.</p>
+  <div class="placas">
+    <div class="placa b-rango"><div class="av"><canvas data-placa="fuego"></canvas><div class="cara">J</div></div><div><b>Marco Fuego · Borde de rango</b><span>Platino · 1742 ELO</span></div></div>
+    <div class="placa b-neon"><div class="av"><canvas data-placa="hielo"></canvas><div class="cara">L</div></div><div><b>Marco Escarcha · Borde Neón</b><span>Oro · 1488 ELO</span></div></div>
+    <div class="placa b-rayas"><div class="av"><canvas data-placa="enredadera"></canvas><div class="cara">M</div></div><div><b>Marco Enredadera · Borde Papel picado</b><span>Plata · 1203 ELO</span></div></div>
+    <div class="placa b-oro"><div class="av"><canvas data-placa="corona"></canvas><div class="cara">A</div></div><div><b>Marco Corona · Borde Oro</b><span>Diamante · 2051 ELO</span></div></div>
+  </div>
+
+  <h2>3. La tienda cambia cada día</h2>
+  <p class="lead">Lo común queda siempre a la venta. De raro para arriba, cada día entra solo una parte: así hay una razón para abrir la tienda todos los días y comprar algo se siente como encontrarlo. Igual que la tienda de Fortnite, las ofertas diarias de Brawl Stars o la de Valorant.</p>
+  <div class="tienda">
+    <div class="cab"><h3>Hoy en la calle</h3><span class="reloj" id="reloj">Cambia en 07:42:10</span></div>
+    <div class="estantes">
+      <div class="slot legendario"><span class="eti r-legendario">Legendario del día</span><b>Marco Fénix vivo</b><span class="precio">6000 Chispas</span></div>
+      <div class="slot epico"><span class="eti r-epico">Épico</span><b>Marco Tormenta</b><span class="precio">3200</span></div>
+      <div class="slot epico"><span class="eti r-epico">Épico</span><b>Estela Cometa</b><span class="precio">3000</span></div>
+      <div class="slot epico"><span class="eti r-epico">Épico</span><b>Fuente Neón</b><span class="precio">2800</span></div>
+      <div class="slot raro"><span class="eti r-raro">Raro</span><b>Fondo Aurora</b><span class="precio">1800</span></div>
+      <div class="slot raro"><span class="eti r-raro">Raro</span><b>Título «Calculadora humana»</b><span class="precio">1500</span></div>
+      <div class="slot raro"><span class="eti r-raro">Raro</span><b>Efecto Chispas</b><span class="precio">1600</span></div>
+      <div class="slot raro"><span class="eti r-raro">Raro</span><b>Sonido Marimba</b><span class="precio">1200</span></div>
+      <div class="slot raro"><span class="eti r-raro">Raro</span><b>Marco Escarcha</b><span class="precio">1800</span></div>
+      <div class="slot raro"><span class="eti r-raro">Raro</span><b>Ciudad Quimia</b><span class="precio">1400</span></div>
+    </div>
+    <p class="nota" style="margin-top:12px">Debajo siguen los puestos de siempre con todo lo común, los paquetes y las ayudas.</p>
+  </div>
+  <h3 style="margin-top:22px">Reglas propuestas</h3>
+  <ol>
+    <li><b>Siempre a la venta:</b> lo común (63 piezas hoy), las ayudas, los paquetes y las Cometas.</li>
+    <li><b>Cada día:</b> 6 raros, 3 épicos y 1 legendario, los mismos para todos. Cambia a la medianoche de cada jugador (va junto con elegir el país).</li>
+    <li><b>Sin mala suerte:</b> la rotación recorre todo el catálogo antes de repetir, como un mazo que se baraja. Con 85 raros, 26 épicos y 3 legendarios, todo pasa por la tienda al menos una vez cada 2 a 4 semanas.</li>
+    <li><b>Lista de deseos:</b> marcas una pieza y te llega un aviso el día que entra (usa los avisos que ya existen, dentro del tope de 2 por día).</li>
+    <li><b>Lo de eventos y colecciones no cambia:</b> sigue saliendo solo en su evento, nunca antes (regla de siempre).</li>
+    <li><b>Las cápsulas siguen dando cualquier pieza:</b> lo que no está hoy en la tienda se puede conseguir igual en una cápsula. Así nadie queda bloqueado.</li>
+    <li><b>Sin ventaja por pagar:</b> todo es cosmético; Pro no ve la tienda de mañana ni tiene más espacios.</li>
+  </ol>
+  <p class="nota">Ya existe la «rotación del día» (1 destacado + 3) en <code>src/lib/tienda/bazar.ts</code>; se amplía a 10 espacios y el resto de raros a legendarios sale de los puestos fijos.</p>
+
+  <h2>4. Cómo se haría (web y app iguales)</h2>
+  <ul>
+    <li><b>Cada marco animado es un WebP animado</b> de 512 × 512 con transparencia, que se pone encima del avatar. El mismo archivo sirve en la web (<code>&lt;img&gt;</code>) y en la app (<code>expo-image</code>, que ya muestra los emotes animados). Pesa 150 a 400 KB y se descarga una vez.</li>
+    <li><b>Se fabrican como los videos de los eventos:</b> se dibujan en HTML (como estos prototipos, pero a mano y con más detalle), se graban cuadro por cuadro y se exportan a WebP. Así se ven idénticos en todas partes y no gastan batería calculando partículas.</li>
+    <li><b>En tamaño chico</b> (filas de amigos, chat) se usa el primer cuadro quieto, para no tener 30 animaciones a la vez.</li>
+    <li><b>Ajuste «Animaciones livianas»:</b> los marcos quedan quietos, como ya pasa con el resto de efectos.</li>
+    <li><b>Los marcos de colores de hoy</b> se quedan como marcos comunes y raros; los animados son épicos y legendarios, y los de evento.</li>
+    <li><b>Base de datos:</b> el borde es una columna nueva en la Placa (<code>profiles.borde</code>) y una categoría nueva en la tienda; los dueños de marcos actuales no pierden nada.</li>
+  </ul>
+
+  <h2>5. Referencias</h2>
+  <div class="ref">
+    <div><b>Discord · decoraciones de avatar</b><p>Animaciones que rodean el avatar y se salen del círculo (llamas, orejas, hojas). La referencia más cercana a lo que pides: misma idea, mismo tamaño en todas las pantallas.</p></div>
+    <div><b>Steam · marcos animados de la tienda de puntos</b><p>Marcos temáticos que se venden por temporada; quietos en las listas, animados en el perfil.</p></div>
+    <div><b>League of Legends · bordes de rango</b><p>Cada rango tiene su borde y se gana jugando. Equivale al borde de rango gratis que proponemos.</p></div>
+    <div><b>Clash Royale y Brawl Stars · ofertas diarias</b><p>Pocas piezas por día, cambian a una hora fija y hay un reloj visible. Generan el hábito de entrar a diario.</p></div>
+    <div><b>Fortnite · tienda de objetos</b><p>Lo destacado rota cada día; la gente espera «a que vuelva» una skin. La lista de deseos sale de aquí.</p></div>
+    <div><b>Valorant · Mercado nocturno</b><p>Una selección distinta para cada jugador por tiempo limitado. Más adelante podría ser un evento propio de Prodigia.</p></div>
+    <div><b>Rocket League · tienda rotativa</b><p>Espacios fijos por rareza y un reloj de cambio; nunca muestra todo el catálogo a la vez.</p></div>
+    <div><b>Apex Legends · bordes de insignia animados</b><p>Bordes que se ganan con logros y se notan en la pantalla de presentación, como el choque de rankeds.</p></div>
+  </div>
+
+  <h2>6. Lo que necesito que decidas</h2>
+  <ol>
+    <li>¿Te gustan estos 8 marcos como dirección? Dime cuáles sí, cuáles no y qué temas te faltan.</li>
+    <li>¿Separamos marco y borde como en la sección 2?</li>
+    <li>¿La tienda con 6 raros, 3 épicos y 1 legendario al día, y lo común siempre?</li>
+  </ol>
+</main>
+<script>
+const MARCOS = [
+  { id: "fuego", nombre: "Fénix vivo", rareza: "legendario", nota: "Llamas de verdad que suben desde el aro, con chispas." },
+  { id: "hielo", nombre: "Escarcha", rareza: "epico", nota: "Cristales que sobresalen, brillan y dejan caer nieve." },
+  { id: "rayo", nombre: "Tormenta", rareza: "epico", nota: "Rayos que saltan alrededor del avatar." },
+  { id: "galaxia", nombre: "Órbita", rareza: "epico", nota: "Un planeta y estrellas girando en anillos." },
+  { id: "enredadera", nombre: "Enredadera", rareza: "raro", nota: "Hojas que se mecen y pétalos que caen." },
+  { id: "corona", nombre: "Corona", rareza: "legendario", nota: "Aro de oro con brillo que recorre y una corona con gemas." },
+  { id: "agua", nombre: "Marea", rareza: "raro", nota: "Un aro de agua que ondula y suelta burbujas." },
+  { id: "glitch", nombre: "Glitch", rareza: "epico", nota: "Neón que se descompone en rojo, verde y azul." },
+];
+const NOMBRE_RAREZA = { comun: "Común", raro: "Raro", epico: "Épico", legendario: "Legendario" };
+const cont = document.getElementById("marcos");
+for (const m of MARCOS) {
+  const t = document.createElement("div");
+  t.className = "tarjeta";
+  t.innerHTML = `<canvas width="400" height="400" data-marco="${m.id}"></canvas><span class="eti r-${m.rareza}">${NOMBRE_RAREZA[m.rareza]}</span><h3>${m.nombre}</h3><p>${m.nota}</p>`;
+  cont.appendChild(t);
+}
+const TAU = Math.PI * 2;
+const rnd = (a, b) => a + Math.random() * (b - a);
+
+function avatar(g, cx, cy, r, letra) {
+  const gr = g.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
+  gr.addColorStop(0, "#7C5CFF"); gr.addColorStop(1, "#22D3EE");
+  g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, r, 0, TAU); g.fill();
+  g.fillStyle = "#fff"; g.font = `800 ${r * 0.8}px system-ui`; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(letra, cx, cy + r * 0.04);
+}
+
+// Cada marco: crear(estado) y dibujar(g, t, estado, s) con s = escala (1 = canvas de 400).
+const DIBUJOS = {
+  fuego: {
+    crear: () => ({ p: [] }),
+    dibujar(g, t, e, s, cx, cy, R) {
+      for (let i = 0; i < 16; i++) {
+        const a = rnd(0, TAU), rr = R + rnd(-2, 6) * s;
+        const peso = 0.55 + 0.45 * Math.max(0, Math.sin(a)); // más llama abajo y a los lados
+        if (Math.random() > peso) continue;
+        e.p.push({ x: cx + Math.cos(a) * rr, y: cy + Math.sin(a) * rr, vx: rnd(-0.4, 0.4) * s, vy: rnd(-3.2, -1.6) * s, v: 0, max: rnd(28, 50), r: rnd(11, 20) * s });
+      }
+      if (Math.random() < 0.3) { const a = rnd(0, TAU); e.p.push({ x: cx + Math.cos(a) * R, y: cy + Math.sin(a) * R, vx: rnd(-1, 1) * s, vy: rnd(-4, -2.5) * s, v: 0, max: rnd(30, 50), r: 2.2 * s, chispa: true }); }
+      g.globalCompositeOperation = "lighter";
+      e.p = e.p.filter((q) => q.v < q.max);
+      for (const q of e.p) {
+        q.v++; q.x += q.vx + Math.sin((q.v + q.y) * 0.15) * 0.5 * s; q.y += q.vy;
+        const k = q.v / q.max;
+        if (q.chispa) { g.fillStyle = `rgba(255,${200 - k * 120},80,${1 - k})`; g.fillRect(q.x, q.y, q.r, q.r); continue; }
+        const rad = q.r * (1 - k * 0.7);
+        const col = k < 0.25 ? [255, 245, 200] : k < 0.55 ? [255, 160, 40] : [230, 60, 20];
+        const gr = g.createRadialGradient(q.x, q.y, 0, q.x, q.y, rad);
+        gr.addColorStop(0, `rgba(${col},${0.55 * (1 - k)})`); gr.addColorStop(1, `rgba(${col},0)`);
+        g.fillStyle = gr; g.beginPath(); g.arc(q.x, q.y, rad, 0, TAU); g.fill();
+      }
+      g.globalCompositeOperation = "source-over";
+      // Las llamas van detrás: el avatar se vuelve a pintar encima.
+      if (!e.chico) avatar(g, cx, cy, R - 10 * s, "P");
+      g.strokeStyle = "rgba(255,190,90,0.9)"; g.lineWidth = 4 * s; g.beginPath(); g.arc(cx, cy, R, 0, TAU); g.stroke();
+    },
+  },
+  hielo: {
+    crear: () => ({ picos: Array.from({ length: 14 }, (_, i) => ({ a: (i / 14) * TAU + rnd(-0.1, 0.1), l: rnd(18, 42), w: rnd(5, 9) })), nieve: [] }),
+    dibujar(g, t, e, s, cx, cy, R) {
+      g.strokeStyle = "rgba(200,240,255,0.85)"; g.lineWidth = 6 * s; g.beginPath(); g.arc(cx, cy, R, 0, TAU); g.stroke();
+      for (const p of e.picos) {
+        const brillo = 0.55 + 0.45 * Math.sin(t * 2 + p.a * 3);
+        const x0 = cx + Math.cos(p.a) * R, y0 = cy + Math.sin(p.a) * R;
+        const x1 = cx + Math.cos(p.a) * (R + p.l * s), y1 = cy + Math.sin(p.a) * (R + p.l * s);
+        const nx = -Math.sin(p.a) * p.w * s, ny = Math.cos(p.a) * p.w * s;
+        const gr = g.createLinearGradient(x0, y0, x1, y1);
+        gr.addColorStop(0, `rgba(130,215,255,${0.9})`); gr.addColorStop(1, `rgba(255,255,255,${brillo})`);
+        g.fillStyle = gr; g.beginPath(); g.moveTo(x0 + nx, y0 + ny); g.lineTo(x1, y1); g.lineTo(x0 - nx, y0 - ny); g.closePath(); g.fill();
+      }
+      if (Math.random() < 0.25) e.nieve.push({ x: cx + rnd(-R * 1.4, R * 1.4), y: cy - R * 1.5, v: rnd(0.6, 1.4) * s, f: rnd(0, TAU) });
+      e.nieve = e.nieve.filter((n) => n.y < cy + R * 1.6);
+      g.fillStyle = "rgba(255,255,255,0.85)";
+      for (const n of e.nieve) { n.y += n.v; n.x += Math.sin(t * 2 + n.f) * 0.5; g.beginPath(); g.arc(n.x, n.y, 2.2 * s, 0, TAU); g.fill(); }
+    },
+  },
+  rayo: {
+    crear: () => ({ arcos: [] }),
+    dibujar(g, t, e, s, cx, cy, R) {
+      g.shadowColor = "#7FD8FF"; g.shadowBlur = 18 * s;
+      g.strokeStyle = `rgba(120,200,255,${0.6 + 0.4 * Math.abs(Math.sin(t * 9))})`; g.lineWidth = 5 * s; g.beginPath(); g.arc(cx, cy, R, 0, TAU); g.stroke();
+      if (Math.random() < 0.6) { const a = rnd(0, TAU); e.arcos.push({ a, b: a + rnd(0.5, 1.6), vida: rnd(5, 11), afuera: rnd(20, 46) }); }
+      e.arcos = e.arcos.filter((x) => x.vida-- > 0);
+      for (const x of e.arcos) {
+        g.strokeStyle = `rgba(230,248,255,${Math.min(1, x.vida / 4)})`; g.lineWidth = 2.6 * s; g.beginPath();
+        const pasos = 12;
+        for (let i = 0; i <= pasos; i++) {
+          const k = i / pasos, a = x.a + (x.b - x.a) * k;
+          const r = R + Math.sin(k * Math.PI) * x.afuera * s + rnd(-7, 7) * s;
+          const px = cx + Math.cos(a) * r, py = cy + Math.sin(a) * r;
+          i ? g.lineTo(px, py) : g.moveTo(px, py);
+        }
+        g.stroke();
+      }
+      g.shadowBlur = 0;
+    },
+  },
+  galaxia: {
+    crear: () => ({ estrellas: Array.from({ length: 60 }, () => ({ a: rnd(0, TAU), r: rnd(1.0, 1.45), v: rnd(0.15, 0.5), f: rnd(0, TAU), t: rnd(1, 2.6) })) }),
+    dibujar(g, t, e, s, cx, cy, R) {
+      const gr = g.createConicGradient(t * 0.4, cx, cy);
+      gr.addColorStop(0, "#7C4DFF"); gr.addColorStop(0.35, "#FF4FD8"); gr.addColorStop(0.7, "#40C4FF"); gr.addColorStop(1, "#7C4DFF");
+      g.strokeStyle = gr; g.lineWidth = 6 * s; g.beginPath(); g.arc(cx, cy, R, 0, TAU); g.stroke();
+      for (const x of e.estrellas) {
+        const a = x.a + t * x.v, r = R * x.r;
+        g.fillStyle = `rgba(255,255,255,${0.35 + 0.65 * Math.abs(Math.sin(t * 2 + x.f))})`;
+        g.beginPath(); g.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, x.t * s, 0, TAU); g.fill();
+      }
+      g.save(); g.translate(cx, cy); g.scale(1, 0.38); g.strokeStyle = "rgba(180,160,255,0.45)"; g.lineWidth = 2 * s; g.beginPath(); g.arc(0, 0, R * 1.42, 0, TAU); g.restore(); g.stroke();
+      const a = t * 0.9, px = cx + Math.cos(a) * R * 1.42, py = cy + Math.sin(a) * R * 1.42 * 0.38;
+      const pg = g.createRadialGradient(px - 4 * s, py - 4 * s, 1, px, py, 14 * s);
+      pg.addColorStop(0, "#FFE59A"); pg.addColorStop(1, "#FF6B3D");
+      g.fillStyle = pg; g.beginPath(); g.arc(px, py, 13 * s, 0, TAU); g.fill();
+    },
+  },
+  enredadera: {
+    crear: () => ({ hojas: Array.from({ length: 16 }, (_, i) => ({ a: (i / 16) * TAU, f: rnd(0, TAU), l: rnd(16, 24) })), petalos: [] }),
+    dibujar(g, t, e, s, cx, cy, R) {
+      g.strokeStyle = "#3E7B3A"; g.lineWidth = 6 * s; g.beginPath();
+      for (let i = 0; i <= 120; i++) { const a = (i / 120) * TAU, r = R + Math.sin(a * 7) * 3 * s; const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+      g.stroke();
+      for (const h of e.hojas) {
+        const a = h.a + Math.sin(t * 1.6 + h.f) * 0.08, x = cx + Math.cos(a) * R, y = cy + Math.sin(a) * R;
+        g.save(); g.translate(x, y); g.rotate(a + Math.PI / 2 + Math.sin(t * 2 + h.f) * 0.35);
+        g.fillStyle = "#5FBF4A"; g.beginPath(); g.ellipse(0, -h.l * s * 0.5, h.l * s * 0.32, h.l * s * 0.55, 0, 0, TAU); g.fill();
+        g.strokeStyle = "#2E6B2A"; g.lineWidth = 1.4 * s; g.beginPath(); g.moveTo(0, 0); g.lineTo(0, -h.l * s); g.stroke(); g.restore();
+      }
+      if (Math.random() < 0.06) { const a = rnd(Math.PI * 1.1, Math.PI * 1.9); e.petalos.push({ x: cx + Math.cos(a) * R, y: cy + Math.sin(a) * R, v: 0, f: rnd(0, TAU) }); }
+      e.petalos = e.petalos.filter((p) => p.v++ < 130);
+      for (const p of e.petalos) { p.y += 1.1 * s; p.x += Math.sin(p.v * 0.08 + p.f) * 0.9 * s; g.fillStyle = `rgba(255,170,200,${1 - p.v / 130})`; g.beginPath(); g.ellipse(p.x, p.y, 5 * s, 3 * s, p.v * 0.05, 0, TAU); g.fill(); }
+    },
+  },
+  corona: {
+    crear: () => ({}),
+    dibujar(g, t, e, s, cx, cy, R) {
+      const gr = g.createConicGradient(t * 1.2, cx, cy);
+      ["#8A6200", "#FFE08A", "#FFF6D8", "#FFC53D", "#8A6200", "#B8860B", "#8A6200"].forEach((c, i, l) => gr.addColorStop(i / (l.length - 1), c));
+      g.strokeStyle = gr; g.lineWidth = 11 * s; g.beginPath(); g.arc(cx, cy, R + 2 * s, 0, TAU); g.stroke();
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * TAU + Math.PI / 8, x = cx + Math.cos(a) * (R + 2 * s), y = cy + Math.sin(a) * (R + 2 * s);
+        const col = ["#E53950", "#2E8BFF", "#33D17A", "#B07CFF"][i % 4];
+        g.fillStyle = col; g.beginPath(); g.arc(x, y, 5.5 * s, 0, TAU); g.fill();
+        const b = Math.max(0, Math.sin(t * 3 + i * 1.7)); g.fillStyle = `rgba(255,255,255,${b})`; g.beginPath(); g.arc(x - 1.8 * s, y - 1.8 * s, 1.8 * s, 0, TAU); g.fill();
+      }
+      const top = cy - R - 6 * s, w = 34 * s;
+      g.fillStyle = "#FFC53D"; g.strokeStyle = "#8A6200"; g.lineWidth = 2 * s; g.beginPath();
+      g.moveTo(cx - w, top); g.lineTo(cx - w, top - 18 * s); g.lineTo(cx - w * 0.5, top - 8 * s); g.lineTo(cx, top - 30 * s); g.lineTo(cx + w * 0.5, top - 8 * s); g.lineTo(cx + w, top - 18 * s); g.lineTo(cx + w, top); g.closePath(); g.fill(); g.stroke();
+      g.fillStyle = "#E53950"; g.beginPath(); g.arc(cx, top - 10 * s, 4.5 * s, 0, TAU); g.fill();
+    },
+  },
+  agua: {
+    crear: () => ({ b: [] }),
+    dibujar(g, t, e, s, cx, cy, R) {
+      for (let capa = 0; capa < 2; capa++) {
+        g.strokeStyle = capa ? "rgba(140,230,255,0.9)" : "rgba(40,140,230,0.8)"; g.lineWidth = (capa ? 3 : 8) * s; g.beginPath();
+        for (let i = 0; i <= 160; i++) { const a = (i / 160) * TAU, r = R + Math.sin(a * 6 + t * (capa ? -3 : 2)) * 4 * s; const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+        g.stroke();
+      }
+      if (Math.random() < 0.18) { const a = rnd(Math.PI * 0.15, Math.PI * 0.85); e.b.push({ x: cx + Math.cos(a) * R, y: cy + Math.sin(a) * R, r: rnd(3, 7) * s, v: 0 }); }
+      e.b = e.b.filter((b) => b.v++ < 150);
+      for (const b of e.b) { b.y -= 1.2 * s; b.x += Math.sin(b.v * 0.1) * 0.6 * s; const x = b.x > cx ? b.x + 24 * s * (b.v / 150) : b.x - 24 * s * (b.v / 150);
+        g.strokeStyle = `rgba(190,240,255,${1 - b.v / 150})`; g.lineWidth = 1.6 * s; g.beginPath(); g.arc(x, b.y, b.r, 0, TAU); g.stroke(); }
+    },
+  },
+  glitch: {
+    crear: () => ({ salto: 0 }),
+    dibujar(g, t, e, s, cx, cy, R) {
+      if (Math.random() < 0.06) e.salto = 6;
+      const d = e.salto-- > 0 ? rnd(4, 9) * s : 1.5 * s;
+      g.globalCompositeOperation = "lighter"; g.lineWidth = 5 * s;
+      [["#FF2E63", -d, 0], ["#08F7FE", d, 0], ["#39FF14", 0, d * 0.6]].forEach(([c, dx, dy]) => { g.strokeStyle = c; g.beginPath(); g.arc(cx + dx, cy + dy, R, 0, TAU); g.stroke(); });
+      g.globalCompositeOperation = "source-over";
+      if (e.salto > 0) for (let i = 0; i < 4; i++) { g.fillStyle = ["#FF2E63", "#08F7FE", "#FFFFFF"][i % 3]; g.fillRect(cx + rnd(-R, R), cy + rnd(-R * 1.1, R * 1.1), rnd(20, 60) * s, rnd(2, 5) * s); }
+    },
+  },
+};
+
+const lienzos = [];
+document.querySelectorAll("canvas[data-marco]").forEach((c) => lienzos.push({ c, id: c.dataset.marco, chico: false }));
+document.querySelectorAll("canvas[data-placa]").forEach((c) => { c.width = 232; c.height = 232; lienzos.push({ c, id: c.dataset.placa, chico: true }); });
+for (const l of lienzos) { l.g = l.c.getContext("2d"); l.e = DIBUJOS[l.id].crear(); l.e.chico = l.chico; }
+function cuadro(ms) {
+  const t = ms / 1000;
+  for (const l of lienzos) {
+    const { c, g } = l, W = c.width, cx = W / 2, cy = W / 2;
+    const s = W / 400, R = l.chico ? W * 0.33 : 112 * s;
+    g.clearRect(0, 0, W, W);
+    if (!l.chico) avatar(g, cx, cy, R - 10 * s, "P");
+    DIBUJOS[l.id].dibujar(g, t, l.e, l.chico ? s * 1.7 : s, cx, cy, R);
+  }
+  requestAnimationFrame(cuadro);
+}
+requestAnimationFrame(cuadro);
+
+const reloj = document.getElementById("reloj");
+setInterval(() => {
+  const d = new Date(), fin = new Date(d); fin.setHours(24, 0, 0, 0);
+  const s = Math.floor((fin - d) / 1000), p = (n) => String(n).padStart(2, "0");
+  reloj.textContent = `Cambia en ${p(Math.floor(s / 3600))}:${p(Math.floor((s % 3600) / 60))}:${p(s % 60)}`;
+}, 1000);
+</script>
+</body>
+</html>

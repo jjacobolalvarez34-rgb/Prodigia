@@ -116,6 +116,7 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
 | Elegir el país (zona horaria) para que la racha y el día cambien a la medianoche de cada uno, no a una hora fija | FALTA (2026-11-05, esperar su «procedamos») | Hoy el día se cuenta en UTC (`current_date`): en Colombia cambia a las 19:00. 0308 ya guarda la zona del teléfono para los avisos. |
 | Quitar Carnaval y dejar solo Año Nuevo Lunar en febrero (se pisan del 6 al 9) | FALTA (2026-11-05, esperar su «procedamos») | Idea del usuario: darle protagonismo a Año Nuevo Lunar. |
 | Meta del Reto 2027 según jugadores activos y paquetes de cápsulas de temporada para las fiestas nuevas | FALTA (antes de Navidad) | Propuesto el 2026-11-05. |
+| Marcos animados de verdad (fuego, hielo, rayos…), separar marco (avatar) y borde (Placa), y tienda que rota cada día (comunes siempre; 6 raros, 3 épicos y 1 legendario al día) | PROPUESTA (2026-11-05), esperando decisión | Prototipos animados, reglas y referencias en `docs/rediseno/marcos-animados.html`. Hoy los 22 marcos son el mismo aro de colores que gira, y el marco también tiñe el borde de la Placa (de ahí el choque). |
 | Editor de placa en la web | HECHO | Vista previa en vivo y ocho pestañas. Commit 94bfda6b. |
 | APK 0.6.8 (versionCode 14) | HECHO | Compilado el 2026-10-30 a las 15:20 en `D:\Prodigia-APK\Prodigia.apk`. |
 
