@@ -1,0 +1,7 @@
+<!doctype html><meta charset="utf-8"><title>Marcos finales</title>
+<style>body{margin:0;font:13px system-ui;color:#E8ECF8}.f{display:flex;flex-wrap:wrap;gap:34px;padding:34px}.o{background:#0B1022}.c{background:#F4F1EA;color:#333}.p{position:relative;width:110px;height:110px}.a{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#7C5CFF,#22D3EE);display:grid;place-items:center;font:800 44px system-ui;color:#fff}.p img{position:absolute;left:-33px;top:-33px;width:176px;height:176px}.ch .p,.ch .a{width:40px;height:40px;font-size:16px}.ch .p img{left:-12px;top:-12px;width:64px;height:64px}</style>
+<body><div class="f o" id="o"></div><div class="f c" id="c"></div><div class="f o ch" id="ch"></div>
+<script>
+const ids=["fenix","corona","escarcha","tormenta","orbita","glitch","enredadera","marea"];
+for(const [z,ext] of [["o","webp"],["c","webp"],["ch","png"]])for(const id of ids)document.getElementById(z).insertAdjacentHTML("beforeend",`<div><div class="p"><div class="a">P</div><img src="../../public/marcos/${id}.${ext}"></div></div>`);
+</script>

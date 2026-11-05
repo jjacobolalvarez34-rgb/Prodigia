@@ -3,6 +3,7 @@
 // cosméticos (rangos, marcos, fondos) salen del mismo código de la web.
 import { FONDO_PERFIL_ESTILO, MARCOS_MUNDO, MARCOS_NEON, RANGOS_ELO, rangoDeElo, type FondoPerfil, type RangoElo } from "@/types/database";
 import { ciudadDeMarcoColeccion, marcoTemporadaDe } from "@/lib/recompensas/catalogo";
+import { marcoAnimadoDe, rutaMarcoAnimado } from "@/lib/recompensas/marcosAnimados";
 import { urlAbsoluta } from "./entorno";
 import { supabase } from "./supabase";
 
@@ -80,10 +81,14 @@ export type InfoMarco =
   // Tienda ampliada (0248): de temporada (aro con degradé que gira) y de colección
   // (el anillo del mundo con un resplandor de su color que late).
   | { tipo: "temporada"; color: string; colores: string[] }
-  | { tipo: "coleccion"; color: string; imagen: string; ciudad: string };
+  | { tipo: "coleccion"; color: string; imagen: string; ciudad: string }
+  // Marco animado (0313): WebP animado encima del avatar y su versión quieta.
+  | { tipo: "animado"; color: string; animada: string; quieta: string };
 
 export function infoMarco(marco: string | null | undefined): InfoMarco {
   if (!marco || marco === "ninguno") return { tipo: "ninguno", color: "#7C5CFF" };
+  const animado = marcoAnimadoDe(marco);
+  if (animado) return { tipo: "animado", color: animado.color, animada: urlAbsoluta(rutaMarcoAnimado(animado, true)) ?? "", quieta: urlAbsoluta(rutaMarcoAnimado(animado, false)) ?? "" };
   const rango = RANGOS_ELO.find((r) => r.slug === marco);
   if (rango) return { tipo: "rango", color: rango.colorHex };
   const neon = MARCOS_NEON.find((m) => m.slug === marco);

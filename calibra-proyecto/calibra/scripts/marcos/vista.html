@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Marcos animados · revisión</title>
+<style>
+  body { margin: 0; background: #070A14; color: #E8ECF8; font: 14px system-ui, sans-serif; }
+  .rejilla { display: grid; grid-template-columns: repeat(4, 280px); gap: 18px; padding: 20px; }
+  .celda { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .pila { position: relative; width: 256px; height: 256px; }
+  .pila .av { position: absolute; left: 48px; top: 48px; width: 160px; height: 160px; border-radius: 50%; background: linear-gradient(135deg, #7C5CFF, #22D3EE); display: grid; place-items: center; font: 800 64px system-ui; color: #fff; }
+  .pila canvas { position: absolute; inset: 0; width: 256px; height: 256px; }
+  .claro { background: #F4F1EA; }
+</style>
+</head>
+<body>
+<div class="rejilla" id="r"></div>
+<script src="marcos.js"></script>
+<script>
+const ids = Object.keys(MARCOS.lista);
+const fondo = new URLSearchParams(location.search).get("fondo");
+if (fondo === "claro") document.body.classList.add("claro");
+const lienzos = [];
+for (const id of ids) {
+  const d = document.createElement("div");
+  d.className = "celda";
+  d.innerHTML = `<div class="pila"><div class="av">P</div><canvas width="512" height="512"></canvas></div><b>${id}</b>`;
+  document.getElementById("r").appendChild(d);
+  lienzos.push([id, d.querySelector("canvas")]);
+}
+// ?t=1.2 deja quieto un instante (para las capturas); sin t, anima.
+const fijo = new URLSearchParams(location.search).get("t");
+function pintar(ms) {
+  for (const [id, c] of lienzos) {
+    const T = MARCOS.lista[id].T;
+    const t = fijo != null ? Number(fijo) % T : (ms / 1000) % T;
+    dibujarMarco(id, c, t);
+  }
+  if (fijo == null) requestAnimationFrame(pintar);
+}
+requestAnimationFrame(pintar);
+</script>
+</body>
+</html>

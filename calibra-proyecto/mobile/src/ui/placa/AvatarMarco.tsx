@@ -6,6 +6,7 @@ import { SvgXml } from "react-native-svg";
 import { svgMarcoMundo } from "@/lib/recompensas/marcosMundo";
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 import { useAnimacionActiva } from "~/lib/rendimiento";
+import { ESCALA_MARCO_ANIMADO, TAM_MIN_ANIMADO } from "@/lib/recompensas/marcosAnimados";
 import { infoMarco } from "~/lib/placa";
 import { aclarar, brillo, color, fuente, oscurecer, conAlfa, temaClaro } from "~/tema";
 import Texto from "../Texto";
@@ -113,6 +114,19 @@ function AvatarMarcoBase({ url, nombre, marco = "ninguno", tam = 40, animar = tr
           {url ? <Image source={{ uri: url }} style={styles.relleno} contentFit="cover" autoplay={animar} /> : <Inicial nombre={nombre} tam={tam} />}
         </View>
         <MarcoCiudad ciudad={info.ciudad} tam={anillo} />
+      </View>
+    );
+  } else if (info.tipo === "animado") {
+    // Marco animado (0313): la imagen es 1,6 veces el avatar y lo rodea; en tamaños
+    // chicos o con animaciones livianas va la versión quieta.
+    const lado = Math.round(tam * ESCALA_MARCO_ANIMADO);
+    const moverse = animar && activa && tam >= TAM_MIN_ANIMADO;
+    aro = (
+      <View style={{ width: tam, height: tam, alignItems: "center", justifyContent: "center" }}>
+        <View style={{ width: tam, height: tam, borderRadius: tam / 2, overflow: "hidden", backgroundColor: color.surface2 }}>
+          {url ? <Image source={{ uri: url }} style={styles.relleno} contentFit="cover" autoplay={animar} /> : <Inicial nombre={nombre} tam={tam} />}
+        </View>
+        <Image pointerEvents="none" source={{ uri: moverse ? info.animada : info.quieta }} autoplay={moverse} cachePolicy="memory-disk" contentFit="contain" style={{ position: "absolute", width: lado, height: lado, left: (tam - lado) / 2, top: (tam - lado) / 2 }} />
       </View>
     );
   } else if (info.tipo === "mundo") {

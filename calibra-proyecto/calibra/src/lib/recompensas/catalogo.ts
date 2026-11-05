@@ -7,6 +7,7 @@
 // importa nada de React.
 
 import { COSTOS, PRECIO_LEGENDARIO_COMETAS, PRECIO_RAREZA_CHISPAS, SOLO_COMETAS } from "../tienda/costos";
+import { MARCOS_ANIMADOS } from "./marcosAnimados";
 import { EFECTOS_NUEVOS, EMOTES_NUEVOS, ESTELAS_NUEVAS, filasCatalogoAmpliado, filasFuentes, MARCOS_ESTILO, PAQUETES_NUEVOS, SONIDOS_NUEVOS } from "./catalogoAmpliado";
 import { EFECTOS_EVENTO, EMOTES_EVENTO, ESTELAS_EVENTO, MARCOS_EVENTO, piezasDeEventos } from "@/lib/temas/colecciones";
 import type { IdTema } from "@/lib/temas/calendario";
@@ -327,6 +328,8 @@ export const CATALOGO_NUEVO: ItemCatalogo[] = [
   ...filasCatalogoAmpliado().map((f) => ({ ...f, categoria: f.categoria as CategoriaNueva, vendible: true })),
   // Fuentes nuevas (0294).
   ...filasFuentes().map((f) => ({ ...f, categoria: f.categoria as CategoriaNueva, vendible: true })),
+  // Marcos animados de verdad (0313, scripts/marcos).
+  ...MARCOS_ANIMADOS.map((m) => ({ item: `marco_${m.slug}`, categoria: "marco" as const, valor: m.slug, nombre: `Marco ${m.nombre}`, precio: m.precio, rareza: m.rareza, vendible: true })),
   // Piezas de los eventos: no se venden en el Bazar (tienda del evento); acá están para
   // el inventario y para dibujarlas.
   ...piezasDeEventos().map((p) => ({ item: p.item, categoria: p.categoria as CategoriaNueva, valor: p.valor, nombre: p.nombre, precio: 1, rareza: p.rareza, vendible: false })),
