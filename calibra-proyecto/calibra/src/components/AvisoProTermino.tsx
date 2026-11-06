@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Logo from "@/components/Logo";
+import AvisoPagosEnPrueba from "@/components/pagos/AvisoPagosEnPrueba";
 
 // «Tu Prodigia Pro terminó» (0276), igual que AvisoProTermino de la app. Mismo
 // auto-montaje que AnunciosModal: revisar_mi_pro apaga Pro si venció y dice si
@@ -21,13 +22,34 @@ export default function AvisoProTermino() {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!activo || !user || user.is_anonymous) return;
       const { data } = await supabase.rpc("revisar_mi_pro");
-      const fila = (data as { aviso: boolean }[] | null)?.[0];
+      const fila = (data as { aviso: boolean; plan: string }[] | null)?.[0];
       if (activo && fila?.aviso) setVisible(true);
+      // Pro de lanzamiento (0315): la primera vez que llega, a la bienvenida de Pro.
+      if (activo && fila?.plan === "pro") {
+        const clave = `prodigia:pro-lanzamiento:${user.id}`;
+        let visto = false;
+        try {
+          visto = !!localStorage.getItem(clave);
+        } catch {
+          visto = true;
+        }
+        if (!visto) {
+          const { data: hasta } = await supabase.rpc("mi_pro_lanzamiento");
+          if (activo && typeof hasta === "string") {
+            try {
+              localStorage.setItem(clave, "1");
+            } catch {
+              // nada
+            }
+            router.push("/pro/bienvenida?regalo=1");
+          }
+        }
+      }
     });
     return () => {
       activo = false;
     };
-  }, []);
+  }, [router]);
 
   function cerrar(renovar: boolean) {
     setVisible(false);
@@ -36,6 +58,8 @@ export default function AvisoProTermino() {
   }
 
   return (
+    <>
+    <AvisoPagosEnPrueba />
     <AnimatePresence>
       {visible && (
         <motion.div
@@ -77,5 +101,6 @@ export default function AvisoProTermino() {
         </motion.div>
       )}
     </AnimatePresence>
+    </>
   );
 }

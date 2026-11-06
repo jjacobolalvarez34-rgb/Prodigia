@@ -7,6 +7,7 @@ import { BENEFICIOS_PRO } from "@/lib/pro/beneficios";
 import { IconoTrazo } from "./Iconos";
 import { sonar, vibrar } from "~/lib/efectos";
 import { useJugador } from "~/lib/jugador";
+import { supabase } from "~/lib/supabase";
 import { color, conAlfa } from "~/tema";
 import Boton3D from "./Boton3D";
 import CinematicaPro from "./CinematicaPro";
@@ -24,11 +25,16 @@ export default function BienvenidaPro({ userId }: { userId: string }) {
   const { plan } = useJugador();
   const [ver, setVer] = useState(false);
   const [cine, setCine] = useState(true);
+  // Pro de lanzamiento (0315): 7 días de regalo para las cuentas nuevas.
+  const [regaloHasta, setRegaloHasta] = useState<Date | null>(null);
 
   useEffect(() => {
     if (plan !== "pro") return;
     AsyncStorage.getItem(clave(userId)).then((v) => {
       if (!v) setVer(true);
+    });
+    supabase.rpc("mi_pro_lanzamiento").then(({ data }) => {
+      if (typeof data === "string") setRegaloHasta(new Date(data));
     });
   }, [plan, userId]);
 
@@ -57,10 +63,12 @@ export default function BienvenidaPro({ userId }: { userId: string }) {
           PRODIGIA PRO
         </Texto>
         <Texto v="h1" centro>
-          ¡Ya tienes Pro!
+          {regaloHasta ? "¡Pro de regalo!" : "¡Ya tienes Pro!"}
         </Texto>
         <Texto v="nota" centro>
-          Esto es todo lo que se acaba de encender en tu cuenta:
+          {regaloHasta
+            ? `Bienvenido a Prodigia: tienes 7 días de Pro gratis, hasta el ${regaloHasta.toLocaleDateString("es", { day: "numeric", month: "long" })}. Esto es todo lo que se encendió en tu cuenta:`
+            : "Esto es todo lo que se acaba de encender en tu cuenta:"}
         </Texto>
         <ScrollView style={{ maxHeight: 320 }} contentContainerStyle={styles.lista}>
           {BENEFICIOS_PRO.map((b, i) => (

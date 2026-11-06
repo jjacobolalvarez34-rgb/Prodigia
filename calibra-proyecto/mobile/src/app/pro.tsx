@@ -35,7 +35,7 @@ export default function Pro() {
         </LinearGradient>
       </View>
       <Texto v="display" centro>
-        {plan === "pro" ? "Ya eres Pro ✦" : "Juega Prodigia sin límites"}
+        {plan === "pro" ? "Ya eres Pro" : "Juega Prodigia sin límites"}
       </Texto>
       {plan !== "pro" && (
         <>

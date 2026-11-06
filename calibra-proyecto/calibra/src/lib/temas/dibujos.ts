@@ -125,7 +125,17 @@ export const PARTICULAS: Record<TipoParticula, Dibujo> = {
     ],
   },
   confeti: { ancho: 32, alto: 32, formas: [{ d: "M10 12h12v8H10z", relleno: "#FFFFFF" }] },
-  chispa: { ancho: 32, alto: 32, formas: [{ d: estrella(16, 16, 12), relleno: "#FFD36B" }, { d: estrella(16, 16, 5), relleno: "#FFFFFF" }] },
+  // Llamita de lámpara (2026-11-06): antes era una estrella de cuatro puntas, y los
+  // destellos están prohibidos en Prodigia. Halo, llama y núcleo claro.
+  chispa: {
+    ancho: 32,
+    alto: 32,
+    formas: [
+      { d: elipse(16, 19, 9, 10), relleno: "#FFB347", opacidad: 0.28 },
+      { d: "M16 4C19.5 10 23 14 23 19.5A7 7 0 0 1 9 19.5C9 14 12.5 10 16 4Z", relleno: "#FF9A2E" },
+      { d: "M16 10C18 13.5 19.6 16 19.6 19.4A3.6 3.6 0 0 1 12.4 19.4C12.4 16 14 13.5 16 10Z", relleno: "#FFE7A0" },
+    ],
+  },
   polvo: { ancho: 32, alto: 32, formas: [{ d: circulo(16, 16, 12), relleno: "#FF5D8F", opacidad: 0.55 }, { d: circulo(13, 13, 6), relleno: "#FFFFFF", opacidad: 0.25 }] },
   nota: { ancho: 32, alto: 32, formas: [{ d: "M13 24V7l12-3v16", trazo: "#FFFFFF", ancho: 2.4 }, { d: elipse(10, 24, 4, 3), relleno: "#FFFFFF" }, { d: elipse(22, 20, 4, 3), relleno: "#FFFFFF" }] },
   estrella: { ancho: 32, alto: 32, formas: [{ d: estrella(16, 16, 13), relleno: "#FFF3C4" }] },

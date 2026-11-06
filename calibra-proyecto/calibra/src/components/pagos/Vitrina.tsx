@@ -7,6 +7,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import IconoCometa from "@/components/IconoCometa";
 import IconoTrazo from "@/components/IconoTrazo";
 import { abrirCheckoutPaddle } from "@/lib/pagos/paddleClient";
+import { EVENTO_PAGOS_EN_PRUEBA, pagosEnPrueba } from "@/components/pagos/AvisoPagosEnPrueba";
 import { PRODUCTOS } from "@/lib/pagos/productos";
 import type { ProductoComprable } from "@/lib/pagos/tipos";
 import { bonoPorcentaje, MAS_ELEGIDO, mejorValor, PAQUETES_CHISPAS, PAQUETES_COMETAS, precioTexto } from "@/lib/pagos/vitrina";
@@ -23,6 +24,11 @@ export function useCheckout(alCompletar: (p: ProductoComprable) => void) {
   const [error, setError] = useState<string | null>(null);
 
   async function comprar(producto: ProductoComprable, detalle?: { mundo?: string; paquete?: string }) {
+    // Pagos todavía en prueba (Paddle sandbox): en vez del pago, el letrero de testers.
+    if (pagosEnPrueba()) {
+      window.dispatchEvent(new CustomEvent(EVENTO_PAGOS_EN_PRUEBA));
+      return;
+    }
     setComprando(producto);
     setError(null);
     try {
