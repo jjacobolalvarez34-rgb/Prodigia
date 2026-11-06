@@ -321,7 +321,7 @@ export function PlanesPro({ pagosHabilitados, ahorro }: { pagosHabilitados: bool
               {p.destacado && <Sello color="#FFC53D">{t("anual.sello", { porcentaje: ahorro.porcentaje })}</Sello>}
               <div className="flex items-center justify-between">
                 <span className={`font-mono text-xs font-bold uppercase tracking-[0.2em] ${p.destacado ? "text-[#FFD36B]" : "text-[#6C4CF1]"}`}>{p.nombre}</span>
-                <IconoTrazo nombre={p.destacado ? "corona" : "destello"} className={`h-6 w-6 ${p.destacado ? "text-[#FFC53D]" : "text-[#6C4CF1]"}`} />
+                <IconoTrazo nombre={p.destacado ? "corona" : "cohete"} className={`h-6 w-6 ${p.destacado ? "text-[#FFC53D]" : "text-[#6C4CF1]"}`} />
               </div>
               <div>
                 <div className="flex items-end gap-1">
