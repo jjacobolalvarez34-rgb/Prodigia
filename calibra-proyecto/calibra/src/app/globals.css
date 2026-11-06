@@ -145,6 +145,11 @@ body {
   background: var(--background);
   color: var(--foreground);
   transition: background-color .2s ease, color .2s ease;
+  /* Nada se sale a lo ancho (2026-11-06): el brillo de borde de las tarjetas
+     (BorderGlow, 40 px por fuera) agrandaba la página en el celular y el fondo de
+     la tienda quedaba cortado con una franja blanca a la derecha. `clip` no crea
+     un contenedor de scroll, así que los elementos sticky siguen funcionando. */
+  overflow-x: clip;
 }
 
 button:not(:disabled),
