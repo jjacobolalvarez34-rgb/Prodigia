@@ -5219,7 +5219,7 @@
       "coleccion": "A {ciudad} collection piece you don't have",
       "marcoColeccion": "The {ciudad} collection frame",
       "pieza_evento": "An event collection piece you're missing",
-      "tema_app": "An app theme you don't have",
+      "tema_app": "An app theme (or Free Lettering) you don't have",
       "coleccionSin": "A piece of the city's collection you're missing",
       "marcoColeccionSin": "The city's animated collection frame"
     },
@@ -6166,5 +6166,39 @@
     "hazteProCta": "Go Pro",
     "avisoAprender": "{n, plural, one {You have # ticket left to try a Pro class} other {You have # tickets left to try Pro classes}}",
     "error": "Couldn't use the ticket. Please try again."
+  },
+  "LetraLibre": {
+    "titulo": "Free Lettering",
+    "etiqueta": "One-time unlock · Epic",
+    "desc": "Pick the lettering for every title in the app: menus, cards, buttons and banners. It beats your theme's lettering. It only changes how things look.",
+    "comoConseguir": "Bought once with Comets, or found in prism, supernova, Alignment and Pro capsules.",
+    "comprar": "Unlock for {n}",
+    "confirmar": "Tap again to confirm",
+    "teFaltan": "You need {n} more Comets.",
+    "comprada": "Free Lettering is yours! Pick your lettering.",
+    "elige": "Pick the lettering for titles",
+    "delTema": "Theme's lettering",
+    "enUso": "IN USE",
+    "puesta": "Titles now use {nombre}.",
+    "puestaTema": "Titles are back to your theme's lettering.",
+    "irATienda": "Get it at the Calligraphy stall",
+    "ajustesTitulo": "App lettering",
+    "ajustesDesc": "The lettering for titles across the app. It beats your theme's.",
+    "capsulaTuya": "It's yours. Pick your lettering in Settings or at the Bazaar › Calligraphy.",
+    "letras": {
+      "siempre": "The usual",
+      "cartel": "Poster",
+      "aventura": "Adventure",
+      "redonda": "Rounded",
+      "pixel": "Pixel",
+      "maquina": "Typewriter",
+      "romana": "Roman",
+      "imprenta": "Press",
+      "marcador": "Marker",
+      "consola": "Console",
+      "retro": "Retro",
+      "arcade": "Arcade",
+      "cursiva": "Script"
+    }
   }
 }

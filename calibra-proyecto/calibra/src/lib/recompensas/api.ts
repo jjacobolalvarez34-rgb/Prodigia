@@ -346,3 +346,33 @@ export async function comprarTemaApp(sb: SupabaseClient, slug: string): Promise<
 export async function ponerTemaApp(sb: SupabaseClient, slug: string): Promise<void> {
   await equiparCosmetico(sb, "tema", slug);
 }
+
+// ---------- Letra libre (0314) ----------
+export interface EstadoLetraApp {
+  // false si la base todavía no tiene 0314: la Letra libre no se muestra.
+  disponible: boolean;
+  tiene: boolean;
+  // La letra elegida (LETRAS_APP); null = la del tema.
+  elegida: string | null;
+}
+
+export const SIN_LETRA_APP: EstadoLetraApp = { disponible: false, tiene: false, elegida: null };
+
+export async function estadoLetraApp(sb: SupabaseClient, userId: string): Promise<EstadoLetraApp> {
+  const { data, error } = await sb.from("profiles").select("letra_libre, letra_app").eq("id", userId).maybeSingle();
+  if (error || !data) return SIN_LETRA_APP;
+  const f = data as { letra_libre?: boolean | null; letra_app?: string | null };
+  return { disponible: true, tiene: !!f.letra_libre, elegida: f.letra_app ?? null };
+}
+
+export async function comprarLetraLibre(sb: SupabaseClient): Promise<{ cometas: number }> {
+  const { data, error } = await sb.rpc("comprar_letra_libre");
+  if (error) throw error;
+  return filas<{ cometas: number }>(data)[0];
+}
+
+// null = vuelve a la letra del tema.
+export async function elegirLetraApp(sb: SupabaseClient, letra: string | null): Promise<void> {
+  const { error } = await sb.rpc("elegir_letra_app", { p_letra: letra });
+  if (error) throw error;
+}

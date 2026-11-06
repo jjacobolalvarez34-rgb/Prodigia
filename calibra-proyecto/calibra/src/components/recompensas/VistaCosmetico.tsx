@@ -7,6 +7,7 @@ import AvatarConMarco from "@/components/AvatarConMarco";
 import CiudadSkyline from "./CiudadSkyline";
 import LlamaDibujo from "@/components/LlamaDibujo";
 import MiniTemaApp from "./MiniTemaApp";
+import MuestraLetraLibre from "@/components/temas/MuestraLetraLibre";
 import { temaAppDe } from "@/lib/recompensas/temas";
 
 // Muestra chica de un cosmético de las categorías nuevas (tienda, cápsulas y
@@ -74,6 +75,8 @@ export default function VistaCosmetico({ categoria, valor, tam = 56 }: { categor
     }
     case "tema":
       return <MiniTemaApp tema={temaAppDe(valor)} ancho={Math.round(tam * 0.8)} />;
+    case "letra_app":
+      return <MuestraLetraLibre tam={tam} />;
     default:
       return null;
   }

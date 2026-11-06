@@ -5,11 +5,13 @@ import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "rea
 import Animated, { FadeIn, FadeInDown, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { useLiviano } from "~/lib/rendimiento";
 import { vibrar } from "~/lib/efectos";
-import { brillo as sombraBrillo, color, conAlfa, radio } from "~/tema";
+import { brillo as sombraBrillo, color, conAlfa, forma, radio } from "~/tema";
 
 // Tarjeta de 02-SISTEMA-VISUAL.md §4.2: surface-1, borde de 1 dp y un brillo
 // superior interno que da sensación de vidrio. "Activa" (con `acento`): borde del
 // color + resplandor. Si es tocable, se encoge con resorte al apretarla.
+// Con un tema, la forma es la suya (tema.ts: forma): radio, grosor del borde y sombra
+// (dura = desplazada y sólida del color del borde; suave = difusa).
 
 interface Props {
   children: ReactNode;
@@ -72,9 +74,10 @@ const styles = StyleSheet.create({
   tarjeta: {
     backgroundColor: color.surface1,
     borderRadius: radio.tarjeta,
-    borderWidth: 1,
+    borderWidth: forma.borde,
     borderColor: color.border,
     overflow: "hidden",
+    ...(forma.sombraTarjeta ? { boxShadow: forma.sombraTarjeta } : null),
   },
   vidrio: { position: "absolute", left: 0, right: 0, top: 0, height: 28 },
 });

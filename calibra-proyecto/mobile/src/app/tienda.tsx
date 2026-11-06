@@ -16,6 +16,7 @@ import { precioTemaCometas, TEMA_CLASICO, TEMAS_APP, type TemaApp } from "@/lib/
 import { comprarTemaApp, ponerTemaApp } from "@/lib/recompensas/api";
 import { guardarTema, sincronizarTemasApp, useTemasApp } from "~/lib/temaApp";
 import MiniTemaApp from "~/ui/temas/MiniTemaApp";
+import LetraLibreApp from "~/ui/temas/LetraLibreApp";
 import { probarPaqueteAcierto, sonar, vibrar } from "~/lib/efectos";
 import { recargarCosmeticos } from "~/lib/recompensas";
 import { fijarChispas, fijarCometas, recargarJugador, useJugador } from "~/lib/jugador";
@@ -370,7 +371,7 @@ export default function Tienda() {
   const [ocupado, setOcupado] = useState(false);
   const [festejo, setFestejo] = useState(0);
   // null = portada del Bazar (solo en Tienda).
-  const [pestana, setPestana] = useState<Pestana | null>(params.pestana === "cometas" ? "cometas" : null);
+  const [pestana, setPestana] = useState<Pestana | null>(params.pestana === "cometas" ? "cometas" : (puestoDe(params.pestana)?.id ?? null));
   const cometas = resumen?.cometas ?? 0;
   const [monedaVista, setMonedaVista] = useState<"cometas" | "chispas">("cometas");
   const [canjePendiente, setCanjePendiente] = useState<number | null>(null);
@@ -663,6 +664,12 @@ export default function Tienda() {
           </View>
           )}
           {puestoVista && modo === "tienda" && <Toldo claro={puestoVista.color} oscuro={puestoVista.oscuro} alto={14} />}
+          {/* Letra libre (0314): se vende en la Caligrafía (en el Inventario, si la tienes). */}
+          {pestanaVista === "caligrafia" && (
+            <View style={{ paddingHorizontal: 16, paddingTop: 14 }}>
+              <LetraLibreApp donde="tienda" soloSiLaTienes={modo === "inventario"} />
+            </View>
+          )}
 
           {pestanaVista === null ? (
             <PortadaBazar catalogo={catalogo} e={e} placa={placa} ancho={anchoTarjeta} onPress={elegirItem} onPuesto={(p) => setPestana(p)} />

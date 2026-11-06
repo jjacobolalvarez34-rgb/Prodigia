@@ -18,6 +18,7 @@ import IconoCometa from "@/components/IconoCometa";
 import { precioTemaCometas, TEMA_CLASICO, TEMAS_APP, type TemaApp } from "@/lib/recompensas/temas";
 import { aplicarTemaAppWeb } from "@/lib/recompensas/temaAppWeb";
 import MiniTemaApp from "@/components/recompensas/MiniTemaApp";
+import LetraLibre from "@/components/temas/LetraLibre";
 import { puestoDe, type PuestoId } from "@/lib/tienda/bazar";
 import IlustracionPaquete from "@/components/tienda/IlustracionPaquete";
 import IconoTrazo from "@/components/IconoTrazo";
@@ -424,6 +425,9 @@ export default function TiendaAmpliada({ paquetesConDinero = false }: { paquetes
           </button>
         ))}
       </div>
+      {/* Letra libre (0314): se vende en la Caligrafía; en el Inventario, con las fuentes. */}
+      {!inventario && puesto === "caligrafia" && <LetraLibre />}
+      {inventario && pestanaVista === "nombre" && <LetraLibre soloSiLaTienes />}
       {!inventario && pestanaVista === "temporada" && <p className="text-sm font-semibold text-racha">{t("quedanDias", { n: diasHastaFinDeMes() })}</p>}
       {pestanaVista === "temas" && e && !e.temas.disponible && !inventario && (
         <>

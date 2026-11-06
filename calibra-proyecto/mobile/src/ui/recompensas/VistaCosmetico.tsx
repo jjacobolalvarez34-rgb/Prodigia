@@ -9,6 +9,7 @@ import AvatarMarco from "../placa/AvatarMarco";
 import FondoPlaca from "../placa/FondoPlaca";
 import Texto from "../Texto";
 import MiniTemaApp from "../temas/MiniTemaApp";
+import MuestraLetraLibre from "../temas/MuestraLetraLibre";
 import { temaAppDe } from "@/lib/recompensas/temas";
 
 // Muestra chica de un cosmético de las categorías nuevas (tienda, cápsulas y
@@ -81,6 +82,8 @@ export default function VistaCosmetico({ categoria, valor, tam = 56 }: { categor
     }
     case "tema":
       return <MiniTemaApp tema={temaAppDe(valor)} ancho={Math.round(tam * 0.8)} alto={Math.round(tam * 1.04)} />;
+    case "letra_app":
+      return <MuestraLetraLibre tam={tam} />;
     default:
       return null;
   }

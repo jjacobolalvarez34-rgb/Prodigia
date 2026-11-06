@@ -50,6 +50,9 @@ export interface TemaApp {
   radio: number;
   borde: number;
   sombra: "dura" | "suave" | "ninguna";
+  // Letra de los títulos (LETRAS_APP): display/h1/h2/h3, botones y títulos de tarjetas.
+  // El cuerpo de texto y los números siguen en Inter y JetBrains Mono, para leerse bien.
+  letra: IdLetra;
   paleta: PaletaTema;
 }
 
@@ -64,6 +67,61 @@ export const PRECIO_TEMA_COMETAS: Record<RarezaTema, number> = { comun: 200, rar
 // catálogo para convertir en Chispas un tema que sale repetido en una cápsula (÷ 3).
 export const PRECIO_CHISPAS_RAREZA_TEMA: Record<RarezaTema, number> = { comun: 400, raro: 1200, epico: 3000, legendario: 6000 };
 
+// ---------- Letras de títulos (identidad de cada tema y Letra libre, 0314) ----------
+// Cada tema trae su letra para los títulos; con la Letra libre se elige cualquiera de
+// estas para toda la app (gana sobre la del tema). Son fuentes de un solo peso que ya
+// están cargadas: en la app (mobile/src/app/_layout.tsx, useFonts) y en la web
+// (app/layout.tsx, next/font). Casi todas son más anchas que Space Grotesk, así que
+// cada una lleva un factor de tamaño (`escala`) para que ningún título se corte ni se
+// desborde, y un interlineado mínimo (las de trazo alto se cortaban arriba en Android).
+// En Android una fuente propia ya trae su peso: nunca se combina con fontWeight.
+export type IdLetra = "siempre" | "cartel" | "aventura" | "redonda" | "pixel" | "maquina" | "romana" | "imprenta" | "marcador" | "consola" | "retro" | "arcade" | "cursiva";
+
+export interface LetraApp {
+  id: IdLetra;
+  nombre: string;
+  // Familia en la app: la de títulos grandes y la de los medianos (h2/h3, botones).
+  app: { display: string; semi: string };
+  // Variable de next/font en la web.
+  web: string;
+  escala: number;
+  interlineado: number;
+}
+
+// La de siempre (Space Grotesk): la que se ve sin tema y la que se elige para volver a ella.
+export const LETRA_SIEMPRE: IdLetra = "siempre";
+
+export const LETRAS_APP: LetraApp[] = [
+  { id: "siempre", nombre: "La de siempre", app: { display: "SpaceGrotesk_700Bold", semi: "SpaceGrotesk_600SemiBold" }, web: "var(--font-space-grotesk)", escala: 1, interlineado: 1.15 },
+  { id: "cartel", nombre: "Cartel", app: { display: "Bungee", semi: "Bungee" }, web: "var(--font-bungee)", escala: 0.85, interlineado: 1.2 },
+  { id: "aventura", nombre: "Aventura", app: { display: "LuckiestGuy", semi: "LuckiestGuy" }, web: "var(--font-luckiest-guy)", escala: 0.92, interlineado: 1.2 },
+  { id: "redonda", nombre: "Redonda", app: { display: "Fredoka", semi: "Fredoka" }, web: "var(--font-fredoka)", escala: 1, interlineado: 1.25 },
+  { id: "pixel", nombre: "Píxel", app: { display: "Silkscreen", semi: "Silkscreen" }, web: "var(--font-silkscreen)", escala: 0.85, interlineado: 1.2 },
+  { id: "maquina", nombre: "Máquina de escribir", app: { display: "SpecialElite", semi: "SpecialElite" }, web: "var(--font-special-elite)", escala: 0.95, interlineado: 1.25 },
+  { id: "romana", nombre: "Romana", app: { display: "Cinzel", semi: "Cinzel" }, web: "var(--font-cinzel)", escala: 0.9, interlineado: 1.3 },
+  { id: "imprenta", nombre: "Imprenta", app: { display: "Inter_700Bold", semi: "Inter_700Bold" }, web: "var(--font-inter)", escala: 1, interlineado: 1.2 },
+  { id: "marcador", nombre: "Marcador", app: { display: "PermanentMarker", semi: "PermanentMarker" }, web: "var(--font-permanent-marker)", escala: 0.95, interlineado: 1.35 },
+  { id: "consola", nombre: "Consola", app: { display: "Audiowide", semi: "Audiowide" }, web: "var(--font-audiowide)", escala: 0.88, interlineado: 1.25 },
+  { id: "retro", nombre: "Retro", app: { display: "Righteous", semi: "Righteous" }, web: "var(--font-righteous)", escala: 1, interlineado: 1.25 },
+  { id: "arcade", nombre: "Arcade", app: { display: "PressStart2P", semi: "PressStart2P" }, web: "var(--font-press-start)", escala: 0.62, interlineado: 1.45 },
+  { id: "cursiva", nombre: "Cursiva", app: { display: "Lobster", semi: "Lobster" }, web: "var(--font-lobster)", escala: 1.05, interlineado: 1.3 },
+];
+
+export function letraDe(id: string | null | undefined): LetraApp | null {
+  return (id && LETRAS_APP.find((l) => l.id === id)) || null;
+}
+
+// La letra que se ve: la elegida con la Letra libre gana; si no, la del tema; sin
+// ninguna de las dos, null (la de siempre, sin tocar nada).
+export function letraEfectiva(temaSlug: string | null | undefined, elegida: string | null | undefined): LetraApp | null {
+  return letraDe(elegida) ?? letraDe(temaAppDe(temaSlug)?.letra) ?? null;
+}
+
+// Letra libre (0314): un desbloqueo único que deja elegir la letra de títulos de toda la
+// app. Solo cosmético. Se compra con Cometas en la Caligrafía o sale en las cápsulas que
+// traen temas. Mismos datos que 0314_letra_libre.sql (temas.test.ts los compara).
+export const LETRA_LIBRE = { item: "letra_libre", categoria: "letra_app", valor: "libre", nombre: "Letra libre", rareza: "epico" as RarezaTema, precioCometas: 400 } as const;
+
 export const TEMAS_APP: TemaApp[] = [
   {
     slug: "roguelike",
@@ -75,6 +133,7 @@ export const TEMAS_APP: TemaApp[] = [
     radio: 5,
     borde: 2,
     sombra: "dura",
+    letra: "cartel",
     paleta: { claro: true, fondo: "#D3C8EE", fondoHondo: "#C2B4E6", superficie: "#F4EDE0", superficie2: "#EAE0CD", superficie3: "#DED1B9", borde: "#0D0A14", texto: "#1A1426", texto2: "#463B5A", primario: "#2F6BEB", logro: "#F2B33D", correcto: "#1F8F5C", error: "#D63A2B", racha: "#E0651A" },
   },
   {
@@ -87,6 +146,7 @@ export const TEMAS_APP: TemaApp[] = [
     radio: 7,
     borde: 2,
     sombra: "suave",
+    letra: "aventura",
     paleta: { claro: false, fondo: "#3555C8", fondoHondo: "#2A47B0", superficie: "#1D2B6B", superficie2: "#243478", superficie3: "#2C3E88", borde: "#C9922A", texto: "#FFFFFF", texto2: "#D5DEFF", primario: "#2A5FD6", logro: "#FFB627", correcto: "#3DDC97", error: "#FF7A7A", racha: "#FF9A52" },
   },
   {
@@ -99,6 +159,7 @@ export const TEMAS_APP: TemaApp[] = [
     radio: 0,
     borde: 2,
     sombra: "ninguna",
+    letra: "redonda",
     paleta: { claro: true, fondo: "#A8D186", fondoHondo: "#95C470", superficie: "#FBE2A8", superficie2: "#F5D592", superficie3: "#EDC77C", borde: "#8A3F0A", texto: "#3B1D07", texto2: "#5A3612", primario: "#2E7A1E", logro: "#F2B33D", correcto: "#2E7A1E", error: "#B8321F", racha: "#C2540E" },
   },
   {
@@ -111,6 +172,7 @@ export const TEMAS_APP: TemaApp[] = [
     radio: 0,
     borde: 2,
     sombra: "ninguna",
+    letra: "pixel",
     paleta: { claro: true, fondo: "#9BBC0F", fondoHondo: "#8BAC0F", superficie: "#B5CF3C", superficie2: "#A6C426", superficie3: "#8BAC0F", borde: "#0F380F", texto: "#0F380F", texto2: "#173F17", primario: "#0F380F", logro: "#D4E36A", correcto: "#306230", error: "#6B1F0F", racha: "#5A3A05" },
   },
   {
@@ -123,6 +185,7 @@ export const TEMAS_APP: TemaApp[] = [
     radio: 2,
     borde: 1,
     sombra: "suave",
+    letra: "maquina",
     paleta: { claro: false, fondo: "#21160F", fondoHondo: "#170F0A", superficie: "#33241A", superficie2: "#3D2C20", superficie3: "#4A3527", borde: "#A07D42", texto: "#EFE3C8", texto2: "#C8B48E", primario: "#5B3FC4", logro: "#E0B95A", correcto: "#7FC98A", error: "#E0727A", racha: "#E39A55" },
   },
   {
@@ -135,6 +198,7 @@ export const TEMAS_APP: TemaApp[] = [
     radio: 0,
     borde: 1,
     sombra: "ninguna",
+    letra: "romana",
     paleta: { claro: false, fondo: "#0C0606", fondoHondo: "#060303", superficie: "#1D0F0B", superficie2: "#26140E", superficie3: "#331B12", borde: "#B8862C", texto: "#F6E8CC", texto2: "#C9AE86", primario: "#C23A22", logro: "#F2C14E", correcto: "#6FD39A", error: "#FF6F5A", racha: "#FF8A3D" },
   },
   {
@@ -147,6 +211,7 @@ export const TEMAS_APP: TemaApp[] = [
     radio: 0,
     borde: 2,
     sombra: "dura",
+    letra: "imprenta",
     paleta: { claro: true, fondo: "#FFFFFF", fondoHondo: "#F2F2F2", superficie: "#FFFFFF", superficie2: "#F2F2F2", superficie3: "#E6E6E6", borde: "#0A0A0A", texto: "#0A0A0A", texto2: "#4A4A4A", primario: "#5B3CF5", logro: "#FFB000", correcto: "#13804F", error: "#D0312D", racha: "#C2540E" },
   },
   {
@@ -159,6 +224,7 @@ export const TEMAS_APP: TemaApp[] = [
     radio: 6,
     borde: 1,
     sombra: "dura",
+    letra: "marcador",
     paleta: { claro: true, fondo: "#FBFAF5", fondoHondo: "#F1EFE6", superficie: "#FFFFFF", superficie2: "#F4F1FF", superficie3: "#ECE7FF", borde: "#36314D", texto: "#36314D", texto2: "#5E5875", primario: "#6A55D9", logro: "#FFE25A", correcto: "#1E8A5A", error: "#D0405A", racha: "#C2540E" },
   },
   {
@@ -171,6 +237,7 @@ export const TEMAS_APP: TemaApp[] = [
     radio: 7,
     borde: 1,
     sombra: "ninguna",
+    letra: "consola",
     paleta: { claro: false, fondo: "#0A1020", fondoHondo: "#060A15", superficie: "#152140", superficie2: "#1B2A4E", superficie3: "#22335C", borde: "#2C3B62", texto: "#F1E6CF", texto2: "#A9B3C9", primario: "#B84E14", logro: "#FFB45A", correcto: "#3AC7C0", error: "#FF6B5D", racha: "#FF8A3D" },
   },
   {
@@ -183,6 +250,7 @@ export const TEMAS_APP: TemaApp[] = [
     radio: 3,
     borde: 0,
     sombra: "dura",
+    letra: "retro",
     paleta: { claro: true, fondo: "#F7DCCF", fondoHondo: "#F0CDBD", superficie: "#FFF6EF", superficie2: "#FBEBE1", superficie3: "#F3DDD2", borde: "#E0BFD8", texto: "#3D3358", texto2: "#5A5073", primario: "#6F5ED6", logro: "#F5B860", correcto: "#1E8A5A", error: "#C8483A", racha: "#C2540E" },
   },
   {
@@ -195,6 +263,7 @@ export const TEMAS_APP: TemaApp[] = [
     radio: 0,
     borde: 1,
     sombra: "ninguna",
+    letra: "arcade",
     paleta: { claro: false, fondo: "#07020F", fondoHondo: "#030108", superficie: "#0D0520", superficie2: "#140A2C", superficie3: "#1C0F3A", borde: "#2FF3FF", texto: "#F6F2FF", texto2: "#B7AED6", primario: "#C214A3", logro: "#FFE14D", correcto: "#3DFFB0", error: "#FF4D6D", racha: "#FF9A3D" },
   },
   {
@@ -207,12 +276,45 @@ export const TEMAS_APP: TemaApp[] = [
     radio: 2,
     borde: 1,
     sombra: "ninguna",
+    letra: "cursiva",
     paleta: { claro: true, fondo: "#EFE3C6", fondoHondo: "#E5D6B4", superficie: "#F6EDD6", superficie2: "#ECE0C2", superficie3: "#E2D4B2", borde: "#3A3324", texto: "#1F2C45", texto2: "#474232", primario: "#1F2C45", logro: "#E8A93A", correcto: "#2E6E3A", error: "#B23E1E", racha: "#A84A1A" },
   },
 ];
 
 export function temaAppDe(slug: string | null | undefined): TemaApp | null {
   return (slug && TEMAS_APP.find((t) => t.slug === slug)) || null;
+}
+
+// ---------- Forma de cada tema ----------
+// Además de los colores, cada tema cambia la forma: el radio de tarjetas y botones
+// (radio 0 = esquinas rectas), el grosor del borde y la sombra («dura» = desplazada y
+// sólida del color del borde, como una carta impresa; «suave» = difusa; «ninguna»).
+// Sin tema, FORMA_CLASICA: exactamente la de siempre (botones en píldora).
+export interface FormaTema {
+  radioTarjeta: number;
+  // Botones que siempre fueron píldora (Boton3D, pestañas, segmentos).
+  radioBoton: number;
+  radioChip: number;
+  // Esquinas de arriba de las hojas que suben desde abajo.
+  radioHoja: number;
+  borde: number;
+  sombra: "dura" | "suave" | "ninguna";
+}
+
+export const FORMA_CLASICA: FormaTema = { radioTarjeta: 20, radioBoton: 999, radioChip: 12, radioHoja: 24, borde: 1, sombra: "ninguna" };
+
+export function formaTema(slug: string | null | undefined): FormaTema | null {
+  const t = temaAppDe(slug);
+  if (!t) return null;
+  const r = t.radio;
+  return {
+    radioTarjeta: r * 2.5,
+    radioBoton: r * 2,
+    radioChip: Math.min(12, r * 2),
+    radioHoja: Math.min(24, r * 3),
+    borde: t.borde,
+    sombra: t.sombra,
+  };
 }
 
 // Slug del tema en el catálogo de la base (catalogo_cosmeticos, categoría 'tema').
@@ -338,8 +440,20 @@ export function tokensTema(slug: string | null | undefined): TokensTema | null {
 // (y el script de arranque del layout, antes de pintar, desde localStorage).
 export function variablesCssTema(slug: string | null | undefined): Record<string, string> | null {
   const k = tokensTema(slug);
-  if (!k) return null;
+  const f = formaTema(slug);
+  const letra = letraDe(temaAppDe(slug)?.letra);
+  if (!k || !f || !letra) return null;
+  const px = (n: number) => `${Math.round(n * 10) / 10}px`;
   return {
+    ...variablesLetra(letra),
+    // Radios de Tailwind (rounded-lg/xl/2xl/3xl) proporcionales al de las tarjetas; el
+    // de los botones píldora, aparte (rounded-full de avatares e íconos no se toca).
+    "--radius-lg": px(f.radioTarjeta * 0.5),
+    "--radius-xl": px(f.radioTarjeta * 0.75),
+    "--radius-2xl": px(f.radioTarjeta),
+    "--radius-3xl": px(f.radioTarjeta * 1.4),
+    "--radio-boton": px(f.radioBoton),
+    "--borde-tema": px(f.borde),
     "--background": k.fondo,
     "--foreground": k.texto,
     "--texto-secundario": k.texto2,
@@ -365,4 +479,9 @@ export function variablesCssTema(slug: string | null | undefined): Record<string
     "--tema-tinta-error": k.tintaError,
     "--tema-tinta-racha": k.tintaRacha,
   };
+}
+
+// Variables de la letra de títulos (globals.css: font-display y su tamaño).
+export function variablesLetra(letra: LetraApp): Record<string, string> {
+  return { "--fuente-titulos": letra.web, "--escala-letra": String(letra.escala) };
 }

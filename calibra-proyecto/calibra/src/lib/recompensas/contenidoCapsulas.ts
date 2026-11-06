@@ -92,7 +92,7 @@ export function nombrePremio(premio: string, minimo: number, maximo: number, mun
     const r = premio.slice(10) as Rareza;
     return NOMBRE_RAREZA[r] ? `Un cosmético ${NOMBRE_RAREZA[r].toLowerCase()} al azar` : premio;
   }
-  if (premio === "tema_app") return "Un tema de la app que no tengas";
+  if (premio === "tema_app") return "Un tema de la app (o la Letra libre) que no tengas";
   if (premio === "coleccion") return mundo ? `Una pieza de la colección de la ciudad que te falte` : "Una pieza de la colección de la ciudad que te falte";
   if (premio === "pieza_evento") return "Una pieza de la colección del evento que te falte";
   if (premio === "marco_coleccion") return "El marco animado de colección de la ciudad";

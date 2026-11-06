@@ -114,7 +114,7 @@ export default function CartelPlegable({ id, franja, children }: { id: string; f
               <span className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: franja.acento }}>
                 {franja.eyebrow}
               </span>
-              <span className="truncate font-display text-base font-bold leading-tight">{franja.titulo}</span>
+              <span className="titulo-flexible truncate font-display text-base font-bold leading-tight">{franja.titulo}</span>
             </span>
             {franja.pendiente ? (
               <span className="shrink-0 rounded-full border px-2.5 py-1 font-mono text-[11px] font-bold" style={{ borderColor: `${franja.acento}99`, color: franja.acento, background: `${franja.acento}1a` }}>

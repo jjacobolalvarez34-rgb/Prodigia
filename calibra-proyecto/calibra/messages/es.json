@@ -5219,7 +5219,7 @@
       "coleccion": "Una pieza de la colección de {ciudad} que te falte",
       "marcoColeccion": "El marco de colección de {ciudad}",
       "pieza_evento": "Una pieza de la colección del evento que te falte",
-      "tema_app": "Un tema de la app que no tengas",
+      "tema_app": "Un tema de la app (o la Letra libre) que no tengas",
       "coleccionSin": "Una pieza de la colección de la ciudad que te falte",
       "marcoColeccionSin": "El marco animado de colección de la ciudad"
     },
@@ -6166,5 +6166,39 @@
     "hazteProCta": "Hazte Pro",
     "avisoAprender": "{n, plural, one {Te queda # ticket para probar una clase Pro} other {Te quedan # tickets para probar clases Pro}}",
     "error": "No se pudo usar el ticket. Inténtalo de nuevo."
+  },
+  "LetraLibre": {
+    "titulo": "Letra libre",
+    "etiqueta": "Desbloqueo único · Épico",
+    "desc": "Elige la letra de los títulos de toda la app: menús, tarjetas, botones y carteles. Gana sobre la letra de tu tema. Solo cambia cómo se ve.",
+    "comoConseguir": "Se compra una sola vez con Cometas o sale en las cápsulas prisma, supernova, de la Alineación y Pro.",
+    "comprar": "Desbloquear por {n}",
+    "confirmar": "Toca otra vez para confirmar",
+    "teFaltan": "Te faltan {n} Cometas.",
+    "comprada": "¡La Letra libre es tuya! Elige tu letra.",
+    "elige": "Elige la letra de los títulos",
+    "delTema": "La del tema",
+    "enUso": "EN USO",
+    "puesta": "Ahora los títulos van en {nombre}.",
+    "puestaTema": "Los títulos vuelven a la letra de tu tema.",
+    "irATienda": "Conseguirla en la Caligrafía",
+    "ajustesTitulo": "Letra de la app",
+    "ajustesDesc": "La letra de los títulos en toda la app. Gana sobre la de tu tema.",
+    "capsulaTuya": "Es tuya. Elige tu letra en Ajustes o en el Bazar › Caligrafía.",
+    "letras": {
+      "siempre": "La de siempre",
+      "cartel": "Cartel",
+      "aventura": "Aventura",
+      "redonda": "Redonda",
+      "pixel": "Píxel",
+      "maquina": "Máquina de escribir",
+      "romana": "Romana",
+      "imprenta": "Imprenta",
+      "marcador": "Marcador",
+      "consola": "Consola",
+      "retro": "Retro",
+      "arcade": "Arcade",
+      "cursiva": "Cursiva"
+    }
   }
 }

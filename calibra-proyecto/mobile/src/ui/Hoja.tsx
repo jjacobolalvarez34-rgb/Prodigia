@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Animated, Easing, Modal, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { color, conAlfa } from "~/tema";
+import { color, conAlfa, forma } from "~/tema";
 import AvisoGlobal from "./Aviso";
 
 // Hoja inferior (confirmar una compra, ver un clan del mapa, retar a un amigo): el
@@ -58,9 +58,9 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: conAlfa(color.surface1, 0.99),
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    borderTopWidth: 1,
+    borderTopLeftRadius: forma.radioHoja,
+    borderTopRightRadius: forma.radioHoja,
+    borderTopWidth: forma.borde || 1,
     borderColor: color.border,
     paddingHorizontal: 18,
     paddingTop: 10,

@@ -27,12 +27,16 @@ describe("contenido de las cápsulas", () => {
     for (const [tipo, filas] of sql) expect(CONTENIDO_CAPSULAS[tipo as TipoCapsula], tipo).toEqual(filas);
   });
 
-  it("0297 es la última migración que define contenido_capsula y abrir_capsula", () => {
+  it("0297 es la última migración que define contenido_capsula; abrir_capsula, 0314 (Letra libre)", () => {
     const posteriores = readdirSync(MIGRACIONES).filter((f) => f > "0297_temas_app.sql" && f.endsWith(".sql"));
     for (const f of posteriores) {
       const texto = readFileSync(path.join(MIGRACIONES, f), "utf8");
-      expect(texto.includes("function public.contenido_capsula") || texto.includes("function public.abrir_capsula"), f).toBe(false);
+      expect(texto.includes("function public.contenido_capsula"), f).toBe(false);
+      if (f !== "0314_letra_libre.sql") expect(texto.includes("function public.abrir_capsula"), f).toBe(false);
     }
+    // 0314 solo suma la Letra libre al premio de temas: sigue sorteando los mismos premios.
+    const sql0314 = readFileSync(path.join(MIGRACIONES, "0314_letra_libre.sql"), "utf8");
+    for (const premio of ["tema_app", "pieza_evento", "chispas", "coleccion", "marco_coleccion"]) expect(sql0314, premio).toContain(`v_premio = '${premio}'`);
   });
 
   it("cada cápsula suma 100 y los temas salen solo en las más poderosas", () => {

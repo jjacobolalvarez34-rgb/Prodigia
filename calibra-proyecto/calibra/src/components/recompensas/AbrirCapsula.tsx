@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { CATALOGO_NUEVO, ciudadDe, COLOR_RAREZA, coloresCapsula, type Rareza } from "@/lib/recompensas/catalogo";
 import { abrirCapsula, type Capsula } from "@/lib/recompensas/api";
 import type { PremioGuardado } from "@/lib/recompensas/capsulasSinVer";
+import { LETRA_LIBRE } from "@/lib/recompensas/temas";
 import { marcarAbriendoWeb, marcarVistaWeb } from "@/lib/recompensas/capsulasSinVerWeb";
 import { refrescarCosmeticosWeb } from "@/lib/recompensas/cosmeticosWeb";
 import { createClient } from "@/lib/supabase/client";
@@ -24,6 +25,7 @@ export { DibujoCapsula } from "./DibujoCapsula";
 
 function Premio({ p }: { p: PremioGuardado }) {
   const t = useTranslations("Recompensas");
+  const tLetra = useTranslations("LetraLibre");
   if (p.premio === "chispas" || p.convertido) {
     return (
       <div className="flex flex-col items-center gap-2">
@@ -38,9 +40,10 @@ function Premio({ p }: { p: PremioGuardado }) {
   }
   const it = CATALOGO_NUEVO.find((x) => x.item === p.slug);
   const rareza = (p.rareza ?? "raro") as Rareza;
-  // Un tema de la app (0297) llega con slug tema_<tema>.
-  const esTema = p.premio === "tema_app" || !!p.slug?.startsWith("tema_");
-  const categoria = it?.categoria ?? (esTema ? "tema" : p.slug?.startsWith("marco_") ? "marco" : "titulo");
+  // Un tema de la app (0297) llega con slug tema_<tema>; la Letra libre (0314), con el suyo.
+  const esLetra = p.slug === LETRA_LIBRE.item;
+  const esTema = !esLetra && (p.premio === "tema_app" || !!p.slug?.startsWith("tema_"));
+  const categoria = esLetra ? LETRA_LIBRE.categoria : it?.categoria ?? (esTema ? "tema" : p.slug?.startsWith("marco_") ? "marco" : "titulo");
   const valor = it?.valor ?? (esTema ? p.slug?.replace(/^tema_/, "") : p.slug?.replace(/^marco_/, "")) ?? "";
   return (
     <div className="flex flex-col items-center gap-2">
@@ -51,7 +54,7 @@ function Premio({ p }: { p: PremioGuardado }) {
         {t(`tienda.rareza.${rareza}`).toUpperCase()}
       </span>
       <p className="font-display text-2xl font-bold text-foreground">{p.nombre}</p>
-      <p className="text-sm text-texto-secundario">{esTema ? t("capsulas.temaTuyo") : t("capsulas.esTuyo")}</p>
+      <p className="text-sm text-texto-secundario">{esLetra ? tLetra("capsulaTuya") : esTema ? t("capsulas.temaTuyo") : t("capsulas.esTuyo")}</p>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { CAPSULAS, CATALOGO_NUEVO, ciudadDe, COLOR_RAREZA, coloresCapsula, NOMBR
 import { sonar } from "~/lib/efectos";
 import { fijarChispas, recargarJugador } from "~/lib/jugador";
 import type { PremioGuardado } from "@/lib/recompensas/capsulasSinVer";
+import { LETRA_LIBRE } from "@/lib/recompensas/temas";
 import { marcarAbriendo, marcarVista } from "~/lib/capsulasSinVer";
 import { abrirCapsula, recargarCosmeticos, recargarPendientes, type Capsula as DatosCapsula } from "~/lib/recompensas";
 import { supabase } from "~/lib/supabase";
@@ -57,8 +58,10 @@ function Premio({ p }: { p: PremioGuardado }) {
   const it = itemDe(p.slug);
   const rareza = (p.rareza ?? "raro") as Rareza;
   // Un tema de la app (0297) llega con slug tema_<tema>.
-  const esTema = p.premio === "tema_app" || !!p.slug?.startsWith("tema_");
-  const categoria = it?.categoria ?? (esTema ? "tema" : p.slug?.startsWith("marco_") ? "marco" : "titulo");
+  // La Letra libre (0314) sale con los temas y llega con su propio slug.
+  const esLetra = p.slug === LETRA_LIBRE.item;
+  const esTema = !esLetra && (p.premio === "tema_app" || !!p.slug?.startsWith("tema_"));
+  const categoria = esLetra ? LETRA_LIBRE.categoria : it?.categoria ?? (esTema ? "tema" : p.slug?.startsWith("marco_") ? "marco" : "titulo");
   const valor = it?.valor ?? (esTema ? p.slug?.replace(/^tema_/, "") : p.slug?.replace(/^marco_/, "")) ?? "";
   return (
     <View style={{ alignItems: "center", gap: 8 }}>
@@ -70,7 +73,7 @@ function Premio({ p }: { p: PremioGuardado }) {
         {p.nombre}
       </Texto>
       <Texto v="nota" centro>
-        {esTema ? "Ya es tuyo. Póntelo en el Bazar › Temas." : "Ya es tuyo. Póntelo desde la tienda."}
+        {esLetra ? "Es tuya. Elige tu letra en Ajustes o en el Bazar › Caligrafía." : esTema ? "Ya es tuyo. Póntelo en el Bazar › Temas." : "Ya es tuyo. Póntelo desde la tienda."}
       </Texto>
     </View>
   );

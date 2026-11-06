@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, View, type LayoutChangeEvent } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import { vibrar } from "~/lib/efectos";
-import { color, fuente } from "~/tema";
+import { color, forma, fuente } from "~/tema";
 import Texto from "./Texto";
 
 // Pestañas internas (Rankeds · Casual · Liga · Semanal; Inicio · Amigos · Mensajes ·
@@ -51,8 +51,8 @@ export default function Segmentos<T extends string>({ opciones, valor, onCambio 
 }
 
 const styles = StyleSheet.create({
-  caja: { flexDirection: "row", backgroundColor: color.surface1, borderWidth: 1, borderColor: color.border, borderRadius: 999, padding: 4 },
-  activo: { position: "absolute", top: 4, bottom: 4, left: 4, borderRadius: 999, backgroundColor: color.surface3 },
+  caja: { flexDirection: "row", backgroundColor: color.surface1, borderWidth: forma.borde || 1, borderColor: color.border, borderRadius: forma.radioPildora, padding: 4 },
+  activo: { position: "absolute", top: 4, bottom: 4, left: 4, borderRadius: forma.radioPildora, backgroundColor: color.surface3 },
   opcion: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4, paddingVertical: 7 },
   texto: { fontFamily: fuente.cuerpoFuerte, fontSize: 12.5 },
   insignia: { minWidth: 16, height: 16, borderRadius: 8, paddingHorizontal: 4, backgroundColor: color.primario, alignItems: "center", justifyContent: "center" },

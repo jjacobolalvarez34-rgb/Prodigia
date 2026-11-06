@@ -11,6 +11,7 @@ import { vibrar } from "~/lib/efectos";
 import { URL_WEB } from "~/lib/entorno";
 import { EQUIPO_LIVIANO } from "~/lib/rendimiento";
 import { limpiarJugador } from "~/lib/jugador";
+import { useLetraApp } from "~/lib/letraApp";
 import { borrarResumen } from "~/lib/resumen";
 import { useSesion } from "~/lib/sesion";
 import { desconectarPresencia } from "~/lib/social";
@@ -24,6 +25,7 @@ import { PantallaApilada, TituloSeccion } from "~/ui/Pantalla";
 import PreguntaEdad from "~/ui/PreguntaEdad";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
+import LetraLibreApp from "~/ui/temas/LetraLibreApp";
 import { color } from "~/tema";
 
 function Fila({ titulo, nota, derecha, onPress }: { titulo: string; nota?: string; derecha?: ReactNode; onPress?: () => void }) {
@@ -54,6 +56,8 @@ export default function Ajustes() {
   const { sesion } = useSesion();
   const ajustes = useAjustes();
   const edad = useEdad();
+  // Letra libre (0314): la sección aparece cuando la base ya la tiene.
+  const letra = useLetraApp();
   const [pidiendoEdad, setPidiendoEdad] = useState(false);
   const [bloqueados, setBloqueados] = useState<Bloqueado[]>([]);
   const [respaldoListo, setRespaldoListo] = useState(false);
@@ -125,6 +129,9 @@ export default function Ajustes() {
               }} trackColor={{ true: color.primario, false: color.surface3 }} thumbColor="#fff" />}
         />
       </Tarjeta>
+
+      {letra.disponible && <TituloSeccion>Aspecto</TituloSeccion>}
+      <LetraLibreApp donde="ajustes" />
 
       <TituloSeccion>Avisos</TituloSeccion>
       <Tarjeta relleno={4}>

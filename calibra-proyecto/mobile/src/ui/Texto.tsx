@@ -1,7 +1,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import { StyleSheet, Text, type TextProps, type TextStyle } from "react-native";
 import { contraste, luminancia, tintaLegible } from "@/lib/recompensas/temas";
-import { color, COLOR_NOCHE, fuente, temaClaro } from "~/tema";
+import { color, COLOR_NOCHE, forma, fuente, temaClaro } from "~/tema";
 
 // Temas de la app de fondo claro (0297): el texto de siempre pasa a oscuro. Dos ajustes
 // para que nada quede ilegible (con el tema de siempre no cambia nada):
@@ -62,12 +62,34 @@ export default function Texto({ v = "cuerpo", c, centro, tam, style, ...resto }:
   const interlineado = plano?.fontSize && !plano.lineHeight ? { lineHeight: Math.round(plano.fontSize * 1.22) } : null;
   const pedido = typeof plano?.color === "string" ? plano.color : c;
   const tinta = tintaDe(v, pedido, sobreOscuro);
+  const titulo = forma.letraPropia ? ajusteTitulo(v, tam, plano) : null;
   return (
     <Text
       {...resto}
-      style={[estilos[v], c ? { color: c } : null, centro ? { textAlign: "center" } : null, tam ? { fontSize: tam, lineHeight: Math.round(tam * 1.22) } : null, style, interlineado, tinta ? { color: tinta } : null]}
+      style={[estilos[v], c ? { color: c } : null, centro ? { textAlign: "center" } : null, tam ? { fontSize: tam, lineHeight: Math.round(tam * 1.22) } : null, style, interlineado, tinta ? { color: tinta } : null, titulo]}
     />
   );
+}
+
+// Letra de títulos del tema o de la Letra libre (0314): todo texto en la letra de
+// títulos (las variantes display/h1/h2/h3 o un estilo con fuente.display) se escala
+// con el factor de esa letra y lleva su interlineado mínimo, para que las anchas no
+// se corten ni se desborden. Con la letra de siempre no se toca nada.
+function ajusteTitulo(v: Variante, tam: number | undefined, plano: TextStyle | undefined): TextStyle | null {
+  const familia = plano?.fontFamily ?? estilos[v].fontFamily;
+  if (familia !== fuente.display && familia !== fuente.displaySemi) return null;
+  const base = plano?.fontSize ?? tam ?? estilos[v].fontSize ?? 15;
+  // Con piso: la letra chica (botones, etiquetas) se tiene que seguir leyendo.
+  const tamano = Math.round(Math.max(base * forma.escalaTitulo, Math.min(base, 10)) * 10) / 10;
+  const alto = plano?.lineHeight ?? (tam || plano?.fontSize ? Math.round(base * 1.22) : estilos[v].lineHeight ?? base * 1.22);
+  return {
+    fontSize: tamano,
+    lineHeight: Math.max(Math.round(alto * (tamano / base)), Math.ceil(tamano * forma.interlineadoTitulo)),
+    // Las letras propias son más anchas: sin el apretado de Space Grotesk (el
+    // espaciado abierto que se pidió a propósito se respeta).
+    letterSpacing: plano?.letterSpacing && plano.letterSpacing > 0 ? plano.letterSpacing * forma.escalaTitulo : 0,
+    fontWeight: "normal",
+  };
 }
 
 const estilos = StyleSheet.create({

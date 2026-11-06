@@ -429,7 +429,7 @@ export function textoPremio(premio: string, minimo: number, maximo: number, mund
   if (premio.startsWith("cosmetico_")) return `Un cosmético ${NOMBRE_RAREZA[premio.slice(10) as Rareza].toLowerCase()}`;
   if (premio === "coleccion") return c ? `Una pieza de la colección de ${c.nombre} que te falte` : "Una pieza de la colección de la ciudad";
   if (premio === "pieza_evento") return "Una pieza de la colección del evento que te falte";
-  if (premio === "tema_app") return "Un tema de la app que no tengas";
+  if (premio === "tema_app") return "Un tema de la app (o la Letra libre) que no tengas";
   if (premio === "marco_coleccion") return c ? `El marco de colección de ${c.nombre}` : "El marco de colección";
   return premio;
 }

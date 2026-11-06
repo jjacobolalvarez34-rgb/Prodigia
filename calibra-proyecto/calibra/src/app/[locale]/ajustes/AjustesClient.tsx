@@ -7,6 +7,7 @@ import { sonidoHabilitado, sonidoHabilitadoServerSnapshot, setSonidoHabilitado, 
 import { efectosHabilitados, efectosHabilitadosServerSnapshot, setEfectosHabilitados, subscribeEfectos } from "@/lib/efectos";
 import { decoracionHabilitada, decoracionHabilitadaServerSnapshot, setDecoracionHabilitada, subscribeDecoracion } from "@/lib/decoracion";
 import ThemeToggle from "@/components/ThemeToggle";
+import LetraLibre from "@/components/temas/LetraLibre";
 
 interface Props {
   userId: string;
@@ -114,6 +115,8 @@ export default function AjustesClient({ userId, ocultarDobleONadaInicial }: Prop
         </div>
         <ThemeToggle />
       </section>
+
+      <LetraLibre enAjustes />
     </div>
   );
 }

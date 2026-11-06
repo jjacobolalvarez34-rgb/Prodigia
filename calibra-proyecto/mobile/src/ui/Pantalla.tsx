@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Pressable, ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { vibrar } from "~/lib/efectos";
-import { color } from "~/tema";
+import { color, forma } from "~/tema";
 import HUD from "./HUD";
 import { IconoFlecha } from "./Iconos";
 import Texto from "./Texto";
@@ -138,9 +138,9 @@ const styles = StyleSheet.create({
   atras: {
     width: 38,
     height: 38,
-    borderRadius: 19,
+    borderRadius: Math.min(19, forma.radioPildora),
     backgroundColor: color.surface1,
-    borderWidth: 1,
+    borderWidth: forma.borde || 1,
     borderColor: color.border,
     alignItems: "center",
     justifyContent: "center",

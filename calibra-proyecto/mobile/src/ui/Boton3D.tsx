@@ -6,7 +6,7 @@ import Svg, { Path } from "react-native-svg";
 import { colorSolidoPrimario, paradasPrimario } from "@/lib/degradeBoton";
 import { sonar, vibrar, type Sonido } from "~/lib/efectos";
 import { useAnimacionActiva, useLiviano } from "~/lib/rendimiento";
-import { color, conAlfa, fuente } from "~/tema";
+import { color, conAlfa, forma, fuente } from "~/tema";
 import Texto from "./Texto";
 import BordeTemporada from "./temas/BordeTemporada";
 
@@ -15,6 +15,8 @@ import BordeTemporada from "./temas/BordeTemporada";
 // sombra del mismo color y, en el botón destacado (`brillo`), el borde con el
 // degradé cálido del mundo que late y la plaquita redonda con el ▶. Al tocarlo se
 // achica con resorte (hilo nativo).
+// Con un tema, la forma es la suya (tema.ts: forma): radio (píldora solo en el de
+// siempre) y, en los de sombra dura, contorno y sombra sólida del color del borde.
 
 type VarianteBoton = "primario" | "logro" | "secundario" | "peligro" | "pro";
 
@@ -108,8 +110,12 @@ export default function Boton3D({
       sombra = `0px 10px 24px -8px ${conAlfa(solido, 0.6)}`;
   }
 
+  // Temas de sombra dura (cartas, imprenta, cuaderno): contorno y sombra sólida.
+  const contorno = forma.sombraBoton && forma.borde > 0 && variante !== "secundario";
+  if (forma.sombraBoton) sombra = forma.sombraBoton;
+
   const contenido = (
-    <View style={[styles.cara, { height: alto, borderColor: borde ?? "transparent", borderWidth: borde ? 1 : 0 }]}>
+    <View style={[styles.cara, { height: alto, borderColor: contorno ? color.border : borde ?? "transparent", borderWidth: contorno ? forma.borde : borde ? forma.borde || 1 : 0 }]}>
       {fondo}
       {variante !== "secundario" && <LinearGradient colors={["rgba(255,255,255,0.18)", "rgba(255,255,255,0)"]} style={styles.reflejo} pointerEvents="none" />}
       {cargando ? (
@@ -144,14 +150,14 @@ export default function Boton3D({
         accessibilityRole="button"
         accessibilityLabel={titulo}
         accessibilityState={{ disabled: inactivo }}
-        style={{ borderRadius: 999, boxShadow: sombra }}
+        style={{ borderRadius: forma.radioPildora, boxShadow: sombra }}
       >
         {/* Festividades: borde de la fecha en los botones principales. */}
-        {variante !== "secundario" && variante !== "peligro" && <BordeTemporada radio={999} />}
+        {variante !== "secundario" && variante !== "peligro" && <BordeTemporada radio={forma.radioPildora} />}
         {destacado ? (
           <View style={styles.marcoDestacado}>
             <Animated.View style={[StyleSheet.absoluteFill, estiloHalo]}>
-              <LinearGradient colors={variante === "logro" ? ["#FFE08A", color.logro, "#FF8A3D"] : paradas} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: 999 }]} />
+              <LinearGradient colors={variante === "logro" ? ["#FFE08A", color.logro, "#FF8A3D"] : paradas} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: forma.radioPildora }]} />
             </Animated.View>
             {contenido}
           </View>
@@ -164,11 +170,11 @@ export default function Boton3D({
 }
 
 const styles = StyleSheet.create({
-  cara: { borderRadius: 999, overflow: "hidden", alignItems: "center", justifyContent: "center", paddingHorizontal: 20 },
-  marcoDestacado: { borderRadius: 999, padding: 2.5 },
+  cara: { borderRadius: forma.radioPildora, overflow: "hidden", alignItems: "center", justifyContent: "center", paddingHorizontal: 20 },
+  marcoDestacado: { borderRadius: forma.radioPildora, padding: 2.5 },
   reflejo: { position: "absolute", left: 0, right: 0, top: 0, height: "50%" },
   fila: { flexDirection: "row", alignItems: "center", gap: 10 },
   texto: { fontFamily: fuente.displaySemi, letterSpacing: 0.2 },
-  placa: { width: 30, height: 30, borderRadius: 15, alignItems: "center", justifyContent: "center" },
-  placaChica: { width: 24, height: 24, borderRadius: 12 },
+  placa: { width: 30, height: 30, borderRadius: Math.min(15, forma.radioPildora), alignItems: "center", justifyContent: "center" },
+  placaChica: { width: 24, height: 24, borderRadius: Math.min(12, forma.radioPildora) },
 });

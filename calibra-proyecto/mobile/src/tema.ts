@@ -1,5 +1,5 @@
 import { File, Paths } from "expo-file-system";
-import { TEMA_CLASICO, tokensTema } from "@/lib/recompensas/temas";
+import { FORMA_CLASICA, formaTema, letraDe, letraEfectiva, LETRA_SIEMPRE, TEMA_CLASICO, tokensTema } from "@/lib/recompensas/temas";
 
 // Tokens de "Noche de Prodigia" (docs/app-nativa/02-SISTEMA-VISUAL.md §2-4 y
 // maquetas-android.html). Cuando exista packages/tokens, estos valores salen de ahí
@@ -33,19 +33,22 @@ export const COLOR_NOCHE = {
 // app (reloadAppAsync) o se aplica la próxima vez que se abre. Sin archivo, sin tema
 // o ante cualquier error, `color` es exactamente COLOR_NOCHE, el de siempre.
 export const ARCHIVO_TEMA_APP = "tema-app.json";
+// Letra libre (0314): la letra de títulos elegida (lib/letraApp.ts). Igual que el tema,
+// se lee al arrancar.
+export const ARCHIVO_LETRA_APP = "letra-app.json";
 
-function temaGuardadoAlAbrir(): string {
+function leerAlAbrir(archivo: string, campo: "slug" | "id"): string | null {
   try {
-    const f = new File(Paths.document, ARCHIVO_TEMA_APP);
-    if (!f.exists) return TEMA_CLASICO;
-    const j = JSON.parse(f.textSync()) as { slug?: unknown };
-    return typeof j.slug === "string" ? j.slug : TEMA_CLASICO;
+    const f = new File(Paths.document, archivo);
+    if (!f.exists) return null;
+    const j = JSON.parse(f.textSync()) as Record<string, unknown>;
+    return typeof j[campo] === "string" ? (j[campo] as string) : null;
   } catch {
-    return TEMA_CLASICO;
+    return null;
   }
 }
 
-const tokens = tokensTema(temaGuardadoAlAbrir());
+const tokens = tokensTema(leerAlAbrir(ARCHIVO_TEMA_APP, "slug") ?? TEMA_CLASICO);
 
 // El tema con el que arrancó la app ('clasico' si no hay ninguno).
 export const TEMA_APP_ACTIVO: string = tokens?.slug ?? TEMA_CLASICO;
@@ -75,14 +78,40 @@ export const color: { readonly [K in keyof typeof COLOR_NOCHE]: string } = token
     }
   : COLOR_NOCHE;
 
+// La letra elegida con la Letra libre con la que arrancó la app (null = la del tema).
+export const LETRA_APP_ACTIVA: string | null = letraDe(leerAlAbrir(ARCHIVO_LETRA_APP, "id"))?.id ?? null;
+// La letra de títulos que se ve: la elegida o la del tema; null = la de siempre.
+const letra = letraEfectiva(TEMA_APP_ACTIVO, LETRA_APP_ACTIVA);
+const letraPropia = !!letra && letra.id !== LETRA_SIEMPRE;
+
+// ---------- Forma del tema (temas.ts: formaTema) ----------
+// Radio de tarjetas y botones, grosor del borde y sombra; y la escala de la letra de
+// títulos (las anchas van más chicas para que nada se corte). Sin tema y sin Letra
+// libre, todo exactamente como siempre.
+const f = formaTema(TEMA_APP_ACTIVO) ?? FORMA_CLASICA;
+export const forma = {
+  ...f,
+  // Botones que siempre fueron píldora (Boton3D, segmentos, pestañas).
+  radioPildora: f.radioBoton,
+  // Hay una letra de títulos distinta de la de siempre.
+  letraPropia,
+  escalaTitulo: letraPropia ? letra.escala : 1,
+  interlineadoTitulo: letraPropia ? letra.interlineado : 0,
+  // Sombra de tarjetas y botones (boxShadow); null = la de siempre.
+  sombraTarjeta: f.sombra === "dura" ? `4px 4px 0px ${color.border}` : f.sombra === "suave" ? "0px 10px 24px -12px rgba(0, 0, 0, 0.6)" : null,
+  sombraBoton: f.sombra === "dura" ? `3px 3px 0px ${color.border}` : null,
+} as const;
+
 export const espacio = { xs: 4, s: 8, m: 12, l: 16, xl: 20, xxl: 24, xxxl: 32 } as const;
-export const radio = { chip: 12, boton: 16, tarjeta: 20, sprint: 28 } as const;
+export const radio: { readonly chip: number; readonly boton: number; readonly tarjeta: number; readonly sprint: number } =
+  f === FORMA_CLASICA ? { chip: 12, boton: 16, tarjeta: 20, sprint: 28 } : { chip: f.radioChip, boton: Math.min(16, f.radioTarjeta), tarjeta: f.radioTarjeta, sprint: Math.round(f.radioTarjeta * 1.4) };
 
 // Fuentes de la marca (cargadas en _layout.tsx). En Android una fuente propia ya
-// trae su peso: nunca se combina con fontWeight.
+// trae su peso: nunca se combina con fontWeight. La de títulos (display) es la del
+// tema o la de la Letra libre; el cuerpo y los números no cambian nunca.
 export const fuente = {
-  display: "SpaceGrotesk_700Bold",
-  displaySemi: "SpaceGrotesk_600SemiBold",
+  display: letraPropia ? letra.app.display : "SpaceGrotesk_700Bold",
+  displaySemi: letraPropia ? letra.app.semi : "SpaceGrotesk_600SemiBold",
   cuerpo: "Inter_400Regular",
   cuerpoMedio: "Inter_500Medium",
   cuerpoFuerte: "Inter_600SemiBold",

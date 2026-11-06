@@ -136,7 +136,9 @@
   --color-tt-success: var(--tt-success);
   --color-tt-danger: var(--tt-danger);
   --color-tt-danger-muted: var(--tt-danger-muted);
-  --font-display: var(--font-space-grotesk);
+  /* --fuente-titulos: la letra de títulos del tema o de la Letra libre (temas.ts). Sin
+     ninguna, la de siempre. */
+  --font-display: var(--fuente-titulos, var(--font-space-grotesk));
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
 }
@@ -1196,6 +1198,9 @@ html[data-tema-app] :is([class~="text-primario"], [class*=" text-primario/"], [c
 html[data-tema-app] :is([class~="text-correcto"], [class*=" text-correcto/"], [class^="text-correcto/"]) { color: var(--tinta-correcto); }
 html[data-tema-app] :is([class~="text-error"], [class*=" text-error/"], [class^="text-error/"]) { color: var(--tinta-error); }
 html[data-tema-app] :is([class~="text-racha"], [class*=" text-racha/"], [class^="text-racha/"]) { color: var(--tinta-racha); }
+/* Botones de relleno dorado (bg-logro) con text-foreground: en los temas va el texto
+   oscuro que mide temas.test.ts (#2A1A00), no la tinta clara de los temas oscuros. */
+html[data-tema-app] [class~="bg-logro"][class~="text-foreground"] { color: #2a1a00; }
 /* Paneles que son oscuros a propósito (carteles de evento, escenas, tarjetas con su
    propio fondo fijo): adentro vuelve la tinta clara de siempre, también en los temas
    claros. */
@@ -1226,3 +1231,66 @@ html[data-tema-claro] .texto-acento { color: color-mix(in oklab, var(--acento) 5
 /* Partículas de las festividades sobre fondos claros: un contorno suave para que la
    nieve blanca o las chispas doradas se sigan viendo. */
 html[data-tema-claro] .particula-tema { filter: drop-shadow(0 0 1.5px rgba(20, 16, 40, 0.6)); }
+
+/* Forma de los temas (formaTema en temas.ts): los radios de Tailwind (rounded-lg…3xl)
+   llegan inline en <html> como --radius-*; acá los botones y etiquetas píldora (con
+   relleno lateral: los avatares, puntos e interruptores redondos no se tocan), el
+   grosor del borde de las tarjetas y la sombra del tema. */
+html[data-tema-app] [class~="rounded-full"][class*="px-"] { border-radius: var(--radio-boton); }
+html[data-tema-app] :is([class~="bg-surface"], [class~="bg-surface-2"])[class~="border"] { border-width: var(--borde-tema); }
+/* Sombra dura: desplazada y sólida, del color del borde (carta impresa). */
+html[data-tema-sombra="dura"] :is([class~="bg-surface"], [class~="bg-surface-2"])[class~="border"]:is([class~="rounded-xl"], [class~="rounded-2xl"], [class~="rounded-3xl"]) {
+  box-shadow: 4px 4px 0 0 var(--border);
+}
+html[data-tema-sombra="dura"] :is(button, a)[class~="bg-primario"][class~="rounded-full"] {
+  box-shadow: 0 0 0 var(--borde-tema) var(--border), 3px 3px 0 var(--borde-tema) var(--border);
+}
+html[data-tema-sombra="suave"] :is([class~="bg-surface"], [class~="bg-surface-2"])[class~="border"]:is([class~="rounded-xl"], [class~="rounded-2xl"], [class~="rounded-3xl"]) {
+  box-shadow: 0 14px 30px -16px rgba(0, 0, 0, 0.65);
+}
+
+/* Letra de títulos (LETRAS_APP en temas.ts; la del tema o la de la Letra libre). Solo
+   font-display: el cuerpo y los números no cambian. Son fuentes de un solo peso: sin
+   negrita falsa. Como casi todas son más anchas, los tamaños de texto de Tailwind se
+   escalan adentro de font-display (--escala-letra), con un piso para que la letra
+   chica (botones, etiquetas) se siga leyendo; el texto en font-sans o font-mono que
+   quede adentro vuelve a su tamaño. */
+html[data-letra]:not([data-letra="siempre"]) .font-display {
+  font-synthesis: none;
+  --text-xs: max(calc(0.75rem * var(--escala-letra, 1)), 10px);
+  --text-sm: max(calc(0.875rem * var(--escala-letra, 1)), 10.5px);
+  --text-base: max(calc(1rem * var(--escala-letra, 1)), 11px);
+  --text-lg: calc(1.125rem * var(--escala-letra, 1));
+  --text-xl: calc(1.25rem * var(--escala-letra, 1));
+  --text-2xl: calc(1.5rem * var(--escala-letra, 1));
+  --text-3xl: calc(1.875rem * var(--escala-letra, 1));
+  --text-4xl: calc(2.25rem * var(--escala-letra, 1));
+  --text-5xl: calc(3rem * var(--escala-letra, 1));
+  --text-6xl: calc(3.75rem * var(--escala-letra, 1));
+  --text-7xl: calc(4.5rem * var(--escala-letra, 1));
+}
+/* Títulos en font-display sin clase de tamaño (heredan el del padre): también a escala. */
+html[data-letra]:not([data-letra="siempre"]) .font-display:not(.font-display .font-display):not([class*="text-xs"], [class*="text-sm"], [class*="text-base"], [class*="text-lg"], [class*="text-xl"], [class*="text-2xl"], [class*="text-3xl"], [class*="text-4xl"], [class*="text-5xl"], [class*="text-6xl"], [class*="text-7xl"], [class*="text-["]) {
+  font-size: calc(1em * var(--escala-letra, 1));
+}
+/* Títulos que se cortaban con «…» (titulo-flexible): con una letra ancha pasan a dos
+   líneas en vez de perder la mitad. */
+html[data-letra]:not([data-letra="siempre"]) .titulo-flexible {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal;
+}
+html[data-letra]:not([data-letra="siempre"]) .font-display :is(.font-sans, .font-mono) {
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+  --text-7xl: 4.5rem;
+}
