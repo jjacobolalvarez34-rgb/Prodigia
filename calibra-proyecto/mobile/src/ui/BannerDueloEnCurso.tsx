@@ -26,7 +26,7 @@ export default function BannerDueloEnCurso({ userId, segmentos }: { userId: stri
     if (enPartida) return;
     let vivo = true;
     const revisar = () => {
-      buscarDueloEnCurso(supabase as unknown as ClienteMinimo, userId).then(
+      buscarDueloEnCurso(supabase as unknown as ClienteMinimo, userId, async (id) => (await leerProgresoDuelo(id)) !== null).then(
         (d) => {
           if (vivo) setDuelo(d);
         },

@@ -120,6 +120,20 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
 | Editor de placa en la web | HECHO | Vista previa en vivo y ocho pestañas. Commit 94bfda6b. |
 | APK 0.6.8 (versionCode 14) | HECHO | Compilado el 2026-10-30 a las 15:20 en `D:\Prodigia-APK\Prodigia.apk`. |
 
+## 2e. Pedidos del 2026-11-06 (para la próxima sesión)
+
+- **Cambiar el video del mamut del inicio.** Falta definir con qué se reemplaza.
+- **Duelos entre amigos: HECHO el 2026-11-07 en código.** Falta que el usuario corra la **0317** (`0317_retos_no_se_borran_jugando.sql`).
+  - El «no autorizado» al cerrar venía de que el reto se borraba a los 2 minutos aunque ya se estuviera jugando. Ahora se borra solo si nadie jugó y pasaron 20 minutos.
+  - El aviso «duelo en curso» ya no sale por un reto recibido sin aceptar (`lib/duelos/enCurso.ts`).
+  - El duelo solo arranca con los dos en la sala; si el otro no llega en 2 minutos, se cancela. Eso ya existía en `useArranqueSincronizado`.
+  - Probar un reto completo entre dos cuentas después de correr la 0317.
+- **Reel 04 «Los hilos» (Snowman), v3:**
+  - Al usuario le gustaron el video y el concepto.
+  - Hay que mejorar las ramas: cómo se ven y el tempo en que aparecen, sobre todo de la mitad del video al final.
+  - El estado y los comandos están en `D:\Repositorios\Prodigia\marketing\piezas\2026-11-07-directo\05-reels\reel-04-hilos\ESTADO.md`.
+  - Opcional: sumar la captura de Naipia (hoy se ven 14 mundos) y tomas grabadas en video con las 2 cuentas QA subidas de nivel.
+
 ## 3. Pendientes de antes que siguen abiertos
 
 | Qué | Estado | Nota |

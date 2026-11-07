@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { buscarDueloEnCurso, type ClienteMinimo, type DueloEnCurso } from "@/lib/duelos/enCurso";
+import { leerInicioDuelo } from "@/lib/duelos/reanudar";
 import { hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 import type { ArithmeticProblemType } from "@/types/database";
 
@@ -26,7 +27,7 @@ export default function BannerDueloEnCurso() {
       const { data } = await sb.auth.getSession();
       const uid = data.session?.user.id;
       if (!uid || data.session?.user.is_anonymous) return;
-      const d = await buscarDueloEnCurso(sb as unknown as ClienteMinimo, uid).catch(() => null);
+      const d = await buscarDueloEnCurso(sb as unknown as ClienteMinimo, uid, (id) => leerInicioDuelo(id) !== null).catch(() => null);
       if (vivo) setDuelo(d);
     };
     revisar();
