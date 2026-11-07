@@ -3,7 +3,8 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { useEffect, useRef, useState } from "react";
 import { Animated, Easing, StyleSheet } from "react-native";
 
-// Intro de marca al abrir la app (como "Made with Unity"): el video de Mamut S.A.S.
+// Intro de marca al abrir la app (como "Made with Unity"): el video de Mamut Herd
+// (cambiado el 2026-11-07; antes decía Mamut S.A.S.)
 // (docs/mamut-intro-vertical-oscuro.mp4, 1080×1920, 4 s) es la "marca de agua"
 // antes de que arranque Prodigia. Orden:
 //   1. el video se reproduce COMPLETO, una sola vez;
