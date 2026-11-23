@@ -56,6 +56,89 @@
       "errorConexion": "No se pudo enviar. Revisa tu conexión.",
       "gracias": "¡Gracias! Ya recibimos tus datos.",
       "graciasDescripcion": "Te vamos a escribir por email en los próximos días."
+    },
+    "v2": {
+      "hero": {
+        "etiqueta": "Piloto gratis para colegios",
+        "titulo": "Tu curso practicando. Tú sabiendo quién necesita ayuda.",
+        "texto": "Asigna tareas por ciudad y mira en un panel quién practicó, cuánto acertó y quién se está quedando atrás.",
+        "crear": "Crear mi curso gratis",
+        "irPanel": "Ir a mi panel",
+        "piloto": "Pedir el piloto"
+      },
+      "funciones": {
+        "etiqueta": "Lo que tienes",
+        "titulo": "Todo lo que un docente necesita, nada más",
+        "tareas": {
+          "titulo": "Tareas con meta",
+          "texto": "Ciudad, cantidad de ejercicios y fecha límite."
+        },
+        "panel": {
+          "titulo": "Panel del curso",
+          "texto": "Actividad diaria, precisión y última vez de cada estudiante."
+        },
+        "alertas": {
+          "titulo": "Alertas",
+          "texto": "Quién no ha practicado o acierta poco, sin buscarlo."
+        },
+        "informe": {
+          "titulo": "Informe",
+          "texto": "Imprímelo o ábrelo en Excel."
+        }
+      },
+      "pasos": {
+        "etiqueta": "Cómo funciona el piloto",
+        "titulo": "Tres pasos",
+        "p1": {
+          "titulo": "Nos escribes",
+          "texto": "Cuéntanos de tu colegio en el formulario."
+        },
+        "p2": {
+          "titulo": "Recibes tu código",
+          "texto": "4 semanas de Pro para hasta 40 estudiantes."
+        },
+        "p3": {
+          "titulo": "Decides",
+          "texto": "Si funciona, seguimos con la licencia anual."
+        }
+      },
+      "planes": {
+        "etiqueta": "Planes",
+        "titulo": "Empieza gratis",
+        "docente": {
+          "nombre": "Docente",
+          "precio": "Gratis",
+          "items": [
+            "Cursos ilimitados",
+            "Tareas y panel del curso",
+            "Informe y exportar a Excel"
+          ],
+          "boton": "Crear mi curso"
+        },
+        "colegio": {
+          "nombre": "Colegio",
+          "precio": "Cotización",
+          "detalle": "según el número de estudiantes",
+          "items": [
+            "Todo lo del plan Docente",
+            "Pro para cada estudiante",
+            "Acompañamiento en la puesta en marcha"
+          ],
+          "boton": "Pedir el piloto",
+          "destacado": "Piloto gratis"
+        }
+      },
+      "contacto": {
+        "etiqueta": "Hablemos",
+        "titulo": "Pide el piloto para tu colegio"
+      },
+      "demo": {
+        "boton": "Ver la demo del panel",
+        "titulo": "Demo del panel docente",
+        "aviso": "Esto es una demo con un curso de ejemplo: puedes crear tareas, quitar estudiantes y exportar, pero nada se guarda.",
+        "crear": "Crear mi curso gratis",
+        "piloto": "Pedir el piloto"
+      }
     }
   },
   "Rankeds": {
@@ -6183,7 +6266,7 @@
     },
     "hero": {
       "etiqueta": "Gratis · sin registrarte",
-      "titulo": "Entrena tu cabeza en 60 segundos",
+      "titulo": "Entrena tu cabeza",
       "subtitulo": "Quince ciudades para practicar de verdad. Partidas cortas, duelos en vivo y una dificultad que se ajusta a ti.",
       "jugar": "Jugar ahora",
       "yaTengo": "Ya tengo cuenta",
@@ -6281,7 +6364,8 @@
         "Alertas de quién se queda atrás",
         "Informe para imprimir y exportar"
       ],
-      "boton": "Conoce el piloto para colegios"
+      "boton": "Conoce el piloto para colegios",
+      "demo": "Ver la demo del panel"
     },
     "faq": {
       "etiqueta": "Preguntas frecuentes",
@@ -6325,6 +6409,45 @@
       "terminos": "Términos",
       "contacto": "Contacto",
       "hecho": "© 2026 Mamut Herd"
+    },
+    "rueda": {
+      "etiqueta": "Las 15 ciudades de Prodigia",
+      "pista": "Gírala con el dedo o toca una ciudad"
+    },
+    "ticket": {
+      "titulo": "Lo que cuesta una partida.",
+      "texto": "Sesenta segundos. Y si fallas, no pagas nada.",
+      "encabezado": "TICKET DE PARTIDA · Nº 000001",
+      "lineas": [
+        [
+          "10 preguntas",
+          "60 s"
+        ],
+        [
+          "Racha",
+          "+ segundos"
+        ],
+        [
+          "Respuesta rápida",
+          "+ Exp"
+        ],
+        [
+          "3 aciertos seguidos",
+          "+1 nivel"
+        ],
+        [
+          "Un fallo",
+          "0,00"
+        ]
+      ],
+      "nota": "* Fallar no resta: solo no suma.",
+      "total": "TOTAL",
+      "totalValor": "CABEZA +1",
+      "pie": "Mañana hay reto diario nuevo: las mismas 5 preguntas para todos."
+    },
+    "neon": {
+      "hero": "en 60 segundos",
+      "final": "¿Una partida?"
     }
   },
   "Curso": {

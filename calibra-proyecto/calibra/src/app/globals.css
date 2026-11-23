@@ -1235,3 +1235,94 @@ html[data-tema-claro] .particula-tema { filter: drop-shadow(0 0 1.5px rgba(20, 1
   :root:not([data-theme="light"]) .mh-claro { display: none; }
   :root:not([data-theme="light"]) .mh-oscuro { display: block; }
 }
+
+/* ---------- Presentación (LandingPublica, /docentes): la Noche de Prodigia ----------
+   2026-11-23: «la estética de Prodigia es neón, pero que no se vea hecha con IA».
+   Siempre oscura (el neón no se lee sobre crema), fondo liso, sin manchas ni vidrio.
+   El neón imita un tubo real: centro casi blanco, color en el halo, apagado se ve el
+   vidrio. Se enciende tubo por tubo en desorden y una letra falla de vez en cuando
+   (nunca más de 3 destellos por segundo). A pedido, corre aunque el sistema pida
+   reducir el movimiento. */
+.noche-prodigia {
+  --background: #090c14;
+  --foreground: #f4f6fb;
+  --texto-secundario: #8892b0;
+  --surface: #12172a;
+  --surface-2: #171d34;
+  --border: #232b47;
+  --primario: #7c5cff;
+  --correcto: #3ddc97;
+  --racha: #ff8a3d;
+  --error: #ff5d5d;
+  --logro: #ffb627;
+  color-scheme: dark;
+  background: var(--background);
+  color: var(--foreground);
+}
+.neon {
+  --n: #9b85ff;
+  --neon-luz: color-mix(in oklab, var(--n) 22%, #ffffff);
+  --neon-sombra: 0 0 1px #fff, 0 0 4px var(--n), 0 0 11px var(--n), 0 0 24px var(--n), 0 0 52px color-mix(in oklab, var(--n) 55%, transparent);
+  --neon-apagado: color-mix(in oklab, var(--n) 20%, #1c2236);
+  color: var(--neon-luz);
+  text-shadow: var(--neon-sombra);
+}
+.neon-apagado {
+  color: var(--neon-apagado);
+  text-shadow: none;
+}
+@keyframes neon-encender {
+  0% { color: var(--neon-apagado); text-shadow: none; }
+  12% { color: var(--neon-luz); text-shadow: var(--neon-sombra); }
+  16% { color: var(--neon-apagado); text-shadow: none; }
+  34% { color: var(--neon-luz); text-shadow: var(--neon-sombra); }
+  38% { color: var(--neon-apagado); text-shadow: none; }
+  60%, 100% { color: var(--neon-luz); text-shadow: var(--neon-sombra); }
+}
+@keyframes neon-falla {
+  0%, 86%, 100% { color: var(--neon-luz); text-shadow: var(--neon-sombra); }
+  87% { color: var(--neon-apagado); text-shadow: none; }
+  88.5% { color: var(--neon-luz); text-shadow: var(--neon-sombra); }
+  91% { color: var(--neon-apagado); text-shadow: none; }
+  92% { color: var(--neon-luz); text-shadow: var(--neon-sombra); }
+}
+.neon-letra {
+  animation: neon-encender 1.1s steps(1, end) both;
+}
+.neon-letra-falla {
+  animation: neon-encender 1.1s steps(1, end) both, neon-falla 7.3s steps(1, end) 2.4s infinite;
+}
+/* Íconos y bordes en tubo: el mismo encendido con filtro en vez de text-shadow. */
+@keyframes neon-encender-caja {
+  0% { opacity: 0.25; filter: none; }
+  12% { opacity: 1; filter: drop-shadow(0 0 3px var(--n)) drop-shadow(0 0 10px var(--n)); }
+  16% { opacity: 0.25; filter: none; }
+  40%, 100% { opacity: 1; filter: drop-shadow(0 0 3px var(--n)) drop-shadow(0 0 10px var(--n)); }
+}
+.neon-caja {
+  --n: #9b85ff;
+  opacity: 0.25;
+}
+.neon-caja[data-encendido="si"] {
+  animation: neon-encender-caja 1s steps(1, end) both;
+}
+.tubo-neon {
+  border: 2px solid color-mix(in oklab, var(--n, #9b85ff) 35%, #ffffff);
+  box-shadow: 0 0 4px var(--n, #9b85ff), 0 0 14px color-mix(in oklab, var(--n, #9b85ff) 70%, transparent), inset 0 0 10px color-mix(in oklab, var(--n, #9b85ff) 35%, transparent);
+}
+.rueda-activa svg {
+  color: color-mix(in oklab, var(--n, #9b85ff) 30%, #ffffff);
+  filter: drop-shadow(0 0 3px var(--n, #9b85ff)) drop-shadow(0 0 8px var(--n, #9b85ff));
+}
+@keyframes ventana-prende {
+  0% { opacity: 0.12; }
+  40% { opacity: 1; }
+  44% { opacity: 0.3; }
+  52%, 100% { opacity: 1; }
+}
+.ventana-ciudad {
+  opacity: 0.12;
+}
+[data-encendido="si"] .ventana-ciudad {
+  animation: ventana-prende 0.9s steps(1, end) both;
+}

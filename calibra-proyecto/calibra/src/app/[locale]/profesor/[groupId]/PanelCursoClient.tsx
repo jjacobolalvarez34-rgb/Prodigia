@@ -29,6 +29,9 @@ interface Props {
   actividad: DiaActividad[];
   licencia: LicenciaDocente | null;
   faltaMigracion: boolean;
+  // Demo pública (/docentes/demo): curso de ejemplo; todo se puede tocar pero nada se
+  // guarda ni llama a la base.
+  demo?: boolean;
 }
 
 const COLOR_MUNDO = Object.fromEntries(MUNDOS_LANDING.map((m) => [m.slug, m.colorHex])) as Record<string, string>;
@@ -44,12 +47,13 @@ function sumarDias(fechaIso: string, n: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-export default function PanelCursoClient({ grupo, filas: filasIniciales, tareas: tareasIniciales, actividad, licencia, faltaMigracion }: Props) {
+export default function PanelCursoClient({ grupo, filas: filasIniciales, tareas: tareasIniciales, actividad, licencia, faltaMigracion, demo = false }: Props) {
   const t = useTranslations("Curso.panel");
   const locale = useLocale();
   const router = useRouter();
   const [ahora] = useState(() => Date.now());
   const [filas, setFilas] = useState(filasIniciales);
+  const [filasTareas, setFilasTareas] = useState(tareasIniciales);
   const [copiado, setCopiado] = useState(false);
 
   const sinNombre = t("alumnos.sinNombre");
@@ -57,7 +61,7 @@ export default function PanelCursoClient({ grupo, filas: filasIniciales, tareas:
   const resumen = resumenCurso(filas);
   const alertas = alertasDelCurso(filas, ahora, sinNombre);
   const tareas = agruparTareas(
-    tareasIniciales.filter((f) => nombrePorId.has(f.user_id)),
+    filasTareas.filter((f) => nombrePorId.has(f.user_id)),
     ahora,
   );
   const fecha = (iso: string) => new Date(iso).toLocaleDateString(locale, { day: "numeric", month: "short" });
@@ -97,6 +101,10 @@ export default function PanelCursoClient({ grupo, filas: filasIniciales, tareas:
   }
 
   async function quitar(userId: string) {
+    if (demo) {
+      setFilas((prev) => prev.filter((f) => f.user_id !== userId));
+      return;
+    }
     const supabase = createClient();
     const { error } = await supabase.rpc("quitar_alumno_grupo", { p_group_id: grupo.id, p_user_id: userId });
     if (!error) {
@@ -116,7 +124,7 @@ export default function PanelCursoClient({ grupo, filas: filasIniciales, tareas:
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link href="/profesor" className="text-xs text-texto-secundario hover:underline print:hidden">
+          <Link href={demo ? "/docentes" : "/profesor"} className="text-xs text-texto-secundario hover:underline print:hidden">
             {t("volver")}
           </Link>
           <h1 className="mt-1 font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{grupo.nombre}</h1>
@@ -128,7 +136,7 @@ export default function PanelCursoClient({ grupo, filas: filasIniciales, tareas:
           <button type="button" onClick={() => window.print()} className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground hover:border-primario/50">
             {t("imprimir")}
           </button>
-          <BorrarGrupo groupId={grupo.id} nombreGrupo={grupo.nombre} />
+          {!demo && <BorrarGrupo groupId={grupo.id} nombreGrupo={grupo.nombre} />}
         </div>
       </div>
 
@@ -186,9 +194,13 @@ export default function PanelCursoClient({ grupo, filas: filasIniciales, tareas:
             <ul className="mt-3 flex max-h-44 flex-col gap-2 overflow-y-auto print:max-h-none">
               {alertas.map((a) => (
                 <li key={a.user_id} className="flex items-center justify-between gap-3 rounded-xl bg-surface-2 px-3 py-2 text-sm">
-                  <Link href={`/profesor/${grupo.id}/${a.user_id}`} className="font-medium text-foreground hover:underline">
-                    {a.nombre}
-                  </Link>
+                  {demo ? (
+                    <span className="font-medium text-foreground">{a.nombre}</span>
+                  ) : (
+                    <Link href={`/profesor/${grupo.id}/${a.user_id}`} className="font-medium text-foreground hover:underline">
+                      {a.nombre}
+                    </Link>
+                  )}
                   <span className={a.motivo === "precision" ? "text-racha" : "text-error"}>
                     {a.motivo === "nunca" && t("alertas.nunca")}
                     {a.motivo === "inactivo" && t("alertas.inactivo", { dias: a.dias ?? 0 })}
@@ -201,7 +213,22 @@ export default function PanelCursoClient({ grupo, filas: filasIniciales, tareas:
         </section>
       </div>
 
-      <SeccionTareas grupoId={grupo.id} tareas={tareas} nombrePorId={nombrePorId} totalAlumnos={filas.length} fecha={fecha} faltaMigracion={faltaMigracion} />
+      <SeccionTareas
+        grupoId={grupo.id}
+        tareas={tareas}
+        nombrePorId={nombrePorId}
+        totalAlumnos={filas.length}
+        fecha={fecha}
+        faltaMigracion={faltaMigracion}
+        demo={
+          demo
+            ? {
+                crear: (base) => setFilasTareas((prev) => [...filas.map((f) => ({ ...base, user_id: f.user_id, hechos: 0, correctos: 0 })), ...prev]),
+                borrar: (id) => setFilasTareas((prev) => prev.filter((f) => f.tarea_id !== id)),
+              }
+            : undefined
+        }
+      />
 
       <section className="flex flex-col gap-3" data-tour="curso-alumnos">
         <h2 className="font-display text-lg font-bold text-foreground">{t("alumnos.titulo")}</h2>
@@ -223,7 +250,7 @@ export default function PanelCursoClient({ grupo, filas: filasIniciales, tareas:
               </thead>
               <tbody>
                 {filas.map((f) => (
-                  <FilaAlumno key={f.user_id} grupoId={grupo.id} fila={f} ahora={ahora} sinNombre={sinNombre} onQuitar={() => quitar(f.user_id)} />
+                  <FilaAlumno key={f.user_id} grupoId={grupo.id} fila={f} ahora={ahora} sinNombre={sinNombre} demo={demo} onQuitar={() => quitar(f.user_id)} />
                 ))}
               </tbody>
             </table>
@@ -243,7 +270,7 @@ function Kpi({ etiqueta, valor }: { etiqueta: string; valor: string }) {
   );
 }
 
-function FilaAlumno({ grupoId, fila: f, ahora, sinNombre, onQuitar }: { grupoId: string; fila: FilaPanelAlumno; ahora: number; sinNombre: string; onQuitar: () => void }) {
+function FilaAlumno({ grupoId, fila: f, ahora, sinNombre, demo, onQuitar }: { grupoId: string; fila: FilaPanelAlumno; ahora: number; sinNombre: string; demo: boolean; onQuitar: () => void }) {
   const t = useTranslations("Curso.panel.alumnos");
   const [confirmar, setConfirmar] = useState(false);
   const nombre = f.display_name ?? sinNombre;
@@ -252,7 +279,11 @@ function FilaAlumno({ grupoId, fila: f, ahora, sinNombre, onQuitar }: { grupoId:
   return (
     <tr className="border-t border-border">
       <td className="px-4 py-3">
-        <Link href={`/profesor/${grupoId}/${f.user_id}`} className="flex items-center gap-2 font-medium text-foreground hover:text-primario">
+        <Link
+          href={demo ? "#" : `/profesor/${grupoId}/${f.user_id}`}
+          onClick={demo ? (e) => e.preventDefault() : undefined}
+          className="flex items-center gap-2 font-medium text-foreground hover:text-primario"
+        >
           <Avatar url={f.avatar_url} nombre={f.display_name} size={28} />
           <span className="hover:underline">{nombre}</span>
           {f.pro_colegio && <span className="rounded-full bg-primario/10 px-2 py-0.5 text-[10px] font-semibold text-primario">{t("pro")}</span>}
@@ -296,6 +327,7 @@ function SeccionTareas({
   totalAlumnos,
   fecha,
   faltaMigracion,
+  demo,
 }: {
   grupoId: string;
   tareas: ReturnType<typeof agruparTareas>;
@@ -303,6 +335,7 @@ function SeccionTareas({
   totalAlumnos: number;
   fecha: (iso: string) => string;
   faltaMigracion: boolean;
+  demo?: { crear: (base: Omit<FilaProgresoTarea, "user_id" | "hechos" | "correctos">) => void; borrar: (id: string) => void };
 }) {
   const t = useTranslations("Curso.panel.tareas");
   const router = useRouter();
@@ -322,6 +355,22 @@ function SeccionTareas({
     if (titulo.trim().length < 2) return;
     setCreando(true);
     setError(false);
+    if (demo) {
+      demo.crear({
+        tarea_id: `demo-${Date.now()}`,
+        mundo,
+        titulo: titulo.trim(),
+        instrucciones: instrucciones.trim() || null,
+        meta_ejercicios: meta,
+        inicia_at: new Date().toISOString(),
+        vence_at: new Date(finDelDiaBogota(vence)).toISOString(),
+      });
+      setCreando(false);
+      setTitulo("");
+      setInstrucciones("");
+      setAbierta(false);
+      return;
+    }
     const supabase = createClient();
     const { error: err } = await supabase.rpc("crear_tarea_grupo", {
       p_group_id: grupoId,
@@ -343,6 +392,11 @@ function SeccionTareas({
   }
 
   async function borrar(id: string) {
+    if (demo) {
+      demo.borrar(id);
+      setBorrando(null);
+      return;
+    }
     const supabase = createClient();
     await supabase.rpc("borrar_tarea_grupo", { p_tarea_id: id });
     setBorrando(null);

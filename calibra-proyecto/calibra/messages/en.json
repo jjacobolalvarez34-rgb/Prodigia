@@ -56,6 +56,89 @@
       "errorConexion": "Couldn't send it. Check your connection.",
       "gracias": "Thanks! We received your details.",
       "graciasDescripcion": "We'll email you within the next few days."
+    },
+    "v2": {
+      "hero": {
+        "etiqueta": "Free pilot for schools",
+        "titulo": "Your class practicing. You knowing who needs help.",
+        "texto": "Assign tasks by city and see in one dashboard who practiced, how accurate they were and who is falling behind.",
+        "crear": "Create my class for free",
+        "irPanel": "Go to my dashboard",
+        "piloto": "Ask for the pilot"
+      },
+      "funciones": {
+        "etiqueta": "What you get",
+        "titulo": "Everything a teacher needs, nothing more",
+        "tareas": {
+          "titulo": "Tasks with a goal",
+          "texto": "City, number of exercises and due date."
+        },
+        "panel": {
+          "titulo": "Class dashboard",
+          "texto": "Daily activity, accuracy and last active for every student."
+        },
+        "alertas": {
+          "titulo": "Alerts",
+          "texto": "Who hasn't practiced or is struggling, without digging."
+        },
+        "informe": {
+          "titulo": "Report",
+          "texto": "Print it or open it in Excel."
+        }
+      },
+      "pasos": {
+        "etiqueta": "How the pilot works",
+        "titulo": "Three steps",
+        "p1": {
+          "titulo": "You write to us",
+          "texto": "Tell us about your school in the form."
+        },
+        "p2": {
+          "titulo": "You get your code",
+          "texto": "4 weeks of Pro for up to 40 students."
+        },
+        "p3": {
+          "titulo": "You decide",
+          "texto": "If it works, we continue with the yearly license."
+        }
+      },
+      "planes": {
+        "etiqueta": "Plans",
+        "titulo": "Start free",
+        "docente": {
+          "nombre": "Teacher",
+          "precio": "Free",
+          "items": [
+            "Unlimited classes",
+            "Tasks and class dashboard",
+            "Report and Excel export"
+          ],
+          "boton": "Create my class"
+        },
+        "colegio": {
+          "nombre": "School",
+          "precio": "Quote",
+          "detalle": "based on number of students",
+          "items": [
+            "Everything in Teacher",
+            "Pro for every student",
+            "Help getting started"
+          ],
+          "boton": "Ask for the pilot",
+          "destacado": "Free pilot"
+        }
+      },
+      "contacto": {
+        "etiqueta": "Let's talk",
+        "titulo": "Ask for the pilot for your school"
+      },
+      "demo": {
+        "boton": "See the dashboard demo",
+        "titulo": "Teacher dashboard demo",
+        "aviso": "This is a demo with a sample class: you can create tasks, remove students and export, but nothing is saved.",
+        "crear": "Create my class for free",
+        "piloto": "Ask for the pilot"
+      }
     }
   },
   "Rankeds": {
@@ -6183,7 +6266,7 @@
     },
     "hero": {
       "etiqueta": "Free · no sign-up",
-      "titulo": "Train your brain in 60 seconds",
+      "titulo": "Train your brain",
       "subtitulo": "Fifteen cities to really practice. Short rounds, live duels and difficulty that adapts to you.",
       "jugar": "Play now",
       "yaTengo": "I have an account",
@@ -6281,7 +6364,8 @@
         "Alerts for who's falling behind",
         "Printable, exportable report"
       ],
-      "boton": "See the school pilot"
+      "boton": "See the school pilot",
+      "demo": "See the dashboard demo"
     },
     "faq": {
       "etiqueta": "FAQ",
@@ -6325,6 +6409,45 @@
       "terminos": "Terms",
       "contacto": "Contact",
       "hecho": "© 2026 Mamut Herd"
+    },
+    "rueda": {
+      "etiqueta": "Prodigia's 15 cities",
+      "pista": "Spin it with your finger or tap a city"
+    },
+    "ticket": {
+      "titulo": "What a round costs.",
+      "texto": "Sixty seconds. And if you miss, you pay nothing.",
+      "encabezado": "ROUND RECEIPT · Nº 000001",
+      "lineas": [
+        [
+          "10 questions",
+          "60 s"
+        ],
+        [
+          "Streak",
+          "+ seconds"
+        ],
+        [
+          "Fast answer",
+          "+ Exp"
+        ],
+        [
+          "3 in a row",
+          "+1 level"
+        ],
+        [
+          "A miss",
+          "0.00"
+        ]
+      ],
+      "nota": "* Missing doesn't subtract: it just doesn't add.",
+      "total": "TOTAL",
+      "totalValor": "BRAIN +1",
+      "pie": "Tomorrow there's a new daily challenge: the same 5 questions for everyone."
+    },
+    "neon": {
+      "hero": "in 60 seconds",
+      "final": "One round?"
     }
   },
   "Curso": {

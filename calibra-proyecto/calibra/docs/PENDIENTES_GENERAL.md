@@ -134,6 +134,23 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
   - El estado y los comandos están en `D:\Repositorios\Prodigia\marketing\piezas\2026-11-07-directo\05-reels\reel-04-hilos\ESTADO.md`.
   - Opcional: sumar la captura de Naipia (hoy se ven 14 mundos) y tomas grabadas en video con las 2 cuentas QA subidas de nivel.
 
+## 2f. Pedidos del 2026-11-23 (SEGUIR AQUÍ)
+
+**Te toca a ti:** correr en Supabase la **0316**, **0317** y **0318** (piloto para colegios). Sin la 0318 el panel docente se ve en modo reducido y «Mi curso» sale vacío.
+
+| Pedido | Estado | Detalle |
+|---|---|---|
+| Página de presentación (landing) con precios, colegios, «Jugar» al flujo de siempre | HECHO v1 subido (049d6997); v2 neón SIN SUBIR hasta este commit | En «/» sin sesión y en `/conoce` (con sesión se ve ahí). v2: «Noche de Prodigia» sin señales de IA (sin manchas, vidrio, degradé en texto ni etiquetas en mayúsculas), letrero de neón de tubo que se enciende en desorden con una letra que falla, horizonte con ventanas del color de cada ciudad, ticket de partida, plan anual con tubo encendido, sello de Mamut Herd en el pie. Animaciones corren aunque el sistema pida reducir movimiento. Archivos: `src/components/landing/{LandingPublica,RuedaCiudades,neon,TicketPartida,piezas}.tsx`, CSS «Presentación» al final de `globals.css`. |
+| Rueda de ciudades interactiva | HECHO en código, NO VISTO EN NAVEGADOR | Se gira con el dedo/mouse con inercia, frena en una ciudad, tocar una la trae arriba, flechas del teclado. Matemática en `src/lib/landing/rueda.ts` (con tests). FALTA: capturas reales y probar el arrastre en el navegador (script listo en el scratchpad `capturas2.mjs`: arrastre, toque en Quimia y tecla). |
+| Piloto para colegios (licencias, tareas, panel del curso, Mi curso) | HECHO (0318 pendiente de correr) | Admin crea licencias en `/admin/colegios`; el docente activa el código en `/profesor`; estudiantes reciben Pro mientras dure. Tareas por ciudad con meta y fecha; panel con actividad 14 días, alertas, exportar a Excel, imprimir. Estudiante: `/curso` (menú de cuenta «Mi curso») y tarjeta de tareas en el inicio. |
+| `/docentes` rediseñada + botón «Ver la demo del panel» | HECHO en código, NO VISTO EN NAVEGADOR | Demo pública en `/docentes/demo` con un curso de ejemplo (`src/lib/docentes/demo.ts`): se pueden crear tareas, quitar estudiantes y exportar, nada se guarda. Botón también en la sección Colegios de la presentación. |
+| Firma de Mamut Herd | HECHO en la web | `src/components/MamutHerdSello.tsx` → https://mamutherdpage.vercel.app. FALTA en la app: sello apilado en Ajustes > Acerca de (PNG ya copiados en `mobile/assets/mamut-herd/`). |
+| Constelación se traba al completarse (app) | HECHO (1cdc75f6) | La pestaña de abajo seguía animando debajo de la celebración. Ahora se pausa (`useTaparFondo` en `mobile/src/lib/rendimiento.ts`). Llega con el próximo APK. Si era en la web, revisar `CelebracionConstelaciones.tsx` de la web. |
+| Tutorial guiado en cada sección | FALTA | Web y app: la primera vez en cada sección (inicio, ciudad, rankeds, social, tienda, perfil, panel docente) un recorrido que ilumina cada parte, saltable y repetible. Ya hay anclas `data-tour="..."` en el panel docente, Mi curso y el inicio. |
+| App: «Mi curso» y tareas | FALTA | Paridad: unirse con código, ver cursos, salir, y la tarjeta de tareas en el inicio de la app (RPC `mis_grupos`, `mis_tareas`, `unirse_a_grupo`, `salir_de_grupo`). |
+| Verificación pendiente | FALTA | Correr `npm run build` y mirar las páginas nuevas en el navegador (presentación neón, rueda, `/docentes`, `/docentes/demo`, `/admin/colegios`, `/profesor`, `/curso`). El disco es lento: `next dev` tarda varios minutos en compilar la primera vez. |
+| Recordatorios de siempre | — | Google: «Información de la marca» → Guardar con `https://prodigia-sandy.vercel.app` → «Corregí los problemas» (Search Console ya verificado con https). Paddle: pasar del sandbox al real. Límite de correos de Supabase. |
+
 ## 3. Pendientes de antes que siguen abiertos
 
 | Qué | Estado | Nota |
