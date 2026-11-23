@@ -99,7 +99,9 @@ function edificios(ciudades: CiudadLuz[], ancho: number, alto: number) {
 export function CiudadDeNoche({ ciudades, alto = 120 }: { ciudades: CiudadLuz[]; alto?: number }) {
   const ref = useRef<SVGSVGElement>(null);
   const visto = useInView(ref, { once: true, margin: "-20px" });
-  const ancho = 600;
+  // Ancho de dibujo amplio: en pantallas anchas casi no se recorta arriba y los
+  // letreros de los techos se ven completos.
+  const ancho = 900;
   const calle = 22;
   const lista = edificios(ciudades, ancho, alto);
   return (
