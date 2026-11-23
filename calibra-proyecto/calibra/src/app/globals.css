@@ -1226,3 +1226,12 @@ html[data-tema-claro] .texto-acento { color: color-mix(in oklab, var(--acento) 5
 /* Partículas de las festividades sobre fondos claros: un contorno suave para que la
    nieve blanca o las chispas doradas se sigan viendo. */
 html[data-tema-claro] .particula-tema { filter: drop-shadow(0 0 1.5px rgba(20, 16, 40, 0.6)); }
+
+/* Sello de Mamut Herd (MamutHerdSello.tsx): la versión clara u oscura según el tema. */
+.mh-oscuro { display: none; }
+:root[data-theme="dark"] .mh-claro { display: none; }
+:root[data-theme="dark"] .mh-oscuro { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mh-claro { display: none; }
+  :root:not([data-theme="light"]) .mh-oscuro { display: block; }
+}

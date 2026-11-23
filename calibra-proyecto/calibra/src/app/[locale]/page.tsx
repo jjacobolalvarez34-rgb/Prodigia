@@ -5,7 +5,6 @@ import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
 import Header from "@/components/Header";
-import HeaderFlujo from "@/components/landing/HeaderFlujo";
 import VisitanteLanding from "@/components/landing/VisitanteLanding";
 import Avatar from "@/components/Avatar";
 import WorldCard from "@/components/WorldCard";
@@ -24,6 +23,7 @@ import { aplicarCongelamientoSiHaceFalta } from "@/lib/practica/congelamientos";
 import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica, IconAnatomia, IconMelodia, IconTrigonometria, IconHistoria, IconCalculia, IconCircuitia, IconEstadistica, IconNaipia, IconCodia, IconDinamia, IconVitalia } from "@/components/icons";
 import { tieneMundo } from "@/lib/mundos/precios";
 import { sabadoDelFinde } from "@/lib/retoFinde";
+import TareasInicio from "@/components/curso/TareasInicio";
 import SaludoInicio from "./SaludoInicio";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -36,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const t = await getTranslations(user ? "Home.metadata" : "Landing.metadata");
+  const t = await getTranslations(user ? "Home.metadata" : "Presentacion.metadata");
   return { title: t("title"), description: t("description") };
 }
 
@@ -51,10 +51,7 @@ export default async function ProdigiaHomePage() {
   } = await supabase.auth.getUser();
   if (!visitante) {
     return (
-      <>
-        <HeaderFlujo />
-        <VisitanteLanding />
-      </>
+      <VisitanteLanding />
     );
   }
 
@@ -186,6 +183,7 @@ export default async function ProdigiaHomePage() {
           </Link>
         </div>
 
+        {!user.is_anonymous && <TareasInicio />}
         <EventoDobleExperiencia />
         {!user.is_anonymous && <PrimerosPasos />}
         {!user.is_anonymous && <TarjetaRecompensas />}

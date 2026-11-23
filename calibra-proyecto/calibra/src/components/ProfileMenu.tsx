@@ -122,6 +122,13 @@ export default function ProfileMenu() {
             >
               {t("ajustes")}
             </Link>
+            <Link
+              href="/curso"
+              role="menuitem"
+              className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-texto-secundario transition-colors hover:bg-surface-2 hover:text-foreground"
+            >
+              {t("miCurso")}
+            </Link>
             {/* Reportado en vivo (2026-09-15): "no me aparece el botón de
                 docentes... no me sale para verlo" — /docentes existía pero
                 no estaba linkeada desde ningún lado. Acá y no en la navbar

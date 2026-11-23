@@ -1,77 +1,35 @@
 "use client";
 
 import SeccionRecompensas from "./SeccionRecompensas";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import LandingPublica from "./LandingPublica";
+import HeaderFlujo from "./HeaderFlujo";
+import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { MUNDOS_LANDING, type MundoLanding } from "@/lib/mundos";
 
-const CLAVE_CONOCE = "prodigia-conoce-prodigia";
+type PasoTutorial = "presentacion" | "intro" | "ciudad" | "mecanismo";
 
-type RespuestaGuardada = "cargando" | "si" | "no" | "ninguna";
-type PasoTutorial = "intro" | "ciudad" | "mecanismo";
-
-function subscribe() {
-  return () => {};
-}
-
-function getSnapshot(): RespuestaGuardada {
-  try {
-    const v = localStorage.getItem(CLAVE_CONOCE);
-    return v === "si" ? "si" : v === "no" ? "no" : "ninguna";
-  } catch {
-    return "ninguna";
-  }
-}
-
-// Snapshot de servidor: mismo criterio que Greeting.tsx — nunca se
-// resuelve en el HTML inicial (localStorage no existe en el server), así
-// que devuelve un valor neutro y useSyncExternalStore se encarga de
-// re-renderizar solo con el valor real apenas hidrata en el cliente.
-function getServerSnapshot(): RespuestaGuardada {
-  return "cargando";
-}
-
-// Landing pública para visitantes sin sesión — rediseño del flujo
-// (Fase 7): "¿Ya conoces Prodigia?" (paso 0, sin cambios) → si "No":
-// intro corta con la bifurcación real ("Jugar sin tutorial" manda
-// directo a /login — mismo destino que "Sí, ya la conozco", porque todo
-// lo que sigue es justamente el tutorial; "Hacer el tutorial" sigue acá
-// mismo) → elegir ciudad → explicación breve del mecanismo del sprint →
-// recién ahí se crea la sesión de invitado y se entra a /demo/[mundo],
-// que continúa el resto del flujo (partida de prueba, tour, promo Pro,
-// elegir 2 mundos gratis) sin volver a pasar por acá.
+// Visitante sin sesión en «/». Desde 2026-11-23 lo primero es la página de
+// presentación (LandingPublica: qué es, ciudades, precios, colegios). «Jugar» arranca
+// el flujo de siempre, sin cambios: intro con la bifurcación real ("Jugar sin
+// tutorial" manda a /login) → elegir ciudad → explicación breve del sprint → recién
+// ahí se crea la sesión de invitado y se entra a /demo/[mundo], que continúa el resto
+// (partida de prueba, tour, promo Pro, elegir 2 mundos gratis). La vieja pregunta
+// «¿Ya conoces Prodigia?» la reemplaza el botón «Ya tengo cuenta» de la presentación.
 export default function VisitanteLanding() {
   const t = useTranslations("Landing");
-  const tHome = useTranslations("Home");
   const router = useRouter();
-  const guardada = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  // Elección hecha EN ESTA visita (antes de que localStorage.getItem
-  // vuelva a leerse) — así el click en "Sí"/"No" cambia la pantalla al
-  // toque, sin depender de que el store se vuelva a leer.
-  const [eleccion, setEleccion] = useState<"si" | "no" | null>(null);
-  const [paso, setPaso] = useState<PasoTutorial>("intro");
+  const [paso, setPaso] = useState<PasoTutorial>("presentacion");
   const [ciudadElegida, setCiudadElegida] = useState<string | null>(null);
   const [entrando, setEntrando] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const respuesta = eleccion ?? guardada;
-
-  useEffect(() => {
-    if (respuesta === "si") router.replace("/login");
-  }, [respuesta, router]);
-
-  function elegir(nueva: "si" | "no") {
-    try {
-      localStorage.setItem(CLAVE_CONOCE, nueva);
-    } catch {
-      // Si falla (modo privado, storage lleno), simplemente vuelve a
-      // preguntar la próxima visita — no bloquea nada.
-    }
-    setEleccion(nueva);
-    if (nueva === "si") router.push("/login");
+  function jugar() {
+    window.scrollTo({ top: 0 });
+    setPaso("intro");
   }
 
   // signInAnonymously invisible recién acá (paso "mecanismo" → arranca
@@ -93,30 +51,48 @@ export default function VisitanteLanding() {
     router.push(`/demo/${ciudadElegida}`);
   }
 
-  if (respuesta === "cargando" || respuesta === "si") return null;
-
-  if (respuesta === "ninguna") {
-    return (
-      <div className="mx-auto flex w-full max-w-sm flex-1 flex-col items-center justify-center gap-5 px-4 py-20 text-center">
-        <h1 className="font-display text-xl font-bold text-foreground">{t("pregunta.titulo")}</h1>
-        <div className="flex w-full flex-col gap-3">
-          <button
-            onClick={() => elegir("si")}
-            className="rounded-xl bg-primario px-5 py-3 font-display font-semibold text-white"
-          >
-            {t("pregunta.si")}
-          </button>
-          <button
-            onClick={() => elegir("no")}
-            className="rounded-xl border border-border px-5 py-3 font-display font-semibold text-foreground"
-          >
-            {t("pregunta.no")}
-          </button>
-        </div>
-      </div>
-    );
+  if (paso === "presentacion") {
+    return <LandingPublica onJugar={jugar} />;
   }
 
+  return (
+    <>
+      <HeaderFlujo />
+      <PasosFlujo
+        paso={paso}
+        setPaso={setPaso}
+        ciudadElegida={ciudadElegida}
+        setCiudadElegida={setCiudadElegida}
+        entrando={entrando}
+        error={error}
+        comenzarDemo={comenzarDemo}
+        irALogin={() => router.push("/login")}
+      />
+    </>
+  );
+}
+
+function PasosFlujo({
+  paso,
+  setPaso,
+  ciudadElegida,
+  setCiudadElegida,
+  entrando,
+  error,
+  comenzarDemo,
+  irALogin,
+}: {
+  paso: PasoTutorial;
+  setPaso: (p: PasoTutorial) => void;
+  ciudadElegida: string | null;
+  setCiudadElegida: (s: string) => void;
+  entrando: string | null;
+  error: string | null;
+  comenzarDemo: () => void;
+  irALogin: () => void;
+}) {
+  const t = useTranslations("Landing");
+  const tHome = useTranslations("Home");
   if (paso === "intro") {
     return (
       <div className="mx-auto flex w-full max-w-sm flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center">
@@ -130,7 +106,7 @@ export default function VisitanteLanding() {
             {t("intro.hacerTutorial")}
           </button>
           <button
-            onClick={() => router.push("/login")}
+            onClick={irALogin}
             className="rounded-xl border border-border px-5 py-3 font-display font-semibold text-foreground"
           >
             {t("intro.sinTutorial")}

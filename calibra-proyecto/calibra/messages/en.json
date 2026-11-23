@@ -1309,7 +1309,8 @@
       "modoClaro": "Light mode",
       "modoOscuro": "Dark mode",
       "idioma": "Language",
-      "salir": "Log out"
+      "salir": "Log out",
+      "miCurso": "My class"
     },
     "recompensas": "Rewards"
   },
@@ -6166,5 +6167,383 @@
     "hazteProCta": "Go Pro",
     "avisoAprender": "{n, plural, one {You have # ticket left to try a Pro class} other {You have # tickets left to try Pro classes}}",
     "error": "Couldn't use the ticket. Please try again."
+  },
+  "Presentacion": {
+    "metadata": {
+      "title": "Prodigia · 15 cities to train your brain",
+      "description": "Adaptive practice in math, science, code, music and history in 60-second rounds, with live duels and rankings. Free on the web and Android."
+    },
+    "nav": {
+      "ciudades": "Cities",
+      "comoFunciona": "How it works",
+      "precios": "Pricing",
+      "colegios": "Schools",
+      "entrar": "Log in",
+      "jugar": "Play"
+    },
+    "hero": {
+      "etiqueta": "Free · no sign-up",
+      "titulo": "Train your brain in 60 seconds",
+      "subtitulo": "Fifteen cities to really practice. Short rounds, live duels and difficulty that adapts to you.",
+      "jugar": "Play now",
+      "yaTengo": "I have an account",
+      "android": "Also on Android"
+    },
+    "cifras": {
+      "ciudades": "cities to study",
+      "segundos": "seconds per round",
+      "duelos": "live duels and ranked",
+      "plataformas": "web and Android, one account"
+    },
+    "como": {
+      "etiqueta": "How it works",
+      "titulo": "How it plays",
+      "paso1": {
+        "titulo": "Pick",
+        "texto": "One city, one subject."
+      },
+      "paso2": {
+        "titulo": "Play",
+        "texto": "10 questions, 60 seconds."
+      },
+      "paso3": {
+        "titulo": "Level up",
+        "texto": "Difficulty grows with you."
+      }
+    },
+    "ciudades": {
+      "etiqueta": "The cities",
+      "titulo": "Fifteen cities",
+      "texto": "Tap one to see what you study there."
+    },
+    "competir": {
+      "etiqueta": "With others",
+      "titulo": "You never play alone",
+      "rankeds": {
+        "titulo": "Ranked",
+        "texto": "Live duels, with ELO and rank."
+      },
+      "amigos": {
+        "titulo": "Duels with friends",
+        "texto": "Challenge friends to the same round."
+      },
+      "clanes": {
+        "titulo": "Clans",
+        "texto": "Climb the weekly league together."
+      },
+      "retos": {
+        "titulo": "Challenges and events",
+        "texto": "Daily, weekly and seasonal."
+      }
+    },
+    "precios": {
+      "etiqueta": "Pricing",
+      "titulo": "Free forever",
+      "texto": "Pro gives you more, never an edge in rankings.",
+      "gratis": {
+        "nombre": "Free",
+        "precio": "US$0",
+        "detalle": "forever",
+        "items": [
+          "2 cities of your choice",
+          "Ranked, duels and clans",
+          "Lessons in every city"
+        ],
+        "boton": "Start free"
+      },
+      "mensual": {
+        "nombre": "Pro monthly",
+        "precio": "US${precio}",
+        "detalle": "per month",
+        "boton": "See Pro"
+      },
+      "anual": {
+        "nombre": "Pro yearly",
+        "precio": "US${precio}",
+        "detalle": "per year · save {ahorro}%",
+        "boton": "See Pro",
+        "destacado": "Best value"
+      },
+      "proItems": [
+        "All 15 cities",
+        "+25% Sparks",
+        "300 Comets a month",
+        "Pro capsules every week"
+      ],
+      "sueltos": "Just one city? It's US${mundo}, or 2,500 Sparks earned by playing. Sparks and Comets from US${minimo}."
+    },
+    "colegios": {
+      "etiqueta": "For schools and teachers",
+      "titulo": "Your class practicing. You seeing who needs help.",
+      "texto": "Tasks by city, a class dashboard and Pro for all your students.",
+      "items": [
+        "Tasks with a goal and due date",
+        "Alerts for who's falling behind",
+        "Printable, exportable report"
+      ],
+      "boton": "See the school pilot"
+    },
+    "faq": {
+      "etiqueta": "FAQ",
+      "titulo": "FAQ",
+      "items": [
+        {
+          "p": "Is it free?",
+          "r": "Yes. You can play without ever paying: pick two free cities and unlock the rest with the Sparks you earn. Pro is optional."
+        },
+        {
+          "p": "Do I need an account?",
+          "r": "Not to try it: \"Play now\" starts a trial round instantly. An account saves your progress and streak and lets you play on your phone."
+        },
+        {
+          "p": "Who is Prodigia for?",
+          "r": "Anyone who wants to practice: school or university students, people preparing for an exam, or anyone who wants to keep their mind sharp."
+        },
+        {
+          "p": "Does Pro give an edge in rankings?",
+          "r": "No. Pro gives more Sparks, cosmetics and every city, but Experience and ELO are earned the same way by everyone."
+        },
+        {
+          "p": "Is there an app?",
+          "r": "Yes, for Android, with the same account as the web. You can practice offline and it syncs when you're back online."
+        },
+        {
+          "p": "How do I use it with my class?",
+          "r": "Go to the schools page, create your class and share the code with your students. If your school has a license, everyone gets Pro while it lasts."
+        }
+      ]
+    },
+    "final": {
+      "titulo": "Your first round takes one minute",
+      "texto": "No sign-up.",
+      "boton": "Play now"
+    },
+    "pie": {
+      "docentes": "Schools",
+      "descargar": "Download the app",
+      "privacidad": "Privacy",
+      "terminos": "Terms",
+      "contacto": "Contact",
+      "hecho": "© 2026 Mamut Herd"
+    }
+  },
+  "Curso": {
+    "profesor": {
+      "titulo": "Teacher dashboard",
+      "subtitulo": "Create your classes, assign tasks and see who needs help.",
+      "licencia": {
+        "titulo": "School license",
+        "cupos": "{usados} of {cupos} students with Pro",
+        "vence": "Valid until {fecha}",
+        "vencida": "Expired on {fecha}",
+        "beneficio": "Every student who joins your classes gets Pro while the license is valid.",
+        "sinLicencia": "Does your school have a Prodigia license?",
+        "sinLicenciaTexto": "Enter the code we gave you. Your students will get Pro while it lasts.",
+        "placeholder": "COL-XXXXXX",
+        "activar": "Activate",
+        "activando": "Activating...",
+        "activada": "License activated for {colegio}.",
+        "piloto": "Don't have one yet? Ask for the free pilot",
+        "errores": {
+          "codigo": "That code doesn't exist. Check it.",
+          "otro": "Another teacher already activated that license.",
+          "vencida": "That license has expired.",
+          "cuenta": "You need a full account (not a guest) to activate it.",
+          "generico": "Couldn't activate it. Try again."
+        }
+      },
+      "pasos": {
+        "titulo": "How to start",
+        "p1": "Create a class with any name.",
+        "p2": "Share the code: your students enter it in \"My class\".",
+        "p3": "Assign a task: city, how many exercises and the due date.",
+        "p4": "Check the dashboard: who practiced, how accurate they were and who fell behind."
+      },
+      "cursos": {
+        "titulo": "Your classes",
+        "vacio": "You don't have any classes yet.",
+        "estudiantes": "{n, plural, one {# student} other {# students}}",
+        "abrir": "Open dashboard",
+        "codigo": "Code {codigo}"
+      },
+      "crear": {
+        "titulo": "Create a class",
+        "placeholder": "E.g.: 10A Math",
+        "boton": "Create class",
+        "creando": "Creating...",
+        "error": "Couldn't create the class."
+      },
+      "estudiante": "Are you a student? Join your class from \"My class\".",
+      "irMiCurso": "Go to My class"
+    },
+    "panel": {
+      "volver": "Back to your classes",
+      "codigo": "Class code",
+      "copiar": "Copy",
+      "copiado": "Copied",
+      "compartir": "Your students open \"My class\" in their account menu (web or app) and enter this code.",
+      "exportar": "Export to Excel",
+      "imprimir": "Print report",
+      "informe": "Class report · {fecha}",
+      "licencia": "{colegio} license: {usados} of {cupos} students with Pro",
+      "sinCupos": "The license has no seats left: new students won't get Pro.",
+      "faltaMigracion": "The new dashboard needs database update 0318. Until then only the student list is shown.",
+      "kpi": {
+        "alumnos": "Students",
+        "activos": "Active this week",
+        "activosValor": "{n} of {total}",
+        "ejercicios": "Exercises this week",
+        "precision": "Accuracy this week"
+      },
+      "actividad": {
+        "titulo": "Activity in the last 14 days",
+        "leyenda": "{fecha}: {ejercicios} exercises, {activos} students",
+        "vacio": "No activity yet."
+      },
+      "alertas": {
+        "titulo": "Need attention",
+        "vacio": "All good: nobody is falling behind.",
+        "nunca": "Hasn't practiced yet",
+        "inactivo": "{dias} days without practicing",
+        "precision": "{p} accuracy this week"
+      },
+      "tareas": {
+        "titulo": "Tasks",
+        "nueva": "New task",
+        "ciudad": "City",
+        "tituloCampo": "Title",
+        "tituloPlaceholder": "E.g.: Fractions review",
+        "meta": "Exercises",
+        "vence": "Due date",
+        "instrucciones": "Instructions (optional)",
+        "crear": "Assign task",
+        "creando": "Assigning...",
+        "error": "Couldn't create the task. Make sure the date hasn't passed.",
+        "vacio": "No tasks yet. Assign the first one: your students see it on their home screen.",
+        "progreso": "{cumplidas} of {total} completed it",
+        "enCurso": "{n} in progress",
+        "pendientes": "{n} not started",
+        "vencida": "Past due",
+        "venceEl": "Due {fecha}",
+        "metaTexto": "{n} {ciudad} exercises",
+        "verDetalle": "See students",
+        "ocultar": "Hide",
+        "borrar": "Delete",
+        "confirmarBorrar": "Delete this task?",
+        "si": "Yes, delete",
+        "no": "Cancel",
+        "estado": {
+          "cumplida": "Done",
+          "en_curso": "In progress",
+          "pendiente": "Not started"
+        }
+      },
+      "alumnos": {
+        "titulo": "Students",
+        "vacio": "No students yet. Share the class code.",
+        "columnas": {
+          "alumno": "Student",
+          "semana": "Exercises (7 days)",
+          "precision": "Accuracy (7 days)",
+          "total": "Total exercises",
+          "ultima": "Last active",
+          "ciudad": "Most played city"
+        },
+        "nunca": "Never",
+        "hoy": "Today",
+        "ayer": "Yesterday",
+        "haceDias": "{n} days ago",
+        "pro": "School Pro",
+        "quitar": "Remove",
+        "confirmarQuitar": "Remove {nombre} from the class?",
+        "si": "Yes, remove",
+        "no": "Cancel",
+        "sinNombre": "Student"
+      },
+      "csv": {
+        "alumno": "Student",
+        "ejercicios7d": "Exercises 7 days",
+        "precision7d": "Accuracy 7 days",
+        "ejerciciosTotal": "Total exercises",
+        "precisionTotal": "Total accuracy",
+        "ultima": "Last active",
+        "ciudad": "Most played city"
+      }
+    },
+    "estudiante": {
+      "metadata": {
+        "title": "My class · Prodigia",
+        "description": "Your classes and tasks."
+      },
+      "titulo": "My class",
+      "subtitulo": "Join your teacher's class with the code they gave you and your tasks will show up here.",
+      "unirse": {
+        "titulo": "Join a class",
+        "placeholder": "6-letter code",
+        "boton": "Join",
+        "uniendo": "Joining...",
+        "ok": "You joined {nombre}.",
+        "error": "That code doesn't exist. Check it with your teacher."
+      },
+      "cursos": {
+        "titulo": "Your classes",
+        "vacio": "You're not in any class yet.",
+        "docente": "Teacher: {nombre}",
+        "pro": "Your school gives you Pro",
+        "salir": "Leave class",
+        "confirmarSalir": "Leave {nombre}?",
+        "si": "Yes, leave",
+        "no": "Cancel"
+      },
+      "tareas": {
+        "titulo": "Your tasks",
+        "vacio": "No tasks for now.",
+        "progreso": "{hechos} of {meta} exercises",
+        "practicar": "Practice",
+        "cumplida": "Done",
+        "vencida": "Past due",
+        "hoy": "Due today",
+        "manana": "Due tomorrow",
+        "dias": "{n} days left",
+        "de": "{grupo} · {ciudad}"
+      },
+      "inicio": {
+        "titulo": "Class tasks",
+        "verTodas": "See all"
+      },
+      "invitado": "You need an account to join a class."
+    },
+    "admin": {
+      "metadata": {
+        "title": "School licenses"
+      },
+      "titulo": "School licenses",
+      "subtitulo": "Create the license code and give it to the school's teacher. Their students get Pro until it expires.",
+      "crear": {
+        "titulo": "New license",
+        "colegio": "School",
+        "ciudad": "City",
+        "contacto": "Contact (name, email or phone)",
+        "cupos": "Seats (students)",
+        "dias": "Duration in days",
+        "notas": "Notes (optional)",
+        "boton": "Create license",
+        "creando": "Creating...",
+        "ok": "License created. Code: {codigo}",
+        "error": "Couldn't create the license."
+      },
+      "lista": {
+        "titulo": "Licenses",
+        "vacio": "No licenses yet.",
+        "uso": "{usados} of {cupos} seats · {cursos} classes",
+        "docente": "Teacher: {nombre}",
+        "sinDocente": "Not activated yet",
+        "vence": "Expires {fecha}",
+        "vencida": "Expired {fecha}",
+        "mas30": "+30 days",
+        "mas365": "+1 year",
+        "error": "Couldn't extend it."
+      }
+    }
   }
 }

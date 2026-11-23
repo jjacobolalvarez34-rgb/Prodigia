@@ -1309,7 +1309,8 @@
       "modoClaro": "Modo claro",
       "modoOscuro": "Modo oscuro",
       "idioma": "Idioma",
-      "salir": "Salir"
+      "salir": "Salir",
+      "miCurso": "Mi curso"
     },
     "recompensas": "Recompensas"
   },
@@ -6166,5 +6167,383 @@
     "hazteProCta": "Hazte Pro",
     "avisoAprender": "{n, plural, one {Te queda # ticket para probar una clase Pro} other {Te quedan # tickets para probar clases Pro}}",
     "error": "No se pudo usar el ticket. Inténtalo de nuevo."
+  },
+  "Presentacion": {
+    "metadata": {
+      "title": "Prodigia · 15 ciudades para entrenar tu cabeza",
+      "description": "Práctica adaptativa de matemáticas, ciencias, idiomas del código, música e historia en partidas de 60 segundos, con duelos en vivo y rankings. Gratis en la web y en Android."
+    },
+    "nav": {
+      "ciudades": "Ciudades",
+      "comoFunciona": "Cómo funciona",
+      "precios": "Precios",
+      "colegios": "Colegios",
+      "entrar": "Iniciar sesión",
+      "jugar": "Jugar"
+    },
+    "hero": {
+      "etiqueta": "Gratis · sin registrarte",
+      "titulo": "Entrena tu cabeza en 60 segundos",
+      "subtitulo": "Quince ciudades para practicar de verdad. Partidas cortas, duelos en vivo y una dificultad que se ajusta a ti.",
+      "jugar": "Jugar ahora",
+      "yaTengo": "Ya tengo cuenta",
+      "android": "También en Android"
+    },
+    "cifras": {
+      "ciudades": "ciudades para estudiar",
+      "segundos": "segundos por partida",
+      "duelos": "duelos y rankeds en vivo",
+      "plataformas": "web y Android, la misma cuenta"
+    },
+    "como": {
+      "etiqueta": "Cómo funciona",
+      "titulo": "Así se juega",
+      "paso1": {
+        "titulo": "Elige",
+        "texto": "Una ciudad, una materia."
+      },
+      "paso2": {
+        "titulo": "Juega",
+        "texto": "10 preguntas, 60 segundos."
+      },
+      "paso3": {
+        "titulo": "Sube",
+        "texto": "La dificultad crece contigo."
+      }
+    },
+    "ciudades": {
+      "etiqueta": "Las ciudades",
+      "titulo": "Quince ciudades",
+      "texto": "Toca una para ver qué se estudia ahí."
+    },
+    "competir": {
+      "etiqueta": "Con otros",
+      "titulo": "Nunca juegas solo",
+      "rankeds": {
+        "titulo": "Rankeds",
+        "texto": "Duelos en vivo, con ELO y rango."
+      },
+      "amigos": {
+        "titulo": "Duelos con amigos",
+        "texto": "Reta a tus amigos a la misma partida."
+      },
+      "clanes": {
+        "titulo": "Clanes",
+        "texto": "Suban juntos en la liga semanal."
+      },
+      "retos": {
+        "titulo": "Retos y eventos",
+        "texto": "Diarios, semanales y de temporada."
+      }
+    },
+    "precios": {
+      "etiqueta": "Precios",
+      "titulo": "Gratis para siempre",
+      "texto": "Pro te da más, pero nunca ventaja en rankings.",
+      "gratis": {
+        "nombre": "Gratis",
+        "precio": "0 US$",
+        "detalle": "para siempre",
+        "items": [
+          "2 ciudades a tu elección",
+          "Rankeds, duelos y clanes",
+          "Lecciones de cada ciudad"
+        ],
+        "boton": "Empezar gratis"
+      },
+      "mensual": {
+        "nombre": "Pro mensual",
+        "precio": "{precio} US$",
+        "detalle": "al mes",
+        "boton": "Ver Pro"
+      },
+      "anual": {
+        "nombre": "Pro anual",
+        "precio": "{precio} US$",
+        "detalle": "al año · ahorras {ahorro} %",
+        "boton": "Ver Pro",
+        "destacado": "El que más conviene"
+      },
+      "proItems": [
+        "Las 15 ciudades",
+        "+25 % de Chispas",
+        "300 Cometas al mes",
+        "Cápsulas Pro cada semana"
+      ],
+      "sueltos": "¿Solo una ciudad? Cuesta {mundo} US$, o 2.500 Chispas ganadas jugando. Chispas y Cometas sueltos desde {minimo} US$."
+    },
+    "colegios": {
+      "etiqueta": "Para colegios y docentes",
+      "titulo": "Tu curso practicando. Tú viendo quién necesita ayuda.",
+      "texto": "Tareas por ciudad, panel del curso y Pro para todos tus estudiantes.",
+      "items": [
+        "Tareas con meta y fecha",
+        "Alertas de quién se queda atrás",
+        "Informe para imprimir y exportar"
+      ],
+      "boton": "Conoce el piloto para colegios"
+    },
+    "faq": {
+      "etiqueta": "Preguntas frecuentes",
+      "titulo": "Preguntas frecuentes",
+      "items": [
+        {
+          "p": "¿Es gratis?",
+          "r": "Sí. Puedes jugar sin pagar nunca: eliges dos ciudades gratis y las demás se abren con las Chispas que ganas jugando. Pro es opcional."
+        },
+        {
+          "p": "¿Necesito crear una cuenta?",
+          "r": "Para probar, no: con «Jugar ahora» haces una partida de prueba al instante. La cuenta sirve para guardar tu progreso, tu racha y jugar en el celular."
+        },
+        {
+          "p": "¿Para quién es Prodigia?",
+          "r": "Para cualquier persona que quiera practicar: estudiantes de colegio o universidad, quien se prepara para un examen o quien simplemente quiere mantener la cabeza en forma."
+        },
+        {
+          "p": "¿Pro da ventaja en los rankings?",
+          "r": "No. Pro da más Chispas, cosméticos y todas las ciudades, pero la Experiencia y el ELO se ganan igual para todos."
+        },
+        {
+          "p": "¿Hay app?",
+          "r": "Sí, para Android, con la misma cuenta que la web. Puedes practicar sin conexión y se sincroniza cuando vuelves a tener internet."
+        },
+        {
+          "p": "¿Cómo lo uso con mi curso?",
+          "r": "Entra a la página para colegios, crea tu curso y comparte el código con tus estudiantes. Si tu colegio tiene licencia, todos reciben Pro mientras dure."
+        }
+      ]
+    },
+    "final": {
+      "titulo": "Tu primera partida dura un minuto",
+      "texto": "Sin registrarte.",
+      "boton": "Jugar ahora"
+    },
+    "pie": {
+      "docentes": "Colegios",
+      "descargar": "Descargar la app",
+      "privacidad": "Privacidad",
+      "terminos": "Términos",
+      "contacto": "Contacto",
+      "hecho": "© 2026 Mamut Herd"
+    }
+  },
+  "Curso": {
+    "profesor": {
+      "titulo": "Panel docente",
+      "subtitulo": "Crea tus cursos, asigna tareas y mira quién necesita ayuda.",
+      "licencia": {
+        "titulo": "Licencia del colegio",
+        "cupos": "{usados} de {cupos} estudiantes con Pro",
+        "vence": "Vigente hasta el {fecha}",
+        "vencida": "Venció el {fecha}",
+        "beneficio": "Todo estudiante que entre a tus cursos recibe Pro mientras la licencia esté vigente.",
+        "sinLicencia": "¿Tu colegio tiene licencia de Prodigia?",
+        "sinLicenciaTexto": "Escribe el código que te dimos. Tus estudiantes recibirán Pro mientras dure.",
+        "placeholder": "COL-XXXXXX",
+        "activar": "Activar",
+        "activando": "Activando...",
+        "activada": "Licencia activada para {colegio}.",
+        "piloto": "¿Todavía no tienen? Pide el piloto gratis",
+        "errores": {
+          "codigo": "Ese código no existe. Revísalo.",
+          "otro": "Esa licencia ya la activó otro docente.",
+          "vencida": "Esa licencia ya venció.",
+          "cuenta": "Necesitas una cuenta (no de invitado) para activarla.",
+          "generico": "No se pudo activar. Inténtalo de nuevo."
+        }
+      },
+      "pasos": {
+        "titulo": "Cómo empezar",
+        "p1": "Crea un curso con el nombre que quieras.",
+        "p2": "Comparte el código: tus estudiantes lo escriben en «Mi curso».",
+        "p3": "Asigna una tarea: ciudad, cuántos ejercicios y hasta cuándo.",
+        "p4": "Revisa el panel: quién practicó, cuánto acertó y quién se quedó atrás."
+      },
+      "cursos": {
+        "titulo": "Tus cursos",
+        "vacio": "Todavía no tienes cursos.",
+        "estudiantes": "{n, plural, one {# estudiante} other {# estudiantes}}",
+        "abrir": "Abrir panel",
+        "codigo": "Código {codigo}"
+      },
+      "crear": {
+        "titulo": "Crear un curso",
+        "placeholder": "Ej.: 10A Matemáticas",
+        "boton": "Crear curso",
+        "creando": "Creando...",
+        "error": "No se pudo crear el curso."
+      },
+      "estudiante": "¿Eres estudiante? Únete a tu curso desde «Mi curso».",
+      "irMiCurso": "Ir a Mi curso"
+    },
+    "panel": {
+      "volver": "Volver a tus cursos",
+      "codigo": "Código del curso",
+      "copiar": "Copiar",
+      "copiado": "Copiado",
+      "compartir": "Tus estudiantes abren «Mi curso» en el menú de su cuenta (web o app) y escriben este código.",
+      "exportar": "Exportar a Excel",
+      "imprimir": "Imprimir informe",
+      "informe": "Informe del curso · {fecha}",
+      "licencia": "Licencia de {colegio}: {usados} de {cupos} estudiantes con Pro",
+      "sinCupos": "Se acabaron los cupos de la licencia: los estudiantes nuevos no reciben Pro.",
+      "faltaMigracion": "El panel nuevo necesita la actualización 0318 de la base de datos. Mientras tanto solo se ve la lista de estudiantes.",
+      "kpi": {
+        "alumnos": "Estudiantes",
+        "activos": "Activos esta semana",
+        "activosValor": "{n} de {total}",
+        "ejercicios": "Ejercicios esta semana",
+        "precision": "Precisión de la semana"
+      },
+      "actividad": {
+        "titulo": "Actividad de los últimos 14 días",
+        "leyenda": "{fecha}: {ejercicios} ejercicios, {activos} estudiantes",
+        "vacio": "Todavía no hay actividad."
+      },
+      "alertas": {
+        "titulo": "Necesitan atención",
+        "vacio": "Todo en orden: nadie se está quedando atrás.",
+        "nunca": "Todavía no ha practicado",
+        "inactivo": "{dias} días sin practicar",
+        "precision": "Acierta {p} esta semana"
+      },
+      "tareas": {
+        "titulo": "Tareas",
+        "nueva": "Nueva tarea",
+        "ciudad": "Ciudad",
+        "tituloCampo": "Título",
+        "tituloPlaceholder": "Ej.: Repaso de fracciones",
+        "meta": "Ejercicios",
+        "vence": "Fecha límite",
+        "instrucciones": "Instrucciones (opcional)",
+        "crear": "Asignar tarea",
+        "creando": "Asignando...",
+        "error": "No se pudo crear la tarea. Revisa que la fecha no haya pasado.",
+        "vacio": "Todavía no hay tareas. Asigna la primera: tus estudiantes la ven en su inicio.",
+        "progreso": "{cumplidas} de {total} la cumplieron",
+        "enCurso": "{n} en curso",
+        "pendientes": "{n} sin empezar",
+        "vencida": "Vencida",
+        "venceEl": "Vence el {fecha}",
+        "metaTexto": "{n} ejercicios de {ciudad}",
+        "verDetalle": "Ver estudiantes",
+        "ocultar": "Ocultar",
+        "borrar": "Borrar",
+        "confirmarBorrar": "¿Borrar esta tarea?",
+        "si": "Sí, borrar",
+        "no": "Cancelar",
+        "estado": {
+          "cumplida": "Cumplida",
+          "en_curso": "En curso",
+          "pendiente": "Sin empezar"
+        }
+      },
+      "alumnos": {
+        "titulo": "Estudiantes",
+        "vacio": "Todavía no hay estudiantes. Comparte el código del curso.",
+        "columnas": {
+          "alumno": "Estudiante",
+          "semana": "Ejercicios (7 días)",
+          "precision": "Precisión (7 días)",
+          "total": "Ejercicios en total",
+          "ultima": "Última vez",
+          "ciudad": "Ciudad más jugada"
+        },
+        "nunca": "Nunca",
+        "hoy": "Hoy",
+        "ayer": "Ayer",
+        "haceDias": "Hace {n} días",
+        "pro": "Pro del colegio",
+        "quitar": "Quitar",
+        "confirmarQuitar": "¿Quitar a {nombre} del curso?",
+        "si": "Sí, quitar",
+        "no": "Cancelar",
+        "sinNombre": "Estudiante"
+      },
+      "csv": {
+        "alumno": "Estudiante",
+        "ejercicios7d": "Ejercicios 7 días",
+        "precision7d": "Precisión 7 días",
+        "ejerciciosTotal": "Ejercicios en total",
+        "precisionTotal": "Precisión total",
+        "ultima": "Última vez",
+        "ciudad": "Ciudad más jugada"
+      }
+    },
+    "estudiante": {
+      "metadata": {
+        "title": "Mi curso · Prodigia",
+        "description": "Tus cursos y tus tareas."
+      },
+      "titulo": "Mi curso",
+      "subtitulo": "Únete al curso de tu docente con el código que te dio y verás aquí tus tareas.",
+      "unirse": {
+        "titulo": "Unirme a un curso",
+        "placeholder": "Código de 6 letras",
+        "boton": "Unirme",
+        "uniendo": "Uniendo...",
+        "ok": "Te uniste a {nombre}.",
+        "error": "Ese código no existe. Revísalo con tu docente."
+      },
+      "cursos": {
+        "titulo": "Tus cursos",
+        "vacio": "Todavía no estás en ningún curso.",
+        "docente": "Docente: {nombre}",
+        "pro": "Tu colegio te da Pro",
+        "salir": "Salir del curso",
+        "confirmarSalir": "¿Salir de {nombre}?",
+        "si": "Sí, salir",
+        "no": "Cancelar"
+      },
+      "tareas": {
+        "titulo": "Tus tareas",
+        "vacio": "No tienes tareas por ahora.",
+        "progreso": "{hechos} de {meta} ejercicios",
+        "practicar": "Practicar",
+        "cumplida": "Cumplida",
+        "vencida": "Vencida",
+        "hoy": "Vence hoy",
+        "manana": "Vence mañana",
+        "dias": "Quedan {n} días",
+        "de": "{grupo} · {ciudad}"
+      },
+      "inicio": {
+        "titulo": "Tareas de tu curso",
+        "verTodas": "Ver todas"
+      },
+      "invitado": "Para unirte a un curso necesitas crear tu cuenta."
+    },
+    "admin": {
+      "metadata": {
+        "title": "Licencias de colegios"
+      },
+      "titulo": "Licencias de colegios",
+      "subtitulo": "Crea el código de la licencia y dáselo al docente del colegio. Sus estudiantes reciben Pro hasta la fecha de vencimiento.",
+      "crear": {
+        "titulo": "Nueva licencia",
+        "colegio": "Colegio",
+        "ciudad": "Ciudad",
+        "contacto": "Contacto (nombre, correo o teléfono)",
+        "cupos": "Cupos (estudiantes)",
+        "dias": "Duración en días",
+        "notas": "Notas (opcional)",
+        "boton": "Crear licencia",
+        "creando": "Creando...",
+        "ok": "Licencia creada. Código: {codigo}",
+        "error": "No se pudo crear la licencia."
+      },
+      "lista": {
+        "titulo": "Licencias",
+        "vacio": "Todavía no hay licencias.",
+        "uso": "{usados} de {cupos} cupos · {cursos} cursos",
+        "docente": "Docente: {nombre}",
+        "sinDocente": "Sin activar todavía",
+        "vence": "Vence el {fecha}",
+        "vencida": "Venció el {fecha}",
+        "mas30": "+30 días",
+        "mas365": "+1 año",
+        "error": "No se pudo extender."
+      }
+    }
   }
 }
