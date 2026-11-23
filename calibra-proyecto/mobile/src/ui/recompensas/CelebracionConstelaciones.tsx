@@ -9,7 +9,7 @@ import { constelacionesPorVer, marcarConstelacionesVistas, NOMBRE_FUGAZ, type Co
 import { sonar, vibrar } from "~/lib/efectos";
 import { recargarJugador } from "~/lib/jugador";
 import { leerAvisoConstelaciones, limpiarAvisoConstelaciones, recargarCosmeticos, suscribirAvisoConstelaciones } from "~/lib/recompensas";
-import { useLiviano } from "~/lib/rendimiento";
+import { DentroDeSuperposicion, useLiviano, useTaparFondo } from "~/lib/rendimiento";
 import { supabase } from "~/lib/supabase";
 import { color, conAlfa, fuente, mundoDe, COLOR_NOCHE } from "~/tema";
 import Boton3D from "../Boton3D";
@@ -314,6 +314,8 @@ export default function CelebracionConstelaciones() {
   const [lista, setLista] = useState<ConstelacionCompletada[]>([]);
   const [i, setI] = useState(0);
   const permitido = LUGARES.has(segmentos[0] ?? "") && !primeraVez;
+  // Mientras se celebra, la pestaña de abajo deja de animar (ver rendimiento.ts).
+  useTaparFondo(lista.length > 0 && permitido);
 
   useEffect(() => {
     if (!aviso || !permitido || lista.length > 0) return;
@@ -345,9 +347,11 @@ export default function CelebracionConstelaciones() {
 
   return (
     <SobreOscuro>
-      <Animated.View entering={FadeIn.duration(300)} style={styles.fondo}>
-        <Una key={actual.id} c={actual} onSeguir={seguir} ultima={i === lista.length - 1} />
-      </Animated.View>
+      <DentroDeSuperposicion value={true}>
+        <Animated.View entering={FadeIn.duration(300)} style={styles.fondo}>
+          <Una key={actual.id} c={actual} onSeguir={seguir} ultima={i === lista.length - 1} />
+        </Animated.View>
+      </DentroDeSuperposicion>
     </SobreOscuro>
   );
 }

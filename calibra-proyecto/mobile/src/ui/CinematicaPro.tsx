@@ -5,7 +5,7 @@ import Animated, { Easing, FadeIn, FadeInDown, useAnimatedStyle, useDerivedValue
 import { LinearGradient } from "expo-linear-gradient";
 import { CAMINO_CHISPA, CINE, COLORES_CINE as C, crearEstallidoCine, crearEstrellasCine, muestrearCinematica } from "@/lib/fx/cinematicaPro";
 import { precargarSonidos, sonar, vibrar } from "~/lib/efectos";
-import { useLiviano } from "~/lib/rendimiento";
+import { useLiviano, useTaparFondo } from "~/lib/rendimiento";
 import { fuente } from "~/tema";
 import Texto from "./Texto";
 
@@ -31,6 +31,8 @@ function brillo(color: string) {
 export default function CinematicaPro({ onTerminar }: { onTerminar: () => void }) {
   const { width: W, height: H } = useWindowDimensions();
   const liviano = useLiviano();
+  // Mientras corre, la pantalla de abajo deja de animar (ver rendimiento.ts).
+  useTaparFondo(true);
   const reloj = useClock();
 
   // Todo lo que se arma una vez: la línea de tiempo muestreada, estrellas, partículas y pinturas.

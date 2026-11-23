@@ -7,7 +7,7 @@
 //    menos partículas y menos efectos simultáneos (esLiviano).
 import * as Device from "expo-device";
 import { useIsFocused } from "expo-router";
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useSyncExternalStore } from "react";
 import { AppState } from "react-native";
 import { useAjustes } from "./ajustes";
 
@@ -31,9 +31,43 @@ function useAppActiva(): boolean {
   return activa;
 }
 
+// 3) Una celebración a pantalla completa (constelación, 2026-11-23: «es la primera vez
+//    que al completar una constelación se me traba TANTO») tapa la pestaña, pero la
+//    pestaña sigue con el foco y seguía animando todo debajo (glifos, placa, marcos
+//    animados, carteles) mientras arriba corría el estallido. Mientras hay una
+//    superposición, lo de abajo se pausa; lo que está dentro de ella
+//    (<DentroDeSuperposicion>) sigue animando.
+let superposiciones = 0;
+const oyentes = new Set<() => void>();
+function suscribirSuperposicion(f: () => void) {
+  oyentes.add(f);
+  return () => {
+    oyentes.delete(f);
+  };
+}
+const leerSuperposicion = () => superposiciones > 0;
+
+// Mientras el componente que lo llama esté montado con `activa`, pausa lo de abajo.
+export function useTaparFondo(activa: boolean) {
+  useEffect(() => {
+    if (!activa) return;
+    superposiciones++;
+    oyentes.forEach((f) => f());
+    return () => {
+      superposiciones--;
+      oyentes.forEach((f) => f());
+    };
+  }, [activa]);
+}
+
+const ContextoSuperposicion = createContext(false);
+export const DentroDeSuperposicion = ContextoSuperposicion.Provider;
+
 // true si la pantalla que contiene al componente está a la vista.
 export function useAnimacionActiva(): boolean {
   const enFoco = useIsFocused();
   const activa = useAppActiva();
-  return enFoco && activa;
+  const tapada = useSyncExternalStore(suscribirSuperposicion, leerSuperposicion);
+  const dentro = useContext(ContextoSuperposicion);
+  return enFoco && activa && (!tapada || dentro);
 }
