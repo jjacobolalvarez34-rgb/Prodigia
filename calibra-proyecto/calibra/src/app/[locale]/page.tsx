@@ -11,8 +11,6 @@ import WorldCard from "@/components/WorldCard";
 import EventoDobleExperiencia from "@/components/EventoDobleExperiencia";
 import TarjetaRecompensas from "@/components/recompensas/TarjetaRecompensas";
 import PrimerosPasos from "@/components/recompensas/PrimerosPasos";
-import PrimeraVezTip from "@/components/PrimeraVezTip";
-import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { calcularRachaDiaria, lunesDeEstaSemanaIso } from "@/lib/practica/racha";
 import RepararRacha from "@/components/RepararRacha";
 import CartelTemporada from "@/components/temas/CartelTemporada";
@@ -130,13 +128,11 @@ export default async function ProdigiaHomePage() {
             label={t("precision7dias")}
             valor={precision7dias === null ? t("sinDatos") : `${precision7dias}%`}
           />
-          <AvisoPrimeraVez avisoKey="chispas-intro" texto={t("chispasIntro")}>
-            <MetricaCard
-              icono={<IconoTrazo nombre="rayo" className="h-4 w-4 text-logro" />}
-              label={t("chispas")}
-              valor={`${profile.puntos_total}`}
-            />
-          </AvisoPrimeraVez>
+          <MetricaCard
+            icono={<IconoTrazo nombre="rayo" className="h-4 w-4 text-logro" />}
+            label={t("chispas")}
+            valor={`${profile.puntos_total}`}
+          />
         </section>
 
         <div className="grid gap-3 sm:grid-cols-2" data-tour="inicio-retos">
@@ -197,130 +193,128 @@ export default async function ProdigiaHomePage() {
             <h2 className="font-display text-lg font-bold text-foreground">{t("tusMundos")}</h2>
             <p className="text-xs text-texto-secundario">{t("tusMundosDescripcion")}</p>
           </div>
-          <PrimeraVezTip tipKey="tour-mundos" texto={t("tourMundos")}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <WorldCard
-                nombre={tMundos("numeria")}
-                descripcion={t("mundos.numeria")}
-                Icono={IconSuma}
-                href="/numeria"
-                colorHex="#6C4CF1"
-                bloqueado={!tieneMundo(profile, "numeria")}
-              />
-              <WorldCard
-                nombre={tMundos("enigmia")}
-                descripcion={t("mundos.enigmia")}
-                Icono={IconLogica}
-                href="/enigmia"
-                colorHex="#0E9F6E"
-                bloqueado={!tieneMundo(profile, "enigmia")}
-              />
-              <WorldCard
-                nombre={tMundos("geografia")}
-                descripcion={t("mundos.geografia")}
-                Icono={IconGeometria}
-                href="/geografia"
-                colorHex="#1E7A8C"
-                bloqueado={!tieneMundo(profile, "geografia")}
-              />
-              <WorldCard
-                nombre={tMundos("quimia")}
-                descripcion={t("mundos.quimia")}
-                Icono={IconQuimica}
-                href="/quimia"
-                colorHex="#C026D3"
-                bloqueado={!tieneMundo(profile, "quimia")}
-              />
-              <WorldCard
-                nombre={tMundos("anatomia")}
-                descripcion={t("mundos.anatomia")}
-                Icono={IconAnatomia}
-                href="/anatomia"
-                colorHex="#8B2942"
-                bloqueado={!tieneMundo(profile, "anatomia")}
-              />
-              <WorldCard
-                nombre={tMundos("melodia")}
-                descripcion={t("mundos.melodia")}
-                Icono={IconMelodia}
-                href="/melodia"
-                colorHex="#B8860B"
-                bloqueado={!tieneMundo(profile, "melodia")}
-              />
-              <WorldCard
-                nombre={tMundos("trigonometria")}
-                descripcion={t("mundos.trigonometria")}
-                Icono={IconTrigonometria}
-                href="/trigonometria"
-                colorHex="#84CC16"
-                bloqueado={!tieneMundo(profile, "trigonometria")}
-              />
-              <WorldCard
-                nombre={tMundos("historia")}
-                descripcion={t("mundos.historia")}
-                Icono={IconHistoria}
-                href="/historia"
-                colorHex="#A0522D"
-                bloqueado={!tieneMundo(profile, "historia")}
-              />
-              <WorldCard
-                nombre={tMundos("calculia")}
-                descripcion={t("mundos.calculia")}
-                Icono={IconCalculia}
-                href="/calculia"
-                colorHex="#4338CA"
-                bloqueado={!tieneMundo(profile, "calculia")}
-              />
-              <WorldCard
-                nombre={tMundos("circuitia")}
-                descripcion={t("mundos.circuitia")}
-                Icono={IconCircuitia}
-                href="/circuitia"
-                colorHex="#F59E0B"
-                bloqueado={!tieneMundo(profile, "circuitia")}
-              />
-              <WorldCard
-                nombre={tMundos("estadistica")}
-                descripcion={t("mundos.estadistica")}
-                Icono={IconEstadistica}
-                href="/estadistica"
-                colorHex="#0D9488"
-                bloqueado={!tieneMundo(profile, "estadistica")}
-              />
-              <WorldCard
-                nombre={tMundos("naipia")}
-                descripcion={t("mundos.naipia")}
-                Icono={IconNaipia}
-                href="/naipia"
-                colorHex="#B91C1C"
-                bloqueado={!tieneMundo(profile, "naipia")}
-              />
-              <WorldCard
-                nombre={tMundos("codia")}
-                descripcion={t("mundos.codia")}
-                Icono={IconCodia}
-                href="/codia"
-                colorHex="#06B6D4"
-                bloqueado={!tieneMundo(profile, "codia")}
-              />
-              <WorldCard
-                nombre={tMundos("dinamia")}
-                descripcion={t("mundos.dinamia")}
-                Icono={IconDinamia}
-                href="/dinamia"
-                colorHex="#2563EB"
-                bloqueado={!tieneMundo(profile, "dinamia")}
-              />
-              <WorldCard
-                nombre={tMundos("vitalia")}
-                descripcion={t("mundos.vitalia")}
-                Icono={IconVitalia}
-                href="/vitalia"
-                colorHex="#16A34A"
-                bloqueado={!tieneMundo(profile, "vitalia")}
-              />
-            </div>
-          </PrimeraVezTip>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <WorldCard
+              nombre={tMundos("numeria")}
+              descripcion={t("mundos.numeria")}
+              Icono={IconSuma}
+              href="/numeria"
+              colorHex="#6C4CF1"
+              bloqueado={!tieneMundo(profile, "numeria")}
+            />
+            <WorldCard
+              nombre={tMundos("enigmia")}
+              descripcion={t("mundos.enigmia")}
+              Icono={IconLogica}
+              href="/enigmia"
+              colorHex="#0E9F6E"
+              bloqueado={!tieneMundo(profile, "enigmia")}
+            />
+            <WorldCard
+              nombre={tMundos("geografia")}
+              descripcion={t("mundos.geografia")}
+              Icono={IconGeometria}
+              href="/geografia"
+              colorHex="#1E7A8C"
+              bloqueado={!tieneMundo(profile, "geografia")}
+            />
+            <WorldCard
+              nombre={tMundos("quimia")}
+              descripcion={t("mundos.quimia")}
+              Icono={IconQuimica}
+              href="/quimia"
+              colorHex="#C026D3"
+              bloqueado={!tieneMundo(profile, "quimia")}
+            />
+            <WorldCard
+              nombre={tMundos("anatomia")}
+              descripcion={t("mundos.anatomia")}
+              Icono={IconAnatomia}
+              href="/anatomia"
+              colorHex="#8B2942"
+              bloqueado={!tieneMundo(profile, "anatomia")}
+            />
+            <WorldCard
+              nombre={tMundos("melodia")}
+              descripcion={t("mundos.melodia")}
+              Icono={IconMelodia}
+              href="/melodia"
+              colorHex="#B8860B"
+              bloqueado={!tieneMundo(profile, "melodia")}
+            />
+            <WorldCard
+              nombre={tMundos("trigonometria")}
+              descripcion={t("mundos.trigonometria")}
+              Icono={IconTrigonometria}
+              href="/trigonometria"
+              colorHex="#84CC16"
+              bloqueado={!tieneMundo(profile, "trigonometria")}
+            />
+            <WorldCard
+              nombre={tMundos("historia")}
+              descripcion={t("mundos.historia")}
+              Icono={IconHistoria}
+              href="/historia"
+              colorHex="#A0522D"
+              bloqueado={!tieneMundo(profile, "historia")}
+            />
+            <WorldCard
+              nombre={tMundos("calculia")}
+              descripcion={t("mundos.calculia")}
+              Icono={IconCalculia}
+              href="/calculia"
+              colorHex="#4338CA"
+              bloqueado={!tieneMundo(profile, "calculia")}
+            />
+            <WorldCard
+              nombre={tMundos("circuitia")}
+              descripcion={t("mundos.circuitia")}
+              Icono={IconCircuitia}
+              href="/circuitia"
+              colorHex="#F59E0B"
+              bloqueado={!tieneMundo(profile, "circuitia")}
+            />
+            <WorldCard
+              nombre={tMundos("estadistica")}
+              descripcion={t("mundos.estadistica")}
+              Icono={IconEstadistica}
+              href="/estadistica"
+              colorHex="#0D9488"
+              bloqueado={!tieneMundo(profile, "estadistica")}
+            />
+            <WorldCard
+              nombre={tMundos("naipia")}
+              descripcion={t("mundos.naipia")}
+              Icono={IconNaipia}
+              href="/naipia"
+              colorHex="#B91C1C"
+              bloqueado={!tieneMundo(profile, "naipia")}
+            />
+            <WorldCard
+              nombre={tMundos("codia")}
+              descripcion={t("mundos.codia")}
+              Icono={IconCodia}
+              href="/codia"
+              colorHex="#06B6D4"
+              bloqueado={!tieneMundo(profile, "codia")}
+            />
+            <WorldCard
+              nombre={tMundos("dinamia")}
+              descripcion={t("mundos.dinamia")}
+              Icono={IconDinamia}
+              href="/dinamia"
+              colorHex="#2563EB"
+              bloqueado={!tieneMundo(profile, "dinamia")}
+            />
+            <WorldCard
+              nombre={tMundos("vitalia")}
+              descripcion={t("mundos.vitalia")}
+              Icono={IconVitalia}
+              href="/vitalia"
+              colorHex="#16A34A"
+              bloqueado={!tieneMundo(profile, "vitalia")}
+            />
+          </div>
         </section>
       </div>
     </>

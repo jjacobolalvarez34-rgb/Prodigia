@@ -16,7 +16,6 @@ import FondoCursorMundo from "@/components/FondoCursorMundo";
 import TopicCard from "@/components/TopicCard";
 import NivelMundoBadge from "@/components/NivelMundoBadge";
 import NivelMundoProgreso from "@/components/NivelMundoProgreso";
-import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import AprenderTabs from "@/components/AprenderTabs";
 import type { UnidadCaminoGenerico } from "@/components/CaminoContinuo";
 import LevelDial from "@/app/[locale]/practica/LevelDial";
@@ -76,17 +75,15 @@ export async function PaginaHubMundo({ slug }: { slug: SlugMundoNuevo }) {
       <FondoCursorMundo mundo={slug} />
       <Header autenticado />
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
-        <AvisoPrimeraVez avisoKey={`${slug}-intro`} texto={tm("aviso")}>
-          <div>
-            <span className="text-xs font-medium uppercase tracking-wide" style={{ color: cfg.color }}>
-              {tm("nombreMundo")}
-            </span>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{tm("titulo")}</h1>
-            <div className="mt-2">
-              <NivelMundoBadge nombreMundo={tm("nombreMundo")} nivel={nivelMundo} colorHex={cfg.color} />
-            </div>
+        <div>
+          <span className="text-xs font-medium uppercase tracking-wide" style={{ color: cfg.color }}>
+            {tm("nombreMundo")}
+          </span>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{tm("titulo")}</h1>
+          <div className="mt-2">
+            <NivelMundoBadge nombreMundo={tm("nombreMundo")} nivel={nivelMundo} colorHex={cfg.color} />
           </div>
-        </AvisoPrimeraVez>
+        </div>
 
         <NivelMundoProgreso
           nombreMundo={tm("nombreMundo")}

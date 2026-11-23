@@ -136,7 +136,7 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
 
 ## 2f. Pedidos del 2026-11-23 (SEGUIR AQUÍ)
 
-**Te toca a ti:** 0316, 0317 y 0318 YA CORRIDAS (2026-11-23). Falta correr la **0319** (estudio del curso) y la **0320** (tutorial guiado).
+**Migraciones:** 0316 a 0320 YA CORRIDAS (2026-11-23).
 
 | Pedido | Estado | Detalle |
 |---|---|---|
@@ -150,6 +150,7 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
 | Neón en el fondo de la presentación | HECHO | Letreros de neón en los techos con el glifo de cada ciudad (uno falla de vez en cuando), ventanas con brillo y reflejos en la calle mojada. |
 | Estudio del curso para docentes («datos útiles y cómo mejorar») | HECHO (0319 pendiente de correr) | Pestaña «Estudio del curso» en el panel y en la demo: recomendaciones priorizadas con botón «Asignar tarea» (tema crítico, tema que empeora, a quién contactar, apurados, estancados, práctica espaciada, fluidez, reconocer avances, tema dominado), tabla de temas (precisión, tendencia 2 semanas, a cuántos les cuesta, tiempo por respuesta, nivel), perfil por estudiante (etiqueta, fuertes/débiles, velocidad frente al curso, días activos, minutos, hora habitual), mapa de constancia de 4 semanas, horas de práctica y distribución de precisión. Lógica en `src/lib/docentes/estudio.ts` (con tests), nombres de temas en `temas.ts`. |
 | Tutorial guiado en cada sección | HECHO (0320 pendiente de correr) | Decisiones tomadas: se guarda en la cuenta, reemplaza los globos de la app (queda solo el de resultado), sale la primera vez + botón «?» en el encabezado de la web. Contenido compartido en `src/lib/tutorial/recorridos.ts` (11 secciones, con tests). Web: `components/tutorial/RecorridoGuiado.tsx` montado en el Header según la ruta, «Ver los tutoriales otra vez» en Ajustes. App: `ui/RecorridoSeccion.tsx` con anclas (`lib/anclas.ts`) en inicio, ciudad y Mundos; Ajustes > «Ver el tutorial otra vez» también lo repite. Sin la 0320 se recuerda en el navegador o el teléfono. FALTA: verlo en el navegador con una cuenta real y en el teléfono (próximo APK). |
+| Globos viejos de la web (inicio, cada ciudad, Rankeds) | HECHO | Quitados `PrimeraVezTip` y `AvisoPrimeraVez` (13 lugares): los reemplaza el tutorial guiado, igual que en la app. Los invitados ya no ven globos.
 | App: «Mi curso», tareas en el inicio y «Acerca de» con Mamut Herd | HECHO (1bce2234) | Ajustes > Colegio > Mi curso; tarjeta «Tareas de tu curso» en el inicio; Ajustes > Acerca de con el sello apilado. Llega con el próximo APK. |
 | Verificación pendiente | FALTA | Correr `npm run build` y mirar las páginas nuevas en el navegador (presentación neón, rueda, `/docentes`, `/docentes/demo`, `/admin/colegios`, `/profesor`, `/curso`). El disco es lento: `next dev` tarda varios minutos en compilar la primera vez. |
 | Recordatorios de siempre | — | Google: «Información de la marca» → Guardar con `https://prodigia-sandy.vercel.app` → «Corregí los problemas» (Search Console ya verificado con https). Paddle: pasar del sandbox al real. Límite de correos de Supabase. |

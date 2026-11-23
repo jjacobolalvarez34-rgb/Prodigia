@@ -16,7 +16,6 @@ import Boton from "@/components/Boton";
 import { COLOR_MUNDO, hrefDuelo, type MundoDuelo } from "@/lib/duelos/rutas";
 import { anotarDueloEmparejado, desdeConMargen, dueloNuevo, marcarBuscandoDuelo } from "@/lib/duelos/emparejamiento";
 import { formatoRestante, useRetosPendientes, type RetoPendienteBase } from "@/app/[locale]/social/useRetosPendientes";
-import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { useConteoUsuariosEnLinea } from "@/lib/presencia/useConteoUsuariosEnLinea";
 import SelectorMundoDuelo, { type SeleccionMundoDuelo } from "@/components/duelos/SelectorMundoDuelo";
 import RankingElo from "./RankingElo";
@@ -131,15 +130,13 @@ export default function RankedsClient({
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-12 sm:px-6"
     >
-      <AvisoPrimeraVez avisoKey="rankeds-intro" texto={t("intro")}>
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Rankeds</h1>
-            <p className="mt-1 text-sm text-texto-secundario">{t("subtitulo")}</p>
-          </div>
-          <UsuariosEnLinea />
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">Rankeds</h1>
+          <p className="mt-1 text-sm text-texto-secundario">{t("subtitulo")}</p>
         </div>
-      </AvisoPrimeraVez>
+        <UsuariosEnLinea />
+      </div>
       <div className="flex w-fit gap-1 rounded-full border border-border bg-surface p-1">
         {TABS.map((t) => (
           <button
@@ -285,14 +282,12 @@ function MiCompetitivo({
 
       <TemporadaActual />
 
-      <AvisoPrimeraVez avisoKey="rangos-intro" texto={t("rangosIntro")}>
-        <div className="flex flex-col items-center gap-1 rounded-2xl border-2 border-primario/30 bg-primario/5 px-6 py-6 text-center">
-          {/* Insignia del rango: las Torres (2026-10-12), que reemplazan a los estandartes PNG. */}
-          <InsigniaRango elo={miElo} className="h-28 w-28" />
-          <span className="font-mono text-4xl font-bold text-primario">{miElo}</span>
-          <RangoBadge elo={miElo} tituloNombre={miTituloNombre} size="md" />
-        </div>
-      </AvisoPrimeraVez>
+      <div className="flex flex-col items-center gap-1 rounded-2xl border-2 border-primario/30 bg-primario/5 px-6 py-6 text-center">
+        {/* Insignia del rango: las Torres (2026-10-12), que reemplazan a los estandartes PNG. */}
+        <InsigniaRango elo={miElo} className="h-28 w-28" />
+        <span className="font-mono text-4xl font-bold text-primario">{miElo}</span>
+        <RangoBadge elo={miElo} tituloNombre={miTituloNombre} size="md" />
+      </div>
 
       <div className="grid grid-cols-3 gap-3">
         <Stat label={t("victorias")} valor={String(victorias)} />

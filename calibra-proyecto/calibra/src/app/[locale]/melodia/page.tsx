@@ -10,7 +10,6 @@ import TopicCard from "@/components/TopicCard";
 import NivelMundoBadge from "@/components/NivelMundoBadge";
 import NivelMundoProgreso from "@/components/NivelMundoProgreso";
 import type { SincronizarProgresoRow } from "@/lib/mundos/progresoNivel";
-import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { IconCheck, IconMelodia } from "@/components/icons";
 import { COLOR_MELODIA } from "./colores";
 
@@ -54,20 +53,15 @@ export default async function MelodiaHomePage() {
       <FondoCursorMundo mundo="melodia" />
       <Header autenticado />
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
-        <AvisoPrimeraVez
-          avisoKey="melodia-intro"
-          texto={t("avisoIntro")}
-        >
-          <div>
-            <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_MELODIA }}>
-              {tMundos("melodia")}
-            </span>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
-            <div className="mt-2">
-              <NivelMundoBadge nombreMundo={tMundos("melodia")} nivel={nivelMundo} colorHex={COLOR_MELODIA} />
-            </div>
+        <div>
+          <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_MELODIA }}>
+            {tMundos("melodia")}
+          </span>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
+          <div className="mt-2">
+            <NivelMundoBadge nombreMundo={tMundos("melodia")} nivel={nivelMundo} colorHex={COLOR_MELODIA} />
           </div>
-        </AvisoPrimeraVez>
+        </div>
 
         <NivelMundoProgreso nombreMundo={tMundos("melodia")} colorHex={COLOR_MELODIA} progreso={progresoMundo} />
 

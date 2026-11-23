@@ -10,7 +10,6 @@ import TopicCard from "@/components/TopicCard";
 import NivelMundoBadge from "@/components/NivelMundoBadge";
 import NivelMundoProgreso from "@/components/NivelMundoProgreso";
 import type { SincronizarProgresoRow } from "@/lib/mundos/progresoNivel";
-import AvisoPrimeraVez from "@/components/AvisoPrimeraVez";
 import { IconCheck, IconTrigonometria } from "@/components/icons";
 import { COLOR_TRIGONOMETRIA } from "./colores";
 
@@ -52,20 +51,15 @@ export default async function TrigonometriaHomePage() {
       <FondoCursorMundo mundo="trigonometria" />
       <Header autenticado />
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
-        <AvisoPrimeraVez
-          avisoKey="trigonometria-intro"
-          texto={t("aviso")}
-        >
-          <div>
-            <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_TRIGONOMETRIA }}>
-              {t("nombreMundo")}
-            </span>
-            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
-            <div className="mt-2">
-              <NivelMundoBadge nombreMundo={t("nombreMundo")} nivel={nivelMundo} colorHex={COLOR_TRIGONOMETRIA} />
-            </div>
+        <div>
+          <span className="text-xs font-medium uppercase tracking-wide" style={{ color: COLOR_TRIGONOMETRIA }}>
+            {t("nombreMundo")}
+          </span>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">{t("titulo")}</h1>
+          <div className="mt-2">
+            <NivelMundoBadge nombreMundo={t("nombreMundo")} nivel={nivelMundo} colorHex={COLOR_TRIGONOMETRIA} />
           </div>
-        </AvisoPrimeraVez>
+        </div>
 
         <NivelMundoProgreso nombreMundo={t("nombreMundo")} colorHex={COLOR_TRIGONOMETRIA} progreso={progresoMundo} />
 
