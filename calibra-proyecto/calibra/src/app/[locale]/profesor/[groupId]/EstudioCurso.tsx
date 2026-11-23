@@ -379,7 +379,7 @@ function Distribucion({ perfiles }: { perfiles: PerfilAlumno[] }) {
       <div className="mt-3 flex flex-col gap-1.5">
         {d.map((x, i) => (
           <div key={x.franja} className="flex items-center gap-2 text-xs">
-            <span className="w-12 shrink-0 font-mono text-texto-secundario">{x.franja} %</span>
+            <span className="w-16 shrink-0 whitespace-nowrap font-mono text-texto-secundario">{x.franja} %</span>
             <div className="h-3 flex-1 overflow-hidden rounded-full bg-surface-2">
               <div className="h-full rounded-full" style={{ width: `${(x.cantidad / max) * 100}%`, background: colores[i] }} />
             </div>

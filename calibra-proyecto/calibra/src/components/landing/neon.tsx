@@ -82,14 +82,16 @@ function edificios(ciudades: CiudadLuz[], ancho: number, alto: number) {
   ciudades.forEach((c, k) => {
     const w = anchoEdificio - 3 - Math.floor(azar() * 6);
     const x = k * anchoEdificio + Math.floor(azar() * 3);
-    const h = Math.floor(alto * (0.42 + azar() * 0.45));
+    const letrero = k % 3 === 1;
+    // Los que llevan letrero son más bajos: el letrero entra completo en el dibujo.
+    const h = Math.floor(alto * (letrero ? 0.45 + azar() * 0.2 : 0.42 + azar() * 0.45));
     const ventanas = [];
     for (let vy = alto - h + 7; vy < alto - 6; vy += 9) {
       for (let vx = x + 4; vx < x + w - 5; vx += 7) {
         if (azar() < 0.42) ventanas.push({ x: vx, y: vy, tarda: Math.floor(azar() * 2600) });
       }
     }
-    lista.push({ x, w, h, color: c.neon, glifo: c.glifo, letrero: k % 3 === 1, ventanas });
+    lista.push({ x, w, h, color: c.neon, glifo: c.glifo, letrero, ventanas });
   });
   return lista;
 }
@@ -147,7 +149,7 @@ export function CiudadDeNoche({ ciudades, alto = 120 }: { ciudades: CiudadLuz[];
                 x={e.x + e.w / 2}
                 y={alto - e.h - 7}
                 textAnchor="middle"
-                fontSize="15"
+                fontSize="19"
                 fontWeight="700"
                 fill={`color-mix(in oklab, ${e.color} 35%, #ffffff)`}
                 stroke={e.color}

@@ -6412,7 +6412,8 @@
     },
     "rueda": {
       "etiqueta": "Prodigia's 15 cities",
-      "pista": "Spin it with your finger or tap a city"
+      "pista": "Spin it with your finger or tap a city",
+      "girala": "Spin it!"
     },
     "ticket": {
       "titulo": "What a round costs.",

@@ -6412,7 +6412,8 @@
     },
     "rueda": {
       "etiqueta": "Las 15 ciudades de Prodigia",
-      "pista": "Gírala con el dedo o toca una ciudad"
+      "pista": "Gírala con el dedo o toca una ciudad",
+      "girala": "¡Gírala!"
     },
     "ticket": {
       "titulo": "Lo que cuesta una partida.",
