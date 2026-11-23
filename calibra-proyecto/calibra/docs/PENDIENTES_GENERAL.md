@@ -153,6 +153,7 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
 | Globos viejos de la web (inicio, cada ciudad, Rankeds) | HECHO | Quitados `PrimeraVezTip` y `AvisoPrimeraVez` (13 lugares): los reemplaza el tutorial guiado, igual que en la app. Los invitados ya no ven globos.
 | App: «Mi curso», tareas en el inicio y «Acerca de» con Mamut Herd | HECHO (1bce2234) | Ajustes > Colegio > Mi curso; tarjeta «Tareas de tu curso» en el inicio; Ajustes > Acerca de con el sello apilado. Llega con el próximo APK. |
 | Verificación pendiente | FALTA | Correr `npm run build` y mirar las páginas nuevas en el navegador (presentación neón, rueda, `/docentes`, `/docentes/demo`, `/admin/colegios`, `/profesor`, `/curso`). El disco es lento: `next dev` tarda varios minutos en compilar la primera vez. |
+| **SIGUIENTE: tipos de cuenta** | POR PLANEAR | Pedido del 2026-11-23: crear diferentes tipos de cuenta (por ejemplo jugador, docente, colegio). Hoy no hay tipos: cualquiera es docente al crear un curso o activar una licencia (`/profesor`), y el admin se reconoce aparte. Antes de construir, planear qué tipos, cómo se elige al registrarse, qué ve cada uno y cómo se pasa de uno a otro (web y app). |
 | Recordatorios de siempre | — | Google: «Información de la marca» → Guardar con `https://prodigia-sandy.vercel.app` → «Corregí los problemas» (Search Console ya verificado con https). Paddle: pasar del sandbox al real. Límite de correos de Supabase. |
 
 ## 3. Pendientes de antes que siguen abiertos
