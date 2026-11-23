@@ -136,7 +136,7 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
 
 ## 2f. Pedidos del 2026-11-23 (SEGUIR AQUÍ)
 
-**Te toca a ti:** correr en Supabase la **0316**, **0317** y **0318** (piloto para colegios). Sin la 0318 el panel docente se ve en modo reducido y «Mi curso» sale vacío.
+**Te toca a ti:** 0316, 0317 y 0318 YA CORRIDAS (2026-11-23). Falta correr la **0319** (estudio del curso): sin ella la pestaña «Estudio del curso» avisa que falta.
 
 | Pedido | Estado | Detalle |
 |---|---|---|
@@ -146,6 +146,8 @@ Si mañana sale la publicidad y Paddle real aún no está aprobado: dejar `NEXT_
 | `/docentes` rediseñada + botón «Ver la demo del panel» | HECHO en código, NO VISTO EN NAVEGADOR | Demo pública en `/docentes/demo` con un curso de ejemplo (`src/lib/docentes/demo.ts`): se pueden crear tareas, quitar estudiantes y exportar, nada se guarda. Botón también en la sección Colegios de la presentación. |
 | Firma de Mamut Herd | HECHO en la web | `src/components/MamutHerdSello.tsx` → https://mamutherdpage.vercel.app. FALTA en la app: sello apilado en Ajustes > Acerca de (PNG ya copiados en `mobile/assets/mamut-herd/`). |
 | Constelación se traba al completarse (app) | HECHO (1cdc75f6) | La pestaña de abajo seguía animando debajo de la celebración. Ahora se pausa (`useTaparFondo` en `mobile/src/lib/rendimiento.ts`). Llega con el próximo APK. Si era en la web, revisar `CelebracionConstelaciones.tsx` de la web. |
+| Neón en el fondo de la presentación | HECHO | Letreros de neón en los techos con el glifo de cada ciudad (uno falla de vez en cuando), ventanas con brillo y reflejos en la calle mojada. |
+| Estudio del curso para docentes («datos útiles y cómo mejorar») | HECHO (0319 pendiente de correr) | Pestaña «Estudio del curso» en el panel y en la demo: recomendaciones priorizadas con botón «Asignar tarea» (tema crítico, tema que empeora, a quién contactar, apurados, estancados, práctica espaciada, fluidez, reconocer avances, tema dominado), tabla de temas (precisión, tendencia 2 semanas, a cuántos les cuesta, tiempo por respuesta, nivel), perfil por estudiante (etiqueta, fuertes/débiles, velocidad frente al curso, días activos, minutos, hora habitual), mapa de constancia de 4 semanas, horas de práctica y distribución de precisión. Lógica en `src/lib/docentes/estudio.ts` (con tests), nombres de temas en `temas.ts`. |
 | Tutorial guiado en cada sección | FALTA | Web y app: la primera vez en cada sección (inicio, ciudad, rankeds, social, tienda, perfil, panel docente) un recorrido que ilumina cada parte, saltable y repetible. Ya hay anclas `data-tour="..."` en el panel docente, Mi curso y el inicio. |
 | App: «Mi curso» y tareas | FALTA | Paridad: unirse con código, ver cursos, salir, y la tarjeta de tareas en el inicio de la app (RPC `mis_grupos`, `mis_tareas`, `unirse_a_grupo`, `salir_de_grupo`). |
 | Verificación pendiente | FALTA | Correr `npm run build` y mirar las páginas nuevas en el navegador (presentación neón, rueda, `/docentes`, `/docentes/demo`, `/admin/colegios`, `/profesor`, `/curso`). El disco es lento: `next dev` tarda varios minutos en compilar la primera vez. |

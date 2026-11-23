@@ -27,7 +27,7 @@ import TicketPartida from "./TicketPartida";
 // flujo de siempre (onJugar en «/»; un link a «/» en /conoce). Las animaciones corren
 // aunque el sistema pida reducir el movimiento (MotionConfig reducedMotion="never").
 
-const COLORES_CIUDAD = MUNDOS_LANDING.map((m) => NEON_MUNDO[m.slug].neon);
+const CIUDADES_LUZ = MUNDOS_LANDING.map((m) => NEON_MUNDO[m.slug]);
 
 function BotonJugar({ onJugar, children, grande }: { onJugar?: () => void; children: ReactNode; grande?: boolean }) {
   const contenido = (
@@ -112,7 +112,7 @@ export default function LandingPublica({ onJugar }: { onJugar?: () => void }) {
           {/* Inicio: el letrero, la rueda y la ciudad de noche abajo. */}
           <section id="ciudades" className="relative scroll-mt-20 overflow-hidden">
             <Estrellas />
-            <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-4 pb-36 pt-12 sm:px-6 md:grid-cols-[1fr_1.05fr] md:pb-44 md:pt-20">
+            <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 px-4 pb-44 pt-12 sm:px-6 md:grid-cols-[1fr_1.05fr] md:pb-56 md:pt-20">
               <div className="flex flex-col items-center gap-6 text-center md:items-start md:text-left">
                 <h1 className="font-display font-bold leading-[1.02] tracking-tight">
                   <motion.span
@@ -157,8 +157,8 @@ export default function LandingPublica({ onJugar }: { onJugar?: () => void }) {
                 <RuedaCiudades />
               </motion.div>
             </div>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 md:h-40">
-              <CiudadDeNoche colores={COLORES_CIUDAD} />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 md:h-52">
+              <CiudadDeNoche ciudades={CIUDADES_LUZ} />
             </div>
           </section>
 
@@ -280,7 +280,7 @@ export default function LandingPublica({ onJugar }: { onJugar?: () => void }) {
           {/* Cierre: otro letrero y la ciudad. */}
           <section className="relative overflow-hidden pt-24 sm:pt-32">
             <Estrellas cantidad={18} />
-            <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-7 px-4 pb-44 text-center sm:px-6">
+            <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-7 px-4 pb-52 text-center sm:px-6">
               <LetreroNeon texto={t("neon.final")} color="#4FE0F5" falla={2} semilla={3} className="font-display text-5xl font-bold sm:text-7xl" />
               <p className="text-lg text-texto-secundario">
                 {t("final.titulo")}. {t("final.texto")}
@@ -289,8 +289,8 @@ export default function LandingPublica({ onJugar }: { onJugar?: () => void }) {
                 {t("final.boton")}
               </BotonJugar>
             </div>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32">
-              <CiudadDeNoche colores={[...COLORES_CIUDAD].reverse()} />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40">
+              <CiudadDeNoche ciudades={[...CIUDADES_LUZ].reverse()} />
             </div>
           </section>
         </main>

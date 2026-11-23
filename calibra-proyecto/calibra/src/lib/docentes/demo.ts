@@ -3,6 +3,8 @@
 // y la página lo dice: sirve para que un colegio vea el panel sin crear cuenta. Es
 // determinista para la misma hora (igual en el servidor y en el cliente).
 import type { DiaActividad, FilaPanelAlumno, FilaProgresoTarea } from "./panel";
+import type { FilaEstudio, FilaHabito } from "./estudio";
+
 
 const DIA = 24 * 60 * 60 * 1000;
 
@@ -73,4 +75,68 @@ export function cursoDemo(ahora: number): { filas: FilaPanelAlumno[]; tareas: Fi
   }));
 
   return { filas, tareas, actividad };
+}
+
+// ---------- estudio del curso de ejemplo (0319) ----------
+
+// Temas del curso de ejemplo: [tema, ciudad, ajuste de acierto, tiempo base en ms].
+const TEMAS_DEMO: [string, string, number, number][] = [
+  ["fracciones_sumar", "numeria", -0.24, 9000],
+  ["fracciones_simplificar", "numeria", -0.04, 7000],
+  ["decimales_porcentaje", "numeria", -0.08, 8000],
+  ["algebra_dos-pasos", "numeria", -0.12, 11000],
+  ["quimia_tabla", "quimia", 0.02, 6000],
+  ["quimia_nomenclatura", "quimia", -0.18, 10000],
+  ["geografia_america", "geografia", 0.07, 5000],
+  ["vitalia_celula", "vitalia", 0.03, 7000],
+];
+
+// Por estudiante: [multiplicador de velocidad, tendencia en puntos (reciente - anterior)].
+const RITMO_DEMO: [number, number][] = [
+  [0.95, 3], [1.0, 2], [1.05, 1], [1.0, 14], [1.55, 2], [0.6, -2],
+  [1.0, 9], [1.1, -9], [1.0, 0], [1.2, 4], [1.0, 0], [1.0, 0],
+];
+
+export function estudioDemo(ahora: number): { estudio: FilaEstudio[]; habitos: FilaHabito[] } {
+  const estudio: FilaEstudio[] = [];
+  const habitos: FilaHabito[] = [];
+  ALUMNOS.forEach(([, e7, p, total, dias], i) => {
+    if (total === 0) return;
+    const [vel, tend] = RITMO_DEMO[i];
+    TEMAS_DEMO.forEach(([tema, mundo, ajuste, ms], k) => {
+      if ((i + k) % 4 === 3) return;
+      const n = Math.max(6, Math.round((total / 6) * (0.6 + ((i * 7 + k * 3) % 5) / 5)));
+      const pt = Math.min(0.98, Math.max(0.2, p + ajuste));
+      const nRec = Math.round(n * 0.35);
+      const nAnt = Math.round(n * 0.3);
+      const pRec = Math.min(0.99, Math.max(0.1, pt + tend / 200));
+      const pAnt = Math.min(0.99, Math.max(0.1, pt - tend / 200));
+      estudio.push({
+        user_id: `demo-${i}`,
+        mundo,
+        tema,
+        intentos: n,
+        correctos: Math.round(n * pt),
+        intentos_rec: dias !== null && dias < 14 ? nRec : 0,
+        correctos_rec: dias !== null && dias < 14 ? Math.round(nRec * pRec) : 0,
+        intentos_ant: nAnt,
+        correctos_ant: Math.round(nAnt * pAnt),
+        tiempo_mediano_ms: Math.round(ms * vel),
+        nivel_max: Math.min(10, 2 + Math.round(pt * 7)),
+        nivel_rec: Math.round((1 + pt * 7) * 10) / 10,
+        ultimo: dias === null ? null : new Date(ahora - (dias + (k % 3)) * DIA).toISOString(),
+      });
+    });
+    // Hábitos de los últimos 28 días: los más activos juegan casi a diario.
+    const frecuencia = e7 > 100 ? 1 : e7 > 60 ? 2 : e7 > 30 ? 3 : e7 > 0 ? 4 : 0;
+    for (let d = 0; d < 28; d++) {
+      if (dias === null || d < dias) continue;
+      if (frecuencia === 0 ? d % 6 !== 0 || d < 9 : (d + i) % frecuencia !== 0) continue;
+      const fecha = new Date(ahora - 5 * 60 * 60 * 1000 - d * DIA).toISOString().slice(0, 10);
+      const hora = [16, 19, 20, 21, 7, 18][(i + d) % 6];
+      const ej = 8 + ((i * 5 + d * 3) % 22);
+      habitos.push({ user_id: `demo-${i}`, fecha, hora, ejercicios: ej, correctos: Math.round(ej * p), minutos: Math.round(ej * 0.15 * 10) / 10 });
+    }
+  });
+  return { estudio, habitos };
 }

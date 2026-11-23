@@ -21,6 +21,8 @@ import {
 } from "@/lib/docentes/panel";
 import type { LicenciaDocente } from "../ProfesorClient";
 import BorrarGrupo from "./BorrarGrupo";
+import EstudioCurso from "./EstudioCurso";
+import type { FilaEstudio, FilaHabito } from "@/lib/docentes/estudio";
 
 interface Props {
   grupo: { id: string; nombre: string; codigo: string };
@@ -32,6 +34,10 @@ interface Props {
   // Demo pública (/docentes/demo): curso de ejemplo; todo se puede tocar pero nada se
   // guarda ni llama a la base.
   demo?: boolean;
+  // Estudio del curso (0319): sin la migración llegan vacíos y faltaEstudio en true.
+  estudio?: FilaEstudio[];
+  habitos?: FilaHabito[];
+  faltaEstudio?: boolean;
 }
 
 const COLOR_MUNDO = Object.fromEntries(MUNDOS_LANDING.map((m) => [m.slug, m.colorHex])) as Record<string, string>;
@@ -47,13 +53,32 @@ function sumarDias(fechaIso: string, n: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-export default function PanelCursoClient({ grupo, filas: filasIniciales, tareas: tareasIniciales, actividad, licencia, faltaMigracion, demo = false }: Props) {
+export default function PanelCursoClient({ grupo, filas: filasIniciales, tareas: tareasIniciales, actividad, licencia, faltaMigracion, demo = false, estudio = [], habitos = [], faltaEstudio = false }: Props) {
   const t = useTranslations("Curso.panel");
   const locale = useLocale();
   const router = useRouter();
   const [ahora] = useState(() => Date.now());
   const [filas, setFilas] = useState(filasIniciales);
   const [filasTareas, setFilasTareas] = useState(tareasIniciales);
+  const [pestana, setPestana] = useState<"panel" | "estudio">("panel");
+  const tEstudio = useTranslations("Curso.estudio");
+
+  // «Asignar tarea» desde una recomendación del estudio: 7 días de plazo.
+  async function asignarTarea({ mundo, titulo, meta }: { mundo: string; titulo: string; meta: number }): Promise<boolean> {
+    const vence = finDelDiaBogota(sumarDias(hoyBogota(), 7));
+    if (demo) {
+      const id = `demo-${Date.now()}`;
+      const ahoraIso = new Date().toISOString();
+      setFilasTareas((prev) => [
+        ...filas.map((f) => ({ tarea_id: id, mundo, titulo, instrucciones: null, meta_ejercicios: meta, inicia_at: ahoraIso, vence_at: new Date(vence).toISOString(), user_id: f.user_id, hechos: 0, correctos: 0 })),
+        ...prev,
+      ]);
+      return true;
+    }
+    const { error } = await createClient().rpc("crear_tarea_grupo", { p_group_id: grupo.id, p_mundo: mundo, p_titulo: titulo, p_instrucciones: null, p_meta: meta, p_vence_at: vence });
+    if (!error) router.refresh();
+    return !error;
+  }
   const [copiado, setCopiado] = useState(false);
 
   const sinNombre = t("alumnos.sinNombre");
@@ -158,6 +183,26 @@ export default function PanelCursoClient({ grupo, filas: filasIniciales, tareas:
       )}
       {faltaMigracion && <p className="rounded-2xl border border-logro/40 bg-logro/10 px-4 py-3 text-sm text-foreground">{t("faltaMigracion")}</p>}
 
+      <div className="flex gap-1 self-start rounded-full border border-border bg-surface p-1 print:hidden" role="tablist">
+        {(["panel", "estudio"] as const).map((p) => (
+          <button
+            key={p}
+            type="button"
+            role="tab"
+            aria-selected={pestana === p}
+            onClick={() => setPestana(p)}
+            data-tour={p === "estudio" ? "curso-pestana-estudio" : undefined}
+            className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${pestana === p ? "bg-primario text-white" : "text-texto-secundario hover:text-foreground"}`}
+          >
+            {tEstudio(`pestanas.${p}`)}
+          </button>
+        ))}
+      </div>
+
+      {pestana === "estudio" && <EstudioCurso filas={filas} estudio={estudio} habitos={habitos} faltaMigracion={faltaEstudio} onAsignar={asignarTarea} />}
+
+      {pestana === "panel" && (
+      <>
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4" data-tour="curso-resumen">
         <Kpi etiqueta={t("kpi.alumnos")} valor={String(resumen.alumnos)} />
         <Kpi etiqueta={t("kpi.activos")} valor={t("kpi.activosValor", { n: resumen.activos7d, total: resumen.alumnos })} />
@@ -257,6 +302,8 @@ export default function PanelCursoClient({ grupo, filas: filasIniciales, tareas:
           </div>
         )}
       </section>
+      </>
+      )}
     </div>
   );
 }

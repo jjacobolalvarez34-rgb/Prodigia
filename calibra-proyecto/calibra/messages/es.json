@@ -6667,6 +6667,125 @@
         "mas365": "+1 año",
         "error": "No se pudo extender."
       }
+    },
+    "estudio": {
+      "pestanas": {
+        "panel": "Panel",
+        "estudio": "Estudio del curso"
+      },
+      "intro": "Basado en los ejercicios de las últimas 8 semanas. Con pocos datos no sacamos conclusiones.",
+      "faltaMigracion": "El estudio necesita la actualización 0319 de la base de datos.",
+      "vacio": "Todavía no hay ejercicios suficientes para un estudio. Vuelve cuando el curso haya practicado unos días.",
+      "recomendaciones": {
+        "titulo": "Qué hacer ahora",
+        "asignar": "Asignar tarea",
+        "asignada": "Tarea asignada",
+        "tituloTarea": "Refuerzo: {tema}",
+        "tema_critico": {
+          "titulo": "Refuerza {tema}",
+          "texto": "El curso acierta {valor} % en {tema} ({ciudad}). Asigna una tarea corta y repasen juntos la lección de la ciudad antes de practicar."
+        },
+        "tema_empeora": {
+          "titulo": "{tema} va hacia atrás",
+          "texto": "La precisión bajó {valor} puntos en las últimas dos semanas. Suele pasar al subir de nivel: un repaso corto ayuda a afianzarlo."
+        },
+        "contactar": {
+          "titulo": "Habla con {n, plural, one {# estudiante} other {# estudiantes}}",
+          "texto": "No practican hace una semana o más, o aciertan menos de la mitad: {nombres}."
+        },
+        "apurados": {
+          "titulo": "Responden apurados",
+          "texto": "{nombres}: contestan bastante más rápido que el curso pero aciertan poco. Pídeles que lean con calma; fallar no suma."
+        },
+        "estancados": {
+          "titulo": "Se estancaron",
+          "texto": "{nombres}: no mejoran desde hace dos semanas. Cambiar de tema un tiempo o repasar la lección suele destrabar."
+        },
+        "repartir_practica": {
+          "titulo": "Reparte la práctica en la semana",
+          "texto": "La mitad del curso practica menos de {valor} días al mes. Varias sesiones cortas se recuerdan mejor que una larga (práctica espaciada): prueba tareas de 10 ejercicios, tres veces por semana."
+        },
+        "fluidez": {
+          "titulo": "Ganar fluidez",
+          "texto": "{nombres}: aciertan mucho pero tardan más que el curso. Ya saben el tema; la práctica cronometrada o los duelos les dan soltura."
+        },
+        "reconocer": {
+          "titulo": "Reconoce el avance",
+          "texto": "{nombres}: mejoraron más de 8 puntos en dos semanas. Decírselo refuerza el hábito."
+        },
+        "subir_nivel": {
+          "titulo": "{tema} ya está dominado",
+          "texto": "El curso acierta {valor} %. Pueden pasar al siguiente tema de {ciudad}."
+        }
+      },
+      "temas": {
+        "titulo": "Temas del curso",
+        "texto": "Precisión de todo el curso en cada tema, cómo cambió en las últimas dos semanas y a cuántos les cuesta.",
+        "columnas": {
+          "tema": "Tema",
+          "precision": "Precisión",
+          "tendencia": "2 semanas",
+          "dificultad": "Les cuesta",
+          "ejercicios": "Ejercicios",
+          "tiempo": "Por respuesta",
+          "nivel": "Nivel"
+        },
+        "pocos": "pocos datos",
+        "sube": "+{n} pts",
+        "baja": "{n} pts",
+        "estable": "estable",
+        "segundos": "{n} s",
+        "verTodos": "Ver todos los temas ({n})",
+        "verMenos": "Ver menos"
+      },
+      "perfiles": {
+        "titulo": "Cómo va cada estudiante",
+        "etiquetas": {
+          "sin_actividad": "Sin actividad",
+          "en_riesgo": "En riesgo",
+          "apurado": "Apurado",
+          "estancado": "Estancado",
+          "progresa": "Progresa",
+          "lento_seguro": "Lento pero seguro",
+          "solido": "Sólido",
+          "en_camino": "En camino"
+        },
+        "descripcion": {
+          "sin_actividad": "No ha hecho ejercicios en estas semanas.",
+          "en_riesgo": "Lleva días sin practicar o acierta menos de la mitad.",
+          "apurado": "Responde rápido y falla seguido.",
+          "estancado": "Su precisión no mejora.",
+          "progresa": "Mejoró en las últimas dos semanas.",
+          "lento_seguro": "Acierta mucho pero tarda.",
+          "solido": "Acierta mucho y practica seguido.",
+          "en_camino": "Avanza a un ritmo normal."
+        },
+        "fuertes": "Le va bien en",
+        "debiles": "Le cuesta",
+        "precision": "Precisión",
+        "tendencia": "2 semanas",
+        "velocidad": "Velocidad",
+        "rapido": "{n} % más rápido que el curso",
+        "lento": "{n} % más lento que el curso",
+        "igual": "como el curso",
+        "dias": "Días activos (4 semanas)",
+        "minutos": "Minutos esta semana",
+        "hora": "Suele practicar hacia las {hora}:00",
+        "ultimaVez": "Última vez hace {n} días",
+        "ejercicios": "{n} ejercicios",
+        "sinDatos": "Todavía sin datos suficientes."
+      },
+      "constancia": {
+        "titulo": "Constancia de las últimas 4 semanas",
+        "texto": "Cada cuadro es un día; más intenso, más ejercicios."
+      },
+      "horas": {
+        "titulo": "A qué hora practican"
+      },
+      "distribucion": {
+        "titulo": "Precisión de los estudiantes",
+        "texto": "Estudiantes en cada franja (con al menos 10 ejercicios)."
+      }
     }
   }
 }

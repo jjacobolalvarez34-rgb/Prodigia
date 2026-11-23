@@ -6667,6 +6667,125 @@
         "mas365": "+1 year",
         "error": "Couldn't extend it."
       }
+    },
+    "estudio": {
+      "pestanas": {
+        "panel": "Dashboard",
+        "estudio": "Class study"
+      },
+      "intro": "Based on the exercises of the last 8 weeks. With little data we draw no conclusions.",
+      "faltaMigracion": "The study needs database update 0319.",
+      "vacio": "Not enough exercises for a study yet. Come back once the class has practiced for a few days.",
+      "recomendaciones": {
+        "titulo": "What to do now",
+        "asignar": "Assign task",
+        "asignada": "Task assigned",
+        "tituloTarea": "Review: {tema}",
+        "tema_critico": {
+          "titulo": "Reinforce {tema}",
+          "texto": "The class gets {valor}% right in {tema} ({ciudad}). Assign a short task and review the city's lesson together before practicing."
+        },
+        "tema_empeora": {
+          "titulo": "{tema} is slipping",
+          "texto": "Accuracy dropped {valor} points in the last two weeks. It often happens after leveling up: a short review helps it stick."
+        },
+        "contactar": {
+          "titulo": "Talk to {n, plural, one {# student} other {# students}}",
+          "texto": "They haven't practiced for a week or more, or get less than half right: {nombres}."
+        },
+        "apurados": {
+          "titulo": "Answering in a rush",
+          "texto": "{nombres}: they answer much faster than the class but miss often. Ask them to read calmly; misses don't add anything."
+        },
+        "estancados": {
+          "titulo": "Stalled",
+          "texto": "{nombres}: no improvement for two weeks. Switching topics for a while or reviewing the lesson usually helps."
+        },
+        "repartir_practica": {
+          "titulo": "Spread practice across the week",
+          "texto": "Half the class practices fewer than {valor} days a month. Several short sessions are remembered better than one long one (spaced practice): try 10-exercise tasks three times a week."
+        },
+        "fluidez": {
+          "titulo": "Build fluency",
+          "texto": "{nombres}: very accurate but slower than the class. They know the topic; timed practice or duels build ease."
+        },
+        "reconocer": {
+          "titulo": "Recognize progress",
+          "texto": "{nombres}: improved more than 8 points in two weeks. Telling them reinforces the habit."
+        },
+        "subir_nivel": {
+          "titulo": "{tema} is mastered",
+          "texto": "The class gets {valor}% right. You can move on to the next {ciudad} topic."
+        }
+      },
+      "temas": {
+        "titulo": "Class topics",
+        "texto": "Whole-class accuracy per topic, how it changed in the last two weeks and how many struggle.",
+        "columnas": {
+          "tema": "Topic",
+          "precision": "Accuracy",
+          "tendencia": "2 weeks",
+          "dificultad": "Struggling",
+          "ejercicios": "Exercises",
+          "tiempo": "Per answer",
+          "nivel": "Level"
+        },
+        "pocos": "little data",
+        "sube": "+{n} pts",
+        "baja": "{n} pts",
+        "estable": "steady",
+        "segundos": "{n} s",
+        "verTodos": "See all topics ({n})",
+        "verMenos": "See less"
+      },
+      "perfiles": {
+        "titulo": "How each student is doing",
+        "etiquetas": {
+          "sin_actividad": "No activity",
+          "en_riesgo": "At risk",
+          "apurado": "Rushing",
+          "estancado": "Stalled",
+          "progresa": "Improving",
+          "lento_seguro": "Slow but sure",
+          "solido": "Solid",
+          "en_camino": "On track"
+        },
+        "descripcion": {
+          "sin_actividad": "No exercises in these weeks.",
+          "en_riesgo": "Days without practicing or less than half right.",
+          "apurado": "Answers fast and misses often.",
+          "estancado": "Accuracy isn't improving.",
+          "progresa": "Improved in the last two weeks.",
+          "lento_seguro": "Very accurate but slow.",
+          "solido": "Very accurate and practices often.",
+          "en_camino": "Moving at a normal pace."
+        },
+        "fuertes": "Doing well in",
+        "debiles": "Struggles with",
+        "precision": "Accuracy",
+        "tendencia": "2 weeks",
+        "velocidad": "Speed",
+        "rapido": "{n}% faster than the class",
+        "lento": "{n}% slower than the class",
+        "igual": "same as the class",
+        "dias": "Active days (4 weeks)",
+        "minutos": "Minutes this week",
+        "hora": "Usually practices around {hora}:00",
+        "ultimaVez": "Last active {n} days ago",
+        "ejercicios": "{n} exercises",
+        "sinDatos": "Not enough data yet."
+      },
+      "constancia": {
+        "titulo": "Consistency over the last 4 weeks",
+        "texto": "Each square is a day; brighter means more exercises."
+      },
+      "horas": {
+        "titulo": "When they practice"
+      },
+      "distribucion": {
+        "titulo": "Student accuracy",
+        "texto": "Students in each band (with at least 10 exercises)."
+      }
     }
   }
 }

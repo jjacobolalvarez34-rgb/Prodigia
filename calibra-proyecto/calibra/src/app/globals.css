@@ -1326,3 +1326,22 @@ html[data-tema-claro] .particula-tema { filter: drop-shadow(0 0 1.5px rgba(20, 1
 [data-encendido="si"] .ventana-ciudad {
   animation: ventana-prende 0.9s steps(1, end) both;
 }
+
+/* Letreros de los techos de la ciudad de noche: se prenden al entrar en pantalla y
+   uno falla de vez en cuando (mismo ritmo irregular que el letrero del título). */
+@keyframes letrero-prende {
+  0% { opacity: 0.15; }
+  15% { opacity: 1; }
+  19% { opacity: 0.2; }
+  45%, 100% { opacity: 1; }
+}
+@keyframes letrero-falla {
+  0%, 84%, 100% { opacity: 1; }
+  85% { opacity: 0.25; }
+  86.5% { opacity: 1; }
+  89% { opacity: 0.3; }
+  90% { opacity: 1; }
+}
+.letrero-techo { opacity: 0.15; }
+[data-encendido="si"] .letrero-techo { animation: letrero-prende 1s steps(1, end) both; }
+[data-encendido="si"] .letrero-techo-falla { animation: letrero-prende 1s steps(1, end) both, letrero-falla 6.1s steps(1, end) 3s infinite; }

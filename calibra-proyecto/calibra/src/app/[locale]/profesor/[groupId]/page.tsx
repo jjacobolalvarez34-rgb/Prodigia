@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUsuario, bloquearInvitado } from "@/lib/auth/guard";
 import Header from "@/components/Header";
 import type { DiaActividad, FilaPanelAlumno, FilaProgresoTarea } from "@/lib/docentes/panel";
+import type { FilaEstudio, FilaHabito } from "@/lib/docentes/estudio";
 import type { LicenciaDocente } from "../ProfesorClient";
 import PanelCursoClient from "./PanelCursoClient";
 
@@ -41,11 +42,14 @@ export default async function GrupoPage({ params }: Props) {
     notFound();
   }
 
-  const [panel, tareas, actividad, licencias] = await Promise.all([
+  const [panel, tareas, actividad, licencias, estudio, habitos] = await Promise.all([
     supabase.rpc("panel_grupo", { p_group_id: groupId }),
     supabase.rpc("progreso_tareas_grupo", { p_group_id: groupId }),
     supabase.rpc("actividad_grupo_diaria", { p_group_id: groupId, p_dias: 14 }),
     supabase.rpc("mi_licencia_docente"),
+    // 0319: sin la migración estas dos no existen y el estudio avisa.
+    supabase.rpc("estudio_grupo", { p_group_id: groupId, p_dias: 56 }),
+    supabase.rpc("habitos_grupo", { p_group_id: groupId, p_dias: 28 }),
   ]);
 
   let filas = (panel.data ?? []) as FilaPanelAlumno[];
@@ -79,6 +83,9 @@ export default async function GrupoPage({ params }: Props) {
         actividad={(actividad.data ?? []) as DiaActividad[]}
         licencia={((licencias.data as LicenciaDocente[] | null) ?? [])[0] ?? null}
         faltaMigracion={faltaMigracion}
+        estudio={(estudio.data ?? []) as FilaEstudio[]}
+        habitos={(habitos.data ?? []) as FilaHabito[]}
+        faltaEstudio={!!estudio.error}
       />
     </>
   );

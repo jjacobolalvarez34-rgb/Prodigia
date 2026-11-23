@@ -4,12 +4,15 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import Logo from "@/components/Logo";
-import { cursoDemo, GRUPO_DEMO } from "@/lib/docentes/demo";
+import { cursoDemo, estudioDemo, GRUPO_DEMO } from "@/lib/docentes/demo";
 import PanelCursoClient from "../../profesor/[groupId]/PanelCursoClient";
 
 export default function DemoPanelClient({ conSesion }: { conSesion: boolean }) {
   const t = useTranslations("Docentes.v2.demo");
-  const [datos] = useState(() => cursoDemo(Date.now()));
+  const [datos] = useState(() => {
+    const ahora = Date.now();
+    return { ...cursoDemo(ahora), ...estudioDemo(ahora) };
+  });
   const hrefPanel = conSesion ? "/profesor" : "/login?next=/profesor";
 
   return (
@@ -34,7 +37,7 @@ export default function DemoPanelClient({ conSesion }: { conSesion: boolean }) {
           </div>
         </div>
       </div>
-      <PanelCursoClient grupo={GRUPO_DEMO} filas={datos.filas} tareas={datos.tareas} actividad={datos.actividad} licencia={null} faltaMigracion={false} demo />
+      <PanelCursoClient grupo={GRUPO_DEMO} filas={datos.filas} tareas={datos.tareas} actividad={datos.actividad} licencia={null} faltaMigracion={false} demo estudio={datos.estudio} habitos={datos.habitos} />
     </div>
   );
 }

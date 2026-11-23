@@ -65,45 +65,117 @@ export function CajaNeon({ color, children, className, retraso = 0 }: { color: s
 }
 
 // La ciudad de noche: un edificio por ciudad, con las ventanas del neón de esa ciudad.
-// Las ventanas se prenden en desorden cuando el horizonte entra en pantalla.
-function edificios(colores: string[], ancho: number, alto: number) {
+// Las ventanas se prenden en desorden cuando el horizonte entra en pantalla. Algunos
+// techos llevan el letrero de su ciudad (su glifo en tubo de neón, uno falla de vez en
+// cuando) y la calle mojada refleja las luces (2026-11-23: «le falta algo neón en el
+// fondo»). Todo es dibujo: nada de manchas borrosas.
+type CiudadLuz = { neon: string; glifo: string };
+
+function edificios(ciudades: CiudadLuz[], ancho: number, alto: number) {
   let s = 23;
   const azar = () => {
     s = (s * 9301 + 49297) % 233280;
     return s / 233280;
   };
-  const lista: { x: number; w: number; h: number; color: string; ventanas: { x: number; y: number; tarda: number }[] }[] = [];
-  const anchoEdificio = ancho / colores.length;
-  colores.forEach((color, k) => {
+  const lista: { x: number; w: number; h: number; color: string; glifo: string; letrero: boolean; ventanas: { x: number; y: number; tarda: number }[] }[] = [];
+  const anchoEdificio = ancho / ciudades.length;
+  ciudades.forEach((c, k) => {
     const w = anchoEdificio - 3 - Math.floor(azar() * 6);
     const x = k * anchoEdificio + Math.floor(azar() * 3);
-    const h = Math.floor(alto * (0.42 + azar() * 0.55));
+    const h = Math.floor(alto * (0.42 + azar() * 0.45));
     const ventanas = [];
     for (let vy = alto - h + 7; vy < alto - 6; vy += 9) {
       for (let vx = x + 4; vx < x + w - 5; vx += 7) {
         if (azar() < 0.42) ventanas.push({ x: vx, y: vy, tarda: Math.floor(azar() * 2600) });
       }
     }
-    lista.push({ x, w, h, color, ventanas });
+    lista.push({ x, w, h, color: c.neon, glifo: c.glifo, letrero: k % 3 === 1, ventanas });
   });
   return lista;
 }
 
-export function CiudadDeNoche({ colores, alto = 110 }: { colores: string[]; alto?: number }) {
+export function CiudadDeNoche({ ciudades, alto = 120 }: { ciudades: CiudadLuz[]; alto?: number }) {
   const ref = useRef<SVGSVGElement>(null);
   const visto = useInView(ref, { once: true, margin: "-20px" });
   const ancho = 600;
-  const lista = edificios(colores, ancho, alto);
+  const calle = 22;
+  const lista = edificios(ciudades, ancho, alto);
   return (
-    <svg ref={ref} viewBox={`0 0 ${ancho} ${alto}`} preserveAspectRatio="xMidYMax slice" className="block h-full w-full" data-encendido={visto ? "si" : "no"} aria-hidden="true">
+    <svg ref={ref} viewBox={`0 0 ${ancho} ${alto + calle}`} preserveAspectRatio="xMidYMax slice" className="block h-full w-full" data-encendido={visto ? "si" : "no"} aria-hidden="true">
+      <defs>
+        <filter id="brillo-ventana" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="1.2" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="brillo-letrero" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="2.6" result="b2" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="b1" />
+          <feMerge>
+            <feMergeNode in="b2" />
+            <feMergeNode in="b1" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="reflejo" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="2.2 1.2" />
+        </filter>
+        <linearGradient id="calle-fade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+        <mask id="calle-mascara">
+          <rect x="0" y={alto} width={ancho} height={calle} fill="url(#calle-fade)" />
+        </mask>
+      </defs>
+
       {lista.map((e, i) => (
         <g key={i}>
           <rect x={e.x} y={alto - e.h} width={e.w} height={e.h} fill={i % 2 ? "#111731" : "#0D1228"} />
-          {e.ventanas.map((v, j) => (
-            <rect key={j} x={v.x} y={v.y} width={3} height={4} fill={e.color} className="ventana-ciudad" style={{ animationDelay: `${v.tarda}ms` }} />
-          ))}
+          <g filter="url(#brillo-ventana)">
+            {e.ventanas.map((v, j) => (
+              <rect key={j} x={v.x} y={v.y} width={3} height={4} fill={e.color} className="ventana-ciudad" style={{ animationDelay: `${v.tarda}ms` }} />
+            ))}
+          </g>
+          {e.letrero && (
+            <g className={i === 4 ? "letrero-techo letrero-techo-falla" : "letrero-techo"} style={{ animationDelay: `${600 + i * 140}ms` }}>
+              <line x1={e.x + e.w / 2 - 6} y1={alto - e.h} x2={e.x + e.w / 2 - 6} y2={alto - e.h - 5} stroke="#2A3150" strokeWidth="1" />
+              <line x1={e.x + e.w / 2 + 6} y1={alto - e.h} x2={e.x + e.w / 2 + 6} y2={alto - e.h - 5} stroke="#2A3150" strokeWidth="1" />
+              <text
+                x={e.x + e.w / 2}
+                y={alto - e.h - 7}
+                textAnchor="middle"
+                fontSize="15"
+                fontWeight="700"
+                fill={`color-mix(in oklab, ${e.color} 35%, #ffffff)`}
+                stroke={e.color}
+                strokeWidth="0.4"
+                filter="url(#brillo-letrero)"
+                style={{ fontFamily: "var(--font-space-grotesk), system-ui, sans-serif" }}
+              >
+                {e.glifo}
+              </text>
+            </g>
+          )}
         </g>
       ))}
+
+      <rect x="0" y={alto} width={ancho} height={calle} fill="#070A13" />
+      <g mask="url(#calle-mascara)">
+        <g transform={`translate(0 ${alto * 2}) scale(1 -1)`} filter="url(#reflejo)">
+          {lista.map((e, i) => (
+            <g key={i}>
+              {e.ventanas
+                .filter((v) => v.y > alto - 26)
+                .map((v, j) => (
+                  <rect key={j} x={v.x - 1} y={v.y} width={5} height={5} fill={e.color} className="ventana-ciudad" style={{ animationDelay: `${v.tarda}ms` }} />
+                ))}
+            </g>
+          ))}
+        </g>
+      </g>
     </svg>
   );
 }
