@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireUsuario } from "@/lib/auth/guard";
+import RepetirTutoriales from "@/components/tutorial/RepetirTutoriales";
 import Header from "@/components/Header";
 import AjustesClient from "./AjustesClient";
 import ContrasenaRespaldo from "@/components/ContrasenaRespaldo";
@@ -36,6 +37,7 @@ export default async function AjustesPage() {
           userId={user.id}
           ocultarDobleONadaInicial={profileFull?.ocultar_doble_o_nada ?? false}
         />
+        {!user.is_anonymous && <RepetirTutoriales />}
         <div className="flex flex-col gap-1 border-t border-border pt-6 text-sm">
           <Link href="/terminos" className="text-texto-secundario hover:text-foreground hover:underline">
             {t("terminosDeUso")}

@@ -38,7 +38,7 @@ export default function NivelMundoProgreso({ nombreMundo, colorHex, progreso }: 
   const ciudad = MUNDOS_LANDING.find((m) => ruta === `/${m.slug}` || ruta.startsWith(`/${m.slug}/`));
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border-2 px-5 py-4" style={{ borderColor: `color-mix(in oklab, ${colorHex} 25%, transparent)` }}>
+    <section data-tour="ciudad-nivel" className="flex flex-col gap-3 rounded-2xl border-2 px-5 py-4" style={{ borderColor: `color-mix(in oklab, ${colorHex} 25%, transparent)` }}>
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="font-display text-base font-bold text-foreground">{t("titulo")}</h2>
         <div className="flex items-center gap-3">

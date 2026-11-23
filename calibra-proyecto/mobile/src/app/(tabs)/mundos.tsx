@@ -1,3 +1,4 @@
+import { useAncla } from "~/lib/anclas";
 import * as WebBrowser from "expo-web-browser";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
@@ -97,6 +98,7 @@ function TarjetaMundo({ mundo, tuyo, nivel, indice, recien, onPress }: { mundo: 
 
 
 export default function Mundos() {
+  const anclaLista = useAncla("mundos-lista");
   const router = useRouter();
   const { sesion } = useSesion();
   const userId = sesion?.user.id;
@@ -171,7 +173,7 @@ export default function Mundos() {
           <Chip texto="Bloqueados" activo={filtro === "bloqueados"} onPress={() => setFiltro("bloqueados")} />
         </View>
         {lista.map((m, i) => (
-          <View key={m.slug}>
+          <View key={m.slug} ref={i === 0 ? anclaLista : undefined} collapsable={false}>
             <TarjetaMundo
               mundo={m}
               tuyo={esTuyo(m)}

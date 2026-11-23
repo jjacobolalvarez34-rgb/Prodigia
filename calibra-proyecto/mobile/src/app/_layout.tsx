@@ -46,6 +46,7 @@ import VideoApertura from "~/ui/VideoApertura";
 import { vigilarIconoTemporada } from "~/lib/iconoTemporada";
 import AvisoActualizacion from "~/ui/AvisoActualizacion";
 import { GlobosPorRuta } from "~/ui/GloboAyuda";
+import { RecorridosPorRuta } from "~/ui/RecorridoSeccion";
 import CelebracionConstelaciones from "~/ui/recompensas/CelebracionConstelaciones";
 import BannerDueloEnCurso from "~/ui/BannerDueloEnCurso";
 import BienvenidaPro from "~/ui/BienvenidaPro";
@@ -277,6 +278,7 @@ function Navegacion() {
       <AvisoGlobal />
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <CelebracionConstelaciones />}
       {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <GlobosPorRuta segmentos={segmentos} />}
+      {!cargando && userId && !sesion?.user.is_anonymous && terminos && !cargaVisible && <RecorridosPorRuta segmentos={segmentos} />}
       {!cargando && userId && terminos && !cargaVisible && <PrimeraVez key={userId} userId={userId} anonimo={!!sesion?.user.is_anonymous} />}
       {/* Festividades (src/lib/temas): el ambiente de la fecha, nunca dentro de una partida. */}
       {!cargando && !cargaVisible && !segmentos.some((x) => PANTALLAS_DE_JUEGO.has(x)) && <CapaTemporada />}

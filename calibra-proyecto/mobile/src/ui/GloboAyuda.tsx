@@ -65,18 +65,11 @@ const styles = StyleSheet.create({
   dentro: { flexDirection: "row", alignItems: "center", gap: 12, padding: 14, borderRadius: 18, backgroundColor: color.surface2, borderWidth: 1, borderColor: conAlfa(color.primario, 0.55), boxShadow: `0px 8px 28px ${conAlfa(color.primario, 0.35)}` },
 });
 
-// Qué globo corresponde a la pantalla abierta (montado una vez en _layout).
+// Qué globo corresponde a la pantalla abierta (montado una vez en _layout). Desde el
+// tutorial guiado (2026-11-23, RecorridoSeccion) las secciones tienen su recorrido y el
+// globo queda solo para la pantalla de resultado.
 const POR_RUTA: Record<string, IdGlobo> = {
-  "(tabs)/mundos": "mundos",
-  "(tabs)/competir": "competir",
-  "(tabs)/social": "social",
-  "(tabs)/perfil": "perfil",
-  tienda: "tienda",
-  recompensas: "recompensas",
   resultado: "resultado",
-  "[mundo]": "mundo",
-  numeria: "mundo",
-  geografia: "mundo",
 };
 
 export function GlobosPorRuta({ segmentos }: { segmentos: string[] }) {

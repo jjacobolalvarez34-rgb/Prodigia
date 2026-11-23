@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { Pressable, View } from "react-native";
 import { ordenarMisTareas, type MiTarea } from "@/lib/docentes/panel";
 import { cargarMisTareas } from "~/lib/curso";
+import { useAncla } from "~/lib/anclas";
 import { color } from "~/tema";
 import { TituloSeccion } from "../Pantalla";
 import Texto from "../Texto";
@@ -13,6 +14,7 @@ import TarjetaTarea from "./TarjetaTarea";
 export default function TareasInicio() {
   const router = useRouter();
   const [tareas, setTareas] = useState<MiTarea[]>([]);
+  const ancla = useAncla("inicio-tareas");
   const [ahora, setAhora] = useState(() => Date.now());
 
   useFocusEffect(
@@ -33,7 +35,7 @@ export default function TareasInicio() {
   if (pendientes.length === 0) return null;
 
   return (
-    <View style={{ gap: 10 }}>
+    <View ref={ancla} collapsable={false} style={{ gap: 10 }}>
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
         <TituloSeccion>Tareas de tu curso</TituloSeccion>
         <Pressable onPress={() => router.push("/curso")} hitSlop={10}>

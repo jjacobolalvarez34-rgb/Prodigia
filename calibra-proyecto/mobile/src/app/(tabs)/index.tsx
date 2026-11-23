@@ -33,6 +33,7 @@ import { PantallaPestana, TituloSeccion } from "~/ui/Pantalla";
 import PrimerosPasos from "~/ui/PrimerosPasos";
 import Tarjeta from "~/ui/Tarjeta";
 import TareasInicio from "~/ui/curso/TareasInicio";
+import { useAncla } from "~/lib/anclas";
 import Texto from "~/ui/Texto";
 import MinieventoFiesta from "~/ui/temas/minieventos/MinieventoFiesta";
 import { color, conAlfa, MUNDO_POR_SLUG, mundoDe } from "~/tema";
@@ -45,6 +46,9 @@ export default function Hoy() {
   const userId = sesion?.user.id;
   const { placa, resumen, mundos, esInvitado } = useJugador();
   const red = useSinConexion();
+  // Anclas del tutorial guiado (RecorridoSeccion).
+  const anclaContinuar = useAncla("inicio-continuar");
+  const anclaRecompensas = useAncla("inicio-recompensas");
   const [continuar, setContinuar] = useState<Continuar | null>(null);
   const [progreso, setProgreso] = useState<ProgresoMundo | null>(null);
   const [retos, setRetos] = useState<{ diario: number | null; semanal: number | null } | null>(null);
@@ -170,6 +174,7 @@ export default function Hoy() {
       {!esInvitado && <RepararRacha indice={indice++} />}
 
       {continuar && mundoContinuar && (
+        <View ref={anclaContinuar} collapsable={false}>
         <Tarjeta indice={indice++} relleno={0} acento={mundoContinuar.neon} brillo={0.18} esquina>
           <Ciudad semilla={mundoContinuar.slug} acento={mundoContinuar.neon} alto={84} radio={0} />
           <View style={{ padding: 14, gap: 10 }}>
@@ -190,11 +195,13 @@ export default function Hoy() {
             <Boton3D titulo={celebracionDe(temaHoy)?.boton ?? "Jugar"} acento={mundoContinuar.base} brillo sonido="jugar" onPress={() => router.push(continuar.ruta)} />
           </View>
         </Tarjeta>
+        </View>
       )}
 
       {!esInvitado && <TareasInicio />}
 
       {!esInvitado && (
+        <View ref={anclaRecompensas} collapsable={false}>
         <Animated.View entering={FadeInDown.delay(120).duration(300)} style={[styles.fila, { alignItems: "stretch" }]}>
           <PrimerosPasos />
           <Pressable onPress={() => router.push("/recompensas")} style={({ pressed }) => [styles.chico, totalPendientes(recompensas) > 0 && { borderColor: color.logro, boxShadow: `0px 0px 14px ${conAlfa(color.logro, 0.35)}` }, pressed && { transform: [{ scale: 0.97 }] }]}>
@@ -218,6 +225,7 @@ export default function Hoy() {
             </Texto>
           </Pressable>
         </Animated.View>
+        </View>
       )}
 
       {rachaEnRiesgo && (

@@ -119,7 +119,7 @@ export default async function ProdigiaHomePage() {
         <MinieventoInicio />
         {!user.is_anonymous && <RepararRacha />}
 
-        <section className="grid grid-cols-3 gap-3">
+        <section className="grid grid-cols-3 gap-3" data-tour="inicio-metricas">
           <MetricaCard
             icono={<IconLlama className="h-4 w-4 text-racha" />}
             label={t("racha")}
@@ -139,7 +139,7 @@ export default async function ProdigiaHomePage() {
           </AvisoPrimeraVez>
         </section>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2" data-tour="inicio-retos">
           <Link
             href="/reto-diario"
             className="flex items-center justify-between gap-4 rounded-2xl border border-logro/30 bg-logro/10 px-5 py-4 transition-colors hover:border-logro/50"
@@ -186,9 +186,13 @@ export default async function ProdigiaHomePage() {
         {!user.is_anonymous && <TareasInicio />}
         <EventoDobleExperiencia />
         {!user.is_anonymous && <PrimerosPasos />}
-        {!user.is_anonymous && <TarjetaRecompensas />}
+        {!user.is_anonymous && (
+          <div data-tour="inicio-recompensas">
+            <TarjetaRecompensas />
+          </div>
+        )}
 
-        <section className="flex flex-col gap-4">
+        <section className="flex flex-col gap-4" data-tour="inicio-mundos">
           <div>
             <h2 className="font-display text-lg font-bold text-foreground">{t("tusMundos")}</h2>
             <p className="text-xs text-texto-secundario">{t("tusMundosDescripcion")}</p>

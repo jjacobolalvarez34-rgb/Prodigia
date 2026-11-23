@@ -18,6 +18,7 @@ import { BotonAtras } from "./Pantalla";
 import Segmentos from "./Segmentos";
 import Tarjeta from "./Tarjeta";
 import Texto, { SobreOscuro } from "./Texto";
+import { useAncla } from "~/lib/anclas";
 import PestanaAprender from "./aprender/PestanaAprender";
 
 // Hub de un mundo (03-PANTALLAS §4.5): la ciudad encendida arriba con el nivel del
@@ -74,6 +75,10 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
   const { mundos, plan } = useJugador();
   const [progreso, setProgreso] = useState<ProgresoMundo | null>(null);
   const [pestana, setPestana] = useState<"practicar" | "aprender">("practicar");
+  // Anclas del tutorial guiado (RecorridoSeccion, recorrido «ciudad»).
+  const anclaNivel = useAncla("ciudad-nivel");
+  const anclaPestanas = useAncla("ciudad-pestanas");
+  const anclaModo = useAncla("ciudad-modo");
   const router = useRouter();
 
   useFocusEffect(
@@ -113,7 +118,7 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
               <Texto style={{ fontFamily: fuente.cuerpoFuerte, fontSize: 12, color: color.texto }}>Modo Zen</Texto>
             </Pressable>
             )}
-            <View style={styles.titulo}>
+            <View ref={anclaNivel} collapsable={false} style={styles.titulo}>
               <Texto style={{ fontFamily: fuente.display, fontSize: 30, letterSpacing: 2, color: color.texto, textShadowColor: mundo.neon, textShadowRadius: 16 }}>
                 {mundo.nombre.toUpperCase()}
               </Texto>
@@ -141,6 +146,7 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
               </View>
             </View>
           )}
+          <View ref={anclaPestanas} collapsable={false}>
           <Segmentos<"practicar" | "aprender">
             opciones={[
               { id: "practicar", titulo: "Practicar" },
@@ -149,6 +155,7 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
             valor={pestana}
             onCambio={setPestana}
           />
+          </View>
           {bloqueado ? (
             <Tarjeta acento={mundo.neon}>
               <Texto v="h3">{mundo.nombre} no está entre tus mundos</Texto>
@@ -157,7 +164,9 @@ export default function HubMundo({ mundo, descripcion, children, pie }: { mundo:
           ) : pestana === "practicar" ? (
             <>
               <Texto v="nota">{descripcion}</Texto>
-              {children}
+              <View ref={anclaModo} collapsable={false} style={{ gap: 10 }}>
+                {children}
+              </View>
             </>
           ) : (
             <PestanaAprender mundo={mundo} />

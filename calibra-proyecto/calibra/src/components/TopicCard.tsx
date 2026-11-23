@@ -63,7 +63,7 @@ export default async function TopicCard({ nombre, Icono, href, badge, colorHex =
 
   if (href) {
     return (
-      <Link href={href} className={className} style={style}>
+      <Link data-tour="ciudad-modo" href={href} className={className} style={style}>
         {contenido}
       </Link>
     );

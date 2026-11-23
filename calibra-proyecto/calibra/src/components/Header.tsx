@@ -15,6 +15,9 @@ import BannerDueloEnCurso from "./duelos/BannerDueloEnCurso";
 import Logo from "./Logo";
 import MundoSelector from "./MundoSelector";
 import ProfileMenu from "./ProfileMenu";
+import RecorridoGuiado from "./tutorial/RecorridoGuiado";
+import BotonTutorial from "./tutorial/BotonTutorial";
+import { recorridoDeRutaWeb } from "@/lib/tutorial/recorridos";
 import ThemeToggle from "./ThemeToggle";
 
 // Fase II: el color de acento del nav sigue al mundo en el que estás
@@ -94,6 +97,8 @@ export default function Header({ autenticado = false, invitado = false }: Props)
   const router = useRouter();
   const pedirConfirmacion = usePedirConfirmacionSalida();
   const colorMundo = colorDelMundo(pathname ?? "/");
+  // Tutorial guiado de la sección abierta (docs/PLAN_TUTORIAL_GUIADO.md).
+  const recorrido = autenticado && !invitado ? recorridoDeRutaWeb(pathname ?? "/") : null;
 
   // Pedido 2026-09-24: cualquier click en el Header (casita, logo, links)
   // primero pasa por la guardia de salida — si hay una partida o una
@@ -190,6 +195,8 @@ export default function Header({ autenticado = false, invitado = false }: Props)
               </Link>
             );
           })}
+          {recorrido && <BotonTutorial id={recorrido} acento={colorMundo} />}
+          {recorrido && <RecorridoGuiado key={recorrido} id={recorrido} acento={colorMundo} />}
           {autenticado ? <ProfileMenu /> : <ThemeToggle />}
         </nav>
       </div>

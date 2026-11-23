@@ -176,6 +176,8 @@ export async function verTutorialOtraVez() {
   await guardar(CLAVE_RECORRIDO, null);
   const { olvidarAyudas } = await import("./ayudas");
   await olvidarAyudas();
+  const { olvidarRecorridosEnCuenta } = await import("./tutorial");
+  await olvidarRecorridosEnCuenta();
   oyentesRecorrido.forEach((o) => o());
 }
 
