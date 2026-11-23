@@ -235,6 +235,7 @@ function Navegacion() {
             <Stack.Screen name="avisos" />
             <Stack.Screen name="ajustes-avisos" />
             <Stack.Screen name="ajustes" />
+            <Stack.Screen name="curso" />
             <Stack.Screen name="tienda" options={{ animation: "slide_from_bottom" }} />
             <Stack.Screen name="recompensas" />
             <Stack.Screen name="evento" />

@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet, Switch, View } from "react-native";
+import { ActivityIndicator, Alert, Image, Platform, Pressable, StyleSheet, Switch, View } from "react-native";
 import { useEffect, useState, type ReactNode } from "react";
 import { consultarVersionNueva, mostrarActualizacion, versionInstalada } from "~/lib/actualizacion";
 import { verTutorialOtraVez } from "~/lib/bienvenida";
@@ -24,7 +24,7 @@ import { PantallaApilada, TituloSeccion } from "~/ui/Pantalla";
 import PreguntaEdad from "~/ui/PreguntaEdad";
 import Tarjeta from "~/ui/Tarjeta";
 import Texto from "~/ui/Texto";
-import { color } from "~/tema";
+import { color, temaClaro } from "~/tema";
 
 function Fila({ titulo, nota, derecha, onPress }: { titulo: string; nota?: string; derecha?: ReactNode; onPress?: () => void }) {
   return (
@@ -126,6 +126,16 @@ export default function Ajustes() {
         />
       </Tarjeta>
 
+      {/* Piloto para colegios (0318): unirse al curso del docente y ver las tareas. */}
+      {!sesion?.user.is_anonymous && (
+        <>
+          <TituloSeccion>Colegio</TituloSeccion>
+          <Tarjeta relleno={4}>
+            <Fila titulo="Mi curso" nota="Únete con el código de tu docente y mira tus tareas" onPress={() => router.push("/curso")} />
+          </Tarjeta>
+        </>
+      )}
+
       <TituloSeccion>Avisos</TituloSeccion>
       <Tarjeta relleno={4}>
         <Fila titulo="Notificaciones" nota="Qué avisos recibir y cuándo" onPress={() => router.push("/ajustes-avisos")} />
@@ -203,6 +213,31 @@ export default function Ajustes() {
         <Fila titulo="Privacidad" onPress={() => WebBrowser.openBrowserAsync(`${URL_WEB}/privacidad`)} />
         <Fila titulo="Términos" onPress={() => WebBrowser.openBrowserAsync(`${URL_WEB}/terminos`)} />
         <Fila titulo="Eliminar mi cuenta" nota="Se hace desde la web, con tu sesión" onPress={() => WebBrowser.openBrowserAsync(`${URL_WEB}/ajustes`)} />
+      </Tarjeta>
+
+      {/* Kit de marca de Mamut Herd (GUIA-DE-USO.md): sello apilado en «Acerca de», entre
+          160 y 220 dp de ancho, con el texto corto y el enlace. */}
+      <TituloSeccion>Acerca de</TituloSeccion>
+      <Tarjeta>
+        <View style={{ alignItems: "center", gap: 12, paddingVertical: 6 }}>
+          <Texto v="h3">Prodigia {Constants.expoConfig?.version ?? ""}</Texto>
+          <Pressable onPress={() => WebBrowser.openBrowserAsync("https://mamutherdpage.vercel.app")} accessibilityLabel="Un producto de Mamut Herd">
+            <Image
+              source={temaClaro ? require("../../assets/mamut-herd/un-producto-de-mamut-herd-apilado-para-fondo-claro.png") : require("../../assets/mamut-herd/un-producto-de-mamut-herd-apilado-para-fondo-oscuro.png")}
+              style={{ width: 190, height: 190 / 2.71 }}
+              resizeMode="contain"
+            />
+          </Pressable>
+          <Texto v="nota" tam={12} centro>
+            Prodigia es un producto de Mamut Herd, una empresa que crea productos digitales y ayuda a empresas pequeñas a crecer.
+          </Texto>
+          <Texto v="nota" tam={12} centro>
+            Contacto: mamutherdoficial@gmail.com
+          </Texto>
+          <Texto v="nota" tam={11} centro>
+            © 2026 Mamut Herd
+          </Texto>
+        </View>
       </Tarjeta>
 
       <Boton3D titulo="Cerrar sesión" variante="peligro" onPress={salir} estilo={{ marginTop: 8 }} />

@@ -32,6 +32,7 @@ import NumeroAnimado from "~/ui/NumeroAnimado";
 import { PantallaPestana, TituloSeccion } from "~/ui/Pantalla";
 import PrimerosPasos from "~/ui/PrimerosPasos";
 import Tarjeta from "~/ui/Tarjeta";
+import TareasInicio from "~/ui/curso/TareasInicio";
 import Texto from "~/ui/Texto";
 import MinieventoFiesta from "~/ui/temas/minieventos/MinieventoFiesta";
 import { color, conAlfa, MUNDO_POR_SLUG, mundoDe } from "~/tema";
@@ -190,6 +191,8 @@ export default function Hoy() {
           </View>
         </Tarjeta>
       )}
+
+      {!esInvitado && <TareasInicio />}
 
       {!esInvitado && (
         <Animated.View entering={FadeInDown.delay(120).duration(300)} style={[styles.fila, { alignItems: "stretch" }]}>
