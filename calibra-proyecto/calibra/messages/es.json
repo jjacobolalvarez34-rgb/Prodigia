@@ -6896,6 +6896,39 @@
         "pierde": "Gana la casa"
       },
       "atajos": "Teclado: 2–9, 0 = 10, A = As, P = pide, L = se planta, N = nueva mano, Retroceso = deshacer."
+    },
+    "sala": {
+      "enVivo": "Sala en vivo",
+      "enSala": "{n, plural, =0 {nadie en la sala todavía} one {# jugador en la sala} other {# jugadores en la sala}}",
+      "nombreEtiqueta": "Tu nombre para el ranking de la sala",
+      "nombrePlaceholder": "Escribe tu nombre",
+      "entrar": "Entrar a la sala",
+      "esperandoMano": "Estás adentro. Esperando a que el crupier reparta…",
+      "esperandoCrupier": "Listo. Esperando a que el crupier destape su carta…",
+      "esperandoSiguiente": "Esperando la siguiente mano…",
+      "mesaDesconectada": "Se perdió la conexión con la mesa. Espera un momento: vuelve sola.",
+      "tuPuesto": "Quedaste en el puesto {n} de {total}."
+    },
+    "salaMesa": {
+      "titulo": "Sala en vivo",
+      "conectados": "{n, plural, =0 {nadie conectado} one {# conectado} other {# conectados}}",
+      "entra": "Entra desde tu celular",
+      "todos": "Todos",
+      "repartir": "Repartir mano {n}",
+      "destapar": "Destapar al crupier",
+      "ayudaDestapar": "Cuando la mayoría termine, destapa: quien siga pensando se planta con lo que tiene.",
+      "verRanking": "Ver ranking",
+      "nuevaPartida": "Nueva partida",
+      "pidieron": "Pidieron",
+      "plantaron": "Se plantaron",
+      "pensando": "Siguen pensando",
+      "piDice": "π* dice",
+      "mostrarPi": "Mostrar π*",
+      "ganaron": "Le ganaron a la casa",
+      "empataron": "Empataron",
+      "perdieron": "Perdieron",
+      "ranking": "Ranking de la sala",
+      "sinJugadores": "Nadie jugó todavía."
     }
   }
 }

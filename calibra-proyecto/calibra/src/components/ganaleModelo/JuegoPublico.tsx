@@ -22,7 +22,9 @@ import {
   type Decision,
   type ManoComun,
 } from "@/lib/ganaleModelo/blackjack";
-import { Ficha, ManoCartas, NEON_NAIPIA, Pano, conSigno, useFrasesModelo } from "./mesa";
+import { Ficha, ManoCartas, NEON_NAIPIA, Pano, RETRASOS_CRUPIER, RETRASOS_JUGADOR, conSigno, useFrasesModelo } from "./mesa";
+import { useCanalSala } from "./useCanalSala";
+import JuegoSala from "./JuegoSala";
 
 // «Gánale al modelo», modo público (el del QR). Una partida son MANOS_POR_PARTIDA manos;
 // el jugador y el modelo juegan cada mano con las mismas cartas (números aleatorios
@@ -31,7 +33,7 @@ import { Ficha, ManoCartas, NEON_NAIPIA, Pano, conSigno, useFrasesModelo } from 
 
 type Fase = "inicio" | "jugando" | "crupier" | "comparar" | "final";
 
-interface ManoJugada {
+export interface ManoJugada {
   mano: ManoComun;
   jugador: Carta[];
   modelo: Carta[];
@@ -68,7 +70,14 @@ function guardarMejor(n: number, total: number): { n: number; total: number } | 
 const ANCHO_CARTA = 66;
 const PAUSA_CRUPIER_MS = 650;
 
+// Con la sala abierta en el proyector (?modo=sala), el celular entra a la sala en vivo;
+// si no, juega solo.
 export default function JuegoPublico() {
+  const sala = useCanalSala("jugador");
+  return sala.huboMesa ? <JuegoSala sala={sala} /> : <JuegoSolo />;
+}
+
+function JuegoSolo() {
   const t = useTranslations("GanaleModelo");
   const frases = useFrasesModelo();
   const [fase, setFase] = useState<Fase>("inicio");
@@ -149,27 +158,7 @@ export default function JuegoPublico() {
   const ultima = jugadas[jugadas.length - 1];
 
   return (
-    <MotionConfig reducedMotion="never">
-      <div className="noche-prodigia relative flex min-h-screen flex-col overflow-x-clip">
-        <Estrellas cantidad={18} />
-        <header className="relative z-10 border-b border-border bg-background/90">
-          <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
-            <Link href="/" className="flex items-center gap-2 font-display text-lg font-bold tracking-tight text-foreground">
-              <Logo size={26} colorAro="#7C5CFF" />
-              Prodigia
-            </Link>
-            <span className="flex items-center gap-2 text-xs font-semibold text-[#F4B4B4]">
-              <Ficha tam={16} />
-              {t("marca")}
-            </span>
-          </div>
-        </header>
-
-        <main className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 pb-10 pt-6">
-          <h1 className="text-center font-display text-4xl font-bold leading-tight sm:text-6xl">
-            <LetreroNeon texto={t("titulo")} color={NEON_NAIPIA} falla={3} retrasoBase={200} />
-          </h1>
-
+    <Marco>
           {fase === "inicio" && <Inicio onJugar={empezarPartida} />}
 
           {mano && (fase === "jugando" || fase === "crupier") && (
@@ -182,14 +171,16 @@ export default function JuegoPublico() {
                 <div className="flex flex-col gap-16 py-2 sm:gap-20">
                   <FilaMano titulo={t("crupier")} total={fase === "crupier" ? frases.totalDe(crupierFinal.slice(0, crupierVisto)) : null}>
                     <ManoCartas
+                      key={`c-${indice}`}
                       etiqueta={t("crupier")}
                       ancho={ANCHO_CARTA}
+                      retrasos={RETRASOS_CRUPIER}
                       cartas={fase === "crupier" ? crupierFinal.slice(0, Math.max(2, crupierVisto)) : mano.crupier.slice(0, 2)}
                       oculta={fase === "jugando" || crupierVisto < 2}
                     />
                   </FilaMano>
                   <FilaMano titulo={t("tu")} total={frases.totalDe(jugador)}>
-                    <ManoCartas etiqueta={t("tu")} ancho={ANCHO_CARTA} cartas={jugador} />
+                    <ManoCartas key={`j-${indice}`} etiqueta={t("tu")} ancho={ANCHO_CARTA} cartas={jugador} retrasos={RETRASOS_JUGADOR} />
                   </FilaMano>
                 </div>
               </Pano>
@@ -221,7 +212,35 @@ export default function JuegoPublico() {
           {fase === "final" && (
             <Final fichasTu={fichasTu} fichasModelo={fichasModelo} jugadas={jugadas} mejor={mejor} onOtra={empezarPartida} />
           )}
+    </Marco>
+  );
+}
 
+// Encabezado, letrero, «¿Cómo decide el modelo?», Prodigia y pie (solo y en sala).
+export function Marco({ children }: { children: ReactNode }) {
+  const t = useTranslations("GanaleModelo");
+  return (
+    <MotionConfig reducedMotion="never">
+      <div className="noche-prodigia relative flex min-h-screen flex-col overflow-x-clip">
+        <Estrellas cantidad={18} />
+        <header className="relative z-10 border-b border-border bg-background/90">
+          <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
+            <Link href="/" className="flex items-center gap-2 font-display text-lg font-bold tracking-tight text-foreground">
+              <Logo size={26} colorAro="#7C5CFF" />
+              Prodigia
+            </Link>
+            <span className="flex items-center gap-2 text-xs font-semibold text-[#F4B4B4]">
+              <Ficha tam={16} />
+              {t("marca")}
+            </span>
+          </div>
+        </header>
+
+        <main className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 pb-10 pt-6">
+          <h1 className="text-center font-display text-4xl font-bold leading-tight sm:text-6xl">
+            <LetreroNeon texto={t("titulo")} color={NEON_NAIPIA} falla={3} retrasoBase={200} />
+          </h1>
+          {children}
           <ComoDecide />
           <Promo />
         </main>
@@ -237,7 +256,7 @@ export default function JuegoPublico() {
   );
 }
 
-function FilaMano({ titulo, total, children }: { titulo: string; total: string | null; children: ReactNode }) {
+export function FilaMano({ titulo, total, children }: { titulo: string; total: string | null; children: ReactNode }) {
   return (
     <div className="flex flex-col items-center gap-2">
       <div className="flex items-center gap-2 text-sm font-semibold text-[#F5EBCB]">
@@ -291,7 +310,19 @@ function Etiqueta({ r }: { r: number }) {
   );
 }
 
-function Comparacion({ jugada, ultimaMano, onSiguiente, indice }: { jugada: ManoJugada; ultimaMano: boolean; onSiguiente: () => void; indice: number }) {
+export function Comparacion({
+  jugada,
+  ultimaMano,
+  onSiguiente,
+  indice,
+  esperando,
+}: {
+  jugada: ManoJugada;
+  ultimaMano: boolean;
+  onSiguiente?: () => void;
+  indice: number;
+  esperando?: string;
+}) {
   const t = useTranslations("GanaleModelo");
   const frases = useFrasesModelo();
   const distintas = jugada.decisiones.filter((d) => !coincide(d));
@@ -333,29 +364,35 @@ function Comparacion({ jugada, ultimaMano, onSiguiente, indice }: { jugada: Mano
           ))
         )}
       </div>
-      <button
-        type="button"
-        onClick={onSiguiente}
-        className="mx-auto w-full max-w-xs rounded-full bg-[#B91C1C] px-8 py-3.5 text-lg font-bold text-white shadow-[0_0_0_2px_#F25C5C55,0_0_22px_#F25C5C44] transition active:scale-[0.97]"
-      >
-        {ultimaMano ? t("verFinal") : t("siguiente")}
-      </button>
+      {onSiguiente ? (
+        <button
+          type="button"
+          onClick={onSiguiente}
+          className="mx-auto w-full max-w-xs rounded-full bg-[#B91C1C] px-8 py-3.5 text-lg font-bold text-white shadow-[0_0_0_2px_#F25C5C55,0_0_22px_#F25C5C44] transition active:scale-[0.97]"
+        >
+          {ultimaMano ? t("verFinal") : t("siguiente")}
+        </button>
+      ) : (
+        esperando && <p className="text-center text-sm text-texto-secundario">{esperando}</p>
+      )}
     </motion.div>
   );
 }
 
-function Final({
+export function Final({
   fichasTu,
   fichasModelo,
   jugadas,
   mejor,
   onOtra,
+  children,
 }: {
   fichasTu: number;
   fichasModelo: number;
   jugadas: ManoJugada[];
   mejor: { n: number; total: number } | null;
-  onOtra: () => void;
+  onOtra?: () => void;
+  children?: ReactNode;
 }) {
   const t = useTranslations("GanaleModelo.final");
   const todas = jugadas.flatMap((j) => j.decisiones);
@@ -378,14 +415,17 @@ function Final({
       </div>
       {todas.length > 0 && <p className="text-foreground">{t("coincidencias", { n: iguales, total: todas.length })}</p>}
       {mejor && <p className="text-sm text-texto-secundario">{t("mejor", { n: mejor.n, total: mejor.total })}</p>}
+      {children}
       <p className="max-w-md text-sm text-texto-secundario">{t("honesto")}</p>
-      <button
-        type="button"
-        onClick={onOtra}
-        className="w-full max-w-xs rounded-full bg-[#B91C1C] px-8 py-3.5 text-lg font-bold text-white shadow-[0_0_0_2px_#F25C5C55,0_0_22px_#F25C5C44] transition active:scale-[0.97]"
-      >
-        {t("otraVez")}
-      </button>
+      {onOtra && (
+        <button
+          type="button"
+          onClick={onOtra}
+          className="w-full max-w-xs rounded-full bg-[#B91C1C] px-8 py-3.5 text-lg font-bold text-white shadow-[0_0_0_2px_#F25C5C55,0_0_22px_#F25C5C44] transition active:scale-[0.97]"
+        >
+          {t("otraVez")}
+        </button>
+      )}
     </motion.div>
   );
 }

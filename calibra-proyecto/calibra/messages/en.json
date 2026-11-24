@@ -6896,6 +6896,39 @@
         "pierde": "House wins"
       },
       "atajos": "Keys: 2–9, 0 = 10, A = Ace, P = hit, L = stand, N = new hand, Backspace = undo."
+    },
+    "sala": {
+      "enVivo": "Live room",
+      "enSala": "{n, plural, =0 {nobody in the room yet} one {# player in the room} other {# players in the room}}",
+      "nombreEtiqueta": "Your name for the room ranking",
+      "nombrePlaceholder": "Type your name",
+      "entrar": "Join the room",
+      "esperandoMano": "You're in. Waiting for the dealer to deal…",
+      "esperandoCrupier": "Done. Waiting for the dealer to flip their card…",
+      "esperandoSiguiente": "Waiting for the next hand…",
+      "mesaDesconectada": "Lost the connection to the table. Hold on: it comes back by itself.",
+      "tuPuesto": "You finished {n} of {total}."
+    },
+    "salaMesa": {
+      "titulo": "Live room",
+      "conectados": "{n, plural, =0 {nobody connected} one {# connected} other {# connected}}",
+      "entra": "Join from your phone",
+      "todos": "Everyone",
+      "repartir": "Deal hand {n}",
+      "destapar": "Flip the dealer's card",
+      "ayudaDestapar": "When most are done, flip: anyone still thinking stands with what they have.",
+      "verRanking": "See the ranking",
+      "nuevaPartida": "New game",
+      "pidieron": "Hit",
+      "plantaron": "Stood",
+      "pensando": "Still thinking",
+      "piDice": "π* says",
+      "mostrarPi": "Show π*",
+      "ganaron": "Beat the house",
+      "empataron": "Pushed",
+      "perdieron": "Lost",
+      "ranking": "Room ranking",
+      "sinJugadores": "Nobody has played yet."
     }
   }
 }

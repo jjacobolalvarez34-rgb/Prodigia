@@ -34,7 +34,19 @@ export function Pano({ children, leyenda, className = "" }: { children: ReactNod
           </text>
         </svg>
       )}
+      <Zapato />
       <div className="relative">{children}</div>
+    </div>
+  );
+}
+
+// El zapato del que salen las cartas, en la esquina del paño.
+function Zapato() {
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute -right-1 -top-1 z-0 h-14 w-12 rotate-12 rounded-lg bg-[#1A1210] p-1 shadow-[0_6px_14px_rgba(0,0,0,0.5)] sm:h-16 sm:w-14">
+      <div className="h-full w-full overflow-hidden rounded-md border border-[#3B2416]">
+        <div className="mt-2 h-full w-full -rotate-6 rounded-sm" style={{ background: "repeating-linear-gradient(45deg, #B91C1C 0 4px, #C93636 4px 8px)" }} />
+      </div>
     </div>
   );
 }
@@ -42,7 +54,24 @@ export function Pano({ children, leyenda, className = "" }: { children: ReactNod
 // Inclinación fija por posición: las cartas reales nunca caen derechas.
 const GIRO = [-4, 3, -2, 4, -3, 2, -1, 3];
 
-export function ManoCartas({ cartas, oculta = false, ancho = 64, etiqueta }: { cartas: Carta[]; oculta?: boolean; ancho?: number; etiqueta?: string }) {
+// Repartida en el orden real del blackjack: tu primera, la visible del crupier, tu
+// segunda y la oculta. Retrasos en segundos por posición para cada lado.
+export const RETRASOS_JUGADOR = [0.1, 0.7];
+export const RETRASOS_CRUPIER = [0.4, 1.0];
+
+export function ManoCartas({
+  cartas,
+  oculta = false,
+  ancho = 64,
+  etiqueta,
+  retrasos = [],
+}: {
+  cartas: Carta[];
+  oculta?: boolean;
+  ancho?: number;
+  etiqueta?: string;
+  retrasos?: number[];
+}) {
   return (
     <div role="group" aria-label={etiqueta} className="flex min-h-[1px] justify-center" style={{ minHeight: (ancho * 84) / 60 + 8 }}>
       {cartas.map((c, i) => {
@@ -50,9 +79,9 @@ export function ManoCartas({ cartas, oculta = false, ancho = 64, etiqueta }: { c
         return (
           <motion.div
             key={`${i}-${c.valor}-${c.palo}`}
-            initial={{ opacity: 0, x: 120, y: -150, rotate: 25, scale: 0.6 }}
+            initial={{ opacity: 0, x: 170, y: -190, rotate: 35, scale: 0.55 }}
             animate={{ opacity: 1, x: 0, y: 0, rotate: GIRO[i % GIRO.length], scale: 1 }}
-            transition={{ type: "spring", stiffness: 240, damping: 20, mass: 0.8 }}
+            transition={{ type: "spring", stiffness: 240, damping: 21, mass: 0.8, delay: retrasos[i] ?? 0 }}
             style={{ marginLeft: i === 0 ? 0 : -ancho * 0.38, zIndex: i, perspective: 600 }}
           >
             <motion.div

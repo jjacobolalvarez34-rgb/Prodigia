@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import JuegoPublico from "@/components/ganaleModelo/JuegoPublico";
 import ModoMesa from "@/components/ganaleModelo/ModoMesa";
+import ModoSala from "@/components/ganaleModelo/ModoSala";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("GanaleModelo.metadata");
@@ -14,5 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 // presentador para jugar con cartas reales.
 export default async function GanaleAlModeloPage({ searchParams }: { searchParams: Promise<{ [k: string]: string | string[] | undefined }> }) {
   const { modo } = await searchParams;
-  return modo === "mesa" ? <ModoMesa /> : <JuegoPublico />;
+  if (modo === "mesa") return <ModoMesa />;
+  if (modo === "sala") return <ModoSala />;
+  return <JuegoPublico />;
 }
