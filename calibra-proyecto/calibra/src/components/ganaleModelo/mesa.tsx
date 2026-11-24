@@ -26,8 +26,8 @@ export function Pano({ children, leyenda, className = "" }: { children: ReactNod
       <div aria-hidden="true" className="pointer-events-none absolute inset-2 rounded-[1.4rem] border border-dashed border-[#E9D9A6]/25" />
       {leyenda && (
         <svg aria-hidden="true" viewBox="0 0 400 60" className="pointer-events-none absolute left-1/2 top-1/2 w-[88%] max-w-md -translate-x-1/2 -translate-y-1/2">
-          <path id={idArco} d="M20 50 Q200 0 380 50" fill="none" />
-          <text fill="#E9D9A6" fillOpacity={0.32} fontSize="13" fontWeight={700} letterSpacing="2" fontFamily="ui-sans-serif, system-ui, sans-serif">
+          <path id={idArco} d="M6 54 Q200 0 394 54" fill="none" />
+          <text fill="#E9D9A6" fillOpacity={0.32} fontSize="10.5" fontWeight={700} letterSpacing="1" fontFamily="ui-sans-serif, system-ui, sans-serif">
             <textPath href={`#${idArco}`} startOffset="50%" textAnchor="middle">
               {leyenda.toUpperCase()}
             </textPath>
@@ -82,7 +82,7 @@ export function Ficha({ color = COLOR_NAIPIA, tam = 22 }: { color?: string; tam?
 }
 
 export function conSigno(n: number): string {
-  return n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0";
+  return n > 0 ? `+${n}` : n < 0 ? `-${-n}` : "0";
 }
 
 // Textos derivados del modelo (estado, carta, la línea que explica una decisión).

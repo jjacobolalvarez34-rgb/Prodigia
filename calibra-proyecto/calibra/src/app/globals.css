@@ -1235,6 +1235,9 @@ html[data-tema-claro] .particula-tema { filter: drop-shadow(0 0 1.5px rgba(20, 1
   :root:not([data-theme="light"]) .mh-claro { display: none; }
   :root:not([data-theme="light"]) .mh-oscuro { display: block; }
 }
+/* La Noche de Prodigia siempre es oscura: el sello va en su versión para fondo oscuro. */
+.noche-prodigia .mh-claro { display: none; }
+.noche-prodigia .mh-oscuro { display: block; }
 
 /* ---------- Presentación (LandingPublica, /docentes): la Noche de Prodigia ----------
    2026-11-23: «la estética de Prodigia es neón, pero que no se vea hecha con IA».

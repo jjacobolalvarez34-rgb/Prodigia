@@ -13,7 +13,7 @@ const CLAVE_ANUNCIO = "prodigia:anuncio-app-visto";
 const SIETE_DIAS = 7 * 24 * 60 * 60 * 1000;
 
 // Donde se juega o se estudia el sticker estorba (tapa botones): ahí no aparece.
-const RUTAS_SIN_STICKER = /\/(practica|sprint|duelo|duelos|diagnostico|reto|demo|aprender|login|registro|onboarding|descargar|invitado|serie|ranked)/;
+const RUTAS_SIN_STICKER = /\/(practica|sprint|duelo|duelos|diagnostico|reto|demo|aprender|login|registro|onboarding|descargar|invitado|serie|ranked|ganale-al-modelo)/;
 
 function leer(clave: string): string | null {
   try {
