@@ -434,3 +434,10 @@ Resultado:
 - CONSTRUI: `docs/FINAL-SPRINT-REPORT.md` (rutas de migracion 0116→0128 + NOTIFY, checklist de retest por tunnel 9 flujos, riesgos S5/S9 y causa del 0 XP, nota de rollback F6).
 - VERIFIQUE: el codigo de `/api/attempts` y `/api/logic-attempts` llama RPCs de 0120 (insertar_intento / insertar_intento_logica, grant a authenticated 0120:483/573) — el 0 XP es por migracion 0120 no aplicada a la base, NO por codigo (tsc/eslint/vitest/build OK).
 - PENDIENTE usuario: aplicar 0116→0128 + NOTIFY y recorrer el Paso 2 del informe. PENDIENTE PO: items de UX, feed social, copy 50% dominio y tutorial.
+### CLAIM: Minievento «Gánale al modelo» (web) · claude · 2026-11-24
+Estado: COMPLETO (ver cierre abajo). Excepción de paridad PENDIENTE: solo web (docs/PARIDAD_APP_WEB.md).
+
+### CIERRE: Minievento «Gánale al modelo» · claude · 2026-11-24
+- CONSTRUÍ: ruta pública `src/app/[locale]/ganale-al-modelo/` (modo público de 3 manos con números aleatorios comunes y modo presentador `?modo=mesa`), lógica pura en `src/lib/ganaleModelo/` (valor de la mano, π* exacto por recursión de Bellman, crupier S17, manos comunes, Hi-Lo, estado del modo mesa), piezas en `src/components/ganaleModelo/` (paño, cartas de Naipia con repartida y volteo, ficha, banner), banner en la presentación pública y en el inicio con sesión, textos es/en (`GanaleModelo`).
+- π* no se copió de `politica_blackjack.json` (no llegó con el encargo): se calcula en código con las mismas reglas. Coincide con los valores del encargo (duro 16 contra 7: plantarse −48, pedir −41 por cada 100 manos; valor del juego −4.7 por cada 100). Si llega el JSON, comparar.
+- VERIFICADO CON TEST: 29 pruebas nuevas (todas las del encargo) y la suite completa (3222). tsc y eslint limpios.

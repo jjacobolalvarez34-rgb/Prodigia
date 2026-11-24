@@ -6787,5 +6787,115 @@
         "texto": "Estudiantes en cada franja (con al menos 10 ejercicios)."
       }
     }
+  },
+  "GanaleModelo": {
+    "metadata": {
+      "title": "Gánale al modelo · Prodigia",
+      "description": "Tres manos de blackjack contra un modelo de Markov, con las mismas cartas. Un minievento de Naipia, en Prodigia."
+    },
+    "marca": "Minievento de Naipia",
+    "titulo": "Gánale al modelo",
+    "subtitulo": "Tú y un modelo de Markov juegan con las mismas cartas. Tres manos. ¿Quién termina con más fichas?",
+    "reglas": [
+      "Llega lo más cerca de 21 sin pasarte.",
+      "Solo puedes pedir o plantarte.",
+      "El crupier se planta con 17."
+    ],
+    "empezar": "Jugar",
+    "mano": "Mano {n} de {total}",
+    "crupier": "Crupier",
+    "tu": "Tú",
+    "modelo": "El modelo",
+    "pedir": "Pedir",
+    "plantarse": "Plantarse",
+    "duro": "duro {n}",
+    "suave": "suave {n}",
+    "pasado": "se pasó",
+    "pano": "El crupier se planta con 17 · ganar paga 1 a 1",
+    "marcador": "Tú {tu} · Modelo {modelo}",
+    "resultadoMano": {
+      "gana": "Gana",
+      "empata": "Empata",
+      "pierde": "Pierde"
+    },
+    "mismasCartas": "Mismas cartas, dos jugadas",
+    "coincidio": "Jugaste igual que el modelo.",
+    "explicacion": "Con {estado} contra {carta} el modelo {accion}: plantarse {p} por cada 100 manos así; pedir {h}.",
+    "accion": {
+      "pedir": "pide",
+      "plantarse": "se planta"
+    },
+    "valor": {
+      "gana": "gana {n}",
+      "pierde": "pierde {n}",
+      "cero": "queda en 0"
+    },
+    "cartaAs": "un As",
+    "cartaNum": "un {n}",
+    "cartaOcho": "un 8",
+    "siguiente": "Siguiente mano",
+    "verFinal": "Ver resultado",
+    "final": {
+      "gano": "¡Le ganaste al modelo!",
+      "empate": "Empataste con el modelo",
+      "perdio": "Esta vez ganó el modelo",
+      "fichasTu": "Tus fichas",
+      "fichasModelo": "Fichas del modelo",
+      "coincidencias": "Coincidiste con π* en {n} de {total} decisiones.",
+      "mejor": "Tu mejor marca: {n} de {total}.",
+      "honesto": "En tres manos manda la suerte. En promedio el modelo pierde unas 4.7 fichas por cada 100 manos: nadie le gana a la casa.",
+      "otraVez": "Jugar otra partida"
+    },
+    "comoDecide": {
+      "titulo": "¿Cómo decide el modelo?",
+      "lineas": [
+        "Cada situación es un estado: tu total, si tienes un As que vale 11 y la carta visible del crupier. Son 280.",
+        "En cada estado compara cuántas fichas espera ganar si pide y si se planta, y elige la mayor.",
+        "Esos valores salen exactos de resolver un sistema lineal; la política óptima π* se encontró con iteración de políticas.",
+        "Tú y el modelo reciben las mismas cartas (números aleatorios comunes), así la comparación es justa."
+      ]
+    },
+    "naipia": "¿Quieres aprender a contar cartas?",
+    "naipiaLink": "Entra a Naipia",
+    "prodigia": "Esto es un minievento de Prodigia: 15 ciudades para entrenar la mente con partidas de un minuto.",
+    "prodigiaCta": "Conocer Prodigia",
+    "banner": {
+      "etiqueta": "Minievento · Naipia",
+      "texto": "Tres manos de blackjack contra un modelo de Markov, con las mismas cartas.",
+      "cta": "Jugar"
+    },
+    "mesa": {
+      "titulo": "Modo mesa",
+      "jugadorPide": "El jugador pide",
+      "jugadorPlanta": "El jugador se planta",
+      "dice": "π* dice",
+      "porCien": "por cada 100 manos",
+      "ocultar": "Ocultar hasta que el público vote",
+      "revelar": "Revelar",
+      "oculto": "¿Pedir o plantarse? Voten.",
+      "deshacer": "Deshacer",
+      "nuevaMano": "Nueva mano",
+      "barajar": "Barajar",
+      "barajas": "Barajas",
+      "corriente": "Conteo corriente",
+      "verdadero": "Conteo verdadero",
+      "cartasVistas": "{n} cartas vistas",
+      "jugador": "Jugador",
+      "paso": {
+        "j1": "Primera carta del jugador",
+        "cv": "Carta visible del crupier",
+        "j2": "Segunda carta del jugador",
+        "decide": "¿Qué hace el jugador?",
+        "cartaJugador": "Carta que pidió el jugador",
+        "crupier": "Cartas del crupier: la oculta y las que pida",
+        "fin": "Mano terminada"
+      },
+      "resultado": {
+        "gana": "Gana el jugador",
+        "empata": "Empate",
+        "pierde": "Gana la casa"
+      },
+      "atajos": "Teclado: 2–9, 0 = 10, A = As, P = pide, L = se planta, N = nueva mano, Retroceso = deshacer."
+    }
   }
 }

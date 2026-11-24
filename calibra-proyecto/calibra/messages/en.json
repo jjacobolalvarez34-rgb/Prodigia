@@ -6787,5 +6787,115 @@
         "texto": "Students in each band (with at least 10 exercises)."
       }
     }
+  },
+  "GanaleModelo": {
+    "metadata": {
+      "title": "Beat the model · Prodigia",
+      "description": "Three hands of blackjack against a Markov model, with the same cards. A Naipia mini-event, in Prodigia."
+    },
+    "marca": "Naipia mini-event",
+    "titulo": "Beat the model",
+    "subtitulo": "You and a Markov model play the same cards. Three hands. Who ends up with more chips?",
+    "reglas": [
+      "Get as close to 21 as you can without going over.",
+      "You can only hit or stand.",
+      "The dealer stands on 17."
+    ],
+    "empezar": "Play",
+    "mano": "Hand {n} of {total}",
+    "crupier": "Dealer",
+    "tu": "You",
+    "modelo": "The model",
+    "pedir": "Hit",
+    "plantarse": "Stand",
+    "duro": "hard {n}",
+    "suave": "soft {n}",
+    "pasado": "bust",
+    "pano": "Dealer stands on 17 · wins pay 1 to 1",
+    "marcador": "You {tu} · Model {modelo}",
+    "resultadoMano": {
+      "gana": "Wins",
+      "empata": "Push",
+      "pierde": "Loses"
+    },
+    "mismasCartas": "Same cards, two ways to play",
+    "coincidio": "You played just like the model.",
+    "explicacion": "With {estado} against {carta} the model {accion}: standing {p} per 100 hands like this; hitting {h}.",
+    "accion": {
+      "pedir": "hits",
+      "plantarse": "stands"
+    },
+    "valor": {
+      "gana": "wins {n}",
+      "pierde": "loses {n}",
+      "cero": "breaks even"
+    },
+    "cartaAs": "an Ace",
+    "cartaNum": "a {n}",
+    "cartaOcho": "an 8",
+    "siguiente": "Next hand",
+    "verFinal": "See the result",
+    "final": {
+      "gano": "You beat the model!",
+      "empate": "You tied with the model",
+      "perdio": "The model won this time",
+      "fichasTu": "Your chips",
+      "fichasModelo": "Model's chips",
+      "coincidencias": "You matched π* in {n} of {total} decisions.",
+      "mejor": "Your best: {n} of {total}.",
+      "honesto": "In three hands, luck rules. On average the model loses about 4.7 chips per 100 hands: nobody beats the house.",
+      "otraVez": "Play again"
+    },
+    "comoDecide": {
+      "titulo": "How does the model decide?",
+      "lineas": [
+        "Each situation is a state: your total, whether you have an Ace counting as 11, and the dealer's up card. There are 280.",
+        "In each state it compares how many chips it expects to win by hitting and by standing, and picks the larger.",
+        "Those values come out exactly by solving a linear system; the optimal policy π* was found with policy iteration.",
+        "You and the model get the same cards (common random numbers), so the comparison is fair."
+      ]
+    },
+    "naipia": "Want to learn to count cards?",
+    "naipiaLink": "Go to Naipia",
+    "prodigia": "This is a Prodigia mini-event: 15 cities to train your mind with one-minute games.",
+    "prodigiaCta": "Discover Prodigia",
+    "banner": {
+      "etiqueta": "Mini-event · Naipia",
+      "texto": "Three hands of blackjack against a Markov model, with the same cards.",
+      "cta": "Play"
+    },
+    "mesa": {
+      "titulo": "Table mode",
+      "jugadorPide": "The player hits",
+      "jugadorPlanta": "The player stands",
+      "dice": "π* says",
+      "porCien": "per 100 hands",
+      "ocultar": "Hide until the audience votes",
+      "revelar": "Reveal",
+      "oculto": "Hit or stand? Vote.",
+      "deshacer": "Undo",
+      "nuevaMano": "New hand",
+      "barajar": "Shuffle",
+      "barajas": "Decks",
+      "corriente": "Running count",
+      "verdadero": "True count",
+      "cartasVistas": "{n} cards seen",
+      "jugador": "Player",
+      "paso": {
+        "j1": "Player's first card",
+        "cv": "Dealer's up card",
+        "j2": "Player's second card",
+        "decide": "What does the player do?",
+        "cartaJugador": "Card the player drew",
+        "crupier": "Dealer's cards: the hole card and any hits",
+        "fin": "Hand over"
+      },
+      "resultado": {
+        "gana": "Player wins",
+        "empata": "Push",
+        "pierde": "House wins"
+      },
+      "atajos": "Keys: 2–9, 0 = 10, A = Ace, P = hit, L = stand, N = new hand, Backspace = undo."
+    }
   }
 }

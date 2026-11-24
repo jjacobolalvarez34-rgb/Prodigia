@@ -4102,3 +4102,7 @@ Tres mundos nuevos, normales en todo (catálogo, Practicar, Rankeds, duelos, log
 - **Pendiente:**
   - inglés del contenido de las lecciones de Dinamia y Vitalia (hoy se ven en español también en inglés);
   - que la app re-exporte los adaptadores compartidos en vez de sus copias.
+
+## 2026-11-24 — Minievento «Gánale al modelo» (Konrad Lorenz)
+
+Blackjack simplificado como proceso de decisión de Markov contra la política óptima π*, para que el público juegue desde un QR (`/es/ganale-al-modelo`) y para el modo presentador con cartas reales (`?modo=mesa`). Encargo y reglas: `docs/minieventos/ENCARGO_GANALE_AL_MODELO.md`. Solo web por ahora (excepción PENDIENTE en `PARIDAD_APP_WEB.md`). VERIFICADO CON TEST (29 nuevas, suite completa 3222), tsc y eslint limpios.

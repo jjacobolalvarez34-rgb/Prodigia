@@ -72,6 +72,7 @@ lecciones o visuales, junto con `tsc` y `eslint` de los dos proyectos.
 | Widgets de la pantalla de inicio, intro de Mamut | Solo app | Son del sistema Android |
 | Práctica sin conexión | Solo app | La web no funciona sin conexión |
 | Borrar la cuenta | Web (la app abre la web) | Pendiente dentro de la app |
+| Minievento «Gánale al modelo» (`/ganale-al-modelo`, blackjack contra π*) y su banner en el inicio | Solo web, PENDIENTE (2026-11-24) | Se hizo en una noche para la jornada de proyectos de la Konrad Lorenz (el público entra por QR desde el navegador). Antes de llevarlo a la app, decidir si un blackjack choca con la misma política de Google Play que la Trastienda (PROD-01). Encargo: `docs/minieventos/ENCARGO_GANALE_AL_MODELO.md`. |
 
 ## Agregado el 2026-10-13 y 14 (en los dos lados)
 

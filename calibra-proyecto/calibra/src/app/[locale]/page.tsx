@@ -22,6 +22,7 @@ import { IconSuma, IconLogica, IconGeometria, IconLlama, IconCheck, IconQuimica,
 import { tieneMundo } from "@/lib/mundos/precios";
 import { sabadoDelFinde } from "@/lib/retoFinde";
 import TareasInicio from "@/components/curso/TareasInicio";
+import BannerGanaleModelo from "@/components/ganaleModelo/BannerGanaleModelo";
 import SaludoInicio from "./SaludoInicio";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -115,6 +116,7 @@ export default async function ProdigiaHomePage() {
         <CartelAlineacion invitado={user.is_anonymous} />
         <CartelTemporada />
         <MinieventoInicio />
+        <BannerGanaleModelo />
         {!user.is_anonymous && <RepararRacha />}
 
         <section className="grid grid-cols-3 gap-3" data-tour="inicio-metricas">

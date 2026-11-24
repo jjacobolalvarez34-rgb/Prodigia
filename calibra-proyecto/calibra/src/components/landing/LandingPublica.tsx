@@ -14,6 +14,7 @@ import { NEON_MUNDO } from "@/lib/landing/rueda";
 import { Aparece, Encabezado, MiniPanel, SUAVE, clasesBoton } from "./piezas";
 import { CajaNeon, CiudadDeNoche, Estrellas, LetreroNeon } from "./neon";
 import RuedaCiudades from "./RuedaCiudades";
+import BannerGanaleModelo from "@/components/ganaleModelo/BannerGanaleModelo";
 import TicketPartida from "./TicketPartida";
 
 // Página de presentación pública (2026-11-23). Segunda versión, a pedido: «la estética
@@ -109,6 +110,9 @@ export default function LandingPublica({ onJugar }: { onJugar?: () => void }) {
         </header>
 
         <main id="inicio" className="flex flex-col">
+          <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-4 sm:px-6">
+            <BannerGanaleModelo className="mx-auto max-w-xl" />
+          </div>
           {/* Inicio: el letrero, la rueda y la ciudad de noche abajo. */}
           <section id="ciudades" className="relative scroll-mt-20 overflow-hidden">
             <Estrellas />
