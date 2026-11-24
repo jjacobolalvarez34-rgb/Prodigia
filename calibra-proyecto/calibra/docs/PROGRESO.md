@@ -4106,3 +4106,6 @@ Tres mundos nuevos, normales en todo (catálogo, Practicar, Rankeds, duelos, log
 ## 2026-11-24 — Minievento «Gánale al modelo» (Konrad Lorenz)
 
 Blackjack simplificado como proceso de decisión de Markov contra la política óptima π*, para que el público juegue desde un QR (`/es/ganale-al-modelo`) y para el modo presentador con cartas reales (`?modo=mesa`). Encargo y reglas: `docs/minieventos/ENCARGO_GANALE_AL_MODELO.md`. Solo web por ahora (excepción PENDIENTE en `PARIDAD_APP_WEB.md`). VERIFICADO CON TEST (29 nuevas, suite completa 3222), tsc y eslint limpios.
+
+### 2026-11-24 — «Gánale al modelo»: sala en vivo
+`?modo=sala` en el proyector reparte la misma mano a todos los celulares por Supabase Realtime (solo mensajes y presencia, nada en la base), cuenta en vivo quién pide o se planta, destapa al crupier para todos y lleva el ranking. Los celulares se unen solos si la sala está abierta. VERIFICADO EN BROWSER en el sitio publicado: proyector + 2 celulares, 3 manos y ranking, sin errores; los conteos del proyector coinciden con cada celular. Lógica en `src/lib/ganaleModelo/sala.ts` (con tests). Nota: el primer despliegue en Vercel falló sin error en la compilación local; el reintento (commit vacío) publicó bien.
